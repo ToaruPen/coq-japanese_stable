@@ -749,7 +749,7 @@ Wave FINAL (After ALL tasks — verification, 4 parallel):
 
 ### Phase 0 → Phase 1 ブリッジ (Wave 2)
 
-- [ ] 5. レガシーXML移行の実行
+- [x] 5. レガシーXML移行の実行
 
   **What to do**:
   - Task 3 の `migration-report.json` に基づき、検証済みXMLファイルを新プロジェクトへコピー
@@ -806,7 +806,7 @@ Wave FINAL (After ALL tasks — verification, 4 parallel):
   **Commit**: YES
   - Message: `feat(localization): migrate validated XML translations from legacy`
 
-- [ ] 6. テストハーネス構築 (NUnit + HarmonyLib)
+- [x] 6. テストハーネス構築 (NUnit + HarmonyLib)
 
   **What to do**:
   - `Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj` を作成:
