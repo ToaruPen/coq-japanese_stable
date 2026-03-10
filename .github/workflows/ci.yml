@@ -9,9 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dotnet-version: ["8.0.x"]
 
     steps:
       - uses: actions/checkout@v4
@@ -19,14 +16,20 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ matrix.dotnet-version }}
+          dotnet-version: |
+            8.0.x
+            10.0.x
 
       - name: Build QudJP
         run: dotnet build Mods/QudJP/Assemblies/QudJP.csproj --configuration Release
 
+      - name: Build QudJP.Tests
+        if: hashFiles('Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj') != ''
+        run: dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release
+
       - name: Test QudJP
-        if: hashFiles('Mods/QudJP/Assemblies/QudJP.Tests.csproj') != ''
-        run: dotnet test Mods/QudJP/Assemblies/QudJP.Tests.csproj --configuration Release --no-build
+        if: hashFiles('Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj') != ''
+        run: dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-build
 
       - name: Setup Python
         uses: actions/setup-python@v5

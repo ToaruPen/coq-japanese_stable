@@ -27,5 +27,9 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup Condition="!Exists('$(ManagedDir)/0Harmony.dll')">
+    <PackageReference Include="Lib.Harmony" Version="2.2.2" PrivateAssets="all" ExcludeAssets="runtime" />
+  </ItemGroup>
+
   <!-- Game DLL references - only resolve when building locally with game installed -->
 </Project>
