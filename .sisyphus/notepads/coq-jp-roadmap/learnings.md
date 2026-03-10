@@ -88,3 +88,24 @@
 - Target frameworks: net10.0 for tests, net48 for mod DLL
 - netstandard2.0 doesn't work well for test projects (adapter incompatibility)
 - PoC project structure: /tmp/qudjp-poc/{QudJP.PoC.Tests, QudJP.PoC.Mod}
+
+## 2026-03-11 Task 8 Python ツール基盤
+- Ruff `select = ["ALL"]` で CLI スクリプトを書く際は `# noqa: T201` (print), `# noqa: S603, S607` (subprocess) が頻出。per-file-ignores で `scripts/tests/**` に `S101` (assert) と `PLR2004` (magic value) を抑制すると pytest テストが自然に書ける。
+- `scripts/__init__.py` を作ると INP001 (implicit-namespace-package) を回避でき、テストからの `from scripts.check_encoding import ...` も動作する。
+- Python 3.12+ ターゲットでは `from __future__ import annotations` 不要。`list[str] | None` 等が runtime で直接動作する。
+- boolean パラメータは keyword-only (`*` 後に配置) にすると FBT001/FBT002 を回避できる。
+- 例外メッセージは変数 `msg = f"..."` に格納してから `raise Error(msg)` とすると EM101/EM102 を回避。
+- `shutil.copy2` はメタデータ保持。`dest_path.parent.mkdir(parents=True, exist_ok=True)` でネストしたコピー先も安全。
+- 32 テスト全パス、ruff 0 エラーを初回実行で達成。
+
+## 2026-03-11 Task 1 スキャフォールディング（再実行）
+- dotnet SDK 10.0.100 では `dotnet new sln` がデフォルトで `.slnx` (XML形式) を生成。`--format sln` で従来の `.sln` を指定可能。
+- `dotnet sln add` も `.slnx` に変換するため、`.sln` 形式を維持するには手動生成が安全。
+- `QudJP.csproj` は `net48` + `Nullable enable` + `TreatWarningsAsErrors` でゲームDLL参照なしで正常ビルド（`src/AssemblyInfo.cs` のみ）。
+- `Mods/QudJP/Localization/ObjectBlueprints/` にはTask 3で移行済みの jp.xml ファイル（14ファイル）が既存。
+
+## 2026-03-11 Task 11 Grammar中和パッチ
+- `XRL.Language.Grammar` は `[HarmonyTargetMethod]` + `AccessTools.Method("Type:Method")` でゲーム型直参照なしに8メソッドを安全に解決できる。
+- net48 互換では `string.Replace(old, new, StringComparison)` と `^1` インデクサは使えないため、`Replace(old, new)` と `items[items.Count - 1]` を使う必要がある。
+- L1 では Harmony適用を使わず Prefix を直接呼ぶだけで、文法中和ロジック（無冠詞化・複数形無効化・`の`付与・和文リスト化）を高速に検証できる。
+- `SplitOfSentenceList` は `、` と英語の `, and` / ` and ` を `,` 正規化してから分割すると、色コードを壊さずに要素化できる。

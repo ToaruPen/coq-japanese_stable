@@ -11,3 +11,9 @@
 - Assembly-CSharp.dll reference: `<Private>false</Private>` (reference-only, not copied)
 - Harmony: NuGet Lib.Harmony 2.4.2 for tests, game-bundled 0Harmony 2.2.2.0 for runtime
 - 3-Layer test strategy: CONFIRMED viable after Part A success
+
+## 2026-03-11 Task 1 スキャフォールディング（再実行）
+- `.sln` ファイルは手動作成（dotnet CLI が `.slnx` に変換する問題を回避）。
+- `.editorconfig` の C# スタイルルールは severity=error で統一（`dotnet_style_qualification` 系）。
+- CI は `hashFiles()` ガードで条件付き実行（テストプロジェクト・Pythonファイル未存在時にスキップ）。
+- pyproject.toml の Ruff ignore は `D100`, `D104`, `COM812`, `ISC001` の4ルールのみ。
