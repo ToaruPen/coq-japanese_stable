@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using HarmonyLib;
 
@@ -22,10 +23,31 @@ public static class MainMenuLocalizationPatch
             return;
         }
 
-        var leftOptions = AccessTools.Field(targetType, "LeftOptions")?.GetValue(null);
+        var leftOptions = AccessCollectionField(targetType, __instance, "LeftOptions");
         UITextSkinTranslationPatch.TranslateStringFieldsInCollection(leftOptions, "Text");
 
-        var rightOptions = AccessTools.Field(targetType, "RightOptions")?.GetValue(null);
+        var rightOptions = AccessCollectionField(targetType, __instance, "RightOptions");
         UITextSkinTranslationPatch.TranslateStringFieldsInCollection(rightOptions, "Text");
+    }
+
+    private static object? AccessCollectionField(Type targetType, object? instance, string fieldName)
+    {
+        var field = AccessTools.Field(targetType, fieldName);
+        if (field is null)
+        {
+            return null;
+        }
+
+        if (field.IsStatic)
+        {
+            return field.GetValue(null);
+        }
+
+        if (instance is null)
+        {
+            return null;
+        }
+
+        return field.GetValue(instance);
     }
 }

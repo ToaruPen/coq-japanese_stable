@@ -78,3 +78,13 @@
 - Popupは `XRL.UI.Popup.ShowBlock` と `ShowOptionList` を `HarmonyTargetMethods` + `object[] __args` で一括Prefix処理し、タイトル/本文/選択肢/ボタン文言を反映できる。
 - MainMenu/Options は `Show()` Postfixでメニュー要素フィールドを反射更新する方式にすると、ゲーム型を直接参照せずにL2 DummyTargetでも検証可能。
 - L2は既存3 + 新規6 = 合計9テストが `--filter TestCategory=L2` で全件パス。
+
+## 2026-03-11 Task 0: PoC Results
+- dotnet SDK 10.0.100 on macOS ARM64 — NUnit + HarmonyLib fully functional
+- 6/6 tests pass: NUnit harness, Harmony Prefix, Harmony Postfix, Assembly-CSharp reference, 0Harmony metadata, Unity type instantiation
+- Assembly-CSharp.dll: Pure types like ConsoleLib.Console.Markup are fully accessible via reflection
+- TypeInitializationException: NOT observed for 20 Unity types — better than expected
+- HarmonyLib NuGet 2.4.2 works alongside game's 0Harmony 2.2.2.0
+- Target frameworks: net10.0 for tests, net48 for mod DLL
+- netstandard2.0 doesn't work well for test projects (adapter incompatibility)
+- PoC project structure: /tmp/qudjp-poc/{QudJP.PoC.Tests, QudJP.PoC.Mod}

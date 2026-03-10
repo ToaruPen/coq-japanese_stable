@@ -9,3 +9,8 @@
 - 現行ゲーム `Base/Books.xml` は XML 不正文字参照（line 1091, col 6）を含み、通常XMLパース不可。ID抽出は regex フォールバックが必要。
 - 事前想定（辞書37ファイル）に対し、実観測は辞書JSON35ファイル。件数差分の原因確認が必要。
 - Optionsで6件（`OptionDebug*`）がレガシーのみ、Booksで3件（`AcrossTheSpindle1-3`）がレガシーのみ。
+
+## 2026-03-11 Task 0: Known Issues
+- NUnit3TestAdapter 5.0.0 NU1701 warning for netstandard2.0 target — not critical
+- [ModuleInitializer] on Mono runtime: unverified, Part B pending
+- Part B (game runtime Harmony verification): PENDING manual game launch
