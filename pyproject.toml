@@ -26,6 +26,9 @@ max-returns = 6
 max-args = 6
 max-statements = 50
 
+[tool.ruff.lint.per-file-ignores]
+"scripts/tests/**" = ["S101", "PLR2004"]
+
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 

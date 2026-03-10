@@ -1,0 +1,47 @@
+All checks passed!
+=== ruff check scripts/ ===
+Exit code: 0 (All checks passed)
+
+=== pytest scripts/tests/ ===
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.0.2, pluggy-1.6.0 -- /opt/homebrew/opt/python@3.14/bin/python3.14
+cachedir: .pytest_cache
+rootdir: /Users/sankenbisha/Dev/Caves-of-Qud_Japanese
+configfile: pyproject.toml
+plugins: cov-7.0.0
+collecting ... collected 32 items
+
+scripts/tests/test_check_encoding.py::TestCheckFile::test_clean_file_has_no_issues PASSED [  3%]
+scripts/tests/test_check_encoding.py::TestCheckFile::test_bom_detected PASSED [  6%]
+scripts/tests/test_check_encoding.py::TestCheckFile::test_crlf_detected PASSED [  9%]
+scripts/tests/test_check_encoding.py::TestCheckFile::test_mojibake_detected PASSED [ 12%]
+scripts/tests/test_check_encoding.py::TestCheckFile::test_invalid_utf8_detected PASSED [ 15%]
+scripts/tests/test_check_encoding.py::TestCheckFile::test_multiple_issues_reported PASSED [ 18%]
+scripts/tests/test_check_encoding.py::TestCheckFile::test_empty_file_is_clean PASSED [ 21%]
+scripts/tests/test_check_encoding.py::TestCheckDirectory::test_clean_directory PASSED [ 25%]
+scripts/tests/test_check_encoding.py::TestCheckDirectory::test_issues_across_files PASSED [ 28%]
+scripts/tests/test_check_encoding.py::TestCheckDirectory::test_recursive_scan PASSED [ 31%]
+scripts/tests/test_check_encoding.py::TestCheckDirectory::test_nonexistent_directory_raises PASSED [ 34%]
+scripts/tests/test_check_encoding.py::TestCheckDirectory::test_file_instead_of_directory_raises PASSED [ 37%]
+scripts/tests/test_check_encoding.py::TestMain::test_clean_directory_returns_zero PASSED [ 40%]
+scripts/tests/test_check_encoding.py::TestMain::test_issues_return_one PASSED [ 43%]
+scripts/tests/test_check_encoding.py::TestMain::test_nonexistent_directory_returns_one PASSED [ 46%]
+scripts/tests/test_extract_base.py::TestExtractXmlFiles::test_copies_xml_files PASSED [ 50%]
+scripts/tests/test_extract_base.py::TestExtractXmlFiles::test_preserves_directory_structure PASSED [ 53%]
+scripts/tests/test_extract_base.py::TestExtractXmlFiles::test_skips_non_xml_files PASSED [ 56%]
+scripts/tests/test_extract_base.py::TestExtractXmlFiles::test_skip_existing_without_force PASSED [ 59%]
+scripts/tests/test_extract_base.py::TestExtractXmlFiles::test_overwrite_with_force PASSED [ 62%]
+scripts/tests/test_extract_base.py::TestExtractXmlFiles::test_nonexistent_source_raises PASSED [ 65%]
+scripts/tests/test_extract_base.py::TestExtractXmlFiles::test_empty_source_returns_empty PASSED [ 68%]
+scripts/tests/test_extract_base.py::TestExtractXmlFiles::test_multiple_xml_files PASSED [ 71%]
+scripts/tests/test_sync_mod.py::TestBuildRsyncCommand::test_basic_command_structure PASSED [ 75%]
+scripts/tests/test_sync_mod.py::TestBuildRsyncCommand::test_dry_run_flag PASSED [ 78%]
+scripts/tests/test_sync_mod.py::TestBuildRsyncCommand::test_no_dry_run_by_default PASSED [ 81%]
+scripts/tests/test_sync_mod.py::TestBuildRsyncCommand::test_exclude_fonts_flag PASSED [ 84%]
+scripts/tests/test_sync_mod.py::TestBuildRsyncCommand::test_no_exclude_fonts_by_default PASSED [ 87%]
+scripts/tests/test_sync_mod.py::TestBuildRsyncCommand::test_both_flags_combined PASSED [ 90%]
+scripts/tests/test_sync_mod.py::TestRunSync::test_nonexistent_source_raises PASSED [ 93%]
+scripts/tests/test_sync_mod.py::TestRunSync::test_calls_subprocess_run PASSED [ 96%]
+scripts/tests/test_sync_mod.py::TestRunSync::test_dry_run_passed_to_subprocess PASSED [100%]
+
+============================== 32 passed in 0.03s ==============================
