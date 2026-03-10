@@ -71,6 +71,38 @@ public static class MyPatch
 - `___fieldName` (triple underscore) accesses private fields
 - Prefix returning `false` skips the original AND all lower-priority prefixes
 
+## Fail-Fast Error Handling
+
+Fail-fast follows a 3-tier pattern.
+
+### 1) Init time
+`QudJPMod.ApplyHarmonyPatches` / `Translator.LoadTranslations` must throw immediately.
+
+```csharp
+if (harmony is null)
+    throw new InvalidOperationException("Harmony is required for patch registration.");
+```
+
+### 2) Target resolution (`TargetMethod()`)
+Emit `Trace.TraceError` with method name, then return `null`.
+
+```csharp
+var method = AccessTools.Method(typeof(Grammar), "Pluralize");
+if (method is null)
+    Trace.TraceError("[QudJP] TargetMethod missing: Grammar.Pluralize");
+return method;
+```
+
+### 3) Runtime patch bodies (Prefix/Postfix)
+Log with `Trace.TraceError`; do not throw into the game loop.
+
+```csharp
+try { __result = Translate(__result); }
+catch (Exception ex) { Trace.TraceError("[QudJP] Runtime patch failed: {0}", ex); }
+```
+
+Never silently swallow exceptions. Never use bare `catch (Exception) { }`. Never use `if (x is null) return;` to hide unexpected nulls.
+
 ## File Naming Conventions
 
 ```
