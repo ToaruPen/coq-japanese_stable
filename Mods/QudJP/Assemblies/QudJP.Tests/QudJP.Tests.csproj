@@ -20,6 +20,12 @@
     <ProjectReference Include="../QudJP.csproj" ReferenceOutputAssembly="false" SkipGetTargetFrameworkProperties="true" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="../src/ColorCodePreserver.cs" Link="Production/ColorCodePreserver.cs" />
+    <Compile Include="../src/LocalizationAssetResolver.cs" Link="Production/LocalizationAssetResolver.cs" />
+    <Compile Include="../src/Translator.cs" Link="Production/Translator.cs" />
+  </ItemGroup>
+
   <ItemGroup Condition="Exists('$(AssemblyCSharpPath)')">
     <Reference Include="Assembly-CSharp">
       <HintPath>$(AssemblyCSharpPath)</HintPath>
