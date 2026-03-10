@@ -333,7 +333,7 @@ Wave FINAL (After ALL tasks — verification, 4 parallel):
 
 ### Phase 0: PoC & 基盤構築
 
-- [ ] 0. ツールチェーンPoC: NUnit + HarmonyLib macOS 検証 ★ GATE TASK
+- [x] 0. ツールチェーンPoC: NUnit + HarmonyLib macOS 検証 ★ GATE TASK (Part A ✅, Part B ⏳ユーザー手動確認待ち)
 
   **What to do**:
   - **Part A: NUnit + HarmonyLib テスト環境検証**
@@ -437,7 +437,7 @@ Wave FINAL (After ALL tasks — verification, 4 parallel):
   **Commit**: YES
   - Message: `chore: toolchain proof-of-concept for NUnit + HarmonyLib on macOS`
 
-- [ ] 1. プロジェクトスキャフォールディング
+- [x] 1. プロジェクトスキャフォールディング
 
   **What to do**:
   - Git リポジトリ初期化（`git init`）
@@ -556,7 +556,7 @@ Wave FINAL (After ALL tasks — verification, 4 parallel):
   **Commit**: YES
   - Message: `chore: initialize project scaffolding with build config`
 
-- [ ] 2. ゲームデータ構造の分析
+- [x] 2. ゲームデータ構造の分析
 
   **What to do**:
   - `StreamingAssets/Base/` 配下の全XMLファイルの一覧と構造を把握
@@ -611,7 +611,7 @@ Wave FINAL (After ALL tasks — verification, 4 parallel):
   **Commit**: YES
   - Message: `docs: add game data structure analysis`
 
-- [ ] 3. レガシーXML監査 & 移行計画
+- [x] 3. レガシーXML監査 & 移行計画
 
   **What to do**:
   - レガシーの全XML翻訳ファイル（35ファイル, 66,301行）を自動検証:
@@ -691,7 +691,7 @@ Wave FINAL (After ALL tasks — verification, 4 parallel):
   **Commit**: YES
   - Message: `docs: complete legacy XML audit and migration plan`
 
-- [ ] 4. ILSpy解析結果の永続化 & 補完
+- [x] 4. ILSpy解析結果の永続化 & 補完
 
   **What to do**:
   - 前セッションで実施したILSpy解析結果を `docs/ilspy-analysis.md` に永続化:
