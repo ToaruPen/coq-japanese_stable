@@ -882,7 +882,7 @@ Wave FINAL (After ALL tasks — verification, 4 parallel):
 
 ### Phase 1: 最小動作Mod (Wave 3-4)
 
-- [ ] 7. C# 翻訳インフラストラクチャの構築
+- [x] 7. C# 翻訳インフラストラクチャの構築
 
   **What to do**:
   - Mod エントリポイント `QudJPMod.cs` の実装（Harmony.PatchAll() を呼ぶブートストラップ）
@@ -947,7 +947,7 @@ Wave FINAL (After ALL tasks — verification, 4 parallel):
   **Commit**: YES
   - Message: `feat(harmony): implement core translation infrastructure with L1 tests`
 
-- [ ] 8. Python ツール基盤の構築
+- [x] 8. Python ツール基盤の構築
 
   **What to do**:
   - `scripts/sync_mod.py` — Mod をゲームディレクトリへ同期（rsync ベース、macOS対応）
