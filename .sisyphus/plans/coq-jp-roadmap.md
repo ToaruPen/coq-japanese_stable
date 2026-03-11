@@ -1078,7 +1078,7 @@ Wave FINAL (After ALL tasks — verification, 4 parallel):
   **Commit**: YES
   - Message: `feat(harmony): add basic UI localization patches with L2 tests`
 
-- [ ] 10. 最小動作Modの統合テスト
+- [x] 10. 最小動作Modの統合テスト
 
   **What to do**:
   - Tasks 5-9 の成果物を統合し、ゲーム内で動作する最小Modを構成
