@@ -124,6 +124,15 @@ Examples:
 - `fix(xml): correct creature name encoding in Creatures.jp.xml`
 - `test(patch): add L2 test for GrammarPatch prefix`
 
+## Mod Deployment
+
+ゲームへの Mod デプロイ方法は [docs/deployment.md](docs/deployment.md) を参照。
+
+**要点**:
+- `python scripts/sync_mod.py` でデプロイ（推奨）
+- ゲームに必要なのは `manifest.json` + `QudJP.dll` + `Localization/` のみ
+- `.cs` ソースファイルは絶対にデプロイしない（ゲームのコンパイラがエラーを出す）
+
 ## Constraints
 
 - No code from the legacy project (clean-room implementation)
