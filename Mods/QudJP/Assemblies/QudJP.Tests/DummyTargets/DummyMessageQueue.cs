@@ -4,21 +4,23 @@ internal static class DummyMessageQueue
 {
     public static string LastMessage { get; private set; } = string.Empty;
 
-    public static string LastColor { get; private set; } = string.Empty;
+    public static string? LastColor { get; private set; }
 
-    public static bool LastUsePopup { get; private set; }
+    public static bool LastCapitalize { get; private set; }
 
-    public static void AddPlayerMessage(string message, string color, bool usePopup)
+    public static bool LastUsePopup => LastCapitalize;
+
+    public static void AddPlayerMessage(string Message, string? Color = null, bool Capitalize = true)
     {
-        LastMessage = message;
-        LastColor = color;
-        LastUsePopup = usePopup;
+        LastMessage = Message;
+        LastColor = Color;
+        LastCapitalize = Capitalize;
     }
 
     public static void Reset()
     {
         LastMessage = string.Empty;
-        LastColor = string.Empty;
-        LastUsePopup = false;
+        LastColor = null;
+        LastCapitalize = false;
     }
 }

@@ -1457,7 +1457,7 @@ Wave FINAL (After ALL tasks — verification, 4 parallel):
   **Commit**: YES
   - Message: `feat(scripts): add diff and validation tooling`
 
-- [ ] 16. メッセージログ翻訳 (辞書置換方式) + L1/L2テスト
+- [x] 16. メッセージログ翻訳 (辞書置換方式) + L1/L2テスト
 
   **What to do**:
   - **Phase 1 スコープ**: 辞書置換方式によるメッセージログ翻訳（XDidY完全置換はPhase 2）

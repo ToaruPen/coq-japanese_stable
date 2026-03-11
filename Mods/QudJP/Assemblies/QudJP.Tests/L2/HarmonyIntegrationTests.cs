@@ -72,13 +72,13 @@ public sealed class HarmonyIntegrationTests
                 original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage)),
                 prefix: new HarmonyMethod(RequireMethod(typeof(DummyMessageQueuePrefixPatch), nameof(DummyMessageQueuePrefixPatch.Prefix))));
 
-            DummyMessageQueue.AddPlayerMessage("hello", "&w", usePopup: false);
+            DummyMessageQueue.AddPlayerMessage("hello", "&w", Capitalize: false);
 
             Assert.Multiple(() =>
             {
                 Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("[JP] hello"));
                 Assert.That(DummyMessageQueue.LastColor, Is.EqualTo("&Y"));
-                Assert.That(DummyMessageQueue.LastUsePopup, Is.True);
+                Assert.That(DummyMessageQueue.LastCapitalize, Is.True);
             });
         }
         finally
@@ -118,11 +118,11 @@ public sealed class HarmonyIntegrationTests
 
     private static class DummyMessageQueuePrefixPatch
     {
-        public static void Prefix(ref string message, ref string color, ref bool usePopup)
+        public static void Prefix(ref string Message, ref string Color, ref bool Capitalize)
         {
-            message = $"[JP] {message}";
-            color = "&Y";
-            usePopup = true;
+            Message = $"[JP] {Message}";
+            Color = "&Y";
+            Capitalize = true;
         }
     }
 }

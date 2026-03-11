@@ -1,0 +1,149 @@
+{
+  "entries": [],
+  "patterns": [
+    {
+      "pattern": "^You hit (.+) for (\\d+) damage[.!]?$",
+      "template": "{0}に{1}ダメージを与えた"
+    },
+    {
+      "pattern": "^You crit (.+) for (\\d+) damage[.!]?$",
+      "template": "{0}に会心の一撃で{1}ダメージを与えた"
+    },
+    {
+      "pattern": "^You attack (.+?)[.!]?$",
+      "template": "{0}に攻撃した"
+    },
+    {
+      "pattern": "^(.+) hits you for (\\d+) damage[.!]?$",
+      "template": "{0}の攻撃で{1}ダメージを受けた"
+    },
+    {
+      "pattern": "^(.+) crits you for (\\d+) damage[.!]?$",
+      "template": "{0}の会心の一撃で{1}ダメージを受けた"
+    },
+    {
+      "pattern": "^(.+) attacks you[.!]?$",
+      "template": "{0}があなたに攻撃した"
+    },
+    {
+      "pattern": "^You miss (.+?)[.!]?$",
+      "template": "{0}への攻撃をはずした"
+    },
+    {
+      "pattern": "^(.+) misses you[.!]?$",
+      "template": "{0}の攻撃は外れた"
+    },
+    {
+      "pattern": "^You block (.+)'s attack[.!]?$",
+      "template": "{0}の攻撃を防いだ"
+    },
+    {
+      "pattern": "^You dodge (.+)'s attack[.!]?$",
+      "template": "{0}の攻撃を回避した"
+    },
+    {
+      "pattern": "^You parry (.+)'s attack[.!]?$",
+      "template": "{0}の攻撃を受け流した"
+    },
+    {
+      "pattern": "^You are confused[.!]?$",
+      "template": "あなたは混乱した"
+    },
+    {
+      "pattern": "^You are stunned[.!]?$",
+      "template": "あなたは朦朧としている"
+    },
+    {
+      "pattern": "^You are poisoned[.!]?$",
+      "template": "あなたは毒状態になった"
+    },
+    {
+      "pattern": "^You are bleeding[.!]?$",
+      "template": "あなたは出血している"
+    },
+    {
+      "pattern": "^You are burning[.!]?$",
+      "template": "あなたは燃えている"
+    },
+    {
+      "pattern": "^You stop bleeding[.!]?$",
+      "template": "あなたの出血は止まった"
+    },
+    {
+      "pattern": "^You are no longer confused[.!]?$",
+      "template": "あなたの混乱は解けた"
+    },
+    {
+      "pattern": "^You begin moving[.!]?$",
+      "template": "あなたは移動を開始した"
+    },
+    {
+      "pattern": "^You stop moving[.!]?$",
+      "template": "あなたは移動を止めた"
+    },
+    {
+      "pattern": "^You pick up (.+?)[.!]?$",
+      "template": "{0}を拾った"
+    },
+    {
+      "pattern": "^You drop (.+?)[.!]?$",
+      "template": "{0}を落とした"
+    },
+    {
+      "pattern": "^You equip (.+?)[.!]?$",
+      "template": "{0}を装備した"
+    },
+    {
+      "pattern": "^You unequip (.+?)[.!]?$",
+      "template": "{0}を装備解除した"
+    },
+    {
+      "pattern": "^You fire (.+?)[.!]?$",
+      "template": "{0}を発射した"
+    },
+    {
+      "pattern": "^You reload (.+?)[.!]?$",
+      "template": "{0}を再装填した"
+    },
+    {
+      "pattern": "^You die![.!]?$",
+      "template": "あなたは死んだ！"
+    },
+    {
+      "pattern": "^(.+?) is destroyed[.!]?$",
+      "template": "{0}は破壊された"
+    },
+    {
+      "pattern": "^(.+?) dies[.!]?$",
+      "template": "{0}は死んだ"
+    },
+    {
+      "pattern": "^You feel (.+?)[.!]?$",
+      "template": "あなたは{0}と感じた"
+    },
+    {
+      "pattern": "^You see (.+?)[.!]?$",
+      "template": "あなたは{0}を見た"
+    },
+    {
+      "pattern": "^You hear (.+?)[.!]?$",
+      "template": "あなたは{0}を聞いた"
+    },
+    {
+      "pattern": "^You gain (\\d+) XP[.!]?$",
+      "template": "あなたは経験値を{0}獲得した"
+    },
+    {
+      "pattern": "^You lose (\\d+) HP[.!]?$",
+      "template": "あなたは{0}HPを失った"
+    },
+    {
+      "pattern": "^You recover (\\d+) HP[.!]?$",
+      "template": "あなたは{0}HP回復した"
+    },
+    {
+      "pattern": "^You cannot do that[.!]?$",
+      "template": "それはできない"
+    }
+  ]
+}
