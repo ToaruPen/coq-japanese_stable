@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <genotypes>
-  <genotype Name="Mutated Human" DisplayName="突然変異した人間" MutationPoints="12" StatPoints="44" AllowedMutationCategories="*" RandomWeight="90" Subtypes="Callings" Class="" Tile="UI/sw_mutant.bmp" DetailColor="g" BodyObject="Humanoid" BaseHPGain="1-4" BaseSPGain="50" BaseMPGain="1" Species="human" IsMutant="true" CharacterBuilderModules="XRL.CharacterBuilds.Qud.QudCasteModule,XRL.CharacterBuilds.Qud.QudCyberneticsModule" Load="Replace">
+  <genotype Name="Mutated Human" DisplayName="突然変異した人間" MutationPoints="12" StatPoints="44" AllowedMutationCategories="*" RandomWeight="90" Subtypes="Callings" Class="" Tile="UI/sw_mutant.bmp" DetailColor="g" BodyObject="Humanoid" BaseHPGain="1-4" BaseSPGain="50" BaseMPGain="1" Species="human" IsMutant="true" CharacterBuilderModules="XRL.CharacterBuilds.Qud.QudCasteModule,XRL.CharacterBuilds.Qud.QudCyberneticsModule">
     <removeextrainfo>Mutations</removeextrainfo>
     <removeextrainfo>Moderate starting attributes</removeextrainfo>
     <removeextrainfo>-600 reputation with {{C|the Putus Templar}}</removeextrainfo>
@@ -18,7 +18,7 @@
     <extrainfo>平均的な初期能力値</extrainfo>
     <extrainfo>{{C|プトゥス聖堂騎士団}} との評判 -600</extrainfo>
   </genotype>
-  <genotype Name="True Kin" DisplayName="真性人類" MutationPoints="0" StatPoints="38" AllowedMutationCategories="" CyberneticsLicensePoints="2" RandomWeight="10" Subtypes="Castes" Class="" Tile="UI/sw_truekin.bmp" DetailColor="C" BodyObject="Humanoid" BaseHPGain="1-4" BaseSPGain="70" BaseMPGain="0" Species="human" IsTrueKin="true" CharacterBuilderModules="XRL.CharacterBuilds.Qud.QudCallingModule,XRL.CharacterBuilds.Qud.QudMutationsModule" Load="Replace">
+  <genotype Name="True Kin" DisplayName="真性人類" MutationPoints="0" StatPoints="38" AllowedMutationCategories="" CyberneticsLicensePoints="2" RandomWeight="10" Subtypes="Castes" Class="" Tile="UI/sw_truekin.bmp" DetailColor="C" BodyObject="Humanoid" BaseHPGain="1-4" BaseSPGain="70" BaseMPGain="0" Species="human" IsTrueKin="true" CharacterBuilderModules="XRL.CharacterBuilds.Qud.QudCallingModule,XRL.CharacterBuilds.Qud.QudMutationsModule">
     <removeextrainfo>High starting attributes</removeextrainfo>
     <removeextrainfo>Access to cybernetics</removeextrainfo>
     <removeextrainfo>{{C|20}} bonus skill points each level</removeextrainfo>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<quests Load="Merge">
+<quests>
   
   <quest Name="What's Eating the Watervine?" Factions="Joppa" Reputation="200" Level="1" Achievement="ACH_COMPLETE_WATERVINE"
          Accomplishment="ジョッパの村人にギルシュを警告し、食い荒らされたウォーターヴァインの謎を解いた。"

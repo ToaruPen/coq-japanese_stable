@@ -1,4 +1,4 @@
-<activatedabilities Load="Replace">
+<activatedabilities>
 	<ability Command="CommandAmputateLimb">
 		<description>自分か感染した仲間の四肢を切断する。</description>
 		<UITile Tile="Abilities/abil_amputate_limb.bmp" Foreground="y" Detail="Y" />
