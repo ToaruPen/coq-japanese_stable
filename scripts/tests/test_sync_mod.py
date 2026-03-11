@@ -94,6 +94,15 @@ class TestBuildRsyncCommand:
         wildcard_idx = cmd.index("--exclude=*")
         assert fonts_idx < wildcard_idx
 
+    def test_rsync_includes_contains_bootstrap_cs(self) -> None:
+        """Bootstrap.cs is in the include list for game-compiled loader deployment."""
+        assert "Bootstrap.cs" in _RSYNC_INCLUDES
+
+    def test_build_rsync_command_includes_bootstrap(self) -> None:
+        """--include=Bootstrap.cs appears in the built rsync command."""
+        cmd = build_rsync_command(Path("/src"), Path("/dst"))
+        assert "--include=Bootstrap.cs" in cmd
+
 
 class TestRunSync:
     """Tests for run_sync."""

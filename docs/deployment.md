@@ -46,6 +46,7 @@ rm -rf "$GAME_MODS/QudJP"
 # Copy only required files
 mkdir -p "$GAME_MODS/QudJP/Assemblies"
 cp Mods/QudJP/manifest.json "$GAME_MODS/QudJP/"
+cp Mods/QudJP/Bootstrap.cs "$GAME_MODS/QudJP/"
 cp Mods/QudJP/Assemblies/QudJP.dll "$GAME_MODS/QudJP/Assemblies/"
 cp -r Mods/QudJP/Localization "$GAME_MODS/QudJP/"
 ```
@@ -54,11 +55,12 @@ cp -r Mods/QudJP/Localization "$GAME_MODS/QudJP/"
 
 ## Deployed Files
 
-The game requires exactly three types of files:
+The game requires exactly four types of files:
 
 | File | Purpose |
 |------|---------|
-| `manifest.json` | Mod metadata (ID, title, DLL path) |
+| `manifest.json` | Mod metadata (ID, title, version) |
+| `Bootstrap.cs` | Game-compiled loader shim — discovers and initializes QudJP.dll |
 | `Assemblies/QudJP.dll` | Pre-compiled Harmony patch DLL |
 | `Localization/` | XML translation files + JSON dictionaries |
 
@@ -66,7 +68,7 @@ The game requires exactly three types of files:
 
 | File | Reason |
 |------|--------|
-| `*.cs` | Game's Unity/Mono compiler attempts to compile them and fails |
+| `*.cs` (except `Bootstrap.cs`) | Game's Unity/Mono compiler attempts to compile them — `Bootstrap.cs` is the intentional exception as it IS meant to be game-compiled |
 | `*.csproj`, `*.sln` | Build configuration files (not needed by the game) |
 | `*.pdb` | Debug symbols (not needed by the game) |
 | `bin/`, `obj/` | Build artifacts |
@@ -75,7 +77,7 @@ The game requires exactly three types of files:
 | `QudJP.Analyzers/` | Roslyn analyzer project |
 | `AGENTS.md` | Development documentation |
 
-> **Critical**: The game's mod system automatically attempts to compile any `.cs` file found in the mod directory. QudJP uses a pre-compiled DLL, so if source files are present, C# 10+ syntax (`global using`, file-scoped namespaces, etc.) will cause compilation errors in the game's older compiler (CS8652, CS1514, +438 errors).
+> **Critical**: The game's mod system automatically attempts to compile any `.cs` file found in the mod directory. `Bootstrap.cs` is intentionally game-compiled (it uses C# ≤9 syntax to bootstrap the pre-built DLL). All other `.cs` source files must NOT be deployed, as C# 10+ syntax will cause compilation errors (CS8652, CS1514).
 
 ---
 
@@ -103,6 +105,7 @@ The game requires exactly three types of files:
 | Mod not listed | `manifest.json` not deployed | Verify `manifest.json` exists at the deploy target |
 | Japanese text shows as □ (tofu) | CJK font not bundled | Verify Fonts directory is deployed |
 | DLL load error | `QudJP.dll` not built | Run `dotnet build` then re-deploy |
+| No QudJP traces in Player.log | Bootstrap.cs not deployed or failed to compile | Verify `Bootstrap.cs` exists in game `Mods/QudJP/` directory; check Player.log for compile errors |
 
 ---
 

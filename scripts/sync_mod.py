@@ -7,10 +7,13 @@ from pathlib import Path
 
 # Only game-essential files are deployed.  The game's Unity/Mono compiler will
 # attempt to compile any .cs file it finds, so source code must never reach the
-# Mods directory.  We use an include-first strategy: explicitly allow the three
-# things the game needs, then exclude everything else.
+# Mods directory — with one exception: Bootstrap.cs is a thin loader shim that
+# the game compiles to discover and initialize QudJP.dll.  We use an
+# include-first strategy: explicitly allow the needed files, then exclude
+# everything else.
 _RSYNC_INCLUDES: tuple[str, ...] = (
     "manifest.json",
+    "Bootstrap.cs",
     "Assemblies/",
     "Assemblies/QudJP.dll",
     "Localization/",
