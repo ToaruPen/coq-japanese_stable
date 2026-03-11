@@ -184,3 +184,9 @@
 - `ConversationNode.GetDisplayText(bool)` は `AccessTools.Method("XRL.World.Conversations.ConversationNode:GetDisplayText")` で一次解決し、失敗時は `AccessTools.AllTypes()` から `XRL.World.Conversations.*` + `GetDisplayText(bool):string` を走査する二段階解決で追従性を確保できる。
 - Postfix は `UITextSkinTranslationPatch.TranslatePreservingColors(__result)` へ委譲し、翻訳辞書適用と `{{W|...}}` 色コード保全を共通経路で再利用すると実装差分を最小化できる。
 - 会話表示L2は `DummyConversationElement.GetDisplayText(bool)` へ実パッチPostfixを直接当てる形で、翻訳/未知文パススルー/色コード保全/null・empty/既存日本語パススルーを1ファイル内で網羅できる。
+
+## 2026-03-11 Task 14 UIパッチ拡張 (GetDisplayName/CharGen/Inventory)
+- `GetDisplayNameEvent.GetFor` は `AccessTools.Method("XRL.World.GetDisplayNameEvent:GetFor")` を一次解決し、失敗時に `AccessTools.AllTypes()` から `GetDisplayNameEvent` + `GetFor` + `string` 戻り値を探す二段階解決で実装できる。
+- CharGen/Inventory はゲーム更新で型名が変わりやすいため、既知型名配列 + 名前空間/型名パターンのフォールバック走査で `string` 戻り値メソッドをまとめて Postfix する設計が保守しやすい。
+- 共有ソースを `net48` と `net10.0` の両方で analyzer clean にするには、`StringComparison.OrdinalIgnoreCase` 付き部分一致を `#if NET48` で `IndexOf`、それ以外で `Contains` に分岐するヘルパー化が有効（CA2249 回避）。
+- L2は `DummyGetDisplayNameEvent` + UI拡張テスト1ファイルで8ケース（GetDisplayName 4 / CharGen 2 / Inventory 2）を追加し、全体テストは 96 passed まで増加した。
