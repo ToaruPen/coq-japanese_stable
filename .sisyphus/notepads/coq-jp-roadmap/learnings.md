@@ -167,3 +167,15 @@
 - `Microsoft.CodeAnalysis.CSharp.Analyzer.Testing.NUnit` 1.1.2 は NUnit 4 系と実行時互換がなく、`Assert.That(ValueTuple<,>...)` の `MissingMethodException` が出るため、Analyzer テスト側は NUnit 3.13.x が安定した。
 - Analyzer テストの raw string は `using` が namespace 宣言より後ろに回ると `CS1529` を誘発するため、`using` を先頭、スタブ namespace を後置する順序が必要。
 - Analyzer プロジェクトの RS2008 は release tracking markdown を維持しない運用なら `.editorconfig` の `dotnet_diagnostic.RS2008.severity = none` で無警告運用にできる。
+
+## 2026-03-11 Task 16 メッセージログ翻訳
+- `MessagePatternTranslator` は `DataContractJsonSerializer` + `ConcurrentDictionary<string, Regex>` で実装し、初回ロード時に全regexを事前コンパイルして不正パターンを fail-fast で検知できる。
+- 末尾句読点を許容する正規表現で `(.+)` を使うとキャプチャに `.`/`!` が残るため、メッセージ本文抽出は `(.+?)` の非貪欲マッチが安定。
+- `messages.ja.json` に `"entries": []` を併記しておくと、既存 `Translator` の `*.ja.json` 一括ロードと共存できる（`patterns` は無視される）。
+- `MessageLogPatch` は `Prefix(ref string Message, string? Color, bool Capitalize)` で `Message` だけを書き換え、catch では `return true` を徹底すると英語フォールバックを維持できる。
+- L2 で `MessageLogPatch.Prefix` を `DummyMessageQueue.AddPlayerMessage` に直接 `harmony.Patch` する形にすると、実ゲーム型依存なしで辞書置換・色コード保全・引数透過を検証できる。
+
+## 2026-03-11 Task 17 HistoricStringExpander 初期対応
+- `HistoricStringExpander` は `AccessTools.Method("HistoryKit.HistoricStringExpander:ExpandString")` の名前解決を第一選択にし、失敗時のみ `TypeByName + GetDeclaredMethods` で `ExpandString`/5引数/先頭`string` を拾うと、ゲーム型直参照なしで安全に解決できる。
+- Phase 1 は Expand 後の `__result` に対して `UITextSkinTranslationPatch.TranslatePreservingColors()` をそのまま適用する最小実装で、既存辞書・色コード保全ロジックを再利用できる。
+- L1 は Postfix を直接呼び、L2 は `DummyHistoricStringExpander.ExpandString` へ Harmony Postfix を当てる二層検証にすると、仕様（既知キー翻訳・未知文パススルー・色コード保持）を過不足なく固定化できる。

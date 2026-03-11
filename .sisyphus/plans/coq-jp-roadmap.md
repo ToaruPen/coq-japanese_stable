@@ -1532,7 +1532,7 @@ Wave FINAL (After ALL tasks — verification, 4 parallel):
 
 ### Phase 3: ポリッシュ & リリース (Wave 7-9)
 
-- [ ] 17. プロシージャルテキスト初期対応 (HistoricStringExpander)
+- [x] 17. プロシージャルテキスト初期対応 (HistoricStringExpander)
 
   **What to do**:
   - ILSpy Hook: `HistoricStringExpander.ExpandString(string, ...)` — Postfix
