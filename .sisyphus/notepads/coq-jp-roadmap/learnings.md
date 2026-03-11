@@ -179,3 +179,8 @@
 - `HistoricStringExpander` は `AccessTools.Method("HistoryKit.HistoricStringExpander:ExpandString")` の名前解決を第一選択にし、失敗時のみ `TypeByName + GetDeclaredMethods` で `ExpandString`/5引数/先頭`string` を拾うと、ゲーム型直参照なしで安全に解決できる。
 - Phase 1 は Expand 後の `__result` に対して `UITextSkinTranslationPatch.TranslatePreservingColors()` をそのまま適用する最小実装で、既存辞書・色コード保全ロジックを再利用できる。
 - L1 は Postfix を直接呼び、L2 は `DummyHistoricStringExpander.ExpandString` へ Harmony Postfix を当てる二層検証にすると、仕様（既知キー翻訳・未知文パススルー・色コード保持）を過不足なく固定化できる。
+
+## 2026-03-11 Task 12 会話表示テキストHarmony Postfix
+- `ConversationNode.GetDisplayText(bool)` は `AccessTools.Method("XRL.World.Conversations.ConversationNode:GetDisplayText")` で一次解決し、失敗時は `AccessTools.AllTypes()` から `XRL.World.Conversations.*` + `GetDisplayText(bool):string` を走査する二段階解決で追従性を確保できる。
+- Postfix は `UITextSkinTranslationPatch.TranslatePreservingColors(__result)` へ委譲し、翻訳辞書適用と `{{W|...}}` 色コード保全を共通経路で再利用すると実装差分を最小化できる。
+- 会話表示L2は `DummyConversationElement.GetDisplayText(bool)` へ実パッチPostfixを直接当てる形で、翻訳/未知文パススルー/色コード保全/null・empty/既存日本語パススルーを1ファイル内で網羅できる。
