@@ -148,3 +148,16 @@
 - CHANGELOG.md: 65行。Keep a Changelog 形式、0.1.0-dev (Unreleased) に全実装済み機能を英語で記載。
 - scripts/README.md: 219行。5スクリプト全ての用途・使い方・出力例・終了コードを記載。典型的なワークフローも追加。
 - docs/glossary.csv: ヘッダー English,Japanese,Short,Notes,Status、83エントリ、UTF-8 BOM なし、問題なし（変更不要）。
+
+## 2026-03-11 Task 10 Roslyn + SonarAnalyzer 有効化
+
+- net48 では `EnableNETAnalyzers` はデフォルトOFF。`<EnableNETAnalyzers>true</EnableNETAnalyzers>` + `<AnalysisLevel>latest-all</AnalysisLevel>` を明示追加する必要がある。
+- net10.0 は SDK analyzers が自動有効だが、`AnalysisLevel=latest-all` で追加CA規則（CA1307, CA1510, CA1515, CA1865等）が発火する。
+- SonarAnalyzer.CSharp は `PrivateAssets=all` + `IncludeAssets=analyzers` で analyzer-only 参照にできる。バージョン指定は NuGet 解決後の実バージョン（10.8.0.113526）に合わせる必要がある。
+- Harmony パッチ特有の suppress 対象: CA1707 (__ パラメータ), CA1859 (TargetMethod 戻り型), CA1002 (List<T> パラメータ), CA1062 (null検査).
+- net48/net10.0 共有ソースでの suppress 対象: CA1510 (ThrowIfNull は .NET 6+), CA1307 (Replace+StringComparison は .NET Core 3.0+), CA1865 (EndsWith(char) は .NET Core 2.1+).
+- テストプロジェクト固有の suppress: CA1515 (public→internal), CA1822 (static化), S1186 (空メソッド), CA2249 (Contains vs IndexOf).
+- DataContract クラスの CA1812 は serializer 経由のリフレクション生成で偽陽性になる。
+- ColorCodePreserver の S127 (ループカウンタ更新) はパーサーステートマシンの必然。
+- 全 suppress は .editorconfig で管理し、#pragma warning disable ゼロを維持。
+- 初回ビルドで mod project 37 errors, test project 37 errors を2ラウンドのトリアージで解消。

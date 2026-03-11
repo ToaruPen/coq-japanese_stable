@@ -19,6 +19,59 @@ csharp_style_var_when_type_is_apparent = true:warning
 csharp_new_line_before_open_brace = all
 csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:error
 
+# --- Roslyn / SonarAnalyzer Suppressions (project-specific) ---
+
+# Harmony requires double-underscore parameter names (__result, __instance, __originalMethod, __args)
+dotnet_diagnostic.CA1707.severity = none
+
+# Harmony [HarmonyTargetMethod] convention returns MethodBase; AccessTools.Method returns MethodInfo
+# but the Harmony framework resolves these methods by reflection — changing return type risks breakage
+dotnet_diagnostic.CA1859.severity = none
+
+# Harmony patch parameters must match game method signatures exactly (List<T> required, not Collection<T>)
+dotnet_diagnostic.CA1002.severity = none
+
+# Harmony injects parameters from runtime (game objects); null-checking framework-injected args is inappropriate
+dotnet_diagnostic.CA1062.severity = none
+
+# DataContract classes (DictionaryDocument, DictionaryEntry) are instantiated by DataContractJsonSerializer via reflection
+dotnet_diagnostic.CA1812.severity = none
+
+# GrammarPatchHelpers.SplitSentenceList uses inline char[] for String.Split — method is called infrequently
+dotnet_diagnostic.CA1861.severity = none
+
+# GrammarPatchHelpers.BuildJapaneseList concatenates short Japanese lists (typically 2–5 items);
+# StringBuilder overhead not justified for this scale
+dotnet_diagnostic.S1643.severity = none
+
+# ColorCodePreserver parser deliberately advances the loop counter to skip multi-character markup tokens
+dotnet_diagnostic.S127.severity = none
+
+# Harmony patches must be public for framework discovery; mod DLL is loaded by the game as a library
+dotnet_diagnostic.CA1515.severity = none
+
+# ArgumentNullException.ThrowIfNull is .NET 6+ API; source code is shared with net48 mod project
+dotnet_diagnostic.CA1510.severity = none
+
+# string.Replace(string, string, StringComparison) is .NET Core 3.0+; source shared with net48
+dotnet_diagnostic.CA1307.severity = none
+
+# string.EndsWith(char) is .NET Core 2.1+; source shared with net48 which lacks this overload
+dotnet_diagnostic.CA1865.severity = none
+
+[**/QudJP.Tests/**/*.cs]
+# Magic numbers in test data and assertions are acceptable
+dotnet_diagnostic.S109.severity = none
+
+# DummyTarget methods are intentionally empty — they exist as Harmony patch targets for L2 tests
+dotnet_diagnostic.S1186.severity = none
+
+# DummyTarget methods must remain instance methods for Harmony to patch them
+dotnet_diagnostic.CA1822.severity = none
+
+# Test doubles mimic game API patterns which use IndexOf
+dotnet_diagnostic.CA2249.severity = none
+
 [*.xml]
 indent_style = space
 indent_size = 2

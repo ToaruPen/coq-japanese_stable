@@ -11,16 +11,27 @@ public static class PopupTranslationPatch
 {
     private const string TargetTypeName = "XRL.UI.Popup";
 
+    // ShowBlock parameter count for game version 2.0.4
+    private const int ShowBlockParameterCount = 8;
+
+    // ShowOptionList parameter count for game version 2.0.4
+    private const int ShowOptionListParameterCount = 19;
+
+    // ShowOptionList argument indices (game version 2.0.4)
+    private const int ShowOptionListIntroIndex = 4;
+    private const int ShowOptionListSpacingTextIndex = 9;
+    private const int ShowOptionListButtonsIndex = 14;
+
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
-        var showBlock = FindMethod(methodName: "ShowBlock", parameterCount: 8);
+        var showBlock = FindMethod(methodName: "ShowBlock", parameterCount: ShowBlockParameterCount);
         if (showBlock is not null)
         {
             yield return showBlock;
         }
 
-        var showOptionList = FindMethod(methodName: "ShowOptionList", parameterCount: 19);
+        var showOptionList = FindMethod(methodName: "ShowOptionList", parameterCount: ShowOptionListParameterCount);
         if (showOptionList is not null)
         {
             yield return showOptionList;
@@ -57,12 +68,12 @@ public static class PopupTranslationPatch
     {
         TranslateStringArg(args, index: 0);
         TranslateStringListArg(args, index: 1);
-        TranslateStringArg(args, index: 4);
-        TranslateStringArg(args, index: 9);
+        TranslateStringArg(args, index: ShowOptionListIntroIndex);
+        TranslateStringArg(args, index: ShowOptionListSpacingTextIndex);
 
-        if (args.Length > 14)
+        if (args.Length > ShowOptionListButtonsIndex)
         {
-            UITextSkinTranslationPatch.TranslateStringFieldsInCollection(args[14], "text");
+            UITextSkinTranslationPatch.TranslateStringFieldsInCollection(args[ShowOptionListButtonsIndex], "text");
         }
     }
 

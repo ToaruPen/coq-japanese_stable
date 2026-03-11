@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
@@ -48,12 +49,31 @@ public static class LocalizationAssetResolver
     private static string ResolveModRootDirectory()
     {
         var assemblyPath = Assembly.GetExecutingAssembly().Location;
-        var assemblyDirectory = string.IsNullOrWhiteSpace(assemblyPath)
-            ? AppContext.BaseDirectory
-            : Path.GetDirectoryName(assemblyPath) ?? AppContext.BaseDirectory;
+        string assemblyDirectory;
+        if (string.IsNullOrWhiteSpace(assemblyPath))
+        {
+            assemblyDirectory = AppContext.BaseDirectory;
+        }
+        else
+        {
+            var dirName = Path.GetDirectoryName(assemblyPath);
+            if (dirName is null)
+            {
+                Trace.TraceWarning("QudJP: Assembly directory name is null for '{0}', falling back to AppContext.BaseDirectory.", assemblyPath);
+                dirName = AppContext.BaseDirectory;
+            }
+
+            assemblyDirectory = dirName;
+        }
 
         var modRoot = Directory.GetParent(assemblyDirectory);
-        return modRoot?.FullName ?? assemblyDirectory;
+        if (modRoot is null)
+        {
+            Trace.TraceWarning("QudJP: Mod root directory is null (parent of '{0}'), using assembly directory as root.", assemblyDirectory);
+            return assemblyDirectory;
+        }
+
+        return modRoot.FullName;
     }
 
     private static bool IsSubPathOf(string candidatePath, string rootPath)

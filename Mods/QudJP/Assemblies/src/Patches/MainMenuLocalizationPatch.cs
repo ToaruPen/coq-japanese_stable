@@ -24,7 +24,13 @@ public static class MainMenuLocalizationPatch
 
     public static void Postfix(object __instance)
     {
-        var targetType = __instance?.GetType() ?? AccessTools.TypeByName(TargetTypeName);
+        var targetType = __instance?.GetType();
+        if (targetType is null)
+        {
+            Trace.TraceWarning("QudJP: MainMenuLocalizationPatch __instance is null, resolving type by name.");
+            targetType = AccessTools.TypeByName(TargetTypeName);
+        }
+
         if (targetType is null)
         {
             Trace.TraceError("QudJP: MainMenuLocalizationPatch target type is null. Skipping translation.");
@@ -43,6 +49,7 @@ public static class MainMenuLocalizationPatch
         var field = AccessTools.Field(targetType, fieldName);
         if (field is null)
         {
+            Trace.TraceWarning("QudJP: Field '{0}' not found on type '{1}'.", fieldName, targetType.FullName);
             return null;
         }
 
@@ -53,6 +60,7 @@ public static class MainMenuLocalizationPatch
 
         if (instance is null)
         {
+            Trace.TraceWarning("QudJP: Cannot access instance field '{0}' — instance is null.", fieldName);
             return null;
         }
 

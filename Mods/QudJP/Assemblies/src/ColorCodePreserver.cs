@@ -6,6 +6,7 @@ namespace QudJP;
 
 public static class ColorCodePreserver
 {
+    private const int MarkupTokenLength = 2;
     public static (string stripped, List<ColorSpan> spans) Strip(string? input)
     {
         if (string.IsNullOrEmpty(input))
@@ -62,7 +63,7 @@ public static class ColorCodePreserver
             return value;
         }
 
-        var builder = new StringBuilder(value.Length + (spans.Count * 2));
+        var builder = new StringBuilder(value.Length + (spans.Count * MarkupTokenLength));
 
         for (var index = 0; index <= textLength; index++)
         {
@@ -103,12 +104,12 @@ public static class ColorCodePreserver
                 if (input[index + 1] == '&')
                 {
                     builder.Append("&&");
-                    index += 2;
+                    index += MarkupTokenLength;
                     continue;
                 }
 
-                spans.Add(new ColorSpan(builder.Length, input.Substring(index, 2)));
-                index += 2;
+                spans.Add(new ColorSpan(builder.Length, input.Substring(index, MarkupTokenLength)));
+                index += MarkupTokenLength;
                 continue;
             }
 
@@ -117,12 +118,12 @@ public static class ColorCodePreserver
                 if (input[index + 1] == '^')
                 {
                     builder.Append("^^");
-                    index += 2;
+                    index += MarkupTokenLength;
                     continue;
                 }
 
-                spans.Add(new ColorSpan(builder.Length, input.Substring(index, 2)));
-                index += 2;
+                spans.Add(new ColorSpan(builder.Length, input.Substring(index, MarkupTokenLength)));
+                index += MarkupTokenLength;
                 continue;
             }
 
