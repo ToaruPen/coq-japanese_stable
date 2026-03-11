@@ -1790,7 +1790,7 @@ Wave FINAL (After ALL tasks — verification, 4 parallel):
   **Commit**: YES
   - Message: `feat(lint): add custom Roslyn analyzers for project-specific rules`
 
-- [ ] 20. GitHub リリース準備
+- [x] 20. GitHub リリース準備
 
   **What to do**:
   - GitHub リポジトリ設定（description, topics, license）
