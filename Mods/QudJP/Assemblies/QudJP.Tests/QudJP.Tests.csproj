@@ -7,6 +7,9 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AnalysisLevel>latest-all</AnalysisLevel>
     <IsPackable>false</IsPackable>
+    <!-- FontManager.ResolveFontPath is only used inside #if HAS_TMP, which is not defined in test builds.
+         S1144 is a false positive here — suppress it for the test project only. -->
+    <NoWarn>S1144</NoWarn>
     <AssemblyCSharpPath>$(HOME)/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/Resources/Data/Managed/Assembly-CSharp.dll</AssemblyCSharpPath>
   </PropertyGroup>
 
@@ -27,9 +30,11 @@
 
   <ItemGroup>
     <Compile Include="../src/ColorCodePreserver.cs" Link="Production/ColorCodePreserver.cs" />
+    <Compile Include="../src/FontManager.cs" Link="Production/FontManager.cs" />
     <Compile Include="../src/LocalizationAssetResolver.cs" Link="Production/LocalizationAssetResolver.cs" />
     <Compile Include="../src/MessagePatternTranslator.cs" Link="Production/MessagePatternTranslator.cs" />
     <Compile Include="../src/Patches/*.cs" Link="Production/Patches/%(Filename)%(Extension)" />
+    <Compile Include="../src/QudJPMod.cs" Link="Production/QudJPMod.cs" />
     <Compile Include="../src/Translator.cs" Link="Production/Translator.cs" />
   </ItemGroup>
 
