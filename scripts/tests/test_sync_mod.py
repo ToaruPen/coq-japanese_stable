@@ -103,6 +103,17 @@ class TestBuildRsyncCommand:
         cmd = build_rsync_command(Path("/src"), Path("/dst"))
         assert "--include=Bootstrap.cs" in cmd
 
+    def test_rsync_includes_contains_fonts(self) -> None:
+        """Fonts/ and Fonts/** are in the include list for font deployment."""
+        assert "Fonts/" in _RSYNC_INCLUDES
+        assert "Fonts/**" in _RSYNC_INCLUDES
+
+    def test_build_rsync_command_includes_fonts(self) -> None:
+        """--include=Fonts/ and --include=Fonts/** appear in the built command."""
+        cmd = build_rsync_command(Path("/src"), Path("/dst"))
+        assert "--include=Fonts/" in cmd
+        assert "--include=Fonts/**" in cmd
+
 
 class TestRunSync:
     """Tests for run_sync."""

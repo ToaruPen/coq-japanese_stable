@@ -18,6 +18,8 @@ _RSYNC_INCLUDES: tuple[str, ...] = (
     "Assemblies/QudJP.dll",
     "Localization/",
     "Localization/**",
+    "Fonts/",
+    "Fonts/**",
 )
 
 _RSYNC_EXCLUDES: tuple[str, ...] = ("*",)

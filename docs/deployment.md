@@ -55,7 +55,7 @@ cp -r Mods/QudJP/Localization "$GAME_MODS/QudJP/"
 
 ## Deployed Files
 
-The game requires exactly four types of files:
+The game requires exactly five types of files:
 
 | File | Purpose |
 |------|---------|
@@ -63,6 +63,7 @@ The game requires exactly four types of files:
 | `Bootstrap.cs` | Game-compiled loader shim — discovers and initializes QudJP.dll |
 | `Assemblies/QudJP.dll` | Pre-compiled Harmony patch DLL |
 | `Localization/` | XML translation files + JSON dictionaries |
+| `Fonts/` | CJK font for TextMeshPro rendering + SIL OFL license |
 
 ### Files That Must NOT Be Deployed
 

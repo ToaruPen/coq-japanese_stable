@@ -5,9 +5,11 @@ and produces ``dist/QudJP-v{version}.zip`` containing only the files the game
 needs:
 
 - ``QudJP/manifest.json``
+- ``QudJP/Bootstrap.cs``
 - ``QudJP/Assemblies/QudJP.dll``
 - ``QudJP/Localization/**/*.xml``
 - ``QudJP/Localization/**/*.json``
+- ``QudJP/Fonts/*`` (CJK font and license)
 
 The ZIP root is ``QudJP/`` so users can extract it directly into their Mods
 directory.
@@ -146,12 +148,29 @@ def create_zip(
         zf.write(dll_path, arc_dll)
         members.append(arc_dll)
 
+        # Bootstrap.cs
+        bootstrap_path = manifest_path.parent / "Bootstrap.cs"
+        if bootstrap_path.exists():
+            arc_bootstrap = "QudJP/Bootstrap.cs"
+            zf.write(bootstrap_path, arc_bootstrap)
+            members.append(arc_bootstrap)
+
         # Localization files
         for file_path in localization_files:
             relative = file_path.relative_to(localization_dir.parent)
             arc_name = f"QudJP/{relative}"
             zf.write(file_path, arc_name)
             members.append(arc_name)
+
+        # Font files
+        fonts_dir = manifest_path.parent / "Fonts"
+        if fonts_dir.is_dir():
+            for font_file in sorted(fonts_dir.rglob("*")):
+                if font_file.is_file():
+                    relative = font_file.relative_to(manifest_path.parent)
+                    arc_name = f"QudJP/{relative}"
+                    zf.write(font_file, arc_name)
+                    members.append(arc_name)
 
     return members
 

@@ -179,6 +179,22 @@ class TestCreateZip:
         create_zip(deep_output, manifest, dll, loc_dir, loc_files)
         assert deep_output.exists()
 
+    def test_zip_contains_font_files(self, tmp_path: Path) -> None:
+        """ZIP contains font files from the Fonts/ directory."""
+        output, manifest, dll, loc_dir, loc_files = self._make_inputs(tmp_path)
+        fonts_dir = manifest.parent / "Fonts"
+        fonts_dir.mkdir()
+        (fonts_dir / "TestFont.otf").write_bytes(b"\x00\x01\x02\x03")
+        (fonts_dir / "OFL.txt").write_text("SIL Open Font License", encoding="utf-8")
+
+        members = create_zip(output, manifest, dll, loc_dir, loc_files)
+        with zipfile.ZipFile(output) as zf:
+            names = zf.namelist()
+        assert "QudJP/Fonts/TestFont.otf" in names
+        assert "QudJP/Fonts/OFL.txt" in names
+        assert "QudJP/Fonts/TestFont.otf" in members
+        assert "QudJP/Fonts/OFL.txt" in members
+
 
 class TestBuildReleaseImport:
     """Smoke test: module imports without error."""
