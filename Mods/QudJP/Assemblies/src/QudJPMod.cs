@@ -40,6 +40,7 @@ public static class QudJPMod
         }
 
         InvokePatchAll(harmony);
+        LogPatchResults(harmony);
     }
 
     internal static object? CreateHarmony(string harmonyId)
@@ -64,19 +65,6 @@ public static class QudJPMod
     internal static void InvokePatchAll(object harmony)
     {
         var harmonyType = harmony.GetType();
-        var patchAllWithoutArgs = harmonyType.GetMethod(
-            "PatchAll",
-            BindingFlags.Instance | BindingFlags.Public,
-            binder: null,
-            types: Type.EmptyTypes,
-            modifiers: null);
-
-        if (patchAllWithoutArgs is not null)
-        {
-            patchAllWithoutArgs.Invoke(harmony, null);
-            return;
-        }
-
         var patchAllWithAssembly = harmonyType.GetMethod(
             "PatchAll",
             BindingFlags.Instance | BindingFlags.Public,
@@ -84,13 +72,50 @@ public static class QudJPMod
             types: new[] { typeof(Assembly) },
             modifiers: null);
 
-        if (patchAllWithAssembly is not null)
+        if (patchAllWithAssembly is null)
+        {
+            throw new MissingMethodException(harmonyType.FullName, "PatchAll");
+        }
+
+        try
         {
             patchAllWithAssembly.Invoke(harmony, new object[] { Assembly.GetExecutingAssembly() });
+        }
+        catch (TargetInvocationException ex)
+        {
+            // PatchAll may throw when individual patches fail to resolve their targets
+            // (e.g., game types not available). Log the error but don't crash —
+            // patches applied before the failure remain in effect.
+            LogToUnity($"[QudJP] Warning: Some patches failed to apply: {ex.InnerException?.Message ?? ex.Message}");
+        }
+    }
+
+    internal static void LogToUnity(string message)
+    {
+#if HAS_TMP
+        UnityEngine.Debug.Log(message);
+#else
+        Trace.TraceInformation(message);
+#endif
+    }
+
+    internal static void LogPatchResults(object harmony)
+    {
+        var getPatchedMethods = harmony.GetType().GetMethod("GetPatchedMethods");
+        if (getPatchedMethods is null)
+        {
+            LogToUnity("[QudJP] Warning: GetPatchedMethods not available.");
             return;
         }
 
-        throw new MissingMethodException(harmonyType.FullName, "PatchAll");
+        var methods = (System.Collections.IEnumerable)getPatchedMethods.Invoke(harmony, null)!;
+        var count = 0;
+        foreach (var _ in methods)
+        {
+            count++;
+        }
+
+        LogToUnity($"[QudJP] Harmony patching complete: {count} method(s) patched.");
     }
 
     internal static Type? ResolveHarmonyType()
