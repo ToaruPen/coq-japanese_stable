@@ -1,7 +1,10 @@
 {
-  "active_plan": "/Users/sankenbisha/Dev/Caves-of-Qud_Japanese/.sisyphus/plans/cjk-font-injection.md",
-  "started_at": "2026-03-12T11:52:58.538Z",
-  "session_ids": ["ses_327b90a2affePeZsGInqF0tqTa"],
-  "plan_name": "cjk-font-injection",
-  "worktree_path": "/Users/sankenbisha/Dev/Caves-of-Qud_Japanese"
+  "active_plan": null,
+  "completed_plans": [
+    {
+      "plan_name": "patchall-fix",
+      "completed_at": "2026-03-13T00:00:00.000Z",
+      "summary": "Fixed PatchAll assembly scanning bug, merged to main, worktree cleaned up"
+    }
+  ]
 }
