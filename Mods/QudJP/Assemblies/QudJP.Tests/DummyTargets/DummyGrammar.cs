@@ -11,7 +11,7 @@ internal static class DummyGrammar
         var article = name.Length > 0 && "aeiouAEIOU".IndexOf(name[0]) >= 0 ? "an" : "a";
         if (capitalize)
         {
-            article = char.ToUpperInvariant(article[0]) + article[1..];
+            article = char.ToUpperInvariant(article[0]) + article.Substring(1);
         }
 
         return $"{article} {name}";
@@ -44,7 +44,7 @@ internal static class DummyGrammar
             return items[0] + " and " + items[1];
         }
 
-        return string.Join(", ", items.GetRange(0, items.Count - 1)) + ", and " + items[^1];
+        return string.Join(", ", items.GetRange(0, items.Count - 1)) + ", and " + items[items.Count - 1];
     }
 
     public static string MakeOrList(List<string> items)
@@ -64,7 +64,7 @@ internal static class DummyGrammar
             return items[0] + " or " + items[1];
         }
 
-        return string.Join(", ", items.GetRange(0, items.Count - 1)) + ", or " + items[^1];
+        return string.Join(", ", items.GetRange(0, items.Count - 1)) + ", or " + items[items.Count - 1];
     }
 
     public static List<string> SplitOfSentenceList(string text)
@@ -75,8 +75,8 @@ internal static class DummyGrammar
         }
 
         var normalized = text
-            .Replace(", and ", ", ", StringComparison.Ordinal)
-            .Replace(" and ", ", ", StringComparison.Ordinal);
+            .Replace(", and ", ", ")
+            .Replace(" and ", ", ");
 
         var fragments = normalized.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
         var result = new List<string>(fragments.Length);
@@ -101,7 +101,7 @@ internal static class DummyGrammar
 
         if (char.IsLetter(text[0]))
         {
-            return char.ToUpperInvariant(text[0]) + text[1..];
+            return char.ToUpperInvariant(text[0]) + text.Substring(1);
         }
 
         return text;

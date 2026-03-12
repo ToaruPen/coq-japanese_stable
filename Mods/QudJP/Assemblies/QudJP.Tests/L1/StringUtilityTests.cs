@@ -1,3 +1,6 @@
+using System;
+using NUnit.Framework;
+
 namespace QudJP.Tests.L1;
 
 [TestFixture]
@@ -27,19 +30,19 @@ public sealed class StringUtilityTests
 
     private static string ReplaceVisibleToken(string source, string oldToken, string newToken)
     {
-        return source.Replace(oldToken, newToken, System.StringComparison.Ordinal);
+        return source.Replace(oldToken, newToken);
     }
 
     private static string RemoveIndefiniteArticle(string source)
     {
         if (source.StartsWith("an ", System.StringComparison.OrdinalIgnoreCase))
         {
-            return source[3..];
+            return source.Substring(3);
         }
 
         if (source.StartsWith("a ", System.StringComparison.OrdinalIgnoreCase))
         {
-            return source[2..];
+            return source.Substring(2);
         }
 
         return source;
