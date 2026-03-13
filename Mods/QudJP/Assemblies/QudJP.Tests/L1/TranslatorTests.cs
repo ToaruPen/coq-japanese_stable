@@ -52,6 +52,36 @@ public sealed class TranslatorTests
     }
 
     [Test]
+    public void Translate_LogsContext_WhenKeyIsMissing()
+    {
+        WriteDictionary("ui-test.ja.json", "Hello", "こんにちは");
+        using var writer = new StringWriter();
+        using var listener = new System.Diagnostics.TextWriterTraceListener(writer);
+        System.Diagnostics.Trace.Listeners.Add(listener);
+
+        try
+        {
+            using var _ = Translator.PushLogContext("TestRoute");
+
+            var translated = Translator.Translate("Goodbye");
+
+            listener.Flush();
+            var output = writer.ToString();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(translated, Is.EqualTo("Goodbye"));
+                Assert.That(output, Does.Contain("missing key 'Goodbye'"));
+                Assert.That(output, Does.Contain("context: TestRoute"));
+            });
+        }
+        finally
+        {
+            System.Diagnostics.Trace.Listeners.Remove(listener);
+        }
+    }
+
+    [Test]
     public void Translate_LoadsDictionaryOnlyOnce_WhenCalledRepeatedly()
     {
         WriteDictionary("ui-test.ja.json", "Inventory", "インベントリ");

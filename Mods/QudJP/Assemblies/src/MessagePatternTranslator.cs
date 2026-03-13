@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
@@ -15,6 +16,8 @@ internal static class MessagePatternTranslator
     private static readonly object SyncRoot = new object();
     private static readonly ConcurrentDictionary<string, Regex> RegexCache =
         new ConcurrentDictionary<string, Regex>(StringComparer.Ordinal);
+    private static readonly ConcurrentDictionary<string, byte> MissingPatternLog =
+        new ConcurrentDictionary<string, byte>(StringComparer.Ordinal);
 
     private static List<MessagePatternDefinition>? loadedPatterns;
     private static string? patternFileOverride;
@@ -22,8 +25,10 @@ internal static class MessagePatternTranslator
 
     internal static int LoadInvocationCount => Volatile.Read(ref loadInvocationCount);
 
-    internal static string Translate(string? source)
+    internal static string Translate(string? source, string? context = null)
     {
+        using var _ = Translator.PushLogContext(context);
+
         if (string.IsNullOrEmpty(source))
         {
             return source ?? string.Empty;
@@ -46,6 +51,7 @@ internal static class MessagePatternTranslator
             patternFileOverride = filePath;
             loadedPatterns = null;
             RegexCache.Clear();
+            MissingPatternLog.Clear();
             Interlocked.Exchange(ref loadInvocationCount, 0);
         }
     }
@@ -69,6 +75,11 @@ internal static class MessagePatternTranslator
             }
 
             return ApplyTemplate(definition.Template, match);
+        }
+
+        if (MissingPatternLog.TryAdd(source, 0))
+        {
+            Trace.TraceInformation($"QudJP MessagePatternTranslator: no pattern for '{source}'.{Translator.GetCurrentLogContextSuffix()}");
         }
 
         return source;

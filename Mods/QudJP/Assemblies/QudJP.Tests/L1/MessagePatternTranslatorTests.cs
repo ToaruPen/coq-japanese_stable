@@ -132,6 +132,34 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_LogsContext_WhenPatternDoesNotMatch()
+    {
+        WritePatternDictionary(("^You equip (.+)[.!]?$", "{0}を装備した"));
+        using var writer = new StringWriter();
+        using var listener = new System.Diagnostics.TextWriterTraceListener(writer);
+        System.Diagnostics.Trace.Listeners.Add(listener);
+
+        try
+        {
+            var translated = MessagePatternTranslator.Translate("You begin moving.", "MessageLogPatch");
+
+            listener.Flush();
+            var output = writer.ToString();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(translated, Is.EqualTo("You begin moving."));
+                Assert.That(output, Does.Contain("no pattern for 'You begin moving.'"));
+                Assert.That(output, Does.Contain("context: MessageLogPatch"));
+            });
+        }
+        finally
+        {
+            System.Diagnostics.Trace.Listeners.Remove(listener);
+        }
+    }
+
+    [Test]
     public void Translate_ReturnsEmptyString_WhenInputIsNull()
     {
         WritePatternDictionary(("^You die![.!]?$", "あなたは死んだ！"));

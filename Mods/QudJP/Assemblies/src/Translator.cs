@@ -21,6 +21,9 @@ public static class Translator
     private static string? dictionaryDirectoryOverride;
     private static int loadInvocationCount;
 
+    [ThreadStatic]
+    private static Stack<string>? logContextStack;
+
     public static string Translate(string key)
     {
         if (key is null)
@@ -50,6 +53,24 @@ public static class Translator
 
     internal static int LoadInvocationCount => Volatile.Read(ref loadInvocationCount);
 
+    internal static IDisposable PushLogContext(string? context)
+    {
+        if (string.IsNullOrWhiteSpace(context))
+        {
+            return NoopScope.Instance;
+        }
+
+        logContextStack ??= new Stack<string>();
+        logContextStack.Push(context!.Trim());
+        return new LogContextScope();
+    }
+
+    internal static string GetCurrentLogContextSuffix()
+    {
+        var context = GetCurrentLogContext();
+        return string.IsNullOrEmpty(context) ? string.Empty : $" (context: {context})";
+    }
+
     private static string TranslateCore(string key)
     {
         var translations = GetLoadedTranslations();
@@ -60,7 +81,7 @@ public static class Translator
 
         if (MissingKeyLog.TryAdd(key, 0))
         {
-            Trace.TraceInformation($"QudJP Translator: missing key '{key}'.");
+            Trace.TraceInformation($"QudJP Translator: missing key '{key}'.{GetCurrentLogContextSuffix()}");
         }
 
         return key;
@@ -157,5 +178,38 @@ public static class Translator
 
         [DataMember(Name = "text")]
         public string? Text { get; set; }
+    }
+
+    private static string? GetCurrentLogContext()
+    {
+        return logContextStack is { Count: > 0 } ? logContextStack.Peek() : null;
+    }
+
+    private sealed class LogContextScope : IDisposable
+    {
+        private bool disposed;
+
+        public void Dispose()
+        {
+            if (disposed)
+            {
+                return;
+            }
+
+            disposed = true;
+            if (logContextStack is { Count: > 0 })
+            {
+                logContextStack.Pop();
+            }
+        }
+    }
+
+    private sealed class NoopScope : IDisposable
+    {
+        internal static readonly NoopScope Instance = new NoopScope();
+
+        public void Dispose()
+        {
+        }
     }
 }
