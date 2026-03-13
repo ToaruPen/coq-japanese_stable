@@ -28,7 +28,7 @@ public static class MessageLogPatch
         {
             _ = Color;
             _ = Capitalize;
-            Message = MessagePatternTranslator.Translate(Message);
+            Message = MessagePatternTranslator.Translate(Message, nameof(MessageLogPatch));
             return true;
         }
         catch (Exception ex)
