@@ -8,6 +8,8 @@ namespace QudJP.Tests.L1;
 [NonParallelizable]
 public sealed class TranslatorTests
 {
+    private static readonly UTF8Encoding Utf8WithoutBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+
     private string tempDirectory = null!;
 
     [SetUp]
@@ -133,15 +135,11 @@ public sealed class TranslatorTests
 
     private void WriteDictionary(string fileName, string key, string text)
     {
-        var content =
-            "{"
-            + "\"entries\":["
-            + "{\"key\":\"" + EscapeJson(key) + "\",\"text\":\"" + EscapeJson(text) + "\"}"
-            + "]}"
-            + Environment.NewLine;
-
-        var path = Path.Combine(tempDirectory, fileName);
-        File.WriteAllText(path, content, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        var builder = new StringBuilder();
+        builder.Append("{\"entries\":[");
+        AppendEntries(builder, new[] { (key, text) });
+        builder.AppendLine("]}");
+        WriteDictionaryFile(fileName, builder.ToString());
     }
 
     private static string EscapeJson(string value)
@@ -153,7 +151,30 @@ public sealed class TranslatorTests
 
     private void WriteRawDictionary(string fileName, string content)
     {
+        WriteDictionaryFile(fileName, content + Environment.NewLine);
+    }
+
+    private static void AppendEntries(StringBuilder builder, IReadOnlyList<(string key, string text)> entries)
+    {
+        for (var index = 0; index < entries.Count; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            var (key, text) = entries[index];
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(text));
+            builder.Append("\"}");
+        }
+    }
+
+    private void WriteDictionaryFile(string fileName, string content)
+    {
         var path = Path.Combine(tempDirectory, fileName);
-        File.WriteAllText(path, content + Environment.NewLine, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        File.WriteAllText(path, content, Utf8WithoutBom);
     }
 }

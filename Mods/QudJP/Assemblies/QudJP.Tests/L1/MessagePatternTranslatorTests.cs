@@ -8,6 +8,8 @@ namespace QudJP.Tests.L1;
 [NonParallelizable]
 public sealed class MessagePatternTranslatorTests
 {
+    private static readonly UTF8Encoding Utf8WithoutBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+
     private string tempDirectory = null!;
     private string patternFilePath = null!;
 
@@ -230,32 +232,38 @@ public sealed class MessagePatternTranslatorTests
     private void WritePatternDictionary(params (string pattern, string template)[] patterns)
     {
         var builder = new StringBuilder();
-        builder.Append('{');
-        builder.Append("\"patterns\":[");
+        builder.Append("{\"patterns\":[");
+        AppendPatternEntries(builder, patterns);
+        builder.AppendLine("]}");
+        WritePatternFile(builder.ToString());
+    }
 
-        for (var index = 0; index < patterns.Length; index++)
+    private void WriteRawPatternFile(string json)
+    {
+        WritePatternFile(json + Environment.NewLine);
+    }
+
+    private static void AppendPatternEntries(StringBuilder builder, IReadOnlyList<(string pattern, string template)> patterns)
+    {
+        for (var index = 0; index < patterns.Count; index++)
         {
             if (index > 0)
             {
                 builder.Append(',');
             }
 
+            var (pattern, template) = patterns[index];
             builder.Append("{\"pattern\":\"");
-            builder.Append(EscapeJson(patterns[index].pattern));
+            builder.Append(EscapeJson(pattern));
             builder.Append("\",\"template\":\"");
-            builder.Append(EscapeJson(patterns[index].template));
+            builder.Append(EscapeJson(template));
             builder.Append("\"}");
         }
-
-        builder.Append("]}");
-        builder.AppendLine();
-
-        File.WriteAllText(patternFilePath, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 
-    private void WriteRawPatternFile(string json)
+    private void WritePatternFile(string content)
     {
-        File.WriteAllText(patternFilePath, json + Environment.NewLine, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        File.WriteAllText(patternFilePath, content, Utf8WithoutBom);
     }
 
     private static string EscapeJson(string value)

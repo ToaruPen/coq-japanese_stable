@@ -11,6 +11,8 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class UIExpansionPatchTests
 {
+    private static readonly UTF8Encoding Utf8WithoutBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+
     private string tempDirectory = null!;
 
     [SetUp]
@@ -39,23 +41,17 @@ public sealed class UIExpansionPatchTests
     {
         WriteDictionary(("worn bronze sword", "使い込まれた青銅の剣"));
 
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
+        RunWithPostfixPatch(
+            targetType: typeof(DummyGetDisplayNameEvent),
+            targetMethodName: nameof(DummyGetDisplayNameEvent.GetFor),
+            patchType: typeof(GetDisplayNamePatch),
+            patchMethodName: nameof(GetDisplayNamePatch.Postfix),
+            assertion: () =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyGetDisplayNameEvent), nameof(DummyGetDisplayNameEvent.GetFor)),
-                postfix: new HarmonyMethod(RequireMethod(typeof(GetDisplayNamePatch), nameof(GetDisplayNamePatch.Postfix))));
-
             var result = DummyGetDisplayNameEvent.GetFor("worn bronze sword", "bronze sword");
 
             Assert.That(result, Is.EqualTo("使い込まれた青銅の剣"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        });
     }
 
     [Test]
@@ -63,23 +59,17 @@ public sealed class UIExpansionPatchTests
     {
         WriteDictionary(("known sword", "既知の剣"));
 
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
+        RunWithPostfixPatch(
+            targetType: typeof(DummyGetDisplayNameEvent),
+            targetMethodName: nameof(DummyGetDisplayNameEvent.GetFor),
+            patchType: typeof(GetDisplayNamePatch),
+            patchMethodName: nameof(GetDisplayNamePatch.Postfix),
+            assertion: () =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyGetDisplayNameEvent), nameof(DummyGetDisplayNameEvent.GetFor)),
-                postfix: new HarmonyMethod(RequireMethod(typeof(GetDisplayNamePatch), nameof(GetDisplayNamePatch.Postfix))));
-
             var result = DummyGetDisplayNameEvent.GetFor("unknown relic", "unknown relic");
 
             Assert.That(result, Is.EqualTo("unknown relic"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        });
     }
 
     [Test]
@@ -87,23 +77,17 @@ public sealed class UIExpansionPatchTests
     {
         WriteDictionary(("worn bronze sword", "使い込まれた青銅の剣"));
 
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
+        RunWithPostfixPatch(
+            targetType: typeof(DummyGetDisplayNameEvent),
+            targetMethodName: nameof(DummyGetDisplayNameEvent.GetFor),
+            patchType: typeof(GetDisplayNamePatch),
+            patchMethodName: nameof(GetDisplayNamePatch.Postfix),
+            assertion: () =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyGetDisplayNameEvent), nameof(DummyGetDisplayNameEvent.GetFor)),
-                postfix: new HarmonyMethod(RequireMethod(typeof(GetDisplayNamePatch), nameof(GetDisplayNamePatch.Postfix))));
-
             var result = DummyGetDisplayNameEvent.GetFor("{{C|worn bronze sword}}", "bronze sword");
 
             Assert.That(result, Is.EqualTo("{{C|使い込まれた青銅の剣}}"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        });
     }
 
     [Test]
@@ -129,23 +113,17 @@ public sealed class UIExpansionPatchTests
     {
         WriteDictionary(("Choose Genotype", "遺伝型を選択"));
 
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
+        RunWithPostfixPatch(
+            targetType: typeof(DummyCharGenScreen),
+            targetMethodName: nameof(DummyCharGenScreen.GetHeaderText),
+            patchType: typeof(CharGenLocalizationPatch),
+            patchMethodName: nameof(CharGenLocalizationPatch.Postfix),
+            assertion: () =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyCharGenScreen), nameof(DummyCharGenScreen.GetHeaderText)),
-                postfix: new HarmonyMethod(RequireMethod(typeof(CharGenLocalizationPatch), nameof(CharGenLocalizationPatch.Postfix))));
-
             var result = new DummyCharGenScreen("Choose Genotype").GetHeaderText();
 
             Assert.That(result, Is.EqualTo("遺伝型を選択"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        });
     }
 
     [Test]
@@ -153,23 +131,17 @@ public sealed class UIExpansionPatchTests
     {
         WriteDictionary(("Choose Genotype", "遺伝型を選択"));
 
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
+        RunWithPostfixPatch(
+            targetType: typeof(DummyCharGenScreen),
+            targetMethodName: nameof(DummyCharGenScreen.GetHeaderText),
+            patchType: typeof(CharGenLocalizationPatch),
+            patchMethodName: nameof(CharGenLocalizationPatch.Postfix),
+            assertion: () =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyCharGenScreen), nameof(DummyCharGenScreen.GetHeaderText)),
-                postfix: new HarmonyMethod(RequireMethod(typeof(CharGenLocalizationPatch), nameof(CharGenLocalizationPatch.Postfix))));
-
             var result = new DummyCharGenScreen("Unknown Chargen Text").GetHeaderText();
 
             Assert.That(result, Is.EqualTo("Unknown Chargen Text"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        });
     }
 
     [Test]
@@ -209,23 +181,17 @@ public sealed class UIExpansionPatchTests
     {
         WriteDictionary(("Total weight", "総重量"));
 
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
+        RunWithPostfixPatch(
+            targetType: typeof(DummyInventoryScreen),
+            targetMethodName: nameof(DummyInventoryScreen.GetCategoryLabel),
+            patchType: typeof(InventoryLocalizationPatch),
+            patchMethodName: nameof(InventoryLocalizationPatch.Postfix),
+            assertion: () =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyInventoryScreen), nameof(DummyInventoryScreen.GetCategoryLabel)),
-                postfix: new HarmonyMethod(RequireMethod(typeof(InventoryLocalizationPatch), nameof(InventoryLocalizationPatch.Postfix))));
-
             var result = new DummyInventoryScreen("Total weight").GetCategoryLabel();
 
             Assert.That(result, Is.EqualTo("総重量"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        });
     }
 
     [Test]
@@ -233,23 +199,17 @@ public sealed class UIExpansionPatchTests
     {
         WriteDictionary(("Total weight", "総重量"));
 
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
+        RunWithPostfixPatch(
+            targetType: typeof(DummyInventoryScreen),
+            targetMethodName: nameof(DummyInventoryScreen.GetCategoryLabel),
+            patchType: typeof(InventoryLocalizationPatch),
+            patchMethodName: nameof(InventoryLocalizationPatch.Postfix),
+            assertion: () =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyInventoryScreen), nameof(DummyInventoryScreen.GetCategoryLabel)),
-                postfix: new HarmonyMethod(RequireMethod(typeof(InventoryLocalizationPatch), nameof(InventoryLocalizationPatch.Postfix))));
-
             var result = new DummyInventoryScreen("Unknown Inventory Text").GetCategoryLabel();
 
             Assert.That(result, Is.EqualTo("Unknown Inventory Text"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        });
     }
 
     private static string CreateHarmonyId()
@@ -266,28 +226,10 @@ public sealed class UIExpansionPatchTests
     private void WriteDictionary(params (string key, string text)[] entries)
     {
         var builder = new StringBuilder();
-        builder.Append('{');
-        builder.Append("\"entries\":[");
-
-        for (var index = 0; index < entries.Length; index++)
-        {
-            if (index > 0)
-            {
-                builder.Append(',');
-            }
-
-            builder.Append("{\"key\":\"");
-            builder.Append(EscapeJson(entries[index].key));
-            builder.Append("\",\"text\":\"");
-            builder.Append(EscapeJson(entries[index].text));
-            builder.Append("\"}");
-        }
-
-        builder.Append("]}");
-        builder.AppendLine();
-
-        var path = Path.Combine(tempDirectory, "ui-expansion-l2.ja.json");
-        File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        builder.Append("{\"entries\":[");
+        AppendEntries(builder, entries);
+        builder.AppendLine("]}");
+        WriteDictionaryFile(builder.ToString());
     }
 
     private static string EscapeJson(string value)
@@ -295,6 +237,53 @@ public sealed class UIExpansionPatchTests
         return value
             .Replace("\\", "\\\\", StringComparison.Ordinal)
             .Replace("\"", "\\\"", StringComparison.Ordinal);
+    }
+
+    private static void AppendEntries(StringBuilder builder, IReadOnlyList<(string key, string text)> entries)
+    {
+        for (var index = 0; index < entries.Count; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            var (key, text) = entries[index];
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(text));
+            builder.Append("\"}");
+        }
+    }
+
+    private static void RunWithPostfixPatch(
+        Type targetType,
+        string targetMethodName,
+        Type patchType,
+        string patchMethodName,
+        Action assertion)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(targetType, targetMethodName),
+                postfix: new HarmonyMethod(RequireMethod(patchType, patchMethodName)));
+            assertion();
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private void WriteDictionaryFile(string content)
+    {
+        var path = Path.Combine(tempDirectory, "ui-expansion-l2.ja.json");
+        File.WriteAllText(path, content, Utf8WithoutBom);
     }
 
     private sealed class DummyCharGenScreen

@@ -13,6 +13,8 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class LookTooltipContentPatchTests
 {
+    private static readonly UTF8Encoding Utf8WithoutBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+
     private string tempDirectory = null!;
 
     [SetUp]
@@ -41,23 +43,12 @@ public sealed class LookTooltipContentPatchTests
     {
         WriteDictionary(("This relic hums softly.", "この遺物はかすかに唸っている。"));
 
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
+        RunWithTooltipPatch(() =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyLookTooltipTarget), nameof(DummyLookTooltipTarget.GenerateTooltipContent)),
-                postfix: new HarmonyMethod(RequireMethod(typeof(LookTooltipContentPatch), nameof(LookTooltipContentPatch.Postfix))));
-
             var result = DummyLookTooltipTarget.GenerateTooltipContent("This relic hums softly.");
 
             Assert.That(result, Is.EqualTo("この遺物はかすかに唸っている。"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        });
     }
 
     [Test]
@@ -65,23 +56,12 @@ public sealed class LookTooltipContentPatchTests
     {
         WriteDictionary(("Ancient ruin", "古代の廃墟"));
 
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
+        RunWithTooltipPatch(() =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyLookTooltipTarget), nameof(DummyLookTooltipTarget.GenerateTooltipContent)),
-                postfix: new HarmonyMethod(RequireMethod(typeof(LookTooltipContentPatch), nameof(LookTooltipContentPatch.Postfix))));
-
             var result = DummyLookTooltipTarget.GenerateTooltipContent("{{Y|Ancient ruin}}");
 
             Assert.That(result, Is.EqualTo("{{Y|古代の廃墟}}"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        });
     }
 
     [Test]
@@ -89,23 +69,12 @@ public sealed class LookTooltipContentPatchTests
     {
         WriteDictionary(("Known text", "既知の文"));
 
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
+        RunWithTooltipPatch(() =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyLookTooltipTarget), nameof(DummyLookTooltipTarget.GenerateTooltipContent)),
-                postfix: new HarmonyMethod(RequireMethod(typeof(LookTooltipContentPatch), nameof(LookTooltipContentPatch.Postfix))));
-
             var result = DummyLookTooltipTarget.GenerateTooltipContent("Unknown tooltip text");
 
             Assert.That(result, Is.EqualTo("Unknown tooltip text"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        });
     }
 
     private static string CreateHarmonyId()
@@ -122,28 +91,10 @@ public sealed class LookTooltipContentPatchTests
     private void WriteDictionary(params (string key, string text)[] entries)
     {
         var builder = new StringBuilder();
-        builder.Append('{');
-        builder.Append("\"entries\":[");
-
-        for (var index = 0; index < entries.Length; index++)
-        {
-            if (index > 0)
-            {
-                builder.Append(',');
-            }
-
-            builder.Append("{\"key\":\"");
-            builder.Append(EscapeJson(entries[index].key));
-            builder.Append("\",\"text\":\"");
-            builder.Append(EscapeJson(entries[index].text));
-            builder.Append("\"}");
-        }
-
-        builder.Append("]}");
-        builder.AppendLine();
-
-        var path = Path.Combine(tempDirectory, "look-tooltip-l2.ja.json");
-        File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        builder.Append("{\"entries\":[");
+        AppendEntries(builder, entries);
+        builder.AppendLine("]}");
+        WriteDictionaryFile(builder.ToString());
     }
 
     private static string EscapeJson(string value)
@@ -151,6 +102,51 @@ public sealed class LookTooltipContentPatchTests
         return value
             .Replace("\\", "\\\\", StringComparison.Ordinal)
             .Replace("\"", "\\\"", StringComparison.Ordinal);
+    }
+
+    private static void AppendEntries(StringBuilder builder, IReadOnlyList<(string key, string text)> entries)
+    {
+        for (var index = 0; index < entries.Count; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            var (key, text) = entries[index];
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(text));
+            builder.Append("\"}");
+        }
+    }
+
+    private static HarmonyMethod TooltipPostfix =>
+        new HarmonyMethod(RequireMethod(typeof(LookTooltipContentPatch), nameof(LookTooltipContentPatch.Postfix)));
+
+    private static void RunWithTooltipPatch(Action assertion)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyLookTooltipTarget), nameof(DummyLookTooltipTarget.GenerateTooltipContent)),
+                postfix: TooltipPostfix);
+            assertion();
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private void WriteDictionaryFile(string content)
+    {
+        var path = Path.Combine(tempDirectory, "look-tooltip-l2.ja.json");
+        File.WriteAllText(path, content, Utf8WithoutBom);
     }
 
     private static class DummyLookTooltipTarget

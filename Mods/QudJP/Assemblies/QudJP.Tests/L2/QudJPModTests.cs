@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using HarmonyLib;
 
@@ -15,15 +17,9 @@ public sealed class QudJPModTests
         var harmonyId = $"qudjp.tests.patchall.{Guid.NewGuid():N}";
         var harmony = new Harmony(harmonyId);
 
-        using var listener = new System.Diagnostics.TextWriterTraceListener(new System.IO.StringWriter());
-        System.Diagnostics.Trace.Listeners.Add(listener);
-
         try
         {
-            Assert.That(() => QudJPMod.InvokePatchAll(harmony), Throws.Nothing);
-
-            listener.Flush();
-            var output = listener.Writer!.ToString()!;
+            var output = CaptureTrace(() => Assert.That(() => QudJPMod.InvokePatchAll(harmony), Throws.Nothing));
 
             Assert.That(output, Does.Contain("[QudJP]"),
                 "InvokePatchAll should log when patches fail to apply, " +
@@ -31,7 +27,6 @@ public sealed class QudJPModTests
         }
         finally
         {
-            System.Diagnostics.Trace.Listeners.Remove(listener);
             harmony.UnpatchAll(harmonyId);
         }
     }
@@ -61,21 +56,8 @@ public sealed class QudJPModTests
                 original: AccessTools.Method(typeof(PatchAllDummyTarget), nameof(PatchAllDummyTarget.Echo)),
                 postfix: new HarmonyMethod(AccessTools.Method(typeof(PatchAllTestPatch), nameof(PatchAllTestPatch.Postfix))));
 
-            using var listener = new System.Diagnostics.TextWriterTraceListener(new System.IO.StringWriter());
-            System.Diagnostics.Trace.Listeners.Add(listener);
-
-            try
-            {
-                QudJPMod.LogPatchResults(harmony);
-                listener.Flush();
-                var output = listener.Writer!.ToString()!;
-
-                Assert.That(output, Does.Contain("method(s) patched"));
-            }
-            finally
-            {
-                System.Diagnostics.Trace.Listeners.Remove(listener);
-            }
+            var output = CaptureTrace(() => QudJPMod.LogPatchResults(harmony));
+            Assert.That(output, Does.Contain("method(s) patched"));
         }
         finally
         {
@@ -122,41 +104,32 @@ public sealed class QudJPModTests
     [Test]
     public void LogPatchResults_HandlesGetPatchedMethodsFailure_WithoutThrowing()
     {
-        using var listener = new System.Diagnostics.TextWriterTraceListener(new System.IO.StringWriter());
-        System.Diagnostics.Trace.Listeners.Add(listener);
-
-        try
-        {
-            Assert.That(() => QudJPMod.LogPatchResults(ThrowingPatchedMethodsProbe.Create()), Throws.Nothing);
-
-            listener.Flush();
-            var output = listener.Writer!.ToString()!;
-
-            Assert.That(output, Does.Contain("Failed to enumerate patched methods"));
-        }
-        finally
-        {
-            System.Diagnostics.Trace.Listeners.Remove(listener);
-        }
+        var output = CaptureTrace(() => Assert.That(() => QudJPMod.LogPatchResults(ThrowingPatchedMethodsProbe.Create()), Throws.Nothing));
+        Assert.That(output, Does.Contain("Failed to enumerate patched methods"));
     }
 
     [Test]
     public void LogToUnity_WritesToTrace_InTestEnvironment()
     {
-        using var listener = new System.Diagnostics.TextWriterTraceListener(new System.IO.StringWriter());
-        System.Diagnostics.Trace.Listeners.Add(listener);
+        var output = CaptureTrace(() => QudJPMod.LogToUnity("[QudJP] test message"));
+        Assert.That(output, Does.Contain("[QudJP] test message"));
+    }
+
+    private static string CaptureTrace(Action action)
+    {
+        using var writer = new StringWriter();
+        using var listener = new TextWriterTraceListener(writer);
+        Trace.Listeners.Add(listener);
 
         try
         {
-            QudJPMod.LogToUnity("[QudJP] test message");
+            action();
             listener.Flush();
-            var output = listener.Writer!.ToString()!;
-
-            Assert.That(output, Does.Contain("[QudJP] test message"));
+            return writer.ToString();
         }
         finally
         {
-            System.Diagnostics.Trace.Listeners.Remove(listener);
+            Trace.Listeners.Remove(listener);
         }
     }
 

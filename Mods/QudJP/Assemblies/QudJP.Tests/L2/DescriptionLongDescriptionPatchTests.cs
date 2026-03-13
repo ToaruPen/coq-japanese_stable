@@ -13,6 +13,8 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class DescriptionLongDescriptionPatchTests
 {
+    private static readonly UTF8Encoding Utf8WithoutBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+
     private string tempDirectory = null!;
 
     [SetUp]
@@ -41,26 +43,14 @@ public sealed class DescriptionLongDescriptionPatchTests
     {
         WriteDictionary(("It crackles with static.", "それは静電気を散らしている。"));
 
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
+        RunWithDescriptionPatch(() =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyDescriptionTarget), nameof(DummyDescriptionTarget.GetLongDescription)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(DescriptionLongDescriptionPatch), nameof(DescriptionLongDescriptionPatch.Prefix))),
-                postfix: new HarmonyMethod(RequireMethod(typeof(DescriptionLongDescriptionPatch), nameof(DescriptionLongDescriptionPatch.Postfix))));
-
             var target = new DummyDescriptionTarget("It crackles with static.");
             var builder = new StringBuilder();
             target.GetLongDescription(builder);
 
             Assert.That(builder.ToString(), Is.EqualTo("それは静電気を散らしている。"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        });
     }
 
     [Test]
@@ -68,26 +58,14 @@ public sealed class DescriptionLongDescriptionPatchTests
     {
         WriteDictionary(("It crackles with static.", "それは静電気を散らしている。"));
 
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
+        RunWithDescriptionPatch(() =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyDescriptionTarget), nameof(DummyDescriptionTarget.GetLongDescription)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(DescriptionLongDescriptionPatch), nameof(DescriptionLongDescriptionPatch.Prefix))),
-                postfix: new HarmonyMethod(RequireMethod(typeof(DescriptionLongDescriptionPatch), nameof(DescriptionLongDescriptionPatch.Postfix))));
-
             var target = new DummyDescriptionTarget("It crackles with static.");
             var builder = new StringBuilder("prefix: ");
             target.GetLongDescription(builder);
 
             Assert.That(builder.ToString(), Is.EqualTo("prefix: それは静電気を散らしている。"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        });
     }
 
     [Test]
@@ -95,26 +73,14 @@ public sealed class DescriptionLongDescriptionPatchTests
     {
         WriteDictionary(("Charged item", "帯電したアイテム"));
 
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
+        RunWithDescriptionPatch(() =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyDescriptionTarget), nameof(DummyDescriptionTarget.GetLongDescription)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(DescriptionLongDescriptionPatch), nameof(DescriptionLongDescriptionPatch.Prefix))),
-                postfix: new HarmonyMethod(RequireMethod(typeof(DescriptionLongDescriptionPatch), nameof(DescriptionLongDescriptionPatch.Postfix))));
-
             var target = new DummyDescriptionTarget("{{C|Charged item}}");
             var builder = new StringBuilder();
             target.GetLongDescription(builder);
 
             Assert.That(builder.ToString(), Is.EqualTo("{{C|帯電したアイテム}}"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        });
     }
 
     [Test]
@@ -122,26 +88,14 @@ public sealed class DescriptionLongDescriptionPatchTests
     {
         WriteDictionary(("Known text", "既知の文"));
 
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
+        RunWithDescriptionPatch(() =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyDescriptionTarget), nameof(DummyDescriptionTarget.GetLongDescription)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(DescriptionLongDescriptionPatch), nameof(DescriptionLongDescriptionPatch.Prefix))),
-                postfix: new HarmonyMethod(RequireMethod(typeof(DescriptionLongDescriptionPatch), nameof(DescriptionLongDescriptionPatch.Postfix))));
-
             var target = new DummyDescriptionTarget("Unknown long description");
             var builder = new StringBuilder();
             target.GetLongDescription(builder);
 
             Assert.That(builder.ToString(), Is.EqualTo("Unknown long description"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        });
     }
 
     private static string CreateHarmonyId()
@@ -158,28 +112,10 @@ public sealed class DescriptionLongDescriptionPatchTests
     private void WriteDictionary(params (string key, string text)[] entries)
     {
         var builder = new StringBuilder();
-        builder.Append('{');
-        builder.Append("\"entries\":[");
-
-        for (var index = 0; index < entries.Length; index++)
-        {
-            if (index > 0)
-            {
-                builder.Append(',');
-            }
-
-            builder.Append("{\"key\":\"");
-            builder.Append(EscapeJson(entries[index].key));
-            builder.Append("\",\"text\":\"");
-            builder.Append(EscapeJson(entries[index].text));
-            builder.Append("\"}");
-        }
-
-        builder.Append("]}");
-        builder.AppendLine();
-
-        var path = Path.Combine(tempDirectory, "description-long-l2.ja.json");
-        File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        builder.Append("{\"entries\":[");
+        AppendEntries(builder, entries);
+        builder.AppendLine("]}");
+        WriteDictionaryFile(builder.ToString());
     }
 
     private static string EscapeJson(string value)
@@ -187,6 +123,57 @@ public sealed class DescriptionLongDescriptionPatchTests
         return value
             .Replace("\\", "\\\\", StringComparison.Ordinal)
             .Replace("\"", "\\\"", StringComparison.Ordinal);
+    }
+
+    private static void AppendEntries(StringBuilder builder, IReadOnlyList<(string key, string text)> entries)
+    {
+        for (var index = 0; index < entries.Count; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            var (key, text) = entries[index];
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(text));
+            builder.Append("\"}");
+        }
+    }
+
+    private static MethodInfo DescriptionMethod => RequireMethod(typeof(DummyDescriptionTarget), nameof(DummyDescriptionTarget.GetLongDescription));
+
+    private static HarmonyMethod DescriptionPrefix =>
+        new HarmonyMethod(RequireMethod(typeof(DescriptionLongDescriptionPatch), nameof(DescriptionLongDescriptionPatch.Prefix)));
+
+    private static HarmonyMethod DescriptionPostfix =>
+        new HarmonyMethod(RequireMethod(typeof(DescriptionLongDescriptionPatch), nameof(DescriptionLongDescriptionPatch.Postfix)));
+
+    private static void RunWithDescriptionPatch(Action assertion)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: DescriptionMethod,
+                prefix: DescriptionPrefix,
+                postfix: DescriptionPostfix);
+            assertion();
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private void WriteDictionaryFile(string content)
+    {
+        var path = Path.Combine(tempDirectory, "description-long-l2.ja.json");
+        File.WriteAllText(path, content, Utf8WithoutBom);
     }
 
     private sealed class DummyDescriptionTarget
