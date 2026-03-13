@@ -25,7 +25,7 @@ public static class UITextSkinTranslationPatch
     {
         try
         {
-            text = TranslatePreservingColors(text);
+            text = TranslatePreservingColors(text, nameof(UITextSkinTranslationPatch));
         }
         catch (Exception ex)
         {
@@ -33,8 +33,10 @@ public static class UITextSkinTranslationPatch
         }
     }
 
-    internal static string TranslatePreservingColors(string? source)
+    internal static string TranslatePreservingColors(string? source, string? context = null)
     {
+        using var _ = Translator.PushLogContext(context);
+
         if (string.IsNullOrEmpty(source))
         {
             return source ?? string.Empty;
@@ -50,7 +52,7 @@ public static class UITextSkinTranslationPatch
         return ColorCodePreserver.Restore(translated, spans);
     }
 
-    internal static void TranslateStringField(object? instance, string fieldName)
+    internal static void TranslateStringField(object? instance, string fieldName, string? context = null)
     {
         if (instance is null || string.IsNullOrEmpty(fieldName))
         {
@@ -64,14 +66,14 @@ public static class UITextSkinTranslationPatch
         }
 
         var current = field.GetValue(instance) as string;
-        var translated = TranslatePreservingColors(current);
+        var translated = TranslatePreservingColors(current, context);
         if (!string.Equals(current, translated, StringComparison.Ordinal))
         {
             field.SetValue(instance, translated);
         }
     }
 
-    internal static void TranslateStringFieldsInCollection(object? maybeCollection, params string[] fieldNames)
+    internal static void TranslateStringFieldsInCollection(object? maybeCollection, string? context = null, params string[] fieldNames)
     {
         if (maybeCollection is null || maybeCollection is string || fieldNames is null || fieldNames.Length == 0)
         {
@@ -92,7 +94,7 @@ public static class UITextSkinTranslationPatch
 
             for (var index = 0; index < fieldNames.Length; index++)
             {
-                TranslateStringField(item, fieldNames[index]);
+                TranslateStringField(item, fieldNames[index], context);
             }
         }
     }
