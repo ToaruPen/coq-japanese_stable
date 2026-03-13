@@ -1,4 +1,5 @@
 using System.Runtime.Serialization;
+using System.Diagnostics;
 using System.Text;
 
 namespace QudJP.Tests.L1;
@@ -101,6 +102,105 @@ public sealed class TranslatorTests
     }
 
     [Test]
+    public void Translate_RepeatedMissingKeysRemainMeasurable()
+    {
+        WriteDictionary("ui-test.ja.json", "Hello", "こんにちは");
+
+        using (Translator.PushLogContext("MessageLogPatch"))
+        {
+            _ = Translator.Translate("MISSING_KEY_FOR_RepeatedHits");
+            _ = Translator.Translate("MISSING_KEY_FOR_RepeatedHits");
+            _ = Translator.Translate("MISSING_KEY_FOR_RepeatedHits");
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                Translator.GetMissingKeyHitCountForTests("MISSING_KEY_FOR_RepeatedHits"),
+                Is.EqualTo(3));
+            Assert.That(
+                Translator.GetMissingRouteHitCountForTests("MessageLogPatch"),
+                Is.EqualTo(3));
+        });
+    }
+
+    [Test]
+    public void Translate_MissingKeyLogging_IsThrottledToPowerOfTwoHits()
+    {
+        WriteDictionary("ui-test.ja.json", "Hello", "こんにちは");
+
+        var output = CaptureTrace(() =>
+        {
+            using (Translator.PushLogContext("MessageLogPatch"))
+            {
+                _ = Translator.Translate("MISSING_KEY_FOR_Throttle");
+                _ = Translator.Translate("MISSING_KEY_FOR_Throttle");
+                _ = Translator.Translate("MISSING_KEY_FOR_Throttle");
+                _ = Translator.Translate("MISSING_KEY_FOR_Throttle");
+            }
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(output, Does.Contain("hit 1"));
+            Assert.That(output, Does.Contain("hit 2"));
+            Assert.That(output, Does.Not.Contain("hit 3"));
+            Assert.That(output, Does.Contain("hit 4"));
+        });
+    }
+
+    [Test]
+    public void Translate_MissingKeySummary_RanksRoutes()
+    {
+        WriteDictionary("ui-test.ja.json", "Hello", "こんにちは");
+
+        using (Translator.PushLogContext("PopupTranslationPatch"))
+        {
+            _ = Translator.Translate("MISSING_KEY_FOR_Popup");
+        }
+
+        using (Translator.PushLogContext("MessageLogPatch"))
+        {
+            _ = Translator.Translate("MISSING_KEY_FOR_MessageLog_A");
+            _ = Translator.Translate("MISSING_KEY_FOR_MessageLog_B");
+        }
+
+        var summary = Translator.GetMissingKeySummaryForTests();
+        var messageLogIndex = summary.IndexOf("MessageLogPatch=2", StringComparison.Ordinal);
+        var popupIndex = summary.IndexOf("PopupTranslationPatch=1", StringComparison.Ordinal);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(summary, Does.Contain("MessageLogPatch=2"));
+            Assert.That(summary, Does.Contain("PopupTranslationPatch=1"));
+            Assert.That(messageLogIndex, Is.GreaterThanOrEqualTo(0));
+            Assert.That(popupIndex, Is.GreaterThan(messageLogIndex));
+        });
+    }
+
+    [Test]
+    public void Translate_LogsLoadSummary_AndDuplicateKeyDiagnostics()
+    {
+        WriteDictionary(
+            "first.ja.json",
+            ("Hello", "こんにちは"),
+            ("Inventory", "インベントリ"));
+        WriteDictionary("second.ja.json", ("Hello", "やあ"));
+
+        var output = CaptureTrace(() => Assert.That(Translator.Translate("Hello"), Is.EqualTo("やあ")));
+        var summary = Translator.GetDictionaryLoadSummaryForTests();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(output, Does.Contain("duplicate key overrides: Hello=1"));
+            Assert.That(output, Does.Contain("loaded 2 unique entries from 2 file(s)"));
+            Assert.That(summary, Does.Contain("3 raw entries"));
+            Assert.That(summary, Does.Contain("1 duplicate key override(s)"));
+            Assert.That(summary, Does.Contain("1 distinct key(s)"));
+        });
+    }
+
+    [Test]
     [Category("L1")]
     public void Translate_ThrowsDirectoryNotFoundException_WhenDictionaryDirectoryMissing()
     {
@@ -134,11 +234,35 @@ public sealed class TranslatorTests
         Assert.Throws<ArgumentNullException>(() => Translator.Translate(null!));
     }
 
+    private static string CaptureTrace(Action action)
+    {
+        using var writer = new StringWriter();
+        using var listener = new TextWriterTraceListener(writer);
+        Trace.Listeners.Add(listener);
+
+        try
+        {
+            action();
+            Trace.Flush();
+            listener.Flush();
+            return writer.ToString();
+        }
+        finally
+        {
+            Trace.Listeners.Remove(listener);
+        }
+    }
+
     private void WriteDictionary(string fileName, string key, string text)
+    {
+        WriteDictionary(fileName, (key, text));
+    }
+
+    private void WriteDictionary(string fileName, params (string key, string text)[] entries)
     {
         var builder = new StringBuilder();
         builder.Append("{\"entries\":[");
-        AppendEntries(builder, new[] { (key, text) });
+        AppendEntries(builder, entries);
         builder.AppendLine("]}");
         WriteDictionaryFile(fileName, builder.ToString());
     }

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using System.Text;
 using System.Threading;
 
 namespace QudJP;
@@ -14,12 +15,16 @@ public static class Translator
     private static readonly object SyncRoot = new object();
     private static readonly ConcurrentDictionary<string, string> TranslationCache =
         new ConcurrentDictionary<string, string>(StringComparer.Ordinal);
-    private static readonly ConcurrentDictionary<string, byte> MissingKeyLog =
-        new ConcurrentDictionary<string, byte>(StringComparer.Ordinal);
+    private static readonly ConcurrentDictionary<string, int> MissingKeyCounts =
+        new ConcurrentDictionary<string, int>(StringComparer.Ordinal);
+    private static readonly ConcurrentDictionary<string, int> MissingRouteCounts =
+        new ConcurrentDictionary<string, int>(StringComparer.Ordinal);
 
     private static Dictionary<string, string>? loadedTranslations;
     private static string? dictionaryDirectoryOverride;
+    private static string dictionaryLoadSummary = "Translator: dictionary load summary unavailable.";
     private static int loadInvocationCount;
+    private const string NoContextLabel = "<no-context>";
 
     [ThreadStatic]
     private static Stack<string>? logContextStack;
@@ -31,7 +36,12 @@ public static class Translator
             throw new ArgumentNullException(nameof(key));
         }
 
-        return TranslationCache.GetOrAdd(key, TranslateCore);
+        if (TranslationCache.TryGetValue(key, out var cachedTranslation))
+        {
+            return cachedTranslation;
+        }
+
+        return TranslateCore(key);
     }
 
     internal static void SetDictionaryDirectoryForTests(string? directoryPath)
@@ -41,7 +51,9 @@ public static class Translator
             dictionaryDirectoryOverride = directoryPath;
             loadedTranslations = null;
             TranslationCache.Clear();
-            MissingKeyLog.Clear();
+            MissingKeyCounts.Clear();
+            MissingRouteCounts.Clear();
+            dictionaryLoadSummary = "Translator: dictionary load summary unavailable.";
             Interlocked.Exchange(ref loadInvocationCount, 0);
         }
     }
@@ -52,6 +64,34 @@ public static class Translator
     }
 
     internal static int LoadInvocationCount => Volatile.Read(ref loadInvocationCount);
+
+    internal static string GetDictionaryLoadSummaryForTests()
+    {
+        return dictionaryLoadSummary;
+    }
+
+    internal static int GetMissingKeyHitCountForTests(string key)
+    {
+        return GetCounterValue(MissingKeyCounts, key);
+    }
+
+    internal static int GetMissingRouteHitCountForTests(string? context)
+    {
+        return GetCounterValue(MissingRouteCounts, NormalizeContext(context));
+    }
+
+    internal static string GetMissingKeySummaryForTests(int maxEntries = 10)
+    {
+        var routeSummary = BuildRankedSummary(
+            "missing key routes",
+            MissingRouteCounts,
+            maxEntries);
+        var keySummary = BuildRankedSummary(
+            "missing keys",
+            MissingKeyCounts,
+            maxEntries);
+        return routeSummary + Environment.NewLine + keySummary;
+    }
 
     internal static IDisposable PushLogContext(string? context)
     {
@@ -76,12 +116,15 @@ public static class Translator
         var translations = GetLoadedTranslations();
         if (translations.TryGetValue(key, out var translated))
         {
+            _ = TranslationCache.TryAdd(key, translated);
             return translated;
         }
 
-        if (MissingKeyLog.TryAdd(key, 0))
+        var hitCount = RecordMissingKey(key);
+        if (ShouldLogMissingHit(hitCount))
         {
-            Trace.TraceInformation($"QudJP Translator: missing key '{key}'.{GetCurrentLogContextSuffix()}");
+            LogObservability(
+                $"[QudJP] Translator: missing key '{key}' (hit {hitCount}).{GetCurrentLogContextSuffix()}");
         }
 
         return key;
@@ -120,11 +163,27 @@ public static class Translator
 
         var files = Directory.GetFiles(dictionaryDirectory, "*.ja.json", SearchOption.TopDirectoryOnly);
         Array.Sort(files, StringComparer.OrdinalIgnoreCase);
+        var keySources = new Dictionary<string, string>(StringComparer.Ordinal);
+        var duplicateKeyCounts = new Dictionary<string, int>(StringComparer.Ordinal);
+        var rawEntryCount = 0;
+        var duplicateKeyCount = 0;
 
         for (var fileIndex = 0; fileIndex < files.Length; fileIndex++)
         {
-            LoadDictionaryFile(files[fileIndex], translations);
+            LoadDictionaryFile(
+                files[fileIndex],
+                translations,
+                keySources,
+                duplicateKeyCounts,
+                ref rawEntryCount,
+                ref duplicateKeyCount);
         }
+
+        dictionaryLoadSummary =
+            $"Translator: loaded {translations.Count} unique entries from {files.Length} file(s) " +
+            $"({rawEntryCount} raw entries, {duplicateKeyCount} duplicate key override(s) across {duplicateKeyCounts.Count} distinct key(s)).";
+        LogObservability($"[QudJP] {dictionaryLoadSummary}");
+        LogDuplicateKeySummary(duplicateKeyCounts);
 
         return translations;
     }
@@ -139,7 +198,13 @@ public static class Translator
         return LocalizationAssetResolver.GetLocalizationPath("Dictionaries");
     }
 
-    private static void LoadDictionaryFile(string filePath, Dictionary<string, string> translations)
+    private static void LoadDictionaryFile(
+        string filePath,
+        Dictionary<string, string> translations,
+        Dictionary<string, string> keySources,
+        Dictionary<string, int> duplicateKeyCounts,
+        ref int rawEntryCount,
+        ref int duplicateKeyCount)
     {
         using var stream = File.OpenRead(filePath);
         var serializer = new DataContractJsonSerializer(typeof(DictionaryDocument));
@@ -159,8 +224,142 @@ public static class Translator
                 continue;
             }
 
+            rawEntryCount++;
+            if (keySources.TryGetValue(entry.Key!, out _))
+            {
+                duplicateKeyCount++;
+                duplicateKeyCounts[entry.Key!] = duplicateKeyCounts.TryGetValue(entry.Key!, out var duplicateCount)
+                    ? duplicateCount + 1
+                    : 1;
+            }
+
+            keySources[entry.Key!] = filePath;
             translations[entry.Key!] = entry.Text;
         }
+    }
+
+    private static int RecordMissingKey(string key)
+    {
+        var hitCount = MissingKeyCounts.AddOrUpdate(key, 1, IncrementCounter);
+        _ = MissingRouteCounts.AddOrUpdate(NormalizeContext(GetCurrentLogContext()), 1, IncrementCounter);
+        return hitCount;
+    }
+
+    internal static bool ShouldLogMissingHitForTests(int hitCount)
+    {
+        return ShouldLogMissingHit(hitCount);
+    }
+
+    private static void LogDuplicateKeySummary(Dictionary<string, int> duplicateKeyCounts)
+    {
+        if (duplicateKeyCounts.Count == 0)
+        {
+            return;
+        }
+
+        LogObservability(
+            $"[QudJP] Warning: Translator duplicate key overrides: {BuildRankedCounterBody(duplicateKeyCounts, 10)}.");
+    }
+
+    private static void LogObservability(string message)
+    {
+        QudJPMod.LogToUnity(message);
+    }
+
+    private static bool ShouldLogMissingHit(int hitCount)
+    {
+        return hitCount > 0 && (hitCount & (hitCount - 1)) == 0;
+    }
+
+    private static int GetCounterValue(ConcurrentDictionary<string, int> counters, string key)
+    {
+        return counters.TryGetValue(key, out var count) ? count : 0;
+    }
+
+    private static string BuildRankedSummary(
+        string label,
+        ConcurrentDictionary<string, int> counters,
+        int maxEntries)
+    {
+        var boundedMaxEntries = maxEntries <= 0 ? 1 : maxEntries;
+        var entries = counters.ToArray();
+        if (entries.Length == 0)
+        {
+            return $"QudJP Translator: {label}: none.";
+        }
+
+        Array.Sort(entries, CompareCounterEntries);
+        var limit = Math.Min(boundedMaxEntries, entries.Length);
+        var builder = new StringBuilder();
+        builder.Append("QudJP Translator: ");
+        builder.Append(label);
+        builder.Append(": ");
+        for (var index = 0; index < limit; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append("; ");
+            }
+
+            builder.Append(entries[index].Key);
+            builder.Append('=');
+            builder.Append(entries[index].Value);
+        }
+
+        builder.Append('.');
+        return builder.ToString();
+    }
+
+    private static string BuildRankedCounterBody(
+        IDictionary<string, int> counters,
+        int maxEntries)
+    {
+        var boundedMaxEntries = maxEntries <= 0 ? 1 : maxEntries;
+        var entries = new KeyValuePair<string, int>[counters.Count];
+        counters.CopyTo(entries, 0);
+        Array.Sort(entries, CompareCounterEntries);
+
+        var limit = Math.Min(boundedMaxEntries, entries.Length);
+        var builder = new StringBuilder();
+        for (var index = 0; index < limit; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append("; ");
+            }
+
+            builder.Append(entries[index].Key);
+            builder.Append('=');
+            builder.Append(entries[index].Value);
+        }
+
+        return builder.ToString();
+    }
+
+    private static int CompareCounterEntries(
+        KeyValuePair<string, int> left,
+        KeyValuePair<string, int> right)
+    {
+        var countComparison = right.Value.CompareTo(left.Value);
+        return countComparison != 0
+            ? countComparison
+            : StringComparer.Ordinal.Compare(left.Key, right.Key);
+    }
+
+    private static int IncrementCounter(string _, int currentValue)
+    {
+        return currentValue < int.MaxValue ? currentValue + 1 : int.MaxValue;
+    }
+
+    private static string NormalizeContext(string? context)
+    {
+        if (context is null)
+        {
+            return NoContextLabel;
+        }
+
+        var trimmedContext = context.Trim();
+        return trimmedContext.Length == 0 ? NoContextLabel : trimmedContext;
     }
 
     [DataContract]
@@ -180,7 +379,7 @@ public static class Translator
         public string? Text { get; set; }
     }
 
-    private static string? GetCurrentLogContext()
+    internal static string? GetCurrentLogContext()
     {
         return logContextStack is { Count: > 0 } ? logContextStack.Peek() : null;
     }

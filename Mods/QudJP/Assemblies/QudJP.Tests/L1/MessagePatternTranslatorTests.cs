@@ -1,4 +1,5 @@
 using System.Runtime.Serialization;
+using System.Diagnostics;
 using System.Text;
 
 namespace QudJP.Tests.L1;
@@ -198,6 +199,94 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_RepeatedMissingPatternsRemainMeasurable()
+    {
+        WritePatternDictionary(("^You equip (.+)[.!]?$", "{0}を装備した"));
+
+        _ = MessagePatternTranslator.Translate("You begin moving.", "MessageLogPatch");
+        _ = MessagePatternTranslator.Translate("You begin moving.", "MessageLogPatch");
+        _ = MessagePatternTranslator.Translate("You begin moving.", "MessageLogPatch");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                MessagePatternTranslator.GetMissingPatternHitCountForTests("You begin moving."),
+                Is.EqualTo(3));
+            Assert.That(
+                MessagePatternTranslator.GetMissingRouteHitCountForTests("MessageLogPatch"),
+                Is.EqualTo(3));
+        });
+    }
+
+    [Test]
+    public void Translate_MissingPatternLogging_IsThrottledToPowerOfTwoHits()
+    {
+        WritePatternDictionary(("^You equip (.+)[.!]?$", "{0}を装備した"));
+
+        var output = CaptureTrace(() =>
+        {
+            _ = MessagePatternTranslator.Translate("You begin moving.", "MessageLogPatch");
+            _ = MessagePatternTranslator.Translate("You begin moving.", "MessageLogPatch");
+            _ = MessagePatternTranslator.Translate("You begin moving.", "MessageLogPatch");
+            _ = MessagePatternTranslator.Translate("You begin moving.", "MessageLogPatch");
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(output, Does.Contain("hit 1"));
+            Assert.That(output, Does.Contain("hit 2"));
+            Assert.That(output, Does.Not.Contain("hit 3"));
+            Assert.That(output, Does.Contain("hit 4"));
+        });
+    }
+
+    [Test]
+    public void Translate_MissingPatternSummary_RanksRoutes()
+    {
+        WritePatternDictionary(("^You equip (.+)[.!]?$", "{0}を装備した"));
+
+        _ = MessagePatternTranslator.Translate("You stop moving.", "PopupTranslationPatch");
+        _ = MessagePatternTranslator.Translate("You begin moving.", "MessageLogPatch");
+        _ = MessagePatternTranslator.Translate("You begin resting.", "MessageLogPatch");
+
+        var summary = MessagePatternTranslator.GetMissingPatternSummaryForTests();
+        var messageLogIndex = summary.IndexOf("MessageLogPatch=2", StringComparison.Ordinal);
+        var popupIndex = summary.IndexOf("PopupTranslationPatch=1", StringComparison.Ordinal);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(summary, Does.Contain("MessageLogPatch=2"));
+            Assert.That(summary, Does.Contain("PopupTranslationPatch=1"));
+            Assert.That(messageLogIndex, Is.GreaterThanOrEqualTo(0));
+            Assert.That(popupIndex, Is.GreaterThan(messageLogIndex));
+        });
+    }
+
+    [Test]
+    public void Translate_LogsPatternLoadSummary_AndDuplicatePatternDiagnostics()
+    {
+        WritePatternDictionary(
+            ("^You hit (.+) for (\\d+) damage[.!]?$", "FIRST:{0}:{1}"),
+            ("^You hit (.+) for (\\d+) damage[.!]?$", "SECOND:{0}:{1}"),
+            ("^You miss (.+?)[.!]?$", "MISS:{0}"));
+
+        var output = CaptureTrace(() =>
+            Assert.That(
+                MessagePatternTranslator.Translate("You hit snapjaw for 2 damage."),
+                Is.EqualTo("FIRST:snapjaw:2")));
+        var summary = MessagePatternTranslator.GetPatternLoadSummaryForTests();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(output, Does.Contain("duplicate patterns: ^You hit (.+) for (\\d+) damage[.!]?$=1"));
+            Assert.That(output, Does.Contain("loaded 3 pattern(s)"));
+            Assert.That(summary, Does.Contain("2 unique"));
+            Assert.That(summary, Does.Contain("1 duplicate pattern(s)"));
+            Assert.That(summary, Does.Contain("1 distinct pattern(s)"));
+        });
+    }
+
+    [Test]
     public void Translate_ThrowsFileNotFoundException_WhenPatternFileMissing()
     {
         MessagePatternTranslator.SetPatternFileForTests(Path.Combine(tempDirectory, "missing-messages.ja.json"));
@@ -227,6 +316,25 @@ public sealed class MessagePatternTranslatorTests
         WriteRawPatternFile("{\"patterns\":[{\"pattern\":\"^You miss (.+)$\"}]}");
 
         Assert.Throws<InvalidDataException>(() => MessagePatternTranslator.Translate("You miss snapjaw."));
+    }
+
+    private static string CaptureTrace(Action action)
+    {
+        using var writer = new StringWriter();
+        using var listener = new TextWriterTraceListener(writer);
+        Trace.Listeners.Add(listener);
+
+        try
+        {
+            action();
+            Trace.Flush();
+            listener.Flush();
+            return writer.ToString();
+        }
+        finally
+        {
+            Trace.Listeners.Remove(listener);
+        }
     }
 
     private void WritePatternDictionary(params (string pattern, string template)[] patterns)
