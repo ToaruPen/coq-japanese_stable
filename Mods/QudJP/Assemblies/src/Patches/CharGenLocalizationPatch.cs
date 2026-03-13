@@ -85,8 +85,8 @@ public static class CharGenLocalizationPatch
         }
 
         return fullName.StartsWith("XRL.CharacterCreation.", StringComparison.Ordinal)
-               || fullName.StartsWith("XRL.CharacterBuilds.", StringComparison.Ordinal)
-               || ContainsOrdinalIgnoreCase(fullName, "CharacterCreation");
+               || ContainsOrdinalIgnoreCase(fullName, "CharacterCreation")
+               || ContainsOrdinalIgnoreCase(fullName, "Embark");
     }
 
     private static void CollectCandidateMethods(Type type, ICollection<MethodBase> targets, ISet<MethodBase> seen)
@@ -117,17 +117,16 @@ public static class CharGenLocalizationPatch
             return false;
         }
 
-        if (name.StartsWith("get_", StringComparison.Ordinal))
-        {
-            return true;
-        }
+        var candidateName = name.StartsWith("get_", StringComparison.Ordinal)
+            ? name.Substring("get_".Length)
+            : name;
 
-        return ContainsOrdinalIgnoreCase(name, "Text")
-               || ContainsOrdinalIgnoreCase(name, "Title")
-               || ContainsOrdinalIgnoreCase(name, "Label")
-               || ContainsOrdinalIgnoreCase(name, "Description")
-               || ContainsOrdinalIgnoreCase(name, "Display")
-               || ContainsOrdinalIgnoreCase(name, "Prompt");
+        return ContainsOrdinalIgnoreCase(candidateName, "Text")
+               || ContainsOrdinalIgnoreCase(candidateName, "Title")
+               || ContainsOrdinalIgnoreCase(candidateName, "Label")
+               || ContainsOrdinalIgnoreCase(candidateName, "Description")
+               || ContainsOrdinalIgnoreCase(candidateName, "Display")
+               || ContainsOrdinalIgnoreCase(candidateName, "Prompt");
     }
 
     private static bool ContainsOrdinalIgnoreCase(string source, string value)
