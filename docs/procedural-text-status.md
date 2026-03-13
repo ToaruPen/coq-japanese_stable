@@ -1,52 +1,29 @@
-# プロシージャルテキスト対応状況（Phase 1）
+# プロシージャルテキスト対応状況
 
-`HistoryKit.HistoricStringExpander.ExpandString()` の Harmony Postfix で、展開後の英語文字列を
-`UITextSkinTranslationPatch.TranslatePreservingColors()` に通す初期対応を実装しています。
+`HistoryKit.HistoricStringExpander.ExpandString()` 向けの runtime patch は、現在 **意図的に無効化** されています。
 
-この段階は **最小・安全な初期対応** です。英語展開そのものはゲーム本体に任せ、最終結果だけ辞書照合します。
+無効化の実装根拠は `Mods/QudJP/Assemblies/src/Patches/HistoricStringExpanderPatch.cs` で、
+`TargetMethods()` が warning を出したうえで `yield break` します。これは履歴文の表示だけでなく
+`HistorySpice` / world generation 用の symbolic key まで翻訳してしまい、プレイアビリティを壊す
+危険が確認されたためです。
 
-## 対応済み
+## 現在の扱い
 
-- 静的に近い履歴文（展開結果が辞書キーと完全一致するもの）は翻訳される。
-- `{{R|...}}` / `&G` / `^k` などの色コードは保持される。
+- ステータス: `intentionally disabled`
+- 理由: world generation / playability safeguard
+- runtime 挙動: patch 登録時に warning を出して対象メソッドを返さない
+- テスト対象: `Postfix` 本体の文字列変換ロジックだけは L1/L2 で維持する
 
-例:
+## 観測上の意味
 
-- 入力（展開後）: `In the beginning, Resheph created Qud`
-- 辞書キー: `In the beginning, Resheph created Qud`
-- 出力: `はじめに、レシェフがクッドを創造した`
+- `HistoricStringExpander` 系の英語断片は、現在の untranslated-text observability baseline では
+  **既知の blind spot** として扱う
+- `missing key` / `no pattern` の集計対象に入らないため、coverage の母集団へ混ぜない
+- まずは Rosetta 起動下で world generation が安定することを優先する
 
-## 部分対応
+## 今後の再導入条件
 
-- テンプレート展開文でも、**最終文字列がたまたま辞書キーに一致**すれば翻訳される。
-- 一部だけ一致するケース（部分文字列一致）は翻訳されない（現状は完全一致のみ）。
-
-例:
-
-- 展開結果: `Sultan was crowned`
-- 辞書キー: `Sultan was crowned`
-- 出力: `スルタンが戴冠した`
-
-一方で以下は未翻訳（完全一致しないため）:
-
-- 展開結果: `Sultan was crowned in 1024`
-- 辞書キー: `Sultan was crowned`
-
-## 未対応
-
-- 完全プロシージャル文（ランダム生成された固有名・語順・可変スロットを含む文）。
-- `Messaging.XDidY()` / `Messaging.XDidYToZ()` 系の SVO -> SOV 変換。
-- テンプレート単位の翻訳（展開前トークンを使った変換）。
-- 変数を意識したパターン翻訳（`=...=` 相当の意味を使う可変翻訳）。
-
-例:
-
-- `{{G|Sultan Ehra-iv was crowned in the 3rd year of ...}}`（毎回変化）
-- `snapjaw hits you for 5 damage!`（メッセージテンプレート変形）
-
-## Phase 2 TODO
-
-- `XDidY` / `XDidYToZ` の日本語語順（SOV）変換を追加。
-- 展開後文字列ではなくテンプレートレベルでの翻訳導入を検討。
-- 変数・固有名スロットを扱えるパターン照合（variable-aware matching）を実装。
-- ランダム生成文向けに、辞書完全一致以外の段階的フォールバック戦略を設計。
+- 表示専用ケースへ適用範囲を限定できること
+- history generation 用の symbolic key を翻訳対象から確実に除外できること
+- Rosetta 起動の実ゲーム確認で world generation が通ること
+- untranslated observability と playability の証跡を分離して提示できること

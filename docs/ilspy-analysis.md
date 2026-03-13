@@ -1,6 +1,6 @@
 # ILSpy Text Pipeline Analysis (Game 2.0.4)
 
-Evidence base: decompiled sources in `docs/ilspy-raw/`.
+Evidence base: historical ILSpy notes captured in this document plus current game-DLL-assisted probes in `Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs`.
 
 Decompilation gaps observed:
 - `XRL_Messages_Messaging.retry.cs`: decompilation failed - namespace probe needed.
@@ -47,34 +47,43 @@ UI/message rendering
 
 ## 2. Hook Points Table
 
-| # | Hook Point | Class | Patch Type | Classification | Test Layer |
-|---|------------|-------|------------|----------------|------------|
-| 1 | `A(string,bool)` | `XRL.Language.Grammar` | Postfix | Pure | L1 |
-| 2 | `Pluralize(string)` | `XRL.Language.Grammar` | Prefix | Pure | L1 |
-| 3 | `MakePossessive(string)` | `XRL.Language.Grammar` | Prefix | Pure | L1 |
-| 4 | `XDidY(...)` | `XRL.World.IComponent<T>` wrapper | Prefix | Mixed | L2 |
-| 5 | `XDidYToZ(...)` | `XRL.World.IComponent<T>` wrapper | Prefix | Mixed | L2 |
-| 6 | `AddPlayerMessage(string,string,bool)` | `XRL.Messages.MessageQueue` | Prefix | Unity-dependent | L3 |
-| 7 | `Transform(string,bool)` | `ConsoleLib.Console.Markup` | Prefix | Mixed | L2 |
-| 8 | `Parse(string)` | `ConsoleLib.Console.Markup` | Transpiler | Mixed | L2 |
-| 9 | `Strip(string)` | `ConsoleLib.Console.Markup` | Postfix | Mixed | L2 |
-| 10 | `Prepare()` | `XRL.World.Conversations.IConversationElement` | Postfix | Mixed | L2 |
-| 11 | `GetDisplayText(bool)` | `XRL.World.Conversations.IConversationElement` | Postfix | Mixed | L2 |
-| 12 | `Render()` | `XRL.UI.ConversationUI` | Prefix | Unity-dependent | L3 |
-| 13 | `GenerateTooltipContent(GameObject)` | `XRL.UI.Look` | Postfix | Mixed | L2 |
-| 14 | `ShowConversation(...)` | `XRL.UI.Popup` | Prefix | Unity-dependent | L3 |
-| 15 | `GetFor(...)` | `XRL.World.GetDisplayNameEvent` | Postfix | Mixed | L2 |
-| 16 | `ProcessFor(GameObject,bool)` | `XRL.World.GetDisplayNameEvent` | Prefix | Mixed | L2 |
-| 17 | `GetLongDescription(StringBuilder)` | `XRL.World.Parts.Description` | Postfix | Mixed | L2 |
-| 18 | `VariableReplace(StringBuilder, GameObject, GameObject, bool)` | `XRL.GameText` | Prefix | Mixed | L2 |
-| 19 | `Process(StringBuilder,...)` | `XRL.GameText` | Prefix | Mixed | L2 |
-| 20 | `ExpandString(string, HistoricEntitySnapshot, History, Dictionary<string,string>, Random)` | `HistoryKit.HistoricStringExpander` | Prefix | Mixed | L2 |
-| 21 | `Filter(string,string,string,bool)` | `XRL.Language.TextFilters` | Prefix | Mixed | L2 |
-| 22 | `ReadConversation(string,BuildContext)` | `XRL.World.Conversations.ConversationLoader` | Postfix | Mixed | L2 |
-| 23 | `LoadConversations()` | `XRL.World.Conversations.ConversationLoader` | Postfix | Mixed | L2 |
-| 24 | `LoadBlueprints()` | `XRL.World.GameObjectFactory` | Postfix | Mixed | L2 |
-| 25 | `LoadBakedXML(ObjectBlueprintXMLData)` | `XRL.World.GameObjectFactory` | Postfix | Mixed | L2 |
-| 26 | `Process()` | `XRL.World.Text.ReplaceBuilder` | Prefix | Mixed | L2 |
+| # | Hook Point | Class | Patch Type | Observability Status | Test Layer |
+|---|------------|-------|------------|----------------------|------------|
+| 1 | `A(string,bool)` | `XRL.Language.Grammar` | Postfix | `observable` | L1 |
+| 2 | `Pluralize(string)` | `XRL.Language.Grammar` | Prefix | `observable` | L1 |
+| 3 | `MakePossessive(string)` | `XRL.Language.Grammar` | Prefix | `observable` | L1 |
+| 4 | `XDidY(...)` | `XRL.World.IComponent<T>` wrapper | Prefix | `unobserved / unpatched` | L2 |
+| 5 | `XDidYToZ(...)` | `XRL.World.IComponent<T>` wrapper | Prefix | `unobserved / unpatched` | L2 |
+| 6 | `AddPlayerMessage(string,string,bool)` | `XRL.Messages.MessageQueue` | Prefix | `observable` | L3 |
+| 7 | `Transform(string,bool)` | `ConsoleLib.Console.Markup` | Prefix | `unobserved / unpatched` | L2 |
+| 8 | `Parse(string)` | `ConsoleLib.Console.Markup` | Transpiler | `unobserved / unpatched` | L2 |
+| 9 | `Strip(string)` | `ConsoleLib.Console.Markup` | Postfix | `unobserved / unpatched` | L2 |
+| 10 | `Prepare()` | `XRL.World.Conversations.IConversationElement` | Postfix | `unobserved / unpatched` | L2 |
+| 11 | `GetDisplayText(bool)` | `XRL.World.Conversations.IConversationElement` | Postfix | `observable` | L2 |
+| 12 | `Render()` | `XRL.UI.ConversationUI` | Prefix | `unobserved / unpatched` | L3 |
+| 13 | `GenerateTooltipContent(GameObject)` | `XRL.UI.Look` | Postfix | `observable` | L2 |
+| 14 | `ShowConversation(...)` | `XRL.UI.Popup` | Prefix | `unobserved / unpatched` | L3 |
+| 15 | `GetFor(...)` | `XRL.World.GetDisplayNameEvent` | Postfix | `observable` | L2 |
+| 16 | `ProcessFor(GameObject,bool)` | `XRL.World.GetDisplayNameEvent` | Prefix | `observable` | L2 |
+| 17 | `GetLongDescription(StringBuilder)` | `XRL.World.Parts.Description` | Postfix | `observable` | L2 |
+| 18 | `VariableReplace(StringBuilder, GameObject, GameObject, bool)` | `XRL.GameText` | Prefix | `unobserved / unpatched` | L2 |
+| 19 | `Process(StringBuilder,...)` | `XRL.GameText` | Prefix | `unobserved / unpatched` | L2 |
+| 20 | `ExpandString(string, HistoricEntitySnapshot, History, Dictionary<string,string>, Random)` | `HistoryKit.HistoricStringExpander` | Prefix | `intentionally disabled` | L2 |
+| 21 | `Filter(string,string,string,bool)` | `XRL.Language.TextFilters` | Prefix | `unobserved / unpatched` | L2 |
+| 22 | `ReadConversation(string,BuildContext)` | `XRL.World.Conversations.ConversationLoader` | Postfix | `unobserved / unpatched` | L2 |
+| 23 | `LoadConversations()` | `XRL.World.Conversations.ConversationLoader` | Postfix | `unobserved / unpatched` | L2 |
+| 24 | `LoadBlueprints()` | `XRL.World.GameObjectFactory` | Postfix | `unobserved / unpatched` | L2 |
+| 25 | `LoadBakedXML(ObjectBlueprintXMLData)` | `XRL.World.GameObjectFactory` | Postfix | `unobserved / unpatched` | L2 |
+| 26 | `Process()` | `XRL.World.Text.ReplaceBuilder` | Prefix | `unobserved / unpatched` | L2 |
+
+### 2.1 Current blind spots outside the main hook table
+
+| Patch class | Status | Reason |
+|------------|--------|--------|
+| `CharGenLocalizationPatch` | `observable (heuristic)` | current runtime observations route character-generation menus, callings, mutation lists, cybernetics, and stat-allocation text through this patch; some downstream sink-only UITextSkin residues still remain |
+| `GrammarSplitOfSentenceListPatch` | `currently skipped` | not part of the currently claimed observable route set |
+| `GrammarInitCapsPatch` | `currently skipped` | not part of the currently claimed observable route set |
+| `GrammarCardinalNumberPatch` | `currently skipped` | not part of the currently claimed observable route set |
 
 ## 3. Detailed Hook Points (16+)
 
