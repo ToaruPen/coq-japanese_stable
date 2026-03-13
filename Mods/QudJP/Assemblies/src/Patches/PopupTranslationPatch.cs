@@ -81,7 +81,7 @@ public static class PopupTranslationPatch
 
         if (args.Length > ShowOptionListButtonsIndex)
         {
-            UITextSkinTranslationPatch.TranslateStringFieldsInCollection(args[ShowOptionListButtonsIndex], "text");
+            UITextSkinTranslationPatch.TranslateStringFieldsInCollection(args[ShowOptionListButtonsIndex], nameof(PopupTranslationPatch), "text");
         }
     }
 
@@ -94,7 +94,7 @@ public static class PopupTranslationPatch
 
         if (args[index] is string text)
         {
-            args[index] = UITextSkinTranslationPatch.TranslatePreservingColors(text);
+            args[index] = UITextSkinTranslationPatch.TranslatePreservingColors(text, nameof(PopupTranslationPatch));
         }
     }
 
@@ -124,7 +124,7 @@ public static class PopupTranslationPatch
                 return;
             }
 
-            translated.Add(UITextSkinTranslationPatch.TranslatePreservingColors(text));
+            translated.Add(UITextSkinTranslationPatch.TranslatePreservingColors(text, nameof(PopupTranslationPatch)));
         }
 
         args[index] = translated;

@@ -40,10 +40,10 @@ public static class MainMenuLocalizationPatch
             }
 
             var leftOptions = AccessCollectionField(targetType, __instance, "LeftOptions");
-            UITextSkinTranslationPatch.TranslateStringFieldsInCollection(leftOptions, "Text");
+            UITextSkinTranslationPatch.TranslateStringFieldsInCollection(leftOptions, nameof(MainMenuLocalizationPatch), "Text");
 
             var rightOptions = AccessCollectionField(targetType, __instance, "RightOptions");
-            UITextSkinTranslationPatch.TranslateStringFieldsInCollection(rightOptions, "Text");
+            UITextSkinTranslationPatch.TranslateStringFieldsInCollection(rightOptions, nameof(MainMenuLocalizationPatch), "Text");
         }
         catch (Exception ex)
         {

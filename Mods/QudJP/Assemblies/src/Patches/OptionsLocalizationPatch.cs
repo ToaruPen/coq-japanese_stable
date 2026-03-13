@@ -35,13 +35,13 @@ public static class OptionsLocalizationPatch
             var type = __instance.GetType();
 
             var menuItemsField = AccessTools.Field(type, "menuItems");
-            UITextSkinTranslationPatch.TranslateStringFieldsInCollection(menuItemsField?.GetValue(__instance), "Title", "HelpText");
+            UITextSkinTranslationPatch.TranslateStringFieldsInCollection(menuItemsField?.GetValue(__instance), nameof(OptionsLocalizationPatch), "Title", "HelpText");
 
             var filteredMenuItemsField = AccessTools.Field(type, "filteredMenuItems");
-            UITextSkinTranslationPatch.TranslateStringFieldsInCollection(filteredMenuItemsField?.GetValue(__instance), "Title", "HelpText");
+            UITextSkinTranslationPatch.TranslateStringFieldsInCollection(filteredMenuItemsField?.GetValue(__instance), nameof(OptionsLocalizationPatch), "Title", "HelpText");
 
             var defaultMenuOptionsField = AccessTools.Field(type, "defaultMenuOptions");
-            UITextSkinTranslationPatch.TranslateStringFieldsInCollection(defaultMenuOptionsField?.GetValue(null), "Description");
+            UITextSkinTranslationPatch.TranslateStringFieldsInCollection(defaultMenuOptionsField?.GetValue(null), nameof(OptionsLocalizationPatch), "Description");
         }
         catch (Exception ex)
         {
