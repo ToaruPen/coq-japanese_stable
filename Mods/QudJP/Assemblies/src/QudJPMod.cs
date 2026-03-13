@@ -115,14 +115,14 @@ public static class QudJPMod
         for (var index = 0; index < patchTypes.Length; index++)
         {
             var patchType = patchTypes[index];
-            if (!TryPreparePatchType(patchType, out var preparationFailure))
-            {
-                LogToUnity($"[QudJP] Warning: Skipping patch {patchType.FullName}: {preparationFailure}");
-                continue;
-            }
-
             try
             {
+                if (!TryPreparePatchType(patchType, out var preparationFailure))
+                {
+                    LogToUnity($"[QudJP] Warning: Skipping patch {patchType.FullName}: {preparationFailure}");
+                    continue;
+                }
+
                 var processor = createClassProcessor.Invoke(harmony, new object[] { patchType });
                 if (processor is null)
                 {
@@ -139,9 +139,11 @@ public static class QudJPMod
 
                 patchMethod.Invoke(processor, null);
             }
-            catch (TargetInvocationException ex)
+            catch (Exception ex)
             {
-                var details = ex.InnerException?.ToString() ?? ex.ToString();
+                var details = ex is TargetInvocationException tie
+                    ? tie.InnerException?.ToString() ?? tie.ToString()
+                    : ex.ToString();
                 LogToUnity($"[QudJP] Warning: Failed to apply patch {patchType.FullName}: {details}");
             }
         }
@@ -173,8 +175,38 @@ public static class QudJPMod
 
     internal static Type[] GetHarmonyPatchTypes(Assembly assembly)
     {
-        return assembly
-            .GetTypes()
+        Type[] allTypes;
+        try
+        {
+            allTypes = assembly.GetTypes();
+        }
+        catch (ReflectionTypeLoadException ex)
+        {
+            Trace.TraceWarning(
+                "QudJP: ReflectionTypeLoadException loading types from {0}. Proceeding with {1} partially loaded type(s).",
+                assembly.FullName,
+                ex.Types?.Count(static t => t is not null) ?? 0);
+            var loadedTypes = ex.Types;
+            if (loadedTypes is null)
+            {
+                allTypes = Array.Empty<Type>();
+            }
+            else
+            {
+                var nonNull = new System.Collections.Generic.List<Type>(loadedTypes.Length);
+                for (var i = 0; i < loadedTypes.Length; i++)
+                {
+                    if (loadedTypes[i] is { } t)
+                    {
+                        nonNull.Add(t);
+                    }
+                }
+
+                allTypes = nonNull.ToArray();
+            }
+        }
+
+        return allTypes
             .Where(HasHarmonyPatchAttribute)
             .ToArray();
     }

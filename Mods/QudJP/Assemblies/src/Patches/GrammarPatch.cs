@@ -56,6 +56,11 @@ internal static class GrammarPatchHelpers
         return result.ToString();
     }
 
+    internal static List<string> EnsureList(IEnumerable<string> source)
+    {
+        return source is List<string> list ? list : new List<string>(source);
+    }
+
     internal static List<string> SplitSentenceList(string text)
     {
         if (string.IsNullOrEmpty(text))
@@ -190,7 +195,7 @@ public static class GrammarMakeAndListPatch
         try
         {
             _ = __1;
-            var items = __0 is List<string> list ? list : new List<string>(__0);
+            var items = GrammarPatchHelpers.EnsureList(__0);
             __result = GrammarPatchHelpers.BuildJapaneseList(items, "と");
             return false;
         }
@@ -239,7 +244,7 @@ public static class GrammarMakeOrListPatch
         try
         {
             _ = __1;
-            var items = __0 is List<string> list ? list : new List<string>(__0);
+            var items = GrammarPatchHelpers.EnsureList(__0);
             __result = GrammarPatchHelpers.BuildJapaneseList(items, "または");
             return false;
         }
