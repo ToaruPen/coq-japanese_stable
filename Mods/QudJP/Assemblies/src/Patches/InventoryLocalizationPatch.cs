@@ -64,7 +64,7 @@ public static class InventoryLocalizationPatch
                 return;
             }
 
-            __result = UITextSkinTranslationPatch.TranslatePreservingColors(__result);
+            __result = UITextSkinTranslationPatch.TranslatePreservingColors(__result, nameof(InventoryLocalizationPatch));
         }
         catch (Exception ex)
         {

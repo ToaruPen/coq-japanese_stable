@@ -63,7 +63,7 @@ public static class CharGenLocalizationPatch
                 return;
             }
 
-            __result = UITextSkinTranslationPatch.TranslatePreservingColors(__result);
+            __result = UITextSkinTranslationPatch.TranslatePreservingColors(__result, nameof(CharGenLocalizationPatch));
         }
         catch (Exception ex)
         {

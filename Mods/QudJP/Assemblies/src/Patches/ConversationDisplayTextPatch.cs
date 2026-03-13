@@ -55,7 +55,7 @@ public static class ConversationDisplayTextPatch
                 return;
             }
 
-            __result = UITextSkinTranslationPatch.TranslatePreservingColors(__result);
+            __result = UITextSkinTranslationPatch.TranslatePreservingColors(__result, nameof(ConversationDisplayTextPatch));
         }
         catch (Exception ex)
         {
