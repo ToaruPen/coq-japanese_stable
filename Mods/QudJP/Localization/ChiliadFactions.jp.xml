@@ -18,7 +18,7 @@
   <faction Name="Cragmensch" DisplayName="クラッグメンシュ">
     <property Name="EndVisibility" Value="Conceal" />
   </faction>
-  <faction Name="Issachari" DisplayName="イサカリ">
+  <faction Name="Issachari" DisplayName="イッサカリ">
     <property Name="EndVisibility" Value="Conceal" />
   </faction>
   <faction Name="Mechanimists" DisplayName="メカニマス教">
@@ -29,7 +29,7 @@
   <faction Name="Mopango" DisplayName="モパンゴ">
     <property Name="EndVisibility" Value="Conceal" />
   </faction>
-  <faction Name="Naphtaali" DisplayName="ナフターリ">
+  <faction Name="Naphtaali" DisplayName="ナフタリ">
     <property Name="EndVisibility" Value="Conceal" />
   </faction>
   <faction Name="Svardym" DisplayName="スヴァーディム">

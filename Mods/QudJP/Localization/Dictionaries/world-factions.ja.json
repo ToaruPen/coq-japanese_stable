@@ -132,7 +132,7 @@
     {
       "key": "Daughters",
       "context": "Faction.Name",
-      "text": "ドーター"
+      "text": "娘たち"
     },
     {
       "key": "Dogs",
@@ -217,7 +217,7 @@
     {
       "key": "Gyre Wights",
       "context": "Faction.Name",
-      "text": "ジャイアワイト"
+      "text": "渦動ワイト"
     },
     {
       "key": "Halophiles",
@@ -257,7 +257,7 @@
     {
       "key": "Issachari",
       "context": "Faction.Name",
-      "text": "イサカリ"
+      "text": "イッサカリ"
     },
     {
       "key": "Jellies",
@@ -337,7 +337,7 @@
     {
       "key": "Naphtaali",
       "context": "Faction.Name",
-      "text": "ナフターリ"
+      "text": "ナフタリ"
     },
     {
       "key": "Nephilim",
@@ -417,7 +417,7 @@
     {
       "key": "Seekers",
       "context": "Faction.Name",
-      "text": "シーカー"
+      "text": "盲道の徒"
     },
     {
       "key": "Slimes",
@@ -473,21 +473,6 @@
       "key": "Succulents",
       "context": "Faction.Name",
       "text": "多肉植物"
-    },
-    {
-      "key": "Sludges",
-      "context": "Faction.Name",
-      "text": "スラッジ"
-    },
-    {
-      "key": "Soups",
-      "context": "Faction.Name",
-      "text": "スープ"
-    },
-    {
-      "key": "Gelatinous Polyhedra",
-      "context": "Faction.Name",
-      "text": "ゼラチン質多面体"
     },
     {
       "key": "SultanCult1",
@@ -577,7 +562,7 @@
     {
       "key": "Wardens",
       "context": "Faction.Name",
-      "text": "守衛"
+      "text": "監視官"
     },
     {
       "key": "Water",

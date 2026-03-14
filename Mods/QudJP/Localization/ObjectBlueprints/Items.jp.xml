@@ -429,7 +429,7 @@
   <object Name="BionicLiver" Inherits="BaseCyberneticsEquipment_3point" Replace="true">
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="毒素を瞬時に分解する人工肝臓。" />
-    <part Name="Render" DisplayName="{{Y|バイオニックリバー}}" Tile="Items/sw_cyberliver.bmp" ColorString="&amp;C" DetailColor="r" />
+    <part Name="Render" DisplayName="{{Y|バイオニック肝臓}}" Tile="Items/sw_cyberliver.bmp" ColorString="&amp;C" DetailColor="r" />
     <part Name="CyberneticsBaseItem" Slots="Body" Cost="3" BehaviorDescription="毒・病気に対するセーヴに +4。" />
     <part Name="CyberneticsBionicLiver" />
   </object>
@@ -10993,4 +10993,3 @@
   </object>
 
 </objects>
-
