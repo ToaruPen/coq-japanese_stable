@@ -1,5 +1,4 @@
 using System.Runtime.Serialization;
-using System.Diagnostics;
 using System.Text;
 
 namespace QudJP.Tests.L1;
@@ -129,7 +128,7 @@ public sealed class TranslatorTests
     {
         WriteDictionary("ui-test.ja.json", "Hello", "こんにちは");
 
-        var output = CaptureTrace(() =>
+        var output = TestTraceHelper.CaptureTrace(() =>
         {
             using (Translator.PushLogContext("MessageLogPatch"))
             {
@@ -187,7 +186,7 @@ public sealed class TranslatorTests
             ("Inventory", "インベントリ"));
         WriteDictionary("second.ja.json", ("Hello", "やあ"));
 
-        var output = CaptureTrace(() => Assert.That(Translator.Translate("Hello"), Is.EqualTo("やあ")));
+        var output = TestTraceHelper.CaptureTrace(() => Assert.That(Translator.Translate("Hello"), Is.EqualTo("やあ")));
         var summary = Translator.GetDictionaryLoadSummaryForTests();
 
         Assert.Multiple(() =>
@@ -232,25 +231,6 @@ public sealed class TranslatorTests
     public void Translate_ThrowsArgumentNullException_WhenKeyIsNull()
     {
         Assert.Throws<ArgumentNullException>(() => Translator.Translate(null!));
-    }
-
-    private static string CaptureTrace(Action action)
-    {
-        using var writer = new StringWriter();
-        using var listener = new TextWriterTraceListener(writer);
-        Trace.Listeners.Add(listener);
-
-        try
-        {
-            action();
-            Trace.Flush();
-            listener.Flush();
-            return writer.ToString();
-        }
-        finally
-        {
-            Trace.Listeners.Remove(listener);
-        }
     }
 
     private void WriteDictionary(string fileName, string key, string text)

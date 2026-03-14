@@ -293,6 +293,30 @@
       "text": "ゲームモードを選択"
     },
     {
+      "key": "New Game",
+      "text": "新しいゲーム"
+    },
+    {
+      "key": "Records",
+      "text": "記録"
+    },
+    {
+      "key": "Mods",
+      "text": "Mod"
+    },
+    {
+      "key": "Redeem Code",
+      "text": "コードを引き換える"
+    },
+    {
+      "key": "Modding Toolkit",
+      "text": "Mod 制作ツール"
+    },
+    {
+      "key": "Credits",
+      "text": "クレジット"
+    },
+    {
       "key": "Randomize Selection",
       "text": "ランダムに選択"
     },

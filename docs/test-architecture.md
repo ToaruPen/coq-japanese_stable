@@ -38,13 +38,13 @@ dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCa
 
 ---
 
-## L2 — Harmony 統合 / game-DLL-assisted
+## L2 / L2G — Harmony 統合
 
 **目的**: Harmony パッチの target 解決、シグネチャ整合、翻訳ロジック適用を自動検証する。
 
-L2 では 2 つのモードを使い分けます。
+L2 層は 2 つのカテゴリに分かれます。
 
-### L2-A — game-DLL-assisted
+### L2G — game-DLL-assisted (`[Category("L2G")]`)
 
 `Assembly-CSharp.dll` を参照し、実ゲームの型名・メソッド名・シグネチャ・static メソッド・副作用の軽い処理を直接検証します。
 
@@ -64,7 +64,7 @@ L2 では 2 つのモードを使い分けます。
 - `ConsoleLib.Console.Markup` の static API 解決確認
 - private `TargetMethod()` の反射呼び出し検証
 
-### L2-B — DummyTarget
+### L2 — DummyTarget (`[Category("L2")]`)
 
 実 DLL の安全な直接実行が難しい場合は、従来どおり同一シグネチャの DummyTarget にパッチを当てて、Prefix/Postfix のロジックを検証します。
 

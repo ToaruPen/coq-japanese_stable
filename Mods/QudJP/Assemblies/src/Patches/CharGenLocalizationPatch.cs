@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using HarmonyLib;
+using QudJP;
 
 namespace QudJP.Patches;
 
@@ -138,7 +139,7 @@ public static class CharGenLocalizationPatch
 
         for (var excludedIndex = 0; excludedIndex < ExcludedTypeHints.Length; excludedIndex++)
         {
-            if (ContainsOrdinalIgnoreCase(fullName, ExcludedTypeHints[excludedIndex]))
+            if (StringHelpers.ContainsOrdinalIgnoreCase(fullName, ExcludedTypeHints[excludedIndex]))
             {
                 return false;
             }
@@ -146,11 +147,11 @@ public static class CharGenLocalizationPatch
 
         for (var index = 0; index < TypeNameHints.Length; index++)
         {
-            if (ContainsOrdinalIgnoreCase(fullName, TypeNameHints[index]))
+            if (StringHelpers.ContainsOrdinalIgnoreCase(fullName, TypeNameHints[index]))
             {
                 for (var structuralIndex = 0; structuralIndex < StructuralTypeHints.Length; structuralIndex++)
                 {
-                    if (ContainsOrdinalIgnoreCase(fullName, StructuralTypeHints[structuralIndex]))
+                    if (StringHelpers.ContainsOrdinalIgnoreCase(fullName, StructuralTypeHints[structuralIndex]))
                     {
                         return true;
                     }
@@ -214,14 +215,14 @@ public static class CharGenLocalizationPatch
             ? name.Substring("get_".Length)
             : name;
 
-        if (ContainsOrdinalIgnoreCase(candidateName, "Type"))
+        if (StringHelpers.ContainsOrdinalIgnoreCase(candidateName, "Type"))
         {
             return false;
         }
 
         for (var index = 0; index < MethodNameHints.Length; index++)
         {
-            if (ContainsOrdinalIgnoreCase(candidateName, MethodNameHints[index]))
+            if (StringHelpers.ContainsOrdinalIgnoreCase(candidateName, MethodNameHints[index]))
             {
                 return true;
             }
@@ -230,12 +231,4 @@ public static class CharGenLocalizationPatch
         return false;
     }
 
-    private static bool ContainsOrdinalIgnoreCase(string source, string value)
-    {
-#if NET48
-        return source.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0;
-#else
-        return source.Contains(value, StringComparison.OrdinalIgnoreCase);
-#endif
-    }
 }

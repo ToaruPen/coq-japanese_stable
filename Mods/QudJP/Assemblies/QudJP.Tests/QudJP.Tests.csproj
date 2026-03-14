@@ -39,8 +39,10 @@
     <Compile Include="../src/FontManager.cs" Link="Production/FontManager.cs" />
     <Compile Include="../src/LocalizationAssetResolver.cs" Link="Production/LocalizationAssetResolver.cs" />
     <Compile Include="../src/MessagePatternTranslator.cs" Link="Production/MessagePatternTranslator.cs" />
+    <Compile Include="../src/ObservabilityHelpers.cs" Link="Production/ObservabilityHelpers.cs" />
     <Compile Include="../src/Patches/*.cs" Link="Production/Patches/%(Filename)%(Extension)" />
     <Compile Include="../src/QudJPMod.cs" Link="Production/QudJPMod.cs" />
+    <Compile Include="../src/StringHelpers.cs" Link="Production/StringHelpers.cs" />
     <Compile Include="../src/Translator.cs" Link="Production/Translator.cs" />
   </ItemGroup>
 

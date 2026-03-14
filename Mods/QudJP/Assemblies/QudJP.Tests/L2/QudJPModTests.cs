@@ -1,6 +1,3 @@
-using System;
-using System.Diagnostics;
-using System.IO;
 using System.Reflection;
 using HarmonyLib;
 
@@ -19,7 +16,7 @@ public sealed class QudJPModTests
 
         try
         {
-            var output = CaptureTrace(() => Assert.That(() => QudJPMod.InvokePatchAll(harmony), Throws.Nothing));
+            var output = TestTraceHelper.CaptureTrace(() => Assert.That(() => QudJPMod.InvokePatchAll(harmony), Throws.Nothing));
 
             Assert.That(output, Does.Contain("[QudJP]"),
                 "InvokePatchAll should log when patches fail to apply, " +
@@ -56,7 +53,7 @@ public sealed class QudJPModTests
                 original: AccessTools.Method(typeof(PatchAllDummyTarget), nameof(PatchAllDummyTarget.Echo)),
                 postfix: new HarmonyMethod(AccessTools.Method(typeof(PatchAllTestPatch), nameof(PatchAllTestPatch.Postfix))));
 
-            var output = CaptureTrace(() => QudJPMod.LogPatchResults(harmony));
+            var output = TestTraceHelper.CaptureTrace(() => QudJPMod.LogPatchResults(harmony));
             Assert.That(output, Does.Contain("method(s) patched"));
         }
         finally
@@ -104,34 +101,15 @@ public sealed class QudJPModTests
     [Test]
     public void LogPatchResults_HandlesGetPatchedMethodsFailure_WithoutThrowing()
     {
-        var output = CaptureTrace(() => Assert.That(() => QudJPMod.LogPatchResults(ThrowingPatchedMethodsProbe.Create()), Throws.Nothing));
+        var output = TestTraceHelper.CaptureTrace(() => Assert.That(() => QudJPMod.LogPatchResults(ThrowingPatchedMethodsProbe.Create()), Throws.Nothing));
         Assert.That(output, Does.Contain("Failed to enumerate patched methods"));
     }
 
     [Test]
     public void LogToUnity_WritesToTrace_InTestEnvironment()
     {
-        var output = CaptureTrace(() => QudJPMod.LogToUnity("[QudJP] test message"));
+        var output = TestTraceHelper.CaptureTrace(() => QudJPMod.LogToUnity("[QudJP] test message"));
         Assert.That(output, Does.Contain("[QudJP] test message"));
-    }
-
-    private static string CaptureTrace(Action action)
-    {
-        using var writer = new StringWriter();
-        using var listener = new TextWriterTraceListener(writer);
-        Trace.Listeners.Add(listener);
-
-        try
-        {
-            action();
-            Trace.Flush();
-            listener.Flush();
-            return writer.ToString();
-        }
-        finally
-        {
-            Trace.Listeners.Remove(listener);
-        }
     }
 
     // Simple test-local target for PatchAll assembly scanning to discover.

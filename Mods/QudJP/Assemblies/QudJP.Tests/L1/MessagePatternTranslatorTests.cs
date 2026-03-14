@@ -1,5 +1,4 @@
 using System.Runtime.Serialization;
-using System.Diagnostics;
 using System.Text;
 
 namespace QudJP.Tests.L1;
@@ -223,7 +222,7 @@ public sealed class MessagePatternTranslatorTests
     {
         WritePatternDictionary(("^You equip (.+)[.!]?$", "{0}を装備した"));
 
-        var output = CaptureTrace(() =>
+        var output = TestTraceHelper.CaptureTrace(() =>
         {
             _ = MessagePatternTranslator.Translate("You begin moving.", "MessageLogPatch");
             _ = MessagePatternTranslator.Translate("You begin moving.", "MessageLogPatch");
@@ -270,7 +269,7 @@ public sealed class MessagePatternTranslatorTests
             ("^You hit (.+) for (\\d+) damage[.!]?$", "SECOND:{0}:{1}"),
             ("^You miss (.+?)[.!]?$", "MISS:{0}"));
 
-        var output = CaptureTrace(() =>
+        var output = TestTraceHelper.CaptureTrace(() =>
             Assert.That(
                 MessagePatternTranslator.Translate("You hit snapjaw for 2 damage."),
                 Is.EqualTo("FIRST:snapjaw:2")));
@@ -316,25 +315,6 @@ public sealed class MessagePatternTranslatorTests
         WriteRawPatternFile("{\"patterns\":[{\"pattern\":\"^You miss (.+)$\"}]}");
 
         Assert.Throws<InvalidDataException>(() => MessagePatternTranslator.Translate("You miss snapjaw."));
-    }
-
-    private static string CaptureTrace(Action action)
-    {
-        using var writer = new StringWriter();
-        using var listener = new TextWriterTraceListener(writer);
-        Trace.Listeners.Add(listener);
-
-        try
-        {
-            action();
-            Trace.Flush();
-            listener.Flush();
-            return writer.ToString();
-        }
-        finally
-        {
-            Trace.Listeners.Remove(listener);
-        }
     }
 
     private void WritePatternDictionary(params (string pattern, string template)[] patterns)

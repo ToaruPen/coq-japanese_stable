@@ -116,6 +116,36 @@ public sealed class UITextSkinTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(translated, Is.EqualTo(text));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(text), Is.EqualTo(0));
+        });
+    }
+
+    [TestCase("新しいゲーム", nameof(MainMenuLocalizationPatch))]
+    [TestCase("：プレイ方式を選択：", nameof(CharGenLocalizationPatch))]
+    [TestCase("チュートリアル\n[A]", nameof(CharGenLocalizationPatch))]
+    [TestCase("Caves of Qud の基礎を学ぶ。", nameof(CharGenLocalizationPatch))]
+    [TestCase("有機生命体の史料庫と照合する微小なグラフェンアレイ。\n\n生物クリーチャーの正確なHP・AV・DVを参照できる。", nameof(CharGenLocalizationPatch))]
+    public void TranslatePreservingColors_SkipsAlreadyLocalizedDirectRouteText(string text, string context)
+    {
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(text, context);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(text));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(text), Is.EqualTo(0));
+        });
+    }
+
+    [TestCase("光学バイオスキャナ (Face)")]
+    [TestCase("+1 Toughness")]
+    [TestCase("Stinger (Confusing Venom)")]
+    public void TranslatePreservingColors_KeepsObservingMixedLanguageDirectRouteText(string text)
+    {
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(text, nameof(CharGenLocalizationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(text));
             Assert.That(Translator.GetMissingKeyHitCountForTests(text), Is.EqualTo(1));
         });
     }

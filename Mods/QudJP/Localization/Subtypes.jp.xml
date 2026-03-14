@@ -176,7 +176,7 @@
 
   </class>
 
-  <class ID="Callings" ChargenTitle="choose calling" SingularTitle="calling">
+  <class ID="Callings" ChargenTitle="コーリングを選択" SingularTitle="コーリング">
 
     <subtype Name="Apostle" DisplayName="使徒" Gear="StartingGear_Apostle" Tile="creatures/caste_13.bmp" DetailColor="m">
       <stat Name="Ego" Bonus="2" />

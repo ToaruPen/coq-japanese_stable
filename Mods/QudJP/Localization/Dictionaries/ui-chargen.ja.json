@@ -25,6 +25,38 @@
       "text": "プレイ方式を選択"
     },
     {
+      "key": "Tutorial",
+      "text": "チュートリアル"
+    },
+    {
+      "key": "Classic",
+      "text": "クラシック"
+    },
+    {
+      "key": "Roleplay",
+      "text": "ロールプレイ"
+    },
+    {
+      "key": "Wander",
+      "text": "放浪"
+    },
+    {
+      "key": "Daily",
+      "text": "デイリー"
+    },
+    {
+      "key": "Preset",
+      "text": "プリセット"
+    },
+    {
+      "key": "Build Library",
+      "text": "ビルドライブラリ"
+    },
+    {
+      "key": "Previous Character",
+      "text": "前回のキャラクター"
+    },
+    {
       "key": "Select Starting Location",
       "context": "Chargen.StartingLocation.Breadcrumb",
       "text": "開始地点を選択"
@@ -412,6 +444,58 @@
       "key": "Points Remaining:",
       "context": "QudAttributesModuleWindow",
       "text": "残りポイント："
+    },
+    {
+      "key": "Calling",
+      "text": "コーリング"
+    },
+    {
+      "key": "Cybernetics",
+      "text": "サイバネ移植"
+    },
+    {
+      "key": "Export Code to Clipboard",
+      "text": "コードをクリップボードにコピー"
+    },
+    {
+      "key": "Save Build To Library",
+      "text": "ビルドをライブラリに保存"
+    },
+    {
+      "key": "Name: ",
+      "text": "名前："
+    },
+    {
+      "key": "<random>",
+      "text": "<ランダム>"
+    },
+    {
+      "key": "You only manifest mental mutations, and all of your mutation choices when manifesting a new mutation are mental.\n\n",
+      "text": "精神変異しか発現せず、新たに変異を獲得する際に提示される候補もすべて精神系になります。\n\n"
+    },
+    {
+      "key": "Your Strength score determines how effectively you penetrate your opponents' armor with melee attacks, how much damage your melee attacks do, your ability to resist forced movement, and your carry capacity.",
+      "text": "筋力は、近接攻撃で敵の装甲を貫通する効率、近接攻撃のダメージ量、強制移動への抵抗力、所持重量を決定します。"
+    },
+    {
+      "key": "Your Agility score determines your accuracy with both melee and ranged weapons and your ability to dodge attacks.",
+      "text": "敏捷性は、近接武器と遠隔武器の命中率、および攻撃を回避する能力を決定します。"
+    },
+    {
+      "key": "Your Toughness score determines your number of hit points, your natural healing rate, and your ability to resist poison and disease.",
+      "text": "耐久力は、ヒットポイント、自然治癒速度、毒や病気への抵抗力を決定します。"
+    },
+    {
+      "key": "Your Intelligence score determines your number of skill points and your ability to examine artifacts.",
+      "text": "知性は、スキルポイントの量とアーティファクトを鑑定する能力を決定します。"
+    },
+    {
+      "key": "Your Willpower score modifies the cooldowns of your activated abilities, determines your ability to resist mental attacks, and modifies your natural healing rate.",
+      "text": "意志力は、起動能力のクールダウン、精神攻撃への抵抗力、自然治癒速度を左右します。"
+    },
+    {
+      "key": "Your Ego score determines the potency of your mental mutations, your ability to haggle with merchants, and your ability to dominate the wills of other living creatures.",
+      "text": "自我は、精神変異の強さ、商人との値引き交渉力、他の生物を支配する能力を決定します。"
     }
   ]
 }

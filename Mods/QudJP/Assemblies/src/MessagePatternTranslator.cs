@@ -6,7 +6,6 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -26,7 +25,10 @@ internal static class MessagePatternTranslator
     private static string? patternFileOverride;
     private static string patternLoadSummary = "MessagePatternTranslator: pattern load summary unavailable.";
     private static int loadInvocationCount;
-    private const string NoContextLabel = "<no-context>";
+    private const int MaxLogSourceLength = 200;
+    internal const int MaxUniquePatterns = 10_000;
+    internal const int MaxUniqueRoutes = 1_000;
+    internal const string OverflowKey = "__overflow__";
 
     internal static int LoadInvocationCount => Volatile.Read(ref loadInvocationCount);
 
@@ -37,21 +39,23 @@ internal static class MessagePatternTranslator
 
     internal static int GetMissingPatternHitCountForTests(string source)
     {
-        return GetCounterValue(MissingPatternCounts, source);
+        return ObservabilityHelpers.GetCounterValue(MissingPatternCounts, source);
     }
 
     internal static int GetMissingRouteHitCountForTests(string? context)
     {
-        return GetCounterValue(MissingRouteCounts, NormalizeContext(context));
+        return ObservabilityHelpers.GetCounterValue(MissingRouteCounts, ObservabilityHelpers.NormalizeContext(context));
     }
 
     internal static string GetMissingPatternSummaryForTests(int maxEntries = 10)
     {
-        var routeSummary = BuildRankedSummary(
+        var routeSummary = ObservabilityHelpers.BuildRankedSummary(
+            "QudJP MessagePatternTranslator",
             "missing pattern routes",
             MissingRouteCounts,
             maxEntries);
-        var patternSummary = BuildRankedSummary(
+        var patternSummary = ObservabilityHelpers.BuildRankedSummary(
+            "QudJP MessagePatternTranslator",
             "missing patterns",
             MissingPatternCounts,
             maxEntries);
@@ -113,10 +117,11 @@ internal static class MessagePatternTranslator
         }
 
         var hitCount = RecordMissingPattern(source);
-        if (ShouldLogMissingHit(hitCount))
+        if (ObservabilityHelpers.ShouldLogMissingHit(hitCount))
         {
+            var sanitizedSource = SanitizeForLog(source);
             LogObservability(
-                $"[QudJP] MessagePatternTranslator: no pattern for '{source}' (hit {hitCount}).{Translator.GetCurrentLogContextSuffix()}");
+                $"[QudJP] MessagePatternTranslator: no pattern for '{sanitizedSource}' (hit {hitCount}).{Translator.GetCurrentLogContextSuffix()}");
         }
 
         return source;
@@ -220,14 +225,27 @@ internal static class MessagePatternTranslator
 
     private static int RecordMissingPattern(string source)
     {
-        var hitCount = MissingPatternCounts.AddOrUpdate(source, 1, IncrementCounter);
-        _ = MissingRouteCounts.AddOrUpdate(NormalizeContext(Translator.GetCurrentLogContext()), 1, IncrementCounter);
+        var hitCount = AddOrUpdateCapped(MissingPatternCounts, source, MaxUniquePatterns);
+        _ = AddOrUpdateCapped(
+            MissingRouteCounts,
+            ObservabilityHelpers.NormalizeContext(Translator.GetCurrentLogContext()),
+            MaxUniqueRoutes);
         return hitCount;
+    }
+
+    private static int AddOrUpdateCapped(ConcurrentDictionary<string, int> counters, string key, int maxKeys)
+    {
+        if (counters.ContainsKey(key) || counters.Count < maxKeys)
+        {
+            return counters.AddOrUpdate(key, 1, ObservabilityHelpers.IncrementCounter);
+        }
+
+        return counters.AddOrUpdate(OverflowKey, 1, ObservabilityHelpers.IncrementCounter);
     }
 
     internal static bool ShouldLogMissingHitForTests(int hitCount)
     {
-        return ShouldLogMissingHit(hitCount);
+        return ObservabilityHelpers.ShouldLogMissingHit(hitCount);
     }
 
     private static void LogDuplicatePatternSummary(Dictionary<string, int> duplicatePatternCounts)
@@ -238,7 +256,7 @@ internal static class MessagePatternTranslator
         }
 
         LogObservability(
-            $"[QudJP] Warning: MessagePatternTranslator duplicate patterns: {BuildRankedCounterBody(duplicatePatternCounts, 10)}.");
+            $"[QudJP] Warning: MessagePatternTranslator duplicate patterns: {ObservabilityHelpers.BuildRankedCounterBody(duplicatePatternCounts, 10)}.");
     }
 
     private static void LogObservability(string message)
@@ -246,100 +264,46 @@ internal static class MessagePatternTranslator
         QudJPMod.LogToUnity(message);
     }
 
-    private static bool ShouldLogMissingHit(int hitCount)
+    private static string SanitizeForLog(string source)
     {
-        return hitCount > 0 && (hitCount & (hitCount - 1)) == 0;
-    }
+#if NET48
+        var sanitized = source.Length > MaxLogSourceLength
+            ? source.Substring(0, MaxLogSourceLength) + "..."
+            : source;
+#else
+        var sanitized = source.Length > MaxLogSourceLength
+            ? string.Concat(source.AsSpan(0, MaxLogSourceLength), "...")
+            : source;
+#endif
 
-    private static int GetCounterValue(ConcurrentDictionary<string, int> counters, string key)
-    {
-        return counters.TryGetValue(key, out var count) ? count : 0;
-    }
-
-    private static string BuildRankedSummary(
-        string label,
-        ConcurrentDictionary<string, int> counters,
-        int maxEntries)
-    {
-        var boundedMaxEntries = maxEntries <= 0 ? 1 : maxEntries;
-        var entries = counters.ToArray();
-        if (entries.Length == 0)
+        var builder = new System.Text.StringBuilder(sanitized.Length);
+        for (var index = 0; index < sanitized.Length; index++)
         {
-            return $"QudJP MessagePatternTranslator: {label}: none.";
-        }
-
-        Array.Sort(entries, CompareCounterEntries);
-        var limit = Math.Min(boundedMaxEntries, entries.Length);
-        var builder = new StringBuilder();
-        builder.Append("QudJP MessagePatternTranslator: ");
-        builder.Append(label);
-        builder.Append(": ");
-        for (var index = 0; index < limit; index++)
-        {
-            if (index > 0)
+            var character = sanitized[index];
+            if (character == '\n')
             {
-                builder.Append("; ");
+                builder.Append("\\n");
             }
-
-            builder.Append(entries[index].Key);
-            builder.Append('=');
-            builder.Append(entries[index].Value);
-        }
-
-        builder.Append('.');
-        return builder.ToString();
-    }
-
-    private static string BuildRankedCounterBody(
-        IDictionary<string, int> counters,
-        int maxEntries)
-    {
-        var boundedMaxEntries = maxEntries <= 0 ? 1 : maxEntries;
-        var entries = new KeyValuePair<string, int>[counters.Count];
-        counters.CopyTo(entries, 0);
-        Array.Sort(entries, CompareCounterEntries);
-
-        var limit = Math.Min(boundedMaxEntries, entries.Length);
-        var builder = new StringBuilder();
-        for (var index = 0; index < limit; index++)
-        {
-            if (index > 0)
+            else if (character == '\r')
             {
-                builder.Append("; ");
+                builder.Append("\\r");
             }
-
-            builder.Append(entries[index].Key);
-            builder.Append('=');
-            builder.Append(entries[index].Value);
+            else if (character == '\t')
+            {
+                builder.Append("\\t");
+            }
+            else if (char.IsControl(character))
+            {
+                builder.Append("\\u");
+                builder.Append(((int)character).ToString("X4", System.Globalization.CultureInfo.InvariantCulture));
+            }
+            else
+            {
+                builder.Append(character);
+            }
         }
 
         return builder.ToString();
-    }
-
-    private static int CompareCounterEntries(
-        KeyValuePair<string, int> left,
-        KeyValuePair<string, int> right)
-    {
-        var countComparison = right.Value.CompareTo(left.Value);
-        return countComparison != 0
-            ? countComparison
-            : StringComparer.Ordinal.Compare(left.Key, right.Key);
-    }
-
-    private static int IncrementCounter(string _, int currentValue)
-    {
-        return currentValue < int.MaxValue ? currentValue + 1 : int.MaxValue;
-    }
-
-    private static string NormalizeContext(string? context)
-    {
-        if (context is null)
-        {
-            return NoContextLabel;
-        }
-
-        var trimmedContext = context.Trim();
-        return trimmedContext.Length == 0 ? NoContextLabel : trimmedContext;
     }
 
     private static string ApplyTemplate(string template, Match match)

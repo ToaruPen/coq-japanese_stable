@@ -72,7 +72,7 @@ dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCa
 dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L2G
 ```
 
-現在の C# テスト数: **148 件**（L1 + L2 + L2G）
+現在の C# テスト数: **185 件**（L1: 75、L2: 85、L2G: 25）
 
 ### Python テスト
 

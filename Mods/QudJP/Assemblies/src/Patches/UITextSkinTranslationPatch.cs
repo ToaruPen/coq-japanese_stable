@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using HarmonyLib;
+using QudJP;
 
 namespace QudJP.Patches;
 
@@ -22,6 +23,8 @@ public static class UITextSkinTranslationPatch
         new Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex EnglishWordPattern =
         new Regex("[A-Za-z]{2,}", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex AllowedLocalizedEnglishTokenPattern =
+        new Regex("^(Caves|Qud|of|Mod|HP|AV|DV|XP|SP|MA|STR|AGI|TOU|INT|WIL|EGO|DEX|BURST)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PointsRemainingPattern =
         new Regex("^Points Remaining:\\s*\\d+$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex StatHelpTextPattern =
@@ -163,6 +166,7 @@ public static class UITextSkinTranslationPatch
             || IsWhitespaceOnly(source)
             || IsUiPseudoGraphic(source)
             || string.Equals(source, "quit", StringComparison.Ordinal)
+            || IsAlreadyLocalizedDirectRouteText(source, context)
             || IsAlreadyLocalizedUITextSinkText(source, context);
     }
 
@@ -197,6 +201,31 @@ public static class UITextSkinTranslationPatch
 
         return JapaneseCharacterPattern.IsMatch(source)
             || HotkeySuffixedLabelPattern.IsMatch(source);
+    }
+
+    private static bool IsAlreadyLocalizedDirectRouteText(string source, string? context)
+    {
+        if (!string.Equals(context, nameof(MainMenuLocalizationPatch), StringComparison.Ordinal)
+            && !string.Equals(context, nameof(CharGenLocalizationPatch), StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        if (!JapaneseCharacterPattern.IsMatch(source))
+        {
+            return false;
+        }
+
+        var matches = EnglishWordPattern.Matches(source);
+        for (var index = 0; index < matches.Count; index++)
+        {
+            if (!AllowedLocalizedEnglishTokenPattern.IsMatch(matches[index].Value))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static bool IsWhitespaceOnly(string source)
@@ -282,11 +311,6 @@ public static class UITextSkinTranslationPatch
             return nameof(CharGenLocalizationPatch);
         }
 
-        if (LooksLikeCharGenSinkText(source: null, stackTypeNames: stackTypeNames))
-        {
-            return nameof(CharGenLocalizationPatch);
-        }
-
         if (ContainsHint(stackTypeNames, "Qud.UI.MainMenu"))
         {
             return nameof(MainMenuLocalizationPatch);
@@ -348,7 +372,7 @@ public static class UITextSkinTranslationPatch
     {
         for (var index = 0; index < stackTypeNames.Length; index++)
         {
-            if (ContainsOrdinalIgnoreCase(stackTypeNames[index], hint))
+            if (StringHelpers.ContainsOrdinalIgnoreCase(stackTypeNames[index], hint))
             {
                 return true;
             }
@@ -357,12 +381,4 @@ public static class UITextSkinTranslationPatch
         return false;
     }
 
-    private static bool ContainsOrdinalIgnoreCase(string source, string value)
-    {
-#if NET48
-        return source.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0;
-#else
-        return source.Contains(value, StringComparison.OrdinalIgnoreCase);
-#endif
-    }
 }

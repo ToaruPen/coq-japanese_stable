@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using HarmonyLib;
+using QudJP;
 
 namespace QudJP.Patches;
 
@@ -88,7 +89,7 @@ public static class InventoryLocalizationPatch
         return (fullName.StartsWith("XRL.UI.", StringComparison.Ordinal)
                 || fullName.StartsWith("Qud.UI.", StringComparison.Ordinal)
                 || fullName.StartsWith("XRL.World.", StringComparison.Ordinal))
-               && ContainsOrdinalIgnoreCase(fullName, "Inventory");
+               && StringHelpers.ContainsOrdinalIgnoreCase(fullName, "Inventory");
     }
 
     private static void CollectCandidateMethods(Type type, ICollection<MethodBase> targets, ISet<MethodBase> seen)
@@ -124,22 +125,14 @@ public static class InventoryLocalizationPatch
             return true;
         }
 
-        return ContainsOrdinalIgnoreCase(name, "Text")
-               || ContainsOrdinalIgnoreCase(name, "Label")
-               || ContainsOrdinalIgnoreCase(name, "Title")
-               || ContainsOrdinalIgnoreCase(name, "Action")
-               || ContainsOrdinalIgnoreCase(name, "Weight")
-               || ContainsOrdinalIgnoreCase(name, "Category")
-               || ContainsOrdinalIgnoreCase(name, "Display")
-               || ContainsOrdinalIgnoreCase(name, "Name");
+        return StringHelpers.ContainsOrdinalIgnoreCase(name, "Text")
+               || StringHelpers.ContainsOrdinalIgnoreCase(name, "Label")
+               || StringHelpers.ContainsOrdinalIgnoreCase(name, "Title")
+               || StringHelpers.ContainsOrdinalIgnoreCase(name, "Action")
+               || StringHelpers.ContainsOrdinalIgnoreCase(name, "Weight")
+               || StringHelpers.ContainsOrdinalIgnoreCase(name, "Category")
+               || StringHelpers.ContainsOrdinalIgnoreCase(name, "Display")
+               || StringHelpers.ContainsOrdinalIgnoreCase(name, "Name");
     }
 
-    private static bool ContainsOrdinalIgnoreCase(string source, string value)
-    {
-#if NET48
-        return source.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0;
-#else
-        return source.Contains(value, StringComparison.OrdinalIgnoreCase);
-#endif
-    }
 }
