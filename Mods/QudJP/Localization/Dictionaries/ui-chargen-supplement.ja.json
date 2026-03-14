@@ -11,7 +11,7 @@
   "entries": [
     { "key": "{{c|ù}} Persuasion", "context": "TMP.Description", "text": "{{c|ù}} 説得術" },
     { "key": "  {{C|ù}} Intimidate", "context": "TMP.Description", "text": "  {{C|ù}} 威圧" },
-    { "key": "  {{C|ù}} Proselytize", "context": "TMP.Description", "text": "  {{C|ù}} 改宗" },
+    { "key": "  {{C|ù}} Proselytize", "context": "TMP.Description", "text": "  {{C|ù}} 布教" },
     { "key": "{{c|ù}} Self-discipline", "context": "TMP.Description", "text": "{{c|ù}} 自己鍛錬" },
     { "key": "  {{C|ù}} Fasting Way", "context": "TMP.Description", "text": "  {{C|ù}} 断食の道" },
     { "key": "  {{C|ù}} Lionheart", "context": "TMP.Description", "text": "  {{C|ù}} 獅子心" },
@@ -30,7 +30,7 @@
     { "key": "{{c|ù}} Wayfaring", "context": "TMP.Description", "text": "{{c|ù}} サバイバル" },
 
     { "key": "Intimidate", "context": "TMP.Description", "text": "威圧" },
-    { "key": "Proselytize", "context": "TMP.Description", "text": "改宗" },
+    { "key": "Proselytize", "context": "TMP.Description", "text": "布教" },
     { "key": "Akimbo", "context": "TMP.Description", "text": "二挺拳銃" },
     { "key": "+400 reputation with mysterious strangers", "context": "TMP.Description", "text": "謎のよそ者との評判 +400" },
     { "key": "Customs and Folklore", "context": "TMP.Description", "text": "風習と民間伝承" },
@@ -93,13 +93,36 @@
 
     { "key": "{{c|ù}} Tinkering", "context": "TMP.Description", "text": "{{c|ù}} 工作" },
     { "key": "Tinkering", "context": "TMP.Description", "text": "工作" },
-    { "key": "  {{C|ù}} Scavenger", "context": "TMP.Description", "text": "  {{C|ù}} 屑拾い" },
-    { "key": "Scavenger", "context": "TMP.Description", "text": "屑拾い" },
+    { "key": "  {{C|ù}} Scavenger", "context": "TMP.Description", "text": "  {{C|ù}} 廃品漁り" },
+    { "key": "Scavenger", "context": "TMP.Description", "text": "廃品漁り" },
     { "key": "{{c|ù}} Acrobatics", "context": "TMP.Description", "text": "{{c|ù}} 曲芸" },
     { "key": "Acrobatics", "context": "TMP.Description", "text": "曲芸" },
     { "key": "  {{C|ù}} Spry", "context": "TMP.Description", "text": "  {{C|ù}} 軽業" },
     { "key": "Spry", "context": "TMP.Description", "text": "軽業" },
     { "key": "{{c|ù}} Starts with random junk and artifacts", "context": "TMP.Description", "text": "{{c|ù}} ランダムなガラクタとアーティファクトを所持して開始" },
-    { "key": "Starts with random junk and artifacts", "context": "TMP.Description", "text": "ランダムなガラクタとアーティファクトを所持して開始" }
+    { "key": "Starts with random junk and artifacts", "context": "TMP.Description", "text": "ランダムなガラクタとアーティファクトを所持して開始" },
+
+    { "key": "Choose Variant", "context": "Chargen.Variant.Action", "text": "変種を選択" },
+    { "key": "<none>", "context": "Chargen.Cybernetics.None", "text": "なし" },
+
+    { "key": "Stinger (Confusing Venom)", "context": "Chargen.Mutation.Option", "text": "毒針（混乱毒）" },
+    { "key": "Stinger (Paralyzing Venom)", "context": "Chargen.Mutation.Option", "text": "毒針（麻痺毒）" },
+    { "key": "Stinger (Poisoning Venom)", "context": "Chargen.Mutation.Option", "text": "毒針（猛毒）" },
+
+    { "key": "光学バイオスキャナ (Face)", "context": "Chargen.Cybernetics.Option", "text": "光学バイオスキャナ（顔）" },
+    { "key": "光学テクノスキャナ (Face)", "context": "Chargen.Cybernetics.Option", "text": "光学テクノスキャナ（顔）" },
+    { "key": "皮膚用断熱材 (Body)", "context": "Chargen.Cybernetics.Option", "text": "皮膚用断熱材（胴）" },
+    { "key": "皮膚用断熱材 (Head)", "context": "Chargen.Cybernetics.Option", "text": "皮膚用断熱材（頭）" },
+    { "key": "皮膚用断熱材 (Back)", "context": "Chargen.Cybernetics.Option", "text": "皮膚用断熱材（背中）" },
+    { "key": "暗視システム (Face)", "context": "Chargen.Cybernetics.Option", "text": "暗視システム（顔）" },
+    { "key": "高弾性足首腱 (Feet)", "context": "Chargen.Cybernetics.Option", "text": "高弾性足首腱（足）" },
+    { "key": "放物筋サブルーチン (Arm)", "context": "Chargen.Cybernetics.Option", "text": "放物筋サブルーチン（腕）" },
+    { "key": "透明皮膚 (Body)", "context": "Chargen.Cybernetics.Option", "text": "透明皮膚（胴）" },
+    { "key": "透明皮膚 (Back)", "context": "Chargen.Cybernetics.Option", "text": "透明皮膚（背中）" },
+    { "key": "安定化アームロック (Arm)", "context": "Chargen.Cybernetics.Option", "text": "安定化アームロック（腕）" },
+    { "key": "高速リリース屈筋 (Hands)", "context": "Chargen.Cybernetics.Option", "text": "高速リリース屈筋（手）" },
+    { "key": "カーバイド製手骨 (Hands)", "context": "Chargen.Cybernetics.Option", "text": "カーバイド製手骨（手）" },
+    { "key": "ペンタセプス (Feet)", "context": "Chargen.Cybernetics.Option", "text": "ペンタセプス（足）" },
+    { "key": "膨張軸索 (Head)", "context": "Chargen.Cybernetics.Option", "text": "膨張軸索（頭）" }
   ]
 }

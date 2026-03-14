@@ -18,6 +18,42 @@
       "text": "装備"
     },
     {
+      "key": "SKILLS",
+      "text": "スキル"
+    },
+    {
+      "key": "ATTRIBUTES && POWERS",
+      "text": "能力値と能力"
+    },
+    {
+      "key": "EQUIPMENT",
+      "text": "装備"
+    },
+    {
+      "key": "TINKERING",
+      "text": "工作"
+    },
+    {
+      "key": "JOURNAL",
+      "text": "ジャーナル"
+    },
+    {
+      "key": "QUESTS",
+      "text": "クエスト"
+    },
+    {
+      "key": "REPUTATION",
+      "text": "評判"
+    },
+    {
+      "key": "MESSAGE LOG",
+      "text": "メッセージログ"
+    },
+    {
+      "key": "Sort Options",
+      "text": "並び替えオプション"
+    },
+    {
       "key": "Weight",
       "text": "重量"
     },
@@ -27,7 +63,7 @@
     },
     {
       "key": "Drop",
-      "text": "捨てる"
+      "text": "落とす"
     },
     {
       "key": "Trade",
@@ -144,7 +180,7 @@
     },
     {
       "key": "Quick Drink",
-      "text": "高速飲用"
+      "text": "高速飲み"
     },
     {
       "key": "Quick Apply",
@@ -218,7 +254,7 @@
     {
       "key": "Last saved:",
       "context": "SaveManagement.LastSaved",
-      "text": "最後の保存："
+      "text": "最終セーブ："
     },
     {
       "key": "Error!",
@@ -327,7 +363,7 @@
     },
     {
       "key": "LOAD GAME",
-      "text": "ロードゲーム"
+      "text": "ゲームをロード"
     },
     {
       "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\n Type 'QUIT' to confirm.",

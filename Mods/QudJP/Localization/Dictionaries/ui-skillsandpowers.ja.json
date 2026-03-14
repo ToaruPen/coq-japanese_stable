@@ -907,12 +907,12 @@
     {
       "key": "Proselytize",
       "context": "TMP.Description",
-      "text": "改宗"
+      "text": "布教"
     },
     {
       "key": "Proselytize",
       "context": "TMP.Skill Name",
-      "text": "改宗"
+      "text": "布教"
     },
     {
       "key": "Reduces the movement speed penalty when swimming (normally 50 points) by 25 points.",
@@ -947,7 +947,7 @@
     {
       "key": "Scavenger",
       "context": "TMP.Skill Name",
-      "text": "スカベンジャー"
+      "text": "廃品漁り"
     },
     {
       "key": "Self-discipline",
