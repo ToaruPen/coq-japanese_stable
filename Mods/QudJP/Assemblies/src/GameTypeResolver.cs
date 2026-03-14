@@ -15,8 +15,9 @@ internal static class GameTypeResolver
             return byFullName;
         }
 
-        Type? match = null;
-        string? matchAssemblyName = null;
+        Type? firstMatch = null;
+        string? firstMatchAssembly = null;
+        System.Collections.Generic.List<string>? allCandidates = null;
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         for (var assemblyIndex = 0; assemblyIndex < assemblies.Length; assemblyIndex++)
@@ -31,6 +32,7 @@ internal static class GameTypeResolver
                 types = Array.FindAll(ex.Types, static type => type is not null)!;
             }
 
+            var asmName = assemblies[assemblyIndex].GetName().Name;
             for (var typeIndex = 0; typeIndex < types.Length; typeIndex++)
             {
                 if (types[typeIndex].Name != simpleTypeName)
@@ -38,25 +40,32 @@ internal static class GameTypeResolver
                     continue;
                 }
 
-                if (match is null)
+                if (firstMatch is null)
                 {
-                    match = types[typeIndex];
-                    matchAssemblyName = assemblies[assemblyIndex].GetName().Name;
+                    firstMatch = types[typeIndex];
+                    firstMatchAssembly = asmName;
                 }
                 else
                 {
-                    Trace.TraceWarning(
-                        "QudJP: Ambiguous simple name '{0}': '{1}' (in '{2}') vs '{3}' (in '{4}'). Returning null.",
-                        simpleTypeName,
-                        match.FullName,
-                        matchAssemblyName,
-                        types[typeIndex].FullName,
-                        assemblies[assemblyIndex].GetName().Name);
-                    return null;
+                    allCandidates ??= new System.Collections.Generic.List<string>
+                    {
+                        $"'{firstMatch.FullName}' (in '{firstMatchAssembly}')",
+                    };
+                    allCandidates.Add($"'{types[typeIndex].FullName}' (in '{asmName}')");
                 }
             }
         }
 
-        return match;
+        if (allCandidates is not null)
+        {
+            Trace.TraceWarning(
+                "QudJP: Ambiguous simple name '{0}' resolved to {1} types: {2}. Returning null.",
+                simpleTypeName,
+                allCandidates.Count,
+                string.Join(", ", allCandidates));
+            return null;
+        }
+
+        return firstMatch;
     }
 }
