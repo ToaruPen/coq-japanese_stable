@@ -55,6 +55,24 @@ public sealed class UIExpansionPatchTests
     }
 
     [Test]
+    public void GetDisplayName_AcceptsJapaneseIdentityEntry_WhenPatched()
+    {
+        WriteDictionary(("螺旋角", "螺旋角"));
+
+        RunWithPostfixPatch(
+            targetType: typeof(DummyGetDisplayNameEvent),
+            targetMethodName: nameof(DummyGetDisplayNameEvent.GetFor),
+            patchType: typeof(GetDisplayNamePatch),
+            patchMethodName: nameof(GetDisplayNamePatch.Postfix),
+            assertion: () =>
+        {
+            var result = DummyGetDisplayNameEvent.GetFor("螺旋角", "螺旋角");
+
+            Assert.That(result, Is.EqualTo("螺旋角"));
+        });
+    }
+
+    [Test]
     public void GetDisplayName_PassesThroughUnknownDisplayName_WhenPatched()
     {
         WriteDictionary(("known sword", "既知の剣"));
