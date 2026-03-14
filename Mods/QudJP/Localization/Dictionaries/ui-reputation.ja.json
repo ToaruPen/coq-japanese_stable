@@ -32,12 +32,42 @@
     {
       "key": "Disliked by",
       "context": "Qud.UI.XRL.UI.ReputationScreen",
-      "text": "嫌悪"
+      "text": "反感"
     },
     {
       "key": "Hated by",
       "context": "Qud.UI.XRL.UI.ReputationScreen",
-      "text": "敵対"
+      "text": "憎悪"
+    },
+    {
+      "key": "The villagers of {0}",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}の村人たち"
+    },
+    {
+      "key": "Reputation: {0}",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "評判: {0}"
+    },
+    {
+      "key": "The villagers of {0} don't care about you, but aggressive ones will attack you.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}の村人たちはあなたを特に気に掛けていないが、攻撃的な者は襲ってくる。"
+    },
+    {
+      "key": "The villagers of {0} are interested in hearing gossip that's about them.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}の村人たちは、自分たちに関するうわさ話に興味を示す。"
+    },
+    {
+      "key": "You aren't welcome in their holy places.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "あなたは彼らの聖地では歓迎されていない。"
+    },
+    {
+      "key": "You are welcome in their holy places.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "あなたは彼らの聖地で歓迎されている。"
     }
   ]
 }
