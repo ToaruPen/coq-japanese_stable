@@ -53,16 +53,16 @@ public sealed class GetDisplayNameProcessPatchTests
     }
 
     [Test]
-    public void Postfix_AcceptsJapaneseIdentityEntry_WhenPatched()
+    public void Postfix_TranslatesJapaneseEntry_WhenPatched()
     {
-        WriteDictionary(("奇妙な遺物", "奇妙な遺物"));
+        WriteDictionary(("奇妙な遺物", "奇妙なアーティファクト"));
 
         RunWithDisplayNameProcessPatch(() =>
         {
             var processor = new DummyDisplayNameProcessor();
             var result = processor.ProcessFor("奇妙な遺物");
 
-            Assert.That(result, Is.EqualTo("奇妙な遺物"));
+            Assert.That(result, Is.EqualTo("奇妙なアーティファクト"));
         });
     }
 

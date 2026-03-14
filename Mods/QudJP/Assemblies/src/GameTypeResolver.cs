@@ -46,9 +46,11 @@ internal static class GameTypeResolver
                 else
                 {
                     Trace.TraceWarning(
-                        "QudJP: Ambiguous simple name '{0}' found in assemblies '{1}' and '{2}'. Returning null.",
+                        "QudJP: Ambiguous simple name '{0}': '{1}' (in '{2}') vs '{3}' (in '{4}'). Returning null.",
                         simpleTypeName,
+                        match.FullName,
                         matchAssemblyName,
+                        types[typeIndex].FullName,
                         assemblies[assemblyIndex].GetName().Name);
                     return null;
                 }

@@ -181,26 +181,7 @@ public sealed class UITextSkinTemplateTranslatorTests
 
     private static string EscapeJson(string value)
     {
-        return value
-            .Replace("\\", "\\\\", StringComparison.Ordinal)
-            .Replace("\"", "\\\"", StringComparison.Ordinal)
-            .Replace("\n", "\\n", StringComparison.Ordinal)
-            .Replace("\r", "\\r", StringComparison.Ordinal)
-            .Replace("\t", "\\t", StringComparison.Ordinal);
-    }
-
-    private sealed class DummyFieldOnlyUITextSkin
-    {
-        public string text = string.Empty;
-    }
-
-    private sealed class DummyPropertyOnlyUITextSkin
-    {
-        public string Text { get; set; } = string.Empty;
-    }
-
-    private sealed class DummyLowercasePropertyUITextSkin
-    {
-        public string text { get; set; } = string.Empty;
+        var serialized = System.Text.Json.JsonSerializer.Serialize(value);
+        return serialized.Substring(1, serialized.Length - 2);
     }
 }

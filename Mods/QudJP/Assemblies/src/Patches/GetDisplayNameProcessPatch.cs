@@ -13,6 +13,7 @@ public static class GetDisplayNameProcessPatch
     private static Type? cachedBuilderType;
     private static FieldInfo? cachedPrimaryBaseField;
     private static FieldInfo? cachedLastAddedField;
+    private static bool warnedMissingBuilderFields;
 
 #pragma warning disable CA2249 // net48 lacks string.Contains(char)
     private static bool ContainsChar(string value, char ch) => value.IndexOf(ch) >= 0;
@@ -99,6 +100,17 @@ public static class GetDisplayNameProcessPatch
             cachedBuilderType = dbType;
             cachedPrimaryBaseField = AccessTools.Field(dbType, "PrimaryBase");
             cachedLastAddedField = AccessTools.Field(dbType, "LastAdded");
+
+            if (!warnedMissingBuilderFields
+                && (cachedPrimaryBaseField is null || cachedLastAddedField is null))
+            {
+                warnedMissingBuilderFields = true;
+                Trace.TraceWarning(
+                    "QudJP: Builder type '{0}' missing field(s): PrimaryBase={1}, LastAdded={2}",
+                    dbType.FullName,
+                    cachedPrimaryBaseField is null ? "not found" : "ok",
+                    cachedLastAddedField is null ? "not found" : "ok");
+            }
         }
 
         var primaryBase = cachedPrimaryBaseField?.GetValue(descriptionBuilder) as string;

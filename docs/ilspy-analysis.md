@@ -407,13 +407,13 @@ Implication for issue-29:
 
 Highest-value upstream candidates already present in the hook inventory:
 
-| Candidate hook | Why it matters for residual UI text | Current status |
-| --- | --- | --- |
-| `Popup.ShowConversation(...)` | popup intro/options can surface as final UI strings before `UITextSkin` | `unobserved / unpatched` in ILSpy note; repo has `PopupTranslationPatch` for `ShowBlock`/`ShowOptionList` only |
-| `ConversationUI.Render()` | conversation-facing UI text may bypass current popup coverage | `unobserved / unpatched` |
-| `Look.GenerateTooltipContent(GameObject)` | tooltip and info-panel text can become final sink strings | `observable` |
-| `Description.GetLongDescription(StringBuilder)` | long blocks can flow into UI as already-composed text | `observable` |
-| `GameText.VariableReplace(...)` / `GameText.Process(...)` | formatted dynamic text may be fully assembled before UI sink | `unobserved / unpatched` |
+| Candidate hook | Why it matters for residual UI text | ILSpy baseline | Repo implementation |
+| --- | --- | --- | --- |
+| `Popup.ShowConversation(...)` | popup intro/options can surface as final UI strings before `UITextSkin` | `unobserved / unpatched` | `PopupTranslationPatch` covers `ShowBlock`/`ShowOptionList` only; `ShowConversation` not yet patched |
+| `ConversationUI.Render()` | conversation-facing UI text may bypass current popup coverage | `unobserved / unpatched` | none |
+| `Look.GenerateTooltipContent(GameObject)` | tooltip and info-panel text can become final sink strings | `observable` | postfix patch exists |
+| `Description.GetLongDescription(StringBuilder)` | long blocks can flow into UI as already-composed text | `observable` | postfix patch exists |
+| `GameText.VariableReplace(...)` / `GameText.Process(...)` | formatted dynamic text may be fully assembled before UI sink | `unobserved / unpatched` | none |
 
 Current DLL symbol scan also exposes concrete status-screen families to probe next:
 
