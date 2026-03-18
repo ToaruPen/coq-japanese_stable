@@ -9848,7 +9848,7 @@
   </object>
 
 <object Name="Ogre Ape Pelt" Inherits="Item" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;W" Tile="Items/sw_ape_pelt.bmp" DetailColor="w" />
+    <part Name="Render" DisplayName="{{W|オーガエイプの毛皮}}" ColorString="&amp;W" Tile="Items/sw_ape_pelt.bmp" DetailColor="w" />
     <part Name="Description" Short="" />
     <part Name="Physics" Weight="10" Category="Trade Goods" />
     <part Name="Commerce" Value="300" />
@@ -10202,13 +10202,13 @@
   </object>
 
 <object Name="HeirloomsCatalog" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;w" RenderString="=" RenderLayer="5" Tile="Items/sw_unfurled_scroll1.bmp" TileColor="&amp;C" DetailColor="y" />
+    <part Name="Render" DisplayName="{{W|家宝目録}}" ColorString="&amp;w" RenderString="=" RenderLayer="5" Tile="Items/sw_unfurled_scroll1.bmp" TileColor="&amp;C" DetailColor="y" />
     <part Name="Book" ID="@HeirloomsBook" />
     <part Name="Commerce" Value="150" />
   </object>
 
 <object Name="Sheaf1" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;w" RenderString="=" RenderLayer="5" Tile="Items/sw_unfurled_scroll1.bmp" TileColor="&amp;w" DetailColor="g" />
+    <part Name="Render" DisplayName="{{W|ぼろぼろの羊皮紙の束}}" ColorString="&amp;w" RenderString="=" RenderLayer="5" Tile="Items/sw_unfurled_scroll1.bmp" TileColor="&amp;w" DetailColor="g" />
     <part Name="Description" Short="" />
     <part Name="Book" ID="Sheaf1" />
     <part Name="Commerce" Value="1" />
@@ -10255,7 +10255,7 @@
   </object>
 
 <object Name="DarkCalculus" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;K" RenderString="=" RenderLayer="5" Tile="Items/sw_book_4.bmp" TileColor="&amp;K" DetailColor="C" />
+    <part Name="Render" DisplayName="{{W|On the Origins and Nature of the Dark Calculus}}" ColorString="&amp;K" RenderString="=" RenderLayer="5" Tile="Items/sw_book_4.bmp" TileColor="&amp;K" DetailColor="C" />
     <part Name="Description" Short="" />
     <part Name="Book" ID="DarkCalculus" />
     <part Name="Commerce" Value="300" />
@@ -10269,19 +10269,19 @@
   </object>
 
 <object Name="MimicandMadpole" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;w" RenderString="=" RenderLayer="5" Tile="Items/sw_book_1.bmp" TileColor="&amp;w" DetailColor="r" />
+    <part Name="Render" DisplayName="{{W|The Mimic and the Madpole}}" ColorString="&amp;w" RenderString="=" RenderLayer="5" Tile="Items/sw_book_1.bmp" TileColor="&amp;w" DetailColor="r" />
     <part Name="Book" ID="MimicandMadpole" />
     <part Name="Commerce" Value="50" />
   </object>
 
 <object Name="OnHumanMimicry" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;w" RenderString="=" RenderLayer="5" Tile="Items/sw_book_2.bmp" TileColor="&amp;w" DetailColor="g" />
+    <part Name="Render" DisplayName="{{W|On Humanoid Mimicry of Animals and Plants}}" ColorString="&amp;w" RenderString="=" RenderLayer="5" Tile="Items/sw_book_2.bmp" TileColor="&amp;w" DetailColor="g" />
     <part Name="Book" ID="Animals" />
     <part Name="Commerce" Value="50" />
   </object>
 
 <object Name="FromEntropytoHierarchy" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;m" RenderString="=" RenderLayer="5" Tile="Items/sw_book_3.bmp" TileColor="&amp;m" DetailColor="C" />
+    <part Name="Render" DisplayName="{{W|From Entropy to Hierarchy}}" ColorString="&amp;m" RenderString="=" RenderLayer="5" Tile="Items/sw_book_3.bmp" TileColor="&amp;m" DetailColor="C" />
     <part Name="Book" ID="EntropytoHierarchy" />
     <part Name="Commerce" Value="300" />
   </object>
@@ -10294,13 +10294,13 @@
   </object>
 
 <object Name="DisquisitionOnTheMaladyOfTheMimic" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;m" RenderString="=" RenderLayer="5" Tile="Items/sw_book_3.bmp" TileColor="&amp;m" DetailColor="R" />
+    <part Name="Render" DisplayName="{{W|ミミック病論}}" ColorString="&amp;m" RenderString="=" RenderLayer="5" Tile="Items/sw_book_3.bmp" TileColor="&amp;m" DetailColor="R" />
     <part Name="Book" ID="DisquisitionOnTheMaladyOfTheMimic" />
     <part Name="Commerce" Value="300" />
   </object>
 
 <object Name="Crime and Punishment" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;w" RenderString="=" RenderLayer="5" Tile="Items/sw_book_2.bmp" TileColor="&amp;w" DetailColor="R" />
+    <part Name="Render" DisplayName="{{W|Crime and Punishment}}" ColorString="&amp;w" RenderString="=" RenderLayer="5" Tile="Items/sw_book_2.bmp" TileColor="&amp;w" DetailColor="R" />
     <part Name="Description" Short="" />
     <part Name="Book" ID="CrimeandPunishment" />
     <part Name="SetBooleanStateOnRead" State="SawCrimePunishment" />
@@ -10309,39 +10309,39 @@
   </object>
 
 <object Name="AphorismsAboutBirds" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;w" RenderString="=" RenderLayer="5" Tile="Items/sw_scroll1.bmp" TileColor="&amp;w" DetailColor="B" />
+    <part Name="Render" DisplayName="{{W|Aphorisms about Birds}}" ColorString="&amp;w" RenderString="=" RenderLayer="5" Tile="Items/sw_scroll1.bmp" TileColor="&amp;w" DetailColor="B" />
     <part Name="Book" ID="AphorismsAboutBirds" />
     <part Name="Commerce" Value="75" />
   </object>
 
 <object Name="BloodandFear" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;r" RenderString="=" RenderLayer="5" Tile="Items/sw_book_4.bmp" TileColor="&amp;R" DetailColor="W" />
+    <part Name="Render" DisplayName="{{W|血と恐怖：ラーのライフサイクルについて}}" ColorString="&amp;r" RenderString="=" RenderLayer="5" Tile="Items/sw_book_4.bmp" TileColor="&amp;R" DetailColor="W" />
     <part Name="Book" ID="BloodandFear" />
     <part Name="Commerce" Value="150" />
   </object>
 
 <object Name="ArtlessBeauty" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;g" RenderString="=" RenderLayer="5" Tile="Items/sw_book_1.bmp" TileColor="&amp;g" DetailColor="R" />
+    <part Name="Render" DisplayName="{{W|飾らぬ美}}" ColorString="&amp;g" RenderString="=" RenderLayer="5" Tile="Items/sw_book_1.bmp" TileColor="&amp;g" DetailColor="R" />
     <part Name="Book" ID="TheArtlessBeauty" />
     <part Name="Commerce" Value="150" />
   </object>
 
 <object Name="FaunsoftheMeadow" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;W" RenderString="=" RenderLayer="5" Tile="Items/sw_book_4.bmp" TileColor="&amp;W" DetailColor="Y" />
+    <part Name="Render" DisplayName="{{W|草原のファウン}}" ColorString="&amp;W" RenderString="=" RenderLayer="5" Tile="Items/sw_book_4.bmp" TileColor="&amp;W" DetailColor="Y" />
     <part Name="Description" Short="" />
     <part Name="Book" ID="FaunsoftheMeadow" />
     <part Name="Commerce" Value="75" />
   </object>
 
 <object Name="MurmursPrayer" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;W" RenderString="=" RenderLayer="5" Tile="Items/sw_book_4.bmp" TileColor="&amp;W" DetailColor="Y" />
+    <part Name="Render" DisplayName="{{W|ささやきの祈り}}" ColorString="&amp;W" RenderString="=" RenderLayer="5" Tile="Items/sw_book_4.bmp" TileColor="&amp;W" DetailColor="Y" />
     <part Name="Description" Short="" />
     <part Name="Book" ID="MurmursPrayer" />
     <part Name="Commerce" Value="100" />
   </object>
 
 <object Name="InMaqqomYd" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;r" RenderString="=" RenderLayer="5" Tile="Items/sw_book_4.bmp" TileColor="&amp;r" DetailColor="C" />
+    <part Name="Render" DisplayName="{{W|マッコム・イドにて}}" ColorString="&amp;r" RenderString="=" RenderLayer="5" Tile="Items/sw_book_4.bmp" TileColor="&amp;r" DetailColor="C" />
     <part Name="Description" Short="" />
     <part Name="Book" ID="InMaqqomYd" />
     <part Name="RevealObservationOnRead" ObservationId="MaqqomYd" />
@@ -10355,20 +10355,20 @@
   </object>
 
 <object Name="CouncilAtGammaRock" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;B" RenderString="=" RenderLayer="5" Tile="Items/sw_scroll2.bmp" TileColor="&amp;B" DetailColor="y" />
+    <part Name="Render" DisplayName="{{W|ガンマ・ロックの評議会}}" ColorString="&amp;B" RenderString="=" RenderLayer="5" Tile="Items/sw_scroll2.bmp" TileColor="&amp;B" DetailColor="y" />
     <part Name="Description" Short="" />
     <part Name="Book" ID="CouncilAtGammaRock" />
     <part Name="Commerce" Value="250" />
   </object>
 
 <object Name="ModuloMoonStair" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;m" TileColor="&amp;K" DetailColor="m" RenderString="=" RenderLayer="5" Tile="Items/sw_book_3.bmp" />
+    <part Name="Render" DisplayName="{{W|モジュロの月階段と生命の木}}" ColorString="&amp;m" TileColor="&amp;K" DetailColor="m" RenderString="=" RenderLayer="5" Tile="Items/sw_book_3.bmp" />
     <part Name="Book" ID="ModuloMoonStair" />
     <part Name="Commerce" Value="300" />
   </object>
 
 <object Name="GolemOperatingManual" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;c" RenderString="=" RenderLayer="5" Tile="Items/sw_book_3.bmp" TileColor="&amp;c" DetailColor="m" />
+    <part Name="Render" DisplayName="{{W|巨大生物操作マニュアル}}" ColorString="&amp;c" RenderString="=" RenderLayer="5" Tile="Items/sw_book_3.bmp" TileColor="&amp;c" DetailColor="m" />
     <part Name="Description" Short="" />
     <part Name="Book" ID="GolemOperatingManual" />
     <part Name="Commerce" Value="1" />
@@ -10600,7 +10600,7 @@
   </object>
 
 <object Name="Yellow Security Card" Inherits="Security Card" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" ColorString="&amp;W" />
+    <part Name="Render" DisplayName="{{W|黄色のセキュリティカード}}" ColorString="&amp;W" />
     <part Name="Commerce" Value="200" />
   </object>
 
@@ -10638,7 +10638,7 @@
   </object>
 
 <object Name="Gold Trollking Key" Inherits="Security Card" Replace="true">
-    <part Name="Render" DisplayName="{{W|}}" RenderString="-" ColorString="&amp;W" Occluding="false" RenderIfDark="true" Tile="Items/sw_key.bmp" />
+    <part Name="Render" DisplayName="{{W|金のトロル王の鍵}}" RenderString="-" ColorString="&amp;W" Occluding="false" RenderIfDark="true" Tile="Items/sw_key.bmp" />
     <part Name="Commerce" Value="200" />
     <stat Name="AV" Value="25" />
     <stat Name="Hitpoints" Value="300" />
