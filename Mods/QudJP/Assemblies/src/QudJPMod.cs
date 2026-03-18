@@ -10,6 +10,8 @@ namespace QudJP;
 
 public static class QudJPMod
 {
+    internal const string BuildMarker = "ui-child-snapshot-v3";
+
     private static int isInitialized;
 
     public static void Init()
@@ -29,6 +31,7 @@ public static class QudJPMod
             return;
         }
 
+        LogToUnity($"[QudJP] Build marker: {BuildMarker}");
         FontManager.Initialize();
         ApplyHarmonyPatches();
     }

@@ -43,7 +43,7 @@ public static class LookTooltipContentPatch
         return null;
     }
 
-    public static void Postfix(ref string __result)
+    public static void Postfix(object __instance, ref string __result)
     {
         try
         {
@@ -53,10 +53,54 @@ public static class LookTooltipContentPatch
             }
 
             __result = UITextSkinTranslationPatch.TranslatePreservingColors(__result, nameof(LookTooltipContentPatch));
+            LogProbe(BuildTooltipContentProbe(__result));
+            DelayedSceneProbeScheduler.ScheduleCompareSceneProbe(__instance);
         }
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: LookTooltipContentPatch.Postfix failed: {0}", ex);
         }
+    }
+
+    private static string BuildTooltipContentProbe(string content)
+    {
+        var normalized = content.Replace("\r", "\\r")
+            .Replace("\n", "\\n");
+#pragma warning disable CA1845
+        var truncated = normalized.Length <= 240 ? normalized : normalized.Substring(0, 240) + "...";
+#pragma warning restore CA1845
+        return "[QudJP] LookTooltipContentProbe/v1: len="
+            + content.Length.ToString(System.Globalization.CultureInfo.InvariantCulture)
+            + " content='"
+            + truncated
+            + "'";
+    }
+
+    private static void LogProbe(string message)
+    {
+        try
+        {
+            var debugType = Type.GetType("UnityEngine.Debug, UnityEngine.CoreModule", throwOnError: false);
+            if (debugType is null)
+            {
+                Trace.TraceWarning(
+                    "QudJP: LookTooltipContentPatch.LogProbe could not find UnityEngine.Debug in UnityEngine.CoreModule. Trying UnityEngine assembly name.");
+                debugType = Type.GetType("UnityEngine.Debug, UnityEngine", throwOnError: false);
+            }
+
+            var logMethod = debugType?.GetMethod(
+                "Log",
+                BindingFlags.Public | BindingFlags.Static,
+                binder: null,
+                types: new[] { typeof(object) },
+                modifiers: null);
+            logMethod?.Invoke(null, new object[] { message });
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceWarning("QudJP: LookTooltipContentPatch.LogProbe fell back to trace. {0}", ex.Message);
+        }
+
+        Trace.TraceInformation(message);
     }
 }
