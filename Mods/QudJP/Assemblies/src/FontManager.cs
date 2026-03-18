@@ -20,18 +20,21 @@ public static class FontManager
     private static int isInitialized;
 
 #if HAS_TMP
-    private static readonly string[] VanillaTmpFontNames =
-    {
-        "LiberationSans SDF",
-        "Liberation Sans SDF",
-        "LiberationSans",
-        "Liberation Sans",
-    };
-
     private static readonly string[] VanillaLegacyFontNames =
     {
         "LiberationSans",
         "Liberation Sans",
+    };
+
+    private static readonly string[] LegacyFallbackOsFontNames =
+    {
+        "Noto Sans CJK JP",
+        "Hiragino Sans",
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic UI",
+        "Yu Gothic",
+        "MS Gothic",
+        "Arial Unicode MS",
     };
 
     private static TMP_FontAsset? primaryFontAsset;
@@ -69,6 +72,10 @@ public static class FontManager
 
             primaryFontAsset = fontAsset;
             legacyFont = fontAsset.sourceFontFile;
+            if (legacyFont is null)
+            {
+                legacyFont = TryCreateLegacyFallbackFont();
+            }
 
             fontAsset.fallbackFontAssetTable ??= new List<TMP_FontAsset>();
 
@@ -117,7 +124,7 @@ public static class FontManager
         var fontAsset = primaryFontAsset
             ?? throw new InvalidOperationException("QudJP FontManager: primary TMP font asset is not initialized.");
 
-        if (text.font is null || IsVanillaTmpFont(text.font))
+        if (text.font is null)
         {
             text.font = fontAsset;
         }
@@ -125,6 +132,63 @@ public static class FontManager
         {
             EnsureFallbackChain(text.font, fontAsset);
         }
+
+        RefreshAfterFontAssignment(text);
+    }
+
+    internal static void ForcePrimaryFont(TMP_Text text)
+    {
+        if (text is null)
+        {
+            throw new ArgumentNullException(nameof(text));
+        }
+
+        var fontAsset = primaryFontAsset
+            ?? throw new InvalidOperationException("QudJP FontManager: primary TMP font asset is not initialized.");
+
+        if (text.font is not null && !ReferenceEquals(text.font, fontAsset))
+        {
+            EnsureFallbackChain(text.font, fontAsset);
+        }
+
+        text.font = fontAsset;
+        RefreshAfterFontAssignment(text);
+    }
+
+    internal static bool TryWarmPrimaryFontCharactersForUi(string? text)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return false;
+        }
+
+        var fontAsset = primaryFontAsset;
+        if (fontAsset is null)
+        {
+            Debug.LogWarning("[QudJP] FontManager: primary TMP font asset is not initialized; skipping UI glyph warmup.");
+            return false;
+        }
+
+        try
+        {
+            var (stripped, _) = ColorCodePreserver.Strip(text);
+            if (string.IsNullOrEmpty(stripped))
+            {
+                return false;
+            }
+
+            return fontAsset.TryAddCharacters(stripped, out _);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[QudJP] FontManager: UI glyph warmup failed: {ex.GetType().Name}: {ex.Message}");
+            return false;
+        }
+    }
+
+    internal static TMP_FontAsset? GetPrimaryFontAssetForDiagnostics()
+    {
+        return primaryFontAsset;
     }
 
     internal static void ApplyToInputField(TMP_InputField inputField)
@@ -152,12 +216,35 @@ public static class FontManager
             throw new ArgumentNullException(nameof(text));
         }
 
+        if (text.font is not null && !ShouldApplyLegacyFallback(text))
+        {
+            return;
+        }
+
+        legacyFont ??= TryCreateLegacyFallbackFont();
+
         var fallbackFont = legacyFont
             ?? throw new InvalidOperationException("QudJP FontManager: legacy font is not initialized.");
 
         if (text.font is null || IsVanillaLegacyFont(text.font))
         {
             text.font = fallbackFont;
+        }
+    }
+
+    private static Font? TryCreateLegacyFallbackFont()
+    {
+        try
+        {
+            var font = Font.CreateDynamicFontFromOSFont(LegacyFallbackOsFontNames, 16);
+            Debug.Log($"[QudJP] FontManager: legacy fallback font initialized from OS font '{font.name}'.");
+
+            return font;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[QudJP] FontManager: failed to initialize legacy fallback font: {ex.GetType().Name}: {ex.Message}");
+            return null;
         }
     }
 
@@ -241,9 +328,11 @@ public static class FontManager
         return true;
     }
 
-    private static bool IsVanillaTmpFont(TMP_FontAsset fontAsset)
+    private static void RefreshAfterFontAssignment(TMP_Text text)
     {
-        return MatchesKnownFontName(fontAsset.name, VanillaTmpFontNames);
+        text.havePropertiesChanged = true;
+        text.UpdateMeshPadding();
+        text.ForceMeshUpdate(ignoreActiveState: true, forceTextReparsing: true);
     }
 
     private static bool IsVanillaLegacyFont(Font font)
@@ -261,6 +350,25 @@ public static class FontManager
         for (var index = 0; index < candidates.Length; index++)
         {
             if (string.Equals(value, candidates[index], StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool ShouldApplyLegacyFallback(UguiText text)
+    {
+        var value = text.text;
+        if (string.IsNullOrEmpty(value))
+        {
+            return false;
+        }
+
+        for (var index = 0; index < value.Length; index++)
+        {
+            if (value[index] > 0x7F)
             {
                 return true;
             }
