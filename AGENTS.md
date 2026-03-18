@@ -130,12 +130,22 @@ Examples:
 See [docs/deployment.md](docs/deployment.md) for full deployment instructions.
 
 **Key points**:
-- Deploy with `python scripts/sync_mod.py` (recommended)
-- The game only needs `manifest.json` + `QudJP.dll` + `Localization/`
+- Deploy with `python3 scripts/sync_mod.py` (recommended)
+- The game needs `manifest.json` + `Bootstrap.cs` + `Assemblies/QudJP.dll` + `Localization/` + `Fonts/`
 - NEVER deploy `.cs` source files (the game's Unity/Mono compiler will attempt to compile them and fail)
+
+## Runtime Logs
+
+- macOS Steam runtime logs are under `~/Library/Logs/Freehold Games/CavesOfQud/`
+- Current run: `~/Library/Logs/Freehold Games/CavesOfQud/Player.log`
+- Previous run: `~/Library/Logs/Freehold Games/CavesOfQud/Player-prev.log`
+- Mod build logs are under `~/Library/Application Support/Freehold Games/CavesOfQud/` (`build_log.txt`, `build_log.txt.prev`)
+- On Apple Silicon, collect L3 evidence from Rosetta launches only; use `scripts/launch_rosetta.sh` or `Launch CavesOfQud (Rosetta).command`
+- When verifying the mod, check `Player.log` for `[QudJP] Build marker`, probe lines like `[QudJP] PopupTitleProbe` / `[QudJP] DescriptionInventoryActionProbe`, and errors such as `MODWARN` or `Missing glyph`
 
 ## Constraints
 
+- For rendering, localization, and UI regressions, prefer root-cause investigation and durable fixes over stopgap workarounds. Temporary fallbacks are acceptable only to gather evidence or unblock diagnosis, and should be removed once the underlying failure path is understood.
 - No code from the legacy project (clean-room implementation)
 - Assembly-CSharp.dll must NOT be committed to the repo
 - Distribution via GitHub only (no Steam Workshop)

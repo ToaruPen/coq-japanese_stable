@@ -75,6 +75,10 @@ public static class MyPatch
 
 Fail-fast follows a 3-tier pattern.
 
+## Investigation Priority
+
+For rendering, localization, and UI regressions in the mod DLL, prioritize root-cause investigation and durable fixes over stopgap workarounds. Temporary fallbacks are acceptable to collect evidence or keep diagnosis moving, but they are not the target end state and should be removed once the failing path is understood.
+
 ### 1) Init time
 `QudJPMod.ApplyHarmonyPatches` / `Translator.LoadTranslations` must throw immediately.
 
