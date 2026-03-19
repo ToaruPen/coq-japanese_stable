@@ -52,70 +52,17 @@ public static class EquipmentLineRenderProbePatch
         {
 #if HAS_TMP
             var applied = EquipmentLineFontFixer.TryApplyPrimaryFontToEquipmentLine(__instance);
-            var repaired = TmpTextRepairer.TryRepairInvisibleTexts(__instance);
-            if (EquipmentLineObservability.TryBuildState(__instance, data, applied, out var logLine)
-                && logLine is not null
-                && logLine.Length > 0)
-            {
-                LogProbe(logLine);
-            }
-
-            if (repaired > 0)
-            {
-                LogProbe(TmpTextRepairer.BuildRepairLog("EquipmentLineRepair/v1", repaired));
-            }
-
-            if (UiChildTextObservability.TryBuildSnapshot(__instance, "EquipmentLineChildren/v1", out var childLogLine)
-                && childLogLine is not null
-                && childLogLine.Length > 0)
-            {
-                LogProbe(childLogLine);
-            }
-
-            if (EquipmentLineObservability.TryBuildCompactChildSummary(__instance, out var compactChildLogLine)
-                && compactChildLogLine is not null
-                && compactChildLogLine.Length > 0)
-            {
-                LogProbe(compactChildLogLine);
-            }
+            _ = TmpTextRepairer.TryRepairInvisibleTexts(__instance);
 #else
             _ = __instance;
             _ = data;
+            _ = data;
 #endif
+            _ = applied;
         }
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: EquipmentLineRenderProbePatch.Postfix failed: {0}", ex);
         }
     }
-
-    #if HAS_TMP
-    private static void LogProbe(string message)
-    {
-        try
-        {
-            var debugType = Type.GetType("UnityEngine.Debug, UnityEngine.CoreModule", throwOnError: false);
-            if (debugType is null)
-            {
-                Trace.TraceWarning(
-                    "QudJP: EquipmentLineRenderProbePatch.LogProbe could not find UnityEngine.Debug in UnityEngine.CoreModule. Trying UnityEngine assembly name.");
-                debugType = Type.GetType("UnityEngine.Debug, UnityEngine", throwOnError: false);
-            }
-
-            var logMethod = debugType?.GetMethod(
-                "Log",
-                BindingFlags.Public | BindingFlags.Static,
-                binder: null,
-                types: new[] { typeof(object) },
-                modifiers: null);
-            logMethod?.Invoke(null, new object[] { message });
-        }
-        catch (Exception ex)
-        {
-            Trace.TraceWarning("QudJP: EquipmentLineRenderProbePatch.LogProbe fell back to trace. {0}", ex.Message);
-        }
-
-        Trace.TraceInformation(message);
-    }
-    #endif
 }
