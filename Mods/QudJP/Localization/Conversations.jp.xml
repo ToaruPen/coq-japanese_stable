@@ -1822,7 +1822,7 @@
       <text>
         人生の大半を、クァドの花野とムリイの塩田のあいだの草原（ステップ）で暮らした。
 
-        従弟の間抜けがコイラーのがらくたでティンカーごっこをしやがってな、そいつが原因でここへ来た。まあ、その話はこれくらいで十分だ。
+        従弟の間抜けがコイラーのがらくたで工作ごっこをしやがってな、そいつが原因でここへ来た。まあ、その話はこれくらいで十分だ。
       </text>
       <choice UseID="RokhasSlugs" />
       <choice UseID="RokhasFreehold" />
@@ -2535,7 +2535,7 @@
 
     <node ID="Canticle1" Replace="true">
       <text>
-        ……よし。旧き賢者バラサラムを探せ。現存するティンカーの中で最年長にして最も慧眼の持ち主だ。北東、ジャングルに絡まれたクッドの廃墟にあるグリット・ゲートのアーチの下で、弟子たち――バラサラム派――と暮らしている。奴ならこの信号の意味を見抜ける。
+        ……よし。旧き賢者バラサラムを探せ。現存する修理工の中で最年長にして最も慧眼の持ち主だ。北東、ジャングルに絡まれたクッドの廃墟にあるグリット・ゲートのアーチの下で、弟子たち――バラサラム派――と暮らしている。奴ならこの信号の意味を見抜ける。
       </text>
       <choice Target="WhoBarathrumites">そのバラサラム派とは？</choice>
       <choice Target="CanticleAccept1">十分だ。向かおう。</choice>
@@ -2694,7 +2694,7 @@
       <choice ID="ThePorridge" GotoID="Porridge">かまどから漂うその匂いは……言葉にできない。</choice>
       <choice ID="Platespinning" GotoID="FoodNetwork">何を作っている？</choice>
       <choice GotoID="Kitchen">実験室？ どう見ても台所だろう。</choice>
-      <choice GotoID="End">生きて飲め、料理のティンカー。</choice>
+      <choice GotoID="End">生きて飲め、料理の修理工。</choice>
     </start>
 
     <node ID="Bethesda">
@@ -2709,7 +2709,7 @@
       <choice UseID="ThePorridge" />
       <choice UseID="Platespinning" />
       <choice ID="KitchenNightmare" GotoID="Kitchen">ここを台所と呼んだのか？</choice>
-      <choice GotoID="End">生きて飲め、料理のティンカー。</choice>
+      <choice GotoID="End">生きて飲め、料理の修理工。</choice>
     </node>
 
     <node ID="Omonporch">
@@ -2724,7 +2724,7 @@
       <choice UseID="ThePorridge" />
       <choice UseID="Platespinning" />
       <choice UseID="KitchenNightmare" />
-      <choice GotoID="End">生きて飲め、料理のティンカー。</choice>
+      <choice GotoID="End">生きて飲め、料理の修理工。</choice>
     </node>
 
     <node ID="Rumbling">
@@ -2739,7 +2739,7 @@
       <choice UseID="ThePorridge" />
       <choice UseID="Platespinning" />
       <choice UseID="KitchenNightmare" />
-      <choice GotoID="End">生きて飲め、料理のティンカー。</choice>
+      <choice GotoID="End">生きて飲め、料理の修理工。</choice>
     </node>
 
     <node ID="Klanq">
@@ -2755,7 +2755,7 @@
       <choice UseID="ThePorridge" />
       <choice UseID="Platespinning" />
       <choice UseID="KitchenNightmare" />
-      <choice GotoID="End">生きて飲め、料理のティンカー。</choice>
+      <choice GotoID="End">生きて飲め、料理の修理工。</choice>
     </node>
 
     <node ID="Porridge">
@@ -2770,7 +2770,7 @@
       <choice UseID="MushroomRisotto" />
       <choice UseID="Platespinning" />
       <choice UseID="KitchenNightmare" />
-      <choice GotoID="End">生きて飲め、料理のティンカー。</choice>
+      <choice GotoID="End">生きて飲め、料理の修理工。</choice>
     </node>
 
     <node ID="FoodNetwork">
@@ -2804,7 +2804,7 @@
       <choice UseID="MushroomRisotto" />
       <choice UseID="ThePorridge" />
       <choice UseID="KitchenNightmare" />
-      <choice GotoID="End">生きて飲め、料理のティンカー。</choice>
+      <choice GotoID="End">生きて飲め、料理の修理工。</choice>
     </node>
 
     <node ID="Kitchen">
@@ -2846,7 +2846,7 @@
       <choice UseID="MushroomRisotto" />
       <choice UseID="ThePorridge" />
       <choice UseID="Platespinning" />
-      <choice GotoID="End">生きて飲め、料理のティンカー。</choice>
+      <choice GotoID="End">生きて飲め、料理の修理工。</choice>
     </node>
   </conversation>
 
@@ -3086,7 +3086,7 @@
       <choice GotoID="Klanq" IfHaveActiveQuest="Pax Klanq, I Presume?">パクス・クランクに会ったことは？</choice>
       <choice GotoID="HowLong">ずいぶん髪が白い！ どれくらいグリット・ゲートで暮らしている？</choice>
       <choice GotoID="OtherBarathrumites">ほかのバラサラム派のことを教えてくれないか？</choice>
-      <choice GotoID="LiquidTinker">あなたは液体ティンカーなの？</choice>
+      <choice GotoID="LiquidTinker">あなたは液体修理工なの？</choice>
       <choice GotoID="End">生きて飲め。</choice>
     </start>
 
@@ -3094,14 +3094,14 @@
       <text>
         そこにはコンヴァレッセンスの水たまりがある。低温霧が凝縮すると、冷たくて発光する液体になって、入浴できれば回復に効くのさ。
 
-        ああ！ 廃墟の病棟のひとつに、錬金術師の店があるよ。錬金術師が誰かって？ なんとも謎めいた人物――素人の液体ティンカー、詩人、商人。方法は科学的じゃないけれど、特定の液体を探しているなら役に立つ。くれぐれも用心してね、=name=。
+        ああ！ 廃墟の病棟のひとつに、錬金術師の店があるよ。錬金術師が誰かって？ なんとも謎めいた人物――素人の液体修理工、詩人、商人。方法は科学的じゃないけれど、特定の液体を探しているなら役に立つ。くれぐれも用心してね、=name=。
       </text>
       <choice GotoID="Omonporch" IfHaveActiveQuest="The Earl of Omonporch">オモンポーチと、自称の伯爵については？</choice>
       <choice GotoID="Rumbling" IfHaveActiveQuest="Grave Thoughts">あの地鳴りを感じたか、ホーテンサ？</choice>
       <choice GotoID="Klanq" IfHaveActiveQuest="Pax Klanq, I Presume?">パクス・クランクに会ったことは？</choice>
       <choice GotoID="HowLong">どれくらいグリット・ゲートで暮らしている？</choice>
       <choice GotoID="OtherBarathrumites">ほかのバラサラム派のことを教えてくれないか？</choice>
-      <choice GotoID="LiquidTinker">あなたは液体ティンカーなの？</choice>
+      <choice GotoID="LiquidTinker">あなたは液体修理工なの？</choice>
       <choice GotoID="End">生きて飲め。</choice>
     </node>
 
@@ -3114,7 +3114,7 @@
       <choice GotoID="Klanq" IfHaveActiveQuest="Pax Klanq, I Presume?">パクス・クランクに会ったことは？</choice>
       <choice GotoID="HowLong">どれくらいグリット・ゲートで暮らしている？</choice>
       <choice GotoID="OtherBarathrumites">ほかのバラサラム派のことを教えてくれないか？</choice>
-      <choice GotoID="LiquidTinker">あなたは液体ティンカーなの？</choice>
+      <choice GotoID="LiquidTinker">あなたは液体修理工なの？</choice>
       <choice GotoID="End">生きて飲め。</choice>
     </node>
 
@@ -3127,7 +3127,7 @@
       <choice GotoID="Klanq" IfHaveActiveQuest="Pax Klanq, I Presume?">パクス・クランクに会ったことは？</choice>
       <choice GotoID="HowLong">どれくらいグリット・ゲートで暮らしている？</choice>
       <choice GotoID="OtherBarathrumites">ほかのバラサラム派のことを教えてくれないか？</choice>
-      <choice GotoID="LiquidTinker">あなたは液体ティンカーなの？</choice>
+      <choice GotoID="LiquidTinker">あなたは液体修理工なの？</choice>
       <choice GotoID="End">生きて飲め。</choice>
     </node>
 
@@ -3142,7 +3142,7 @@
       <choice GotoID="Rumbling" IfHaveActiveQuest="Grave Thoughts">あの地鳴りを感じたか、ホーテンサ？</choice>
       <choice GotoID="HowLong">どれくらいグリット・ゲートで暮らしている？</choice>
       <choice GotoID="OtherBarathrumites">ほかのバラサラム派のことを教えてくれないか？</choice>
-      <choice GotoID="LiquidTinker">あなたは液体ティンカーなの？</choice>
+      <choice GotoID="LiquidTinker">あなたは液体修理工なの？</choice>
       <choice GotoID="End">生きて飲め。</choice>
     </node>
 
@@ -3153,7 +3153,7 @@
         何年も。何十年の上にまた何十年。ひょっとすると何世紀も。私がバラサラムのもとで学ぶために来た頃、ここにいる耳の濡れた仔たちの多くは母の夢日記の中の走り書きでしかなかった。あの頃は知らぬことばかりで、今もなお知らぬことばかりだよ。
       </text>
       <choice GotoID="OtherBarathrumites">ほかのバラサラム派のことを教えてくれないか？</choice>
-      <choice GotoID="LiquidTinker">あなたは液体ティンカーなの？</choice>
+      <choice GotoID="LiquidTinker">あなたは液体修理工なの？</choice>
       <choice GotoID="End">生きて飲め。</choice>
     </node>
 
@@ -3382,7 +3382,7 @@
       <text>
         そんなことを言われると羽根ペンがそわそわしてしまう。
         
-        エズラの村には必ず寄りなさい。そこに住む流配の娘は私の知るどのティンカーにも劣らない腕で、いつも余剰品を売ってくれる。
+        エズラの村には必ず寄りなさい。そこに住む流配の娘は私の知るどの修理工にも劣らない腕で、いつも余剰品を売ってくれる。
       </text>
       <choice GotoID="End">助言に感謝する。生きて飲め。</choice>
     </node>
@@ -4556,10 +4556,10 @@
       </text>
       <choice GotoID="TradeEntrance" IfFinishedQuest="What's Eating the Watervine?">ジョッパ経由で来た。長老イルーダドは私を友と呼ぶ。</choice>
       <choice GotoID="GiveDisk" IfHaveBlueprint="Scratched Data Disk" IfHaveQuest="A Signal in the Noise" CompleteQuestStep="A Signal in the Noise~Speak with the Barathrumites">
-        待ってくれ！ 私の名は =name= 。奇妙な印を刻まれたデータディスクを手に入れたんだ。そちらのティンカー団にとって意味があるか？ 調べてくれないか？
+        待ってくれ！ 私の名は =name= 。奇妙な印を刻まれたデータディスクを手に入れたんだ。そちらの修理工団にとって意味があるか？ 調べてくれないか？
       </choice>
       <choice GotoID="GiveDisk" IfHaveBlueprint="Scratched Data Disk" IfNotHaveQuest="A Signal in the Noise">
-        待ってくれ！ 私の名は =name= 。奇妙な印を刻まれたデータディスクを手に入れたんだ。そちらのティンカー団にとって意味があるか？ 調べてくれないか？
+        待ってくれ！ 私の名は =name= 。奇妙な印を刻まれたデータディスクを手に入れたんだ。そちらの修理工団にとって意味があるか？ 調べてくれないか？
       </choice>
       <choice GotoID="TradeEntrance" IfHaveItem="Merchant's Token">私は商人だ、洞窟住まいよ。取引のためだけに入りたい。</choice>
       <choice GotoID="GiveDisk" IfHaveQuest="A Canticle for Barathrum" CompleteQuestStep="A Canticle for Barathrum~Speak with the Barathrumites">待ってくれ！ 私の名は =name= 。ジョッパのアージヴからの伝言を届けに来た。</choice>
@@ -4809,7 +4809,7 @@
     </start>
     <node ID="GuestKlanq">
       <text>
-        神秘のクランクを匿うなんて、なんと斬新！ あのティンカー菌の物語で退屈と呼べるものは聞いたことがない――ただし「破滅的」という形容が当てはまる話はいくつもあるけれどね。
+        神秘のクランクを匿うなんて、なんと斬新！ あの修理工菌の物語で退屈と呼べるものは聞いたことがない――ただし「破滅的」という形容が当てはまる話はいくつもあるけれどね。
 
         地下で何が醸されているか、つい想像が物語を紡いでしまうが……私としては、下ではなく外にいられてホッとしているよ。
       </text>
@@ -5014,12 +5014,12 @@
       <text>
         -んむ、仕事？ 農夫たちは洞窟の害獣に悩まされている。南の水蔓畑にいるメフメトと話してみなさい。
 
-        それからアージヴだ、=player.formalAddressTerm=。ティンカーさ。いつだって何か小物をつなぐ相手を探している。南西のブリキ小屋へ行くといい。
+        それからアージヴだ、=player.formalAddressTerm=。修理工さ。いつだって何か小物をつなぐ相手を探している。南西のブリキ小屋へ行くといい。
       </text>
     </node>
     <node ID="WorkAfter" Inherits="Start">
       <text>
-        -んむ、仕事？ アージヴを訪ねなさい、=player.formalAddressTerm=。ティンカーさ。いつだってつなぐ小物を求めている。南西の金属板の小屋にいるよ。
+        -んむ、仕事？ アージヴを訪ねなさい、=player.formalAddressTerm=。修理工さ。いつだってつなぐ小物を求めている。南西の金属板の小屋にいるよ。
       </text>
     </node>
     <node ID="Stiltbound" Inherits="Start">
@@ -5395,7 +5395,7 @@
         関節がたまらなく痛む！ この痛みに値する買い物をしてくれ。~
         未完の設計図は売り物じゃない。他は全部売る。~
         ゴミを漁るのは勝手だが、紙には触るな。~
-        ティンカーかい？ きっと作りたい物が見つかる。~
+        修理工かい？ きっと作りたい物が見つかる。~
         作る才覚があるなら、欲しいものがここにある。~
         この献身のせいで多くを失ったんだ、=player.formalAddressTerm=。取り戻すのを手伝ってくれ。~
         銀の父祖に誓って、誰かが紙の順番を変えてたら……。~
@@ -7206,7 +7206,7 @@
   <conversation ID="Otho">
     <node ID="Signal" Replace="true">
       <text>
-        その信号は、どこからとも知れぬ場所から繰り返し送信されているものだ。=V0tinkeraddendum= 我らがティンカーの一人、&amp;mQガール&amp;y が長波検出器を仕掛けている最中に見つけた。残念ながら暗号化されており、ここには解読手段がない。だが、この件でお前が助けになれるかもしれない。
+        その信号は、どこからとも知れぬ場所から繰り返し送信されているものだ。=V0tinkeraddendum= 我らが修理工の一人、&amp;mQガール&amp;y が長波検出器を仕掛けている最中に見つけた。残念ながら暗号化されており、ここには解読手段がない。だが、この件でお前が助けになれるかもしれない。
 
         我々はずっと以前から、大広間 &amp;Cベセスダ・スーサ&amp;y の底に、完全に機能する &amp;Wbaetyl&amp;y があると知っている。メカニマス教はその周囲を聖別して神殿を建てた。Qガールは信号を解読する方法を考案したと主張しているが、ベテルの計算資源が必要だ。もしメカニマスの施設に潜入できるなら、ベテルに接続して信号を解読できるだろう。
       </text>
@@ -7363,7 +7363,7 @@
       <choice ID="DiskChoice" IfHaveQuest="Decoding the Signal" IfNotFinishedQuestStep="Decoding the Signal~Get Q Girl's Instructions onto the Data Disk" GotoID="Disk">
         オソから聞いたよ。信号の解読手順があるって。このディスクに、ベテル用の手順を書き込んでもらえる？
       </choice>
-      <choice GotoID="End">生きて飲め、ティンカー。</choice>
+      <choice GotoID="End">生きて飲め、修理工。</choice>
     </node>
 
     <node ID="Rumbling" Replace="true">
@@ -7375,7 +7375,7 @@
       <choice UseID="GogglesChoice" />
       <choice UseID="TinkerChoice" />
       <choice UseID="DiskChoice" />
-      <choice GotoID="End">生きて飲め、ティンカー。</choice>
+      <choice GotoID="End">生きて飲め、修理工。</choice>
     </node>
 
     <node ID="Quetzal" Replace="true">
@@ -7387,7 +7387,7 @@
       <choice UseID="GogglesChoice" />
       <choice UseID="TinkerChoice" />
       <choice UseID="DiskChoice" />
-      <choice GotoID="End">生きて飲め、ティンカー。</choice>
+      <choice GotoID="End">生きて飲め、修理工。</choice>
     </node>
 
     <node ID="Hair" Replace="true">
@@ -7399,7 +7399,7 @@
       <choice UseID="GogglesChoice" />
       <choice UseID="TinkerChoice" />
       <choice UseID="DiskChoice" />
-      <choice GotoID="End">生きて飲め、ティンカー。</choice>
+      <choice GotoID="End">生きて飲め、修理工。</choice>
     </node>
 
     <node ID="Goggles" Replace="true">
@@ -7411,7 +7411,7 @@
       <choice UseID="HairChoice" />
       <choice UseID="TinkerChoice" />
       <choice UseID="DiskChoice" />
-      <choice GotoID="End">生きて飲め、ティンカー。</choice>
+      <choice GotoID="End">生きて飲め、修理工。</choice>
     </node>
 
     <node ID="Tinker" Replace="true">
@@ -7427,7 +7427,7 @@
       <choice UseID="HairChoice" />
       <choice UseID="GogglesChoice" />
       <choice UseID="DiskChoice" />
-      <choice GotoID="End">生きて飲め、ティンカー。</choice>
+      <choice GotoID="End">生きて飲め、修理工。</choice>
     </node>
 
     <node ID="Disk" Replace="true">
@@ -7726,7 +7726,7 @@
 
     <node ID="TombBody2">
       <text>
-        奇妙で不確かだが、ティンカーなら知っているだろう？ 粗い設計図でも、何もないよりは良い。オモンポーチへ戻り、イーターの墓所に入るのだ。内部では、盗掘者たちが刻んだ迷走の道筋を辿り、レシェフの埋葬室へ昇れ。
+        奇妙で不確かだが、修理工なら知っているだろう？ 粗い設計図でも、何もないよりは良い。オモンポーチへ戻り、イーターの墓所に入るのだ。内部では、盗掘者たちが刻んだ迷走の道筋を辿り、レシェフの埋葬室へ昇れ。
 
         墓所への入り方については、レシェフが千年前に門を封じた。ただし封印には不備がある。古の死の印は時に失われたが、それを取り戻して身体に刻めば、是もなく死門が開く――かつて無数の喰らう者たちがそうであったように。
 
@@ -7790,7 +7790,7 @@
 
     <node ID="Euclid">
       <text>
-        あれは親友のユークリッドだ。おしゃべり植物でな、聞いた言葉をニュー根網に蓄え、葉を擦り合わせて模倣する。口から出るのはたいてい無意味だが、それでも夜な夜なティンカーするときの良い話し相手だ。あれも古い……私より古いかもしれんが、まだ語ることは尽きていない。
+        あれは親友のユークリッドだ。おしゃべり植物でな、聞いた言葉をニュー根網に蓄え、葉を擦り合わせて模倣する。口から出るのはたいてい無意味だが、それでも夜な夜な工作するときの良い話し相手だ。あれも古い……私より古いかもしれんが、まだ語ることは尽きていない。
       </text>
       <choice UseID="QuestionsChoice" />
     </node>
@@ -7988,7 +7988,7 @@
         {{emote|*スパラフチレが首を振る。*}}
       </text>
       <choice ID="ConfirmSpara" GotoID="SparaNod">生まれつき、ということか？</choice>
-      <choice ID="ThankSpara" GotoID="SparaThank">丁寧に教えてくれてありがとう、ティンカーの友よ。</choice>
+      <choice ID="ThankSpara" GotoID="SparaThank">丁寧に教えてくれてありがとう、修理工の友よ。</choice>
       <choice UseID="SubjectChange" />
       <choice UseID="FarewellSpara" />
     </node>
@@ -8761,7 +8761,7 @@
     </node>
     <node ID="Minyan" Inherits="Naphtaali">
       <text>
-        巡礼者たち。必要や畏敬や霊感に突き動かされ集まった連中。ティンカー、鍛冶、護衛、斥候――生涯の重圧で合金のように結び付いた。
+        巡礼者たち。必要や畏敬や霊感に突き動かされ集まった連中。修理工、鍛冶、護衛、斥候――生涯の重圧で合金のように結び付いた。
 
         要するに家族さ。
       </text>
@@ -13178,6 +13178,213 @@
   </conversation>
 
 
+  <conversation ID="BaseDynamicShim" />
+
+  <conversation ID="Euclid" Replace="true">
+    <node ID="Start">
+      <text>
+        {{emote|*チプ チプ チプ チプ*}}
+
+
+        =MARKOVPARAGRAPH=
+        {{emote|*チプ チプ チプ チプ*}}
+      </text>
+      <choice GotoID="End">……</choice>
+    </node>
+  </conversation>
+
+  <conversation ID="Naphtaali" Replace="true">
+    <node ID="Start">
+      <text>
+        身軽であれ。~
+        手先を器用にせよ。~
+        ミニャンはどこだ？~
+        ゴッドヘッドに拝礼せよ。~
+        山羊人はいないのか？~
+        ああ。~
+        種まく者の目が汝を見守らんことを。~
+        クロムを見いだせ、孤りの者よ。~
+        ああ、孤りの者よ。~
+        我らが磨き、押し上げるゴッドヘッドに祝福あれ。~
+        木々があなたを守る。
+      </text>
+      <choice GotoID="End">生きて飲め。</choice>
+    </node>
+  </conversation>
+
+  <conversation ID="PaxKlanq2" Replace="true">
+    <start ID="Welcome">
+      <text>
+        クランク、君にぱふ……
+
+
+        ……あとで。今はトゲトゲの頼みで、ぱふ休止。
+      </text>
+      <choice Target="IsGolemReady" IfHaveState="GolemBuilding">
+        <text>クリーチャーはできた？</text>
+      </choice>
+      <choice Target="BuildGolem" IfHaveActiveQuest="The Golem">
+        <text>クリーチャーを鋳て触媒化する準備ができた。</text>
+      </choice>
+      <choice Target="Die" IfTestState="KlanqDied">死んだんじゃなかったのか？</choice>
+      <choice Target="GolemComponentQuestions" IfHaveActiveQuest="The Golem">集める部品について教えてくれ。</choice>
+      <choice Target="GolemOtherQuestions" IfHaveActiveQuest="The Golem">クリーチャーについて知っておくべきことは？</choice>
+      <choice Target="BarathrumsStudy">今はグリット・ゲートに住んでいるのか？</choice>
+      <choice Target="GolemOtherQuestions" IfFinishedQuest="The Golem">あの大きなクリーチャーについていくつか聞きたい。</choice>
+      <choice Target="End">生きて飲め。</choice>
+    </start>
+
+    <node ID="Die" Inherits="Welcome">
+      <text>
+        クランクは拡散する！ 大事なところでは殺せない。
+      </text>
+    </node>
+
+    <node ID="BuildGolem">
+      <text>材料そろった？ 回路ハンダ付けする。クランク、スープかき混ぜていい？</text>
+      <choice Target="GolemThreeDays">
+        <text>ああ。</text>
+        <part Name="BuildGolem" TimeDays="3">
+          まだ塚に必要な素材を全部置いていない。
+        </part>
+        <part Name="TakeLiquid" Liquids="proteangunk" Amount="20" Destroy="true" Priority="10">
+          始原スープが足りない。
+        </part>
+      </choice>
+      <choice Target="Welcome">
+        <text>まだだ。</text>
+      </choice>
+    </node>
+
+    <node ID="GolemThreeDays" SetBooleanState="GolemBuilding,true">
+      <text>クランク、かき混ぜる！ 三日後に戻って、クリーチャー来る。はい、作業手順書持っていって。</text>
+      <choice Target="End" GiveItem="GolemOperatingManual">三日後に戻る。</choice>
+    </node>
+
+    <node ID="IsGolemReady">
+      <text>まだ！ =mound.complete.days= に戻って。</text>
+      <part Name="MoundContext" Preposition="false" />
+      <choice Target="Welcome">わかった。</choice>
+    </node>
+
+    <node ID="GolemComponentQuestions">
+      <text>
+        スープ、身体、触媒、アツムス、武装、呪文、ハムサ、動力源、そしてスープ。部品を聞いて！
+      </text>
+      <choice Target="Soup">スープについて教えてくれ。</choice>
+      <choice Target="Body">本体について教えてくれ。</choice>
+      <choice Target="Catalyst">触媒のことを聞かせてくれ。</choice>
+      <choice Target="Atzmus">アツムスは？</choice>
+      <choice Target="Armament">武装は？</choice>
+      <choice Target="Incantation">呪文は？</choice>
+      <choice Target="Hamsa">ハムサは？</choice>
+      <choice Target="Power">動力源は？</choice>
+      <choice Target="Mound">集めた部品はどこに置けばいい？</choice>
+      <choice Target="Welcome">別のことを聞きたい。</choice>
+    </node>
+
+    <node ID="Soup" Inherits="GolemComponentQuestions">
+      <text>
+        始原スープ20ドラム。クリーチャーの循環液。触媒ぶち込んでドン！ 動く物質。電磁石で正弦波を流す。
+      </text>
+    </node>
+    <node ID="Body" Inherits="GolemComponentQuestions">
+      <text>
+        友だちの身体で、あとからクリーチャーを形作る。君について歩き、経験積む。心配しない、創造で友だち消費しない。
+      </text>
+    </node>
+    <node ID="Catalyst" Inherits="GolemComponentQuestions">
+      <text>
+        純液 3 ドラムでスープを触媒化し栄養を循環させる。
+      </text>
+    </node>
+    <node ID="Atzmus" Inherits="GolemComponentQuestions">
+      <text>
+        アツムスは存在の超越写し。生き物パーツの特性を型取り、本体と交差させる。
+      </text>
+    </node>
+    <node ID="Armament" Inherits="GolemComponentQuestions">
+      <text>
+        ゼータクローム武器。クリーチャーを武芸に同調させ、メタクロームの拳形（こぶしかた）をそのまま型取る。
+      </text>
+    </node>
+    <node ID="Incantation" Inherits="GolemComponentQuestions">
+      <text>
+        君の経験から話して書き付け、存在のきずなを形成。クリーチャーの夢脳が最初に聞く音。
+      </text>
+    </node>
+    <node ID="Hamsa" Inherits="GolemComponentQuestions">
+      <text>
+        掌にはんだ付けする選んだトークン。重さ5ポンド以下。選択次第でクリーチャーの性質と行動が変わる。
+      </text>
+    </node>
+    <node ID="Power" Inherits="GolemComponentQuestions">
+      <text>
+        スピンドル上昇クリーチャーには強い電池と珍しい電磁シールド必要。紫トゲでフラックス3ドラム使って中性子セル作る、または別電源探す。
+      </text>
+    </node>
+    <node ID="Mound" Inherits="GolemComponentQuestions">
+      <text>
+        スクラップ粘土の盛り土と対話する。それからクランクと話して回路ハンダ付け、スープかき混ぜる。
+      </text>
+    </node>
+
+    <node ID="GolemOtherQuestions">
+      <text>
+        何聞く？ クランク話す。
+      </text>
+      <choice Target="Work" IfHaveActiveQuest="The Golem">クリーチャーと結び付くって、どうなる？</choice>
+      <choice Target="Work" IfFinishedQuest="The Golem">結び付いたあと、どうなる？</choice>
+      <choice Target="Spindle">バラサラムとクリーチャーでスピンドルを昇るのか？</choice>
+      <choice Target="Equip">クリーチャーに装備は着せられる？</choice>
+      <choice Target="Damage">損傷したり壊れたら？</choice>
+      <choice Target="Welcome">別のことを聞きたい。</choice>
+    </node>
+    <node ID="Work" Inherits="GolemOtherQuestions">
+      <text>
+        クリーチャーは友だちみたいに君についてくる。それから中に入って操作。友だちも一人なら一緒に入れる。
+      </text>
+    </node>
+    <node ID="Equip" Inherits="GolemOtherQuestions">
+      <text>
+        クリーチャーは巨大クリーチャー。超大型ギアしか装備できない。クラーケンとかソルトバックみたい。
+      </text>
+    </node>
+    <node ID="Damage" Inherits="GolemOtherQuestions">
+      <text>
+        トゲトゲがオモンポーチのスルタン法廷に修復の小部屋を作った。そこでサンスラグ1ドラムでクリーチャー塗り直す。失くしたら呼び戻す。
+      </text>
+    </node>
+    <node ID="Spindle" Inherits="GolemOtherQuestions">
+      <text>
+        そう！ でもそれまでにもクリーチャーと歩ける。話して、戦って、眠って……普通。友だち。
+      </text>
+    </node>
+
+    <node ID="BarathrumsStudy" Inherits="Welcome">
+      <text>
+        クランク、生きてる！ ジャロピー悲劇がクランクを薄暗いろうそく部屋に招いた。石床をぬいぐるみで柔らかくして、退屈な瓶棚を喜びと胞子で磨いた。トゲトゲ、見て。
+      </text>
+    </node>
+  </conversation>
+
+  <conversation ID="Slynth" Replace="true">
+    <node ID="Start">
+      <text>あ？</text>
+      <text>新しい生き物。生きて飲め。</text>
+      <text>空……太陽……ああ。</text>
+      <text>{{emote|*黙って見つめる*}}</text>
+      <text>挨拶。</text>
+      <text IfNotHavePart="LightManipulation">光らない？</text>
+      <text IfNotHavePart="PhotosyntheticSkin">葉っぱ……ない？</text>
+      <text>ああ……ははは！ 冗談。</text>
+      <text>ターみたいに長くしゃべる？</text>
+      <text>ええと、争わないでいよう。</text>
+      <text>退屈。</text>
+      <text>たくさん持ってる。</text>
+      <text>飲んで、そして。生きる。はっ！</text>
+      <choice GotoID="End">生きて飲め。</choice>
+    </node>
+  </conversation>
+
 </conversations>
-
-

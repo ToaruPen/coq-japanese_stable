@@ -84,6 +84,18 @@ public static class GetDisplayNameProcessPatch
                 return;
             }
 
+            var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(__result, nameof(GetDisplayNameProcessPatch));
+            if (!string.Equals(translated, __result, StringComparison.Ordinal))
+            {
+                __result = translated;
+                return;
+            }
+
+            if (UITextSkinTranslationPatch.IsAlreadyLocalizedDisplayNameText(__result, nameof(GetDisplayNameProcessPatch)))
+            {
+                return;
+            }
+
             __result = UITextSkinTranslationPatch.TranslatePreservingColors(__result, nameof(GetDisplayNameProcessPatch));
         }
         catch (Exception ex)

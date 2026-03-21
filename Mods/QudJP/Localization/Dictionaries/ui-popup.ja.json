@@ -45,6 +45,166 @@
             "text": "{{W|[Space]}} {{y|続ける}}"
         },
         {
+            "key": "[space] Continue",
+            "text": "[Space] 続ける"
+        },
+        {
+            "key": "[Enter] Accept",
+            "text": "[Enter] 決定"
+        },
+        {
+            "key": "[Esc] Cancel",
+            "text": "[Esc] キャンセル"
+        },
+        {
+            "key": "[o] Options",
+            "text": "[o] オプション"
+        },
+        {
+            "key": "[g] Game Info",
+            "text": "[g] ゲーム情報"
+        },
+        {
+            "key": "[k] Control Mapping",
+            "text": "[k] 操作割り当て"
+        },
+        {
+            "key": "[s] Save and Quit",
+            "text": "[s] セーブして終了"
+        },
+        {
+            "key": "[a] Abandon Character",
+            "text": "[a] キャラクターを放棄"
+        },
+        {
+            "key": "Enter Submit",
+            "text": "Enter 送信"
+        },
+        {
+            "key": "Esc Cancel",
+            "text": "Esc キャンセル"
+        },
+        {
+            "key": "Tab Hold to Accept",
+            "text": "Tab 長押しで決定"
+        },
+        {
+            "key": "[L] Look",
+            "text": "[L] 調べる"
+        },
+        {
+            "key": "[Tab] Trade",
+            "text": "[Tab] 取引"
+        },
+        {
+            "key": "Do you really want to attack the {0}?",
+            "text": "本当に{0}を攻撃しますか？"
+        },
+        {
+            "key": "Do you really want to attack {0}?",
+            "text": "本当に{0}を攻撃しますか？"
+        },
+        {
+            "key": "The {0} refuses to speak to you.",
+            "text": "{0}はあなたと話そうとしない。"
+        },
+        {
+            "key": "That is not owned by you. Are you sure you want to open it?",
+            "text": "それはあなたの所有物ではない。本当に開けますか？"
+        },
+        {
+            "key": "Are you sure you want to delete the save game for {0}?",
+            "text": "{0}のセーブデータを本当に削除しますか？"
+        },
+        {
+            "key": "Delete {0}",
+            "text": "{0}を削除"
+        },
+        {
+            "key": "You sense only hostility from {0}.",
+            "text": "あなたには{0}から敵意しか感じられない。"
+        },
+        {
+            "key": "You already have that power.",
+            "text": "その能力はすでに習得している。"
+        },
+        {
+            "key": "You are frozen solid!",
+            "text": "あなたは完全に凍りついた！"
+        },
+        {
+            "key": "There are hostiles nearby!",
+            "text": "近くに敵対者がいる！"
+        },
+        {
+            "key": "Would you like to walk to the nearest stairway down?",
+            "text": "最寄りの下り階段まで移動しますか？"
+        },
+        {
+            "key": "drop",
+            "text": "落とす"
+        },
+        {
+            "key": "mark important",
+            "text": "重要にする"
+        },
+        {
+            "key": "learn",
+            "text": "習得"
+        },
+        {
+            "key": "add Notes",
+            "text": "メモを追加"
+        },
+        {
+            "key": "add notes",
+            "text": "メモを追加"
+        },
+        {
+            "key": "View final messages",
+            "text": "最後のメッセージを見る"
+        },
+        {
+            "key": "Reload from checkpoint",
+            "text": "チェックポイントから再開"
+        },
+        {
+            "key": "Retire character",
+            "text": "キャラクターを引退"
+        },
+        {
+            "key": "Quit to main menu",
+            "text": "メインメニューに戻る"
+        },
+        {
+            "key": "Your health has dropped below 40%!",
+            "text": "体力が40%を下回った！"
+        },
+        {
+            "key": "How long would you like to sleep?",
+            "text": "どれくらい眠りますか？"
+        },
+        {
+            "key": "There's nothing on that. Would you like to store an item?",
+            "text": "そこには何も置かれていません。アイテムを預けますか？"
+        },
+        {
+            "key": "You need a dram of either blood or putrescence to desecrate a shrine.",
+            "text": "祠を冒涜するには血液か腐敗液のどちらか1ドラムが必要だ。"
+        },
+        {
+            "key": "You note this piece of information in the Sultan Histories > Resheph section of your journal.",
+            "text": "この情報をジャーナルの「スルタン史 > レシェフ」欄に記録した。"
+        },
+        {
+            "key": "Until Waxing Salt Sun",
+            "text": "次の塩の満ちる太陽まで"
+        },
+        {
+            "key": "Until Hindsun",
+            "text": "次の後陽まで"
+        },
+        {
             "key": "{{W|[y]}} {{y|Yes}}",
             "context": "Qud.UI.PopupMessage.Button.Yes.Hotkey",
             "text": "{{W|[y]}} {{y|はい}}"

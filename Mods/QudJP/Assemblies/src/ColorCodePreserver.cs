@@ -7,6 +7,9 @@ namespace QudJP;
 public static class ColorCodePreserver
 {
     private const int MarkupTokenLength = 2;
+    private const string TmpColorOpenTagPrefix = "<color=";
+    private const string TmpColorCloseTag = "</color>";
+
     public static (string stripped, List<ColorSpan> spans) Strip(string? input)
     {
         if (string.IsNullOrEmpty(input))
@@ -84,6 +87,29 @@ public static class ColorCodePreserver
         return builder.ToString();
     }
 
+    internal static List<ColorSpan> SliceSpans(IReadOnlyList<ColorSpan>? spans, int startIndex, int length)
+    {
+        var sliced = new List<ColorSpan>();
+        if (spans is null || spans.Count == 0 || length < 0)
+        {
+            return sliced;
+        }
+
+        var endIndex = startIndex + length;
+        for (var index = 0; index < spans.Count; index++)
+        {
+            var span = spans[index];
+            if (span.Index < startIndex || span.Index > endIndex)
+            {
+                continue;
+            }
+
+            sliced.Add(new ColorSpan(span.Index - startIndex, span.Token));
+        }
+
+        return sliced;
+    }
+
     private static void ParseSegment(string input, int startIndex, int endIndex, StringBuilder builder, List<ColorSpan> spans)
     {
         var index = startIndex;
@@ -127,9 +153,55 @@ public static class ColorCodePreserver
                 continue;
             }
 
+            if (input[index] == '<'
+                && TryReadTmpColorTag(input, index, endIndex, out var tmpToken, out var tmpNextIndex))
+            {
+                spans.Add(new ColorSpan(builder.Length, tmpToken));
+                index = tmpNextIndex;
+                continue;
+            }
+
             builder.Append(input[index]);
             index++;
         }
+    }
+
+    private static bool TryReadTmpColorTag(
+        string input,
+        int startIndex,
+        int endIndex,
+        out string token,
+        out int nextIndex)
+    {
+        token = string.Empty;
+        nextIndex = startIndex;
+
+        if (startIndex >= endIndex || input[startIndex] != '<')
+        {
+            return false;
+        }
+
+        if (StartsWithOrdinalIgnoreCase(input, startIndex, TmpColorCloseTag))
+        {
+            token = TmpColorCloseTag;
+            nextIndex = startIndex + TmpColorCloseTag.Length;
+            return true;
+        }
+
+        if (!StartsWithOrdinalIgnoreCase(input, startIndex, TmpColorOpenTagPrefix))
+        {
+            return false;
+        }
+
+        var closeIndex = input.IndexOf('>', startIndex + TmpColorOpenTagPrefix.Length);
+        if (closeIndex < 0 || closeIndex >= endIndex)
+        {
+            return false;
+        }
+
+        token = input.Substring(startIndex, (closeIndex - startIndex) + 1);
+        nextIndex = closeIndex + 1;
+        return true;
     }
 
     private static bool TryReadMarkup(
@@ -194,6 +266,16 @@ public static class ColorCodePreserver
         }
 
         return false;
+    }
+
+    private static bool StartsWithOrdinalIgnoreCase(string input, int startIndex, string value)
+    {
+        if (startIndex < 0 || startIndex + value.Length > input.Length)
+        {
+            return false;
+        }
+
+        return string.Compare(input, startIndex, value, 0, value.Length, StringComparison.OrdinalIgnoreCase) == 0;
     }
 }
 

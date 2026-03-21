@@ -1,6 +1,17 @@
 <?xml version='1.0' encoding='utf-8'?>
 <factions Load="Merge">
+  <faction Name="Player" DisplayName="プレイヤー" />
+  <faction Name="Inanimate" DisplayName="無生物" />
+  <faction Name="Beasts" DisplayName="獣" />
+  <faction Name="Plants" DisplayName="植物" />
+  <faction Name="Humanoids" DisplayName="人型" />
+  <faction Name="GerminatedPlants" DisplayName="芽吹き植物" />
+  <faction Name="Cherubim" DisplayName="ケルビム" />
   <faction Name="Prey" DisplayName="牧草を食む快楽主義者" />
+  <faction Name="Playerhater" DisplayName="プレイヤー嫌い" />
+  <faction Name="Playerneutral" DisplayName="プレイヤー中立" />
+  <faction Name="Hunters" DisplayName="狩人" />
+  <faction Name="Mean" DisplayName="ミーン" />
   <faction Name="Joppa" DisplayName="ジョッパの村人たち" />
   <faction Name="Kyakukya" DisplayName="キャクキャの村人たち">
     <waterritual
@@ -64,6 +75,7 @@
   <faction Name="Trolls" DisplayName="トロール" />
   <faction Name="Issachari" DisplayName="イッサカリ族" />
   <faction Name="Strangers" DisplayName="謎めいたよそ者" />
+  <faction Name="Solos" DisplayName="ソロ" />
   <faction Name="Pariahs" DisplayName="パリア">
     <interests BuyDescription=" 新しい社会を築くために必要な資源に関心がある： ">
       <interest Tags="water,weep" WillBuy="true" WillSell="false" />
@@ -98,6 +110,7 @@
     </interests>
   </faction>
   <faction Name="Mechanimists" DisplayName="メカニマス教" />
+  <faction Name="MechaSub" DisplayName="メカサブ" />
   <faction Name="Gyre Wights" DisplayName="渦動ワイト" />
   <faction Name="Mamon" DisplayName="マモンの子ら" />
   <faction Name="Seekers" DisplayName="盲道の求道者" />

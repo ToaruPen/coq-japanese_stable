@@ -35,11 +35,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="../src/ColorAwareTranslationComposer.cs" Link="Production/ColorAwareTranslationComposer.cs" />
     <Compile Include="../src/ColorCodePreserver.cs" Link="Production/ColorCodePreserver.cs" />
     <Compile Include="../src/ComparePopupTextFixer.cs" Link="Production/ComparePopupTextFixer.cs" />
     <Compile Include="../src/CompareProbeRunner.cs" Link="Production/CompareProbeRunner.cs" />
     <Compile Include="../src/DelayedInventoryLineRepairScheduler.cs" Link="Production/DelayedInventoryLineRepairScheduler.cs" />
     <Compile Include="../src/DelayedSceneProbeScheduler.cs" Link="Production/DelayedSceneProbeScheduler.cs" />
+    <Compile Include="../src/DynamicTextObservability.cs" Link="Production/DynamicTextObservability.cs" />
     <Compile Include="../src/EquipmentLineFontFixer.cs" Link="Production/EquipmentLineFontFixer.cs" />
     <Compile Include="../src/EquipmentLineObservability.cs" Link="Production/EquipmentLineObservability.cs" />
     <Compile Include="../src/FontManager.cs" Link="Production/FontManager.cs" />
@@ -49,6 +51,7 @@
     <Compile Include="../src/InventoryLineUpdateObservability.cs" Link="Production/InventoryLineUpdateObservability.cs" />
     <Compile Include="../src/InventoryRenderObservability.cs" Link="Production/InventoryRenderObservability.cs" />
     <Compile Include="../src/InventoryUiFieldObservability.cs" Link="Production/InventoryUiFieldObservability.cs" />
+    <Compile Include="../src/LocalizedSearchTextBuilder.cs" Link="Production/LocalizedSearchTextBuilder.cs" />
     <Compile Include="../src/LocalizationAssetResolver.cs" Link="Production/LocalizationAssetResolver.cs" />
     <Compile Include="../src/MessagePatternTranslator.cs" Link="Production/MessagePatternTranslator.cs" />
     <Compile Include="../src/ObservabilityHelpers.cs" Link="Production/ObservabilityHelpers.cs" />

@@ -53,6 +53,396 @@ public sealed class GetDisplayNameProcessPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesMixedModifierAndJapaneseBase_WhenPatched()
+    {
+        WriteDictionary(("lacquered", "漆塗り"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("lacquered サンダル");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("漆塗りサンダル"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("lacquered サンダル"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesEnglishTitlePrefixAndJapaneseBase_WhenPatched()
+    {
+        WriteDictionary(("Warden", "監視官"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("Warden イラメ");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("監視官イラメ"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("Warden イラメ"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesGeneratedTitleSuffix_WhenPatched()
+    {
+        WriteDictionary(("village apothecary", "村の薬師"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("Naruur, village apothecary");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("Naruur、村の薬師"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("Naruur, village apothecary"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesGeneratedTinkerTitleSuffix_WhenPatched()
+    {
+        WriteDictionary(("the village tinker", "村の修理工"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("Uukat, the village tinker");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("Uukat、村の修理工"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("Uukat, the village tinker"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesGeneratedMerchantTitleSuffix_WhenPatched()
+    {
+        WriteDictionary(("the village merchant", "村の商人"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("Yurl, the village merchant");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("Yurl、村の商人"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("Yurl, the village merchant"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesGeneratedDromadMerchantTitleSuffix_WhenPatched()
+    {
+        WriteDictionary(("dromad merchant", "ドロマド商人"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("タム, dromad merchant");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("タム、ドロマド商人"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("タム, dromad merchant"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesGeneratedLastSultanTitleSuffix_WhenPatched()
+    {
+        WriteDictionary(("the Last Sultan", "最後のスルタン"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("レシェフの神殿, the Last Sultan");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("レシェフの神殿、最後のスルタン"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("レシェフの神殿, the Last Sultan"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesGeneratedTitleSuffixWithLeadingModifier_WhenPatched()
+    {
+        WriteDictionary(
+            ("bloody", "{{r|血まみれの}}"),
+            ("village apothecary", "村の薬師"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("bloody Naruur, village apothecary");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("{{r|血まみれの}}Naruur、村の薬師"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("bloody Naruur, village apothecary"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [TestCase("水たまり of salty water", "塩気のある水の水たまり")]
+    [TestCase("水たまり of brackish blood", "塩気混じりの血の水たまり")]
+    public void Postfix_TranslatesLiquidPrepositionDisplayName_WhenPatched(string source, string expected)
+    {
+        WriteDictionary(
+            ("salty", "塩気のある"),
+            ("brackish", "塩気混じりの"),
+            ("water", "水"),
+            ("blood", "血"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor(source);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo(expected));
+                Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesBracketedDisplayNameSuffix_WhenPatched()
+    {
+        WriteDictionary(
+            ("dromad merchant", "ドロマド商人"),
+            ("sitting", "座っている"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("タム, dromad merchant [sitting]");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("タム、ドロマド商人 [座っている]"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("タム, dromad merchant [sitting]"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_DoesNotReTranslateAlreadyLocalizedBracketedDisplayName_WhenPatched()
+    {
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("タム、ドロマド商人 [座っている]");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("タム、ドロマド商人 [座っている]"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("タム、ドロマド商人 [座っている]"), Is.EqualTo(0));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("[座っている]"), Is.EqualTo(0));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("座っている"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesBracketedDisplayNameStateTemplate_WhenPatched()
+    {
+        WriteDictionary(
+            ("dromad merchant", "ドロマド商人"),
+            ("sitting on {0}", "{0}に座っている"),
+            ("chair", "椅子"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("タム, dromad merchant [sitting on a chair]");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("タム、ドロマド商人 [椅子に座っている]"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("タム, dromad merchant [sitting on a chair]"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesBracketedInventoryState_WhenPatched()
+    {
+        WriteDictionary(("[empty]", "[空]"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("水袋 [empty]");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("水袋 [空]"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("水袋 [empty]"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesBracketedLiquidAmount_WhenPatched()
+    {
+        WriteDictionary(("fresh water", "真水"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("水筒 [32 drams of fresh water]");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("水筒 [32ドラムの真水]"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("水筒 [32 drams of fresh water]"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesLeadingMarkupWrappedModifier_WhenPatched()
+    {
+        WriteDictionary(("{{graffitied|graffitied}}", "{{graffitied|落書きされた}}"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("{{graffitied|graffitied}} 塩漬け茎の壁");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("{{graffitied|落書きされた}} 塩漬け茎の壁"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("{{graffitied|graffitied}} 塩漬け茎の壁"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesGeneratedProperNameModifier_WhenPatched()
+    {
+        WriteDictionary(("bloody", "{{r|血まみれの}}"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("bloody Naruur");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("{{r|血まみれの}}Naruur"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("bloody Naruur"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesQuantitySuffix_WhenPatched()
+    {
+        WriteDictionary(("water flask", "水袋"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("water flask x2");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("水袋 x2"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("water flask x2"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesMkTierSuffix_WhenPatched()
+    {
+        WriteDictionary(("rusted grenade", "錆びたグレネード"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("rusted grenade mk I <AA1>");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("錆びたグレネード mk I <AA1>"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("rusted grenade mk I <AA1>"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesAngleCodeSuffix_WhenPatched()
+    {
+        WriteDictionary(("worn bronze sword", "使い込まれた青銅の剣"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("worn bronze sword <BD1>");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("使い込まれた青銅の剣 <BD1>"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("worn bronze sword <BD1>"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesParenthesizedStateSuffix_WhenPatched()
+    {
+        WriteDictionary(("unburnt", "未使用"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("たいまつ x10 (unburnt)");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("たいまつ x10 (未使用)"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("たいまつ x10 (unburnt)"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesParenthesizedStateAndAngleCodeSuffix_WhenPatched()
+    {
+        WriteDictionary(("Low", "低"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("ケムセル (Low) <BD1>");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("ケムセル (低) <BD1>"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("ケムセル (Low) <BD1>"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
     public void Postfix_TranslatesJapaneseEntry_WhenPatched()
     {
         WriteDictionary(("奇妙な遺物", "奇妙なアーティファクト"));

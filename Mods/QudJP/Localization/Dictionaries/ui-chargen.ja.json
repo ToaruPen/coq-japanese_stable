@@ -182,7 +182,7 @@
     {
       "key": "Tinker",
       "context": "Chargen.Subtype.Tinker.Title",
-      "text": "ティンカー"
+      "text": "工匠"
     },
     {
       "key": "Warden",
@@ -242,7 +242,7 @@
     {
       "key": "Tinker\n[{{W|I}}]",
       "context": "TMP.Title",
-      "text": "ティンカー\n[{{W|I}}]"
+      "text": "工匠\n[{{W|I}}]"
     },
     {
       "key": "Warden\n[{{W|J}}]",
@@ -302,7 +302,7 @@
     {
       "key": "Tinker \n[I] ",
       "context": "TMPro.TextMeshProUGUI",
-      "text": "ティンカー \n[I] "
+      "text": "工匠 \n[I] "
     },
     {
       "key": "Warden \n[J] ",

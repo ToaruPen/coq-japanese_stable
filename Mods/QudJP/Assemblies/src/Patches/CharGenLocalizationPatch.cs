@@ -16,6 +16,8 @@ public static class CharGenLocalizationPatch
         "XRL.CharacterCreation.CharacterCreationManager",
         "XRL.CharacterCreation.EmbarkModule",
         "XRL.CharacterBuilds.EmbarkBuilder",
+        "QudSubtypeModule",
+        "QudCallingModule",
         "QudGenotypeModule",
         "QudMutationsModule",
         "QudCyberneticsModule",
@@ -111,7 +113,8 @@ public static class CharGenLocalizationPatch
                 return;
             }
 
-            __result = UITextSkinTranslationPatch.TranslatePreservingColors(__result, nameof(CharGenLocalizationPatch));
+            var translated = ChargenStructuredTextTranslator.Translate(__result);
+            __result = UITextSkinTranslationPatch.TranslatePreservingColors(translated, nameof(CharGenLocalizationPatch));
         }
         catch (Exception ex)
         {

@@ -109,6 +109,24 @@ public sealed class UIExpansionPatchTests
     }
 
     [Test]
+    public void GetDisplayName_TranslatesMixedModifierAndJapaneseBase_WhenPatched()
+    {
+        WriteDictionary(("lacquered", "漆塗り"));
+
+        RunWithPostfixPatch(
+            targetType: typeof(DummyGetDisplayNameEvent),
+            targetMethodName: nameof(DummyGetDisplayNameEvent.GetFor),
+            patchType: typeof(GetDisplayNamePatch),
+            patchMethodName: nameof(GetDisplayNamePatch.Postfix),
+            assertion: () =>
+        {
+            var result = DummyGetDisplayNameEvent.GetFor("lacquered サンダル", "サンダル");
+
+            Assert.That(result, Is.EqualTo("漆塗りサンダル"));
+        });
+    }
+
+    [Test]
     public void GetDisplayName_HandlesNullAndEmptyResult()
     {
         WriteDictionary(("placeholder", "プレースホルダー"));
@@ -225,6 +243,28 @@ public sealed class UIExpansionPatchTests
             var result = new DummyInventoryScreen("Unknown Inventory Text").GetCategoryLabel();
 
             Assert.That(result, Is.EqualTo("Unknown Inventory Text"));
+        });
+    }
+
+    [Test]
+    public void Inventory_SkipsAlreadyLocalizedBracketedDisplayName_WhenPatched()
+    {
+        RunWithPostfixPatch(
+            targetType: typeof(DummyInventoryScreen),
+            targetMethodName: nameof(DummyInventoryScreen.GetCategoryLabel),
+            patchType: typeof(InventoryLocalizationPatch),
+            patchMethodName: nameof(InventoryLocalizationPatch.Postfix),
+            assertion: () =>
+        {
+            var result = new DummyInventoryScreen("水袋 [空]").GetCategoryLabel();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("水袋 [空]"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("水袋 [空]"), Is.EqualTo(0));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("[空]"), Is.EqualTo(0));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("空"), Is.EqualTo(0));
+            });
         });
     }
 

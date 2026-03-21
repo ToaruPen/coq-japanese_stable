@@ -302,7 +302,7 @@
         {
             "key": "Water Containers",
             "context": "XRL.World.Parts.XRL.World.Parts.LiquidVolume",
-            "text": "水用容器"
+            "text": "容れ物"
         },
         {
             "key": "[empty, sealed]",
@@ -1997,7 +1997,7 @@
         {
             "key": "{{g|Quenched}}",
             "context": "XRL.World.Parts.XRL.World.Parts.Stomach",
-            "text": "{{g|潤った}}"
+            "text": "{{g|潤っている}}"
         },
         {
             "key": "{{G|Tumescent}}",
@@ -2582,7 +2582,7 @@
         {
             "key": "You receive tinkering bits <{{|",
             "context": "XRL.World.Parts.XRL.World.Parts.Repair",
-            "text": "細工ビット <{{| を受け取った"
+            "text": "修理ビット <{{| を受け取った"
         },
         {
             "key": "You make some progress repairing ",
@@ -2867,7 +2867,7 @@
         {
             "key": "You receive tinkering bits <{{|",
             "context": "XRL.World.Parts.XRL.World.Parts.Tinkering_Mine",
-            "text": "細工ビット <{{| を受け取った"
+            "text": "修理ビット <{{| を受け取った"
         },
         {
             "key": "You make some progress disarming ",
@@ -3486,4 +3486,3 @@
         }
     ]
 }
-

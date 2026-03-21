@@ -1,151 +1,51 @@
-# Localization/ — XML Translation Files
+# Localization AGENTS.md
 
-Translation XML files for Caves of Qud. The game's merge system loads these
-at startup and overlays them onto the base game data.
+## WHY
 
-## File Naming
+- This area contains the shipped localization assets: XML merge files and JSON dictionaries used by the mod and game.
+- It is the main edit surface for stable translated strings, object names, conversation text, and fixed UI labels.
 
-`Category.jp.xml` — category name matches the game's base XML category:
+## WHAT
 
-```
-Creatures.jp.xml
-Conversations.jp.xml
-Items.jp.xml
-Factions.jp.xml
-```
+### Area Map
 
-Never use spaces or uppercase in the `.jp.xml` suffix.
+- `*.jp.xml`
+  - XML localization overlays loaded by the game's merge system
+- `Dictionaries/*.ja.json`
+  - dictionary assets for UI text, message templates, and display-name fragments
+- `Dictionaries/README.md`
+  - local notes for dictionary handling
 
-## Encoding and Line Endings
+### Facts That Matter Here
 
-- Encoding: **UTF-8 without BOM**
-- Line endings: **LF** (Unix-style)
+- XML files are expected to be UTF-8 without BOM and LF line endings.
+- Most XML localization uses `Load="Merge"` and depends on exact `Name` matching.
+- Blueprint and Conversation IDs must match game version `2.0.4` exactly.
+- Game color codes and runtime placeholders are data, not prose:
+  - preserve `{{...}}`, `&X`, `^x`, `&&`, `^^`
+  - preserve `=variable.name=` exactly
+- Dynamic/procedural text is not automatically an asset-only problem.
+  - If the text is composed upstream, follow `docs/logic-required-policy.md` before adding broad dictionary keys from logs alone.
 
-BOM (byte order mark, `EF BB BF`) causes the game's XML parser to fail
-silently on some platforms. Always save without BOM.
+## HOW
 
-Verify with:
+### Validation Commands
 
-```bash
-file Creatures.jp.xml          # should say "UTF-8 Unicode text"
-hexdump -C Creatures.jp.xml | head -1  # first bytes must NOT be ef bb bf
-```
+- XML well-formedness: `xmllint --noout <file>`
+- Encoding check: `file <file>`
+- BOM check: `hexdump -C <file> | head -1`
+- Python validation/linting from repo root:
+  - `ruff check scripts/`
+  - `pytest scripts/tests/`
 
-## Load Attribute
+### Asset Editing Workflow
 
-Most translation files use attribute-level merge:
+- Use XML or dictionary assets for true stable leaf strings, fixed labels, and atomic names.
+- When a runtime string includes slots, states, quantities, or generated titles, confirm whether it belongs to a feature-specific generator before trying to close it with exact keys.
+- When editing XML overlays, verify that the target object/conversation ID exists for the intended game version.
 
-```xml
-<objects Load="Merge">
-  <object Name="Snapjaw">
-    <part Name="Render" DisplayName="スナップジョー" />
-  </object>
-</objects>
-```
+### Area-Specific Constraints
 
-`Load="Merge"` tells the engine to merge by matching `Name` attributes rather
-than replacing the entire block. Use this for all creature, item, and faction
-translations unless the game's base file uses a different load mode.
-
-## Color Codes — PRESERVE EXACTLY
-
-The game uses three color code formats. All must pass through translation
-unchanged:
-
-### Pre-markup shorthand (most common in XML)
-
-```
-{{W|text}}    white foreground
-{{R|text}}    red foreground
-{{G|text}}    green foreground
-{{y|text}}    dark gray foreground
-```
-
-### Foreground color escape
-
-```
-&W            switch to white
-&R            switch to red
-&G            switch to green
-```
-
-### Background color escape
-
-```
-^r            red background
-^b            blue background
-^y            yellow background
-```
-
-### Literal escapes
-
-```
-&&            literal ampersand
-^^            literal caret
-```
-
-**Wrong** (breaks rendering):
-
-```xml
-<part Name="Render" DisplayName="{{W|スナップジョー" />   <!-- unclosed -->
-<part Name="Render" DisplayName="&Wスナップジョー" />     <!-- missing reset -->
-```
-
-**Correct**:
-
-```xml
-<part Name="Render" DisplayName="{{W|スナップジョー}}" />
-```
-
-## Variable Placeholders
-
-The game substitutes `=variable.name=` at runtime. Preserve the format exactly:
-
-```xml
-<!-- Source -->
-<text>=creature.name= attacks you!</text>
-
-<!-- Translation: keep =creature.name= intact -->
-<text>=creature.name=があなたを攻撃した！</text>
-```
-
-Never translate, reformat, or add spaces inside `=...=`.
-
-## ID Matching
-
-Blueprint and Conversation IDs must exactly match game version **2.0.4**.
-A mismatched ID silently fails — the translation is ignored.
-
-```xml
-<!-- Correct: matches game's internal ID -->
-<object Name="Snapjaw">
-
-<!-- Wrong: game has no object named "SnapJaw" (case-sensitive) -->
-<object Name="SnapJaw">
-```
-
-When in doubt, check the game's base XML files for the exact ID string.
-
-## Mojibake Prevention
-
-Never introduce Shift-JIS corruption sequences. Common mojibake patterns
-that must NOT appear in any file:
-
-```
-繧  縺  驕  蜒  繝  縺ゅ  縺励
-```
-
-If you see these characters, the file was saved in Shift-JIS or re-encoded
-incorrectly. Discard and re-translate from the source.
-
-## Validation Checklist
-
-Before committing a translation file:
-
-1. UTF-8 without BOM confirmed
-2. LF line endings confirmed
-3. All color codes balanced (every `{{X|` has a matching `}}`)
-4. All `=variable.name=` placeholders preserved verbatim
-5. Object/blueprint IDs match game version 2.0.4
-6. No mojibake sequences present
-7. XML is well-formed (`xmllint --noout file.jp.xml`)
+- Do not introduce BOM.
+- Do not alter color-code structure or placeholder syntax while translating surrounding text.
+- Treat mojibake as an encoding failure, not as source text to edit around.

@@ -15,6 +15,16 @@ internal static class GrammarPatchTarget
 
 internal static class GrammarPatchHelpers
 {
+    internal static void LogTransform(string family, string source, string translated, bool logWhenUnchanged = false)
+    {
+        DynamicTextObservability.RecordTransform("GrammarPatch", family, source, translated, logWhenUnchanged);
+    }
+
+    internal static string DescribeCountFamily(string family, int count)
+    {
+        return family + "/count=" + (count >= 3 ? "3+" : count.ToString(CultureInfo.InvariantCulture));
+    }
+
     internal static MethodBase? ResolveMethod(string methodName, Type[] parameterTypes, string signature)
     {
         var method = AccessTools.Method(GrammarPatchTarget.TypeName + ":" + methodName, parameterTypes);
@@ -33,32 +43,53 @@ internal static class GrammarPatchHelpers
             return string.Empty;
         }
 
+        var normalizedItems = new string[items.Count];
+        for (var index = 0; index < items.Count; index++)
+        {
+            normalizedItems[index] = StripLeadingIndefiniteArticle(items[index]);
+        }
+
         if (items.Count == 1)
         {
-            return items[0];
+            return normalizedItems[0];
         }
 
         if (items.Count == 2)
         {
-            return items[0] + conjunction + items[1];
+            return normalizedItems[0] + conjunction + normalizedItems[1];
         }
 
-        var result = new StringBuilder(items[0]);
+        var result = new StringBuilder(normalizedItems[0]);
         for (var index = 1; index < items.Count - 1; index++)
         {
             result.Append('、');
-            result.Append(items[index]);
+            result.Append(normalizedItems[index]);
         }
 
         result.Append('、');
         result.Append(conjunction);
-        result.Append(items[items.Count - 1]);
+        result.Append(normalizedItems[items.Count - 1]);
         return result.ToString();
     }
 
     internal static List<string> EnsureList(IEnumerable<string> source)
     {
         return source is List<string> list ? list : new List<string>(source);
+    }
+
+    internal static string StripLeadingIndefiniteArticle(string source)
+    {
+        if (source.Length > 2 && source.StartsWith("a ", StringComparison.OrdinalIgnoreCase))
+        {
+            return source.Substring(2);
+        }
+
+        if (source.Length > 3 && source.StartsWith("an ", StringComparison.OrdinalIgnoreCase))
+        {
+            return source.Substring(3);
+        }
+
+        return source;
     }
 
     internal static List<string> SplitSentenceList(string text)
@@ -105,7 +136,8 @@ public static class GrammarAPatch
         try
         {
             _ = Capitalize;
-            __result = Word;
+            __result = GrammarPatchHelpers.StripLeadingIndefiniteArticle(Word);
+            GrammarPatchHelpers.LogTransform("A", Word, __result, logWhenUnchanged: true);
             return false;
         }
         catch (Exception ex)
@@ -133,6 +165,7 @@ public static class GrammarPluralizePatch
         try
         {
             __result = word;
+            GrammarPatchHelpers.LogTransform("Pluralize", word, __result, logWhenUnchanged: true);
             return false;
         }
         catch (Exception ex)
@@ -160,6 +193,7 @@ public static class GrammarMakePossessivePatch
         try
         {
             __result = word.EndsWith("の", StringComparison.Ordinal) ? word : word + "の";
+            GrammarPatchHelpers.LogTransform("MakePossessive", word, __result, logWhenUnchanged: true);
             return false;
         }
         catch (Exception ex)
@@ -197,6 +231,10 @@ public static class GrammarMakeAndListPatch
             _ = __1;
             var items = GrammarPatchHelpers.EnsureList(__0);
             __result = GrammarPatchHelpers.BuildJapaneseList(items, "と");
+            GrammarPatchHelpers.LogTransform(
+                GrammarPatchHelpers.DescribeCountFamily("MakeAndList", items.Count),
+                string.Join(" | ", items),
+                __result);
             return false;
         }
         catch (Exception ex)
@@ -246,6 +284,10 @@ public static class GrammarMakeOrListPatch
             _ = __1;
             var items = GrammarPatchHelpers.EnsureList(__0);
             __result = GrammarPatchHelpers.BuildJapaneseList(items, "または");
+            GrammarPatchHelpers.LogTransform(
+                GrammarPatchHelpers.DescribeCountFamily("MakeOrList", items.Count),
+                string.Join(" | ", items),
+                __result);
             return false;
         }
         catch (Exception ex)
@@ -281,6 +323,10 @@ public static class GrammarSplitOfSentenceListPatch
         try
         {
             __result = GrammarPatchHelpers.SplitSentenceList(Text);
+            GrammarPatchHelpers.LogTransform(
+                GrammarPatchHelpers.DescribeCountFamily("SplitOfSentenceList", __result.Count),
+                Text,
+                string.Join(" | ", __result));
             return false;
         }
         catch (Exception ex)
@@ -316,6 +362,7 @@ public static class GrammarInitCapsPatch
         try
         {
             __result = Text;
+            GrammarPatchHelpers.LogTransform("InitCaps", Text, __result, logWhenUnchanged: true);
             return false;
         }
         catch (Exception ex)
@@ -351,6 +398,7 @@ public static class GrammarCardinalNumberPatch
         try
         {
             __result = Number.ToString(CultureInfo.InvariantCulture);
+            GrammarPatchHelpers.LogTransform("CardinalNumber", Number.ToString(CultureInfo.InvariantCulture), __result, logWhenUnchanged: true);
             return false;
         }
         catch (Exception ex)

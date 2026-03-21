@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -8,6 +9,9 @@ namespace QudJP.Patches;
 [HarmonyPatch]
 public static class ConversationDisplayTextPatch
 {
+    private static readonly Regex TrailingActionMarkerPattern =
+        new Regex(" (?<marker>\\[[^\\]]+\\])$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
     {
@@ -55,11 +59,23 @@ public static class ConversationDisplayTextPatch
                 return;
             }
 
+            __result = NormalizeConversationDisplayText(__result);
             __result = UITextSkinTranslationPatch.TranslatePreservingColors(__result, nameof(ConversationDisplayTextPatch));
         }
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: ConversationDisplayTextPatch.Postfix failed: {0}", ex);
         }
+    }
+
+    private static string NormalizeConversationDisplayText(string source)
+    {
+        var match = TrailingActionMarkerPattern.Match(source);
+        if (!match.Success)
+        {
+            return source;
+        }
+
+        return source.Substring(0, match.Index);
     }
 }

@@ -33,6 +33,30 @@
       "key": "Remove",
       "context": "XRL.World.IInventoryActionsEvent",
       "text": "外す"
+    },
+    {
+      "key": "Close Menu",
+      "text": "メニューを閉じる"
+    },
+    {
+      "key": "sort: a-z/by class",
+      "text": "並び替え: A-Z/カテゴリ別"
+    },
+    {
+      "key": "vendor actions",
+      "text": "取引"
+    },
+    {
+      "key": "add one",
+      "text": "1つ追加"
+    },
+    {
+      "key": "remove one",
+      "text": "1つ減らす"
+    },
+    {
+      "key": "toggle all",
+      "text": "すべて切り替え"
     }
   ]
 }

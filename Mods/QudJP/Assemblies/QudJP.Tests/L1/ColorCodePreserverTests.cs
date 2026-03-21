@@ -97,6 +97,23 @@ public sealed class ColorCodePreserverTests
     }
 
     [Test]
+    public void SliceSpans_ReturnsRangeRelativeMarkup()
+    {
+        var input = "{{W|[Esc]}} {{y|Cancel}}";
+        var (stripped, spans) = ColorCodePreserver.Strip(input);
+
+        var hotkey = ColorCodePreserver.Restore("[Esc]", ColorCodePreserver.SliceSpans(spans, 0, 5));
+        var label = ColorCodePreserver.Restore("キャンセル", ColorCodePreserver.SliceSpans(spans, 6, 6));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stripped, Is.EqualTo("[Esc] Cancel"));
+            Assert.That(hotkey, Is.EqualTo("{{W|[Esc]}}"));
+            Assert.That(label, Is.EqualTo("{{y|キャンセル}}"));
+        });
+    }
+
+    [Test]
     public void Strip_ReturnsEmptyValue_ForNullOrEmptyInput()
     {
         var nullResult = ColorCodePreserver.Strip(null);

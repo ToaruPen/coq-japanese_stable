@@ -50,6 +50,18 @@
       "text": "メッセージログ"
     },
     {
+      "key": "Books",
+      "text": "書物"
+    },
+    {
+      "key": "Armor",
+      "text": "防具"
+    },
+    {
+      "key": "Building zone...",
+      "text": "ゾーンを構築中..."
+    },
+    {
       "key": "Sort Options",
       "text": "並び替えオプション"
     },
@@ -104,6 +116,70 @@
       "text": "続ける"
     },
     {
+      "key": "[y] Yes",
+      "text": "[y] はい"
+    },
+    {
+      "key": "[n] No",
+      "text": "[n] いいえ"
+    },
+    {
+      "key": "Game saved!",
+      "text": "ゲームを保存しました！"
+    },
+    {
+      "key": "Light Sources",
+      "text": "光源"
+    },
+    {
+      "key": "Food",
+      "text": "食料"
+    },
+    {
+      "key": "Meds",
+      "text": "医薬品"
+    },
+    {
+      "key": "Scrap",
+      "text": "スクラップ"
+    },
+    {
+      "key": "Data Disks",
+      "text": "データディスク"
+    },
+    {
+      "key": "Clothes",
+      "text": "衣類"
+    },
+    {
+      "key": "Tools",
+      "text": "道具"
+    },
+    {
+      "key": "Trade Goods",
+      "text": "交易品"
+    },
+    {
+      "key": "Grenades",
+      "text": "グレネード"
+    },
+    {
+      "key": "MUTATION",
+      "text": "変異"
+    },
+    {
+      "key": "ALL",
+      "text": "すべて"
+    },
+    {
+      "key": "*All",
+      "text": "*すべて"
+    },
+    {
+      "key": "quit",
+      "text": "終了"
+    },
+    {
       "key": "Are you sure you want to quit?",
       "text": "本当に終了しますか？"
     },
@@ -151,6 +227,62 @@
       "text": "セーブ"
     },
     {
+      "key": "Save Tombstone File",
+      "text": "墓碑ファイルを保存"
+    },
+    {
+      "key": "You don't have any schematics.",
+      "text": "設計図を持っていない。"
+    },
+    {
+      "key": "You have no active quests.",
+      "text": "進行中のクエストはない。"
+    },
+    {
+      "key": "TARGET: [none]",
+      "text": "対象: [なし]"
+    },
+    {
+      "key": "village apothecary",
+      "text": "村の薬師"
+    },
+    {
+      "key": "the village apothecary",
+      "text": "村の薬師"
+    },
+    {
+      "key": "village tinker",
+      "text": "村の修理工"
+    },
+    {
+      "key": "the village tinker",
+      "text": "村の修理工"
+    },
+    {
+      "key": "village merchant",
+      "text": "村の商人"
+    },
+    {
+      "key": "the village merchant",
+      "text": "村の商人"
+    },
+    {
+      "key": "dromad merchant",
+      "text": "ドロマド商人"
+    },
+    {
+      "key": "the Last Sultan",
+      "text": "最後のスルタン"
+    },
+    {
+      "key": "Wraith-Knight Templar of the Binary Honorum",
+      "text": "バイナリー・オノルムの亡霊聖堂騎士"
+    },
+    {
+      "key": "Exit",
+      "text": "終了"
+    },
+    {
       "key": "Location:",
       "text": "場所："
     },
@@ -193,6 +325,142 @@
     {
       "key": "Look",
       "text": "調べる"
+    },
+    {
+      "key": "interact",
+      "text": "インタラクト"
+    },
+    {
+      "key": "walk",
+      "text": "歩く"
+    },
+    {
+      "key": "lock",
+      "text": "固定"
+    },
+    {
+      "key": "Loading game",
+      "text": "ゲームを読み込み中"
+    },
+    {
+      "key": "ACTIVE EFFECTS:",
+      "text": "発動中の効果:"
+    },
+    {
+      "key": "take all",
+      "text": "すべて取る"
+    },
+    {
+      "key": "store",
+      "text": "保管"
+    },
+    {
+      "key": "store an item",
+      "text": "アイテムを保管"
+    },
+    {
+      "key": "buy",
+      "text": "購入"
+    },
+    {
+      "key": "show",
+      "text": "表示"
+    },
+    {
+      "key": "disassemble all",
+      "text": "すべて分解"
+    },
+    {
+      "key": "LVL",
+      "text": "Lv"
+    },
+    {
+      "key": "Exp",
+      "text": "経験値"
+    },
+    {
+      "key": "Sated",
+      "text": "満腹"
+    },
+    {
+      "key": "Quenched",
+      "text": "潤っている"
+    },
+    {
+      "key": "Perfect",
+      "text": "完璧"
+    },
+    {
+      "key": "Injured",
+      "text": "負傷"
+    },
+    {
+      "key": "Fine",
+      "text": "良好"
+    },
+    {
+      "key": "Hostile",
+      "text": "敵対的"
+    },
+    {
+      "key": "Impossible",
+      "text": "不可能"
+    },
+    {
+      "key": "Average",
+      "text": "平均"
+    },
+    {
+      "key": "pray",
+      "text": "祈る"
+    },
+    {
+      "key": "desecrate",
+      "text": "冒涜する"
+    },
+    {
+      "key": "untarget",
+      "text": "ターゲット解除"
+    },
+    {
+      "key": "sitting",
+      "text": "座っている"
+    },
+    {
+      "key": "flying",
+      "text": "飛行中"
+    },
+    {
+      "key": "wading",
+      "text": "浅瀬を進んでいる"
+    },
+    {
+      "key": "wet",
+      "text": "濡れている"
+    },
+    {
+      "key": "prone",
+      "text": "伏せている"
+    },
+    {
+      "key": "sitting on {0}",
+      "text": "{0}に座っている"
+    },
+    {
+      "key": "lying on {0}",
+      "text": "{0}に横たわっている"
+    },
+    {
+      "key": "enclosed in {0}",
+      "text": "{0}に閉じ込められている"
+    },
+    {
+      "key": "engulfed by {0}",
+      "text": "{0}に呑み込まれている"
+    },
+    {
+      "key": "auto-collecting {0}",
+      "text": "{0}を自動収集中"
     },
     {
       "key": "Color",
@@ -426,8 +694,24 @@
       "text": "重量："
     },
     {
+      "key": "Strength Bonus Cap:",
+      "text": "筋力ボーナス上限:"
+    },
+    {
+      "key": "Weapon Class:",
+      "text": "武器カテゴリ:"
+    },
+    {
       "key": "unburnt",
       "text": "未点火"
+    },
+    {
+      "key": "Low",
+      "text": "低"
+    },
+    {
+      "key": "low",
+      "text": "低"
     },
     {
       "key": "Adds",

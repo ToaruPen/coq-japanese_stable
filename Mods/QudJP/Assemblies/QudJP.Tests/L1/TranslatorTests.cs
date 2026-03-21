@@ -85,6 +85,31 @@ public sealed class TranslatorTests
     }
 
     [Test]
+    public void Translate_LogsNestedContextDetails_WhileKeepingPrimaryRouteCounts()
+    {
+        WriteDictionary("ui-test.ja.json", "Hello", "こんにちは");
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+        {
+            using var route = Translator.PushLogContext("MainMenuLocalizationPatch");
+            using var collection = Translator.PushLogContext("collection=LeftOptions");
+            using var itemType = Translator.PushLogContext("itemType=DummyMenuItem");
+            using var field = Translator.PushLogContext("field=Text");
+            _ = Translator.Translate("MISSING_KEY_FOR_NestedContext");
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                output,
+                Does.Contain("context: MainMenuLocalizationPatch > collection=LeftOptions > itemType=DummyMenuItem > field=Text"));
+            Assert.That(
+                Translator.GetMissingRouteHitCountForTests("MainMenuLocalizationPatch"),
+                Is.EqualTo(1));
+        });
+    }
+
+    [Test]
     public void Translate_LoadsDictionaryOnlyOnce_WhenCalledRepeatedly()
     {
         WriteDictionary("ui-test.ja.json", "Inventory", "インベントリ");

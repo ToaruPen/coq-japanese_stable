@@ -1,155 +1,44 @@
-# scripts/ — Python Tooling
+# Scripts AGENTS.md
 
-Translation tooling, validation scripts, and their tests live here.
+## WHY
 
-## Runtime Requirements
+- This area contains Python tooling for validation, extraction, diffing, and deployment support for the localization project.
+- Script changes affect contributor workflow and asset correctness rather than game runtime patching directly.
 
-- Python 3.12 or newer
-- Dependencies declared in `pyproject.toml` (project root)
+## WHAT
 
-## Linting
+### Area Map
 
-Ruff is the sole linter and formatter. Config lives in `pyproject.toml`:
+- top-level `scripts/*.py`
+  - operational utilities such as sync, validation, extraction, and diff helpers
+- `scripts/tests/`
+  - pytest coverage for the Python tools
+- canonical config
+  - `pyproject.toml` defines Ruff and pytest behavior for this area
 
-```toml
-[tool.ruff.lint]
-select = ["ALL"]
+### Facts That Matter Here
 
-[tool.ruff.lint.mccabe]
-max-complexity = 10
-```
+- Python baseline is `3.12+`.
+- Ruff is the configured linter for this area.
+- Tests run with pytest from `scripts/tests/`.
+- Public script interfaces in this repo are typed and documented; existing files follow that pattern.
 
-Run before committing:
+## HOW
 
-```bash
-ruff check scripts/
-ruff format scripts/
-```
+### Common Commands
 
-All rules are enabled. Disable individual rules only with an inline comment
-and a justification:
+- Lint: `ruff check scripts/`
+- Format, if needed by existing workflow: `ruff format scripts/`
+- Tests: `pytest scripts/tests/`
+- Narrow test run: `pytest scripts/tests/ -k <pattern>`
 
-```python
-result = some_func()  # noqa: SIM117 -- nested with needed for clarity
-```
+### Editing Workflow
 
-## Type Hints
+- Prefer extending an existing script when the behavior belongs to the same operational tool.
+- Keep error paths explicit and actionable because these scripts are used for validation and deployment tasks.
+- When a script validates localization assets, align its checks with the canonical repo docs rather than duplicating new rules ad hoc.
 
-Required on every public function and method:
+### Area-Specific Constraints
 
-```python
-def translate_text(source: str, locale: str = "ja") -> str:
-    ...
-
-def load_xml(path: Path) -> ET.ElementTree:
-    ...
-```
-
-Private helpers (leading underscore) should also have hints where practical.
-
-## Docstrings
-
-Google style. Required on all public functions, classes, and modules:
-
-```python
-def sync_translations(source_dir: Path, output_dir: Path) -> int:
-    """Sync XML translation files from source to output directory.
-
-    Args:
-        source_dir: Directory containing source XML files.
-        output_dir: Destination directory for translated files.
-
-    Returns:
-        Number of files written.
-
-    Raises:
-        FileNotFoundError: If source_dir does not exist.
-    """
-```
-
-## Script Naming
-
-`verb_noun.py` pattern. The verb describes the action; the noun describes
-the target:
-
-```
-sync_translations.py    # copies/merges XML files
-check_encoding.py       # validates UTF-8 / BOM / mojibake
-validate_ids.py         # checks blueprint/conversation IDs against game data
-extract_strings.py      # pulls translatable strings from game XML
-```
-
-No generic names like `utils.py`, `helpers.py`, or `main.py`.
-
-## Import Ordering
-
-Enforced by Ruff (isort rules). Three groups, separated by blank lines:
-
-```python
-# 1. stdlib
-import re
-from pathlib import Path
-
-# 2. third-party
-import lxml.etree as ET
-
-# 3. local
-from scripts.common import load_config
-```
-
-## Tests
-
-Location: `scripts/tests/`
-Runner: pytest
-
-```bash
-pytest scripts/tests/
-pytest scripts/tests/ -v          # verbose
-pytest scripts/tests/ -k encoding # filter by name
-```
-
-Test file naming mirrors the script it covers:
-
-```
-scripts/check_encoding.py   ->  scripts/tests/test_check_encoding.py
-scripts/sync_translations.py -> scripts/tests/test_sync_translations.py
-```
-
-Each test file starts with a module docstring explaining what it covers.
-
-## Error Handling
-
-Fail fast with actionable messages. Include: cause, affected file/line,
-and a suggested fix where possible:
-
-```python
-msg = (
-    f"BOM detected in {path}. "
-    "Save as UTF-8 without BOM (VS Code: bottom-right encoding selector)."
-)
-raise ValueError(msg)
-```
-
-Never silently swallow exceptions. Never use bare `except:`.
-
-## Common Patterns
-
-### Reading XML safely
-
-```python
-from pathlib import Path
-import lxml.etree as ET
-
-def load_xml(path: Path) -> ET.ElementTree:
-    """Load an XML file, raising on parse error."""
-    with path.open("rb") as fh:
-        return ET.parse(fh)
-```
-
-### Walking translation files
-
-```python
-def iter_jp_xml(root: Path):
-    """Yield all *.jp.xml files under root."""
-    yield from root.rglob("*.jp.xml")
-```
+- Do not add silent fallbacks that hide invalid asset state.
+- Keep script names descriptive; this repo uses `verb_noun.py` style names for top-level tools.

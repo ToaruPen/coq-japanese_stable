@@ -279,7 +279,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="図面・設計術を脳に直接書き込むソフトウェアの第二世代。" />
     <part Name="Render" DisplayName="{{Y|スキーマソフト Mk2}}" Tile="Items/sw_schemasoft.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="2" BehaviorDescription="ティンカーIIIまでの設計図を1つ会得する。" />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="2" BehaviorDescription="修理工IIIまでの設計図を1つ会得する。" />
     <part Name="CyberneticsSchemasoft" MaxTier="3" />
     <tag Name="CyberneticsDestroyOnRemoval" />
     <part Name="ItemElements" Elements="scholarship::3" />
@@ -405,7 +405,7 @@
     <part Name="Physics" Weight="5" />
     <part Name="Description" Short="物質の再配列を行う微小工場。破損した装備をその場で修復する。" />
     <part Name="Render" DisplayName="{{Y|物質再構築機}}" Tile="Items/sw_matter.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Body" Cost="3" BehaviorDescription="装備の耐久度を徐々に修復する。ティンカー行為の時間 -25%" />
+    <part Name="CyberneticsBaseItem" Slots="Body" Cost="3" BehaviorDescription="装備の耐久度を徐々に修復する。工作時間 -25%" />
     <part Name="CyberneticsMatterRecompositer" />
     <part Name="ItemElements" Elements="travel::4" />
     <tag Name="CyberneticsOneOnly" />
@@ -453,7 +453,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="希少な設計図を脳に直接ロードする第三世代スキーマソフト。" />
     <part Name="Render" DisplayName="{{Y|スキーマソフト Mk3}}" Tile="Items/sw_schemasoft.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="3" BehaviorDescription="ティンカーIV相当の設計図を1つ会得する。" />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="3" BehaviorDescription="修理工IV相当の設計図を1つ会得する。" />
     <part Name="CyberneticsSchemasoft" MaxTier="5" />
     <tag Name="CyberneticsDestroyOnRemoval" />
     <part Name="ItemElements" Elements="scholarship::4" />
@@ -541,9 +541,9 @@
   </object>
   <object Name="Schemasoft4" Inherits="BaseCyberneticsEquipment_4point" Replace="true">
     <part Name="Physics" Weight="0" />
-    <part Name="Description" Short="ティンカー上級者向けの最上位スキーマソフト。古代図面を完全再現する。" />
+    <part Name="Description" Short="修理工上級者向けの最上位スキーマソフト。古代図面を完全再現する。" />
     <part Name="Render" DisplayName="{{Y|スキーマソフト Mk4}}" Tile="Items/sw_schemasoft.bmp" ColorString="&amp;C" DetailColor="R" />
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="4" BehaviorDescription="高Tierの設計図を1つ会得し、ティンカー難易度を1段階下げる。" />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="4" BehaviorDescription="高Tierの設計図を1つ会得し、工作難易度を1段階下げる。" />
     <part Name="CyberneticsSchemasoft" MaxTier="7" />
     <part Name="ItemElements" Elements="scholarship::5" />
     <tag Name="CyberneticsDestroyOnRemoval" />
@@ -552,7 +552,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="力場を刃として形成し、分子単位で切削を行う精密旋盤。" />
     <part Name="Render" DisplayName="{{Y|精密フォース旋盤}}" Tile="Items/implant_precision_force_lathe.bmp" TileColor="&amp;c" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Head,Arm,Body,Back" Cost="4" BehaviorDescription="工作時間 -50%&#10;ティンカー素材消費 -1 (最低1)" />
+    <part Name="CyberneticsBaseItem" Slots="Head,Arm,Body,Back" Cost="4" BehaviorDescription="工作時間 -50%&#10;工作素材消費 -1 (最低1)" />
     <part Name="CyberneticsPrecisionForceLathe" />
     <tag Name="CyberneticsOneOnly" />
   </object>
@@ -588,7 +588,7 @@
     <part Name="Physics" Weight="2" />
     <part Name="Description" Short="指先に配した微細マニピュレーター群。極小の工作を手早く行える。" />
     <part Name="Render" DisplayName="{{Y|マイクロマニピュレーターアレイ}}" Tile="Items/sw_cyber_micromanipulator_array.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="5" BehaviorDescription="解体・組立の時間 -50%&#10;ティンカー判定 +3" />
+    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="5" BehaviorDescription="解体・組立の時間 -50%&#10;工作判定 +3" />
     <part Name="CyberneticsMicromanipulatorArray" />
     <part Name="ItemElements" Elements="scholarship::5" />
     <part Name="Toolbox" ChargeUse="0" WorksOnCarrier="false" TrackAsToolbox="false" UnpoweredInspectBonus="8" UnpoweredDisassembleBonus="10" ComputePowerFactor="1" NameForStatus="DiagnosticSensors" />
@@ -678,7 +678,7 @@
     <part Name="Physics" Weight="5" />
     <part Name="Description" Short="高精度で物質を再構成するプレミアムモデル。遺失技術の修復も可能。" />
     <part Name="Render" DisplayName="{{Y|高忠実度物質再構築機}}" Tile="Items/sw_cyber_high_fidelity_matter_recompositer.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Body" Cost="8" BehaviorDescription="装備耐久の自動修復が二倍の速度になる。&#10;ティンカー時に追加で+1設計図を選べる。" />
+    <part Name="CyberneticsBaseItem" Slots="Body" Cost="8" BehaviorDescription="装備耐久の自動修復が二倍の速度になる。&#10;工作時に追加で+1設計図を選べる。" />
     <part Name="CyberneticsHighFidelityMatterRecompositer" />
     <part Name="ItemElements" Elements="travel::8" />
     <tag Name="CyberneticsOneOnly" />
@@ -1349,7 +1349,7 @@
   </object>
   <object Name="Basic Toolkit" Inherits="Tool" Replace="true">
     <part Name="Render" DisplayName="{{c|基本工具セット}}" Tile="Items/sw_toolbox.bmp" ColorString="&amp;c" DetailColor="C" />
-    <part Name="Description" Short="錫の箱でティンカ道具がカンカン鳴っている。ピンセット、小槌、プライヤー、逆プライヤー、ガラス玉、レンチが三丁。" />
+    <part Name="Description" Short="錫の箱で修理道具がカンカン鳴っている。ピンセット、小槌、プライヤー、逆プライヤー、ガラス玉、レンチが三丁。" />
     <part Name="Commerce" Value="15" />
     <part Name="Metal" />
     <part Name="Toolbox" UnpoweredDisassembleBonus="10" ChargeUse="0" WorksOnEquipper="true" WorksOnCarrier="true" IsTechScannable="false" BehaviorDescription="この品を使うと遺物を分解したとき追加のパーツを回収しやすくなる。" />
@@ -1611,7 +1611,7 @@
     <part Name="Examiner" Complexity="2" Alternate="UnknownBottle" />
     <part Name="Render" Tile="items/sw_spray.bmp" DisplayName="スプレーボトル" ColorString="&amp;C" DetailColor="c" RenderString="012" RenderLayer="5" />
     <part Name="Physics" Category="Applicators" />
-    <part Name="Description" Short="あるティンカーがサイフォン管と加圧ノズルを組み合わせ、注ぎたくない液体を噴霧する道具を作った。" />
+    <part Name="Description" Short="ある修理工がサイフォン管と加圧ノズルを組み合わせ、注ぎたくない液体を噴霧する道具を作った。" />
     <part Name="Commerce" Value="20" />
     <part Name="Applicator" />
     <part Name="Spraybottle" />
@@ -2081,54 +2081,42 @@
   </object>
   <object Name="HalfFullWaterskin" Inherits="Waterskin" Replace="true">
     <part Name="LiquidVolume" StartVolume="32" />
-    <part Name="Render" DisplayName="水袋（半量）" />
   </object>
   <object Name="FullWaterskin" Inherits="Waterskin" Replace="true">
     <part Name="LiquidVolume" StartVolume="64" />
-    <part Name="Render" DisplayName="水袋（満タン）" />
   </object>
   <object Name="EmptyWaterskin" Inherits="Waterskin" Replace="true">
     <part Name="LiquidVolume" StartVolume="0" />
-    <part Name="Render" DisplayName="水袋（空）" />
   </object>
   <object Name="RandomWaterskin" Inherits="Waterskin" Replace="true">
     <part Name="LiquidVolume" StartVolume="4d16" />
-    <part Name="Render" DisplayName="水袋（不定量）" />
   </object>
   <object Name="Randomskin" Inherits="Waterskin" Replace="true">
     <part Name="LiquidVolume" StartVolume="0" />
     <part Name="PopulationLiquidFiller" Table="RandomLiquid" Volume="1d8" />
-    <part Name="Render" DisplayName="水袋（未知の液体）" />
   </object>
   <object Name="HoneyWaterskin" Inherits="Waterskin" Replace="true">
     <part Name="LiquidVolume" InitialLiquid="honey-1000" StartVolume="2d16" />
-    <part Name="Render" DisplayName="ハチミツ入り水袋" />
   </object>
   <object Name="HoneyWaterskinSmallAmount" Inherits="Waterskin" Replace="true">
     <part Name="LiquidVolume" InitialLiquid="honey-1000" StartVolume="2-5" />
-    <part Name="Render" DisplayName="ハチミツ入り水袋（少量）" />
   </object>
   <object Name="ApostleHoneyWaterskin" Inherits="Waterskin" Replace="true">
     <part Name="LiquidVolume" InitialLiquid="honey-1000" StartVolume="2d6+1" />
-    <part Name="Render" DisplayName="使徒のハチミツ袋" />
     <tag Name="ExcludeFromDynamicEncounters" Value="*noinherit" />
   </object>
   <object Name="WineWaterskin" Inherits="Waterskin" Replace="true">
     <part Name="LiquidVolume" InitialLiquid="wine-1000" StartVolume="2d16" />
-    <part Name="Render" DisplayName="ワイン入り水袋" />
   </object>
   <object Name="PilgrimWineWaterskin" Inherits="Waterskin" Replace="true">
     <part Name="LiquidVolume" InitialLiquid="wine-1000" StartVolume="2d6+1" />
-    <part Name="Render" DisplayName="巡礼者のワイン袋" />
     <tag Name="ExcludeFromDynamicEncounters" Value="*noinherit" />
   </object>
   <object Name="Slimeskin" Inherits="Waterskin" Replace="true">
     <part Name="LiquidVolume" InitialLiquid="slime-1000" StartVolume="2d16" />
-    <part Name="Render" DisplayName="粘液入り水袋" />
   </object>
   <object Name="CiderWaterskin" Inherits="Waterskin" Replace="true">
     <part Name="LiquidVolume" InitialLiquid="cider-1000" StartVolume="2d16" />
-    <part Name="Render" DisplayName="サイダー入り水袋" />
   </object>
   <object Name="Oilskin" Inherits="WaterContainer" Replace="true">
     <part Name="LiquidVolume" MaxVolume="64" Volume="64" StartVolume="1d32" InitialLiquid="oil-1000" ManualSeal="true" />
@@ -2157,7 +2145,6 @@
   </object>
   <object Name="Empty Canteen" Inherits="Canteen" Replace="true">
     <part Name="LiquidVolume" StartVolume="0-1" />
-    <part Name="Render" DisplayName="水筒（空）" ColorString="&amp;g" TileColor="&amp;g" DetailColor="w" Tile="Items/sw_canteen.png" />
     <tag Name="ExcludeFromDynamicEncounters" Value="*noinherit" />
   </object>
   <object Name="Phial" Inherits="WaterContainer" Replace="true">
@@ -10854,7 +10841,7 @@
 <object Name="Dormant Waydroid" Inherits="Item" Replace="true">
     <part Name="Render" DisplayName="{{c|休眠中のウェイドロイド}}" RenderString="2" ColorString="&amp;c" Tile="Creatures/sw_waydroid.bmp" DetailColor="W" RenderLayer="5" />
     <part Name="Commerce" Value="30" />
-    <part Name="Description" Short="ここに、知覚のない眠りにあるウェイドロイドが横たわっている。心あるティンカーなら、ふたたび命を与えられるだろうか。" />
+    <part Name="Description" Short="ここに、知覚のない眠りにあるウェイドロイドが横たわっている。心ある修理工なら、ふたたび命を与えられるだろうか。" />
     <part Name="Physics" Category="Quest Items" />
     <tag Name="ExcludeFromDynamicEncounters" />
     <tag Name="NoSparkingQuest" />

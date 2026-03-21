@@ -52,7 +52,7 @@
     {
       "key": "  {{C|?}} Tinker I",
       "context": "TMP.Description",
-      "text": "  {{C|?}} ティンカー I"
+      "text": "  {{C|?}} 修理工 I"
     },
     {
       "key": "+200 reputation with bears",
@@ -185,6 +185,16 @@
       "text": "四肢切断"
     },
     {
+      "key": "Melee",
+      "context": "TMP.Skill Name",
+      "text": "近接"
+    },
+    {
+      "key": "Melee Weapons",
+      "context": "TMP.Skill Name",
+      "text": "近接武器"
+    },
+    {
       "key": "Apothecary",
       "context": "TMP.Skill Name",
       "text": "薬師"
@@ -193,6 +203,14 @@
       "key": "Are you sure you want to buy ",
       "context": "XRL.UI.SkillsAndPowersScreen",
       "text": "購入してもよろしいですか: "
+    },
+    {
+      "key": "Buy Mutation",
+      "text": "変異を購入"
+    },
+    {
+      "key": "Show Effects",
+      "text": "効果を表示"
     },
     {
       "key": "As long as you wield a shield, there is a 50% chance you block one melee attack per round. When you block an attack, you add the shield's AV bonus to your AV for that attack. If you equip multiple shields, the one block per round limit is per shield, and you only can attempt to block a given attack once, using your best usable shield.",
@@ -1147,22 +1165,22 @@
     {
       "key": "Tinker I",
       "context": "TMP.Description",
-      "text": "ティンカー I"
+      "text": "工匠 I"
     },
     {
       "key": "Tinker I",
       "context": "TMP.Skill Name",
-      "text": "発明Ⅰ"
+      "text": "工匠 I"
     },
     {
       "key": "Tinker II",
       "context": "TMP.Skill Name",
-      "text": "発明Ⅱ"
+      "text": "工匠 II"
     },
     {
       "key": "Tinker III",
       "context": "TMP.Skill Name",
-      "text": "発明Ⅲ"
+      "text": "工匠 III"
     },
     {
       "key": "Tinkering",

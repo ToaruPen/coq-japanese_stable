@@ -14,24 +14,44 @@
       "template": "{0}に攻撃した"
     },
     {
-      "pattern": "^(.+) hits you for (\\d+) damage[.!]?$",
+      "pattern": "^(?:The )?(.+) hits you for (\\d+) damage[.!]?$",
       "template": "{0}の攻撃で{1}ダメージを受けた"
     },
     {
-      "pattern": "^(.+) crits you for (\\d+) damage[.!]?$",
+      "pattern": "^(?:The )?(.+) crits you for (\\d+) damage[.!]?$",
       "template": "{0}の会心の一撃で{1}ダメージを受けた"
     },
     {
-      "pattern": "^(.+) attacks you[.!]?$",
+      "pattern": "^(?:The )?(.+) attacks you[.!]?$",
       "template": "{0}があなたを攻撃してきた"
+    },
+    {
+      "pattern": "^You miss with your (.+?)[.!] \\[(.+?) vs (.+?)\\]$",
+      "template": "{0}での攻撃は外れた。[{1} vs {2}]"
     },
     {
       "pattern": "^You miss (.+?)[.!]?$",
       "template": "{0}への攻撃は外れた"
     },
     {
-      "pattern": "^(.+) misses you[.!]?$",
+      "pattern": "^(?:The )?(.+) misses you[.!]?$",
       "template": "{0}の攻撃は外れた"
+    },
+    {
+      "pattern": "^(.+) switches to aggressive stance[.!]?$",
+      "template": "{0}は攻撃態勢に入った。"
+    },
+    {
+      "pattern": "^You take (\\d+) damage from (.+?)の freezing effect![.!]?$",
+      "template": "{1}の凍結効果で{0}ダメージを受けた！"
+    },
+    {
+      "pattern": "^(.+) emits a freezing ray from (?:his|her|its|their) hands![.!]?$",
+      "template": "{0}は手から凍結光線を放った！"
+    },
+    {
+      "pattern": "^You already have that power[.!]?$",
+      "template": "その能力はすでに習得している。"
     },
     {
       "pattern": "^You block (.+)'s attack[.!]?$",
@@ -110,6 +130,10 @@
       "template": "あなたは死んだ！"
     },
     {
+      "pattern": "^Your health has dropped below 40%![.!]?$",
+      "template": "体力が40%を下回った！"
+    },
+    {
       "pattern": "^(.+?) is destroyed[.!]?$",
       "template": "{0}は破壊された"
     },
@@ -120,6 +144,18 @@
     {
       "pattern": "^You feel (.+?)[.!]?$",
       "template": "あなたは{0}を感じた"
+    },
+    {
+      "pattern": "^You see (?:a |an |the )?(.+?) to the (north|south|east|west|northeast|northwest|southeast|southwest) and stop moving[.!]?$",
+      "template": "{t1}に{0}が見えたので移動をやめた。"
+    },
+    {
+      "pattern": "^You see (.+?) above and stop moving[.!]?$",
+      "template": "頭上に{0}が見えたので移動をやめた。"
+    },
+    {
+      "pattern": "^You see (.+?) below and stop moving[.!]?$",
+      "template": "足元に{0}が見えたので移動をやめた。"
     },
     {
       "pattern": "^You see (.+?)[.!]?$",
@@ -148,6 +184,182 @@
     {
       "pattern": "^You embark for the caves of Qud\\.$",
       "template": "あなたはQudの洞窟へ旅立った。"
+    },
+    {
+      "pattern": "^You hit \\((x\\d+)\\) for (\\d+) damage with your (.+?)[.!] \\[(.+?)\\]$",
+      "template": "{2}で{1}ダメージを与えた。({0}) [{3}]"
+    },
+    {
+      "pattern": "^You critically hit \\((x\\d+)\\) for (\\d+) damage with your (.+?)[.!] \\[(.+?)\\]$",
+      "template": "{2}で会心の一撃、{1}ダメージを与えた。({0}) [{3}]"
+    },
+    {
+      "pattern": "^(?:The )?(.+) hits \\((x\\d+)\\) for (\\d+) damage with (?:his|her|its) (.+?)[.!] \\[(.+?)\\]$",
+      "template": "{0}の{3}で{2}ダメージを受けた。({1}) [{4}]"
+    },
+    {
+      "pattern": "^(?:The )?(.+) hits \\((x\\d+)\\) for (\\d+) damage with their (.+?)[.!] \\[(.+?)\\]$",
+      "template": "{0}の{3}で{2}ダメージを受けた。({1}) [{4}]"
+    },
+    {
+      "pattern": "^(?:The )?(.+) critically hits \\((x\\d+)\\) for (\\d+) damage with (?:his|her|its) (.+?)[.!] \\[(.+?)\\]$",
+      "template": "{0}の{3}が会心し、{2}ダメージを受けた。({1}) [{4}]"
+    },
+    {
+      "pattern": "^(?:The )?(.+) critically hits \\((x\\d+)\\) for (\\d+) damage with their (.+?)[.!] \\[(.+?)\\]$",
+      "template": "{0}の{3}が会心し、{2}ダメージを受けた。({1}) [{4}]"
+    },
+    {
+      "pattern": "^(?:The )?(.+) misses you with (?:his|her|its) (.+?)[.!] \\[(.+?) vs (.+?)\\]$",
+      "template": "{0}の{1}は外れた。[{2} vs {3}]"
+    },
+    {
+      "pattern": "^(?:The )?(.+) misses you with their (.+?)[.!] \\[(.+?) vs (.+?)\\]$",
+      "template": "{0}の{1}は外れた。[{2} vs {3}]"
+    },
+    {
+      "pattern": "^You don't penetrate (?:the )?(.+?)の armor with your (.+?)[.!] \\[(.+?)\\]$",
+      "template": "{1}では{0}の装甲を貫けない。[{2}]"
+    },
+    {
+      "pattern": "^(.+) begins bleeding from another wound[.!]?$",
+      "template": "{0}はさらに出血し始めた。"
+    },
+    {
+      "pattern": "^(.+) begins bleeding[.!]?$",
+      "template": "{0}は出血し始めた。"
+    },
+    {
+      "pattern": "^(.+) stops bleeding[.!]?$",
+      "template": "{0}の出血は止まった。"
+    },
+    {
+      "pattern": "^One of (.+?)の wounds stops bleeding[.!]?$",
+      "template": "{0}の傷のひとつの出血が止まった。"
+    },
+    {
+      "pattern": "^(.+) takes (\\d+) damage from bleeding[.!]?$",
+      "template": "{0}は出血で{1}ダメージを受けた。"
+    },
+    {
+      "pattern": "^(.+) takes no damage from bleeding[.!]?$",
+      "template": "{0}は出血でダメージを受けなかった。"
+    },
+    {
+      "pattern": "^(.+) becomes confused[.!]?$",
+      "template": "{0}は混乱した。"
+    },
+    {
+      "pattern": "^(.+) resists the effects of your venom[.!]?$",
+      "template": "{0}はあなたの毒に抵抗した。"
+    },
+    {
+      "pattern": "^You strike (.+?) with your stinger[.!]?$",
+      "template": "{0}を毒針で突いた。"
+    },
+    {
+      "pattern": "^You are dazed[.!]?$",
+      "template": "あなたはよろめいた。"
+    },
+    {
+      "pattern": "^You have lost sight of (?:the )?(.+?)[.!]?$",
+      "template": "{0}を見失った。"
+    },
+    {
+      "pattern": "^You cannot do that while sitting[.!]?$",
+      "template": "座っている間はそれを行えない。"
+    },
+    {
+      "pattern": "^You pass by a (.+?)[.!]?$",
+      "template": "{0}のそばを通り過ぎた。"
+    },
+    {
+      "pattern": "^You pass by (.+?)[.!]?$",
+      "template": "{0}のそばを通り過ぎた。"
+    },
+    {
+      "pattern": "^You wade through (?:a |an )?(.+?)[.!]?$",
+      "template": "{0}をかき分けて進んだ。"
+    },
+    {
+      "pattern": "^A (.+?) appears here[.!]?$",
+      "template": "{0}がここに現れた。"
+    },
+    {
+      "pattern": "^The way is blocked by some (.+?)[.!]?$",
+      "template": "{0}が道を塞いでいる。"
+    },
+    {
+      "pattern": "^The way is blocked by a (.+?)[.!]?$",
+      "template": "{0}が道を塞いでいる。"
+    },
+    {
+      "pattern": "^You stop moving because the (.+?) is in the way[.!]?$",
+      "template": "{0}が邪魔で移動をやめた。"
+    },
+    {
+      "pattern": "^You note this piece of information in the Sultan Histories > (.+?) section of your journal\\.[.!]?$",
+      "template": "この情報をジャーナルの「スルタン史 > {0}」欄に記録した。"
+    },
+    {
+      "pattern": "^You discover the location of (.+?)[.!]?$",
+      "template": "{0}の場所を発見した。"
+    },
+    {
+      "pattern": "^You note the location of (.+?) in the Locations > (.+?) section of your journal\\.[.!]?$",
+      "template": "ジャーナルの「場所 > {t1}」欄に{0}の場所を記録した。"
+    },
+    {
+      "pattern": "^You have received a new quest, (.+?)(!+)$",
+      "template": "新しいクエストを受けた: {0}{1}"
+    },
+    {
+      "pattern": "^The (.+?) harvests a (.+?)[.!]?$",
+      "template": "{0}は{1}を収穫した。"
+    },
+    {
+      "pattern": "^The (.+?) begins flying[.!]?$",
+      "template": "{0}が飛翔し始めた。"
+    },
+    {
+      "pattern": "^The (.+?) has been poisoned![.!]?$",
+      "template": "{0}は毒状態になった。"
+    },
+    {
+      "pattern": "^The (.+?) takes (\\d+) damage from your poison![.!]?$",
+      "template": "{0}はあなたの毒で{1}ダメージを受けた。"
+    },
+    {
+      "pattern": "^You sit down on the (.+?)[.!]?$",
+      "template": "{0}に腰を下ろした。"
+    },
+    {
+      "pattern": "^You stand up[.!]?$",
+      "template": "立ち上がった。"
+    },
+    {
+      "pattern": "^(?:The )?(.+?) stands up[.!]?$",
+      "template": "{0}は立ち上がった。"
+    },
+    {
+      "pattern": "^You disassemble the (.+?)\\. You receive tinkering bits <(.+?)>\\.[.!]?$",
+      "template": "{0}を分解し、修理ビット<{1}>を受け取った。"
+    },
+    {
+      "pattern": "^(.+?) takes (\\d+) damage from your freezing weapon![.!]?$",
+      "template": "{0}はあなたの凍てつく武器で{1}ダメージを受けた！"
+    },
+    {
+      "pattern": "^You yell, '(.+)'$",
+      "template": "あなたは「{0}」と叫んだ。"
+    },
+    {
+      "pattern": "^(?:The )?(.+?) yells, '(.+)'$",
+      "template": "{0}は「{1}」と叫んだ。"
+    },
+    {
+      "pattern": "^On the (.+?) of (.+?), you arrive at the oasis-hamlet of Joppa, along the far rim of Moghra'yi, the Great Salt Desert\\.\\n\\nAll around you, moisture farmers tend to groves of viridian watervine\\. There are huts wrought from rock salt and brinestalk\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",
+      "template": "{1}の{0}日、あなたは大塩砂漠モグライィの遥かな縁にあるオアシス集落ジョッパに到着した。\n\nあたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。"
     },
     {
       "pattern": "^On the (.+?) of (.+?), you arrive at the village of (.+?)\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",

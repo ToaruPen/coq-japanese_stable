@@ -18,21 +18,23 @@ How to deploy the QudJP mod to the Caves of Qud game directory.
 ```bash
 # Build then deploy
 dotnet build Mods/QudJP/Assemblies/QudJP.csproj
-python scripts/sync_mod.py
+python3.12 scripts/sync_mod.py
 ```
+
+`sync_mod.py` requires Python `>=3.12` per `pyproject.toml`. `python3` may resolve to an older interpreter on macOS, so prefer `python3.12` unless your shell already points `python3` at Python 3.12+.
 
 `sync_mod.py` uses an rsync include-first strategy to deploy only game-essential files.
 
 **Dry run** (preview without copying):
 
 ```bash
-python scripts/sync_mod.py --dry-run
+python3.12 scripts/sync_mod.py --dry-run
 ```
 
 **Exclude fonts** (faster when fonts have not changed):
 
 ```bash
-python scripts/sync_mod.py --exclude-fonts
+python3.12 scripts/sync_mod.py --exclude-fonts
 ```
 
 ### Method 2: Manual Copy

@@ -1,0 +1,20 @@
+{
+    "entries": [
+        {
+            "key": "QudJP.DeathWrapper.KilledBy.Wrapped",
+            "text": "あなたは死んだ。\n\n{killer}に殺された。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.BittenToDeathBy.Wrapped",
+            "text": "あなたは死んだ。\n\n{killer}に噛み殺された。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.KilledBy.Bare",
+            "text": "{killer}に殺された。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.AccidentallyKilledBy.Bare",
+            "text": "{killer}にうっかり殺された。"
+        }
+    ]
+}

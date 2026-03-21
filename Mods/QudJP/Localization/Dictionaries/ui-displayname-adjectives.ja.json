@@ -195,6 +195,16 @@
       "text": "動く"
     },
     {
+      "key": "Warden",
+      "context": "GetDisplayName.Adjective",
+      "text": "監視官"
+    },
+    {
+      "key": "Barathrumite",
+      "context": "GetDisplayName.Adjective",
+      "text": "バラサラム派の"
+    },
+    {
       "key": "[{{W|Implant}}] -",
       "context": "GetDisplayName.Adjective",
       "text": "[{{W|インプラント}}] -"
@@ -1428,6 +1438,11 @@
       "key": "salty",
       "context": "GetDisplayName.Adjective",
       "text": "{{Y|塩気のある}}"
+    },
+    {
+      "key": "brackish",
+      "context": "GetDisplayName.Adjective",
+      "text": "塩気混じりの"
     },
     {
       "key": "salt",

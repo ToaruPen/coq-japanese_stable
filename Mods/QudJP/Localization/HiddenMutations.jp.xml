@@ -1,59 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mutations Hidden="true" ExcludeFromPool="true">
   <category Name="Physical">
-    <mutation Name="Dark Vision" Cost="1" Class="NightVision" Tile="Mutations/dark_vision.png" />
-    <mutation Name="Heightened Smell" Cost="2" Class="HeightenedSmell" Tile="Mutations/heightened_smell.png" />
-    <mutation Name="Gills" Cost="1" Class="Gills" Tile="Mutations/gills.png" />
-    <mutation Name="Infiltrate" Cost="1" Class="Infiltrate" Tile="Abilities/abil_infiltrate.bmp" />
-    <mutation Name="Heat Absorption" Cost="1" Class="HeatAbsorption" Tile="Mutations/heat_absorption.png" />
-    <mutation Name="Wall Climber" Cost="1" Class="WallWalker" Tile="Mutations/wall_climber.png" />
-    <mutation Name="Spider Webs" Cost="3" Class="SpiderWebs" Tile="Mutations/spinnerets.bmp" />
-    <mutation Name="Frost Webs" Cost="3" Class="FrostWebs" Tile="Mutations/spinnerets.bmp" />
-    <mutation Name="Acid Slime Glands" Cost="1" Class="AcidSlimeGlands" Tile="Mutations/slime_glands.bmp" />
-    <mutation Name="Sticky Tongue" Cost="1" Class="StickyTongue" Tile="Abilities/abil_tongue.bmp" />
-    <mutation Name="Spore Puff" Cost="1" Class="SporePuffer" Tile="Items/sw_ficklegill.bmp" />
-    <mutation Name="Magnetic Pulse" Cost="1" Class="MagneticPulse" Tile="Abilities/abil_magnetic_pulse.bmp" />
-    <mutation Name="Urchin Belching" Cost="1" Class="UrchinBelcher" Tile="Abilities/abil_belch.bmp" />
-    <mutation Name="Waveform" Cost="1" Class="WaveformWorm" Tile="Mutations/waveform.png" />
-    <mutation Name="Multiple Horns" Cost="1" Class="MultiHorns" Tile="Mutations/multihorns.png" />
-    <mutation Name="Astral" Cost="1" Class="Astral" Tile="Mutations/astral.png" />
-    <mutation Name="Decarbonizer" Cost="1" Class="Decarbonizer" Tile="Abilities/abil_decarbonize.bmp" />
-    <mutation Name="Lithifying Gaze" Cost="1" Class="StoneGaze" Tile="Abilities/abil_gaze.bmp" />
-    <mutation Name="Crungling Gaze" Cost="1" Class="CrungleGaze" Tile="Abilities/abil_gaze.bmp" />
-    <mutation Name="Liquid Font" Cost="1" Class="LiquidFont" Tile="Mutations/liquid_font.png" />
-    <mutation Name="Irisdual Beam" Cost="1" Class="IrisdualBeam" Tile="Mutations/irisdual_beam.png" />
-    <mutation Name="Bilge Sphincter" Cost="1" Class="SlogGlands" Tile="Mutations/bilge_sphincter.png" />
-    <mutation Name="Crystallinity" Cost="1" Class="Crystallinity" Tile="Mutations/crystallinity.png" />
-    <mutation Name="Fear Aura" Cost="1" Class="FearAura" Tile="Mutations/fear_aura.png" />
-    <mutation Name="Burrowing" Cost="1" Class="Burrowing" Tile="Abilities/abil_burrow.bmp" />
-    <mutation Name="Liquid Spitter" Cost="1" Class="LiquidSpitter" Tile="Mutations/slime_glands.bmp" />
-    <mutation Name="Freezing Ultraray" Cost="1" Class="FreezeBreath" Tile="Mutations/freezing_ray.bmp" />
-    <mutation Name="Defensive Chromatophores" Cost="1" Class="DefensiveChromatophores" Tile="Abilities/abil_scintillate.bmp" />
+    <mutation Name="Dark Vision" Cost="1" Class="NightVision" Tile="Mutations/dark_vision.png" DisplayName="暗視" />
+    <mutation Name="Heightened Smell" Cost="2" Class="HeightenedSmell" Tile="Mutations/heightened_smell.png" DisplayName="強化嗅覚" />
+    <mutation Name="Gills" Cost="1" Class="Gills" Tile="Mutations/gills.png" DisplayName="エラ" />
+    <mutation Name="Infiltrate" Cost="1" Class="Infiltrate" Tile="Abilities/abil_infiltrate.bmp" DisplayName="潜入" />
+    <mutation Name="Heat Absorption" Cost="1" Class="HeatAbsorption" Tile="Mutations/heat_absorption.png" DisplayName="熱吸収" />
+    <mutation Name="Wall Climber" Cost="1" Class="WallWalker" Tile="Mutations/wall_climber.png" DisplayName="壁登り" />
+    <mutation Name="Spider Webs" Cost="3" Class="SpiderWebs" Tile="Mutations/spinnerets.bmp" DisplayName="蜘蛛の巣" />
+    <mutation Name="Frost Webs" Cost="3" Class="FrostWebs" Tile="Mutations/spinnerets.bmp" DisplayName="氷結糸" />
+    <mutation Name="Acid Slime Glands" Cost="1" Class="AcidSlimeGlands" Tile="Mutations/slime_glands.bmp" DisplayName="酸性スライム腺" />
+    <mutation Name="Sticky Tongue" Cost="1" Class="StickyTongue" Tile="Abilities/abil_tongue.bmp" DisplayName="粘着舌" />
+    <mutation Name="Spore Puff" Cost="1" Class="SporePuffer" Tile="Items/sw_ficklegill.bmp" DisplayName="胞子噴射" />
+    <mutation Name="Magnetic Pulse" Cost="1" Class="MagneticPulse" Tile="Abilities/abil_magnetic_pulse.bmp" DisplayName="磁気パルス" />
+    <mutation Name="Urchin Belching" Cost="1" Class="UrchinBelcher" Tile="Abilities/abil_belch.bmp" DisplayName="ウニ吐き" />
+    <mutation Name="Waveform" Cost="1" Class="WaveformWorm" Tile="Mutations/waveform.png" DisplayName="ウェーブフォーム" />
+    <mutation Name="Multiple Horns" Cost="1" Class="MultiHorns" Tile="Mutations/multihorns.png" DisplayName="多重角" />
+    <mutation Name="Astral" Cost="1" Class="Astral" Tile="Mutations/astral.png" DisplayName="アストラル" />
+    <mutation Name="Decarbonizer" Cost="1" Class="Decarbonizer" Tile="Abilities/abil_decarbonize.bmp" DisplayName="デカーボナイザー" />
+    <mutation Name="Lithifying Gaze" Cost="1" Class="StoneGaze" Tile="Abilities/abil_gaze.bmp" DisplayName="石化の視線" />
+    <mutation Name="Crungling Gaze" Cost="1" Class="CrungleGaze" Tile="Abilities/abil_gaze.bmp" DisplayName="クラングリングの視線" />
+    <mutation Name="Liquid Font" Cost="1" Class="LiquidFont" Tile="Mutations/liquid_font.png" DisplayName="液体泉" />
+    <mutation Name="Irisdual Beam" Cost="1" Class="IrisdualBeam" Tile="Mutations/irisdual_beam.png" DisplayName="アイリスデュアル光線" />
+    <mutation Name="Bilge Sphincter" Cost="1" Class="SlogGlands" Tile="Mutations/bilge_sphincter.png" DisplayName="ビルジスフィンクター" />
+    <mutation Name="Crystallinity" Cost="1" Class="Crystallinity" Tile="Mutations/crystallinity.png" DisplayName="結晶性" />
+    <mutation Name="Fear Aura" Cost="1" Class="FearAura" Tile="Mutations/fear_aura.png" DisplayName="恐怖のオーラ" />
+    <mutation Name="Burrowing" Cost="1" Class="Burrowing" Tile="Abilities/abil_burrow.bmp" DisplayName="穴掘り" />
+    <mutation Name="Liquid Spitter" Cost="1" Class="LiquidSpitter" Tile="Mutations/slime_glands.bmp" DisplayName="液体吐き" />
+    <mutation Name="Freezing Ultraray" Cost="1" Class="FreezeBreath" Tile="Mutations/freezing_ray.bmp" DisplayName="凍結超光線" />
+    <mutation Name="Defensive Chromatophores" Cost="1" Class="DefensiveChromatophores" Tile="Abilities/abil_scintillate.bmp" DisplayName="防御性色素胞" />
     <!-- Breathers -->
-    <mutation Name="Fire Breath" Cost="1" Class="FireBreather" Tile="Abilities/abil_breathe.bmp" />
-    <mutation Name="Ice Breath" Cost="1" Class="IceBreather" Tile="Abilities/abil_breathe.bmp" />
-    <mutation Name="Normality Breath" Cost="1" Class="NormalityBreather" Tile="Abilities/abil_breathe.bmp" />
-    <mutation Name="Corrosive Breath" Cost="1" Class="CorrosiveBreather" Tile="Abilities/abil_breathe.bmp" />
-    <mutation Name="Confusing Breath" Cost="1" Class="ConfusionBreather" Tile="Abilities/abil_breathe.bmp" />
-    <mutation Name="Stun Breath" Cost="1" Class="StunBreather" Tile="Abilities/abil_breathe.bmp" />
-    <mutation Name="Poison Breath" Cost="1" Class="PoisonBreather" Tile="Abilities/abil_breathe.bmp" />
-    <mutation Name="Sleep Breath" Cost="1" Class="SleepBreather" Tile="Abilities/abil_breathe.bmp" />
-    <mutation Name="Shame Breath" Cost="1" Class="ShameBreather" Tile="Abilities/abil_breathe.bmp" />
+    <mutation Name="Fire Breath" Cost="1" Class="FireBreather" Tile="Abilities/abil_breathe.bmp" DisplayName="火炎ブレス" />
+    <mutation Name="Ice Breath" Cost="1" Class="IceBreather" Tile="Abilities/abil_breathe.bmp" DisplayName="氷結ブレス" />
+    <mutation Name="Normality Breath" Cost="1" Class="NormalityBreather" Tile="Abilities/abil_breathe.bmp" DisplayName="正常化ブレス" />
+    <mutation Name="Corrosive Breath" Cost="1" Class="CorrosiveBreather" Tile="Abilities/abil_breathe.bmp" DisplayName="腐食ブレス" />
+    <mutation Name="Confusing Breath" Cost="1" Class="ConfusionBreather" Tile="Abilities/abil_breathe.bmp" DisplayName="混乱ブレス" />
+    <mutation Name="Stun Breath" Cost="1" Class="StunBreather" Tile="Abilities/abil_breathe.bmp" DisplayName="朦朧ブレス" />
+    <mutation Name="Poison Breath" Cost="1" Class="PoisonBreather" Tile="Abilities/abil_breathe.bmp" DisplayName="毒ブレス" />
+    <mutation Name="Sleep Breath" Cost="1" Class="SleepBreather" Tile="Abilities/abil_breathe.bmp" DisplayName="睡眠ブレス" />
+    <mutation Name="Shame Breath" Cost="1" Class="ShameBreather" Tile="Abilities/abil_breathe.bmp" DisplayName="恥辱ブレス" />
     <!-- Gas Generation -->
-    <mutation Name="Plasma Emission" Cost="3" MaxSelected="1" Class="PlasmaGeneration" Tile="Mutations/gas_generation.bmp" />
-    <mutation Name="Poison Gas Generation" Cost="3" MaxSelected="1" Class="PoisonGasGeneration" Tile="Mutations/gas_generation.bmp" />
-    <mutation Name="Defoliant Generation" Cost="3" MaxSelected="1" Class="DefoliantGeneration" Tile="Mutations/gas_generation.bmp" />
-    <mutation Name="Fungicide Generation" Cost="3" MaxSelected="1" Class="FungicideGeneration" Tile="Mutations/gas_generation.bmp" />
-    <mutation Name="Confusion Gas Generation" Cost="3" MaxSelected="1" Class="ConfusionGasGeneration" Tile="Mutations/gas_generation.bmp" />
-    <mutation Name="Normality Gas Generation" Cost="3" MaxSelected="1" Class="NormalityGasGeneration" Tile="Mutations/gas_generation.bmp" />
-    <mutation Name="Glitter Dust Generation" Cost="3" MaxSelected="1" Class="GlitterDustGeneration" Tile="Mutations/gas_generation.bmp" />
+    <mutation Name="Plasma Emission" Cost="3" MaxSelected="1" Class="PlasmaGeneration" Tile="Mutations/gas_generation.bmp" DisplayName="プラズマ放出" />
+    <mutation Name="Poison Gas Generation" Cost="3" MaxSelected="1" Class="PoisonGasGeneration" Tile="Mutations/gas_generation.bmp" DisplayName="毒ガス生成" />
+    <mutation Name="Defoliant Generation" Cost="3" MaxSelected="1" Class="DefoliantGeneration" Tile="Mutations/gas_generation.bmp" DisplayName="落葉剤生成" />
+    <mutation Name="Fungicide Generation" Cost="3" MaxSelected="1" Class="FungicideGeneration" Tile="Mutations/gas_generation.bmp" DisplayName="殺真菌剤生成" />
+    <mutation Name="Confusion Gas Generation" Cost="3" MaxSelected="1" Class="ConfusionGasGeneration" Tile="Mutations/gas_generation.bmp" DisplayName="混乱ガス生成" />
+    <mutation Name="Normality Gas Generation" Cost="3" MaxSelected="1" Class="NormalityGasGeneration" Tile="Mutations/gas_generation.bmp" DisplayName="正常化ガス生成" />
+    <mutation Name="Glitter Dust Generation" Cost="3" MaxSelected="1" Class="GlitterDustGeneration" Tile="Mutations/gas_generation.bmp" DisplayName="グリッターダスト生成" />
   </category>
   <category Name="Mental">
-    <mutation Name="Invisibility" Cost="1" Class="Invisibility" Tile="Mutations/invisibility.png" />
-    <mutation Name="Interdiction" Cost="1" Class="Interdiction" Tile="Mutations/interdiction.png" />
-    <mutation Name="Ley Shifting" Cost="1" Class="LeyShifting" Tile="Abilities/abil_ley_shift.bmp" />
-    <mutation Name="Quantum Fugue" Cost="5" Class="QuantumFugue" Tile="Mutations/quantum_fugue.png" />
-    <mutation Name="Reflect Shame" Cost="1" Class="ReflectShame" Tile="Mutations/reflect_shame.png" />
-    <mutation Name="Repelling Force" Cost="1" Class="RepellingForce" Tile="Abilities/abil_repel.bmp" />
+    <mutation Name="Invisibility" Cost="1" Class="Invisibility" Tile="Mutations/invisibility.png" DisplayName="透明化" />
+    <mutation Name="Interdiction" Cost="1" Class="Interdiction" Tile="Mutations/interdiction.png" DisplayName="インターディクション" />
+    <mutation Name="Ley Shifting" Cost="1" Class="LeyShifting" Tile="Abilities/abil_ley_shift.bmp" DisplayName="レイシフト" />
+    <mutation Name="Quantum Fugue" Cost="5" Class="QuantumFugue" Tile="Mutations/quantum_fugue.png" DisplayName="量子フーガ" />
+    <mutation Name="Reflect Shame" Cost="1" Class="ReflectShame" Tile="Mutations/reflect_shame.png" DisplayName="恥辱反射" />
+    <mutation Name="Repelling Force" Cost="1" Class="RepellingForce" Tile="Abilities/abil_repel.bmp" DisplayName="反発力" />
   </category>
 </mutations>

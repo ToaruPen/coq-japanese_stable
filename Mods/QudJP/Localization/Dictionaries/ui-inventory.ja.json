@@ -50,6 +50,22 @@
             "text": "|{weight} lbs.|"
         },
         {
+            "key": "navigation",
+            "text": "操作"
+        },
+        {
+            "key": "<search>",
+            "text": "<検索>"
+        },
+        {
+            "key": "Set Primary Limb",
+            "text": "主肢に設定"
+        },
+        {
+            "key": "Display Options",
+            "text": "表示オプション"
+        },
+        {
             "key": "[{weight} lbs.]",
             "context": "Qud.UI.InventoryLine.ItemWeightLabel",
             "text": "[{weight} lbs.]"
@@ -178,6 +194,10 @@
             "key": "Left Hand",
             "context": "BodyPart.Slot.Hand",
             "text": "左手"
+        },
+        {
+            "key": "*Left Hand",
+            "text": "*左手"
         },
         {
             "key": "Right Hand",

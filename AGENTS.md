@@ -1,155 +1,93 @@
-# QudJP — Caves of Qud Japanese Localization Mod
+# QudJP AGENTS.md
 
-**Repository**: ToaruPen/Caves-of-Qud_Japanese
-**Game version target**: 2.0.4
+## WHY
 
-## Project Overview
+- This repo is a Japanese localization mod for Caves of Qud, targeting game version `2.0.4`.
+- The shipped mod consists of a Harmony-patched DLL, XML localization assets, and Python tooling for validation and sync.
 
-QudJP is a Japanese localization mod for Caves of Qud. It ships:
-- A Harmony-patched DLL that intercepts grammar/text rendering at runtime
-- XML translation files loaded by the game's merge system
-- Python scripts for translation tooling and validation
+## WHAT
 
-## Directory Structure
+### Start Here
 
-```
-Caves-of-Qud_Japanese/
-├── Mods/QudJP/
-│   ├── Assemblies/          # C# Harmony patch DLL + tests
-│   │   ├── src/             # Production code
-│   │   ├── QudJP.csproj     # net48 mod DLL project
-│   │   └── QudJP.Tests/     # net10.0 test project
-│   ├── Localization/        # XML translation files (*.jp.xml)
-│   └── manifest.json        # Mod metadata
-├── scripts/                 # Python tooling
-│   └── tests/               # pytest test suite
-├── pyproject.toml           # Python project config (Ruff, pytest)
-└── .editorconfig            # Editor formatting rules
-```
+- Read this root file first, then the scoped `AGENTS.md` for the area you will edit:
+  - `Mods/QudJP/Assemblies/AGENTS.md`
+  - `Mods/QudJP/Localization/AGENTS.md`
+  - `scripts/AGENTS.md`
+- Tasks that touch dynamic or procedural text use `docs/logic-required-policy.md` as the default workflow.
+  - This includes work that starts from `Player.log`, `missing key`, `no pattern`, display-name composition, popup templates, inventory suffixes, or message-log templates.
+  - Read `docs/logic-required-policy.md` before analyzing logs or adding route/template logic.
+- Manual L3 verification on Apple Silicon uses Rosetta only.
+  - Launch with `scripts/launch_rosetta.sh` or `Launch CavesOfQud (Rosetta).command`.
 
-## Tech Stack
+### Repo Map
 
-| Layer | Technology |
-|-------|-----------|
-| Mod DLL | C# / .NET 4.8 (Unity Mono) |
-| Harmony patches | HarmonyLib 0Harmony 2.2.2.0 (game-bundled, runtime) |
-| Test Harmony | HarmonyLib NuGet 2.4.2 (test-only) |
-| Translations | XML with game merge system |
-| Tooling | Python 3.12+ |
-| Linter (C#) | Roslyn analyzers, TreatWarningsAsErrors |
-| Linter (Python) | Ruff select=ALL, McCabe C≤10 |
+- `Mods/QudJP/Assemblies/`
+  - C# mod DLL (`QudJP.csproj`, `net48`) and test project (`QudJP.Tests`, `net10.0`).
+- `Mods/QudJP/Localization/`
+  - XML translation files and JSON dictionaries loaded by the mod/game.
+- `scripts/`
+  - Python utilities for sync, validation, extraction, and tests.
+- `docs/`
+  - Canonical process and verification docs.
 
-## Build Commands
+### Canonical Docs
 
-```bash
-# Build mod DLL
-dotnet build Mods/QudJP/Assemblies/QudJP.csproj
+- `README.md`
+  - project overview, install/build/test commands
+- `docs/contributing.md`
+  - contributor workflow and CI expectations
+- `docs/logic-required-policy.md`
+  - required policy for dynamic/procedural text
+- `docs/test-architecture.md`
+  - L1/L2/L2G/L3 test boundaries
+- `docs/deployment.md`
+  - deployment procedure
+- `docs/inventory-verification.md`
+  - inventory/equipment L3 verification flow
 
-# Run all tests (when test project exists)
-dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj
+## HOW
 
-# Pure logic tests only (no Harmony, no Unity)
-dotnet test --filter TestCategory=L1
+### Build And Test
 
-# Harmony integration tests only (no Unity)
-dotnet test --filter TestCategory=L2
+- Mod build: `dotnet build Mods/QudJP/Assemblies/QudJP.csproj`
+- C# tests: `dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj`
+- L1 only: `dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L1`
+- L2 only: `dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L2`
+- Python lint: `ruff check scripts/`
+- Python tests: `pytest scripts/tests/`
+- Runtime-facing C# or localization changes normally stay incomplete until the built mod is re-deployed to the game directory.
+- The canonical deploy path is `python3.12 scripts/sync_mod.py` after a successful build, or another Python `>=3.12` interpreter that satisfies `pyproject.toml`; see `docs/deployment.md` for the shipped file set and target path.
 
-# Lint Python
-ruff check scripts/
+### Dynamic-Text Workflow
 
-# Test Python
-pytest scripts/tests/
-```
+- `Player.log` is evidence, not the source of truth for closing dynamic strings.
+- Do not treat one observed log line as the translation unit by default; name the family first, then confirm that family from upstream evidence.
+- For logic-required text, first locate the upstream generator or asset, then implement the smallest slot-aware route/template change, then add L1/L2 coverage that matches that composition boundary.
+- Stable leaf strings, fixed labels, and atomic names can still be handled as dictionary/XML assets when the text is genuinely static.
 
-## Test Architecture (3 Layers)
+### Runtime Evidence
 
-### L1 — Pure Logic
-- No HarmonyLib dependency
-- No UnityEngine dependency
-- Tests pure C# logic: string manipulation, grammar rules, data parsing
-- Tag: `[Category("L1")]`
-- Fast, run on every commit
+- Current log: `~/Library/Logs/Freehold Games/CavesOfQud/Player.log`
+- Previous log: `~/Library/Logs/Freehold Games/CavesOfQud/Player-prev.log`
+- Build logs: `~/Library/Application Support/Freehold Games/CavesOfQud/build_log.txt`
+- Useful runtime markers:
+  - `[QudJP] Build marker`
+  - `DynamicTextProbe/v1`
+  - `MessagePatternTranslator: no pattern`
+  - `missing key`
+  - `MODWARN`
+  - `Missing glyph`
 
-### L2 — Harmony Integration
-- HarmonyLib NuGet 2.4.2 allowed
-- No UnityEngine dependency
-- Tests that patches apply correctly to DummyTarget classes and, where safe, against real `Assembly-CSharp.dll` method resolution/static behavior without Unity runtime
-- Tag: `[Category("L2")]`
-- Run on every commit
+### Repo Facts That Affect Edits
 
-### L3 — Game Smoke
-- Requires actual game launch
-- Manual only, never in CI
-- Verifies end-to-end rendering in-game
-- For automated inventory/equipment display verification, use `docs/inventory-verification.md`
+- `Assembly-CSharp.dll` must not be committed.
+- Game DLL references are local contributor paths; contributors must own the game.
+- Blueprint and Conversation IDs must match game version `2.0.4`.
+- Deployment ships built assets and localization data; `.cs` source files are not deployed into the game mod directory.
 
-## Testing Rules
+### Working Conventions
 
-**DummyTarget pattern** (critical):
-- NEVER instantiate types from Assembly-CSharp.dll in tests
-- Assembly-CSharp.dll may be referenced in tests for target resolution, signature checks, and Unity-runtime-free static behavior
-- Create test doubles with matching method signatures instead
-- Example: `class DummyGrammar { public string Pluralize(string s) => s + "s"; }`
-
-**Layer boundaries**:
-- L1 tests: zero references to HarmonyLib
-- L2 tests: zero references to UnityEngine; direct Assembly-CSharp instantiation remains forbidden
-- L3 tests: manual game launch only, no automation
-
-## Code Style
-
-### C#
-- `<Nullable>enable</Nullable>` — null safety enforced
-- `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>` — zero warnings
-- `<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>` — style in CI
-- All game DLL references: `<Private>false</Private>` (don't copy to output)
-
-### Python
-- Python 3.12+
-- Ruff: `select = ["ALL"]`, `max-complexity = 10`
-- Type hints required on all public functions
-- Docstrings: Google style
-- Script naming: `verb_noun.py` (e.g., `sync_translations.py`)
-
-## Commit Convention
-
-Conventional Commits in English:
-```
-type(scope): description
-
-Types: feat, fix, docs, style, refactor, test, chore
-Scopes: patch, xml, scripts, ci, deps
-```
-
-Examples:
-- `feat(patch): add grammar postfix for verb conjugation`
-- `fix(xml): correct creature name encoding in Creatures.jp.xml`
-- `test(patch): add L2 test for GrammarPatch prefix`
-
-## Mod Deployment
-
-See [docs/deployment.md](docs/deployment.md) for full deployment instructions.
-
-**Key points**:
-- Deploy with `python3 scripts/sync_mod.py` (recommended)
-- The game needs `manifest.json` + `Bootstrap.cs` + `Assemblies/QudJP.dll` + `Localization/` + `Fonts/`
-- NEVER deploy `.cs` source files (the game's Unity/Mono compiler will attempt to compile them and fail)
-
-## Runtime Logs
-
-- macOS Steam runtime logs are under `~/Library/Logs/Freehold Games/CavesOfQud/`
-- Current run: `~/Library/Logs/Freehold Games/CavesOfQud/Player.log`
-- Previous run: `~/Library/Logs/Freehold Games/CavesOfQud/Player-prev.log`
-- Mod build logs are under `~/Library/Application Support/Freehold Games/CavesOfQud/` (`build_log.txt`, `build_log.txt.prev`)
-- On Apple Silicon, collect L3 evidence from Rosetta launches only; use `scripts/launch_rosetta.sh` or `Launch CavesOfQud (Rosetta).command`
-- When verifying the mod, check `Player.log` for `[QudJP] Build marker`, probe lines like `[QudJP] PopupTitleProbe` / `[QudJP] DescriptionInventoryActionProbe`, and errors such as `MODWARN` or `Missing glyph`
-- For inventory / equipment rendering checks, follow `docs/inventory-verification.md` and keep proof screenshots under `artifacts/verify_inventory/`
-
-## Constraints
-
-- For rendering, localization, and UI regressions, prefer root-cause investigation and durable fixes over stopgap workarounds. Temporary fallbacks are acceptable only to gather evidence or unblock diagnosis, and should be removed once the underlying failure path is understood.
-- No code from the legacy project (clean-room implementation)
-- Assembly-CSharp.dll must NOT be committed to the repo
-- Distribution via GitHub only (no Steam Workshop)
-- Game DLL references are local paths; contributors must own the game
-- Blueprint/Conversation IDs must match game version 2.0.4 exactly
+- Commit messages use Conventional Commits in English, typically with scopes such as `patch`, `xml`, `scripts`, `ci`, or `deps`.
+- Detailed C# patch/test guidance lives in `Mods/QudJP/Assemblies/AGENTS.md`.
+- Detailed XML/encoding guidance lives in `Mods/QudJP/Localization/AGENTS.md`.
+- Detailed Python guidance lives in `scripts/AGENTS.md`.

@@ -91,8 +91,8 @@
     { "key": "{{c|ù}} +4 to saves vs. bleeding", "context": "TMP.Description", "text": "{{c|ù}} 出血セーブ +4" },
     { "key": "+4 to saves vs. bleeding", "context": "TMP.Description", "text": "出血セーブ +4" },
 
-    { "key": "{{c|ù}} Tinkering", "context": "TMP.Description", "text": "{{c|ù}} 工作" },
-    { "key": "Tinkering", "context": "TMP.Description", "text": "工作" },
+    { "key": "{{c|ù}} Tinkering", "context": "TMP.Description", "text": "{{c|ù}} 工匠" },
+    { "key": "Tinkering", "context": "TMP.Description", "text": "工匠" },
     { "key": "  {{C|ù}} Scavenger", "context": "TMP.Description", "text": "  {{C|ù}} 廃品漁り" },
     { "key": "Scavenger", "context": "TMP.Description", "text": "廃品漁り" },
     { "key": "{{c|ù}} Acrobatics", "context": "TMP.Description", "text": "{{c|ù}} 曲芸" },

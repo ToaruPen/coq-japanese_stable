@@ -10,12 +10,9 @@ namespace QudJP.Patches;
 [HarmonyPatch]
 public static class InventoryLocalizationPatch
 {
-    private static readonly string[] KnownTypeNames =
+    private static readonly (string typeName, string methodName)[] KnownTargets =
     {
-        "XRL.UI.InventoryScreen",
-        "Qud.UI.InventoryAndEquipmentStatusScreen",
-        "Qud.UI.InventoryLine",
-        "XRL.World.IInventoryActionsEvent",
+        ("Qud.UI.InventoryLineData", "get_displayName"),
     };
 
     [HarmonyTargetMethods]
@@ -24,27 +21,18 @@ public static class InventoryLocalizationPatch
         var targets = new List<MethodBase>();
         var seen = new HashSet<MethodBase>();
 
-        for (var index = 0; index < KnownTypeNames.Length; index++)
+        for (var index = 0; index < KnownTargets.Length; index++)
         {
-            var resolvedType = AccessTools.TypeByName(KnownTypeNames[index]);
+            var resolvedType = AccessTools.TypeByName(KnownTargets[index].typeName);
             if (resolvedType is null)
             {
                 continue;
             }
 
-            CollectCandidateMethods(resolvedType, targets, seen);
-        }
-
-        if (targets.Count == 0)
-        {
-            foreach (var type in AccessTools.AllTypes())
+            var method = AccessTools.Method(resolvedType, KnownTargets[index].methodName);
+            if (method is not null && seen.Add(method))
             {
-                if (!IsInventoryType(type))
-                {
-                    continue;
-                }
-
-                CollectCandidateMethods(type!, targets, seen);
+                targets.Add(method);
             }
         }
 
@@ -56,7 +44,7 @@ public static class InventoryLocalizationPatch
         return targets;
     }
 
-    public static void Postfix(ref string __result)
+    public static void Postfix(MethodBase __originalMethod, ref string __result)
     {
         try
         {
@@ -65,74 +53,23 @@ public static class InventoryLocalizationPatch
                 return;
             }
 
-            __result = UITextSkinTranslationPatch.TranslatePreservingColors(__result, nameof(InventoryLocalizationPatch));
+            var methodContext = __originalMethod is null
+                ? nameof(InventoryLocalizationPatch)
+                : ObservabilityHelpers.ComposeContext(
+                    nameof(InventoryLocalizationPatch),
+                    $"method={__originalMethod.DeclaringType?.Name ?? "<unknown>"}.{__originalMethod.Name}");
+
+            if (UITextSkinTranslationPatch.IsAlreadyLocalizedDisplayNameText(__result, methodContext))
+            {
+                return;
+            }
+
+            __result = UITextSkinTranslationPatch.TranslatePreservingColors(__result, methodContext);
         }
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: InventoryLocalizationPatch.Postfix failed: {0}", ex);
         }
-    }
-
-    private static bool IsInventoryType(Type? type)
-    {
-        if (type is null)
-        {
-            return false;
-        }
-
-        var fullName = type.FullName;
-        if (fullName is null || fullName.Length == 0)
-        {
-            return false;
-        }
-
-        return (fullName.StartsWith("XRL.UI.", StringComparison.Ordinal)
-                || fullName.StartsWith("Qud.UI.", StringComparison.Ordinal)
-                || fullName.StartsWith("XRL.World.", StringComparison.Ordinal))
-               && StringHelpers.ContainsOrdinalIgnoreCase(fullName, "Inventory");
-    }
-
-    private static void CollectCandidateMethods(Type type, ICollection<MethodBase> targets, ISet<MethodBase> seen)
-    {
-        var methods = AccessTools.GetDeclaredMethods(type);
-        for (var index = 0; index < methods.Count; index++)
-        {
-            var method = methods[index];
-            if (!IsTextReturningMethodCandidate(method) || !seen.Add(method))
-            {
-                continue;
-            }
-
-            targets.Add(method);
-        }
-    }
-
-    private static bool IsTextReturningMethodCandidate(MethodInfo method)
-    {
-        if (method.ReturnType != typeof(string) || method.ContainsGenericParameters)
-        {
-            return false;
-        }
-
-        var name = method.Name;
-        if (string.IsNullOrEmpty(name))
-        {
-            return false;
-        }
-
-        if (name.StartsWith("get_", StringComparison.Ordinal))
-        {
-            return true;
-        }
-
-        return StringHelpers.ContainsOrdinalIgnoreCase(name, "Text")
-               || StringHelpers.ContainsOrdinalIgnoreCase(name, "Label")
-               || StringHelpers.ContainsOrdinalIgnoreCase(name, "Title")
-               || StringHelpers.ContainsOrdinalIgnoreCase(name, "Action")
-               || StringHelpers.ContainsOrdinalIgnoreCase(name, "Weight")
-               || StringHelpers.ContainsOrdinalIgnoreCase(name, "Category")
-               || StringHelpers.ContainsOrdinalIgnoreCase(name, "Display")
-               || StringHelpers.ContainsOrdinalIgnoreCase(name, "Name");
     }
 
 }

@@ -146,7 +146,7 @@
         スヴァーディムのジーブが、機械の語り手とその熊の弟子について話していた。あなたのことか？
       </choice>
       <choice GotoID="NoMask" IfHaveSultanNoteWithTag="rebekahWasHealer" IfTestState="TalkedToYlaHaj" FlagSecret="true" SetStringConversationState="BarathrumQuestion,Daughters">
-        レベカは癒やし手だった。だが彼女の弟子「流配の娘たち」はティンカーだ。なぜだ？
+        レベカは癒やし手だった。だが彼女の弟子「流配の娘たち」は修理工だ。なぜだ？
       </choice>
       <choice GotoID="BarathrumRecovers" SetBooleanState="WaitArrivePartial4,true">
         バラサラム、わからない。
@@ -238,7 +238,7 @@
     </node>
     <node ID="Z-Reveal1a">
       <text>
-        聞いてくれ、=name=。若い熊だった頃、洪水から逃げる一族とホムズデルタを越えクッド西部に入った時、すでにジャイアの疫病は猛威を振るっていた。われらは新しい炉辺、ウルシーブが心安らぐクローム洞窟に根を下ろし、長老の導きでわたしはティンカーの技を学べた。
+        聞いてくれ、=name=。若い熊だった頃、洪水から逃げる一族とホムズデルタを越えクッド西部に入った時、すでにジャイアの疫病は猛威を振るっていた。われらは新しい炉辺、ウルシーブが心安らぐクローム洞窟に根を下ろし、長老の導きでわたしは修理工の技を学べた。
       </text>
       <choice GotoID="Z-Reveal2">...</choice>
     </node>
@@ -2161,7 +2161,6 @@
   </conversation>
 
 </conversations>
-
 
 
 

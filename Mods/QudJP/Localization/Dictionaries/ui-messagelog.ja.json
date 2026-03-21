@@ -393,16 +393,6 @@
             "key": "You died.",
             "context": "XRL.Messages.Combat",
             "text": "あなたは死んだ。"
-        },
-        {
-            "key": "You were killed by {attacker}.",
-            "context": "XRL.Messages.Combat",
-            "text": "{attacker}に殺された。"
-        },
-        {
-            "key": "You were accidentally killed by {attacker}.",
-            "context": "XRL.Messages.Combat",
-            "text": "{attacker}に誤って殺された。"
         }
     ]
 }

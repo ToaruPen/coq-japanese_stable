@@ -7,6 +7,12 @@ namespace QudJP.Tests.L1;
 [Category("L1")]
 public sealed class GrammarPatchTests
 {
+    [SetUp]
+    public void SetUp()
+    {
+        Translator.ResetForTests();
+    }
+
     [Test]
     public void APatch_ReturnsInputUnchanged_ForNormalWord()
     {
@@ -46,6 +52,20 @@ public sealed class GrammarPatchTests
         {
             Assert.That(skipped, Is.False);
             Assert.That(result, Is.EqualTo("{{W|sword}}"));
+        });
+    }
+
+    [Test]
+    public void APatch_StripsLeadingIndefiniteArticle()
+    {
+        var result = string.Empty;
+
+        var skipped = GrammarAPatch.Prefix("a ドア", Capitalize: false, ref result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(skipped, Is.False);
+            Assert.That(result, Is.EqualTo("ドア"));
         });
     }
 
@@ -162,6 +182,22 @@ public sealed class GrammarPatchTests
         });
     }
 
+    [TestCase(new[] { "A" }, "A")]
+    [TestCase(new[] { "A", "B" }, "AとB")]
+    [TestCase(new[] { "A", "B", "C", "D" }, "A、B、C、とD")]
+    public void MakeAndListPatch_CharacterizesBoundaryCounts(string[] input, string expected)
+    {
+        var result = string.Empty;
+
+        var skipped = GrammarMakeAndListPatch.Prefix(input, false, ref result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(skipped, Is.False);
+            Assert.That(result, Is.EqualTo(expected));
+        });
+    }
+
     [Test]
     public void MakeAndListPatch_ReturnsEmptyString_WhenListIsEmpty()
     {
@@ -193,6 +229,41 @@ public sealed class GrammarPatchTests
     }
 
     [Test]
+    public void MakeAndListPatch_StripsLeadingIndefiniteArticlesFromItems()
+    {
+        var result = string.Empty;
+        var input = new List<string> { "a ドア", "a 薄めの塩の水たまり" };
+
+        var skipped = GrammarMakeAndListPatch.Prefix(input, false, ref result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(skipped, Is.False);
+            Assert.That(result, Is.EqualTo("ドアと薄めの塩の水たまり"));
+        });
+    }
+
+    [Test]
+    public void MakeAndListPatch_LogsDynamicTransformProbe()
+    {
+        var output = TestTraceHelper.CaptureTrace(() =>
+        {
+            var result = string.Empty;
+            var input = new List<string> { "A", "B", "C" };
+            _ = GrammarMakeAndListPatch.Prefix(input, false, ref result);
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(output, Does.Contain("DynamicTextProbe/v1"));
+            Assert.That(output, Does.Contain("route='GrammarPatch'"));
+            Assert.That(output, Does.Contain("family='MakeAndList/count=3+'"));
+            Assert.That(output, Does.Contain("source='A | B | C'"));
+            Assert.That(output, Does.Contain("translated='A、B、とC'"));
+        });
+    }
+
+    [Test]
     public void MakeOrListPatch_JoinsThreeItemsInJapaneseStyle()
     {
         var result = string.Empty;
@@ -204,6 +275,22 @@ public sealed class GrammarPatchTests
         {
             Assert.That(skipped, Is.False);
             Assert.That(result, Is.EqualTo("A、B、またはC"));
+        });
+    }
+
+    [TestCase(new[] { "A" }, "A")]
+    [TestCase(new[] { "A", "B" }, "AまたはB")]
+    [TestCase(new[] { "A", "B", "C", "D" }, "A、B、C、またはD")]
+    public void MakeOrListPatch_CharacterizesBoundaryCounts(string[] input, string expected)
+    {
+        var result = string.Empty;
+
+        var skipped = GrammarMakeOrListPatch.Prefix(input, false, ref result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(skipped, Is.False);
+            Assert.That(result, Is.EqualTo(expected));
         });
     }
 
@@ -248,6 +335,23 @@ public sealed class GrammarPatchTests
         {
             Assert.That(skipped, Is.False);
             Assert.That(result, Is.EqualTo(new[] { "A", "B", "C" }));
+        });
+    }
+
+    [TestCase("A", new[] { "A" })]
+    [TestCase("A and B", new[] { "A", "B" })]
+    [TestCase("A, B, C, and D", new[] { "A", "B", "C", "D" })]
+    [TestCase("A、B、C", new[] { "A", "B", "C" })]
+    public void SplitOfSentenceListPatch_CharacterizesBoundaryCounts(string input, string[] expected)
+    {
+        List<string> result = new();
+
+        var skipped = GrammarSplitOfSentenceListPatch.Prefix(input, ref result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(skipped, Is.False);
+            Assert.That(result, Is.EqualTo(expected));
         });
     }
 

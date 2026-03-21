@@ -7,7 +7,39 @@ namespace QudJP;
 
 internal static class ObservabilityHelpers
 {
+    internal const string ContextSeparator = " > ";
     internal const string NoContextLabel = "<no-context>";
+
+    internal static string ComposeContext(string? primaryContext, params string?[] details)
+    {
+        var normalizedPrimary = NormalizeContext(primaryContext);
+        if (details is null || details.Length == 0)
+        {
+            return normalizedPrimary;
+        }
+
+        var builder = new StringBuilder(normalizedPrimary);
+        for (var index = 0; index < details.Length; index++)
+        {
+            var detail = details[index]?.Trim();
+            if (string.IsNullOrEmpty(detail))
+            {
+                continue;
+            }
+
+            builder.Append(ContextSeparator);
+            builder.Append(detail);
+        }
+
+        return builder.ToString();
+    }
+
+    internal static string ExtractPrimaryContext(string? context)
+    {
+        var normalized = NormalizeContext(context);
+        var separatorIndex = normalized.IndexOf(ContextSeparator, StringComparison.Ordinal);
+        return separatorIndex < 0 ? normalized : normalized.Substring(0, separatorIndex);
+    }
 
     internal static bool ShouldLogMissingHit(int hitCount)
     {

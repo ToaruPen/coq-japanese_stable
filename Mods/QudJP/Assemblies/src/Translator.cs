@@ -27,6 +27,9 @@ public static class Translator
     [ThreadStatic]
     private static Stack<string>? logContextStack;
 
+    [ThreadStatic]
+    private static int suppressMissingKeyLoggingDepth;
+
     public static string Translate(string key)
     {
         if (key is null)
@@ -42,6 +45,31 @@ public static class Translator
         return TranslateCore(key);
     }
 
+    internal static bool TryGetTranslation(string key, out string translated)
+    {
+        if (key is null)
+        {
+            throw new ArgumentNullException(nameof(key));
+        }
+
+        if (TranslationCache.TryGetValue(key, out var cachedTranslation))
+        {
+            translated = cachedTranslation;
+            return true;
+        }
+
+        var translations = GetLoadedTranslations();
+        if (translations.TryGetValue(key, out var loadedTranslation))
+        {
+            translated = loadedTranslation;
+            _ = TranslationCache.TryAdd(key, translated);
+            return true;
+        }
+
+        translated = key;
+        return false;
+    }
+
     internal static void SetDictionaryDirectoryForTests(string? directoryPath)
     {
         lock (SyncRoot)
@@ -51,6 +79,7 @@ public static class Translator
             TranslationCache.Clear();
             MissingKeyCounts.Clear();
             MissingRouteCounts.Clear();
+            DynamicTextObservability.ResetForTests();
             dictionaryLoadSummary = "Translator: dictionary load summary unavailable.";
             Interlocked.Exchange(ref loadInvocationCount, 0);
         }
@@ -75,7 +104,7 @@ public static class Translator
 
     internal static int GetMissingRouteHitCountForTests(string? context)
     {
-        return ObservabilityHelpers.GetCounterValue(MissingRouteCounts, ObservabilityHelpers.NormalizeContext(context));
+        return ObservabilityHelpers.GetCounterValue(MissingRouteCounts, ObservabilityHelpers.ExtractPrimaryContext(context));
     }
 
     internal static string GetMissingKeySummaryForTests(int maxEntries = 10)
@@ -109,6 +138,17 @@ public static class Translator
     {
         var context = GetCurrentLogContext();
         return string.IsNullOrEmpty(context) ? string.Empty : $" (context: {context})";
+    }
+
+    internal static IDisposable PushMissingKeyLoggingSuppression(bool suppress)
+    {
+        if (!suppress)
+        {
+            return NoopScope.Instance;
+        }
+
+        suppressMissingKeyLoggingDepth++;
+        return new MissingKeySuppressionScope();
     }
 
     private static string TranslateCore(string key)
@@ -240,9 +280,14 @@ public static class Translator
 
     private static int RecordMissingKey(string key)
     {
+        if (suppressMissingKeyLoggingDepth > 0)
+        {
+            return 0;
+        }
+
         var hitCount = MissingKeyCounts.AddOrUpdate(key, 1, ObservabilityHelpers.IncrementCounter);
         _ = MissingRouteCounts.AddOrUpdate(
-            ObservabilityHelpers.NormalizeContext(GetCurrentLogContext()),
+            ObservabilityHelpers.ExtractPrimaryContext(GetCurrentLogContext()),
             1,
             ObservabilityHelpers.IncrementCounter);
         return hitCount;
@@ -288,7 +333,19 @@ public static class Translator
 
     internal static string? GetCurrentLogContext()
     {
-        return logContextStack is { Count: > 0 } ? logContextStack.Peek() : null;
+        if (logContextStack is not { Count: > 0 })
+        {
+            return null;
+        }
+
+        if (logContextStack.Count == 1)
+        {
+            return logContextStack.Peek();
+        }
+
+        var frames = logContextStack.ToArray();
+        Array.Reverse(frames);
+        return string.Join(ObservabilityHelpers.ContextSeparator, frames);
     }
 
     private sealed class LogContextScope : IDisposable
@@ -316,6 +373,30 @@ public static class Translator
 
         public void Dispose()
         {
+        }
+    }
+
+    private sealed class MissingKeySuppressionScope : IDisposable
+    {
+        private bool disposed;
+
+        public void Dispose()
+        {
+            if (disposed)
+            {
+                return;
+            }
+
+            disposed = true;
+            if (suppressMissingKeyLoggingDepth > 0)
+            {
+                DecrementSuppressionDepth();
+            }
+        }
+
+        private static void DecrementSuppressionDepth()
+        {
+            suppressMissingKeyLoggingDepth--;
         }
     }
 }

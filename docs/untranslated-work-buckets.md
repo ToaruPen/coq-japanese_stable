@@ -31,10 +31,14 @@ issue-29 の目的は、`Player.log` に残っている未翻訳テキストを
 ## 実作業の進め方
 
 - `Player.log` は backlog そのものではなく、未訳の「証拠」と「意味的な塊」を見つけるために使う
+- 現在の missing-key log は `Route > detail > detail` 形式の context を出す。一次 route は patch 名で維持しつつ、field / itemType / collection / method などの detail を後ろに積む
 - fixed label / atomic noun / message-log template のように route 上でそのまま閉じるものだけを log から直接追加する
 - `logic-required` に入った時点で、以後の主戦場は `Player.log` ではなく upstream source 調査へ移す
 - つまり残差を 1 件ずつ消すのではなく、`GameText.VariableReplace(...)`, `Popup.ShowConversation(...)`, `GetDisplayNameEvent`, `DescriptionBuilder` のような生成点を押さえてまとめて潰す
 - `Player.log` の役割は、修正後にどの意味塊がまだ漏れているかを再観測すること
+- 通常の未訳観測は手動操作で行い、`scripts/verify_inventory.py` は inventory / equipment 表示検証のためにだけ使う
+- 一般的な未訳観測で自動化を使う場合は、char-gen から inventory 各タブまで遷移して `Player.log` を採取できることを前提にし、現行の inventory-only 自動化はそのまま流用しない
+- `MainMenuLocalizationPatch` / `CharGenLocalizationPatch` で出る単独ショートカット、checkbox 記号、疑似グラフィック (`[Space]`, `[Esc]`, `[R]`, `[Delete]`, `[ ][n]`, `[■][n]` など) は、原則として観測ノイズ扱いにする
 
 ## Route Inventory
 
@@ -57,6 +61,8 @@ issue-29 の目的は、`Player.log` に残っている未翻訳テキストを
   - `Player.log:196` - `<none>`
   - `Player.log:325` - `Stinger (Confusing Venom)`
   - `Player.log:344` - `Choose Variant`
+- ノイズとして除外する例:
+  - `Player.log` 上の `[R]`, `[Delete]`, `[ ][n]`, `[■][n]`, `[1pts]`, `[2pts]`
 - 判断理由:
   - これらは値埋め込みのない安定文字列で、現行 route の exact-match 辞書追加で対処できる
   - `CharGenLocalizationPatch` 自体は final string を受けるが、少なくともこの塊は asset 作業として切り出せる
@@ -180,6 +186,44 @@ issue-29 の目的は、`Player.log` に残っている未翻訳テキストを
   - reputation / stat line / requirement line を route 別に upstream patch へ切り出す
   - それまでの暫定対応をするなら template translation 層を追加する
 
+### 4.1. `skills/powers` の color / markup drift
+
+- 主 route: `UITextSkinTranslationPatch`
+- 補助 route: `ColorAwareTranslationComposer`, `TextShellReplacementRenderer`
+- 性質: 未訳 leaf ではなく、翻訳後の skill label や description 行で色・markup の保持が崩れる表示回帰
+- 2026-03-21 時点の観測:
+  - screenshot evidence: skills / powers 画面で `廃品漁り` など一部 skill 名の色が周辺行とずれて見える
+  - 同系統の render owner 候補:
+    - `Mods/QudJP/Assemblies/src/Patches/UITextSkinTranslationPatch.cs`
+    - `Mods/QudJP/Assemblies/src/ColorAwareTranslationComposer.cs`
+    - `Mods/QudJP/Assemblies/src/TextShellReplacementRenderer.cs`
+- 判断理由:
+  - これは `Melee` / `Melee Weapons` のような未訳 leaf とは別 family であり、辞書追加では閉じない
+  - 翻訳結果の text 自体ではなく、色 span / TMP wrapping / replacement render の保持境界を確認する必要がある
+- 次作業:
+  - `skills/powers` 画面で色崩れする source family を `Player.log` と screenshot で再特定する
+  - `UITextSkinTranslationPatch` と `ColorAwareTranslationComposer` のどちらで span ownership が崩れるかを切り分ける
+  - 必要なら `TextShellReplacementRenderer` の TMP 設定同期を `skills/powers` 表示に限定して調整する
+
+### 4.5. Stateful liquid-container display names
+
+- 主 route: `GetDisplayNamePatch`, `GetDisplayNameProcessPatch`, `InventoryLocalizationPatch`
+- 性質: base item name に、液量・空/半量・液体名などの状態が後段で合成された container 表示
+- `Player.log` 例:
+  - `Player.log:244` - `水袋（空） [empty]`
+  - `Player.log:247` - `水袋（半量） [32 drams of fresh water]`
+  - `Player.log:252` - `巡礼者のワイン袋 [9 drams of wine]`
+- 判断理由:
+  - base game では `HalfFullWaterskin`, `EmptyWaterskin`, `PilgrimWineWaterskin`, `Empty Canteen` などの variant object は存在するが、`DisplayName` は持たず `LiquidVolume` / `InitialLiquid` だけを変えている
+  - そのため、状態つき容器名を XML の static `DisplayName` で後付けすると、後段の `[empty]` / `[32 drams of ...]` と二重管理になり、混在表示を起こしやすい
+  - この系統は fixed asset ではなく、容器名・状態・液体名・量の合成点を扱う `logic-required` で処理すべき
+- 運用ルール:
+  - 状態つき liquid container variant に対して static XML の `Render DisplayName` は追加しない
+  - 既存の variant override は cleanup 対象として扱う
+- 次作業:
+  - `empty` / `{n} drams of {liquid}` / 容器ベース名の template 化ポイントを特定する
+  - liquid container 系の表示は route-aware template handling に寄せる
+
 ### 5. Procedural / generated naming and lore
 
 - 主 route: `GetDisplayNamePatch`, `GetDisplayNameProcessPatch`, 一部 `UITextSkinTranslationPatch`
@@ -196,6 +240,52 @@ issue-29 の目的は、`Player.log` に残っている未翻訳テキストを
   - playability を壊さない再導入条件は `docs/procedural-text-status.md` を参照
 
 ## Follow-Up Split
+
+## 2026-03-21 Active Implementation TODO
+
+- scope
+  - `shrine/history` の自動生成文は今回の作業スコープから除外する
+- reputation
+  - `FactionsStatusScreenTranslationPatch` の自己再入と repeated translation をさらに減らす
+  - `FactionsLine` の `detailsText/detailsText2/detailsText3` を評判タブ幅の中で自動折り返しにする
+  - 未対応 topic leaf (`ruins`, `Girsh lairs`, `sultan tomb inscriptions`, `Resheph's healer Rebekah`, `workshop`) を dedicated route で閉じる
+- character status / mutation
+  - `Mutated Human Tinker` のような genotype + calling title を dedicated route で処理する
+  - `Level: n ¯ HP: a/b ¯ XP: c/d ¯ Weight: w#` の上段 status 行を 1 family として処理する
+  - live mutation detail の `description + This rank + Next rank` を dedicated route で閉じる
+  - 属性 help の color / markup 崩れを dedicated help family で直す
+- chargen
+  - mutation long description (`sleep gas`, `electromagnetic pulse`, `nearsighted`) を `description + rank text` family で閉じる
+  - 既に改善済みの raw bullet / `Points Remaining` を回帰させない
+- compare / status sink
+  - `Strength Bonus Cap: {0}` を template family にする
+  - `Weapon Class: ...` を template / exact family にする
+  - `Perfect`, `Injured`, `Hostile`, `Average` の compare/status 行を sink family で閉じる
+- skills / powers
+  - `Melee`, `Melee Weapons` の section label を閉じる
+  - `廃品漁り` など skills / powers 行の color / markup drift を、未訳 leaf とは別 family として調査・修正する
+  - skill line translation で元の indent / visual hierarchy を落とさない
+- popup / message
+  - `Enter 送信`, `Esc キャンセル`, `Tab 長押しで決定`, `続ける` の localized no-op を徹底する
+  - `MessagePatternTranslator` で article-aware pattern と brace / color balance を維持する
+  - death wrapper family は `popup の個別 exact/template` と `message regex` の寄せ集めとして増やさず、`wrapper cause + killer slot` の shared family として再設計する
+  - upstream family の owner は `message assembly` とみなし、`PopupTranslationPatch` と `MessagePatternTranslator` は同じ death family を使う route adapter として整理する
+  - `killed by` だけでなく `bitten to death by` と `accidentally killed by` を同じ death wrapper TODO に含める
+  - article 処理 (`a/an/the`) と killer 名の display-name reuse は death wrapper family の共通責務として 1 箇所に寄せる
+  - 対象 family:
+    - `You see a ... and stop moving.`
+    - `The ... stands up.`
+    - `You died ... killed by a ...`
+    - `You died ... bitten to death by a ...`
+    - `You were accidentally killed by ...`
+    - `You hit ...`
+    - `You miss ...`
+    - `(.+?) yells, '...'`
+- verification
+  - 対象 L1/L2 テスト
+  - `dotnet build Mods/QudJP/Assemblies/QudJP.csproj`
+  - `/Users/toarupen/.local/bin/python3.12 scripts/sync_mod.py`
+  - Rosetta での L3 実確認
 
 ### Asset implementation tasks
 
@@ -240,6 +330,35 @@ issue-29 の目的は、`Player.log` に残っている未翻訳テキストを
    - 対象: `Sithithythoth`, `Iondanna`, `Baaraahaaaaah`
    - 根拠: `Player.log:488`, `Player.log:499`, `Player.log:522`
    - 調査起点: `GetDisplayNameEvent`, `HistoricStringExpander` 周辺の blind spot
+
+## 2026-03-21 Death Wrapper Family Refactor TODO
+
+- family boundary
+  - `death wrapper` は「一般動詞活用」ではなく `wrapper cause + killer slot` family として扱う
+  - canonical family は `message assembly` 起点で定義し、`PopupTranslationPatch` と `MessagePatternTranslator` は同一 family の route adapter にする
+  - 最初に管理する subfamily は `killed by`, `bitten to death by`, `accidentally killed by`
+- implementation refactor
+  - `PopupTranslationPatch` の `TryTranslateDeathPopup` / `TryTranslateBittenToDeathPopup` の重複を shared helper へ寄せる
+  - killer 名の article 剥がし (`a/an/the`) と display-name route 再利用は death wrapper family 共通 helper に寄せる
+  - popup 側の fixed template (`ui-popup.ja.json`) と message 側の regex/template (`messages.ja.json`) は別 asset のままでもよいが、family 定義と slot handling は 1 箇所に集約する
+  - `ui-messagelog.ja.json` にだけ存在する `You were accidentally killed by {attacker}.` を death wrapper inventory に含め、popup/message 間で取りこぼす variant を洗う
+- characterization tests
+  - L1: death wrapper family ごとに `killer slot`, `article 有無`, `句点/感嘆符揺れ`, `already localized killer` を固定する
+  - L2: popup route で `killed by` と `bitten to death by` の両方が shared helper を通って訳される回帰を追加する
+  - L2: message route で `killed by`, `bitten to death by`, `accidentally killed by` が同じ family inventory に従う回帰を追加する
+  - L2: popup と message で同じ killer source を与えたとき、killer 名の訳し方と article 除去が一致することを固定する
+- evidence pointers
+  - production:
+    - `Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs`
+    - `Mods/QudJP/Assemblies/src/MessagePatternTranslator.cs`
+    - `Mods/QudJP/Localization/Dictionaries/messages.ja.json`
+    - `Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json`
+    - `Mods/QudJP/Localization/Dictionaries/ui-messagelog.ja.json`
+  - policy / upstream:
+    - `docs/logic-required-policy.md`
+    - `docs/ilspy-analysis.md`
+    - `.sisyphus/notepads/coq-jp-roadmap/decisions.md`
+    - `.sisyphus/evidence/task-9-Qud.UI.PopupMessage.cs`
 
 ### Investigation references
 

@@ -45,6 +45,11 @@
       "text": "{0}の村人たち"
     },
     {
+      "key": "The {0}",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}"
+    },
+    {
       "key": "Reputation: {0}",
       "context": "Qud.UI.FactionsStatusScreen",
       "text": "評判: {0}"
@@ -68,6 +73,361 @@
       "key": "You are welcome in their holy places.",
       "context": "Qud.UI.FactionsStatusScreen",
       "text": "あなたは彼らの聖地で歓迎されている。"
+    },
+    {
+      "key": "The {0} don't care about you, but aggressive ones will attack you.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}はあなたを特に気に掛けていないが、攻撃的な者は襲ってくる。"
+    },
+    {
+      "key": "The {0} is interested in trading secrets about {1}. They're also interested in hearing gossip that's about them.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}は{1}に関する秘密の取引に関心があり、自分たちに関するうわさ話にも興味を示す。"
+    },
+    {
+      "key": "The {0} are interested in trading secrets about {1}. They're also interested in hearing gossip that's about them.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}は{1}に関する秘密の取引に関心があり、自分たちに関するうわさ話にも興味を示す。"
+    },
+    {
+      "key": "The {0} is interested in hearing gossip that's about them.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}は自分たちに関するうわさ話に興味を示す。"
+    },
+    {
+      "key": "The {0} are interested in hearing gossip that's about them.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}は自分たちに関するうわさ話に興味を示す。"
+    },
+    {
+      "key": "The {0} despise you. Even docile ones will attack you.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}はあなたを憎悪しており、おとなしい個体でも襲ってくる。"
+    },
+    {
+      "key": "The {0} dislike you, but docile ones won't attack you.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}はあなたを嫌っているが、おとなしい個体は襲ってこない。"
+    },
+    {
+      "key": "The {0} favor you. Aggressive ones won't attack you.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}はあなたに好意的で、攻撃的な個体も襲ってこない。"
+    },
+    {
+      "key": "The {0} revere you and consider you one of their own.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}はあなたを崇め、自分たちの同胞だと見なしている。"
+    },
+    {
+      "key": "You hold the {0} of {1} among them.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "あなたは彼らのあいだで{1}の{0}に就いている。"
+    },
+    {
+      "key": "The {0} will usually let you pet them.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}はたいてい撫でさせてくれる。"
+    },
+    {
+      "key": "The {0} won't usually let you pet them.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}はたいてい撫でさせてくれない。"
+    },
+    {
+      "key": "The {0} is interested in trading secrets about {1}.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}は{1}に関する秘密の取引に関心がある。"
+    },
+    {
+      "key": "The {0} are interested in trading secrets about {1}.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}は{1}に関する秘密の取引に関心がある。"
+    },
+    {
+      "key": "The {0} is interested in sharing secrets about {1}.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}は{1}に関する秘密の共有に関心がある。"
+    },
+    {
+      "key": "The {0} are interested in sharing secrets about {1}.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}は{1}に関する秘密の共有に関心がある。"
+    },
+    {
+      "key": "The {0} is interested in learning about {1}.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}は{1}について知ることに関心がある。"
+    },
+    {
+      "key": "The {0} are interested in learning about {1}.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "{0}は{1}について知ることに関心がある。"
+    },
+    {
+      "key": "They're also interested in hearing gossip that's about them.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "また、自分たちに関するうわさ話にも興味を示す。"
+    },
+    {
+      "key": "They're also interested in trading secrets about {0}.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "また、{0}に関する秘密の取引にも関心がある。"
+    },
+    {
+      "key": "They're also interested in sharing secrets about {0}.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "また、{0}に関する秘密の共有にも関心がある。"
+    },
+    {
+      "key": "They're also interested in learning about {0}.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "また、{0}について知ることにも関心がある。"
+    },
+    {
+      "key": "They're also interested in trading secrets about {0} and hearing gossip that's about them.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "また、{0}に関する秘密の取引と、自分たちに関するうわさ話の両方に興味を示す。"
+    },
+    {
+      "key": "They're also interested in sharing secrets about {0} and hearing gossip that's about them.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "また、{0}に関する秘密の共有と、自分たちに関するうわさ話の両方に興味を示す。"
+    },
+    {
+      "key": "They're also interested in learning about {0} and hearing gossip that's about them.",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "また、{0}について知ることと、自分たちに関するうわさ話の両方に興味を示す。"
+    },
+    {
+      "key": "the sultan they worship",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "彼らが崇拝するスルタン"
+    },
+    {
+      "key": "sultan they admire or despise",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "彼らが好悪を抱くスルタン"
+    },
+    {
+      "key": "all sultans",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "すべてのスルタン"
+    },
+    {
+      "key": "all sorts of gossip",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "あらゆるうわさ話"
+    },
+    {
+      "key": "gossip that's about them",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "彼ら自身に関するうわさ話"
+    },
+    {
+      "key": "technology",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "技術"
+    },
+    {
+      "key": "everything",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "あらゆる物事"
+    },
+    {
+      "key": "the modern world",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "現代世界"
+    },
+    {
+      "key": "oddities",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "奇妙品"
+    },
+    {
+      "key": "historic sites",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "史跡"
+    },
+    {
+      "key": "all settlements",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "すべての集落"
+    },
+    {
+      "key": "humanoid settlement",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "人型種族の集落"
+    },
+    {
+      "key": "slime bogs",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "スライム湿原"
+    },
+    {
+      "key": "apple farms",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "リンゴ農園"
+    },
+    {
+      "key": "pig farms",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "豚農場"
+    },
+    {
+      "key": "other merchants",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "他の商人"
+    },
+    {
+      "key": "Consortium merchants",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "フィタ・コンソーシアムの商人"
+    },
+    {
+      "key": "humanoid merchant",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "人型種族の商人"
+    },
+    {
+      "key": "baboon lair",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "ヒヒの巣"
+    },
+    {
+      "key": "ape lair",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "類人猿の巣"
+    },
+    {
+      "key": "insect lair",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "昆虫の巣"
+    },
+    {
+      "key": "cat lair",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "猫の巣"
+    },
+    {
+      "key": "goatfolk settlement",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "山羊人の集落"
+    },
+    {
+      "key": "banana grove",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "バナナ林"
+    },
+    {
+      "key": "flower fields",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "花畑"
+    },
+    {
+      "key": "jungle",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "ジャングル"
+    },
+    {
+      "key": "desert canyons",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "砂漠峡谷"
+    },
+    {
+      "key": "salt marsh",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "塩性湿地"
+    },
+    {
+      "key": "Moon Stair",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "月の階段"
+    },
+    {
+      "key": "Palladium Reef",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "パラジウム礁"
+    },
+    {
+      "key": "Lake Hinnom",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "ヒンノム湖"
+    },
+    {
+      "key": "water weep",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "水のしずく泉"
+    },
+    {
+      "key": "honey weep",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "蜜の泉"
+    },
+    {
+      "key": "distillery",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "蒸留所"
+    },
+    {
+      "key": "fungus forests",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "菌類の森"
+    },
+    {
+      "key": "Oboroqoru's lair",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "オボロコルの巣"
+    },
+    {
+      "key": "robot lair",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "ロボットの巣"
+    },
+    {
+      "key": "snapjaw forts",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "スナップジョーの砦"
+    },
+    {
+      "key": "becoming nooks",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "変成の隠れ家"
+    },
+    {
+      "key": "ancestral bracelet Kindrish",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "祖伝の腕輪キンドリシュ"
+    },
+    {
+      "key": "ruins",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "遺跡"
+    },
+    {
+      "key": "Girsh lairs",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "ギルシュの巣"
+    },
+    {
+      "key": "sultan tomb inscriptions",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "スルタン墓碑銘"
+    },
+    {
+      "key": "Resheph's healer Rebekah",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "レシェフの治療師レベカ"
+    },
+    {
+      "key": "workshop",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "工房"
+    },
+    {
+      "key": "weep",
+      "context": "Qud.UI.FactionsStatusScreen",
+      "text": "泉"
     }
   ]
 }

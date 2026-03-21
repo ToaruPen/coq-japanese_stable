@@ -56,6 +56,11 @@ internal static class UITextSkinTemplateTranslator
             return;
         }
 
+        DynamicTextObservability.RecordTransform(
+            ObservabilityHelpers.ExtractPrimaryContext(context),
+            templateKey,
+            current,
+            translated);
         SetCurrentText(uiTextSkin, translated);
     }
 

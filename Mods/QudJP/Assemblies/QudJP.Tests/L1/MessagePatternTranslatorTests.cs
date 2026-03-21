@@ -11,6 +11,7 @@ public sealed class MessagePatternTranslatorTests
     private static readonly UTF8Encoding Utf8WithoutBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
     private string tempDirectory = null!;
+    private string dictionaryDirectory = null!;
     private string patternFilePath = null!;
 
     [SetUp]
@@ -18,9 +19,13 @@ public sealed class MessagePatternTranslatorTests
     {
         tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-message-pattern-l1", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDirectory);
+        dictionaryDirectory = Path.Combine(tempDirectory, "dict");
+        Directory.CreateDirectory(dictionaryDirectory);
 
         patternFilePath = Path.Combine(tempDirectory, "messages.ja.json");
 
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
         MessagePatternTranslator.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
     }
@@ -28,6 +33,7 @@ public sealed class MessagePatternTranslatorTests
     [TearDown]
     public void TearDown()
     {
+        Translator.ResetForTests();
         MessagePatternTranslator.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
@@ -44,6 +50,18 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate("You miss snapjaw.");
 
         Assert.That(translated, Is.EqualTo("snapjawへの攻撃をはずした"));
+    }
+
+    [Test]
+    public void Translate_AppliesWeaponMissPatternBeforeGenericMissPattern()
+    {
+        WritePatternDictionary(
+            ("^You miss with your (.+?)[.!] \\[(.+?) vs (.+?)\\]$", "{0}での攻撃は外れた。[{1} vs {2}]"),
+            ("^You miss (.+?)[.!]?$", "{0}への攻撃は外れた"));
+
+        var translated = MessagePatternTranslator.Translate("You miss with your レンチ! [10 vs 10]");
+
+        Assert.That(translated, Is.EqualTo("レンチでの攻撃は外れた。[10 vs 10]"));
     }
 
     [Test]
@@ -124,6 +142,29 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_PreservesCaptureLocalMarkupWhenReorderingPlaceholders()
+    {
+        WritePatternDictionary(("^You hit (.+) for (\\d+) damage[.!]?$", "{1}ダメージを{0}に与えた"));
+
+        var translated = MessagePatternTranslator.Translate("You hit {{R|snapjaw}} for {{G|7}} damage!");
+
+        Assert.That(translated, Is.EqualTo("{{G|7}}ダメージを{{R|snapjaw}}に与えた"));
+    }
+
+    [Test]
+    public void Translate_PreservesCaptureLocalMarkupForTranslatedCaptures()
+    {
+        WritePatternDictionary((
+            "^You see (.+?) to the (north|south|east|west|northeast|northwest|southeast|southwest) and stop moving[.!]?$",
+            "{t1}に{0}が見えたので移動をやめた。"));
+        WriteExactDictionary(("north", "北"));
+
+        var translated = MessagePatternTranslator.Translate("You see タム、ドロマド商人 to the {{G|north}} and stop moving.");
+
+        Assert.That(translated, Is.EqualTo("{{G|北}}にタム、ドロマド商人が見えたので移動をやめた。"));
+    }
+
+    [Test]
     public void Translate_AppliesJournalNotesPattern()
     {
         WritePatternDictionary(("^Notes: (.+)$", "備考: {0}"));
@@ -160,6 +201,378 @@ public sealed class MessagePatternTranslatorTests
             "地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。";
 
         Assert.That(translated, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void Translate_AppliesLowHealthWarningPattern()
+    {
+        WritePatternDictionary(("^Your health has dropped below 40%![.!]?$", "体力が40%を下回った！"));
+
+        var translated = MessagePatternTranslator.Translate("Your health has dropped below 40%!");
+
+        Assert.That(translated, Is.EqualTo("体力が40%を下回った！"));
+    }
+
+    [Test]
+    public void Translate_AppliesWeaponHitPatternWithHitCountAndRoll()
+    {
+        WritePatternDictionary(
+            ("^You hit \\((x\\d+)\\) for (\\d+) damage with your (.+?)[.!] \\[(.+?)\\]$", "{2}で{1}ダメージを与えた。({0}) [{3}]"));
+
+        var translated = MessagePatternTranslator.Translate("You hit (x2) for 3 damage with your 青銅の短剣! [15]");
+
+        Assert.That(translated, Is.EqualTo("青銅の短剣で3ダメージを与えた。(x2) [15]"));
+    }
+
+    [Test]
+    public void Translate_AppliesArmorPenetrationPatternWithLeadingArticle()
+    {
+        WritePatternDictionary(
+            ("^You don't penetrate (?:the )?(.+?)の armor with your (.+?)[.!] \\[(.+?)\\]$", "{1}では{0}の装甲を貫けない。[{2}]"));
+
+        var translated = MessagePatternTranslator.Translate("You don't penetrate the 花瓶の armor with your 青銅の短剣. [19]");
+
+        Assert.That(translated, Is.EqualTo("青銅の短剣では花瓶の装甲を貫けない。[19]"));
+    }
+
+    [Test]
+    public void Translate_AppliesArmorPenetrationPatternWithColorizedWeapon()
+    {
+        WritePatternDictionary(
+            ("^You don't penetrate (?:the )?(.+?)の armor with your (.+?)[.!] \\[(.+?)\\]$", "{1}では{0}の装甲を貫けない。[{2}]"));
+
+        var translated = MessagePatternTranslator.Translate("You don't penetrate タムの armor with your {{w|青銅の短剣}}. [17]");
+
+        Assert.That(translated, Is.EqualTo("{{w|青銅の短剣}}ではタムの装甲を貫けない。[17]"));
+    }
+
+    [Test]
+    public void Translate_AppliesIncomingWeaponMissPatternWithRollComparison()
+    {
+        WritePatternDictionary(
+            ("^(.+) misses you with (?:his|her|its) (.+?)[.!] \\[(.+?) vs (.+?)\\]$", "{0}の{1}は外れた。[{2} vs {3}]"));
+
+        var translated = MessagePatternTranslator.Translate("Naruur misses you with her 乳棒! [5 vs 11]");
+
+        Assert.That(translated, Is.EqualTo("Naruurの乳棒は外れた。[5 vs 11]"));
+    }
+
+    [Test]
+    public void Translate_AppliesAggressiveStancePattern()
+    {
+        WritePatternDictionary(("^(.+) switches to aggressive stance[.!]?$", "{0}は攻撃態勢に入った。"));
+
+        var translated = MessagePatternTranslator.Translate("監視官イラメ switches to aggressive stance.");
+
+        Assert.That(translated, Is.EqualTo("監視官イラメは攻撃態勢に入った。"));
+    }
+
+    [Test]
+    public void Translate_AppliesFreezingEffectDamagePattern()
+    {
+        WritePatternDictionary(("^You take (\\d+) damage from (.+?)の freezing effect![.!]?$", "{1}の凍結効果で{0}ダメージを受けた！"));
+
+        var translated = MessagePatternTranslator.Translate("You take 14 damage from 監視官イラメの freezing effect!");
+
+        Assert.That(translated, Is.EqualTo("監視官イラメの凍結効果で14ダメージを受けた！"));
+    }
+
+    [Test]
+    public void Translate_AppliesFreezingRayPattern()
+    {
+        WritePatternDictionary(("^(.+) emits a freezing ray from (?:his|her|its|their) hands![.!]?$", "{0}は手から凍結光線を放った！"));
+
+        var translated = MessagePatternTranslator.Translate("監視官イラメ emits a freezing ray from her hands!");
+
+        Assert.That(translated, Is.EqualTo("監視官イラメは手から凍結光線を放った！"));
+    }
+
+    [Test]
+    public void Translate_AppliesIncomingWeaponHitPatternWithLeadingArticleOutsideCapture()
+    {
+        WritePatternDictionary(
+            ("^(?:The )?(.+) hits \\((x\\d+)\\) for (\\d+) damage with (?:his|her|its) (.+?)[.!] \\[(.+?)\\]$", "{0}の{3}で{2}ダメージを受けた。({1}) [{4}]"));
+
+        var translated = MessagePatternTranslator.Translate("The ウォーターヴァイン農家 hits (x2) for 4 damage with his 鉄の蔓刈り斧. [17]");
+
+        Assert.That(translated, Is.EqualTo("ウォーターヴァイン農家の鉄の蔓刈り斧で4ダメージを受けた。(x2) [17]"));
+    }
+
+    [Test]
+    public void Translate_AppliesIncomingWeaponMissPatternWithLeadingArticleOutsideCapture()
+    {
+        WritePatternDictionary(
+            ("^(?:The )?(.+) misses you with (?:his|her|its) (.+?)[.!] \\[(.+?) vs (.+?)\\]$", "{0}の{1}は外れた。[{2} vs {3}]"));
+
+        var translated = MessagePatternTranslator.Translate("The ウォーターヴァイン農家 misses you with his 鉄の蔓刈り斧! [3 vs 7]");
+
+        Assert.That(translated, Is.EqualTo("ウォーターヴァイン農家の鉄の蔓刈り斧は外れた。[3 vs 7]"));
+    }
+
+    [Test]
+    public void Translate_AppliesPassByPattern()
+    {
+        WritePatternDictionary(("^You pass by a (.+?)[.!]?$", "{0}のそばを通り過ぎた。"));
+
+        var translated = MessagePatternTranslator.Translate("You pass by a 編みかご.");
+
+        Assert.That(translated, Is.EqualTo("編みかごのそばを通り過ぎた。"));
+    }
+
+    [Test]
+    public void Translate_AppliesPassByPatternWithoutArticle()
+    {
+        WritePatternDictionary(("^You pass by (.+?)[.!]?$", "{0}のそばを通り過ぎた。"));
+
+        var translated = MessagePatternTranslator.Translate("You pass by ウォーターヴァインと薄めの塩の水たまり.");
+
+        Assert.That(translated, Is.EqualTo("ウォーターヴァインと薄めの塩の水たまりのそばを通り過ぎた。"));
+    }
+
+    [Test]
+    public void Translate_AppliesWadeThroughPattern()
+    {
+        WritePatternDictionary(("^You wade through (?:a |an )?(.+?)[.!]?$", "{0}をかき分けて進んだ。"));
+
+        var translated = MessagePatternTranslator.Translate("You wade through a 塩辛い水の水たまり.");
+
+        Assert.That(translated, Is.EqualTo("塩辛い水の水たまりをかき分けて進んだ。"));
+    }
+
+    [TestCase("north", "北")]
+    [TestCase("south", "南")]
+    [TestCase("east", "東")]
+    [TestCase("west", "西")]
+    [TestCase("northeast", "北東")]
+    [TestCase("northwest", "北西")]
+    [TestCase("southeast", "南東")]
+    [TestCase("southwest", "南西")]
+    public void Translate_AppliesDirectionalSeeAndStopFamily(string direction, string expectedDirection)
+    {
+        WritePatternDictionary((
+            "^You see (.+?) to the (north|south|east|west|northeast|northwest|southeast|southwest) and stop moving[.!]?$",
+            "{t1}に{0}が見えたので移動をやめた。"));
+        WriteExactDictionary(("north", "北"), ("south", "南"), ("east", "東"), ("west", "西"), ("northeast", "北東"), ("northwest", "北西"), ("southeast", "南東"), ("southwest", "南西"));
+
+        var translated = MessagePatternTranslator.Translate($"You see タム、ドロマド商人 to the {direction} and stop moving.");
+
+        Assert.That(translated, Is.EqualTo($"{expectedDirection}にタム、ドロマド商人が見えたので移動をやめた。"));
+    }
+
+    [Test]
+    public void Translate_AppliesGenericSultanHistoriesJournalPattern()
+    {
+        WritePatternDictionary(("^You note this piece of information in the Sultan Histories > (.+?) section of your journal\\.[.!]?$", "この情報をジャーナルの「スルタン史 > {0}」欄に記録した。"));
+
+        var translated = MessagePatternTranslator.Translate("You note this piece of information in the Sultan Histories > Nashid I section of your journal.");
+
+        Assert.That(translated, Is.EqualTo("この情報をジャーナルの「スルタン史 > Nashid I」欄に記録した。"));
+    }
+
+    [Test]
+    public void Translate_AppliesJournalLocationFamily_WithTranslatedSectionCapture()
+    {
+        WritePatternDictionary((
+            "^You note the location of (.+?) in the Locations > (.+?) section of your journal\\.[.!]?$",
+            "ジャーナルの「場所 > {t1}」欄に{0}の場所を記録した。"));
+        WriteExactDictionary(("Historic Sites", "史跡"));
+
+        var translated = MessagePatternTranslator.Translate(
+            "You note the location of Shagganip in the Locations > Historic Sites section of your journal.");
+
+        Assert.That(translated, Is.EqualTo("ジャーナルの「場所 > 史跡」欄にShagganipの場所を記録した。"));
+    }
+
+    [Test]
+    public void Translate_AppliesDisassembleAndBitsReceiptPattern()
+    {
+        WritePatternDictionary(("^You disassemble the (.+?)\\. You receive tinkering bits <(.+?)>\\.[.!]?$", "{0}を分解し、修理ビット<{1}>を受け取った。"));
+
+        var translated = MessagePatternTranslator.Translate("You disassemble the 奇妙な遺物. You receive tinkering bits <CD>.");
+
+        Assert.That(translated, Is.EqualTo("奇妙な遺物を分解し、修理ビット<CD>を受け取った。"));
+    }
+
+    [Test]
+    public void Translate_AppliesThirdPersonStandUpPattern()
+    {
+        WritePatternDictionary(("^(.+?) stands up[.!]?$", "{0}は立ち上がった。"));
+
+        var translated = MessagePatternTranslator.Translate("タム stands up.");
+
+        Assert.That(translated, Is.EqualTo("タムは立ち上がった。"));
+    }
+
+    [Test]
+    public void Translate_AppliesFreezingWeaponDamagePattern()
+    {
+        WritePatternDictionary(("^(.+?) takes (\\d+) damage from your freezing weapon![.!]?$", "{0}はあなたの凍てつく武器で{1}ダメージを受けた！"));
+
+        var translated = MessagePatternTranslator.Translate("血まみれのタム takes 1 damage from your freezing weapon!");
+
+        Assert.That(translated, Is.EqualTo("血まみれのタムはあなたの凍てつく武器で1ダメージを受けた！"));
+    }
+
+    [Test]
+    public void Translate_AppliesYellPattern()
+    {
+        WritePatternDictionary(("^(.+?) yells, '(.+)'$", "{0}は「{1}」と叫んだ。"));
+
+        var translated = MessagePatternTranslator.Translate("The ウォーターヴァイン農家のメカニマス教徒改宗者 yells, 'Is it a dybbuk that possesses the robot? It should be sacred and still.'");
+
+        Assert.That(translated, Is.EqualTo("The ウォーターヴァイン農家のメカニマス教徒改宗者は「Is it a dybbuk that possesses the robot? It should be sacred and still.」と叫んだ。"));
+    }
+
+    [Test]
+    public void Translate_AppliesJoppaArrivalPattern()
+    {
+        WritePatternDictionary((
+            "^On the (.+?) of (.+?), you arrive at the oasis-hamlet of Joppa, along the far rim of Moghra'yi, the Great Salt Desert\\.\\n\\nAll around you, moisture farmers tend to groves of viridian watervine\\. There are huts wrought from rock salt and brinestalk\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",
+            "{1}の{0}日、あなたは大塩砂漠モグライィの遥かな縁にあるオアシス集落ジョッパに到着した。\n\nあたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。"));
+
+        var source = "On the 27th of Uru Ux, you arrive at the oasis-hamlet of Joppa, along the far rim of Moghra'yi, the Great Salt Desert.\n\n" +
+            "All around you, moisture farmers tend to groves of viridian watervine. There are huts wrought from rock salt and brinestalk.\n\n" +
+            "On the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky.";
+
+        var translated = MessagePatternTranslator.Translate(source);
+
+        var expected = "Uru Uxの27th日、あなたは大塩砂漠モグライィの遥かな縁にあるオアシス集落ジョッパに到着した。\n\n" +
+            "あたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n" +
+            "地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。";
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void Translate_AppliesBlockedMovementPattern()
+    {
+        WritePatternDictionary(("^You stop moving because the (.+?) is in the way[.!]?$", "{0}が邪魔で移動をやめた。"));
+
+        var translated = MessagePatternTranslator.Translate("You stop moving because the 泥灰岩 is in the way.");
+
+        Assert.That(translated, Is.EqualTo("泥灰岩が邪魔で移動をやめた。"));
+    }
+
+    [Test]
+    public void Translate_AppliesBlockedPathPatternWithArticle()
+    {
+        WritePatternDictionary(("^The way is blocked by a (.+?)[.!]?$", "{0}が道を塞いでいる。"));
+
+        var translated = MessagePatternTranslator.Translate("The way is blocked by a 帆布.");
+
+        Assert.That(translated, Is.EqualTo("帆布が道を塞いでいる。"));
+    }
+
+    [Test]
+    public void Translate_AppliesBleedingDamagePattern()
+    {
+        WritePatternDictionary(("^(.+) takes (\\d+) damage from bleeding[.!]?$", "{0}は出血で{1}ダメージを受けた。"));
+
+        var translated = MessagePatternTranslator.Translate("bloody Naruur takes 1 damage from bleeding.");
+
+        Assert.That(translated, Is.EqualTo("bloody Naruurは出血で1ダメージを受けた。"));
+    }
+
+    [Test]
+    public void Translate_AppliesLostSightPatternWithLeadingArticle()
+    {
+        WritePatternDictionary(("^You have lost sight of (?:the )?(.+?)[.!]?$", "{0}を見失った。"));
+
+        var translated = MessagePatternTranslator.Translate("You have lost sight of the レシェフの神殿.");
+
+        Assert.That(translated, Is.EqualTo("レシェフの神殿を見失った。"));
+    }
+
+    [Test]
+    public void Translate_AppliesLostSightPattern()
+    {
+        WritePatternDictionary(("^You have lost sight of (.+?)[.!]?$", "{0}を見失った。"));
+
+        var translated = MessagePatternTranslator.Translate("You have lost sight of bloody Naruur.");
+
+        Assert.That(translated, Is.EqualTo("bloody Naruurを見失った。"));
+    }
+
+    [Test]
+    public void Translate_AppliesJournalHistoryNotePattern()
+    {
+        WritePatternDictionary(("^You note this piece of information in the Sultan Histories > Resheph section of your journal\\.[.!]?$", "この情報をジャーナルの「スルタン史 > レシェフ」欄に記録した。"));
+
+        var translated = MessagePatternTranslator.Translate("You note this piece of information in the Sultan Histories > Resheph section of your journal.");
+
+        Assert.That(translated, Is.EqualTo("この情報をジャーナルの「スルタン史 > レシェフ」欄に記録した。"));
+    }
+
+    [Test]
+    public void Translate_AppliesHarvestPattern()
+    {
+        WritePatternDictionary(("^The (.+?) harvests a (.+?)[.!]?$", "{0}は{1}を収穫した。"));
+
+        var translated = MessagePatternTranslator.Translate("The ウォーターヴァイン農家 harvests a ヴァインウェイファー.");
+
+        Assert.That(translated, Is.EqualTo("ウォーターヴァイン農家はヴァインウェイファーを収穫した。"));
+    }
+
+    [Test]
+    public void Translate_AppliesSitDownPattern()
+    {
+        WritePatternDictionary(("^You sit down on the (.+?)[.!]?$", "{0}に腰を下ろした。"));
+
+        var translated = MessagePatternTranslator.Translate("You sit down on the フロアクッション.");
+
+        Assert.That(translated, Is.EqualTo("フロアクッションに腰を下ろした。"));
+    }
+
+    [Test]
+    public void Translate_AppliesDeathPattern()
+    {
+        WritePatternDictionary(("^You died\\.\\n\\nYou were killed by (.+?)[.!]?$", "あなたは死んだ。\n\n{0}に殺された。"));
+
+        var translated = MessagePatternTranslator.Translate("You died.\n\nYou were killed by メフメット.");
+
+        Assert.That(translated, Is.EqualTo("あなたは死んだ。\n\nメフメットに殺された。"));
+    }
+
+    [Test]
+    public void Translate_AppliesWrappedDeathWrapperViaSharedFamily()
+    {
+        WritePatternDictionary(("^You hear (.+?)[.!]?$", "{0}を聞いた。"));
+        WriteExactDictionary(("QudJP.DeathWrapper.KilledBy.Wrapped", "あなたは死んだ。\n\n{killer}に殺された。"));
+
+        var translated = MessagePatternTranslator.Translate("You died.\n\nYou were killed by a ウォーターヴァイン農家.");
+
+        Assert.That(translated, Is.EqualTo("あなたは死んだ。\n\nウォーターヴァイン農家に殺された。"));
+    }
+
+    [Test]
+    public void Translate_AppliesBareAccidentalDeathWrapperViaSharedFamily()
+    {
+        WritePatternDictionary(("^You hear (.+?)[.!]?$", "{0}を聞いた。"));
+        WriteExactDictionary(("QudJP.DeathWrapper.AccidentallyKilledBy.Bare", "{killer}にうっかり殺された。"));
+
+        var translated = MessagePatternTranslator.Translate("You were accidentally killed by the ウォーターヴァイン農家.");
+
+        Assert.That(translated, Is.EqualTo("ウォーターヴァイン農家にうっかり殺された。"));
+    }
+
+    [Test]
+    public void Translate_LogsDynamicTransformProbe_WhenPatternMatches()
+    {
+        WritePatternDictionary(("^You sit down on the (.+?)[.!]?$", "{0}に腰を下ろした。"));
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+            Assert.That(
+                MessagePatternTranslator.Translate("You sit down on the フロアクッション.", "MessageLogPatch"),
+                Is.EqualTo("フロアクッションに腰を下ろした。")));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(output, Does.Contain("DynamicTextProbe/v1"));
+            Assert.That(output, Does.Contain("route='MessagePatternTranslator'"));
+            Assert.That(output, Does.Contain("family='^You sit down on the (.+?)[.!]?$'"));
+            Assert.That(output, Does.Contain("source='You sit down on the フロアクッション.'"));
+            Assert.That(output, Does.Contain("translated='フロアクッションに腰を下ろした。'"));
+        });
     }
 
     [Test]
@@ -368,6 +781,28 @@ public sealed class MessagePatternTranslatorTests
     private void WriteRawPatternFile(string json)
     {
         WritePatternFile(json + Environment.NewLine);
+    }
+
+    private void WriteExactDictionary(params (string key, string text)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.Append("{\"entries\":[");
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.AppendLine("]}");
+        File.WriteAllText(Path.Combine(dictionaryDirectory, "ui-test.ja.json"), builder.ToString(), Utf8WithoutBom);
     }
 
     private static void AppendPatternEntries(StringBuilder builder, IReadOnlyList<(string pattern, string template)> patterns)

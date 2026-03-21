@@ -30,6 +30,38 @@
             "text": "風が静まった。"
         },
         {
+            "key": "north",
+            "text": "北"
+        },
+        {
+            "key": "south",
+            "text": "南"
+        },
+        {
+            "key": "east",
+            "text": "東"
+        },
+        {
+            "key": "west",
+            "text": "西"
+        },
+        {
+            "key": "northeast",
+            "text": "北東"
+        },
+        {
+            "key": "northwest",
+            "text": "北西"
+        },
+        {
+            "key": "southeast",
+            "text": "南東"
+        },
+        {
+            "key": "southwest",
+            "text": "南西"
+        },
+        {
             "key": "ThawZone exception",
             "context": "XRL.Messages.MessageQueue",
             "text": "ThawZone 例外"

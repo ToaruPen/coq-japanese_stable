@@ -150,6 +150,11 @@
             "text": "突然変異P"
         },
         {
+            "key": "Mutation",
+            "context": "Qud.UI.CharacterStatusScreen.MutationTerm",
+            "text": "突然変異"
+        },
+        {
             "key": "SP",
             "context": "Qud.UI.CharacterAttributeLine.AttributeLabel",
             "text": "スキルP"
@@ -193,6 +198,51 @@
             "key": "Expand",
             "context": "Qud.UI.CharacterAttributeLine.MenuOption",
             "text": "展開"
+        },
+        {
+            "key": "RANK",
+            "context": "Qud.UI.CharacterStatusScreen.MutationRank",
+            "text": "ランク"
+        },
+        {
+            "key": "You see in the dark.",
+            "context": "Qud.UI.CharacterStatusScreen.MutationDetails",
+            "text": "暗闇でも見える。"
+        },
+        {
+            "key": "This rank",
+            "context": "Qud.UI.CharacterStatusScreen.MutationRank",
+            "text": "現在ランク"
+        },
+        {
+            "key": "Next rank",
+            "context": "Qud.UI.CharacterStatusScreen.MutationRank",
+            "text": "次ランク"
+        },
+        {
+            "key": "Morphotype",
+            "context": "Qud.UI.CharacterStatusScreen.MutationType",
+            "text": "モーフタイプ"
+        },
+        {
+            "key": "Physical Defect",
+            "context": "Qud.UI.CharacterStatusScreen.MutationType",
+            "text": "肉体的欠陥"
+        },
+        {
+            "key": "Mental Defect",
+            "context": "Qud.UI.CharacterStatusScreen.MutationType",
+            "text": "精神的欠陥"
+        },
+        {
+            "key": "Physical Mutation",
+            "context": "Qud.UI.CharacterStatusScreen.MutationType",
+            "text": "肉体突然変異"
+        },
+        {
+            "key": "Mental Mutation",
+            "context": "Qud.UI.CharacterStatusScreen.MutationType",
+            "text": "精神突然変異"
         },
         {
             "key": "Collapse",

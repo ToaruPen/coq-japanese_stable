@@ -6,8 +6,10 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using QudJP.Patches;
 
 namespace QudJP;
 
@@ -71,14 +73,13 @@ internal static class MessagePatternTranslator
             return source ?? string.Empty;
         }
 
-        var (stripped, spans) = ColorCodePreserver.Strip(source);
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         if (stripped.Length == 0)
         {
             return source!;
         }
 
-        var translated = TranslateStripped(stripped);
-        return ColorCodePreserver.Restore(translated, spans);
+        return TranslateStripped(stripped, spans);
     }
 
     internal static void SetPatternFileForTests(string? filePath)
@@ -100,8 +101,13 @@ internal static class MessagePatternTranslator
         SetPatternFileForTests(null);
     }
 
-    private static string TranslateStripped(string source)
+    private static string TranslateStripped(string source, IReadOnlyList<ColorSpan>? spans = null)
     {
+        if (DeathWrapperFamilyTranslator.TryTranslateMessage(source, spans, out var deathTranslated))
+        {
+            return deathTranslated;
+        }
+
         var patterns = GetLoadedPatterns();
         for (var index = 0; index < patterns.Count; index++)
         {
@@ -113,7 +119,13 @@ internal static class MessagePatternTranslator
                 continue;
             }
 
-            return ApplyTemplate(definition.Template, match);
+            var translated = ApplyTemplate(definition.Template, match, source, spans);
+            DynamicTextObservability.RecordTransform(
+                nameof(MessagePatternTranslator),
+                definition.Pattern,
+                source,
+                translated);
+            return translated;
         }
 
         var hitCount = RecordMissingPattern(source);
@@ -124,7 +136,9 @@ internal static class MessagePatternTranslator
                 $"[QudJP] MessagePatternTranslator: no pattern for '{sanitizedSource}' (hit {hitCount}).{Translator.GetCurrentLogContextSuffix()}");
         }
 
-        return source;
+        return spans is null || spans.Count == 0
+            ? source
+            : ColorAwareTranslationComposer.Restore(source, spans);
     }
 
     private static List<MessagePatternDefinition> GetLoadedPatterns()
@@ -310,12 +324,24 @@ internal static class MessagePatternTranslator
         return builder.ToString();
     }
 
-    private static string ApplyTemplate(string template, Match match)
+    private static string ApplyTemplate(string template, Match match, string source, IReadOnlyList<ColorSpan>? spans)
     {
         var capturedCount = match.Groups.Count - 1;
         if (capturedCount <= 0)
         {
-            return template;
+            return spans is null || spans.Count == 0
+                ? template
+                : ColorAwareTranslationComposer.Restore(template, spans);
+        }
+
+        if (spans is not null && spans.Count > 0)
+        {
+            return ApplyTemplateWithColorAwareCaptures(template, match, source, spans);
+        }
+
+        if (template.Contains("{t"))
+        {
+            return ApplyTemplateWithTranslatedCaptures(template, match);
         }
 
         var placeholders = new object[capturedCount];
@@ -325,6 +351,140 @@ internal static class MessagePatternTranslator
         }
 
         return string.Format(CultureInfo.InvariantCulture, template, placeholders);
+    }
+
+    private static string ApplyTemplateWithTranslatedCaptures(string template, Match match)
+    {
+        return ApplyTemplateWithParsedPlaceholders(template, match, strippedSourceLength: null, spans: null);
+    }
+
+    private static string ApplyTemplateWithColorAwareCaptures(
+        string template,
+        Match match,
+        string strippedSource,
+        IReadOnlyList<ColorSpan> spans)
+    {
+        return ApplyTemplateWithParsedPlaceholders(template, match, strippedSource.Length, spans);
+    }
+
+    private static string ApplyTemplateWithParsedPlaceholders(
+        string template,
+        Match match,
+        int? strippedSourceLength,
+        IReadOnlyList<ColorSpan>? spans)
+    {
+        var builder = new StringBuilder(template.Length);
+        for (var index = 0; index < template.Length; index++)
+        {
+            var character = template[index];
+            if (character == '{' && index + 1 < template.Length && template[index + 1] == '{')
+            {
+                builder.Append('{');
+                index++;
+                continue;
+            }
+
+            if (character == '}' && index + 1 < template.Length && template[index + 1] == '}')
+            {
+                builder.Append('}');
+                index++;
+                continue;
+            }
+
+            if (character != '{')
+            {
+                builder.Append(character);
+                continue;
+            }
+
+            var closeIndex = template.IndexOf('}', index + 1);
+            if (closeIndex < 0)
+            {
+                throw new FormatException($"QudJP: malformed message pattern template '{template}'.");
+            }
+
+            var token = template.Substring(index + 1, closeIndex - index - 1);
+            var translateCapture = token.Length > 1 && token[0] == 't';
+            if (translateCapture)
+            {
+                token = token.Substring(1);
+            }
+
+            if (!int.TryParse(token, NumberStyles.None, CultureInfo.InvariantCulture, out var captureIndex))
+            {
+                throw new FormatException($"QudJP: unsupported placeholder '{{{token}}}' in message pattern template '{template}'.");
+            }
+
+            if (captureIndex < 0 || captureIndex >= match.Groups.Count - 1)
+            {
+                throw new FormatException($"QudJP: placeholder '{{{token}}}' exceeds capture count in message pattern template '{template}'.");
+            }
+
+            var group = match.Groups[captureIndex + 1];
+            var value = group.Value;
+            if (translateCapture)
+            {
+                value = TranslateTemplateCapture(value);
+            }
+
+            if (spans is not null && spans.Count > 0)
+            {
+                value = ColorAwareTranslationComposer.RestoreCapture(value, spans, group);
+            }
+
+            builder.Append(value);
+            index = closeIndex;
+        }
+
+        var translated = builder.ToString();
+        if (spans is null || spans.Count == 0 || strippedSourceLength is null)
+        {
+            return translated;
+        }
+
+        var boundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(spans, match, strippedSourceLength.Value, translated.Length);
+        return ColorAwareTranslationComposer.Restore(translated, boundarySpans);
+    }
+
+    private static string TranslateTemplateCapture(string source)
+    {
+        using var _ = Translator.PushMissingKeyLoggingSuppression(true);
+        var direct = Translator.Translate(source);
+        if (!string.Equals(direct, source, StringComparison.Ordinal))
+        {
+            return direct;
+        }
+
+        var lower = LowerAscii(source);
+        if (!string.Equals(lower, source, StringComparison.Ordinal))
+        {
+            var lowered = Translator.Translate(lower);
+            if (!string.Equals(lowered, lower, StringComparison.Ordinal))
+            {
+                return lowered;
+            }
+        }
+
+        return source;
+    }
+
+    private static string LowerAscii(string source)
+    {
+        var buffer = source.ToCharArray();
+        var changed = false;
+        for (var index = 0; index < buffer.Length; index++)
+        {
+            var character = buffer[index];
+            if (character < 'A' || character > 'Z')
+            {
+                continue;
+            }
+
+            buffer[index] = (char)(character + ('a' - 'A'));
+            changed = true;
+        }
+
+        return changed ? new string(buffer) : source;
     }
 
     private sealed class MessagePatternDefinition

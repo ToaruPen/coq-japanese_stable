@@ -270,7 +270,7 @@
       </skills>
     </subtype>
 
-    <subtype Name="Tinker" DisplayName="ティンカー" Gear="StartingGear_Tinker" Tile="creatures/caste_21.bmp" DetailColor="c">
+    <subtype Name="Tinker" DisplayName="工匠" Gear="StartingGear_Tinker" Tile="creatures/caste_21.bmp" DetailColor="c">
       <stat Name="Intelligence" Bonus="2" />
       <skills>
         <skill Name="Tinkering" />
