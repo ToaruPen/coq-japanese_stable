@@ -50,7 +50,7 @@ See `docs/producer-first-design.md` for the full architecture.
 
 ## Game Source Reference
 
-Decompiled game source: `docs/ilspy-raw/` (gitignored, local only).
+Decompiled game source: `~/Dev/coq-decompiled/` (outside repo, never committed).
 Regenerate: `scripts/decompile_game_dll.sh`
 
 Use to trace upstream producers, verify method signatures, investigate unclaimed routes.

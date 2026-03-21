@@ -16,7 +16,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-OUTPUT_DIR="$REPO_ROOT/docs/ilspy-raw"
+OUTPUT_DIR="${COQ_DECOMPILED_DIR:-$HOME/Dev/coq-decompiled}"
 
 # Game DLL path (macOS Steam default)
 DLL_PATH="$HOME/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/Resources/Data/Managed/Assembly-CSharp.dll"
@@ -28,7 +28,7 @@ export DOTNET_ROLL_FORWARD=LatestMajor
 
 # ---------------------------------------------------------------------------
 # Text pipeline classes to decompile.
-# Organized by pipeline stage (see docs/ilspy-analysis.md).
+# Organized by pipeline stage.
 # Add classes here as new translation routes are discovered.
 # ---------------------------------------------------------------------------
 TEXT_PIPELINE_CLASSES=(

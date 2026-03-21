@@ -42,7 +42,7 @@ python3.12 scripts/sync_mod.py
 
 ## Game Source Reference
 
-Decompiled game source lives in `docs/ilspy-raw/` (gitignored, local only).
+Decompiled game source lives in `~/Dev/coq-decompiled/` (outside repo, never committed).
 
 ```bash
 # Regenerate decompiled sources (37 text-pipeline classes)
@@ -50,6 +50,9 @@ scripts/decompile_game_dll.sh
 
 # List classes without decompiling
 scripts/decompile_game_dll.sh --list
+
+# Override output directory
+COQ_DECOMPILED_DIR=/path/to/dir scripts/decompile_game_dll.sh
 ```
 
 Use these files to trace upstream text producers, verify method signatures, and investigate unclaimed routes.
@@ -82,6 +85,5 @@ Use these files to trace upstream text producers, verify method signatures, and 
 | `docs/producer-first-design.md` | Architecture: ContractRegistry + ClaimRegistry + audit sink |
 | `docs/logic-required-policy.md` | Policy for dynamic/procedural text classification |
 | `docs/test-architecture.md` | L1/L2/L2G/L3 test boundaries |
-| `docs/ilspy-analysis.md` | Game text pipeline (26 hook points) |
 | `docs/contributing.md` | Contributor workflow and CI |
 | `docs/deployment.md` | Deployment procedure |
