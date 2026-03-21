@@ -500,7 +500,7 @@ Migration plan:
    - **TranslatePreservingColors migration**: There are TWO distinct TPC implementations
      that must be migrated separately, plus a shared generic utility:
 
-     **Implementation A** — `UITextSkinTranslationPatch.TranslatePreservingColors`:
+     **Implementation A** — `UITextSkinTranslationPatch.TranslatePreservingColors` (8 callers):
      Complex sink-level logic (~10 steps: stack trace resolution, dedicated route checks,
      multiple fallback paths, `Translator.Translate()` generic fallback). This is the one
      being REMOVED (replaced by audit-only sink). Callers that currently call this method:
@@ -511,44 +511,45 @@ Migration plan:
      - `QudMenuBottomContextTranslationPatch.cs`
      - `CharGenLocalizationPatch.cs`
      - `HistoricStringExpanderPatch.cs` ← **DEAD CODE**: `TargetMethods()` yields nothing (`yield break`), patch never fires at runtime
-     - `InventoryLocalizationPatch.cs`
      - `InventoryAndEquipmentStatusScreenTranslationPatch.cs`
-     - `DeathWrapperFamilyTranslator.cs`
 
-     **Implementation B** — `GetDisplayNameRouteTranslator.TranslatePreservingColors`:
+     **Implementation B** — `GetDisplayNameRouteTranslator.TranslatePreservingColors` (4 callers):
      DisplayName-specific suffix decomposition logic (no generic `Translator.Translate()` fallback).
      This one is KEPT and evolved into the Builder renderer. Callers:
      - `GetDisplayNamePatch.cs`
      - `GetDisplayNameProcessPatch.cs`
+     - `InventoryLocalizationPatch.cs`
+     - `DeathWrapperFamilyTranslator.cs`
 
      **Shared infrastructure** — `ColorAwareTranslationComposer.TranslatePreservingColors(string?, Func<string,string>)`:
-     Generic Strip→callback→Restore utility. Already used by 5+ patches (AbilityBar, ActiveEffect,
-     WorldMods, EffectDescription, EffectDetails, etc.). All Implementation A callers should be
-     migrated to use this shared utility with contract-specific callbacks.
+     Generic Strip→callback→Restore utility. Used by patches such as AbilityBarUpdateAbilitiesTextPatch
+     and ActiveEffectTextTranslator (via the convenience wrapper), and by WorldModsTextTranslator
+     (via direct `Strip`/`Restore` calls). All Implementation A callers should be migrated to use
+     this shared utility with contract-specific callbacks.
    - Verify audit log false positive rate after cutover (run game, check Player.log)
 
-6. **Display Name Builder contract migration**
+5. **Display Name Builder contract migration**
    - L2G prerequisite: DescriptionBuilder slot validation
 
-7. **Long Description split**: intercept contributing producers
+6. **Long Description split**: intercept contributing producers
    - Prerequisite: L2G test confirming `GetShortDescription()` signature
 
 ### Phase 2: New domains
 
-8. Conversation runtime Template migration
-9. Message Frame contract (XDidY/XDidYToZ — new patch, highest risk)
-10. Cleanup: remove fragment dictionary entries made obsolete by contracts
+7. Conversation runtime Template migration
+8. Message Frame contract (XDidY/XDidYToZ — new patch, highest risk)
+9. Cleanup: remove fragment dictionary entries made obsolete by contracts
 
 ### Post-implementation documentation tasks
 
-11. Update `Mods/QudJP/Assemblies/AGENTS.md` with ContractRegistry registration pattern
-12. Update `AGENTS.md` (root) to reference `producer-first-design.md` instead of deleted docs
-13. Update `README.md` to remove references to deleted `translation-process.md`
+10. Update `Mods/QudJP/Assemblies/AGENTS.md` with ContractRegistry registration pattern
+11. Update `AGENTS.md` (root) to reference `producer-first-design.md` instead of deleted docs
+12. Update `README.md` to remove references to deleted `translation-process.md`
 
 ## Implementation Checklist (from cross-review)
 
-- [ ] **Before Step 6**: Confirm `GetShortDescription()` signature via L2G test; add to `ilspy-analysis.md` hook table
-- [ ] **During Step 4 (atomic cutover)**: Update ALL 12 TranslatePreservingColors callers simultaneously (full list in Step 4 above)
+- [ ] **Before Step 5**: Confirm `GetShortDescription()` signature via L2G test; add to `ilspy-analysis.md` hook table
+- [ ] **During Step 4 (atomic cutover)**: Update all 8 Implementation A callers simultaneously; 4 Implementation B callers evolve separately with Builder renderer (full lists in Step 4 above)
 - [ ] **During Step 4 (atomic cutover)**: Leaf batch registration MUST be simultaneous with audit mode activation to prevent unclaimed flood
 - [ ] **During Step 2 (helper refactor)**: After changing `TranslateStringField` signature, update `MainMenuLocalizationPatchTests.cs` and `OptionsLocalizationPatchTests.cs` (existing tests must not be deleted)
 - [ ] **During Step 4**: Migrate `UITextSkinTranslationPatchTests.cs` per L2 test migration plan (rename/repurpose, don't delete)
