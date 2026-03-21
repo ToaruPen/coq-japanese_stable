@@ -1,3 +1,4 @@
+#if HAS_TMP
 using TMPro;
 
 namespace QudJP.Tests.L1;
@@ -53,3 +54,4 @@ public sealed class InventoryReplacementHardeningTests
         return TextShellReplacementRenderer.IsReplacementTextNameForTests(objectName);
     }
 }
+#endif
