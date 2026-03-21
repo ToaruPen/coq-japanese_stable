@@ -489,7 +489,9 @@ Migration plan:
    - Agents can now consult the inventory for these routes
 
 3. **ClaimRegistry (ConditionalWeakTable)**
-   - Producer patches add `ClaimRegistry.Claim()` after rendering
+   - Category 1 (field-write) patches add `ClaimRegistry.Claim()` after rendering
+   - Category 2 (`__result` rewrite) patches are Scope Exempt — no claim needed
+     (see Three Claim Categories section for details)
    - No changes to UITextSkin yet — this is additive only
 
 4. **UITextSkin audit mode + Leaf batch registration + TranslatePreservingColors migration** (ATOMIC cutover)
