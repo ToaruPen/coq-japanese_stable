@@ -399,27 +399,37 @@ to the repository so agents can read it without building the mod.
 
 ## Screen-Specific Patches: Keep as Producer-First
 
-These stay because they ARE producer-first — they intercept at a specific upstream method:
+These stay because they ARE producer-first — they intercept at a specific upstream method.
+
+### Category 1: Field-write patches (need ClaimRegistry)
 
 - `CharacterStatusScreenTranslationPatch` → `UpdateViewFromData` (Template: attributePoints, mutationPoints)
 - `SkillsAndPowersStatusScreenTranslationPatch` → `UpdateViewFromData` (Template: spText)
-- `SkillsAndPowersStatusScreenDetailsPatch` → `UpdateDetailsFromNode` (hybrid: skillName=Leaf, requirements=Template, requiredSkills=LeafList)
+- `SkillsAndPowersStatusScreenDetailsPatch` → `UpdateDetailsFromNode` (6 fields: detailsText=LeafList, skillNameText=MarkupLeaf, learnedText=MarkupLeaf, requirementsText=Template, requiredSkillsText=LeafList, requiredSkillsHeader=MarkupLeaf)
 - `FactionsStatusScreenTranslationPatch` → `UpdateViewFromData` (Template: reputation lines)
-- `StatisticGetHelpTextPatch` → `Statistic.GetHelpText` (MarkupLeaf)
 - `CharacterStatusScreenMutationDetailsPatch` → mutation detail (Template: description + rank text)
-- `CharacterStatusScreenAttributeHighlightPatch` → attribute highlight (MarkupLeaf)
+- `CharacterStatusScreenAttributeHighlightPatch` → `HandleHighlightAttribute` (MarkupLeaf: 3 fields — primaryAttributesDetails, secondaryAttributesDetails, resistanceAttributesDetails)
+- `CharacterStatusScreenHighlightEffectPatch` → `HandleHighlightEffect` (LeafList: mutationsDetails field, via ActiveEffectTextTranslator)
+- `AbilityBarUpdateAbilitiesTextPatch` → `AbilityBar.UpdateAbilitiesText` (Template: AbilityCommandText pagination, Leaf: CycleCommandText)
 
-These are already producer-first in spirit. The migration formalizes them with contract types,
-registers them in ContractRegistry, and adds ClaimRegistry.Claim() after rendering.
+### Category 2: `__result` rewrite patches (Scope Exempt)
 
-### Scope Exemption: non-SetText patches
+- `GetDisplayNameProcessPatch`, `GrammarAPatch`, `GrammarPluralizePatch`
+- `StatisticGetHelpTextPatch` → `Statistic.GetHelpText` (Leaf: pure exact-match dictionary lookup, no markup)
+- `DescriptionShortDescriptionPatch` → `Description.GetShortDescription` (MarkupLeaf: via WorldModsTextTranslator + Masterwork template)
+- `EffectDescriptionPatch` → `Effect.GetDescription` (Leaf/LeafList: via ActiveEffectTextTranslator)
+- `EffectDetailsPatch` → `Effect.GetDetails` (Leaf/LeafList: via ActiveEffectTextTranslator)
+- `GameObjectShowActiveEffectsPatch` → `GameObject.ShowActiveEffects` (Transpiler: Template for title prefix, Leaf for empty text)
 
-Patches that rewrite `__result` directly (e.g., `GetDisplayNameProcessPatch`,
-`GrammarAPatch`, `GrammarPluralizePatch`) do **NOT** need ClaimRegistry claims.
-Reason: their translated output never reaches `UITextSkin.SetText`, so the audit sink
-will never see these strings.
+### Shared helpers (not patches)
 
-Rule of thumb: if the patch's translated string flows to `UITextSkin.SetText` (via field
+- `UITextSkinReflectionAccessor` — `GetCurrentText`/`SetCurrentText` via reflection on `UITextSkin`. Used by Category 1 field-write patches. **Must be brought into producer-first before Step 2.**
+- `ActiveEffectTextTranslator` — effect text translation (exact match → line-by-line fallback). Uses `ColorAwareTranslationComposer.TranslatePreservingColors`. Consumed by EffectDescription/EffectDetails/HighlightEffect patches.
+- `WorldModsTextTranslator` — scoped dictionary lookup + Masterwork template. Uses `ColorAwareTranslationComposer.Strip`/`Restore` directly. Consumed by DescriptionShortDescriptionPatch and StatusLineTranslationHelpers.
+
+### ClaimRegistry rule
+
+If the patch's translated string flows to `UITextSkin.SetText` (via field
 assignment, `StringBuilder` write, or any path that ends at the UI rendering layer), it
 needs `ClaimRegistry.Claim()`. If it returns a translated `__result` directly to the game
 engine without passing through a UI sink, it does not.
@@ -534,7 +544,8 @@ Migration plan:
    - L2G prerequisite: DescriptionBuilder slot validation
 
 6. **Long Description split**: intercept contributing producers
-   - Prerequisite: L2G test confirming `GetShortDescription()` signature
+   - `DescriptionShortDescriptionPatch` (FlavorBody) already exists on main — bring into producer-first
+   - Remaining: RulesLines producers (effects block, equipment rendering)
 
 ### Phase 2: New domains
 
@@ -559,7 +570,12 @@ Migration plan:
 - [ ] **Scope Exemption + Claim Categories documented**: three categories (field-write/ClaimRegistry, __result/exempt, Leaf/sink-executed) in design doc
 - [ ] **OQ-3 branch sync**: Cherry-pick or merge `PickGameObjectScreenTranslationPatch` from `main` (commit 67a3931) into `producer-first` before Step 4 cutover
 - [ ] **Dead code**: `HistoricStringExpanderPatch` has `yield break` in `TargetMethods()` — patch never fires. Remove from TPC caller list during Step 4 migration; consider deleting entirely or documenting rationale for retention
-- [ ] **New local patches**: 6 uncommitted local patches exist on main working directory (AbilityBarUpdateAbilitiesTextPatch, ActiveEffectTextTranslator, CharacterStatusScreenHighlightEffectPatch, DescriptionShortDescriptionPatch, EffectDescriptionPatch, EffectDetailsPatch, GameObjectShowActiveEffectsPatch, WorldModsTextTranslator). Assess which need ContractRegistry registration before Step 4 cutover
+- [ ] **Branch sync — local patches**: 12 uncommitted patches + 4 modified tracked files on main must be brought into producer-first before Step 4. None depend on Implementation A/B TPC. Breakdown:
+  - **Category 1 (need ClaimRegistry)**: AbilityBarUpdateAbilitiesTextPatch, CharacterStatusScreenAttributeHighlightPatch, CharacterStatusScreenHighlightEffectPatch, SkillsAndPowersStatusScreenDetailsPatch
+  - **Category 2 (Scope Exempt)**: DescriptionShortDescriptionPatch, StatisticGetHelpTextPatch, EffectDescriptionPatch, EffectDetailsPatch, GameObjectShowActiveEffectsPatch
+  - **Helpers (not patches)**: UITextSkinReflectionAccessor (critical infra — required by multiple Cat 1 patches), ActiveEffectTextTranslator, WorldModsTextTranslator
+  - **Modified tracked files (all 4 need merge)**: CharacterStatusScreenMutationDetailsPatch (UITextSkinReflectionAccessor dep), SkillsAndPowersStatusScreenTranslationPatch (6 new internal TPC methods), StatusLineTranslationHelpers (WorldModsTextTranslator insertion), UITextSkinTemplateTranslator (UITextSkinReflectionAccessor dep)
+- [ ] **Contract type correction**: StatisticGetHelpTextPatch is **Leaf** (plain exact-match, no markup), not MarkupLeaf as previously documented
 
 ## Investigation Results (formerly Open Questions)
 
@@ -579,7 +595,9 @@ Build sequence:
 5. `"\n\n"` + effects block (from `GetEffectsBlock` event)
 
 **Decision**: Do NOT split at the output. Instead, split at the **producer boundary**:
-- FlavorBody: Patch `GetShortDescription()` separately (returns flavor prose only)
+- FlavorBody: `DescriptionShortDescriptionPatch` already exists (untracked on main). It patches
+  `Description.GetShortDescription(bool, bool, string)` as a `ref __result` rewrite (Category 2,
+  MarkupLeaf via WorldModsTextTranslator). This patch must be brought into producer-first.
 - RulesLines: Patch the Body/Effects append calls individually via Transpiler or
   by intercepting the contributing events (`GetEffectsBlock`, equipment rendering)
 
