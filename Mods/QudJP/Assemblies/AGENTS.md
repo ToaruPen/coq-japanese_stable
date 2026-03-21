@@ -53,6 +53,21 @@
   - L1 for parser/template logic
   - L2 or L2G for the actual patch route and untranslated pass-through behavior
 
+### Provenance Check Before Dictionary Addition
+
+- Before adding any new translation-dictionary entry for runtime text, run `python3.12 -m scripts.analyze_provenance --output /tmp/provenance-report.json`.
+- Check whether the candidate key's context namespace appears in the report's `generator_catalog`.
+- If it does, the text is likely dynamically composed. Do not add a dictionary entry. Instead:
+  - identify the upstream generator family,
+  - implement the smallest route/template change for that family,
+  - add L1/L2 coverage for the generator's slot structure.
+- If it does not, the string may still be `exact_leaf`, but confirm upstream evidence before widening dictionaries.
+- Treat the analyzer classifications as follows:
+  - `exact_leaf`: compile-time constant or stable leaf string; dictionary is acceptable
+  - `structured_dynamic`: slot-bearing template such as `string.Format` or `StringBuilder`; use a route/template
+  - `generator_family`: known generator API such as `DescriptionBuilder`, `GetDisplayNameEvent`, `Grammar.*`, `GameText`, or `HistoricStringExpander`; dictionary addition is forbidden
+  - `opaque`: provenance unclear; investigate upstream before adding dictionary coverage
+
 ### Runtime Failure Model
 
 - Initialization failures are expected to fail fast.
