@@ -53,6 +53,16 @@
   - L1 for parser/template logic
   - L2 or L2G for the actual patch route and untranslated pass-through behavior
 
+### Mandatory Triage Before Dictionary Addition
+
+- When encountering an untranslated string, the following gate is mandatory:
+  1. Run `python3 scripts/triage_untranslated.py` to classify the string
+  2. If `logic_required`: the string contains dynamic slots — implement a Harmony patch or template route, not a dictionary entry
+  3. If `static_leaf`: proceed with dictionary entry addition
+  4. If `route_patch`: add a regex pattern to `messages.ja.json`
+  5. If `unresolved`: stop and investigate upstream (see `docs/logic-required-policy.md`)
+- This gate exists because the bottleneck is family attribution, not translation. An exact-key dictionary entry for dynamically composed text creates maintenance debt that scales with the number of possible slot values.
+
 ### Runtime Failure Model
 
 - Initialization failures are expected to fail fast.

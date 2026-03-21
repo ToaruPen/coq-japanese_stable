@@ -38,6 +38,15 @@
 - Keep error paths explicit and actionable because these scripts are used for validation and deployment tasks.
 - When a script validates localization assets, align its checks with the canonical repo docs rather than duplicating new rules ad hoc.
 
+### Triage Gate for Untranslated Strings
+
+- Before adding a new dictionary entry or message pattern, run `python3 scripts/triage_untranslated.py --output /tmp/triage.json`.
+- Check the classification of the target string:
+  - `static_leaf` → Dictionary entry is appropriate
+  - `route_patch` → Add a regex pattern to `messages.ja.json`, not a dictionary entry
+  - `logic_required` → Do **not** add a dictionary entry. Investigate the upstream generator first per `docs/logic-required-policy.md`
+  - `unresolved` → Investigate before taking any action
+
 ### Area-Specific Constraints
 
 - Do not add silent fallbacks that hide invalid asset state.
