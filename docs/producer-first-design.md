@@ -248,29 +248,63 @@ internal sealed class ClaimInfo
 internal readonly record struct ContractKey(string RouteId, string SchemaId, string? FieldId);
 ```
 
-### String instance uniqueness
+### Three claim categories
 
-`Translator.TranslateCore` may return the same string instance for identical translations
-from different routes. If strict producer attribution is needed at the sink, producer patches
-should ensure unique instances via `new string(translated)`. For the audit-only use case,
-this is not required — knowing "some producer claimed this" is sufficient.
+Not all patches interact with ClaimRegistry the same way. There are three categories:
+
+**Category 1: Field-write patches** (screen patches that write to UITextSkin fields)
+- These write a translated string directly to a UI field (e.g., `___spText.SetText(jp)`)
+- When UI framework updates, SetText receives the SAME string instance
+- **Claim works**: `ClaimRegistry.Claim()` after field write, SetText sees same instance
+
+**Category 2: `__result` rewrite patches** (GetDisplayName, Grammar, Conversation, Tooltip)
+- These return a translated `__result` directly to the game engine
+- The result is consumed by game code, NOT by SetText directly
+- **Scope Exemption**: no ClaimRegistry needed — string never reaches audit sink
+
+**Category 3: Leaf entries** (stable UI labels with no dedicated upstream producer)
+- Game code sets UI text directly (e.g., `inventoryLabel.SetText("Inventory")`)
+- No QudJP producer patch intercepts this — the game is the producer
+- **Sink-executed Leaf contract**: audit sink checks ContractRegistry for registered Leaf
+  entries and translates them there. This is NOT fallback — it is a registered contract
+  being executed at the only available interception point.
+
+#### Why StringBuilder paths are not a problem
+
+`DescriptionLongDescriptionPatch` writes to a StringBuilder, which later materializes
+as a new string via `ToString()`. This seems like a claim-breaking materialization boundary.
+However, the SB content flows to `Look.GenerateTooltipContent` which returns via `__result`
+→ intercepted by `LookTooltipContentPatch` (Category 2, Scope Exemption). The SB path
+does NOT reach UITextSkin.SetText directly, so ClaimRegistry is not involved.
 
 ### Runtime flow
 
 ```
-producer patch fires
+Category 1 — field-write patch fires:
   → look up RouteContract from ContractRegistry
   → call renderer for this contract type
-  → ClaimRegistry.Claim(translatedString, contractKey)     [instance-based]
-  → return translated string (via __result, StringBuilder, or field write)
+  → write translated string to UI field
+  → ClaimRegistry.Claim(translatedString, contractKey)
+  → later, UITextSkin.SetText fires → IsClaimed → pass through
 
-UITextSkin.SetText fires                                    [Priority.Last]
-  → ClaimRegistry.IsClaimed(text)?
-  → if claimed: pass through (already translated by a producer)
-  → if NOT claimed:
-      → check blind-spot/noise suppression list
-      → if suppressed: pass through silently
-      → otherwise: log as unclaimed (no translation attempt)
+Category 2 — __result patch fires:
+  → look up RouteContract from ContractRegistry
+  → call renderer, set __result to translated string
+  → return (no Claim needed — string never reaches SetText)
+
+Category 3 — no producer patch fires, game sets UI text directly:
+  → UITextSkin.SetText fires
+  → ClaimRegistry.IsClaimed(text)? → NO
+  → ContractRegistry has a Leaf/MarkupLeaf contract for this key? → YES
+  → translate via LeafRenderer, pass through translated text
+  → (this is a registered contract execution, not fallback)
+
+Unclaimed path:
+  → UITextSkin.SetText fires
+  → ClaimRegistry.IsClaimed(text)? → NO
+  → ContractRegistry Leaf lookup? → NO
+  → blind-spot/noise suppression? → suppress silently if matched
+  → otherwise: log as unclaimed (no translation attempt)
 ```
 
 ## Audit Route (UITextSkin.SetText)
@@ -280,22 +314,26 @@ UITextSkin.SetText fires                                    [Priority.Last]
 - Falls back to `ResolveObservabilityContext` (stack trace analysis) for route reclassification
 - Logs `missing key` for untranslated strings
 
-### Target behavior (no fallback)
+### Target behavior (contract-directed, no generic fallback)
 
-- Strings claimed in ClaimRegistry → pass through (already translated)
-- Unclaimed strings → **no translation attempt**. Log as unclaimed:
-  `[QudJP] AuditSink: unclaimed '<text>' (owner: unknown)`
-- Stack trace reclassification (`ResolveObservabilityContext`) removed entirely
-- All translation happens upstream at the producer boundary, never at the sink
+The sink has three paths, checked in order:
 
-**No fallback at the sink.** Fixed labels (UI text like "Inventory", "SKILLS") must be
-claimed by an upstream contract (Leaf or MarkupLeaf) registered in ContractRegistry.
-If a fixed label appears as unclaimed in the audit log, the correct response is to register
-it in ContractRegistry with an upstream route — not to add a sink-level fallback.
+1. **Claimed** (ClaimRegistry hit) → pass through (already translated by upstream producer)
+2. **Registered Leaf** (ContractRegistry Leaf/MarkupLeaf match) → translate via LeafRenderer
+   - This is NOT generic fallback — it only fires for keys explicitly registered in ContractRegistry
+   - The sink is the execution point for Leaf contracts because the game (not QudJP) is the producer
+3. **Unclaimed** → no translation. Log as: `[QudJP] AuditSink: unclaimed '<text>' (owner: unknown)`
 
-This is intentional: fallback at the sink is what created the current anti-pattern of
-exact-key dictionary growth for dynamically composed text. Removing it forces all
-translation to be owner-attributed.
+**No generic dictionary fallback.** The sink does NOT call `Translator.Translate()` on arbitrary
+strings. It only translates strings that are either claimed by a producer or explicitly registered
+as Leaf contracts. Everything else is logged as unclaimed.
+
+Stack trace reclassification (`ResolveObservabilityContext`) is removed entirely.
+
+The difference from the current sink:
+- Current: `Translator.Translate(anything)` — translates everything it can match
+- New: `ClaimRegistry` check → `ContractRegistry` Leaf check → audit log — only translates
+  what is explicitly registered
 
 ### Blind spot and noise policy
 
@@ -351,11 +389,12 @@ ObservabilityFamily  → family label for DynamicTextProbe logging
 
 ### Contract inventory export
 
-At build time (or mod init), ContractRegistry exports its contents to
-`docs/contract-inventory.json`. This file is the agent-facing artifact that enables
-the workflow gate described in "Agent Workflow Gate" above.
+At **build time**, ContractRegistry exports its contents to `docs/contract-inventory.json`.
+This file is the agent-facing artifact that enables the workflow gate.
 
-Export is triggered by a test or build script, NOT at game runtime.
+Export is triggered by an L1 test that instantiates ContractRegistry, registers all contracts,
+and writes the JSON. This runs in CI — NOT at game runtime. The exported JSON is committed
+to the repository so agents can read it without building the mod.
 
 ## Screen-Specific Patches: Keep as Producer-First
 
@@ -410,7 +449,23 @@ engine without passing through a UI sink, it does not.
 - Contract renderer produces correct Japanese
 - UITextSkin audit mode detects unclaimed strings (no translation attempt)
 - UITextSkin passes through claimed strings without re-translation
+- UITextSkin translates registered Leaf entries (Category 3 sink-executed Leaf)
 - Blind-spot suppression: procedural names, numeric values, empty strings are not logged
+
+### L2 test migration for existing UITextSkinTranslationPatchTests
+
+Existing tests in `UITextSkinTranslationPatchTests.cs` that assume sink-level translation
+(e.g., `Prefix_TranslatesKnownKey`) will have their **expected behavior reversed** after
+audit-only migration. Per CLAUDE.md policy, existing tests must NOT be deleted.
+
+Migration plan:
+- `Prefix_TranslatesKnownKey` → rename to `Prefix_RegisteredLeaf_TranslatesViaContractRegistry`
+  and update assertion to verify Leaf contract execution path (not generic Translator.Translate)
+- `Prefix_PassesThroughUnknownText` → keep as-is (behavior unchanged — unknown text passes through)
+- `TranslatePreservingColors_*` tests → move to `ColorAwareTranslationComposerTests.cs`
+  (tests follow the relocated method)
+- Add NEW tests: `Prefix_ClaimedString_PassesThrough`, `Prefix_UnclaimedString_LogsAudit`,
+  `Prefix_BlindSpot_Suppressed`
 
 ### L2G: DLL-assisted tests
 - Route target methods resolve against real Assembly-CSharp.dll
@@ -436,14 +491,26 @@ engine without passing through a UI sink, it does not.
    - Producer patches add `ClaimRegistry.Claim()` after rendering
    - No changes to UITextSkin yet — this is additive only
 
-4. **UITextSkin audit-only mode + remove ResolveObservabilityContext** (single cutover)
-   - Audit sink checks `ClaimRegistry.IsClaimed()` instead of translating
-   - **Cutover checklist**: simultaneously update patches that call `TranslatePreservingColors()`
-   - **TranslatePreservingColors migration**: relocate to `ColorAwareTranslationComposer`
-
-5. **Leaf batch registration**
-   - `RegisterLeafDictionary()` for ~600-700 high-confidence entries
-   - Verify audit log doesn't flood with false positives
+4. **UITextSkin audit mode + Leaf batch registration + TranslatePreservingColors migration** (ATOMIC cutover)
+   - Audit sink: ClaimRegistry check → ContractRegistry Leaf check → unclaimed log
+   - `RegisterLeafDictionary()` for ~600-700 high-confidence entries (MUST be simultaneous
+     with audit cutover to prevent unclaimed flood)
+   - Remove `ResolveObservabilityContext` entirely
+   - **TranslatePreservingColors migration**: relocate from `UITextSkinTranslationPatch` to
+     `ColorAwareTranslationComposer`. ALL callers must be updated simultaneously:
+     - `DescriptionLongDescriptionPatch.cs`
+     - `LookTooltipContentPatch.cs`
+     - `ConversationDisplayTextPatch.cs`
+     - `PopupTranslationPatch.cs`
+     - `QudMenuBottomContextTranslationPatch.cs`
+     - `CharGenLocalizationPatch.cs`
+     - `HistoricStringExpanderPatch.cs`
+     - `InventoryLocalizationPatch.cs`
+     - `InventoryAndEquipmentStatusScreenTranslationPatch.cs`
+     - `GetDisplayNamePatch.cs`
+     - `GetDisplayNameProcessPatch.cs`
+     - `DeathWrapperFamilyTranslator.cs`
+   - Verify audit log false positive rate after cutover (run game, check Player.log)
 
 6. **Display Name Builder contract migration**
    - L2G prerequisite: DescriptionBuilder slot validation
@@ -465,12 +532,14 @@ engine without passing through a UI sink, it does not.
 
 ## Implementation Checklist (from cross-review)
 
-- [ ] **Before Step 7**: Confirm `GetShortDescription()` signature via L2G test; add to `ilspy-analysis.md` hook table
-- [ ] **During Step 4 (cutover)**: Simultaneously update `DescriptionLongDescriptionPatch` and `GetDisplayNameProcessPatch` to not depend on `TranslatePreservingColors()` in sink patch
+- [ ] **Before Step 6**: Confirm `GetShortDescription()` signature via L2G test; add to `ilspy-analysis.md` hook table
+- [ ] **During Step 4 (atomic cutover)**: Update ALL 12 TranslatePreservingColors callers simultaneously (full list in Step 4 above)
+- [ ] **During Step 4 (atomic cutover)**: Leaf batch registration MUST be simultaneous with audit mode activation to prevent unclaimed flood
 - [ ] **During Step 2 (helper refactor)**: After changing `TranslateStringField` signature, update `MainMenuLocalizationPatchTests.cs` and `OptionsLocalizationPatchTests.cs` (existing tests must not be deleted)
-- [ ] **After Step 5**: Verify audit false positive rate is bounded (run game, check Player.log)
-- [ ] **Scope Exemption documented**: non-SetText patches (`__result` rewriters) do NOT need ClaimRegistry (documented in Scope Exemption section above)
-- [ ] **OQ-3 inventory correction**: Verify actual TranslateStringField call sites against current branch before refactoring (prior investigation may be stale)
+- [ ] **During Step 4**: Migrate `UITextSkinTranslationPatchTests.cs` per L2 test migration plan (rename/repurpose, don't delete)
+- [ ] **After Step 4**: Verify audit false positive rate is bounded (run game, check Player.log)
+- [ ] **Scope Exemption + Claim Categories documented**: three categories (field-write/ClaimRegistry, __result/exempt, Leaf/sink-executed) in design doc
+- [ ] **OQ-3 inventory correction**: Verify actual TranslateStringField call sites against current branch before refactoring
 
 ## Investigation Results (formerly Open Questions)
 
