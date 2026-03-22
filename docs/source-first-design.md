@@ -30,7 +30,8 @@ flat dupes, 8 retry/msgprobe artifacts).
 | 8 | GetShort/LongDescription | 7 | 5 | Negligible — mostly override producers |
 | 9 | JournalAPI (AddAccomplishment, AddMapNote, AddObservation) | 130 | 82 | Narrative/chronicle text |
 | 10 | HistoricStringExpander.ExpandString | 242 | 58 | Procedural lore text |
-| | **Sink subtotal** | **3,704** | | |
+| 11 | ReplaceBuilder (StartReplace) | ~64 | ~22 | Template-variable text composition |
+| | **Sink subtotal** | **~3,768** | | |
 
 ### Override Producers
 
@@ -40,9 +41,13 @@ flat dupes, 8 retry/msgprobe artifacts).
 | Effects: GetDetails | 171 | 171 |
 | Mutations: GetDescription | 127 | 127 |
 | Mutations: GetLevelText | 131 | 131 |
-| **Producer subtotal** | **609** | |
+| Parts: GetShortDescription | ~265 | ~265 |
+| **Producer subtotal** | **~874** | |
 
-### Grand Total: **4,313** translatable sites
+### Grand Total: **~4,642** translatable sites
+
+Note: DidX family count (272) needs re-measurement after ast-grep pattern fix (B1).
+Total will shift accordingly. All counts are post-dedup approximations.
 
 ### Additional Data
 
@@ -68,7 +73,7 @@ The ~10-15% that genuinely require runtime evidence:
 ## Two-Layer Problem This Solves
 
 1. **Why isn't everything translated?** — Decompiled source wasn't fully available.
-   Now it is. LLM agents can scan all 4,300+ translatable sites and generate translation
+   Now it is. LLM agents can scan all 4,600+ translatable sites and generate translation
    artifacts (dictionary entries or patches) directly from source.
 
 2. **Why do agents misclassify dynamic text as dictionary entries?** — They couldn't
@@ -80,7 +85,7 @@ The ~10-15% that genuinely require runtime evidence:
 ```
 Phase 1: Static Scan (Python + ast-grep + LLM)
   ~/Dev/coq-decompiled/ (5371 files after dedup)
-    → Scanner classifies all 4,313 translatable sites
+    → Scanner classifies all ~4,642 translatable sites
     → Generates candidate-inventory.json (all routes, with confidence)
     → LLM agents consume inventory to produce translations
 
@@ -102,18 +107,23 @@ See "Validated Site Counts" section above for the full table with deduplicated n
 
 **ast-grep patterns for sink families:**
 
+Note: IComponent subclasses call DidX/DidXToY/EmitMessage without qualifier (`this.` implicit).
+Both qualified (`$_.DidX($$$)`) and unqualified (`DidX($$$)`) patterns are needed.
+`Does()` has ~9 false positives from non-messaging `.Does()` methods — filter in rule_classifier.
+
 | # | Family | ast-grep Pattern(s) |
 |---|--------|-------------------|
 | 1 | SetText | `$_.SetText($$$)` |
 | 2 | AddPlayerMessage | `$_.AddPlayerMessage($$$)`, `MessageQueue.AddPlayerMessage($$$)` |
 | 3 | Popup (9 variants) | `Popup.Show($$$)`, `Popup.ShowFail($$$)`, `Popup.ShowBlock($$$)`, `Popup.ShowYesNo($$$)`, `Popup.ShowYesNoCancel($$$)`, `Popup.PickOption($$$)`, `Popup.AskString($$$)`, `Popup.ShowAsync($$$)`, `Popup.WarnYesNo($$$)` |
-| 4 | DidX (6 variants) | `$_.DidX($$$)`, `$_.DidXToY($$$)`, `$_.DidXToYWithZ($$$)`, `XDidY($$$)`, `XDidYToZ($$$)`, `WDidXToYWithZ($$$)` |
+| 4 | DidX (6 variants) | `$_.DidX($$$)`, `DidX($$$)`, `$_.DidXToY($$$)`, `DidXToY($$$)`, `$_.DidXToYWithZ($$$)`, `DidXToYWithZ($$$)`, `Messaging.XDidY($$$)`, `Messaging.XDidYToZ($$$)`, `Messaging.WDidXToYWithZ($$$)` |
 | 5 | GetDisplayName | `$_.GetDisplayName($$$)` |
-| 6 | Does() | `$_.Does($$$)` |
-| 7 | EmitMessage | `EmitMessage($$$)` |
+| 6 | Does() | `$_.Does($$$)` (filter non-IComponent.Does in rule_classifier) |
+| 7 | EmitMessage | `$_.EmitMessage($$$)`, `EmitMessage($$$)`, `Messaging.EmitMessage($$$)` |
 | 8 | GetShort/LongDescription | `$_.GetShortDescription($$$)`, `$_.GetLongDescription($$$)` |
 | 9 | JournalAPI | `JournalAPI.AddAccomplishment($$$)`, `JournalAPI.AddMapNote($$$)`, `JournalAPI.AddObservation($$$)` |
 | 10 | HistoricStringExpander | `HistoricStringExpander.ExpandString($$$)` |
+| 11 | ReplaceBuilder | `$_.StartReplace($$$)` (template-variable text composition, ~64 sites) |
 
 **Override producers** (grep-based, not ast-grep):
 
@@ -123,6 +133,7 @@ See "Validated Site Counts" section above for the full table with deduplicated n
 | Effects: GetDetails | `override.*GetDetails` in Effects/ | 171 |
 | Mutations: GetDescription | `override.*GetDescription` in Mutations/ | 127 |
 | Mutations: GetLevelText | `override.*GetLevelText` in Mutations/ | 131 |
+| Parts: GetShortDescription | `override.*GetShortDescription` in Parts/ | ~265 |
 
 ### Classification Algorithm
 
@@ -166,10 +177,10 @@ Step 7 is the remainder. ~400-600 sites, ~10-15%.
   "game_version": "2.0.4",
   "scan_date": "2026-03-22",
   "stats": {
-    "total_sites": 4313,
+    "total_sites": 4642,
     "total_deduped_files": 5371,
-    "sink_sites": 3704,
-    "override_producers": 609,
+    "sink_sites": 3768,
+    "override_producers": 874,
     "auto_classified": null,
     "llm_classified": null,
     "unresolved": null
@@ -302,19 +313,15 @@ are UI-presentation concerns unaffected by decompilation depth. Keep as-is.
 
 ### Tier 1: Keep As-Is (rendering/display)
 
-| Component | Role | Rationale |
+| Component (actual filename) | Role | Rationale |
 |-----------|------|-----------|
-| `StatusScreenFontPatch` (multiple) | CJK font injection per screen | Pure rendering, no translation logic |
-| `PopupFontPatch` | Popup font consistency | Pure rendering |
-| `TextMeshProTextTranslationPatch` | TextMeshPro rendering | Pure rendering |
-| `UITextFieldTranslationPatch` | Input field font | Pure rendering |
-| `InventoryLocalizationPatch` | Inventory display name | Rendering + GetDisplayNameRouteTranslator delegation |
-| `InventoryLineTranslationPatch` | Inventory row formatting | Display formatting |
-| `InventoryScreenTranslationPatch` | Inventory screen layout | Display formatting |
-| `EquipmentLineTranslationPatch` | Equipment row formatting | Display formatting |
-| `EquipmentScreenTranslationPatch` | Equipment screen layout | Display formatting |
-| `BaseLineWithTooltipTranslationPatch` | Tooltip rendering | Display formatting |
-| `SelectableTextMenuItemTranslationPatch` | Menu item rendering | Display formatting |
+| `StatusScreenFontPatch` (multiple files) | CJK font injection per screen | Pure rendering, no translation logic |
+| `TextMeshProFontPatch.cs` | TextMeshPro font | Pure rendering |
+| `TmpInputFieldFontPatch.cs` | Input field font | Pure rendering |
+| `InventoryLineRenderProbePatch.cs` | Inventory row rendering | Display probe |
+| `EquipmentLineRenderProbePatch.cs` | Equipment row rendering | Display probe |
+| `BaseLineWithTooltipStartTooltipPatch.cs` | Tooltip rendering | Display formatting |
+| `SelectableTextMenuItemProbePatch.cs` | Menu item rendering | Display formatting |
 | `ColorAwareTranslationComposer` | Strip/Restore color markup | Utility, reusable as-is |
 
 ### Tier 2: Rewrite with Source-First Knowledge (translation logic)
@@ -324,15 +331,17 @@ are UI-presentation concerns unaffected by decompilation depth. Keep as-is.
 | `UITextSkinTranslationPatch` | Stack inspection + context guessing | Scanner classifies every SetText site upfront; route is known before runtime |
 | `MessagePatternTranslator` | 30+ hand-written regex patterns | Scanner extracts all AddPlayerMessage patterns; regex generated from inventory |
 | `PopupTranslationPatch` | 3 methods (ShowBlock, ShowOptionList, ShowConversation) | Expand to all Popup variants; classification from inventory |
-| `MessageLogPatch` | Delegates to MessagePatternTranslator | Rewrite with Messaging-class-level postfix patch for SVO→SOV |
+| `MessageLogPatch` | Delegates to MessagePatternTranslator | Rewrite with HandleMessage Prefix patch for SVO→SOV |
 | `GetDisplayNamePatch` / `GetDisplayNameRouteTranslator` | Suffix decomposition heuristics | Source-traced name composition; inventory knows exact Builder patterns |
+| `InventoryLocalizationPatch` | GetDisplayNameRouteTranslator delegation | Contains translation logic (was misclassified as Tier 1) |
+| `InventoryAndEquipmentStatusScreenTranslationPatch` | Inventory/Equipment screen | Scanner classifies all sites in these screens |
 | `EffectDescriptionPatch` / `EffectDetailsPatch` | Override hook + dictionary | Scanner identifies all 347 GetDescription overrides; generates complete dictionary |
 | `MutationDescriptionPatch` / `MutationLevelTextPatch` | Override hook + dictionary | Scanner identifies all 127+132 overrides; generates complete dictionary |
 | `SkillDescriptionPatch` | Override hook + dictionary | Scanner identifies all skill descriptions; generates complete dictionary |
 | `CharacterStatusScreenTranslationPatch` | Manual template extraction | Scanner classifies all Template sites in CharacterStatusScreen |
 | `SkillsAndPowersStatusScreenTranslationPatch` | Manual template extraction | Scanner classifies all sites in SkillsAndPowersStatusScreen |
 | `FactionsStatusScreenTranslationPatch` | Manual template extraction | Scanner classifies all sites in FactionsStatusScreen |
-| `GrammarPatch` family (8 patches) | Individual method patches | Keep structure, but enhance with source-informed rules |
+| `GrammarPatch.cs` (1 file, 8 inner classes) | Individual method patches | Keep structure, but enhance with source-informed rules |
 | `MainMenuTranslationPatch` | Hard-coded string mapping | Scanner identifies all Leaf sites; dictionary-driven |
 | `OptionsScreenTranslationPatch` | Hard-coded string mapping | Scanner identifies all Leaf sites; dictionary-driven |
 | `ConversationDisplayTextPatch` / `ConversationTextDynamicPatch` | Pattern matching | Scanner classifies conversation text composition |
@@ -355,7 +364,7 @@ is per-domain, not a big-bang rewrite.
 
 ### Technology
 
-- **Python 3.12+** (consistent with existing `scripts/` tooling)
+- **Python 3 (>=3.12)** — use `python3`, not version-pinned `python3.12`
 - **ast-grep** for structural C# pattern matching (installed, v0.42.0)
 - **Claude Code subagents** for steps 5-6 classification (reads decompiled source in-session, no API cost)
 - Output: JSON (`candidate-inventory.json` — committed to repo; intermediate files `.gitignore`d)
@@ -373,10 +382,14 @@ Phase 1b — Python rule classifier (mechanical, seconds)
   raw_hits.jsonl → rule classifier → .scanner-cache/inventory_draft.json
   Steps 1-4: Leaf/Template/Builder/MessageFrame at high confidence (~78%)
 
-Phase 1c — Claude Code subagent classifier (targeted, minutes)
+Phase 1c — LLM-assisted classification (targeted, interactive)
   Filter: confidence=medium or low from inventory_draft (~300-400 sites)
-  Subagent reads relevant decompiled source → reclassifies
-  Steps 5-6: variable tracing, call chain analysis (~14% additional)
+  Execution: run `scan_text_producers.py --phase=1c` within a Claude Code session.
+    Script presents unresolved sites → human/LLM reads the relevant decompiled
+    source file and classifies → result written back to inventory_draft.json.
+  NOTE: No Python→Claude Code subagent API exists. For automation, use either
+    Anthropic API (separate cost) or Claude Code CLI headless mode (`claude -p`).
+  Steps 5-6: variable tracing, call chain analysis (~15-20% additional)
 
 Phase 1d — Cross-reference (mechanical, seconds)
   Match against existing patches (Mods/QudJP/Assemblies/src/Patches/*.cs),
@@ -389,6 +402,23 @@ Output: candidate-inventory.json (committed to docs/)
 
 Intermediate files (`.scanner-cache/`) are `.gitignore`d — each contributor regenerates locally.
 
+### Deduplication Algorithm (Phase 1a)
+
+The decompiler produces multiple copies of some classes. The scanner MUST deduplicate
+before counting or classifying:
+
+```
+1. Exclude empty files (0 bytes)
+2. Exclude .retry.cs and .msgprobe.cs files
+3. For flat namespace files (e.g., XRL.World.GameObject.cs, XRL_World_GameObject.cs):
+   - If a namespace-directory counterpart exists (e.g., XRL.World/GameObject.cs),
+     EXCLUDE the flat file and keep the directory version
+   - Match rule: strip dots/underscores from prefix, compare to directory path
+4. Prefer namespace-directory files over flat files in all cases
+```
+
+This reduces 5,474 → ~5,371 files. All site counts in this document are post-dedup.
+
 ### Scanner Components
 
 ```
@@ -398,7 +428,7 @@ scripts/
     __init__.py
     ast_grep_runner.py         # Phase 1a: ast-grep batch execution per sink family
     rule_classifier.py         # Phase 1b: mechanical classification (steps 1-4)
-    llm_classifier.py          # Phase 1c: subagent dispatch for medium/low sites
+    llm_classifier.py          # Phase 1c: present unresolved sites for interactive LLM classification
     cross_reference.py         # Phase 1d: match existing patches/dictionaries
     inventory.py               # Inventory data model, JSON I/O, diffing
 ```
@@ -408,9 +438,17 @@ scripts/
 The scanner must know what's ALREADY translated to avoid duplicate work.
 Cross-reference sources:
 
-1. **Existing patches** (`Mods/QudJP/Assemblies/src/Patches/*.cs`) — grep for target methods → mark as `translated`
-2. **Existing dictionaries** (`Localization/Dictionaries/*.ja.json`) — keys → mark matching Leaf sites
-3. **Existing XML translations** (`Localization/*.jp.xml`) — IDs → mark matching blueprint text
+1. **Existing dictionaries** (`Localization/Dictionaries/*.ja.json`, 38 files) — **primary source**.
+   Match dictionary keys against Leaf site string values. This is the most reliable
+   cross-reference because most existing patches translate via dictionary lookup, not
+   by patching individual call sites.
+2. **Existing XML translations** (`Localization/*.jp.xml`, ~21 files) — match IDs against
+   blueprint-sourced text.
+3. **Existing patches** (`Mods/QudJP/Assemblies/src/Patches/*.cs`, 50 files) — parse
+   `[HarmonyPatch]` attributes to identify which game methods are already hooked.
+   Note: most patches route to dictionary lookup, so the dictionary cross-reference
+   (source 1) catches what they cover. Patch cross-reference catches structural patches
+   (e.g., Template reformatting, SVO rewriting) that don't use dictionary keys.
 
 ## Implementation Policy: TDD
 
@@ -440,7 +478,7 @@ step is verified against known inputs before the pipeline is assembled.
 
 ## Success Criteria
 
-- [ ] candidate-inventory.json contains ALL ~4,313 translatable sites (deduped)
+- [ ] candidate-inventory.json contains ALL ~4,642 translatable sites (deduped)
 - [ ] Auto-classification (steps 1-4) covers ≥75% with high confidence
 - [ ] LLM-assisted classification (steps 5-6) brings total to ≥90%
 - [ ] Unresolved sites are <10% of total
@@ -465,17 +503,36 @@ are too numerous for individual regex patterns.
 
 ### Approach
 
-A single Harmony **postfix patch on `Messaging.XDidY`, `Messaging.XDidYToZ`, and
-`Messaging.WDidXToYWithZ`** intercepts the assembled English sentence at the message
-generation point, rather than patching 272+ individual call sites.
+XDidY/XDidYToZ/WDidXToYWithZ are all **void methods** — a postfix patch cannot
+intercept the assembled message (it's already been sent to `HandleMessage` →
+`MessageQueue.AddPlayerMessage()` or `Popup.Show()` by postfix time).
 
-The `MessageFrameTranslator` postfix:
+Instead, use a **Prefix patch on `Messaging.HandleMessage()`** — the single funnel
+point through which ALL DidX/EmitMessage output passes (confirmed in Messaging.cs
+at lines 87, 197, 284, 431, 564, 735). This is a `private static` method but Harmony
+can patch it via `AccessTools.Method`.
 
-1. **Receives** the assembled English message string from Messaging methods
+```csharp
+[HarmonyPatch]
+static class MessageFrameTranslatorPatch
+{
+    static MethodBase TargetMethod() =>
+        AccessTools.Method(typeof(Messaging), "HandleMessage");
+
+    // Prefix receives ref string Msg — rewrite SVO→SOV in place
+    static void Prefix(ref string Msg, GameObject Source)
+    { ... }
+}
+```
+
+The `MessageFrameTranslator` Prefix:
+
+1. **Receives** `ref string Msg` (the assembled English sentence) from HandleMessage
 2. **Parses** into semantic slots: `{subject, verb, extra}` (note: "Extra" is freeform English — not just object/instrument)
 3. **Looks up** verb → Japanese verb mapping (dictionary-driven, **118 unique verbs**)
 4. **Recomposes** in SOV order with Japanese particles
 5. For freeform `Extra` phrases, falls back to per-verb-Extra pair dictionary or LLM-generated translation at scan time
+6. **Discriminates** DidX-originated messages from other EmitMessage calls (via pattern matching or `__state` flag from a companion XDidY Prefix)
 
 ### Inventory Integration
 
@@ -543,5 +600,5 @@ the `--diff` flag is a filter, not a separate code path.
 |----------|----------|-----------|
 | LLM classifier execution model | Claude Code subagents (in-session) | Zero API cost, leverages existing tooling, ~300-400 sites only |
 | Intermediate file management | `.gitignore`d, only `candidate-inventory.json` committed | Reproducible locally, review-friendly final output |
-| MessageFrame strategy | SVO→SOV rewrite engine | 548 sites too many for individual regex; generalized engine scales |
+| MessageFrame strategy | HandleMessage Prefix patch | void methods make postfix impossible; HandleMessage is the single funnel point |
 | Inventory freshness | Decompile diff | Automated detection of changed sites on game update |
