@@ -186,6 +186,30 @@
       "template": "あなたは移動を止めた"
     },
     {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) to the ground!$",
+      "template": "{t0}は地面に倒れた！"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) to the ground\\.$",
+      "template": "{t0}は地面に倒れた。"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) to the ground$",
+      "template": "{t0}は地面に倒れた"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) asleep!$",
+      "template": "{t0}は眠りに落ちた！"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) asleep\\.$",
+      "template": "{t0}は眠りに落ちた。"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) asleep$",
+      "template": "{t0}は眠りに落ちた"
+    },
+    {
       "pattern": "^You pick up (.+?)[.!]?$",
       "template": "{0}を拾った"
     },

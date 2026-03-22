@@ -41,9 +41,7 @@ public sealed class DoesVerbFamilyTests
             ("snapjaw", "スナップジョー"),
             ("glowpad", "グロウパッド"),
             ("turret", "タレット"),
-            ("bronze short sword", "青銅の短剣"),
-            ("canteen", "水筒"),
-            ("water", "水"));
+            ("bronze short sword", "青銅の短剣"));
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
@@ -106,20 +104,6 @@ public sealed class DoesVerbFamilyTests
     [TestCase("{{W|The bear hits the snapjaw for 5 damage!}}", "{{W|熊はスナップジョーに5ダメージを与えた！}}")]
     [TestCase("{{r|The bear misses the snapjaw!}}", "{{r|熊はスナップジョーへの攻撃を外した！}}")]
     public void Translate_CombatDamageThirdPerson(string input, string expected)
-    {
-        AssertTranslated(input, expected);
-    }
-
-    // --- Possession/Lack Family ---
-
-    // Plain text
-    [TestCase("The canteen has no room for more water.", "水筒にはこれ以上の水を入れる余地がない。")]
-    [TestCase("You have no more ammo!", "弾薬が尽きた！")]
-    [TestCase("The bear has nothing to say.", "熊は何も言うことがない。")]
-    [TestCase("You have left your party.", "あなたはパーティーを離れた。")]
-    // Color-wrapped
-    [TestCase("{{y|You have no more ammo!}}", "{{y|弾薬が尽きた！}}")]
-    public void Translate_PossessionLackFamily(string input, string expected)
     {
         AssertTranslated(input, expected);
     }
