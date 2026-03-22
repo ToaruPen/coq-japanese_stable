@@ -257,7 +257,8 @@ public static class XDidYTranslationPatch
         var subjectPossessedBy = GetArg(args, 10);
         var source = GetArg(args, 11);
         var describeSubjectDirection = GetBoolArg(args, 12);
-        var describeSubjectDirectionLate = GetBoolArg(args, 13);
+        // describeSubjectDirectionLate (index 13) is handled by TryBuildSubjectLabel:
+        // Japanese SOV order always attaches direction to the subject noun phrase.
         var alwaysVisible = GetBoolArg(args, 14);
         var fromDialog = GetBoolArg(args, 15);
         var usePopup = GetBoolArg(args, 16);
@@ -278,7 +279,7 @@ public static class XDidYTranslationPatch
                 return true;
             }
 
-            DispatchTranslatedMessage(
+            return DispatchTranslatedMessage(
                 ResolveMessageSource(source, actor),
                 playerMessage,
                 color,
@@ -286,7 +287,6 @@ public static class XDidYTranslationPatch
                 colorAsBadFor,
                 fromDialog,
                 usePopup);
-            return false;
         }
 
         if (!alwaysVisible && !IsVisible(useVisibilityOf ?? source ?? actor))
@@ -301,7 +301,6 @@ public static class XDidYTranslationPatch
                 indefiniteSubject,
                 subjectPossessedBy,
                 describeSubjectDirection,
-                describeSubjectDirectionLate,
                 out var subjectText))
         {
             return true;
@@ -312,7 +311,7 @@ public static class XDidYTranslationPatch
             return true;
         }
 
-        DispatchTranslatedMessage(
+        return DispatchTranslatedMessage(
             ResolveMessageSource(source, actor),
             translated,
             color,
@@ -320,7 +319,6 @@ public static class XDidYTranslationPatch
             colorAsBadFor,
             fromDialog,
             usePopup);
-        return false;
     }
 
     private static bool HandleXDidYToZ(object?[] args)
@@ -344,7 +342,7 @@ public static class XDidYTranslationPatch
         var objectPossessedBy = GetArg(args, 16);
         var source = GetArg(args, 17);
         var describeSubjectDirection = GetBoolArg(args, 18);
-        var describeSubjectDirectionLate = GetBoolArg(args, 19);
+        // describeSubjectDirectionLate (index 19) is handled by TryBuildSubjectLabel.
         var alwaysVisible = GetBoolArg(args, 20);
         var fromDialog = GetBoolArg(args, 21);
         var usePopup = GetBoolArg(args, 22);
@@ -372,7 +370,8 @@ public static class XDidYTranslationPatch
                 useFullNames,
                 indefiniteObject,
                 indefiniteObjectForOthers,
-                possessiveObject);
+                possessiveObject,
+                objectPossessedBy);
             if (string.IsNullOrWhiteSpace(objectText))
             {
                 return true;
@@ -383,7 +382,7 @@ public static class XDidYTranslationPatch
                 return true;
             }
 
-            DispatchTranslatedMessage(
+            return DispatchTranslatedMessage(
                 ResolveMessageSource(source, actor),
                 playerMessage,
                 color,
@@ -391,7 +390,6 @@ public static class XDidYTranslationPatch
                 colorAsBadFor,
                 fromDialog,
                 usePopup);
-            return false;
         }
 
         if (!alwaysVisible && !IsVisible(useVisibilityOf ?? source ?? actor))
@@ -406,7 +404,6 @@ public static class XDidYTranslationPatch
                 indefiniteSubject,
                 subjectPossessedBy,
                 describeSubjectDirection,
-                describeSubjectDirectionLate,
                 out var subjectText))
         {
             return true;
@@ -419,7 +416,8 @@ public static class XDidYTranslationPatch
             useFullNames,
             indefiniteObject,
             indefiniteObjectForOthers,
-            possessiveObject);
+            possessiveObject,
+            objectPossessedBy);
         if (string.IsNullOrWhiteSpace(objectLabel))
         {
             return true;
@@ -437,7 +435,7 @@ public static class XDidYTranslationPatch
             return true;
         }
 
-        DispatchTranslatedMessage(
+        return DispatchTranslatedMessage(
             ResolveMessageSource(source, actor),
             translated,
             color,
@@ -445,7 +443,6 @@ public static class XDidYTranslationPatch
             colorAsBadFor,
             fromDialog,
             usePopup);
-        return false;
     }
 
     private static bool HandleWDidXToYWithZ(object?[] args)
@@ -475,14 +472,11 @@ public static class XDidYTranslationPatch
         var indirectObjectPossessedBy = GetArg(args, 22);
         var source = GetArg(args, 23);
         var describeSubjectDirection = GetBoolArg(args, 24);
-        var describeSubjectDirectionLate = GetBoolArg(args, 25);
+        // describeSubjectDirectionLate (index 25) is handled by TryBuildSubjectLabel.
         var alwaysVisible = GetBoolArg(args, 26);
         var fromDialog = GetBoolArg(args, 27);
         var usePopup = GetBoolArg(args, 28);
         var useVisibilityOf = GetArg(args, 29);
-
-        _ = directObjectPossessedBy;
-        _ = indirectObjectPossessedBy;
 
         if (string.IsNullOrWhiteSpace(verb))
         {
@@ -514,7 +508,8 @@ public static class XDidYTranslationPatch
                 useFullNames,
                 indefiniteDirectObject,
                 indefiniteDirectObjectForOthers,
-                possessiveDirectObject);
+                possessiveDirectObject,
+                directObjectPossessedBy);
             var indirectObjectText = BuildObjectLabel(
                 indirectObject,
                 actor,
@@ -522,7 +517,8 @@ public static class XDidYTranslationPatch
                 useFullNames,
                 indefiniteIndirectObject,
                 indefiniteIndirectObjectForOthers,
-                possessiveIndirectObject);
+                possessiveIndirectObject,
+                indirectObjectPossessedBy);
 
             if (string.IsNullOrWhiteSpace(directObjectText) || string.IsNullOrWhiteSpace(indirectObjectText))
             {
@@ -543,7 +539,7 @@ public static class XDidYTranslationPatch
                 return true;
             }
 
-            DispatchTranslatedMessage(
+            return DispatchTranslatedMessage(
                 ResolveMessageSource(source, actor),
                 playerMessage,
                 color,
@@ -551,7 +547,6 @@ public static class XDidYTranslationPatch
                 colorAsBadFor,
                 fromDialog,
                 usePopup);
-            return false;
         }
 
         if (!alwaysVisible && !IsVisible(useVisibilityOf ?? source ?? actor))
@@ -566,7 +561,6 @@ public static class XDidYTranslationPatch
                 indefiniteSubject,
                 subjectPossessedBy,
                 describeSubjectDirection,
-                describeSubjectDirectionLate,
                 out var subjectText))
         {
             return true;
@@ -579,7 +573,8 @@ public static class XDidYTranslationPatch
             useFullNames,
             indefiniteDirectObject,
             indefiniteDirectObjectForOthers,
-            possessiveDirectObject);
+            possessiveDirectObject,
+            directObjectPossessedBy);
         var indirectLabel = BuildObjectLabel(
             indirectObject,
             actor,
@@ -587,7 +582,8 @@ public static class XDidYTranslationPatch
             useFullNames,
             indefiniteIndirectObject,
             indefiniteIndirectObjectForOthers,
-            possessiveIndirectObject);
+            possessiveIndirectObject,
+            indirectObjectPossessedBy);
         if (string.IsNullOrWhiteSpace(directLabel) || string.IsNullOrWhiteSpace(indirectLabel))
         {
             return true;
@@ -607,7 +603,7 @@ public static class XDidYTranslationPatch
             return true;
         }
 
-        DispatchTranslatedMessage(
+        return DispatchTranslatedMessage(
             ResolveMessageSource(source, actor),
             translated,
             color,
@@ -615,7 +611,6 @@ public static class XDidYTranslationPatch
             colorAsBadFor,
             fromDialog,
             usePopup);
-        return false;
     }
 
     private static bool ShouldPromotePopupForXDidY(bool usePopup, bool fromDialog, object? actor, object? subjectPossessedBy)
@@ -680,7 +675,6 @@ public static class XDidYTranslationPatch
         bool indefiniteSubject,
         object? subjectPossessedBy,
         bool describeSubjectDirection,
-        bool describeSubjectDirectionLate,
         out string subjectText)
     {
         var ownerPrefix = GetOwnerPrefix(subjectPossessedBy ?? GetHolder(actor), useFullNames, indefiniteSubject);
@@ -692,9 +686,12 @@ public static class XDidYTranslationPatch
         }
 
         subjectText = ownerPrefix + baseLabel;
-        if (describeSubjectDirection && !describeSubjectDirectionLate)
+        if (describeSubjectDirection)
         {
-            subjectText += GetDirectionSuffix(subjectPossessedBy ?? actor);
+            // Always use actor for direction (not the owner), and include
+            // it regardless of late flag since Japanese SOV order places
+            // the direction suffix on the subject noun phrase directly.
+            subjectText += GetDirectionSuffix(actor);
         }
 
         return true;
@@ -768,16 +765,19 @@ public static class XDidYTranslationPatch
         bool useFullNames,
         bool indefiniteObject,
         bool indefiniteObjectForOthers,
-        bool possessive)
+        bool possessive,
+        object? objectPossessedBy = null)
     {
+        var ownerPrefix = GetOwnerPrefix(objectPossessedBy, useFullNames, indefiniteObject);
+
         if (ReferenceEquals(value, actor) && string.IsNullOrEmpty(subjectOverride))
         {
-            return possessive ? "自分の" : "自分";
+            return possessive ? ownerPrefix + "自分の" : ownerPrefix + "自分";
         }
 
         if (IsPlayer(value))
         {
-            return possessive ? "あなたの" : "あなた";
+            return possessive ? ownerPrefix + "あなたの" : ownerPrefix + "あなた";
         }
 
         var label = GetEntityDisplayName(value, capitalize: false, useFullNames, indefiniteObject || indefiniteObjectForOthers);
@@ -786,7 +786,7 @@ public static class XDidYTranslationPatch
             return string.Empty;
         }
 
-        return possessive ? MakePossessiveLabel(label) : label;
+        return possessive ? ownerPrefix + MakePossessiveLabel(label) : ownerPrefix + label;
     }
 
     private static string GetEntityDisplayName(object? value, bool capitalize, bool useFullNames, bool indefiniteArticle)
@@ -900,7 +900,11 @@ public static class XDidYTranslationPatch
         };
     }
 
-    private static void DispatchTranslatedMessage(
+    /// <summary>
+    /// Returns false when dispatch succeeded (caller should skip original),
+    /// true when dispatch failed (caller should fall back to original).
+    /// </summary>
+    private static bool DispatchTranslatedMessage(
         object? source,
         string translatedMessage,
         string? color,
@@ -909,19 +913,19 @@ public static class XDidYTranslationPatch
         bool fromDialog,
         bool usePopup)
     {
-        var marked = MessageFrameTranslator.MarkDirectTranslation(translatedMessage);
-        var colored = ApplyMessageColor(marked, color, colorAsGoodFor, colorAsBadFor);
+        var colored = ApplyMessageColor(translatedMessage, color, colorAsGoodFor, colorAsBadFor);
+        var marked = MessageFrameTranslator.MarkDirectTranslation(colored);
 
         if (messageDispatcherOverride is not null)
         {
-            messageDispatcherOverride(source, colored, fromDialog, usePopup);
-            return;
+            messageDispatcherOverride(source, marked, fromDialog, usePopup);
+            return false;
         }
 
         if (HandleMessageMethod is null)
         {
-            Trace.TraceError("QudJP: Failed to resolve Messaging.HandleMessage(string overload).");
-            return;
+            Trace.TraceError("QudJP: Failed to resolve Messaging.HandleMessage(string overload). Falling back to original.");
+            return true;
         }
 
         HandleMessageMethod.Invoke(
@@ -929,13 +933,14 @@ public static class XDidYTranslationPatch
             new[]
             {
                 ResolveMessageSource(source, null),
-                (object?)colored,
+                (object?)marked,
                 ' ',
                 fromDialog,
                 usePopup,
                 null,
                 null,
             });
+        return false;
     }
 
     private static string ApplyMessageColor(string message, string? color, object? colorAsGoodFor, object? colorAsBadFor)
