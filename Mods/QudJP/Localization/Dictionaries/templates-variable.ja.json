@@ -13,7 +13,7 @@
     {
       "key": "=subject.T= =verb:bask= in the sunlight and =verb:absorb= the nourishing rays.",
       "context": "XRL.World.Parts.Mutation.PhotosyntheticSkin",
-      "text": "=subject.T=は日光を浴び、滋養に満ちた光を=verb:absorb=した。"
+      "text": "=subject.T=は日光の中で=verb:bask=し、滋養に満ちた光を=verb:absorb=した。"
     },
     {
       "key": "This shrine depicts a significant event from the life of the ancient =sultan.term= =subject.name=:\n\n",

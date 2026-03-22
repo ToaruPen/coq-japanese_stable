@@ -302,7 +302,8 @@ public static class XDidYTranslationPatch
                 subjectPossessedBy,
                 describeSubjectDirection,
                 describeSubjectDirectionLate,
-                out var subjectText))
+                out var subjectText,
+                out var lateDirectionSuffix))
         {
             return true;
         }
@@ -310,6 +311,11 @@ public static class XDidYTranslationPatch
         if (!MessageFrameTranslator.TryTranslateXDidY(subjectText, verbText, extra, endMark, out var translated))
         {
             return true;
+        }
+
+        if (!string.IsNullOrEmpty(lateDirectionSuffix))
+        {
+            translated += lateDirectionSuffix;
         }
 
         DispatchTranslatedMessage(
@@ -407,7 +413,8 @@ public static class XDidYTranslationPatch
                 subjectPossessedBy,
                 describeSubjectDirection,
                 describeSubjectDirectionLate,
-                out var subjectText))
+                out var subjectText,
+                out var lateDirectionSuffix))
         {
             return true;
         }
@@ -435,6 +442,11 @@ public static class XDidYTranslationPatch
                 out var translated))
         {
             return true;
+        }
+
+        if (!string.IsNullOrEmpty(lateDirectionSuffix))
+        {
+            translated += lateDirectionSuffix;
         }
 
         DispatchTranslatedMessage(
@@ -568,7 +580,8 @@ public static class XDidYTranslationPatch
                 subjectPossessedBy,
                 describeSubjectDirection,
                 describeSubjectDirectionLate,
-                out var subjectText))
+                out var subjectText,
+                out var lateDirectionSuffix))
         {
             return true;
         }
@@ -580,7 +593,8 @@ public static class XDidYTranslationPatch
             useFullNames,
             indefiniteDirectObject,
             indefiniteDirectObjectForOthers,
-            possessiveDirectObject);
+            possessiveDirectObject,
+            directObjectPossessedBy);
         var indirectLabel = BuildObjectLabel(
             indirectObject,
             actor,
@@ -588,7 +602,8 @@ public static class XDidYTranslationPatch
             useFullNames,
             indefiniteIndirectObject,
             indefiniteIndirectObjectForOthers,
-            possessiveIndirectObject);
+            possessiveIndirectObject,
+            indirectObjectPossessedBy);
         if (string.IsNullOrWhiteSpace(directLabel) || string.IsNullOrWhiteSpace(indirectLabel))
         {
             return true;
@@ -606,6 +621,11 @@ public static class XDidYTranslationPatch
                 out var translated))
         {
             return true;
+        }
+
+        if (!string.IsNullOrEmpty(lateDirectionSuffix))
+        {
+            translated += lateDirectionSuffix;
         }
 
         DispatchTranslatedMessage(
@@ -682,8 +702,10 @@ public static class XDidYTranslationPatch
         object? subjectPossessedBy,
         bool describeSubjectDirection,
         bool describeSubjectDirectionLate,
-        out string subjectText)
+        out string subjectText,
+        out string lateDirectionSuffix)
     {
+        lateDirectionSuffix = string.Empty;
         var ownerPrefix = GetOwnerPrefix(subjectPossessedBy ?? GetHolder(actor), useFullNames, indefiniteSubject);
         var baseLabel = TranslateSubjectBase(actor, subjectOverride, useFullNames, indefiniteSubject);
         if (string.IsNullOrWhiteSpace(baseLabel))
@@ -693,9 +715,17 @@ public static class XDidYTranslationPatch
         }
 
         subjectText = ownerPrefix + baseLabel;
-        if (describeSubjectDirection && !describeSubjectDirectionLate)
+        if (describeSubjectDirection)
         {
-            subjectText += GetDirectionSuffix(subjectPossessedBy ?? actor);
+            var dirSuffix = GetDirectionSuffix(actor);
+            if (describeSubjectDirectionLate)
+            {
+                lateDirectionSuffix = dirSuffix;
+            }
+            else
+            {
+                subjectText += dirSuffix;
+            }
         }
 
         return true;

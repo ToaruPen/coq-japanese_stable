@@ -326,7 +326,11 @@ public sealed class MessageLogPatchTests
     [Test]
     public void Prefix_StripsDirectTranslationMarkerWithoutReapplyingPatterns()
     {
-        WritePatternDictionary(("^You hit (.+) for (\\d+) damage[.!]?$", "{0}に{1}ダメージを与えた"));
+        // Pattern that matches the English original AND a trap pattern matching the stripped Japanese.
+        // If MessagePatternTranslator.Translate were invoked on the stripped text, the trap would fire.
+        WritePatternDictionary(
+            ("^You hit (.+) for (\\d+) damage[.!]?$", "{0}に{1}ダメージを与えた"),
+            ("^熊は防いだ。$", "TRAP: should not be reached"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -339,6 +343,7 @@ public sealed class MessageLogPatchTests
 
             DummyMessageQueue.AddPlayerMessage("\u0001熊は防いだ。", "&W", Capitalize: false);
 
+            // The marker should be stripped AND the trap pattern should NOT fire.
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("熊は防いだ。"));
         }
         finally
