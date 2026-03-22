@@ -10,26 +10,65 @@ runtime log analysis.
 This replaces the producer-first design (archived as `producer-first-design-old.md`),
 which assumed only 26 known hook points and incremental discovery.
 
-## Validated Coverage Numbers (Codex + Claude independent audit, 2026-03-22)
+## Validated Site Counts (deduplicated, 2026-03-22)
 
-| Method | Coverage | Sites |
-|--------|----------|------:|
-| Sink-line-only (literal + inline template) | **78.2%** | 1460/1866 |
-| + LLM reading decompiled source (variable tracing, call chains) | **91.8%** | 1540/1677 (deduped) |
-| Requires runtime log analysis | **~8%** | 250-300 |
+Measured against `~/Dev/coq-decompiled/` with deduplication: 5,474 raw → **5,371** unique
+`.cs` files (excluded: 32 empty, 37 dot-namespace flat dupes, 26 underscore-namespace
+flat dupes, 8 retry/msgprobe artifacts).
 
-The ~8% that genuinely require runtime evidence:
+### Sink Call Sites (10 families)
+
+| # | Family | Call Sites | Files | Notes |
+|---|--------|----------:|------:|-------|
+| 1 | SetText | 316 | 85 | |
+| 2 | AddPlayerMessage (instance + MessageQueue) | 585 | 220 | |
+| 3 | Popup family (Show, ShowFail, ShowYesNo, etc. — 9 variants) | 1,460 | 421 | Largest family |
+| 4 | DidX family (DidX, DidXToY, DidXToYWithZ, XDidY, XDidYToZ, WDidXToYWithZ) | 272 | 145 | |
+| 5 | GetDisplayName | 147 | 70 | |
+| 6 | Does() | 307 | 136 | Subject+verb composition |
+| 7 | EmitMessage | 238 | 82 | Direct message emission |
+| 8 | GetShort/LongDescription | 7 | 5 | Negligible — mostly override producers |
+| 9 | JournalAPI (AddAccomplishment, AddMapNote, AddObservation) | 130 | 82 | Narrative/chronicle text |
+| 10 | HistoricStringExpander.ExpandString | 242 | 58 | Procedural lore text |
+| | **Sink subtotal** | **3,704** | | |
+
+### Override Producers
+
+| Producer | Overrides | Files |
+|----------|----------:|------:|
+| Effects: GetDescription | 180 | 180 |
+| Effects: GetDetails | 171 | 171 |
+| Mutations: GetDescription | 127 | 127 |
+| Mutations: GetLevelText | 131 | 131 |
+| **Producer subtotal** | **609** | |
+
+### Grand Total: **4,313** translatable sites
+
+### Additional Data
+
+- **Unique verb strings** in DidX family: **118** (appear, beat, burn, convince, die, disarm, give, roll, stare, etc.)
+
+### Coverage Estimate (revised)
+
+| Method | Estimated Coverage | Sites |
+|--------|-------------------|------:|
+| Mechanical (ast-grep + rule classifier, steps 1-4) | ~70-75% | ~3,000-3,200 |
+| + LLM reading decompiled source (steps 5-6) | ~85-90% | ~3,700-3,900 |
+| Requires runtime log analysis | ~10-15% | ~400-600 |
+
+The ~10-15% that genuinely require runtime evidence:
 - Event parameter injection — `SourceDescription` depends on event firing context
 - Runtime payload UI — `Notification.Data` displays arbitrary notification payloads
 - Save/persisted text — score details are records from past runs
 - Generic popup/message wrappers — `Popup.Show(Message)` where producer is external
 - Blueprint/tag strings — text from XML tags not visible in C# source
 - Ability/data asset strings — display text loaded from non-code assets
+- HistoricStringExpander procedural lore (~242 sites) — deep template expansion
 
 ## Two-Layer Problem This Solves
 
 1. **Why isn't everything translated?** — Decompiled source wasn't fully available.
-   Now it is. LLM agents can scan all 1885+ sink call sites and generate translation
+   Now it is. LLM agents can scan all 4,300+ translatable sites and generate translation
    artifacts (dictionary entries or patches) directly from source.
 
 2. **Why do agents misclassify dynamic text as dictionary entries?** — They couldn't
@@ -40,8 +79,8 @@ The ~8% that genuinely require runtime evidence:
 
 ```
 Phase 1: Static Scan (Python + ast-grep + LLM)
-  ~/Dev/coq-decompiled/ (5474 files)
-    → Scanner classifies all sink call sites
+  ~/Dev/coq-decompiled/ (5371 files after dedup)
+    → Scanner classifies all 4,313 translatable sites
     → Generates candidate-inventory.json (all routes, with confidence)
     → LLM agents consume inventory to produce translations
 
@@ -57,23 +96,33 @@ Phase 2: Runtime Verification (C# + Harmony, only for unresolved ~5-10%)
 
 All `.cs` files in `~/Dev/coq-decompiled/`, organized by namespace.
 
-### Scan Targets (5 sink families)
+### Scan Targets (10 sink families + 4 override producers)
 
-| Sink | Pattern | Files | Call Sites |
-|------|---------|------:|----------:|
-| UI text | `$_.SetText($$$)` | 359 | ~500+ |
-| Message log | `$_.AddPlayerMessage($$$)` | 671 | ~800+ |
-| Popup | `Popup.Show($$$)` | 843 | ~1000+ |
-| Action narration | `DidX/DidXToY` | 303 | 548 |
-| Display name | `$_.GetDisplayName($$$)` | 191 | ~250+ |
+See "Validated Site Counts" section above for the full table with deduplicated numbers.
 
-Additionally, text-producing overrides:
+**ast-grep patterns for sink families:**
 
-| Producer | Pattern | Files |
-|----------|---------|------:|
-| Effect descriptions | `override GetDescription/GetDetails` | 180 + 171 |
-| Mutation descriptions | `override GetDescription/GetLevelText` | 127 + 132 |
-| Skill descriptions | in `XRL.World.Parts.Skill/` | 173 |
+| # | Family | ast-grep Pattern(s) |
+|---|--------|-------------------|
+| 1 | SetText | `$_.SetText($$$)` |
+| 2 | AddPlayerMessage | `$_.AddPlayerMessage($$$)`, `MessageQueue.AddPlayerMessage($$$)` |
+| 3 | Popup (9 variants) | `Popup.Show($$$)`, `Popup.ShowFail($$$)`, `Popup.ShowBlock($$$)`, `Popup.ShowYesNo($$$)`, `Popup.ShowYesNoCancel($$$)`, `Popup.PickOption($$$)`, `Popup.AskString($$$)`, `Popup.ShowAsync($$$)`, `Popup.WarnYesNo($$$)` |
+| 4 | DidX (6 variants) | `$_.DidX($$$)`, `$_.DidXToY($$$)`, `$_.DidXToYWithZ($$$)`, `XDidY($$$)`, `XDidYToZ($$$)`, `WDidXToYWithZ($$$)` |
+| 5 | GetDisplayName | `$_.GetDisplayName($$$)` |
+| 6 | Does() | `$_.Does($$$)` |
+| 7 | EmitMessage | `EmitMessage($$$)` |
+| 8 | GetShort/LongDescription | `$_.GetShortDescription($$$)`, `$_.GetLongDescription($$$)` |
+| 9 | JournalAPI | `JournalAPI.AddAccomplishment($$$)`, `JournalAPI.AddMapNote($$$)`, `JournalAPI.AddObservation($$$)` |
+| 10 | HistoricStringExpander | `HistoricStringExpander.ExpandString($$$)` |
+
+**Override producers** (grep-based, not ast-grep):
+
+| Producer | Pattern | Overrides |
+|----------|---------|----------:|
+| Effects: GetDescription | `override.*GetDescription` in Effects/ | 180 |
+| Effects: GetDetails | `override.*GetDetails` in Effects/ | 171 |
+| Mutations: GetDescription | `override.*GetDescription` in Mutations/ | 127 |
+| Mutations: GetLevelText | `override.*GetLevelText` in Mutations/ | 131 |
 
 ### Classification Algorithm
 
@@ -105,9 +154,9 @@ For each sink call site, classify by argument pattern:
    SetText(ComputeSomething())  →  { type: "Unresolved", confidence: "low", needs_runtime: true }
 ```
 
-Steps 1-4 are mechanical (ast-grep + regex). ~1460 sites, ~78%.
-Steps 5-6 require LLM reading decompiled source. ~80-250 additional sites, ~14%.
-Step 7 is the remainder. ~250-300 sites, ~8%.
+Steps 1-4 are mechanical (ast-grep + regex). ~3,000-3,200 sites, ~70-75%.
+Steps 5-6 require LLM reading decompiled source. ~700-900 additional sites, ~15-20%.
+Step 7 is the remainder. ~400-600 sites, ~10-15%.
 
 ### Output: candidate-inventory.json
 
@@ -117,11 +166,13 @@ Step 7 is the remainder. ~250-300 sites, ~8%.
   "game_version": "2.0.4",
   "scan_date": "2026-03-22",
   "stats": {
-    "total_sites": 1677,
-    "total_raw": 1866,
-    "auto_classified": 1460,
-    "llm_classified": 80,
-    "unresolved": 137
+    "total_sites": 4313,
+    "total_deduped_files": 5371,
+    "sink_sites": 3704,
+    "override_producers": 609,
+    "auto_classified": null,
+    "llm_classified": null,
+    "unresolved": null
   },
   "sites": [
     {
@@ -205,18 +256,19 @@ Step 7 is the remainder. ~250-300 sites, ~8%.
 
 | Priority | Domain | Sites | Rationale |
 |----------|--------|------:|-----------|
-| P0 | UI screen labels (Qud.UI SetText literals) | ~27 | Immediately visible, Leaf, trivial |
-| P1 | Effect/mutation/skill descriptions | ~600 | High volume, mostly Leaf/Template |
+| P0 | UI screen labels (SetText literals) | ~30 | Immediately visible, Leaf, trivial |
+| P1 | Effect/mutation/skill descriptions (overrides) | ~609 | High volume, mostly Leaf/Template |
 | P2 | Screen-specific templates (CharacterStatus, Skills, Factions) | ~50 | Already partially patched |
-| P3 | Popup.Show literals | ~262 | High volume, Leaf |
-| P4 | AddPlayerMessage literals | ~126 | Message log text |
+| P3 | Popup family literals (Show, ShowFail, ShowYesNo, etc.) | ~1,460 | Largest family, many Leaf |
+| P4 | AddPlayerMessage literals | ~585 | Message log text |
 | P5 | Conversation text | ~40 | Template with =variable= slots |
-| P6 | MessageFrame (DidX/DidXToY) | ~548 | Highest complexity, SVO→SOV |
-| P7 | Trade/Tinkering/Book screens | ~80 | Mixed Template/Leaf |
-| P8 | StringBuilder compositions | ~117 | Need slot analysis |
-| P9 | Unresolved (runtime fallback) | ~265 | Phase 2 |
+| P6 | MessageFrame (DidX 6 variants + Does()) | ~579 | SVO→SOV via Messaging postfix patch |
+| P7 | GetDisplayName / Trade / Tinkering / Book screens | ~227 | Mixed Template/Leaf |
+| P8 | JournalAPI / EmitMessage | ~368 | Narrative + direct message paths |
+| P9 | HistoricStringExpander (procedural lore) | ~242 | Deep template expansion, likely runtime |
+| P10 | Unresolved (runtime fallback) | ~400-600 | Phase 2 |
 
-## Phase 2: Runtime Verification (for Unresolved ~5-10%)
+## Phase 2: Runtime Verification (for Unresolved ~10-15%)
 
 Only needed for sites where static analysis couldn't determine the text content or
 composition pattern. Uses the existing Player.log infrastructure.
@@ -312,8 +364,10 @@ is per-domain, not a big-bang rewrite.
 
 ```
 Phase 1a — ast-grep batch scan (mechanical, seconds)
-  5 sink patterns × ~/Dev/coq-decompiled/ → .scanner-cache/raw_hits.jsonl
-  ~1866 raw hits extracted with file, line, matched code
+  10 sink families (25+ patterns) × ~/Dev/coq-decompiled/ → .scanner-cache/raw_hits.jsonl
+  + override producer grep → .scanner-cache/override_hits.jsonl
+  ~4,313 total hits extracted with file, line, matched code
+  Dedup: exclude flat namespace duplicates + empty files (5,474 → 5,371 files)
 
 Phase 1b — Python rule classifier (mechanical, seconds)
   raw_hits.jsonl → rule classifier → .scanner-cache/inventory_draft.json
@@ -325,7 +379,7 @@ Phase 1c — Claude Code subagent classifier (targeted, minutes)
   Steps 5-6: variable tracing, call chain analysis (~14% additional)
 
 Phase 1d — Cross-reference (mechanical, seconds)
-  Match against existing patches (src/Patches/*.cs),
+  Match against existing patches (Mods/QudJP/Assemblies/src/Patches/*.cs),
   dictionaries (Localization/Dictionaries/*.ja.json),
   and XML translations (Localization/*.jp.xml)
   → Mark matched sites as `translated`
@@ -354,7 +408,7 @@ scripts/
 The scanner must know what's ALREADY translated to avoid duplicate work.
 Cross-reference sources:
 
-1. **Existing patches** (`src/Patches/*.cs`) — grep for target methods → mark as `translated`
+1. **Existing patches** (`Mods/QudJP/Assemblies/src/Patches/*.cs`) — grep for target methods → mark as `translated`
 2. **Existing dictionaries** (`Localization/Dictionaries/*.ja.json`) — keys → mark matching Leaf sites
 3. **Existing XML translations** (`Localization/*.jp.xml`) — IDs → mark matching blueprint text
 
@@ -386,7 +440,7 @@ step is verified against known inputs before the pipeline is assembled.
 
 ## Success Criteria
 
-- [ ] candidate-inventory.json contains ALL unique sink call sites (deduped)
+- [ ] candidate-inventory.json contains ALL ~4,313 translatable sites (deduped)
 - [ ] Auto-classification (steps 1-4) covers ≥75% with high confidence
 - [ ] LLM-assisted classification (steps 5-6) brings total to ≥90%
 - [ ] Unresolved sites are <10% of total
@@ -397,8 +451,8 @@ step is verified against known inputs before the pipeline is assembled.
 
 ## MessageFrame Translation: SVO→SOV Rewrite Engine
 
-548 DidX/DidXToY call sites make per-pattern regex infeasible. Instead, build a
-generalized SVO→SOV rewrite engine.
+272 DidX-family + 307 Does() call sites make per-pattern regex infeasible. Instead,
+build a generalized SVO→SOV rewrite engine via Messaging class-level Harmony postfix patch.
 
 ### Problem
 
@@ -411,16 +465,22 @@ are too numerous for individual regex patterns.
 
 ### Approach
 
-Build a `MessageFrameTranslator` that:
+A single Harmony **postfix patch on `Messaging.XDidY`, `Messaging.XDidYToZ`, and
+`Messaging.WDidXToYWithZ`** intercepts the assembled English sentence at the message
+generation point, rather than patching 272+ individual call sites.
 
-1. **Parses** DidX/DidXToY output into semantic slots: `{subject, verb, object, instrument, extra}`
-2. **Looks up** verb → Japanese verb mapping (dictionary-driven, ~100-150 unique verbs)
-3. **Recomposes** in SOV order with Japanese particles: `{subject}は{instrument}で{object}を{verb_ja}`
+The `MessageFrameTranslator` postfix:
+
+1. **Receives** the assembled English message string from Messaging methods
+2. **Parses** into semantic slots: `{subject, verb, extra}` (note: "Extra" is freeform English — not just object/instrument)
+3. **Looks up** verb → Japanese verb mapping (dictionary-driven, **118 unique verbs**)
+4. **Recomposes** in SOV order with Japanese particles
+5. For freeform `Extra` phrases, falls back to per-verb-Extra pair dictionary or LLM-generated translation at scan time
 
 ### Inventory Integration
 
-The scanner classifies all 548 MessageFrame sites. The inventory records the verb
-string for each site, enabling bulk extraction of the verb dictionary:
+The scanner classifies all 272 DidX-family + 307 Does() sites. The inventory records
+the verb string for each site, enabling bulk extraction of the verb dictionary (118 unique verbs):
 
 ```json
 {
@@ -436,9 +496,10 @@ string for each site, enabling bulk extraction of the verb dictionary:
 ### Priority
 
 P6 in the translation order. Implementation depends on:
-- Inventory completion (know all 548 sites)
-- Verb dictionary extraction (automated from inventory)
-- SOV recomposition logic (the core engine)
+- Inventory completion (know all 579 DidX + Does() sites)
+- Verb dictionary extraction (118 unique verbs, automated from inventory)
+- Messaging class postfix patch (intercepts at message generation, not per call site)
+- Freeform Extra phrase handling (per-verb-Extra pair dictionary + LLM fallback)
 
 ## Freshness Management: Decompile Diff
 
