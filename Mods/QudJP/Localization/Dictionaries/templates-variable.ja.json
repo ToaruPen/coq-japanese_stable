@@ -21,6 +21,11 @@
       "text": "この祠は古の=sultan.term= =subject.name=の生涯における重大な出来事を描いている:\n\n"
     },
     {
+      "key": "A trio of tongues vegetate from =subject.t's= =bodypart:Face=!",
+      "context": "XRL.World.Effects.CookingDomainTongue_ThreeTongues",
+      "text": "3本の舌が=subject.t=の=bodypart:Face=から生えてきた！"
+    },
+    {
       "key": "__vt_dynamic_passthrough",
       "context": "meta",
       "text": "Dynamic VariableTemplate sites are translated at their text source, not at StartReplace call site",

@@ -900,11 +900,6 @@
       "text": "宝玉の夕暮れまで待つ"
     },
     {
-      "key": "A trio of tongues vegetate from =subject.t's= =bodypart:Face=!",
-      "context": "XRL.World.Effects.CookingDomainTongue_ThreeTongues",
-      "text": "3本の舌が=subject.t=の=bodypart:Face=から生えてきた！"
-    },
-    {
       "key": "Your shot goes wild!",
       "context": "XRL.World.Parts.MissileWeapon",
       "text": "射撃が大きく逸れた！"
