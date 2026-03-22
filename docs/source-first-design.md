@@ -30,8 +30,8 @@ flat dupes, 8 retry/msgprobe artifacts).
 | 8 | GetShort/LongDescription | 7 | 5 | Negligible — mostly override producers |
 | 9 | JournalAPI (AddAccomplishment, AddMapNote, AddObservation) | 130 | 82 | Narrative/chronicle text |
 | 10 | HistoricStringExpander.ExpandString | 242 | 58 | Procedural lore text |
-| 11 | ReplaceBuilder (StartReplace) | ~64 | ~22 | Template-variable text composition |
-| | **Sink subtotal** | **~3,768** | | |
+| 11 | ReplaceBuilder (StartReplace) | ~52 | ~21 | Template-variable text composition |
+| | **Sink subtotal** | **~3,756** | | |
 
 ### Override Producers
 
@@ -44,7 +44,7 @@ flat dupes, 8 retry/msgprobe artifacts).
 | Parts: GetShortDescription | ~265 | ~265 |
 | **Producer subtotal** | **~874** | |
 
-### Grand Total: **~4,642** translatable sites
+### Grand Total: **~4,630** translatable sites
 
 Note: DidX family count (272) needs re-measurement after ast-grep pattern fix (B1).
 Total will shift accordingly. All counts are post-dedup approximations.
@@ -85,7 +85,7 @@ The ~10-15% that genuinely require runtime evidence:
 ```
 Phase 1: Static Scan (Python + ast-grep + LLM)
   ~/Dev/coq-decompiled/ (5371 files after dedup)
-    → Scanner classifies all ~4,642 translatable sites
+    → Scanner classifies all ~4,630 translatable sites
     → Generates candidate-inventory.json (all routes, with confidence)
     → LLM agents consume inventory to produce translations
 
@@ -123,7 +123,7 @@ Both qualified (`$_.DidX($$$)`) and unqualified (`DidX($$$)`) patterns are neede
 | 8 | GetShort/LongDescription | `$_.GetShortDescription($$$)`, `$_.GetLongDescription($$$)` |
 | 9 | JournalAPI | `JournalAPI.AddAccomplishment($$$)`, `JournalAPI.AddMapNote($$$)`, `JournalAPI.AddObservation($$$)` |
 | 10 | HistoricStringExpander | `HistoricStringExpander.ExpandString($$$)` |
-| 11 | ReplaceBuilder | `$_.StartReplace($$$)` (template-variable text composition, ~64 sites) |
+| 11 | ReplaceBuilder | `$_.StartReplace($$$)` (template-variable text composition, ~52 post-dedup sites) |
 
 **Override producers** (grep-based, not ast-grep):
 
@@ -195,9 +195,9 @@ Step 7 is the remainder. ~400-600 sites, ~10-15%.
   "game_version": "2.0.4",
   "scan_date": "2026-03-22",
   "stats": {
-    "total_sites": 4642,
+    "total_sites": 4630,
     "total_deduped_files": 5371,
-    "sink_sites": 3768,
+    "sink_sites": 3756,
     "override_producers": 874,
     "auto_classified": null,
     "llm_classified": null,
@@ -388,7 +388,7 @@ is per-domain, not a big-bang rewrite.
 
 - **Python 3 (>=3.12)** — use `python3`, not version-pinned `python3.12`
 - **ast-grep** for structural C# pattern matching (installed, v0.42.0)
-- **Interactive LLM classification** for steps 5-6 (run within Claude Code session or via `claude -p` headless mode)
+- **Interactive LLM classification** for steps 5-6 (run `--phase=1c` within Claude Code session, or `claude -p` headless mode, or Anthropic API)
 - Output: JSON (`candidate-inventory.json` — committed to repo; intermediate files `.gitignore`d)
 
 ### Pipeline Phases (Approach C: Hybrid)
@@ -397,7 +397,7 @@ is per-domain, not a big-bang rewrite.
 Phase 1a — ast-grep batch scan (mechanical, seconds)
   11 sink families (30+ patterns) × ~/Dev/coq-decompiled/ → .scanner-cache/raw_hits.jsonl
   + 5 override producer greps → .scanner-cache/override_hits.jsonl
-  ~4,642 total hits extracted with file, line, matched code
+  ~4,630 total hits extracted with file, line, matched code
   Dedup: exclude flat namespace duplicates + empty files (5,474 → 5,371 files)
 
 Phase 1b — Python rule classifier (mechanical, seconds)
@@ -500,7 +500,7 @@ step is verified against known inputs before the pipeline is assembled.
 
 ## Success Criteria
 
-- [ ] candidate-inventory.json contains ALL ~4,642 translatable sites (deduped)
+- [ ] candidate-inventory.json contains ALL ~4,630 translatable sites (deduped)
 - [ ] Auto-classification (steps 1-4) covers ≥75% with high confidence
 - [ ] LLM-assisted classification (steps 5-6) brings total to ≥90%
 - [ ] Unresolved sites are <15% of total (estimate: 10-15%)
@@ -538,8 +538,11 @@ can patch it via `AccessTools.Method`.
 [HarmonyPatch]
 static class MessageFrameTranslatorPatch
 {
+    // HandleMessage has 2 overloads (string vs StringBuilder) — must specify param types
     static MethodBase TargetMethod() =>
-        AccessTools.Method(typeof(Messaging), "HandleMessage");
+        AccessTools.Method(typeof(Messaging), "HandleMessage",
+            new[] { typeof(GameObject), typeof(string), typeof(char),
+                    typeof(bool), typeof(bool), typeof(GameObject), typeof(GameObject) });
 
     // Prefix receives ref string Msg — rewrite SVO→SOV in place
     static void Prefix(ref string Msg, GameObject Source)
