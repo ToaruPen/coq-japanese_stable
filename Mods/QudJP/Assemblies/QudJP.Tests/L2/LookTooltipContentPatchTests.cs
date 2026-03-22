@@ -99,6 +99,7 @@ public sealed class LookTooltipContentPatchTests
     public void Postfix_TranslatesCompareStatusLines_WhenPatched()
     {
         WriteDictionary(
+            ("Strength", "筋力"),
             ("Bonus Cap:", "ボーナス上限:"),
             ("Weapon Class:", "武器カテゴリ:"),
             ("Long Blades (increased penetration on critical hit)", "長剣（クリティカル時に貫通力上昇）"),
@@ -113,7 +114,7 @@ public sealed class LookTooltipContentPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(cap, Is.EqualTo("Strength ボーナス上限: なし"));
+                Assert.That(cap, Is.EqualTo("筋力ボーナス上限: なし"));
                 Assert.That(egoCap, Is.EqualTo("Ego ボーナス上限: 2"));
                 Assert.That(weaponClass, Is.EqualTo("武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
             });

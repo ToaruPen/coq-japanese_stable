@@ -1,44 +1,36 @@
-# Scripts AGENTS.md
+# Scripts
 
-## WHY
+Python tooling for validation, extraction, sync, and deployment.
 
-- This area contains Python tooling for validation, extraction, diffing, and deployment support for the localization project.
-- Script changes affect contributor workflow and asset correctness rather than game runtime patching directly.
+## Area Map
 
-## WHAT
+- `scripts/*.py` — operational utilities (sync, validation, extraction, diff)
+- `scripts/*.sh` — shell tools (decompile, launch)
+- `scripts/tests/` — pytest coverage
+- `pyproject.toml` — Ruff and pytest config
 
-### Area Map
+## Commands
 
-- top-level `scripts/*.py`
-  - operational utilities such as sync, validation, extraction, and diff helpers
-- `scripts/tests/`
-  - pytest coverage for the Python tools
-- canonical config
-  - `pyproject.toml` defines Ruff and pytest behavior for this area
+```bash
+ruff check scripts/              # Lint
+ruff format scripts/             # Format
+pytest scripts/tests/            # All tests
+pytest scripts/tests/ -k <pat>   # Filtered tests
 
-### Facts That Matter Here
+# Decompile game DLL for source reference
+scripts/decompile_game_dll.sh          # Text pipeline classes (37)
+scripts/decompile_game_dll.sh --list   # List classes only
+scripts/decompile_game_dll.sh --all    # All classes (slow)
+```
 
-- Python baseline is `3.12+`.
-- Ruff is the configured linter for this area.
-- Tests run with pytest from `scripts/tests/`.
-- Public script interfaces in this repo are typed and documented; existing files follow that pattern.
+## Editing Rules
 
-## HOW
+- Prefer extending an existing script over creating a new one for the same tool.
+- Keep error paths explicit and actionable — these scripts drive validation and deployment.
+- Align validation checks with canonical docs, not ad hoc rules.
+- Python baseline: `3.12+`. Typed and documented public interfaces.
 
-### Common Commands
-
-- Lint: `ruff check scripts/`
-- Format, if needed by existing workflow: `ruff format scripts/`
-- Tests: `pytest scripts/tests/`
-- Narrow test run: `pytest scripts/tests/ -k <pattern>`
-
-### Editing Workflow
-
-- Prefer extending an existing script when the behavior belongs to the same operational tool.
-- Keep error paths explicit and actionable because these scripts are used for validation and deployment tasks.
-- When a script validates localization assets, align its checks with the canonical repo docs rather than duplicating new rules ad hoc.
-
-### Area-Specific Constraints
+## Constraints
 
 - Do not add silent fallbacks that hide invalid asset state.
-- Keep script names descriptive; this repo uses `verb_noun.py` style names for top-level tools.
+- Script naming: `verb_noun.py` for top-level tools, `verb_noun.sh` for shell scripts.

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace QudJP;
 
@@ -94,6 +95,18 @@ internal static class StringHelpers
 
         translated = source;
         return false;
+    }
+
+    internal static string TranslateExactOrLowerAsciiFallback(string source)
+    {
+        var result = TranslateExactOrLowerAscii(source);
+        if (result is not null)
+        {
+            return result;
+        }
+
+        Trace.TraceWarning("QudJP: TranslateExactOrLowerAscii miss for '{0}', falling back to source.", source);
+        return source;
     }
 
     internal static bool ContainsOrdinalIgnoreCase(string source, string value)

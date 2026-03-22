@@ -16,6 +16,11 @@ internal static class StatusLineTranslationHelpers
 
     internal static bool TryTranslateCompareStatusLine(string source, string route, string family, out string translated)
     {
+        if (WorldModsTextTranslator.TryTranslate(source, route, family, out translated))
+        {
+            return true;
+        }
+
         var bonusCapMatch = BonusCapPattern.Match(source);
         if (bonusCapMatch.Success)
         {
@@ -28,7 +33,12 @@ internal static class StatusLineTranslationHelpers
                     translatedValue = valueTranslation;
                 }
 
-                translated = bonusCapMatch.Groups["stat"].Value + " " + translatedSuffix + " " + translatedValue;
+                var rawStat = bonusCapMatch.Groups["stat"].Value;
+                var statTranslated = StringHelpers.TryGetTranslationExactOrLowerAscii(rawStat, out var translatedStat);
+                var statName = statTranslated ? translatedStat : rawStat;
+                var separator = statTranslated ? "" : " ";
+
+                translated = statName + separator + translatedSuffix + " " + translatedValue;
                 DynamicTextObservability.RecordTransform(route, family, source, translated);
                 return true;
             }

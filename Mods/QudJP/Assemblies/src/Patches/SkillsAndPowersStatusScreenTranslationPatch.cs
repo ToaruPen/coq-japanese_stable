@@ -108,6 +108,108 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
         return false;
     }
 
+    internal static (bool changed, string translated) TryTranslateExactLeafPreservingColors(
+        string source,
+        string route,
+        bool recordTransform)
+    {
+        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(source, TranslateLeaf);
+        if (string.Equals(source, translated, StringComparison.Ordinal))
+        {
+            return (false, source);
+        }
+
+        if (recordTransform)
+        {
+            DynamicTextObservability.RecordTransform(route, "SkillsAndPowers.ExactLeaf", source, translated);
+        }
+
+        return (true, translated);
+    }
+
+    internal static (bool changed, string translated) TryTranslateDetailText(
+        string source,
+        string route,
+        bool recordTransform)
+    {
+        var exact = TryTranslateExactLeafPreservingColors(source, route, recordTransform);
+        if (exact.changed)
+        {
+            return exact;
+        }
+
+        return TryTranslateLineCollection(source, route, "SkillsAndPowers.DetailText", TryTranslateExactLeafPreservingColors, recordTransform);
+    }
+
+    internal static (bool changed, string translated) TryTranslateLearnedStatusText(
+        string source,
+        string route,
+        bool recordTransform)
+    {
+        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            static visible => StringHelpers.TranslateExactOrLowerAsciiFallback(visible));
+        if (string.Equals(source, translated, StringComparison.Ordinal))
+        {
+            return (false, source);
+        }
+
+        if (recordTransform)
+        {
+            DynamicTextObservability.RecordTransform(route, "SkillsAndPowers.LearnedStatus", source, translated);
+        }
+
+        return (true, translated);
+    }
+
+    internal static (bool changed, string translated) TryTranslateRequirementsOwnerText(
+        string source,
+        string route,
+        bool recordTransform)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = RequirementBlockPattern.Match(stripped);
+        if (!match.Success)
+        {
+            return (false, source);
+        }
+
+        var cost = ColorAwareTranslationComposer.RestoreCapture(match.Groups["cost"].Value, spans, match.Groups["cost"]);
+        var translated = $":: {cost} SP ::\n:: {match.Groups["requirement"].Value} {TranslateAttributeRequirement(match.Groups["attribute"].Value)} ::";
+        if (string.Equals(source, translated, StringComparison.Ordinal))
+        {
+            return (false, source);
+        }
+
+        if (recordTransform)
+        {
+            DynamicTextObservability.RecordTransform(route, "SkillsAndPowers.Requirements", source, translated);
+        }
+
+        return (true, translated);
+    }
+
+    internal static (bool changed, string translated) TryTranslateRequiredSkillsOwnerText(
+        string source,
+        string route,
+        bool recordTransform)
+    {
+        return TryTranslateLineCollection(source, route, "SkillsAndPowers.RequiredSkills", TryTranslateStructuredLinePreservingColors, recordTransform);
+    }
+
+    internal static string TranslateLeaf(string source)
+    {
+        var direct = Translator.Translate(source);
+        return string.Equals(direct, source, StringComparison.Ordinal) ? source : direct;
+    }
+
+    internal static string TranslateAttributeRequirement(string source)
+    {
+        return AttributeRequirementAbbreviations.TryGetValue(source, out var abbreviation)
+            ? abbreviation
+            : source;
+    }
+
     private static bool TryTranslateSkillPoints(string source, string route, out string translated)
     {
         var match = SkillPointsPattern.Match(source);
@@ -265,16 +367,60 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
         return true;
     }
 
-    private static string TranslateLeaf(string source)
+    private static (bool changed, string translated) TryTranslateStructuredLinePreservingColors(
+        string source,
+        string route,
+        bool recordTransform)
     {
-        var direct = Translator.Translate(source);
-        return string.Equals(direct, source, StringComparison.Ordinal) ? source : direct;
+        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            visible => TryTranslateText(visible, route, out var structured) ? structured : TranslateLeaf(visible));
+        if (string.Equals(source, translated, StringComparison.Ordinal))
+        {
+            return (false, source);
+        }
+
+        if (recordTransform)
+        {
+            DynamicTextObservability.RecordTransform(route, "SkillsAndPowers.StructuredLine", source, translated);
+        }
+
+        return (true, translated);
     }
 
-    private static string TranslateAttributeRequirement(string source)
+    private static (bool changed, string translated) TryTranslateLineCollection(
+        string source,
+        string route,
+        string family,
+        Func<string, string, bool, (bool changed, string translated)> lineTranslator,
+        bool recordTransform)
     {
-        return AttributeRequirementAbbreviations.TryGetValue(source, out var abbreviation)
-            ? abbreviation
-            : source;
+        var lines = source.Split(new[] { '\n' }, StringSplitOptions.None);
+        if (lines.Length == 1)
+        {
+            return lineTranslator(source, route, recordTransform);
+        }
+
+        var translatedLines = new string[lines.Length];
+        var changed = false;
+        for (var index = 0; index < lines.Length; index++)
+        {
+            var lineResult = lineTranslator(lines[index], route, false);
+            translatedLines[index] = lineResult.translated;
+            changed |= lineResult.changed;
+        }
+
+        if (!changed)
+        {
+            return (false, source);
+        }
+
+        var translated = string.Join("\n", translatedLines);
+        if (recordTransform)
+        {
+            DynamicTextObservability.RecordTransform(route, family, source, translated);
+        }
+
+        return (true, translated);
     }
 }
