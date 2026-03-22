@@ -174,6 +174,36 @@ public sealed class MessageLogPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesStatusPredicateMessage_WhenPatched()
+    {
+        WritePatternDictionary(("^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stunned[.!]?$", "{t0}は気絶した"));
+        WriteExactDictionary(("snapjaw", "スナップジョー"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(MessageLogPatch), nameof(MessageLogPatch.Prefix))));
+
+            DummyMessageQueue.AddPlayerMessage("The snapjaw is stunned!", "&R", Capitalize: false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("スナップジョーは気絶した"));
+                Assert.That(DummyMessageQueue.LastColor, Is.EqualTo("&R"));
+                Assert.That(DummyMessageQueue.LastCapitalize, Is.False);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_TranslatesWeaponCombatMessage_WhenPatched()
     {
         WritePatternDictionary(
