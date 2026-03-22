@@ -10,6 +10,22 @@ runtime log analysis.
 This replaces the producer-first design (archived as `producer-first-design-old.md`),
 which assumed only 26 known hook points and incremental discovery.
 
+## Validated Coverage Numbers (Codex + Claude independent audit, 2026-03-22)
+
+| Method | Coverage | Sites |
+|--------|----------|------:|
+| Sink-line-only (literal + inline template) | **78.2%** | 1460/1866 |
+| + LLM reading decompiled source (variable tracing, call chains) | **91.8%** | 1540/1677 (deduped) |
+| Requires runtime log analysis | **~8%** | 250-300 |
+
+The ~8% that genuinely require runtime evidence:
+- Event parameter injection — `SourceDescription` depends on event firing context
+- Runtime payload UI — `Notification.Data` displays arbitrary notification payloads
+- Save/persisted text — score details are records from past runs
+- Generic popup/message wrappers — `Popup.Show(Message)` where producer is external
+- Blueprint/tag strings — text from XML tags not visible in C# source
+- Ability/data asset strings — display text loaded from non-code assets
+
 ## Two-Layer Problem This Solves
 
 1. **Why isn't everything translated?** — Decompiled source wasn't fully available.
@@ -89,9 +105,9 @@ For each sink call site, classify by argument pattern:
    SetText(ComputeSomething())  →  { type: "Unresolved", confidence: "low", needs_runtime: true }
 ```
 
-Steps 1-4 are mechanical (ast-grep + regex). ~570 sites, ~30%.
-Step 5-6 require LLM reading decompiled source. ~1000+ sites, ~55%.
-Step 7 is the remainder. ~200-300 sites, ~10-15%.
+Steps 1-4 are mechanical (ast-grep + regex). ~1460 sites, ~78%.
+Steps 5-6 require LLM reading decompiled source. ~80-250 additional sites, ~14%.
+Step 7 is the remainder. ~250-300 sites, ~8%.
 
 ### Output: candidate-inventory.json
 
@@ -101,10 +117,11 @@ Step 7 is the remainder. ~200-300 sites, ~10-15%.
   "game_version": "2.0.4",
   "scan_date": "2026-03-22",
   "stats": {
-    "total_sites": 1885,
-    "auto_classified": 570,
-    "llm_classified": 1050,
-    "unresolved": 265
+    "total_sites": 1677,
+    "total_raw": 1866,
+    "auto_classified": 1460,
+    "llm_classified": 80,
+    "unresolved": 137
   },
   "sites": [
     {
@@ -231,7 +248,7 @@ the actual unresolved count is known.
 | `UITextSkinTemplateTranslator` | Template translation at sink | None |
 | `StatusLineTranslationHelpers` | Status line translation | None |
 | `Translator` + 38 dictionaries | Leaf lookup | Add entries from inventory |
-| 12 uncommitted patches on main | Various screen translations | Commit, register in inventory |
+| 50 committed patches on main | Various screen/effect/description translations | Register in inventory as `translated` |
 | `UITextSkinTranslationPatch` | Sink-level translation | Keep for now; Phase 2 may convert to audit |
 
 ## Scanner Implementation
@@ -268,13 +285,13 @@ Cross-reference sources:
 
 ## Success Criteria
 
-- [ ] candidate-inventory.json contains ALL sink call sites (1885+)
-- [ ] Auto-classification covers ~30% with high confidence
-- [ ] LLM-assisted classification covers ~55% with medium+ confidence
-- [ ] Unresolved sites are <15% of total
+- [ ] candidate-inventory.json contains ALL unique sink call sites (~1677 deduped)
+- [ ] Auto-classification (steps 1-4) covers ≥75% with high confidence
+- [ ] LLM-assisted classification (steps 5-6) brings total to ≥90%
+- [ ] Unresolved sites are <10% of total
 - [ ] AGENTS.md references candidate-inventory.json as the workflow gate
 - [ ] Agent can consume inventory and generate translation artifacts without manual guidance
-- [ ] Existing translations are cross-referenced and marked as `translated`
+- [ ] Existing translations (50 patches + 38 dictionaries) are cross-referenced and marked `translated`
 
 ## Open Questions
 
