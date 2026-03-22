@@ -1,0 +1,1171 @@
+{
+  "meta": {
+    "id": "message-frame-verbs",
+    "lang": "ja",
+    "version": "0.1.0"
+  },
+  "entries": [],
+  "tier1": [
+    {
+      "verb": "absorb",
+      "text": "吸収した"
+    },
+    {
+      "verb": "activate",
+      "text": "起動した"
+    },
+    {
+      "verb": "appear",
+      "text": "現れた"
+    },
+    {
+      "verb": "are",
+      "text": "なった"
+    },
+    {
+      "verb": "assume",
+      "text": "とった"
+    },
+    {
+      "verb": "attack",
+      "text": "攻撃した"
+    },
+    {
+      "verb": "attempt",
+      "text": "試みた"
+    },
+    {
+      "verb": "beat",
+      "text": "叩いた"
+    },
+    {
+      "verb": "become",
+      "text": "なった"
+    },
+    {
+      "verb": "begin",
+      "text": "始めた"
+    },
+    {
+      "verb": "bite",
+      "text": "噛みついた"
+    },
+    {
+      "verb": "blink",
+      "text": "瞬間移動した"
+    },
+    {
+      "verb": "block",
+      "text": "防いだ"
+    },
+    {
+      "verb": "break",
+      "text": "壊した"
+    },
+    {
+      "verb": "brighten",
+      "text": "明るくなった"
+    },
+    {
+      "verb": "burn",
+      "text": "燃やした"
+    },
+    {
+      "verb": "burrow",
+      "text": "穴を掘った"
+    },
+    {
+      "verb": "cannot",
+      "text": "できなかった"
+    },
+    {
+      "verb": "charge",
+      "text": "突撃した"
+    },
+    {
+      "verb": "chirp",
+      "text": "鳴いた"
+    },
+    {
+      "verb": "clasp",
+      "text": "握りしめた"
+    },
+    {
+      "verb": "cohere",
+      "text": "凝集した"
+    },
+    {
+      "verb": "collapse",
+      "text": "崩壊した"
+    },
+    {
+      "verb": "collide",
+      "text": "衝突した"
+    },
+    {
+      "verb": "come",
+      "text": "来た"
+    },
+    {
+      "verb": "conjure",
+      "text": "召喚した"
+    },
+    {
+      "verb": "consume",
+      "text": "消費した"
+    },
+    {
+      "verb": "continue",
+      "text": "続けた"
+    },
+    {
+      "verb": "cool",
+      "text": "冷えた"
+    },
+    {
+      "verb": "crumble",
+      "text": "崩れた"
+    },
+    {
+      "verb": "dash",
+      "text": "突進した"
+    },
+    {
+      "verb": "deploy",
+      "text": "展開した"
+    },
+    {
+      "verb": "destabilize",
+      "text": "不安定化した"
+    },
+    {
+      "verb": "detonate",
+      "text": "起爆した"
+    },
+    {
+      "verb": "die",
+      "text": "死んだ"
+    },
+    {
+      "verb": "dig",
+      "text": "掘った"
+    },
+    {
+      "verb": "dim",
+      "text": "薄暗くなった"
+    },
+    {
+      "verb": "disappear",
+      "text": "消えた"
+    },
+    {
+      "verb": "disarm",
+      "text": "武装解除した"
+    },
+    {
+      "verb": "discharge",
+      "text": "放電した"
+    },
+    {
+      "verb": "discorporate",
+      "text": "実体を失った"
+    },
+    {
+      "verb": "dodge",
+      "text": "回避した"
+    },
+    {
+      "verb": "draw",
+      "text": "引き寄せた"
+    },
+    {
+      "verb": "drink",
+      "text": "飲んだ"
+    },
+    {
+      "verb": "drop",
+      "text": "落とした"
+    },
+    {
+      "verb": "dust",
+      "text": "粉砕した"
+    },
+    {
+      "verb": "eject",
+      "text": "射出した"
+    },
+    {
+      "verb": "emerge",
+      "text": "現れた"
+    },
+    {
+      "verb": "emit",
+      "text": "放出した"
+    },
+    {
+      "verb": "enter",
+      "text": "入った"
+    },
+    {
+      "verb": "equip",
+      "text": "装備した"
+    },
+    {
+      "verb": "erupt",
+      "text": "噴出した"
+    },
+    {
+      "verb": "exit",
+      "text": "出た"
+    },
+    {
+      "verb": "explode",
+      "text": "爆発した"
+    },
+    {
+      "verb": "extrude",
+      "text": "押し出した"
+    },
+    {
+      "verb": "fall",
+      "text": "倒れた"
+    },
+    {
+      "verb": "feel",
+      "text": "感じた"
+    },
+    {
+      "verb": "filch",
+      "text": "かすめ取った"
+    },
+    {
+      "verb": "fire",
+      "text": "発射した"
+    },
+    {
+      "verb": "fling",
+      "text": "投げつけた"
+    },
+    {
+      "verb": "flip",
+      "text": "反転した"
+    },
+    {
+      "verb": "focus",
+      "text": "集中した"
+    },
+    {
+      "verb": "gain",
+      "text": "獲得した"
+    },
+    {
+      "verb": "give",
+      "text": "渡した"
+    },
+    {
+      "verb": "go",
+      "text": "行った"
+    },
+    {
+      "verb": "grab",
+      "text": "掴んだ"
+    },
+    {
+      "verb": "hand",
+      "text": "手渡した"
+    },
+    {
+      "verb": "have",
+      "text": "持った"
+    },
+    {
+      "verb": "hiss",
+      "text": "シューッと鳴った"
+    },
+    {
+      "verb": "hit",
+      "text": "命中させた"
+    },
+    {
+      "verb": "hook",
+      "text": "引っ掛けた"
+    },
+    {
+      "verb": "howl",
+      "text": "吠えた"
+    },
+    {
+      "verb": "impel",
+      "text": "突き動かした"
+    },
+    {
+      "verb": "implode",
+      "text": "内破した"
+    },
+    {
+      "verb": "juke",
+      "text": "回避した"
+    },
+    {
+      "verb": "lapse",
+      "text": "陥った"
+    },
+    {
+      "verb": "launch",
+      "text": "繰り出した"
+    },
+    {
+      "verb": "lie",
+      "text": "横になった"
+    },
+    {
+      "verb": "lock",
+      "text": "固定した"
+    },
+    {
+      "verb": "look",
+      "text": "見えた"
+    },
+    {
+      "verb": "loosen",
+      "text": "緩めた"
+    },
+    {
+      "verb": "lose",
+      "text": "失った"
+    },
+    {
+      "verb": "lunge",
+      "text": "突進した"
+    },
+    {
+      "verb": "make",
+      "text": "出した"
+    },
+    {
+      "verb": "melt",
+      "text": "溶けた"
+    },
+    {
+      "verb": "open",
+      "text": "開いた"
+    },
+    {
+      "verb": "overheat",
+      "text": "過熱した"
+    },
+    {
+      "verb": "parry",
+      "text": "受け流した"
+    },
+    {
+      "verb": "pass",
+      "text": "通り過ぎた"
+    },
+    {
+      "verb": "peer",
+      "text": "覗き込んだ"
+    },
+    {
+      "verb": "permanently drain",
+      "text": "永久に吸い取った"
+    },
+    {
+      "verb": "pick",
+      "text": "拾った"
+    },
+    {
+      "verb": "place",
+      "text": "置いた"
+    },
+    {
+      "verb": "plop",
+      "text": "ポトリと落ちた"
+    },
+    {
+      "verb": "pour",
+      "text": "注いだ"
+    },
+    {
+      "verb": "prick",
+      "text": "突き刺した"
+    },
+    {
+      "verb": "produce",
+      "text": "生み出した"
+    },
+    {
+      "verb": "raise",
+      "text": "持ち上げた"
+    },
+    {
+      "verb": "realize",
+      "text": "気づいた"
+    },
+    {
+      "verb": "recharge",
+      "text": "充電した"
+    },
+    {
+      "verb": "refract",
+      "text": "屈折させた"
+    },
+    {
+      "verb": "refuse",
+      "text": "拒否した"
+    },
+    {
+      "verb": "regenerate",
+      "text": "再生した"
+    },
+    {
+      "verb": "release",
+      "text": "放出した"
+    },
+    {
+      "verb": "remain",
+      "text": "とどまった"
+    },
+    {
+      "verb": "rise",
+      "text": "立ち上がった"
+    },
+    {
+      "verb": "roll",
+      "text": "転がった"
+    },
+    {
+      "verb": "run",
+      "text": "走った"
+    },
+    {
+      "verb": "rust",
+      "text": "錆びた"
+    },
+    {
+      "verb": "seem",
+      "text": "見えた"
+    },
+    {
+      "verb": "sense",
+      "text": "感知した"
+    },
+    {
+      "verb": "shake",
+      "text": "振り払った"
+    },
+    {
+      "verb": "shatter",
+      "text": "砕け散った"
+    },
+    {
+      "verb": "shift",
+      "text": "移動した"
+    },
+    {
+      "verb": "slam",
+      "text": "叩きつけた"
+    },
+    {
+      "verb": "sleep",
+      "text": "眠りについた"
+    },
+    {
+      "verb": "smash",
+      "text": "打ち破った"
+    },
+    {
+      "verb": "spew",
+      "text": "噴き出した"
+    },
+    {
+      "verb": "spin",
+      "text": "回転させた"
+    },
+    {
+      "verb": "spit",
+      "text": "吐き出した"
+    },
+    {
+      "verb": "stand",
+      "text": "立ち上がった"
+    },
+    {
+      "verb": "stare",
+      "text": "見つめた"
+    },
+    {
+      "verb": "start",
+      "text": "始めた"
+    },
+    {
+      "verb": "stir",
+      "text": "動き出した"
+    },
+    {
+      "verb": "stomp",
+      "text": "踏みつけた"
+    },
+    {
+      "verb": "stop",
+      "text": "やめた"
+    },
+    {
+      "verb": "strike",
+      "text": "攻撃した"
+    },
+    {
+      "verb": "submerge",
+      "text": "潜った"
+    },
+    {
+      "verb": "swim",
+      "text": "泳いだ"
+    },
+    {
+      "verb": "swipe",
+      "text": "なぎ払った"
+    },
+    {
+      "verb": "switch",
+      "text": "切り替えた"
+    },
+    {
+      "verb": "swoop",
+      "text": "急降下した"
+    },
+    {
+      "verb": "take",
+      "text": "取った"
+    },
+    {
+      "verb": "teach",
+      "text": "教えた"
+    },
+    {
+      "verb": "teleport",
+      "text": "テレポートした"
+    },
+    {
+      "verb": "tighten",
+      "text": "締めつけた"
+    },
+    {
+      "verb": "tinker",
+      "text": "修理した"
+    },
+    {
+      "verb": "toss",
+      "text": "放り投げた"
+    },
+    {
+      "verb": "touch",
+      "text": "触れた"
+    },
+    {
+      "verb": "try",
+      "text": "試みた"
+    },
+    {
+      "verb": "unequip",
+      "text": "装備を外した"
+    },
+    {
+      "verb": "vibrate",
+      "text": "振動した"
+    },
+    {
+      "verb": "wake",
+      "text": "目覚めた"
+    }
+  ],
+  "tier2": [
+    {
+      "verb": "absorb",
+      "extra": "light",
+      "text": "光を吸収した"
+    },
+    {
+      "verb": "are",
+      "extra": "back on the ambient broadcast power grid",
+      "text": "環境放送電力グリッドに復帰した"
+    },
+    {
+      "verb": "are",
+      "extra": "bleeding",
+      "text": "出血した"
+    },
+    {
+      "verb": "are",
+      "extra": "burning",
+      "text": "燃え始めた"
+    },
+    {
+      "verb": "are",
+      "extra": "confused",
+      "text": "混乱した"
+    },
+    {
+      "verb": "are",
+      "extra": "dazed",
+      "text": "よろめいた"
+    },
+    {
+      "verb": "are",
+      "extra": "destroyed",
+      "text": "破壊された"
+    },
+    {
+      "verb": "are",
+      "extra": "forced to the surface",
+      "text": "水面に押し出された"
+    },
+    {
+      "verb": "are",
+      "extra": "frozen",
+      "text": "凍りついた"
+    },
+    {
+      "verb": "are",
+      "extra": "hobbled",
+      "text": "足を痛めた"
+    },
+    {
+      "verb": "are",
+      "extra": "knocked prone",
+      "text": "倒れた"
+    },
+    {
+      "verb": "are",
+      "extra": "leaving the ambient broadcast power grid and transitioning to backup power",
+      "text": "環境放送電力グリッドから離脱し、予備電源に移行した"
+    },
+    {
+      "verb": "are",
+      "extra": "locked, and you don't have the key",
+      "text": "鍵がかかっているが、鍵を持っていない"
+    },
+    {
+      "verb": "are",
+      "extra": "no longer choking",
+      "text": "窒息から回復した"
+    },
+    {
+      "verb": "are",
+      "extra": "no longer crippled",
+      "text": "損傷から回復した"
+    },
+    {
+      "verb": "are",
+      "extra": "no longer ill",
+      "text": "病気が治った"
+    },
+    {
+      "verb": "are",
+      "extra": "no longer poisoned",
+      "text": "毒が消えた"
+    },
+    {
+      "verb": "are",
+      "extra": "overwhelmed with terror",
+      "text": "恐怖に圧倒された"
+    },
+    {
+      "verb": "are",
+      "extra": "paralyzed",
+      "text": "麻痺した"
+    },
+    {
+      "verb": "are",
+      "extra": "poisoned",
+      "text": "毒状態になった"
+    },
+    {
+      "verb": "are",
+      "extra": "reduced to dust",
+      "text": "塵と化した"
+    },
+    {
+      "verb": "are",
+      "extra": "reflection",
+      "text": "反射した"
+    },
+    {
+      "verb": "are",
+      "extra": "revealed",
+      "text": "姿を現した"
+    },
+    {
+      "verb": "are",
+      "extra": "stunned",
+      "text": "気絶した"
+    },
+    {
+      "verb": "are",
+      "extra": "suppressed",
+      "text": "抑制された"
+    },
+    {
+      "verb": "assume",
+      "extra": "a menacing pose",
+      "text": "威嚇の構えをとった"
+    },
+    {
+      "verb": "assume",
+      "extra": "full corporeal form again",
+      "text": "再び完全な肉体を取り戻した"
+    },
+    {
+      "verb": "attack",
+      "extra": "{0}",
+      "text": "{0}を攻撃した"
+    },
+    {
+      "verb": "become",
+      "extra": "confused",
+      "text": "混乱した"
+    },
+    {
+      "verb": "begin",
+      "extra": "healing",
+      "text": "回復を始めた"
+    },
+    {
+      "verb": "begin",
+      "extra": "meditating",
+      "text": "瞑想を始めた"
+    },
+    {
+      "verb": "begin",
+      "extra": "to flicker in and out of corporeality",
+      "text": "肉体が明滅し始めた"
+    },
+    {
+      "verb": "bite",
+      "extra": "{0}",
+      "text": "{0}に噛みついた"
+    },
+    {
+      "verb": "blink",
+      "extra": "away from the danger",
+      "text": "危険から瞬間移動した"
+    },
+    {
+      "verb": "break",
+      "extra": "free",
+      "text": "拘束を振りほどいた"
+    },
+    {
+      "verb": "burrow",
+      "extra": "into the ground",
+      "text": "地面に潜った"
+    },
+    {
+      "verb": "charge",
+      "extra": "!",
+      "text": "突撃した！"
+    },
+    {
+      "verb": "collapse",
+      "extra": "under the pressure of normality",
+      "text": "正常空間の圧力で崩壊した"
+    },
+    {
+      "verb": "come",
+      "extra": "and both explode",
+      "text": "互いにぶつかり爆発した"
+    },
+    {
+      "verb": "come",
+      "extra": "to a complete stop",
+      "text": "完全に停止した"
+    },
+    {
+      "verb": "conjure",
+      "extra": "a {{B|wall of force}}",
+      "text": "{{B|力の壁}}を生み出した"
+    },
+    {
+      "verb": "continue",
+      "extra": "being",
+      "text": "存在し続けた"
+    },
+    {
+      "verb": "cool",
+      "extra": "into a block of shale",
+      "text": "冷えて頁岩の塊になった"
+    },
+    {
+      "verb": "crumble",
+      "extra": "to dust",
+      "text": "塵になって崩れた"
+    },
+    {
+      "verb": "dash",
+      "extra": "through a tunnel in spacetime",
+      "text": "時空のトンネルを駆け抜けた"
+    },
+    {
+      "verb": "dig",
+      "extra": "a passage down",
+      "text": "下への通路を掘った"
+    },
+    {
+      "verb": "dig",
+      "extra": "a passage up",
+      "text": "上への通路を掘った"
+    },
+    {
+      "verb": "discharge",
+      "extra": "an electrical arc",
+      "text": "電弧を放った"
+    },
+    {
+      "verb": "drink",
+      "extra": "but don't seem to retain any of it",
+      "text": "飲んだが何も残らないようだ"
+    },
+    {
+      "verb": "drop",
+      "extra": "something",
+      "text": "何かを落とした"
+    },
+    {
+      "verb": "emerge",
+      "extra": "from the ground",
+      "text": "地面から現れた"
+    },
+    {
+      "verb": "emit",
+      "extra": "!",
+      "text": "放出した！"
+    },
+    {
+      "verb": "emit",
+      "extra": "a {{fiery|plume of flame}}",
+      "text": "{{fiery|炎の柱}}を放った"
+    },
+    {
+      "verb": "emit",
+      "extra": "an electromagnetic pulse",
+      "text": "電磁パルスを放った"
+    },
+    {
+      "verb": "enter",
+      "extra": "a berserk fury",
+      "text": "狂暴な激怒状態に入った"
+    },
+    {
+      "verb": "enter",
+      "extra": "a trance",
+      "text": "トランス状態に入った"
+    },
+    {
+      "verb": "erupt",
+      "extra": "into flames",
+      "text": "炎に包まれた"
+    },
+    {
+      "verb": "exit",
+      "extra": "sleep mode",
+      "text": "スリープモードを解除した"
+    },
+    {
+      "verb": "exit",
+      "extra": "sleep mode by emergency interrupt",
+      "text": "緊急割り込みでスリープモードを解除した"
+    },
+    {
+      "verb": "explode",
+      "extra": "with a flash",
+      "text": "閃光とともに爆発した"
+    },
+    {
+      "verb": "extrude",
+      "extra": "!",
+      "text": "押し出した！"
+    },
+    {
+      "verb": "fall",
+      "extra": "asleep",
+      "text": "眠りに落ちた"
+    },
+    {
+      "verb": "feel",
+      "extra": "a bit glitchy",
+      "text": "少しおかしくなった"
+    },
+    {
+      "verb": "feel",
+      "extra": "less stiff",
+      "text": "体の硬さがほぐれた"
+    },
+    {
+      "verb": "filch",
+      "extra": "!",
+      "text": "かすめ取った！"
+    },
+    {
+      "verb": "flip",
+      "extra": "polarity",
+      "text": "極性を反転させた"
+    },
+    {
+      "verb": "gain",
+      "extra": "a level",
+      "text": "レベルが上がった"
+    },
+    {
+      "verb": "give",
+      "extra": "a treat",
+      "text": "おやつを渡した"
+    },
+    {
+      "verb": "go",
+      "extra": "into another cardiac arrest",
+      "text": "再び心停止に陥った"
+    },
+    {
+      "verb": "go",
+      "extra": "into cardiac arrest",
+      "text": "心停止に陥った"
+    },
+    {
+      "verb": "have",
+      "extra": "been poisoned",
+      "text": "毒に侵された"
+    },
+    {
+      "verb": "hook",
+      "extra": "!",
+      "text": "引っ掛けた！"
+    },
+    {
+      "verb": "impel",
+      "extra": "plants to burgeon from the ground",
+      "text": "地面から植物を芽吹かせた"
+    },
+    {
+      "verb": "lapse",
+      "extra": "back into hibernation",
+      "text": "再び冬眠に入った"
+    },
+    {
+      "verb": "launch",
+      "extra": "into a flurry of attacks",
+      "text": "怒涛の連撃を繰り出した"
+    },
+    {
+      "verb": "lie",
+      "extra": "down",
+      "text": "横になった"
+    },
+    {
+      "verb": "lock",
+      "extra": "in place",
+      "text": "固定された"
+    },
+    {
+      "verb": "look",
+      "extra": "less stricken",
+      "text": "苦痛がやわらいだ"
+    },
+    {
+      "verb": "make",
+      "extra": "no sound",
+      "text": "音を立てなかった"
+    },
+    {
+      "verb": "peer",
+      "extra": "into another space",
+      "text": "別の空間を覗き込んだ"
+    },
+    {
+      "verb": "permanently drain",
+      "extra": "!",
+      "text": "永久に吸い取った！"
+    },
+    {
+      "verb": "produce",
+      "extra": "in a flurry of {{C|flashing chrome}} and {{cloning|spurting liquid}}",
+      "text": "{{C|煌めくクローム}}と{{cloning|噴き出す液体}}の中から生み出された"
+    },
+    {
+      "verb": "raise",
+      "extra": "!",
+      "text": "持ち上げた！"
+    },
+    {
+      "verb": "realize",
+      "extra": "one of your wounds is an illusion",
+      "text": "傷のひとつが幻であることに気づいた"
+    },
+    {
+      "verb": "realize",
+      "extra": "one of your wounds is an illusion, and the pain from it suddenly stops",
+      "text": "傷のひとつが幻であることに気づき、その痛みが突然消えた"
+    },
+    {
+      "verb": "realize",
+      "extra": "your wound is an illusion",
+      "text": "傷が幻であることに気づいた"
+    },
+    {
+      "verb": "realize",
+      "extra": "your wound is an illusion, and the pain suddenly stops",
+      "text": "傷が幻であることに気づき、痛みが突然消えた"
+    },
+    {
+      "verb": "remain",
+      "extra": "stunned",
+      "text": "気絶したままだ"
+    },
+    {
+      "verb": "roll",
+      "extra": "on the ground",
+      "text": "地面を転がった"
+    },
+    {
+      "verb": "seem",
+      "extra": "to have absorbed some of the electrical charge",
+      "text": "電荷の一部を吸収したようだ"
+    },
+    {
+      "verb": "shake",
+      "extra": "off the stun",
+      "text": "気絶を振り払った"
+    },
+    {
+      "verb": "shake",
+      "extra": "the spores off",
+      "text": "胞子を振り払った"
+    },
+    {
+      "verb": "shift",
+      "extra": "spacetime in the local region",
+      "text": "局所領域の時空を歪めた"
+    },
+    {
+      "verb": "smash",
+      "extra": "through the floor with a block of fulcrete",
+      "text": "フルクリートの塊で床を打ち破った"
+    },
+    {
+      "verb": "spew",
+      "extra": "a pool of stinking liquid",
+      "text": "悪臭のする液溜まりを噴き出した"
+    },
+    {
+      "verb": "spit",
+      "extra": "a pool of slime",
+      "text": "粘液の溜まりを吐き出した"
+    },
+    {
+      "verb": "spit",
+      "extra": "a stream of corrosive acid",
+      "text": "腐食性の酸を吐き出した"
+    },
+    {
+      "verb": "stand",
+      "extra": "up",
+      "text": "立ち上がった"
+    },
+    {
+      "verb": "stare",
+      "extra": "at {0} menacingly",
+      "text": "{0}を睨みつけた"
+    },
+    {
+      "verb": "stare",
+      "extra": "menacingly",
+      "text": "威嚇するように睨みつけた"
+    },
+    {
+      "verb": "start",
+      "extra": "crackling",
+      "text": "パチパチと音を立て始めた"
+    },
+    {
+      "verb": "start",
+      "extra": "scintillating in {{rainbow|prismatic hues}}",
+      "text": "{{rainbow|虹色の輝き}}を放ち始めた"
+    },
+    {
+      "verb": "start",
+      "extra": "to glow",
+      "text": "光り始めた"
+    },
+    {
+      "verb": "start",
+      "extra": "to shine over the full spectrum",
+      "text": "全スペクトルで輝き始めた"
+    },
+    {
+      "verb": "stomp",
+      "extra": "with bestial fury",
+      "text": "獣のごとき怒りで踏みつけた"
+    },
+    {
+      "verb": "stop",
+      "extra": "scintillating",
+      "text": "輝きが止まった"
+    },
+    {
+      "verb": "swim",
+      "extra": "before your eyes",
+      "text": "目の前がぐらついた"
+    },
+    {
+      "verb": "swoop",
+      "extra": "down to attack",
+      "text": "急降下して攻撃した"
+    },
+    {
+      "verb": "take",
+      "extra": "a sip of fresh water",
+      "text": "淡水を一口飲んだ"
+    },
+    {
+      "verb": "teach",
+      "extra": "!",
+      "text": "教えた！"
+    },
+    {
+      "verb": "teleport",
+      "extra": "!",
+      "text": "テレポートした！"
+    },
+    {
+      "verb": "try",
+      "extra": "but fails to push through the normality lattice in the local region of spacetime",
+      "text": "試みたが、局所時空の正常化格子を突破できなかった"
+    },
+    {
+      "verb": "wake",
+      "extra": "up",
+      "text": "目を覚ました"
+    },
+    {
+      "verb": "wake",
+      "extra": "up in a daze",
+      "text": "もうろうとして目を覚ました"
+    }
+  ],
+  "tier3": [
+    {
+      "verb": "gain",
+      "extra": "{{rules|{0}}} XP",
+      "text": "{{rules|{0}}}XPを獲得した"
+    },
+    {
+      "verb": "hit",
+      "extra": "{0} for {1} damage",
+      "text": "{0}に{1}ダメージを与えた"
+    },
+    {
+      "verb": "strike",
+      "extra": "{0} with {1} for {2} damage",
+      "text": "{1}で{0}に{2}ダメージを与えた"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "id": "templates-variable",
+    "lang": "ja",
+    "version": "0.1.0",
+    "description": "Translations for VariableTemplate patterns using =variable= syntax (StartReplace)"
+  },
+  "rules": {
+    "protectColorTags": true,
+    "protectVariableMarkers": true
+  },
+  "entries": [
+    {
+      "key": "=subject.T= =verb:bask= in the sunlight and =verb:absorb= the nourishing rays.",
+      "context": "XRL.World.Parts.Mutation.PhotosyntheticSkin",
+      "text": "=subject.T=は日光の中で日光浴し、滋養に満ちた光を吸収した。"
+    },
+    {
+      "key": "This shrine depicts a significant event from the life of the ancient =sultan.term= =subject.name=:\n\n",
+      "context": "XRL.World.Parts.Shrine",
+      "text": "この祠は古の=sultan.term= =subject.name=の生涯における重大な出来事を描いている:\n\n"
+    },
+    {
+      "key": "__vt_dynamic_passthrough",
+      "context": "meta",
+      "text": "Dynamic VariableTemplate sites are translated at their text source, not at StartReplace call site",
+      "note": "Sites: HistoryAPI, JournalAPI, KithAndKin*, WaterRitualRandomMutation, CreatureRegionSpice, BlowAwayGas, DesalinationPellet, EatenAccomplishment, Interactable, InteriorBlockEntrance, Preacher, TakenAccomplishment, RuinedAccomplishment, SitOnChair, ScriptCallToArms, Leveler, AchillesHeel, ActivePartMalfunctioning, CatacombWall, CryoProjectile, EMP, ElectricalDischarge, EmergencyTeleporter, Engulf, FlammableProtocol, GasGrenade, Hologram, PrizeItem, SultanShrine, Teleporter, WaterCollector, SpindleLauncher"
+    }
+  ]
+}

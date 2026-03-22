@@ -657,7 +657,7 @@ internal static class MessageFrameTranslator
             return Path.GetFullPath(dictionaryPathOverride);
         }
 
-        return LocalizationAssetResolver.GetLocalizationPath("Dictionaries/verbs.ja.json");
+        return LocalizationAssetResolver.GetLocalizationPath("MessageFrames/verbs.ja.json");
     }
 
     private static string BuildPairKey(string verb, string extra)

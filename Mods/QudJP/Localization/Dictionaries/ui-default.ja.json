@@ -898,6 +898,61 @@
       "key": "Until Jeweled Dusk",
       "context": "QudMenuItem.option:1",
       "text": "宝玉の夕暮れまで待つ"
+    },
+    {
+      "key": "A trio of tongues vegetate from =subject.t's= =bodypart:Face=!",
+      "context": "XRL.World.Effects.CookingDomainTongue_ThreeTongues",
+      "text": "3本の舌が=subject.t=の=bodypart:Face=から生えてきた！"
+    },
+    {
+      "key": "Your shot goes wild!",
+      "context": "XRL.World.Parts.MissileWeapon",
+      "text": "射撃が大きく逸れた！"
+    },
+    {
+      "key": "The zealot mumbles inaudibly, encased in ice.",
+      "context": "XRL.World.Parts.SixDayZealot",
+      "text": "氷に閉じ込められた狂信者が、聞き取れないほどに呟いた。"
+    },
+    {
+      "key": "Details will be revealed once unlocked.",
+      "context": "Qud.UI.AchievementViewRow",
+      "text": "解除後に詳細が表示されます。"
+    },
+    {
+      "key": "{{C|[Morphotype]}}",
+      "context": "Qud.UI.CharacterStatusScreen",
+      "text": "{{C|[モーフォタイプ]}}"
+    },
+    {
+      "key": "{{W|ACHIEVEMENTS}}",
+      "context": "Qud.UI.HighScoresScreen",
+      "text": "{{W|実績}}"
+    },
+    {
+      "key": "{{W|ENDED RUNS}}",
+      "context": "Qud.UI.HighScoresScreen",
+      "text": "{{W|終了した冒険}}"
+    },
+    {
+      "key": "{{K|[none]}}",
+      "context": "Qud.UI.SkillsAndPowersStatusScreen",
+      "text": "{{K|[なし]}}"
+    },
+    {
+      "key": "{{K|You don't have any schematics.}}",
+      "context": "Qud.UI.TinkeringLine",
+      "text": "{{K|設計図を持っていない。}}"
+    },
+    {
+      "key": "    <no applicable items>",
+      "context": "Qud.UI.TinkeringLine",
+      "text": "    <該当アイテムなし>"
+    },
+    {
+      "key": "{{K|<search>}}",
+      "context": "XRL.UI.Framework.FrameworkSearchInput",
+      "text": "{{K|<検索>}}"
     }
   ]
 }
