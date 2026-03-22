@@ -238,18 +238,66 @@ that need runtime evidence.
 Decision: defer runtime infrastructure until Phase 1 is substantially complete and
 the actual unresolved count is known.
 
-## Existing Infrastructure: Keep As-Is
+## Existing Infrastructure: Triage
 
-| Component | Role | Change Needed |
-|-----------|------|---------------|
-| `ColorAwareTranslationComposer` | Strip/Restore color markup | None |
-| `MessagePatternTranslator` | Regex message log routes | Extend with new patterns from inventory |
-| `GetDisplayNameRouteTranslator` | DisplayName suffix decomposition | None |
-| `UITextSkinTemplateTranslator` | Template translation at sink | None |
-| `StatusLineTranslationHelpers` | Status line translation | None |
-| `Translator` + 38 dictionaries | Leaf lookup | Add entries from inventory |
-| 50 committed patches on main | Various screen/effect/description translations | Register in inventory as `translated` |
-| `UITextSkinTranslationPatch` | Sink-level translation | Keep for now; Phase 2 may convert to audit |
+The existing 50 patches were written without full decompilation — agents had limited
+visibility into upstream text producers, resulting in primitive pattern matching and
+incomplete classification. With full source now available, most translation logic
+patches should be rewritten to leverage the scanner's classification data.
+
+**Exception**: Inventory/tooltip rendering patches (fonts, layout, display formatting)
+are UI-presentation concerns unaffected by decompilation depth. Keep as-is.
+
+### Tier 1: Keep As-Is (rendering/display)
+
+| Component | Role | Rationale |
+|-----------|------|-----------|
+| `StatusScreenFontPatch` (multiple) | CJK font injection per screen | Pure rendering, no translation logic |
+| `PopupFontPatch` | Popup font consistency | Pure rendering |
+| `TextMeshProTextTranslationPatch` | TextMeshPro rendering | Pure rendering |
+| `UITextFieldTranslationPatch` | Input field font | Pure rendering |
+| `InventoryLocalizationPatch` | Inventory display name | Rendering + GetDisplayNameRouteTranslator delegation |
+| `InventoryLineTranslationPatch` | Inventory row formatting | Display formatting |
+| `InventoryScreenTranslationPatch` | Inventory screen layout | Display formatting |
+| `EquipmentLineTranslationPatch` | Equipment row formatting | Display formatting |
+| `EquipmentScreenTranslationPatch` | Equipment screen layout | Display formatting |
+| `BaseLineWithTooltipTranslationPatch` | Tooltip rendering | Display formatting |
+| `SelectableTextMenuItemTranslationPatch` | Menu item rendering | Display formatting |
+| `ColorAwareTranslationComposer` | Strip/Restore color markup | Utility, reusable as-is |
+
+### Tier 2: Rewrite with Source-First Knowledge (translation logic)
+
+| Component | Current Approach | Source-First Improvement |
+|-----------|-----------------|------------------------|
+| `UITextSkinTranslationPatch` | Stack inspection + context guessing | Scanner classifies every SetText site upfront; route is known before runtime |
+| `MessagePatternTranslator` | 30+ hand-written regex patterns | Scanner extracts all AddPlayerMessage patterns; regex generated from inventory |
+| `PopupTranslationPatch` | 3 methods (ShowBlock, ShowOptionList, ShowConversation) | Expand to all Popup variants; classification from inventory |
+| `MessageLogPatch` | Delegates to MessagePatternTranslator | Rewrite with Messaging-class-level postfix patch for SVO→SOV |
+| `GetDisplayNamePatch` / `GetDisplayNameRouteTranslator` | Suffix decomposition heuristics | Source-traced name composition; inventory knows exact Builder patterns |
+| `EffectDescriptionPatch` / `EffectDetailsPatch` | Override hook + dictionary | Scanner identifies all 347 GetDescription overrides; generates complete dictionary |
+| `MutationDescriptionPatch` / `MutationLevelTextPatch` | Override hook + dictionary | Scanner identifies all 127+132 overrides; generates complete dictionary |
+| `SkillDescriptionPatch` | Override hook + dictionary | Scanner identifies all skill descriptions; generates complete dictionary |
+| `CharacterStatusScreenTranslationPatch` | Manual template extraction | Scanner classifies all Template sites in CharacterStatusScreen |
+| `SkillsAndPowersStatusScreenTranslationPatch` | Manual template extraction | Scanner classifies all sites in SkillsAndPowersStatusScreen |
+| `FactionsStatusScreenTranslationPatch` | Manual template extraction | Scanner classifies all sites in FactionsStatusScreen |
+| `GrammarPatch` family (8 patches) | Individual method patches | Keep structure, but enhance with source-informed rules |
+| `MainMenuTranslationPatch` | Hard-coded string mapping | Scanner identifies all Leaf sites; dictionary-driven |
+| `OptionsScreenTranslationPatch` | Hard-coded string mapping | Scanner identifies all Leaf sites; dictionary-driven |
+| `ConversationDisplayTextPatch` / `ConversationTextDynamicPatch` | Pattern matching | Scanner classifies conversation text composition |
+
+### Migration Strategy
+
+Tier 2 rewrites follow the scanner output priority (P0→P9):
+
+1. Scanner classifies all sites in the relevant domain
+2. Agent compares scanner output vs existing patch implementation
+3. New implementation replaces the patch, covering ALL sites (not just the ones the old patch knew about)
+4. Old patch is deleted; inventory marks all sites as `translated`
+5. Tests verify: new implementation covers everything the old patch covered + new sites
+
+This means Tier 2 patches are NOT immediately obsolete — they continue to function
+until the scanner-driven replacement is ready and tested for that domain. The transition
+is per-domain, not a big-bang rewrite.
 
 ## Scanner Implementation
 
@@ -257,21 +305,48 @@ the actual unresolved count is known.
 
 - **Python 3.12+** (consistent with existing `scripts/` tooling)
 - **ast-grep** for structural C# pattern matching (installed, v0.42.0)
-- **LLM calls** for steps 5-6 classification (decompiled source reading)
-- Output: JSON (candidate-inventory.json)
+- **Claude Code subagents** for steps 5-6 classification (reads decompiled source in-session, no API cost)
+- Output: JSON (`candidate-inventory.json` — committed to repo; intermediate files `.gitignore`d)
+
+### Pipeline Phases (Approach C: Hybrid)
+
+```
+Phase 1a — ast-grep batch scan (mechanical, seconds)
+  5 sink patterns × ~/Dev/coq-decompiled/ → .scanner-cache/raw_hits.jsonl
+  ~1866 raw hits extracted with file, line, matched code
+
+Phase 1b — Python rule classifier (mechanical, seconds)
+  raw_hits.jsonl → rule classifier → .scanner-cache/inventory_draft.json
+  Steps 1-4: Leaf/Template/Builder/MessageFrame at high confidence (~78%)
+
+Phase 1c — Claude Code subagent classifier (targeted, minutes)
+  Filter: confidence=medium or low from inventory_draft (~300-400 sites)
+  Subagent reads relevant decompiled source → reclassifies
+  Steps 5-6: variable tracing, call chain analysis (~14% additional)
+
+Phase 1d — Cross-reference (mechanical, seconds)
+  Match against existing patches (src/Patches/*.cs),
+  dictionaries (Localization/Dictionaries/*.ja.json),
+  and XML translations (Localization/*.jp.xml)
+  → Mark matched sites as `translated`
+
+Output: candidate-inventory.json (committed to docs/)
+```
+
+Intermediate files (`.scanner-cache/`) are `.gitignore`d — each contributor regenerates locally.
 
 ### Scanner Components
 
 ```
 scripts/
-  scan_text_producers.py       # Main scanner entry point
+  scan_text_producers.py       # Main entry: orchestrates phases 1a-1d
   scanner/
     __init__.py
-    ast_grep_patterns.py       # ast-grep pattern definitions for 5 sink families
-    classifier.py              # Rule-based classification (steps 1-4)
-    llm_classifier.py          # LLM-assisted classification (steps 5-6)
-    inventory.py               # Inventory data model and JSON I/O
-    cross_reference.py         # Cross-ref with existing patches/dictionaries
+    ast_grep_runner.py         # Phase 1a: ast-grep batch execution per sink family
+    rule_classifier.py         # Phase 1b: mechanical classification (steps 1-4)
+    llm_classifier.py          # Phase 1c: subagent dispatch for medium/low sites
+    cross_reference.py         # Phase 1d: match existing patches/dictionaries
+    inventory.py               # Inventory data model, JSON I/O, diffing
 ```
 
 ### Cross-Reference with Existing Work
@@ -283,21 +358,129 @@ Cross-reference sources:
 2. **Existing dictionaries** (`Localization/Dictionaries/*.ja.json`) — keys → mark matching Leaf sites
 3. **Existing XML translations** (`Localization/*.jp.xml`) — IDs → mark matching blueprint text
 
+## Implementation Policy: TDD
+
+All scanner components and translation engine code MUST follow Test-Driven Development:
+
+1. **Write a failing test first** — before implementing any scanner phase or translator
+2. **Implement the minimum code** to make the test pass
+3. **Refactor** — clean up while keeping tests green
+
+### Test boundaries per component
+
+| Component | Test Type | Example |
+|-----------|-----------|---------|
+| `ast_grep_runner.py` | L1 unit | Given a known .cs snippet, assert correct raw hits extraction |
+| `rule_classifier.py` | L1 unit | Given a raw hit, assert correct classification (Leaf/Template/etc.) |
+| `llm_classifier.py` | L1 unit (mocked) | Given a medium-confidence site, assert correct subagent prompt |
+| `cross_reference.py` | L1 unit | Given existing patch list + inventory, assert correct `translated` marking |
+| `inventory.py` | L1 unit | JSON round-trip, dedup, diff operations |
+| `MessageFrameTranslator` | L1 unit | Given assembled English DidX output, assert correct SOV Japanese |
+| Scanner integration | L2 | Run full pipeline on test fixture directory, assert inventory schema |
+
+### Rationale
+
+The scanner produces a JSON artifact that all downstream agents depend on. Incorrect
+classification cascades into wrong translation artifacts. TDD ensures each classification
+step is verified against known inputs before the pipeline is assembled.
+
 ## Success Criteria
 
-- [ ] candidate-inventory.json contains ALL unique sink call sites (~1677 deduped)
+- [ ] candidate-inventory.json contains ALL unique sink call sites (deduped)
 - [ ] Auto-classification (steps 1-4) covers ≥75% with high confidence
 - [ ] LLM-assisted classification (steps 5-6) brings total to ≥90%
 - [ ] Unresolved sites are <10% of total
 - [ ] AGENTS.md references candidate-inventory.json as the workflow gate
 - [ ] Agent can consume inventory and generate translation artifacts without manual guidance
 - [ ] Existing translations (50 patches + 38 dictionaries) are cross-referenced and marked `translated`
+- [ ] All scanner components have passing tests before integration
 
-## Open Questions
+## MessageFrame Translation: SVO→SOV Rewrite Engine
 
-1. **LLM classifier cost**: Steps 5-6 may require reading 1000+ files. Should the LLM
-   classifier run as a batch job or on-demand per-file?
-2. **Inventory freshness**: When game updates, how to detect which sites changed?
-   Diff the decompiled source against previous version.
-3. **MessageFrame priority**: 548 call sites is large. Should we build SVO→SOV rewrite
-   infrastructure first, or handle each one as a regex pattern in MessagePatternTranslator?
+548 DidX/DidXToY call sites make per-pattern regex infeasible. Instead, build a
+generalized SVO→SOV rewrite engine.
+
+### Problem
+
+English: `The bear blocks the attack with its shield.` (Subject-Verb-Object)
+Japanese: `クマは盾で攻撃を防いだ。` (Subject-Object-Verb)
+
+DidX/DidXToY frames produce English word-order messages at runtime. Each call site
+uses a verb string + optional object + optional preposition phrase. The combinations
+are too numerous for individual regex patterns.
+
+### Approach
+
+Build a `MessageFrameTranslator` that:
+
+1. **Parses** DidX/DidXToY output into semantic slots: `{subject, verb, object, instrument, extra}`
+2. **Looks up** verb → Japanese verb mapping (dictionary-driven, ~100-150 unique verbs)
+3. **Recomposes** in SOV order with Japanese particles: `{subject}は{instrument}で{object}を{verb_ja}`
+
+### Inventory Integration
+
+The scanner classifies all 548 MessageFrame sites. The inventory records the verb
+string for each site, enabling bulk extraction of the verb dictionary:
+
+```json
+{
+  "id": "XRL.World.Parts.Combat::HandleEvent::L1015",
+  "type": "MessageFrame",
+  "verb": "block",
+  "frame": "DidX",
+  "has_object": true,
+  "has_with_phrase": true
+}
+```
+
+### Priority
+
+P6 in the translation order. Implementation depends on:
+- Inventory completion (know all 548 sites)
+- Verb dictionary extraction (automated from inventory)
+- SOV recomposition logic (the core engine)
+
+## Freshness Management: Decompile Diff
+
+When the game updates (e.g., 2.0.4 → 2.0.5):
+
+### Strategy
+
+```
+1. Decompile new Assembly-CSharp.dll → ~/Dev/coq-decompiled-new/
+2. diff -rq ~/Dev/coq-decompiled/ ~/Dev/coq-decompiled-new/ → changed_files.txt
+3. Re-run scanner phases 1a-1b on changed files only
+4. Diff old vs new inventory → report:
+   - New sites (added in update)
+   - Removed sites (deleted in update)
+   - Modified sites (same location, different pattern)
+   - Broken translations (translated site changed upstream)
+5. Human reviews broken translations, agents handle new sites
+```
+
+### Tooling
+
+Add `--diff` flag to `scan_text_producers.py`:
+
+```bash
+# Full scan (initial or rebuild)
+python scripts/scan_text_producers.py
+
+# Incremental scan after game update
+python scripts/scan_text_producers.py --diff ~/Dev/coq-decompiled-new/
+```
+
+### Current Status
+
+Game version is fixed at `2.0.4`. This strategy is designed but not implemented
+until an update ships. The scanner should be built diff-aware from the start so
+the `--diff` flag is a filter, not a separate code path.
+
+## Resolved Design Decisions
+
+| Question | Decision | Rationale |
+|----------|----------|-----------|
+| LLM classifier execution model | Claude Code subagents (in-session) | Zero API cost, leverages existing tooling, ~300-400 sites only |
+| Intermediate file management | `.gitignore`d, only `candidate-inventory.json` committed | Reproducible locally, review-friendly final output |
+| MessageFrame strategy | SVO→SOV rewrite engine | 548 sites too many for individual regex; generalized engine scales |
+| Inventory freshness | Decompile diff | Automated detection of changed sites on game update |
