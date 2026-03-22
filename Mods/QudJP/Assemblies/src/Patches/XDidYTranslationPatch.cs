@@ -935,12 +935,10 @@ public static class XDidYTranslationPatch
 
     private static string TranslateDirectionPhrase(string direction)
     {
-        if (Translator.TryGetTranslation(direction, out var translated)
-            && !string.Equals(translated, direction, StringComparison.Ordinal))
-        {
-            return translated;
-        }
-
+        // Always return noun-stem form ("北側") — NOT adverbial ("北に").
+        // Do NOT use Translator.TryGetTranslation here because global dictionaries
+        // may return adverbial forms that break both prepend ("北にの熊") and
+        // late-append ("…、北にに。") composition.
         return direction switch
         {
             "to the north" => "北側",
@@ -951,6 +949,7 @@ public static class XDidYTranslationPatch
             "to the northwest" => "北西側",
             "to the southeast" => "南東側",
             "to the southwest" => "南西側",
+            "nearby" => "近く",
             _ => direction,
         };
     }
