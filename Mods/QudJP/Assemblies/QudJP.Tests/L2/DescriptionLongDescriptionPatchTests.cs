@@ -98,6 +98,63 @@ public sealed class DescriptionLongDescriptionPatchTests
         });
     }
 
+    [Test]
+    public void Postfix_KeepsStatAbbreviationsUntranslated_WhenPatched()
+    {
+        WriteDictionary(("STR", "筋力"), ("+1 STR", "+1 筋力"));
+
+        RunWithDescriptionPatch(() =>
+        {
+            var abbreviationTarget = new DummyDescriptionTarget("STR");
+            var abbreviationBuilder = new StringBuilder();
+            abbreviationTarget.GetLongDescription(abbreviationBuilder);
+
+            var signedTarget = new DummyDescriptionTarget("+1 STR");
+            var signedBuilder = new StringBuilder();
+            signedTarget.GetLongDescription(signedBuilder);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(abbreviationBuilder.ToString(), Is.EqualTo("STR"));
+                Assert.That(signedBuilder.ToString(), Is.EqualTo("+1 STR"));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesCompareStatusLines_WhenPatched()
+    {
+        WriteDictionary(
+            ("Strength", "筋力"),
+            ("Bonus Cap:", "ボーナス上限:"),
+            ("Weapon Class:", "武器カテゴリ:"),
+            ("Long Blades (increased penetration on critical hit)", "長剣（クリティカル時に貫通力上昇）"),
+            ("no limit", "なし"));
+
+        RunWithDescriptionPatch(() =>
+        {
+            var capTarget = new DummyDescriptionTarget("Strength Bonus Cap: no limit");
+            var capBuilder = new StringBuilder();
+            capTarget.GetLongDescription(capBuilder);
+
+            var egoCapTarget = new DummyDescriptionTarget("Ego Bonus Cap: 2");
+            var egoCapBuilder = new StringBuilder();
+            egoCapTarget.GetLongDescription(egoCapBuilder);
+
+            var weaponClassTarget =
+                new DummyDescriptionTarget("Weapon Class: Long Blades (increased penetration on critical hit)");
+            var weaponClassBuilder = new StringBuilder();
+            weaponClassTarget.GetLongDescription(weaponClassBuilder);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(capBuilder.ToString(), Is.EqualTo("筋力ボーナス上限: なし"));
+                Assert.That(egoCapBuilder.ToString(), Is.EqualTo("Ego ボーナス上限: 2"));
+                Assert.That(weaponClassBuilder.ToString(), Is.EqualTo("武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
+            });
+        });
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

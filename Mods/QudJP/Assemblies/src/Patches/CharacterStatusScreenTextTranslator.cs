@@ -7,6 +7,8 @@ namespace QudJP.Patches;
 
 internal static class CharacterStatusScreenTextTranslator
 {
+    private static readonly Regex ComparisonLabelOpenerSuffixPattern =
+        new Regex("\\{\\{[^|]+\\|$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex AttributePointsPattern =
         new Regex("^Attribute Points: (?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex MutationPointsPattern =
@@ -59,6 +61,21 @@ internal static class CharacterStatusScreenTextTranslator
             return true;
         }
 
+        if (TryTranslateCompactStatusLine(source, route, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateCompareStatusLine(source, route, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateActiveEffectsLine(source, route, out translated))
+        {
+            return true;
+        }
+
         if (TryTranslateExactLookup(source, route, out translated))
         {
             return true;
@@ -86,6 +103,26 @@ internal static class CharacterStatusScreenTextTranslator
 
         translated = source;
         return false;
+    }
+
+    private static bool TryTranslateCompactStatusLine(string source, string route, out string translated)
+    {
+        if (StatusLineTranslationHelpers.TryTranslateLevelExpLine(source, route, "CharacterStatus.CompactLevelExp", out translated))
+        {
+            return true;
+        }
+
+        return StatusLineTranslationHelpers.TryTranslateHpLine(source, route, "CharacterStatus.CompactHp", out translated);
+    }
+
+    private static bool TryTranslateCompareStatusLine(string source, string route, out string translated)
+    {
+        return StatusLineTranslationHelpers.TryTranslateCompareStatusLine(source, route, "CharacterStatus.CompareStatus", out translated);
+    }
+
+    private static bool TryTranslateActiveEffectsLine(string source, string route, out string translated)
+    {
+        return StatusLineTranslationHelpers.TryTranslateActiveEffectsLine(source, route, "CharacterStatus.ActiveEffects", out translated);
     }
 
     private static bool TryTranslatePointLabel(string source, string route, out string translated)
@@ -129,12 +166,8 @@ internal static class CharacterStatusScreenTextTranslator
         }
 
         var levelLabel = Translator.Translate("LVL");
-        var hpLabel = Translator.Translate("HP");
-        var xpLabel = Translator.Translate("XP");
         var weightLabel = Translator.Translate("Weight");
         if (string.Equals(levelLabel, "LVL", StringComparison.Ordinal)
-            || string.Equals(hpLabel, "HP", StringComparison.Ordinal)
-            || string.Equals(xpLabel, "XP", StringComparison.Ordinal)
             || string.Equals(weightLabel, "Weight", StringComparison.Ordinal))
         {
             translated = source;
@@ -146,13 +179,13 @@ internal static class CharacterStatusScreenTextTranslator
             ": ",
             match.Groups["level"].Value,
             " ¯ ",
-            hpLabel,
+            "HP",
             ": ",
             match.Groups["hpCurrent"].Value,
             "/",
             match.Groups["hpMax"].Value,
             " ¯ ",
-            xpLabel,
+            "XP",
             ": ",
             match.Groups["xpCurrent"].Value,
             "/",
@@ -393,23 +426,33 @@ internal static class CharacterStatusScreenTextTranslator
         string? nextRank,
         out string translated)
     {
-        var thisRankLabel = Translator.Translate("This rank");
-        var nextRankLabel = Translator.Translate("Next rank");
-        if ((string.IsNullOrEmpty(currentRank) && string.IsNullOrEmpty(nextRank))
-            || string.Equals(thisRankLabel, "This rank", StringComparison.Ordinal)
-            || string.Equals(nextRankLabel, "Next rank", StringComparison.Ordinal))
+#pragma warning disable CA2249
+        var hasCurrentRankSection = source.IndexOf("This rank", StringComparison.Ordinal) >= 0;
+        var hasNextRankSection = source.IndexOf("Next rank", StringComparison.Ordinal) >= 0;
+#pragma warning restore CA2249
+        var hasDescriptionSection = RequiresComparisonDescription(source, hasCurrentRankSection, hasNextRankSection);
+        var thisRankLabel = hasCurrentRankSection ? Translator.Translate("This rank") : null;
+        var nextRankLabel = hasNextRankSection ? Translator.Translate("Next rank") : null;
+        if ((!hasCurrentRankSection && !hasNextRankSection)
+            || (hasDescriptionSection && string.IsNullOrEmpty(description))
+            || (hasCurrentRankSection
+                && (string.IsNullOrEmpty(currentRank)
+                    || string.Equals(thisRankLabel, "This rank", StringComparison.Ordinal)))
+            || (hasNextRankSection
+                && (string.IsNullOrEmpty(nextRank)
+                    || string.Equals(nextRankLabel, "Next rank", StringComparison.Ordinal))))
         {
             translated = source;
             return false;
         }
 
         var builder = new StringBuilder();
-        if (!string.IsNullOrEmpty(description))
+        if (hasDescriptionSection)
         {
             builder.Append(description);
         }
 
-        if (!string.IsNullOrEmpty(currentRank))
+        if (hasCurrentRankSection)
         {
             if (builder.Length > 0)
             {
@@ -422,7 +465,7 @@ internal static class CharacterStatusScreenTextTranslator
             builder.Append(currentRank);
         }
 
-        if (!string.IsNullOrEmpty(nextRank))
+        if (hasNextRankSection)
         {
             if (builder.Length > 0)
             {
@@ -438,6 +481,47 @@ internal static class CharacterStatusScreenTextTranslator
         translated = builder.Length == 0 ? source : builder.ToString();
         DynamicTextObservability.RecordTransform(route, "CharacterStatus.MutationDetailComparison", source, translated);
         return !string.Equals(source, translated, StringComparison.Ordinal);
+    }
+
+    private static bool RequiresComparisonDescription(string source, bool hasCurrentRankSection, bool hasNextRankSection)
+    {
+        var firstLabelIndex = GetFirstComparisonLabelIndex(source, hasCurrentRankSection, hasNextRankSection);
+        if (firstLabelIndex <= 0)
+        {
+            return false;
+        }
+
+        var prefix = source.Substring(0, firstLabelIndex).TrimEnd();
+        if (prefix.Length == 0)
+        {
+            return false;
+        }
+
+        prefix = ComparisonLabelOpenerSuffixPattern.Replace(prefix, string.Empty).TrimEnd();
+        prefix = prefix.TrimEnd(':');
+        return !string.IsNullOrWhiteSpace(prefix);
+    }
+
+    private static int GetFirstComparisonLabelIndex(string source, bool hasCurrentRankSection, bool hasNextRankSection)
+    {
+        var currentIndex = hasCurrentRankSection
+            ? source.IndexOf("This rank", StringComparison.Ordinal)
+            : -1;
+        var nextIndex = hasNextRankSection
+            ? source.IndexOf("Next rank", StringComparison.Ordinal)
+            : -1;
+
+        if (currentIndex < 0)
+        {
+            return nextIndex;
+        }
+
+        if (nextIndex < 0)
+        {
+            return currentIndex;
+        }
+
+        return Math.Min(currentIndex, nextIndex);
     }
 
     private static string? GetMutationDictionaryValue(string key)

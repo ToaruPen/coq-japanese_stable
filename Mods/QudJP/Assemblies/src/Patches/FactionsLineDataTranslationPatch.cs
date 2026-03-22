@@ -54,6 +54,10 @@ public static class FactionsLineDataTranslationPatch
     {
         var itemType = item.GetType();
         var labelField = itemType.GetField("label", PublicInstanceFlags);
+        var idField = itemType.GetField("id", PublicInstanceFlags);
+        var factionId = idField?.FieldType == typeof(string)
+            ? idField.GetValue(item) as string
+            : null;
         string? localizedLabel = null;
 
         if (labelField?.FieldType == typeof(string))
@@ -67,10 +71,17 @@ public static class FactionsLineDataTranslationPatch
                     localizedLabel = FactionsStatusScreenTranslationPatch.TranslateFactionText(
                         currentLabel!,
                         ObservabilityHelpers.ComposeContext(nameof(FactionsLineDataTranslationPatch), "field=label"));
-                    if (!string.Equals(currentLabel, localizedLabel, StringComparison.Ordinal))
-                    {
-                        labelField.SetValue(item, localizedLabel);
-                    }
+                }
+
+                if (string.Equals(currentLabel, localizedLabel, StringComparison.Ordinal)
+                    && FactionsStatusScreenTranslationPatch.TryTranslateFactionLabelFromId(currentLabel!, factionId, out var fallbackLabel))
+                {
+                    localizedLabel = fallbackLabel;
+                }
+
+                if (!string.Equals(currentLabel, localizedLabel, StringComparison.Ordinal))
+                {
+                    labelField.SetValue(item, localizedLabel);
                 }
             }
         }
@@ -95,10 +106,6 @@ public static class FactionsLineDataTranslationPatch
             localizedFragments.Add(localizedLabel);
         }
 
-        var idField = itemType.GetField("id", PublicInstanceFlags);
-        var factionId = idField?.FieldType == typeof(string)
-            ? idField.GetValue(item) as string
-            : null;
         if (FactionsStatusScreenTranslationPatch.TryGetLocalizedFactionSearchFragments(factionId, out var searchFragments))
         {
             localizedFragments.AddRange(searchFragments);

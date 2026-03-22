@@ -578,23 +578,7 @@ public static class PopupTranslationPatch
 
     private static string? TranslateLabelWithCaseFallback(string source)
     {
-        var direct = Translator.Translate(source);
-        if (!string.Equals(direct, source, StringComparison.Ordinal))
-        {
-            return direct;
-        }
-
-        var lower = LowerAscii(source);
-        if (!string.Equals(lower, source, StringComparison.Ordinal))
-        {
-            var lowered = Translator.Translate(lower);
-            if (!string.Equals(lowered, lower, StringComparison.Ordinal))
-            {
-                return lowered;
-            }
-        }
-
-        return null;
+        return StringHelpers.TranslateExactOrLowerAscii(source);
     }
 
 #pragma warning disable S1144
@@ -609,26 +593,6 @@ public static class PopupTranslationPatch
         return TranslatePopupEntityReference(source);
     }
 #pragma warning restore S1144
-
-    private static string LowerAscii(string source)
-    {
-        var buffer = source.ToCharArray();
-        var changed = false;
-        for (var index = 0; index < buffer.Length; index++)
-        {
-            var character = buffer[index];
-            if (character < 'A' || character > 'Z')
-            {
-                continue;
-            }
-
-            buffer[index] = (char)(character + ('a' - 'A'));
-            changed = true;
-        }
-
-        return changed ? new string(buffer) : source;
-    }
-
     private static void TranslatePopupMenuItemTextCollection(object? maybeCollection)
     {
         if (maybeCollection is null || maybeCollection is string || maybeCollection is not IList list)

@@ -80,6 +80,7 @@ public static class Translator
             MissingKeyCounts.Clear();
             MissingRouteCounts.Clear();
             DynamicTextObservability.ResetForTests();
+            ScopedDictionaryLookup.ResetForTests();
             dictionaryLoadSummary = "Translator: dictionary load summary unavailable.";
             Interlocked.Exchange(ref loadInvocationCount, 0);
         }
@@ -236,6 +237,11 @@ public static class Translator
         }
 
         return LocalizationAssetResolver.GetLocalizationPath("Dictionaries");
+    }
+
+    internal static string GetDictionaryDirectoryPath()
+    {
+        return ResolveDictionaryDirectory();
     }
 
     private static void LoadDictionaryFile(

@@ -69,19 +69,7 @@ public static class GetDisplayNamePatch
                 return;
             }
 
-            var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(__result, nameof(GetDisplayNamePatch));
-            if (!string.Equals(translated, __result, StringComparison.Ordinal))
-            {
-                __result = translated;
-                return;
-            }
-
-            if (UITextSkinTranslationPatch.IsAlreadyLocalizedDisplayNameText(__result, nameof(GetDisplayNamePatch)))
-            {
-                return;
-            }
-
-            __result = UITextSkinTranslationPatch.TranslatePreservingColors(__result, nameof(GetDisplayNamePatch));
+            __result = GetDisplayNameRouteTranslator.TranslatePreservingColors(__result, nameof(GetDisplayNamePatch));
         }
         catch (Exception ex)
         {

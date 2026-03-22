@@ -71,7 +71,84 @@ public sealed class GetDisplayNameRouteTranslatorTests
         });
     }
 
+    [Test]
+    public void TranslatePreservingColors_UsesLowerAsciiFallbackForParenthesizedState()
+    {
+        WriteDictionary(
+            ("lead slug", "鉛の弾"),
+            ("frozen", "凍結"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "lead slug (Frozen)",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("鉛の弾 (凍結)"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_UsesExactLookupForWholeDisplayName()
+    {
+        WriteDictionary(("worn bronze sword", "使い込まれた青銅の剣"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "worn bronze sword",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("使い込まれた青銅の剣"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_UsesTrimmedExactLookupForWholeDisplayName()
+    {
+        WriteDictionary(("worn bronze sword", "使い込まれた青銅の剣"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "  worn bronze sword  ",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("  使い込まれた青銅の剣  "));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_PrefersDisplayNameScopedDictionaryForConflictingLiquidKey()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("water", "{{B|水の}}"));
+        WriteDictionaryFile(
+            "ui-liquids.ja.json",
+            ("water", "水"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "water",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{B|水の}}"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_PrefersDisplayNameScopedDictionaryForConflictingLiquidAdjectiveKey()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("bloody", "{{r|血まみれの}}"));
+        WriteDictionaryFile(
+            "ui-liquid-adjectives.ja.json",
+            ("bloody", "血混じりの"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "bloody Naruur",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{r|血まみれの}}Naruur"));
+    }
+
     private void WriteDictionary(params (string key, string text)[] entries)
+    {
+        WriteDictionaryFile("ui-displayname-route.ja.json", entries);
+    }
+
+    private void WriteDictionaryFile(string fileName, params (string key, string text)[] entries)
     {
         var builder = new StringBuilder();
         builder.Append('{');
@@ -95,7 +172,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
         builder.AppendLine();
 
         File.WriteAllText(
-            Path.Combine(tempDirectory, "ui-displayname-route.ja.json"),
+            Path.Combine(tempDirectory, fileName),
             builder.ToString(),
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }

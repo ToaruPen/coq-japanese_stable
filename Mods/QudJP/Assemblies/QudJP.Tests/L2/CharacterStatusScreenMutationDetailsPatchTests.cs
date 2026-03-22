@@ -70,6 +70,55 @@ public sealed class CharacterStatusScreenMutationDetailsPatchTests
         }
     }
 
+    [Test]
+    public void TryTranslateMutationDetails_TranslatesComparisonFamily_WhenAllRequiredBlocksExist()
+    {
+        WriteDictionary(
+            ("mutation:Force Wall", "力の壁を生み出し、9マス連続の力場で敵を遮る。"),
+            ("mutation:Force Wall:rank:1", "9マス分の連続した固定力場を作る。"),
+            ("mutation:Force Wall:rank:2", "10マス分の連続した固定力場を作る。"),
+            ("This rank", "現在ランク"),
+            ("Next rank", "次ランク"));
+
+        var changed = CharacterStatusScreenTextTranslator.TryTranslateMutationDetails(
+            new DummyCharacterMutation { Name = "Force Wall", Level = 1 },
+            "You generate a wall of force.\n\n{{w|This rank}}:\n9 contiguous stationary force fields.\n\n{{w|Next rank}}:\n10 contiguous stationary force fields.",
+            nameof(CharacterStatusScreenTranslationPatch),
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(
+                translated,
+                Is.EqualTo("力の壁を生み出し、9マス連続の力場で敵を遮る。\n\n{{w|現在ランク}}:\n9マス分の連続した固定力場を作る。\n\n{{w|次ランク}}:\n10マス分の連続した固定力場を作る。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateMutationDetails_PassesThroughComparisonFamily_WhenAnyRequiredBlockIsMissing()
+    {
+        const string source = "You generate a wall of force.\n\n{{w|This rank}}:\n9 contiguous stationary force fields.\n\n{{w|Next rank}}:\n10 contiguous stationary force fields.";
+
+        WriteDictionary(
+            ("mutation:Force Wall", "力の壁を生み出し、9マス連続の力場で敵を遮る。"),
+            ("mutation:Force Wall:rank:1", "9マス分の連続した固定力場を作る。"),
+            ("This rank", "現在ランク"),
+            ("Next rank", "次ランク"));
+
+        var changed = CharacterStatusScreenTextTranslator.TryTranslateMutationDetails(
+            new DummyCharacterMutation { Name = "Force Wall", Level = 1 },
+            source,
+            nameof(CharacterStatusScreenTranslationPatch),
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.False);
+            Assert.That(translated, Is.EqualTo(source));
+        });
+    }
+
     private static MethodInfo RequireMethod(Type type, string methodName)
     {
         return AccessTools.Method(type, methodName)

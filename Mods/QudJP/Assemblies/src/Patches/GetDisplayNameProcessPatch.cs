@@ -90,13 +90,6 @@ public static class GetDisplayNameProcessPatch
                 __result = translated;
                 return;
             }
-
-            if (UITextSkinTranslationPatch.IsAlreadyLocalizedDisplayNameText(__result, nameof(GetDisplayNameProcessPatch)))
-            {
-                return;
-            }
-
-            __result = UITextSkinTranslationPatch.TranslatePreservingColors(__result, nameof(GetDisplayNameProcessPatch));
         }
         catch (Exception ex)
         {

@@ -35,6 +35,53 @@ internal sealed class DummyCharacterMutationLineData
     public DummyCharacterMutation? mutation { get; set; }
 }
 
+internal sealed class DummyPickGameObjectScreen
+{
+    public List<DummyMenuOption> defaultMenuOptions = new List<DummyMenuOption>
+    {
+        new DummyMenuOption("Close Menu"),
+        new DummyMenuOption("navigate"),
+    };
+
+    public List<DummyMenuOption> getItemMenuOptions = new List<DummyMenuOption>
+    {
+        new DummyMenuOption("Close Menu"),
+        new DummyMenuOption("navigate"),
+    };
+
+    public DummyMenuOption TAKE_ALL = new DummyMenuOption("take all");
+
+    public DummyMenuOption STORE_ITEM = new DummyMenuOption("store an item");
+
+    public void UpdateViewFromData(bool reentry)
+    {
+        _ = reentry;
+        _ = TAKE_ALL;
+    }
+}
+
+internal sealed class DummyInventoryAndEquipmentStatusScreen
+{
+    public DummyMenuOption CMD_OPTIONS = new DummyMenuOption("Display Options");
+
+    public DummyMenuOption SET_PRIMARY_LIMB = new DummyMenuOption("Set Primary Limb");
+
+    public DummyMenuOption SHOW_TOOLTIP = new DummyMenuOption("[{{W|Alt}}] Show Tooltip", "CmdShowTooltip", "Alt");
+
+    public DummyMenuOption QUICK_DROP = new DummyMenuOption("Quick Drop");
+
+    public DummyMenuOption QUICK_EAT = new DummyMenuOption("Quick Eat");
+
+    public DummyMenuOption QUICK_DRINK = new DummyMenuOption("Quick Drink");
+
+    public DummyMenuOption QUICK_APPLY = new DummyMenuOption("Quick Apply");
+
+    public void UpdateViewFromData()
+    {
+        _ = CMD_OPTIONS;
+    }
+}
+
 internal sealed class DummyCharacterStatusMutationScreen
 {
     public DummyUITextSkin mutationNameText = new DummyUITextSkin();

@@ -3235,94 +3235,14 @@
             "text": "使える手段が尽きたので、ここまでの成果で結果が決まる。"
         },
         {
-            "key": "whenever @thisCreature deal@s cold damage, there's a 25% chance",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainCold_OnDealingColdDamage",
-            "text": "@thisCreature が冷気ダメージを与えるたび、25%の確率で"
-        },
-        {
-            "key": "whenever @thisCreature deal@s electric damage, there's a 25% chance",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainElectric_OnDealingElectricDamage",
-            "text": "@thisCreature が電撃ダメージを与えるたび、25%の確率で"
-        },
-        {
-            "key": "whenever @thisCreature take@s electric damage, there's ",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainElectric_OnElectricDamaged",
-            "text": "@thisCreature が電撃ダメージを受けるたび、"
-        },
-        {
             "key": "% chance",
             "context": "XRL.World.XRL.World.Effects.CookingDomainElectric_OnElectricDamaged",
             "text": "%の確率で"
         },
         {
-            "key": "whenever @thisCreature take@s electric damage, there's a 50% chance",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainElectric_OnElectricDamaged",
-            "text": "@thisCreature が電撃ダメージを受けるたび、50%の確率で"
-        },
-        {
-            "key": "whenever @thisCreature deal@s fire damage, there's a 10% chance",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainHeat_OnDealingHeatDamage",
-            "text": "@thisCreature が火炎ダメージを与えるたび、10%の確率で"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a ",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainHP_OnDamaged",
-            "text": "@thisCreature がダメージを受けるたび、"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a 8-10% chance",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainHP_OnDamaged",
-            "text": "@thisCreature がダメージを受けるたび、8～10%の確率で"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a 12-15% chance",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainHP_OnDamagedMidTier",
-            "text": "@thisCreature がダメージを受けるたび、12～15%の確率で"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a 15-20% chance @they start phasing for 8-10 turns.",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainPhase_UnitPhaseOnDamage",
-            "text": "@thisCreature がダメージを受けるたび、15～20%の確率で@they は8～10ターンのあいだフェイズアウトする。"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a 16-20% chance",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainRegenHightier_OnDamaged",
-            "text": "@thisCreature がダメージを受けるたび、16～20%の確率で"
-        },
-        {
-            "key": "whenever @thisCreature reflect@s damage, there's a 50% chance",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainReflect_OnReflectedDamage",
-            "text": "@thisCreature がダメージを反射するたび、50%の確率で"
-        },
-        {
-            "key": "whenever @thisCreature reflect@s damage, there's a 100% chance",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainReflect_OnReflectedDamageHighTier",
-            "text": "@thisCreature がダメージを反射するたび、100%の確率で"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a 8-10% chance",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainReflect_OnDamaged",
-            "text": "@thisCreature がダメージを受けるたび、8～10%の確率で"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a 16-20% chance",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainReflect_OnDamagedHighTier",
-            "text": "@thisCreature がダメージを受けるたび、16～20%の確率で"
-        },
-        {
-            "key": "Reflect ",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainReflect_UnitReflectDamage",
-            "text": "受けたダメージの"
-        },
-        {
             "key": "% damage back at @their attackers, rounded up.",
             "context": "XRL.World.XRL.World.Effects.CookingDomainReflect_UnitReflectDamage",
             "text": "%を切り上げて@their 攻撃者に反射する。"
-        },
-        {
-            "key": "Reflect 3-4% damage back at @their attackers, rounded up.",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainReflect_UnitReflectDamage",
-            "text": "受けたダメージの3～4%を切り上げて@their 攻撃者に反射する。"
         },
         {
             "key": "from %t tiny spines!",
@@ -3350,31 +3270,6 @@
             "text": " のダメージがあなたに跳ね返ってきた。"
         },
         {
-            "key": "Reflect 15-18% damage back at @their attackers, rounded up.",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainReflect_UnitReflectDamageHighTier",
-            "text": "受けたダメージの15～18%を切り上げて@their 攻撃者に反射する。"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a ",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainRegenLowtier_OnDamaged",
-            "text": "@thisCreature がダメージを受けるたび、"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a 8-10% chance",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainRegenLowtier_OnDamaged",
-            "text": "@thisCreature がダメージを受けるたび、8～10%の確率で"
-        },
-        {
-            "key": "Falling damage @thisCreature take@s is reduced by 90%.",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainRubber_ExtraReducedFallDamage",
-            "text": "@thisCreature が受ける落下ダメージが90%軽減される。"
-        },
-        {
-            "key": "Falling damage @thisCreature take@s is reduced by 50%.",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainRubber_ReducedFallDamage",
-            "text": "@thisCreature が受ける落下ダメージが50%軽減される。"
-        },
-        {
             "key": "away from the danger",
             "context": "XRL.World.XRL.World.Parts.BlinkOnDamage",
             "text": "危険から離れた"
@@ -3383,11 +3278,6 @@
             "key": "from %t digestive enzymes!",
             "context": "XRL.World.XRL.World.Parts.EngulfingDamage",
             "text": "%t の消化酵素による！"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a 30-40% chance",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainRegenHightier_OnDamaged",
-            "text": "@thisCreature がダメージを受けるたび、30～40%の確率で"
         },
         {
             "key": "You do not have a bow or rifle equipped!",
@@ -3418,11 +3308,6 @@
             "key": "from %t damage reflection!",
             "context": "XRL.World.XRL.World.Parts.ReflectDamage",
             "text": "%t のダメージ反射による！"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage from a plant,",
-            "context": "XRL.World.XRL.World.Effects.CookingDomainPlant_OnDamageByPlant",
-            "text": "@thisCreature が植物からダメージを受けるたび、"
         },
         {
             "key": "Robber chimes ring through the vault, and you hear the grating of stone on stone as the other imperial reliquaries slide into the unreachable recesses of the Tomb.",

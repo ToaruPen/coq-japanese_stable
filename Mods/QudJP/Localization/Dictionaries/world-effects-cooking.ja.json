@@ -29,11 +29,6 @@
             "text": "クイックネス+3%"
         },
         {
-            "key": "+10% to natural healing rate",
-            "context": "XRL.World.Effects.BasicCookingEffect_Regeneration.GetDetails",
-            "text": "自然治癒速度+10%"
-        },
-        {
             "key": "+1 to hit",
             "context": "XRL.World.Effects.BasicCookingEffect_ToHit.GetDetails",
             "text": "命中+1"
@@ -65,11 +60,6 @@
         },
         {
             "key": "whenever @thisCreature perform@s a critical hit,",
-            "context": "XRL.World.Effects.CookingDomainAgility_OnPerformCriticalHit.GetTriggerDescription",
-            "text": "@thisCreature がクリティカルヒットを与えるたび、"
-        },
-        {
-            "key": "whenever @thisCreature perform@s a critical hit,",
             "context": "XRL.World.Effects.CookingDomainAgility_OnPerformCriticalHit.GetTemplatedTriggerDescription",
             "text": "@thisCreature がクリティカルヒットを与えるたび、"
         },
@@ -97,11 +87,6 @@
             "key": "@they stiffen@s.",
             "context": "XRL.World.Effects.CookingDomainArmor_LargeAVBuff_ProceduralCookingTriggeredAction.GetNotification",
             "text": "@they は身構える。"
-        },
-        {
-            "key": "whenever @thisCreature suffer@s a 2X or greater physical penetration,",
-            "context": "XRL.World.Effects.CookingDomainArmor_OnPenetration.GetTriggerDescription",
-            "text": "@thisCreature が2X以上の物理貫通を受けるたび、"
         },
         {
             "key": "whenever @thisCreature suffer@s a 2X or greater physical penetration,",
@@ -270,11 +255,6 @@
         },
         {
             "key": "whenever @thisCreature take@s electric damage, there's a 50% chance",
-            "context": "XRL.World.Effects.CookingDomainElectric_OnElectricDamaged.GetTriggerDescription",
-            "text": "@thisCreature が電撃ダメージを受けるたび、50%の確率で"
-        },
-        {
-            "key": "whenever @thisCreature take@s electric damage, there's a 50% chance",
             "context": "XRL.World.Effects.CookingDomainElectric_OnElectricDamaged.GetTemplatedTriggerDescription",
             "text": "@thisCreature が電撃ダメージを受けるたび、50%の確率で"
         },
@@ -334,11 +314,6 @@
             "text": "熱耐性+10～15"
         },
         {
-            "key": "whenever @thisCreature take@s damage, there's a 8-10% chance",
-            "context": "XRL.World.Effects.CookingDomainHP_OnDamaged.GetTemplatedTriggerDescription",
-            "text": "@thisCreature がダメージを受けるたび、8～10%の確率で"
-        },
-        {
             "key": "whenever @thisCreature take@s damage, there's a 12-15% chance",
             "context": "XRL.World.Effects.CookingDomainHP_OnDamagedMidTier.GetTemplatedTriggerDescription",
             "text": "@thisCreature がダメージを受けるたび、12～15%の確率で"
@@ -362,11 +337,6 @@
             "key": "whenever @thisCreature reflect@s damage, there's a 100% chance",
             "context": "XRL.World.Effects.CookingDomainReflect_OnReflectedDamageHighTier.GetTriggerDescription",
             "text": "@thisCreature がダメージを反射するたび、100%の確率で"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a 8-10% chance",
-            "context": "XRL.World.Effects.CookingDomainReflect_OnDamaged.GetTemplatedTriggerDescription",
-            "text": "@thisCreature がダメージを受けるたび、8～10%の確率で"
         },
         {
             "key": "whenever @thisCreature take@s damage, there's a 16-20% chance",
@@ -417,21 +387,6 @@
             "key": "whenever @thisCreature take@s damage, there's a 8-10% chance",
             "context": "XRL.World.Effects.CookingDomainRegenLowtier_OnDamaged.GetTemplatedTriggerDescription",
             "text": "@thisCreature がダメージを受けるたび、8～10%の確率で"
-        },
-        {
-            "key": "Falling damage @thisCreature take@s is reduced by 90%.",
-            "context": "XRL.World.Effects.CookingDomainRubber_ExtraReducedFallDamage.GetTemplatedDescription",
-            "text": "@thisCreature が受ける落下ダメージが90%軽減される。"
-        },
-        {
-            "key": "Falling damage @thisCreature take@s is reduced by 50%.",
-            "context": "XRL.World.Effects.CookingDomainRubber_ReducedFallDamage.GetTemplatedDescription",
-            "text": "@thisCreature が受ける落下ダメージが50%軽減される。"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage from a plant,",
-            "context": "XRL.World.Effects.CookingDomainPlant_OnDamageByPlant.GetTriggerDescription",
-            "text": "@thisCreature が植物からダメージを受けるたび、"
         },
         {
             "key": "whenever @thisCreature take@s damage from a plant,",
@@ -499,11 +454,6 @@
             "text": "@they の軽微な悪性ステータス効果がランダムで1つ解除される。"
         },
         {
-            "key": "@they feel less afflicted.",
-            "context": "XRL.World.Effects.CookingDomainLowtierRegen_RemoveDebuff_ProceduralCookingTriggeredAction.GetNotification",
-            "text": "@they は不調が和らぐのを感じる。"
-        },
-        {
             "key": "@they stop bleeding.",
             "context": "XRL.World.Effects.CookingDomainLowtierRegen_StopBleeding_ProceduralCookingTriggeredAction.GetDescription",
             "text": "@they の出血が止まる。"
@@ -567,11 +517,6 @@
             "key": "+2 MA",
             "context": "XRL.World.Effects.CookingDomainFear_UnitBonusMA.GetTemplatedDescription",
             "text": "MA+2"
-        },
-        {
-            "key": "Can use Intimidate.",
-            "context": "XRL.World.Effects.CookingDomainFear_UnitIntimidate.GetTemplatedDescription",
-            "text": "〈威圧〉を使用できる。"
         },
         {
             "key": "+300 reputation with fungi",
@@ -859,16 +804,6 @@
             "text": "〈棘〉をレベル5～6で使用できる。既に持つ場合、さらにレベル3～4強化される。"
         },
         {
-            "key": "Whenever @thisCreature jump@s, @they may immediately jump two more times.",
-            "context": "XRL.World.Effects.CookingDomainRubber_Extra2Jumps.GetDescription",
-            "text": "@thisCreature が跳躍するたび、続けて2回まで即座に跳躍できる。"
-        },
-        {
-            "key": "Whenever @thisCreature jump@s, @they may immediately jump again.",
-            "context": "XRL.World.Effects.CookingDomainRubber_ExtraJump.GetDescription",
-            "text": "@thisCreature が跳躍するたび、続けて即座にもう1回跳躍できる。"
-        },
-        {
             "key": "@they jump@s three times in a row, each time at +2 range.",
             "context": "XRL.World.Effects.CookingDomainRubber_JumpThrice_ProceduralCookingTriggeredAction.GetDescription",
             "text": "@they は連続で3回、射程+2で跳躍する。"
@@ -1004,16 +939,6 @@
             "text": "@thisCreature を毒する。"
         },
         {
-            "key": "@they became a crystal being permanently.",
-            "context": "XRL.World.Effects.CookingDomainSpecial_UnitCrystalTransform.GetDescription",
-            "text": "@they は恒久的にクリスタル生命となる。"
-        },
-        {
-            "key": "@they became a slug permanently.",
-            "context": "XRL.World.Effects.CookingDomainSpecial_UnitSlogTransform.GetDescription",
-            "text": "@they は恒久的にナメクジになる。"
-        },
-        {
             "key": "+6 vs Move,Knockdown,Restraint saves",
             "context": "XRL.World.Effects.CookingDomainStability_MoveResistUnit.GetDescription",
             "text": "移動・転倒・拘束に対するセーヴ+6"
@@ -1044,19 +969,9 @@
             "text": "@they は{1}時間のあいだ最大HPが+{0}%増える。"
         },
         {
-            "key": "whenever @thisCreature take@s damage, there's a {0}% chance",
-            "context": "XRL.World.Effects.CookingDomainHP_OnDamaged.GetTriggerDescription",
-            "text": "@thisCreature がダメージを受けるたび、{0}%の確率で"
-        },
-        {
             "key": "whenever @thisCreature take@s damage, there's a {0}% chance @they start phasing for {1}-{2} turns.",
             "context": "XRL.World.Effects.CookingDomainPhase_UnitPhaseOnDamage.GetDescription",
             "text": "@thisCreature がダメージを受けるたび、{0}%の確率で@they は{1}～{2}ターンのあいだフェイズアウトする。"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a {0}% chance",
-            "context": "XRL.World.Effects.CookingDomainReflect_OnDamaged.GetTriggerDescription",
-            "text": "@thisCreature がダメージを受けるたび、{0}%の確率で"
         },
         {
             "key": "@they expel quills per the Quills mutation at level {0}.",
@@ -1082,11 +997,6 @@
             "key": "Whenever @thisCreature jump@s, @they may immediately jump again.",
             "context": "XRL.World.Effects.CookingDomainRubber_ExtraJump.GetTemplatedDescription",
             "text": "@thisCreature が跳躍するたび、続けて即座にもう1回跳躍できる。"
-        },
-        {
-            "key": "Falling damage @thisCreature take@s is reduced by {0}%.",
-            "context": "XRL.World.Effects.CookingDomainRubber_ExtraReducedFallDamage.GetDescription",
-            "text": "@thisCreature が受ける落下ダメージが{0}%軽減される。"
         },
         {
             "key": "Falling damage @thisCreature take@s is reduced by {0}%.",
@@ -1365,11 +1275,6 @@
         },
         {
             "key": "whenever @thisCreature suffer@s",
-            "context": "XRL.World.Effects.CookingDomainArmor_OnPenetration.GetTriggerDescription",
-            "text": "@thisCreature が物理貫通を受けるたび、"
-        },
-        {
-            "key": "whenever @thisCreature suffer@s",
             "context": "XRL.World.Effects.CookingDomainArmor_OnPenetration.GetTemplatedTriggerDescription",
             "text": "@thisCreature が物理貫通を受けるたび、"
         },
@@ -1389,29 +1294,9 @@
             "text": "@thisCreature が電撃ダメージを受けるたび、"
         },
         {
-            "key": "Can use",
-            "context": "XRL.World.Effects.CookingDomainFear_UnitIntimidate.GetDescription",
-            "text": "使用できる。"
-        },
-        {
             "key": "@they get +",
             "context": "XRL.World.Effects.CookingDomainHP_IncreaseHP_ProceduralCookingTriggeredAction.GetDescription",
             "text": "@they は最大HPが増加する。"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a",
-            "context": "XRL.World.Effects.CookingDomainHP_OnDamaged.GetTriggerDescription",
-            "text": "@thisCreature がダメージを受けるたび、"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a",
-            "context": "XRL.World.Effects.CookingDomainPhase_UnitPhaseOnDamage.GetDescription",
-            "text": "@thisCreature がダメージを受けるたび、"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a",
-            "context": "XRL.World.Effects.CookingDomainReflect_OnDamaged.GetTriggerDescription",
-            "text": "@thisCreature がダメージを受けるたび、"
         },
         {
             "key": "@they expel quills per the Quills mutation at level",
@@ -1432,16 +1317,6 @@
             "key": "whenever @thisCreature take@s damage, there's a",
             "context": "XRL.World.Effects.CookingDomainRegenLowtier_OnDamaged.GetTriggerDescription",
             "text": "@thisCreature がダメージを受けるたび、"
-        },
-        {
-            "key": "?????",
-            "context": "XRL.World.Effects.CookingDomainSpecial_UnitCrystalTransform.GetTemplatedDescription",
-            "text": "@they は恒久的にクリスタル生命となる。"
-        },
-        {
-            "key": "?????",
-            "context": "XRL.World.Effects.CookingDomainSpecial_UnitSlogTransform.GetTemplatedDescription",
-            "text": "@they は恒久的にナメクジになる。"
         },
         {
             "key": "Whenever @thisCreature take@s avoidable damage, there's a",
@@ -1470,11 +1345,6 @@
         },
         {
             "key": "whenever @thisCreature suffer@s ",
-            "context": "XRL.World.Effects.CookingDomainArmor_OnPenetration.GetTemplatedTriggerDescription",
-            "text": "@thisCreature が物理貫通を受けるたび、"
-        },
-        {
-            "key": "whenever @thisCreature suffer@s ",
             "context": "XRL.World.Effects.CookingDomainArmor_OnPenetration.GetTriggerDescription",
             "text": "@thisCreature が物理貫通を受けるたび、"
         },
@@ -1482,26 +1352,6 @@
             "key": "whenever @thisCreature take@s electric damage, there's ",
             "context": "XRL.World.Effects.CookingDomainElectric_OnElectricDamaged.GetTriggerDescription",
             "text": "@thisCreature が電撃ダメージを受けるたび、"
-        },
-        {
-            "key": "Can use ",
-            "context": "XRL.World.Effects.CookingDomainFear_UnitIntimidate.GetDescription",
-            "text": "使用できる。"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a ",
-            "context": "XRL.World.Effects.CookingDomainHP_OnDamaged.GetTriggerDescription",
-            "text": "@thisCreature がダメージを受けるたび、"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a ",
-            "context": "XRL.World.Effects.CookingDomainPhase_UnitPhaseOnDamage.GetDescription",
-            "text": "@thisCreature がダメージを受けるたび、"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a ",
-            "context": "XRL.World.Effects.CookingDomainReflect_OnDamaged.GetTriggerDescription",
-            "text": "@thisCreature がダメージを受けるたび、"
         },
         {
             "key": "@they expel quills per the Quills mutation at level ",

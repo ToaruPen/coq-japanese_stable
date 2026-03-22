@@ -500,14 +500,17 @@ public static class FactionsStatusScreenTranslationPatch
 
     private static bool TryTranslateExactOrCaseFoldedKey(string source, out string translated)
     {
-        if (TryTranslateExactKey(source, out translated))
+        if (!StringHelpers.TryGetTranslationExactOrLowerAscii(source, out translated))
         {
-            return true;
+            return false;
         }
 
-        var lowered = LowerAscii(source);
-        return !string.Equals(lowered, source, StringComparison.Ordinal)
-            && TryTranslateExactKey(lowered, out translated);
+        DynamicTextObservability.RecordTransform(
+            nameof(FactionsStatusScreenTranslationPatch),
+            source,
+            source,
+            translated);
+        return true;
     }
 
     private static bool TryTranslateParagraphSequence(string source, out string translated)
@@ -630,50 +633,20 @@ public static class FactionsStatusScreenTranslationPatch
 
     private static bool TryTranslateFactionTopicList(string source, out string translated)
     {
-        var parts = new List<string>();
-        var separators = new List<char>();
-        var current = new StringBuilder(source.Length);
-        for (var index = 0; index < source.Length; index++)
-        {
-            var character = source[index];
-            if (character != '、' && character != 'と')
-            {
-                current.Append(character);
-                continue;
-            }
-
-            if (current.Length == 0)
-            {
-                current.Append(character);
-                continue;
-            }
-
-            parts.Add(current.ToString());
-            current.Clear();
-            separators.Add(character);
-        }
-
-        if (separators.Count == 0)
+        var parts = SplitFactionTopicList(source);
+        if (parts.Count < 2)
         {
             translated = source;
             return false;
         }
 
-        parts.Add(current.ToString());
         var changed = false;
         for (var index = 0; index < parts.Count; index++)
         {
-            var part = parts[index].Trim();
-            var prefix = string.Empty;
-            if (part.StartsWith("と", StringComparison.Ordinal))
-            {
-                prefix = "と";
-                part = part.Substring(1).TrimStart();
-            }
-
+            var part = parts[index];
             var translatedPart = TranslateFactionTopic(part);
             changed |= !string.Equals(part, translatedPart, StringComparison.Ordinal);
-            parts[index] = prefix + translatedPart;
+            parts[index] = translatedPart;
         }
 
         if (!changed)
@@ -682,19 +655,82 @@ public static class FactionsStatusScreenTranslationPatch
             return false;
         }
 
-        var builder = new StringBuilder(source.Length);
-        for (var index = 0; index < parts.Count; index++)
+        translated = GrammarPatchHelpers.BuildJapaneseList(parts, "と");
+        return true;
+    }
+
+    private static List<string> SplitFactionTopicList(string source)
+    {
+        var parts = new List<string>();
+        var current = new StringBuilder(source.Length);
+        for (var index = 0; index < source.Length; index++)
         {
-            if (index > 0)
+            if (TryConsumeFactionTopicSeparator(source, ref index, current, parts))
             {
-                builder.Append(separators[index - 1]);
+                continue;
             }
 
-            builder.Append(parts[index]);
+            current.Append(source[index]);
         }
 
-        translated = builder.ToString();
+        var last = current.ToString().Trim();
+        if (last.Length > 0)
+        {
+            parts.Add(last);
+        }
+
+        return parts;
+    }
+
+    private static bool TryConsumeFactionTopicSeparator(string source, ref int index, StringBuilder current, List<string> parts)
+    {
+        if (source[index] == '、' || source[index] == 'と')
+        {
+            _ = TryFlushFactionTopicPart(current, parts);
+            return true;
+        }
+
+        if (StartsWithAt(source, index, ", and "))
+        {
+            _ = TryFlushFactionTopicPart(current, parts);
+            index += ", and ".Length - 1;
+            return true;
+        }
+
+        if (StartsWithAt(source, index, " and "))
+        {
+            _ = TryFlushFactionTopicPart(current, parts);
+            index += " and ".Length - 1;
+            return true;
+        }
+
+        if (StartsWithAt(source, index, ", "))
+        {
+            _ = TryFlushFactionTopicPart(current, parts);
+            index += ", ".Length - 1;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool TryFlushFactionTopicPart(StringBuilder current, List<string> parts)
+    {
+        var part = current.ToString().Trim();
+        if (part.Length == 0)
+        {
+            return false;
+        }
+
+        parts.Add(part);
+        current.Clear();
         return true;
+    }
+
+    private static bool StartsWithAt(string source, int index, string value)
+    {
+        return index + value.Length <= source.Length
+            && string.Compare(source, index, value, 0, value.Length, StringComparison.Ordinal) == 0;
     }
 
     private static bool TryTranslateFactionTopicFragment(string source, out string translated)
@@ -744,7 +780,7 @@ public static class FactionsStatusScreenTranslationPatch
             return translated;
         }
 
-        var stripped = StripLeadingArticle(value);
+        var stripped = StringHelpers.StripLeadingDefiniteArticle(value, StringComparison.OrdinalIgnoreCase);
         if (!string.Equals(stripped, value, StringComparison.Ordinal)
             && TryTranslateExactOrCaseFoldedKey(stripped, out translated))
         {
@@ -753,17 +789,6 @@ public static class FactionsStatusScreenTranslationPatch
 
         return value;
     }
-
-    private static string StripLeadingArticle(string source)
-    {
-        if (source.StartsWith("the ", StringComparison.OrdinalIgnoreCase))
-        {
-            return source.Substring(4);
-        }
-
-        return source;
-    }
-
     private static bool LooksLikeTerminalFactionLabel(string source)
     {
         if (source.StartsWith("The ", StringComparison.Ordinal)
@@ -790,25 +815,6 @@ public static class FactionsStatusScreenTranslationPatch
         }
 
         return true;
-    }
-
-    private static string LowerAscii(string source)
-    {
-        var buffer = source.ToCharArray();
-        var changed = false;
-        for (var index = 0; index < buffer.Length; index++)
-        {
-            var character = buffer[index];
-            if (character < 'A' || character > 'Z')
-            {
-                continue;
-            }
-
-            buffer[index] = (char)(character + ('a' - 'A'));
-            changed = true;
-        }
-
-        return changed ? new string(buffer) : source;
     }
 
     internal static bool TryGetLocalizedFactionSearchFragments(string? factionId, out IReadOnlyList<string> fragments)
@@ -860,6 +866,23 @@ public static class FactionsStatusScreenTranslationPatch
         return localized.Count > 0;
     }
 
+    internal static bool TryTranslateFactionLabelFromId(string source, string? factionId, out string translated)
+    {
+        translated = source;
+        if (string.IsNullOrWhiteSpace(source) || string.IsNullOrWhiteSpace(factionId))
+        {
+            return false;
+        }
+
+        if (source.StartsWith("The ", StringComparison.Ordinal)
+            && TryTranslateFactionLabelFallbackCandidate($"the {factionId}", out translated))
+        {
+            return true;
+        }
+
+        return TryTranslateFactionLabelFallbackCandidate(factionId!, out translated);
+    }
+
     private static void AddLocalizedSearchFragment(List<string> localized, string? source)
     {
         if (string.IsNullOrWhiteSpace(source))
@@ -877,5 +900,20 @@ public static class FactionsStatusScreenTranslationPatch
         {
             localized.Add(stripped);
         }
+    }
+
+    private static bool TryTranslateFactionLabelFallbackCandidate(string key, out string translated)
+    {
+        if (!StringHelpers.TryGetTranslationExactOrLowerAscii(key, out translated))
+        {
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(
+            nameof(FactionsStatusScreenTranslationPatch),
+            $"FactionLabelFallback:{key}",
+            key,
+            translated);
+        return true;
     }
 }

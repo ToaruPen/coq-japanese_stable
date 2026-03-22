@@ -77,6 +77,50 @@ public sealed class LookTooltipContentPatchTests
         });
     }
 
+    [Test]
+    public void Postfix_KeepsStatAbbreviationsUntranslated_WhenPatched()
+    {
+        WriteDictionary(("STR", "筋力"), ("+1 STR", "+1 筋力"));
+
+        RunWithTooltipPatch(() =>
+        {
+            var abbreviation = DummyLookTooltipTarget.GenerateTooltipContent("STR");
+            var signed = DummyLookTooltipTarget.GenerateTooltipContent("+1 STR");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(abbreviation, Is.EqualTo("STR"));
+                Assert.That(signed, Is.EqualTo("+1 STR"));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesCompareStatusLines_WhenPatched()
+    {
+        WriteDictionary(
+            ("Strength", "筋力"),
+            ("Bonus Cap:", "ボーナス上限:"),
+            ("Weapon Class:", "武器カテゴリ:"),
+            ("Long Blades (increased penetration on critical hit)", "長剣（クリティカル時に貫通力上昇）"),
+            ("no limit", "なし"));
+
+        RunWithTooltipPatch(() =>
+        {
+            var cap = DummyLookTooltipTarget.GenerateTooltipContent("Strength Bonus Cap: no limit");
+            var egoCap = DummyLookTooltipTarget.GenerateTooltipContent("Ego Bonus Cap: 2");
+            var weaponClass = DummyLookTooltipTarget.GenerateTooltipContent(
+                "Weapon Class: Long Blades (increased penetration on critical hit)");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(cap, Is.EqualTo("筋力ボーナス上限: なし"));
+                Assert.That(egoCap, Is.EqualTo("Ego ボーナス上限: 2"));
+                Assert.That(weaponClass, Is.EqualTo("武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
+            });
+        });
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

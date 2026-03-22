@@ -55,12 +55,14 @@
     <Compile Include="../src/LocalizationAssetResolver.cs" Link="Production/LocalizationAssetResolver.cs" />
     <Compile Include="../src/MessagePatternTranslator.cs" Link="Production/MessagePatternTranslator.cs" />
     <Compile Include="../src/ObservabilityHelpers.cs" Link="Production/ObservabilityHelpers.cs" />
+    <Compile Include="../src/ScopedDictionaryLookup.cs" Link="Production/ScopedDictionaryLookup.cs" />
     <Compile Include="../src/Patches/*.cs" Link="Production/Patches/%(Filename)%(Extension)" />
     <Compile Include="../src/QudJPMod.cs" Link="Production/QudJPMod.cs" />
     <Compile Include="../src/QudMenuBottomContextObservability.cs" Link="Production/QudMenuBottomContextObservability.cs" />
     <Compile Include="../src/ScreenHierarchyObservability.cs" Link="Production/ScreenHierarchyObservability.cs" />
     <Compile Include="../src/SceneTextObservability.cs" Link="Production/SceneTextObservability.cs" />
     <Compile Include="../src/SelectableTextMenuItemObservability.cs" Link="Production/SelectableTextMenuItemObservability.cs" />
+    <Compile Include="../src/StatusLineTranslationHelpers.cs" Link="Production/StatusLineTranslationHelpers.cs" />
     <Compile Include="../src/StringHelpers.cs" Link="Production/StringHelpers.cs" />
     <Compile Include="../src/TextShellReplacementRenderer.cs" Link="Production/TextShellReplacementRenderer.cs" />
     <Compile Include="../src/TmpTextRepairer.cs" Link="Production/TmpTextRepairer.cs" />

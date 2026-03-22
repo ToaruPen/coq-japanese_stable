@@ -58,13 +58,7 @@ public static class InventoryLocalizationPatch
                 : ObservabilityHelpers.ComposeContext(
                     nameof(InventoryLocalizationPatch),
                     $"method={__originalMethod.DeclaringType?.Name ?? "<unknown>"}.{__originalMethod.Name}");
-
-            if (UITextSkinTranslationPatch.IsAlreadyLocalizedDisplayNameText(__result, methodContext))
-            {
-                return;
-            }
-
-            __result = UITextSkinTranslationPatch.TranslatePreservingColors(__result, methodContext);
+            __result = GetDisplayNameRouteTranslator.TranslatePreservingColors(__result, methodContext);
         }
         catch (Exception ex)
         {

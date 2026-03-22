@@ -175,9 +175,9 @@ public sealed class UITextSkinTranslationPatchTests
     }
 
     [Test]
-    public void TranslatePreservingColors_TranslatesLevelExpHudLineInSinkContext()
+    public void TranslatePreservingColors_KeepsExpLabelInLevelExpHudLineInSinkContext()
     {
-        WriteDictionary(("LVL", "Lv"), ("Exp", "経験値"));
+        WriteDictionary(("LVL", "Lv"));
 
         var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
             "LVL: 1 Exp: 0 / 220",
@@ -185,7 +185,7 @@ public sealed class UITextSkinTranslationPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Is.EqualTo("Lv: 1 経験値: 0 / 220"));
+            Assert.That(translated, Is.EqualTo("Lv: 1 Exp: 0 / 220"));
             Assert.That(Translator.GetMissingKeyHitCountForTests("LVL: 1 Exp: 0 / 220"), Is.EqualTo(0));
         });
     }
@@ -193,14 +193,14 @@ public sealed class UITextSkinTranslationPatchTests
     [Test]
     public void TranslatePreservingColors_LogsDynamicTransformProbe_ForLevelExpSinkRoute()
     {
-        WriteDictionary(("LVL", "Lv"), ("Exp", "経験値"));
+        WriteDictionary(("LVL", "Lv"));
 
         var output = TestTraceHelper.CaptureTrace(() =>
             Assert.That(
                 UITextSkinTranslationPatch.TranslatePreservingColors(
                     "LVL: 1 Exp: 0 / 220",
                     nameof(UITextSkinTranslationPatch)),
-                Is.EqualTo("Lv: 1 経験値: 0 / 220")));
+                Is.EqualTo("Lv: 1 Exp: 0 / 220")));
 
         Assert.Multiple(() =>
         {
@@ -208,22 +208,20 @@ public sealed class UITextSkinTranslationPatchTests
             Assert.That(output, Does.Contain("route='UITextSkinTranslationPatch'"));
             Assert.That(output, Does.Contain("family='UITextSink.LevelExp'"));
             Assert.That(output, Does.Contain("source='LVL: 1 Exp: 0 / 220'"));
-            Assert.That(output, Does.Contain("translated='Lv: 1 経験値: 0 / 220'"));
+            Assert.That(output, Does.Contain("translated='Lv: 1 Exp: 0 / 220'"));
         });
     }
 
     [Test]
-    public void TranslatePreservingColors_TranslatesHpHudLineInSinkContext()
+    public void TranslatePreservingColors_KeepsHpLabelInHudLineInSinkContext()
     {
-        WriteDictionary(("HP", "ヒットポイント"));
-
         var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
             "HP: 18 / 18",
             nameof(UITextSkinTranslationPatch));
 
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Is.EqualTo("ヒットポイント: 18 / 18"));
+            Assert.That(translated, Is.EqualTo("HP: 18 / 18"));
             Assert.That(Translator.GetMissingKeyHitCountForTests("HP: 18 / 18"), Is.EqualTo(0));
         });
     }
@@ -306,13 +304,17 @@ public sealed class UITextSkinTranslationPatchTests
     public void TranslatePreservingColors_TranslatesCompareStatusLinesInSinkContext()
     {
         WriteDictionary(
-            ("Strength Bonus Cap:", "筋力ボーナス上限:"),
+            ("Strength", "筋力"),
+            ("Bonus Cap:", "ボーナス上限:"),
             ("Weapon Class:", "武器カテゴリ:"),
             ("Long Blades (increased penetration on critical hit)", "長剣（クリティカル時に貫通力上昇）"),
             ("no limit", "なし"));
 
         var cap = UITextSkinTranslationPatch.TranslatePreservingColors(
             "Strength Bonus Cap: 1",
+            nameof(UITextSkinTranslationPatch));
+        var egoCap = UITextSkinTranslationPatch.TranslatePreservingColors(
+            "Ego Bonus Cap: 2",
             nameof(UITextSkinTranslationPatch));
         var noLimit = UITextSkinTranslationPatch.TranslatePreservingColors(
             "Strength Bonus Cap: no limit",
@@ -324,28 +326,46 @@ public sealed class UITextSkinTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(cap, Is.EqualTo("筋力ボーナス上限: 1"));
+            Assert.That(egoCap, Is.EqualTo("Ego ボーナス上限: 2"));
             Assert.That(noLimit, Is.EqualTo("筋力ボーナス上限: なし"));
             Assert.That(weaponClass, Is.EqualTo("武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
         });
     }
 
     [Test]
-    public void TranslatePreservingColors_TranslatesCommandBarInSinkContext()
+    public void TranslatePreservingColors_TranslatesCommandBarInPickTargetRouteContext()
     {
         WriteDictionary(
             ("Look", "調べる"),
             ("lock", "固定"),
             ("interact", "インタラクト"),
-            ("walk", "歩く"));
+            ("walk", "歩く"),
+            ("select", "選択"));
 
         var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "Look | ESC | (F1) lock | space interact | W walk",
-            nameof(UITextSkinTranslationPatch));
+            "Look | ESC | (F1) lock | space interact | W walk | Enter-select",
+            nameof(PickTargetWindowTextTranslator));
 
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Is.EqualTo("調べる | ESC | (F1) 固定 | space インタラクト | W 歩く"));
-            Assert.That(Translator.GetMissingKeyHitCountForTests("Look | ESC | (F1) lock | space interact | W walk"), Is.EqualTo(0));
+            Assert.That(translated, Is.EqualTo("調べる | ESC | (F1) 固定 | space インタラクト | W 歩く | Enter-選択"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("Look | ESC | (F1) lock | space interact | W walk | Enter-select"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesInventoryTooltipLabelInDedicatedRouteContext()
+    {
+        WriteDictionary(("Show Tooltip", "ツールチップ表示"));
+
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+            "Show Tooltip",
+            nameof(InventoryAndEquipmentStatusScreenTranslationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("ツールチップ表示"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("Show Tooltip"), Is.EqualTo(0));
         });
     }
 
@@ -376,6 +396,22 @@ public sealed class UITextSkinTranslationPatchTests
     }
 
     [Test]
+    public void TranslatePreservingColors_SkipsFactionsLineOwnedTextWithoutMissingKeyLogs()
+    {
+        var source = "The villagers of Abal don't care about you, but aggressive ones will attack you.";
+
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+            source,
+            nameof(FactionsLineTranslationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesSkillStatusFamiliesInSinkContext()
     {
         WriteDictionary(
@@ -383,18 +419,45 @@ public sealed class UITextSkinTranslationPatchTests
             ("Starting Cost [{val} sp]", "初期コスト [{val} sp]"),
             ("Skill Points (SP): {val}", "スキルポイント (SP): {val}"),
             ("Tinker I", "工匠 I"),
-            ("Tinker II", "工匠 II"),
-            ("Intelligence", "知力"));
+            ("Tinker II", "工匠 II"));
 
         var learned = UITextSkinTranslationPatch.TranslatePreservingColors("Learned [5/10]", nameof(UITextSkinTranslationPatch));
         var startingCost = UITextSkinTranslationPatch.TranslatePreservingColors("Starting Cost [100 sp] [1/10]", nameof(UITextSkinTranslationPatch));
+        var requirementBlock = UITextSkinTranslationPatch.TranslatePreservingColors(":: 100 SP ::\n:: 23 Intelligence ::\n", nameof(UITextSkinTranslationPatch));
         var skillLine = UITextSkinTranslationPatch.TranslatePreservingColors("    :Tinker II [200sp] 23 Intelligence, Tinker I", nameof(UITextSkinTranslationPatch));
 
         Assert.Multiple(() =>
         {
             Assert.That(learned, Is.EqualTo("習得済み [5/10]"));
             Assert.That(startingCost, Is.EqualTo("初期コスト [100 sp] [1/10]"));
-            Assert.That(skillLine, Is.EqualTo("    :工匠 II [200sp] 23 知力, 工匠 I"));
+            Assert.That(requirementBlock, Is.EqualTo(":: 100 SP ::\n:: 23 INT ::"));
+            Assert.That(skillLine, Is.EqualTo("    :工匠 II [200sp] 23 INT, 工匠 I"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesSkillSectionLabelsInSinkContext()
+    {
+        WriteDictionary(
+            ("Melee", "近接戦闘"),
+            ("Melee Weapons", "近接武器"),
+            ("Short Blades", "短剣"));
+
+        var section = UITextSkinTranslationPatch.TranslatePreservingColors(
+            ":Melee",
+            nameof(UITextSkinTranslationPatch));
+        var subsection = UITextSkinTranslationPatch.TranslatePreservingColors(
+            "  :Melee Weapons",
+            nameof(UITextSkinTranslationPatch));
+        var skillLine = UITextSkinTranslationPatch.TranslatePreservingColors(
+            "    :Short Blades [100sp] 15 Agility",
+            nameof(UITextSkinTranslationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(section, Is.EqualTo(":近接戦闘"));
+            Assert.That(subsection, Is.EqualTo("  :近接武器"));
+            Assert.That(skillLine, Is.EqualTo("    :短剣 [100sp] 15 AGI"));
         });
     }
 
@@ -420,9 +483,10 @@ public sealed class UITextSkinTranslationPatchTests
     [TestCase(nameof(UITextSkinTranslationPatch), nameof(CharacterStatusScreenTranslationPatch), "Qud.UI.CharacterMutationLine")]
     [TestCase(nameof(UITextSkinTranslationPatch), nameof(CharacterStatusScreenTranslationPatch), "Qud.UI.CharacterAttributeLine")]
     [TestCase(nameof(UITextSkinTranslationPatch), nameof(FactionsStatusScreenTranslationPatch), "Qud.UI.FactionsStatusScreen")]
-    [TestCase(nameof(UITextSkinTranslationPatch), nameof(FactionsStatusScreenTranslationPatch), "Qud.UI.FactionsLine")]
+    [TestCase(nameof(UITextSkinTranslationPatch), nameof(FactionsLineTranslationPatch), "Qud.UI.FactionsLine")]
     [TestCase(nameof(UITextSkinTranslationPatch), nameof(MainMenuLocalizationPatch), "Qud.UI.MainMenu")]
     [TestCase(nameof(UITextSkinTranslationPatch), nameof(OptionsLocalizationPatch), "Qud.UI.OptionsScreen")]
+    [TestCase(nameof(UITextSkinTranslationPatch), nameof(PickTargetWindowTextTranslator), "XRL.UI.PickTargetWindow")]
     [TestCase(nameof(UITextSkinTranslationPatch), nameof(PopupTranslationPatch), "Qud.UI.Popup")]
     public void ResolveObservabilityContext_ReclassifiesKnownSinkStacks(
         string originalContext,
@@ -471,6 +535,25 @@ public sealed class UITextSkinTranslationPatchTests
     }
 
     [Test]
+    public void TranslatePreservingColors_TranslatesFactionTopicListsInDedicatedRouteContext()
+    {
+        WriteDictionary(
+            ("The {0} are interested in learning about {1}.", "{0}は{1}について知ることに関心がある。"),
+            ("the locations of insect lair", "昆虫の巣の場所"),
+            ("the locations of ape lair", "類人猿の巣の場所"),
+            ("sultan they admire or despise", "彼らが好悪を抱くスルタン"),
+            ("gossip that's about them", "彼ら自身に関するうわさ話"));
+
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+            "The apes are interested in learning about the locations of insect lair, the locations of ape lair, sultan they admire or despise, and gossip that's about them.",
+            nameof(FactionsStatusScreenTranslationPatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("apesは昆虫の巣の場所、類人猿の巣の場所、彼らが好悪を抱くスルタン、と彼ら自身に関するうわさ話について知ることに関心がある。"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesCharacterStatusFamiliesInDedicatedRouteContext()
     {
         WriteDictionary(
@@ -479,8 +562,6 @@ public sealed class UITextSkinTranslationPatchTests
             ("Mutated Human", "変異人間"),
             ("Tinker", "修理工"),
             ("LVL", "Lv"),
-            ("HP", "ヒットポイント"),
-            ("XP", "経験値"),
             ("Weight", "重量"),
             ("Force Wall", "力場壁"),
             ("RANK", "ランク"),
@@ -521,12 +602,56 @@ public sealed class UITextSkinTranslationPatchTests
             Assert.That(attributePoints, Is.EqualTo("能力値ポイント: 0"));
             Assert.That(mutationPoints, Is.EqualTo("突然変異ポイント: 0"));
             Assert.That(title, Is.EqualTo("変異人間 修理工"));
-            Assert.That(summary, Is.EqualTo("Lv: 1 ¯ ヒットポイント: 18/18 ¯ 経験値: 0/220 ¯ 重量: 405#"));
+            Assert.That(summary, Is.EqualTo("Lv: 1 ¯ HP: 18/18 ¯ XP: 0/220 ¯ 重量: 405#"));
             Assert.That(mutationLine, Is.EqualTo("力場壁 (1)"));
             Assert.That(rank, Is.EqualTo("{{G|ランク 1/10}}"));
             Assert.That(mutationType, Is.EqualTo("{{c|[精神突然変異]}}"));
             Assert.That(help, Is.EqualTo("あなたの{{W|自我}}は精神突然変異の威力、商人との取引能力、他者の意志を支配する力を決める。"));
             Assert.That(darkVision, Is.EqualTo("暗闇でも見える。"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_KeepsHpAndExpLabelsInCharacterStatusCompactLines()
+    {
+        WriteDictionary(
+            ("LVL", "Lv"),
+            ("ACTIVE EFFECTS:", "発動中の効果:"),
+            ("wading", "浅瀬を進んでいる"),
+            ("wet", "濡れている"),
+            ("Strength", "筋力"),
+            ("Bonus Cap:", "ボーナス上限:"),
+            ("Weapon Class:", "武器カテゴリ:"),
+            ("Long Blades (increased penetration on critical hit)", "長剣（クリティカル時に貫通力上昇）"),
+            ("no limit", "なし"));
+
+        var levelExp = UITextSkinTranslationPatch.TranslatePreservingColors(
+            "LVL: 1 Exp: 0 / 220",
+            nameof(CharacterStatusScreenTranslationPatch));
+        var hp = UITextSkinTranslationPatch.TranslatePreservingColors(
+            "HP: 18 / 18",
+            nameof(CharacterStatusScreenTranslationPatch));
+        var activeEffects = UITextSkinTranslationPatch.TranslatePreservingColors(
+            "ACTIVE EFFECTS: wading, wet",
+            nameof(CharacterStatusScreenTranslationPatch));
+        var cap = UITextSkinTranslationPatch.TranslatePreservingColors(
+            "Strength Bonus Cap: no limit",
+            nameof(CharacterStatusScreenTranslationPatch));
+        var egoCap = UITextSkinTranslationPatch.TranslatePreservingColors(
+            "Ego Bonus Cap: 2",
+            nameof(CharacterStatusScreenTranslationPatch));
+        var weaponClass = UITextSkinTranslationPatch.TranslatePreservingColors(
+            "Weapon Class: Long Blades (increased penetration on critical hit)",
+            nameof(CharacterStatusScreenTranslationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(levelExp, Is.EqualTo("Lv: 1 Exp: 0 / 220"));
+            Assert.That(hp, Is.EqualTo("HP: 18 / 18"));
+            Assert.That(activeEffects, Is.EqualTo("発動中の効果: 浅瀬を進んでいる、濡れている"));
+            Assert.That(cap, Is.EqualTo("筋力ボーナス上限: なし"));
+            Assert.That(egoCap, Is.EqualTo("Ego ボーナス上限: 2"));
+            Assert.That(weaponClass, Is.EqualTo("武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
         });
     }
 

@@ -70,7 +70,7 @@ internal static class DeathWrapperFamilyTranslator
     {
         var trimmed = source.TrimEnd();
         var trailingNewline = source.Length > trimmed.Length ? source.Substring(trimmed.Length) : string.Empty;
-        var normalized = StripLeadingArticle(trimmed);
+        var normalized = StringHelpers.StripLeadingEnglishArticle(trimmed, includeCapitalizedDefiniteArticle: true);
         if (Translator.TryGetTranslation(normalized, out var direct)
             && !string.Equals(direct, normalized, StringComparison.Ordinal))
         {
@@ -134,32 +134,6 @@ internal static class DeathWrapperFamilyTranslator
         translated = source;
         return false;
     }
-
-    private static string StripLeadingArticle(string source)
-    {
-        if (source.StartsWith("a ", StringComparison.Ordinal))
-        {
-            return source.Substring(2);
-        }
-
-        if (source.StartsWith("an ", StringComparison.Ordinal))
-        {
-            return source.Substring(3);
-        }
-
-        if (source.StartsWith("the ", StringComparison.Ordinal))
-        {
-            return source.Substring(4);
-        }
-
-        if (source.StartsWith("The ", StringComparison.Ordinal))
-        {
-            return source.Substring(4);
-        }
-
-        return source;
-    }
-
     private sealed class DeathWrapperDefinition
     {
         internal DeathWrapperDefinition(string family, string pattern, string templateKey, string placeholder)

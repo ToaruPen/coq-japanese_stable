@@ -402,7 +402,9 @@ internal static class ChargenStructuredTextTranslator
         var factionKey = match.Groups["faction"].Value.Trim();
         if (!TryTranslateExactLeaf(factionKey, out var translatedFaction))
         {
-            var strippedFactionKey = StripLeadingArticle(factionKey);
+            var strippedFactionKey = StringHelpers.StripLeadingDefiniteArticle(
+                factionKey,
+                StringComparison.OrdinalIgnoreCase);
             if (!TryTranslateExactLeaf(strippedFactionKey, out translatedFaction))
             {
                 translated = source;
@@ -436,14 +438,6 @@ internal static class ChargenStructuredTextTranslator
 
         return false;
     }
-
-    private static string StripLeadingArticle(string source)
-    {
-        return source.StartsWith("the ", StringComparison.OrdinalIgnoreCase)
-            ? source.Substring(4)
-            : source;
-    }
-
     private static Dictionary<string, string> GetSubtypeDisplayNames()
     {
         lock (SyncRoot)

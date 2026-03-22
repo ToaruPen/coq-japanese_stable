@@ -1,51 +1,39 @@
-# Localization AGENTS.md
+# Localization
 
-## WHY
+Shipped localization assets: XML merge files and JSON dictionaries.
 
-- This area contains the shipped localization assets: XML merge files and JSON dictionaries used by the mod and game.
-- It is the main edit surface for stable translated strings, object names, conversation text, and fixed UI labels.
+## Area Map
 
-## WHAT
+- `*.jp.xml` — XML localization overlays (game merge system, `Load="Merge"`)
+- `Dictionaries/*.ja.json` — dictionary assets for UI text, messages, display names
+- `Dictionaries/README.md` — local dictionary handling notes
 
-### Area Map
+## Validation
 
-- `*.jp.xml`
-  - XML localization overlays loaded by the game's merge system
-- `Dictionaries/*.ja.json`
-  - dictionary assets for UI text, message templates, and display-name fragments
-- `Dictionaries/README.md`
-  - local notes for dictionary handling
+```bash
+xmllint --noout <file>         # XML well-formedness
+file <file>                    # Encoding check
+hexdump -C <file> | head -1   # BOM check
+```
 
-### Facts That Matter Here
+## Translation Workflow Gate
 
-- XML files are expected to be UTF-8 without BOM and LF line endings.
-- Most XML localization uses `Load="Merge"` and depends on exact `Name` matching.
-- Blueprint and Conversation IDs must match game version `2.0.4` exactly.
-- Game color codes and runtime placeholders are data, not prose:
-  - preserve `{{...}}`, `&X`, `^x`, `&&`, `^^`
-  - preserve `=variable.name=` exactly
-- Dynamic/procedural text is not automatically an asset-only problem.
-  - If the text is composed upstream, follow `docs/logic-required-policy.md` before adding broad dictionary keys from logs alone.
+Before adding a dictionary entry, check `docs/contract-inventory.json`:
 
-## HOW
+1. **Leaf/MarkupLeaf** → dictionary entry is appropriate
+2. **Template/Builder/MessageFrame** → needs translation logic, not a dictionary entry
+3. **Route not registered** → investigate upstream first per `docs/logic-required-policy.md`
 
-### Validation Commands
+## Editing Rules
 
-- XML well-formedness: `xmllint --noout <file>`
-- Encoding check: `file <file>`
-- BOM check: `hexdump -C <file> | head -1`
-- Python validation/linting from repo root:
-  - `ruff check scripts/`
-  - `pytest scripts/tests/`
+- Use dictionary/XML for true stable leaf strings, fixed labels, and atomic names only.
+- Verify target object/conversation IDs match game version `2.0.4`.
+- Preserve markup and placeholders exactly:
+  - `{{...}}`, `&X`, `^x`, `&&`, `^^` — game color codes
+  - `=variable.name=` — runtime variable tokens
 
-### Asset Editing Workflow
+## Constraints
 
-- Use XML or dictionary assets for true stable leaf strings, fixed labels, and atomic names.
-- When a runtime string includes slots, states, quantities, or generated titles, confirm whether it belongs to a feature-specific generator before trying to close it with exact keys.
-- When editing XML overlays, verify that the target object/conversation ID exists for the intended game version.
-
-### Area-Specific Constraints
-
-- Do not introduce BOM.
-- Do not alter color-code structure or placeholder syntax while translating surrounding text.
-- Treat mojibake as an encoding failure, not as source text to edit around.
+- UTF-8 without BOM, LF line endings.
+- Do not alter color-code structure or placeholder syntax while translating.
+- Treat mojibake as an encoding failure, not source text.

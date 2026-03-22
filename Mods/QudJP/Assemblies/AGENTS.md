@@ -1,66 +1,69 @@
-# Assemblies AGENTS.md
+# Assemblies
 
-## WHY
+C# mod DLL and automated tests for Harmony patch behavior.
 
-- This area contains the C# mod DLL loaded by the game and the automated tests that validate patch behavior.
-- Most runtime localization logic, route/template handling, and Harmony patching lives here.
+## Area Map
 
-## WHAT
+- `QudJP.csproj` — mod DLL (`net48`)
+- `QudJP.Tests/` — test project (`net10.0`)
+- `src/Patches/` — Harmony patches (one class per file)
+- `src/` — translators, renderers, observability helpers, shared utilities
 
-### Area Map
+## Build and Test
 
-- `QudJP.csproj`
-  - mod DLL project targeting `net48`
-- `QudJP.Tests/`
-  - test project targeting `net10.0`
-- `src/`
-  - production code, including `Patches/`, translator logic, and observability helpers
+```bash
+dotnet build Mods/QudJP/Assemblies/QudJP.csproj
+dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj
+dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L1
+dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L2
+dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L2G
+```
 
-### Facts That Matter Here
+## Test Layers
 
-- Runtime Harmony comes from the game environment; tests use HarmonyLib NuGet `2.4.2`.
-- Game DLL references use local contributor paths and are not committed.
-- `Assembly-CSharp.dll` may be referenced for target resolution, signature checks, and safe static behavior checks, but direct game-type instantiation in tests is not part of this repo's test pattern.
-- Dynamic/procedural text work in this area uses `docs/logic-required-policy.md` as the default policy.
-  - If the task starts from `Player.log`, `missing key`, `no pattern`, display-name composition, popup templates, or inventory state text, read that policy before widening a route/template family.
+| Layer | Scope | Dependencies |
+|-------|-------|-------------|
+| L1 | Pure logic | No HarmonyLib, no UnityEngine |
+| L2 | Harmony integration | HarmonyLib NuGet 2.4.2, no Unity runtime |
+| L2G | DLL-assisted resolution | Assembly-CSharp.dll for target/signature checks |
+| L3 | Manual in-game verification | Rosetta on Apple Silicon |
 
-### Test Layers
+## Translation Workflow Gate
 
-- L1
-  - pure logic, no HarmonyLib, no UnityEngine
-- L2
-  - Harmony integration without Unity runtime
-- L2G
-  - game-DLL-assisted target resolution / hook inventory checks
-- L3
-  - manual in-game verification only; see `docs/inventory-verification.md` when relevant
+Before adding any translation, check `docs/contract-inventory.json`:
 
-## HOW
+1. **Leaf/MarkupLeaf** → dictionary entry is appropriate
+2. **Template/Builder/MessageFrame** → implement translation logic (patch or template route)
+3. **Route not registered** → investigate upstream producer first. Do NOT add a dictionary entry.
 
-### Common Commands
+This gate exists because exact-key dictionary entries for dynamically composed text create maintenance debt.
 
-- Build: `dotnet build Mods/QudJP/Assemblies/QudJP.csproj`
-- All C# tests: `dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj`
-- L1 only: `dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L1`
-- L2 only: `dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L2`
-- L2G only: `dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L2G`
+## Patch Architecture (Producer-First)
 
-### Patch And Test Workflow
+See `docs/producer-first-design.md` for the full architecture.
 
-- Prefer the smallest route-aware change over sink-only cleanup.
-- For logic-required families, identify the upstream generator and slot structure before adding templates or broad regexes.
-- Add tests at the same composition boundary as the change.
-  - L1 for parser/template logic
-  - L2 or L2G for the actual patch route and untranslated pass-through behavior
+- **ContractRegistry**: design-time source of truth for route → contract type mappings.
+- **ClaimRegistry**: runtime `ConditionalWeakTable<string, ClaimInfo>` tracking translated strings.
+- **Category 1** (field-write patches): use `ClaimRegistry.Claim()` after rendering.
+- **Category 2** (`__result` rewrite patches): Scope Exempt — no claim needed.
+- **Category 3** (Leaf entries): sink-executed contract via `ContractRegistry` lookup.
 
-### Runtime Failure Model
+## Game Source Reference
 
-- Initialization failures are expected to fail fast.
-- `TargetMethod()` resolution failures log an error and skip patch application.
-- Runtime Prefix/Postfix failures log via `Trace.TraceError` and avoid crashing the game loop.
+Decompiled game source: `~/Dev/coq-decompiled/` (outside repo, never committed).
+Regenerate: `scripts/decompile_game_dll.sh`
 
-### Area-Specific Constraints
+Use to trace upstream producers, verify method signatures, investigate unclaimed routes.
+
+## Constraints
 
 - Do not commit `Assembly-CSharp.dll` or other game DLLs.
-- Do not instantiate real game types in tests when a DummyTarget with matching signature is sufficient.
-- One patch class per file remains the local convention in `src/Patches/`.
+- Do not instantiate real game types in tests — use DummyTargets with matching signatures.
+- One patch class per file in `src/Patches/`.
+- Runtime Harmony comes from the game; tests use HarmonyLib NuGet `2.4.2`.
+
+## Failure Model
+
+- Initialization failures fail fast.
+- `TargetMethod()` resolution failures log and skip patch application.
+- Runtime Prefix/Postfix failures log via `Trace.TraceError` — never crash the game loop.

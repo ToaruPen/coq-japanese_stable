@@ -13,8 +13,6 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class GetDisplayNameProcessPatchTests
 {
-    private static readonly UTF8Encoding Utf8WithoutBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
-
     private string tempDirectory = null!;
 
     [SetUp]
@@ -539,7 +537,7 @@ public sealed class GetDisplayNameProcessPatchTests
     }
 
     [Test]
-    public void Postfix_LeavesComposedNameOnExactMatchPath_WhenBuilderLastAddedDoesNotMatch()
+    public void Postfix_LeavesComposedNameWithoutMissingKeyNoise_WhenBuilderLastAddedDoesNotMatch()
     {
         WriteDictionary(("ヒヒ", "ヒヒ"));
 
@@ -548,10 +546,29 @@ public sealed class GetDisplayNameProcessPatchTests
             var processor = new DummyFigurineDisplayNameProcessor { DB = new DummyDescriptionBuilder("ヒヒ", "warlord") };
             var result = processor.ProcessFor(displayName: "Oo-hoo-ho-HOO-OOO-ee-ho, legendary ヒヒ");
 
+                Assert.Multiple(() =>
+                {
+                    Assert.That(result, Is.EqualTo("Oo-hoo-ho-HOO-OOO-ee-ho, legendary ヒヒ"));
+                    Assert.That(Translator.GetMissingKeyHitCountForTests("Oo-hoo-ho-HOO-OOO-ee-ho, legendary ヒヒ"), Is.EqualTo(0));
+                });
+            });
+    }
+
+    [Test]
+    public void Postfix_PrefersDisplayNameScopedDictionary_WhenLiquidAdjectiveKeyConflicts()
+    {
+        WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("bloody", "{{r|血まみれの}}"));
+        WriteDictionaryFile("ui-liquid-adjectives.ja.json", ("bloody", "血混じりの"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("bloody Naruur");
+
             Assert.Multiple(() =>
             {
-                Assert.That(result, Is.EqualTo("Oo-hoo-ho-HOO-OOO-ee-ho, legendary ヒヒ"));
-                Assert.That(Translator.GetMissingKeyHitCountForTests("Oo-hoo-ho-HOO-OOO-ee-ho, legendary ヒヒ"), Is.EqualTo(1));
+                Assert.That(result, Is.EqualTo("{{r|血まみれの}}Naruur"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("bloody Naruur"), Is.EqualTo(0));
             });
         });
     }
@@ -569,11 +586,24 @@ public sealed class GetDisplayNameProcessPatchTests
 
     private void WriteDictionary(params (string key, string text)[] entries)
     {
+        WriteDictionaryFile("ui-getdisplayname-process.ja.json", entries);
+    }
+
+    private void WriteDictionaryFile(string fileName, params (string key, string text)[] entries)
+    {
         var builder = new StringBuilder();
         builder.Append("{\"entries\":[");
         AppendEntries(builder, entries);
         builder.AppendLine("]}");
-        WriteDictionaryFile(builder.ToString());
+        WriteDictionaryFile(fileName, builder.ToString());
+    }
+
+    private void WriteDictionaryFile(string fileName, string contents)
+    {
+        File.WriteAllText(
+            Path.Combine(tempDirectory, fileName),
+            contents,
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 
     private static string EscapeJson(string value)
@@ -641,12 +671,6 @@ public sealed class GetDisplayNameProcessPatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
-    }
-
-    private void WriteDictionaryFile(string content)
-    {
-        var path = Path.Combine(tempDirectory, "displayname-process-l2.ja.json");
-        File.WriteAllText(path, content, Utf8WithoutBom);
     }
 
     private sealed class DummyDisplayNameProcessor

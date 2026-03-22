@@ -268,6 +268,30 @@ public sealed class UIExpansionPatchTests
         });
     }
 
+    [Test]
+    public void Inventory_TranslatesStructuredDisplayName_WhenPatched()
+    {
+        WriteDictionary(
+            ("water flask", "水袋"),
+            ("[empty]", "[空]"));
+
+        RunWithPostfixPatch(
+            targetType: typeof(DummyInventoryScreen),
+            targetMethodName: nameof(DummyInventoryScreen.GetCategoryLabel),
+            patchType: typeof(InventoryLocalizationPatch),
+            patchMethodName: nameof(InventoryLocalizationPatch.Postfix),
+            assertion: () =>
+        {
+            var result = new DummyInventoryScreen("water flask [empty]").GetCategoryLabel();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("水袋 [空]"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("water flask [empty]"), Is.EqualTo(0));
+            });
+        });
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

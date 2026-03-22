@@ -52,7 +52,7 @@ public static class LookTooltipContentPatch
                 return;
             }
 
-            __result = UITextSkinTranslationPatch.TranslatePreservingColors(__result, nameof(LookTooltipContentPatch));
+            __result = TranslateTooltipContent(__result);
             LogProbe(BuildTooltipContentProbe(__result));
 #if HAS_TMP
             DelayedSceneProbeScheduler.ScheduleCompareSceneProbe(__instance);
@@ -64,6 +64,20 @@ public static class LookTooltipContentPatch
         {
             Trace.TraceError("QudJP: LookTooltipContentPatch.Postfix failed: {0}", ex);
         }
+    }
+
+    internal static string TranslateTooltipContent(string source)
+    {
+        if (StatusLineTranslationHelpers.TryTranslateCompareStatusLine(
+                source,
+                nameof(LookTooltipContentPatch),
+                "Tooltip.CompareStatus",
+                out var translated))
+        {
+            return translated;
+        }
+
+        return UITextSkinTranslationPatch.TranslatePreservingColors(source, nameof(LookTooltipContentPatch));
     }
 
     private static string BuildTooltipContentProbe(string content)

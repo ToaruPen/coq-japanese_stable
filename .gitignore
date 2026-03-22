@@ -46,8 +46,9 @@ packages/
 # Unity / Game mod
 *.unitypackage
 
-# Decompiled game source (copyrighted, local reference only)
+# Decompiled game source (copyrighted, never commit)
 docs/ilspy-raw/
 
 # Local tool installations
 .sisyphus/tools/
+.omx/

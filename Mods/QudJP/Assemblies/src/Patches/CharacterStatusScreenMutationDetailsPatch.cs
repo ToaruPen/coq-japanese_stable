@@ -45,7 +45,7 @@ public static class CharacterStatusScreenMutationDetailsPatch
                 return;
             }
 
-            var currentText = GetCurrentText(___mutationsDetails);
+            var currentText = UITextSkinReflectionAccessor.GetCurrentText(___mutationsDetails, nameof(CharacterStatusScreenMutationDetailsPatch));
             if (string.IsNullOrEmpty(currentText))
             {
                 return;
@@ -60,7 +60,7 @@ public static class CharacterStatusScreenMutationDetailsPatch
                 return;
             }
 
-            SetCurrentText(___mutationsDetails, translated);
+            _ = UITextSkinReflectionAccessor.SetCurrentText(___mutationsDetails, translated, nameof(CharacterStatusScreenMutationDetailsPatch));
         }
         catch (Exception ex)
         {
@@ -79,58 +79,5 @@ public static class CharacterStatusScreenMutationDetailsPatch
 
         var field = AccessTools.Field(type, memberName);
         return field?.GetValue(instance);
-    }
-
-    private static string? GetCurrentText(object uiTextSkin)
-    {
-        var textField = AccessTools.Field(uiTextSkin.GetType(), "text");
-        if (textField?.FieldType == typeof(string))
-        {
-            return textField.GetValue(uiTextSkin) as string;
-        }
-
-        var textProperty = AccessTools.Property(uiTextSkin.GetType(), "Text");
-        if (textProperty is null)
-        {
-            Trace.TraceWarning(
-                "QudJP: CharacterStatusScreenMutationDetailsPatch.GetCurrentText falling back to property 'text' for {0}.",
-                uiTextSkin.GetType().FullName);
-            textProperty = AccessTools.Property(uiTextSkin.GetType(), "text");
-        }
-
-        return textProperty is not null && textProperty.CanRead && textProperty.PropertyType == typeof(string)
-            ? textProperty.GetValue(uiTextSkin) as string
-            : null;
-    }
-
-    private static void SetCurrentText(object uiTextSkin, string translated)
-    {
-        var setText = AccessTools.Method(uiTextSkin.GetType(), "SetText", new[] { typeof(string) });
-        if (setText is not null)
-        {
-            _ = setText.Invoke(uiTextSkin, new object[] { translated });
-            return;
-        }
-
-        var textField = AccessTools.Field(uiTextSkin.GetType(), "text");
-        if (textField?.FieldType == typeof(string))
-        {
-            textField.SetValue(uiTextSkin, translated);
-            return;
-        }
-
-        var textProperty = AccessTools.Property(uiTextSkin.GetType(), "Text");
-        if (textProperty is null)
-        {
-            Trace.TraceWarning(
-                "QudJP: CharacterStatusScreenMutationDetailsPatch.SetCurrentText falling back to property 'text' for {0}.",
-                uiTextSkin.GetType().FullName);
-            textProperty = AccessTools.Property(uiTextSkin.GetType(), "text");
-        }
-
-        if (textProperty is not null && textProperty.CanWrite && textProperty.PropertyType == typeof(string))
-        {
-            textProperty.SetValue(uiTextSkin, translated);
-        }
     }
 }

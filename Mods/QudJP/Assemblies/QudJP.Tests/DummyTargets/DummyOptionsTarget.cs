@@ -41,10 +41,26 @@ internal sealed class DummyOptionsRow
 
 internal sealed class DummyMenuOption
 {
-    public DummyMenuOption(string description)
+    public DummyMenuOption(string description, string? inputCommand = null, string? keyDescription = null)
     {
         Description = description;
+        InputCommand = inputCommand;
+        KeyDescription = keyDescription;
     }
 
     public string Description;
+
+    public string? InputCommand;
+
+    public string? KeyDescription;
+
+    public string getMenuText()
+    {
+        if (!string.IsNullOrEmpty(KeyDescription))
+        {
+            return "[{{W|" + KeyDescription + "}}] " + Description;
+        }
+
+        return Description;
+    }
 }

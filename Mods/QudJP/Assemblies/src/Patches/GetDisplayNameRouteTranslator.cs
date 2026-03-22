@@ -8,6 +8,15 @@ namespace QudJP.Patches;
 
 internal static class GetDisplayNameRouteTranslator
 {
+    private static readonly string[] DisplayNameDictionaryFiles =
+    {
+        "ui-displayname-adjectives.ja.json",
+    };
+    private static readonly string[] LiquidPhraseDictionaryFiles =
+    {
+        "ui-liquid-adjectives.ja.json",
+        "ui-liquids.ja.json",
+    };
     private static readonly Regex BracketedDisplayNameSuffixPattern =
         new Regex("^(?<base>.+?)\\s+\\[(?<state>.+)\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex ParenthesizedDisplayNameSuffixPattern =
@@ -37,6 +46,23 @@ internal static class GetDisplayNameRouteTranslator
     private static readonly Regex EnglishWordPattern =
         new Regex("[A-Za-z]{2,}", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    internal static bool IsAlreadyLocalizedDisplayNameText(string source)
+    {
+        return IsAlreadyLocalizedBracketedDisplayName(source)
+            || IsAlreadyLocalizedParenthesizedDisplayName(source);
+    }
+
+    internal static bool IsAlreadyLocalizedDisplayNameStateText(string source)
+    {
+        if (string.IsNullOrWhiteSpace(source))
+        {
+            return false;
+        }
+
+        return JapaneseCharacterPattern.IsMatch(source)
+            && !EnglishWordPattern.IsMatch(source);
+    }
+
     internal static string TranslatePreservingColors(string? source, string? context = null)
     {
         if (string.IsNullOrEmpty(source))
@@ -60,7 +86,16 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         using var __ = Translator.PushMissingKeyLoggingSuppression(
+            IsAlreadyLocalizedDisplayNameText(stripped)
+            || IsAlreadyLocalizedDisplayNameStateText(stripped)
+            || IsAlreadyLocalizedBracketLabel(stripped)
+            ||
             UITextSkinTranslationPatch.IsAlreadyLocalizedDirectRouteTextForContext(stripped, context));
+
+        if (IsAlreadyLocalizedDisplayNameText(stripped))
+        {
+            return source!;
+        }
 
         if (TryTranslateLeadingMarkupWrappedModifier(source!, route, out var markupLeadingTranslation))
         {
@@ -133,6 +168,16 @@ internal static class GetDisplayNameRouteTranslator
         if (changed)
         {
             translated = transformed;
+            return true;
+        }
+
+        if (TryTranslateExactDisplayNameLookup(source, route, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateTrimmedDisplayNameLookup(source, route, out translated))
+        {
             return true;
         }
 
@@ -268,8 +313,8 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         var modifier = match.Groups["modifier"].Value;
-        var translatedModifier = Translator.Translate(modifier);
-        if (string.Equals(translatedModifier, modifier, StringComparison.Ordinal))
+        var translatedModifier = TranslateDisplayNameModifier(modifier);
+        if (translatedModifier is null)
         {
             translated = source;
             return false;
@@ -302,8 +347,8 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         var rest = source.Substring(separatorIndex + 1);
-        var translatedModifier = Translator.Translate(modifier);
-        if (string.Equals(translatedModifier, modifier, StringComparison.Ordinal))
+        var translatedModifier = TranslateDisplayNameExactOrLowerAscii(modifier);
+        if (translatedModifier is null)
         {
             return false;
         }
@@ -372,8 +417,8 @@ internal static class GetDisplayNameRouteTranslator
             return false;
         }
 
-        var translatedModifier = Translator.Translate(modifier);
-        if (string.Equals(translatedModifier, modifier, StringComparison.Ordinal))
+        var translatedModifier = TranslateDisplayNameExactOrLowerAscii(modifier);
+        if (translatedModifier is null)
         {
             return false;
         }
@@ -418,20 +463,10 @@ internal static class GetDisplayNameRouteTranslator
             return translated;
         }
 
-        var direct = Translator.Translate(source);
-        if (!string.Equals(direct, source, StringComparison.Ordinal))
+        var direct = TranslateDisplayNameExactOrLowerAscii(source);
+        if (direct is not null)
         {
             return direct;
-        }
-
-        var lowered = LowerAscii(source);
-        if (!string.Equals(lowered, source, StringComparison.Ordinal))
-        {
-            var loweredTranslation = Translator.Translate(lowered);
-            if (!string.Equals(loweredTranslation, lowered, StringComparison.Ordinal))
-            {
-                return loweredTranslation;
-            }
         }
 
         return source;
@@ -439,7 +474,7 @@ internal static class GetDisplayNameRouteTranslator
 
     private static string TranslateDisplayNameState(string source, string route)
     {
-        if (UITextSkinTranslationPatch.IsAlreadyLocalizedDisplayNameStateText(source))
+        if (IsAlreadyLocalizedDisplayNameStateText(source))
         {
             return source;
         }
@@ -535,28 +570,8 @@ internal static class GetDisplayNameRouteTranslator
 
     private static string TranslateDisplayNameStateTarget(string source, string route)
     {
-        var target = StripLeadingArticle(source);
+        var target = StringHelpers.StripLeadingEnglishArticle(source);
         return TranslateDisplayNameFragment(target, route);
-    }
-
-    private static string StripLeadingArticle(string source)
-    {
-        if (source.StartsWith("a ", StringComparison.Ordinal))
-        {
-            return source.Substring(2);
-        }
-
-        if (source.StartsWith("an ", StringComparison.Ordinal))
-        {
-            return source.Substring(3);
-        }
-
-        if (source.StartsWith("the ", StringComparison.Ordinal))
-        {
-            return source.Substring(4);
-        }
-
-        return source;
     }
 
     private static string UnwrapSingleBracketPair(string source)
@@ -637,6 +652,12 @@ internal static class GetDisplayNameRouteTranslator
 
     private static string? TranslateAsciiPhrase(string source)
     {
+        var scoped = ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, LiquidPhraseDictionaryFiles);
+        if (scoped is not null)
+        {
+            return scoped;
+        }
+
         using var __ = Translator.PushMissingKeyLoggingSuppression(true);
         var direct = Translator.Translate(source);
         if (!string.Equals(direct, source, StringComparison.Ordinal))
@@ -653,7 +674,12 @@ internal static class GetDisplayNameRouteTranslator
         var builder = new StringBuilder();
         for (var index = 0; index < parts.Length; index++)
         {
-            var translatedPart = Translator.Translate(parts[index]);
+            var translatedPart = ScopedDictionaryLookup.TranslateExactOrLowerAscii(parts[index], LiquidPhraseDictionaryFiles);
+            if (translatedPart is null)
+            {
+                translatedPart = Translator.Translate(parts[index]);
+            }
+
             if (string.Equals(translatedPart, parts[index], StringComparison.Ordinal))
             {
                 return null;
@@ -694,41 +720,136 @@ internal static class GetDisplayNameRouteTranslator
 
     private static string? TranslateAsciiTokenWithCaseFallback(string source)
     {
-        var direct = Translator.Translate(source);
-        if (!string.Equals(direct, source, StringComparison.Ordinal))
-        {
-            return direct;
-        }
-
-        var lower = LowerAscii(source);
-        if (!string.Equals(lower, source, StringComparison.Ordinal))
-        {
-            var lowered = Translator.Translate(lower);
-            if (!string.Equals(lowered, lower, StringComparison.Ordinal))
-            {
-                return lowered;
-            }
-        }
-
-        return null;
+        return TranslateDisplayNameExactOrLowerAscii(source);
     }
 
-    private static string LowerAscii(string source)
+    private static bool TryTranslateExactDisplayNameLookup(string source, string route, out string translated)
     {
-        var buffer = source.ToCharArray();
-        var changed = false;
-        for (var index = 0; index < buffer.Length; index++)
+        var direct = TranslateDisplayNameExactOrLowerAscii(source);
+        if (direct is not null)
         {
-            var character = buffer[index];
-            if (character < 'A' || character > 'Z')
-            {
-                continue;
-            }
+            translated = direct;
+            DynamicTextObservability.RecordTransform(route, "DisplayName.ExactLookup", source, translated);
+            return true;
+        }
+        translated = source;
+        return false;
+    }
 
-            buffer[index] = (char)(character + ('a' - 'A'));
-            changed = true;
+    private static bool TryTranslateTrimmedDisplayNameLookup(string source, string route, out string translated)
+    {
+        translated = source;
+        var trimmed = source.Trim();
+        if (trimmed.Length == 0 || trimmed.Length == source.Length)
+        {
+            return false;
         }
 
-        return changed ? new string(buffer) : source;
+        var trimmedTranslation = TranslateDisplayNameExactOrLowerAscii(trimmed);
+        if (trimmedTranslation is null)
+        {
+            return false;
+        }
+
+        var leadingLength = source.Length - source.TrimStart().Length;
+        var trailingLength = source.Length - source.TrimEnd().Length;
+#pragma warning disable CA1845 // net48 target keeps simple string APIs here
+        translated =
+            source.Substring(0, leadingLength) +
+            trimmedTranslation +
+            source.Substring(source.Length - trailingLength, trailingLength);
+#pragma warning restore CA1845
+        DynamicTextObservability.RecordTransform(route, "DisplayName.TrimmedLookup", source, translated);
+        return true;
+    }
+
+    private static string? TryTranslateDisplayNameScopedExact(string source)
+    {
+        return ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, DisplayNameDictionaryFiles);
+    }
+
+    private static string? TranslateDisplayNameExactOrLowerAscii(string source)
+    {
+        var scoped = TryTranslateDisplayNameScopedExact(source);
+        if (scoped is not null)
+        {
+            return scoped;
+        }
+
+        return StringHelpers.TryGetTranslationExactOrLowerAscii(source, out var translated)
+            ? translated
+            : null;
+    }
+
+    private static string? TranslateDisplayNameModifier(string source)
+    {
+        var bracketWrapped = source.Length >= 2
+            && source[0] == '['
+            && source[source.Length - 1] == ']';
+        var core = bracketWrapped
+            ? source.Substring(1, source.Length - 2)
+            : source;
+
+        var direct = TryTranslateDisplayNameScopedExact(core);
+        if (direct is null)
+        {
+            var (stripped, _) = ColorAwareTranslationComposer.Strip(core);
+            if (!string.Equals(stripped, core, StringComparison.Ordinal))
+            {
+                direct = TryTranslateDisplayNameScopedExact(stripped);
+            }
+        }
+
+        if (direct is null)
+        {
+            var global = Translator.Translate(source);
+            if (string.Equals(global, source, StringComparison.Ordinal))
+            {
+                return null;
+            }
+
+            return global;
+        }
+
+        return bracketWrapped
+            ? "[" + direct + "]"
+            : direct;
+    }
+
+    private static bool IsAlreadyLocalizedBracketedDisplayName(string source)
+    {
+        var match = BracketedDisplayNameSuffixPattern.Match(source);
+        if (!match.Success)
+        {
+            return false;
+        }
+
+        return ContainsJapanese(match.Groups["base"].Value)
+            && IsAlreadyLocalizedDisplayNameStateText(match.Groups["state"].Value);
+    }
+
+    private static bool IsAlreadyLocalizedParenthesizedDisplayName(string source)
+    {
+        var match = ParenthesizedDisplayNameSuffixPattern.Match(source);
+        if (!match.Success)
+        {
+            return false;
+        }
+
+        return ContainsJapanese(match.Groups["base"].Value)
+            && IsAlreadyLocalizedDisplayNameStateText(match.Groups["state"].Value);
+    }
+
+    private static bool ContainsJapanese(string source)
+    {
+        return !string.IsNullOrEmpty(source) && JapaneseCharacterPattern.IsMatch(source);
+    }
+
+    private static bool IsAlreadyLocalizedBracketLabel(string source)
+    {
+        return source.Length >= 2
+            && source[0] == '['
+            && source[source.Length - 1] == ']'
+            && ContainsJapanese(source);
     }
 }

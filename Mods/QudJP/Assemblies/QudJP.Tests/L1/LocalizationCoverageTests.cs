@@ -115,6 +115,57 @@ public sealed class LocalizationCoverageTests
         Assert.That(untranslated, Is.Empty, "Mutation option names are not covered by the exact-leaf chargen route.");
     }
 
+    [Test]
+    public void WorldPartsDictionary_DoesNotReuseCookingOwnerKeys()
+    {
+        var dictionariesRoot = Path.Combine(localizationRoot, "Dictionaries");
+        var cookingKeys = LoadEntries(Path.Combine(dictionariesRoot, "world-effects-cooking.ja.json"))
+            .Select(static entry => entry.Key)
+            .ToHashSet(StringComparer.Ordinal);
+        var worldPartsCookingKeys = LoadEntries(Path.Combine(dictionariesRoot, "world-parts.ja.json"))
+            .Where(static entry => entry.Context.StartsWith("XRL.World.XRL.World.Effects.CookingDomain", StringComparison.Ordinal))
+            .Select(static entry => entry.Key)
+            .Where(cookingKeys.Contains)
+            .ToArray();
+
+        Assert.That(
+            worldPartsCookingKeys,
+            Is.Empty,
+            "world-parts should not duplicate cooking owner keys because Translator currently loads dictionaries by key only.");
+    }
+
+    [Test]
+    public void WorldEffectsCookingDictionary_DoesNotContainSameTextDuplicateKeys()
+    {
+        var dictionariesRoot = Path.Combine(localizationRoot, "Dictionaries");
+        var sameTextDuplicateKeys = LoadEntries(Path.Combine(dictionariesRoot, "world-effects-cooking.ja.json"))
+            .GroupBy(static entry => entry.Key, StringComparer.Ordinal)
+            .Where(static group => group.Count() > 1)
+            .Where(static group => group.Select(static entry => entry.Text).Distinct(StringComparer.Ordinal).Count() == 1)
+            .Select(static group => group.Key)
+            .ToArray();
+
+        Assert.That(
+            sameTextDuplicateKeys,
+            Is.Empty,
+            "world-effects-cooking should not keep duplicate keys with the same text because Translator currently loads dictionaries by key only.");
+    }
+
+    [Test]
+    public void WorldEffectsCookingDictionary_DoesNotContainQuestionMarkOnlyKeys()
+    {
+        var dictionariesRoot = Path.Combine(localizationRoot, "Dictionaries");
+        var invalidKeys = LoadEntries(Path.Combine(dictionariesRoot, "world-effects-cooking.ja.json"))
+            .Where(static entry => entry.Key.Length > 0 && entry.Key.All(static ch => ch == '?'))
+            .Select(static entry => $"{entry.Context}:{entry.Key}")
+            .ToArray();
+
+        Assert.That(
+            invalidKeys,
+            Is.Empty,
+            "world-effects-cooking should not contain mojibake question-mark keys when a concrete English source key exists.");
+    }
+
     private static string[] LoadMutationNamesWithDisplayName(string path)
     {
         var document = XDocument.Load(path);
@@ -159,9 +210,10 @@ public sealed class LocalizationCoverageTests
             .EnumerateArray()
             .Select(static element => new DictionaryEntry(
                 element.GetProperty("key").GetString() ?? string.Empty,
-                element.TryGetProperty("context", out var contextProperty) ? contextProperty.GetString() ?? string.Empty : string.Empty))
+                element.TryGetProperty("context", out var contextProperty) ? contextProperty.GetString() ?? string.Empty : string.Empty,
+                element.GetProperty("text").GetString() ?? string.Empty))
             .ToArray();
     }
 
-    private sealed record DictionaryEntry(string Key, string Context);
+    private sealed record DictionaryEntry(string Key, string Context, string Text);
 }
