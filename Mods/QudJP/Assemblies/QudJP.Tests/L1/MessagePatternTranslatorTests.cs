@@ -384,6 +384,38 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_AppliesJournalJourneyPattern_WithTranslatedCapture()
+    {
+        WritePatternDictionary(("^You journeyed to (.+?)\\.$", "{t0}に旅した。"));
+        WriteExactDictionary(("Kyakukya", "キャクキャ"));
+
+        var translated = MessagePatternTranslator.Translate("You journeyed to Kyakukya.");
+
+        Assert.That(translated, Is.EqualTo("キャクキャに旅した。"));
+    }
+
+    [Test]
+    public void Translate_AppliesJournalHiddenVillagePattern_WithTranslatedCapture()
+    {
+        WritePatternDictionary(("^You discovered the hidden village of (.+?)\\.$", "隠れ里{t0}を発見した。"));
+        WriteExactDictionary(("Bey Lah", "ベイ・ラー"));
+
+        var translated = MessagePatternTranslator.Translate("You discovered the hidden village of Bey Lah.");
+
+        Assert.That(translated, Is.EqualTo("隠れ里ベイ・ラーを発見した。"));
+    }
+
+    [Test]
+    public void Translate_AppliesJournalMapNoteLastVisitedPattern()
+    {
+        WritePatternDictionary(("^Last visited on the (.+?) of (.+?)$", "{1}の{0}日に最後に訪れた。"));
+
+        var translated = MessagePatternTranslator.Translate("Last visited on the 5th of Ut yara Ux");
+
+        Assert.That(translated, Is.EqualTo("Ut yara Uxの5th日に最後に訪れた。"));
+    }
+
+    [Test]
     public void Translate_AppliesDisassembleAndBitsReceiptPattern()
     {
         WritePatternDictionary(("^You disassemble the (.+?)\\. You receive tinkering bits <(.+?)>\\.[.!]?$", "{0}を分解し、修理ビット<{1}>を受け取った。"));

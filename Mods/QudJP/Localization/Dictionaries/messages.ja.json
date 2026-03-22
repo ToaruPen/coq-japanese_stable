@@ -622,6 +622,34 @@
       "template": "ジャーナルの「場所 > {t1}」欄に{0}の場所を記録した。"
     },
     {
+      "pattern": "^You journeyed to (.+?)\\.$",
+      "template": "{t0}に旅した。"
+    },
+    {
+      "pattern": "^You discovered the hidden village of (.+?)\\.$",
+      "template": "隠れ里{t0}を発見した。"
+    },
+    {
+      "pattern": "^There exists a pocket dimension known as (.+?)\\.$",
+      "template": "{0}と呼ばれるポケット次元が存在する。"
+    },
+    {
+      "pattern": "^There exists a dimension known as (.+?)\\.$",
+      "template": "{0}と呼ばれる次元が存在する。"
+    },
+    {
+      "pattern": "^You crossed into (.+?)\\.$",
+      "template": "{t0}へ足を踏み入れた。"
+    },
+    {
+      "pattern": "^You crossed into the Thin World, rarefied, and stood before the gate to (.+?)\\.$",
+      "template": "希薄な薄界へ足を踏み入れ、{t0}への門前に立った。"
+    },
+    {
+      "pattern": "^Last visited on the (.+?) of (.+?)$",
+      "template": "{1}の{0}日に最後に訪れた。"
+    },
+    {
       "pattern": "^You have received a new quest, (.+?)(!+)$",
       "template": "新しいクエストを受けた: {0}{1}"
     },

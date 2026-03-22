@@ -1,0 +1,283 @@
+{
+  "meta": {
+    "id": "ui-journal-chronology",
+    "lang": "ja",
+    "version": "0.1.0"
+  },
+  "rules": {
+    "protectColorTags": true,
+    "protectHtmlEntities": true
+  },
+  "entries": [
+    {
+      "key": "Inexplicably, you drank lava.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "なぜか溶岩を飲んだ。"
+    },
+    {
+      "key": "You drank the bright cream of the Palladium Reef and were quickened.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "パラディウム礁のまばゆい乳脂を飲み、素早くなった。"
+    },
+    {
+      "key": "You drank the raw entropy of the universe and your mind fluctuated in and out of coherence.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "宇宙の生のエントロピーを飲み、精神が正気と混沌のあいだで揺らいだ。"
+    },
+    {
+      "key": "You drank the raw entropy of the universe and your genome fluctuated in and out of coherence.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "宇宙の生のエントロピーを飲み、遺伝子が安定と混沌のあいだで揺らいだ。"
+    },
+    {
+      "key": "You poured the raw entropy of the universe onto things and caused them to glitch into other things.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "宇宙の生のエントロピーを物に注ぎ、別の物へとグリッチさせた。"
+    },
+    {
+      "key": "You poured the raw entropy of the universe on the ground and caused the space around you to glitch.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "宇宙の生のエントロピーを地面に注ぎ、周囲の空間をグリッチさせた。"
+    },
+    {
+      "key": "You had the feeling of being watched, and learned that there's a sight older than sight.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "見られている気配を感じ、視覚よりも古い視覚が存在することを知った。"
+    },
+    {
+      "key": "You learned a cosmic truth, early among truths, about the locality of space and time as you knew them and an aether vaster than both.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "空間と時間の局所性、そしてその両方よりも広大なエーテルについて、真理の中でも原初の宇宙的真理を知った。"
+    },
+    {
+      "key": "You touched the chiming rock and attuned to Chavvah, the Tree of Life.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "鳴り響く岩に触れ、生命の樹チャヴァに同調した。"
+    },
+    {
+      "key": "You rejoiced in a drop of nectar.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "一滴の花蜜に歓喜した。"
+    },
+    {
+      "key": "You became denser.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "より高密度になった。"
+    },
+    {
+      "key": "You ate some Crystal Delight and became a crystalline being.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "クリスタル・ディライトを食べ、結晶の存在になった。"
+    },
+    {
+      "key": "You ate the Cloaca Surprise.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "クロアカ・サプライズを食べた。"
+    },
+    {
+      "key": "You contracted glotrot.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "舌腐病に罹患した。"
+    },
+    {
+      "key": "You were cured of glotrot and your tongue regrew.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "舌腐病が治り、舌が生え直した。"
+    },
+    {
+      "key": "Your tongue regrew.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "舌が生え直した。"
+    },
+    {
+      "key": "Your tongue rotted away.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "舌が腐り落ちた。"
+    },
+    {
+      "key": "You contracted ironshank.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "鉄脚病に罹患した。"
+    },
+    {
+      "key": "You were cured of ironshank and your leg bones softened.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "鉄脚病が治り、脚の骨が柔らかさを取り戻した。"
+    },
+    {
+      "key": "You contracted monochrome.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "モノクロームに罹患した。"
+    },
+    {
+      "key": "You were cured of monochrome and your vision returned to color.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "モノクロームが治り、視界に色が戻った。"
+    },
+    {
+      "key": "You woke from a peaceful dream.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "穏やかな夢から目覚めた。"
+    },
+    {
+      "key": "You woke from a fitful dream.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "浅い夢から目覚めた。"
+    },
+    {
+      "key": "There exists a pocket dimension known as {{O|Tzimtzlum}}.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "{{O|ツィムツルム}}と呼ばれるポケット次元が存在する。"
+    },
+    {
+      "key": "A {{w|dromad}} caravan",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "{{w|ドロマド}}の隊商"
+    },
+    {
+      "key": "While dimensionally lost, you discovered a passageway to the pocket dimension Tzimtzlum and traveled there.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "次元の狭間に迷う中、ポケット次元ツィムツルムへの通路を見つけ、そこへ赴いた。"
+    },
+    {
+      "key": "You discovered the Hydropon.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "ハイドロポンを発見した。"
+    },
+    {
+      "key": "Thah gifted you a miraculous sculpture for helping the slynth.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "スリンスを助けた礼として、タァから奇跡の彫像を授かった。"
+    },
+    {
+      "key": "You stumbled upon some flattened remains.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "ぺしゃんこになった遺骸を見つけた。"
+    },
+    {
+      "key": "You crossed into Brightsheol.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "ブライトシェオルへ足を踏み入れた。"
+    },
+    {
+      "key": "You crossed into the Thin World, rarefied, and stood before the gate to Brightsheol.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "希薄な薄界へ足を踏み入れ、ブライトシェオルへの門前に立った。"
+    },
+    {
+      "key": "You died and were entombed in the burial chamber of Resheph, the Last Sultan.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "死に、最後のスルタンたるレシェフの埋葬室に葬られた。"
+    },
+    {
+      "key": "You were reconstituted in the material world with a stronger magnetic charge.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "より強い磁気を帯びて物質界で再構成された。"
+    },
+    {
+      "key": "You found a new home for a young people.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "若き民の新たな住処を見つけた。"
+    },
+    {
+      "key": "You restored functionality to one of the four strange entities in the Tomb.",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "墓所にいる4つの奇妙な存在のうち1つの機能を回復させた。"
+    },
+    {
+      "key": "The roaming keter of Chavvah, Tree of Life",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "生命の樹チャヴァの放浪するケテル"
+    },
+    {
+      "key": "Bey Lah",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "ベイ・ラー"
+    },
+    {
+      "key": "Brightsheol",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "ブライトシェオル"
+    },
+    {
+      "key": "Tzimtzlum",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "ツィムツルム"
+    },
+    {
+      "key": "Hydropon",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "ハイドロポン"
+    },
+    {
+      "key": "Omonporch",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "オモンポーチ"
+    },
+    {
+      "key": "the Six Day Stilt",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "六日竹馬"
+    },
+    {
+      "key": "Red Rock",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "レッドロック"
+    },
+    {
+      "key": "a rusted archway",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "錆びたアーチ門"
+    },
+    {
+      "key": "the rust wells",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "錆の井戸"
+    },
+    {
+      "key": "Grit Gate",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "グリット・ゲート"
+    },
+    {
+      "key": "Golgotha",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "ゴルゴタ"
+    },
+    {
+      "key": "Bethesda Susa",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "ベセスダ・スーサ"
+    },
+    {
+      "key": "the Tomb of the Eaters",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "喰らう者の墓"
+    },
+    {
+      "key": "the asphalt mines",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "アスファルト鉱山"
+    },
+    {
+      "key": "the City of Bones",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "骨の都"
+    },
+    {
+      "key": "the Great Asphalt Sea",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "大アスファルト海"
+    },
+    {
+      "key": "the Tunnels of Ur",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "ウルの坑道"
+    },
+    {
+      "key": "the Swilling Vast",
+      "context": "Qud.UI.Qud.API.JournalAPI",
+      "text": "スウィリング・ヴァスト"
+    }
+  ]
+}
