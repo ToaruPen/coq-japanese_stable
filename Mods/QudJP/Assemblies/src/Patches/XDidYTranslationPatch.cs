@@ -679,8 +679,13 @@ public static class XDidYTranslationPatch
             var dirSuffix = GetDirectionSuffix(actor);
             if (describeSubjectDirectionLate)
             {
-                // Late direction appears at end of sentence: "…現れた、北側に。"
-                lateDirectionSuffix = string.IsNullOrEmpty(dirSuffix) ? string.Empty : "、" + dirSuffix + "に";
+                if (!string.IsNullOrEmpty(dirSuffix))
+                {
+                    // Embed direction as pre-verbal adverb: "ホログラムは北側に現れた。"
+                    // Trailing に makes BuildSentence skip は (EndsWithJapaneseParticle).
+                    subjectText = ownerPrefix + baseLabel + "は" + dirSuffix + "に";
+                    return true;
+                }
             }
             else if (!string.IsNullOrEmpty(dirSuffix))
             {

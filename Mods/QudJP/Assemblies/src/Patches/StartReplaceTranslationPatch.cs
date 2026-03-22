@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using HarmonyLib;
@@ -41,10 +44,25 @@ public static class StartReplaceTranslationPatch
         }
 
         // Fallback: search all types for the extension method
-        foreach (var asm in System.AppDomain.CurrentDomain.GetAssemblies())
+        foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
         {
-            foreach (var t in asm.GetTypes())
+            Type[] types;
+            try
             {
+                types = asm.GetTypes();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                types = ex.Types.Where(t => t != null).ToArray()!;
+            }
+
+            foreach (var t in types)
+            {
+                if (!t.IsDefined(typeof(ExtensionAttribute), false))
+                {
+                    continue;
+                }
+
                 var m = AccessTools.Method(t, "StartReplace", new[] { typeof(string) });
                 if (m is not null && m.IsStatic)
                 {
@@ -53,7 +71,9 @@ public static class StartReplaceTranslationPatch
             }
         }
 
-        return null!;
+        System.Diagnostics.Trace.TraceError(
+            "QudJP: StartReplaceTranslationPatch.TargetMethod failed to resolve GameTextExtensions.StartReplace(string).");
+        throw new MissingMethodException("GameTextExtensions", "StartReplace");
     }
 
     [HarmonyPrefix]
@@ -89,6 +109,8 @@ public static class StartReplaceTranslationPatch
         var path = ResolveDictionaryPath();
         if (!File.Exists(path))
         {
+            System.Diagnostics.Trace.TraceError(
+                "QudJP: Variable template dictionary not found: {0}", path);
             templateDictionary = new Dictionary<string, string>();
             return;
         }
@@ -102,7 +124,7 @@ public static class StartReplaceTranslationPatch
                 var dict = new Dictionary<string, string>();
                 foreach (var entry in doc.Entries)
                 {
-                    if (entry.Key is not null && entry.Text is not null && !entry.Key.StartsWith("__", System.StringComparison.Ordinal))
+                    if (entry.Key is not null && entry.Text is not null && !entry.Key.StartsWith("__", StringComparison.Ordinal))
                     {
                         dict[entry.Key] = entry.Text;
                     }
@@ -115,8 +137,10 @@ public static class StartReplaceTranslationPatch
                 templateDictionary = new Dictionary<string, string>();
             }
         }
-        catch
+        catch (Exception ex)
         {
+            System.Diagnostics.Trace.TraceError(
+                "QudJP: Failed to load variable template dictionary '{0}': {1}", path, ex);
             templateDictionary = new Dictionary<string, string>();
         }
     }
