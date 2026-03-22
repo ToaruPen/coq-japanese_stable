@@ -315,7 +315,7 @@ public static class XDidYTranslationPatch
 
         if (!string.IsNullOrEmpty(lateDirectionSuffix))
         {
-            translated += lateDirectionSuffix;
+            translated = InsertBeforePunctuation(translated, lateDirectionSuffix);
         }
 
         DispatchTranslatedMessage(
@@ -446,7 +446,7 @@ public static class XDidYTranslationPatch
 
         if (!string.IsNullOrEmpty(lateDirectionSuffix))
         {
-            translated += lateDirectionSuffix;
+            translated = InsertBeforePunctuation(translated, lateDirectionSuffix);
         }
 
         DispatchTranslatedMessage(
@@ -625,7 +625,7 @@ public static class XDidYTranslationPatch
 
         if (!string.IsNullOrEmpty(lateDirectionSuffix))
         {
-            translated += lateDirectionSuffix;
+            translated = InsertBeforePunctuation(translated, lateDirectionSuffix);
         }
 
         DispatchTranslatedMessage(
@@ -714,7 +714,6 @@ public static class XDidYTranslationPatch
             return false;
         }
 
-        subjectText = ownerPrefix + baseLabel;
         if (describeSubjectDirection)
         {
             var dirSuffix = GetDirectionSuffix(actor);
@@ -724,11 +723,31 @@ public static class XDidYTranslationPatch
             }
             else
             {
-                subjectText += dirSuffix;
+                // Prepend direction: "北側の熊" not "熊の北側"
+                subjectText = dirSuffix + "の" + ownerPrefix + baseLabel;
+                return true;
             }
         }
 
+        subjectText = ownerPrefix + baseLabel;
+
         return true;
+    }
+
+    private static string InsertBeforePunctuation(string text, string insertion)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return insertion;
+        }
+
+        var lastChar = text[text.Length - 1];
+        if (lastChar is '。' or '！' or '!' or '.' or '?' or '？')
+        {
+            return text.Substring(0, text.Length - 1) + insertion + lastChar;
+        }
+
+        return text + insertion;
     }
 
     private static string TranslateSubjectBase(object? actor, string? subjectOverride, bool useFullNames, bool indefiniteSubject)
