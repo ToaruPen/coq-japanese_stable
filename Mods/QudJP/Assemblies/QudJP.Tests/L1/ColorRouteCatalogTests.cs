@@ -101,6 +101,7 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs|UITextSkinTranslationPatch.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/QudMenuBottomContextTranslationPatch.cs|PopupTranslationPatch.TranslatePopupMenuItemText("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/QudMenuBottomContextTranslationPatch.cs|UITextSkinTranslationPatch.TranslatePreservingColors("] = 1,
+            ["Mods/QudJP/Assemblies/src/Patches/XDidYTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
         };
 }
 

@@ -1,0 +1,172 @@
+{
+  "meta": {
+    "id": "message-frame-verbs",
+    "lang": "ja",
+    "version": "0.1.0"
+  },
+  "entries": [],
+  "tier1": [
+    {
+      "verb": "appear",
+      "text": "現れた"
+    },
+    {
+      "verb": "attack",
+      "text": "攻撃した"
+    },
+    {
+      "verb": "begin",
+      "text": "始めた"
+    },
+    {
+      "verb": "bite",
+      "text": "噛みついた"
+    },
+    {
+      "verb": "block",
+      "text": "防いだ"
+    },
+    {
+      "verb": "burn",
+      "text": "燃やした"
+    },
+    {
+      "verb": "chirp",
+      "text": "鳴いた"
+    },
+    {
+      "verb": "die",
+      "text": "死んだ"
+    },
+    {
+      "verb": "disappear",
+      "text": "消えた"
+    },
+    {
+      "verb": "dodge",
+      "text": "回避した"
+    },
+    {
+      "verb": "gain",
+      "text": "獲得した"
+    },
+    {
+      "verb": "give",
+      "text": "渡した"
+    },
+    {
+      "verb": "hit",
+      "text": "命中させた"
+    },
+    {
+      "verb": "parry",
+      "text": "受け流した"
+    },
+    {
+      "verb": "stare",
+      "text": "見つめた"
+    },
+    {
+      "verb": "stop",
+      "text": "やめた"
+    },
+    {
+      "verb": "strike",
+      "text": "攻撃した"
+    }
+  ],
+  "tier2": [
+    {
+      "verb": "are",
+      "extra": "bleeding",
+      "text": "出血した"
+    },
+    {
+      "verb": "are",
+      "extra": "burning",
+      "text": "燃え始めた"
+    },
+    {
+      "verb": "are",
+      "extra": "confused",
+      "text": "混乱した"
+    },
+    {
+      "verb": "are",
+      "extra": "destroyed",
+      "text": "破壊された"
+    },
+    {
+      "verb": "are",
+      "extra": "frozen",
+      "text": "凍りついた"
+    },
+    {
+      "verb": "are",
+      "extra": "knocked prone",
+      "text": "倒れた"
+    },
+    {
+      "verb": "are",
+      "extra": "paralyzed",
+      "text": "麻痺した"
+    },
+    {
+      "verb": "are",
+      "extra": "poisoned",
+      "text": "毒状態になった"
+    },
+    {
+      "verb": "are",
+      "extra": "revealed",
+      "text": "姿を現した"
+    },
+    {
+      "verb": "are",
+      "extra": "stunned",
+      "text": "気絶した"
+    },
+    {
+      "verb": "attack",
+      "extra": "{0}",
+      "text": "{0}を攻撃した"
+    },
+    {
+      "verb": "bite",
+      "extra": "{0}",
+      "text": "{0}に噛みついた"
+    },
+    {
+      "verb": "feel",
+      "extra": "a bit glitchy",
+      "text": "少しおかしくなった"
+    },
+    {
+      "verb": "lock",
+      "extra": "in place",
+      "text": "固定された"
+    },
+    {
+      "verb": "stare",
+      "extra": "at {0} menacingly",
+      "text": "{0}を睨みつけた"
+    }
+  ],
+  "tier3": [
+    {
+      "verb": "gain",
+      "extra": "{{rules|{0}}} XP",
+      "text": "{{rules|{0}}}XPを獲得した"
+    },
+    {
+      "verb": "hit",
+      "extra": "{0} for {1} damage",
+      "text": "{0}に{1}ダメージを与えた"
+    },
+    {
+      "verb": "strike",
+      "extra": "{0} with {1} for {2} damage",
+      "text": "{1}で{0}に{2}ダメージを与えた"
+    }
+  ]
+}

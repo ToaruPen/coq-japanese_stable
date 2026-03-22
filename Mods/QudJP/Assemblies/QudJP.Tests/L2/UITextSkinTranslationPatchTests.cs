@@ -67,6 +67,16 @@ public sealed class UITextSkinTranslationPatchTests
         Assert.That(text, Is.EqualTo("{{W|こんにちは}}"));
     }
 
+    [Test]
+    public void Prefix_StripsDirectTranslationMarkerBeforeSinkTranslation()
+    {
+        var text = "\u0001{{W|熊は防いだ。}}";
+
+        UITextSkinTranslationPatch.Prefix(ref text);
+
+        Assert.That(text, Is.EqualTo("{{W|熊は防いだ。}}"));
+    }
+
     [TestCaseSource(typeof(QudJP.Tests.L1.ColorRouteInvariantCases), nameof(QudJP.Tests.L1.ColorRouteInvariantCases.UiTextSkinCases))]
     public void TranslatePreservingColors_PreservesSharedInvariantCases(QudJP.Tests.L1.ColorTranslationCase testCase)
     {

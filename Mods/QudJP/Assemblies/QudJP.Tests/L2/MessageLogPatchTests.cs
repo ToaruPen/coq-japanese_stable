@@ -324,6 +324,30 @@ public sealed class MessageLogPatchTests
     }
 
     [Test]
+    public void Prefix_StripsDirectTranslationMarkerWithoutReapplyingPatterns()
+    {
+        WritePatternDictionary(("^You hit (.+) for (\\d+) damage[.!]?$", "{0}に{1}ダメージを与えた"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(MessageLogPatch), nameof(MessageLogPatch.Prefix))));
+
+            DummyMessageQueue.AddPlayerMessage("\u0001熊は防いだ。", "&W", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("熊は防いだ。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_TranslatesBareAccidentalDeathMessage_WhenPatched()
     {
         WritePatternDictionary(("^You hear (.+?)[.!]?$", "{0}を聞いた。"));

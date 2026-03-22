@@ -95,6 +95,11 @@ public static class UITextSkinTranslationPatch
             return source ?? string.Empty;
         }
 
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            return markedText;
+        }
+
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         var effectiveContext = ResolveObservabilityContext(context, stripped);
         var detailedContext = ObservabilityHelpers.ComposeContext(effectiveContext, contextDetails);
