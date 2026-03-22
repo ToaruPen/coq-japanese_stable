@@ -710,7 +710,7 @@ public static class XDidYTranslationPatch
             return false;
         }
 
-        if (describeSubjectDirection)
+        if (describeSubjectDirection || describeSubjectDirectionLate)
         {
             var dirSuffix = GetDirectionSuffix(actor);
             if (describeSubjectDirectionLate)
