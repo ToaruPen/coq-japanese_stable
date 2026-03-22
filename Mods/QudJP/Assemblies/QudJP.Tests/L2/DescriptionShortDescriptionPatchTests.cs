@@ -37,8 +37,9 @@ public sealed class DescriptionShortDescriptionPatchTests
     [Test]
     public void DescriptionShortDescriptionPatch_TranslatesScopedWorldModsEntries_WhenPatched()
     {
+        WriteScopedDictionary(
+            ("Strength Bonus Cap: no limit\nWeapon Class: Long Blades (increased penetration on critical hit)", "筋力ボーナス上限: なし\n武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
         WriteDictionary(
-            ("Strength Bonus Cap: no limit\nWeapon Class: Long Blades (increased penetration on critical hit)", "筋力ボーナス上限: なし\n武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"),
             ("Masterwork: This weapon scores critical hits {0} of the time instead of 5%.", "名工品: この武器のクリティカル発生率は{0}（通常は5%）。"));
 
         var harmonyId = CreateHarmonyId();
@@ -47,7 +48,7 @@ public sealed class DescriptionShortDescriptionPatchTests
         {
             harmony.Patch(
                 original: RequireMethod(typeof(DummyDescriptionShortDescriptionTarget), nameof(DummyDescriptionShortDescriptionTarget.GetShortDescription)),
-                postfix: new HarmonyMethod(RequireMethod(typeof(DescriptionShortDescriptionPatch), nameof(DescriptionShortDescriptionPatch.Postfix))));
+                postfix: new HarmonyMethod(RequirePostfix(typeof(DescriptionShortDescriptionPatch), nameof(DescriptionShortDescriptionPatch.Postfix))));
 
             var compareTarget = new DummyDescriptionShortDescriptionTarget(
                 "Strength Bonus Cap: no limit\nWeapon Class: Long Blades (increased penetration on critical hit)");
@@ -81,7 +82,23 @@ public sealed class DescriptionShortDescriptionPatchTests
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
     }
 
+    private static MethodInfo RequirePostfix(Type type, string methodName)
+    {
+        return AccessTools.Method(type, methodName)
+            ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
     private void WriteDictionary(params (string key, string text)[] entries)
+    {
+        WriteDictionaryToFile("description-short-l2.ja.json", entries);
+    }
+
+    private void WriteScopedDictionary(params (string key, string text)[] entries)
+    {
+        WriteDictionaryToFile("world-mods.ja.json", entries);
+    }
+
+    private void WriteDictionaryToFile(string fileName, (string key, string text)[] entries)
     {
         var builder = new StringBuilder();
         builder.Append('{');
@@ -103,7 +120,7 @@ public sealed class DescriptionShortDescriptionPatchTests
         builder.Append("]}");
         builder.AppendLine();
         File.WriteAllText(
-            Path.Combine(tempDirectory, "description-short-l2.ja.json"),
+            Path.Combine(tempDirectory, fileName),
             builder.ToString(),
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }

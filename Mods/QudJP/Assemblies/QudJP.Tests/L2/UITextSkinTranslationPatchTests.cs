@@ -304,6 +304,7 @@ public sealed class UITextSkinTranslationPatchTests
     public void TranslatePreservingColors_TranslatesCompareStatusLinesInSinkContext()
     {
         WriteDictionary(
+            ("Strength", "筋力"),
             ("Bonus Cap:", "ボーナス上限:"),
             ("Weapon Class:", "武器カテゴリ:"),
             ("Long Blades (increased penetration on critical hit)", "長剣（クリティカル時に貫通力上昇）"),
@@ -618,6 +619,7 @@ public sealed class UITextSkinTranslationPatchTests
             ("ACTIVE EFFECTS:", "発動中の効果:"),
             ("wading", "浅瀬を進んでいる"),
             ("wet", "濡れている"),
+            ("Strength", "筋力"),
             ("Bonus Cap:", "ボーナス上限:"),
             ("Weapon Class:", "武器カテゴリ:"),
             ("Long Blades (increased penetration on critical hit)", "長剣（クリティカル時に貫通力上昇）"),

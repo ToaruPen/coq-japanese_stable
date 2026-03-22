@@ -125,6 +125,7 @@ public sealed class DescriptionLongDescriptionPatchTests
     public void Postfix_TranslatesCompareStatusLines_WhenPatched()
     {
         WriteDictionary(
+            ("Strength", "筋力"),
             ("Bonus Cap:", "ボーナス上限:"),
             ("Weapon Class:", "武器カテゴリ:"),
             ("Long Blades (increased penetration on critical hit)", "長剣（クリティカル時に貫通力上昇）"),

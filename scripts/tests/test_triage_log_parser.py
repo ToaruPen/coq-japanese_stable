@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from scripts.triage.log_parser import parse_log
+
+if TYPE_CHECKING:
+    from pathlib import Path
 from scripts.triage.models import LogEntryKind
 
 
@@ -86,7 +89,9 @@ def test_parse_missing_key_with_nested_context(tmp_path: Path) -> None:
     _write_log(
         log,
         [
-            "[QudJP] Translator: missing key 'covered in liquid' (hit 1). (context: CharacterStatusScreenTranslationPatch > field=statusText)",
+            "[QudJP] Translator: missing key 'covered in liquid'"
+            " (hit 1). (context: CharacterStatusScreenTranslationPatch"
+            " > field=statusText)",
         ],
     )
     entries = parse_log(log)
@@ -139,7 +144,14 @@ def test_parse_dynamic_text_probe(tmp_path: Path) -> None:
     _write_log(
         log,
         [
-            "[QudJP] DynamicTextProbe/v1: route='UITextSkinTranslationPatch' family='CharacterStatusFamily' hit=8 changed=true source='Points Remaining: 12' translated='残りポイント: 12'. (context: CharacterStatusScreenTranslationPatch > field=statusText)",
+            "[QudJP] DynamicTextProbe/v1:"
+            " route='UITextSkinTranslationPatch'"
+            " family='CharacterStatusFamily'"
+            " hit=8 changed=true"
+            " source='Points Remaining: 12'"
+            " translated='残りポイント: 12'."
+            " (context: CharacterStatusScreenTranslationPatch"
+            " > field=statusText)",
         ],
     )
     entries = parse_log(log)
