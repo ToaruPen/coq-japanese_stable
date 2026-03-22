@@ -35,6 +35,17 @@ class Confidence(StrEnum):
     LOW = "low"
 
 
+class SiteStatus(StrEnum):
+    """Workflow status assigned after Phase 1d cross-reference."""
+
+    TRANSLATED = "translated"
+    NEEDS_TRANSLATION = "needs_translation"
+    NEEDS_PATCH = "needs_patch"
+    NEEDS_REVIEW = "needs_review"
+    UNRESOLVED = "unresolved"
+    EXCLUDED = "excluded"
+
+
 class SiteType(StrEnum):
     """Candidate site types produced by the source-first classifier."""
 
@@ -151,8 +162,14 @@ class InventorySite:
     frame: str | None = None
     lookup_tier: int | None = None
     source_context: str | None = None
+    source: str | None = None
+    source_id: str | None = None
     needs_review: bool = False
     needs_runtime: bool = False
+    status: SiteStatus | None = None
+    existing_patch: str | None = None
+    existing_dictionary: str | None = None
+    existing_xml: str | None = None
 
     def to_dict(self) -> dict[str, object]:
         """Serialize an inventory site as JSON-compatible data."""
@@ -175,6 +192,12 @@ class InventorySite:
             "frame": self.frame,
             "lookup_tier": self.lookup_tier,
             "source_context": self.source_context,
+            "source": self.source,
+            "source_id": self.source_id,
+            "status": self.status.value if self.status is not None else None,
+            "existing_patch": self.existing_patch,
+            "existing_dictionary": self.existing_dictionary,
+            "existing_xml": self.existing_xml,
         }
         payload.update({key: value for key, value in optional_fields.items() if value is not None})
         return payload
@@ -197,8 +220,14 @@ class InventorySite:
             frame=_optional_string(payload.get("frame")),
             lookup_tier=_optional_int(payload.get("lookup_tier")),
             source_context=_optional_string(payload.get("source_context")),
+            source=_optional_string(payload.get("source")),
+            source_id=_optional_string(payload.get("source_id")),
             needs_review=bool(payload.get("needs_review", False)),
             needs_runtime=bool(payload.get("needs_runtime", False)),
+            status=_optional_status(payload.get("status")),
+            existing_patch=_optional_string(payload.get("existing_patch")),
+            existing_dictionary=_optional_string(payload.get("existing_dictionary")),
+            existing_xml=_optional_string(payload.get("existing_xml")),
         )
 
 
@@ -311,6 +340,16 @@ def read_inventory_draft_json(path: Path) -> InventoryDraft:
         return InventoryDraft.from_dict(json.load(handle))
 
 
+def write_candidate_inventory_json(path: Path, draft: InventoryDraft) -> None:
+    """Write a Phase 1d candidate inventory JSON payload."""
+    write_inventory_draft_json(path, draft)
+
+
+def read_candidate_inventory_json(path: Path) -> InventoryDraft:
+    """Read a Phase 1d candidate inventory JSON payload."""
+    return read_inventory_draft_json(path)
+
+
 def _optional_int(value: object | None) -> int | None:
     """Convert an optional JSON number to int."""
     if value is None:
@@ -323,3 +362,10 @@ def _optional_string(value: object | None) -> str | None:
     if value is None:
         return None
     return str(value)
+
+
+def _optional_status(value: object | None) -> SiteStatus | None:
+    """Convert an optional JSON status string."""
+    if value is None:
+        return None
+    return SiteStatus(str(value))
