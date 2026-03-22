@@ -302,6 +302,54 @@
       "template": "{0}の{1}は外れた。[{2} vs {3}]"
     },
     {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage!$",
+      "template": "{t0}は{t2}で{t1}に{3}ダメージを与えた！"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage\\.$",
+      "template": "{t0}は{t2}で{t1}に{3}ダメージを与えた。"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage$",
+      "template": "{t0}は{t2}で{t1}に{3}ダメージを与えた"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) for (\\d+) damage!$",
+      "template": "{t0}は{t1}に{2}ダメージを与えた！"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) for (\\d+) damage\\.$",
+      "template": "{t0}は{t1}に{2}ダメージを与えた。"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) for (\\d+) damage$",
+      "template": "{t0}は{t1}に{2}ダメージを与えた"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )(.+?) with (?:a |an |the )?(.+?)! \\[(.+?) vs (.+?)\\]$",
+      "template": "{t0}は{t2}で{t1}への攻撃を外した！ [{3} vs {4}]"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )(.+?) with (?:a |an |the )?(.+?)\\. \\[(.+?) vs (.+?)\\]$",
+      "template": "{t0}は{t2}で{t1}への攻撃を外した。 [{3} vs {4}]"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )(.+?) with (?:a |an |the )?(.+?) \\[(.+?) vs (.+?)\\]$",
+      "template": "{t0}は{t2}で{t1}への攻撃を外した [{3} vs {4}]"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )(.+?)!$",
+      "template": "{t0}は{t1}への攻撃を外した！"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )(.+?)\\.$",
+      "template": "{t0}は{t1}への攻撃を外した。"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )(.+?)$",
+      "template": "{t0}は{t1}への攻撃を外した"
+    },
+    {
       "pattern": "^You don't penetrate (?:the )?(.+?)の armor with your (.+?)[.!] \\[(.+?)\\]$",
       "template": "{1}では{0}の装甲を貫けない。[{2}]"
     },

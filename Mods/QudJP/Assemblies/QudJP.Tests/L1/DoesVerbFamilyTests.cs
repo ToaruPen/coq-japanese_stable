@@ -40,7 +40,8 @@ public sealed class DoesVerbFamilyTests
             ("bear", "熊"),
             ("snapjaw", "スナップジョー"),
             ("glowpad", "グロウパッド"),
-            ("turret", "タレット"));
+            ("turret", "タレット"),
+            ("bronze short sword", "青銅の短剣"));
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
@@ -87,6 +88,22 @@ public sealed class DoesVerbFamilyTests
     // Color-wrapped (ConsequentialColor wraps full message)
     [TestCase("{{r|You don't penetrate the snapjaw's armor!}}", "{{r|スナップジョーの防具を貫通できなかった！}}")]
     public void Translate_NegationLackFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Combat Damage Family (third-person actor) ---
+
+    // Plain text
+    [TestCase("The bear hits the snapjaw for 5 damage!", "熊はスナップジョーに5ダメージを与えた！")]
+    [TestCase("The bear misses the snapjaw!", "熊はスナップジョーへの攻撃を外した！")]
+    [TestCase("The bear hits the snapjaw with a bronze short sword for 3 damage.", "熊は青銅の短剣でスナップジョーに3ダメージを与えた。")]
+    [TestCase("The bear misses the snapjaw with a bronze short sword! [8 vs 12]", "熊は青銅の短剣でスナップジョーへの攻撃を外した！ [8 vs 12]")]
+    // Penetration color (Stat.GetResultColor wraps full message in ampersand format)
+    // AddPlayerMessage converts ampersand to brace: &W → {{W|...}}
+    [TestCase("{{W|The bear hits the snapjaw for 5 damage!}}", "{{W|熊はスナップジョーに5ダメージを与えた！}}")]
+    [TestCase("{{r|The bear misses the snapjaw!}}", "{{r|熊はスナップジョーへの攻撃を外した！}}")]
+    public void Translate_CombatDamageThirdPerson(string input, string expected)
     {
         AssertTranslated(input, expected);
     }
