@@ -28,6 +28,11 @@ public static class MessageLogPatch
         {
             _ = Color;
             _ = Capitalize;
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(ref Message))
+            {
+                return true;
+            }
+
             Message = MessagePatternTranslator.Translate(Message, nameof(MessageLogPatch));
             return true;
         }

@@ -242,6 +242,11 @@ public static class PopupTranslationPatch
 
     private static string TranslatePopupText(string source)
     {
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            return markedText;
+        }
+
         if (IsAlreadyLocalizedPopupText(source))
         {
             return source;
@@ -278,6 +283,11 @@ public static class PopupTranslationPatch
         if (string.IsNullOrEmpty(source))
         {
             return source ?? string.Empty;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            return markedText;
         }
 
         if (IsAlreadyLocalizedPopupText(source))
