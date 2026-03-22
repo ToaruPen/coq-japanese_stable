@@ -351,7 +351,8 @@ public static class UITextSkinTranslationPatch
             || string.Equals(primaryContext, nameof(GetDisplayNameProcessPatch), StringComparison.Ordinal)
             || string.Equals(primaryContext, nameof(FactionsStatusScreenTranslationPatch), StringComparison.Ordinal)
             || string.Equals(primaryContext, nameof(InventoryLocalizationPatch), StringComparison.Ordinal)
-            || string.Equals(primaryContext, nameof(PopupTranslationPatch), StringComparison.Ordinal);
+            || string.Equals(primaryContext, nameof(PopupTranslationPatch), StringComparison.Ordinal)
+            || string.Equals(primaryContext, nameof(PopupMessageTranslationPatch), StringComparison.Ordinal);
     }
 
     private static bool IsStrictDirectRouteContext(string? context)
@@ -380,7 +381,9 @@ public static class UITextSkinTranslationPatch
 #pragma warning disable S1144
     private static bool IsPopupTemplateContext(string? context)
     {
-        return string.Equals(ObservabilityHelpers.ExtractPrimaryContext(context), nameof(PopupTranslationPatch), StringComparison.Ordinal);
+        var primaryContext = ObservabilityHelpers.ExtractPrimaryContext(context);
+        return string.Equals(primaryContext, nameof(PopupTranslationPatch), StringComparison.Ordinal)
+            || string.Equals(primaryContext, nameof(PopupMessageTranslationPatch), StringComparison.Ordinal);
     }
 
     private static bool ShouldPreserveTooltipStatAbbreviation(string source, string? route)
@@ -498,23 +501,12 @@ public static class UITextSkinTranslationPatch
 
     private static bool TryTranslateHotkeyLabel(string source, string route, out string translated)
     {
-        var match = Regex.Match(source, "^\\[(?<hotkey>[^\\]]+)\\]\\s+(?<label>.+)$", RegexOptions.CultureInvariant);
-        if (!match.Success)
-        {
-            translated = source;
-            return false;
-        }
-
-        var translatedLabel = TranslateAsciiTokenWithCaseFallback(match.Groups["label"].Value);
-        if (translatedLabel is null)
-        {
-            translated = source;
-            return false;
-        }
-
-        translated = $"[{match.Groups["hotkey"].Value}] {translatedLabel}";
-        DynamicTextObservability.RecordTransform(route, "UITextSink.HotkeyLabel", source, translated);
-        return true;
+        return HotkeyLabelFamilyTranslator.TryTranslateBracketedLabel(
+            source,
+            route,
+            "UITextSink.HotkeyLabel",
+            rejectNumericHotkeys: false,
+            out translated);
     }
 
     private static bool TryTranslateCompareStatusLine(string source, string route, out string translated)

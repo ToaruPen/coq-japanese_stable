@@ -240,7 +240,7 @@ public static class PopupTranslationPatch
         return false;
     }
 
-    private static string TranslatePopupText(string source)
+    internal static string TranslatePopupTextForRoute(string source, string route)
     {
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
@@ -252,7 +252,7 @@ public static class PopupTranslationPatch
             return source;
         }
 
-        var popupMenuItemText = TranslatePopupMenuItemText(source);
+        var popupMenuItemText = TranslatePopupMenuItemTextForRoute(source, route);
         if (!string.Equals(popupMenuItemText, source, StringComparison.Ordinal))
         {
             return popupMenuItemText;
@@ -269,16 +269,26 @@ public static class PopupTranslationPatch
             return exact;
         }
 
-        var patternTranslated = MessagePatternTranslator.Translate(source, nameof(PopupTranslationPatch));
+        var patternTranslated = MessagePatternTranslator.Translate(source, route);
         if (!string.Equals(patternTranslated, source, StringComparison.Ordinal))
         {
             return patternTranslated;
         }
 
-        return UITextSkinTranslationPatch.TranslatePreservingColors(source, nameof(PopupTranslationPatch));
+        return UITextSkinTranslationPatch.TranslatePreservingColors(source, route);
     }
 
     internal static string TranslatePopupMenuItemText(string source)
+    {
+        return TranslatePopupMenuItemTextForRoute(source, nameof(PopupTranslationPatch));
+    }
+
+    private static string TranslatePopupText(string source)
+    {
+        return TranslatePopupTextForRoute(source, nameof(PopupTranslationPatch));
+    }
+
+    internal static string TranslatePopupMenuItemTextForRoute(string source, string route)
     {
         if (string.IsNullOrEmpty(source))
         {
@@ -295,7 +305,7 @@ public static class PopupTranslationPatch
             return source;
         }
 
-        if (TryTranslateStyledHotkeyLabel(source, out var translated))
+        if (TryTranslateStyledHotkeyLabel(source, route, out var translated))
         {
             return translated;
         }
@@ -491,30 +501,23 @@ public static class PopupTranslationPatch
 
     private static bool TryTranslateHotkeyLabel(string source, out string translated)
     {
-        var match = HotkeyLabelPattern.Match(source);
-        if (!match.Success || int.TryParse(match.Groups["hotkey"].Value, out _))
-        {
-            translated = source;
-            return false;
-        }
-
-        var label = match.Groups["label"].Value;
-        var translatedLabel = TranslateLabelWithCaseFallback(label);
-        if (translatedLabel is null)
-        {
-            translated = source;
-            return false;
-        }
-
-        translated = $"[{match.Groups["hotkey"].Value}] {translatedLabel}";
-        DynamicTextObservability.RecordTransform(nameof(PopupTranslationPatch), "HotkeyLabel", source, translated);
-        return true;
+        return HotkeyLabelFamilyTranslator.TryTranslateBracketedLabel(
+            source,
+            nameof(PopupTranslationPatch),
+            "HotkeyLabel",
+            rejectNumericHotkeys: true,
+            out translated);
     }
 
-    private static bool TryTranslateStyledHotkeyLabel(string source, out string translated)
+    private static bool TryTranslateStyledHotkeyLabel(string source, string route, out string translated)
     {
         var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
-        if (!TryTranslateHotkeyLabel(stripped, out var translatedVisible))
+        if (!HotkeyLabelFamilyTranslator.TryTranslateBracketedLabel(
+                stripped,
+                route,
+                "HotkeyLabel",
+                rejectNumericHotkeys: true,
+                out var translatedVisible))
         {
             translated = source;
             return false;
@@ -532,7 +535,7 @@ public static class PopupTranslationPatch
             + sourceMatch.Groups["labelOpen"].Value
             + visibleMatch.Groups["label"].Value
             + sourceMatch.Groups["labelClose"].Value;
-        DynamicTextObservability.RecordTransform(nameof(PopupTranslationPatch), "HotkeyLabelMarkup", source, translated);
+        DynamicTextObservability.RecordTransform(route, "HotkeyLabelMarkup", source, translated);
         return true;
     }
 
