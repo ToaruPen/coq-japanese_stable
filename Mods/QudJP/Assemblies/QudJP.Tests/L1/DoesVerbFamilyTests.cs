@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace QudJP.Tests.L1;
 
 [TestFixture]
@@ -7,11 +5,9 @@ namespace QudJP.Tests.L1;
 [NonParallelizable]
 public sealed class DoesVerbFamilyTests
 {
-    private static readonly UTF8Encoding Utf8WithoutBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
-
     private string tempDirectory = null!;
     private string patternFilePath = null!;
-    private string dictionaryPath = null!;
+    private string dictionaryDirectory = null!;
 
     [SetUp]
     public void SetUp()
@@ -20,9 +16,7 @@ public sealed class DoesVerbFamilyTests
         Directory.CreateDirectory(tempDirectory);
 
         patternFilePath = Path.Combine(tempDirectory, "messages.ja.json");
-        dictionaryPath = Path.Combine(tempDirectory, "ui-test.ja.json");
-
-        File.Copy(
+        dictionaryDirectory = Path.GetFullPath(
             Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
                 "..",
@@ -31,22 +25,14 @@ public sealed class DoesVerbFamilyTests
                 "..",
                 "..",
                 "Localization",
-                "Dictionaries",
-                "messages.ja.json"),
+                "Dictionaries"));
+
+        File.Copy(
+            Path.Combine(dictionaryDirectory, "messages.ja.json"),
             patternFilePath);
 
-        WriteExactDictionary(
-            ("You", "あなた"),
-            ("bear", "熊"),
-            ("snapjaw", "スナップジョー"),
-            ("glowpad", "グロウパッド"),
-            ("turret", "タレット"),
-            ("bronze short sword", "青銅の短剣"),
-            ("canteen", "水筒"),
-            ("water", "水"));
-
         Translator.ResetForTests();
-        Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
         MessagePatternTranslator.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
     }
@@ -65,15 +51,15 @@ public sealed class DoesVerbFamilyTests
 
     // --- Status Predicate Family ---
 
-    // Plain text (no color)
-    [TestCase("The bear is exhausted!", "熊は疲弊した！")]
-    [TestCase("The snapjaw is stunned!", "スナップジョーは気絶した！")]
-    [TestCase("The bear is stuck.", "熊は動けなくなった。")]
-    [TestCase("The glowpad is sealed.", "グロウパッドは封印された。")]
+    // Plain text (runtime-like already-localized display names)
+    [TestCase("The 熊 is exhausted!", "熊は疲弊した！")]
+    [TestCase("The スナップジョー is stunned!", "スナップジョーは気絶した！")]
+    [TestCase("The 熊 is stuck.", "熊は動けなくなった。")]
+    [TestCase("The グロウパッド is sealed.", "グロウパッドは封印された。")]
     [TestCase("You are exhausted!", "あなたは疲弊した！")]
     // Color-wrapped (AddPlayerMessage wraps entire message in {{color|...}})
-    [TestCase("{{g|The bear is exhausted!}}", "{{g|熊は疲弊した！}}")]
-    [TestCase("{{R|The snapjaw is stunned!}}", "{{R|スナップジョーは気絶した！}}")]
+    [TestCase("{{g|The 熊 is exhausted!}}", "{{g|熊は疲弊した！}}")]
+    [TestCase("{{R|The スナップジョー is stunned!}}", "{{R|スナップジョーは気絶した！}}")]
     public void Translate_StatusPredicateFamily(string input, string expected)
     {
         AssertTranslated(input, expected);
@@ -82,13 +68,13 @@ public sealed class DoesVerbFamilyTests
     // --- Negation/Lack Family ---
 
     // Plain text
-    [TestCase("The turret can't hear you!", "タレットにはあなたの声が聞こえない！")]
-    [TestCase("The bear doesn't have a consciousness to appeal to.", "熊には訴えるべき意識がない。")]
-    [TestCase("You don't penetrate the snapjaw's armor!", "スナップジョーの防具を貫通できなかった！")]
+    [TestCase("The タレット can't hear you!", "タレットにはあなたの声が聞こえない！")]
+    [TestCase("The 熊 doesn't have a consciousness to appeal to.", "熊には訴えるべき意識がない。")]
+    [TestCase("You don't penetrate the スナップジョー's armor!", "スナップジョーの防具を貫通できなかった！")]
     [TestCase("You can't see!", "視界がない！")]
-    [TestCase("The turret doesn't have enough charge to fire.", "タレットはfireするのに十分なchargeがない。")]
+    [TestCase("The タレット doesn't have enough charge to fire.", "タレットはfireするのに十分なchargeがない。")]
     // Color-wrapped (ConsequentialColor wraps full message)
-    [TestCase("{{r|You don't penetrate the snapjaw's armor!}}", "{{r|スナップジョーの防具を貫通できなかった！}}")]
+    [TestCase("{{r|You don't penetrate the スナップジョー's armor!}}", "{{r|スナップジョーの防具を貫通できなかった！}}")]
     public void Translate_NegationLackFamily(string input, string expected)
     {
         AssertTranslated(input, expected);
@@ -97,14 +83,14 @@ public sealed class DoesVerbFamilyTests
     // --- Combat Damage Family (third-person actor) ---
 
     // Plain text
-    [TestCase("The bear hits the snapjaw for 5 damage!", "熊はスナップジョーに5ダメージを与えた！")]
-    [TestCase("The bear misses the snapjaw!", "熊はスナップジョーへの攻撃を外した！")]
-    [TestCase("The bear hits the snapjaw with a bronze short sword for 3 damage.", "熊は青銅の短剣でスナップジョーに3ダメージを与えた。")]
-    [TestCase("The bear misses the snapjaw with a bronze short sword! [8 vs 12]", "熊は青銅の短剣でスナップジョーへの攻撃を外した！ [8 vs 12]")]
+    [TestCase("The 熊 hits the スナップジョー for 5 damage!", "熊はスナップジョーに5ダメージを与えた！")]
+    [TestCase("The 熊 misses the スナップジョー!", "熊はスナップジョーへの攻撃を外した！")]
+    [TestCase("The 熊 hits the スナップジョー with a 青銅の短剣 for 3 damage.", "熊は青銅の短剣でスナップジョーに3ダメージを与えた。")]
+    [TestCase("The 熊 misses the スナップジョー with a 青銅の短剣! [8 vs 12]", "熊は青銅の短剣でスナップジョーへの攻撃を外した！ [8 vs 12]")]
     // Penetration color (Stat.GetResultColor wraps full message in ampersand format)
     // AddPlayerMessage converts ampersand to brace: &W → {{W|...}}
-    [TestCase("{{W|The bear hits the snapjaw for 5 damage!}}", "{{W|熊はスナップジョーに5ダメージを与えた！}}")]
-    [TestCase("{{r|The bear misses the snapjaw!}}", "{{r|熊はスナップジョーへの攻撃を外した！}}")]
+    [TestCase("{{W|The 熊 hits the スナップジョー for 5 damage!}}", "{{W|熊はスナップジョーに5ダメージを与えた！}}")]
+    [TestCase("{{r|The 熊 misses the スナップジョー!}}", "{{r|熊はスナップジョーへの攻撃を外した！}}")]
     public void Translate_CombatDamageThirdPerson(string input, string expected)
     {
         AssertTranslated(input, expected);
@@ -113,9 +99,9 @@ public sealed class DoesVerbFamilyTests
     // --- Possession/Lack Family ---
 
     // Plain text
-    [TestCase("The canteen has no room for more water.", "水筒にはこれ以上の水を入れる余地がない。")]
+    [TestCase("The 水筒 has no room for more water.", "水筒にはこれ以上の水を入れる余地がない。")]
     [TestCase("You have no more ammo!", "弾薬が尽きた！")]
-    [TestCase("The bear has nothing to say.", "熊は何も言うことがない。")]
+    [TestCase("The 熊 has nothing to say.", "熊は何も言うことがない。")]
     [TestCase("You have left your party.", "あなたはパーティーを離れた。")]
     // Color-wrapped
     [TestCase("{{y|You have no more ammo!}}", "{{y|弾薬が尽きた！}}")]
@@ -127,11 +113,11 @@ public sealed class DoesVerbFamilyTests
     // --- Motion/Direction Family ---
 
     // Plain text
-    [TestCase("The bear falls to the ground.", "熊は地面に倒れた。")]
+    [TestCase("The 熊 falls to the ground.", "熊は地面に倒れた。")]
     [TestCase("You fall to the ground.", "あなたは地面に倒れた。")]
-    [TestCase("The snapjaw falls asleep.", "スナップジョーは眠りに落ちた。")]
+    [TestCase("The スナップジョー falls asleep.", "スナップジョーは眠りに落ちた。")]
     // Color-wrapped (ConsequentialColor)
-    [TestCase("{{g|The bear falls to the ground.}}", "{{g|熊は地面に倒れた。}}")]
+    [TestCase("{{g|The 熊 falls to the ground.}}", "{{g|熊は地面に倒れた。}}")]
     public void Translate_MotionDirectionFamily(string input, string expected)
     {
         AssertTranslated(input, expected);
@@ -141,36 +127,5 @@ public sealed class DoesVerbFamilyTests
     {
         var result = MessagePatternTranslator.Translate(input);
         Assert.That(result, Is.EqualTo(expected));
-    }
-
-    private void WriteExactDictionary(params (string key, string text)[] entries)
-    {
-        var builder = new StringBuilder();
-        builder.Append("{\"entries\":[");
-        for (var index = 0; index < entries.Length; index++)
-        {
-            if (index > 0)
-            {
-                builder.Append(',');
-            }
-
-            builder.Append("{\"key\":\"");
-            builder.Append(EscapeJson(entries[index].key));
-            builder.Append("\",\"text\":\"");
-            builder.Append(EscapeJson(entries[index].text));
-            builder.Append("\"}");
-        }
-
-        builder.AppendLine("]}");
-        File.WriteAllText(dictionaryPath, builder.ToString(), Utf8WithoutBom);
-    }
-
-    private static string EscapeJson(string value)
-    {
-        return value
-            .Replace("\\", "\\\\", StringComparison.Ordinal)
-            .Replace("\r", "\\r", StringComparison.Ordinal)
-            .Replace("\n", "\\n", StringComparison.Ordinal)
-            .Replace("\"", "\\\"", StringComparison.Ordinal);
     }
 }

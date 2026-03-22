@@ -86,88 +86,100 @@
       "template": "あなたは燃え始めた"
     },
     {
+      "pattern": "^You are exhausted!$",
+      "template": "あなたは疲弊した！"
+    },
+    {
+      "pattern": "^You are exhausted\\.$",
+      "template": "あなたは疲弊した。"
+    },
+    {
+      "pattern": "^You are exhausted$",
+      "template": "あなたは疲弊した"
+    },
+    {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) exhausted!$",
-      "template": "{t0}は疲弊した！"
+      "template": "{0}は疲弊した！"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) exhausted\\.$",
-      "template": "{t0}は疲弊した。"
+      "template": "{0}は疲弊した。"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) exhausted$",
-      "template": "{t0}は疲弊した"
+      "template": "{0}は疲弊した"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stunned!$",
-      "template": "{t0}は気絶した！"
+      "template": "{0}は気絶した！"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stunned\\.$",
-      "template": "{t0}は気絶した。"
+      "template": "{0}は気絶した。"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stunned$",
-      "template": "{t0}は気絶した"
+      "template": "{0}は気絶した"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stuck!$",
-      "template": "{t0}は動けなくなった！"
+      "template": "{0}は動けなくなった！"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stuck\\.$",
-      "template": "{t0}は動けなくなった。"
+      "template": "{0}は動けなくなった。"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stuck$",
-      "template": "{t0}は動けなくなった"
+      "template": "{0}は動けなくなった"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) sealed!$",
-      "template": "{t0}は封印された！"
+      "template": "{0}は封印された！"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) sealed\\.$",
-      "template": "{t0}は封印された。"
+      "template": "{0}は封印された。"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) sealed$",
-      "template": "{t0}は封印された"
+      "template": "{0}は封印された"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) jammed!$",
-      "template": "{t0}は動作不良を起こした！"
+      "template": "{0}は動作不良を起こした！"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) jammed\\.$",
-      "template": "{t0}は動作不良を起こした。"
+      "template": "{0}は動作不良を起こした。"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) jammed$",
-      "template": "{t0}は動作不良を起こした"
+      "template": "{0}は動作不良を起こした"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) empty!$",
-      "template": "{t0}は空になった！"
+      "template": "{0}は空になった！"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) empty\\.$",
-      "template": "{t0}は空になった。"
+      "template": "{0}は空になった。"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) empty$",
-      "template": "{t0}は空になった"
+      "template": "{0}は空になった"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) unresponsive!$",
-      "template": "{t0}は反応しなくなった！"
+      "template": "{0}は反応しなくなった！"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) unresponsive\\.$",
-      "template": "{t0}は反応しなくなった。"
+      "template": "{0}は反応しなくなった。"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) unresponsive$",
-      "template": "{t0}は反応しなくなった"
+      "template": "{0}は反応しなくなった"
     },
     {
       "pattern": "^You stop bleeding[.!]?$",
@@ -186,28 +198,52 @@
       "template": "あなたは移動を止めた"
     },
     {
+      "pattern": "^You (?:falls?|fell) to the ground!$",
+      "template": "あなたは地面に倒れた！"
+    },
+    {
+      "pattern": "^You (?:falls?|fell) to the ground\\.$",
+      "template": "あなたは地面に倒れた。"
+    },
+    {
+      "pattern": "^You (?:falls?|fell) to the ground$",
+      "template": "あなたは地面に倒れた"
+    },
+    {
+      "pattern": "^You (?:falls?|fell) asleep!$",
+      "template": "あなたは眠りに落ちた！"
+    },
+    {
+      "pattern": "^You (?:falls?|fell) asleep\\.$",
+      "template": "あなたは眠りに落ちた。"
+    },
+    {
+      "pattern": "^You (?:falls?|fell) asleep$",
+      "template": "あなたは眠りに落ちた"
+    },
+    {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) to the ground!$",
-      "template": "{t0}は地面に倒れた！"
+      "template": "{0}は地面に倒れた！"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) to the ground\\.$",
-      "template": "{t0}は地面に倒れた。"
+      "template": "{0}は地面に倒れた。"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) to the ground$",
-      "template": "{t0}は地面に倒れた"
+      "template": "{0}は地面に倒れた"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) asleep!$",
-      "template": "{t0}は眠りに落ちた！"
+      "template": "{0}は眠りに落ちた！"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) asleep\\.$",
-      "template": "{t0}は眠りに落ちた。"
+      "template": "{0}は眠りに落ちた。"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) asleep$",
-      "template": "{t0}は眠りに落ちた"
+      "template": "{0}は眠りに落ちた"
     },
     {
       "pattern": "^You pick up (.+?)[.!]?$",
@@ -327,51 +363,51 @@
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage!$",
-      "template": "{t0}は{t2}で{t1}に{3}ダメージを与えた！"
+      "template": "{0}は{2}で{1}に{3}ダメージを与えた！"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage\\.$",
-      "template": "{t0}は{t2}で{t1}に{3}ダメージを与えた。"
+      "template": "{0}は{2}で{1}に{3}ダメージを与えた。"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage$",
-      "template": "{t0}は{t2}で{t1}に{3}ダメージを与えた"
+      "template": "{0}は{2}で{1}に{3}ダメージを与えた"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) for (\\d+) damage!$",
-      "template": "{t0}は{t1}に{2}ダメージを与えた！"
+      "template": "{0}は{1}に{2}ダメージを与えた！"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) for (\\d+) damage\\.$",
-      "template": "{t0}は{t1}に{2}ダメージを与えた。"
+      "template": "{0}は{1}に{2}ダメージを与えた。"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) for (\\d+) damage$",
-      "template": "{t0}は{t1}に{2}ダメージを与えた"
+      "template": "{0}は{1}に{2}ダメージを与えた"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )(.+?) with (?:a |an |the )?(.+?)! \\[(.+?) vs (.+?)\\]$",
-      "template": "{t0}は{t2}で{t1}への攻撃を外した！ [{3} vs {4}]"
+      "template": "{0}は{2}で{1}への攻撃を外した！ [{3} vs {4}]"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )(.+?) with (?:a |an |the )?(.+?)\\. \\[(.+?) vs (.+?)\\]$",
-      "template": "{t0}は{t2}で{t1}への攻撃を外した。 [{3} vs {4}]"
+      "template": "{0}は{2}で{1}への攻撃を外した。 [{3} vs {4}]"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )(.+?) with (?:a |an |the )?(.+?) \\[(.+?) vs (.+?)\\]$",
-      "template": "{t0}は{t2}で{t1}への攻撃を外した [{3} vs {4}]"
+      "template": "{0}は{2}で{1}への攻撃を外した [{3} vs {4}]"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )(.+?)!$",
-      "template": "{t0}は{t1}への攻撃を外した！"
+      "template": "{0}は{1}への攻撃を外した！"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )(.+?)\\.$",
-      "template": "{t0}は{t1}への攻撃を外した。"
+      "template": "{0}は{1}への攻撃を外した。"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )(.+?)$",
-      "template": "{t0}は{t1}への攻撃を外した"
+      "template": "{0}は{1}への攻撃を外した"
     },
     {
       "pattern": "^You don't penetrate (?:the )?(.+?)の armor with your (.+?)[.!] \\[(.+?)\\]$",
@@ -379,39 +415,39 @@
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:can't|cannot) hear you!$",
-      "template": "{t0}にはあなたの声が聞こえない！"
+      "template": "{0}にはあなたの声が聞こえない！"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:can't|cannot) hear you\\.$",
-      "template": "{t0}にはあなたの声が聞こえない。"
+      "template": "{0}にはあなたの声が聞こえない。"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:can't|cannot) hear you$",
-      "template": "{t0}にはあなたの声が聞こえない"
+      "template": "{0}にはあなたの声が聞こえない"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a consciousness to appeal to!$",
-      "template": "{t0}には訴えるべき意識がない！"
+      "template": "{0}には訴えるべき意識がない！"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a consciousness to appeal to\\.$",
-      "template": "{t0}には訴えるべき意識がない。"
+      "template": "{0}には訴えるべき意識がない。"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a consciousness to appeal to$",
-      "template": "{t0}には訴えるべき意識がない"
+      "template": "{0}には訴えるべき意識がない"
     },
     {
       "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s') armor!$",
-      "template": "{t0}の防具を貫通できなかった！"
+      "template": "{0}の防具を貫通できなかった！"
     },
     {
       "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s') armor\\.$",
-      "template": "{t0}の防具を貫通できなかった。"
+      "template": "{0}の防具を貫通できなかった。"
     },
     {
       "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s') armor$",
-      "template": "{t0}の防具を貫通できなかった"
+      "template": "{0}の防具を貫通できなかった"
     },
     {
       "pattern": "^You (?:can't|cannot) see!$",
@@ -427,39 +463,39 @@
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) seem to be working!$",
-      "template": "{t0}は機能していないようだ！"
+      "template": "{0}は機能していないようだ！"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) seem to be working\\.$",
-      "template": "{t0}は機能していないようだ。"
+      "template": "{0}は機能していないようだ。"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) seem to be working$",
-      "template": "{t0}は機能していないようだ"
+      "template": "{0}は機能していないようだ"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) have enough (.+?) to (.+?)!$",
-      "template": "{t0}は{2}するのに十分な{1}がない！"
+      "template": "{0}は{2}するのに十分な{1}がない！"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) have enough (.+?) to (.+?)\\.$",
-      "template": "{t0}は{2}するのに十分な{1}がない。"
+      "template": "{0}は{2}するのに十分な{1}がない。"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) have enough (.+?) to (.+?)$",
-      "template": "{t0}は{2}するのに十分な{1}がない"
+      "template": "{0}は{2}するのに十分な{1}がない"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) no room for more (.+?)!$",
-      "template": "{t0}にはこれ以上の{t1}を入れる余地がない！"
+      "template": "{0}にはこれ以上の{t1}を入れる余地がない！"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) no room for more (.+?)\\.$",
-      "template": "{t0}にはこれ以上の{t1}を入れる余地がない。"
+      "template": "{0}にはこれ以上の{t1}を入れる余地がない。"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) no room for more (.+?)$",
-      "template": "{t0}にはこれ以上の{t1}を入れる余地がない"
+      "template": "{0}にはこれ以上の{t1}を入れる余地がない"
     },
     {
       "pattern": "^You have no more ammo!$",
@@ -475,15 +511,15 @@
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) nothing to say!$",
-      "template": "{t0}は何も言うことがない！"
+      "template": "{0}は何も言うことがない！"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) nothing to say\\.$",
-      "template": "{t0}は何も言うことがない。"
+      "template": "{0}は何も言うことがない。"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) nothing to say$",
-      "template": "{t0}は何も言うことがない"
+      "template": "{0}は何も言うことがない"
     },
     {
       "pattern": "^You have left your party!$",
