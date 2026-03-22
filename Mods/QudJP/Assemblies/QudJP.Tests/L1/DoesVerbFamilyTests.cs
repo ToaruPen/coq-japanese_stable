@@ -39,7 +39,8 @@ public sealed class DoesVerbFamilyTests
             ("You", "あなた"),
             ("bear", "熊"),
             ("snapjaw", "スナップジョー"),
-            ("glowpad", "グロウパッド"));
+            ("glowpad", "グロウパッド"),
+            ("turret", "タレット"));
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
@@ -71,6 +72,26 @@ public sealed class DoesVerbFamilyTests
     [TestCase("{{g|The bear is exhausted!}}", "{{g|熊は疲弊した！}}")]
     [TestCase("{{R|The snapjaw is stunned!}}", "{{R|スナップジョーは気絶した！}}")]
     public void Translate_StatusPredicateFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Negation/Lack Family ---
+
+    // Plain text
+    [TestCase("The turret can't hear you!", "タレットにはあなたの声が聞こえない！")]
+    [TestCase("The bear doesn't have a consciousness to appeal to.", "熊には訴えるべき意識がない。")]
+    [TestCase("You don't penetrate the snapjaw's armor!", "スナップジョーの防具を貫通できなかった！")]
+    [TestCase("You can't see!", "視界がない！")]
+    [TestCase("The turret doesn't have enough charge to fire.", "タレットはfireするのに十分なchargeがない。")]
+    // Color-wrapped (ConsequentialColor wraps full message)
+    [TestCase("{{r|You don't penetrate the snapjaw's armor!}}", "{{r|スナップジョーの防具を貫通できなかった！}}")]
+    public void Translate_NegationLackFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    private static void AssertTranslated(string input, string expected)
     {
         var result = MessagePatternTranslator.Translate(input);
         Assert.That(result, Is.EqualTo(expected));

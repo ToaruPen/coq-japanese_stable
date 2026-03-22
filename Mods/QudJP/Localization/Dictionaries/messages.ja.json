@@ -306,6 +306,78 @@
       "template": "{1}では{0}の装甲を貫けない。[{2}]"
     },
     {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:can't|cannot) hear you!$",
+      "template": "{t0}にはあなたの声が聞こえない！"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:can't|cannot) hear you\\.$",
+      "template": "{t0}にはあなたの声が聞こえない。"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:can't|cannot) hear you$",
+      "template": "{t0}にはあなたの声が聞こえない"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a consciousness to appeal to!$",
+      "template": "{t0}には訴えるべき意識がない！"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a consciousness to appeal to\\.$",
+      "template": "{t0}には訴えるべき意識がない。"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a consciousness to appeal to$",
+      "template": "{t0}には訴えるべき意識がない"
+    },
+    {
+      "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s') armor!$",
+      "template": "{t0}の防具を貫通できなかった！"
+    },
+    {
+      "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s') armor\\.$",
+      "template": "{t0}の防具を貫通できなかった。"
+    },
+    {
+      "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s') armor$",
+      "template": "{t0}の防具を貫通できなかった"
+    },
+    {
+      "pattern": "^You (?:can't|cannot) see!$",
+      "template": "視界がない！"
+    },
+    {
+      "pattern": "^You (?:can't|cannot) see\\.$",
+      "template": "視界がない。"
+    },
+    {
+      "pattern": "^You (?:can't|cannot) see$",
+      "template": "視界がない"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) seem to be working!$",
+      "template": "{t0}は機能していないようだ！"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) seem to be working\\.$",
+      "template": "{t0}は機能していないようだ。"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) seem to be working$",
+      "template": "{t0}は機能していないようだ"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) have enough (.+?) to (.+?)!$",
+      "template": "{t0}は{2}するのに十分な{1}がない！"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) have enough (.+?) to (.+?)\\.$",
+      "template": "{t0}は{2}するのに十分な{1}がない。"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) have enough (.+?) to (.+?)$",
+      "template": "{t0}は{2}するのに十分な{1}がない"
+    },
+    {
       "pattern": "^(.+) begins bleeding from another wound[.!]?$",
       "template": "{0}はさらに出血し始めた。"
     },
