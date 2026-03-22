@@ -37,8 +37,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install ast-grep
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/ast-grep/ast-grep/main/install.sh | bash -s -- --to /usr/local/bin
+        run: npm install -g @ast-grep/cli
 
       - name: Install Ruff
         run: pip install ruff
