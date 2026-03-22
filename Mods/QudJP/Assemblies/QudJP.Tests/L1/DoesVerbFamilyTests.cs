@@ -123,6 +123,40 @@ public sealed class DoesVerbFamilyTests
         AssertTranslated(input, expected);
     }
 
+    // --- Edge cases (required for all families) ---
+
+    [Test]
+    public void Translate_ReturnsOriginal_WhenNoPatternMatches()
+    {
+        // Unrecognized message should pass through unchanged
+        var input = "The bear performs an unknowable act.";
+        var result = MessagePatternTranslator.Translate(input);
+        Assert.That(result, Is.EqualTo(input));
+    }
+
+    [Test]
+    public void Translate_ReturnsEmpty_WhenInputIsEmpty()
+    {
+        var result = MessagePatternTranslator.Translate(string.Empty);
+        Assert.That(result, Is.EqualTo(string.Empty));
+    }
+
+    [Test]
+    public void Translate_ReturnsEmpty_WhenInputIsNull()
+    {
+        var result = MessagePatternTranslator.Translate(null);
+        Assert.That(result, Is.EqualTo(string.Empty));
+    }
+
+    [Test]
+    public void Translate_SkipsTranslation_WhenDirectTranslationMarkerPresent()
+    {
+        // \x01 marker means already translated — should pass through unchanged
+        var input = "\u0001熊は疲弊した！";
+        var result = MessagePatternTranslator.Translate(input);
+        Assert.That(result, Is.EqualTo(input));
+    }
+
     private static void AssertTranslated(string input, string expected)
     {
         var result = MessagePatternTranslator.Translate(input);
