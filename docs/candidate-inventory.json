@@ -24136,7 +24136,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<$prof=entity.organizingPrincipleType><spice.professions.$prof.plural>\", historicEntity.GetCurrentSnapshot(), history2)",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24149,7 +24149,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(muralText ?? \"\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24162,7 +24162,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(gospelText ?? \"\", historicEntitySnapshot, historicEntitySnapshot.entity.history)",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24175,7 +24175,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.lovesick.!random>\", null, null)",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24487,7 +24487,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.commonPhrases.oneStarryNight.!random.capitalize>, =name= manifested a latent power inside \" + GO.GetPronounProvider().Objective + \" and joined the divine ranks of \" + list2[num4].GetBearerDescription() + \".\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24591,7 +24591,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.gossip.leadIns.!random>\", null, The.Game.sultanHistory)",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24604,7 +24604,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.commonPhrases.onlooker.!random.capitalize>! <spice.commonPhrases.remember.!random.capitalize> the admonishment =name= gave \" + Object.an(int.MaxValue, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true, WithoutTitles: true) + \" when \" + Object.it + \" presumed to speak the sacred tongue!\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24799,7 +24799,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.satellitePower.occlusionReasons.!random>\", null, null)",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24812,7 +24812,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.cooking.ate.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24825,7 +24825,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.cooking.ate.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24838,7 +24838,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.cooking.ate.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24851,7 +24851,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.cooking.ate.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24864,7 +24864,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.cooking.ate.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24877,7 +24877,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.cooking.ate.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24890,7 +24890,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.cooking.ate.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24903,7 +24903,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.cooking.ate.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24916,7 +24916,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.cooking.ate.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24929,7 +24929,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.cooking.ingredient.!random>\", null, null, variableCache, Random)",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24942,7 +24942,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.cooking.cookTemplate.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24955,7 +24955,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.cooking.cookbooks.genericName.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24968,7 +24968,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.cooking.cookbooks.genericName.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24981,7 +24981,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.cooking.cookbooks.focalName.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -24994,7 +24994,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.quests.intro.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25007,7 +25007,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.instancesOf.speakTo.!random.capitalize> \")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25020,7 +25020,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.tombstones.cryptIntroPlural.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25033,7 +25033,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.tombstones.cryptPlaque.familyTitlePlural.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25046,7 +25046,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.tombstones.cryptPlaque.\" + Caste + \".familyCognomen.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25059,7 +25059,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.instancesOf.\" + text + \".!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25072,7 +25072,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.personNouns.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25085,7 +25085,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.tombstones.cryptPlaque.familyTitleSingular.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25098,7 +25098,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.tombstones.cryptPlaque.\" + Caste + \".familyCognomen.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25111,7 +25111,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.instancesOf.\" + text + \".!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25124,7 +25124,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.personNouns.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25137,7 +25137,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.tombstones.cryptIntroSingular.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25150,7 +25150,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.tombstones.cryptPlaque.familyTitleSingular.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25163,7 +25163,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.tombstones.cryptPlaque.\" + Caste + \".familyWords.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25176,7 +25176,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.tombstones.eaterUrnIntro.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25189,7 +25189,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.tombstones.ydFreeholderUrnIntro.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25202,7 +25202,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.tombstones.barathrumiteUrnIntro.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25215,7 +25215,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.tombstones.genericUrnIntro.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25384,7 +25384,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.commonPhrases.intrepid.!random.capitalize> =name= recovered \" + locateRelicQuestManager_QuestEntry.Relic + \", a historic relic once thought lost to the sands of time.\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25397,7 +25397,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.advertisements.merchants.!random>\", null, null, vars)",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25410,7 +25410,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.elements.\" + The.Player.GetMythicDomain() + \".nouns.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25423,7 +25423,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.colors.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25436,7 +25436,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.tombstones.intro.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25592,7 +25592,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.egregorePrefix.!random> <spice.nouns.!random>\", seededRandomGenerator)",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25605,7 +25605,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.nouns.!random> Era.\", seededRandomGenerator)",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25618,7 +25618,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.tombstones.intro.!random>\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25631,7 +25631,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"In the month of \" + Calendar.GetMonth() + \" of \" + Calendar.GetYear() + \" AR, =name= founded the village of \" + VillageName + \" to <spice.history.gospels.HumblePractice.LateSultanate.!random>.\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25644,7 +25644,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.history.regions.terrain.\" + tag + \".over.!random>\", currentSnapshot, sultanHistory)",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25657,7 +25657,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.history.regions.terrain.\" + tag + \".over.!random>\", currentSnapshot, sultanHistory)",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25670,7 +25670,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.villages.description.!random>.\")",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25683,7 +25683,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.cooking.recipeNames.oneIngredientMeal.!random>\", null, null, dictionary)",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25696,7 +25696,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.cooking.recipeNames.twoIngredientMeal.!random>\", null, null, dictionary2)",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25709,7 +25709,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(\"<spice.cooking.recipeNames.threeIngredientMeal.!random>\", null, null, dictionary3)",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -25722,7 +25722,7 @@
       "needs_runtime": true,
       "pattern": "HistoricStringExpander.ExpandString(input)",
       "sink": "HistoricStringExpander",
-      "status": "excluded",
+      "status": "needs_patch",
       "type": "ProceduralText"
     },
     {
@@ -53247,7 +53247,7 @@
       "needs_runtime": false,
       "pattern": "Text.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53260,7 +53260,7 @@
       "needs_runtime": false,
       "pattern": "HistoricStringExpander.ExpandString(muralText ?? \"\").StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53273,7 +53273,7 @@
       "needs_runtime": false,
       "pattern": "HistoricStringExpander.ExpandString(gospelText ?? \"\", historicEntitySnapshot, historicEntitySnapshot.entity.history).StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53286,7 +53286,7 @@
       "needs_runtime": false,
       "pattern": "stringBuilder.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53299,7 +53299,7 @@
       "needs_runtime": false,
       "pattern": "E.Text.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53312,7 +53312,7 @@
       "needs_runtime": false,
       "pattern": "E.Text.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53325,7 +53325,7 @@
       "needs_runtime": false,
       "pattern": "Message.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53338,7 +53338,7 @@
       "needs_runtime": false,
       "pattern": "render.DisplayName.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53351,7 +53351,7 @@
       "needs_runtime": false,
       "pattern": "\"=subject.T= =verb:bask= in the sunlight and =verb:absorb= the nourishing rays.\".StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53364,7 +53364,7 @@
       "needs_runtime": false,
       "pattern": "Message.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53377,7 +53377,7 @@
       "needs_runtime": false,
       "pattern": "message.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53390,7 +53390,7 @@
       "needs_runtime": false,
       "pattern": "Text.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53403,7 +53403,7 @@
       "needs_runtime": false,
       "pattern": "Hagiograph.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53416,7 +53416,7 @@
       "needs_runtime": false,
       "pattern": "Gospel.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53429,7 +53429,7 @@
       "needs_runtime": false,
       "pattern": "Message.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53442,7 +53442,7 @@
       "needs_runtime": false,
       "pattern": "Message.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53455,7 +53455,7 @@
       "needs_runtime": false,
       "pattern": "lineText.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53468,7 +53468,7 @@
       "needs_runtime": false,
       "pattern": "Prefix.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53481,7 +53481,7 @@
       "needs_runtime": false,
       "pattern": "Postfix.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53494,7 +53494,7 @@
       "needs_runtime": false,
       "pattern": "Text.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53507,7 +53507,7 @@
       "needs_runtime": false,
       "pattern": "Hagiograph.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53520,7 +53520,7 @@
       "needs_runtime": false,
       "pattern": "Gospel.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53533,7 +53533,7 @@
       "needs_runtime": false,
       "pattern": "Message.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53546,7 +53546,7 @@
       "needs_runtime": false,
       "pattern": "GetProperty(Super ? \"MessageArrivalSuper\" : \"MessageArrival\").StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53559,7 +53559,7 @@
       "needs_runtime": false,
       "pattern": "text.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "VariableTemplate"
     },
     {
@@ -53572,7 +53572,7 @@
       "needs_runtime": false,
       "pattern": "\"This shrine depicts a significant event from the life of the ancient =sultan.term= =subject.name=:\\n\\n\".StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53585,7 +53585,7 @@
       "needs_runtime": false,
       "pattern": "Message.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53598,7 +53598,7 @@
       "needs_runtime": false,
       "pattern": "Message.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53611,7 +53611,7 @@
       "needs_runtime": false,
       "pattern": "Message.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53624,7 +53624,7 @@
       "needs_runtime": false,
       "pattern": "Message.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53637,7 +53637,7 @@
       "needs_runtime": false,
       "pattern": "Message.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53650,7 +53650,7 @@
       "needs_runtime": false,
       "pattern": "Message.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53663,7 +53663,7 @@
       "needs_runtime": false,
       "pattern": "Message.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53676,7 +53676,7 @@
       "needs_runtime": false,
       "pattern": "Message.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53689,7 +53689,7 @@
       "needs_runtime": false,
       "pattern": "Message.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53702,7 +53702,7 @@
       "needs_runtime": false,
       "pattern": "Message.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53715,7 +53715,7 @@
       "needs_runtime": false,
       "pattern": "Message.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53728,7 +53728,7 @@
       "needs_runtime": false,
       "pattern": "Message.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
@@ -53741,7 +53741,7 @@
       "needs_runtime": false,
       "pattern": "text.StartReplace()",
       "sink": "ReplaceBuilder",
-      "status": "needs_translation",
+      "status": "needs_patch",
       "type": "VariableTemplate"
     },
     {
