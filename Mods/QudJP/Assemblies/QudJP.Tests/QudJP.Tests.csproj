@@ -56,6 +56,7 @@
     <Compile Include="../src/MessageFrameTranslator.cs" Link="Production/MessageFrameTranslator.cs" />
     <Compile Include="../src/MessagePatternTranslator.cs" Link="Production/MessagePatternTranslator.cs" />
     <Compile Include="../src/ObservabilityHelpers.cs" Link="Production/ObservabilityHelpers.cs" />
+    <Compile Include="../src/SinkObservation.cs" Link="Production/SinkObservation.cs" />
     <Compile Include="../src/ScopedDictionaryLookup.cs" Link="Production/ScopedDictionaryLookup.cs" />
     <Compile Include="../src/Patches/*.cs" Link="Production/Patches/%(Filename)%(Extension)" />
     <Compile Include="../src/QudJPMod.cs" Link="Production/QudJPMod.cs" />

@@ -794,6 +794,17 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_IgnoresRouteFieldInPatternEntries()
+    {
+        WriteRawPatternFile(
+            "{\"patterns\":[{\"pattern\":\"^You miss (.+?)[.!]?$\",\"template\":\"{0}への攻撃は外れた\",\"route\":\"emit-message\"}]}");
+
+        var translated = MessagePatternTranslator.Translate("You miss snapjaw.");
+
+        Assert.That(translated, Is.EqualTo("snapjawへの攻撃は外れた"));
+    }
+
+    [Test]
     public void Translate_ThrowsInvalidDataException_WhenPatternEntryIsMalformed()
     {
         WriteRawPatternFile("{\"patterns\":[{\"pattern\":\"^You miss (.+)$\"}]}");

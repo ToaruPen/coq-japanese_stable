@@ -33,6 +33,14 @@ public static class MessageLogPatch
                 return true;
             }
 
+            var originalMessage = Message;
+            var (stripped, _) = ColorAwareTranslationComposer.Strip(originalMessage);
+            SinkObservation.LogUnclaimed(
+                nameof(MessageLogPatch),
+                nameof(MessageLogPatch),
+                nameof(MessagePatternTranslator),
+                originalMessage,
+                stripped);
             Message = MessagePatternTranslator.Translate(Message, nameof(MessageLogPatch));
             return true;
         }

@@ -3,2071 +3,2588 @@
   "patterns": [
     {
       "pattern": "^You hit (?:the |a |an )?(.+?) in a vital area[.!]?$",
-      "template": "{0}の急所に命中した"
+      "template": "{0}の急所に命中した",
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:hits|hit) (?:the |a |an )?(.+?) in a vital area[.!]?$",
-      "template": "{0}が{1}の急所に命中させた"
+      "template": "{0}が{1}の急所に命中させた",
+      "route": "message-frame"
     },
     {
       "pattern": "^You critically hit (?:the |a |an )?(.+?) \\(x(\\d+)\\) with (?:a |an |the )?(.+?) for (\\d+) damage!$",
-      "template": "{2}で{0}に会心の一撃、{3}ダメージを与えた！ (x{1})"
+      "template": "{2}で{0}に会心の一撃、{3}ダメージを与えた！ (x{1})",
+      "route": "emit-message"
     },
     {
       "pattern": "^You hit (?:the |a |an )?(.+?) \\(x(\\d+)\\) with (?:a |an |the )?(.+?) for (\\d+) damage!$",
-      "template": "{2}で{0}に{3}ダメージを与えた！ (x{1})"
+      "template": "{2}で{0}に{3}ダメージを与えた！ (x{1})",
+      "route": "emit-message"
     },
     {
       "pattern": "^You critically hit (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage[.!]?$",
-      "template": "{1}で{0}に会心の一撃、{2}ダメージを与えた"
+      "template": "{1}で{0}に会心の一撃、{2}ダメージを与えた",
+      "route": "emit-message"
     },
     {
       "pattern": "^You hit (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage[.!]?$",
-      "template": "{1}で{0}に{2}ダメージを与えた"
+      "template": "{1}で{0}に{2}ダメージを与えた",
+      "route": "emit-message"
     },
     {
       "pattern": "^You critically hit (?:the |a |an )?(.+?) \\(x(\\d+)\\) with (?:a |an |the )?(.+?)[.!]?$",
-      "template": "{2}で{0}に会心の一撃！ (x{1})"
+      "template": "{2}で{0}に会心の一撃！ (x{1})",
+      "route": "emit-message"
     },
     {
       "pattern": "^You hit (?:the |a |an )?(.+?) \\(x(\\d+)\\) with (?:a |an |the )?(.+?)[.!]?$",
-      "template": "{2}で{0}に命中した (x{1})"
+      "template": "{2}で{0}に命中した (x{1})",
+      "route": "emit-message"
     },
     {
       "pattern": "^You critically hit (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?), but your mental attack has no effect[.!]?$",
-      "template": "{1}で{0}に会心の一撃だが、精神攻撃は効果がない"
+      "template": "{1}で{0}に会心の一撃だが、精神攻撃は効果がない",
+      "route": "emit-message"
     },
     {
       "pattern": "^You hit (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?), but your mental attack has no effect[.!]?$",
-      "template": "{1}で{0}に命中したが、精神攻撃は効果がない"
+      "template": "{1}で{0}に命中したが、精神攻撃は効果がない",
+      "route": "emit-message"
     },
     {
       "pattern": "^You critically hit (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?)[.!]?$",
-      "template": "{1}で{0}に会心の一撃！"
+      "template": "{1}で{0}に会心の一撃！",
+      "route": "emit-message"
     },
     {
       "pattern": "^You hit (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?)[.!]?$",
-      "template": "{1}で{0}に命中した"
+      "template": "{1}で{0}に命中した",
+      "route": "emit-message"
     },
     {
       "pattern": "^Something (?:critically )?hits (?:the |a |an )?(.+?) \\(x(\\d+)\\) with (?:a |an |the )?(.+?) for (\\d+) damage!$",
-      "template": "何かが{2}で{0}に{3}ダメージを与えた！ (x{1})"
+      "template": "何かが{2}で{0}に{3}ダメージを与えた！ (x{1})",
+      "route": "emit-message"
     },
     {
       "pattern": "^Something (?:critically )?hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage[.!]?$",
-      "template": "何かが{1}で{0}に{2}ダメージを与えた"
+      "template": "何かが{1}で{0}に{2}ダメージを与えた",
+      "route": "emit-message"
     },
     {
       "pattern": "^Something (?:critically )?hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?)[.!]?$",
-      "template": "何かが{1}で{0}に命中した"
+      "template": "何かが{1}で{0}に命中した",
+      "route": "emit-message"
     },
     {
       "pattern": "^You hit (.+) for (\\d+) damage[.!]?$",
-      "template": "{0}に{1}ダメージを与えた"
+      "template": "{0}に{1}ダメージを与えた",
+      "route": "emit-message"
     },
     {
       "pattern": "^You crit (.+) for (\\d+) damage[.!]?$",
-      "template": "{0}に会心の一撃で{1}ダメージを与えた"
+      "template": "{0}に会心の一撃で{1}ダメージを与えた",
+      "route": "emit-message"
     },
     {
       "pattern": "^You attack (.+?)[.!]?$",
-      "template": "{0}に攻撃した"
+      "template": "{0}に攻撃した",
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The )?(.+) hits you for (\\d+) damage[.!]?$",
-      "template": "{0}の攻撃で{1}ダメージを受けた"
+      "template": "{0}の攻撃で{1}ダメージを受けた",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The )?(.+) crits you for (\\d+) damage[.!]?$",
-      "template": "{0}の会心の一撃で{1}ダメージを受けた"
+      "template": "{0}の会心の一撃で{1}ダメージを受けた",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The )?(.+) attacks you[.!]?$",
-      "template": "{0}があなたを攻撃してきた"
+      "template": "{0}があなたを攻撃してきた",
+      "route": "unclassified"
     },
     {
       "pattern": "^You miss with your (.+?)[.!] \\[(.+?) vs (.+?)\\]$",
-      "template": "{0}での攻撃は外れた。[{1} vs {2}]"
+      "template": "{0}での攻撃は外れた。[{1} vs {2}]",
+      "route": "emit-message"
     },
     {
       "pattern": "^You miss (.+?)[.!]?$",
-      "template": "{0}への攻撃は外れた"
+      "template": "{0}への攻撃は外れた",
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The )?(.+) misses you[.!]?$",
-      "template": "{0}の攻撃は外れた"
+      "template": "{0}の攻撃は外れた",
+      "route": "unclassified"
     },
     {
       "pattern": "^(.+) switches to aggressive stance[.!]?$",
-      "template": "{0}は攻撃態勢に入った。"
+      "template": "{0}は攻撃態勢に入った。",
+      "route": "unclassified"
     },
     {
       "pattern": "^You take (\\d+) damage from (.+?)の freezing effect![.!]?$",
-      "template": "{1}の凍結効果で{0}ダメージを受けた！"
+      "template": "{1}の凍結効果で{0}ダメージを受けた！",
+      "route": "emit-message"
     },
     {
       "pattern": "^(.+) emits a freezing ray from (?:his|her|its|their) hands![.!]?$",
-      "template": "{0}は手から凍結光線を放った！"
+      "template": "{0}は手から凍結光線を放った！",
+      "route": "unclassified"
     },
     {
       "pattern": "^You already have that power[.!]?$",
-      "template": "その能力はすでに習得している。"
+      "template": "その能力はすでに習得している。",
+      "route": "leaf"
     },
     {
       "pattern": "^You block (.+)'s attack[.!]?$",
-      "template": "{0}の攻撃を防いだ"
+      "template": "{0}の攻撃を防いだ",
+      "route": "emit-message"
     },
     {
       "pattern": "^You dodge (.+)'s attack[.!]?$",
-      "template": "{0}の攻撃を回避した"
+      "template": "{0}の攻撃を回避した",
+      "route": "emit-message"
     },
     {
       "pattern": "^You parry (.+)'s attack[.!]?$",
-      "template": "{0}の攻撃を受け流した"
+      "template": "{0}の攻撃を受け流した",
+      "route": "emit-message"
     },
     {
       "pattern": "^You are confused[.!]?$",
-      "template": "あなたは混乱した"
+      "template": "あなたは混乱した",
+      "route": "leaf"
     },
     {
       "pattern": "^You are stunned[.!]?$",
-      "template": "あなたは朦朧となった"
+      "template": "あなたは朦朧となった",
+      "route": "leaf"
     },
     {
       "pattern": "^You are poisoned[.!]?$",
-      "template": "あなたは毒状態になった"
+      "template": "あなたは毒状態になった",
+      "route": "leaf"
     },
     {
       "pattern": "^You are bleeding[.!]?$",
-      "template": "あなたは出血した"
+      "template": "あなたは出血した",
+      "route": "leaf"
     },
     {
       "pattern": "^You are burning[.!]?$",
-      "template": "あなたは燃え始めた"
+      "template": "あなたは燃え始めた",
+      "route": "leaf"
     },
     {
       "pattern": "^You are exhausted!$",
-      "template": "あなたは疲弊した！"
+      "template": "あなたは疲弊した！",
+      "route": "leaf"
     },
     {
       "pattern": "^You are exhausted\\.$",
-      "template": "あなたは疲弊した。"
+      "template": "あなたは疲弊した。",
+      "route": "leaf"
     },
     {
       "pattern": "^You are exhausted$",
-      "template": "あなたは疲弊した"
+      "template": "あなたは疲弊した",
+      "route": "leaf"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) exhausted!$",
-      "template": "{0}は疲弊した！"
+      "template": "{0}は疲弊した！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) exhausted\\.$",
-      "template": "{0}は疲弊した。"
+      "template": "{0}は疲弊した。",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) exhausted$",
-      "template": "{0}は疲弊した"
+      "template": "{0}は疲弊した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stunned!$",
-      "template": "{0}は気絶した！"
+      "template": "{0}は気絶した！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stunned\\.$",
-      "template": "{0}は気絶した。"
+      "template": "{0}は気絶した。",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stunned$",
-      "template": "{0}は気絶した"
+      "template": "{0}は気絶した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stuck!$",
-      "template": "{0}は動けなくなった！"
+      "template": "{0}は動けなくなった！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stuck\\.$",
-      "template": "{0}は動けなくなった。"
+      "template": "{0}は動けなくなった。",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stuck$",
-      "template": "{0}は動けなくなった"
+      "template": "{0}は動けなくなった",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) sealed!$",
-      "template": "{0}は封印された！"
+      "template": "{0}は封印された！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) sealed\\.$",
-      "template": "{0}は封印された。"
+      "template": "{0}は封印された。",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) sealed$",
-      "template": "{0}は封印された"
+      "template": "{0}は封印された",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) jammed!$",
-      "template": "{0}は動作不良を起こした！"
+      "template": "{0}は動作不良を起こした！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) jammed\\.$",
-      "template": "{0}は動作不良を起こした。"
+      "template": "{0}は動作不良を起こした。",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) jammed$",
-      "template": "{0}は動作不良を起こした"
+      "template": "{0}は動作不良を起こした",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) empty!$",
-      "template": "{0}は空になった！"
+      "template": "{0}は空になった！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) empty\\.$",
-      "template": "{0}は空になった。"
+      "template": "{0}は空になった。",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) empty$",
-      "template": "{0}は空になった"
+      "template": "{0}は空になった",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) unresponsive!$",
-      "template": "{0}は反応しなくなった！"
+      "template": "{0}は反応しなくなった！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) unresponsive\\.$",
-      "template": "{0}は反応しなくなった。"
+      "template": "{0}は反応しなくなった。",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) unresponsive$",
-      "template": "{0}は反応しなくなった"
+      "template": "{0}は反応しなくなった",
+      "route": "does-verb"
     },
     {
       "pattern": "^You stop bleeding[.!]?$",
-      "template": "あなたの出血は止まった"
+      "template": "あなたの出血は止まった",
+      "route": "leaf"
     },
     {
       "pattern": "^You are no longer confused[.!]?$",
-      "template": "あなたの混乱は解けた"
+      "template": "あなたの混乱は解けた",
+      "route": "leaf"
     },
     {
       "pattern": "^You begin moving[.!]?$",
-      "template": "あなたは移動を開始した"
+      "template": "あなたは移動を開始した",
+      "route": "leaf"
     },
     {
       "pattern": "^You stop moving[.!]?$",
-      "template": "あなたは移動を止めた"
+      "template": "あなたは移動を止めた",
+      "route": "leaf"
     },
     {
       "pattern": "^You (?:falls?|fell) to the ground!$",
-      "template": "あなたは地面に倒れた！"
+      "template": "あなたは地面に倒れた！",
+      "route": "leaf"
     },
     {
       "pattern": "^You (?:falls?|fell) to the ground\\.$",
-      "template": "あなたは地面に倒れた。"
+      "template": "あなたは地面に倒れた。",
+      "route": "leaf"
     },
     {
       "pattern": "^You (?:falls?|fell) to the ground$",
-      "template": "あなたは地面に倒れた"
+      "template": "あなたは地面に倒れた",
+      "route": "leaf"
     },
     {
       "pattern": "^You (?:falls?|fell) asleep!$",
-      "template": "あなたは眠りに落ちた！"
+      "template": "あなたは眠りに落ちた！",
+      "route": "leaf"
     },
     {
       "pattern": "^You (?:falls?|fell) asleep\\.$",
-      "template": "あなたは眠りに落ちた。"
+      "template": "あなたは眠りに落ちた。",
+      "route": "leaf"
     },
     {
       "pattern": "^You (?:falls?|fell) asleep$",
-      "template": "あなたは眠りに落ちた"
+      "template": "あなたは眠りに落ちた",
+      "route": "leaf"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) and (?:the |a |an )?(.+?) collide and fall to the ground[.!]?$",
-      "template": "{0}と{1}がぶつかり合い、地面に落ちた"
+      "template": "{0}と{1}がぶつかり合い、地面に落ちた",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) to the ground!$",
-      "template": "{0}は地面に倒れた！"
+      "template": "{0}は地面に倒れた！",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) to the ground\\.$",
-      "template": "{0}は地面に倒れた。"
+      "template": "{0}は地面に倒れた。",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) to the ground$",
-      "template": "{0}は地面に倒れた"
+      "template": "{0}は地面に倒れた",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) asleep!$",
-      "template": "{0}は眠りに落ちた！"
+      "template": "{0}は眠りに落ちた！",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) asleep\\.$",
-      "template": "{0}は眠りに落ちた。"
+      "template": "{0}は眠りに落ちた。",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) asleep$",
-      "template": "{0}は眠りに落ちた"
+      "template": "{0}は眠りに落ちた",
+      "route": "unclassified"
     },
     {
       "pattern": "^You pick up (.+?)[.!]?$",
-      "template": "{0}を拾った"
+      "template": "{0}を拾った",
+      "route": "emit-message"
     },
     {
       "pattern": "^You drop (.+?)[.!]?$",
-      "template": "{0}を落とした"
+      "template": "{0}を落とした",
+      "route": "emit-message"
     },
     {
       "pattern": "^You equip (.+?)[.!]?$",
-      "template": "{0}を装備した"
+      "template": "{0}を装備した",
+      "route": "emit-message"
     },
     {
       "pattern": "^You unequip (.+?)[.!]?$",
-      "template": "{0}を装備解除した"
+      "template": "{0}を装備解除した",
+      "route": "emit-message"
     },
     {
       "pattern": "^You fire (.+?)[.!]?$",
-      "template": "{0}を発射した"
+      "template": "{0}を発射した",
+      "route": "emit-message"
     },
     {
       "pattern": "^You reload (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?)[.!]?$",
-      "template": "{0}に{1}を装填した"
+      "template": "{0}に{1}を装填した",
+      "route": "emit-message"
     },
     {
       "pattern": "^You reload (.+?)[.!]?$",
-      "template": "{0}を再装填した"
+      "template": "{0}を再装填した",
+      "route": "emit-message"
     },
     {
       "pattern": "^You die![.!]?$",
-      "template": "あなたは死んだ！"
+      "template": "あなたは死んだ！",
+      "route": "leaf"
     },
     {
       "pattern": "^Your health has dropped below 40%![.!]?$",
-      "template": "体力が40%を下回った！"
+      "template": "体力が40%を下回った！",
+      "route": "leaf"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:fails|fail) to penetrate (.+?)'s armor and (?:is|are) destroyed[.!]?$",
-      "template": "{0}は{1}の防具を貫通できず、破壊された"
+      "template": "{0}は{1}の防具を貫通できず、破壊された",
+      "route": "message-frame"
     },
     {
       "pattern": "^(.+?) is destroyed[.!]?$",
-      "template": "{0}は破壊された"
+      "template": "{0}は破壊された",
+      "route": "unclassified"
     },
     {
       "pattern": "^(.+?) dies[.!]?$",
-      "template": "{0}は死んだ"
+      "template": "{0}は死んだ",
+      "route": "unclassified"
     },
     {
       "pattern": "^You feel (.+?)[.!]?$",
-      "template": "あなたは{0}を感じた"
+      "template": "あなたは{0}を感じた",
+      "route": "emit-message"
     },
     {
       "pattern": "^You see (?:a |an |the )?(.+?) to the (north|south|east|west|northeast|northwest|southeast|southwest) and stop moving[.!]?$",
-      "template": "{t1}に{0}が見えたので移動をやめた。"
+      "template": "{t1}に{0}が見えたので移動をやめた。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You see (.+?) above and stop moving[.!]?$",
-      "template": "頭上に{0}が見えたので移動をやめた。"
+      "template": "頭上に{0}が見えたので移動をやめた。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You see (.+?) below and stop moving[.!]?$",
-      "template": "足元に{0}が見えたので移動をやめた。"
+      "template": "足元に{0}が見えたので移動をやめた。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You see (.+?)[.!]?$",
-      "template": "あなたは{0}を見た"
+      "template": "あなたは{0}を見た",
+      "route": "emit-message"
     },
     {
       "pattern": "^You hear (.+?)[.!]?$",
-      "template": "あなたは{0}を聞いた"
+      "template": "あなたは{0}を聞いた",
+      "route": "emit-message"
     },
     {
       "pattern": "^You gain (\\d+) XP[.!]?$",
-      "template": "あなたは経験値を{0}獲得した"
+      "template": "あなたは経験値を{0}獲得した",
+      "route": "emit-message"
     },
     {
       "pattern": "^You lose (\\d+) HP[.!]?$",
-      "template": "あなたは{0}HPを失った"
+      "template": "あなたは{0}HPを失った",
+      "route": "emit-message"
     },
     {
       "pattern": "^You recover (\\d+) HP[.!]?$",
-      "template": "あなたは{0}HP回復した"
+      "template": "あなたは{0}HP回復した",
+      "route": "emit-message"
     },
     {
       "pattern": "^Notes: (.+)$",
-      "template": "備考: {0}"
+      "template": "備考: {0}",
+      "route": "journal"
     },
     {
       "pattern": "^You embark for the caves of Qud\\.$",
-      "template": "あなたはQudの洞窟へ旅立った。"
+      "template": "あなたはQudの洞窟へ旅立った。",
+      "route": "leaf"
     },
     {
       "pattern": "^You hit \\((x\\d+)\\) for (\\d+) damage with your (.+?)[.!] \\[(.+?)\\]$",
-      "template": "{2}で{1}ダメージを与えた。({0}) [{3}]"
+      "template": "{2}で{1}ダメージを与えた。({0}) [{3}]",
+      "route": "emit-message"
     },
     {
       "pattern": "^You critically hit \\((x\\d+)\\) for (\\d+) damage with your (.+?)[.!] \\[(.+?)\\]$",
-      "template": "{2}で会心の一撃、{1}ダメージを与えた。({0}) [{3}]"
+      "template": "{2}で会心の一撃、{1}ダメージを与えた。({0}) [{3}]",
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The )?(.+) hits \\((x\\d+)\\) for (\\d+) damage with (?:his|her|its) (.+?)[.!] \\[(.+?)\\]$",
-      "template": "{0}の{3}で{2}ダメージを受けた。({1}) [{4}]"
+      "template": "{0}の{3}で{2}ダメージを受けた。({1}) [{4}]",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The )?(.+) hits \\((x\\d+)\\) for (\\d+) damage with their (.+?)[.!] \\[(.+?)\\]$",
-      "template": "{0}の{3}で{2}ダメージを受けた。({1}) [{4}]"
+      "template": "{0}の{3}で{2}ダメージを受けた。({1}) [{4}]",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The )?(.+) critically hits \\((x\\d+)\\) for (\\d+) damage with (?:his|her|its) (.+?)[.!] \\[(.+?)\\]$",
-      "template": "{0}の{3}が会心し、{2}ダメージを受けた。({1}) [{4}]"
+      "template": "{0}の{3}が会心し、{2}ダメージを受けた。({1}) [{4}]",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The )?(.+) critically hits \\((x\\d+)\\) for (\\d+) damage with their (.+?)[.!] \\[(.+?)\\]$",
-      "template": "{0}の{3}が会心し、{2}ダメージを受けた。({1}) [{4}]"
+      "template": "{0}の{3}が会心し、{2}ダメージを受けた。({1}) [{4}]",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The )?(.+) misses you with (?:his|her|its) (.+?)[.!] \\[(.+?) vs (.+?)\\]$",
-      "template": "{0}の{1}は外れた。[{2} vs {3}]"
+      "template": "{0}の{1}は外れた。[{2} vs {3}]",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The )?(.+) misses you with their (.+?)[.!] \\[(.+?) vs (.+?)\\]$",
-      "template": "{0}の{1}は外れた。[{2} vs {3}]"
+      "template": "{0}の{1}は外れた。[{2} vs {3}]",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically (?:hits|hit) you \\(x(\\d+)\\) with (?:a |an |the )?(.+?) for (\\d+) damage!$",
-      "template": "{0}の{2}が会心し、{3}ダメージを受けた！ (x{1})"
+      "template": "{0}の{2}が会心し、{3}ダメージを受けた！ (x{1})",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:hits|hit) you \\(x(\\d+)\\) with (?:a |an |the )?(.+?) for (\\d+) damage!$",
-      "template": "{0}の{2}で{3}ダメージを受けた！ (x{1})"
+      "template": "{0}の{2}で{3}ダメージを受けた！ (x{1})",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically (?:hits|hit) you with (?:a |an |the )?(.+?) for (\\d+) damage[.!]?$",
-      "template": "{0}の{1}が会心し、{2}ダメージを受けた"
+      "template": "{0}の{1}が会心し、{2}ダメージを受けた",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:hits|hit) you with (?:a |an |the )?(.+?) for (\\d+) damage[.!]?$",
-      "template": "{0}の{1}で{2}ダメージを受けた"
+      "template": "{0}の{1}で{2}ダメージを受けた",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically (?:hits|hit) you with (?:a |an |the )?(.+?), but your mental attack has no effect[.!]?$",
-      "template": "{0}の{1}が会心したが、精神攻撃は効果がない"
+      "template": "{0}の{1}が会心したが、精神攻撃は効果がない",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:hits|hit) you with (?:a |an |the )?(.+?), but your mental attack has no effect[.!]?$",
-      "template": "{0}の{1}が命中したが、精神攻撃は効果がない"
+      "template": "{0}の{1}が命中したが、精神攻撃は効果がない",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically (?:hits|hit) you \\(x(\\d+)\\) with (?:a |an |the )?(.+?)!$",
-      "template": "{0}の{2}で会心の一撃を受けた！ (x{1})"
+      "template": "{0}の{2}で会心の一撃を受けた！ (x{1})",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:hits|hit) you \\(x(\\d+)\\) with (?:a |an |the )?(.+?)!$",
-      "template": "{0}の{2}で攻撃を受けた (x{1})"
+      "template": "{0}の{2}で攻撃を受けた (x{1})",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically (?:hits|hit) you with (?:a |an |the )?(.+?)[.!]?$",
-      "template": "{0}の{1}で会心の一撃を受けた"
+      "template": "{0}の{1}で会心の一撃を受けた",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:hits|hit) you with (?:a |an |the )?(.+?)[.!]?$",
-      "template": "{0}の{1}で攻撃を受けた"
+      "template": "{0}の{1}で攻撃を受けた",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically (?:hits|hit) you! \\(x(\\d+)\\)$",
-      "template": "{0}の会心の一撃を受けた！ (x{1})"
+      "template": "{0}の会心の一撃を受けた！ (x{1})",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:hits|hit) you! \\(x(\\d+)\\)$",
-      "template": "{0}の攻撃を受けた！ (x{1})"
+      "template": "{0}の攻撃を受けた！ (x{1})",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically (?:hits|hit) (?:the |a |an )?(?!you)(.+?) \\(x(\\d+)\\) with (?:a |an |the )?(.+?) for (\\d+) damage!$",
-      "template": "{0}は{3}で{1}に会心の一撃、{4}ダメージを与えた！ (x{2})"
+      "template": "{0}は{3}で{1}に会心の一撃、{4}ダメージを与えた！ (x{2})",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:hits|hit) (?:the |a |an )?(?!you)(.+?) \\(x(\\d+)\\) with (?:a |an |the )?(.+?) for (\\d+) damage!$",
-      "template": "{0}は{3}で{1}に{4}ダメージを与えた！ (x{2})"
+      "template": "{0}は{3}で{1}に{4}ダメージを与えた！ (x{2})",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically (?:hits|hit) (?:the |a |an )?(?!you)(.+?) with (?:a |an |the )?(.+?), but (?:his|her|its|their) mental attack has no effect[.!]?$",
-      "template": "{0}は{2}で{1}に会心の一撃だが、精神攻撃は効果がない"
+      "template": "{0}は{2}で{1}に会心の一撃だが、精神攻撃は効果がない",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:hits|hit) (?:the |a |an )?(?!you)(.+?) with (?:a |an |the )?(.+?), but (?:his|her|its|their) mental attack has no effect[.!]?$",
-      "template": "{0}は{2}で{1}に命中させたが、精神攻撃は効果がない"
+      "template": "{0}は{2}で{1}に命中させたが、精神攻撃は効果がない",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage!$",
-      "template": "{0}は{2}で{1}に{3}ダメージを与えた！"
+      "template": "{0}は{2}で{1}に{3}ダメージを与えた！",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage\\.$",
-      "template": "{0}は{2}で{1}に{3}ダメージを与えた。"
+      "template": "{0}は{2}で{1}に{3}ダメージを与えた。",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage$",
-      "template": "{0}は{2}で{1}に{3}ダメージを与えた"
+      "template": "{0}は{2}で{1}に{3}ダメージを与えた",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) for (\\d+) damage!$",
-      "template": "{0}は{1}に{2}ダメージを与えた！"
+      "template": "{0}は{1}に{2}ダメージを与えた！",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) for (\\d+) damage\\.$",
-      "template": "{0}は{1}に{2}ダメージを与えた。"
+      "template": "{0}は{1}に{2}ダメージを与えた。",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) for (\\d+) damage$",
-      "template": "{0}は{1}に{2}ダメージを与えた"
+      "template": "{0}は{1}に{2}ダメージを与えた",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically (?:hits|hit) (?:the |a |an )?(?!you)(.+?) \\(x(\\d+)\\) with (?:a |an |the )?(.+?)!$",
-      "template": "{0}は{3}で{1}に会心の一撃！ (x{2})"
+      "template": "{0}は{3}で{1}に会心の一撃！ (x{2})",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:hits|hit) (?:the |a |an )?(?!you)(.+?) \\(x(\\d+)\\) with (?:a |an |the )?(.+?)!$",
-      "template": "{0}は{3}で{1}に命中した (x{2})"
+      "template": "{0}は{3}で{1}に命中した (x{2})",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically (?:hits|hit) (?:the |a |an )?(?!you)(.+?) with (?:a |an |the )?(.+?)[.!]?$",
-      "template": "{0}は{2}で{1}に会心の一撃"
+      "template": "{0}は{2}で{1}に会心の一撃",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:hits|hit) (?:the |a |an )?(?!you)(.+?) with (?:a |an |the )?(.+?)[.!]?$",
-      "template": "{0}は{2}で{1}に命中した"
+      "template": "{0}は{2}で{1}に命中した",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically (?:hits|hit) (?:the |a |an )?(?!you)(.+?)! \\(x(\\d+)\\)$",
-      "template": "{0}は{1}に会心の一撃！ (x{2})"
+      "template": "{0}は{1}に会心の一撃！ (x{2})",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:hits|hit) (?:the |a |an )?(?!you)(.+?)! \\(x(\\d+)\\)$",
-      "template": "{0}は{1}に命中した (x{2})"
+      "template": "{0}は{1}に命中した (x{2})",
+      "route": "message-frame"
     },
     {
       "pattern": "^You hit something (.+?)[.!]?$",
-      "template": "{0}の方角の何かに命中した"
+      "template": "{0}の方角の何かに命中した",
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:hits|hit) something (.+?)[.!]?$",
-      "template": "{0}は{1}の方角の何かに命中させた"
+      "template": "{0}は{1}の方角の何かに命中させた",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )?(?!you)(.+?) with (?:a |an |the )?(.+?)! \\[(.+?) vs (.+?)\\]$",
-      "template": "{0}は{2}で{1}への攻撃を外した！ [{3} vs {4}]"
+      "template": "{0}は{2}で{1}への攻撃を外した！ [{3} vs {4}]",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )?(?!you)(.+?) with (?:a |an |the )?(.+?)\\. \\[(.+?) vs (.+?)\\]$",
-      "template": "{0}は{2}で{1}への攻撃を外した。 [{3} vs {4}]"
+      "template": "{0}は{2}で{1}への攻撃を外した。 [{3} vs {4}]",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )?(?!you)(.+?) with (?:a |an |the )?(.+?) \\[(.+?) vs (.+?)\\]$",
-      "template": "{0}は{2}で{1}への攻撃を外した [{3} vs {4}]"
+      "template": "{0}は{2}で{1}への攻撃を外した [{3} vs {4}]",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )?(?!you)(.+?)!$",
-      "template": "{0}は{1}への攻撃を外した！"
+      "template": "{0}は{1}への攻撃を外した！",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )?(?!you)(.+?)\\.$",
-      "template": "{0}は{1}への攻撃を外した。"
+      "template": "{0}は{1}への攻撃を外した。",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )?(?!you)(.+?)$",
-      "template": "{0}は{1}への攻撃を外した"
+      "template": "{0}は{1}への攻撃を外した",
+      "route": "unclassified"
     },
     {
       "pattern": "^You don't penetrate (?:the )?(.+?)の armor with your (.+?)[.!] \\[(.+?)\\]$",
-      "template": "{1}では{0}の装甲を貫けない。[{2}]"
+      "template": "{1}では{0}の装甲を貫けない。[{2}]",
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:can't|cannot) hear you!$",
-      "template": "{0}にはあなたの声が聞こえない！"
+      "template": "{0}にはあなたの声が聞こえない！",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:can't|cannot) hear you\\.$",
-      "template": "{0}にはあなたの声が聞こえない。"
+      "template": "{0}にはあなたの声が聞こえない。",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:can't|cannot) hear you$",
-      "template": "{0}にはあなたの声が聞こえない"
+      "template": "{0}にはあなたの声が聞こえない",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a consciousness to appeal to!$",
-      "template": "{0}には訴えるべき意識がない！"
+      "template": "{0}には訴えるべき意識がない！",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a consciousness to appeal to\\.$",
-      "template": "{0}には訴えるべき意識がない。"
+      "template": "{0}には訴えるべき意識がない。",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a consciousness to appeal to$",
-      "template": "{0}には訴えるべき意識がない"
+      "template": "{0}には訴えるべき意識がない",
+      "route": "unclassified"
     },
     {
       "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s') armor!$",
-      "template": "{0}の防具を貫通できなかった！"
+      "template": "{0}の防具を貫通できなかった！",
+      "route": "emit-message"
     },
     {
       "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s') armor\\.$",
-      "template": "{0}の防具を貫通できなかった。"
+      "template": "{0}の防具を貫通できなかった。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s') armor$",
-      "template": "{0}の防具を貫通できなかった"
+      "template": "{0}の防具を貫通できなかった",
+      "route": "emit-message"
     },
     {
       "pattern": "^You (?:can't|cannot) see!$",
-      "template": "視界がない！"
+      "template": "視界がない！",
+      "route": "leaf"
     },
     {
       "pattern": "^You (?:can't|cannot) see\\.$",
-      "template": "視界がない。"
+      "template": "視界がない。",
+      "route": "leaf"
     },
     {
       "pattern": "^You (?:can't|cannot) see$",
-      "template": "視界がない"
+      "template": "視界がない",
+      "route": "leaf"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) seem to be working!$",
-      "template": "{0}は機能していないようだ！"
+      "template": "{0}は機能していないようだ！",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) seem to be working\\.$",
-      "template": "{0}は機能していないようだ。"
+      "template": "{0}は機能していないようだ。",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) seem to be working$",
-      "template": "{0}は機能していないようだ"
+      "template": "{0}は機能していないようだ",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have enough charge to sustain the field!$",
-      "template": "{0}にはフィールドを維持するのに十分な充電がない！"
+      "template": "{0}にはフィールドを維持するのに十分な充電がない！",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have enough charge to operate[.!]?$",
-      "template": "{0}には動作するのに十分な充電がない"
+      "template": "{0}には動作するのに十分な充電がない",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have enough charge to be imprinted with the current location[.!]?$",
-      "template": "{0}には現在地を刻印するのに十分な充電がない"
+      "template": "{0}には現在地を刻印するのに十分な充電がない",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have enough charge to function[.!]?$",
-      "template": "{0}には機能するのに十分な充電がない"
+      "template": "{0}には機能するのに十分な充電がない",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) have enough (.+?) to (.+?)!$",
-      "template": "{t0}は{t2}するのに十分な{t1}がない！"
+      "template": "{t0}は{t2}するのに十分な{t1}がない！",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) have enough (.+?) to (.+?)\\.$",
-      "template": "{t0}は{t2}するのに十分な{t1}がない。"
+      "template": "{t0}は{t2}するのに十分な{t1}がない。",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) have enough (.+?) to (.+?)$",
-      "template": "{t0}は{t2}するのに十分な{t1}がない"
+      "template": "{t0}は{t2}するのに十分な{t1}がない",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) no room for more (.+?)!$",
-      "template": "{0}にはこれ以上の{t1}を入れる余地がない！"
+      "template": "{0}にはこれ以上の{t1}を入れる余地がない！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) no room for more (.+?)\\.$",
-      "template": "{0}にはこれ以上の{t1}を入れる余地がない。"
+      "template": "{0}にはこれ以上の{t1}を入れる余地がない。",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) no room for more (.+?)$",
-      "template": "{0}にはこれ以上の{t1}を入れる余地がない"
+      "template": "{0}にはこれ以上の{t1}を入れる余地がない",
+      "route": "does-verb"
     },
     {
       "pattern": "^You have no more ammo!$",
-      "template": "弾薬が尽きた！"
+      "template": "弾薬が尽きた！",
+      "route": "leaf"
     },
     {
       "pattern": "^You have no more ammo\\.$",
-      "template": "弾薬が尽きた。"
+      "template": "弾薬が尽きた。",
+      "route": "leaf"
     },
     {
       "pattern": "^You have no more ammo$",
-      "template": "弾薬が尽きた"
+      "template": "弾薬が尽きた",
+      "route": "leaf"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) nothing to say!$",
-      "template": "{0}は何も言うことがない！"
+      "template": "{0}は何も言うことがない！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) nothing to say\\.$",
-      "template": "{0}は何も言うことがない。"
+      "template": "{0}は何も言うことがない。",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) nothing to say$",
-      "template": "{0}は何も言うことがない"
+      "template": "{0}は何も言うことがない",
+      "route": "does-verb"
     },
     {
       "pattern": "^You have left your party!$",
-      "template": "あなたはパーティーを離れた！"
+      "template": "あなたはパーティーを離れた！",
+      "route": "leaf"
     },
     {
       "pattern": "^You have left your party\\.$",
-      "template": "あなたはパーティーを離れた。"
+      "template": "あなたはパーティーを離れた。",
+      "route": "leaf"
     },
     {
       "pattern": "^You have left your party$",
-      "template": "あなたはパーティーを離れた"
+      "template": "あなたはパーティーを離れた",
+      "route": "leaf"
     },
     {
       "pattern": "^(.+) begins bleeding from another wound[.!]?$",
-      "template": "{0}はさらに出血し始めた。"
+      "template": "{0}はさらに出血し始めた。",
+      "route": "unclassified"
     },
     {
       "pattern": "^Your nose begins to bleed[.!]?$",
-      "template": "あなたの鼻から血が流れ始めた"
+      "template": "あなたの鼻から血が流れ始めた",
+      "route": "leaf"
     },
     {
       "pattern": "^Your core begins to leak[.!]?$",
-      "template": "あなたのコアから液漏れが始まった"
+      "template": "あなたのコアから液漏れが始まった",
+      "route": "leaf"
     },
     {
       "pattern": "^Your brain begins to hemorrhage[.!]?$",
-      "template": "あなたの脳から出血が始まった"
+      "template": "あなたの脳から出血が始まった",
+      "route": "leaf"
     },
     {
       "pattern": "^Your (?:noses?|nose) (?:begins?|begin) (.+?) more heavily[.!]?$",
-      "template": "あなたの鼻からさらに激しく{0}が始まった"
+      "template": "あなたの鼻からさらに激しく{0}が始まった",
+      "route": "emit-message"
     },
     {
       "pattern": "^Your (?:noses?|nose) (?:begins?|begin) (.+?)[.!]?$",
-      "template": "あなたの鼻から{0}が始まった"
+      "template": "あなたの鼻から{0}が始まった",
+      "route": "emit-message"
     },
     {
       "pattern": "^Your (?:noses?|nose) (?:stops?|stop) (.+?) quite so heavily[.!]?$",
-      "template": "あなたの鼻からの{0}が少し治まった"
+      "template": "あなたの鼻からの{0}が少し治まった",
+      "route": "emit-message"
     },
     {
       "pattern": "^Your (?:noses?|nose) (?:stops?|stop) (.+?)[.!]?$",
-      "template": "あなたの鼻からの{0}が止まった"
+      "template": "あなたの鼻からの{0}が止まった",
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') nose begins to bleed[.!]?$",
-      "template": "{0}の鼻から血が流れ始めた"
+      "template": "{0}の鼻から血が流れ始めた",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') core begins to leak[.!]?$",
-      "template": "{0}のコアから液漏れが始まった"
+      "template": "{0}のコアから液漏れが始まった",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') brain begins to hemorrhage[.!]?$",
-      "template": "{0}の脳から出血が始まった"
+      "template": "{0}の脳から出血が始まった",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (?:noses?|nose) (?:begins?|begin) (.+?) more heavily[.!]?$",
-      "template": "{0}の鼻からさらに激しく{1}が始まった"
+      "template": "{0}の鼻からさらに激しく{1}が始まった",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (?:noses?|nose) (?:begins?|begin) (.+?)[.!]?$",
-      "template": "{0}の鼻から{1}が始まった"
+      "template": "{0}の鼻から{1}が始まった",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (?:noses?|nose) (?:stops?|stop) (.+?) quite so heavily[.!]?$",
-      "template": "{0}の鼻からの{1}が少し治まった"
+      "template": "{0}の鼻からの{1}が少し治まった",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (?:noses?|nose) (?:stops?|stop) (.+?)[.!]?$",
-      "template": "{0}の鼻からの{1}が止まった"
+      "template": "{0}の鼻からの{1}が止まった",
+      "route": "unclassified"
     },
     {
       "pattern": "^(.+) begins bleeding[.!]?$",
-      "template": "{0}は出血し始めた。"
+      "template": "{0}は出血し始めた。",
+      "route": "unclassified"
     },
     {
       "pattern": "^(.+) stops bleeding[.!]?$",
-      "template": "{0}の出血は止まった。"
+      "template": "{0}の出血は止まった。",
+      "route": "unclassified"
     },
     {
       "pattern": "^One of (.+?)の wounds stops bleeding[.!]?$",
-      "template": "{0}の傷のひとつの出血が止まった。"
+      "template": "{0}の傷のひとつの出血が止まった。",
+      "route": "unclassified"
     },
     {
       "pattern": "^(.+) takes (\\d+) damage from bleeding[.!]?$",
-      "template": "{0}は出血で{1}ダメージを受けた。"
+      "template": "{0}は出血で{1}ダメージを受けた。",
+      "route": "unclassified"
     },
     {
       "pattern": "^(.+) takes no damage from bleeding[.!]?$",
-      "template": "{0}は出血でダメージを受けなかった。"
+      "template": "{0}は出血でダメージを受けなかった。",
+      "route": "unclassified"
     },
     {
       "pattern": "^(.+) becomes confused[.!]?$",
-      "template": "{0}は混乱した。"
+      "template": "{0}は混乱した。",
+      "route": "unclassified"
     },
     {
       "pattern": "^(.+) resists the effects of your venom[.!]?$",
-      "template": "{0}はあなたの毒に抵抗した。"
+      "template": "{0}はあなたの毒に抵抗した。",
+      "route": "unclassified"
     },
     {
       "pattern": "^You strike (.+?) with your stinger[.!]?$",
-      "template": "{0}を毒針で突いた。"
+      "template": "{0}を毒針で突いた。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You are dazed[.!]?$",
-      "template": "あなたはよろめいた。"
+      "template": "あなたはよろめいた。",
+      "route": "leaf"
     },
     {
       "pattern": "^You have lost sight of (?:the )?(.+?)[.!]?$",
-      "template": "{0}を見失った。"
+      "template": "{0}を見失った。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You cannot do that while sitting[.!]?$",
-      "template": "座っている間はそれを行えない。"
+      "template": "座っている間はそれを行えない。",
+      "route": "leaf"
     },
     {
       "pattern": "^You pass by a (.+?)[.!]?$",
-      "template": "{0}のそばを通り過ぎた。"
+      "template": "{0}のそばを通り過ぎた。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You pass by (.+?)[.!]?$",
-      "template": "{0}のそばを通り過ぎた。"
+      "template": "{0}のそばを通り過ぎた。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You wade through (?:a |an )?(.+?)[.!]?$",
-      "template": "{0}をかき分けて進んだ。"
+      "template": "{0}をかき分けて進んだ。",
+      "route": "emit-message"
     },
     {
       "pattern": "^A (.+?) appears here[.!]?$",
-      "template": "{0}がここに現れた。"
+      "template": "{0}がここに現れた。",
+      "route": "unclassified"
     },
     {
       "pattern": "^The way is blocked by some (.+?)[.!]?$",
-      "template": "{0}が道を塞いでいる。"
+      "template": "{0}が道を塞いでいる。",
+      "route": "unclassified"
     },
     {
       "pattern": "^The way is blocked by a (.+?)[.!]?$",
-      "template": "{0}が道を塞いでいる。"
+      "template": "{0}が道を塞いでいる。",
+      "route": "unclassified"
     },
     {
       "pattern": "^You stop moving because the (.+?) is in the way[.!]?$",
-      "template": "{0}が邪魔で移動をやめた。"
+      "template": "{0}が邪魔で移動をやめた。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You note this piece of information in the Sultan Histories > (.+?) section of your journal\\.[.!]?$",
-      "template": "この情報をジャーナルの「スルタン史 > {0}」欄に記録した。"
+      "template": "この情報をジャーナルの「スルタン史 > {0}」欄に記録した。",
+      "route": "journal"
     },
     {
       "pattern": "^You discover the location of (.+?)[.!]?$",
-      "template": "{0}の場所を発見した。"
+      "template": "{0}の場所を発見した。",
+      "route": "journal"
     },
     {
       "pattern": "^You note the location of (.+?) in the Locations > (.+?) section of your journal\\.[.!]?$",
-      "template": "ジャーナルの「場所 > {t1}」欄に{0}の場所を記録した。"
+      "template": "ジャーナルの「場所 > {t1}」欄に{0}の場所を記録した。",
+      "route": "journal"
     },
     {
       "pattern": "^You journeyed to (.+?)\\.$",
-      "template": "{t0}に旅した。"
+      "template": "{t0}に旅した。",
+      "route": "journal"
     },
     {
       "pattern": "^You discovered the hidden village of (.+?)\\.$",
-      "template": "隠れ里{t0}を発見した。"
+      "template": "隠れ里{t0}を発見した。",
+      "route": "journal"
     },
     {
       "pattern": "^There exists a pocket dimension known as (.+?)\\.$",
-      "template": "{0}と呼ばれるポケット次元が存在する。"
+      "template": "{0}と呼ばれるポケット次元が存在する。",
+      "route": "journal"
     },
     {
       "pattern": "^There exists a dimension known as (.+?)\\.$",
-      "template": "{0}と呼ばれる次元が存在する。"
+      "template": "{0}と呼ばれる次元が存在する。",
+      "route": "journal"
     },
     {
       "pattern": "^You crossed into (.+?)\\.$",
-      "template": "{t0}へ足を踏み入れた。"
+      "template": "{t0}へ足を踏み入れた。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You crossed into the Thin World, rarefied, and stood before the gate to (.+?)\\.$",
-      "template": "希薄な薄界へ足を踏み入れ、{t0}への門前に立った。"
+      "template": "希薄な薄界へ足を踏み入れ、{t0}への門前に立った。",
+      "route": "emit-message"
     },
     {
       "pattern": "^Last visited on the (.+?) of (.+?)$",
-      "template": "{1}の{0}日に最後に訪れた。"
+      "template": "{1}の{0}日に最後に訪れた。",
+      "route": "journal"
     },
     {
       "pattern": "^You have received a new quest, (.+?)(!+)$",
-      "template": "新しいクエストを受けた: {0}{1}"
+      "template": "新しいクエストを受けた: {0}{1}",
+      "route": "emit-message"
     },
     {
       "pattern": "^You harvest ((?:two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|\\d+)) (.+?) from (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{2}から{0}個の{1}を収穫した"
+      "template": "{2}から{0}個の{1}を収穫した",
+      "route": "emit-message"
     },
     {
       "pattern": "^You harvest ((?:two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|\\d+)) (.+?)[.!]?$",
-      "template": "{0}個の{1}を収穫した"
+      "template": "{0}個の{1}を収穫した",
+      "route": "emit-message"
     },
     {
       "pattern": "^You harvest (?:a |an )?(.+?) from (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{1}から{0}を収穫した"
+      "template": "{1}から{0}を収穫した",
+      "route": "emit-message"
     },
     {
       "pattern": "^You harvest (?:a |an )?(.+?)[.!]?$",
-      "template": "{0}を収穫した"
+      "template": "{0}を収穫した",
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:harvests|harvest) ((?:two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|\\d+)) (.+?) from (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}は{3}から{1}個の{2}を収穫した"
+      "template": "{0}は{3}から{1}個の{2}を収穫した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:harvests|harvest) ((?:two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|\\d+)) (.+?)[.!]?$",
-      "template": "{0}は{1}個の{2}を収穫した"
+      "template": "{0}は{1}個の{2}を収穫した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:harvests|harvest) (?:a |an )?(.+?) from (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}は{2}から{1}を収穫した"
+      "template": "{0}は{2}から{1}を収穫した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:harvests|harvest) (?:a |an )?(.+?)[.!]?$",
-      "template": "{0}は{1}を収穫した"
+      "template": "{0}は{1}を収穫した",
+      "route": "does-verb"
     },
     {
       "pattern": "^There is nothing left to harvest[.!]?$",
-      "template": "収穫できるものが残っていない"
+      "template": "収穫できるものが残っていない",
+      "route": "leaf"
     },
     {
       "pattern": "^The (.+?) harvests a (.+?)[.!]?$",
-      "template": "{0}は{1}を収穫した。"
+      "template": "{0}は{1}を収穫した。",
+      "route": "unclassified"
     },
     {
       "pattern": "^The (.+?) begins flying[.!]?$",
-      "template": "{0}が飛翔し始めた。"
+      "template": "{0}が飛翔し始めた。",
+      "route": "unclassified"
     },
     {
       "pattern": "^The (.+?) has been poisoned![.!]?$",
-      "template": "{0}は毒状態になった。"
+      "template": "{0}は毒状態になった。",
+      "route": "unclassified"
     },
     {
       "pattern": "^The (.+?) takes (\\d+) damage from your poison![.!]?$",
-      "template": "{0}はあなたの毒で{1}ダメージを受けた。"
+      "template": "{0}はあなたの毒で{1}ダメージを受けた。",
+      "route": "unclassified"
     },
     {
       "pattern": "^You sit down on the (.+?)[.!]?$",
-      "template": "{0}に腰を下ろした。"
+      "template": "{0}に腰を下ろした。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You stand up[.!]?$",
-      "template": "立ち上がった。"
+      "template": "立ち上がった。",
+      "route": "leaf"
     },
     {
       "pattern": "^(?:The )?(.+?) stands up[.!]?$",
-      "template": "{0}は立ち上がった。"
+      "template": "{0}は立ち上がった。",
+      "route": "unclassified"
     },
     {
       "pattern": "^You disassemble the (.+?)\\. You receive tinkering bits <(.+?)>\\.[.!]?$",
-      "template": "{0}を分解し、修理ビット<{1}>を受け取った。"
+      "template": "{0}を分解し、修理ビット<{1}>を受け取った。",
+      "route": "emit-message"
     },
     {
       "pattern": "^(.+?) takes (\\d+) damage from your freezing weapon![.!]?$",
-      "template": "{0}はあなたの凍てつく武器で{1}ダメージを受けた！"
+      "template": "{0}はあなたの凍てつく武器で{1}ダメージを受けた！",
+      "route": "unclassified"
     },
     {
       "pattern": "^E-Ros yells, 'I'm coming, (.+?)!'$",
-      "template": "E-Rosは「今行くよ、{0}！」と叫んだ"
+      "template": "E-Rosは「今行くよ、{0}！」と叫んだ",
+      "route": "unclassified"
     },
     {
       "pattern": "^You yell, '(.+)'$",
-      "template": "あなたは「{0}」と叫んだ。"
+      "template": "あなたは「{0}」と叫んだ。",
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The )?(.+?) yells, '(.+)'$",
-      "template": "{0}は「{1}」と叫んだ。"
+      "template": "{0}は「{1}」と叫んだ。",
+      "route": "unclassified"
     },
     {
       "pattern": "^On the (.+?) of (.+?), you arrive at the oasis-hamlet of Joppa, along the far rim of Moghra'yi, the Great Salt Desert\\.\\n\\nAll around you, moisture farmers tend to groves of viridian watervine\\. There are huts wrought from rock salt and brinestalk\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",
-      "template": "{1}の{0}日、あなたは大塩砂漠モグライィの遥かな縁にあるオアシス集落ジョッパに到着した。\n\nあたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。"
+      "template": "{1}の{0}日、あなたは大塩砂漠モグライィの遥かな縁にあるオアシス集落ジョッパに到着した。\n\nあたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。",
+      "route": "journal"
     },
     {
       "pattern": "^On the (.+?) of (.+?), you arrive at the village of (.+?)\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",
-      "template": "{1}の{0}日、あなたは{2}の村に到着した。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。"
+      "template": "{1}の{0}日、あなたは{2}の村に到着した。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。",
+      "route": "journal"
     },
     {
       "pattern": "^You cannot do that[.!]?$",
-      "template": "それはできない"
+      "template": "それはできない",
+      "route": "leaf"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) utterly unresponsive[.!]?$",
-      "template": "{0}はまったく反応しない"
+      "template": "{0}はまったく反応しない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) fully charged!$",
-      "template": "{0}は完全に充電された！"
+      "template": "{0}は完全に充電された！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) no longer your follower[.!]?$",
-      "template": "{0}はもはやあなたの仲間ではない"
+      "template": "{0}はもはやあなたの仲間ではない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) now your follower[.!]?$",
-      "template": "{0}はあなたの仲間になった"
+      "template": "{0}はあなたの仲間になった",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) ripped from your body!$",
-      "template": "{0}があなたの体から引き剥がされた！"
+      "template": "{0}があなたの体から引き剥がされた！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) pulled toward something[.!]?$",
-      "template": "{0}は何かに引き寄せられた"
+      "template": "{0}は何かに引き寄せられた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) pulled toward (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}は{1}に引き寄せられた"
+      "template": "{0}は{1}に引き寄せられた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) open[.!]?$",
-      "template": "{0}は開いている"
+      "template": "{0}は開いている",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) not bleeding[.!]?$",
-      "template": "{0}は出血していない"
+      "template": "{0}は出血していない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) already fully loaded[.!]?$",
-      "template": "{0}はすでに完全に装填されている"
+      "template": "{0}はすでに完全に装填されている",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) already full of (.+?)[.!]?$",
-      "template": "{0}はすでに{1}で満たされている"
+      "template": "{0}はすでに{1}で満たされている",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) already full[.!]?$",
-      "template": "{0}はすでに満タンだ"
+      "template": "{0}はすでに満タンだ",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) turned off[.!]?$",
-      "template": "{0}の電源は切れている"
+      "template": "{0}の電源は切れている",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) extinguished by (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}は{1}によって消し止められた"
+      "template": "{0}は{1}によって消し止められた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) covered in sticky goop!$",
-      "template": "{0}はべとべとの粘液に覆われた！"
+      "template": "{0}はべとべとの粘液に覆われた！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) covered in (.+?)[.!]?$",
-      "template": "{0}は{1}に覆われた"
+      "template": "{0}は{1}に覆われた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) immune to conventional treatments[.!]?$",
-      "template": "{0}は通常の治療が効かない"
+      "template": "{0}は通常の治療が効かない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) lost in the goop!$",
-      "template": "{0}は粘液の中に沈んだ！"
+      "template": "{0}は粘液の中に沈んだ！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) still starting up[.!]?$",
-      "template": "{0}はまだ起動中だ"
+      "template": "{0}はまだ起動中だ",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) still attuning[.!]?$",
-      "template": "{0}はまだ同調中だ"
+      "template": "{0}はまだ同調中だ",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) still cooling down[.!]?$",
-      "template": "{0}はまだ冷却中だ"
+      "template": "{0}はまだ冷却中だ",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) dead still[.!]?$",
-      "template": "{0}はまったく動かない"
+      "template": "{0}はまったく動かない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) in no need of repairs[.!]?$",
-      "template": "{0}は修理の必要がない"
+      "template": "{0}は修理の必要がない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) unable to consume tonics[.!]?$",
-      "template": "{0}はトニックを摂取できない"
+      "template": "{0}はトニックを摂取できない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) too large for you to engulf[.!]?$",
-      "template": "{0}は大きすぎて飲み込めない"
+      "template": "{0}は大きすぎて飲み込めない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) too tenuously anchored in this time to be temporally duplicated in it[.!]?$",
-      "template": "{0}はこの時間への結びつきが弱すぎて、時間複製できない"
+      "template": "{0}はこの時間への結びつきが弱すぎて、時間複製できない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) too difficult to traverse via the world map\\. You'll have to find your way on the surface[.!]?$",
-      "template": "{0}はワールドマップでの移動には困難すぎる。地上を通って道を探さなければならない"
+      "template": "{0}はワールドマップでの移動には困難すぎる。地上を通って道を探さなければならない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) out of your telekinetic range[.!]?$",
-      "template": "{0}はあなたの念動力の範囲外だ"
+      "template": "{0}はあなたの念動力の範囲外だ",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) unconvinced by your pleas, but interested in hearing more[.!]?$",
-      "template": "{0}はあなたの懇願に納得していないが、もっと聞きたがっている"
+      "template": "{0}はあなたの懇願に納得していないが、もっと聞きたがっている",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) unconvinced by your pleas[.!]?$",
-      "template": "{0}はあなたの懇願に納得していない"
+      "template": "{0}はあなたの懇願に納得していない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) sympathetic, but unable to join you[.!]?$",
-      "template": "{0}は同情的だが、あなたに加わることはできない"
+      "template": "{0}は同情的だが、あなたに加わることはできない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) offended by your impertinence[.!]?$",
-      "template": "{0}はあなたの無礼に気分を害した"
+      "template": "{0}はあなたの無礼に気分を害した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) encoded with an imprint of the Thin World that has no meaning in the Thick World[.!]?$",
-      "template": "{0}は薄界の刻印で符号化されているが、厚界では意味を成さない"
+      "template": "{0}は薄界の刻印で符号化されているが、厚界では意味を成さない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) encoded with an imprint (?:of the Thin World )?that has no meaning in your present context[.!]?$",
-      "template": "{0}は現在の状況では意味を成さない刻印で符号化されている"
+      "template": "{0}は現在の状況では意味を成さない刻印で符号化されている",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) encoded with the imprint of a remote pocket dimension, (.+?), that is inaccessible from your present context[.!]?$",
-      "template": "{0}は遠方のポケット次元{1}の刻印で符号化されているが、現在の状況ではアクセスできない"
+      "template": "{0}は遠方のポケット次元{1}の刻印で符号化されているが、現在の状況ではアクセスできない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) engaged in melee combat and (?:is|are) too busy to trade with you[.!]?$",
-      "template": "{0}は近接戦闘中で取引どころではない"
+      "template": "{0}は近接戦闘中で取引どころではない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) engaged in hand-to-hand combat and (?:is|are) too busy to have a conversation with you[.!]?$",
-      "template": "{0}は格闘戦闘中で会話どころではない"
+      "template": "{0}は格闘戦闘中で会話どころではない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) on fire and (?:is|are) too busy to (?:trade|have a conversation) with you[.!]?$",
-      "template": "{0}は燃えていてそれどころではない"
+      "template": "{0}は燃えていてそれどころではない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) not owned by you, and trying to repair (.+?) will be considered an act of theft\\. Are you sure\\?$",
-      "template": "{0}はあなたのものではなく、{1}を修理しようとすると窃盗行為とみなされる。本当に行うか？"
+      "template": "{0}はあなたのものではなく、{1}を修理しようとすると窃盗行為とみなされる。本当に行うか？",
+      "route": "popup"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) not owned by you, and using (.+?) will be considered an act of theft\\. Are you sure\\?$",
-      "template": "{0}はあなたのものではなく、{1}を使用すると窃盗行為とみなされる。本当に行うか？"
+      "template": "{0}はあなたのものではなく、{1}を使用すると窃盗行為とみなされる。本当に行うか？",
+      "route": "popup"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) not owned by you, and examining (.+?) will be considered an act of theft\\. Continue\\?$",
-      "template": "{0}はあなたのものではなく、{1}を調べると窃盗行為とみなされる。続けるか？"
+      "template": "{0}はあなたのものではなく、{1}を調べると窃盗行為とみなされる。続けるか？",
+      "route": "popup"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) not owned by you\\. Are you sure you want to pour from (.+?)\\?$",
-      "template": "{0}はあなたのものではない。{1}から注いでよいか？"
+      "template": "{0}はあなたのものではない。{1}から注いでよいか？",
+      "route": "popup"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) not owned by you\\. Are you sure you want to disassemble (.+?)\\?$",
-      "template": "{0}はあなたのものではない。{1}を分解してよいか？"
+      "template": "{0}はあなたのものではない。{1}を分解してよいか？",
+      "route": "popup"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) penetrate your armor with (.+?)! \\[(.+?)\\]$",
-      "template": "{0}は{1}であなたの防具を貫通できなかった！ [{2}]"
+      "template": "{0}は{1}であなたの防具を貫通できなかった！ [{2}]",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) penetrate your armor! \\[(.+?)\\]$",
-      "template": "{0}はあなたの防具を貫通できなかった！ [{1}]"
+      "template": "{0}はあなたの防具を貫通できなかった！ [{1}]",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) penetrate your armor[.!]?$",
-      "template": "{0}はあなたの防具を貫通できなかった"
+      "template": "{0}はあなたの防具を貫通できなかった",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) seem to understand you[.!]?$",
-      "template": "{0}はあなたの言葉を理解していないようだ"
+      "template": "{0}はあなたの言葉を理解していないようだ",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) seem to be able to float at this time[.!]?$",
-      "template": "{0}は現時点では浮遊できないようだ"
+      "template": "{0}は現時点では浮遊できないようだ",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have the skill to identify artifacts[.!]?$",
-      "template": "{0}にはアーティファクトを鑑定する技能がない"
+      "template": "{0}にはアーティファクトを鑑定する技能がない",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have anything like a head to conk[.!]?$",
-      "template": "{0}には殴るような頭部がない"
+      "template": "{0}には殴るような頭部がない",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a digital mind you can make electronic contact with[.!]?$",
-      "template": "{0}にはあなたが電子接触できるデジタル精神がない"
+      "template": "{0}にはあなたが電子接触できるデジタル精神がない",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) want a new name[.!]?$",
-      "template": "{0}は新しい名前を望んでいない"
+      "template": "{0}は新しい名前を望んでいない",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:does|do) nothing[.!]?$",
-      "template": "{0}は何もしなかった"
+      "template": "{0}は何もしなかった",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) nothing to trade[.!]?$",
-      "template": "{0}には取引するものがない"
+      "template": "{0}には取引するものがない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) no limbs that can be amputated[.!]?$",
-      "template": "{0}には切断できる四肢がない"
+      "template": "{0}には切断できる四肢がない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) no limbs[.!]?$",
-      "template": "{0}には四肢がない"
+      "template": "{0}には四肢がない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) (?:already )?boosted immunity from a nostrum[.!]?$",
-      "template": "{0}はすでにノストラムによる免疫増強を受けている"
+      "template": "{0}はすでにノストラムによる免疫増強を受けている",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) no drain[.!]?$",
-      "template": "{0}には排水口がない"
+      "template": "{0}には排水口がない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) been hacked[.!]?$",
-      "template": "{0}はハッキングされた"
+      "template": "{0}はハッキングされた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(?!You)(.+?) (?:has|have) no more ammo!$",
-      "template": "{0}の弾薬が尽きた！"
+      "template": "{0}の弾薬が尽きた！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(?!You)(.+?) (?:has|have) left your party[.!]?$",
-      "template": "{0}はパーティーを離れた"
+      "template": "{0}はパーティーを離れた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) merely (?:clicks|click)[.!]?$",
-      "template": "{0}はカチッと鳴るだけだった"
+      "template": "{0}はカチッと鳴るだけだった",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:vibrates|vibrate) slightly[.!]?$",
-      "template": "{0}はわずかに振動した"
+      "template": "{0}はわずかに振動した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:isn't|aren't) working!$",
-      "template": "{0}は作動していない！"
+      "template": "{0}は作動していない！",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:seems|seem) to have taken on new qualities[.!]?$",
-      "template": "{0}は新たな特質を帯びたようだ"
+      "template": "{0}は新たな特質を帯びたようだ",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:seems|seem) utterly impervious to your charms[.!]?$",
-      "template": "{0}はあなたの魅力にまったく動じない"
+      "template": "{0}はあなたの魅力にまったく動じない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:shares|share) a recipe with you[.!]?$",
-      "template": "{0}はあなたにレシピを教えた"
+      "template": "{0}はあなたにレシピを教えた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:shares|share) some gossip with you[.!]?$",
-      "template": "{0}はあなたに噂話を教えた"
+      "template": "{0}はあなたに噂話を教えた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:shares|share) the location of (.+?)[.!]?$",
-      "template": "{0}は{1}の場所を教えた"
+      "template": "{0}は{1}の場所を教えた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:shares|share) an event from the life of a sultan with you[.!]?$",
-      "template": "{0}はスルタンの人生の出来事をあなたに語った"
+      "template": "{0}はスルタンの人生の出来事をあなたに語った",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:shares|share) the recipe for (.+?)[.!]?$",
-      "template": "{0}は{1}のレシピを教えた"
+      "template": "{0}は{1}のレシピを教えた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:teaches|teach) you to craft the item modification (.+?)[.!]?$",
-      "template": "{0}はアイテム改造{1}の製作法をあなたに教えた"
+      "template": "{0}はアイテム改造{1}の製作法をあなたに教えた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:teaches|teach) you to craft (.+?)[.!]?$",
-      "template": "{0}は{1}の製作法をあなたに教えた"
+      "template": "{0}は{1}の製作法をあなたに教えた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:teaches|teach) you (.+?)[.!]?$",
-      "template": "{0}はあなたに{1}を教えた"
+      "template": "{0}はあなたに{1}を教えた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:returns|return) to the ground[.!]?$",
-      "template": "{0}は地上に戻った"
+      "template": "{0}は地上に戻った",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:showers|shower) sparks everywhere[.!]?$",
-      "template": "{0}はあたりに火花を散らした"
+      "template": "{0}はあたりに火花を散らした",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:emits|emit) a shower of sparks!$",
-      "template": "{0}は火花の雨を放った！"
+      "template": "{0}は火花の雨を放った！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:emits|emit) a grinding noise[.!]?$",
-      "template": "{0}は軋む音を発した"
+      "template": "{0}は軋む音を発した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:loosens|loosen)\\. Your AV decreases by (.+?)[.!]?$",
-      "template": "{0}が緩んだ。あなたのAVが{1}減少した"
+      "template": "{0}が緩んだ。あなたのAVが{1}減少した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:loosens|loosen)[.!]?$",
-      "template": "{0}が緩んだ"
+      "template": "{0}が緩んだ",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:says|say), '(.+?)'[.!]?$",
-      "template": "{0}は「{1}」と言った"
+      "template": "{0}は「{1}」と言った",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:fails|fail) to deal damage with (?:his|her|its|their) attack! \\[(.+?)\\]$",
-      "template": "{0}の攻撃はダメージを与えられなかった！ [{1}]"
+      "template": "{0}の攻撃はダメージを与えられなかった！ [{1}]",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:resists|resist) your life drain!$",
-      "template": "{0}はあなたの生命吸収に抵抗した！"
+      "template": "{0}はあなたの生命吸収に抵抗した！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:resists|resist) your shield slam[.!]?$",
-      "template": "{0}はあなたのシールドスラムに抵抗した"
+      "template": "{0}はあなたのシールドスラムに抵抗した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:starts|start) to fizz hungrily[.!]?$",
-      "template": "{0}は飢えたように泡立ち始めた"
+      "template": "{0}は飢えたように泡立ち始めた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:starts|start) to gleam with an unearthly light[.!]?$",
-      "template": "{0}はこの世ならぬ光で輝き始めた"
+      "template": "{0}はこの世ならぬ光で輝き始めた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:presses|press) your activation panel[.!]?$",
-      "template": "{0}はあなたの起動パネルを押した"
+      "template": "{0}はあなたの起動パネルを押した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:presses|press) (.+?)'s activation panel[.!]?$",
-      "template": "{0}は{1}の起動パネルを押した"
+      "template": "{0}は{1}の起動パネルを押した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:detaches|detach) from you!$",
-      "template": "{0}はあなたから分離した！"
+      "template": "{0}はあなたから分離した！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:detaches|detach) from (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}は{1}から分離した"
+      "template": "{0}は{1}から分離した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:cleaves|cleave) through your (.+?)[.!]?$",
-      "template": "{0}はあなたの{1}を両断した"
+      "template": "{0}はあなたの{1}を両断した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:cleaves|cleave) through (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}は{1}を両断した"
+      "template": "{0}は{1}を両断した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:impales|impale) (?:himself|herself|itself|themselves) on (.+?) and (?:takes|take) (\\d+) damage!$",
-      "template": "{0}は{1}に突き刺さり{2}ダメージを受けた！"
+      "template": "{0}は{1}に突き刺さり{2}ダメージを受けた！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:kicks|kick) at you, but the kick passes through you[.!]?$",
-      "template": "{0}はあなたを蹴ろうとしたが、蹴りはすり抜けた"
+      "template": "{0}はあなたを蹴ろうとしたが、蹴りはすり抜けた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:kicks|kick) at you, but you hold your ground[.!]?$",
-      "template": "{0}はあなたを蹴ろうとしたが、あなたは踏みとどまった"
+      "template": "{0}はあなたを蹴ろうとしたが、あなたは踏みとどまった",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:kicks|kick) you backwards[.!]?$",
-      "template": "{0}はあなたを蹴り飛ばした"
+      "template": "{0}はあなたを蹴り飛ばした",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:kicks|kick) (?:the |a |an )?(?!you)(.+?) backwards[.!]?$",
-      "template": "{0}は{1}を蹴り飛ばした"
+      "template": "{0}は{1}を蹴り飛ばした",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:kicks|kick) at (?:the |a |an )?(.+?), but the kick passes through (?:him|her|it|them)[.!]?$",
-      "template": "{0}は{1}を蹴ろうとしたが、蹴りはすり抜けた"
+      "template": "{0}は{1}を蹴ろうとしたが、蹴りはすり抜けた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:kicks|kick) at (?:the |a |an )?(.+?), but (.+?) (?:holds|hold) (?:his|her|its|their) ground[.!]?$",
-      "template": "{0}は{1}を蹴ろうとしたが、{2}は踏みとどまった"
+      "template": "{0}は{1}を蹴ろうとしたが、{2}は踏みとどまった",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:reflects|reflect) (\\d+) damage back at you[.!]?$",
-      "template": "{0}は{1}ダメージをあなたに跳ね返した"
+      "template": "{0}は{1}ダメージをあなたに跳ね返した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:reflects|reflect) (\\d+) damage back at (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}は{1}ダメージを{2}に跳ね返した"
+      "template": "{0}は{1}ダメージを{2}に跳ね返した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:goes|go) into sleep mode[.!]?$",
-      "template": "{0}はスリープモードに入った"
+      "template": "{0}はスリープモードに入った",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:winces|wince)[.!]?$",
-      "template": "{0}はたじろいだ"
+      "template": "{0}はたじろいだ",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:ignores|ignore) (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}は{1}を無視した"
+      "template": "{0}は{1}を無視した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) won't let you bandage (?:him|her|it|them)[.!]?$",
-      "template": "{0}はあなたに包帯を巻かせない"
+      "template": "{0}はあなたに包帯を巻かせない",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:locks|lock) firmly into the socket, preventing removal[.!]?$",
-      "template": "{0}はソケットにしっかりと嵌まり、取り外しができなくなった"
+      "template": "{0}はソケットにしっかりと嵌まり、取り外しができなくなった",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:steps|step) on (?:the |a |an )?(.+?) and (?:vibrates|vibrate) through spacetime[.!]?$",
-      "template": "{0}は{1}を踏み、時空を振動して通り抜けた"
+      "template": "{0}は{1}を踏み、時空を振動して通り抜けた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:hums|hum) for a moment, then powers down\\. (.+)$",
-      "template": "{0}は一瞬唸ったが、電源が落ちた。{1}"
+      "template": "{0}は一瞬唸ったが、電源が落ちた。{1}",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:slouches|slouch) in pacification and (?:radiates|radiate) a chord of light[.!]?$",
-      "template": "{0}は鎮静の中でうなだれ、光の和音を放った"
+      "template": "{0}は鎮静の中でうなだれ、光の和音を放った",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:beeps|beep) loudly and (?:flashes|flash) a warning glyph[.!]?$",
-      "template": "{0}は大きなビープ音を鳴らし、警告記号を点滅させた"
+      "template": "{0}は大きなビープ音を鳴らし、警告記号を点滅させた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:crumbles|crumble) into beetles[.!]?$",
-      "template": "{0}は崩れて甲虫の群れになった"
+      "template": "{0}は崩れて甲虫の群れになった",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:atomizes|atomize) and (?:recombines|recombine) into (?:a |an |the )?(.+?)[.!]?$",
-      "template": "{0}は原子分解し、{1}として再結合した"
+      "template": "{0}は原子分解し、{1}として再結合した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:stops|stop) gleaming[.!]?$",
-      "template": "{0}の輝きが消えた"
+      "template": "{0}の輝きが消えた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:shies|shy) away from you[.!]?$",
-      "template": "{0}はあなたから怯えて離れた"
+      "template": "{0}はあなたから怯えて離れた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:ceases|cease) floating near you[.!]?$",
-      "template": "{0}はあなたの近くで浮遊するのをやめた"
+      "template": "{0}はあなたの近くで浮遊するのをやめた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:collapses|collapse) under the pressure of normality and (?:implodes|implode)[.!]?$",
-      "template": "{0}は正常性の圧力に耐えきれず崩壊し、内破した"
+      "template": "{0}は正常性の圧力に耐えきれず崩壊し、内破した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:becomes|become) magnetized!$",
-      "template": "{0}は磁化された！"
+      "template": "{0}は磁化された！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:vomits|vomit) everywhere!$",
-      "template": "{0}はあたりに嘔吐した！"
+      "template": "{0}はあたりに嘔吐した！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:attunes|attune) to your physiology[.!]?$",
-      "template": "{0}はあなたの生理機能に同調した"
+      "template": "{0}はあなたの生理機能に同調した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) cannot be moved[.!]?$",
-      "template": "{0}は動かせない"
+      "template": "{0}は動かせない",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:joins|join) you!$",
-      "template": "{0}があなたの仲間に加わった！"
+      "template": "{0}があなたの仲間に加わった！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:gifts|gift) you (?:a |an |the )?(.+?)[.!]?$",
-      "template": "{0}はあなたに{1}を贈った"
+      "template": "{0}はあなたに{1}を贈った",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:ponies|pony) up (\\d+) drams? of (.+?)[.!]?$",
-      "template": "{0}は{2}を{1}ドラム支払った"
+      "template": "{0}は{2}を{1}ドラム支払った",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:shouts|shout) KLANQ!$",
-      "template": "{0}はKLANQ！と叫んだ"
+      "template": "{0}はKLANQ！と叫んだ",
+      "route": "does-verb"
     },
     {
       "pattern": "^Just before your demise, you are transported to safety! (?:The |the |[Aa]n? )?(.+?) (?:disintegrates|disintegrate)[.!]?$",
-      "template": "死の寸前で安全な場所へ転送された！ {0}は崩壊した"
+      "template": "死の寸前で安全な場所へ転送された！ {0}は崩壊した",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:sees|see) no reason for you to amputate (?:his|her|its|their) (.+?)[.!]?$",
-      "template": "{0}はあなたが{1}を切断する理由がないと考えている"
+      "template": "{0}はあなたが{1}を切断する理由がないと考えている",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:needs|need) to be hung up first[.!]?$",
-      "template": "{0}はまず吊り下げる必要がある"
+      "template": "{0}はまず吊り下げる必要がある",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:needs|need) water in (?:it|him|her|them)[.!]?$",
-      "template": "{0}には水が必要だ"
+      "template": "{0}には水が必要だ",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:was|were) cracked[.!]?$",
-      "template": "{0}にひびが入った"
+      "template": "{0}にひびが入った",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:tries|try) to engulf you, but (?:fails|fail)[.!]?$",
-      "template": "{0}はあなたを飲み込もうとしたが、失敗した"
+      "template": "{0}はあなたを飲み込もうとしたが、失敗した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:tries|try) to engulf (?:the |a |an )?(.+?), but (?:fails|fail)[.!]?$",
-      "template": "{0}は{1}を飲み込もうとしたが、失敗した"
+      "template": "{0}は{1}を飲み込もうとしたが、失敗した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:tries|try) to (.+?) (?:a |an |the )?(.+?), but (?:it is|he is|she is|they are|it's|he's|she's|they're) unresponsive[.!]?$",
-      "template": "{0}は{2}を{1}しようとしたが、反応がない"
+      "template": "{0}は{2}を{1}しようとしたが、反応がない",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:asks|ask) about (?:his|her|its|their) location and (?:is|are) no longer lost[.!]?$",
-      "template": "{0}は自分の居場所について尋ね、もう迷っていない"
+      "template": "{0}は自分の居場所について尋ね、もう迷っていない",
+      "route": "does-verb"
     },
     {
       "pattern": "^On the (.+?) of (.+?), you abandoned all hope\\.$",
-      "template": "{1}の{0}日、あなたはすべての希望を捨てた。"
+      "template": "{1}の{0}日、あなたはすべての希望を捨てた。",
+      "route": "journal"
     },
     {
       "pattern": "^On the (.+?) of (.+?), you multiplied\\.$",
-      "template": "{1}の{0}日、あなたは自己増殖した。"
+      "template": "{1}の{0}日、あなたは自己増殖した。",
+      "route": "journal"
     },
     {
       "pattern": "^On the (.+?) of (.+?), you arrived at (.+?)\\.$",
-      "template": "{1}の{0}日、{t2}に到着した。"
+      "template": "{1}の{0}日、{t2}に到着した。",
+      "route": "journal"
     },
     {
       "pattern": "^The lost Mark of Death from the late sultanate was (.+?)\\.$",
-      "template": "亡きスルタンの死の刻印は{0}だった。"
+      "template": "亡きスルタンの死の刻印は{0}だった。",
+      "route": "unclassified"
     },
     {
       "pattern": "^You discovered the location of (.+?)\\.$",
-      "template": "{0}の場所を発見した。"
+      "template": "{0}の場所を発見した。",
+      "route": "journal"
     },
     {
       "pattern": "^You slew (.+?) and encoded their psyche's psionic bits on the holographic boundary of your own psyche\\.$",
-      "template": "{0}を倒し、その精神のサイオニック・ビットを自らの精神のホログラフィック境界面に刻み付けた。"
+      "template": "{0}を倒し、その精神のサイオニック・ビットを自らの精神のホログラフィック境界面に刻み付けた。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You slew (.+?) and watched their psyche radiate into nothingness\\.$",
-      "template": "{0}を倒し、その精神が虚無へ放射されるのを見届けた。"
+      "template": "{0}を倒し、その精神が虚無へ放射されるのを見届けた。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You slew your bonded kith (.+?), violating the covenant of the water ritual and earning the emnity of all\\.$",
-      "template": "水の儀式で結ばれた同胞{0}を殺し、その誓約を破って全ての者の敵意を買った。"
+      "template": "水の儀式で結ばれた同胞{0}を殺し、その誓約を破って全ての者の敵意を買った。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You slew (.+?)\\.$",
-      "template": "{0}を倒した。"
+      "template": "{0}を倒した。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You read (.+?)\\.$",
-      "template": "{0}を読んだ。"
+      "template": "{0}を読んだ。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You invented a mouthwatering dish called \\{\\{\\|(.+?)\\}\\}\\.$",
-      "template": "垂涎の料理「{{{{|{0}}}}}」を発明した。"
+      "template": "垂涎の料理「{{{{|{0}}}}}」を発明した。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You imbued (.+?) with life\\. Why\\?$",
-      "template": "{0}に命を吹き込んだ。なぜ？"
+      "template": "{0}に命を吹き込んだ。なぜ？",
+      "route": "emit-message"
     },
     {
       "pattern": "^You convinced (.+?) to join your cause\\.$",
-      "template": "{0}を説得し仲間に加えた。"
+      "template": "{0}を説得し仲間に加えた。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You rebuked (.+?) into submission\\.$",
-      "template": "{0}を叱責して従わせた。"
+      "template": "{0}を叱責して従わせた。",
+      "route": "emit-message"
     },
     {
       "pattern": "^Your heart sang at the sight of (.+?)\\.$",
-      "template": "{0}を見て心が歌った。"
+      "template": "{0}を見て心が歌った。",
+      "route": "emit-message"
     },
     {
       "pattern": "^Though your affection for (.+?) endowed you with a certain wisdom, you no longer feel the tug on your heartstrings\\.$",
-      "template": "{0}への愛情がある種の知恵を授けてくれたが、もう心の琴線が揺れることはない。"
+      "template": "{0}への愛情がある種の知恵を授けてくれたが、もう心の琴線が揺れることはない。",
+      "route": "unclassified"
     },
     {
       "pattern": "^Your mind was stranded inside (.+?)\\.$",
-      "template": "あなたの精神は{0}の中に閉じ込められた。"
+      "template": "あなたの精神は{0}の中に閉じ込められた。",
+      "route": "emit-message"
     },
     {
       "pattern": "^Your (.+?) (?:was|were) dismembered\\.$",
-      "template": "あなたの{0}が切断された。"
+      "template": "あなたの{0}が切断された。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You visited the village of (.+?)\\.$",
-      "template": "{t0}の村を訪れた。"
+      "template": "{t0}の村を訪れた。",
+      "route": "journal"
     },
     {
       "pattern": "^You visited the historic site of (.+?)\\.$",
-      "template": "史跡{t0}を訪れた。"
+      "template": "史跡{t0}を訪れた。",
+      "route": "journal"
     },
     {
       "pattern": "^In sacred ritual you shared your (.+?) with (.+?)\\.$",
-      "template": "聖なる儀式で{1}と{0}を分かち合った。"
+      "template": "聖なる儀式で{1}と{0}を分かち合った。",
+      "route": "unclassified"
     },
     {
       "pattern": "^To the dismay of fungi everywhere, you cured the Pax Klanq infection on your (.+?)\\.$",
-      "template": "世の菌類の嘆きをよそに、{0}のパクス・クランク感染を治した。"
+      "template": "世の菌類の嘆きをよそに、{0}のパクス・クランク感染を治した。",
+      "route": "unclassified"
     },
     {
       "pattern": "^To the dismay of fungi everywhere, you cured the (.+?) infection on your (.+?)\\.$",
-      "template": "世の菌類の嘆きをよそに、{1}の{0}感染を治した。"
+      "template": "世の菌類の嘆きをよそに、{1}の{0}感染を治した。",
+      "route": "unclassified"
     },
     {
       "pattern": "^You contracted (.+?) on your (.+?), endearing (.+?) to (.+?)\\.$",
-      "template": "{1}に{0}を罹患し、{2}に対する{3}の好感を得た。"
+      "template": "{1}に{0}を罹患し、{2}に対する{3}の好感を得た。",
+      "route": "emit-message"
     },
     {
       "pattern": "^(.+?) ogled you lovingly after you employed your charm\\.$",
-      "template": "あなたの魅了術を受けて{0}がうっとりとこちらを見つめた。"
+      "template": "あなたの魅了術を受けて{0}がうっとりとこちらを見つめた。",
+      "route": "unclassified"
     },
     {
       "pattern": "^You woke from a long, convincing dream and returned to your life as the (.+?) (.+?)\\.$",
-      "template": "長く信じ込むような夢から目覚め、{0}の{1}としての日常に戻った。"
+      "template": "長く信じ込むような夢から目覚め、{0}の{1}としての日常に戻った。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You named (.+?) '(.+?)'\\.$",
-      "template": "{0}に「{1}」と名付けた。"
+      "template": "{0}に「{1}」と名付けた。",
+      "route": "emit-message"
     },
     {
       "pattern": "^Your larva gestated and you gained the (.+?) mutation\\.$",
-      "template": "あなたの幼虫が成長し、{0}の変異を獲得した。"
+      "template": "あなたの幼虫が成長し、{0}の変異を獲得した。",
+      "route": "emit-message"
     },
     {
       "pattern": "^Your genome destabilized and you gained the (.+?) (.+?)\\.$",
-      "template": "あなたのゲノムが不安定になり、{0}の{1}を得た。"
+      "template": "あなたのゲノムが不安定になり、{0}の{1}を得た。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You became loved among (.+?) and were treated as one of their own\\.$",
-      "template": "{0}に愛され、その一員として扱われるようになった。"
+      "template": "{0}に愛され、その一員として扱われるようになった。",
+      "route": "journal"
     },
     {
       "pattern": "^You discovered (.+?)\\.$",
-      "template": "{0}を発見した。"
+      "template": "{0}を発見した。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You traveled to (.+?)\\.$",
-      "template": "{t0}に旅した。"
+      "template": "{t0}に旅した。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You located (.+?)\\.$",
-      "template": "{0}を発見した。"
+      "template": "{0}を発見した。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You recovered the historic relic, (.+?)\\.$",
-      "template": "歴史的遺物{0}を回収した。"
+      "template": "歴史的遺物{0}を回収した。",
+      "route": "journal"
     },
     {
       "pattern": "^You recovered (.+?)\\.$",
-      "template": "{0}を回収した。"
+      "template": "{0}を回収した。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You ate (.+?)\\.$",
-      "template": "{0}を食べた。"
+      "template": "{0}を食べた。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You witnessed the rare formation of (.+?)\\.$",
-      "template": "珍しい{0}の形成を目撃した。"
+      "template": "珍しい{0}の形成を目撃した。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You appeased a baetyl with (.+?), and in return received (.+?)\\.$",
-      "template": "ベテルに{0}を捧げ、見返りに{1}を受け取った。"
+      "template": "ベテルに{0}を捧げ、見返りに{1}を受け取った。",
+      "route": "journal"
     },
     {
       "pattern": "^With the help of Pax Klanq and the Barathrumites, you constructed (.+?)\\.$",
-      "template": "パクス・クランクとバラスルム派の助けを借りて{0}を建造した。"
+      "template": "パクス・クランクとバラスルム派の助けを借りて{0}を建造した。",
+      "route": "unclassified"
     },
     {
       "pattern": "^You installed (?:a |some )cybernetic (.+?) and committed (.+?) to (.+?)\\.$",
-      "template": "サイバネティック{0}を装着し、{1}を{2}に捧げた。"
+      "template": "サイバネティック{0}を装着し、{1}を{2}に捧げた。",
+      "route": "emit-message"
     },
     {
       "pattern": "^You stopped calling a location '(.+?)' and start calling it '(.+?)'\\.$",
-      "template": "場所の呼称を「{0}」から「{1}」に変更した。"
+      "template": "場所の呼称を「{0}」から「{1}」に変更した。",
+      "route": "journal"
     },
     {
       "pattern": "^You started calling a location '(.+?)'\\.$",
-      "template": "場所を「{0}」と呼ぶことにした。"
+      "template": "場所を「{0}」と呼ぶことにした。",
+      "route": "journal"
     },
     {
       "pattern": "^You started calling (.+?) '(.+?)'\\.$",
-      "template": "{0}を「{1}」と呼ぶことにした。"
+      "template": "{0}を「{1}」と呼ぶことにした。",
+      "route": "emit-message"
     },
     {
       "pattern": "^(.+?) provided you with insightful commentary on (.+?)\\.$",
-      "template": "{0}が{1}について洞察に満ちた解説をしてくれた。"
+      "template": "{0}が{1}について洞察に満ちた解説をしてくれた。",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (.+?) (?:fails|fail) to penetrate (?:the |a |an )?(.+?)(?:'s|s') armor with (.+?) \\[(.+?)\\]!$",
-      "template": "{0}の{1}は{3}で{2}の装甲を貫けなかった！ [{4}]"
+      "template": "{0}の{1}は{3}で{2}の装甲を貫けなかった！ [{4}]",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (.+?) (?:fails|fail) to penetrate (?:the |a |an )?(.+?)(?:'s|s') armor \\[(.+?)\\]!$",
-      "template": "{0}の{1}は{2}の装甲を貫けなかった！ [{3}]"
+      "template": "{0}の{1}は{2}の装甲を貫けなかった！ [{3}]",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (.+?) (?:fails|fail) to penetrate (?:the |a |an )?(.+?)(?:'s|s') armor!$",
-      "template": "{0}の{1}は{2}の装甲を貫けなかった！"
+      "template": "{0}の{1}は{2}の装甲を貫けなかった！",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:fails|fail) to penetrate (?:the |a |an )?(.+?)(?:'s|s') armor with (.+?) \\[(.+?)\\]!$",
-      "template": "{0}は{2}で{1}の装甲を貫けなかった！ [{3}]"
+      "template": "{0}は{2}で{1}の装甲を貫けなかった！ [{3}]",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:fails|fail) to penetrate (?:the |a |an )?(.+?)(?:'s|s') armor \\[(.+?)\\]!$",
-      "template": "{0}は{1}の装甲を貫けなかった！ [{2}]"
+      "template": "{0}は{1}の装甲を貫けなかった！ [{2}]",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:fails|fail) to penetrate (?:the |a |an )?(.+?)(?:'s|s') armor!$",
-      "template": "{0}は{1}の装甲を貫けなかった！"
+      "template": "{0}は{1}の装甲を貫けなかった！",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (.+?) (?:fails|fail) to penetrate your armor with (.+?) \\[(.+?)\\]!$",
-      "template": "{0}の{1}は{2}であなたの装甲を貫けなかった！ [{3}]"
+      "template": "{0}の{1}は{2}であなたの装甲を貫けなかった！ [{3}]",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (.+?) (?:fails|fail) to penetrate your armor \\[(.+?)\\]!$",
-      "template": "{0}の{1}はあなたの装甲を貫けなかった！ [{2}]"
+      "template": "{0}の{1}はあなたの装甲を貫けなかった！ [{2}]",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (.+?) (?:fails|fail) to penetrate your armor!$",
-      "template": "{0}の{1}はあなたの装甲を貫けなかった！"
+      "template": "{0}の{1}はあなたの装甲を貫けなかった！",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:fails|fail) to penetrate your armor with (.+?) \\[(.+?)\\]!$",
-      "template": "{0}は{1}であなたの装甲を貫けなかった！ [{2}]"
+      "template": "{0}は{1}であなたの装甲を貫けなかった！ [{2}]",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:fails|fail) to penetrate your armor \\[(.+?)\\]!$",
-      "template": "{0}はあなたの装甲を貫けなかった！ [{1}]"
+      "template": "{0}はあなたの装甲を貫けなかった！ [{1}]",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:fails|fail) to penetrate your armor!$",
-      "template": "{0}はあなたの装甲を貫けなかった！"
+      "template": "{0}はあなたの装甲を貫けなかった！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') suppressive fire (?:locks|lock) (?:the |a |an )?(.+?) in place[.!]?$",
-      "template": "{0}の制圧射撃が{1}をその場に釘付けにした"
+      "template": "{0}の制圧射撃が{1}をその場に釘付けにした",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') flattening fire (?:drops|drop) (?:the |a |an )?(.+?) to the ground!$",
-      "template": "{0}の制圧射撃が{1}を地面に叩き伏せた！"
+      "template": "{0}の制圧射撃が{1}を地面に叩き伏せた！",
+      "route": "does-verb"
     },
     {
       "pattern": "^You wounds? (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}に深手を負わせた"
+      "template": "{0}に深手を負わせた",
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) wounds? (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}は{1}に深手を負わせた"
+      "template": "{0}は{1}に深手を負わせた",
+      "route": "unclassified"
     },
     {
       "pattern": "^You disorients? (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}を混乱させた"
+      "template": "{0}を混乱させた",
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) disorients? (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}は{1}を混乱させた"
+      "template": "{0}は{1}を混乱させた",
+      "route": "unclassified"
     },
     {
       "pattern": "^Your shot goes wild!$",
-      "template": "あなたの弾が逸れた！"
+      "template": "あなたの弾が逸れた！",
+      "route": "leaf"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') shot goes wild!$",
-      "template": "{0}の弾が逸れた！"
+      "template": "{0}の弾が逸れた！",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:whizzes|whiz|flies|fly|zooms|zoom|streaks|streak|whistles|whistle|hurtles|hurtle|sails|sail|zips|zip|buzzes|buzz|passes|pass|speeds|speed|races|race|rushes|rush|whooshes|whoosh|goes|go|hisses|hiss|screams|scream) past (.+?)[.!]?$",
-      "template": "{0}が{1}のそばを通り過ぎた"
+      "template": "{0}が{1}のそばを通り過ぎた",
+      "route": "unclassified"
     },
     {
       "pattern": "^You cannot open (?:the |a |an )?(.+?) while (?:you are )?(.+?)[.!]?$",
-      "template": "{1}の間は{0}を開けられない"
+      "template": "{1}の間は{0}を開けられない",
+      "route": "emit-message"
     },
     {
       "pattern": "^You cannot open (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}を開けられない"
+      "template": "{0}を開けられない",
+      "route": "emit-message"
     },
     {
       "pattern": "^You are out of phase with (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}と位相がずれている"
+      "template": "{0}と位相がずれている",
+      "route": "emit-message"
     },
     {
       "pattern": "^You cannot reach (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}に手が届かない"
+      "template": "{0}に手が届かない",
+      "route": "emit-message"
     },
     {
       "pattern": "^You can't unlock (?:the |a |an )?(.+?) from a distance[.!]?$",
-      "template": "離れた位置から{0}の鍵を開けることはできない"
+      "template": "離れた位置から{0}の鍵を開けることはできない",
+      "route": "emit-message"
     },
     {
       "pattern": "^You can't unlock (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}の鍵を開けられない"
+      "template": "{0}の鍵を開けられない",
+      "route": "emit-message"
     },
     {
       "pattern": "^You interface with (?:the |a |an )?(.+?) and unlock (?:him|her|it|them)[.!]?$",
-      "template": "{0}にインターフェースで接続して鍵を開けた"
+      "template": "{0}にインターフェースで接続して鍵を開けた",
+      "route": "emit-message"
     },
     {
       "pattern": "^You lay your hand upon (?:the |a |an )?(.+?) and draw forth (?:his|her|its|their) passcode\\. You enter the code and (?:the |a |an )?(.+?) (?:unlocks|unlock)[.!]?$",
-      "template": "{0}に手を当ててパスコードを読み取った。コードを入力すると{1}の鍵が開いた"
+      "template": "{0}に手を当ててパスコードを読み取った。コードを入力すると{1}の鍵が開いた",
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:unlocks|unlock) (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}が{1}の鍵を開けた"
+      "template": "{0}が{1}の鍵を開けた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) cannot be closed[.!]?$",
-      "template": "{0}は閉められない"
+      "template": "{0}は閉められない",
+      "route": "unclassified"
     },
     {
       "pattern": "^You cannot close (?:the |a |an )?(.+?) while (?:you are )?(.+?)[.!]?$",
-      "template": "{1}の間は{0}を閉められない"
+      "template": "{1}の間は{0}を閉められない",
+      "route": "emit-message"
     },
     {
       "pattern": "^You cannot close (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}を閉められない"
+      "template": "{0}を閉められない",
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) cannot be closed with you in the way(?: to the (.+?))?[.!]?$",
-      "template": "あなたが邪魔で{0}を閉められない"
+      "template": "あなたが邪魔で{0}を閉められない",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) cannot be closed with (?:the |a |an )?(.+?) in the way(?: to the (.+?))?[.!]?$",
-      "template": "{1}が邪魔で{0}を閉められない"
+      "template": "{1}が邪魔で{0}を閉められない",
+      "route": "unclassified"
     },
     {
       "pattern": "^A baetyl demanding \"(.+?)\" and promising \"(.+?)\"[.]?$",
-      "template": "「{0}」を要求し、見返りに「{1}」を約束するベテル"
+      "template": "「{0}」を要求し、見返りに「{1}」を約束するベテル",
+      "route": "journal"
     },
     {
       "pattern": "^A \"SATED\" baetyl$",
-      "template": "「満足した」ベテル"
+      "template": "「満足した」ベテル",
+      "route": "journal"
     },
     {
       "pattern": "^You rifle through (?:the |a |an )?(.+?), and find (?:a |an |the )?(.+?)[.!]?$",
-      "template": "{0}を漁り、{1}を見つけた"
+      "template": "{0}を漁り、{1}を見つけた",
+      "route": "emit-message"
     },
     {
       "pattern": "^You rifle through (?:the |a |an )?(.+?), but you find nothing[.!]?$",
-      "template": "{0}を漁ったが、何も見つからなかった"
+      "template": "{0}を漁ったが、何も見つからなかった",
+      "route": "emit-message"
     },
     {
       "pattern": "^Somebody rifles through (?:the |a |an )?(.+?)[.!]?$",
-      "template": "誰かが{0}を漁った"
+      "template": "誰かが{0}を漁った",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:rifles|rifle) through (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}は{1}を漁った"
+      "template": "{0}は{1}を漁った",
+      "route": "does-verb"
     },
     {
       "pattern": "^You butcher (?:a |an |the )?(.+?) from (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{1}から{0}を解体した"
+      "template": "{1}から{0}を解体した",
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:butchers|butcher) (?:a |an |the )?(.+?) from (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}は{2}から{1}を解体した"
+      "template": "{0}は{2}から{1}を解体した",
+      "route": "does-verb"
     },
     {
       "pattern": "^You rip (?:a |an |the )?(.+?) out of (?:the |a |an )?(.+?), but destroy (?:him|her|it|them) in the process[.!]?$",
-      "template": "{1}から{0}を引き抜いたが、その過程で壊してしまった"
+      "template": "{1}から{0}を引き抜いたが、その過程で壊してしまった",
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:rips|rip) (?:a |an |the )?(.+?) out of (?:the |a |an )?(.+?), but (?:destroys|destroy) (?:him|her|it|them) in the process[.!]?$",
-      "template": "{0}は{2}から{1}を引き抜いたが、その過程で壊してしまった"
+      "template": "{0}は{2}から{1}を引き抜いたが、その過程で壊してしまった",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) cannot reach (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}は{1}に届かない"
+      "template": "{0}は{1}に届かない",
+      "route": "unclassified"
     },
     {
       "pattern": "^Your attack passes through (?:the |a |an )?(.+?)!$",
-      "template": "あなたの攻撃は{0}をすり抜けた！"
+      "template": "あなたの攻撃は{0}をすり抜けた！",
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') attack passes through (?:the |a |an )?(.+?)!$",
-      "template": "{0}の攻撃は{1}をすり抜けた！"
+      "template": "{0}の攻撃は{1}をすり抜けた！",
+      "route": "unclassified"
     },
     {
       "pattern": "^Two (.+?) come into contact and both explode!$",
-      "template": "2つの{0}が接触し、両方とも爆発した！"
+      "template": "2つの{0}が接触し、両方とも爆発した！",
+      "route": "unclassified"
     },
     {
       "pattern": "^You enter sleep mode[.!]?$",
-      "template": "あなたはスリープモードに入った"
+      "template": "あなたはスリープモードに入った",
+      "route": "leaf"
     },
     {
       "pattern": "^The reacting liquids congeal into (?:a |an |the )?(.+?)[.!]?$",
-      "template": "反応した液体が凝固し{0}になった"
+      "template": "反応した液体が凝固し{0}になった",
+      "route": "unclassified"
     },
     {
       "pattern": "^The liquids stop reacting[.!]?$",
-      "template": "液体の反応が止まった"
+      "template": "液体の反応が止まった",
+      "route": "leaf"
     },
     {
       "pattern": "^The primordial soup (.+?) starts reacting with the (.+?)[.!]?$",
-      "template": "{0}の原初のスープが{1}と反応を始めた"
+      "template": "{0}の原初のスープが{1}と反応を始めた",
+      "route": "unclassified"
     },
     {
       "pattern": "^The liquid mixture inside (?:the |a |an )?(.+?) starts to glitch[.!]?$",
-      "template": "{0}の中の混合液がグリッチし始めた"
+      "template": "{0}の中の混合液がグリッチし始めた",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:starts|start) to glitch[.!]?$",
-      "template": "{0}がグリッチし始めた"
+      "template": "{0}がグリッチし始めた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(.+?) applied to (.+?)[.!]?$",
-      "template": "{0}が{1}に適用された"
+      "template": "{0}が{1}に適用された",
+      "route": "unclassified"
     },
     {
       "pattern": "^No valid targets for (.+?)[.!]?$",
-      "template": "{0}の有効な対象がない"
+      "template": "{0}の有効な対象がない",
+      "route": "unclassified"
     },
     {
       "pattern": "^One of (?:the |a |an )?(.+?)(?:'s|s') wounds stops (.+?)[.!]?$",
-      "template": "{0}の傷のひとつの{1}が止まった"
+      "template": "{0}の傷のひとつの{1}が止まった",
+      "route": "unclassified"
     },
     {
       "pattern": "^Your queasiness passes[.!]?$",
-      "template": "あなたの吐き気が治まった"
+      "template": "あなたの吐き気が治まった",
+      "route": "leaf"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') queasiness passes[.!]?$",
-      "template": "{0}の吐き気が治まった"
+      "template": "{0}の吐き気が治まった",
+      "route": "unclassified"
     },
     {
       "pattern": "^Your rind softens while .+? recrystallize[sd]?[.!]?$",
-      "template": "あなたの外皮が軟化し、再結晶化している！"
+      "template": "あなたの外皮が軟化し、再結晶化している！",
+      "route": "leaf"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') rind softens while .+? recrystallize[sd]?[.!]?$",
-      "template": "{0}の外皮が軟化し、再結晶化している！"
+      "template": "{0}の外皮が軟化し、再結晶化している！",
+      "route": "unclassified"
     },
     {
       "pattern": "^Your rind recrystallizes and hardens once more[.!]?$",
-      "template": "あなたの外皮が再結晶化し、再び硬くなった"
+      "template": "あなたの外皮が再結晶化し、再び硬くなった",
+      "route": "leaf"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') rind recrystallizes and hardens once more[.!]?$",
-      "template": "{0}の外皮が再結晶化し、再び硬くなった"
+      "template": "{0}の外皮が再結晶化し、再び硬くなった",
+      "route": "unclassified"
     },
     {
       "pattern": "^Your glow dims until it's extinguished[.!]?$",
-      "template": "あなたの輝きが消えるまで薄れた"
+      "template": "あなたの輝きが消えるまで薄れた",
+      "route": "leaf"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') glow dims until it's extinguished[.!]?$",
-      "template": "{0}の輝きが消えるまで薄れた"
+      "template": "{0}の輝きが消えるまで薄れた",
+      "route": "unclassified"
     },
     {
       "pattern": "^A force bubble pops into being around (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}の周りにフォースバブルが出現した"
+      "template": "{0}の周りにフォースバブルが出現した",
+      "route": "unclassified"
     },
     {
       "pattern": "^Your irritable genome acts up[.!](.*)$",
-      "template": "あなたの過敏ゲノムが暴走した{0}"
+      "template": "あなたの過敏ゲノムが暴走した{0}",
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') irritable genome acts up[.!](.*)$",
-      "template": "{0}の過敏ゲノムが暴走した{1}"
+      "template": "{0}の過敏ゲノムが暴走した{1}",
+      "route": "unclassified"
     },
     {
       "pattern": "^The protective force of the cherubim prevents (?:the |a |an )?(.+?) from taking anything from the reliquary[.!]?$",
-      "template": "ケルビムの守護の力が{0}を聖遺物櫃から何かを取ることを阻んでいる"
+      "template": "ケルビムの守護の力が{0}を聖遺物櫃から何かを取ることを阻んでいる",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) burns into bright slag[.!]?$",
-      "template": "{0}は燃えて明るいスラグになった"
+      "template": "{0}は燃えて明るいスラグになった",
+      "route": "unclassified"
     },
     {
       "pattern": "^Suddenly (?:the |a |an )?(.+?) (?:starts|start) flailing around and battering (?:the |a |an )?(.+?)!$",
-      "template": "突然{0}が暴れ出し、{1}を殴りつけた！"
+      "template": "突然{0}が暴れ出し、{1}を殴りつけた！",
+      "route": "unclassified"
     },
     {
       "pattern": "^Your skin itches furiously[.!]?$",
-      "template": "あなたの肌が猛烈にかゆくなった"
+      "template": "あなたの肌が猛烈にかゆくなった",
+      "route": "leaf"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') skin itches furiously[.!]?$",
-      "template": "{0}の肌が猛烈にかゆくなった"
+      "template": "{0}の肌が猛烈にかゆくなった",
+      "route": "unclassified"
     },
     {
       "pattern": "^Two tubular sections of (?:the |a |an )?(.+?) flail around and batter (?:the |a |an )?(.+?)!$",
-      "template": "{0}の2本の管状の部分が暴れ、{1}を殴りつけた！"
+      "template": "{0}の2本の管状の部分が暴れ、{1}を殴りつけた！",
+      "route": "unclassified"
     },
     {
       "pattern": "^You have no more ammo for (?:the |a |an )?(.+?)[.!]?$",
-      "template": "{0}の弾薬がもうない"
+      "template": "{0}の弾薬がもうない",
+      "route": "emit-message"
     },
     {
       "pattern": "^A jet of flame shoots out of (?:the |a |an |your )?(.+?)!$",
-      "template": "{0}から炎の噴流が噴き出した！"
+      "template": "{0}から炎の噴流が噴き出した！",
+      "route": "unclassified"
     },
     {
       "pattern": "^The (.+?) catalyzes (.+?) into (?:a |an |the )?(.+?)[.!]?$",
-      "template": "{0}が{1}を触媒して{2}に変化させた"
+      "template": "{0}が{1}を触媒して{2}に変化させた",
+      "route": "unclassified"
     },
     {
       "pattern": "^You (?:infiltrates?|infiltrate) (?:the |a |an )?(.+?)!$",
-      "template": "{0}に潜入した！"
+      "template": "{0}に潜入した！",
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:infiltrates|infiltrate) (?:the |a |an )?(.+?)!$",
-      "template": "{0}は{1}に潜入した！"
+      "template": "{0}は{1}に潜入した！",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:eats|eat) (?:a |an |the )?(.+?)[.!]?$",
-      "template": "{0}は{1}を食べた"
+      "template": "{0}は{1}を食べた",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:applies|apply) (?:a |an |the )?(.+?)[.!]?$",
-      "template": "{0}は{1}を使用した"
+      "template": "{0}は{1}を使用した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:Some |A set of |[Aa]n? )?(.+?) grows out of your (.+?)!$",
-      "template": "{0}があなたの{1}から生えてきた！"
+      "template": "{0}があなたの{1}から生えてきた！",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:Some |A set of |[Aa]n? )?(.+?) grows out of (?:the |a |an )?(.+?)(?:'s|s') (.+?)!$",
-      "template": "{0}が{1}の{2}から生えてきた！"
+      "template": "{0}が{1}の{2}から生えてきた！",
+      "route": "unclassified"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:deploys|deploy) (?:a |an |the )?(.+?)[.!]?$",
-      "template": "{0}は{1}を展開した"
+      "template": "{0}は{1}を展開した",
+      "route": "does-verb"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) sets up (?:a |an |the )?(.+?)[.!]?$",
-      "template": "{0}は{1}を設置した"
+      "template": "{0}は{1}を設置した",
+      "route": "unclassified"
     },
     {
       "pattern": "^Poisonous goo burns your eyes\\.$",
-      "template": "有毒な粘液が目に染みた。"
+      "template": "有毒な粘液が目に染みた。",
+      "route": "leaf"
     },
     {
       "pattern": "^Putrid ooze splashes into your mouth\\. You gag at the awful taste\\.$",
-      "template": "腐った軟泥が口に入った。ひどい味に吐き気を催した。"
+      "template": "腐った軟泥が口に入った。ひどい味に吐き気を催した。",
+      "route": "leaf"
     },
     {
       "pattern": "^Brown sludge splashes into your mouth\\. You wince at the metallic taste\\.$",
-      "template": "茶色い汚泥が口に入った。金属の味に顔をしかめた。"
+      "template": "茶色い汚泥が口に入った。金属の味に顔をしかめた。",
+      "route": "leaf"
     },
     {
       "pattern": "^The zealot yells 'Make an offering at the Argent Well! Pay homage to your Fathers!'$",
-      "template": "狂信者が叫んだ「白銀の泉に捧げものをせよ！父祖を称えよ！」"
+      "template": "狂信者が叫んだ「白銀の泉に捧げものをせよ！父祖を称えよ！」",
+      "route": "leaf"
     },
     {
       "pattern": "^The zealot yells 'Cast down your artifacts! You are not worthy of their make!'$",
-      "template": "狂信者が叫んだ「アーティファクトを打ち捨てよ！貴様にそれを持つ資格はない！」"
+      "template": "狂信者が叫んだ「アーティファクトを打ち捨てよ！貴様にそれを持つ資格はない！」",
+      "route": "leaf"
     },
     {
       "pattern": "^The zealot yells 'Piety compels you to deliver your sacred relics to the priests in the cathedral! Cleanse them of your filth!'$",
-      "template": "狂信者が叫んだ「信仰心があるなら聖遺物を大聖堂の司祭に届けよ！貴様の穢れを清めるのだ！」"
+      "template": "狂信者が叫んだ「信仰心があるなら聖遺物を大聖堂の司祭に届けよ！貴様の穢れを清めるのだ！」",
+      "route": "leaf"
     },
     {
       "pattern": "^The zealot yells 'The Machine commands that you exorcise robots and bring their sacred husks here!'$",
-      "template": "狂信者が叫んだ「機械の御意志により、ロボットを祓い清め、聖なる殻をここへ持って来い！」"
+      "template": "狂信者が叫んだ「機械の御意志により、ロボットを祓い清め、聖なる殻をここへ持って来い！」",
+      "route": "leaf"
     }
   ]
 }
