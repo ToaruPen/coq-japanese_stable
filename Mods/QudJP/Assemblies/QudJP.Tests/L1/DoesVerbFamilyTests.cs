@@ -712,6 +712,280 @@ public sealed class DoesVerbFamilyTests
         AssertTranslated(input, expected);
     }
 
+    // --- Rifle Through (Garbage.cs) Family ---
+
+    [TestCase("You rifle through the ゴミ山, and find a 銅線.", "ゴミ山を漁り、銅線を見つけた")]
+    [TestCase("You rifle through the ゴミ山, but you find nothing.", "ゴミ山を漁ったが、何も見つからなかった")]
+    [TestCase("The 熊 rifles through the ゴミ山.", "熊はゴミ山を漁った")]
+    [TestCase("Somebody rifles through the ゴミ山.", "誰かがゴミ山を漁った")]
+    // Color-wrapped
+    [TestCase("{{g|You rifle through the ゴミ山, and find a 銅線.}}", "{{g|ゴミ山を漁り、銅線を見つけた}}")]
+    [TestCase("{{K|You rifle through the ゴミ山, but you find nothing.}}", "{{K|ゴミ山を漁ったが、何も見つからなかった}}")]
+    public void Translate_RifleThroughFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Butcher Cybernetic Family ---
+
+    [TestCase("You butcher a サイバネティック from the 死体.", "死体からサイバネティックを解体した")]
+    [TestCase("The 熊 butchers a サイバネティック from the 死体.", "熊は死体からサイバネティックを解体した")]
+    [TestCase("You rip a サイバネティック out of the 死体, but destroy it in the process.", "死体からサイバネティックを引き抜いたが、その過程で壊してしまった")]
+    [TestCase("The 熊 rips a サイバネティック out of the 死体, but destroys it in the process.", "熊は死体からサイバネティックを引き抜いたが、その過程で壊してしまった")]
+    // Color-wrapped
+    [TestCase("{{g|You butcher a サイバネティック from the 死体.}}", "{{g|死体からサイバネティックを解体した}}")]
+    [TestCase("{{r|You rip a サイバネティック out of the 死体, but destroy it in the process.}}", "{{r|死体からサイバネティックを引き抜いたが、その過程で壊してしまった}}")]
+    public void Translate_ButcherCyberneticFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Sunder Mind (nose/core/brain) Family ---
+
+    [TestCase("The 熊's nose begins to bleed.", "熊の鼻から血が流れ始めた")]
+    [TestCase("Your nose begins to bleed.", "あなたの鼻から血が流れ始めた")]
+    [TestCase("The ロボット's core begins to leak.", "ロボットのコアから液漏れが始まった")]
+    [TestCase("Your core begins to leak.", "あなたのコアから液漏れが始まった")]
+    [TestCase("The 熊's brain begins to hemorrhage.", "熊の脳から出血が始まった")]
+    [TestCase("Your brain begins to hemorrhage.", "あなたの脳から出血が始まった")]
+    // Color-wrapped
+    [TestCase("{{r|The 熊's nose begins to bleed.}}", "{{r|熊の鼻から血が流れ始めた}}")]
+    public void Translate_SunderMindFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Combat Reach/Phase Family ---
+
+    [TestCase("The 熊 cannot reach the スナップジョー.", "熊はスナップジョーに届かない")]
+    [TestCase("The 熊's attack passes through the スナップジョー!", "熊の攻撃はスナップジョーをすり抜けた！")]
+    [TestCase("Your attack passes through the スナップジョー!", "あなたの攻撃はスナップジョーをすり抜けた！")]
+    // Color-wrapped
+    [TestCase("{{r|The 熊 cannot reach the スナップジョー.}}", "{{r|熊はスナップジョーに届かない}}")]
+    [TestCase("{{r|The 熊's attack passes through the スナップジョー!}}", "{{r|熊の攻撃はスナップジョーをすり抜けた！}}")]
+    public void Translate_CombatReachPhaseFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Space-Time Vortex Family ---
+
+    [TestCase("Two space-time vortices come into contact and both explode!", "2つのspace-time vorticesが接触し、両方とも爆発した！")]
+    // Color-wrapped
+    [TestCase("{{R|Two space-time vortices come into contact and both explode!}}", "{{R|2つのspace-time vorticesが接触し、両方とも爆発した！}}")]
+    public void Translate_SpaceTimeVortexFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Liquid Reaction Family ---
+
+    [TestCase("The reacting liquids congeal into a スラッジ.", "反応した液体が凝固しスラッジになった")]
+    [TestCase("The liquids stop reacting.", "液体の反応が止まった")]
+    [TestCase("The primordial soup to the east starts reacting with the 酸.", "to the eastの原初のスープが酸と反応を始めた")]
+    // Color-wrapped
+    [TestCase("{{g|The reacting liquids congeal into a スラッジ.}}", "{{g|反応した液体が凝固しスラッジになった}}")]
+    public void Translate_LiquidReactionFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Glitch Family ---
+
+    [TestCase("The 装置 starts to glitch.", "装置がグリッチし始めた")]
+    [TestCase("The liquid mixture inside the 水筒 starts to glitch.", "水筒の中の混合液がグリッチし始めた")]
+    // Color-wrapped
+    [TestCase("{{W|The 装置 starts to glitch.}}", "{{W|装置がグリッチし始めた}}")]
+    public void Translate_GlitchFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Warm Static Effect Family ---
+
+    [TestCase("confused applied to 熊.", "confusedが熊に適用された")]
+    [TestCase("No valid targets for confused.", "confusedの有効な対象がない")]
+    // Color-wrapped
+    [TestCase("{{K|confused applied to 熊.}}", "{{K|confusedが熊に適用された}}")]
+    public void Translate_WarmStaticEffectFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Queasiness/Skin/Rind Family ---
+
+    [TestCase("The 熊's queasiness passes.", "熊の吐き気が治まった")]
+    [TestCase("Your queasiness passes.", "あなたの吐き気が治まった")]
+    [TestCase("The 熊's skin itches furiously.", "熊の肌が猛烈にかゆくなった")]
+    [TestCase("Your skin itches furiously.", "あなたの肌が猛烈にかゆくなった")]
+    [TestCase("The 熊's rind recrystallizes and hardens once more.", "熊の外皮が再結晶化し、再び硬くなった")]
+    [TestCase("Your rind recrystallizes and hardens once more.", "あなたの外皮が再結晶化し、再び硬くなった")]
+    [TestCase("The 熊's glow dims until it's extinguished.", "熊の輝きが消えるまで薄れた")]
+    [TestCase("Your glow dims until it's extinguished.", "あなたの輝きが消えるまで薄れた")]
+    // Color-wrapped
+    [TestCase("{{r|The 熊's queasiness passes.}}", "{{r|熊の吐き気が治まった}}")]
+    [TestCase("{{g|The 熊's glow dims until it's extinguished.}}", "{{g|熊の輝きが消えるまで薄れた}}")]
+    public void Translate_BodyEffectFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Force Bubble Family ---
+
+    [TestCase("A force bubble pops into being around the 変異者.", "変異者の周りにフォースバブルが出現した")]
+    // Color-wrapped
+    [TestCase("{{B|A force bubble pops into being around the 変異者.}}", "{{B|変異者の周りにフォースバブルが出現した}}")]
+    public void Translate_ForceBubbleFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Burns Into Slag Family ---
+
+    [TestCase("The 電池 burns into bright slag.", "電池は燃えて明るいスラグになった")]
+    // Color-wrapped
+    [TestCase("{{R|The 電池 burns into bright slag.}}", "{{R|電池は燃えて明るいスラグになった}}")]
+    public void Translate_BurnsIntoSlagFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Flailing/Battering Family ---
+
+    [TestCase("Suddenly the 武器 starts flailing around and battering you!", "突然武器が暴れ出し、youを殴りつけた！")]
+    [TestCase("Two tubular sections of the 武器 flail around and batter you!", "武器の2本の管状の部分が暴れ、youを殴りつけた！")]
+    // Color-wrapped
+    [TestCase("{{r|Two tubular sections of the 武器 flail around and batter you!}}", "{{r|武器の2本の管状の部分が暴れ、youを殴りつけた！}}")]
+    public void Translate_FlailingBatteringFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Collide Family ---
+
+    [TestCase("The ディスク and the 円盤 collide and fall to the ground.", "ディスクと円盤がぶつかり合い、地面に落ちた")]
+    // Color-wrapped
+    [TestCase("{{r|The ディスク and the 円盤 collide and fall to the ground.}}", "{{r|ディスクと円盤がぶつかり合い、地面に落ちた}}")]
+    public void Translate_CollideFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Ammo/Reload Family ---
+
+    [TestCase("You have no more ammo for the 銃.", "銃の弾薬がもうない")]
+    [TestCase("You reload the 銃 with a マガジン.", "銃にマガジンを装填した")]
+    // Color-wrapped
+    [TestCase("{{r|You have no more ammo for the 銃.}}", "{{r|銃の弾薬がもうない}}")]
+    public void Translate_AmmoReloadFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Jet of Flame Family ---
+
+    [TestCase("A jet of flame shoots out of your ロケットスケート!", "ロケットスケートから炎の噴流が噴き出した！")]
+    // Color-wrapped
+    [TestCase("{{R|A jet of flame shoots out of your ロケットスケート!}}", "{{R|ロケットスケートから炎の噴流が噴き出した！}}")]
+    public void Translate_JetOfFlameFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Catalyze Family ---
+
+    [TestCase("The 酸 catalyzes スラッジ into a 新スラッジ.", "酸がスラッジを触媒して新スラッジに変化させた")]
+    // Color-wrapped
+    [TestCase("{{g|The 酸 catalyzes スラッジ into a 新スラッジ.}}", "{{g|酸がスラッジを触媒して新スラッジに変化させた}}")]
+    public void Translate_CatalyzeFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Infiltrate Family ---
+
+    [TestCase("You infiltrate the メカ!", "メカに潜入した！")]
+    [TestCase("The 熊 infiltrates the メカ!", "熊はメカに潜入した！")]
+    // Color-wrapped
+    [TestCase("{{g|You infiltrate the メカ!}}", "{{g|メカに潜入した！}}")]
+    public void Translate_InfiltrateFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Grow Body Part Family ---
+
+    [TestCase("A 腕 grows out of your 胴体!", "腕があなたの胴体から生えてきた！")]
+    // Color-wrapped
+    [TestCase("{{g|A 腕 grows out of your 胴体!}}", "{{g|腕があなたの胴体から生えてきた！}}")]
+    public void Translate_GrowBodyPartFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Deploy Family ---
+
+    [TestCase("The 技師 deploys a タレット.", "技師はタレットを展開した")]
+    [TestCase("The 技師 sets up a ベッドロール.", "技師はベッドロールを設置した")]
+    // Color-wrapped
+    [TestCase("{{g|The 技師 deploys a タレット.}}", "{{g|技師はタレットを展開した}}")]
+    public void Translate_DeployFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- E-Ros Teleportation Family ---
+
+    [TestCase("E-Ros yells, 'I'm coming, リーダー!'", "E-Rosは「今行くよ、リーダー！」と叫んだ")]
+    // Color-wrapped
+    [TestCase("{{W|E-Ros yells, 'I'm coming, リーダー!'}}", "{{W|E-Rosは「今行くよ、リーダー！」と叫んだ}}")]
+    public void Translate_ErosTeleportationFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Eat/Apply (Tonic 3P) Family ---
+
+    [TestCase("The 熊 eats a トニック.", "熊はトニックを食べた")]
+    [TestCase("The 熊 applies a トニック.", "熊はトニックを使用した")]
+    // Color-wrapped
+    [TestCase("{{g|The 熊 eats a トニック.}}", "{{g|熊はトニックを食べた}}")]
+    public void Translate_EatApplyTonicFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Cherubim Protection Family ---
+
+    [TestCase("The protective force of the cherubim prevents the 冒険者 from taking anything from the reliquary.", "ケルビムの守護の力が冒険者を聖遺物櫃から何かを取ることを阻んでいる")]
+    // Color-wrapped
+    [TestCase("{{r|The protective force of the cherubim prevents the 冒険者 from taking anything from the reliquary.}}", "{{r|ケルビムの守護の力が冒険者を聖遺物櫃から何かを取ることを阻んでいる}}")]
+    public void Translate_CherubimFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Irritable Genome Family ---
+
+    [TestCase("The 変異者's irritable genome acts up.", "変異者の過敏ゲノムが暴走した")]
+    [TestCase("Your irritable genome acts up.", "あなたの過敏ゲノムが暴走した")]
+    // Color-wrapped
+    [TestCase("{{r|Your irritable genome acts up.}}", "{{r|あなたの過敏ゲノムが暴走した}}")]
+    public void Translate_IrritableGenomeFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Sleep Mode (Player) Family ---
+
+    [TestCase("You enter sleep mode.", "あなたはスリープモードに入った")]
+    // Color-wrapped
+    [TestCase("{{C|You enter sleep mode.}}", "{{C|あなたはスリープモードに入った}}")]
+    public void Translate_SleepModePlayerFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
     // --- Edge cases (required for all families) ---
 
     [Test]

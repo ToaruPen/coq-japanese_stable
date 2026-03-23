@@ -282,6 +282,10 @@
       "template": "あなたは眠りに落ちた"
     },
     {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) and (?:the |a |an )?(.+?) collide and fall to the ground[.!]?$",
+      "template": "{0}と{1}がぶつかり合い、地面に落ちた"
+    },
+    {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) to the ground!$",
       "template": "{0}は地面に倒れた！"
     },
@@ -324,6 +328,10 @@
     {
       "pattern": "^You fire (.+?)[.!]?$",
       "template": "{0}を発射した"
+    },
+    {
+      "pattern": "^You reload (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?)[.!]?$",
+      "template": "{0}に{1}を装填した"
     },
     {
       "pattern": "^You reload (.+?)[.!]?$",
@@ -714,6 +722,18 @@
       "template": "{0}はさらに出血し始めた。"
     },
     {
+      "pattern": "^Your nose begins to bleed[.!]?$",
+      "template": "あなたの鼻から血が流れ始めた"
+    },
+    {
+      "pattern": "^Your core begins to leak[.!]?$",
+      "template": "あなたのコアから液漏れが始まった"
+    },
+    {
+      "pattern": "^Your brain begins to hemorrhage[.!]?$",
+      "template": "あなたの脳から出血が始まった"
+    },
+    {
       "pattern": "^Your (?:noses?|nose) (?:begins?|begin) (.+?) more heavily[.!]?$",
       "template": "あなたの鼻からさらに激しく{0}が始まった"
     },
@@ -728,6 +748,18 @@
     {
       "pattern": "^Your (?:noses?|nose) (?:stops?|stop) (.+?)[.!]?$",
       "template": "あなたの鼻からの{0}が止まった"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') nose begins to bleed[.!]?$",
+      "template": "{0}の鼻から血が流れ始めた"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') core begins to leak[.!]?$",
+      "template": "{0}のコアから液漏れが始まった"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') brain begins to hemorrhage[.!]?$",
+      "template": "{0}の脳から出血が始まった"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (?:noses?|nose) (?:begins?|begin) (.+?) more heavily[.!]?$",
@@ -932,6 +964,10 @@
     {
       "pattern": "^(.+?) takes (\\d+) damage from your freezing weapon![.!]?$",
       "template": "{0}はあなたの凍てつく武器で{1}ダメージを受けた！"
+    },
+    {
+      "pattern": "^E-Ros yells, 'I'm coming, (.+?)!'$",
+      "template": "E-Rosは「今行くよ、{0}！」と叫んだ"
     },
     {
       "pattern": "^You yell, '(.+)'$",
@@ -1808,6 +1844,230 @@
     {
       "pattern": "^A \"SATED\" baetyl$",
       "template": "「満足した」ベテル"
+    },
+    {
+      "pattern": "^You rifle through (?:the |a |an )?(.+?), and find (?:a |an |the )?(.+?)[.!]?$",
+      "template": "{0}を漁り、{1}を見つけた"
+    },
+    {
+      "pattern": "^You rifle through (?:the |a |an )?(.+?), but you find nothing[.!]?$",
+      "template": "{0}を漁ったが、何も見つからなかった"
+    },
+    {
+      "pattern": "^Somebody rifles through (?:the |a |an )?(.+?)[.!]?$",
+      "template": "誰かが{0}を漁った"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:rifles|rifle) through (?:the |a |an )?(.+?)[.!]?$",
+      "template": "{0}は{1}を漁った"
+    },
+    {
+      "pattern": "^You butcher (?:a |an |the )?(.+?) from (?:the |a |an )?(.+?)[.!]?$",
+      "template": "{1}から{0}を解体した"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:butchers|butcher) (?:a |an |the )?(.+?) from (?:the |a |an )?(.+?)[.!]?$",
+      "template": "{0}は{2}から{1}を解体した"
+    },
+    {
+      "pattern": "^You rip (?:a |an |the )?(.+?) out of (?:the |a |an )?(.+?), but destroy (?:him|her|it|them) in the process[.!]?$",
+      "template": "{1}から{0}を引き抜いたが、その過程で壊してしまった"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:rips|rip) (?:a |an |the )?(.+?) out of (?:the |a |an )?(.+?), but (?:destroys|destroy) (?:him|her|it|them) in the process[.!]?$",
+      "template": "{0}は{2}から{1}を引き抜いたが、その過程で壊してしまった"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) cannot reach (?:the |a |an )?(.+?)[.!]?$",
+      "template": "{0}は{1}に届かない"
+    },
+    {
+      "pattern": "^Your attack passes through (?:the |a |an )?(.+?)!$",
+      "template": "あなたの攻撃は{0}をすり抜けた！"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') attack passes through (?:the |a |an )?(.+?)!$",
+      "template": "{0}の攻撃は{1}をすり抜けた！"
+    },
+    {
+      "pattern": "^Two (.+?) come into contact and both explode!$",
+      "template": "2つの{0}が接触し、両方とも爆発した！"
+    },
+    {
+      "pattern": "^You enter sleep mode[.!]?$",
+      "template": "あなたはスリープモードに入った"
+    },
+    {
+      "pattern": "^The reacting liquids congeal into (?:a |an |the )?(.+?)[.!]?$",
+      "template": "反応した液体が凝固し{0}になった"
+    },
+    {
+      "pattern": "^The liquids stop reacting[.!]?$",
+      "template": "液体の反応が止まった"
+    },
+    {
+      "pattern": "^The primordial soup (.+?) starts reacting with the (.+?)[.!]?$",
+      "template": "{0}の原初のスープが{1}と反応を始めた"
+    },
+    {
+      "pattern": "^The liquid mixture inside (?:the |a |an )?(.+?) starts to glitch[.!]?$",
+      "template": "{0}の中の混合液がグリッチし始めた"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:starts|start) to glitch[.!]?$",
+      "template": "{0}がグリッチし始めた"
+    },
+    {
+      "pattern": "^(.+?) applied to (.+?)[.!]?$",
+      "template": "{0}が{1}に適用された"
+    },
+    {
+      "pattern": "^No valid targets for (.+?)[.!]?$",
+      "template": "{0}の有効な対象がない"
+    },
+    {
+      "pattern": "^One of (?:the |a |an )?(.+?)(?:'s|s') wounds stops (.+?)[.!]?$",
+      "template": "{0}の傷のひとつの{1}が止まった"
+    },
+    {
+      "pattern": "^Your queasiness passes[.!]?$",
+      "template": "あなたの吐き気が治まった"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') queasiness passes[.!]?$",
+      "template": "{0}の吐き気が治まった"
+    },
+    {
+      "pattern": "^Your rind softens while .+? recrystallize[sd]?[.!]?$",
+      "template": "あなたの外皮が軟化し、再結晶化している！"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') rind softens while .+? recrystallize[sd]?[.!]?$",
+      "template": "{0}の外皮が軟化し、再結晶化している！"
+    },
+    {
+      "pattern": "^Your rind recrystallizes and hardens once more[.!]?$",
+      "template": "あなたの外皮が再結晶化し、再び硬くなった"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') rind recrystallizes and hardens once more[.!]?$",
+      "template": "{0}の外皮が再結晶化し、再び硬くなった"
+    },
+    {
+      "pattern": "^Your glow dims until it's extinguished[.!]?$",
+      "template": "あなたの輝きが消えるまで薄れた"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') glow dims until it's extinguished[.!]?$",
+      "template": "{0}の輝きが消えるまで薄れた"
+    },
+    {
+      "pattern": "^A force bubble pops into being around (?:the |a |an )?(.+?)[.!]?$",
+      "template": "{0}の周りにフォースバブルが出現した"
+    },
+    {
+      "pattern": "^Your irritable genome acts up[.!](.*)$",
+      "template": "あなたの過敏ゲノムが暴走した{0}"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') irritable genome acts up[.!](.*)$",
+      "template": "{0}の過敏ゲノムが暴走した{1}"
+    },
+    {
+      "pattern": "^The protective force of the cherubim prevents (?:the |a |an )?(.+?) from taking anything from the reliquary[.!]?$",
+      "template": "ケルビムの守護の力が{0}を聖遺物櫃から何かを取ることを阻んでいる"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) burns into bright slag[.!]?$",
+      "template": "{0}は燃えて明るいスラグになった"
+    },
+    {
+      "pattern": "^Suddenly (?:the |a |an )?(.+?) (?:starts|start) flailing around and battering (?:the |a |an )?(.+?)!$",
+      "template": "突然{0}が暴れ出し、{1}を殴りつけた！"
+    },
+    {
+      "pattern": "^Your skin itches furiously[.!]?$",
+      "template": "あなたの肌が猛烈にかゆくなった"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') skin itches furiously[.!]?$",
+      "template": "{0}の肌が猛烈にかゆくなった"
+    },
+    {
+      "pattern": "^Two tubular sections of (?:the |a |an )?(.+?) flail around and batter (?:the |a |an )?(.+?)!$",
+      "template": "{0}の2本の管状の部分が暴れ、{1}を殴りつけた！"
+    },
+    {
+      "pattern": "^You have no more ammo for (?:the |a |an )?(.+?)[.!]?$",
+      "template": "{0}の弾薬がもうない"
+    },
+    {
+      "pattern": "^A jet of flame shoots out of (?:the |a |an |your )?(.+?)!$",
+      "template": "{0}から炎の噴流が噴き出した！"
+    },
+    {
+      "pattern": "^The (.+?) catalyzes (.+?) into (?:a |an |the )?(.+?)[.!]?$",
+      "template": "{0}が{1}を触媒して{2}に変化させた"
+    },
+    {
+      "pattern": "^You (?:infiltrates?|infiltrate) (?:the |a |an )?(.+?)!$",
+      "template": "{0}に潜入した！"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:infiltrates|infiltrate) (?:the |a |an )?(.+?)!$",
+      "template": "{0}は{1}に潜入した！"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:eats|eat) (?:a |an |the )?(.+?)[.!]?$",
+      "template": "{0}は{1}を食べた"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:applies|apply) (?:a |an |the )?(.+?)[.!]?$",
+      "template": "{0}は{1}を使用した"
+    },
+    {
+      "pattern": "^(?:Some |A set of |[Aa]n? )?(.+?) grows out of your (.+?)!$",
+      "template": "{0}があなたの{1}から生えてきた！"
+    },
+    {
+      "pattern": "^(?:Some |A set of |[Aa]n? )?(.+?) grows out of (?:the |a |an )?(.+?)(?:'s|s') (.+?)!$",
+      "template": "{0}が{1}の{2}から生えてきた！"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:deploys|deploy) (?:a |an |the )?(.+?)[.!]?$",
+      "template": "{0}は{1}を展開した"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) sets up (?:a |an |the )?(.+?)[.!]?$",
+      "template": "{0}は{1}を設置した"
+    },
+    {
+      "pattern": "^Poisonous goo burns your eyes\\.$",
+      "template": "有毒な粘液が目に染みた。"
+    },
+    {
+      "pattern": "^Putrid ooze splashes into your mouth\\. You gag at the awful taste\\.$",
+      "template": "腐った軟泥が口に入った。ひどい味に吐き気を催した。"
+    },
+    {
+      "pattern": "^Brown sludge splashes into your mouth\\. You wince at the metallic taste\\.$",
+      "template": "茶色い汚泥が口に入った。金属の味に顔をしかめた。"
+    },
+    {
+      "pattern": "^The zealot yells 'Make an offering at the Argent Well! Pay homage to your Fathers!'$",
+      "template": "狂信者が叫んだ「白銀の泉に捧げものをせよ！父祖を称えよ！」"
+    },
+    {
+      "pattern": "^The zealot yells 'Cast down your artifacts! You are not worthy of their make!'$",
+      "template": "狂信者が叫んだ「アーティファクトを打ち捨てよ！貴様にそれを持つ資格はない！」"
+    },
+    {
+      "pattern": "^The zealot yells 'Piety compels you to deliver your sacred relics to the priests in the cathedral! Cleanse them of your filth!'$",
+      "template": "狂信者が叫んだ「信仰心があるなら聖遺物を大聖堂の司祭に届けよ！貴様の穢れを清めるのだ！」"
+    },
+    {
+      "pattern": "^The zealot yells 'The Machine commands that you exorcise robots and bring their sacred husks here!'$",
+      "template": "狂信者が叫んだ「機械の御意志により、ロボットを祓い清め、聖なる殻をここへ持って来い！」"
     }
   ]
 }
