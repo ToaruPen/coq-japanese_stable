@@ -1,0 +1,125 @@
+{
+  "entries": [],
+  "patterns": [
+    {
+      "pattern": "^Notes: (.+)$",
+      "template": "備考: {0}",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You note this piece of information in the Sultan Histories > (.+?) section of your journal\\.[.!]?$",
+      "template": "この情報をジャーナルの「スルタン史 > {0}」欄に記録した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You discover the location of (.+?)[.!]?$",
+      "template": "{0}の場所を発見した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You note the location of (.+?) in the Locations > (.+?) section of your journal\\.[.!]?$",
+      "template": "ジャーナルの「場所 > {t1}」欄に{0}の場所を記録した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You journeyed to (.+?)\\.$",
+      "template": "{t0}に旅した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You discovered the hidden village of (.+?)\\.$",
+      "template": "隠れ里{t0}を発見した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^There exists a pocket dimension known as (.+?)\\.$",
+      "template": "{0}と呼ばれるポケット次元が存在する。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^There exists a dimension known as (.+?)\\.$",
+      "template": "{0}と呼ばれる次元が存在する。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^Last visited on the (.+?) of (.+?)$",
+      "template": "{1}の{0}日に最後に訪れた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^On the (.+?) of (.+?), you arrive at the oasis-hamlet of Joppa, along the far rim of Moghra'yi, the Great Salt Desert\\.\\n\\nAll around you, moisture farmers tend to groves of viridian watervine\\. There are huts wrought from rock salt and brinestalk\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",
+      "template": "{1}の{0}日、あなたは大塩砂漠モグライィの遥かな縁にあるオアシス集落ジョッパに到着した。\n\nあたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^On the (.+?) of (.+?), you arrive at the village of (.+?)\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",
+      "template": "{1}の{0}日、あなたは{2}の村に到着した。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^On the (.+?) of (.+?), you abandoned all hope\\.$",
+      "template": "{1}の{0}日、あなたはすべての希望を捨てた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^On the (.+?) of (.+?), you multiplied\\.$",
+      "template": "{1}の{0}日、あなたは自己増殖した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^On the (.+?) of (.+?), you arrived at (.+?)\\.$",
+      "template": "{1}の{0}日、{t2}に到着した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You discovered the location of (.+?)\\.$",
+      "template": "{0}の場所を発見した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You visited the village of (.+?)\\.$",
+      "template": "{t0}の村を訪れた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You visited the historic site of (.+?)\\.$",
+      "template": "史跡{t0}を訪れた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You became loved among (.+?) and were treated as one of their own\\.$",
+      "template": "{0}に愛され、その一員として扱われるようになった。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You recovered the historic relic, (.+?)\\.$",
+      "template": "歴史的遺物{0}を回収した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You appeased a baetyl with (.+?), and in return received (.+?)\\.$",
+      "template": "ベテルに{0}を捧げ、見返りに{1}を受け取った。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You stopped calling a location '(.+?)' and start calling it '(.+?)'\\.$",
+      "template": "場所の呼称を「{0}」から「{1}」に変更した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You started calling a location '(.+?)'\\.$",
+      "template": "場所を「{0}」と呼ぶことにした。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^A baetyl demanding \"(.+?)\" and promising \"(.+?)\"[.]?$",
+      "template": "「{0}」を要求し、見返りに「{1}」を約束するベテル",
+      "route": "journal"
+    },
+    {
+      "pattern": "^A \"SATED\" baetyl$",
+      "template": "「満足した」ベテル",
+      "route": "journal"
+    }
+  ]
+}

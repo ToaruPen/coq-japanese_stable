@@ -13,7 +13,10 @@ using QudJP.Patches;
 
 namespace QudJP;
 
-internal static class MessagePatternTranslator
+/// <summary>
+/// Pattern translator scoped to journal route patterns loaded from journal-patterns.ja.json.
+/// </summary>
+internal static class JournalPatternTranslator
 {
     private static readonly object SyncRoot = new object();
     private static readonly ConcurrentDictionary<string, Regex> RegexCache =
@@ -23,9 +26,9 @@ internal static class MessagePatternTranslator
     private static readonly ConcurrentDictionary<string, int> MissingRouteCounts =
         new ConcurrentDictionary<string, int>(StringComparer.Ordinal);
 
-    private static List<MessagePatternDefinition>? loadedPatterns;
+    private static List<JournalPatternDefinition>? loadedPatterns;
     private static string? patternFileOverride;
-    private static string patternLoadSummary = "MessagePatternTranslator: pattern load summary unavailable.";
+    private static string patternLoadSummary = "JournalPatternTranslator: pattern load summary unavailable.";
     private static int loadInvocationCount;
     private const int MaxLogSourceLength = 200;
     internal const int MaxUniquePatterns = 10_000;
@@ -47,21 +50,6 @@ internal static class MessagePatternTranslator
     internal static int GetMissingRouteHitCountForTests(string? context)
     {
         return ObservabilityHelpers.GetCounterValue(MissingRouteCounts, ObservabilityHelpers.NormalizeContext(context));
-    }
-
-    internal static string GetMissingPatternSummaryForTests(int maxEntries = 10)
-    {
-        var routeSummary = ObservabilityHelpers.BuildRankedSummary(
-            "QudJP MessagePatternTranslator",
-            "missing pattern routes",
-            MissingRouteCounts,
-            maxEntries);
-        var patternSummary = ObservabilityHelpers.BuildRankedSummary(
-            "QudJP MessagePatternTranslator",
-            "missing patterns",
-            MissingPatternCounts,
-            maxEntries);
-        return routeSummary + Environment.NewLine + patternSummary;
     }
 
     internal static string Translate(string? source, string? context = null)
@@ -91,7 +79,7 @@ internal static class MessagePatternTranslator
             RegexCache.Clear();
             MissingPatternCounts.Clear();
             MissingRouteCounts.Clear();
-            patternLoadSummary = "MessagePatternTranslator: pattern load summary unavailable.";
+            patternLoadSummary = "JournalPatternTranslator: pattern load summary unavailable.";
             Interlocked.Exchange(ref loadInvocationCount, 0);
         }
     }
@@ -103,24 +91,6 @@ internal static class MessagePatternTranslator
 
     private static string TranslateStripped(string source, IReadOnlyList<ColorSpan>? spans = null)
     {
-        if (DeathWrapperFamilyTranslator.TryTranslateMessage(source, spans, out var deathTranslated))
-        {
-            return deathTranslated;
-        }
-
-        if (Translator.TryGetTranslation(source, out var exactTranslation)
-            && !string.Equals(exactTranslation, source, StringComparison.Ordinal))
-        {
-            DynamicTextObservability.RecordTransform(
-                nameof(MessagePatternTranslator),
-                "exact-dictionary",
-                source,
-                exactTranslation);
-            return spans is null || spans.Count == 0
-                ? exactTranslation
-                : ColorAwareTranslationComposer.Restore(exactTranslation, spans);
-        }
-
         var patterns = GetLoadedPatterns();
         for (var index = 0; index < patterns.Count; index++)
         {
@@ -134,7 +104,7 @@ internal static class MessagePatternTranslator
 
             var translated = ApplyTemplate(definition.Template, match, source, spans);
             DynamicTextObservability.RecordTransform(
-                nameof(MessagePatternTranslator),
+                nameof(JournalPatternTranslator),
                 definition.Pattern,
                 source,
                 translated);
@@ -146,7 +116,7 @@ internal static class MessagePatternTranslator
         {
             var sanitizedSource = SanitizeForLog(source);
             LogObservability(
-                $"[QudJP] MessagePatternTranslator: no pattern for '{sanitizedSource}' (hit {hitCount}).{Translator.GetCurrentLogContextSuffix()}");
+                $"[QudJP] JournalPatternTranslator: no pattern for '{sanitizedSource}' (hit {hitCount}).{Translator.GetCurrentLogContextSuffix()}");
         }
 
         return spans is null || spans.Count == 0
@@ -154,7 +124,7 @@ internal static class MessagePatternTranslator
             : ColorAwareTranslationComposer.Restore(source, spans);
     }
 
-    private static List<MessagePatternDefinition> GetLoadedPatterns()
+    private static List<JournalPatternDefinition> GetLoadedPatterns()
     {
         var cached = Volatile.Read(ref loadedPatterns);
         if (cached is not null)
@@ -173,7 +143,7 @@ internal static class MessagePatternTranslator
         }
     }
 
-    private static List<MessagePatternDefinition> LoadPatterns()
+    private static List<JournalPatternDefinition> LoadPatterns()
     {
         Interlocked.Increment(ref loadInvocationCount);
 
@@ -181,19 +151,19 @@ internal static class MessagePatternTranslator
         if (!File.Exists(patternFilePath))
         {
             throw new FileNotFoundException(
-                $"QudJP: message pattern dictionary file not found: {patternFilePath}",
+                $"QudJP: journal pattern dictionary file not found: {patternFilePath}",
                 patternFilePath);
         }
 
         using var stream = File.OpenRead(patternFilePath);
-        var serializer = new DataContractJsonSerializer(typeof(MessagePatternDocument));
-        var document = serializer.ReadObject(stream) as MessagePatternDocument;
+        var serializer = new DataContractJsonSerializer(typeof(JournalPatternDocument));
+        var document = serializer.ReadObject(stream) as JournalPatternDocument;
         if (document?.Patterns is null)
         {
-            throw new InvalidDataException($"QudJP: message pattern file has no patterns array: {patternFilePath}");
+            throw new InvalidDataException($"QudJP: journal pattern file has no patterns array: {patternFilePath}");
         }
 
-        var definitions = new List<MessagePatternDefinition>(document.Patterns.Count);
+        var definitions = new List<JournalPatternDefinition>(document.Patterns.Count);
         var seenPatterns = new Dictionary<string, int>(StringComparer.Ordinal);
         var duplicatePatternCounts = new Dictionary<string, int>(StringComparer.Ordinal);
         var duplicatePatternCount = 0;
@@ -205,7 +175,7 @@ internal static class MessagePatternTranslator
             if (pattern is null || pattern.Length == 0 || template is null)
             {
                 throw new InvalidDataException(
-                    $"QudJP: malformed message pattern entry at index {index} in '{patternFilePath}'.");
+                    $"QudJP: malformed journal pattern entry at index {index} in '{patternFilePath}'.");
             }
 
             _ = GetCompiledRegex(pattern);
@@ -218,11 +188,11 @@ internal static class MessagePatternTranslator
             }
 
             seenPatterns[pattern] = index;
-            definitions.Add(new MessagePatternDefinition(pattern, template));
+            definitions.Add(new JournalPatternDefinition(pattern, template));
         }
 
         patternLoadSummary =
-            $"MessagePatternTranslator: loaded {definitions.Count} pattern(s) from '{patternFilePath}' " +
+            $"JournalPatternTranslator: loaded {definitions.Count} pattern(s) from '{patternFilePath}' " +
             $"({seenPatterns.Count} unique, {duplicatePatternCount} duplicate pattern(s) across {duplicatePatternCounts.Count} distinct pattern(s)).";
         LogObservability($"[QudJP] {patternLoadSummary}");
         LogDuplicatePatternSummary(duplicatePatternCounts);
@@ -237,7 +207,7 @@ internal static class MessagePatternTranslator
             return Path.GetFullPath(patternFileOverride);
         }
 
-        return LocalizationAssetResolver.GetLocalizationPath("Dictionaries/messages.ja.json");
+        return LocalizationAssetResolver.GetLocalizationPath("Dictionaries/journal-patterns.ja.json");
     }
 
     private static Regex GetCompiledRegex(string pattern)
@@ -274,11 +244,6 @@ internal static class MessagePatternTranslator
         return counters.AddOrUpdate(OverflowKey, 1, ObservabilityHelpers.IncrementCounter);
     }
 
-    internal static bool ShouldLogMissingHitForTests(int hitCount)
-    {
-        return ObservabilityHelpers.ShouldLogMissingHit(hitCount);
-    }
-
     private static void LogDuplicatePatternSummary(Dictionary<string, int> duplicatePatternCounts)
     {
         if (duplicatePatternCounts.Count == 0)
@@ -287,7 +252,7 @@ internal static class MessagePatternTranslator
         }
 
         LogObservability(
-            $"[QudJP] Warning: MessagePatternTranslator duplicate patterns: {ObservabilityHelpers.BuildRankedCounterBody(duplicatePatternCounts, 10)}.");
+            $"[QudJP] Warning: JournalPatternTranslator duplicate patterns: {ObservabilityHelpers.BuildRankedCounterBody(duplicatePatternCounts, 10)}.");
     }
 
     private static void LogObservability(string message)
@@ -413,7 +378,7 @@ internal static class MessagePatternTranslator
             var closeIndex = template.IndexOf('}', index + 1);
             if (closeIndex < 0)
             {
-                throw new FormatException($"QudJP: malformed message pattern template '{template}'.");
+                throw new FormatException($"QudJP: malformed journal pattern template '{template}'.");
             }
 
             var token = template.Substring(index + 1, closeIndex - index - 1);
@@ -425,12 +390,12 @@ internal static class MessagePatternTranslator
 
             if (!int.TryParse(token, NumberStyles.None, CultureInfo.InvariantCulture, out var captureIndex))
             {
-                throw new FormatException($"QudJP: unsupported placeholder '{{{token}}}' in message pattern template '{template}'.");
+                throw new FormatException($"QudJP: unsupported placeholder '{{{token}}}' in journal pattern template '{template}'.");
             }
 
             if (captureIndex < 0 || captureIndex >= match.Groups.Count - 1)
             {
-                throw new FormatException($"QudJP: placeholder '{{{token}}}' exceeds capture count in message pattern template '{template}'.");
+                throw new FormatException($"QudJP: placeholder '{{{token}}}' exceeds capture count in journal pattern template '{template}'.");
             }
 
             var group = match.Groups[captureIndex + 1];
@@ -500,9 +465,9 @@ internal static class MessagePatternTranslator
         return changed ? new string(buffer) : source;
     }
 
-    private sealed class MessagePatternDefinition
+    private sealed class JournalPatternDefinition
     {
-        internal MessagePatternDefinition(string pattern, string template)
+        internal JournalPatternDefinition(string pattern, string template)
         {
             Pattern = pattern;
             Template = template;
@@ -514,14 +479,14 @@ internal static class MessagePatternTranslator
     }
 
     [DataContract]
-    private sealed class MessagePatternDocument
+    private sealed class JournalPatternDocument
     {
         [DataMember(Name = "patterns")]
-        public List<MessagePatternEntry>? Patterns { get; set; }
+        public List<JournalPatternEntry>? Patterns { get; set; }
     }
 
     [DataContract]
-    private sealed class MessagePatternEntry
+    private sealed class JournalPatternEntry
     {
         [DataMember(Name = "pattern")]
         public string? Pattern { get; set; }

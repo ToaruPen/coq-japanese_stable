@@ -22,19 +22,19 @@ public sealed class JournalEntryDisplayTextPatchTests
         Directory.CreateDirectory(tempDirectory);
         dictionaryDirectory = Path.Combine(tempDirectory, "dict");
         Directory.CreateDirectory(dictionaryDirectory);
-        patternFilePath = Path.Combine(tempDirectory, "messages.ja.json");
+        patternFilePath = Path.Combine(tempDirectory, "journal-patterns.ja.json");
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
-        MessagePatternTranslator.ResetForTests();
-        MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
+        JournalPatternTranslator.ResetForTests();
+        JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
     }
 
     [TearDown]
     public void TearDown()
     {
         Translator.ResetForTests();
-        MessagePatternTranslator.ResetForTests();
+        JournalPatternTranslator.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {

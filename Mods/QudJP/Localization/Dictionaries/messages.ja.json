@@ -137,11 +137,6 @@
       "route": "unclassified"
     },
     {
-      "pattern": "^You already have that power[.!]?$",
-      "template": "その能力はすでに習得している。",
-      "route": "leaf"
-    },
-    {
       "pattern": "^You block (.+)'s attack[.!]?$",
       "template": "{0}の攻撃を防いだ",
       "route": "emit-message"
@@ -155,46 +150,6 @@
       "pattern": "^You parry (.+)'s attack[.!]?$",
       "template": "{0}の攻撃を受け流した",
       "route": "emit-message"
-    },
-    {
-      "pattern": "^You are confused[.!]?$",
-      "template": "あなたは混乱した",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You are stunned[.!]?$",
-      "template": "あなたは朦朧となった",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You are poisoned[.!]?$",
-      "template": "あなたは毒状態になった",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You are bleeding[.!]?$",
-      "template": "あなたは出血した",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You are burning[.!]?$",
-      "template": "あなたは燃え始めた",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You are exhausted!$",
-      "template": "あなたは疲弊した！",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You are exhausted\\.$",
-      "template": "あなたは疲弊した。",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You are exhausted$",
-      "template": "あなたは疲弊した",
-      "route": "leaf"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) exhausted!$",
@@ -302,56 +257,6 @@
       "route": "does-verb"
     },
     {
-      "pattern": "^You stop bleeding[.!]?$",
-      "template": "あなたの出血は止まった",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You are no longer confused[.!]?$",
-      "template": "あなたの混乱は解けた",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You begin moving[.!]?$",
-      "template": "あなたは移動を開始した",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You stop moving[.!]?$",
-      "template": "あなたは移動を止めた",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You (?:falls?|fell) to the ground!$",
-      "template": "あなたは地面に倒れた！",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You (?:falls?|fell) to the ground\\.$",
-      "template": "あなたは地面に倒れた。",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You (?:falls?|fell) to the ground$",
-      "template": "あなたは地面に倒れた",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You (?:falls?|fell) asleep!$",
-      "template": "あなたは眠りに落ちた！",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You (?:falls?|fell) asleep\\.$",
-      "template": "あなたは眠りに落ちた。",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You (?:falls?|fell) asleep$",
-      "template": "あなたは眠りに落ちた",
-      "route": "leaf"
-    },
-    {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) and (?:the |a |an )?(.+?) collide and fall to the ground[.!]?$",
       "template": "{0}と{1}がぶつかり合い、地面に落ちた",
       "route": "unclassified"
@@ -422,16 +327,6 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^You die![.!]?$",
-      "template": "あなたは死んだ！",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^Your health has dropped below 40%![.!]?$",
-      "template": "体力が40%を下回った！",
-      "route": "leaf"
-    },
-    {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:fails|fail) to penetrate (.+?)'s armor and (?:is|are) destroyed[.!]?$",
       "template": "{0}は{1}の防具を貫通できず、破壊された",
       "route": "message-frame"
@@ -490,16 +385,6 @@
       "pattern": "^You recover (\\d+) HP[.!]?$",
       "template": "あなたは{0}HP回復した",
       "route": "emit-message"
-    },
-    {
-      "pattern": "^Notes: (.+)$",
-      "template": "備考: {0}",
-      "route": "journal"
-    },
-    {
-      "pattern": "^You embark for the caves of Qud\\.$",
-      "template": "あなたはQudの洞窟へ旅立った。",
-      "route": "leaf"
     },
     {
       "pattern": "^You hit \\((x\\d+)\\) for (\\d+) damage with your (.+?)[.!] \\[(.+?)\\]$",
@@ -772,21 +657,6 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^You (?:can't|cannot) see!$",
-      "template": "視界がない！",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You (?:can't|cannot) see\\.$",
-      "template": "視界がない。",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You (?:can't|cannot) see$",
-      "template": "視界がない",
-      "route": "leaf"
-    },
-    {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) seem to be working!$",
       "template": "{0}は機能していないようだ！",
       "route": "unclassified"
@@ -852,21 +722,6 @@
       "route": "does-verb"
     },
     {
-      "pattern": "^You have no more ammo!$",
-      "template": "弾薬が尽きた！",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You have no more ammo\\.$",
-      "template": "弾薬が尽きた。",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You have no more ammo$",
-      "template": "弾薬が尽きた",
-      "route": "leaf"
-    },
-    {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) nothing to say!$",
       "template": "{0}は何も言うことがない！",
       "route": "does-verb"
@@ -882,39 +737,9 @@
       "route": "does-verb"
     },
     {
-      "pattern": "^You have left your party!$",
-      "template": "あなたはパーティーを離れた！",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You have left your party\\.$",
-      "template": "あなたはパーティーを離れた。",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^You have left your party$",
-      "template": "あなたはパーティーを離れた",
-      "route": "leaf"
-    },
-    {
       "pattern": "^(.+) begins bleeding from another wound[.!]?$",
       "template": "{0}はさらに出血し始めた。",
       "route": "unclassified"
-    },
-    {
-      "pattern": "^Your nose begins to bleed[.!]?$",
-      "template": "あなたの鼻から血が流れ始めた",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^Your core begins to leak[.!]?$",
-      "template": "あなたのコアから液漏れが始まった",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^Your brain begins to hemorrhage[.!]?$",
-      "template": "あなたの脳から出血が始まった",
-      "route": "leaf"
     },
     {
       "pattern": "^Your (?:noses?|nose) (?:begins?|begin) (.+?) more heavily[.!]?$",
@@ -1012,19 +837,9 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^You are dazed[.!]?$",
-      "template": "あなたはよろめいた。",
-      "route": "leaf"
-    },
-    {
       "pattern": "^You have lost sight of (?:the )?(.+?)[.!]?$",
       "template": "{0}を見失った。",
       "route": "emit-message"
-    },
-    {
-      "pattern": "^You cannot do that while sitting[.!]?$",
-      "template": "座っている間はそれを行えない。",
-      "route": "leaf"
     },
     {
       "pattern": "^You pass by a (.+?)[.!]?$",
@@ -1062,41 +877,6 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^You note this piece of information in the Sultan Histories > (.+?) section of your journal\\.[.!]?$",
-      "template": "この情報をジャーナルの「スルタン史 > {0}」欄に記録した。",
-      "route": "journal"
-    },
-    {
-      "pattern": "^You discover the location of (.+?)[.!]?$",
-      "template": "{0}の場所を発見した。",
-      "route": "journal"
-    },
-    {
-      "pattern": "^You note the location of (.+?) in the Locations > (.+?) section of your journal\\.[.!]?$",
-      "template": "ジャーナルの「場所 > {t1}」欄に{0}の場所を記録した。",
-      "route": "journal"
-    },
-    {
-      "pattern": "^You journeyed to (.+?)\\.$",
-      "template": "{t0}に旅した。",
-      "route": "journal"
-    },
-    {
-      "pattern": "^You discovered the hidden village of (.+?)\\.$",
-      "template": "隠れ里{t0}を発見した。",
-      "route": "journal"
-    },
-    {
-      "pattern": "^There exists a pocket dimension known as (.+?)\\.$",
-      "template": "{0}と呼ばれるポケット次元が存在する。",
-      "route": "journal"
-    },
-    {
-      "pattern": "^There exists a dimension known as (.+?)\\.$",
-      "template": "{0}と呼ばれる次元が存在する。",
-      "route": "journal"
-    },
-    {
       "pattern": "^You crossed into (.+?)\\.$",
       "template": "{t0}へ足を踏み入れた。",
       "route": "emit-message"
@@ -1105,11 +885,6 @@
       "pattern": "^You crossed into the Thin World, rarefied, and stood before the gate to (.+?)\\.$",
       "template": "希薄な薄界へ足を踏み入れ、{t0}への門前に立った。",
       "route": "emit-message"
-    },
-    {
-      "pattern": "^Last visited on the (.+?) of (.+?)$",
-      "template": "{1}の{0}日に最後に訪れた。",
-      "route": "journal"
     },
     {
       "pattern": "^You have received a new quest, (.+?)(!+)$",
@@ -1157,11 +932,6 @@
       "route": "does-verb"
     },
     {
-      "pattern": "^There is nothing left to harvest[.!]?$",
-      "template": "収穫できるものが残っていない",
-      "route": "leaf"
-    },
-    {
       "pattern": "^The (.+?) harvests a (.+?)[.!]?$",
       "template": "{0}は{1}を収穫した。",
       "route": "unclassified"
@@ -1185,11 +955,6 @@
       "pattern": "^You sit down on the (.+?)[.!]?$",
       "template": "{0}に腰を下ろした。",
       "route": "emit-message"
-    },
-    {
-      "pattern": "^You stand up[.!]?$",
-      "template": "立ち上がった。",
-      "route": "leaf"
     },
     {
       "pattern": "^(?:The )?(.+?) stands up[.!]?$",
@@ -1220,21 +985,6 @@
       "pattern": "^(?:The )?(.+?) yells, '(.+)'$",
       "template": "{0}は「{1}」と叫んだ。",
       "route": "unclassified"
-    },
-    {
-      "pattern": "^On the (.+?) of (.+?), you arrive at the oasis-hamlet of Joppa, along the far rim of Moghra'yi, the Great Salt Desert\\.\\n\\nAll around you, moisture farmers tend to groves of viridian watervine\\. There are huts wrought from rock salt and brinestalk\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",
-      "template": "{1}の{0}日、あなたは大塩砂漠モグライィの遥かな縁にあるオアシス集落ジョッパに到着した。\n\nあたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。",
-      "route": "journal"
-    },
-    {
-      "pattern": "^On the (.+?) of (.+?), you arrive at the village of (.+?)\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",
-      "template": "{1}の{0}日、あなたは{2}の村に到着した。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。",
-      "route": "journal"
-    },
-    {
-      "pattern": "^You cannot do that[.!]?$",
-      "template": "それはできない",
-      "route": "leaf"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) utterly unresponsive[.!]?$",
@@ -1902,29 +1652,9 @@
       "route": "does-verb"
     },
     {
-      "pattern": "^On the (.+?) of (.+?), you abandoned all hope\\.$",
-      "template": "{1}の{0}日、あなたはすべての希望を捨てた。",
-      "route": "journal"
-    },
-    {
-      "pattern": "^On the (.+?) of (.+?), you multiplied\\.$",
-      "template": "{1}の{0}日、あなたは自己増殖した。",
-      "route": "journal"
-    },
-    {
-      "pattern": "^On the (.+?) of (.+?), you arrived at (.+?)\\.$",
-      "template": "{1}の{0}日、{t2}に到着した。",
-      "route": "journal"
-    },
-    {
       "pattern": "^The lost Mark of Death from the late sultanate was (.+?)\\.$",
       "template": "亡きスルタンの死の刻印は{0}だった。",
       "route": "unclassified"
-    },
-    {
-      "pattern": "^You discovered the location of (.+?)\\.$",
-      "template": "{0}の場所を発見した。",
-      "route": "journal"
     },
     {
       "pattern": "^You slew (.+?) and encoded their psyche's psionic bits on the holographic boundary of your own psyche\\.$",
@@ -1992,16 +1722,6 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^You visited the village of (.+?)\\.$",
-      "template": "{t0}の村を訪れた。",
-      "route": "journal"
-    },
-    {
-      "pattern": "^You visited the historic site of (.+?)\\.$",
-      "template": "史跡{t0}を訪れた。",
-      "route": "journal"
-    },
-    {
       "pattern": "^In sacred ritual you shared your (.+?) with (.+?)\\.$",
       "template": "聖なる儀式で{1}と{0}を分かち合った。",
       "route": "unclassified"
@@ -2047,11 +1767,6 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^You became loved among (.+?) and were treated as one of their own\\.$",
-      "template": "{0}に愛され、その一員として扱われるようになった。",
-      "route": "journal"
-    },
-    {
       "pattern": "^You discovered (.+?)\\.$",
       "template": "{0}を発見した。",
       "route": "emit-message"
@@ -2065,11 +1780,6 @@
       "pattern": "^You located (.+?)\\.$",
       "template": "{0}を発見した。",
       "route": "emit-message"
-    },
-    {
-      "pattern": "^You recovered the historic relic, (.+?)\\.$",
-      "template": "歴史的遺物{0}を回収した。",
-      "route": "journal"
     },
     {
       "pattern": "^You recovered (.+?)\\.$",
@@ -2087,11 +1797,6 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^You appeased a baetyl with (.+?), and in return received (.+?)\\.$",
-      "template": "ベテルに{0}を捧げ、見返りに{1}を受け取った。",
-      "route": "journal"
-    },
-    {
       "pattern": "^With the help of Pax Klanq and the Barathrumites, you constructed (.+?)\\.$",
       "template": "パクス・クランクとバラスルム派の助けを借りて{0}を建造した。",
       "route": "unclassified"
@@ -2100,16 +1805,6 @@
       "pattern": "^You installed (?:a |some )cybernetic (.+?) and committed (.+?) to (.+?)\\.$",
       "template": "サイバネティック{0}を装着し、{1}を{2}に捧げた。",
       "route": "emit-message"
-    },
-    {
-      "pattern": "^You stopped calling a location '(.+?)' and start calling it '(.+?)'\\.$",
-      "template": "場所の呼称を「{0}」から「{1}」に変更した。",
-      "route": "journal"
-    },
-    {
-      "pattern": "^You started calling a location '(.+?)'\\.$",
-      "template": "場所を「{0}」と呼ぶことにした。",
-      "route": "journal"
     },
     {
       "pattern": "^You started calling (.+?) '(.+?)'\\.$",
@@ -2212,11 +1907,6 @@
       "route": "unclassified"
     },
     {
-      "pattern": "^Your shot goes wild!$",
-      "template": "あなたの弾が逸れた！",
-      "route": "leaf"
-    },
-    {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') shot goes wild!$",
       "template": "{0}の弾が逸れた！",
       "route": "unclassified"
@@ -2297,16 +1987,6 @@
       "route": "unclassified"
     },
     {
-      "pattern": "^A baetyl demanding \"(.+?)\" and promising \"(.+?)\"[.]?$",
-      "template": "「{0}」を要求し、見返りに「{1}」を約束するベテル",
-      "route": "journal"
-    },
-    {
-      "pattern": "^A \"SATED\" baetyl$",
-      "template": "「満足した」ベテル",
-      "route": "journal"
-    },
-    {
       "pattern": "^You rifle through (?:the |a |an )?(.+?), and find (?:a |an |the )?(.+?)[.!]?$",
       "template": "{0}を漁り、{1}を見つけた",
       "route": "emit-message"
@@ -2367,19 +2047,9 @@
       "route": "unclassified"
     },
     {
-      "pattern": "^You enter sleep mode[.!]?$",
-      "template": "あなたはスリープモードに入った",
-      "route": "leaf"
-    },
-    {
       "pattern": "^The reacting liquids congeal into (?:a |an |the )?(.+?)[.!]?$",
       "template": "反応した液体が凝固し{0}になった",
       "route": "unclassified"
-    },
-    {
-      "pattern": "^The liquids stop reacting[.!]?$",
-      "template": "液体の反応が止まった",
-      "route": "leaf"
     },
     {
       "pattern": "^The primordial soup (.+?) starts reacting with the (.+?)[.!]?$",
@@ -2412,11 +2082,6 @@
       "route": "unclassified"
     },
     {
-      "pattern": "^Your queasiness passes[.!]?$",
-      "template": "あなたの吐き気が治まった",
-      "route": "leaf"
-    },
-    {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') queasiness passes[.!]?$",
       "template": "{0}の吐き気が治まった",
       "route": "unclassified"
@@ -2424,7 +2089,7 @@
     {
       "pattern": "^Your rind softens while .+? recrystallize[sd]?[.!]?$",
       "template": "あなたの外皮が軟化し、再結晶化している！",
-      "route": "leaf"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') rind softens while .+? recrystallize[sd]?[.!]?$",
@@ -2432,19 +2097,9 @@
       "route": "unclassified"
     },
     {
-      "pattern": "^Your rind recrystallizes and hardens once more[.!]?$",
-      "template": "あなたの外皮が再結晶化し、再び硬くなった",
-      "route": "leaf"
-    },
-    {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') rind recrystallizes and hardens once more[.!]?$",
       "template": "{0}の外皮が再結晶化し、再び硬くなった",
       "route": "unclassified"
-    },
-    {
-      "pattern": "^Your glow dims until it's extinguished[.!]?$",
-      "template": "あなたの輝きが消えるまで薄れた",
-      "route": "leaf"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') glow dims until it's extinguished[.!]?$",
@@ -2480,11 +2135,6 @@
       "pattern": "^Suddenly (?:the |a |an )?(.+?) (?:starts|start) flailing around and battering (?:the |a |an )?(.+?)!$",
       "template": "突然{0}が暴れ出し、{1}を殴りつけた！",
       "route": "unclassified"
-    },
-    {
-      "pattern": "^Your skin itches furiously[.!]?$",
-      "template": "あなたの肌が猛烈にかゆくなった",
-      "route": "leaf"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') skin itches furiously[.!]?$",
@@ -2550,41 +2200,6 @@
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) sets up (?:a |an |the )?(.+?)[.!]?$",
       "template": "{0}は{1}を設置した",
       "route": "unclassified"
-    },
-    {
-      "pattern": "^Poisonous goo burns your eyes\\.$",
-      "template": "有毒な粘液が目に染みた。",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^Putrid ooze splashes into your mouth\\. You gag at the awful taste\\.$",
-      "template": "腐った軟泥が口に入った。ひどい味に吐き気を催した。",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^Brown sludge splashes into your mouth\\. You wince at the metallic taste\\.$",
-      "template": "茶色い汚泥が口に入った。金属の味に顔をしかめた。",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^The zealot yells 'Make an offering at the Argent Well! Pay homage to your Fathers!'$",
-      "template": "狂信者が叫んだ「白銀の泉に捧げものをせよ！父祖を称えよ！」",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^The zealot yells 'Cast down your artifacts! You are not worthy of their make!'$",
-      "template": "狂信者が叫んだ「アーティファクトを打ち捨てよ！貴様にそれを持つ資格はない！」",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^The zealot yells 'Piety compels you to deliver your sacred relics to the priests in the cathedral! Cleanse them of your filth!'$",
-      "template": "狂信者が叫んだ「信仰心があるなら聖遺物を大聖堂の司祭に届けよ！貴様の穢れを清めるのだ！」",
-      "route": "leaf"
-    },
-    {
-      "pattern": "^The zealot yells 'The Machine commands that you exorcise robots and bring their sacred husks here!'$",
-      "template": "狂信者が叫んだ「機械の御意志により、ロボットを祓い清め、聖なる殻をここへ持って来い！」",
-      "route": "leaf"
     }
   ]
 }

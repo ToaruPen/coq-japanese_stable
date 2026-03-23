@@ -1,0 +1,484 @@
+{
+    "entries": [
+        {
+            "key": "You already have that power",
+            "text": "その能力はすでに習得している。"
+        },
+        {
+            "key": "You already have that power.",
+            "text": "その能力はすでに習得している。"
+        },
+        {
+            "key": "You already have that power!",
+            "text": "その能力はすでに習得している。"
+        },
+        {
+            "key": "You are confused",
+            "text": "あなたは混乱した"
+        },
+        {
+            "key": "You are confused.",
+            "text": "あなたは混乱した"
+        },
+        {
+            "key": "You are confused!",
+            "text": "あなたは混乱した"
+        },
+        {
+            "key": "You are stunned",
+            "text": "あなたは朦朧となった"
+        },
+        {
+            "key": "You are stunned.",
+            "text": "あなたは朦朧となった"
+        },
+        {
+            "key": "You are stunned!",
+            "text": "あなたは朦朧となった"
+        },
+        {
+            "key": "You are poisoned",
+            "text": "あなたは毒状態になった"
+        },
+        {
+            "key": "You are poisoned.",
+            "text": "あなたは毒状態になった"
+        },
+        {
+            "key": "You are poisoned!",
+            "text": "あなたは毒状態になった"
+        },
+        {
+            "key": "You are bleeding",
+            "text": "あなたは出血した"
+        },
+        {
+            "key": "You are bleeding.",
+            "text": "あなたは出血した"
+        },
+        {
+            "key": "You are bleeding!",
+            "text": "あなたは出血した"
+        },
+        {
+            "key": "You are burning",
+            "text": "あなたは燃え始めた"
+        },
+        {
+            "key": "You are burning.",
+            "text": "あなたは燃え始めた"
+        },
+        {
+            "key": "You are burning!",
+            "text": "あなたは燃え始めた"
+        },
+        {
+            "key": "You are exhausted!",
+            "text": "あなたは疲弊した！"
+        },
+        {
+            "key": "You are exhausted.",
+            "text": "あなたは疲弊した。"
+        },
+        {
+            "key": "You are exhausted",
+            "text": "あなたは疲弊した"
+        },
+        {
+            "key": "You stop bleeding",
+            "text": "あなたの出血は止まった"
+        },
+        {
+            "key": "You stop bleeding.",
+            "text": "あなたの出血は止まった"
+        },
+        {
+            "key": "You stop bleeding!",
+            "text": "あなたの出血は止まった"
+        },
+        {
+            "key": "You are no longer confused",
+            "text": "あなたの混乱は解けた"
+        },
+        {
+            "key": "You are no longer confused.",
+            "text": "あなたの混乱は解けた"
+        },
+        {
+            "key": "You are no longer confused!",
+            "text": "あなたの混乱は解けた"
+        },
+        {
+            "key": "You begin moving",
+            "text": "あなたは移動を開始した"
+        },
+        {
+            "key": "You begin moving.",
+            "text": "あなたは移動を開始した"
+        },
+        {
+            "key": "You begin moving!",
+            "text": "あなたは移動を開始した"
+        },
+        {
+            "key": "You stop moving",
+            "text": "あなたは移動を止めた"
+        },
+        {
+            "key": "You stop moving.",
+            "text": "あなたは移動を止めた"
+        },
+        {
+            "key": "You stop moving!",
+            "text": "あなたは移動を止めた"
+        },
+        {
+            "key": "You fall to the ground!",
+            "text": "あなたは地面に倒れた！"
+        },
+        {
+            "key": "You falls to the ground!",
+            "text": "あなたは地面に倒れた！"
+        },
+        {
+            "key": "You fell to the ground!",
+            "text": "あなたは地面に倒れた！"
+        },
+        {
+            "key": "You fall to the ground.",
+            "text": "あなたは地面に倒れた。"
+        },
+        {
+            "key": "You falls to the ground.",
+            "text": "あなたは地面に倒れた。"
+        },
+        {
+            "key": "You fell to the ground.",
+            "text": "あなたは地面に倒れた。"
+        },
+        {
+            "key": "You fall to the ground",
+            "text": "あなたは地面に倒れた"
+        },
+        {
+            "key": "You falls to the ground",
+            "text": "あなたは地面に倒れた"
+        },
+        {
+            "key": "You fell to the ground",
+            "text": "あなたは地面に倒れた"
+        },
+        {
+            "key": "You fall asleep!",
+            "text": "あなたは眠りに落ちた！"
+        },
+        {
+            "key": "You falls asleep!",
+            "text": "あなたは眠りに落ちた！"
+        },
+        {
+            "key": "You fell asleep!",
+            "text": "あなたは眠りに落ちた！"
+        },
+        {
+            "key": "You fall asleep.",
+            "text": "あなたは眠りに落ちた。"
+        },
+        {
+            "key": "You falls asleep.",
+            "text": "あなたは眠りに落ちた。"
+        },
+        {
+            "key": "You fell asleep.",
+            "text": "あなたは眠りに落ちた。"
+        },
+        {
+            "key": "You fall asleep",
+            "text": "あなたは眠りに落ちた"
+        },
+        {
+            "key": "You falls asleep",
+            "text": "あなたは眠りに落ちた"
+        },
+        {
+            "key": "You fell asleep",
+            "text": "あなたは眠りに落ちた"
+        },
+        {
+            "key": "You die!",
+            "text": "あなたは死んだ！"
+        },
+        {
+            "key": "You die!.",
+            "text": "あなたは死んだ！"
+        },
+        {
+            "key": "You die!!",
+            "text": "あなたは死んだ！"
+        },
+        {
+            "key": "Your health has dropped below 40%!",
+            "text": "体力が40%を下回った！"
+        },
+        {
+            "key": "Your health has dropped below 40%!.",
+            "text": "体力が40%を下回った！"
+        },
+        {
+            "key": "Your health has dropped below 40%!!",
+            "text": "体力が40%を下回った！"
+        },
+        {
+            "key": "You embark for the caves of Qud.",
+            "text": "あなたはQudの洞窟へ旅立った。"
+        },
+        {
+            "key": "You can't see!",
+            "text": "視界がない！"
+        },
+        {
+            "key": "You cannot see!",
+            "text": "視界がない！"
+        },
+        {
+            "key": "You can't see.",
+            "text": "視界がない。"
+        },
+        {
+            "key": "You cannot see.",
+            "text": "視界がない。"
+        },
+        {
+            "key": "You can't see",
+            "text": "視界がない"
+        },
+        {
+            "key": "You cannot see",
+            "text": "視界がない"
+        },
+        {
+            "key": "You have no more ammo!",
+            "text": "弾薬が尽きた！"
+        },
+        {
+            "key": "You have no more ammo.",
+            "text": "弾薬が尽きた。"
+        },
+        {
+            "key": "You have no more ammo",
+            "text": "弾薬が尽きた"
+        },
+        {
+            "key": "You have left your party!",
+            "text": "あなたはパーティーを離れた！"
+        },
+        {
+            "key": "You have left your party.",
+            "text": "あなたはパーティーを離れた。"
+        },
+        {
+            "key": "You have left your party",
+            "text": "あなたはパーティーを離れた"
+        },
+        {
+            "key": "Your nose begins to bleed",
+            "text": "あなたの鼻から血が流れ始めた"
+        },
+        {
+            "key": "Your nose begins to bleed.",
+            "text": "あなたの鼻から血が流れ始めた"
+        },
+        {
+            "key": "Your nose begins to bleed!",
+            "text": "あなたの鼻から血が流れ始めた"
+        },
+        {
+            "key": "Your core begins to leak",
+            "text": "あなたのコアから液漏れが始まった"
+        },
+        {
+            "key": "Your core begins to leak.",
+            "text": "あなたのコアから液漏れが始まった"
+        },
+        {
+            "key": "Your core begins to leak!",
+            "text": "あなたのコアから液漏れが始まった"
+        },
+        {
+            "key": "Your brain begins to hemorrhage",
+            "text": "あなたの脳から出血が始まった"
+        },
+        {
+            "key": "Your brain begins to hemorrhage.",
+            "text": "あなたの脳から出血が始まった"
+        },
+        {
+            "key": "Your brain begins to hemorrhage!",
+            "text": "あなたの脳から出血が始まった"
+        },
+        {
+            "key": "You are dazed",
+            "text": "あなたはよろめいた。"
+        },
+        {
+            "key": "You are dazed.",
+            "text": "あなたはよろめいた。"
+        },
+        {
+            "key": "You are dazed!",
+            "text": "あなたはよろめいた。"
+        },
+        {
+            "key": "You cannot do that while sitting",
+            "text": "座っている間はそれを行えない。"
+        },
+        {
+            "key": "You cannot do that while sitting.",
+            "text": "座っている間はそれを行えない。"
+        },
+        {
+            "key": "You cannot do that while sitting!",
+            "text": "座っている間はそれを行えない。"
+        },
+        {
+            "key": "There is nothing left to harvest",
+            "text": "収穫できるものが残っていない"
+        },
+        {
+            "key": "There is nothing left to harvest.",
+            "text": "収穫できるものが残っていない"
+        },
+        {
+            "key": "There is nothing left to harvest!",
+            "text": "収穫できるものが残っていない"
+        },
+        {
+            "key": "You stand up",
+            "text": "立ち上がった。"
+        },
+        {
+            "key": "You stand up.",
+            "text": "立ち上がった。"
+        },
+        {
+            "key": "You stand up!",
+            "text": "立ち上がった。"
+        },
+        {
+            "key": "You cannot do that",
+            "text": "それはできない"
+        },
+        {
+            "key": "You cannot do that.",
+            "text": "それはできない"
+        },
+        {
+            "key": "You cannot do that!",
+            "text": "それはできない"
+        },
+        {
+            "key": "Your shot goes wild!",
+            "text": "あなたの弾が逸れた！"
+        },
+        {
+            "key": "You enter sleep mode",
+            "text": "あなたはスリープモードに入った"
+        },
+        {
+            "key": "You enter sleep mode.",
+            "text": "あなたはスリープモードに入った"
+        },
+        {
+            "key": "You enter sleep mode!",
+            "text": "あなたはスリープモードに入った"
+        },
+        {
+            "key": "The liquids stop reacting",
+            "text": "液体の反応が止まった"
+        },
+        {
+            "key": "The liquids stop reacting.",
+            "text": "液体の反応が止まった"
+        },
+        {
+            "key": "The liquids stop reacting!",
+            "text": "液体の反応が止まった"
+        },
+        {
+            "key": "Your queasiness passes",
+            "text": "あなたの吐き気が治まった"
+        },
+        {
+            "key": "Your queasiness passes.",
+            "text": "あなたの吐き気が治まった"
+        },
+        {
+            "key": "Your queasiness passes!",
+            "text": "あなたの吐き気が治まった"
+        },
+        {
+            "key": "Your rind recrystallizes and hardens once more",
+            "text": "あなたの外皮が再結晶化し、再び硬くなった"
+        },
+        {
+            "key": "Your rind recrystallizes and hardens once more.",
+            "text": "あなたの外皮が再結晶化し、再び硬くなった"
+        },
+        {
+            "key": "Your rind recrystallizes and hardens once more!",
+            "text": "あなたの外皮が再結晶化し、再び硬くなった"
+        },
+        {
+            "key": "Your glow dims until it's extinguished",
+            "text": "あなたの輝きが消えるまで薄れた"
+        },
+        {
+            "key": "Your glow dims until it's extinguished.",
+            "text": "あなたの輝きが消えるまで薄れた"
+        },
+        {
+            "key": "Your glow dims until it's extinguished!",
+            "text": "あなたの輝きが消えるまで薄れた"
+        },
+        {
+            "key": "Your skin itches furiously",
+            "text": "あなたの肌が猛烈にかゆくなった"
+        },
+        {
+            "key": "Your skin itches furiously.",
+            "text": "あなたの肌が猛烈にかゆくなった"
+        },
+        {
+            "key": "Your skin itches furiously!",
+            "text": "あなたの肌が猛烈にかゆくなった"
+        },
+        {
+            "key": "Poisonous goo burns your eyes.",
+            "text": "有毒な粘液が目に染みた。"
+        },
+        {
+            "key": "Putrid ooze splashes into your mouth. You gag at the awful taste.",
+            "text": "腐った軟泥が口に入った。ひどい味に吐き気を催した。"
+        },
+        {
+            "key": "Brown sludge splashes into your mouth. You wince at the metallic taste.",
+            "text": "茶色い汚泥が口に入った。金属の味に顔をしかめた。"
+        },
+        {
+            "key": "The zealot yells 'Make an offering at the Argent Well! Pay homage to your Fathers!'",
+            "text": "狂信者が叫んだ「白銀の泉に捧げものをせよ！父祖を称えよ！」"
+        },
+        {
+            "key": "The zealot yells 'Cast down your artifacts! You are not worthy of their make!'",
+            "text": "狂信者が叫んだ「アーティファクトを打ち捨てよ！貴様にそれを持つ資格はない！」"
+        },
+        {
+            "key": "The zealot yells 'Piety compels you to deliver your sacred relics to the priests in the cathedral! Cleanse them of your filth!'",
+            "text": "狂信者が叫んだ「信仰心があるなら聖遺物を大聖堂の司祭に届けよ！貴様の穢れを清めるのだ！」"
+        },
+        {
+            "key": "The zealot yells 'The Machine commands that you exorcise robots and bring their sacred husks here!'",
+            "text": "狂信者が叫んだ「機械の御意志により、ロボットを祓い清め、聖なる殻をここへ持って来い！」"
+        }
+    ]
+}

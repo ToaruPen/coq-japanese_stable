@@ -52,6 +52,7 @@
     <Compile Include="../src/InventoryRenderObservability.cs" Link="Production/InventoryRenderObservability.cs" />
     <Compile Include="../src/InventoryUiFieldObservability.cs" Link="Production/InventoryUiFieldObservability.cs" />
     <Compile Include="../src/LocalizedSearchTextBuilder.cs" Link="Production/LocalizedSearchTextBuilder.cs" />
+    <Compile Include="../src/JournalPatternTranslator.cs" Link="Production/JournalPatternTranslator.cs" />
     <Compile Include="../src/LocalizationAssetResolver.cs" Link="Production/LocalizationAssetResolver.cs" />
     <Compile Include="../src/MessageFrameTranslator.cs" Link="Production/MessageFrameTranslator.cs" />
     <Compile Include="../src/MessagePatternTranslator.cs" Link="Production/MessagePatternTranslator.cs" />

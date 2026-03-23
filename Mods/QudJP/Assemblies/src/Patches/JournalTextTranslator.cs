@@ -56,7 +56,7 @@ internal static class JournalTextTranslator
             return true;
         }
 
-        translated = MessagePatternTranslator.Translate(source, route);
+        translated = JournalPatternTranslator.Translate(source, route);
         if (!string.Equals(source, translated, StringComparison.Ordinal))
         {
             return true;
@@ -106,7 +106,7 @@ internal static class JournalTextTranslator
             if (!string.IsNullOrEmpty(line)
                 && !TryTranslateExactPreservingColors(line, route, "Journal.LineExact", out translatedLine))
             {
-                translatedLine = MessagePatternTranslator.Translate(line, route);
+                translatedLine = JournalPatternTranslator.Translate(line, route);
             }
 
             changed |= !string.Equals(line, translatedLine, StringComparison.Ordinal);

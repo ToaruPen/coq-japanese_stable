@@ -77,6 +77,7 @@ internal static class ColorRouteCatalog
     internal static readonly string[] RouteSymbols =
     {
         "MessagePatternTranslator.Translate(",
+        "JournalPatternTranslator.Translate(",
         "UITextSkinTranslationPatch.TranslatePreservingColors(",
         "GetDisplayNameRouteTranslator.TranslatePreservingColors(",
         "PopupTranslationPatch.TranslatePopupMenuItemText(",
@@ -94,7 +95,7 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/InventoryAndEquipmentStatusScreenTranslationPatch.cs|PopupTranslationPatch.TranslatePopupMenuItemText("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/InventoryAndEquipmentStatusScreenTranslationPatch.cs|UITextSkinTranslationPatch.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/InventoryLocalizationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
-            ["Mods/QudJP/Assemblies/src/Patches/JournalTextTranslator.cs|MessagePatternTranslator.Translate("] = 2,
+            ["Mods/QudJP/Assemblies/src/Patches/JournalTextTranslator.cs|JournalPatternTranslator.Translate("] = 2,
             ["Mods/QudJP/Assemblies/src/Patches/LookTooltipContentPatch.cs|UITextSkinTranslationPatch.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/MessageLogPatch.cs|MessagePatternTranslator.Translate("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/DeathWrapperFamilyTranslator.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
