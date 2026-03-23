@@ -1346,12 +1346,12 @@
       "template": "聖なる儀式で{1}と{0}を分かち合った。"
     },
     {
-      "pattern": "^To the dismay of fungi everywhere, you cured the (.+?) infection on your (.+?)\\.$",
-      "template": "世の菌類の嘆きをよそに、{1}の{0}感染を治した。"
-    },
-    {
       "pattern": "^To the dismay of fungi everywhere, you cured the Pax Klanq infection on your (.+?)\\.$",
       "template": "世の菌類の嘆きをよそに、{0}のパクス・クランク感染を治した。"
+    },
+    {
+      "pattern": "^To the dismay of fungi everywhere, you cured the (.+?) infection on your (.+?)\\.$",
+      "template": "世の菌類の嘆きをよそに、{1}の{0}感染を治した。"
     },
     {
       "pattern": "^You contracted (.+?) on your (.+?), endearing (.+?) to (.+?)\\.$",
