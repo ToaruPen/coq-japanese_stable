@@ -1094,7 +1094,7 @@
       "template": "{0}はあなたの{1}を両断した"
     },
     {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:cleaves|cleave) through (.+?)[.!]?$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:cleaves|cleave) through (?:the |a |an )?(.+?)[.!]?$",
       "template": "{0}は{1}を両断した"
     },
     {

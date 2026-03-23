@@ -412,10 +412,10 @@ public sealed class DoesVerbFamilyTests
     // --- Cleave Family ---
 
     [TestCase("The 戦士 cleaves through your 盾.", "戦士はあなたの盾を両断した")]
-    [TestCase("The 戦士 cleaves through the 熊's 腕.", "戦士はthe 熊's 腕を両断した")]
+    [TestCase("The 戦士 cleaves through the 熊's 腕.", "戦士は熊's 腕を両断した")]
     // Color-wrapped
     [TestCase("{{R|The 戦士 cleaves through your 盾.}}", "{{R|戦士はあなたの盾を両断した}}")]
-    [TestCase("{{g|The 戦士 cleaves through the 熊's 腕.}}", "{{g|戦士はthe 熊's 腕を両断した}}")]
+    [TestCase("{{g|The 戦士 cleaves through the 熊's 腕.}}", "{{g|戦士は熊's 腕を両断した}}")]
     public void Translate_CleaveFamily(string input, string expected)
     {
         AssertTranslated(input, expected);
