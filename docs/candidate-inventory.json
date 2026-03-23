@@ -27728,7 +27728,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You discovered the location of \" + eventProperty + \".\", \"<spice.commonPhrases.intrepid.!random.capitalize> =name= discovered the location of \" + eventProperty + \", once thought lost to the sands of time.\", \"In =year=, =name= appointed a corrupt administrator as minister of \" + eventProperty + \". \" + Grammar.InitCap(Grammar.RandomShePronoun()) + \" mandated the practice of <spice.elements.\" + The.Player.GetMythicDomain() + \".practices.!random> in \" + The.Player.GetPronounProvider().PossessiveAdjective + \" name.\", null, \"general\", MuralCategory.VisitsLocation, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -27766,7 +27766,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"On the \" + XRL.World.Calendar.GetDay() + \" of \" + XRL.World.Calendar.GetMonth() + \", you abandoned all hope.\", null, null, null, \"general\", MuralCategory.Generic, MuralWeight.Nil, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -27804,7 +27804,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"On the \" + XRL.World.Calendar.GetDay() + \" of \" + XRL.World.Calendar.GetMonth() + \", you abandoned all hope.\", null, null, null, \"general\", MuralCategory.Generic, MuralWeight.Nil, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -27842,7 +27842,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddObservation(\"The lost Mark of Death from the late sultanate was \" + text + \".\", \"MarkOfDeathSecret\", \"Gossip\", \"MarkOfDeathSecret\", new string[2] { \"gossip\", \"old\" }, revealed: false, -1L, \"You recover the Mark of Death of the late sultanate.\")",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -28184,7 +28184,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You stopped calling a location '\" + baseDisplayName + \"' and start calling it '\" + text2 + \"'.\", \"In \" + Calendar.GetMonth() + \" of \" + Calendar.GetYear() + \", =name= commanded \" + GO.GetPronounProvider().PossessiveAdjective + \" cartographers to change the name of \" + Grammar.GetProsaicZoneName(parentZone) + \" in the world atlas to \" + text2 + \".\", \"In =year=, =name= won a decisive victory against the combined forces of \" + JournalAPI.GetLandmarkNearest(parentZone).Text + \" at the bloody Battle of \" + baseDisplayName + \". As a result of the battle, \" + baseDisplayName + \" was so <spice.elements.\" + The.Player.GetMythicDomain() + \".ruinReason> that it was renamed \" + text2 + \".\", null, \"general\", MuralCategory.DoesBureaucracy, MuralWeight.Low, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -28222,7 +28222,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You started calling a location '\" + text2 + \"'.\", \"In \" + Calendar.GetMonth() + \" of \" + Calendar.GetYear() + \", =name= commanded \" + GO.GetPronounProvider().PossessiveAdjective + \" cartographers to change the name of \" + Grammar.GetProsaicZoneName(parentZone) + \" in the world atlas to \" + text2 + \".\", \"In =year=, =name= won a decisive victory against the combined forces of \" + JournalAPI.GetLandmarkNearest(parentZone).Text + \" at a bloody battle near \" + Grammar.GetProsaicZoneName(parentZone) + \". As a result of the battle, \" + Grammar.GetProsaicZoneName(parentZone) + \" was so <spice.elements.\" + The.Player.GetMythicDomain() + \".ruinReason> that it was renamed \" + text2 + \".\", null, \"general\", MuralCategory.DoesBureaucracy, MuralWeight.Low, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -28292,7 +28292,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"Your genome destabilized and you gained the \" + list2[num4].GetDisplayName() + \" \" + text + \".\", HistoricStringExpander.ExpandString(\"<spice.commonPhrases.oneStarryNight.!random.capitalize>, =name= manifested a latent power inside \" + GO.GetPronounProvider().Objective + \" and joined the divine ranks of \" + list2[num4].GetBearerDescription() + \".\"), \"While wandering \" + text2 + \", =name= stumbled upon a clan of \" + list2[num4].GetBearerDescription() + \". Because of \" + Grammar.MakePossessive(The.Player.BaseDisplayNameStripped) + \" <spice.elements.\" + The.Player.GetMythicDomain() + \".quality.!random>, they accepted \" + The.Player.GetPronounProvider().Objective + \" into their fold and taught \" + The.Player.GetPronounProvider().Objective + \" their secrets.\", null, \"general\", MuralCategory.BodyExperienceGood, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -28330,7 +28330,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You installed \" + (Cybernetic.IsPlural ? \"some\" : \"a\") + \" cybernetic \" + baseDisplayName + \" and came one step closer to the Grand Unification.\", \"Gaze upon the sublime body of =name=! See the glistening \" + baseDisplayName + \"!\", \"While wandering around  \" + The.Player.CurrentZone.GetTerrainDisplayName() + \", =name= stumbled upon a clan of machine folk. Because of \" + Grammar.MakePossessive(The.Player.BaseDisplayNameStripped) + \" <spice.elements.\" + The.Player.GetMythicDomain() + \".quality.!random>, they accepted \" + The.Player.GetPronounProvider().Objective + \" into their fold and helped \" + The.Player.GetPronounProvider().Objective + \" Become by installing \" + Cybernetic.a + Cybernetic.GetDisplayName(int.MaxValue, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true) + \" implant.\", null, \"general\", MuralCategory.BodyExperienceGood, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -28368,7 +28368,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"On the \" + Calendar.GetDay() + \" of \" + Calendar.GetMonth() + \", you multiplied.\", \"In the month of \" + Calendar.GetMonth() + \" of \" + Calendar.GetYear() + \" AR, =name= immaculately birthed \" + The.Player.GetPronounProvider().Reflexive + \".\", \"In =year=, while traveling near \" + JournalAPI.GetLandmarkNearestPlayer().Text + \", =name= created a simulacrum of \" + The.Player.GetPronounProvider().Reflexive + \" for the purpose of faking chariot accidents.\", null, \"general\", MuralCategory.WeirdThingHappens, MuralWeight.High, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -28406,7 +28406,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You named \" + text + \" '\" + Name + \"'.\", \"Blessed by divine beings, =name= discovered the legendary \" + displayName + \" known as '\" + Name + \"'.\", muralWeight: (DidElementBestowal || DidBasicBestowals > 0) ? MuralWeight.High : MuralWeight.Medium, gospelText: \"At a remote <spice.professions.\" + text2 + \".guildhall> near \" + JournalAPI.GetLandmarkNearestPlayer().Text + \", =name= met with a group of <spice.professions.\" + text2 + \".plural> and commissed \" + text + \" named \" + Name + \".\", aggregateWith: null, category: \"general\", muralCategory: MuralCategory.DoesSomethingRad, secretId: null, time: -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -28642,7 +28642,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(text2 + \" provided you with insightful commentary on \" + gameObject.ShortDisplayNameSingleStripped + \".\", \"Remember the kindness of =name=, who patiently taught \" + gameObject.ShortDisplayNameSingleStripped + \" to \" + The.Player.GetPronounProvider().PossessiveAdjective + \" simple pupil, \" + text2 + \".\", \"At a remote library near the Six Day Stilt, =name= met with the \" + The.Speaker.GetCreatureType() + \" librarian  Sheba Hagadias and together they wrote an exegesis on the book \" + gameObject.ShortDisplayNameSingleStripped + \".\", \"DonateBook\", \"general\", MuralCategory.LearnsSecret, MuralWeight.Low, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -28680,7 +28680,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You contracted \" + gameObject.DisplayNameOnly + \" on your \" + Name + \", endearing \" + The.Player.itself + \" to fungi across Qud.\", \"In a show of unprecedented solidarity with fungi, =name= deigned to contract \" + gameObject.DisplayNameOnly + \" on \" + The.Player.GetPronounProvider().PossessiveAdjective + \" \" + Name + \".\", \"While traveling around \" + The.Player.CurrentZone.GetTerrainDisplayName() + \", =name= discovered \" + JournalAPI.GetLandmarkNearestPlayer().Text + \". There \" + The.Player.GetPronounProvider().Subjective + \" befriened fungi and contracted \" + gameObject.DisplayNameOnly + \" on \" + The.Player.GetPronounProvider().PossessiveAdjective + \" \" + Name + \".\", null, \"general\", MuralCategory.BodyExperienceNeutral, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -28718,7 +28718,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"In sacred ritual you shared your \" + LiquidName + \" with \" + referenceDisplayName + \".\", \"In sacred ritual =name= shared \" + pronounProvider.PossessiveAdjective + \" holy \" + LiquidNameStripped + \" with noted luminary \" + referenceDisplayName + \".\", muralWeight: WanderSystem.WanderEnabled() ? MuralWeight.Low : MuralWeight.Medium, gospelText: \"<spice.elements.\" + The.Player.GetMythicDomain() + \".weddingConditions.!random.capitalize>, =name= cemented \" + The.Player.GetPronounProvider().PossessiveAdjective + \" friendship with \" + Factions.GetIfExists(The.Speaker?.GetPrimaryFaction())?.GetFormattedName() + \" by marrying \" + referenceDisplayName + \".\", aggregateWith: null, category: \"general\", muralCategory: MuralCategory.Treats, secretId: null, time: -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -28756,7 +28756,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(Object.An() + \" ogled you lovingly after you employed your charm.\", \"The storied eroticism of =name= became intimately known to \" + Object.an() + \".\", \"<spice.elements.\" + The.Player.GetMythicDomain() + \".weddingConditions.!random.capitalize>, =name= cemented \" + The.Player.GetPronounProvider().PossessiveAdjective + \" friendship with \" + Object.GetPrimaryFactionName(VisibleOnly: true, Formatted: true, Base: true) + \" by marrying \" + Object.an() + \".\", null, \"general\", MuralCategory.Trysts, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -28954,7 +28954,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You woke from a long, convincing dream and returned to your life as the \" + Target.GetBlueprint().CachedDisplayNameStripped + \" \" + Target.DisplayNameOnlyDirect + \".\", \"<spice.commonPhrases.blessed.!random.capitalize> =name= revealed the details of \" + IComponent<GameObject>.ThePlayer.GetPronounProvider().PossessiveAdjective + \" former life as a \" + Target.GetBlueprint().CachedDisplayNameStripped + \", and announced \" + IComponent<GameObject>.ThePlayer.GetPronounProvider().PossessiveAdjective + \" plans to return to it!\", \"One auspicious evening, \" + Target.DisplayNameOnlyDirect + \" had a dream that <entity.subjectPronoun> was not the \" + Target.GetBlueprint().CachedDisplayNameStripped + \" \" + Target.DisplayNameOnlyDirect + \" but was instead the Moon King =name=. <spice.commonPhrases.fromThenOn.!random.capitalize>, <entity.subjectPronoun> always kept some moondust on <entity.possessivePronoun> person.\", null, \"general\", MuralCategory.WeirdThingHappens, MuralWeight.High, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -28992,7 +28992,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You contracted \" + gameObject.DisplayNameOnly + \" on your \" + bodyPart.GetOrdinalName() + \", endearing \" + Object.itself + \" to fungi across Qud.\", \"Bless the \" + Calendar.GetDay() + \" of \" + Calendar.GetMonth() + \", when =name= cemented a historic alliance with fungi by contracting \" + gameObject.ShortDisplayName + \" on \" + The.Player.GetPronounProvider().PossessiveAdjective + \" \" + bodyPart.GetOrdinalName() + \"!\", \"While traveling around \" + The.Player.CurrentZone.GetTerrainDisplayName() + \", =name= discovered \" + JournalAPI.GetLandmarkNearestPlayer().Text + \". There \" + The.Player.GetPronounProvider().Subjective + \" befriened fungi and contracted \" + gameObject.DisplayNameOnly + \" on \" + The.Player.GetPronounProvider().PossessiveAdjective + \" \" + bodyPart.GetOrdinalName() + \".\", null, \"general\", MuralCategory.BodyExperienceNeutral, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -29270,7 +29270,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"Your heart sang at the sight of \" + Beauty.an() + \".\", \"The troubadour-hero =name= rode the tides of \" + The.Player.GetPronounProvider().PossessiveAdjective + \" passions and shipwrecked on the shores of \" + Beauty.an() + \".\", \"<spice.elements.\" + The.Player.GetMythicDomain() + \".weddingConditions.!random.capitalize>, =name= cemented \" + The.Player.GetPronounProvider().PossessiveAdjective + \" friendship with \" + Object.GetPrimaryFactionName(VisibleOnly: true, Formatted: true, Base: true) + \" by marrying \" + Object.an() + \".\", null, \"general\", MuralCategory.CommitsFolly, MuralWeight.High, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -29308,7 +29308,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"Though your affection for \" + Beauty.an() + \" endowed you with a certain wisdom, you no longer feel the tug on your heartstrings.\", \"The call of the sea rang through the troubadour-hero =name= once again, and \" + The.Player.GetPronounProvider().Subjective + \" set sail from the familiar shore of \" + Beauty.an() + \".\", \"<spice.elements.\" + The.Player.GetMythicDomain() + \".weddingConditions.!random.capitalize>, =name= cemented \" + The.Player.GetPronounProvider().PossessiveAdjective + \" friendship with \" + Object.GetPrimaryFactionName(VisibleOnly: true, Formatted: true, Base: true) + \" by annulling \" + The.Player.GetPronounProvider().PossessiveAdjective + \" marriage to \" + Object.an() + \".\", null, \"general\", MuralCategory.HasInspiringExperience, MuralWeight.High, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -29426,7 +29426,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"Your larva gestated and you gained the \" + list2[0].GetDisplayName() + \" mutation.\", null, null, null, \"general\", MuralCategory.Generic, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -29464,7 +29464,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You convinced \" + Object.an() + \" to join your cause.\", \"Few were possessed of such potent charm as =name=, who -- on the \" + Calendar.GetDay() + \" of \" + Calendar.GetMonth() + \" -- bent the will of \" + Object.an(int.MaxValue, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true) + \" with mere words.\", \"<spice.elements.\" + The.Player.GetMythicDomain() + \".weddingConditions.!random.capitalize>, =name= cemented \" + The.Player.GetPronounProvider().PossessiveAdjective + \" friendship with \" + Object.GetPrimaryFactionName(VisibleOnly: true, Formatted: true, Base: true) + \" by marrying \" + Object.an() + \".\", null, \"general\", MuralCategory.Treats, MuralWeight.Low, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -29502,7 +29502,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You rebuked \" + Object.an() + \" into submission.\", HistoricStringExpander.ExpandString(\"<spice.commonPhrases.onlooker.!random.capitalize>! <spice.commonPhrases.remember.!random.capitalize> the admonishment =name= gave \" + Object.an(int.MaxValue, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true, WithoutTitles: true) + \" when \" + Object.it + \" presumed to speak the sacred tongue!\"), \"<spice.elements.\" + The.Player.GetMythicDomain() + \".weddingConditions.!random.capitalize>, =name= cemented \" + The.Player.GetPronounProvider().PossessiveAdjective + \" friendship with \" + Object.GetPrimaryFactionName(VisibleOnly: true, Formatted: true, Base: true) + \" by marrying \" + Object.an() + \".\", null, \"general\", MuralCategory.Trysts, MuralWeight.Low, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -29719,7 +29719,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"Your mind was stranded inside \" + Subject.GetReferenceDisplayName(int.MaxValue, null, null, NoColor: false, Stripped: true, ColorOnly: false, WithoutTitles: false, Short: false, BaseOnly: false, WithIndefiniteArticle: true) + \".\", null, null, null, \"general\", MuralCategory.Generic, MuralWeight.Nil, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -29757,7 +29757,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You slew \" + ParentObject.GetReferenceDisplayName(int.MaxValue, null, null, NoColor: false, Stripped: false, ColorOnly: false, WithoutTitles: false, Short: false, BaseOnly: false, WithIndefiniteArticle: false, WithDefiniteArticle: true) + \" and encoded their psyche's psionic bits on the holographic boundary of your own psyche.\", \"After a climactic battle of wills, =name= slew \" + ParentObject.GetReferenceDisplayName(int.MaxValue, null, null, NoColor: false, Stripped: false, ColorOnly: false, WithoutTitles: false, Short: false, BaseOnly: false, WithIndefiniteArticle: false, WithDefiniteArticle: true) + \" and absorbed \" + ParentObject.its + \" psyche, thickening toward Godhood.\", $\"In the month of {Calendar.GetMonth()} of {Calendar.GetYear()}, =name= was challenged by <spice.commonPhrases.pretender.!random.article> to a duel over the rights of {Factions.GetMostLikedFormattedName()}. =name= won and had the pretender's psyche kibbled and absorbed into {The.Player.GetPronounProvider().PossessiveAdjective} own.\", null, \"general\", MuralCategory.Slays, MuralWeight.High, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -29795,7 +29795,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You slew \" + ParentObject.GetReferenceDisplayName() + \" and watched their psyche radiate into nothingness.\", \"After a climactic battle of wills, =name= slew \" + ParentObject.GetReferenceDisplayName(int.MaxValue, null, null, NoColor: false, Stripped: false, ColorOnly: false, WithoutTitles: false, Short: false, BaseOnly: false, WithIndefiniteArticle: false, WithDefiniteArticle: true) + \" and watched \" + ParentObject.its + \" psyche radiate into nothingness.\", $\"In the month of {Calendar.GetMonth()} of {Calendar.GetYear()}, =name= was challenged by <spice.commonPhrases.pretender.!random.article> to a duel over the rights of {Factions.GetMostLikedFormattedName()}. =name= won and had the pretender's psyche kibbled and radiated into nothingness.\", null, \"general\", MuralCategory.Slays, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -29833,7 +29833,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You slew \" + ParentObject.GetReferenceDisplayName(int.MaxValue, null, null, NoColor: false, Stripped: false, ColorOnly: false, WithoutTitles: false, Short: false, BaseOnly: false, WithIndefiniteArticle: false, WithDefiniteArticle: true) + \".\", \"After a climactic battle of wills, =name= slew \" + ParentObject.GetReferenceDisplayName(int.MaxValue, null, null, NoColor: false, Stripped: false, ColorOnly: false, WithoutTitles: false, Short: false, BaseOnly: false, WithIndefiniteArticle: false, WithDefiniteArticle: true) + \".\", $\"In the month of {Calendar.GetMonth()} of {Calendar.GetYear()}, =name= was challenged by <spice.commonPhrases.pretender.!random.article> to a duel over the rights of {Factions.GetMostLikedFormattedName()}. =name= won and slew the pretender, charitably not radiating <spice.pronouns.possessive.!random> psyche into nothingness.\", null, \"general\", MuralCategory.Slays, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -29933,7 +29933,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You imbued \" + gameObject.an() + \" with life. Why?\", \"While traveling in \" + Grammar.GetProsaicZoneName(The.Player.CurrentZone) + \", =name= performed a sacred ritual with \" + gameObject.a + gameObject.ShortDisplayName + \", imbuing \" + gameObject.them + \" with life and arranging \" + gameObject.them + \" \" + HistoricStringExpander.ExpandString(\"<spice.elements.\" + IComponent<GameObject>.ThePlayerMythDomain + \".babeTrait.!random>\") + \". Many of the local denizens declared it a miracle. Some weren't so sure.\", \"While traveling in \" + Grammar.GetProsaicZoneName(The.Player.CurrentZone) + \", =name= performed a sacred ritual with \" + gameObject.an() + \", imbuing \" + gameObject.them + \" with life and arranging \" + gameObject.them + \" \" + HistoricStringExpander.ExpandString(\"<spice.elements.\" + The.Player.GetMythicDomain() + \".babeTrait.!random>\") + \". Many of the local denizens declared it a miracle.\", null, \"general\", MuralCategory.CommitsFolly, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -29971,7 +29971,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You imbued \" + gameObject.an() + \" with life. Why?\", \"While traveling in \" + Grammar.GetProsaicZoneName(The.Player.CurrentZone) + \", =name= performed a sacred ritual with \" + gameObject.an() + \", imbuing \" + gameObject.them + \" with life and arranging \" + gameObject.them + \" \" + HistoricStringExpander.ExpandString(\"<spice.elements.\" + The.Player.GetMythicDomain() + \".babeTrait.!random>\") + \". Many of the local denizens declared it a miracle. Some weren't so sure.\", \"While traveling in \" + Grammar.GetProsaicZoneName(The.Player.CurrentZone) + \", =name= performed a sacred ritual with \" + gameObject.an() + \", imbuing \" + gameObject.them + \" with life and arranging \" + gameObject.them + \" \" + HistoricStringExpander.ExpandString(\"<spice.elements.\" + The.Player.GetMythicDomain() + \".babeTrait.!random>\") + \". Many of the local denizens declared it a miracle.\", null, \"general\", MuralCategory.CommitsFolly, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -30049,7 +30049,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"Your \" + ordinalName + \" \" + (plural ? \"were\" : \"was\") + \" dismembered.\", \"While fighting a battle to protect the practice of \" + HistoricStringExpander.ExpandString(\"<spice.elements.\" + The.Player.GetMythicDomain() + \".practices.!random>\") + \", =name= valorously had \" + The.Player.GetPronounProvider().PossessiveAdjective + \" \" + ordinalName + \" dismembered.\", \"While fighting a battle to protect the practice of \" + HistoricStringExpander.ExpandString(\"<spice.elements.\" + The.Player.GetMythicDomain() + \".practices.!random>\") + \", =name= valorously had \" + The.Player.GetPronounProvider().PossessiveAdjective + \" \" + ordinalName + \" dismembered.\", null, \"general\", MuralCategory.BodyExperienceBad, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -30087,7 +30087,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You read \" + referenceDisplayName + \".\", \"In the month of \" + Calendar.GetMonth() + \" of \" + Calendar.GetYear() + \", =name= penned the influential book, \" + referenceDisplayName + \".\", \"At a remote library near \" + JournalAPI.GetLandmarkNearestPlayer().Text + \", =name= met with a group of blind scribes and together they penned the beloved codex \" + referenceDisplayName + \".\", null, \"general\", MuralCategory.CreatesSomething, MuralWeight.VeryLow, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -30125,7 +30125,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You invented a mouthwatering dish called {{|\" + cookingRecipe.GetDisplayName() + \"}}.\", \"In a moment of divine inspiration, the Carbide Chef =name= invented the mouthwatering dish called {{|\" + cookingRecipe.GetDisplayName() + \"}}.\", \"At a remote tavern near \" + JournalAPI.GetLandmarkNearestPlayer().Text + \", =name= met with a group of kippers and, divinely inspired by <spice.elements.\" + The.Player.GetMythicDomain() + \".practices.!random>, invented the dish called \" + cookingRecipe.GetDisplayName() + \".\", null, \"general\", MuralCategory.CreatesSomething, MuralWeight.Low, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -30163,7 +30163,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You read \" + referenceDisplayName + \".\", \"In the month of \" + Calendar.GetMonth() + \" of \" + Calendar.GetYear() + \", =name= penned the influential cookbook, \" + referenceDisplayName + \".\", \"At a remote library near \" + JournalAPI.GetLandmarkNearestPlayer().Text + \", =name= met with a group of tongueless kippers and together they penned the beloved cookbook \" + referenceDisplayName + \".\", null, \"general\", MuralCategory.CreatesSomething, MuralWeight.VeryLow, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -30272,7 +30272,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"To the dismay of fungi everywhere, you cured the \" + ParentObject.DisplayNameOnlyStripped + \" infection on your \" + text + \".\", \"Bless the \" + Calendar.GetDay() + \" of \" + Calendar.GetMonth() + \", when =name= dissolved a sham alliance with the treacherous fungi by curing the \" + ParentObject.DisplayNameOnlyStripped + \" infection on \" + equipped.GetPronounProvider().PossessiveAdjective + \" \" + text + \".\", \"While traveling around \" + The.Player.CurrentZone.GetTerrainDisplayName() + \", =name= stumbled upon a clan of fungi performing a secret ritual. Because of  \" + Grammar.MakePossessive(The.Player.BaseDisplayNameStripped) + \" <spice.elements.\" + The.Player.GetMythicDomain() + \".quality.!random>, they furiously rebuked \" + The.Player.GetPronounProvider().Objective + \" and dissolved the \" + ParentObject.DisplayNameOnlyStripped + \" on \" + Grammar.MakePossessive(The.Player.BaseDisplayNameStripped) + \" \" + text + \".\", null, \"general\", MuralCategory.BodyExperienceNeutral, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -30350,7 +30350,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You slew your bonded kith \" + referenceDisplayName + \", violating the covenant of the water ritual and earning the emnity of all.\", \"Blasphemously, the traitor \" + referenceDisplayName + \" attacked =name=, \" + ParentObject.its + \" water-sib, and =name= was forced to slay \" + ParentObject.them + \". Deep in grief, =name= wept for one year.\", $\"In the month of {Calendar.GetMonth()} of {Calendar.GetYear()}, =name= was challenged by <spice.commonPhrases.pretender.!random.article> to a duel over the rights of {Factions.GetMostLikedFormattedName()}. =name= won and murdered the pretender before tragically realizing <spice.pronouns.subject.!random> was {The.Player.GetPronounProvider().PossessiveAdjective} water-sib.\", null, \"general\", MuralCategory.Slays, MuralWeight.High, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -30388,7 +30388,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You slew \" + referenceDisplayName + \".\", HistoricStringExpander.ExpandString(\"In the month of \" + Calendar.GetMonth() + \" of \" + Calendar.GetYear() + \", brave =name= slew <spice.commonPhrases.odious.!random> \" + referenceDisplayName + \" in single combat.\"), $\"In the month of {Calendar.GetMonth()} of {Calendar.GetYear()}, =name= was challenged by <spice.commonPhrases.pretender.!random.article> to a duel over the rights of {Factions.GetMostLikedFormattedName()}. =name= won and murdered the pretender <spice.elements.{The.Player.GetMythicDomain()}.murdermethods.!random>.\", null, \"general\", MuralCategory.Slays, MuralWeight.Low, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -30426,7 +30426,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"With the help of Pax Klanq and the Barathrumites, you constructed \" + value.an(int.MaxValue, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: false, Short: true, BaseOnly: true) + \" to climb the Spindle.\", null, null, null, \"general\", MuralCategory.Generic, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -30504,7 +30504,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You recovered the historic relic, \" + locateRelicQuestManager_QuestEntry.Relic + \".\", HistoricStringExpander.ExpandString(\"<spice.commonPhrases.intrepid.!random.capitalize> =name= recovered \" + locateRelicQuestManager_QuestEntry.Relic + \", a historic relic once thought lost to the sands of time.\"), \"In an excavation at a site of deep history near \" + JournalAPI.GetLandmarkNearestPlayer().Text + \", =name= recovered \" + locateRelicQuestManager_QuestEntry.Relic + \", the historic relic once thought lost to the sands of time.\", null, \"general\", MuralCategory.VisitsLocation, MuralWeight.High, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -30542,7 +30542,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You discovered \" + text + \".\", \"<spice.commonPhrases.intrepid.!random.capitalize> =name= discovered \" + text + \", once thought lost to the sands of time.\", \"In =year=, =name= won a decisive victory against the combined force of \" + Factions.GetMostHatedFormattedName() + \" from \" + The.Player.CurrentZone.GetTerrainDisplayName() + \" at the bloody Battle of \" + text + \".\", null, \"general\", MuralCategory.VisitsLocation, MuralWeight.Low, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -30580,7 +30580,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You traveled to \" + text + \".\", \"<spice.commonPhrases.intrepid.!random.capitalize> =name= discovered \" + text + \", once thought lost to the sands of time.\", \"In =year=, =name= won a decisive victory against the combined force of \" + Factions.GetMostHatedFormattedName() + \" from \" + The.Player.CurrentZone.GetTerrainDisplayName() + \" at the bloody Battle of \" + text + \".\", null, \"general\", MuralCategory.VisitsLocation, MuralWeight.Low, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -30618,7 +30618,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You read \" + Title + \".\", \"In the month of \" + Calendar.GetMonth() + \" of \" + Calendar.GetYear() + \", =name= penned the influential book, \" + Title + \".\", \"At a remote library near \" + JournalAPI.GetLandmarkNearestPlayer().Text + \", =name= met with a group of blind scribes and together they penned the beloved codex \" + Title + \".\", null, \"general\", MuralCategory.CreatesSomething, MuralWeight.VeryLow, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -30687,7 +30687,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"On the \" + Calendar.GetDay() + \" of \" + Calendar.GetMonth() + \", you arrived at \" + VillageName + \".\", \"On the auspicious \" + Calendar.GetDay() + \" of \" + Calendar.GetMonth() + \", =name= arrived in \" + VillageName + \" and began \" + The.Player.GetPronounProvider().PossessiveAdjective + \" prodigious odyssey through Qud.\", \"At <spice.time.partsOfDay.!random> under <spice.commonPhrases.strange.!random.article> and \" + text2 + \" sky, the people of \" + VillageName + \" saw an image on the horizon that looked like a \" + text + \" bathed in \" + text2 + \". It was =name=, and after \" + The.Player.GetPronounProvider().Subjective + \" came and left, the people of \" + VillageName + \" built a monument to =name= and thenceforth called \" + The.Player.GetPronounProvider().Objective + \" \" + Grammar.MakeTitleCase(text) + \"-in-\" + Grammar.MakeTitleCase(text2) + \".\", null, \"general\", MuralCategory.IsBorn, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -30765,7 +30765,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You appeased a baetyl with \" + demandName + \", and in return received \" + text + \".\", \"While leading a small army through \" + Grammar.GetProsaicZoneName(The.Player.CurrentZone) + \", =name= demanded that a local baetyl use its powers to transmute \" + demandName + \" into \" + GetRewardDescription().ToLower() + \".\", \"While leading a small army through \" + Grammar.GetProsaicZoneName(The.Player.CurrentZone) + \", =name= demanded that a local baetyl use its powers to transmute \" + demandName + \" into \" + GetRewardDescription().ToLower() + \".\", null, \"general\", MuralCategory.AppeasesBaetyl, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -30998,7 +30998,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You witnessed the rare formation of \" + Grammar.A(GetPrefix(ComponentLiquids.Count) + \"sludge\") + \".\", \"=name= was blessed to witness the rare formation of \" + Grammar.A(GetPrefix(ComponentLiquids.Count) + \"sludge\") + \".\", \"Deep in \" + JournalAPI.GetLandmarkNearestPlayer().Text + \", =name= stumbled on a soup sludge performing a secret ritual. Because of \" + Grammar.MakePossessive(The.Player.BaseDisplayNameStripped) + \" <spice.elements.\" + The.Player.GetMythicDomain() + \".quality.!random>, the sludge taught \" + The.Player.BaseDisplayNameStripped + \" the secret to becoming \" + Grammar.A(GetPrefix(ComponentLiquids.Count)) + \".\", null, \"general\", MuralCategory.HasInspiringExperience, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -31036,7 +31036,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You ate \" + ParentObject.an() + \".\", \"=name= ate \" + ParentObject.an() + \". What can we infer from this?\", \"While traveling through \" + The.Player.CurrentZone.GetTerrainDisplayName() + \", =name= stopped at a tavern near \" + JournalAPI.GetLandmarkNearestPlayer().Text + \". There =name= ate \" + ParentObject.an() + \" and left the tavern with \" + The.Player.GetPronounProvider().PossessiveAdjective + \" perspective dramatically altered.\", null, \"general\", MuralCategory.BodyExperienceNeutral, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -31074,7 +31074,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You visited the historic site of \" + RegionName + \".\", \"<spice.commonPhrases.intrepid.!random.capitalize> =name= discovered \" + region + \", once thought lost to the sands of time.\", \"Acting against the enfranchisement of \" + Factions.GetMostHatedFormattedName() + \", =name= led an army to the historic site of \" + RegionName + \". =name= <spice.commonPhrases.liberated.!random> its citizens, and in \" + The.Player.GetPronounProvider().PossessiveAdjective + \" honor they <spice.history.gospels.Celebration.LateSultanate.!random>.\", null, \"general\", MuralCategory.VisitsLocation, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -31112,7 +31112,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You visited the historic site of \" + RegionName + \".\", \"<spice.commonPhrases.intrepid.!random.capitalize> =name= discovered \" + region + \", once thought lost to the sands of time.\", \"Acting against the enfranchisement of \" + Factions.GetMostHatedFormattedName() + \", =name= led an army to the historic site of \" + RegionName + \". =name= <spice.commonPhrases.liberated.!random> its citizens, and in \" + The.Player.GetPronounProvider().PossessiveAdjective + \" honor they <spice.history.gospels.Celebration.LateSultanate.!random>.\", null, \"general\", MuralCategory.VisitsLocation, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -31348,7 +31348,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You visited the village of \" + VillageName + \".\", HistoricStringExpander.ExpandString(\"In the month of \" + Calendar.GetMonth() + \" of \" + Calendar.GetYear() + \" AR, =name= founded the village of \" + VillageName + \" to <spice.history.gospels.HumblePractice.LateSultanate.!random>.\"), \"Acting against the prohibition on the practice of <spice.elements.\" + The.Player.GetMythicDomain() + \".practices.!random>, =name= led an army to the gates of \" + VillageName + \". =name= <spice.commonPhrases.liberated.!random> its citizens, and in \" + The.Player.GetPronounProvider().PossessiveAdjective + \" honor they <spice.history.gospels.Celebration.LateSultanate.!random>.\", null, \"general\", MuralCategory.BecomesLoved, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -31386,7 +31386,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You visited the village of \" + VillageName + \".\", \"In the month of \" + Calendar.GetMonth() + \" of \" + Calendar.GetYear() + \" AR, =name= founded the village of \" + VillageName + \" to <spice.history.gospels.HumblePractice.LateSultanate.!random>.\", \"Acting against the prohibition on the practice of <spice.elements.\" + The.Player.GetMythicDomain() + \".practices.!random>, =name= led an army to the gates of \" + VillageName + \". =name= <spice.commonPhrases.liberated.!random> its citizens, and in \" + The.Player.GetPronounProvider().PossessiveAdjective + \" honor they <spice.history.gospels.Celebration.LateSultanate.!random>.\", null, \"general\", MuralCategory.BecomesLoved, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -31424,7 +31424,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"To the dismay of fungi everywhere, you cured the Pax Klanq infection on your \" + ordinalName + \".\", \"Bless the \" + Calendar.GetDay() + \" of \" + Calendar.GetMonth() + \", when =name= dissolved a sham alliance with the treacherous fungus Klanq by eradicating it from \" + possessiveAdjective + \" \" + ordinalName + \"!\", \"While traveling around \" + The.Player.CurrentZone.GetTerrainDisplayName() + \", =name= stumbled upon a clan of fungi performing a secret ritual. Because of  \" + Grammar.MakePossessive(The.Player.BaseDisplayNameStripped) + \" <spice.elements.\" + The.Player.GetMythicDomain() + \".quality.!random>, they furiously rebuked \" + The.Player.GetPronounProvider().Objective + \" and dissolved the Klanq on \" + Grammar.MakePossessive(The.Player.BaseDisplayNameStripped) + \" \" + ordinalName + \".\", null, \"general\", MuralCategory.BodyExperienceNeutral, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -31611,7 +31611,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You located \" + text + \".\", \"Through the use of \" + IComponent<GameObject>.ThePlayer.GetPronounProvider().PossessiveAdjective + \" divinely \" + HistoricStringExpander.ExpandString(\"<spice.elements.\" + The.Player.GetMythicDomain() + \".adjectives.!random>\") + \" eyes, =name= discovered the lost location of \" + text + \".\", \"Acting against the persecution of \" + Factions.GetMostLikedFormattedName() + \", =name= led an army to the lost gates of \" + text + \". \" + The.Player.GetPronounProvider().CapitalizedSubjective + \" liberated its citizens, who together in \" + The.Player.GetPronounProvider().PossessiveAdjective + \" honor <spice.history.gospels.Celebration.LateSultanate.!random>.\", null, \"general\", MuralCategory.VisitsLocation, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -31649,7 +31649,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You recovered \" + referenceDisplayName + \".\", \"While exploring \" + The.Player.CurrentZone.DisplayName + \", =name= recovered the fabled artifact called \" + referenceDisplayName + \".\", \"While visiting an obscure <spice.professions.\" + text + \".guildhall>, =name= met with a group of <spice.professions.\" + text + \".plural> and commissed what came to be known as the \" + referenceDisplayName + \".\", null, \"general\", MuralCategory.FindsObject, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -31725,7 +31725,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You started calling \" + E.Item.an(int.MaxValue, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true) + \" by the name '\" + text2 + \"'.\", HistoricStringExpander.ExpandString(\"<spice.instancesOf.justice.!random.capitalize>! =name= brought enlightenment to a simple \" + E.Item.GetDisplayName(int.MaxValue, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true, ColorOnly: false, Visible: true, WithoutTitles: false, ForSort: false, Short: true, BaseOnly: false, WithIndefiniteArticle: false, WithDefiniteArticle: false, null, IndicateHidden: false, Capitalize: false, SecondPerson: false, Reflexive: false, true) + \" and bestowed onto \" + E.Item.them + \" the name \" + text2 + \".\"), \"<spice.elements.\" + XRL.The.Player.GetMythicDomain() + \".weddingConditions.!random.capitalize>, =name= cemented \" + XRL.The.Player.GetPronounProvider().PossessiveAdjective + \" friendship with \" + Factions.GetIfExists(E.Item?.GetPrimaryFaction())?.GetFormattedName() + \" by marrying \" + text + \", who took the name \" + text2 + \".\", null, \"general\", MuralCategory.Treats, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -31763,7 +31763,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"On the \" + Calendar.GetDay() + \" of \" + Calendar.GetMonth() + \", \" + text.Replace(\"!\", \".\"), null, null, null, \"general\", MuralCategory.Generic, MuralWeight.Nil, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
@@ -31894,7 +31894,7 @@
       "needs_runtime": false,
       "pattern": "JournalAPI.AddAccomplishment(\"You became loved among \" + Faction.GetFormattedName() + \" and were treated as one of their own.\", \"While wandering around \" + Grammar.InitLowerIfArticle(Grammar.GetProsaicZoneName(The.Player.CurrentZone)) + \", =name= stumbled upon a clan of \" + Faction.GetFormattedName() + \" performing a secret ritual. Because of \" + The.Player.GetPronounProvider().PossessiveAdjective + \" \" + HistoricStringExpander.ExpandString(\"<spice.elements.\" + IComponent<GameObject>.ThePlayerMythDomain + \".quality.!random>\") + \", they accepted \" + The.Player.GetPronounProvider().Objective + \" into their fold and taught \" + The.Player.GetPronounProvider().Objective + \" their secrets.\", \"Deep in the wilds of \" + Grammar.InitLowerIfArticle(Grammar.GetProsaicZoneName(The.Player.CurrentZone)) + \", =name= stumbled upon a clan of \" + Faction.GetFormattedName() + \" performing a secret ritual. Because of \" + Grammar.MakePossessive(The.Player.BaseDisplayNameStripped) + \" <spice.elements.\" + The.Player.GetMythicDomain() + \".quality.!random>, they accepted \" + The.Player.GetPronounProvider().Objective + \" into their fold and taught \" + The.Player.GetPronounProvider().Objective + \" their secrets.\", null, \"general\", MuralCategory.BecomesLoved, MuralWeight.Medium, null, -1L)",
       "sink": "JournalAPI",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "NarrativeTemplate",
       "narrative_arguments": [
         {
