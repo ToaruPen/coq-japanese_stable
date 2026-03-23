@@ -56267,9 +56267,10 @@
       "needs_runtime": false,
       "pattern": "SelectedModTitle.SetText(\"{{W|\" + modInfo.DisplayTitle + \"}}\")",
       "sink": "SetText",
-      "status": "translated",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 4,
@@ -56281,9 +56282,10 @@
       "needs_runtime": false,
       "pattern": "SelectedModAuthor.SetText(\"{{C|by \" + modInfo.Manifest.Author + \"}}\")",
       "sink": "SetText",
-      "status": "translated",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 3,
@@ -56295,9 +56297,10 @@
       "needs_runtime": false,
       "pattern": "SelectedModDescription.SetText(\"{{c|\" + modInfo.Manifest.Description + \"}}\")",
       "sink": "SetText",
-      "status": "translated",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 5,
@@ -71858,11 +71861,12 @@
     }
   ],
   "stats": {
-    "translated": 4028,
-    "needs_patch": 117,
+    "translated": 4025,
     "unresolved": 218,
-    "excluded": 237,
-    "exclude": 64
+    "excluded": 240,
+    "needs_patch": 117,
+    "exclude": 64,
+    "needs_review": 0
   },
   "version": "1.0"
 }
