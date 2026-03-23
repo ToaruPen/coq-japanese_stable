@@ -269,12 +269,26 @@ public static class PopupTranslationPatch
             return exact;
         }
 
+        var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
+        SinkObservation.LogUnclaimed(
+            nameof(PopupTranslationPatch),
+            route,
+            nameof(MessagePatternTranslator),
+            source,
+            stripped);
         var patternTranslated = MessagePatternTranslator.Translate(source, route);
         if (!string.Equals(patternTranslated, source, StringComparison.Ordinal))
         {
             return patternTranslated;
         }
 
+        SinkObservation.LogUnclaimed(
+            nameof(PopupTranslationPatch),
+            route,
+            nameof(UITextSkinTranslationPatch),
+            source,
+            stripped);
+        using var _ = SinkObservation.PushSuppression(true);
         return UITextSkinTranslationPatch.TranslatePreservingColors(source, route);
     }
 

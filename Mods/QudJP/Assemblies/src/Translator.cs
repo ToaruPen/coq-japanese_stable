@@ -80,6 +80,7 @@ public static class Translator
             MissingKeyCounts.Clear();
             MissingRouteCounts.Clear();
             DynamicTextObservability.ResetForTests();
+            SinkObservation.ResetForTests();
             ScopedDictionaryLookup.ResetForTests();
             dictionaryLoadSummary = "Translator: dictionary load summary unavailable.";
             Interlocked.Exchange(ref loadInvocationCount, 0);

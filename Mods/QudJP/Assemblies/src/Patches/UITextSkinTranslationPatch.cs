@@ -152,6 +152,12 @@ public static class UITextSkinTranslationPatch
             return ColorAwareTranslationComposer.Restore(trimmedTranslation, spans);
         }
 
+        SinkObservation.LogUnclaimed(
+            nameof(UITextSkinTranslationPatch),
+            effectiveContext ?? string.Empty,
+            nameof(Translator),
+            source!,
+            stripped);
         var translated = Translator.Translate(stripped);
         return ColorAwareTranslationComposer.Restore(translated, spans);
     }
