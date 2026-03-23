@@ -1260,6 +1260,182 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:asks|ask) about (?:his|her|its|their) location and (?:is|are) no longer lost[.!]?$",
       "template": "{0}は自分の居場所について尋ね、もう迷っていない"
+    },
+    {
+      "pattern": "^On the (.+?) of (.+?), you abandoned all hope\\.$",
+      "template": "{1}の{0}日、あなたはすべての希望を捨てた。"
+    },
+    {
+      "pattern": "^On the (.+?) of (.+?), you multiplied\\.$",
+      "template": "{1}の{0}日、あなたは自己増殖した。"
+    },
+    {
+      "pattern": "^On the (.+?) of (.+?), you arrived at (.+?)\\.$",
+      "template": "{1}の{0}日、{t2}に到着した。"
+    },
+    {
+      "pattern": "^The lost Mark of Death from the late sultanate was (.+?)\\.$",
+      "template": "亡きスルタンの死の刻印は{0}だった。"
+    },
+    {
+      "pattern": "^You discovered the location of (.+?)\\.$",
+      "template": "{0}の場所を発見した。"
+    },
+    {
+      "pattern": "^You slew (.+?) and encoded their psyche's psionic bits on the holographic boundary of your own psyche\\.$",
+      "template": "{0}を倒し、その精神のサイオニック・ビットを自らの精神のホログラフィック境界面に刻み付けた。"
+    },
+    {
+      "pattern": "^You slew (.+?) and watched their psyche radiate into nothingness\\.$",
+      "template": "{0}を倒し、その精神が虚無へ放射されるのを見届けた。"
+    },
+    {
+      "pattern": "^You slew your bonded kith (.+?), violating the covenant of the water ritual and earning the emnity of all\\.$",
+      "template": "水の儀式で結ばれた同胞{0}を殺し、その誓約を破って全ての者の敵意を買った。"
+    },
+    {
+      "pattern": "^You slew (.+?)\\.$",
+      "template": "{0}を倒した。"
+    },
+    {
+      "pattern": "^You read (.+?)\\.$",
+      "template": "{0}を読んだ。"
+    },
+    {
+      "pattern": "^You invented a mouthwatering dish called \\{\\{\\|(.+?)\\}\\}\\.$",
+      "template": "垂涎の料理「{{{{|{0}}}}}」を発明した。"
+    },
+    {
+      "pattern": "^You imbued (.+?) with life\\. Why\\?$",
+      "template": "{0}に命を吹き込んだ。なぜ？"
+    },
+    {
+      "pattern": "^You convinced (.+?) to join your cause\\.$",
+      "template": "{0}を説得し仲間に加えた。"
+    },
+    {
+      "pattern": "^You rebuked (.+?) into submission\\.$",
+      "template": "{0}を叱責して従わせた。"
+    },
+    {
+      "pattern": "^Your heart sang at the sight of (.+?)\\.$",
+      "template": "{0}を見て心が歌った。"
+    },
+    {
+      "pattern": "^Though your affection for (.+?) endowed you with a certain wisdom, you no longer feel the tug on your heartstrings\\.$",
+      "template": "{0}への愛情がある種の知恵を授けてくれたが、もう心の琴線が揺れることはない。"
+    },
+    {
+      "pattern": "^Your mind was stranded inside (.+?)\\.$",
+      "template": "あなたの精神は{0}の中に閉じ込められた。"
+    },
+    {
+      "pattern": "^Your (.+?) (?:was|were) dismembered\\.$",
+      "template": "あなたの{0}が切断された。"
+    },
+    {
+      "pattern": "^You visited the village of (.+?)\\.$",
+      "template": "{t0}の村を訪れた。"
+    },
+    {
+      "pattern": "^You visited the historic site of (.+?)\\.$",
+      "template": "史跡{t0}を訪れた。"
+    },
+    {
+      "pattern": "^In sacred ritual you shared your (.+?) with (.+?)\\.$",
+      "template": "聖なる儀式で{1}と{0}を分かち合った。"
+    },
+    {
+      "pattern": "^To the dismay of fungi everywhere, you cured the Pax Klanq infection on your (.+?)\\.$",
+      "template": "世の菌類の嘆きをよそに、{0}のパクス・クランク感染を治した。"
+    },
+    {
+      "pattern": "^To the dismay of fungi everywhere, you cured the (.+?) infection on your (.+?)\\.$",
+      "template": "世の菌類の嘆きをよそに、{1}の{0}感染を治した。"
+    },
+    {
+      "pattern": "^You contracted (.+?) on your (.+?), endearing (.+?) to (.+?)\\.$",
+      "template": "{1}に{0}を罹患し、{2}に対する{3}の好感を得た。"
+    },
+    {
+      "pattern": "^(.+?) ogled you lovingly after you employed your charm\\.$",
+      "template": "あなたの魅了術を受けて{0}がうっとりとこちらを見つめた。"
+    },
+    {
+      "pattern": "^You woke from a long, convincing dream and returned to your life as the (.+?) (.+?)\\.$",
+      "template": "長く信じ込むような夢から目覚め、{0}の{1}としての日常に戻った。"
+    },
+    {
+      "pattern": "^You named (.+?) '(.+?)'\\.$",
+      "template": "{0}に「{1}」と名付けた。"
+    },
+    {
+      "pattern": "^Your larva gestated and you gained the (.+?) mutation\\.$",
+      "template": "あなたの幼虫が成長し、{0}の変異を獲得した。"
+    },
+    {
+      "pattern": "^Your genome destabilized and you gained the (.+?) (.+?)\\.$",
+      "template": "あなたのゲノムが不安定になり、{0}の{1}を得た。"
+    },
+    {
+      "pattern": "^You became loved among (.+?) and were treated as one of their own\\.$",
+      "template": "{0}に愛され、その一員として扱われるようになった。"
+    },
+    {
+      "pattern": "^You discovered (.+?)\\.$",
+      "template": "{0}を発見した。"
+    },
+    {
+      "pattern": "^You traveled to (.+?)\\.$",
+      "template": "{t0}に旅した。"
+    },
+    {
+      "pattern": "^You located (.+?)\\.$",
+      "template": "{0}を発見した。"
+    },
+    {
+      "pattern": "^You recovered the historic relic, (.+?)\\.$",
+      "template": "歴史的遺物{0}を回収した。"
+    },
+    {
+      "pattern": "^You recovered (.+?)\\.$",
+      "template": "{0}を回収した。"
+    },
+    {
+      "pattern": "^You ate (.+?)\\.$",
+      "template": "{0}を食べた。"
+    },
+    {
+      "pattern": "^You witnessed the rare formation of (.+?)\\.$",
+      "template": "珍しい{0}の形成を目撃した。"
+    },
+    {
+      "pattern": "^You appeased a baetyl with (.+?), and in return received (.+?)\\.$",
+      "template": "ベテルに{0}を捧げ、見返りに{1}を受け取った。"
+    },
+    {
+      "pattern": "^With the help of Pax Klanq and the Barathrumites, you constructed (.+?)\\.$",
+      "template": "パクス・クランクとバラスルム派の助けを借りて{0}を建造した。"
+    },
+    {
+      "pattern": "^You installed (?:a |some )cybernetic (.+?) and committed (.+?) to (.+?)\\.$",
+      "template": "サイバネティック{0}を装着し、{1}を{2}に捧げた。"
+    },
+    {
+      "pattern": "^You stopped calling a location '(.+?)' and start calling it '(.+?)'\\.$",
+      "template": "場所の呼称を「{0}」から「{1}」に変更した。"
+    },
+    {
+      "pattern": "^You started calling a location '(.+?)'\\.$",
+      "template": "場所を「{0}」と呼ぶことにした。"
+    },
+    {
+      "pattern": "^You started calling (.+?) '(.+?)'\\.$",
+      "template": "{0}を「{1}」と呼ぶことにした。"
+    },
+    {
+      "pattern": "^(.+?) provided you with insightful commentary on (.+?)\\.$",
+      "template": "{0}が{1}について洞察に満ちた解説をしてくれた。"
     }
   ]
 }
