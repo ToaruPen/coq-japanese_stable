@@ -1303,7 +1303,7 @@
     },
     {
       "pattern": "^You invented a mouthwatering dish called \\{\\{\\|(.+?)\\}\\}\\.$",
-      "template": "垂涎の料理「{0}」を発明した。"
+      "template": "垂涎の料理「{{{{|{0}}}}}」を発明した。"
     },
     {
       "pattern": "^You imbued (.+?) with life\\. Why\\?$",
