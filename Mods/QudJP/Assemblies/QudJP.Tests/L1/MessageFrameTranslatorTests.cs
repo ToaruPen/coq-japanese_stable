@@ -157,6 +157,415 @@ public sealed class MessageFrameTranslatorTests
         });
     }
 
+    // --- New Tier2 tests (Task 1: #82 DidX verb entries) ---
+
+    [Test]
+    public void TryTranslateXDidY_Tier2_BeginRunning()
+    {
+        WriteDictionary(tier2: new[] { ("begin", "running", "走り始めた") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("クマ", "begin", "running", "!", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("クマは走り始めた！"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier2_StopSprinting()
+    {
+        WriteDictionary(tier2: new[] { ("stop", "sprinting", "全力疾走をやめた") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("あなた", "stop", "sprinting", ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたは全力疾走をやめた。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier2_ReleaseSteam()
+    {
+        WriteDictionary(tier2: new[] { ("release", "a cloud of steam to cool off", "蒸気の雲を放出して冷却した") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("装置", "release", "a cloud of steam to cool off", "!", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("装置は蒸気の雲を放出して冷却した！"));
+        });
+    }
+
+    // --- New Tier3 tests: possessive pronoun capture (DidX, objectSlotCount=0) ---
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_TightenCarapace()
+    {
+        WriteDictionary(tier3: new[] { ("tighten", "{0} carapace", "{0}の甲殻を締めつけた") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("カニ", "tighten", "its carapace", ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("カニはitsの甲殻を締めつけた。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_ActivateReflectiveShield()
+    {
+        WriteDictionary(tier3: new[] { ("activate", "{0} reflective shield", "{0}の反射シールドを起動した") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("ロボット", "activate", "its reflective shield", ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("ロボットはitsの反射シールドを起動した。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_SpinMolecularCannon()
+    {
+        WriteDictionary(tier3: new[] { ("spin", "up {0} molecular cannon", "{0}の分子砲を回転させた") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("変異体", "spin", "up its molecular cannon", "!", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("変異体はitsの分子砲を回転させた！"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_BreakFreeFrom()
+    {
+        WriteDictionary(tier3: new[] { ("break", "free from {0}", "{0}から抜け出した") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("戦士", "break", "free from the hook", "!", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("戦士はthe hookから抜け出した！"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_DischargeElectricalCharge()
+    {
+        WriteDictionary(tier3: new[] { ("discharge", "{0} units of electrical charge", "{0}ユニットの電荷を放電した") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("電気ウナギ", "discharge", "500 units of electrical charge", "!", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("電気ウナギは500ユニットの電荷を放電した！"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_AssumeFormOf()
+    {
+        WriteDictionary(tier3: new[] { ("assume", "the form of {0}", "{0}の姿をとった") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("変異者", "assume", "the form of a bear", ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("変異者はa bearの姿をとった。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_AreKnockedDirection()
+    {
+        WriteDictionary(tier3: new[] { ("are", "knocked {0}", "{0}に吹き飛ばされた") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("ゴブリン", "are", "knocked to the north", ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("ゴブリンはto the northに吹き飛ばされた。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_AreNoLonger()
+    {
+        WriteDictionary(tier3: new[] { ("are", "no longer {0}", "{0}状態ではなくなった") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("あなた", "are", "no longer rooted", ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたはrooted状態ではなくなった。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_SwitchStance()
+    {
+        WriteDictionary(tier3: new[] { ("switch", "to {0} stance", "{0}の構えに切り替えた") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("剣士", "switch", "to aggressive stance", ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("剣士はaggressiveの構えに切り替えた。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_TeleportAway()
+    {
+        WriteDictionary(tier3: new[] { ("teleport", "{0} away", "{0}をテレポートさせた") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("念動力者", "teleport", "the bear away", ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("念動力者はthe bearをテレポートさせた。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_StartReleasing()
+    {
+        WriteDictionary(tier3: new[] { ("start", "releasing {0}", "{0}を放出し始めた") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("変異体", "start", "releasing {{G|poison gas}}", ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("変異体は{{G|poison gas}}を放出し始めた。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_FlingEverywhere()
+    {
+        WriteDictionary(tier3: new[] {
+            ("fling", "{0} {1} everywhere", "{0}の{1}をあたりに飛ばした"),
+            ("fling", "{0} {1}", "{0}の{1}を飛ばした")
+        });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("ヤマアラシ", "fling", "its quills everywhere", "!", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("ヤマアラシはitsのquillsをあたりに飛ばした！"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_FlingBasic()
+    {
+        WriteDictionary(tier3: new[] {
+            ("fling", "{0} {1} everywhere", "{0}の{1}をあたりに飛ばした"),
+            ("fling", "{0} {1}", "{0}の{1}を飛ばした")
+        });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("ヤマアラシ", "fling", "its quills", "!", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("ヤマアラシはitsのquillsを飛ばした！"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_ArePromoted()
+    {
+        WriteDictionary(tier3: new[] { ("are", "promoted to the {0} of {1}", "{1}の{0}に昇進した") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("あなた", "are", "promoted to the Champion of the Barathrumites", ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたはthe BarathrumitesのChampionに昇進した。"));
+        });
+    }
+
+    // --- Tier3 tests for XDidYToZ frame (objectSlotCount=1) ---
+
+    [Test]
+    public void TryTranslateXDidYToZ_Tier3_TryBeatFlames()
+    {
+        WriteDictionary(tier3: new[] {
+            ("try", "to beat at the flames on {0}, but {1} dodges", "{0}の炎を叩こうとしたが、{1}はかわした"),
+            ("try", "to beat at the flames on {0}, but {1}", "{0}の炎を叩こうとしたが、{1}")
+        });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "戦士", "try", "to beat at the flames on", "ゴブリン",
+            ", but it dodges", "!", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("戦士はゴブリンの炎を叩こうとしたが、itはかわした！"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidYToZ_Tier3_AttemptConk()
+    {
+        WriteDictionary(tier3: new[] {
+            ("attempt", "to conk {0} on {1}", "{0}の{1}を強打しようとした")
+        });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "戦士", "attempt", "to conk", "クマ",
+            "on the head", ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("戦士はクマのthe headを強打しようとした。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidYToZ_Tier3_BeatFlamesOnTarget()
+    {
+        WriteDictionary(tier3: new[] {
+            ("beat", "at the flames on {0} with {1}", "{0}の炎を{1}で叩いた")
+        });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "戦士", "beat", "at the flames on", "クマ",
+            "with its fists", "!", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("戦士はクマの炎をits fistsで叩いた！"));
+        });
+    }
+
+    // --- Tier3 test for XDidY frame (objectSlotCount=0, same as DidX) ---
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_SensePsychicPresence()
+    {
+        WriteDictionary(tier3: new[] {
+            ("sense", "{0} foreign to this place and time", "この地と時に馴染まぬ{0}を感じ取った")
+        });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("あなた", "sense", "a psychic presence foreign to this place and time", ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたはこの地と時に馴染まぬa psychic presenceを感じ取った。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_StareAtMultipleTargets()
+    {
+        WriteDictionary(tier3: new[] {
+            ("stare", "at {0} menacingly", "{0}を睨みつけた")
+        });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("熊", "stare", "at the yeti and the baboon menacingly", ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("熊はthe yeti and the baboonを睨みつけた。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_EmitCatchAll()
+    {
+        WriteDictionary(tier3: new[] { ("emit", "{0}", "{0}を発射した") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("砲台", "emit", "3 iron slugs", "!", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("砲台は3 iron slugsを発射した！"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_ChargeBroughtUpShort()
+    {
+        WriteDictionary(tier3: new[] { ("charge", ", but{0} brought up short", "突撃したが、阻まれた") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("戦士", "charge", ", but is brought up short", "!", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("戦士は突撃したが、阻まれた！"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_BeginBleedingFromAnotherWound()
+    {
+        WriteDictionary(tier3: new[] { ("begin", "{0} from another wound", "別の傷から{0}") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("あなた", "begin", "bleeding from another wound", "!", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたは別の傷からbleeding！"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_SpitPuddleOf()
+    {
+        WriteDictionary(tier3: new[] { ("spit", "a puddle of {0}", "{0}の水溜まりを吐き出した") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("変異体", "spit", "a puddle of acid", "!", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("変異体はacidの水溜まりを吐き出した！"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_VibrateCoreImprint()
+    {
+        WriteDictionary(tier3: new[] { ("vibrate", "as the current location is imprinted in {0} geospatial core", "現在地が{0}の地理空間コアに刻み込まれ、振動した") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("リコイラー", "vibrate", "as the current location is imprinted in its geospatial core", ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("リコイラーは現在地がitsの地理空間コアに刻み込まれ、振動した。"));
+        });
+    }
+
     [Test]
     public void MarkerHelpers_AddAndStripDirectTranslationMarker()
     {

@@ -737,6 +737,16 @@
     },
     {
       "verb": "begin",
+      "extra": "running",
+      "text": "走り始めた"
+    },
+    {
+      "verb": "begin",
+      "extra": "sprinting",
+      "text": "全力疾走を始めた"
+    },
+    {
+      "verb": "begin",
       "extra": "to flicker in and out of corporeality",
       "text": "肉体が明滅し始めた"
     },
@@ -1016,6 +1026,16 @@
       "text": "傷が幻であることに気づき、痛みが突然消えた"
     },
     {
+      "verb": "release",
+      "extra": "a cloud of cryogenic mist to heat up",
+      "text": "極低温の霧を放出して加温した"
+    },
+    {
+      "verb": "release",
+      "extra": "a cloud of steam to cool off",
+      "text": "蒸気の雲を放出して冷却した"
+    },
+    {
       "verb": "remain",
       "extra": "stunned",
       "text": "気絶したままだ"
@@ -1107,8 +1127,18 @@
     },
     {
       "verb": "stop",
+      "extra": "running",
+      "text": "走るのをやめた"
+    },
+    {
+      "verb": "stop",
       "extra": "scintillating",
       "text": "輝きが止まった"
+    },
+    {
+      "verb": "stop",
+      "extra": "sprinting",
+      "text": "全力疾走をやめた"
     },
     {
       "verb": "swim",
@@ -1153,9 +1183,139 @@
   ],
   "tier3": [
     {
+      "verb": "activate",
+      "extra": "{0} reflective shield",
+      "text": "{0}の反射シールドを起動した"
+    },
+    {
+      "verb": "are",
+      "extra": "held in place by {0}",
+      "text": "{0}に押さえつけられている"
+    },
+    {
+      "verb": "are",
+      "extra": "knocked {0}",
+      "text": "{0}に吹き飛ばされた"
+    },
+    {
+      "verb": "are",
+      "extra": "no longer {0}",
+      "text": "{0}状態ではなくなった"
+    },
+    {
+      "verb": "are",
+      "extra": "promoted to the {0} of {1}",
+      "text": "{1}の{0}に昇進した"
+    },
+    {
+      "verb": "assume",
+      "extra": "the form of {0}",
+      "text": "{0}の姿をとった"
+    },
+    {
+      "verb": "attempt",
+      "extra": "to conk {0} on {1}",
+      "text": "{0}の{1}を強打しようとした"
+    },
+    {
+      "verb": "beat",
+      "extra": "at the flames on {0} with {1}",
+      "text": "{0}の炎を{1}で叩いた"
+    },
+    {
+      "verb": "beat",
+      "extra": "at the flames with {0}",
+      "text": "炎を{0}で叩いた"
+    },
+    {
+      "verb": "begin",
+      "extra": "{0} from another wound",
+      "text": "別の傷から{0}"
+    },
+    {
+      "verb": "begin",
+      "extra": "acting like {0} {1} from another wound",
+      "text": "{1}のふりをし始めた（別の傷から）"
+    },
+    {
+      "verb": "begin",
+      "extra": "acting like {0} {1}",
+      "text": "{1}のふりをし始めた"
+    },
+    {
+      "verb": "break",
+      "extra": "free from {0}",
+      "text": "{0}から抜け出した"
+    },
+    {
+      "verb": "charge",
+      "extra": ", but{0} brought up short",
+      "text": "突撃したが、阻まれた"
+    },
+    {
+      "verb": "clasp",
+      "extra": "{0} eagerly",
+      "text": "{0}を嬉々として握りしめた"
+    },
+    {
+      "verb": "discharge",
+      "extra": "{0} units of electrical charge",
+      "text": "{0}ユニットの電荷を放電した"
+    },
+    {
+      "verb": "drink",
+      "extra": "the juice from {0} and recharge {1} units of electrical charge",
+      "text": "{0}のジュースを飲み、{1}ユニットの電荷を充電した"
+    },
+    {
+      "verb": "drink",
+      "extra": "the juice from {0} and recharge {1} unit of electrical charge",
+      "text": "{0}のジュースを飲み、{1}ユニットの電荷を充電した"
+    },
+    {
+      "verb": "emit",
+      "extra": "{0}",
+      "text": "{0}を発射した"
+    },
+    {
+      "verb": "fire",
+      "extra": "{0} molecular cannon",
+      "text": "{0}の分子砲を発射した"
+    },
+    {
+      "verb": "fling",
+      "extra": "{0} {1} everywhere",
+      "text": "{0}の{1}をあたりに飛ばした"
+    },
+    {
+      "verb": "fling",
+      "extra": "{0} {1}",
+      "text": "{0}の{1}を飛ばした"
+    },
+    {
+      "verb": "focus",
+      "extra": "{0} sensor somewhere else",
+      "text": "{0}のセンサーを別の場所に向けた"
+    },
+    {
       "verb": "gain",
       "extra": "{{rules|{0}}} XP",
       "text": "{{rules|{0}}}XPを獲得した"
+    },
+    {
+      "verb": "gain",
+      "extra": "{0}",
+      "text": "{0}を獲得した"
+    },
+    {
+      "verb": "have",
+      "extra": "restocked {0} inventory",
+      "text": "{0}の在庫を補充した"
+    },
+    {
+      "verb": "have",
+      "extra": "{0} reflective shield deactivated",
+      "text": "{0}の反射シールドが解除された"
     },
     {
       "verb": "hit",
@@ -1163,9 +1323,159 @@
       "text": "{0}に{1}ダメージを与えた"
     },
     {
+      "verb": "juke",
+      "extra": "out of {0} way",
+      "text": "{0}の進路から飛び退いた"
+    },
+    {
+      "verb": "juke",
+      "extra": "{0}",
+      "text": "{0}にかわした"
+    },
+    {
+      "verb": "loosen",
+      "extra": "{0} pistol grip",
+      "text": "{0}の銃の握りを緩めた"
+    },
+    {
+      "verb": "open",
+      "extra": "wide, and the nacre inside {0} shell glimmers with unseen light",
+      "text": "大きく開き、{0}の殻の中の真珠層が不可視の光で煌めいた"
+    },
+    {
+      "verb": "raise",
+      "extra": "{0} shield in wall formation",
+      "text": "{0}の盾を壁陣形に構えた"
+    },
+    {
+      "verb": "recharge",
+      "extra": "{0} units of electrical charge from the damage",
+      "text": "ダメージから{0}ユニットの電荷を充電した"
+    },
+    {
+      "verb": "recharge",
+      "extra": "{0} unit of electrical charge from the damage",
+      "text": "ダメージから{0}ユニットの電荷を充電した"
+    },
+    {
+      "verb": "regenerate",
+      "extra": "{0} {1}",
+      "text": "{0}の{1}を再生した"
+    },
+    {
+      "verb": "sense",
+      "extra": "{0} foreign to this place and time",
+      "text": "この地と時に馴染まぬ{0}を感じ取った"
+    },
+    {
+      "verb": "shake",
+      "extra": "off {0} daze",
+      "text": "{0}の朦朧を振り払った"
+    },
+    {
+      "verb": "spin",
+      "extra": "up {0} molecular cannon",
+      "text": "{0}の分子砲を回転させた"
+    },
+    {
+      "verb": "spin",
+      "extra": "{0}",
+      "text": "{0}を紡いだ"
+    },
+    {
+      "verb": "spit",
+      "extra": "a puddle of {0}",
+      "text": "{0}の水溜まりを吐き出した"
+    },
+    {
+      "verb": "stare",
+      "extra": "at {0} menacingly",
+      "text": "{0}を睨みつけた"
+    },
+    {
+      "verb": "start",
+      "extra": "reacting with the {0}",
+      "text": "{0}と反応し始めた"
+    },
+    {
+      "verb": "start",
+      "extra": "releasing {0}",
+      "text": "{0}を放出し始めた"
+    },
+    {
+      "verb": "stop",
+      "extra": "acting like {0} {1} so much",
+      "text": "{1}のふりをするのをやめた"
+    },
+    {
+      "verb": "stop",
+      "extra": "acting like {0} {1}",
+      "text": "{1}のふりをやめた"
+    },
+    {
+      "verb": "stop",
+      "extra": "releasing {0}",
+      "text": "{0}の放出をやめた"
+    },
+    {
       "verb": "strike",
       "extra": "{0} with {1} for {2} damage",
       "text": "{1}で{0}に{2}ダメージを与えた"
+    },
+    {
+      "verb": "strike",
+      "extra": "{0} with your stinger",
+      "text": "尾針で{0}を刺した"
+    },
+    {
+      "verb": "strike",
+      "extra": "{0} with {1} stinger",
+      "text": "{1}の尾針で{0}を刺した"
+    },
+    {
+      "verb": "switch",
+      "extra": "to {0} stance",
+      "text": "{0}の構えに切り替えた"
+    },
+    {
+      "verb": "teleport",
+      "extra": "{0} away",
+      "text": "{0}をテレポートさせた"
+    },
+    {
+      "verb": "tighten",
+      "extra": "{0} carapace",
+      "text": "{0}の甲殻を締めつけた"
+    },
+    {
+      "verb": "tinker",
+      "extra": "up {0} {1}",
+      "text": "{0}{1}を組み立てた"
+    },
+    {
+      "verb": "try",
+      "extra": "to beat at the flames on {0}, but {1} dodges",
+      "text": "{0}の炎を叩こうとしたが、{1}はかわした"
+    },
+    {
+      "verb": "try",
+      "extra": "to beat at the flames on {0}, but {1}",
+      "text": "{0}の炎を叩こうとしたが、{1}"
+    },
+    {
+      "verb": "try",
+      "extra": "to shield slam {0}, but {1}",
+      "text": "{0}にシールドスラムを試みたが、{1}"
+    },
+    {
+      "verb": "try",
+      "extra": "to touch {0}, but {1}",
+      "text": "{0}に触れようとしたが、{1}"
+    },
+    {
+      "verb": "vibrate",
+      "extra": "as the current location is imprinted in {0} geospatial core",
+      "text": "現在地が{0}の地理空間コアに刻み込まれ、振動した"
     }
   ]
 }
