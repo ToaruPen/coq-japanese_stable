@@ -1,315 +1,310 @@
 {
-    "meta": {
-        "id": "ui-autogen-mod",
-        "lang": "ja",
-        "version": "1.0",
-        "author": "QudJP"
+  "meta": {
+    "id": "ui-autogen-mod",
+    "lang": "ja",
+    "version": "1.0",
+    "author": "QudJP"
+  },
+  "entries": [
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
+      "key": "{{W|[v]}} {{y|Disable all}}",
+      "text": "{{W|[v]}} {{y|すべて無効化}}"
     },
-    "entries": [
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
-            "key": "{{W|[v]}} {{y|Disable all}}",
-            "text": "{{W|[v]}} {{y|すべて無効化}}"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
-            "key": "{{W|[v]}} {{y|Enable all}}",
-            "text": "{{W|[v]}} {{y|すべて有効化}}"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
-            "key": "{{y|Disable all}}",
-            "text": "{{y|すべて無効化}}"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
-            "key": "{{y|Enable all}}",
-            "text": "{{y|すべて有効化}}"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
-            "key": "{{W|[space]}} {{y|Enable mod}}",
-            "text": "{{W|[space]}} {{y|Modを有効化}}"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
-            "key": "{{W|[space]}} {{y|View dependencies}}",
-            "text": "{{W|[space]}} {{y|依存関係を表示}}"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
-            "key": "{{W|[space]}} {{y|Disable mod}}",
-            "text": "{{W|[space]}} {{y|Modを無効化}}"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
-            "key": "{{W|[space]}} {{y|Recompile mod}}",
-            "text": "{{W|[space]}} {{y|Modを再コンパイル}}"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
-            "key": "]}} {{y|Enable mod}}",
-            "text": "]}} {{y|Modを有効化}}"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
-            "key": "]}} {{y|View dependencies}}",
-            "text": "]}} {{y|依存関係を表示}}"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
-            "key": "]}} {{y|Disable mod}}",
-            "text": "]}} {{y|Modを無効化}}"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
-            "key": "]}} {{y|Recompile mod}}",
-            "text": "]}} {{y|Modを再コンパイル}}"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
-            "key": "Scripting mods are currently disabled. Do you want to enable them?\n\nScripts may contain malicious code with unfettered access to your computer.\nYou can change this option again later in Options -> Mods -> Allow scripting mods.",
-            "text": "スクリプトModは現在無効化されています。有効にしますか？\n\nスクリプトには、コンピュータへの無制限のアクセス権を持つ悪意のあるコードが含まれている可能性があります。\nこの設定は「オプション」->「Mod」->「スクリプトModを許可」で後から変更できます。"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
-            "key": "{{W|Unapproved Scripting}}",
-            "text": "{{W|未承認のスクリプト}}"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
-            "key": "{{C|by ",
-            "text": "{{C|作者: "
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModMenuLine",
-            "key": "{{y|by ",
-            "text": "{{y|作者: "
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModScrollerOne",
-            "key": " contains scripts and has been permanently disabled in the options.\n{{K|(Options->Modding->Allow scripting mods)}}",
-            "text": " にはスクリプトが含まれていますが、オプションで永続的に無効化されています。\n{{K|(オプション->Mod->スクリプトModを許可)}}"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModToolkit",
-            "key": "ModToolkit",
-            "text": "Modツールキット"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModToolkit",
-            "key": "Adventure",
-            "text": "アドベンチャー"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModToolkit",
-            "key": "ModManager",
-            "text": "Modマネージャー"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModToolkit",
-            "key": "MapEditor",
-            "text": "マップエディタ"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModToolkit",
-            "key": "Workshop",
-            "text": "ワークショップ"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModToolkit",
-            "key": "SteamWorkshopUploader",
-            "text": "Steamワークショップアップローダー"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModToolkit",
-            "key": "Wiki",
-            "text": "Wiki"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModToolkit",
-            "key": "History",
-            "text": "歴史"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModToolkit",
-            "key": "HistoryTest",
-            "text": "歴史テスト"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModToolkit",
-            "key": "Waveform",
-            "text": "波形"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModToolkit",
-            "key": "WaveformTest",
-            "text": "波形テスト"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModToolkit",
-            "key": "Blueprint",
-            "text": "ブループリント"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModToolkit",
-            "key": "BrowseBlueprintsView",
-            "text": "ブループリント閲覧"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModToolkit",
-            "key": "OpenSave",
-            "text": "セーブを開く"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModToolkit",
-            "key": "Managed",
-            "text": "管理済み"
-        },
-        {
-            "context": "XRL.World.Parts.Qud.UI.ModToolkit",
-            "key": "Unknown",
-            "text": "不明"
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": ".\nThis can lead to unexpected casting errors and null references for types that are resolved via their name in XML like parts, skills, and mutations.",
-            "text": "。\nこれは、パーツ、スキル、変異など、XML内で名前解決される型において、予期しないキャストエラーやNull参照を引き起こす可能性があります。"
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "\nIt's strongly recommended to rename your type to be unique.",
-            "text": "\n型名を一意なものに変更することを強く推奨します。"
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "\nSee build log for details of all conflicting types.",
-            "text": "\n競合するすべての型の詳細については、ビルドログを参照してください。"
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "A mod with the ID \"",
-            "text": "ID \""
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "\" already exists in ",
-            "text": "\" を持つModは既に存在します: "
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": ", skipping.",
-            "text": "、スキップします。"
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "Could not resolve type '",
-            "text": "型 '"
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "' from active assemblies.",
-            "text": "' をアクティブなアセンブリから解決できませんでした。"
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "Defined symbol: ",
-            "text": "定義済みシンボル: "
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "==== BUILDING MODS ====",
-            "text": "==== MODをビルド中 ===="
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "Skipping, state: {mod.State}",
-            "text": "スキップ中、状態: {mod.State}"
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "Exception compiling mod assembly: ",
-            "text": "Modアセンブリのコンパイル例外: "
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "==== FINAL LOAD ORDER ====",
-            "text": "==== 最終ロード順 ===="
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "Exception reading local mod directory ",
-            "text": "ローカルModディレクトリの読み込み例外 "
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "Skipping workshop subscription info because steam isn't connected",
-            "text": "Steamに接続されていないため、ワークショップの購読情報をスキップします"
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "Subscribed workshop items: ",
-            "text": "購読中のワークショップアイテム: "
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "Mod directory does not exist: ",
-            "text": "Modディレクトリが存在しません: "
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "Exception reading workshop mod subscription ",
-            "text": "ワークショップMod購読の読み込み例外 "
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "Failed reading ModSettings.json",
-            "text": "ModSettings.json の読み込みに失敗しました"
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "Mod initialization executed in edit mode.",
-            "text": "Modの初期化がエディットモードで実行されました。"
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "Mod initialization executed early, options not initialized.",
-            "text": "Modの初期化が早期に実行されました。オプションは初期化されていません。"
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "==== RESOLVING DEPENDENCIES ====",
-            "text": "==== 依存関係を解決中 ===="
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "Cycle detected.",
-            "text": "循環を検出しました。"
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "Circular mod dependency: ",
-            "text": "Mod依存関係の循環: "
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "Graph cycle detection",
-            "text": "グラフ循環検出"
-        },
-        {
-            "context": "XRL.World.Parts.XRL.ModManager",
-            "key": "\" could be found. A full name including namespaces is required.",
-            "text": "\" を持つクラスが見つかりませんでした。名前空間を含む完全な名前が必要です。"
-        },
-        {
-            "key": "press button",
-            "context": "QudMenuItem",
-            "text": "ボタンを押す"
-        },
-        {
-            "context": "SteamWorkshopUploaderView",
-            "key": "Managing - ",
-            "text": "管理中 - "
-        }
-    ]
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
+      "key": "{{W|[v]}} {{y|Enable all}}",
+      "text": "{{W|[v]}} {{y|すべて有効化}}"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
+      "key": "{{y|Disable all}}",
+      "text": "{{y|すべて無効化}}"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
+      "key": "{{y|Enable all}}",
+      "text": "{{y|すべて有効化}}"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
+      "key": "{{W|[space]}} {{y|Enable mod}}",
+      "text": "{{W|[space]}} {{y|Modを有効化}}"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
+      "key": "{{W|[space]}} {{y|View dependencies}}",
+      "text": "{{W|[space]}} {{y|依存関係を表示}}"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
+      "key": "{{W|[space]}} {{y|Disable mod}}",
+      "text": "{{W|[space]}} {{y|Modを無効化}}"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
+      "key": "{{W|[space]}} {{y|Recompile mod}}",
+      "text": "{{W|[space]}} {{y|Modを再コンパイル}}"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
+      "key": "]}} {{y|Enable mod}}",
+      "text": "]}} {{y|Modを有効化}}"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
+      "key": "]}} {{y|View dependencies}}",
+      "text": "]}} {{y|依存関係を表示}}"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
+      "key": "]}} {{y|Disable mod}}",
+      "text": "]}} {{y|Modを無効化}}"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
+      "key": "]}} {{y|Recompile mod}}",
+      "text": "]}} {{y|Modを再コンパイル}}"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
+      "key": "Scripting mods are currently disabled. Do you want to enable them?\n\nScripts may contain malicious code with unfettered access to your computer.\nYou can change this option again later in Options -> Mods -> Allow scripting mods.",
+      "text": "スクリプトModは現在無効化されています。有効にしますか？\n\nスクリプトには、コンピュータへの無制限のアクセス権を持つ悪意のあるコードが含まれている可能性があります。\nこの設定は「オプション」->「Mod」->「スクリプトModを許可」で後から変更できます。"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
+      "key": "{{W|Unapproved Scripting}}",
+      "text": "{{W|未承認のスクリプト}}"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
+      "key": "{{C|by ",
+      "text": "{{C|作者: "
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModMenuLine",
+      "key": "{{y|by ",
+      "text": "{{y|作者: "
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModScrollerOne",
+      "key": " contains scripts and has been permanently disabled in the options.\n{{K|(Options->Modding->Allow scripting mods)}}",
+      "text": " にはスクリプトが含まれていますが、オプションで永続的に無効化されています。\n{{K|(オプション->Mod->スクリプトModを許可)}}"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModToolkit",
+      "key": "ModToolkit",
+      "text": "Modツールキット"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModToolkit",
+      "key": "Adventure",
+      "text": "アドベンチャー"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModToolkit",
+      "key": "ModManager",
+      "text": "Modマネージャー"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModToolkit",
+      "key": "MapEditor",
+      "text": "マップエディタ"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModToolkit",
+      "key": "Workshop",
+      "text": "ワークショップ"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModToolkit",
+      "key": "SteamWorkshopUploader",
+      "text": "Steamワークショップアップローダー"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModToolkit",
+      "key": "Wiki",
+      "text": "Wiki"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModToolkit",
+      "key": "History",
+      "text": "歴史"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModToolkit",
+      "key": "HistoryTest",
+      "text": "歴史テスト"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModToolkit",
+      "key": "Waveform",
+      "text": "波形"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModToolkit",
+      "key": "WaveformTest",
+      "text": "波形テスト"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModToolkit",
+      "key": "Blueprint",
+      "text": "ブループリント"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModToolkit",
+      "key": "BrowseBlueprintsView",
+      "text": "ブループリント閲覧"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModToolkit",
+      "key": "OpenSave",
+      "text": "セーブを開く"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModToolkit",
+      "key": "Managed",
+      "text": "管理済み"
+    },
+    {
+      "context": "XRL.World.Parts.Qud.UI.ModToolkit",
+      "key": "Unknown",
+      "text": "不明"
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": ".\nThis can lead to unexpected casting errors and null references for types that are resolved via their name in XML like parts, skills, and mutations.",
+      "text": "。\nこれは、パーツ、スキル、変異など、XML内で名前解決される型において、予期しないキャストエラーやNull参照を引き起こす可能性があります。"
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "\nIt's strongly recommended to rename your type to be unique.",
+      "text": "\n型名を一意なものに変更することを強く推奨します。"
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "\nSee build log for details of all conflicting types.",
+      "text": "\n競合するすべての型の詳細については、ビルドログを参照してください。"
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "A mod with the ID \"",
+      "text": "ID \""
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "\" already exists in ",
+      "text": "\" を持つModは既に存在します: "
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": ", skipping.",
+      "text": "、スキップします。"
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "Could not resolve type '",
+      "text": "型 '"
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "' from active assemblies.",
+      "text": "' をアクティブなアセンブリから解決できませんでした。"
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "Defined symbol: ",
+      "text": "定義済みシンボル: "
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "==== BUILDING MODS ====",
+      "text": "==== MODをビルド中 ===="
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "Skipping, state: {mod.State}",
+      "text": "スキップ中、状態: {mod.State}"
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "Exception compiling mod assembly: ",
+      "text": "Modアセンブリのコンパイル例外: "
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "==== FINAL LOAD ORDER ====",
+      "text": "==== 最終ロード順 ===="
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "Exception reading local mod directory ",
+      "text": "ローカルModディレクトリの読み込み例外 "
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "Skipping workshop subscription info because steam isn't connected",
+      "text": "Steamに接続されていないため、ワークショップの購読情報をスキップします"
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "Subscribed workshop items: ",
+      "text": "購読中のワークショップアイテム: "
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "Mod directory does not exist: ",
+      "text": "Modディレクトリが存在しません: "
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "Exception reading workshop mod subscription ",
+      "text": "ワークショップMod購読の読み込み例外 "
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "Failed reading ModSettings.json",
+      "text": "ModSettings.json の読み込みに失敗しました"
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "Mod initialization executed in edit mode.",
+      "text": "Modの初期化がエディットモードで実行されました。"
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "Mod initialization executed early, options not initialized.",
+      "text": "Modの初期化が早期に実行されました。オプションは初期化されていません。"
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "==== RESOLVING DEPENDENCIES ====",
+      "text": "==== 依存関係を解決中 ===="
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "Cycle detected.",
+      "text": "循環を検出しました。"
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "Circular mod dependency: ",
+      "text": "Mod依存関係の循環: "
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "Graph cycle detection",
+      "text": "グラフ循環検出"
+    },
+    {
+      "context": "XRL.World.Parts.XRL.ModManager",
+      "key": "\" could be found. A full name including namespaces is required.",
+      "text": "\" を持つクラスが見つかりませんでした。名前空間を含む完全な名前が必要です。"
+    },
+    {
+      "key": "press button",
+      "context": "QudMenuItem",
+      "text": "ボタンを押す"
+    }
+  ]
 }

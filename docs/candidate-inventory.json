@@ -57639,7 +57639,7 @@
       "needs_runtime": false,
       "pattern": "rootObject.transform.Find(\"SelectedModLabel\").GetComponent<UITextSkin>().SetText(\"Managing - \" + info.ID)",
       "sink": "SetText",
-      "status": "translated",
+      "status": "needs_patch",
       "type": "Leaf"
     },
     {
