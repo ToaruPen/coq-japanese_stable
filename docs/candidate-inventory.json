@@ -16183,7 +16183,7 @@
       "pattern": "who.Does(\"butcher\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(who, who.Does(\"butcher\") + \" \" + cybernetic.an() + \" from \" + ParentObject.t() + ((text == null) ? \"\" : (\" \" + text)) + \".\", ' ', !Automatic);",
-      "status": "unresolved",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "butcher"
     },
@@ -18523,7 +18523,7 @@
       "pattern": "E.Actor.Does(\"infiltrate\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(E.Actor, E.Actor.Does(\"infiltrate\") + \" \" + E.Object.t() + \"!\", ' ', FromDialog: false, UsePopup: false, AlwaysVisible: false, E.Actor);",
-      "status": "unresolved",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "infiltrate"
     },
@@ -18775,9 +18775,10 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(GO, \"Poisonous goo burns your eyes.\", ' ', FromDialog: false, UsePopups, AlwaysVisible: false, null, GO)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
+      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence.",
+      "resolution_note": "Static literal resolved via message pattern"
     },
     {
       "column": 4,
@@ -18789,9 +18790,10 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(GO, \"Putrid ooze splashes into your mouth. You gag at the awful taste.\", ' ', FromDialog: false, UsePopups, AlwaysVisible: false, null, GO)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
+      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence.",
+      "resolution_note": "Static literal resolved via message pattern"
     },
     {
       "column": 5,
@@ -18803,9 +18805,10 @@
       "needs_runtime": true,
       "pattern": "Messaging.EmitMessage(GO, \"The reacting liquids congeal into \" + gameObject.an() + \".\")",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
+      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence.",
+      "resolution_note": "Static frame with runtime object name resolved via message pattern"
     },
     {
       "column": 6,
@@ -18817,9 +18820,10 @@
       "needs_runtime": true,
       "pattern": "Messaging.EmitMessage(GO, \"The primordial soup \" + The.Player.DescribeDirectionToward(GO) + \" starts reacting with the \" + LiquidVolume.GetLiquid(secondaryLiquidID).GetName(Liquid) + \".\")",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
+      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence.",
+      "exclusion_reason": "Runtime composition (direction + liquid name); already handled by existing message pattern"
     },
     {
       "column": 4,
@@ -18831,9 +18835,10 @@
       "needs_runtime": true,
       "pattern": "Messaging.EmitMessage(GO, \"The liquids stop reacting.\")",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
+      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence.",
+      "resolution_note": "Static literal resolved via message pattern"
     },
     {
       "column": 4,
@@ -18845,9 +18850,10 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(GO, \"Brown sludge splashes into your mouth. You wince at the metallic taste.\", ' ', FromDialog: false, UsePopups, AlwaysVisible: false, null, GO)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
+      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence.",
+      "resolution_note": "Static literal resolved via message pattern"
     },
     {
       "column": 3,
@@ -18919,7 +18925,7 @@
       "needs_runtime": true,
       "pattern": "liquidVolume.EmitMessage(Object.T() + \" starts to glitch.\", 'W', FromDialog: false, gameObject != null)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -18933,7 +18939,7 @@
       "needs_runtime": true,
       "pattern": "liquidVolume.EmitMessage(\"The liquid mixture inside \" + Object.t() + \" starts to glitch.\", 'W', FromDialog: false, gameObject != null)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -18947,7 +18953,7 @@
       "needs_runtime": true,
       "pattern": "The.Player.EmitMessage(effect?.DisplayNameStripped + \" applied to \" + The.Player.DisplayNameOnlyDirectAndStripped + \".\", null, \"K\")",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -18961,7 +18967,7 @@
       "needs_runtime": true,
       "pattern": "The.Player.EmitMessage(effect.DisplayNameStripped + \" applied to \" + gameObject.DisplayNameOnlyDirectAndStripped + \".\", null, \"K\")",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -18975,7 +18981,7 @@
       "needs_runtime": true,
       "pattern": "The.Player.EmitMessage(\"No valid targets for \" + effect.DisplayNameStripped + \".\", null, \"K\")",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19017,7 +19023,7 @@
       "needs_runtime": true,
       "pattern": "EmitMessage(\"One of \" + Object.poss(\"wounds\") + \" stops \" + base.DisplayNameStripped + \".\", ' ', FromDialog: false, StopMessageUsePopup, AlwaysVisible: false, Object)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19059,7 +19065,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(Object, Object.Poss(\"queasiness passes.\"), ' ', FromDialog: true)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19101,7 +19107,7 @@
       "needs_runtime": true,
       "pattern": "Object.EmitMessage(Object.Poss(\"rind\") + \" softens while \" + Object.it + Object.GetVerb(\"recrystallize\", PrependSpace: true, PronounAntecedent: true) + \"!\", null, IComponent<GameObject>.ConsequentialColor(null, Object))",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19115,7 +19121,7 @@
       "needs_runtime": true,
       "pattern": "Object.EmitMessage(Object.Poss(\"rind\") + \" recrystallizes and hardens once more.\", null, IComponent<GameObject>.ConsequentialColor(Object))",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19129,7 +19135,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(Object, Object.Poss(\"glow\") + \" dims until it's extinguished.\")",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19279,7 +19285,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(ParentObject, ParentObject.Poss(\"carapace\") + \" loosens.\")",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19307,7 +19313,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(parentObject, \"E-Ros yells, {{W|'I'm coming, \" + parentObject.PartyLeader.BaseDisplayName + \"!'}}\")",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19321,7 +19327,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(ParentObject, \"A {{B|force bubble}} pops into being around \" + ParentObject.t() + \".\", ' ', FromDialog: false, UsePopup: false, AlwaysVisible: false, ParentObject)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19335,7 +19341,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(ParentObject, ParentObject.Poss(\"irritable genome acts up.\" + stringBuilder.ToString()), ' ', FromDialog: true)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19363,7 +19369,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(Target, Target.Poss(\"nose begins to bleed.\"))",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19377,7 +19383,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(Target, Target.Poss(\"core begins to leak.\"))",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19391,7 +19397,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(Target, Target.Poss(\"brain begins to hemorrhage.\"))",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19419,7 +19425,7 @@
       "needs_runtime": true,
       "pattern": "EmitMessage(ParentObject.Does(\"are\") + \" extinguished by \" + Object.t() + \".\")",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19517,7 +19523,7 @@
       "needs_runtime": true,
       "pattern": "EmitMessage(\"The protective force of the cherubim prevents \" + gameObjectParameter.t() + \" from taking anything from the reliquary.\", ' ', FromDialog: false, gameObjectParameter.IsPlayer())",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19559,7 +19565,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(Attacker, Attacker.T() + \" cannot reach \" + Defender.t() + \".\")",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19573,7 +19579,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(Attacker, Attacker.Poss(\"attack\") + \" passes through \" + Defender.t() + \"!\")",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19601,7 +19607,7 @@
       "needs_runtime": true,
       "pattern": "EmitMessage(E.Object.T() + \" burns into bright slag.\")",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19615,7 +19621,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(who, \"{{g|You butcher \" + cybernetic.an() + \" from \" + ParentObject.t() + ((text == null) ? \"\" : (\" \" + text)) + \".}}\", ' ', !Automatic)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19629,7 +19635,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(who, who.Does(\"butcher\") + \" \" + cybernetic.an() + \" from \" + ParentObject.t() + ((text == null) ? \"\" : (\" \" + text)) + \".\", ' ', !Automatic)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19643,7 +19649,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(who, \"{{r|You rip \" + cybernetic.an() + \" out of \" + ParentObject.t() + ((text == null) ? \"\" : (\" \" + text)) + \", but destroy \" + cybernetic.them + \" in the process.}}\", ' ', !Automatic)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19657,7 +19663,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(who, who.Does(\"rip\") + \" \" + cybernetic.an() + \" out of \" + ParentObject.t() + ((text == null) ? \"\" : (\" \" + text)) + \", but \" + who.GetVerb(\"destroy\", PrependSpace: false) + \" \" + cybernetic.them + \" in the process.\", ' ', !Automatic)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19727,7 +19733,7 @@
       "needs_runtime": true,
       "pattern": "Actor.EmitMessage(Actor.t() + \" \" + Actor.GetVerb(DeployVerb, PrependSpace: false) + \" \" + ParentObject.an(int.MaxValue, null, null, AsIfKnown: false, Single: true) + \".\", null, null, Actor.IsPlayer())",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -19987,7 +19993,7 @@
       "needs_runtime": true,
       "pattern": "EmitMessage(\"Suddenly \" + ParentObject.does(\"start\") + \" flailing around and battering \" + (E.Actor.IsPlayer() ? \"you\" : E.Actor.t()) + \"!\", ' ', FromDialog: false, E.Actor.IsPlayer())",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -20057,7 +20063,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(equipped, equipped.Poss(\"skin\") + \" itches furiously.\", ' ', FromDialog: false, UsePopup: true)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -20099,7 +20105,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(Actor, \"You rifle through \" + gameObject.t() + ((text == null) ? \"\" : (\" \" + text)) + \", and find \" + gameObject2.an() + \".\", ' ', !Automatic, !Options.ShowScavengeItemAsMessage)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -20113,7 +20119,7 @@
       "needs_runtime": true,
       "pattern": "EmitMessage(\"You rifle through \" + gameObject.t() + ((text == null) ? \"\" : (\" \" + text)) + \", and find \" + gameObject3.an() + \".\", ' ', !Automatic, !Options.ShowScavengeItemAsMessage)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -20127,7 +20133,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(Actor, \"{{K|You rifle through \" + gameObject.t() + ((text == null) ? \"\" : (\" \" + text)) + \", but you find nothing.}}\", ' ', !Automatic)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -20141,7 +20147,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(gameObjectParameter, ParentObject.T() + \" and \" + firstThrownWeapon.t() + \" collide and fall to the ground.\")",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -20274,7 +20280,7 @@
       "needs_runtime": true,
       "pattern": "EmitMessage(\"Two tubular sections of \" + ParentObject.t() + \" flail around and batter \" + (E.Actor.IsPlayer() ? \"you\" : E.Actor.t()) + \"!\", ' ', FromDialog: false, E.Actor.IsPlayer())",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -20414,7 +20420,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(E.Actor, \"You have no more ammo for \" + ParentObject.t() + \".\", ' ', E.FromDialog)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -20442,7 +20448,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(Loader, \"You reload \" + ParentObject.t() + \" with \" + ((Ammo.Count == 1) ? Ammo.an() : Ammo.ShortDisplayName) + \".\", ' ', FromDialog)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -21590,7 +21596,7 @@
       "needs_runtime": true,
       "pattern": "EmitMessage(text + \" grows out of \" + (ParentObject.IsPlayer() ? \"your\" : Grammar.MakePossessive(ParentObject.the + ParentObject.ShortDisplayName)) + \" \" + AttachAt.GetOrdinalName() + \"!\", ' ', FromDialog: true)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -21922,7 +21928,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(E.Actor, \"A {{fiery|jet of flame}} shoots out of \" + ParentObject.GetDisplayName(int.MaxValue, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, ColorOnly: false, Visible: true, WithoutTitles: false, ForSort: false, Short: true, BaseOnly: false, WithIndefiniteArticle: false, WithDefiniteArticle: false, null, IndicateHidden: false, Capitalize: false, SecondPerson: true, Reflexive: false, null, AsPossessed: true) + \"!\", ' ', FromDialog: true)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -21979,9 +21985,10 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(who ?? ParentObject, \"The zealot yells {{W|'\" + text + \"'}}\", ' ', Dialog)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
+      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence.",
+      "resolution_note": "Static literal shout strings resolved via message patterns"
     },
     {
       "column": 4,
@@ -22007,7 +22014,7 @@
       "needs_runtime": true,
       "pattern": "EmitMessage(\"The \" + LiquidVolume.GetLiquid(ID).GetName() + \" catalyzes \" + OldName + \" into \" + ParentObject.an() + \".\")",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -22021,7 +22028,7 @@
       "needs_runtime": true,
       "pattern": "EmitMessage(\"Two \" + displayName.Pluralize() + \" come into contact and both explode!\", ' ', FromDialog: false, usePopup)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -22189,7 +22196,7 @@
       "needs_runtime": true,
       "pattern": "IComponent<GameObject>.EmitMessage(E.Actor, E.Actor.Does(\"infiltrate\") + \" \" + E.Object.t() + \"!\", ' ', FromDialog: false, UsePopup: false, AlwaysVisible: false, E.Actor)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
       "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
     },
@@ -55206,9 +55213,10 @@
       "needs_runtime": true,
       "pattern": "mutationTypeText.SetText(characterMutationLineData.mutation.IsPhysical() ? \"{{R|[Physical Defect]}}\" : \"{{r|[Mental Defect]}}\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "resolution_note": "Static literal defect labels resolved via dictionary"
     },
     {
       "column": 5,
@@ -55220,9 +55228,10 @@
       "needs_runtime": true,
       "pattern": "mutationTypeText.SetText(characterMutationLineData.mutation.IsPhysical() ? (\"{{c|[Physical \" + mutationTermCapital + \"]}}\") : (\"{{c|[Mental \" + mutationTermCapital + \"]}}\"))",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "Semi-static: mutationTermCapital is runtime but Physical/Mental prefix is static; excluded from dictionary resolution"
     },
     {
       "column": 4,
@@ -55717,9 +55726,10 @@
       "needs_runtime": true,
       "pattern": "titleText.SetText(\"{{W|\" + LeaderboardManager.GetLeaderboardName(leaderboardID).ToUpper() + (friendsOnly ? \" (friends only)\" : \"\") + \"}}\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "resolution_note": "Static label '(friends only)' resolved via dictionary"
     },
     {
       "column": 3,
@@ -56114,9 +56124,10 @@
       "needs_runtime": true,
       "pattern": "inputTypeText.SetText(\"{{C|Configuring Controller:}} {{c|\" + (currentGamepad?.name ?? \"<no controller detected>\") + \"}}\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "resolution_note": "Static label resolved via dictionary"
     },
     {
       "column": 4,
@@ -57413,9 +57424,10 @@
       "needs_runtime": true,
       "pattern": "text.SetText(tinkeringLineData.data.DisplayName)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "Runtime DisplayName from tinker data"
     },
     {
       "column": 4,
@@ -57427,9 +57439,10 @@
       "needs_runtime": true,
       "pattern": "descriptionText.SetText(tinkeringLineData.data.UnclippedDescription)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "Runtime UnclippedDescription from tinker data"
     },
     {
       "column": 5,
@@ -57441,9 +57454,10 @@
       "needs_runtime": true,
       "pattern": "modBitCostText.SetText(\"{{K|| Bit Cost |}}\\n\" + tinkeringLineData.costString)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "resolution_note": "Static label 'Bit Cost' resolved via dictionary"
     },
     {
       "column": 5,
@@ -57455,9 +57469,10 @@
       "needs_runtime": true,
       "pattern": "modBitCostText.SetText(\"{{K || Bit Cost |}}\\n\" + tinkeringLineData.costString)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "resolution_note": "Static label 'Bit Cost' resolved via dictionary"
     },
     {
       "column": 6,
@@ -57469,9 +57484,10 @@
       "needs_runtime": true,
       "pattern": "modBitCostText.SetText(modBitCostText.text + \"\\n\\n{{K|| Ingredients |}}\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "resolution_note": "Static label 'Ingredients' resolved via dictionary"
     },
     {
       "column": 9,
@@ -57483,9 +57499,10 @@
       "needs_runtime": true,
       "pattern": "modBitCostText.SetText(modBitCostText.text + \"\\n-or-\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "resolution_note": "Static label '-or-' resolved via dictionary"
     },
     {
       "column": 8,
@@ -57510,9 +57527,10 @@
       "needs_runtime": true,
       "pattern": "modBitCostText.SetText(modBitCostText.text + \"\\n-or-\\n\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "resolution_note": "Static label '-or-' resolved via dictionary"
     },
     {
       "column": 8,
@@ -57524,9 +57542,10 @@
       "needs_runtime": true,
       "pattern": "modBitCostText.SetText(modBitCostText.text + \"\\n{{R|X}} \" + TinkeringHelpers.TinkeredItemShortDisplayName(blueprint2) + \"\\n\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "Runtime item display name"
     },
     {
       "column": 4,
@@ -57538,9 +57557,10 @@
       "needs_runtime": true,
       "pattern": "descriptionText.SetText(tinkeringLineData.modObject?.GetPart<Description>()?.GetShortDescription(AsIfKnown: true, NoConfusion: true, \"Tinkering\"))",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "Runtime GetShortDescription from mod object"
     },
     {
       "column": 4,
@@ -57552,9 +57572,10 @@
       "needs_runtime": true,
       "pattern": "modDescriptionText.SetText(\"{{rules|\" + ItemModding.GetModificationDescription(tinkeringLineData.data.Blueprint, tinkeringLineData.modObject) + \"}}\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "Runtime GetModificationDescription"
     },
     {
       "column": 5,
@@ -57566,9 +57587,10 @@
       "needs_runtime": true,
       "pattern": "modBitCostText.SetText(\"{{K|| Bit Cost |}}\\n\" + tinkeringLineData.costString)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "resolution_note": "Static label 'Bit Cost' resolved via dictionary"
     },
     {
       "column": 5,
@@ -57580,9 +57602,10 @@
       "needs_runtime": true,
       "pattern": "modBitCostText.SetText(\"{{K || Bit Cost |}}\\n\" + tinkeringLineData.costString)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "resolution_note": "Static label 'Bit Cost' resolved via dictionary"
     },
     {
       "column": 6,
@@ -57594,9 +57617,10 @@
       "needs_runtime": true,
       "pattern": "modBitCostText.SetText(modBitCostText.text + \"\\n\\n{{K|| Ingredients |}}\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "resolution_note": "Static label 'Ingredients' resolved via dictionary"
     },
     {
       "column": 9,
@@ -57608,9 +57632,10 @@
       "needs_runtime": true,
       "pattern": "modBitCostText.SetText(modBitCostText.text + \"\\n-or-\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "resolution_note": "Static label '-or-' resolved via dictionary"
     },
     {
       "column": 8,
@@ -57635,9 +57660,10 @@
       "needs_runtime": true,
       "pattern": "modBitCostText.SetText(modBitCostText.text + \"\\n-or-\\n\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "resolution_note": "Static label '-or-' resolved via dictionary"
     },
     {
       "column": 8,
@@ -57649,9 +57675,10 @@
       "needs_runtime": true,
       "pattern": "modBitCostText.SetText(modBitCostText.text + \"\\n{{R|X}} \" + TinkeringHelpers.TinkeredItemShortDisplayName(blueprint4) + \"\\n\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "Runtime item display name"
     },
     {
       "column": 5,
@@ -57907,9 +57934,10 @@
       "needs_runtime": true,
       "pattern": "traderNames[0].SetText(Trader.BaseDisplayName)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "Runtime Trader.BaseDisplayName"
     },
     {
       "column": 3,
@@ -57921,9 +57949,10 @@
       "needs_runtime": true,
       "pattern": "traderNames[1].SetText(The.Player.DisplayName)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "Runtime The.Player.DisplayName"
     },
     {
       "column": 3,
@@ -57935,9 +57964,10 @@
       "needs_runtime": true,
       "pattern": "totalLabels[0].SetText(\"{{B|\" + TradeUI.FormatPrice(Totals[0], CostMultiple) + \" drams →}}\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "resolution_note": "Static label 'drams' resolved via dictionary"
     },
     {
       "column": 3,
@@ -57949,9 +57979,10 @@
       "needs_runtime": true,
       "pattern": "totalLabels[1].SetText(\"{{B|← \" + TradeUI.FormatPrice(Totals[1], CostMultiple) + \" drams}}\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "resolution_note": "Static label 'drams' resolved via dictionary"
     },
     {
       "column": 3,
@@ -57989,9 +58020,10 @@
       "needs_runtime": true,
       "pattern": "hotkeyText.SetText(\"{{W|[\" + ControlManager.getCommandInputFormatted(\"CmdTradeOffer\") + \"]}}\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "Runtime ControlManager keybind text"
     },
     {
       "column": 4,
@@ -58003,9 +58035,10 @@
       "needs_runtime": true,
       "pattern": "detailsRightText.SetText(text)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "Runtime weight and price composition"
     },
     {
       "column": 4,
@@ -58017,9 +58050,10 @@
       "needs_runtime": true,
       "pattern": "detailsLeftText.SetText(go.DisplayNameSingle)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "Runtime go.DisplayNameSingle"
     },
     {
       "column": 4,
@@ -58692,9 +58726,10 @@
       "needs_runtime": true,
       "pattern": "component.creditsTextSkin.SetText(text)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "Credits text from BookUI.Books (external data, not static literal); excluded"
     },
     {
       "column": 4,
@@ -58706,9 +58741,10 @@
       "needs_runtime": true,
       "pattern": "component.tombstoneText.SetText(\"\\n\" + text2)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "translated",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "resolution_note": "Static literal ending strings (21 variants) resolved via dictionary"
     },
     {
       "column": 9,
