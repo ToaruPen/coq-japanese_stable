@@ -490,6 +490,30 @@
       "template": "{0}は{2}で{1}に命中させたが、精神攻撃は効果がない"
     },
     {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage!$",
+      "template": "{0}は{2}で{1}に{3}ダメージを与えた！"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage\\.$",
+      "template": "{0}は{2}で{1}に{3}ダメージを与えた。"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage$",
+      "template": "{0}は{2}で{1}に{3}ダメージを与えた"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) for (\\d+) damage!$",
+      "template": "{0}は{1}に{2}ダメージを与えた！"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) for (\\d+) damage\\.$",
+      "template": "{0}は{1}に{2}ダメージを与えた。"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) for (\\d+) damage$",
+      "template": "{0}は{1}に{2}ダメージを与えた"
+    },
+    {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically (?:hits|hit) (?:the |a |an )?(?!you)(.+?) \\(x(\\d+)\\) with (?:a |an |the )?(.+?)!$",
       "template": "{0}は{3}で{1}に会心の一撃！ (x{2})"
     },
@@ -520,30 +544,6 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:hits|hit) something (.+?)[.!]?$",
       "template": "{0}は{1}の方角の何かに命中させた"
-    },
-    {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage!$",
-      "template": "{0}は{2}で{1}に{3}ダメージを与えた！"
-    },
-    {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage\\.$",
-      "template": "{0}は{2}で{1}に{3}ダメージを与えた。"
-    },
-    {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage$",
-      "template": "{0}は{2}で{1}に{3}ダメージを与えた"
-    },
-    {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) for (\\d+) damage!$",
-      "template": "{0}は{1}に{2}ダメージを与えた！"
-    },
-    {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) for (\\d+) damage\\.$",
-      "template": "{0}は{1}に{2}ダメージを与えた。"
-    },
-    {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) for (\\d+) damage$",
-      "template": "{0}は{1}に{2}ダメージを与えた"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )?(?!you)(.+?) with (?:a |an |the )?(.+?)! \\[(.+?) vs (.+?)\\]$",
@@ -862,7 +862,7 @@
       "template": "新しいクエストを受けた: {0}{1}"
     },
     {
-      "pattern": "^You harvest ((?:two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|\\d+)) (.+?) from (.+?)[.!]?$",
+      "pattern": "^You harvest ((?:two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|\\d+)) (.+?) from (?:the |a |an )?(.+?)[.!]?$",
       "template": "{2}から{0}個の{1}を収穫した"
     },
     {
@@ -870,7 +870,7 @@
       "template": "{0}個の{1}を収穫した"
     },
     {
-      "pattern": "^You harvest (?:a |an )?(.+?) from (.+?)[.!]?$",
+      "pattern": "^You harvest (?:a |an )?(.+?) from (?:the |a |an )?(.+?)[.!]?$",
       "template": "{1}から{0}を収穫した"
     },
     {
@@ -878,7 +878,7 @@
       "template": "{0}を収穫した"
     },
     {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:harvests|harvest) ((?:two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|\\d+)) (.+?) from (.+?)[.!]?$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:harvests|harvest) ((?:two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|\\d+)) (.+?) from (?:the |a |an )?(.+?)[.!]?$",
       "template": "{0}は{3}から{1}個の{2}を収穫した"
     },
     {
@@ -886,7 +886,7 @@
       "template": "{0}は{1}個の{2}を収穫した"
     },
     {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:harvests|harvest) (?:a |an )?(.+?) from (.+?)[.!]?$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:harvests|harvest) (?:a |an )?(.+?) from (?:the |a |an )?(.+?)[.!]?$",
       "template": "{0}は{2}から{1}を収穫した"
     },
     {
