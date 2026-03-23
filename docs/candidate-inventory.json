@@ -14428,7 +14428,7 @@
       "pattern": "Speaker.Does(\"ask\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true)",
       "sink": "Does",
       "source_context": "Popup.Show(Speaker.Does(\"ask\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true) + \" about \" + Speaker.its + \" location and \" + Speaker.GetVerb(\"are\") + \" no longer lost.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "ask"
     },
@@ -14458,7 +14458,7 @@
       "pattern": "Trader.Does(\"are\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true)",
       "sink": "Does",
       "source_context": "Popup.ShowFail(Trader.Does(\"are\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true) + \" engaged in melee combat and\" + Trader.Is + \" too busy to trade with you.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -14473,7 +14473,7 @@
       "pattern": "Trader.Does(\"are\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true)",
       "sink": "Does",
       "source_context": "Popup.ShowFail(Trader.Does(\"are\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true) + \" on fire and\" + Trader.Is + \" too busy to trade with you.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -14518,7 +14518,7 @@
       "pattern": "Trader.Does(\"pony\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true)",
       "sink": "Does",
       "source_context": "Popup.Show(Trader.Does(\"pony\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true) + \" up \" + num2 + \" \" + ((num2 == 1) ? \"dram\" : \"drams\") + \" of fresh water to even up the trade.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "pony"
     },
@@ -14529,11 +14529,11 @@
       "id": "XRL.UI/TradeUI.cs::L1347:C16",
       "line": 1347,
       "needs_review": false,
-      "needs_runtime": false,
+      "needs_runtime": true,
       "pattern": "Trader.Does(\"don't\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true)",
       "sink": "Does",
       "source_context": "Popup.Show(Trader.Does(\"don't\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true) + \" have \" + num2 + \" \" + ((num2 == 1) ? \"dram\" : \"drams\") + \" of fresh water to even up the trade!\");",
-      "status": "needs_review",
+      "status": "unresolved",
       "type": "VerbComposition",
       "verb": "don't"
     },
@@ -14544,11 +14544,11 @@
       "id": "XRL.UI/TradeUI.cs::L1349:C29",
       "line": 1349,
       "needs_review": false,
-      "needs_runtime": false,
+      "needs_runtime": true,
       "pattern": "Trader.Does(\"don't\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true)",
       "sink": "Does",
       "source_context": "else if (Popup.ShowYesNo(Trader.Does(\"don't\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true) + \" have \" + num2 + \" \" + ((num2 == 1) ? \"dram\" : \"drams\") + \" of fresh water to even up the trade! Do you want to complete the trade anyway?\") != DialogResult.Yes) { return OfferStatus.NEXT;",
-      "status": "needs_review",
+      "status": "unresolved",
       "type": "VerbComposition",
       "verb": "don't"
     },
@@ -14578,7 +14578,7 @@
       "pattern": "base.ParentObject.Does(\"drop\")",
       "sink": "Does",
       "source_context": "GoalHandler.AddPlayerMessage(base.ParentObject.Does(\"drop\") + \" \" + randomElement.an() + \" down \" + gameObject.t() + \".\", 'W');",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "drop"
     },
@@ -14593,7 +14593,7 @@
       "pattern": "base.ParentObject.Does(\"shout\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true)",
       "sink": "Does",
       "source_context": "MessageQueue.AddPlayerMessage(base.ParentObject.Does(\"shout\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true) + \" shouts {{O|KLANQ}}!\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "shout"
     },
@@ -14758,7 +14758,7 @@
       "pattern": "The.Speaker.Does(\"provide\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: true, NoColor: false, Stripped: true, WithoutTitles: true, Short: true, BaseOnly: true)",
       "sink": "Does",
       "source_context": "string text = The.Speaker.Does(\"provide\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: true, NoColor: false, Stripped: true, WithoutTitles: true, Short: true, BaseOnly: true);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "provide"
     },
@@ -14773,7 +14773,7 @@
       "pattern": "gameObject2.Does(\"take\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true)",
       "sink": "Does",
       "source_context": "Popup.Show(gameObject2.Does(\"take\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true) + \" \" + gameObject3.t(int.MaxValue, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, null, IndicateHidden: false, SecondPerson: true, Reflexive: false, null, AsPossessed: false) + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "take"
     },
@@ -14848,7 +14848,7 @@
       "pattern": "The.Speaker.Does(\"share\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true)",
       "sink": "Does",
       "source_context": "Popup.Show(The.Speaker.Does(\"share\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true) + \" an event from the life of a sultan with you.\\n\\n\\\"\" + historicEvent.GetEventProperty(\"gospel\") + \"\\\"\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "share"
     },
@@ -14923,7 +14923,7 @@
       "pattern": "Object.Does(\"go\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(Object.Does(\"go\") + \" into {{C|sleep mode}}.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "go"
     },
@@ -14938,7 +14938,7 @@
       "pattern": "Object.Does(\"fall\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(Object.Does(\"fall\") + \" {{C|asleep}}.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "fall"
     },
@@ -14968,7 +14968,7 @@
       "pattern": "actor.Does(\"press\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(actor.Does(\"press\") + \" \" + base.Object.poss(\"activation panel\") + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "press"
     },
@@ -15088,7 +15088,7 @@
       "pattern": "Object.Does(\"were\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: true)",
       "sink": "Does",
       "source_context": "Object.Die(null, null, \"You were reduced to dust.\", Object.Does(\"were\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: true) + \" @@reduced to dust.\", Accidental: false, null, null, Force: false, AlwaysUsePopups: false, \"\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "were"
     },
@@ -15133,7 +15133,7 @@
       "pattern": "Part.Cell.Does(\"are\")",
       "sink": "Does",
       "source_context": "stringBuilder.Append(Part.Cell.Does(\"are\")).Append(\" drained or nearly drained.\\n\\n\").Append(\"Recharge or replace \" + Part.Cell.it + \" to power \") .Append(base.Object.t(int.MaxValue, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, null, IndicateHidden: false, SecondPerson: false)) .Append('.');",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -15144,11 +15144,11 @@
       "id": "XRL.World.Effects/VehicleUnpowered.cs::L106:C25",
       "line": 106,
       "needs_review": false,
-      "needs_runtime": false,
+      "needs_runtime": true,
       "pattern": "base.Object.Does(\"lack\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: false, SecondPerson: false)",
       "sink": "Does",
       "source_context": "stringBuilder.Append(base.Object.Does(\"lack\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: false, SecondPerson: false)).Append(\" the power to act.\");",
-      "status": "needs_review",
+      "status": "unresolved",
       "type": "VerbComposition",
       "verb": "lack"
     },
@@ -15178,7 +15178,7 @@
       "pattern": "gameObject.Does(\"are\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true)",
       "sink": "Does",
       "source_context": "if (gameObject.IsLedBy(who) && who.IsPlayer() && Popup.ShowYesNo(gameObject.Does(\"are\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: true) + \" already your follower. Do you want to beguile \" + gameObject.them + \" anyway?\") != DialogResult.Yes) { return false;",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -15268,7 +15268,7 @@
       "pattern": "E.Actor.Does(\"impale\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(E.Actor.Does(\"impale\") + \" \" + E.Actor.itself + \" on \" + ParentObject.poss(QuillsObject) + \" and\" + E.Actor.GetVerb(\"take\") + \" \" + num2 + \" damage!\", 'G');",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "impale"
     },
@@ -15283,7 +15283,7 @@
       "pattern": "E.Actor.Does(\"impale\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(E.Actor.Does(\"impale\") + \" \" + E.Actor.itself + \" on \" + ParentObject.poss(QuillsObject) + \" and\" + E.Actor.GetVerb(\"take\") + \" \" + num2 + \" damage!\", 'r');",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "impale"
     },
@@ -15298,7 +15298,7 @@
       "pattern": "E.Actor.Does(\"impale\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(E.Actor.Does(\"impale\") + \" \" + E.Actor.itself + \" on \" + ParentObject.poss(QuillsObject) + \" and\" + E.Actor.GetVerb(\"take\") + \" \" + num2 + \" damage!\", 'g');",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "impale"
     },
@@ -15373,7 +15373,7 @@
       "pattern": "Defender.Does(\"were\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: true)",
       "sink": "Does",
       "source_context": "Defender.Die(Attacker, null, \"You were \" + ((LostPart.Type == \"Head\") ? \"decapitated\" : \"relieved of your vital anatomy\") + \" by \" + Attacker.an() + \".\", Defender.Does(\"were\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: true) + \" @@\" + ((LostPart.Type == \"Head\") ? \"decapitated\" : (\"relieved of \" + Defender.its + \" vital anatomy\")) + \" by \" + Attacker.an() + \".\", Accidental: false, Weapon, Projectile);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "were"
     },
@@ -15433,7 +15433,7 @@
       "pattern": "gameObject.Does(\"are\")",
       "sink": "Does",
       "source_context": "if (gameObject.PartyLeader == ParentObject && ParentObject.IsPlayer() && Popup.ShowYesNo(gameObject.Does(\"are\") + \" already your follower. Do you want to proselytize \" + gameObject.them + \" anyway?\") != DialogResult.Yes) { return false;",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -15508,7 +15508,7 @@
       "pattern": "Target.Does(\"are\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: false)",
       "sink": "Does",
       "source_context": "DidXToY(\"draw\", \"a bead on\", Target, ((Target.IsPlayer() || ParentObject.IsPlayer()) ? \"\" : The.Player.DescribeDirectionToward(Target)) + \". \" + Target.Does(\"are\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: false) + \" marked\", null, null, null, ParentObject);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -15534,11 +15534,11 @@
       "id": "XRL.World.Parts.Skill/ShortBlades_Shank.cs::L93:C45",
       "line": 93,
       "needs_review": false,
-      "needs_runtime": false,
+      "needs_runtime": true,
       "pattern": "ParentObject.Does(\"attempt\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(ParentObject.Does(\"attempt\") + \" to take advantage of \" + combatTarget.poss(\"misfortune\") + \" and shank \" + combatTarget.them + \".\");",
-      "status": "needs_review",
+      "status": "unresolved",
       "type": "VerbComposition",
       "verb": "attempt"
     },
@@ -15568,7 +15568,7 @@
       "pattern": "E.Actor.Does(\"kick\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(E.Actor.Does(\"kick\") + \" at \" + E.ApparentTarget.t() + \", but the kick passes through \" + E.ApparentTarget.them + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "kick"
     },
@@ -15598,7 +15598,7 @@
       "pattern": "E.Actor.Does(\"kick\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(E.Actor.Does(\"kick\") + \" at \" + E.ApparentTarget.t() + \", but \" + E.ApparentTarget.does(\"hold\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: true) + \" \" + E.ApparentTarget.its + \" ground.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "kick"
     },
@@ -15628,7 +15628,7 @@
       "pattern": "E.Actor.Does(\"kick\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(E.Actor.Does(\"kick\") + \" \" + E.ApparentTarget.t() + \" backwards.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "kick"
     },
@@ -15688,7 +15688,7 @@
       "pattern": "E.Dying.Does(\"were\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: true)",
       "sink": "Does",
       "source_context": "E.ThirdPersonReason = E.Dying.Does(\"were\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: true) + \" @@resorbed into the Mass Mind.\";",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "were"
     },
@@ -15718,7 +15718,7 @@
       "pattern": "ParentObject.Does(\"are\")",
       "sink": "Does",
       "source_context": "return Actor.Fail(ParentObject.Does(\"are\") + \" \" + GetStatusPhrase() + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -15729,11 +15729,11 @@
       "id": "XRL.World.Parts/BandageMedication.cs::L87:C15",
       "line": 87,
       "needs_review": false,
-      "needs_runtime": false,
+      "needs_runtime": true,
       "pattern": "Target.Does(\"won't\")",
       "sink": "Does",
       "source_context": "Actor.Fail(Target.Does(\"won't\") + \" let you bandage \" + Target.them + \".\");",
-      "status": "needs_review",
+      "status": "unresolved",
       "type": "VerbComposition",
       "verb": "won't"
     },
@@ -15898,7 +15898,7 @@
       "pattern": "ParentObject.Does(\"do\")",
       "sink": "Does",
       "source_context": "default: Popup.Show(ParentObject.Does(\"do\") + \" not seem to be working.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "do"
     },
@@ -15958,7 +15958,7 @@
       "pattern": "ParentObject.Does(\"say\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(gameObject, ParentObject.Does(\"say\") + \", '{{|\" + text2 + \"}}'.\", ' ', Dialog);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "say"
     },
@@ -15973,7 +15973,7 @@
       "pattern": "ParentObject.Does(\"say\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(gameObject, ParentObject.Does(\"say\") + \", '{{|\" + text3 + \"}}'.\", ' ', Dialog);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "say"
     },
@@ -16033,7 +16033,7 @@
       "pattern": "Attacker.Does(\"fail\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(Attacker.Does(\"fail\") + \" to deal damage with \" + Attacker.its + \" attack! [\" + value + \"]\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "fail"
     },
@@ -16059,11 +16059,11 @@
       "id": "XRL.World.Parts/Combat.cs::L1570:C47",
       "line": 1570,
       "needs_review": false,
-      "needs_runtime": false,
+      "needs_runtime": true,
       "pattern": "Attacker.Does(\"don't\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(Attacker.Does(\"don't\") + \" penetrate your armor with \" + Attacker.its_(Weapon) + \"! [\" + value + \"]\");",
-      "status": "needs_review",
+      "status": "unresolved",
       "type": "VerbComposition",
       "verb": "don't"
     },
@@ -16074,11 +16074,11 @@
       "id": "XRL.World.Parts/Combat.cs::L1574:C47",
       "line": 1574,
       "needs_review": false,
-      "needs_runtime": false,
+      "needs_runtime": true,
       "pattern": "Attacker.Does(\"don't\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(Attacker.Does(\"don't\") + \" penetrate your armor! [\" + value + \"]\");",
-      "status": "needs_review",
+      "status": "unresolved",
       "type": "VerbComposition",
       "verb": "don't"
     },
@@ -16093,7 +16093,7 @@
       "pattern": "With.Does(\"are\")",
       "sink": "Does",
       "source_context": "Popup.ShowFail(With.Does(\"are\") + \" engaged in hand-to-hand combat and\" + With.Is + \" too busy to have a conversation with you.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -16108,7 +16108,7 @@
       "pattern": "With.Does(\"are\")",
       "sink": "Does",
       "source_context": "Popup.ShowFail(With.Does(\"are\") + \" on fire and\" + With.Is + \" too busy to have a conversation with you.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -16138,7 +16138,7 @@
       "pattern": "ParentObject.Does(\"need\")",
       "sink": "Does",
       "source_context": "return ParentObject.Does(\"need\") + \" \" + num.Things(\"more round\", \"more rounds\") + \" before \" + ParentObject.it + \" can be fired again.\";",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "need"
     },
@@ -16153,7 +16153,7 @@
       "pattern": "ParentObject.Does(\"are\")",
       "sink": "Does",
       "source_context": "return ParentObject.Does(\"are\") + \" unresponsive as \" + ParentObject.does(\"cool\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: true) + \" down.\";",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -16179,11 +16179,11 @@
       "id": "XRL.World.Parts/CyberneticsButcherableCybernetic.cs::L165:C46",
       "line": 165,
       "needs_review": false,
-      "needs_runtime": false,
+      "needs_runtime": true,
       "pattern": "who.Does(\"butcher\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(who, who.Does(\"butcher\") + \" \" + cybernetic.an() + \" from \" + ParentObject.t() + ((text == null) ? \"\" : (\" \" + text)) + \".\", ' ', !Automatic);",
-      "status": "needs_review",
+      "status": "unresolved",
       "type": "VerbComposition",
       "verb": "butcher"
     },
@@ -16198,7 +16198,7 @@
       "pattern": "who.Does(\"rip\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(who, who.Does(\"rip\") + \" \" + cybernetic.an() + \" out of \" + ParentObject.t() + ((text == null) ? \"\" : (\" \" + text)) + \", but \" + who.GetVerb(\"destroy\", PrependSpace: false) + \" \" + cybernetic.them + \" in the process.\", ' ', !Automatic);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "rip"
     },
@@ -16213,7 +16213,7 @@
       "pattern": "ParentObject.Does(\"are\")",
       "sink": "Does",
       "source_context": "return Actor.Fail(ParentObject.Does(\"are\") + \" \" + GetStatusPhrase() + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -16228,7 +16228,7 @@
       "pattern": "ParentObject.Does(\"are\")",
       "sink": "Does",
       "source_context": "return Actor.Fail(ParentObject.Does(\"are\") + \" \" + GetStatusPhrase() + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -16243,7 +16243,7 @@
       "pattern": "ParentObject.Does(\"are\")",
       "sink": "Does",
       "source_context": "return Actor.Fail(ParentObject.Does(\"are\") + \" \" + GetStatusPhrase() + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -16258,7 +16258,7 @@
       "pattern": "ParentObject.Does(\"are\")",
       "sink": "Does",
       "source_context": "return Actor.Fail(ParentObject.Does(\"are\") + \" \" + GetStatusPhrase() + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -16273,7 +16273,7 @@
       "pattern": "obj2.Does(\"unlock\", int.MaxValue, null, null, null, AsIfKnown: false, Single: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(Actor, obj2.Does(\"unlock\", int.MaxValue, null, null, null, AsIfKnown: false, Single: true) + \" \" + ParentObject.t() + \".\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "unlock"
     },
@@ -16288,7 +16288,7 @@
       "pattern": "attacker.Does(\"try\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(attacker.Does(\"try\") + \" to eat your memories, but \" + attacker.does(\"starve\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: true) + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "try"
     },
@@ -16303,7 +16303,7 @@
       "pattern": "ParentObject.Does(\"click\", int.MaxValue, null, null, \"merely\")",
       "sink": "Does",
       "source_context": "return ParentObject.Does(\"click\", int.MaxValue, null, null, \"merely\") + \".\";",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "click"
     },
@@ -16318,7 +16318,7 @@
       "pattern": "ParentObject.Does(\"are\")",
       "sink": "Does",
       "source_context": "return ParentObject.Does(\"are\") + \" \" + GetStatusPhrase(Status) + \".\";",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -16348,7 +16348,7 @@
       "pattern": "ParentObject.Does(\"are\")",
       "sink": "Does",
       "source_context": "return ParentObject.Does(\"are\") + \" \" + GetStatusPhrase(Status) + \".\";",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -16363,7 +16363,7 @@
       "pattern": "ParentObject.Does(\"click\", int.MaxValue, null, null, \"merely\")",
       "sink": "Does",
       "source_context": "case ActivePartStatus.Unpowered: return Actor.Fail(ParentObject.Does(\"click\", int.MaxValue, null, null, \"merely\") + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "click"
     },
@@ -16378,7 +16378,7 @@
       "pattern": "ParentObject.Does(\"are\")",
       "sink": "Does",
       "source_context": "default: return Actor.Fail(ParentObject.Does(\"are\") + \" \" + GetStatusPhrase(activePartStatus) + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -16408,7 +16408,7 @@
       "pattern": "ParentObject.Does(\"try\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(ParentObject.Does(\"try\") + \" to engulf you, but\" + ParentObject.GetVerb(\"fail\") + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "try"
     },
@@ -16423,7 +16423,7 @@
       "pattern": "ParentObject.Does(\"try\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(ParentObject.Does(\"try\") + \" to engulf \" + who.t() + \", but\" + ParentObject.GetVerb(\"fail\") + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "try"
     },
@@ -16468,7 +16468,7 @@
       "pattern": "ParentObject.Does(\"drop\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(ParentObject.Does(\"drop\") + \" \" + mostValuableItem.an() + \", and by sheer chance \" + mostValuableItem.does(\"quantum tunnel\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: true) + \" and fully\" + mostValuableItem.GetVerb(\"materialize\") + \" in this dimension.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "drop"
     },
@@ -16588,7 +16588,7 @@
       "pattern": "Subject.Does(\"step\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(Subject.Does(\"step\") + \" on \" + ParentObject.t() + \" and\" + Subject.GetVerb(\"vibrate\") + \" through spacetime.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "step"
     },
@@ -16614,11 +16614,11 @@
       "id": "XRL.World.Parts/Garbage.cs::L197:C45",
       "line": 197,
       "needs_review": false,
-      "needs_runtime": false,
+      "needs_runtime": true,
       "pattern": "Actor.Does(\"rifle\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(Actor.Does(\"rifle\") + \" through \" + gameObject.t() + ((text == null) ? \"\" : (\" \" + text)) + \".\");",
-      "status": "needs_review",
+      "status": "unresolved",
       "type": "VerbComposition",
       "verb": "rifle"
     },
@@ -16663,7 +16663,7 @@
       "pattern": "who.Does(\"harvest\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(who, who.Does(\"harvest\") + \" \" + gameObject2.an() + ((text == null) ? \"\" : (\" from \" + text)) + \".\", ' ', !Automatic);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "harvest"
     },
@@ -16678,7 +16678,7 @@
       "pattern": "who.Does(\"harvest\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(who, who.Does(\"harvest\") + \" \" + Grammar.Cardinal(num) + \" \" + gameObject2.ShortDisplayName + ((text == null) ? \"\" : (\" from \" + text)) + \".\", ' ', !Automatic);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "harvest"
     },
@@ -16693,7 +16693,7 @@
       "pattern": "who.Does(\"harvest\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(who, who.Does(\"harvest\") + \" \" + Grammar.Cardinal(num) + \" \" + Grammar.Pluralize(gameObject2.ShortDisplayName) + ((text == null) ? \"\" : (\" from \" + text)) + \".\", ' ', !Automatic);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "harvest"
     },
@@ -16708,7 +16708,7 @@
       "pattern": "ParentObject.Does(\"are\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(ParentObject.Does(\"are\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + \" revealed \" + The.Player.DescribeDirectionToward(ParentObject) + \"!\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -16723,7 +16723,7 @@
       "pattern": "ParentObject.Does(\"need\")",
       "sink": "Does",
       "source_context": "return Actor.Fail(ParentObject.Does(\"need\") + \" water in \" + ParentObject.them + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "need"
     },
@@ -16738,7 +16738,7 @@
       "pattern": "ParentObject.Does(\"click\", int.MaxValue, null, null, \"merely\")",
       "sink": "Does",
       "source_context": "return Actor.Fail(ParentObject.Does(\"click\", int.MaxValue, null, null, \"merely\") + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "click"
     },
@@ -16768,7 +16768,7 @@
       "pattern": "ParentObject.Does(\"click\", int.MaxValue, null, null, \"merely\")",
       "sink": "Does",
       "source_context": "Actor.Fail(ParentObject.Does(\"click\", int.MaxValue, null, null, \"merely\") + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "click"
     },
@@ -17034,11 +17034,11 @@
       "id": "XRL.World.Parts/LiquidVolume.cs::L3480:C28",
       "line": 3480,
       "needs_review": false,
-      "needs_runtime": false,
+      "needs_runtime": true,
       "pattern": "E.Actor.Does(\"collect\")",
       "sink": "Does",
       "source_context": "stringBuilder2.Append(E.Actor.Does(\"collect\")).Append(' ').Append(num9.Things(\"dram\")) .Append(\" of \") .Append(GetLiquidName());",
-      "status": "needs_review",
+      "status": "unresolved",
       "type": "VerbComposition",
       "verb": "collect"
     },
@@ -17053,7 +17053,7 @@
       "pattern": "ParentObject.Does(\"were\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: true)",
       "sink": "Does",
       "source_context": "ParentObject.Die(By, null, \"You were stepped on.\", ParentObject.Does(\"were\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: true) + \" @@stepped on.\", Accidental, null, null, Force: false, AlwaysUsePopups: false, \"\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "were"
     },
@@ -17064,11 +17064,11 @@
       "id": "XRL.World.Parts/LoveTonicApplicator.cs::L51:C45",
       "line": 51,
       "needs_review": false,
-      "needs_runtime": false,
+      "needs_runtime": true,
       "pattern": "gameObjectParameter2.Does(\"look\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(gameObjectParameter2.Does(\"look\") + \" you over and\" + gameObjectParameter2.GetVerb(\"metabolize\") + \" the love tonic with no effect.\");",
-      "status": "needs_review",
+      "status": "unresolved",
       "type": "VerbComposition",
       "verb": "look"
     },
@@ -17203,7 +17203,7 @@
       "pattern": "ParentObject.Does(\"lose\", int.MaxValue, null, null, null, AsIfKnown: false, Single: true)",
       "sink": "Does",
       "source_context": "Popup.Show(ParentObject.Does(\"lose\", int.MaxValue, null, null, null, AsIfKnown: false, Single: true) + \" its magnetic charge and crumbles to powder.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "lose"
     },
@@ -17248,7 +17248,7 @@
       "pattern": "Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(Owner, Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + \" you\" + OutcomeMessageFragment + \".\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17263,7 +17263,7 @@
       "pattern": "Owner.Does(\"hit\", int.MaxValue, null, null, adverb)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(Owner, Owner.Does(\"hit\", int.MaxValue, null, null, adverb) + \" you with \" + Projectile.an() + OutcomeMessageFragment + \".\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17278,7 +17278,7 @@
       "pattern": "Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(The.Player, Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + \" you \" + Defender.DescribeDirectionFrom(Owner) + OutcomeMessageFragment + \".\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17293,7 +17293,7 @@
       "pattern": "Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(The.Player, Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + \" you (x\" + num6 + \") \" + Defender.DescribeDirectionFrom(Owner) + \" for \" + damage.Amount + \" damage!\", 'r', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17308,7 +17308,7 @@
       "pattern": "Owner.Does(\"hit\", int.MaxValue, null, null, adverb)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(Owner, Owner.Does(\"hit\", int.MaxValue, null, null, adverb) + \" you (x\" + num6 + \") with \" + Projectile.an() + \" for \" + damage.Amount + \" damage!\", 'r', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17323,7 +17323,7 @@
       "pattern": "Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(The.Player, Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + \" you (x\" + num6 + \") \" + Defender.DescribeDirectionFrom(Owner) + \" for \" + damage.Amount + \" damage!\", 'r', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17338,7 +17338,7 @@
       "pattern": "Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(The.Player, Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + \" \" + ((Defender == Owner) ? Owner.itself : Defender.t()) + \" \" + The.Player.DescribeDirectionFrom(Owner) + OutcomeMessageFragment + \".\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17353,7 +17353,7 @@
       "pattern": "Owner.Does(\"hit\", int.MaxValue, null, null, adverb)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(Owner, Owner.Does(\"hit\", int.MaxValue, null, null, adverb) + \" \" + ((Defender == Owner) ? Owner.itself : Defender.t()) + \" with \" + Projectile.an() + OutcomeMessageFragment + \".\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17368,7 +17368,7 @@
       "pattern": "Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(The.Player, Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + \" \" + ((Defender == Owner) ? Owner.itself : Defender.t()) + \" \" + The.Player.DescribeDirectionFrom(Owner) + OutcomeMessageFragment + \".\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17383,7 +17383,7 @@
       "pattern": "Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(The.Player, Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + \" \" + ((Defender == Owner) ? Owner.itself : Defender.t()) + \" (x\" + num6 + \") \" + The.Player.DescribeDirectionFrom(Owner) + \" for \" + damage.Amount + \" damage!\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17398,7 +17398,7 @@
       "pattern": "Owner.Does(\"hit\", int.MaxValue, null, null, adverb)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(Owner, Owner.Does(\"hit\", int.MaxValue, null, null, adverb) + \" \" + ((Defender == Owner) ? Owner.itself : Defender.t()) + \" (x\" + num6 + \") with \" + Projectile.an() + \" for \" + damage.Amount + \" damage!\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17413,7 +17413,7 @@
       "pattern": "Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(The.Player, Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + \" \" + ((Defender == Owner) ? Owner.itself : Defender.t()) + \" (x\" + num6 + \") \" + The.Player.DescribeDirectionFrom(Owner) + \" for \" + damage.Amount + \" damage!\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17428,7 +17428,7 @@
       "pattern": "Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(Owner, Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + \" \" + ((Defender == Owner) ? Owner.itself : Defender.t()) + \" \" + Defender.DescribeDirectionFrom(Owner) + OutcomeMessageFragment + \".\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17443,7 +17443,7 @@
       "pattern": "Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(Owner, Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + Projectile.GetVerb(\"hit\") + \" \" + ((Defender == Owner) ? Owner.itself : Defender.t()) + \" (x\" + num6 + \") \" + Defender.DescribeDirectionFrom(Owner) + \"!\", Stat.GetResultColorChar(num6), FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17458,7 +17458,7 @@
       "pattern": "Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(The.Player, Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + \" you \" + Defender.DescribeDirectionToward(Owner) + OutcomeMessageFragment + \".\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17473,7 +17473,7 @@
       "pattern": "Owner.Does(\"hit\", int.MaxValue, null, null, adverb)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(Owner, Owner.Does(\"hit\", int.MaxValue, null, null, adverb) + \" you\" + OutcomeMessageFragment + \".\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17488,7 +17488,7 @@
       "pattern": "Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(The.Player, Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + \" you \" + Defender.DescribeDirectionToward(Owner) + OutcomeMessageFragment + \".\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17503,7 +17503,7 @@
       "pattern": "Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(The.Player, Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + \" you \" + Defender.DescribeDirectionToward(Owner) + \"! (x\" + num6 + \")\", 'r', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17518,7 +17518,7 @@
       "pattern": "Owner.Does(\"hit\", int.MaxValue, null, null, adverb)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(Owner, Owner.Does(\"hit\", int.MaxValue, null, null, adverb) + \" you! (x\" + num6 + \")\", 'r', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17533,7 +17533,7 @@
       "pattern": "Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(The.Player, Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + \" you \" + Defender.DescribeDirectionToward(Owner) + \"! (x\" + num6 + \")\", 'r', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17548,7 +17548,7 @@
       "pattern": "Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(The.Player, Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + \" \" + ((Defender == Owner) ? Owner.itself : Defender.t()) + \" \" + The.Player.DescribeDirectionToward(Owner) + OutcomeMessageFragment + \".\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17563,7 +17563,7 @@
       "pattern": "Owner.Does(\"hit\", int.MaxValue, null, null, adverb)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(Owner, Owner.Does(\"hit\", int.MaxValue, null, null, adverb) + \" \" + ((Defender == Owner) ? Owner.itself : Defender.t()) + OutcomeMessageFragment + \".\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17578,7 +17578,7 @@
       "pattern": "Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(The.Player, Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + \" \" + ((Defender == Owner) ? Owner.itself : Defender.t()) + \" \" + The.Player.DescribeDirectionToward(Owner) + OutcomeMessageFragment + \".\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17593,7 +17593,7 @@
       "pattern": "Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(The.Player, Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + \" \" + ((Defender == Owner) ? Owner.itself : Defender.t()) + \" (x\" + num6 + \") \" + The.Player.DescribeDirectionToward(Owner) + \"!\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17608,7 +17608,7 @@
       "pattern": "Owner.Does(\"hit\", int.MaxValue, null, null, adverb)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(Owner, Owner.Does(\"hit\", int.MaxValue, null, null, adverb) + \" \" + ((Defender == Owner) ? Owner.itself : Defender.t()) + \"! (x\" + num6 + \")\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17623,7 +17623,7 @@
       "pattern": "Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true)",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(The.Player, Projectile.Does(\"hit\", int.MaxValue, null, null, adverb, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: true) + \" \" + ((Defender == Owner) ? Owner.itself : Defender.t()) + \" (x\" + num6 + \") \" + The.Player.DescribeDirectionToward(Owner) + \"!\", ' ', FromDialog: false, UsePopups);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "hit"
     },
@@ -17638,7 +17638,7 @@
       "pattern": "parentObject.Does(\"reflect\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: false, SecondPerson: true, null, AsPossessed: true, asPossessedBy)",
       "sink": "Does",
       "source_context": "array[0] = parentObject.Does(\"reflect\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: false, SecondPerson: true, null, AsPossessed: true, asPossessedBy);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "reflect"
     },
@@ -17698,7 +17698,7 @@
       "pattern": "ParentObject.Does(\"are\")",
       "sink": "Does",
       "source_context": "return ParentObject.Does(\"are\") + \" \" + GetStatusPhrase(Status) + \".\";",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -17713,7 +17713,7 @@
       "pattern": "ParentObject.Does(\"fall\")",
       "sink": "Does",
       "source_context": "Popup.Show(ParentObject.Does(\"fall\") + \" to the ground; you pick \" + ParentObject.them + \" up.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "fall"
     },
@@ -17758,7 +17758,7 @@
       "pattern": "ParentObject.Does(\"are\")",
       "sink": "Does",
       "source_context": "E.PouredBy.Fail(ParentObject.Does(\"are\") + \" \" + GetStatusPhrase() + \" and cannot be poured into.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -17773,7 +17773,7 @@
       "pattern": "ParentObject.Does(\"are\")",
       "sink": "Does",
       "source_context": "E.PouredBy.Fail(ParentObject.Does(\"are\") + \" \" + GetStatusPhrase() + \" and cannot be poured from.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -17788,7 +17788,7 @@
       "pattern": "ParentObject.Does(\"beep\")",
       "sink": "Does",
       "source_context": "return ParentObject.Does(\"beep\") + \" loudly and \" + ParentObject.GetVerb(\"flash\") + \" a warning glyph.\";",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "beep"
     },
@@ -17818,7 +17818,7 @@
       "pattern": "ParentObject.Does(\"atomize\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(ParentObject.Does(\"atomize\") + \" and\" + ParentObject.GetVerb(\"recombine\") + \" into \" + aCreature.an() + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "atomize"
     },
@@ -17829,11 +17829,11 @@
       "id": "XRL.World.Parts/PetGloaming.cs::L90:C16",
       "line": 90,
       "needs_review": false,
-      "needs_runtime": false,
+      "needs_runtime": true,
       "pattern": "ParentObject.Does(\"beat\")",
       "sink": "Does",
       "source_context": "Popup.Show(ParentObject.Does(\"beat\") + \" \" + ParentObject.its + \" wings, and the shattered voices of a trillion worlds ride the current of air and harmonize into one, revealing the following wisdom:\\n\\n\" + text);",
-      "status": "needs_review",
+      "status": "unresolved",
       "type": "VerbComposition",
       "verb": "beat"
     },
@@ -17863,7 +17863,7 @@
       "pattern": "ParentObject.Does(\"start\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(ParentObject.Does(\"start\") + \" to gleam with an {{K|unearthly light}}.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "start"
     },
@@ -17923,7 +17923,7 @@
       "pattern": "ParentObject.Does(\"were\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: true)",
       "sink": "Does",
       "source_context": "ParentObject.Die(InflamedBy, null, \"You were vaporized.\", ParentObject.Does(\"were\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: true) + \" @@vaporized.\", Accidental: true);",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "were"
     },
@@ -17968,7 +17968,7 @@
       "pattern": "ParentObject.Does(\"fall\")",
       "sink": "Does",
       "source_context": "Popup.Show(ParentObject.Does(\"fall\") + \" to the ground; you scoop \" + ParentObject.them + \" up.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "fall"
     },
@@ -17998,7 +17998,7 @@
       "pattern": "ParentObject.Does(\"collapse\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(ParentObject.Does(\"collapse\") + \" under the pressure of normality and\" + ParentObject.GetVerb(\"implode\") + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "collapse"
     },
@@ -18039,11 +18039,11 @@
       "id": "XRL.World.Parts/ReclamationCist.cs::L58:C44",
       "line": 58,
       "needs_review": false,
-      "needs_runtime": false,
+      "needs_runtime": true,
       "pattern": "ParentObject.Does(\"reclaim\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(ParentObject.Does(\"reclaim\") + \" \" + obj.an() + \".\");",
-      "status": "needs_review",
+      "status": "unresolved",
       "type": "VerbComposition",
       "verb": "reclaim"
     },
@@ -18058,7 +18058,7 @@
       "pattern": "ParentObject.Does(\"disintegrate\")",
       "sink": "Does",
       "source_context": "Popup.Show(\"Just before your demise, you are transported to safety! \" + ParentObject.Does(\"disintegrate\") + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "disintegrate"
     },
@@ -18073,7 +18073,7 @@
       "pattern": "ParentObject.Does(\"reflect\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(ParentObject.Does(\"reflect\") + \" \" + num4 + \" damage back at you.\", 'R');",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "reflect"
     },
@@ -18088,7 +18088,7 @@
       "pattern": "ParentObject.Does(\"reflect\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(ParentObject.Does(\"reflect\") + \" \" + num4 + \" damage back at \" + E.Actor.t() + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "reflect"
     },
@@ -18133,7 +18133,7 @@
       "pattern": "gameObjectParameter2.Does(\"are\")",
       "sink": "Does",
       "source_context": "gameObjectParameter.Fail(string.Concat(str2: E.GetGameObjectParameter(\"Tonic\").t(int.MaxValue, null, null, AsIfKnown: false, Single: true), str0: gameObjectParameter2.Does(\"are\"), str1: \" robotic and cannot be affected by \", str3: \".\"));",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -18144,11 +18144,11 @@
       "id": "XRL.World.Parts/SphynxSalt_Tonic_Applicator.cs::L78:C45",
       "line": 78,
       "needs_review": false,
-      "needs_runtime": false,
+      "needs_runtime": true,
       "pattern": "gameObjectParameter3.Does(\"apply\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(gameObjectParameter3.Does(\"apply\") + \" \" + ParentObject.an(int.MaxValue, null, null, AsIfKnown: false, Single: true) + \".\");",
-      "status": "needs_review",
+      "status": "unresolved",
       "type": "VerbComposition",
       "verb": "apply"
     },
@@ -18238,7 +18238,7 @@
       "pattern": "ParentObject.Does(\"are\")",
       "sink": "Does",
       "source_context": "case ActivePartStatus.ProcessInputMissing: Actor.Fail(ParentObject.Does(\"are\") + \" out of {{|\" + LiquidVolume.GetLiquid(ConsumesLiquid).GetName() + \"}}.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -18253,7 +18253,7 @@
       "pattern": "ParentObject.Does(\"are\")",
       "sink": "Does",
       "source_context": "case ActivePartStatus.ProcessInputInvalid: Actor.Fail(ParentObject.Does(\"are\") + \" filled with contaminated {{|\" + LiquidVolume.GetLiquid(ConsumesLiquid).GetName() + \"}}!\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -18388,7 +18388,7 @@
       "pattern": "ParentObject.Does(\"are\")",
       "sink": "Does",
       "source_context": "return E.Actor.Fail(ParentObject.Does(\"are\") + \" \" + GetStatusPhrase() + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -18399,11 +18399,11 @@
       "id": "XRL.World.Parts/ThiefBot.cs::L66:C54",
       "line": 66,
       "needs_review": false,
-      "needs_runtime": false,
+      "needs_runtime": true,
       "pattern": "ParentObject.Does(\"snag\")",
       "sink": "Does",
       "source_context": "string msg = Event.NewStringBuilder().Append(ParentObject.Does(\"snag\")).Compound(target.poss(gameObject)) .Append('!') .ToString();",
-      "status": "needs_review",
+      "status": "unresolved",
       "type": "VerbComposition",
       "verb": "snag"
     },
@@ -18448,7 +18448,7 @@
       "pattern": "combatTarget.Does(\"do\")",
       "sink": "Does",
       "source_context": "return E.Actor.Fail(combatTarget.Does(\"do\") + \" not want to consume \" + ParentObject.t(int.MaxValue, null, null, AsIfKnown: false, Single: true) + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "do"
     },
@@ -18463,7 +18463,7 @@
       "pattern": "combatTarget.Does(\"do\")",
       "sink": "Does",
       "source_context": "return E.Actor.Fail(combatTarget.Does(\"do\") + \" not want \" + ParentObject.t(int.MaxValue, null, null, AsIfKnown: false, Single: true) + \" applied to \" + combatTarget.them + \". You'll need to equip \" + ParentObject.them + \" as a weapon and attack with \" + ParentObject.them + \".\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "do"
     },
@@ -18478,7 +18478,7 @@
       "pattern": "ParentObject.Does(\"fail\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(ParentObject.Does(\"fail\") + \" to penetrate \" + Object.poss(\"armor\") + \" and\" + ParentObject.Is + \" destroyed.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "fail"
     },
@@ -18493,7 +18493,7 @@
       "pattern": "gameObject.Does(\"were\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: true)",
       "sink": "Does",
       "source_context": "gameObject.TakeDamage(num2, \"from falling rocks! {{\" + resultColor + \"|(x\" + num + \")}}\", \"Crushing Cudgel\", \"You were crushed by falling rocks.\", gameObject.Does(\"were\", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, IndicateHidden: false, Pronoun: true) + \" @@crushed by falling rocks.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "were"
     },
@@ -18508,7 +18508,7 @@
       "pattern": "ParentObject.Does(\"are\")",
       "sink": "Does",
       "source_context": "if (Popup.ShowYesNo(Event.FinalizeString(Event.NewStringBuilder(ParentObject.Does(\"are\")).Append(\" occupied.\\n\\n\").Append(\"Attempting to enter is a hostile action and will function as an attack with \") .Append(ChancePerPenetration) .Append(\"% infiltration chance per penetration.\\n\\n\") .Append(\"Are you sure you want to proceed?\")), \"Sounds/UI/ui_notification\", AllowEscape: true, DialogResult.No) != DialogResult.Yes) { return false;",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "are"
     },
@@ -18519,11 +18519,11 @@
       "id": "XRL.World.Parts/VehicleMeleeInfiltration.cs::L103:C51",
       "line": 103,
       "needs_review": false,
-      "needs_runtime": false,
+      "needs_runtime": true,
       "pattern": "E.Actor.Does(\"infiltrate\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.EmitMessage(E.Actor, E.Actor.Does(\"infiltrate\") + \" \" + E.Object.t() + \"!\", ' ', FromDialog: false, UsePopup: false, AlwaysVisible: false, E.Actor);",
-      "status": "needs_review",
+      "status": "unresolved",
       "type": "VerbComposition",
       "verb": "infiltrate"
     },
@@ -18583,7 +18583,7 @@
       "pattern": "E.Actor.Does(\"try\")",
       "sink": "Does",
       "source_context": "IComponent<GameObject>.AddPlayerMessage(E.Actor.Does(\"try\") + \" to \" + ActionVerb + \" \" + ParentObject.an() + \", but \" + ParentObject.itis + \" unresponsive.\");",
-      "status": "needs_review",
+      "status": "translated",
       "type": "VerbComposition",
       "verb": "try"
     },
