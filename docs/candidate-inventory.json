@@ -22203,9 +22203,10 @@
       "needs_runtime": true,
       "pattern": "EmitMessage(source, Color, FromDialog, UsePopup, AlwaysVisible, ColorAsGoodFor, ColorAsBadFor)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
+      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence.",
+      "exclusion_reason": "passthrough_delegation"
     },
     {
       "column": 3,
@@ -22217,9 +22218,10 @@
       "needs_runtime": true,
       "pattern": "Messaging.EmitMessage(Source, msg, Color, FromDialog, UsePopup, AlwaysVisible, ColorAsGoodFor, ColorAsBadFor)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
+      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence.",
+      "exclusion_reason": "passthrough_delegation"
     },
     {
       "column": 8,
@@ -22259,9 +22261,10 @@
       "needs_runtime": true,
       "pattern": "Messaging.EmitMessage(Source, Msg, Color, FromDialog, UsePopup, AlwaysVisible, ColorAsGoodFor, ColorAsBadFor)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
+      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence.",
+      "exclusion_reason": "passthrough_delegation"
     },
     {
       "column": 3,
@@ -22273,9 +22276,10 @@
       "needs_runtime": true,
       "pattern": "EmitMessage(Source, Msg.ToString(), Color, FromDialog, UsePopup, AlwaysVisible, ColorAsGoodFor, ColorAsBadFor)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
+      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence.",
+      "exclusion_reason": "passthrough_delegation"
     },
     {
       "column": 3,
@@ -22287,9 +22291,10 @@
       "needs_runtime": true,
       "pattern": "EmitMessage(GetBasisGameObject(), Msg, Color, FromDialog, UsePopup, AlwaysVisible, ColorAsGoodFor, ColorAsBadFor)",
       "sink": "EmitMessage",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence."
+      "runtime_reason": "Message text is composed upstream from runtime object state or contextual data; final sentence requires runtime evidence.",
+      "exclusion_reason": "passthrough_delegation"
     },
     {
       "column": 3,
@@ -54434,9 +54439,10 @@
       "needs_runtime": true,
       "pattern": "TextSkins[i].SetText((array.Length <= i) ? \"\" : array[i + num])",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 3,
@@ -54504,9 +54510,10 @@
       "needs_runtime": true,
       "pattern": "modPath.SetText(data.info.ID)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 6,
@@ -54662,9 +54669,10 @@
       "needs_runtime": true,
       "pattern": "Name.SetText(achievement.Name)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 3,
@@ -54676,9 +54684,10 @@
       "needs_runtime": true,
       "pattern": "Description.SetText(achievement.Description)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 5,
@@ -54690,9 +54699,10 @@
       "needs_runtime": true,
       "pattern": "Date.SetText(\"Unlocked \" + achievement.TimeStamp.ToString(\"f\"))",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 5,
@@ -54732,9 +54742,10 @@
       "needs_runtime": true,
       "pattern": "Name.SetText(amount + \" hidden achievements remaining\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 3,
@@ -54830,9 +54841,10 @@
       "needs_runtime": true,
       "pattern": "titleText.SetText(Book.Title)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 4,
@@ -54844,9 +54856,10 @@
       "needs_runtime": true,
       "pattern": "titleText.SetText(BookUI.Books[BookID].Title)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 3,
@@ -54858,9 +54871,10 @@
       "needs_runtime": true,
       "pattern": "leftPageNumber.SetText((CurrentPage + 1).ToString())",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 3,
@@ -54872,9 +54886,10 @@
       "needs_runtime": true,
       "pattern": "rightPageNumber.SetText(PageCount.ToString())",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 3,
@@ -56283,9 +56298,10 @@
       "needs_runtime": true,
       "pattern": "titleText.SetText(\"{{W|\" + modInfo.DisplayTitle + \"}}\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 5,
@@ -56297,9 +56313,10 @@
       "needs_runtime": true,
       "pattern": "titleText.SetText(\"{{R|\" + modInfo.DisplayTitle + \"}}\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 5,
@@ -56311,9 +56328,10 @@
       "needs_runtime": true,
       "pattern": "titleText.SetText(\"{{K|\" + modInfo.DisplayTitle + \"}}\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 5,
@@ -56325,9 +56343,10 @@
       "needs_runtime": true,
       "pattern": "titleText.SetText(\"{{Y|\" + modInfo.DisplayTitle + \"}}\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 5,
@@ -56339,9 +56358,10 @@
       "needs_runtime": true,
       "pattern": "authorText.SetText(\"{{y|by \" + _lastAuthor + \"}}\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 4,
@@ -56453,9 +56473,10 @@
       "needs_runtime": true,
       "pattern": "text.SetText((data.Value ? \"[{{W|■}}] \" : \"[ ] \") + \"{{W|\" + data.Title + \"}}\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 4,
@@ -56467,9 +56488,10 @@
       "needs_runtime": true,
       "pattern": "text.SetText((data.Value ? \"[■] \" : \"[ ] \") + data.Title)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 3,
@@ -56523,9 +56545,10 @@
       "needs_runtime": true,
       "pattern": "valueLabel.SetText(data.Value.ToString())",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 4,
@@ -56537,9 +56560,10 @@
       "needs_runtime": true,
       "pattern": "valueLabel.SetText(data.Value.ToString())",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 5,
@@ -56551,9 +56575,10 @@
       "needs_runtime": true,
       "pattern": "valueLabel.SetText(optionsSliderRow.Value.ToString())",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 3,
@@ -56565,9 +56590,10 @@
       "needs_runtime": true,
       "pattern": "text.SetText(data.Title)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 4,
@@ -58187,9 +58213,10 @@
       "needs_runtime": true,
       "pattern": "TextSkins[0].SetText(\"{{W|\" + saveInfoData.SaveGame.Name + \" :: \" + saveInfoData.SaveGame.Description + \" }}\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 4,
@@ -58201,9 +58228,10 @@
       "needs_runtime": true,
       "pattern": "TextSkins[1].SetText(\"{{C|Location:}} \" + saveInfoData.SaveGame.Info)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 4,
@@ -58215,9 +58243,10 @@
       "needs_runtime": true,
       "pattern": "TextSkins[2].SetText(\"{{C|Last saved:}} \" + saveInfoData.SaveGame.SaveTime)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 4,
@@ -58229,9 +58258,10 @@
       "needs_runtime": true,
       "pattern": "TextSkins[3].SetText(\"{{K|\" + saveInfoData.SaveGame.Size + \" {\" + saveInfoData.SaveGame.ID + \"} }}\")",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 5,
@@ -58243,9 +58273,10 @@
       "needs_runtime": true,
       "pattern": "TextSkins[0].SetText(highScoresDataElement.message)",
       "sink": "SetText",
-      "status": "unresolved",
+      "status": "excluded",
       "type": "Unresolved",
-      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence."
+      "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
+      "exclusion_reason": "external_data"
     },
     {
       "column": 5,
@@ -71791,14 +71822,11 @@
     }
   ],
   "stats": {
-    "filtered_hits": 18,
-    "high_confidence": 1754,
-    "input_hits": 4682,
-    "low_confidence": 2702,
-    "medium_confidence": 208,
-    "needs_review": 208,
-    "needs_runtime": 2702,
-    "output_sites": 4664
+    "translated": 3956,
+    "needs_patch": 117,
+    "unresolved": 303,
+    "excluded": 224,
+    "exclude": 64
   },
   "version": "1.0"
 }
