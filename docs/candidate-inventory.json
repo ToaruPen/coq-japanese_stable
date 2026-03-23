@@ -8481,7 +8481,7 @@
       "needs_runtime": false,
       "pattern": "Object.Physics.DidX(\"feel\", \"a bit glitchy\", null, null, \"W\", null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "feel"
     },
@@ -8497,7 +8497,7 @@
       "needs_runtime": false,
       "pattern": "ParentBrain.DidXToY(\"dust\", gameObject, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "dust"
     },
@@ -8514,7 +8514,7 @@
       "needs_runtime": false,
       "pattern": "Messaging.XDidYToZ(base.ParentObject, \"give\", null, The.Player, \"a treat\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "give"
     },
@@ -8530,7 +8530,7 @@
       "needs_runtime": false,
       "pattern": "base.ParentObject.Physics.DidX(\"chirp\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "chirp"
     },
@@ -8546,7 +8546,7 @@
       "needs_runtime": false,
       "pattern": "base.ParentObject.Brain.DidXToY(\"place\", gameObject, null, null, null, null, base.ParentObject, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: true, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "place"
     },
@@ -8562,7 +8562,7 @@
       "needs_runtime": false,
       "pattern": "body.DidXToY(\"toss\", equipped, \"aside\", null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "toss"
     },
@@ -8578,7 +8578,7 @@
       "needs_runtime": false,
       "pattern": "base.ParentObject.Brain.DidXToY(\"place\", gameObject, null, null, null, null, base.ParentObject, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: true, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "place"
     },
@@ -8594,7 +8594,7 @@
       "needs_runtime": false,
       "pattern": "Messaging.WDidXToYWithZ(Disarmer, \"disarm\", null, Subject, \"of\", Weapon, null, \"!\", null, null, null, Subject, UseFullNames: false, IndefiniteSubject: false, IndefiniteDirectObject: false, IndefiniteIndirectObject: false, IndefiniteDirectObjectForOthers: false, IndefiniteIndirectObjectForOthers: false, PossessiveDirectObject: false, PossessiveIndirectObject: false, null, null, Subject, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, Subject.IsPlayerControlled())",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "disarm"
     },
@@ -8611,7 +8611,7 @@
       "needs_runtime": false,
       "pattern": "Messaging.XDidY(Actor, \"roll\", \"on the ground\", \"!\", null, null, Actor, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, Dialog)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "roll"
     },
@@ -8696,7 +8696,7 @@
       "needs_runtime": false,
       "pattern": "Messaging.XDidY(Actor, \"roll\", \"on the ground\", \"!\", null, null, Actor, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, Dialog)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "roll"
     },
@@ -8730,7 +8730,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"no longer choking\", \"!\", null, null, base.Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -8747,7 +8747,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"exit\", \"sleep mode\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "exit"
     },
@@ -8764,7 +8764,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"wake\", \"up\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "wake"
     },
@@ -8781,7 +8781,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"exit\", \"sleep mode by emergency interrupt\", null, null, null, null, base.Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "exit"
     },
@@ -8798,7 +8798,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"wake\", \"up in a daze\", null, null, null, null, base.Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "wake"
     },
@@ -8815,7 +8815,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"feel\", \"less stiff\", null, null, null, base.Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "feel"
     },
@@ -8831,7 +8831,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"lose\", \"interest in\", Beguiler, null, null, null, null, null, Beguiler)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "lose"
     },
@@ -8899,7 +8899,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"burrow\", \"into the ground\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "burrow"
     },
@@ -8916,7 +8916,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"forced to the surface\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -8933,7 +8933,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"emerge\", \"from the ground\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "emerge"
     },
@@ -8950,7 +8950,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"go\", \"into another cardiac arrest\", \"!\", null, null, null, Object, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, Object.IsPlayer())",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "go"
     },
@@ -8967,7 +8967,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"go\", \"into cardiac arrest\", \"!\", null, null, null, Object, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, Object.IsPlayer())",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "go"
     },
@@ -8984,7 +8984,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"look\", \"less stricken\", null, null, null, Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "look"
     },
@@ -9001,7 +9001,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"become\", \"confused\", \"!\", null, null, null, Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "become"
     },
@@ -9018,7 +9018,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"no longer crippled\", \"!\", null, null, base.Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -9035,7 +9035,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"dazed\", null, null, null, null, Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -9103,7 +9103,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"enter\", \"a berserk fury\", \"!\", null, null, base.Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "enter"
     },
@@ -9120,7 +9120,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"become\", \"confused\", \"!\", null, null, null, Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "become"
     },
@@ -9137,7 +9137,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"begin\", \"healing\", null, null, null, Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "begin"
     },
@@ -9154,7 +9154,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"begin\", \"healing\", null, null, null, Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "begin"
     },
@@ -9171,7 +9171,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"hobbled\", \"!\", null, null, null, Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -9256,7 +9256,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"realize\", \"one of your wounds is an illusion\", null, null, null, Object, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, StopMessageUsePopup)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "realize"
     },
@@ -9273,7 +9273,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"realize\", \"your wound is an illusion\", null, null, null, Object, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, StopMessageUsePopup)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "realize"
     },
@@ -9290,7 +9290,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"realize\", \"one of your wounds is an illusion, and the pain from it suddenly stops\", null, null, null, Object, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, StopMessageUsePopup)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "realize"
     },
@@ -9307,7 +9307,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"realize\", \"your wound is an illusion, and the pain suddenly stops\", null, null, null, Object, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, StopMessageUsePopup)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "realize"
     },
@@ -9375,7 +9375,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"no longer ill\", null, null, null, base.Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -9459,7 +9459,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"fall\", \"in love with\", Beauty, null, \"!\", null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "fall"
     },
@@ -9476,7 +9476,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"start\", \"to glow\", null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "start"
     },
@@ -9493,7 +9493,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"begin\", \"meditating\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "begin"
     },
@@ -9510,7 +9510,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"paralyzed\", \"!\", null, null, null, Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -9527,7 +9527,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"have\", \"been poisoned\", \"!\", null, null, null, Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "have"
     },
@@ -9544,7 +9544,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"no longer poisoned\", \"!\", null, null, base.Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -9561,7 +9561,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"no longer poisoned\", \"!\", null, null, base.Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -9578,7 +9578,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"have\", \"been poisoned\", \"!\", null, null, null, Object, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, StartMessageUsePopup)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "have"
     },
@@ -9595,7 +9595,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"no longer poisoned\", \"!\", null, null, base.Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -9611,7 +9611,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"lie\", \"down on\", LyingOn, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, StartMessageUsePopup)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "lie"
     },
@@ -9628,7 +9628,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"lie\", \"down\", null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, StartMessageUsePopup)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "lie"
     },
@@ -9645,7 +9645,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"knocked prone\", \"!\", null, null, null, Object, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, StartMessageUsePopup)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -9661,7 +9661,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"rise\", \"from\", LyingOn, null, null, null, null, base.Object, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, UsePopup || StopMessageUsePopup)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "rise"
     },
@@ -9677,7 +9677,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"stand\", \"up from\", LyingOn, null, null, null, null, base.Object, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, UsePopup || StopMessageUsePopup)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "stand"
     },
@@ -9694,7 +9694,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"stand\", \"up\", null, null, null, base.Object, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, UsePopup || StopMessageUsePopup)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "stand"
     },
@@ -9745,7 +9745,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"reduced to dust\", \"!\", null, null, null, gameObject, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, StartMessageUsePopup)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -9761,7 +9761,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"rust\", null, null, null, null, null, gameObject2, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, StartMessageUsePopup)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "rust"
     },
@@ -9778,7 +9778,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"start\", \"scintillating in {{rainbow|prismatic hues}}\", \"!\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "start"
     },
@@ -9795,7 +9795,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"stop\", \"scintillating\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "stop"
     },
@@ -9812,7 +9812,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"begin\", \"to flicker in and out of corporeality\", null, null, null, Object, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "begin"
     },
@@ -9829,7 +9829,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"assume\", \"full corporeal form again\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "assume"
     },
@@ -9846,7 +9846,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"raise\", Shield, \"in wall formation\", \"!\", null, null, Object, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "raise"
     },
@@ -9880,7 +9880,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"stand\", \"up\", null, null, null, base.Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "stand"
     },
@@ -9897,7 +9897,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"shake\", \"the spores off\", null, null, null, base.Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "shake"
     },
@@ -9914,7 +9914,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"have\", \"been poisoned\", \"!\", null, null, null, Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "have"
     },
@@ -9948,7 +9948,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"break\", \"free\", \"!\", null, null, base.Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "break"
     },
@@ -9965,7 +9965,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"stunned\", \"!\", null, null, null, Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -9982,7 +9982,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"remain\", \"stunned\", \"!\", null, null, null, base.Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "remain"
     },
@@ -9999,7 +9999,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"stunned\", \"!\", null, null, null, base.Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -10015,7 +10015,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"submerge\", null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "submerge"
     },
@@ -10031,7 +10031,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"emerge\", \"from\", gameObject, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: true, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "emerge"
     },
@@ -10048,7 +10048,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"forced to the surface\", null, null, null, null, base.Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -10065,7 +10065,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"suppressed\", \"!\", null, null, null, Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -10082,7 +10082,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"overwhelmed with terror\", \"!\", null, null, null, Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -10099,7 +10099,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"enter\", \"a trance\", \"!\", null, null, Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "enter"
     },
@@ -10116,7 +10116,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"spit\", \"a stream of corrosive acid\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "spit"
     },
@@ -10133,7 +10133,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"impel\", \"plants to burgeon from the ground\", \"!\", null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "impel"
     },
@@ -10150,7 +10150,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"dig\", \"a passage up\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "dig"
     },
@@ -10167,7 +10167,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"dig\", \"a passage down\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "dig"
     },
@@ -10200,7 +10200,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"tighten\", CarapaceObject, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, ParentObject, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "tighten"
     },
@@ -10217,7 +10217,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"peer\", \"into another space\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "peer"
     },
@@ -10267,7 +10267,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"take\", \"control of\", defender, null, \"!\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "take"
     },
@@ -10301,7 +10301,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"discharge\", \"an electrical arc\", \"!\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "discharge"
     },
@@ -10352,7 +10352,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"drink\", \"the juice from\", E.Item, \"but don't seem to retain any of it\", null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "drink"
     },
@@ -10368,7 +10368,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"touch\", E.Item)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "touch"
     },
@@ -10384,7 +10384,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"touch\", E.Item, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "touch"
     },
@@ -10418,7 +10418,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"seem\", \"to have absorbed some of the electrical charge\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "seem"
     },
@@ -10435,7 +10435,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"emit\", \"an electromagnetic pulse\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "emit"
     },
@@ -10452,7 +10452,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"assume\", \"a menacing pose\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "assume"
     },
@@ -10469,7 +10469,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"conjure\", \"a {{B|wall of force}}\", \"!\", null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "conjure"
     },
@@ -10519,7 +10519,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"focus\", Projectile, null, null, null, null, ParentObject, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, ParentObject, null, DescribeSubjectDirection: true, DescribeSubjectDirectionLate: false, Target == The.Player.CurrentCell)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "focus"
     },
@@ -10552,7 +10552,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"lock\", \"onto\", target, null, null, null, null, null, target)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "lock"
     },
@@ -10568,7 +10568,7 @@
       "needs_runtime": false,
       "pattern": "physics.DidXToY(\"take\", preposition, projectile, null, null, null, null, null, Object, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, parentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "take"
     },
@@ -10585,7 +10585,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"start\", \"to shine over the full spectrum\", \"!\", null, null, ParentObject, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "start"
     },
@@ -10602,7 +10602,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"shift\", \"spacetime in the local region\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "shift"
     },
@@ -10652,7 +10652,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"charge\", null, \"!\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "charge"
     },
@@ -10668,7 +10668,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"are\", \"stopped in \" + ParentObject.its + \" tracks by\", firstObjectWithPropertyOrTag, null, \"!\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -10684,7 +10684,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"are\", \"stopped in \" + ParentObject.its + \" tracks by\", item, null, \"!\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -10700,7 +10700,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"are\", \"stopped in \" + ParentObject.its + \" tracks by\", item3, null, \"!\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -10716,7 +10716,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"are\", \"stopped in \" + ParentObject.its + \" tracks by\", item4, null, \"!\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -10733,7 +10733,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"stomp\", \"with bestial fury\", \"!\", null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "stomp"
     },
@@ -10750,7 +10750,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"fall\", \"asleep\", \"!\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "fall"
     },
@@ -10767,7 +10767,7 @@
       "needs_runtime": false,
       "pattern": "Object.Physics.DidX(\"swim\", \"before your eyes\", \"!\", null, null, Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "swim"
     },
@@ -10783,7 +10783,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"cohere\", null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "cohere"
     },
@@ -10834,7 +10834,7 @@
       "needs_runtime": false,
       "pattern": "Messaging.XDidYToZ(E.Defender, \"are\", \"shamed by\", E.Defender, \"reflection\", \"!\", null, null, null, E.Defender, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -10851,7 +10851,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"flip\", \"polarity\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "flip"
     },
@@ -10868,7 +10868,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"spit\", \"a pool of slime\", \"!\", null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "spit"
     },
@@ -10885,7 +10885,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"spew\", \"a pool of stinking liquid\", \"!\", null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "spew"
     },
@@ -10919,7 +10919,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"erupt\", \"into flames\", \"!\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "erupt"
     },
@@ -10987,7 +10987,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"dash\", \"through a tunnel in spacetime\", null, null, null, ParentObject, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "dash"
     },
@@ -11004,7 +11004,7 @@
       "needs_runtime": false,
       "pattern": "DidXToYWithZ(\"hook\", combatTarget, \"with\", primaryWeaponOfType, null, \"!\", null, null, null, combatTarget, UseFullNames: false, IndefiniteSubject: false, IndefiniteDirectObject: false, IndefiniteIndirectObject: false, IndefiniteDirectObjectForOthers: false, IndefiniteIndirectObjectForOthers: false, PossessiveDirectObject: false, PossessiveIndirectObject: false, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "hook"
     },
@@ -11037,7 +11037,7 @@
       "needs_runtime": false,
       "pattern": "cudgel_Slam.DidXToY(\"slam\", \"through\", gameObject2, null, null, null, null, attacker, colorAsBadFor)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "slam"
     },
@@ -11053,7 +11053,7 @@
       "needs_runtime": false,
       "pattern": "cudgel_Slam2.DidXToY(\"slam\", \"through\", gameObject3, null, null, null, null, attacker, colorAsBadFor)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "slam"
     },
@@ -11069,7 +11069,7 @@
       "needs_runtime": false,
       "pattern": "cudgel_Slam3.DidXToY(\"attempt\", \"to slam into\", gameObject4, null, \"!\", null, null, attacker, colorAsBadFor)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "attempt"
     },
@@ -11103,7 +11103,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"shake\", \"off the stun\", null, null, color2.ToString() ?? \"\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "shake"
     },
@@ -11120,7 +11120,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"launch\", \"into a flurry of attacks\", \"!\", null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "launch"
     },
@@ -11154,7 +11154,7 @@
       "needs_runtime": false,
       "pattern": "Actor.Physics.DidXToY(\"stare\", \"at\", list[0], \"menacingly\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "stare"
     },
@@ -11204,7 +11204,7 @@
       "needs_runtime": false,
       "pattern": "DidXToYWithZ(\"slam\", \"into\", TargetObject, \"with\", ShieldObj, null, \"!\", null, null, IndirectObjectPossessedBy: ParentObject, ColorAsGoodFor: ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "slam"
     },
@@ -11220,7 +11220,7 @@
       "needs_runtime": false,
       "pattern": "DidXToYWithZ(\"slam\", \"into\", TargetObject, \"with\", ShieldObj, null, \"!\", null, null, IndirectObjectPossessedBy: ParentObject, ColorAsGoodFor: ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "slam"
     },
@@ -11236,7 +11236,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"attempt\", \"to hobble\", combatTarget, null, null, null, null, null, combatTarget)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "attempt"
     },
@@ -11270,7 +11270,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"smash\", \"through the floor with a block of fulcrete\", \"!\", null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "smash"
     },
@@ -11286,7 +11286,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"howl\", null, \"!\", null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "howl"
     },
@@ -11303,7 +11303,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"charge\", combatTarget, null, \"!\", null, null, null, combatTarget.IsPlayer() ? combatTarget : null)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "charge"
     },
@@ -11319,7 +11319,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"are\", \"stopped in \" + ParentObject.its + \" tracks by\", gameObject2, null, \"!\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -11335,7 +11335,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"charge\", \"right through\", gameObject, null, \"!\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "charge"
     },
@@ -11351,7 +11351,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"charge\", \"right past\", gameObject, null, \"!\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "charge"
     },
@@ -11368,7 +11368,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"charge\", gameObject, \", but\" + ParentObject.GetVerb(\"fail\") + \" to make contact\", \"!\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "charge"
     },
@@ -11435,7 +11435,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"deploy\", gameObject2, null, null, null, null, ParentObject, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "deploy"
     },
@@ -11453,7 +11453,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Timed ? \"set\" : \"lay\""
+      "verb": "Timed ? \"set\" : \"lay\"",
+      "note": "VARIABLE_VERB: verb parameter is 'Timed ? \"set\" : \"lay\"'"
     },
     {
       "column": 4,
@@ -11468,7 +11469,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"drop\", \"something\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "drop"
     },
@@ -11484,7 +11485,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"start\", \"interfacing with\", gameObject, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, UsePopup: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "start"
     },
@@ -11501,7 +11502,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"back on the ambient broadcast power grid\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -11518,7 +11519,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"leaving the ambient broadcast power grid and transitioning to backup power\", null, null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -11534,7 +11535,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"explode\", null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "explode"
     },
@@ -11550,7 +11551,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"disappear\", null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "disappear"
     },
@@ -11566,7 +11567,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"explode\", null, \"!\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "explode"
     },
@@ -11583,7 +11584,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"blink\", \"away from the danger\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "blink"
     },
@@ -11618,7 +11619,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 4,
@@ -11635,7 +11637,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "verb"
+      "verb": "verb",
+      "note": "VARIABLE_VERB: verb parameter is 'verb'"
     },
     {
       "column": 4,
@@ -11649,7 +11652,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"break\", null, null, null, null, null, ParentObject.Equipped)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "break"
     },
@@ -11665,7 +11668,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"plop\", null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog, Actor.IsPlayer())",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "plop"
     },
@@ -11682,7 +11685,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"make\", \"no sound\", null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog, Actor.IsPlayer())",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "make"
     },
@@ -11698,7 +11701,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"explode\", null, \"!\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "explode"
     },
@@ -11714,7 +11717,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"destabilize\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "destabilize"
     },
@@ -11731,7 +11734,7 @@
       "needs_runtime": false,
       "pattern": "Messaging.XDidYToZ(ParentObject, \"produce\", \"a clone of\", Target, \"in a flurry of {{C|flashing chrome}} and {{cloning|spurting liquid}}\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "produce"
     },
@@ -11748,7 +11751,7 @@
       "needs_runtime": false,
       "pattern": "Attacker.Physics.DidX(\"swoop\", \"down to attack\", null, null, null, Attacker)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "swoop"
     },
@@ -11764,7 +11767,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"prick\", E.Object, \"with \" + ParentObject.its + \" neuronal thorns\", null, null, null, null, E.Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "prick"
     },
@@ -11781,7 +11784,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"crumble\", \"to dust\", \"!\", null, null, null, gameObjectParameter)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "crumble"
     },
@@ -11798,7 +11801,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"filch\", gameObject2, null, \"!\", null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "filch"
     },
@@ -11814,7 +11817,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"stir\", null, null, null, null, null, IComponent<GameObject>.ThePlayer)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "stir"
     },
@@ -11830,7 +11833,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"sleep\", null, null, null, null, IComponent<GameObject>.ThePlayer)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "sleep"
     },
@@ -11863,7 +11866,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"tinker\", \"up\", gameObject5, null, \"!\", null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: true, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "tinker"
     },
@@ -11881,7 +11884,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "ActivationVerb"
+      "verb": "ActivationVerb",
+      "note": "VARIABLE_VERB: verb parameter is 'ActivationVerb'"
     },
     {
       "column": 4,
@@ -11896,7 +11900,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"start\", \"crackling\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "start"
     },
@@ -11912,7 +11916,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"drop\", gameObject2, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "drop"
     },
@@ -11928,7 +11932,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"detonate\", null, \"!\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "detonate"
     },
@@ -11944,7 +11948,7 @@
       "needs_runtime": false,
       "pattern": "Sitter.Physics.DidXToY(\"eject\", (Source == ParentObject) ? \"with\" : \"from\", Source, null, \"!\", null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, Source, !flag, DescribeSubjectDirectionLate: false, AlwaysVisible: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "eject"
     },
@@ -11961,7 +11965,7 @@
       "needs_runtime": false,
       "pattern": "gameObject.Physics.DidX(\"lock\", \"in place\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "lock"
     },
@@ -11977,7 +11981,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"explode\", null, \"!\", null, null, null, IComponent<GameObject>.ThePlayer)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "explode"
     },
@@ -11993,7 +11997,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"explode\", null, \"!\", null, null, null, IComponent<GameObject>.ThePlayer)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "explode"
     },
@@ -12009,7 +12013,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"refract\", gameObjectParameter, \"into \" + Grammar.Cardinal(num2) + \" additional \" + ((num2 == 1) ? \"clone\" : \"clones\"), null, null, null, null, gameObjectParameter)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "refract"
     },
@@ -12026,7 +12030,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"try\", \"to refract\", gameObjectParameter, \"but fails to push through the normality lattice in the local region of spacetime\", null, null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "try"
     },
@@ -12042,7 +12046,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"melt\", \"through the floor and\" + ParentObject.GetVerb(\"descend\") + \" with\", part.Engulfed, null, null, null, null, null, part.Engulfed)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "melt"
     },
@@ -12058,7 +12062,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"hand\", Engulfed, \"off\", null, null, null, null, Engulfed)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "hand"
     },
@@ -12074,7 +12078,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"disappear\", null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "disappear"
     },
@@ -12090,7 +12094,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"explode\", null, \"!\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "explode"
     },
@@ -12106,7 +12110,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"explode\", null, \"!\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "explode"
     },
@@ -12157,7 +12161,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"explode\", \"with a flash\", \"!\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "explode"
     },
@@ -12174,7 +12178,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"collapse\", \"under the pressure of normality\", null, null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "collapse"
     },
@@ -12191,7 +12195,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"collapse\", \"under the pressure of normality\", null, null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "collapse"
     },
@@ -12207,7 +12211,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"explode\", null, \"!\", null, null, null, Actor)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "explode"
     },
@@ -12223,7 +12227,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"explode\", null, \"!\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "explode"
     },
@@ -12256,7 +12260,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"pass\", \"through\", gameObject, null, \"!\", null, null, gameObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "pass"
     },
@@ -12272,7 +12276,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"grab\", The.Player, \"and holds you in place\", null, null, null, null, The.Player)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "grab"
     },
@@ -12288,7 +12292,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"implode\", null, \"!\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "implode"
     },
@@ -12305,7 +12309,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"teleport\", gameObjectParameter, \"to \" + ParentObject.its + \" lair\", \"!\", null, null, null, gameObjectParameter)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "teleport"
     },
@@ -12321,7 +12325,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"explode\", null, \"!\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "explode"
     },
@@ -12339,7 +12343,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "HeatVerb"
+      "verb": "HeatVerb",
+      "note": "VARIABLE_VERB: verb parameter is 'HeatVerb'"
     },
     {
       "column": 4,
@@ -12354,7 +12359,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"revealed\", \"!\", null, null, null, null, UseFullNames: false, IndefiniteSubject: true, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -12370,7 +12375,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"disappear\", null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "disappear"
     },
@@ -12386,7 +12391,7 @@
       "needs_runtime": false,
       "pattern": "gameObject.Physics.DidX(\"appear\", null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: true, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "appear"
     },
@@ -12402,7 +12407,7 @@
       "needs_runtime": false,
       "pattern": "Hologram.Physics.DidX(\"disappear\", null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: true, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "disappear"
     },
@@ -12418,7 +12423,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"strike\", null, \"!\", null, null, null, E.Object)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "strike"
     },
@@ -12451,7 +12456,7 @@
       "needs_runtime": false,
       "pattern": "tau.Physics.DidX(\"disappear\", null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "disappear"
     },
@@ -12467,7 +12472,7 @@
       "needs_runtime": false,
       "pattern": "companion.Physics.DidX(\"disappear\", null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "disappear"
     },
@@ -12483,7 +12488,7 @@
       "needs_runtime": false,
       "pattern": "Actor.Physics.DidXToY(\"are\", \"out of phase with\", ParentObject, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: true, FromDialog: false, Actor.IsPlayerControlled())",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -12499,7 +12504,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"refuse\", Actor, \"entry\", null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: true, FromDialog: false, Actor.IsPlayerControlled())",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "refuse"
     },
@@ -12515,7 +12520,7 @@
       "needs_runtime": false,
       "pattern": "Actor.Physics.DidXToY(\"cannot\", \"reach\", ParentObject, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: true, FromDialog: false, Actor.IsPlayerControlled())",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "cannot"
     },
@@ -12531,7 +12536,7 @@
       "needs_runtime": false,
       "pattern": "Actor.Physics.DidXToY(\"are\", \"too large to enter\", ParentObject, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: true, FromDialog: false, Actor.IsPlayerControlled())",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -12547,7 +12552,7 @@
       "needs_runtime": false,
       "pattern": "Actor.Physics.DidXToY(\"are\", \"unable to enter\", ParentObject, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: true, FromDialog: false, Actor.IsPlayerControlled())",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -12563,7 +12568,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"equip\", gameObject2, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "equip"
     },
@@ -12579,7 +12584,7 @@
       "needs_runtime": false,
       "pattern": "DidXToYWithZ(\"take\", gameObjectParameter, \"from\", gameObjectParameter2, text2)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "take"
     },
@@ -12595,7 +12600,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"take\", gameObjectParameter, text2)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "take"
     },
@@ -12611,7 +12616,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"take\", gameObjectParameter)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "take"
     },
@@ -12627,7 +12632,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"drop\", gameObjectParameter4)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "drop"
     },
@@ -12643,7 +12648,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"unequip\", Object3, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "unequip"
     },
@@ -12662,7 +12667,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 5,
@@ -12678,7 +12684,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 5,
@@ -12695,7 +12702,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 5,
@@ -12711,7 +12719,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 5,
@@ -12726,7 +12735,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"cool\", \"into a block of shale\", null, null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "cool"
     },
@@ -12743,7 +12752,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"cool\", \"into a block of shale\", null, null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "cool"
     },
@@ -12760,7 +12769,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"gain\", \"a level\", \"!\", null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "gain"
     },
@@ -12776,7 +12785,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"dim\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "dim"
     },
@@ -12792,7 +12801,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"brighten\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "brighten"
     },
@@ -12825,7 +12834,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"lunge\", \"at\", combatTarget2, null, null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "lunge"
     },
@@ -12841,7 +12850,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"lunge\", \"away from\", combatTarget3, null, null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "lunge"
     },
@@ -12857,7 +12866,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"lunge\", \"at\", combatTarget4, null, null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "lunge"
     },
@@ -12873,7 +12882,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"swipe\", ParentObject.its + \" blade at\", combatTarget5, null, null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "swipe"
     },
@@ -12890,7 +12899,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"emit\", gameObject5, null, \"!\", null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: true, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, flag2, useVisibilityOf)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "emit"
     },
@@ -12940,7 +12949,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"disappear\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "disappear"
     },
@@ -12956,7 +12965,7 @@
       "needs_runtime": false,
       "pattern": "gameObject.Physics.DidX(\"appear\", null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "appear"
     },
@@ -12973,7 +12982,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"absorb\", \"a chord of\", From, \"light\", null, null, null, ParentObject, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "absorb"
     },
@@ -12989,7 +12998,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"explode\", null, \"!\", null, null, null, holder, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, UsePopup: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "explode"
     },
@@ -13005,7 +13014,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"explode\", null, \"!\", null, null, null, IComponent<GameObject>.ThePlayer)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "explode"
     },
@@ -13021,7 +13030,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"explode\", null, \"!\", null, null, null, IComponent<GameObject>.ThePlayer)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "explode"
     },
@@ -13038,7 +13047,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"teach\", E.Actor, cookingRecipe.GetDisplayName(), \"!\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "teach"
     },
@@ -13054,7 +13063,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"explode\", null, \"!\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "explode"
     },
@@ -13104,7 +13113,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"collide\", \"with\", item2)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "collide"
     },
@@ -13122,7 +13131,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "LeaveVerb"
+      "verb": "LeaveVerb",
+      "note": "VARIABLE_VERB: verb parameter is 'LeaveVerb'"
     },
     {
       "column": 8,
@@ -13138,7 +13148,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "ArriveVerb"
+      "verb": "ArriveVerb",
+      "note": "VARIABLE_VERB: verb parameter is 'ArriveVerb'"
     },
     {
       "column": 4,
@@ -13153,7 +13164,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"continue\", \"being\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "continue"
     },
@@ -13222,7 +13233,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 6,
@@ -13237,7 +13249,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"swim\", \"before your eyes\", \"!\", null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "swim"
     },
@@ -13254,7 +13266,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"come\", \"to a complete stop\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "come"
     },
@@ -13271,7 +13283,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"emit\", \"a {{fiery|plume of flame}}\", \"!\", null, null, null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, UsePopups)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "emit"
     },
@@ -13287,7 +13299,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"pick\", \"up\", item)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "pick"
     },
@@ -13303,7 +13315,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"stare\", null, null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "stare"
     },
@@ -13319,7 +13331,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"charge\", null, \"!\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "charge"
     },
@@ -13335,7 +13347,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"are\", \"stopped in \" + ParentObject.its + \" tracks by\", firstObjectWithPropertyOrTag, null, \"!\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -13351,7 +13363,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"run\", \"over\", item, null, null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "run"
     },
@@ -13367,7 +13379,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"are\", \"stopped in \" + ParentObject.its + \" tracks by\", item, null, \"!\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -13384,7 +13396,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"permanently drain\", gameObjectParameter5, Statistic.GetStatNarration(Stat) + \" by \" + num + \" \" + text2, \"!\", null, null, null, gameObjectParameter5, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: true, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, flag)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "permanently drain"
     },
@@ -13400,7 +13412,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"shatter\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "shatter"
     },
@@ -13417,7 +13429,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"lapse\", \"back into hibernation\", null, null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "lapse"
     },
@@ -13451,7 +13463,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"collapse\", \"under the pressure of normality\", null, null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "collapse"
     },
@@ -13468,7 +13480,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"come\", \"into contact with\", GO, \"and both explode\", \"!\", null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, usePopup)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "come"
     },
@@ -13484,7 +13496,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"destabilize\", null, \"!\", null, null, null, IComponent<GameObject>.ThePlayer)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "destabilize"
     },
@@ -13502,7 +13514,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "SpawnVerb"
+      "verb": "SpawnVerb",
+      "note": "VARIABLE_VERB: verb parameter is 'SpawnVerb'"
     },
     {
       "column": 4,
@@ -13518,7 +13531,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "SpawnVerb"
+      "verb": "SpawnVerb",
+      "note": "VARIABLE_VERB: verb parameter is 'SpawnVerb'"
     },
     {
       "column": 3,
@@ -13532,7 +13546,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"hiss\", null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog, Actor.IsPlayer())",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "hiss"
     },
@@ -13549,7 +13563,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"are\", \"locked, and you don't have the key\", null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -13565,7 +13579,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"pour\", \"fresh water over\", ParentObject, null, null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "pour"
     },
@@ -13581,7 +13595,7 @@
       "needs_runtime": false,
       "pattern": "DidXToYWithZ(\"pour\", \"fresh water from\", gameObject, \"over\", ParentObject, null, null, null, null, ParentObject, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteDirectObject: false, IndefiniteIndirectObject: false, IndefiniteDirectObjectForOthers: true, IndefiniteIndirectObjectForOthers: false, PossessiveDirectObject: false, PossessiveIndirectObject: false, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "pour"
     },
@@ -13598,7 +13612,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"take\", \"a sip of fresh water\", null, null, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "take"
     },
@@ -13614,7 +13628,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"take\", \"a sip of fresh water from\", gameObject, null, null, null, null, ParentObject, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, ParentObject)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "take"
     },
@@ -13631,7 +13645,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"extrude\", gameObject, null, \"!\", null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: true, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, E.Actor.IsPlayer())",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "extrude"
     },
@@ -13647,7 +13661,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"detonate\", null, \"!\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "detonate"
     },
@@ -13663,7 +13677,7 @@
       "needs_runtime": false,
       "pattern": "DidXToY(\"consume\", item)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "consume"
     },
@@ -13696,7 +13710,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"disappear\", null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: true)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "disappear"
     },
@@ -13712,7 +13726,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"explode\", null, \"!\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "explode"
     },
@@ -13728,7 +13742,7 @@
       "needs_runtime": false,
       "pattern": "DidX(\"discorporate\", null, \"!\")",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "discorporate"
     },
@@ -13744,7 +13758,7 @@
       "needs_runtime": false,
       "pattern": "gameObject.Physics.DidXToY(\"are\", flag ? \"reshaped at\" : \"transported to\", activePartFirstSubject, null, \"!\", null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: false, IndefiniteObjectForOthers: false, PossessiveObject: false, null, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, E.Actor.IsPlayer())",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -13777,7 +13791,7 @@
       "needs_runtime": false,
       "pattern": "Messaging.XDidY(Object, \"overheat\", null, \"!\", null, null, null, null, UseFullNames: false, IndefiniteSubject: false, holder, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, UsePopup: false, holder)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "overheat"
     },
@@ -13795,7 +13809,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "DeathVerb"
+      "verb": "DeathVerb",
+      "note": "VARIABLE_VERB: verb parameter is 'DeathVerb'"
     },
     {
       "column": 8,
@@ -13811,7 +13826,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "GetTagOrStringProperty(\"CustomDeathVerb\", \"die\")"
+      "verb": "GetTagOrStringProperty(\"CustomDeathVerb\", \"die\")",
+      "note": "VARIABLE_VERB: verb parameter is 'GetTagOrStringProperty(\"CustomDeathVerb\", \"die\")'"
     },
     {
       "column": 8,
@@ -13825,7 +13841,7 @@
       "needs_runtime": false,
       "pattern": "Brain.DidX(\"die\", null, \"!\", null, null, null, this, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, AlwaysUsePopups)",
       "sink": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "die"
     },
@@ -13844,7 +13860,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -13861,7 +13878,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -13878,7 +13896,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -13895,7 +13914,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -13912,7 +13932,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -13929,7 +13950,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -13946,7 +13968,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -13963,7 +13986,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -13980,7 +14004,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -13997,7 +14022,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14014,7 +14040,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14031,7 +14058,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14048,7 +14076,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14065,7 +14094,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14082,7 +14112,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14116,7 +14147,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14133,7 +14165,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14150,7 +14183,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14167,7 +14201,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14184,7 +14219,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14201,7 +14237,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14218,7 +14255,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14235,7 +14273,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14252,7 +14291,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14269,7 +14309,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14286,7 +14327,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14303,7 +14345,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14320,7 +14363,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14337,7 +14381,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 3,
@@ -14354,7 +14399,8 @@
       "sink": "DidX",
       "status": "needs_patch",
       "type": "MessageFrame",
-      "verb": "Verb"
+      "verb": "Verb",
+      "note": "VARIABLE_VERB: verb parameter is 'Verb'"
     },
     {
       "column": 18,
