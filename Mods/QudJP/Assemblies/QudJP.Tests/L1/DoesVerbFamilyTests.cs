@@ -1046,7 +1046,16 @@ public sealed class DoesVerbFamilyTests
 
     [TestCase("As the prism shatters, a reflection of the 熊 is caught on the limen of realities and appears out of nowhere.", "プリズムが砕けると、熊の反射像が現実の狭間に捕らわれ、どこからともなく現れた")]
     [TestCase("As the prism shatters, reflections of the 熊 are caught on the limen of realities and appear out of nowhere.", "プリズムが砕けると、熊の反射像が現実の狭間に捕らわれ、どこからともなく現れた")]
+    [TestCase("{{g|As the prism shatters, a reflection of the 熊 is caught on the limen of realities and appears out of nowhere.}}", "{{g|プリズムが砕けると、熊の反射像が現実の狭間に捕らわれ、どこからともなく現れた}}")]
     public void Translate_PrismReflectionFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    [TestCase("As the prism shatters, a reflection from the 熊 appears out of nowhere.", "As the prism shatters, a reflection from the 熊 appears out of nowhere.")]
+    [TestCase("\u0001As the prism shatters, a reflection of the 熊 is caught on the limen of realities and appears out of nowhere.", "\u0001As the prism shatters, a reflection of the 熊 is caught on the limen of realities and appears out of nowhere.")]
+    [TestCase("", "")]
+    public void Translate_PrismReflectionFamily_FallbackAndEdgeCases(string input, string expected)
     {
         AssertTranslated(input, expected);
     }
@@ -1054,7 +1063,16 @@ public sealed class DoesVerbFamilyTests
     // --- Holographic Visage Family ---
 
     [TestCase("In a glissade of light, the 熊's visage morphs into an image pleasing to the Barathrumites.", "光が滑るように走り、熊の顔貌はthe Barathrumitesに好ましい姿へと変化した")]
+    [TestCase("{{g|In a glissade of light, the 熊's visage morphs into an image pleasing to the Barathrumites.}}", "{{g|光が滑るように走り、熊の顔貌はthe Barathrumitesに好ましい姿へと変化した}}")]
     public void Translate_HolographicVisageFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    [TestCase("In a glissade of light, the 熊's visage morphs.", "In a glissade of light, the 熊's visage morphs.")]
+    [TestCase("\u0001In a glissade of light, the 熊's visage morphs into an image pleasing to the Barathrumites.", "\u0001In a glissade of light, the 熊's visage morphs into an image pleasing to the Barathrumites.")]
+    [TestCase("", "")]
+    public void Translate_HolographicVisageFamily_FallbackAndEdgeCases(string input, string expected)
     {
         AssertTranslated(input, expected);
     }

@@ -57621,7 +57621,7 @@
       "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
       "static_classification": "template_static",
       "classification_evidence": "Fixed separator/fallbacks + giver/location names — known type interpolation",
-      "exclude_reason": "proper nouns and separators only"
+      "exclude_reason": "fallback text '<unknown>' is rare and impact limited; otherwise proper nouns and separators only"
     },
     {
       "column": 3,
