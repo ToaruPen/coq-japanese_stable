@@ -28,7 +28,7 @@ from scripts.scanner.inventory import (
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INVENTORY_PATH = Path("docs/candidate-inventory.json")
 DEFAULT_OUTPUT_PATH = DEFAULT_INVENTORY_PATH
-DEFAULT_SOURCE_ROOT = Path("~/Dev/coq-decompiled")
+DEFAULT_SOURCE_ROOT = None
 _PLACEHOLDER_RE = re.compile(r"\{(?P<index>\d+)\}")
 _TIER_TWO = 2
 
@@ -129,11 +129,13 @@ def reconcile_inventory(
 
         # Verb-based evidence is recorded even for baseline/already-translated sites
         # that happen to match verb assets (hybrid coverage).
-        translated_by_verbs = (
-            reason in {"message-frame", "does-verb"}
-            or _matches_message_frame_assets(current_site, verb_index)
-            or _matches_does_verb_assets(current_site, verb_index)
-        )
+        # Skip redundant verb asset checks if reason already determined translation via verb evidence.
+        if reason in {"message-frame", "does-verb"}:
+            translated_by_verbs = True
+        else:
+            translated_by_verbs = _matches_message_frame_assets(current_site, verb_index) or _matches_does_verb_assets(
+                current_site, verb_index
+            )
 
         reconciled_sites.append(
             replace(
@@ -236,13 +238,28 @@ def _compile_verb_patterns(entries: object) -> tuple[VerbPattern, ...]:
 
 
 def _compile_placeholder_regex(template: str) -> re.Pattern[str]:
-    """Compile a `{0}`-style placeholder template into a regex."""
+    """Compile a `{0}`-style placeholder template into a regex with backreferences for repeated indices."""
     builder: list[str] = ["^"]
     last_index = 0
+    # Map each placeholder index to its capture group number (1-indexed)
+    placeholder_to_group: dict[str, int] = {}
+    next_group = 1
+
     for match in _PLACEHOLDER_RE.finditer(template):
         builder.append(re.escape(template[last_index : match.start()]))
-        builder.append("(.+?)")
+        placeholder_idx = match.group("index")
+
+        if placeholder_idx not in placeholder_to_group:
+            # First occurrence: create a new capture group
+            placeholder_to_group[placeholder_idx] = next_group
+            builder.append("(.+?)")
+            next_group += 1
+        else:
+            # Repeated occurrence: use a backreference to the same group
+            builder.append(f"\\{placeholder_to_group[placeholder_idx]}")
+
         last_index = match.end()
+
     builder.append(re.escape(template[last_index:]))
     builder.append("$")
     return re.compile("".join(builder))
@@ -257,7 +274,11 @@ def normalize_csharp_template(expression: str | None) -> str:
         return ""
 
     normalized: list[str] = []
-    placeholder_index = 0
+    # Map each distinct part (non-string-literal, non-verb) to a placeholder index
+    # to maintain positional equality for repeated references
+    part_to_placeholder: dict[str, int] = {}
+    next_placeholder_index = 0
+
     for part in _split_top_level_concat(stripped):
         if _is_string_literal(part):
             normalized.append(_unquote_string(part))
@@ -268,8 +289,11 @@ def normalize_csharp_template(expression: str | None) -> str:
             normalized.append(base_verb)
             continue
 
-        normalized.append(f"{{{placeholder_index}}}")
-        placeholder_index += 1
+        if part not in part_to_placeholder:
+            part_to_placeholder[part] = next_placeholder_index
+            next_placeholder_index += 1
+        normalized.append(f"{{{part_to_placeholder[part]}}}")
+
     return "".join(normalized)
 
 
@@ -398,7 +422,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--source-root",
-        default=str(DEFAULT_SOURCE_ROOT),
+        default=None,
         help="Path to the decompiled C# source root used for patch evidence.",
     )
     return parser.parse_args(argv)
@@ -429,7 +453,7 @@ def main(argv: list[str] | None = None) -> int:
     inventory_path = Path(args.inventory).expanduser().resolve()
     output_path = Path(args.output).expanduser().resolve()
     repo_root = Path(args.repo_root).expanduser().resolve()
-    source_root = Path(args.source_root).expanduser().resolve()
+    source_root = Path(args.source_root).expanduser().resolve() if args.source_root else None
 
     reconciled, summary = reconcile_inventory_file(
         inventory_path,
