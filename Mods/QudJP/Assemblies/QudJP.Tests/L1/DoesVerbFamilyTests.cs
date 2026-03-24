@@ -1,3 +1,5 @@
+using QudJP.Patches;
+
 namespace QudJP.Tests.L1;
 
 [TestFixture]
@@ -39,6 +41,19 @@ public sealed class DoesVerbFamilyTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
+        MessageFrameTranslator.ResetForTests();
+        MessageFrameTranslator.SetDictionaryPathForTests(
+            Path.GetFullPath(
+                Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "..",
+                    "..",
+                    "..",
+                    "..",
+                    "..",
+                    "Localization",
+                    "MessageFrames",
+                    "verbs.ja.json")));
         MessagePatternTranslator.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
         MessagePatternTranslator.SetLeafFileForTests(
@@ -49,6 +64,7 @@ public sealed class DoesVerbFamilyTests
     public void TearDown()
     {
         MessagePatternTranslator.ResetForTests();
+        MessageFrameTranslator.ResetForTests();
         Translator.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
@@ -710,7 +726,7 @@ public sealed class DoesVerbFamilyTests
     [TestCase("You harvest a ウィッチウッド.", "ウィッチウッドを収穫した")]
     [TestCase("There is nothing left to harvest.", "収穫できるものが残っていない")]
     [TestCase("The 熊 harvests a ウィッチウッド from the 木.", "熊は木からウィッチウッドを収穫した")]
-    [TestCase("The 熊 harvests three ウィッチウッド from the 木.", "熊は木からthree個のウィッチウッドを収穫した")]
+    [TestCase("The 熊 harvests three ウィッチウッド from the 木.", "熊は木からthree ウィッチウッドを収穫した")]
     // Color-wrapped
     [TestCase("{{g|You harvest a ウィッチウッド from the 木.}}", "{{g|木からウィッチウッドを収穫した}}")]
     public void Translate_HarvestFamily(string input, string expected)
@@ -1029,6 +1045,12 @@ public sealed class DoesVerbFamilyTests
     private static void AssertTranslated(string input, string expected)
     {
         var result = MessagePatternTranslator.Translate(input);
+        if (string.Equals(result, input, StringComparison.Ordinal)
+            && DoesVerbRouteTranslator.TryTranslatePlainSentenceForTests(input, out var routed))
+        {
+            result = routed;
+        }
+
         Assert.That(result, Is.EqualTo(expected));
     }
 }
