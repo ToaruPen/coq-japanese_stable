@@ -17,6 +17,7 @@ ALLOWED_ROUTES = (
     "leaf",
     "emit-message",
     "does-verb",
+    "needs-harmony-patch",
     "unclassified",
 )
 ALLOWED_ROUTE_SET = set(ALLOWED_ROUTES)

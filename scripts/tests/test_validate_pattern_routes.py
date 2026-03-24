@@ -21,6 +21,7 @@ def test_validate_pattern_routes_reports_counts_for_valid_routes(tmp_path: Path)
             {"pattern": "^You hit (.+)$", "template": "x", "route": "emit-message"},
             {"pattern": "^You are stunned$", "template": "x", "route": "leaf"},
             {"pattern": "^The (.+?) hits (.+?)$", "template": "x", "route": "message-frame"},
+            {"pattern": "^The (.+?) is exhausted!$", "template": "x", "route": "needs-harmony-patch"},
         ],
     )
 
@@ -29,6 +30,7 @@ def test_validate_pattern_routes_reports_counts_for_valid_routes(tmp_path: Path)
     assert report.counts["emit-message"] == 1
     assert report.counts["leaf"] == 1
     assert report.counts["message-frame"] == 1
+    assert report.counts["needs-harmony-patch"] == 1
     assert report.missing_routes == []
     assert report.invalid_routes == []
     assert set(report.counts) == set(ALLOWED_ROUTES)

@@ -157,6 +157,20 @@ public sealed class MessageFrameTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateXDidY_RepositoryDictionary_UsesStunnedEntry()
+    {
+        UseRepositoryDictionary();
+
+        var translated = MessageFrameTranslator.TryTranslateXDidY("スナップジョー", "are", "stunned", "!", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(sentence, Is.EqualTo("スナップジョーは気絶した！"));
+        });
+    }
+
     // --- New Tier2 tests (Task 1: #82 DidX verb entries) ---
 
     [Test]
@@ -601,6 +615,23 @@ public sealed class MessageFrameTranslatorTests
         builder.AppendLine("}");
 
         File.WriteAllText(dictionaryPath, builder.ToString(), Utf8WithoutBom);
+    }
+
+    private static void UseRepositoryDictionary()
+    {
+        var repositoryDictionaryPath = Path.GetFullPath(
+            Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "..",
+                "..",
+                "..",
+                "..",
+                "..",
+                "Localization",
+                "MessageFrames",
+                "verbs.ja.json"));
+
+        MessageFrameTranslator.SetDictionaryPathForTests(repositoryDictionaryPath);
     }
 
     private static void WriteTier1(StringBuilder builder, IEnumerable<(string verb, string text)>? entries)
