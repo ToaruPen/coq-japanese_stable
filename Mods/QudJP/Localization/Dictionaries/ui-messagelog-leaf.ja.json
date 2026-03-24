@@ -405,6 +405,18 @@
             "text": "液体の反応が止まった"
         },
         {
+            "key": "You no longer feel ill.",
+            "text": "もう気分は悪くない。"
+        },
+        {
+            "key": "{{rules|All your mental cooldowns are refreshed.}}",
+            "text": "{{rules|すべての精神系クールダウンが回復した。}}"
+        },
+        {
+            "key": "Some dimensional interlopers attempt to enter this region of spacetime, but the ambient normality field keeps them at bay.",
+            "text": "異次元からの侵入者がこの時空領域に入り込もうとするが、周囲の常在性場がそれを食い止める。"
+        },
+        {
             "key": "Your queasiness passes",
             "text": "あなたの吐き気が治まった"
         },

@@ -889,6 +889,8 @@ public sealed class DoesVerbFamilyTests
 
     // --- Queasiness/Skin/Rind Family ---
 
+    [TestCase("You feel a little queasy.", "少し吐き気がする")]
+    [TestCase("The 熊 feels a little queasy.", "熊は少し吐き気がする")]
     [TestCase("The 熊's queasiness passes.", "熊の吐き気が治まった")]
     [TestCase("Your queasiness passes.", "あなたの吐き気が治まった")]
     [TestCase("The 熊's skin itches furiously.", "熊の肌が猛烈にかゆくなった")]
@@ -1036,6 +1038,23 @@ public sealed class DoesVerbFamilyTests
     // Color-wrapped
     [TestCase("{{r|The protective force of the cherubim prevents the 冒険者 from taking anything from the reliquary.}}", "{{r|ケルビムの守護の力が冒険者を聖遺物櫃から何かを取ることを阻んでいる}}")]
     public void Translate_CherubimFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Prism Reflection Family ---
+
+    [TestCase("As the prism shatters, a reflection of the 熊 is caught on the limen of realities and appears out of nowhere.", "プリズムが砕けると、熊の反射像が現実の狭間に捕らわれ、どこからともなく現れた")]
+    [TestCase("As the prism shatters, reflections of the 熊 are caught on the limen of realities and appear out of nowhere.", "プリズムが砕けると、熊の反射像が現実の狭間に捕らわれ、どこからともなく現れた")]
+    public void Translate_PrismReflectionFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    // --- Holographic Visage Family ---
+
+    [TestCase("In a glissade of light, the 熊's visage morphs into an image pleasing to the Barathrumites.", "光が滑るように走り、熊の顔貌はthe Barathrumitesに好ましい姿へと変化した")]
+    public void Translate_HolographicVisageFamily(string input, string expected)
     {
         AssertTranslated(input, expected);
     }

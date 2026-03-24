@@ -1187,6 +1187,11 @@
     },
     {
       "verb": "feel",
+      "extra": "a little queasy",
+      "text": "少し吐き気がする"
+    },
+    {
+      "verb": "feel",
       "extra": "less stiff",
       "text": "体の硬さがほぐれた"
     },

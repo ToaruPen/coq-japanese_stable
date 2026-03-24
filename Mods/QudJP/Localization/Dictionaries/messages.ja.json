@@ -262,6 +262,11 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^You feel a little queasy[.!]?$",
+      "template": "少し吐き気がする",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^You feel (.+?)[.!]?$",
       "template": "あなたは{0}を感じた",
       "route": "emit-message"
@@ -1237,6 +1242,11 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) feels a little queasy[.!]?$",
+      "template": "{0}は少し吐き気がする",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^One of (?:the |a |an )?(.+?)(?:'s|s') wounds stops (.+?)[.!]?$",
       "template": "{0}の傷のひとつの{1}が止まった",
       "route": "emit-message"
@@ -1284,6 +1294,21 @@
     {
       "pattern": "^The protective force of the cherubim prevents (?:the |a |an )?(.+?) from taking anything from the reliquary[.!]?$",
       "template": "ケルビムの守護の力が{0}を聖遺物櫃から何かを取ることを阻んでいる",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^As the prism shatters, a reflection of (?:the |a |an )?(.+?) is caught on the limen of realities and appears out of nowhere[.!]?$",
+      "template": "プリズムが砕けると、{0}の反射像が現実の狭間に捕らわれ、どこからともなく現れた",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^As the prism shatters, reflections of (?:the |a |an )?(.+?) are caught on the limen of realities and appear out of nowhere[.!]?$",
+      "template": "プリズムが砕けると、{0}の反射像が現実の狭間に捕らわれ、どこからともなく現れた",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^In a glissade of light, (?:the |a |an )?(.+?)(?:'s|s') visage morphs into an image pleasing to (.+?)[.!]?$",
+      "template": "光が滑るように走り、{0}の顔貌は{1}に好ましい姿へと変化した",
       "route": "emit-message"
     },
     {
