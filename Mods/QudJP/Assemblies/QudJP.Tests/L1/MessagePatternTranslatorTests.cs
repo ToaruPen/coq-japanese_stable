@@ -214,14 +214,14 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
-    public void Translate_AppliesWeaponHitPatternWithHitCountAndRoll()
+    public void Translate_AppliesWeaponHitPatternWithPenetrations()
     {
         WritePatternDictionary(
-            ("^You hit \\((x\\d+)\\) for (\\d+) damage with your (.+?)[.!] \\[(.+?)\\]$", "{2}で{1}ダメージを与えた。({0}) [{3}]"));
+            ("^You hit (?:the |a |an )?(.+?) \\(x(\\d+)\\) with (?:a |an |the )?(.+?) for (\\d+) damage!$", "{2}で{0}に{3}ダメージを与えた！ (x{1})"));
 
-        var translated = MessagePatternTranslator.Translate("You hit (x2) for 3 damage with your 青銅の短剣! [15]");
+        var translated = MessagePatternTranslator.Translate("You hit the 熊 (x2) with 青銅の短剣 for 3 damage!");
 
-        Assert.That(translated, Is.EqualTo("青銅の短剣で3ダメージを与えた。(x2) [15]"));
+        Assert.That(translated, Is.EqualTo("青銅の短剣で熊に3ダメージを与えた！ (x2)"));
     }
 
     [Test]

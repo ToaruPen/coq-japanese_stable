@@ -91,10 +91,10 @@ public sealed class DoesVerbFamilyTests
 
     // Plain text
     [TestCase("The タレット can't hear you!", "タレットにはあなたの声が聞こえない！")]
-    [TestCase("The 熊 doesn't have a consciousness to appeal to.", "熊には訴えるべき意識がない。")]
+    [TestCase("The 熊 does not have a consciousness you can make psychic contact with.", "熊には精神的に接触できる意識がない。")]
     [TestCase("You don't penetrate the スナップジョー's armor!", "スナップジョーの防具を貫通できなかった！")]
     [TestCase("You can't see!", "視界がない！")]
-    [TestCase("The タレット doesn't have enough charge to fire.", "タレットはfireするのに十分なchargeがない。")]
+    [TestCase("The タレット doesn't have enough charge to function.", "タレットには機能するのに十分な充電がない")]
     // Color-wrapped (ConsequentialColor wraps full message)
     [TestCase("{{r|You don't penetrate the スナップジョー's armor!}}", "{{r|スナップジョーの防具を貫通できなかった！}}")]
     public void Translate_NegationLackFamily(string input, string expected)
@@ -959,8 +959,8 @@ public sealed class DoesVerbFamilyTests
     // --- E-Ros Teleportation Family ---
 
     [TestCase("E-Ros yells, 'I'm coming, リーダー!'", "E-Rosは「今行くよ、リーダー！」と叫んだ")]
-    // Color-wrapped
-    [TestCase("{{W|E-Ros yells, 'I'm coming, リーダー!'}}", "{{W|E-Rosは「今行くよ、リーダー！」と叫んだ}}")]
+    // Actual game format: {{W|...}} wraps inner quote only (ErosTeleportation.cs:139)
+    [TestCase("E-Ros yells, {{W|'I'm coming, リーダー!'}}", "{{W|E-Rosは「今行くよ、リーダー！」と叫んだ}}")]
     public void Translate_ErosTeleportationFamily(string input, string expected)
     {
         AssertTranslated(input, expected);

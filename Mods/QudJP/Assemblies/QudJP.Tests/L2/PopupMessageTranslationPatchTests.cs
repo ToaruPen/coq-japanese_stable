@@ -77,7 +77,8 @@ public sealed class PopupMessageTranslationPatchTests
             new DummyPopupMessageTarget().ShowPopup(
                 "Are you sure you want to delete the save game for Yashur?",
                 buttons,
-                items,
+                commandCallback: null,
+                items: items,
                 title: "Delete Yashur",
                 contextTitle: "Save Slots",
                 WantsSpecificPrompt: "ABANDON");
