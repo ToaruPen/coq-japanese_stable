@@ -24,10 +24,13 @@ internal static class MessagePatternTranslator
         new ConcurrentDictionary<string, int>(StringComparer.Ordinal);
 
     private static List<MessagePatternDefinition>? loadedPatterns;
+    private static Dictionary<string, string>? leafDictionary;
     private static string? patternFileOverride;
+    private static string? leafFileOverride;
     private static string patternLoadSummary = "MessagePatternTranslator: pattern load summary unavailable.";
     private static int loadInvocationCount;
     private const int MaxLogSourceLength = 200;
+    private const string DefaultLeafFileName = "ui-messagelog-leaf.ja.json";
     internal const int MaxUniquePatterns = 10_000;
     internal const int MaxUniqueRoutes = 1_000;
     internal const string OverflowKey = "__overflow__";
@@ -99,6 +102,79 @@ internal static class MessagePatternTranslator
     internal static void ResetForTests()
     {
         SetPatternFileForTests(null);
+        leafFileOverride = null;
+        leafDictionary = null;
+    }
+
+    internal static void SetLeafFileForTests(string? path)
+    {
+        leafFileOverride = path;
+        leafDictionary = null;
+    }
+
+    private static bool TryGetLeafTranslation(string source, out string translation)
+    {
+        var dict = GetLoadedLeafDictionary();
+        if (dict.TryGetValue(source, out var value)
+            && !string.Equals(value, source, StringComparison.Ordinal))
+        {
+            translation = value;
+            return true;
+        }
+        translation = source;
+        return false;
+    }
+
+    private static Dictionary<string, string> GetLoadedLeafDictionary()
+    {
+        var cached = leafDictionary;
+        if (cached != null)
+        {
+            return cached;
+        }
+
+        lock (SyncRoot)
+        {
+            cached = leafDictionary;
+            if (cached != null)
+            {
+                return cached;
+            }
+
+            var dict = new Dictionary<string, string>(StringComparer.Ordinal);
+            var leafPath = leafFileOverride ?? ResolveLeafFilePath();
+            if (leafPath != null && File.Exists(leafPath))
+            {
+                try
+                {
+                    var json = File.ReadAllText(leafPath, Encoding.UTF8);
+                    using var ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
+                    var serializer = new DataContractJsonSerializer(typeof(LeafDictionaryFile));
+                    if (serializer.ReadObject(ms) is LeafDictionaryFile file && file.Entries != null)
+                    {
+                        foreach (var entry in file.Entries)
+                        {
+                            if (entry.Key is { Length: > 0 } key && entry.Value is { Length: > 0 } value)
+                            {
+                                dict[key] = value;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Trace.TraceError("QudJP: failed to load leaf dictionary: {0}", ex.Message);
+                }
+            }
+            leafDictionary = dict;
+            return dict;
+        }
+    }
+
+    private static string? ResolveLeafFilePath()
+    {
+        if (leafFileOverride != null) return leafFileOverride;
+        return LocalizationAssetResolver.GetLocalizationPath("Dictionaries/" + DefaultLeafFileName);
     }
 
     private static string TranslateStripped(string source, IReadOnlyList<ColorSpan>? spans = null)
@@ -108,12 +184,11 @@ internal static class MessagePatternTranslator
             return deathTranslated;
         }
 
-        if (Translator.TryGetTranslation(source, out var exactTranslation)
-            && !string.Equals(exactTranslation, source, StringComparison.Ordinal))
+        if (TryGetLeafTranslation(source, out var exactTranslation))
         {
             DynamicTextObservability.RecordTransform(
                 nameof(MessagePatternTranslator),
-                "exact-dictionary",
+                "leaf-dictionary",
                 source,
                 exactTranslation);
             return spans is null || spans.Count == 0
@@ -528,5 +603,22 @@ internal static class MessagePatternTranslator
 
         [DataMember(Name = "template")]
         public string? Template { get; set; }
+    }
+
+    [DataContract]
+    private sealed class LeafDictionaryFile
+    {
+        [DataMember(Name = "entries")]
+        public List<LeafEntry>? Entries { get; set; }
+    }
+
+    [DataContract]
+    private sealed class LeafEntry
+    {
+        [DataMember(Name = "key")]
+        public string? Key { get; set; }
+
+        [DataMember(Name = "text")]
+        public string? Value { get; set; }
     }
 }
