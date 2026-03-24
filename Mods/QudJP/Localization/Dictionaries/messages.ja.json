@@ -94,17 +94,17 @@
     {
       "pattern": "^(?:The )?(.+) hits you for (\\d+) damage[.!]?$",
       "template": "{0}の攻撃で{1}ダメージを受けた",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The )?(.+) crits you for (\\d+) damage[.!]?$",
       "template": "{0}の会心の一撃で{1}ダメージを受けた",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The )?(.+) attacks you[.!]?$",
       "template": "{0}があなたを攻撃してきた",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You miss with your (.+?)[.!] \\[(.+?) vs (.+?)\\]$",
@@ -119,12 +119,12 @@
     {
       "pattern": "^(?:The )?(.+) misses you[.!]?$",
       "template": "{0}の攻撃は外れた",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(.+) switches to aggressive stance[.!]?$",
       "template": "{0}は攻撃態勢に入った。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You take (\\d+) damage from (.+?)の freezing effect![.!]?$",
@@ -134,7 +134,7 @@
     {
       "pattern": "^(.+) emits a freezing ray from (?:his|her|its|their) hands![.!]?$",
       "template": "{0}は手から凍結光線を放った！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You block (.+)'s attack[.!]?$",
@@ -184,37 +184,37 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) and (?:the |a |an )?(.+?) collide and fall to the ground[.!]?$",
       "template": "{0}と{1}がぶつかり合い、地面に落ちた",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) to the ground!$",
       "template": "{0}は地面に倒れた！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) to the ground\\.$",
       "template": "{0}は地面に倒れた。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) to the ground$",
       "template": "{0}は地面に倒れた",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) asleep!$",
       "template": "{0}は眠りに落ちた！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) asleep\\.$",
       "template": "{0}は眠りに落ちた。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) asleep$",
       "template": "{0}は眠りに落ちた",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You pick up (.+?)[.!]?$",
@@ -259,12 +259,12 @@
     {
       "pattern": "^(.+?) is destroyed[.!]?$",
       "template": "{0}は破壊された",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(.+?) dies[.!]?$",
       "template": "{0}は死んだ",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You feel (.+?)[.!]?$",
@@ -324,32 +324,32 @@
     {
       "pattern": "^(?:The )?(.+) hits \\((x\\d+)\\) for (\\d+) damage with (?:his|her|its) (.+?)[.!] \\[(.+?)\\]$",
       "template": "{0}の{3}で{2}ダメージを受けた。({1}) [{4}]",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The )?(.+) hits \\((x\\d+)\\) for (\\d+) damage with their (.+?)[.!] \\[(.+?)\\]$",
       "template": "{0}の{3}で{2}ダメージを受けた。({1}) [{4}]",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The )?(.+) critically hits \\((x\\d+)\\) for (\\d+) damage with (?:his|her|its) (.+?)[.!] \\[(.+?)\\]$",
       "template": "{0}の{3}が会心し、{2}ダメージを受けた。({1}) [{4}]",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The )?(.+) critically hits \\((x\\d+)\\) for (\\d+) damage with their (.+?)[.!] \\[(.+?)\\]$",
       "template": "{0}の{3}が会心し、{2}ダメージを受けた。({1}) [{4}]",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The )?(.+) misses you with (?:his|her|its) (.+?)[.!] \\[(.+?) vs (.+?)\\]$",
       "template": "{0}の{1}は外れた。[{2} vs {3}]",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The )?(.+) misses you with their (.+?)[.!] \\[(.+?) vs (.+?)\\]$",
       "template": "{0}の{1}は外れた。[{2} vs {3}]",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically (?:hits|hit) you \\(x(\\d+)\\) with (?:a |an |the )?(.+?) for (\\d+) damage!$",
@@ -434,32 +434,32 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage!$",
       "template": "{0}は{2}で{1}に{3}ダメージを与えた！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage\\.$",
       "template": "{0}は{2}で{1}に{3}ダメージを与えた。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage$",
       "template": "{0}は{2}で{1}に{3}ダメージを与えた",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) for (\\d+) damage!$",
       "template": "{0}は{1}に{2}ダメージを与えた！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) for (\\d+) damage\\.$",
       "template": "{0}は{1}に{2}ダメージを与えた。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) for (\\d+) damage$",
       "template": "{0}は{1}に{2}ダメージを与えた",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically (?:hits|hit) (?:the |a |an )?(?!you)(.+?) \\(x(\\d+)\\) with (?:a |an |the )?(.+?)!$",
@@ -504,32 +504,32 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )?(?!you)(.+?) with (?:a |an |the )?(.+?)! \\[(.+?) vs (.+?)\\]$",
       "template": "{0}は{2}で{1}への攻撃を外した！ [{3} vs {4}]",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )?(?!you)(.+?) with (?:a |an |the )?(.+?)\\. \\[(.+?) vs (.+?)\\]$",
       "template": "{0}は{2}で{1}への攻撃を外した。 [{3} vs {4}]",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )?(?!you)(.+?) with (?:a |an |the )?(.+?) \\[(.+?) vs (.+?)\\]$",
       "template": "{0}は{2}で{1}への攻撃を外した [{3} vs {4}]",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )?(?!you)(.+?)!$",
       "template": "{0}は{1}への攻撃を外した！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )?(?!you)(.+?)\\.$",
       "template": "{0}は{1}への攻撃を外した。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses (?:the |a |an )?(?!you)(.+?)$",
       "template": "{0}は{1}への攻撃を外した",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You don't penetrate (?:the )?(.+?)の armor with your (.+?)[.!] \\[(.+?)\\]$",
@@ -539,32 +539,32 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:can't|cannot) hear you!$",
       "template": "{0}にはあなたの声が聞こえない！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:can't|cannot) hear you\\.$",
       "template": "{0}にはあなたの声が聞こえない。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:can't|cannot) hear you$",
       "template": "{0}にはあなたの声が聞こえない",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a consciousness to appeal to!$",
       "template": "{0}には訴えるべき意識がない！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a consciousness to appeal to\\.$",
       "template": "{0}には訴えるべき意識がない。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a consciousness to appeal to$",
       "template": "{0}には訴えるべき意識がない",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s') armor!$",
@@ -584,57 +584,57 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) seem to be working!$",
       "template": "{0}は機能していないようだ！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) seem to be working\\.$",
       "template": "{0}は機能していないようだ。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) seem to be working$",
       "template": "{0}は機能していないようだ",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have enough charge to sustain the field!$",
       "template": "{0}にはフィールドを維持するのに十分な充電がない！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have enough charge to operate[.!]?$",
       "template": "{0}には動作するのに十分な充電がない",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have enough charge to be imprinted with the current location[.!]?$",
       "template": "{0}には現在地を刻印するのに十分な充電がない",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have enough charge to function[.!]?$",
       "template": "{0}には機能するのに十分な充電がない",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) have enough (.+?) to (.+?)!$",
       "template": "{t0}は{t2}するのに十分な{t1}がない！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) have enough (.+?) to (.+?)\\.$",
       "template": "{t0}は{t2}するのに十分な{t1}がない。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) have enough (.+?) to (.+?)$",
       "template": "{t0}は{t2}するのに十分な{t1}がない",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(.+) begins bleeding from another wound[.!]?$",
       "template": "{0}はさらに出血し始めた。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^Your (?:noses?|nose) (?:begins?|begin) (.+?) more heavily[.!]?$",
@@ -659,72 +659,72 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') nose begins to bleed[.!]?$",
       "template": "{0}の鼻から血が流れ始めた",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') core begins to leak[.!]?$",
       "template": "{0}のコアから液漏れが始まった",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') brain begins to hemorrhage[.!]?$",
       "template": "{0}の脳から出血が始まった",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (?:noses?|nose) (?:begins?|begin) (.+?) more heavily[.!]?$",
       "template": "{0}の鼻からさらに激しく{1}が始まった",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (?:noses?|nose) (?:begins?|begin) (.+?)[.!]?$",
       "template": "{0}の鼻から{1}が始まった",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (?:noses?|nose) (?:stops?|stop) (.+?) quite so heavily[.!]?$",
       "template": "{0}の鼻からの{1}が少し治まった",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (?:noses?|nose) (?:stops?|stop) (.+?)[.!]?$",
       "template": "{0}の鼻からの{1}が止まった",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(.+) begins bleeding[.!]?$",
       "template": "{0}は出血し始めた。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(.+) stops bleeding[.!]?$",
       "template": "{0}の出血は止まった。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^One of (.+?)の wounds stops bleeding[.!]?$",
       "template": "{0}の傷のひとつの出血が止まった。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(.+) takes (\\d+) damage from bleeding[.!]?$",
       "template": "{0}は出血で{1}ダメージを受けた。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(.+) takes no damage from bleeding[.!]?$",
       "template": "{0}は出血でダメージを受けなかった。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(.+) becomes confused[.!]?$",
       "template": "{0}は混乱した。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(.+) resists the effects of your venom[.!]?$",
       "template": "{0}はあなたの毒に抵抗した。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You strike (.+?) with your stinger[.!]?$",
@@ -754,17 +754,17 @@
     {
       "pattern": "^A (.+?) appears here[.!]?$",
       "template": "{0}がここに現れた。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^The way is blocked by some (.+?)[.!]?$",
       "template": "{0}が道を塞いでいる。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^The way is blocked by a (.+?)[.!]?$",
       "template": "{0}が道を塞いでいる。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You stop moving because the (.+?) is in the way[.!]?$",
@@ -804,22 +804,22 @@
     {
       "pattern": "^The (.+?) harvests a (.+?)[.!]?$",
       "template": "{0}は{1}を収穫した。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^The (.+?) begins flying[.!]?$",
       "template": "{0}が飛翔し始めた。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^The (.+?) has been poisoned![.!]?$",
       "template": "{0}は毒状態になった。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^The (.+?) takes (\\d+) damage from your poison![.!]?$",
       "template": "{0}はあなたの毒で{1}ダメージを受けた。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You sit down on the (.+?)[.!]?$",
@@ -829,7 +829,7 @@
     {
       "pattern": "^(?:The )?(.+?) stands up[.!]?$",
       "template": "{0}は立ち上がった。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You disassemble the (.+?)\\. You receive tinkering bits <(.+?)>\\.[.!]?$",
@@ -839,12 +839,12 @@
     {
       "pattern": "^(.+?) takes (\\d+) damage from your freezing weapon![.!]?$",
       "template": "{0}はあなたの凍てつく武器で{1}ダメージを受けた！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^E-Ros yells, 'I'm coming, (.+?)!'$",
       "template": "E-Rosは「今行くよ、{0}！」と叫んだ",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You yell, '(.+)'$",
@@ -854,7 +854,7 @@
     {
       "pattern": "^(?:The )?(.+?) yells, '(.+)'$",
       "template": "{0}は「{1}」と叫んだ。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) utterly unresponsive[.!]?$",
@@ -894,47 +894,47 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) penetrate your armor with (.+?)! \\[(.+?)\\]$",
       "template": "{0}は{1}であなたの防具を貫通できなかった！ [{2}]",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) penetrate your armor! \\[(.+?)\\]$",
       "template": "{0}はあなたの防具を貫通できなかった！ [{1}]",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) penetrate your armor[.!]?$",
       "template": "{0}はあなたの防具を貫通できなかった",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) seem to understand you[.!]?$",
       "template": "{0}はあなたの言葉を理解していないようだ",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) seem to be able to float at this time[.!]?$",
       "template": "{0}は現時点では浮遊できないようだ",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have the skill to identify artifacts[.!]?$",
       "template": "{0}にはアーティファクトを鑑定する技能がない",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have anything like a head to conk[.!]?$",
       "template": "{0}には殴るような頭部がない",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a digital mind you can make electronic contact with[.!]?$",
       "template": "{0}にはあなたが電子接触できるデジタル精神がない",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) want a new name[.!]?$",
       "template": "{0}は新しい名前を望んでいない",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) no limbs[.!]?$",
@@ -949,7 +949,7 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:isn't|aren't) working!$",
       "template": "{0}は作動していない！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:fails|fail) to deal damage with (?:his|her|its|their) attack! \\[(.+?)\\]$",
@@ -959,7 +959,7 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) won't let you bandage (?:him|her|it|them)[.!]?$",
       "template": "{0}はあなたに包帯を巻かせない",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:beeps|beep) loudly and (?:flashes|flash) a warning glyph[.!]?$",
@@ -969,22 +969,22 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) cannot be moved[.!]?$",
       "template": "{0}は動かせない",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^Just before your demise, you are transported to safety! (?:The |the |[Aa]n? )?(.+?) (?:disintegrates|disintegrate)[.!]?$",
       "template": "死の寸前で安全な場所へ転送された！ {0}は崩壊した",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^The lost Mark of Death from the late sultanate was (.+?)\\.$",
       "template": "亡きスルタンの死の刻印は{0}だった。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^Though your affection for (.+?) endowed you with a certain wisdom, you no longer feel the tug on your heartstrings\\.$",
       "template": "{0}への愛情がある種の知恵を授けてくれたが、もう心の琴線が揺れることはない。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^Your (.+?) (?:was|were) dismembered\\.$",
@@ -994,32 +994,32 @@
     {
       "pattern": "^In sacred ritual you shared your (.+?) with (.+?)\\.$",
       "template": "聖なる儀式で{1}と{0}を分かち合った。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^To the dismay of fungi everywhere, you cured the Pax Klanq infection on your (.+?)\\.$",
       "template": "世の菌類の嘆きをよそに、{0}のパクス・クランク感染を治した。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^To the dismay of fungi everywhere, you cured the (.+?) infection on your (.+?)\\.$",
       "template": "世の菌類の嘆きをよそに、{1}の{0}感染を治した。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(.+?) ogled you lovingly after you employed your charm\\.$",
       "template": "あなたの魅了術を受けて{0}がうっとりとこちらを見つめた。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^With the help of Pax Klanq and the Barathrumites, you constructed (.+?)\\.$",
       "template": "パクス・クランクとバラスルム派の助けを借りて{0}を建造した。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(.+?) provided you with insightful commentary on (.+?)\\.$",
       "template": "{0}が{1}について洞察に満ちた解説をしてくれた。",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (.+?) (?:fails|fail) to penetrate (?:the |a |an )?(.+?)(?:'s|s') armor with (.+?) \\[(.+?)\\]!$",
@@ -1094,7 +1094,7 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) wounds? (?:the |a |an )?(.+?)[.!]?$",
       "template": "{0}は{1}に深手を負わせた",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You disorients? (?:the |a |an )?(.+?)[.!]?$",
@@ -1104,17 +1104,17 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) disorients? (?:the |a |an )?(.+?)[.!]?$",
       "template": "{0}は{1}を混乱させた",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') shot goes wild!$",
       "template": "{0}の弾が逸れた！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:whizzes|whiz|flies|fly|zooms|zoom|streaks|streak|whistles|whistle|hurtles|hurtle|sails|sail|zips|zip|buzzes|buzz|passes|pass|speeds|speed|races|race|rushes|rush|whooshes|whoosh|goes|go|hisses|hiss|screams|scream) past (.+?)[.!]?$",
       "template": "{0}が{1}のそばを通り過ぎた",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You cannot open (?:the |a |an )?(.+?) while (?:you are )?(.+?)[.!]?$",
@@ -1159,7 +1159,7 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) cannot be closed[.!]?$",
       "template": "{0}は閉められない",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You cannot close (?:the |a |an )?(.+?) while (?:you are )?(.+?)[.!]?$",
@@ -1174,12 +1174,12 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) cannot be closed with you in the way(?: to the (.+?))?[.!]?$",
       "template": "あなたが邪魔で{0}を閉められない",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) cannot be closed with (?:the |a |an )?(.+?) in the way(?: to the (.+?))?[.!]?$",
       "template": "{1}が邪魔で{0}を閉められない",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You rifle through (?:the |a |an )?(.+?), and find (?:a |an |the )?(.+?)[.!]?$",
@@ -1194,7 +1194,7 @@
     {
       "pattern": "^Somebody rifles through (?:the |a |an )?(.+?)[.!]?$",
       "template": "誰かが{0}を漁った",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You butcher (?:a |an |the )?(.+?) from (?:the |a |an )?(.+?)[.!]?$",
@@ -1209,7 +1209,7 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) cannot reach (?:the |a |an )?(.+?)[.!]?$",
       "template": "{0}は{1}に届かない",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^Your attack passes through (?:the |a |an )?(.+?)!$",
@@ -1219,47 +1219,47 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') attack passes through (?:the |a |an )?(.+?)!$",
       "template": "{0}の攻撃は{1}をすり抜けた！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^Two (.+?) come into contact and both explode!$",
       "template": "2つの{0}が接触し、両方とも爆発した！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^The reacting liquids congeal into (?:a |an |the )?(.+?)[.!]?$",
       "template": "反応した液体が凝固し{0}になった",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^The primordial soup (.+?) starts reacting with the (.+?)[.!]?$",
       "template": "{0}の原初のスープが{1}と反応を始めた",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^The liquid mixture inside (?:the |a |an )?(.+?) starts to glitch[.!]?$",
       "template": "{0}の中の混合液がグリッチし始めた",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(.+?) applied to (.+?)[.!]?$",
       "template": "{0}が{1}に適用された",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^No valid targets for (.+?)[.!]?$",
       "template": "{0}の有効な対象がない",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^One of (?:the |a |an )?(.+?)(?:'s|s') wounds stops (.+?)[.!]?$",
       "template": "{0}の傷のひとつの{1}が止まった",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') queasiness passes[.!]?$",
       "template": "{0}の吐き気が治まった",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^Your rind softens while .+? recrystallize[sd]?[.!]?$",
@@ -1269,22 +1269,22 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') rind softens while .+? recrystallize[sd]?[.!]?$",
       "template": "{0}の外皮が軟化し、再結晶化している！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') rind recrystallizes and hardens once more[.!]?$",
       "template": "{0}の外皮が再結晶化し、再び硬くなった",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') glow dims until it's extinguished[.!]?$",
       "template": "{0}の輝きが消えるまで薄れた",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^A force bubble pops into being around (?:the |a |an )?(.+?)[.!]?$",
       "template": "{0}の周りにフォースバブルが出現した",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^Your irritable genome acts up[.!](.*)$",
@@ -1294,32 +1294,32 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') irritable genome acts up[.!](.*)$",
       "template": "{0}の過敏ゲノムが暴走した{1}",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^The protective force of the cherubim prevents (?:the |a |an )?(.+?) from taking anything from the reliquary[.!]?$",
       "template": "ケルビムの守護の力が{0}を聖遺物櫃から何かを取ることを阻んでいる",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) burns into bright slag[.!]?$",
       "template": "{0}は燃えて明るいスラグになった",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^Suddenly (?:the |a |an )?(.+?) (?:starts|start) flailing around and battering (?:the |a |an )?(.+?)!$",
       "template": "突然{0}が暴れ出し、{1}を殴りつけた！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') skin itches furiously[.!]?$",
       "template": "{0}の肌が猛烈にかゆくなった",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^Two tubular sections of (?:the |a |an )?(.+?) flail around and batter (?:the |a |an )?(.+?)!$",
       "template": "{0}の2本の管状の部分が暴れ、{1}を殴りつけた！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You have no more ammo for (?:the |a |an )?(.+?)[.!]?$",
@@ -1329,12 +1329,12 @@
     {
       "pattern": "^A jet of flame shoots out of (?:the |a |an |your )?(.+?)!$",
       "template": "{0}から炎の噴流が噴き出した！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^The (.+?) catalyzes (.+?) into (?:a |an |the )?(.+?)[.!]?$",
       "template": "{0}が{1}を触媒して{2}に変化させた",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^You (?:infiltrates?|infiltrate) (?:the |a |an )?(.+?)!$",
@@ -1344,17 +1344,17 @@
     {
       "pattern": "^(?:Some |A set of |[Aa]n? )?(.+?) grows out of your (.+?)!$",
       "template": "{0}があなたの{1}から生えてきた！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:Some |A set of |[Aa]n? )?(.+?) grows out of (?:the |a |an )?(.+?)(?:'s|s') (.+?)!$",
       "template": "{0}が{1}の{2}から生えてきた！",
-      "route": "unclassified"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) sets up (?:a |an |the )?(.+?)[.!]?$",
       "template": "{0}は{1}を設置した",
-      "route": "unclassified"
+      "route": "emit-message"
     }
   ]
 }
