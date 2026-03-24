@@ -1372,22 +1372,22 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^You lock (.+)\\.$",
+      "pattern": "^You lock (?:the |a |an )?(.+)\\.$",
       "template": "{0}を施錠した。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You unlock (.+)\\.$",
+      "pattern": "^You unlock (?:the |a |an )?(.+)\\.$",
       "template": "{0}を解錠した。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You open (.+)\\.$",
+      "pattern": "^You open (?:the |a |an )?(.+)\\.$",
       "template": "{0}を開けた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You close (.+)\\.$",
+      "pattern": "^You close (?:the |a |an )?(.+)\\.$",
       "template": "{0}を閉めた。",
       "route": "emit-message"
     },
@@ -1514,11 +1514,6 @@
     {
       "pattern": "^(.+?) noses? begins? to bleed\\.$",
       "template": "{0}の鼻が出血し始めた。",
-      "route": "emit-message"
-    },
-    {
-      "pattern": "^You rip (?:a |an |the )?(.+?) out of (?:the |a |an )?(.+?) (.+)\\.$",
-      "template": "{1}から{0}を{2}引きちぎった。",
       "route": "emit-message"
     },
     {
