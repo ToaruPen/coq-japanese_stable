@@ -61,13 +61,11 @@ public sealed class DoesVerbFamilyTests
 
     // Plain text (runtime-like already-localized display names)
     [TestCase("The 熊 is exhausted!", "熊は疲弊した！")]
-    [TestCase("The スナップジョー is stunned!", "スナップジョーは気絶した！")]
     [TestCase("The 熊 is stuck.", "熊は動けなくなった。")]
     [TestCase("The グロウパッド is sealed.", "グロウパッドは封印された。")]
     [TestCase("You are exhausted!", "あなたは疲弊した！")]
     // Color-wrapped (AddPlayerMessage wraps entire message in {{color|...}})
     [TestCase("{{g|The 熊 is exhausted!}}", "{{g|熊は疲弊した！}}")]
-    [TestCase("{{R|The スナップジョー is stunned!}}", "{{R|スナップジョーは気絶した！}}")]
     public void Translate_StatusPredicateFamily(string input, string expected)
     {
         AssertTranslated(input, expected);

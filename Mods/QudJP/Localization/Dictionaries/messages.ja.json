@@ -154,32 +154,17 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) exhausted!$",
       "template": "{0}は疲弊した！",
-      "route": "does-verb"
+      "route": "needs-harmony-patch"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) exhausted\\.$",
       "template": "{0}は疲弊した。",
-      "route": "does-verb"
+      "route": "needs-harmony-patch"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) exhausted$",
       "template": "{0}は疲弊した",
-      "route": "does-verb"
-    },
-    {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stunned!$",
-      "template": "{0}は気絶した！",
-      "route": "does-verb"
-    },
-    {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stunned\\.$",
-      "template": "{0}は気絶した。",
-      "route": "does-verb"
-    },
-    {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stunned$",
-      "template": "{0}は気絶した",
-      "route": "does-verb"
+      "route": "needs-harmony-patch"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stuck!$",
@@ -199,17 +184,17 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) sealed!$",
       "template": "{0}は封印された！",
-      "route": "does-verb"
+      "route": "needs-harmony-patch"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) sealed\\.$",
       "template": "{0}は封印された。",
-      "route": "does-verb"
+      "route": "needs-harmony-patch"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) sealed$",
       "template": "{0}は封印された",
-      "route": "does-verb"
+      "route": "needs-harmony-patch"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) jammed!$",
@@ -989,7 +974,7 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) utterly unresponsive[.!]?$",
       "template": "{0}はまったく反応しない",
-      "route": "does-verb"
+      "route": "needs-harmony-patch"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) fully charged!$",
@@ -1029,7 +1014,7 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) not bleeding[.!]?$",
       "template": "{0}は出血していない",
-      "route": "does-verb"
+      "route": "needs-harmony-patch"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) already fully loaded[.!]?$",
@@ -1264,7 +1249,7 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) no limbs[.!]?$",
       "template": "{0}には四肢がない",
-      "route": "does-verb"
+      "route": "needs-harmony-patch"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) (?:already )?boosted immunity from a nostrum[.!]?$",
@@ -1284,7 +1269,7 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(?!You)(.+?) (?:has|have) no more ammo!$",
       "template": "{0}の弾薬が尽きた！",
-      "route": "does-verb"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(?!You)(.+?) (?:has|have) left your party[.!]?$",
@@ -1534,7 +1519,7 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:beeps|beep) loudly and (?:flashes|flash) a warning glyph[.!]?$",
       "template": "{0}は大きなビープ音を鳴らし、警告記号を点滅させた",
-      "route": "does-verb"
+      "route": "needs-harmony-patch"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:crumbles|crumble) into beetles[.!]?$",
@@ -1879,12 +1864,12 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') suppressive fire (?:locks|lock) (?:the |a |an )?(.+?) in place[.!]?$",
       "template": "{0}の制圧射撃が{1}をその場に釘付けにした",
-      "route": "does-verb"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') flattening fire (?:drops|drop) (?:the |a |an )?(.+?) to the ground!$",
       "template": "{0}の制圧射撃が{1}を地面に叩き伏せた！",
-      "route": "does-verb"
+      "route": "emit-message"
     },
     {
       "pattern": "^You wounds? (?:the |a |an )?(.+?)[.!]?$",
