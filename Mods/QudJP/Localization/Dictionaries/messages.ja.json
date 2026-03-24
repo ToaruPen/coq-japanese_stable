@@ -1467,7 +1467,7 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) hits something (.+)\\.$",
+      "pattern": "^(.+?) hits something (.+?)[.!]?$",
       "template": "{0}の射撃が{1}の何かに命中した。",
       "route": "emit-message"
     },

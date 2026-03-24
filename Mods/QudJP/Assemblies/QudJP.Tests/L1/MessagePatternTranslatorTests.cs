@@ -84,7 +84,6 @@ public sealed class MessagePatternTranslatorTests
         Assert.That(translated, Is.EqualTo("brass keyをwardenから受け取った"));
     }
 
-    [Test]
     public void Translate_UsesFirstMatchingPattern_WhenMultiplePatternsMatch()
     {
         WritePatternDictionary(
@@ -255,6 +254,16 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate("Naruur misses you with her 乳棒! [5 vs 11]");
 
         Assert.That(translated, Is.EqualTo("Naruurの乳棒は外れた。[5 vs 11]"));
+    }
+
+    [Test]
+    public void Translate_AppliesNpcHitsSomethingPatternWithExclamation()
+    {
+        WritePatternDictionary(("^(.+?) hits something (.+?)[.!]?$", "{0}の射撃が{1}の何かに命中した。"));
+
+        var translated = MessagePatternTranslator.Translate("Turret hits something to the east!");
+
+        Assert.That(translated, Is.EqualTo("Turretの射撃がto the eastの何かに命中した。"));
     }
 
     [Test]

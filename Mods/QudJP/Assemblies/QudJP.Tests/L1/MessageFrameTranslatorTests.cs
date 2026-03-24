@@ -587,6 +587,28 @@ public sealed class MessageFrameTranslatorTests
     }
 
     [Test]
+    public void TryTranslateXDidY_Tier3_TakeAdvantageRefresh()
+    {
+        WriteDictionary(tier3: new[]
+        {
+            ("take", "advantage of (?:your|his|her|its|their) opponent's reaction to (?:your|his|her|its|their) attack! (.+?) (?:is|are) refreshed", "相手の反応の隙を突き、{0}が再使用可能になった")
+        });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY(
+            "あなた",
+            "take",
+            "advantage of your opponent's reaction to your attack! Long Blades and Short Blades are refreshed",
+            null,
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたは相手の反応の隙を突き、Long Blades and Short Bladesが再使用可能になった。"));
+        });
+    }
+
+    [Test]
     public void TryTranslateXDidY_Tier3_RawRegex()
     {
         WriteDictionary(tier3: new[] { ("kick", "(.+?) (?:backward|backwards)", "{0}を後ろに蹴った") });

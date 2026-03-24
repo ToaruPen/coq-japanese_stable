@@ -2103,6 +2103,11 @@
       "text": "{0}の構えに切り替えた"
     },
     {
+      "verb": "take",
+      "extra": "advantage of (?:your|his|her|its|their) opponent's reaction to (?:your|his|her|its|their) attack! (.+?) (?:is|are) refreshed",
+      "text": "相手の反応の隙を突き、{0}が再使用可能になった"
+    },
+    {
       "verb": "teach",
       "extra": "you to craft the item modification (.+?)",
       "text": "{subject}はアイテム改造{0}の製作法をあなたに教えた"
