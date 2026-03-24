@@ -30,8 +30,8 @@ internal sealed class DummyPopupMessageTarget
     public void ShowPopup(
         string message,
         List<DummyPopupMessageItem>? buttons = null,
-        List<DummyPopupMessageItem>? items = null,
         Action<DummyPopupMessageItem>? commandCallback = null,
+        List<DummyPopupMessageItem>? items = null,
         Action<DummyPopupMessageItem>? selectedItemCallback = null,
         string? title = null,
         bool includeInput = false,

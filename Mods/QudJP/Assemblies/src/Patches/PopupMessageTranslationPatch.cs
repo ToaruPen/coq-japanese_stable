@@ -14,7 +14,7 @@ public static class PopupMessageTranslationPatch
     // ShowPopup parameter indices for game version 2.0.4
     private const int MessageIndex = 0;
     private const int ButtonsIndex = 1;
-    private const int ItemsIndex = 2;
+    private const int ItemsIndex = 3;
     private const int TitleIndex = 5;
     private const int ContextTitleIndex = 11;
 

@@ -2399,6 +2399,11 @@
     },
     {
       "verb": "take",
+      "extra": "advantage of (?:your|his|her|its|their) opponent's reaction to (?:your|his|her|its|their) attack! (.+?) (?:is|are) refreshed",
+      "text": "相手の反応の隙を突き、{0}が再使用可能になった"
+    },
+    {
+      "verb": "take",
       "extra": "(?:the |a |an )?(.+?)",
       "text": "{subject}は{t0}を受け取った{endmark}"
     },
