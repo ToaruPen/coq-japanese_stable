@@ -31,10 +31,18 @@ public sealed class DoesVerbFamilyTests
             Path.Combine(dictionaryDirectory, "messages.ja.json"),
             patternFilePath);
 
+        var leafSource = Path.Combine(dictionaryDirectory, "ui-messagelog-leaf.ja.json");
+        if (File.Exists(leafSource))
+        {
+            File.Copy(leafSource, Path.Combine(tempDirectory, "ui-messagelog-leaf.ja.json"));
+        }
+
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
         MessagePatternTranslator.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
+        MessagePatternTranslator.SetLeafFileForTests(
+            Path.Combine(tempDirectory, "ui-messagelog-leaf.ja.json"));
     }
 
     [TearDown]
