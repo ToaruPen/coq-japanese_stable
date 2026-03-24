@@ -1505,6 +1505,51 @@
       "pattern": "^You rip (?:a |an |the )?(.+?) out of (?:the |a |an )?(.+?)\\.$",
       "template": "{1}から{0}を引きちぎった。",
       "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:Your )?(.+?) (?:is|are) too unstable to craft with\\.$",
+      "template": "{0}は工作に使うには不安定すぎる。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You don't have the required ingredient: (.+?)!$",
+      "template": "必要な材料が足りない: {0}！",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You don't have the required <(.+?)> bits! You have:\\n\\n ?([\\s\\S]+)$",
+      "template": "必要な <{0}> ビットが足りない！現在の所持:\n\n{1}",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You have no hands to beat at the flames with!$",
+      "template": "手がないので火を叩けない！",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^Your base (.+?) is (.+?), modified to (.+?)\\.\\n\\nYou may not raise an attribute above 100\\.$",
+      "template": "あなたの{t0}の基本値は{1}で、修正後は{2}だ。\n\n能力値は100を超えて上げられない。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^Your (.+?) is (.+?)\\.\\n\\nYou may not raise an attribute above 100\\.$",
+      "template": "あなたの{t0}は{1}だ。\n\n能力値は100を超えて上げられない。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You have increased your (.+?) to (.+?)!$",
+      "template": "あなたの{t0}が{1}になった！",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You swell with the inspiration to name an item\\.$",
+      "template": "あなたはアイテムに名付けたい衝動に駆られた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You swell with the inspiration to name your (.+?)\\. Do you wish to\\?$",
+      "template": "あなたは{0}に名付けたい衝動に駆られた。そうしますか？",
+      "route": "emit-message"
     }
   ]
 }

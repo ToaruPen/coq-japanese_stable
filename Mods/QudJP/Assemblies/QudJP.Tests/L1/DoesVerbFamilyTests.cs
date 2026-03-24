@@ -1,3 +1,4 @@
+using System.Text.Json;
 using QudJP.Patches;
 
 namespace QudJP.Tests.L1;
@@ -10,6 +11,7 @@ public sealed class DoesVerbFamilyTests
     private string tempDirectory = null!;
     private string patternFilePath = null!;
     private string dictionaryDirectory = null!;
+    private string leafFilePath = null!;
 
     [SetUp]
     public void SetUp()
@@ -18,6 +20,7 @@ public sealed class DoesVerbFamilyTests
         Directory.CreateDirectory(tempDirectory);
 
         patternFilePath = Path.Combine(tempDirectory, "messages.ja.json");
+        leafFilePath = Path.Combine(tempDirectory, "ui-messagelog-leaf.ja.json");
         dictionaryDirectory = Path.GetFullPath(
             Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
@@ -34,10 +37,8 @@ public sealed class DoesVerbFamilyTests
             patternFilePath);
 
         var leafSource = Path.Combine(dictionaryDirectory, "ui-messagelog-leaf.ja.json");
-        if (File.Exists(leafSource))
-        {
-            File.Copy(leafSource, Path.Combine(tempDirectory, "ui-messagelog-leaf.ja.json"));
-        }
+        var worldLeafSource = Path.Combine(dictionaryDirectory, "ui-messagelog-world.ja.json");
+        WriteCombinedLeafFile(leafFilePath, leafSource, worldLeafSource);
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
@@ -56,8 +57,7 @@ public sealed class DoesVerbFamilyTests
                     "verbs.ja.json")));
         MessagePatternTranslator.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
-        MessagePatternTranslator.SetLeafFileForTests(
-            Path.Combine(tempDirectory, "ui-messagelog-leaf.ja.json"));
+        MessagePatternTranslator.SetLeafFileForTests(leafFilePath);
     }
 
     [TearDown]
@@ -716,6 +716,45 @@ public sealed class DoesVerbFamilyTests
         AssertTranslated(input, expected);
     }
 
+    // --- Popup Coverage Families ---
+
+    [TestCase("You cannot reach the 熊!", "熊に手が届かない")]
+    [TestCase("You have no hands to beat at the flames with!", "手がないので火を叩けない！")]
+    public void Translate_FirefightingPopupFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    [TestCase("The security door unlocks with a loud clank and swings open.", "頑丈なドアが大きな音とともに解錠され開いた。")]
+    [TestCase("The security door swings closed and locks with a loud clank.", "頑丈なドアが閉じて大きな音で施錠された。")]
+    public void Translate_SecurityDoorPopupFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    [TestCase("Your スクラップ is too unstable to craft with.", "スクラップは工作に使うには不安定すぎる。")]
+    [TestCase("You don't have the required ingredient: 銅線!", "必要な材料が足りない: 銅線！")]
+    [TestCase("You don't have the required <AB> bits! You have:\n\n AB: 1", "必要な <AB> ビットが足りない！現在の所持:\n\nAB: 1")]
+    public void Translate_TinkeringPopupFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    [TestCase("Your Strength is {{C|100}}.\n\nYou may not raise an attribute above 100.", "あなたの筋力は{{C|100}}だ。\n\n能力値は100を超えて上げられない。")]
+    [TestCase("Your base Strength is {{C|18}}, modified to {{G|20}}.\n\nYou may not raise an attribute above 100.", "あなたの筋力の基本値は{{C|18}}で、修正後は{{G|20}}だ。\n\n能力値は100を超えて上げられない。")]
+    [TestCase("You have increased your Strength to {{C|19}}!", "あなたの筋力が{{C|19}}になった！")]
+    public void Translate_StatusScreenPopupFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    [TestCase("You swell with the inspiration to name an item.", "あなたはアイテムに名付けたい衝動に駆られた。")]
+    [TestCase("You swell with the inspiration to name your 銅の短剣. Do you wish to?", "あなたは銅の短剣に名付けたい衝動に駆られた。そうしますか？")]
+    public void Translate_ItemNamingPopupFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
     // --- Nosebleed Family ---
 
     [TestCase("Your nose begins bleeding more heavily.", "あなたの鼻からさらに激しくbleedingが始まった")]
@@ -1066,5 +1105,44 @@ public sealed class DoesVerbFamilyTests
         }
 
         Assert.That(result, Is.EqualTo(expected));
+    }
+
+    private static void WriteCombinedLeafFile(string destinationPath, params string[] sourcePaths)
+    {
+        var entries = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var sourcePath in sourcePaths)
+        {
+            if (!File.Exists(sourcePath))
+            {
+                TestContext.WriteLine($"Warning: Leaf source file not found: {sourcePath}");
+                continue;
+            }
+
+            using var document = JsonDocument.Parse(File.ReadAllText(sourcePath));
+            foreach (var element in document.RootElement.GetProperty("entries").EnumerateArray())
+            {
+                var key = element.GetProperty("key").GetString();
+                var text = element.GetProperty("text").GetString();
+                if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(text))
+                {
+                    entries[key] = text;
+                }
+            }
+        }
+
+        using var stream = File.Create(destinationPath);
+        using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
+        writer.WriteStartObject();
+        writer.WritePropertyName("entries");
+        writer.WriteStartArray();
+        foreach (var entry in entries)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("key", entry.Key);
+            writer.WriteString("text", entry.Value);
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
+        writer.WriteEndObject();
     }
 }
