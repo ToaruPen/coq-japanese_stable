@@ -587,6 +587,16 @@
     },
     {
       "verb": "are",
+      "extra": "already full",
+      "text": "{subject}はすでに満タンだ"
+    },
+    {
+      "verb": "are",
+      "extra": "already fully loaded",
+      "text": "{subject}はすでに完全に装填されている"
+    },
+    {
+      "verb": "are",
       "extra": "back on the ambient broadcast power grid",
       "text": "環境放送電力グリッドに復帰した"
     },
@@ -607,13 +617,33 @@
     },
     {
       "verb": "are",
+      "extra": "covered in sticky goop",
+      "text": "{subject}はべとべとの粘液に覆われた{endmark}"
+    },
+    {
+      "verb": "are",
       "extra": "dazed",
       "text": "よろめいた"
     },
     {
       "verb": "are",
+      "extra": "dead still",
+      "text": "{subject}はまったく動かない"
+    },
+    {
+      "verb": "are",
       "extra": "destroyed",
       "text": "破壊された"
+    },
+    {
+      "verb": "are",
+      "extra": "empty",
+      "text": "{subject}は空になった{endmark}"
+    },
+    {
+      "verb": "are",
+      "extra": "encoded with an imprint of the Thin World that has no meaning in the Thick World",
+      "text": "{subject}は薄界の刻印で符号化されているが、厚界では意味を成さない"
     },
     {
       "verb": "are",
@@ -627,8 +657,28 @@
     },
     {
       "verb": "are",
+      "extra": "fully charged",
+      "text": "{subject}は完全に充電された{endmark}"
+    },
+    {
+      "verb": "are",
       "extra": "hobbled",
       "text": "足を痛めた"
+    },
+    {
+      "verb": "are",
+      "extra": "immune to conventional treatments",
+      "text": "{subject}は通常の治療が効かない"
+    },
+    {
+      "verb": "are",
+      "extra": "in no need of repairs",
+      "text": "{subject}は修理の必要がない"
+    },
+    {
+      "verb": "are",
+      "extra": "jammed",
+      "text": "{subject}は動作不良を起こした{endmark}"
     },
     {
       "verb": "are",
@@ -644,6 +694,11 @@
       "verb": "are",
       "extra": "locked, and you don't have the key",
       "text": "鍵がかかっているが、鍵を持っていない"
+    },
+    {
+      "verb": "are",
+      "extra": "lost in the goop",
+      "text": "{subject}は粘液の中に沈んだ{endmark}"
     },
     {
       "verb": "are",
@@ -667,6 +722,31 @@
     },
     {
       "verb": "are",
+      "extra": "no longer your follower",
+      "text": "{subject}はもはやあなたの仲間ではない"
+    },
+    {
+      "verb": "are",
+      "extra": "now your follower",
+      "text": "{subject}はあなたの仲間になった"
+    },
+    {
+      "verb": "are",
+      "extra": "offended by your impertinence",
+      "text": "{subject}はあなたの無礼に気分を害した"
+    },
+    {
+      "verb": "are",
+      "extra": "open",
+      "text": "{subject}は開いている"
+    },
+    {
+      "verb": "are",
+      "extra": "out of your telekinetic range",
+      "text": "{subject}はあなたの念動力の範囲外だ"
+    },
+    {
+      "verb": "are",
       "extra": "overwhelmed with terror",
       "text": "恐怖に圧倒された"
     },
@@ -679,6 +759,11 @@
       "verb": "are",
       "extra": "poisoned",
       "text": "毒状態になった"
+    },
+    {
+      "verb": "are",
+      "extra": "pulled toward something",
+      "text": "{subject}は何かに引き寄せられた"
     },
     {
       "verb": "are",
@@ -697,6 +782,31 @@
     },
     {
       "verb": "are",
+      "extra": "ripped from your body",
+      "text": "{subject}があなたの体から引き剥がされた{endmark}"
+    },
+    {
+      "verb": "are",
+      "extra": "still attuning",
+      "text": "{subject}はまだ同調中だ"
+    },
+    {
+      "verb": "are",
+      "extra": "still cooling down",
+      "text": "{subject}はまだ冷却中だ"
+    },
+    {
+      "verb": "are",
+      "extra": "still starting up",
+      "text": "{subject}はまだ起動中だ"
+    },
+    {
+      "verb": "are",
+      "extra": "stuck",
+      "text": "{subject}は動けなくなった{endmark}"
+    },
+    {
+      "verb": "are",
       "extra": "stunned",
       "text": "気絶した"
     },
@@ -704,6 +814,46 @@
       "verb": "are",
       "extra": "suppressed",
       "text": "抑制された"
+    },
+    {
+      "verb": "are",
+      "extra": "sympathetic, but unable to join you",
+      "text": "{subject}は同情的だが、あなたに加わることはできない"
+    },
+    {
+      "verb": "are",
+      "extra": "too large for you to engulf",
+      "text": "{subject}は大きすぎて飲み込めない"
+    },
+    {
+      "verb": "are",
+      "extra": "too tenuously anchored in this time to be temporally duplicated in it",
+      "text": "{subject}はこの時間への結びつきが弱すぎて、時間複製できない"
+    },
+    {
+      "verb": "are",
+      "extra": "turned off",
+      "text": "{subject}の電源は切れている"
+    },
+    {
+      "verb": "are",
+      "extra": "unable to consume tonics",
+      "text": "{subject}はトニックを摂取できない"
+    },
+    {
+      "verb": "are",
+      "extra": "unconvinced by your pleas",
+      "text": "{subject}はあなたの懇願に納得していない"
+    },
+    {
+      "verb": "are",
+      "extra": "unconvinced by your pleas, but interested in hearing more",
+      "text": "{subject}はあなたの懇願に納得していないが、もっと聞きたがっている"
+    },
+    {
+      "verb": "are",
+      "extra": "unresponsive",
+      "text": "{subject}は反応しなくなった{endmark}"
     },
     {
       "verb": "assume",
@@ -721,9 +871,19 @@
       "text": "{0}を攻撃した"
     },
     {
+      "verb": "attune",
+      "extra": "to your physiology",
+      "text": "{subject}はあなたの生理機能に同調した"
+    },
+    {
       "verb": "become",
       "extra": "confused",
       "text": "混乱した"
+    },
+    {
+      "verb": "become",
+      "extra": "magnetized",
+      "text": "{subject}は磁化された{endmark}"
     },
     {
       "verb": "begin",
@@ -771,9 +931,19 @@
       "text": "地面に潜った"
     },
     {
+      "verb": "cease",
+      "extra": "floating near you",
+      "text": "{subject}はあなたの近くで浮遊するのをやめた"
+    },
+    {
       "verb": "charge",
       "extra": "!",
       "text": "突撃した！"
+    },
+    {
+      "verb": "click",
+      "extra": "merely",
+      "text": "{subject}はカチッと鳴るだけだった"
     },
     {
       "verb": "collapse",
@@ -807,6 +977,11 @@
     },
     {
       "verb": "crumble",
+      "extra": "into beetles",
+      "text": "{subject}は崩れて甲虫の群れになった"
+    },
+    {
+      "verb": "crumble",
       "extra": "to dust",
       "text": "塵になって崩れた"
     },
@@ -814,6 +989,11 @@
       "verb": "dash",
       "extra": "through a tunnel in spacetime",
       "text": "時空のトンネルを駆け抜けた"
+    },
+    {
+      "verb": "detach",
+      "extra": "from you",
+      "text": "{subject}はあなたから分離した{endmark}"
     },
     {
       "verb": "dig",
@@ -829,6 +1009,11 @@
       "verb": "discharge",
       "extra": "an electrical arc",
       "text": "電弧を放った"
+    },
+    {
+      "verb": "do",
+      "extra": "nothing",
+      "text": "{subject}は何もしなかった"
     },
     {
       "verb": "drink",
@@ -849,6 +1034,16 @@
       "verb": "emit",
       "extra": "!",
       "text": "放出した！"
+    },
+    {
+      "verb": "emit",
+      "extra": "a grinding noise",
+      "text": "{subject}は軋む音を発した"
+    },
+    {
+      "verb": "emit",
+      "extra": "a shower of sparks",
+      "text": "{subject}は火花の雨を放った{endmark}"
     },
     {
       "verb": "emit",
@@ -896,6 +1091,11 @@
       "text": "押し出した！"
     },
     {
+      "verb": "fail",
+      "extra": "to penetrate your armor",
+      "text": "{subject}はあなたの装甲を貫けなかった{endmark}"
+    },
+    {
       "verb": "fall",
       "extra": "asleep",
       "text": "眠りに落ちた"
@@ -941,9 +1141,44 @@
       "text": "心停止に陥った"
     },
     {
+      "verb": "go",
+      "extra": "into sleep mode",
+      "text": "{subject}はスリープモードに入った"
+    },
+    {
+      "verb": "have",
+      "extra": "been hacked",
+      "text": "{subject}はハッキングされた"
+    },
+    {
       "verb": "have",
       "extra": "been poisoned",
       "text": "毒に侵された"
+    },
+    {
+      "verb": "have",
+      "extra": "left your party",
+      "text": "{subject}はパーティーを離れた"
+    },
+    {
+      "verb": "have",
+      "extra": "no drain",
+      "text": "{subject}には排水口がない"
+    },
+    {
+      "verb": "have",
+      "extra": "no limbs that can be amputated",
+      "text": "{subject}には切断できる四肢がない"
+    },
+    {
+      "verb": "have",
+      "extra": "nothing to say",
+      "text": "{subject}は何も言うことがない{endmark}"
+    },
+    {
+      "verb": "have",
+      "extra": "nothing to trade",
+      "text": "{subject}には取引するものがない"
     },
     {
       "verb": "hook",
@@ -954,6 +1189,26 @@
       "verb": "impel",
       "extra": "plants to burgeon from the ground",
       "text": "地面から植物を芽吹かせた"
+    },
+    {
+      "verb": "join",
+      "extra": "you",
+      "text": "{subject}があなたの仲間に加わった{endmark}"
+    },
+    {
+      "verb": "kick",
+      "extra": "at you, but the kick passes through you",
+      "text": "{subject}はあなたを蹴ろうとしたが、蹴りはすり抜けた"
+    },
+    {
+      "verb": "kick",
+      "extra": "at you, but you hold your ground",
+      "text": "{subject}はあなたを蹴ろうとしたが、あなたは踏みとどまった"
+    },
+    {
+      "verb": "kick",
+      "extra": "you backwards",
+      "text": "{subject}はあなたを蹴り飛ばした"
     },
     {
       "verb": "lapse",
@@ -972,6 +1227,11 @@
     },
     {
       "verb": "lock",
+      "extra": "firmly into the socket, preventing removal",
+      "text": "{subject}はソケットにしっかりと嵌まり、取り外しができなくなった"
+    },
+    {
+      "verb": "lock",
       "extra": "in place",
       "text": "固定された"
     },
@@ -986,6 +1246,11 @@
       "text": "音を立てなかった"
     },
     {
+      "verb": "need",
+      "extra": "to be hung up first",
+      "text": "{subject}はまず吊り下げる必要がある"
+    },
+    {
       "verb": "peer",
       "extra": "into another space",
       "text": "別の空間を覗き込んだ"
@@ -994,6 +1259,11 @@
       "verb": "permanently drain",
       "extra": "!",
       "text": "永久に吸い取った！"
+    },
+    {
+      "verb": "press",
+      "extra": "your activation panel",
+      "text": "{subject}はあなたの起動パネルを押した"
     },
     {
       "verb": "produce",
@@ -1041,6 +1311,21 @@
       "text": "気絶したままだ"
     },
     {
+      "verb": "resist",
+      "extra": "your life drain",
+      "text": "{subject}はあなたの生命吸収に抵抗した{endmark}"
+    },
+    {
+      "verb": "resist",
+      "extra": "your shield slam",
+      "text": "{subject}はあなたのシールドスラムに抵抗した"
+    },
+    {
+      "verb": "return",
+      "extra": "to the ground",
+      "text": "{subject}は地上に戻った"
+    },
+    {
       "verb": "roll",
       "extra": "on the ground",
       "text": "地面を転がった"
@@ -1049,6 +1334,16 @@
       "verb": "seem",
       "extra": "to have absorbed some of the electrical charge",
       "text": "電荷の一部を吸収したようだ"
+    },
+    {
+      "verb": "seem",
+      "extra": "to have taken on new qualities",
+      "text": "{subject}は新たな特質を帯びたようだ"
+    },
+    {
+      "verb": "seem",
+      "extra": "utterly impervious to your charms",
+      "text": "{subject}はあなたの魅力にまったく動じない"
     },
     {
       "verb": "shake",
@@ -1061,9 +1356,39 @@
       "text": "胞子を振り払った"
     },
     {
+      "verb": "share",
+      "extra": "a recipe with you",
+      "text": "{subject}はあなたにレシピを教えた"
+    },
+    {
+      "verb": "share",
+      "extra": "an event from the life of a sultan with you",
+      "text": "{subject}はスルタンの人生の出来事をあなたに語った"
+    },
+    {
+      "verb": "share",
+      "extra": "some gossip with you",
+      "text": "{subject}はあなたに噂話を教えた"
+    },
+    {
       "verb": "shift",
       "extra": "spacetime in the local region",
       "text": "局所領域の時空を歪めた"
+    },
+    {
+      "verb": "shout",
+      "extra": "KLANQ",
+      "text": "{subject}はKLANQ！と叫んだ{endmark}"
+    },
+    {
+      "verb": "shower",
+      "extra": "sparks everywhere",
+      "text": "{subject}はあたりに火花を散らした"
+    },
+    {
+      "verb": "shy",
+      "extra": "away from you",
+      "text": "{subject}はあなたから怯えて離れた"
     },
     {
       "verb": "smash",
@@ -1112,6 +1437,21 @@
     },
     {
       "verb": "start",
+      "extra": "to fizz hungrily",
+      "text": "{subject}は飢えたように泡立ち始めた"
+    },
+    {
+      "verb": "start",
+      "extra": "to gleam with an unearthly light",
+      "text": "{subject}はこの世ならぬ光で輝き始めた"
+    },
+    {
+      "verb": "start",
+      "extra": "to glitch",
+      "text": "{subject}がグリッチし始めた"
+    },
+    {
+      "verb": "start",
       "extra": "to glow",
       "text": "光り始めた"
     },
@@ -1124,6 +1464,11 @@
       "verb": "stomp",
       "extra": "with bestial fury",
       "text": "獣のごとき怒りで踏みつけた"
+    },
+    {
+      "verb": "stop",
+      "extra": "gleaming",
+      "text": "{subject}の輝きが消えた"
     },
     {
       "verb": "stop",
@@ -1171,6 +1516,16 @@
       "text": "試みたが、局所時空の正常化格子を突破できなかった"
     },
     {
+      "verb": "vibrate",
+      "extra": "slightly",
+      "text": "{subject}はわずかに振動した"
+    },
+    {
+      "verb": "vomit",
+      "extra": "everywhere",
+      "text": "{subject}はあたりに嘔吐した{endmark}"
+    },
+    {
       "verb": "wake",
       "extra": "up",
       "text": "目を覚ました"
@@ -1179,6 +1534,11 @@
       "verb": "wake",
       "extra": "up in a daze",
       "text": "もうろうとして目を覚ました"
+    },
+    {
+      "verb": "were",
+      "extra": "cracked",
+      "text": "{subject}にひびが入った"
     }
   ],
   "tier3": [
@@ -1188,14 +1548,69 @@
       "text": "{0}の反射シールドを起動した"
     },
     {
+      "verb": "apply",
+      "extra": "(?:a |an |the )?(.+?)",
+      "text": "{subject}は{0}を使用した"
+    },
+    {
+      "verb": "are",
+      "extra": "encoded with the imprint of a remote pocket dimension, (.+?), that is inaccessible from your present context",
+      "text": "{subject}は遠方のポケット次元{0}の刻印で符号化されているが、現在の状況ではアクセスできない"
+    },
+    {
+      "verb": "are",
+      "extra": "encoded with an imprint (?:of the Thin World )?that has no meaning in your present context",
+      "text": "{subject}は現在の状況では意味を成さない刻印で符号化されている"
+    },
+    {
+      "verb": "are",
+      "extra": "too difficult to traverse via the world map\\. You'll have to find your way on the surface",
+      "text": "{subject}はワールドマップでの移動には困難すぎる。地上を通って道を探さなければならない"
+    },
+    {
+      "verb": "are",
+      "extra": "engaged in hand-to-hand combat and (?:is|are) too busy to have a conversation with you",
+      "text": "{subject}は格闘戦闘中で会話どころではない"
+    },
+    {
+      "verb": "are",
+      "extra": "on fire and (?:is|are) too busy to (?:trade|have a conversation) with you",
+      "text": "{subject}は燃えていてそれどころではない"
+    },
+    {
+      "verb": "are",
+      "extra": "engaged in melee combat and (?:is|are) too busy to trade with you",
+      "text": "{subject}は近接戦闘中で取引どころではない"
+    },
+    {
+      "verb": "are",
+      "extra": "extinguished by (?:the |a |an )?(.+?)",
+      "text": "{subject}は{0}によって消し止められた"
+    },
+    {
+      "verb": "are",
+      "extra": "pulled toward (?:the |a |an )?(.+?)",
+      "text": "{subject}は{0}に引き寄せられた"
+    },
+    {
+      "verb": "are",
+      "extra": "promoted to the {0} of {1}",
+      "text": "{1}の{0}に昇進した"
+    },
+    {
+      "verb": "are",
+      "extra": "already full of (.+?)",
+      "text": "{subject}はすでに{0}で満たされている"
+    },
+    {
       "verb": "are",
       "extra": "held in place by {0}",
       "text": "{0}に押さえつけられている"
     },
     {
       "verb": "are",
-      "extra": "knocked {0}",
-      "text": "{0}に吹き飛ばされた"
+      "extra": "covered in (.+?)",
+      "text": "{subject}は{0}に覆われた"
     },
     {
       "verb": "are",
@@ -1204,13 +1619,23 @@
     },
     {
       "verb": "are",
-      "extra": "promoted to the {0} of {1}",
-      "text": "{1}の{0}に昇進した"
+      "extra": "knocked {0}",
+      "text": "{0}に吹き飛ばされた"
+    },
+    {
+      "verb": "ask",
+      "extra": "about (?:his|her|its|their) location and (?:is|are) no longer lost",
+      "text": "{subject}は自分の居場所について尋ね、もう迷っていない"
     },
     {
       "verb": "assume",
       "extra": "the form of {0}",
       "text": "{0}の姿をとった"
+    },
+    {
+      "verb": "atomize",
+      "extra": "and (?:recombines|recombine) into (?:a |an |the )?(.+?)",
+      "text": "{subject}は原子分解し、{0}として再結合した"
     },
     {
       "verb": "attempt",
@@ -1229,13 +1654,13 @@
     },
     {
       "verb": "begin",
-      "extra": "{0} from another wound",
-      "text": "別の傷から{0}"
+      "extra": "acting like {0} {1} from another wound",
+      "text": "{1}のふりをし始めた（別の傷から）"
     },
     {
       "verb": "begin",
-      "extra": "acting like {0} {1} from another wound",
-      "text": "{1}のふりをし始めた（別の傷から）"
+      "extra": "{0} from another wound",
+      "text": "別の傷から{0}"
     },
     {
       "verb": "begin",
@@ -1248,6 +1673,11 @@
       "text": "{0}から抜け出した"
     },
     {
+      "verb": "butcher",
+      "extra": "(?:a |an |the )?(.+?) from (?:the |a |an )?(.+?)",
+      "text": "{subject}は{1}から{0}を解体した"
+    },
+    {
       "verb": "charge",
       "extra": ", but{0} brought up short",
       "text": "突撃したが、阻まれた"
@@ -1256,6 +1686,31 @@
       "verb": "clasp",
       "extra": "{0} eagerly",
       "text": "{0}を嬉々として握りしめた"
+    },
+    {
+      "verb": "cleave",
+      "extra": "through your (.+?)",
+      "text": "{subject}はあなたの{0}を両断した"
+    },
+    {
+      "verb": "cleave",
+      "extra": "through (?:the |a |an )?(.+?)",
+      "text": "{subject}は{0}を両断した"
+    },
+    {
+      "verb": "collapse",
+      "extra": "under the pressure of normality and (?:implodes|implode)",
+      "text": "{subject}は正常性の圧力に耐えきれず崩壊し、内破した"
+    },
+    {
+      "verb": "deploy",
+      "extra": "(?:a |an |the )?(.+?)",
+      "text": "{subject}は{0}を展開した"
+    },
+    {
+      "verb": "detach",
+      "extra": "from (?:the |a |an )?(.+?)",
+      "text": "{subject}は{0}から分離した"
     },
     {
       "verb": "discharge",
@@ -1271,6 +1726,11 @@
       "verb": "drink",
       "extra": "the juice from {0} and recharge {1} unit of electrical charge",
       "text": "{0}のジュースを飲み、{1}ユニットの電荷を充電した"
+    },
+    {
+      "verb": "eat",
+      "extra": "(?:a |an |the )?(.+?)",
+      "text": "{subject}は{0}を食べた"
     },
     {
       "verb": "emit",
@@ -1308,9 +1768,34 @@
       "text": "{0}を獲得した"
     },
     {
+      "verb": "gift",
+      "extra": "you (?:a |an |the )?(.+?)",
+      "text": "{subject}はあなたに{0}を贈った"
+    },
+    {
+      "verb": "harvest",
+      "extra": "((?:two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|\\d+)) (.+?) from (?:the |a |an )?(.+?)",
+      "text": "{subject}は{2}から{0}個の{1}を収穫した"
+    },
+    {
+      "verb": "harvest",
+      "extra": "((?:two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|\\d+)) (.+?)",
+      "text": "{subject}は{0}個の{1}を収穫した"
+    },
+    {
+      "verb": "harvest",
+      "extra": "(?:a |an )?(.+?) from (?:the |a |an )?(.+?)",
+      "text": "{subject}は{1}から{0}を収穫した"
+    },
+    {
+      "verb": "harvest",
+      "extra": "(?:a |an )?(.+?)",
+      "text": "{subject}は{0}を収穫した"
+    },
+    {
       "verb": "have",
-      "extra": "restocked {0} inventory",
-      "text": "{0}の在庫を補充した"
+      "extra": "(?:already )?boosted immunity from a nostrum",
+      "text": "{subject}はすでにノストラムによる免疫増強を受けている"
     },
     {
       "verb": "have",
@@ -1318,9 +1803,39 @@
       "text": "{0}の反射シールドが解除された"
     },
     {
+      "verb": "have",
+      "extra": "restocked {0} inventory",
+      "text": "{0}の在庫を補充した"
+    },
+    {
+      "verb": "have",
+      "extra": "no room for more (.+?)",
+      "text": "{subject}にはこれ以上の{t0}を入れる余地がない{endmark}"
+    },
+    {
       "verb": "hit",
       "extra": "{0} for {1} damage",
       "text": "{0}に{1}ダメージを与えた"
+    },
+    {
+      "verb": "hum",
+      "extra": "for a moment, then powers down\\. (.+)",
+      "text": "{subject}は一瞬唸ったが、電源が落ちた。{0}{endmark}"
+    },
+    {
+      "verb": "ignore",
+      "extra": "(?:the |a |an )?(.+?)",
+      "text": "{subject}は{0}を無視した"
+    },
+    {
+      "verb": "impale",
+      "extra": "(?:himself|herself|itself|themselves) on (.+?) and (?:takes|take) (\\d+) damage",
+      "text": "{subject}は{0}に突き刺さり{1}ダメージを受けた{endmark}"
+    },
+    {
+      "verb": "infiltrate",
+      "extra": "(?:the |a |an )?(.+?)",
+      "text": "{subject}は{0}に潜入した{endmark}"
     },
     {
       "verb": "juke",
@@ -1333,14 +1848,54 @@
       "text": "{0}にかわした"
     },
     {
+      "verb": "kick",
+      "extra": "at (?:the |a |an )?(.+?), but (.+?) (?:holds|hold) (?:his|her|its|their) ground",
+      "text": "{subject}は{0}を蹴ろうとしたが、{1}は踏みとどまった"
+    },
+    {
+      "verb": "kick",
+      "extra": "at (?:the |a |an )?(.+?), but the kick passes through (?:him|her|it|them)",
+      "text": "{subject}は{0}を蹴ろうとしたが、蹴りはすり抜けた"
+    },
+    {
+      "verb": "kick",
+      "extra": "(?:the |a |an )?(?!you)(.+?) backwards",
+      "text": "{subject}は{0}を蹴り飛ばした"
+    },
+    {
+      "verb": "loosen",
+      "extra": "\\. Your AV decreases by (.+?)",
+      "text": "{subject}が緩んだ。あなたのAVが{0}減少した"
+    },
+    {
       "verb": "loosen",
       "extra": "{0} pistol grip",
       "text": "{0}の銃の握りを緩めた"
     },
     {
+      "verb": "loosen",
+      "extra": "",
+      "text": "{subject}が緩んだ"
+    },
+    {
+      "verb": "need",
+      "extra": "water in (?:it|him|her|them)",
+      "text": "{subject}には水が必要だ"
+    },
+    {
       "verb": "open",
       "extra": "wide, and the nacre inside {0} shell glimmers with unseen light",
       "text": "大きく開き、{0}の殻の中の真珠層が不可視の光で煌めいた"
+    },
+    {
+      "verb": "pony",
+      "extra": "up (\\d+) drams? of (.+?)",
+      "text": "{subject}は{1}を{0}ドラム支払った"
+    },
+    {
+      "verb": "press",
+      "extra": "(.+?)'s activation panel",
+      "text": "{subject}は{0}の起動パネルを押した"
     },
     {
       "verb": "raise",
@@ -1358,9 +1913,39 @@
       "text": "ダメージから{0}ユニットの電荷を充電した"
     },
     {
+      "verb": "reflect",
+      "extra": "(\\d+) damage back at you",
+      "text": "{subject}は{0}ダメージをあなたに跳ね返した"
+    },
+    {
+      "verb": "reflect",
+      "extra": "(\\d+) damage back at (?:the |a |an )?(.+?)",
+      "text": "{subject}は{0}ダメージを{1}に跳ね返した"
+    },
+    {
       "verb": "regenerate",
       "extra": "{0} {1}",
       "text": "{0}の{1}を再生した"
+    },
+    {
+      "verb": "rifle",
+      "extra": "through (?:the |a |an )?(.+?)",
+      "text": "{subject}は{0}を漁った"
+    },
+    {
+      "verb": "rip",
+      "extra": "(?:a |an |the )?(.+?) out of (?:the |a |an )?(.+?), but (?:destroys|destroy) (?:him|her|it|them) in the process",
+      "text": "{subject}は{1}から{0}を引き抜いたが、その過程で壊してしまった"
+    },
+    {
+      "verb": "say",
+      "extra": ", '(.+?)'",
+      "text": "{subject}は「{0}」と言った"
+    },
+    {
+      "verb": "see",
+      "extra": "no reason for you to amputate (?:his|her|its|their) (.+?)",
+      "text": "{subject}はあなたが{0}を切断する理由がないと考えている"
     },
     {
       "verb": "sense",
@@ -1371,6 +1956,21 @@
       "verb": "shake",
       "extra": "off {0} daze",
       "text": "{0}の朦朧を振り払った"
+    },
+    {
+      "verb": "share",
+      "extra": "the location of (.+?)",
+      "text": "{subject}は{0}の場所を教えた"
+    },
+    {
+      "verb": "share",
+      "extra": "the recipe for (.+?)",
+      "text": "{subject}は{0}のレシピを教えた"
+    },
+    {
+      "verb": "slouch",
+      "extra": "in pacification and (?:radiates|radiate) a chord of light",
+      "text": "{subject}は鎮静の中でうなだれ、光の和音を放った"
     },
     {
       "verb": "spin",
@@ -1403,6 +2003,11 @@
       "text": "{0}を放出し始めた"
     },
     {
+      "verb": "step",
+      "extra": "on (?:the |a |an )?(.+?) and (?:vibrates|vibrate) through spacetime",
+      "text": "{subject}は{0}を踏み、時空を振動して通り抜けた"
+    },
+    {
       "verb": "stop",
       "extra": "acting like {0} {1} so much",
       "text": "{1}のふりをするのをやめた"
@@ -1419,13 +2024,13 @@
     },
     {
       "verb": "strike",
-      "extra": "{0} with {1} for {2} damage",
-      "text": "{1}で{0}に{2}ダメージを与えた"
+      "extra": "{0} with your stinger",
+      "text": "尾針で{0}を刺した"
     },
     {
       "verb": "strike",
-      "extra": "{0} with your stinger",
-      "text": "尾針で{0}を刺した"
+      "extra": "{0} with {1} for {2} damage",
+      "text": "{1}で{0}に{2}ダメージを与えた"
     },
     {
       "verb": "strike",
@@ -1436,6 +2041,21 @@
       "verb": "switch",
       "extra": "to {0} stance",
       "text": "{0}の構えに切り替えた"
+    },
+    {
+      "verb": "teach",
+      "extra": "you to craft the item modification (.+?)",
+      "text": "{subject}はアイテム改造{0}の製作法をあなたに教えた"
+    },
+    {
+      "verb": "teach",
+      "extra": "you to craft (.+?)",
+      "text": "{subject}は{0}の製作法をあなたに教えた"
+    },
+    {
+      "verb": "teach",
+      "extra": "you (.+?)",
+      "text": "{subject}はあなたに{0}を教えた"
     },
     {
       "verb": "teleport",
@@ -1451,6 +2071,21 @@
       "verb": "tinker",
       "extra": "up {0} {1}",
       "text": "{0}{1}を組み立てた"
+    },
+    {
+      "verb": "try",
+      "extra": "to engulf you, but (?:fails|fail)",
+      "text": "{subject}はあなたを飲み込もうとしたが、失敗した"
+    },
+    {
+      "verb": "try",
+      "extra": "to (.+?) (?:a |an |the )?(.+?), but (?:it is|he is|she is|they are|it's|he's|she's|they're) unresponsive",
+      "text": "{subject}は{1}を{0}しようとしたが、反応がない"
+    },
+    {
+      "verb": "try",
+      "extra": "to engulf (?:the |a |an )?(.+?), but (?:fails|fail)",
+      "text": "{subject}は{0}を飲み込もうとしたが、失敗した"
     },
     {
       "verb": "try",
@@ -1473,9 +2108,19 @@
       "text": "{0}に触れようとしたが、{1}"
     },
     {
+      "verb": "unlock",
+      "extra": "(?:the |a |an )?(.+?)",
+      "text": "{subject}が{0}の鍵を開けた"
+    },
+    {
       "verb": "vibrate",
       "extra": "as the current location is imprinted in {0} geospatial core",
       "text": "現在地が{0}の地理空間コアに刻み込まれ、振動した"
+    },
+    {
+      "verb": "wince",
+      "extra": "",
+      "text": "{subject}はたじろいだ"
     }
   ]
 }

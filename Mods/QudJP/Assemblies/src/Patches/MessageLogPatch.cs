@@ -33,6 +33,17 @@ public static class MessageLogPatch
                 return true;
             }
 
+            if (DoesVerbRouteTranslator.TryTranslateMarkedMessage(Message, out var doesTranslated))
+            {
+                Message = doesTranslated;
+                return true;
+            }
+
+            if (!string.Equals(doesTranslated, Message, StringComparison.Ordinal))
+            {
+                Message = doesTranslated;
+            }
+
             var originalMessage = Message;
             var (stripped, _) = ColorAwareTranslationComposer.Strip(originalMessage);
             SinkObservation.LogUnclaimed(

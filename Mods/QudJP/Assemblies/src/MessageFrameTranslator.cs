@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
@@ -15,10 +16,14 @@ internal static class MessageFrameTranslator
     private static readonly object SyncRoot = new object();
     private static readonly Regex PlaceholderPattern =
         new Regex(@"\{(?<index>\d+)\}", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex TranslatedPlaceholderPattern =
+        new Regex(@"\{t(?<index>\d+)\}", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static LoadedVerbDictionary? loadedDictionary;
     private static string? dictionaryPathOverride;
     private static int loadInvocationCount;
+    private const string SubjectPlaceholder = "{subject}";
+    private const string EndMarkPlaceholder = "{endmark}";
 
     internal const char DirectTranslationMarker = '\x01';
 
@@ -37,6 +42,32 @@ internal static class MessageFrameTranslator
     internal static void ResetForTests()
     {
         SetDictionaryPathForTests(null);
+    }
+
+    internal static IReadOnlyList<string> GetKnownVerbsForTests()
+    {
+        var dictionary = GetLoadedDictionary();
+        var verbs = new SortedSet<string>(StringComparer.Ordinal);
+        foreach (var verb in dictionary.Tier1.Keys)
+        {
+            verbs.Add(verb);
+        }
+
+        foreach (var pair in dictionary.Tier2.Keys)
+        {
+            var separator = pair.IndexOf('\u001f');
+            if (separator > 0)
+            {
+                verbs.Add(pair.Substring(0, separator));
+            }
+        }
+
+        for (var index = 0; index < dictionary.Tier3.Count; index++)
+        {
+            verbs.Add(dictionary.Tier3[index].Verb);
+        }
+
+        return new List<string>(verbs);
     }
 
     internal static string MarkDirectTranslation(string source)
@@ -204,6 +235,16 @@ internal static class MessageFrameTranslator
     {
         if (string.IsNullOrWhiteSpace(normalizedTail))
         {
+            if (TryResolveExactPair(verb, string.Empty, objectValues, out predicate))
+            {
+                return true;
+            }
+
+            if (TryResolveTemplate(verb, string.Empty, objectSlotCount, objectValues, out predicate))
+            {
+                return true;
+            }
+
             return TryResolveTier1Verb(verb, out predicate);
         }
 
@@ -253,6 +294,8 @@ internal static class MessageFrameTranslator
         out string predicate)
     {
         var dictionary = GetLoadedDictionary();
+        var bestPredicate = string.Empty;
+        var bestScore = int.MinValue;
         for (var index = 0; index < dictionary.Tier3.Count; index++)
         {
             var definition = dictionary.Tier3[index];
@@ -271,12 +314,55 @@ internal static class MessageFrameTranslator
             var replacementValues = CreateReplacementValues(
                 objectValues,
                 CollectTemplateCaptures(match, objectSlotCount, definition.Extra));
-            predicate = ApplyPlaceholderValues(definition.Text, replacementValues);
-            return true;
+            var candidate = ApplyPlaceholderValues(definition.Text, replacementValues);
+            if (ContainsUntranslatedFunctionWords(candidate))
+            {
+                continue;
+            }
+
+            var score = ScoreTemplatePattern(definition.Extra);
+            if (score > bestScore)
+            {
+                bestScore = score;
+                bestPredicate = candidate;
+            }
         }
 
-        predicate = string.Empty;
-        return false;
+        predicate = bestPredicate;
+        return bestScore != int.MinValue;
+    }
+
+    private static int ScoreTemplatePattern(string pattern)
+    {
+        var score = pattern.Length;
+        // Literal pronoun patterns are more specific than generic (?:the |a |an )?(.+?) patterns
+        // even though they are shorter. Boost their score so they win over generic captures.
+        if (ContainsOrdinal(pattern, " you,") || ContainsOrdinal(pattern, " you ")
+            || pattern.EndsWith(" you", StringComparison.Ordinal)
+            || pattern.StartsWith("you ", StringComparison.Ordinal)
+            || string.Equals(pattern, "you", StringComparison.Ordinal)
+            || ContainsOrdinal(pattern, "your "))
+        {
+            score += 100;
+        }
+        return score;
+    }
+
+    private static bool ContainsUntranslatedFunctionWords(string text)
+    {
+        return ContainsOrdinal(text, " from ")
+            || ContainsOrdinal(text, " your ")
+            || ContainsOrdinal(text, " its ")
+            || ContainsOrdinal(text, " their ")
+            || ContainsOrdinal(text, " his ")
+            || ContainsOrdinal(text, " her ")
+            || text.StartsWith("The ", StringComparison.Ordinal)
+            || ContainsOrdinal(text, " says, ");
+    }
+
+    private static bool ContainsOrdinal(string source, string value)
+    {
+        return source.Contains(value);
     }
 
     private static IReadOnlyDictionary<int, string> CreateReplacementValues(
@@ -305,6 +391,11 @@ internal static class MessageFrameTranslator
         int objectSlotCount,
         string pattern)
     {
+        if (!PlaceholderPattern.IsMatch(pattern))
+        {
+            return CollectRegexCaptures(match, objectSlotCount);
+        }
+
         var captures = new Dictionary<int, string>();
         var placeholderMatches = PlaceholderPattern.Matches(pattern);
         for (var index = 0; index < placeholderMatches.Count; index++)
@@ -321,8 +412,26 @@ internal static class MessageFrameTranslator
         return captures;
     }
 
+    private static Dictionary<int, string> CollectRegexCaptures(Match match, int objectSlotCount)
+    {
+        var captures = new Dictionary<int, string>();
+        for (var groupIndex = 1; groupIndex < match.Groups.Count; groupIndex++)
+        {
+            captures[objectSlotCount + groupIndex - 1] = match.Groups[groupIndex].Value;
+        }
+
+        return captures;
+    }
+
     private static Regex CreateTemplateRegex(string pattern, int objectSlotCount)
     {
+        if (!PlaceholderPattern.IsMatch(pattern))
+        {
+            return new Regex(
+                "^" + pattern + "$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+        }
+
         var builder = new StringBuilder();
         builder.Append('^');
 
@@ -365,6 +474,11 @@ internal static class MessageFrameTranslator
     {
         var value = capture.Value;
         var indexText = value.Remove(startIndex: value.Length - 1, count: 1).Remove(startIndex: 0, count: 1);
+        if (indexText.Length > 0 && indexText[0] == 't')
+        {
+            indexText = indexText.Substring(1);
+        }
+
         return int.Parse(
             indexText,
             CultureInfo.InvariantCulture);
@@ -372,8 +486,18 @@ internal static class MessageFrameTranslator
 
     private static string ApplyPlaceholderValues(string template, IReadOnlyDictionary<int, string> values)
     {
-        return PlaceholderPattern.Replace(
+        var translated = TranslatedPlaceholderPattern.Replace(
             template,
+            match =>
+            {
+                var index = ParsePlaceholderIndex(match);
+                return values.TryGetValue(index, out var value)
+                    ? TranslatePlaceholderValue(value)
+                    : match.Value;
+            });
+
+        return PlaceholderPattern.Replace(
+            translated,
             match =>
             {
                 var index = ParsePlaceholderIndex(match);
@@ -385,6 +509,21 @@ internal static class MessageFrameTranslator
 
     private static string BuildSentence(string? subject, string predicate, string? endMark)
     {
+        if (predicate.Contains(SubjectPlaceholder)
+            || predicate.Contains(EndMarkPlaceholder))
+        {
+            var subjectText = string.IsNullOrWhiteSpace(subject)
+                ? string.Empty
+                : subject!.Trim();
+            return predicate
+                .Replace(SubjectPlaceholder, subjectText)
+                .Replace(
+                    EndMarkPlaceholder,
+                    string.IsNullOrEmpty(endMark)
+                        ? string.Empty
+                        : TranslateEndMark(endMark));
+        }
+
         var builder = new StringBuilder();
         if (!string.IsNullOrWhiteSpace(subject))
         {
@@ -441,6 +580,90 @@ internal static class MessageFrameTranslator
         }
 
         return false;
+    }
+
+    private static string TranslatePlaceholderValue(string value)
+    {
+        var trimmed = NormalizeFragment(value);
+        if (trimmed is null)
+        {
+            Trace.TraceWarning("QudJP: TranslatePlaceholderValue received empty placeholder value.");
+            return string.Empty;
+        }
+
+        if (trimmed.Length == 0)
+        {
+            return trimmed;
+        }
+
+        if (string.Equals(trimmed, "you", StringComparison.OrdinalIgnoreCase))
+        {
+            return "あなた";
+        }
+
+        if (string.Equals(trimmed, "your", StringComparison.OrdinalIgnoreCase))
+        {
+            return "あなたの";
+        }
+
+        if (string.Equals(trimmed, "its", StringComparison.OrdinalIgnoreCase))
+        {
+            return "その";
+        }
+
+        if (string.Equals(trimmed, "their", StringComparison.OrdinalIgnoreCase))
+        {
+            return "それらの";
+        }
+
+        if (string.Equals(trimmed, "his", StringComparison.OrdinalIgnoreCase))
+        {
+            return "彼の";
+        }
+
+        if (string.Equals(trimmed, "her", StringComparison.OrdinalIgnoreCase))
+        {
+            return "彼女の";
+        }
+
+        if (trimmed.EndsWith("'s", StringComparison.Ordinal))
+        {
+            return TranslatePlaceholderValue(trimmed.Substring(0, trimmed.Length - 2)) + "の";
+        }
+
+        if (trimmed.StartsWith("The ", StringComparison.Ordinal)
+            || trimmed.StartsWith("the ", StringComparison.Ordinal)
+            || trimmed.StartsWith("A ", StringComparison.Ordinal)
+            || trimmed.StartsWith("a ", StringComparison.Ordinal)
+            || trimmed.StartsWith("An ", StringComparison.Ordinal)
+            || trimmed.StartsWith("an ", StringComparison.Ordinal))
+        {
+            var separator = trimmed.IndexOf(' ');
+            return TranslatePlaceholderValue(trimmed.Substring(separator + 1));
+        }
+
+        if (trimmed.StartsWith("your ", StringComparison.OrdinalIgnoreCase))
+        {
+            return "あなたの" + TranslatePlaceholderValue(trimmed.Substring(5));
+        }
+
+        if (trimmed.StartsWith("its ", StringComparison.OrdinalIgnoreCase))
+        {
+            return "その" + TranslatePlaceholderValue(trimmed.Substring(4));
+        }
+
+        if (trimmed.StartsWith("their ", StringComparison.OrdinalIgnoreCase))
+        {
+            return "それらの" + TranslatePlaceholderValue(trimmed.Substring(6));
+        }
+
+        if (Translator.TryGetTranslation(trimmed, out var translated)
+            && !string.Equals(translated, trimmed, StringComparison.Ordinal))
+        {
+            return translated;
+        }
+
+        return trimmed;
     }
 
     private static string BuildSingleObjectTail(string? preposition, string? extra)

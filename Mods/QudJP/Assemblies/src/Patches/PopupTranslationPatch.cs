@@ -247,6 +247,16 @@ public static class PopupTranslationPatch
             return markedText;
         }
 
+        if (DoesVerbRouteTranslator.TryTranslateMarkedMessage(source, out var doesTranslated))
+        {
+            return doesTranslated;
+        }
+
+        if (!string.Equals(doesTranslated, source, StringComparison.Ordinal))
+        {
+            source = doesTranslated;
+        }
+
         if (IsAlreadyLocalizedPopupText(source))
         {
             return source;
@@ -312,6 +322,16 @@ public static class PopupTranslationPatch
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
             return markedText;
+        }
+
+        if (DoesVerbRouteTranslator.TryTranslateMarkedMessage(source, out var doesTranslated))
+        {
+            return doesTranslated;
+        }
+
+        if (!string.Equals(doesTranslated, source, StringComparison.Ordinal))
+        {
+            source = doesTranslated;
         }
 
         if (IsAlreadyLocalizedPopupText(source))

@@ -11,6 +11,7 @@ public sealed class MessageFrameTranslatorTests
 
     private string tempDirectory = null!;
     private string dictionaryPath = null!;
+    private string exactDictionaryDirectory = null!;
 
     [SetUp]
     public void SetUp()
@@ -18,7 +19,11 @@ public sealed class MessageFrameTranslatorTests
         tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-message-frame-l1", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDirectory);
         dictionaryPath = Path.Combine(tempDirectory, "verbs.ja.json");
+        exactDictionaryDirectory = Path.Combine(tempDirectory, "dict");
+        Directory.CreateDirectory(exactDictionaryDirectory);
 
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(exactDictionaryDirectory);
         MessageFrameTranslator.ResetForTests();
         MessageFrameTranslator.SetDictionaryPathForTests(dictionaryPath);
     }
@@ -26,6 +31,7 @@ public sealed class MessageFrameTranslatorTests
     [TearDown]
     public void TearDown()
     {
+        Translator.ResetForTests();
         MessageFrameTranslator.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
@@ -581,6 +587,54 @@ public sealed class MessageFrameTranslatorTests
     }
 
     [Test]
+    public void TryTranslateXDidY_Tier3_RawRegex()
+    {
+        WriteDictionary(tier3: new[] { ("kick", "(.+?) (?:backward|backwards)", "{0}を後ろに蹴った") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("熊", "kick", "スナップジョー backward", ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("熊はスナップジョーを後ろに蹴った。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_TranslatedPlaceholder()
+    {
+        WriteExactDictionary(("water", "水"));
+        WriteDictionary(tier3: new[] { ("have", "no room for more (.+?)", "{subject}にはこれ以上の{t0}を入れる余地がない") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("水筒", "have", "no room for more water", ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("水筒にはこれ以上の水を入れる余地がない"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3_PrefersSpecificHarvestPattern()
+    {
+        WriteDictionary(
+            tier3: new[]
+            {
+                ("harvest", "(?:a |an )?(.+?)", "{subject}は{0}を収穫した"),
+                ("harvest", "(?:a |an )?(.+?) from (?:the |a |an )?(.+?)", "{subject}は{1}から{0}を収穫した")
+            });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY("熊", "harvest", "a ウィッチウッド from the 木", ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("熊は木からウィッチウッドを収穫した"));
+        });
+    }
+
+    [Test]
     public void MarkerHelpers_AddAndStripDirectTranslationMarker()
     {
         var marked = MessageFrameTranslator.MarkDirectTranslation("熊は防いだ。");
@@ -632,6 +686,28 @@ public sealed class MessageFrameTranslatorTests
                 "verbs.ja.json"));
 
         MessageFrameTranslator.SetDictionaryPathForTests(repositoryDictionaryPath);
+    }
+
+    private void WriteExactDictionary(params (string key, string text)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.Append("{\"entries\":[");
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"")
+                .Append(EscapeJson(entries[index].key))
+                .Append("\",\"text\":\"")
+                .Append(EscapeJson(entries[index].text))
+                .Append("\"}");
+        }
+
+        builder.AppendLine("]}");
+        File.WriteAllText(Path.Combine(exactDictionaryDirectory, "ui-test.ja.json"), builder.ToString(), Utf8WithoutBom);
     }
 
     private static void WriteTier1(StringBuilder builder, IEnumerable<(string verb, string text)>? entries)
