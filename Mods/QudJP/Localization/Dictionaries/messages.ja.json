@@ -547,18 +547,18 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a consciousness to appeal to!$",
-      "template": "{0}には訴えるべき意識がない！",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a consciousness you can make psychic contact with!$",
+      "template": "{0}には精神的に接触できる意識がない！",
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a consciousness to appeal to\\.$",
-      "template": "{0}には訴えるべき意識がない。",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a consciousness you can make psychic contact with\\.$",
+      "template": "{0}には精神的に接触できる意識がない。",
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a consciousness to appeal to$",
-      "template": "{0}には訴えるべき意識がない",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't|does not|do not) have a consciousness you can make psychic contact with$",
+      "template": "{0}には精神的に接触できる意識がない",
       "route": "emit-message"
     },
     {
