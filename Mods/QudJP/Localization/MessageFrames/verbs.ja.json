@@ -115,6 +115,10 @@
       "text": "衝突した"
     },
     {
+      "verb": "collect",
+      "text": "集めた"
+    },
+    {
       "verb": "come",
       "text": "来た"
     },
@@ -395,6 +399,10 @@
       "text": "拾った"
     },
     {
+      "verb": "piece",
+      "text": "つなぎ合わせた"
+    },
+    {
       "verb": "place",
       "text": "置いた"
     },
@@ -493,6 +501,10 @@
     {
       "verb": "slam",
       "text": "叩きつけた"
+    },
+    {
+      "verb": "slip",
+      "text": "滑った"
     },
     {
       "verb": "sleep",
