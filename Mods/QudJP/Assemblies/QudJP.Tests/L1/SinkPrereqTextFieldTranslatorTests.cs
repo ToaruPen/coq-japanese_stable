@@ -135,6 +135,54 @@ public sealed class SinkPrereqTextFieldTranslatorTests
             SinkPrereqTextFieldTranslator.TranslateChainedField(parent, "child", "text", "Test"));
     }
 
+    [Test]
+    public void TranslateTextSkin_PreservesDirectTranslationMarker()
+    {
+        WriteDictionary(("Options", "設定"));
+        Translator.SetDictionaryDirectoryForTests(tempDir);
+
+        var skin = new DummyUITextSkinField();
+        skin.SetText("\x01Options");
+
+        SinkPrereqTextFieldTranslator.TranslateTextSkin(skin, "Test");
+
+        Assert.That(skin.text, Is.Not.EqualTo("設定"),
+            "Text prefixed with \\x01 DirectTranslationMarker must not be dictionary-translated.");
+        Assert.That(skin.text, Does.Not.Contain("設定"),
+            "Marker-prefixed text must bypass translation entirely.");
+    }
+
+    [Test]
+    public void TranslateField_PreservesDirectTranslationMarker()
+    {
+        WriteDictionary(("Keybinds", "キーバインド"));
+        Translator.SetDictionaryDirectoryForTests(tempDir);
+
+        var target = new DummyLeftSideCategory();
+        target.text.SetText("\x01Keybinds");
+
+        SinkPrereqTextFieldTranslator.TranslateField(target, "text", "Test");
+
+        Assert.That(target.text.text, Does.Not.Contain("キーバインド"),
+            "Field text prefixed with \\x01 DirectTranslationMarker must not be dictionary-translated.");
+    }
+
+    [Test]
+    public void TranslateChainedField_PreservesDirectTranslationMarker()
+    {
+        WriteDictionary(("Build Mode", "ビルドモード"));
+        Translator.SetDictionaryDirectoryForTests(tempDir);
+
+        var parent = new DummyParentWithChild();
+        parent.child.text.SetText("\x01Build Mode");
+
+        SinkPrereqTextFieldTranslator.TranslateChainedField(
+            parent, "child", "text", "Test");
+
+        Assert.That(parent.child.text.text, Does.Not.Contain("ビルドモード"),
+            "Chained field text prefixed with \\x01 DirectTranslationMarker must not be dictionary-translated.");
+    }
+
     private void WriteDictionary(params (string Key, string Text)[] entries)
     {
         var sb = new System.Text.StringBuilder();
