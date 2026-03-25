@@ -6,9 +6,50 @@ namespace QudJP.Patches;
 
 internal static class JournalTextTranslator
 {
+    internal static bool TryTranslateAccomplishmentTextForStorage(
+        string source,
+        string? category,
+        string route,
+        out string translated)
+    {
+        _ = category;
+        return TryTranslateForStorage(source, route, out translated);
+    }
+
+    internal static bool TryTranslateMapNoteTextForStorage(
+        string source,
+        string? category,
+        string route,
+        out string translated)
+    {
+        translated = source;
+        if (string.Equals(category, "Miscellaneous", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(category, "Named Locations", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        return TryTranslateForStorage(source, route, out translated);
+    }
+
+    internal static bool TryTranslateObservationRevealTextForStorage(
+        string source,
+        string route,
+        out string translated)
+    {
+        return TryTranslateForStorage(source, route, out translated);
+    }
+
     internal static bool TryTranslateBaseEntry(object entry, string source, string route, out string translated)
     {
         translated = source;
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var stripped))
+        {
+            translated = stripped;
+            return true;
+        }
+
         if (!ShouldTranslateBaseEntry(entry))
         {
             return false;
@@ -20,12 +61,46 @@ internal static class JournalTextTranslator
     internal static bool TryTranslateMapNoteEntry(object entry, string source, string route, out string translated)
     {
         translated = source;
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var stripped))
+        {
+            translated = stripped;
+            return true;
+        }
+
         if (!ShouldTranslateMapNoteEntry(entry))
         {
             return false;
         }
 
         return TryTranslateDisplayText(source, route, out translated);
+    }
+
+    /// <summary>
+    /// Shared storage-time translation: strips existing marker, translates via display-text
+    /// pipeline, then re-marks the result so display-time postfixes skip re-translation.
+    /// </summary>
+    private static bool TryTranslateForStorage(string source, string route, out string translated)
+    {
+        translated = source;
+        if (string.IsNullOrEmpty(source))
+        {
+            return false;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
+        {
+            translated = source;
+            return true;
+        }
+
+        if (!TryTranslateDisplayText(source, route, out var translatedText))
+        {
+            return false;
+        }
+
+        translated = MessageFrameTranslator.MarkDirectTranslation(translatedText);
+        return true;
     }
 
     private static bool ShouldTranslateBaseEntry(object entry)

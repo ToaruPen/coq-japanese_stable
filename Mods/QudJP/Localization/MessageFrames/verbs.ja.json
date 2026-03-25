@@ -43,6 +43,10 @@
       "text": "叩いた"
     },
     {
+      "verb": "beep",
+      "text": "ビープ音を鳴らした"
+    },
+    {
       "verb": "become",
       "text": "なった"
     },
@@ -57,6 +61,10 @@
     {
       "verb": "blink",
       "text": "瞬間移動した"
+    },
+    {
+      "verb": "bloop",
+      "text": "低い電子音を鳴らした"
     },
     {
       "verb": "block",
@@ -429,6 +437,10 @@
     {
       "verb": "regenerate",
       "text": "再生した"
+    },
+    {
+      "verb": "repair",
+      "text": "修理した"
     },
     {
       "verb": "release",
