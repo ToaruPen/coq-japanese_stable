@@ -177,6 +177,69 @@ public sealed class MessageFrameTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateXDidY_RepositoryDictionary_UsesBeepEntry()
+    {
+        UseRepositoryDictionary();
+
+        var translated = MessageFrameTranslator.TryTranslateXDidY("端末", "beep", extra: null, endMark: ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(sentence, Is.EqualTo("端末はビープ音を鳴らした。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier1_UsesClickEntry()
+    {
+        WriteDictionary(tier1: new[] { ("click", "カチッと鳴った") });
+
+        var translated = MessageFrameTranslator.TryTranslateXDidY("端末", "click", extra: null, endMark: ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(sentence, Is.EqualTo("端末はカチッと鳴った。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_RepositoryDictionary_UsesBloopEntry()
+    {
+        UseRepositoryDictionary();
+
+        var translated = MessageFrameTranslator.TryTranslateXDidY("端末", "bloop", extra: null, endMark: ".", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(sentence, Is.EqualTo("端末は低い電子音を鳴らした。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidYToZ_RepositoryDictionary_UsesRepairEntry()
+    {
+        UseRepositoryDictionary();
+
+        var translated = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "整備ロボット",
+            "repair",
+            preposition: null,
+            objectText: "損傷したアーム",
+            extra: null,
+            endMark: ".",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(sentence, Is.EqualTo("整備ロボットは損傷したアームを修理した。"));
+        });
+    }
+
     // --- New Tier2 tests (Task 1: #82 DidX verb entries) ---
 
     [Test]
