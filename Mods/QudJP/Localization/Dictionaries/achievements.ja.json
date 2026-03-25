@@ -1,0 +1,1208 @@
+{
+  "entries": [
+    {
+      "key": "Achievement progress.",
+      "text": "実績の進捗。"
+    },
+    {
+      "key": "Achievement unlocked!",
+      "text": "実績を解除！"
+    },
+    {
+      "key": "Welcome to Qud",
+      "text": "Qudへようこそ"
+    },
+    {
+      "key": "Die.",
+      "text": "死ぬ。"
+    },
+    {
+      "key": "The Laws of Physics Are Mere Suggestions, Vol. 1",
+      "text": "物理法則はただの提案 第1巻"
+    },
+    {
+      "key": "Violate the Pauli exclusion principle.",
+      "text": "パウリの排他原理を破る。"
+    },
+    {
+      "key": "Eat an Entire Bear",
+      "text": "熊を丸ごと食べる"
+    },
+    {
+      "key": "Kill a bear and eat it. Just eat an entire bear.",
+      "text": "熊を倒して食べる。熊を丸ごと食べるんだ。"
+    },
+    {
+      "key": "To Thine Own Self Be True",
+      "text": "汝自身に誠実であれ"
+    },
+    {
+      "key": "Wear your own severed face on your face.",
+      "text": "切断された自分の顔を自分の顔に被る。"
+    },
+    {
+      "key": "On the Rocks",
+      "text": "オン・ザ・ロック"
+    },
+    {
+      "key": "Drink lava.",
+      "text": "溶岩を飲む。"
+    },
+    {
+      "key": "Friend to Fungi",
+      "text": "菌類の友"
+    },
+    {
+      "key": "Host three different fungal infections at once.",
+      "text": "3種類の真菌感染症に同時にかかる。"
+    },
+    {
+      "key": "Goat Simulator",
+      "text": "ゴートシミュレーター"
+    },
+    {
+      "key": "Project your mind into a goat's body.",
+      "text": "山羊の体に精神を投影する。"
+    },
+    {
+      "key": "Your Better Half",
+      "text": "もう一人の自分"
+    },
+    {
+      "key": "Get killed by your evil twin.",
+      "text": "邪悪な双子に殺される。"
+    },
+    {
+      "key": "The Spirit of Vengeance",
+      "text": "復讐の魂"
+    },
+    {
+      "key": "Recover the Ruin of House Isner.",
+      "text": "イスナー家の遺物を回収する。"
+    },
+    {
+      "key": "Knight Conical",
+      "text": "円錐の騎士"
+    },
+    {
+      "key": "Recover Stopsvalinn.",
+      "text": "Stopsvalinnを回収する。"
+    },
+    {
+      "key": "Love at First Sign",
+      "text": "看板に一目惚れ"
+    },
+    {
+      "key": "Fall in love with a sign.",
+      "text": "看板に恋をする。"
+    },
+    {
+      "key": "You Are Becoming",
+      "text": "あなたは変容しつつある"
+    },
+    {
+      "key": "Install a cybernetic implant at a becoming nook.",
+      "text": "変容の窪みでサイバネティック・インプラントを装着する。"
+    },
+    {
+      "key": "You Became",
+      "text": "あなたは変容した"
+    },
+    {
+      "key": "Have a cybernetic implant installed on every implantable body part.",
+      "text": "装着可能なすべての部位にサイバネティック・インプラントを装着する。"
+    },
+    {
+      "key": "Pyramid Scheme",
+      "text": "ピラミッド・スキーム"
+    },
+    {
+      "key": "Kill a chrome pyramid.",
+      "text": "クロム・ピラミッドを倒す。"
+    },
+    {
+      "key": "Say No More",
+      "text": "もう何も言うな"
+    },
+    {
+      "key": "Contract glotrot.",
+      "text": "グロットロットに感染する。"
+    },
+    {
+      "key": "Metal Pedal",
+      "text": "メタル・ペダル"
+    },
+    {
+      "key": "Contract ironshank.",
+      "text": "アイアンシャンクに感染する。"
+    },
+    {
+      "key": "All the Leaves are Grey",
+      "text": "すべての葉は灰色"
+    },
+    {
+      "key": "Contract monochrome.",
+      "text": "モノクロームに感染する。"
+    },
+    {
+      "key": "You Are What You Eat",
+      "text": "食は人なり"
+    },
+    {
+      "key": "Eat one of your own limbs.",
+      "text": "自分の手足を食べる。"
+    },
+    {
+      "key": "Shoot.",
+      "text": "シュート。"
+    },
+    {
+      "key": "Get killed by a chute crab.",
+      "text": "シュートクラブに殺される。"
+    },
+    {
+      "key": "Dark Tidings",
+      "text": "暗黒の予兆"
+    },
+    {
+      "key": "Foresee your own death.",
+      "text": "自分の死を予見する。"
+    },
+    {
+      "key": "Love Thyself",
+      "text": "汝自身を愛せよ"
+    },
+    {
+      "key": "Fall in love with yourself.",
+      "text": "自分自身に恋をする。"
+    },
+    {
+      "key": "A Bond Knit with Trust",
+      "text": "信頼で結ばれた絆"
+    },
+    {
+      "key": "Become loved by a faction.",
+      "text": "派閥に愛される。"
+    },
+    {
+      "key": "The Woe of Joppa",
+      "text": "ジョッパの厄災"
+    },
+    {
+      "key": "Become hated by the villagers of Joppa.",
+      "text": "ジョッパの村人に嫌われる。"
+    },
+    {
+      "key": "Peekaboo",
+      "text": "いないいないばあ"
+    },
+    {
+      "key": "Become loved by newly sentient beings.",
+      "text": "新たに知性を得た存在に愛される。"
+    },
+    {
+      "key": "Starry Demise",
+      "text": "星々の最期"
+    },
+    {
+      "key": "Be crushed under the weight of a thousand suns.",
+      "text": "千の太陽の重みに押し潰される。"
+    },
+    {
+      "key": "Quiet This Metal",
+      "text": "この金属を鎮めよ"
+    },
+    {
+      "key": "Speak to the alchemist.",
+      "text": "錬金術師に話しかける。"
+    },
+    {
+      "key": "Proteus",
+      "text": "プロテウス"
+    },
+    {
+      "key": "Have 10 mutations.",
+      "text": "変異を10個持つ。"
+    },
+    {
+      "key": "Litteratus",
+      "text": "読書人"
+    },
+    {
+      "key": "Read 10 books.",
+      "text": "本を10冊読む。"
+    },
+    {
+      "key": "So Powerful is the Charm of Words",
+      "text": "かくも強き言葉の魔力"
+    },
+    {
+      "key": "Read 100 books.",
+      "text": "本を100冊読む。"
+    },
+    {
+      "key": "Jawsnapper",
+      "text": "スナップジョウ・スナッパー"
+    },
+    {
+      "key": "Kill 100 snapjaws.",
+      "text": "スナップジョウを100体倒す。"
+    },
+    {
+      "key": "Your Thirst Is Mine, My Water Is Yours",
+      "text": "汝の渇きは我がもの、我が水は汝のもの"
+    },
+    {
+      "key": "Perform the introductory water ritual 100 times.",
+      "text": "水の儀式の挨拶を100回行う。"
+    },
+    {
+      "key": "Mutagenic Mastery",
+      "text": "変異の極致"
+    },
+    {
+      "key": "Advance a mutation to level 15.",
+      "text": "変異をレベル15にする。"
+    },
+    {
+      "key": "Tongue in Cheek",
+      "text": "舌を巻く"
+    },
+    {
+      "key": "Cure glotrot via traditional methods.",
+      "text": "伝統的な方法でグロットロットを治す。"
+    },
+    {
+      "key": "Footloose",
+      "text": "フットルース"
+    },
+    {
+      "key": "Cure ironshank via traditional methods.",
+      "text": "伝統的な方法でアイアンシャンクを治す。"
+    },
+    {
+      "key": "Rainbow Reading",
+      "text": "虹色の読書"
+    },
+    {
+      "key": "Cure monochrome via traditional methods.",
+      "text": "伝統的な方法でモノクロームを治す。"
+    },
+    {
+      "key": "Biographer",
+      "text": "伝記作家"
+    },
+    {
+      "key": "Learn the complete history of a single sultan.",
+      "text": "一人のスルタンの完全な歴史を学ぶ。"
+    },
+    {
+      "key": "Oathbreaker",
+      "text": "誓約破り"
+    },
+    {
+      "key": "Violate the sacred covenant of the water ritual.",
+      "text": "水の儀式の神聖な誓約を破る。"
+    },
+    {
+      "key": "Cubic and Wisest Human",
+      "text": "立方体にして最も賢き人"
+    },
+    {
+      "key": "Activate a time cube.",
+      "text": "タイムキューブを起動する。"
+    },
+    {
+      "key": "Go on. Do it.",
+      "text": "さあ。やれ。"
+    },
+    {
+      "key": "Wield the amaranthine prism.",
+      "text": "アマランス・プリズムを装備する。"
+    },
+    {
+      "key": "In Contemplation of Eons",
+      "text": "悠久の瞑想"
+    },
+    {
+      "key": "Perform the water ritual with Oboroqoru, Ape God.",
+      "text": "猿神オボロコルと水の儀式を行う。"
+    },
+    {
+      "key": "Synolymb",
+      "text": "肢体再生"
+    },
+    {
+      "key": "Regenerate a limb.",
+      "text": "手足を再生する。"
+    },
+    {
+      "key": "Free Falling",
+      "text": "フリーフォーリング"
+    },
+    {
+      "key": "Fall to your death.",
+      "text": "落下して死ぬ。"
+    },
+    {
+      "key": "Three-Sludge Monte",
+      "text": "三重スラッジ・モンテ"
+    },
+    {
+      "key": "Kill a trisludge.",
+      "text": "トライスラッジを倒す。"
+    },
+    {
+      "key": "Five-Sludge Monte",
+      "text": "五重スラッジ・モンテ"
+    },
+    {
+      "key": "Kill a pentasludge.",
+      "text": "ペンタスラッジを倒す。"
+    },
+    {
+      "key": "Ten-Sludge Monte",
+      "text": "十重スラッジ・モンテ"
+    },
+    {
+      "key": "Kill a decasludge.",
+      "text": "デカスラッジを倒す。"
+    },
+    {
+      "key": "Hole Like a Head",
+      "text": "頭のような穴"
+    },
+    {
+      "key": "Get decapitated.",
+      "text": "首を刎ねられる。"
+    },
+    {
+      "key": "What With the Disembowelment and All",
+      "text": "内臓をぶちまけた件について"
+    },
+    {
+      "key": "Find one of Argyve's old apprentices.",
+      "text": "アージヴの元弟子の一人を見つける。"
+    },
+    {
+      "key": "Psst.",
+      "text": "ねえ。"
+    },
+    {
+      "key": "Find the oddly-hued glowpad.",
+      "text": "奇妙な色合いのグロウパッドを見つける。"
+    },
+    {
+      "key": "That Was Nice",
+      "text": "いいこと言うね"
+    },
+    {
+      "key": "Compliment Q Girl.",
+      "text": "Qガールを褒める。"
+    },
+    {
+      "key": "Gemini",
+      "text": "ジェミニ"
+    },
+    {
+      "key": "Wield Caslainard and Polluxus.",
+      "text": "カスレナードとポルクスを装備する。"
+    },
+    {
+      "key": "Donation Level: Kasaphescence",
+      "text": "寄進レベル：カサフェセンス"
+    },
+    {
+      "key": "Make an offering at the Sacred Well of an artifact worth at least 200 reputation.",
+      "text": "聖なる井戸に評判200以上のアーティファクトを捧げる。"
+    },
+    {
+      "key": "Leap, Frog.",
+      "text": "跳べ、蛙。"
+    },
+    {
+      "key": "Convince a frog to teach you how to jump.",
+      "text": "蛙にジャンプの仕方を教えてもらう。"
+    },
+    {
+      "key": "Six Arms None the Richer",
+      "text": "六本の腕、富まず"
+    },
+    {
+      "key": "Have six arms.",
+      "text": "腕を6本持つ。"
+    },
+    {
+      "key": "Cosmo-Chrononaut",
+      "text": "コスモクロノノート"
+    },
+    {
+      "key": "Enter 25 spacetime vortices.",
+      "text": "時空渦に25回入る。"
+    },
+    {
+      "key": "Mechanimist Reformer",
+      "text": "メカニミスト改革者"
+    },
+    {
+      "key": "Convince the High Priest of the Stilt to join your party.",
+      "text": "スティルトの大司祭を仲間に加える。"
+    },
+    {
+      "key": "Aaaaaaaaargh!",
+      "text": "あああああああ！"
+    },
+    {
+      "key": "Overdose on a hulk honey tonic.",
+      "text": "ハルクハニー・トニックを過剰摂取する。"
+    },
+    {
+      "key": "Feast Upon the Goat Hearts! *cheers*",
+      "text": "山羊の心臓を喰らえ！ *歓声*"
+    },
+    {
+      "key": "Perform the water ritual with Mamon Souldrinker.",
+      "text": "魂飲みのマモンと水の儀式を行う。"
+    },
+    {
+      "key": "Rocket Bear",
+      "text": "ロケット・ベア"
+    },
+    {
+      "key": "Equip the Flume-Flier of the Sky-Bear.",
+      "text": "天空熊のフリューム・フライヤーを装備する。"
+    },
+    {
+      "key": "Two Cats Are Better Than One",
+      "text": "猫は二匹に限る"
+    },
+    {
+      "key": "Clone Ctesiphus.",
+      "text": "クテシフスをクローンする。"
+    },
+    {
+      "key": "Me, Myself, and I",
+      "text": "私と、自分と、俺"
+    },
+    {
+      "key": "Share the map with 10 clones of yourself.",
+      "text": "自分のクローン10体とマップを共有する。"
+    },
+    {
+      "key": "Clonal Colony",
+      "text": "クローナル・コロニー"
+    },
+    {
+      "key": "Share the map with 30 clones of yourself.",
+      "text": "自分のクローン30体とマップを共有する。"
+    },
+    {
+      "key": "The Woe of Apes",
+      "text": "猿の厄災"
+    },
+    {
+      "key": "Kill Oboroqoru, Ape God.",
+      "text": "猿神オボロコルを倒す。"
+    },
+    {
+      "key": "Bricks Can Be Thrown, Too",
+      "text": "煉瓦だって投げられる"
+    },
+    {
+      "key": "Kill Aoyg-no-Longer.",
+      "text": "もはやアオイグならざるものを倒す。"
+    },
+    {
+      "key": "Close the Loop",
+      "text": "輪を閉じよ"
+    },
+    {
+      "key": "Recover Kindrish.",
+      "text": "キンドリッシュを回収する。"
+    },
+    {
+      "key": "Tourist",
+      "text": "観光客"
+    },
+    {
+      "key": "Visit 100 generated villages.",
+      "text": "生成された村を100か所訪れる。"
+    },
+    {
+      "key": "Sight Older Than Sight",
+      "text": "視覚より古き視覚"
+    },
+    {
+      "key": "Discover psychic glimmer.",
+      "text": "サイキック・グリマーを発見する。"
+    },
+    {
+      "key": "What Are Directions on a Space That Cannot Be Ordered?",
+      "text": "秩序なき空間に方向とは何か？"
+    },
+    {
+      "key": "Attain 40 psychic glimmer and discover the vast psychic aether.",
+      "text": "サイキック・グリマーを40に到達させ、広大なサイキック・エーテルを発見する。"
+    },
+    {
+      "key": "Star-Eye Esper",
+      "text": "星眼のエスパー"
+    },
+    {
+      "key": "Attain 100 psychic glimmer.",
+      "text": "サイキック・グリマーを100に到達させる。"
+    },
+    {
+      "key": "The Quasar Mind",
+      "text": "クエーサー・マインド"
+    },
+    {
+      "key": "Attain 200 psychic glimmer.",
+      "text": "サイキック・グリマーを200に到達させる。"
+    },
+    {
+      "key": "There Can Be Only One",
+      "text": "残るのは一人だけ"
+    },
+    {
+      "key": "Encode the psionic bits of someone's psyche onto the holographic boundary of your own psyche.",
+      "text": "他者のサイオニック・ビットを自身の精神のホログラフィック境界に書き込む。"
+    },
+    {
+      "key": "Glimmer of Truth",
+      "text": "真実の微光"
+    },
+    {
+      "key": "Attain 20 psychic glimmer as a true kin.",
+      "text": "トゥルーキンとしてサイキック・グリマーを20に到達させる。"
+    },
+    {
+      "key": "Sultan of Salt",
+      "text": "塩のスルタン"
+    },
+    {
+      "key": "Invent 100 recipes.",
+      "text": "レシピを100個発明する。"
+    },
+    {
+      "key": "Absolute Unit",
+      "text": "アブソリュート・ユニット"
+    },
+    {
+      "key": "Successfully cook a meal with neutron flux as an ingredient.",
+      "text": "中性子フラックスを材料にして料理を成功させる。"
+    },
+    {
+      "key": "Non-Locally Sourced",
+      "text": "非ローカル産"
+    },
+    {
+      "key": "Cook a meal with an extradimensional limb as an ingredient.",
+      "text": "異次元の手足を材料にして料理する。"
+    },
+    {
+      "key": "Surprise!",
+      "text": "サプライズ！"
+    },
+    {
+      "key": "Eat the Cloaca Surprise.",
+      "text": "クロアカ・サプライズを食べる。"
+    },
+    {
+      "key": "My Many Facets",
+      "text": "我が多面体"
+    },
+    {
+      "key": "Eat the Crystal Delight.",
+      "text": "クリスタル・デライトを食べる。"
+    },
+    {
+      "key": "On Second Thought",
+      "text": "やっぱりやめとけば"
+    },
+    {
+      "key": "Eat a serving of humble pie.",
+      "text": "ハンブルパイを一切れ食べる。"
+    },
+    {
+      "key": "From Thyn Heres Shaken the Wet and Olde Lif",
+      "text": "此処より振り落とさるる湿りたる古き生"
+    },
+    {
+      "key": "Cross into Brightsheol.",
+      "text": "ブライトシオルに渡る。"
+    },
+    {
+      "key": "All Those Who Wander",
+      "text": "彷徨うすべての者"
+    },
+    {
+      "key": "Travel to the pocket dimension Tzimtzlum.",
+      "text": "ポケット次元ツィムツルムに旅する。"
+    },
+    {
+      "key": "The Recitation of the Drowning of Eudoxia by the Witches of Moonhearth",
+      "text": "ムーンハースの魔女によるエウドクシア水没の朗誦"
+    },
+    {
+      "key": "Wear the Otherpearl.",
+      "text": "アザーパールを身に着ける。"
+    },
+    {
+      "key": "A Clammy Reception",
+      "text": "じめっとした歓迎"
+    },
+    {
+      "key": "Enter Mak's clam in the Yd Freehold.",
+      "text": "イド・フリーホールドでマクの貝に入る。"
+    },
+    {
+      "key": "What's Eating the Watervine?",
+      "text": "ウォーターヴァインを食べているのは何？"
+    },
+    {
+      "key": "Complete the quest What's Eating the Watervine?",
+      "text": "クエスト「ウォーターヴァインを食べているのは何？」を完了する。"
+    },
+    {
+      "key": "Byevalve",
+      "text": "バイバルブ"
+    },
+    {
+      "key": "Enter 100 giant clams.",
+      "text": "巨大な貝に100回入る。"
+    },
+    {
+      "key": "You Recame",
+      "text": "あなたは再び現れた"
+    },
+    {
+      "key": "Rematerialize in the corporeal realm.",
+      "text": "物質界で再実体化する。"
+    },
+    {
+      "key": "Dayenu",
+      "text": "ダイエヌ"
+    },
+    {
+      "key": "Give the repulsive device to all four children of the Tomb.",
+      "text": "忌避装置を墓の4人の子供全員に渡す。"
+    },
+    {
+      "key": "Belong, Friends",
+      "text": "ここが居場所だ、友よ"
+    },
+    {
+      "key": "Help the slynth find a new home.",
+      "text": "スリンスが新しい住処を見つけるのを手伝う。"
+    },
+    {
+      "key": "Token of Gratitude",
+      "text": "感謝の印"
+    },
+    {
+      "key": "Be gifted a 10-pointed asterisk.",
+      "text": "10頂点のアスタリスクを贈られる。"
+    },
+    {
+      "key": "The Laws of Physics Are Mere Suggestions, Vol. 2",
+      "text": "物理法則はただの提案 第2巻"
+    },
+    {
+      "key": "Exploit wave-particle duality to clone yourself.",
+      "text": "波動と粒子の二重性を利用して自分をクローンする。"
+    },
+    {
+      "key": "Aetalag",
+      "text": "アエタラグ"
+    },
+    {
+      "key": "Be turned to stone.",
+      "text": "石にされる。"
+    },
+    {
+      "key": "I-",
+      "text": "わた―"
+    },
+    {
+      "key": "Wink out of existence.",
+      "text": "存在から消え去る。"
+    },
+    {
+      "key": "*gulp*",
+      "text": "*ごくり*"
+    },
+    {
+      "key": "Be swallowed whole.",
+      "text": "丸呑みにされる。"
+    },
+    {
+      "key": "Jeweled Dusk",
+      "text": "宝石の黄昏"
+    },
+    {
+      "key": "Be transmuted into a gemstone.",
+      "text": "宝石に変成される。"
+    },
+    {
+      "key": "The Narrowing Sky",
+      "text": "狭まる空"
+    },
+    {
+      "key": "Wear each of the six Faces of the sultanate.",
+      "text": "スルタン国の6つの仮面をすべて身に着ける。"
+    },
+    {
+      "key": "Dawnglider",
+      "text": "ドーングライダー"
+    },
+    {
+      "key": "Become auroral.",
+      "text": "極光化する。"
+    },
+    {
+      "key": "Was It Something I Said?",
+      "text": "何かまずいこと言った？"
+    },
+    {
+      "key": "Invoke the Chaos Spiel.",
+      "text": "カオス・シュピールを唱える。"
+    },
+    {
+      "key": "Lottery Winner",
+      "text": "宝くじ当選者"
+    },
+    {
+      "key": "Gain a mutation from a gamma moth's mutating gaze.",
+      "text": "ガンマモスの変異の視線で変異を得る。"
+    },
+    {
+      "key": "The Psychal Chorus",
+      "text": "精神のコーラス"
+    },
+    {
+      "key": "Drink 20 drams of brain brine.",
+      "text": "脳塩水を20ドラム飲む。"
+    },
+    {
+      "key": "Become as Gods",
+      "text": "神の如くなれ"
+    },
+    {
+      "key": "Bestow life to 20 inanimate objects.",
+      "text": "無生物20個に命を授ける。"
+    },
+    {
+      "key": "Live and Ink",
+      "text": "生きて墨する"
+    },
+    {
+      "key": "Tattoo yourself.",
+      "text": "自分に刺青を入れる。"
+    },
+    {
+      "key": "tsk tsk",
+      "text": "やれやれ"
+    },
+    {
+      "key": "Disappoint a highly entropic being.",
+      "text": "高エントロピー存在を失望させる。"
+    },
+    {
+      "key": "Raisins in the Layer Cake",
+      "text": "層菓子の中の干し葡萄"
+    },
+    {
+      "key": "Recover a relic from a historic site.",
+      "text": "歴史的遺跡から遺物を回収する。"
+    },
+    {
+      "key": "May the Ground Shake But the Six Day Stilt Never Tumble",
+      "text": "大地は揺れども六日間のスティルトは倒れず"
+    },
+    {
+      "key": "Travel to the Six Day Stilt.",
+      "text": "六日間のスティルトに旅する。"
+    },
+    {
+      "key": "Red Rock Hazing Ritual",
+      "text": "赤い岩の通過儀礼"
+    },
+    {
+      "key": "Be stoned to death by a baboon on the surface of Red Rock.",
+      "text": "レッドロックの地表でヒヒに石を投げられて死ぬ。"
+    },
+    {
+      "key": "Mumblecore",
+      "text": "マンブルコア"
+    },
+    {
+      "key": "Learn a secret from the microbiome.",
+      "text": "マイクロバイオームから秘密を学ぶ。"
+    },
+    {
+      "key": "Open Your Mind",
+      "text": "心を開け"
+    },
+    {
+      "key": "Have your head explode.",
+      "text": "頭を爆発させる。"
+    },
+    {
+      "key": "Weirdwire Conduit... Eureka!",
+      "text": "ウィアードワイヤー導管……ユリイカ！"
+    },
+    {
+      "key": "Help Argyve build the contraption.",
+      "text": "アージヴの装置作りを手伝う。"
+    },
+    {
+      "key": "More Than a Willing Spirit",
+      "text": "心意気だけではなく"
+    },
+    {
+      "key": "Return from Golgotha with a repaired waydroid and gain admittance to Grit Gate.",
+      "text": "修理されたウェイドロイドを持ってゴルゴタから帰還し、グリットゲートへの入場を許される。"
+    },
+    {
+      "key": "Decoding the Signal",
+      "text": "信号の解読"
+    },
+    {
+      "key": "Travel to the Temple of the Rock and decrypt the mysterious signal.",
+      "text": "岩の神殿に赴き、謎の信号を解読する。"
+    },
+    {
+      "key": "The Earl of Omonporch",
+      "text": "オモンポーチの伯爵"
+    },
+    {
+      "key": "Strike a deal with Asphodel the Lovely for control of the Spindlegrounds.",
+      "text": "麗しきアスフォデルと交渉し、スピンドルグラウンズの支配権を得る。"
+    },
+    {
+      "key": "A Call to Arms",
+      "text": "武器を取れ"
+    },
+    {
+      "key": "Defend Grit Gate from the Putus Templar.",
+      "text": "プトゥス・テンプラーからグリットゲートを防衛する。"
+    },
+    {
+      "key": "Pax Klanq, I Presume?",
+      "text": "パクス・クランク、お見受けしますが？"
+    },
+    {
+      "key": "Deliver a message to the mushroom prodigy.",
+      "text": "キノコの天才にメッセージを届ける。"
+    },
+    {
+      "key": "Tomb of the Eaters",
+      "text": "喰らう者の墓"
+    },
+    {
+      "key": "Travel to Brightsheol and disable the Spindle's magnetic field.",
+      "text": "ブライトシオルに赴き、スピンドルの磁場を無効化する。"
+    },
+    {
+      "key": "The Golem",
+      "text": "ゴーレム"
+    },
+    {
+      "key": "Form large creature.",
+      "text": "巨大生物を形成する。"
+    },
+    {
+      "key": "Reclamation",
+      "text": "奪還"
+    },
+    {
+      "key": "Recover the Spindlegrounds from the Putus Templar war party.",
+      "text": "プトゥス・テンプラーの戦闘部隊からスピンドルグラウンズを奪還する。"
+    },
+    {
+      "key": "Aleph",
+      "text": "アレフ"
+    },
+    {
+      "key": "Defeat one of the Girsh nephilim.",
+      "text": "ギルシュ・ネフィリムの一体を倒す。"
+    },
+    {
+      "key": "Bet",
+      "text": "ベート"
+    },
+    {
+      "key": "Defeat two of the Girsh nephilim in a single playthrough.",
+      "text": "1回のプレイでギルシュ・ネフィリムを2体倒す。"
+    },
+    {
+      "key": "Gimel",
+      "text": "ギメル"
+    },
+    {
+      "key": "Defeat three of the Girsh nephilim in a single playthrough.",
+      "text": "1回のプレイでギルシュ・ネフィリムを3体倒す。"
+    },
+    {
+      "key": "Dalet",
+      "text": "ダレット"
+    },
+    {
+      "key": "Defeat four of the Girsh nephilim in a single playthrough.",
+      "text": "1回のプレイでギルシュ・ネフィリムを4体倒す。"
+    },
+    {
+      "key": "He",
+      "text": "ヘー"
+    },
+    {
+      "key": "Defeat five of the Girsh nephilim in a single playthrough.",
+      "text": "1回のプレイでギルシュ・ネフィリムを5体倒す。"
+    },
+    {
+      "key": "Vav",
+      "text": "ヴァヴ"
+    },
+    {
+      "key": "Defeat six of the Girsh nephilim in a single playthrough.",
+      "text": "1回のプレイでギルシュ・ネフィリムを6体倒す。"
+    },
+    {
+      "key": "Zayin",
+      "text": "ザイン"
+    },
+    {
+      "key": "Defeat all seven of the Girsh nephilim in a single playthrough.",
+      "text": "1回のプレイでギルシュ・ネフィリム7体すべてを倒す。"
+    },
+    {
+      "key": "Delight in the Abundance of Peace",
+      "text": "豊かなる平和を喜べ"
+    },
+    {
+      "key": "Pacify all seven of the Girsh nephilim in a single playthrough.",
+      "text": "1回のプレイでギルシュ・ネフィリム7体すべてを懐柔する。"
+    },
+    {
+      "key": "The Laws of Physics Are Mere Suggestions, Vol. 3",
+      "text": "物理法則はただの提案 第3巻"
+    },
+    {
+      "key": "Prove the information paradox by causing your surroundings to glitch.",
+      "text": "周囲をグリッチさせて情報パラドックスを証明する。"
+    },
+    {
+      "key": "Total Makeover",
+      "text": "トータル・メイクオーバー"
+    },
+    {
+      "key": "Pour a dram of pure warm static on yourself.",
+      "text": "純粋な温かい静的ノイズを1ドラム自分にかける。"
+    },
+    {
+      "key": "Dream within a Dream",
+      "text": "夢の中の夢"
+    },
+    {
+      "key": "Enter a waking dream from within a waking dream.",
+      "text": "白昼夢の中から白昼夢に入る。"
+    },
+    {
+      "key": "Swollen Bulb",
+      "text": "膨れた球根"
+    },
+    {
+      "key": "Consume 10 drams of sunslag in a single playthrough.",
+      "text": "1回のプレイでサンスラグを10ドラム摂取する。"
+    },
+    {
+      "key": "Wander Darkling in the Eternal Space",
+      "text": "永遠の空間を闇の中彷徨え"
+    },
+    {
+      "key": "Lose your will to live.",
+      "text": "生きる意志を失う。"
+    },
+    {
+      "key": "Sound Sleeper",
+      "text": "安眠家"
+    },
+    {
+      "key": "Wake peacefully from twenty dreams.",
+      "text": "20回の夢から穏やかに目覚める。"
+    },
+    {
+      "key": "Waterpipe and Rest",
+      "text": "水煙管と休息"
+    },
+    {
+      "key": "Smoke from a hookah.",
+      "text": "水煙管を吸う。"
+    },
+    {
+      "key": "Arconaut",
+      "text": "アルコノート"
+    },
+    {
+      "key": "Descend 50 strata deep.",
+      "text": "地下50階層まで降りる。"
+    },
+    {
+      "key": "Get in the Robot",
+      "text": "ロボットに乗れ"
+    },
+    {
+      "key": "Infiltrate a temple mecha.",
+      "text": "神殿メカに潜入する。"
+    },
+    {
+      "key": "Heat Death",
+      "text": "熱的死"
+    },
+    {
+      "key": "Get vaporized.",
+      "text": "蒸発させられる。"
+    },
+    {
+      "key": "0 for 2",
+      "text": "0勝2敗"
+    },
+    {
+      "key": "Die of thirst.",
+      "text": "渇きで死ぬ。"
+    },
+    {
+      "key": "Oops",
+      "text": "おっと"
+    },
+    {
+      "key": "Be killed by a companion on accident.",
+      "text": "仲間に誤って殺される。"
+    },
+    {
+      "key": "Imagine a Rubber Sheet",
+      "text": "ゴムシートを想像せよ"
+    },
+    {
+      "key": "Dash yourself on the crags of spacetime.",
+      "text": "時空の岩壁に叩きつけられる。"
+    },
+    {
+      "key": "Lair Cake",
+      "text": "レアケーキ"
+    },
+    {
+      "key": "Discover 100 lairs.",
+      "text": "巣穴を100か所発見する。"
+    },
+    {
+      "key": "Then",
+      "text": "そして"
+    },
+    {
+      "key": "Help Chavvah complete the ritual of -elseing and sever Tau at Taproot.",
+      "text": "チャヴァの-elseing（ -エルシング）の儀式を手伝い、タップルートでタウを断つ。"
+    },
+    {
+      "key": "Else",
+      "text": "さもなくば"
+    },
+    {
+      "key": "The Comedy",
+      "text": "喜劇"
+    },
+    {
+      "key": "Settle the dispute in Bey Lah in Eskhind's favor.",
+      "text": "ベイ・ラーの紛争をエスキンドに有利に解決する。"
+    },
+    {
+      "key": "The History",
+      "text": "歴史"
+    },
+    {
+      "key": "Settle the dispute in Bey Lah in Hindriarch Keh's favor.",
+      "text": "ベイ・ラーの紛争をヒンドリアーク・ケーに有利に解決する。"
+    },
+    {
+      "key": "The Tragedy",
+      "text": "悲劇"
+    },
+    {
+      "key": "Settle the dispute in Bey Lah and doom the village.",
+      "text": "ベイ・ラーの紛争を解決し、村を滅ぼす。"
+    },
+    {
+      "key": "The Sonnet",
+      "text": "ソネット"
+    },
+    {
+      "key": "Return the crumpled sheet of paper to its intended recipient or its author.",
+      "text": "くしゃくしゃの紙を本来の受取人か著者に返す。"
+    },
+    {
+      "key": "We Are Starfreight",
+      "text": "我々は星間貨物なり"
+    },
+    {
+      "key": "Ascend the Spindle.",
+      "text": "スピンドルを登る。"
+    },
+    {
+      "key": "Klanq Puff at Sun",
+      "text": "太陽に向かってクランクひと吹き"
+    },
+    {
+      "key": "Spread Klanq in space.",
+      "text": "宇宙にクランクを撒き散らす。"
+    },
+    {
+      "key": "Caves of Qud",
+      "text": "Caves of Qud"
+    },
+    {
+      "key": "Beat the game.",
+      "text": "ゲームをクリアする。"
+    },
+    {
+      "key": "Seraphic Covenant",
+      "text": "熾天使の契約"
+    },
+    {
+      "key": "Enter into a covenant with Resheph and help prepare Qud for the Coven's return.",
+      "text": "レシェフと契約を結び、カヴンの帰還に向けてQudを準備する。"
+    },
+    {
+      "key": "The Dusted Cosmos",
+      "text": "塵と化した宇宙"
+    },
+    {
+      "key": "Leave the solar system on a starship.",
+      "text": "宇宙船で太陽系を離れる。"
+    },
+    {
+      "key": "Seraphic Heresy",
+      "text": "熾天使への異端"
+    },
+    {
+      "key": "Spurn Resheph and return to Qud.",
+      "text": "レシェフを拒み、Qudに帰還する。"
+    },
+    {
+      "key": "The Tillage of the Noosphere",
+      "text": "ヌースフィアの耕作"
+    },
+    {
+      "key": "Accede to Resheph's plan for purging the world of higher life.",
+      "text": "レシェフの高等生命浄化計画に従う。"
+    },
+    {
+      "key": "Ungyre",
+      "text": "アンガイア"
+    },
+    {
+      "key": "Annul the plagues of the Gyre.",
+      "text": "ガイアの疫病を無効化する。"
+    }
+  ]
+}
