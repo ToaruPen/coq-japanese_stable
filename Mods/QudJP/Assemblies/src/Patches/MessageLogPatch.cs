@@ -38,7 +38,7 @@ public static class MessageLogPatch
             SinkObservation.LogUnclaimed(
                 nameof(MessageLogPatch),
                 nameof(MessageLogPatch),
-                "ObservationOnly",
+                SinkObservation.ObservationOnlyDetail,
                 Message,
                 stripped);
 

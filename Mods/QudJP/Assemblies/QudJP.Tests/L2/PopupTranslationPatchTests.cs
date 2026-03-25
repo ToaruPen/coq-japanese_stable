@@ -728,7 +728,7 @@ public sealed class PopupTranslationPatchTests
         var source = "Some untranslated popup text";
         PopupTranslationPatch.TranslatePopupTextForRoute(source, "TestRoute");
         var hitCount = SinkObservation.GetHitCountForTests(
-            nameof(PopupTranslationPatch), "TestRoute", "ObservationOnly", source, source);
+            nameof(PopupTranslationPatch), "TestRoute", SinkObservation.ObservationOnlyDetail, source, source);
         Assert.That(hitCount, Is.GreaterThan(0));
     }
 

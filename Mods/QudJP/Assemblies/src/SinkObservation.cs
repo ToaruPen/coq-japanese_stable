@@ -7,6 +7,7 @@ namespace QudJP;
 
 internal static class SinkObservation
 {
+    internal const string ObservationOnlyDetail = "ObservationOnly";
     private const string ProbeVersion = "v1";
     private const int MaxObservedEntries = 4096;
     private const int MaxValueLength = 200;

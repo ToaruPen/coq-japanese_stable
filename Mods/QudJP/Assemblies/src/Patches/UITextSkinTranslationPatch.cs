@@ -1,10 +1,7 @@
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
 using HarmonyLib;
 using QudJP;
@@ -41,9 +38,6 @@ public static class UITextSkinTranslationPatch
     private static readonly Regex CharGenBulletBlockPattern =
         new Regex("(^|\\n)ù ", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 #pragma warning disable S1144, CA1823
-    private static readonly ConcurrentDictionary<string, string?> ContextResolveCache =
-        new ConcurrentDictionary<string, string?>(StringComparer.Ordinal);
-    private const int MaxContextCacheEntries = 2048;
     private static readonly string[] CharGenStackHints =
     {
         "CharacterCreation",
@@ -98,7 +92,7 @@ public static class UITextSkinTranslationPatch
         }
 
         var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
-        var effectiveContext = ResolveObservabilityContext(context, stripped);
+        var effectiveContext = context;
 
         if (stripped.Length == 0)
         {
@@ -116,7 +110,7 @@ public static class UITextSkinTranslationPatch
             SinkObservation.LogUnclaimed(
                 nameof(UITextSkinTranslationPatch),
                 effectiveContext ?? string.Empty,
-                "ObservationOnly",
+                SinkObservation.ObservationOnlyDetail,
                 source!,
                 stripped);
         }
@@ -451,28 +445,6 @@ public static class UITextSkinTranslationPatch
         return hasGraphicMarker && !EnglishWordPattern.IsMatch(trimmed) && !JapaneseCharacterPattern.IsMatch(trimmed);
     }
 
-    private static string? ResolveObservabilityContext(string? context, string? source)
-    {
-        if (!string.Equals(context, nameof(UITextSkinTranslationPatch), StringComparison.Ordinal))
-        {
-            return context;
-        }
-
-        var cacheKey = source ?? string.Empty;
-        if (ContextResolveCache.TryGetValue(cacheKey, out var cached))
-        {
-            return cached;
-        }
-
-        var resolved = ResolveObservabilityContextFromStack(context, source);
-        if (ContextResolveCache.Count < MaxContextCacheEntries)
-        {
-            ContextResolveCache.TryAdd(cacheKey, resolved);
-        }
-
-        return resolved;
-    }
-
     private static string? ResolveObservabilityContext(string? context, string[] stackTypeNames)
     {
         if (!string.Equals(context, nameof(UITextSkinTranslationPatch), StringComparison.Ordinal))
@@ -536,48 +508,6 @@ public static class UITextSkinTranslationPatch
         return LooksLikeCharGenSinkText(source, stackTypeNames)
             ? nameof(CharGenLocalizationPatch)
             : resolvedContext;
-    }
-
-    private static string? ResolveObservabilityContextFromStack(string? context, string? source)
-    {
-        var stackTrace = new StackTrace();
-        var frames = stackTrace.GetFrames();
-        if (frames is null || frames.Length == 0)
-        {
-            Trace.TraceWarning(
-                "QudJP: ResolveObservabilityContext: no stack frames available for context '{0}'.",
-                context);
-            return context;
-        }
-
-        var typeNames = new string[frames.Length];
-        var count = 0;
-        for (var index = 0; index < frames.Length; index++)
-        {
-            var typeName = frames[index].GetMethod()?.DeclaringType?.FullName;
-            if (string.IsNullOrEmpty(typeName))
-            {
-                continue;
-            }
-
-            typeNames[count] = typeName!;
-            count++;
-        }
-
-        if (count == 0)
-        {
-            Trace.TraceWarning(
-                "QudJP: ResolveObservabilityContext: all {0} stack frames had null/empty declaring types for context '{1}'.",
-                frames.Length,
-                context);
-            return context;
-        }
-
-        var trimmedTypeNames = new string[count];
-        Array.Copy(typeNames, trimmedTypeNames, count);
-        return source is null
-            ? ResolveObservabilityContext(context, trimmedTypeNames)
-            : ResolveObservabilityContext(context, trimmedTypeNames, source);
     }
 
     private static bool ContainsAnyHint(string[] stackTypeNames, string[] hints)

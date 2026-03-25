@@ -424,7 +424,7 @@ public sealed class MessageLogPatchTests
         var originalMessage = message;
         MessageLogPatch.Prefix(ref message);
         var hitCount = SinkObservation.GetHitCountForTests(
-            nameof(MessageLogPatch), nameof(MessageLogPatch), "ObservationOnly", originalMessage, originalMessage);
+            nameof(MessageLogPatch), nameof(MessageLogPatch), SinkObservation.ObservationOnlyDetail, originalMessage, originalMessage);
         Assert.That(hitCount, Is.GreaterThan(0));
     }
 
