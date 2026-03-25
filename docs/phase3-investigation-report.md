@@ -280,11 +280,13 @@ ReplaceBuilder L281/L287, ModCellView L14 (mod ID), PickGameObjectLine L162 (whi
 
 ## Recommended Phase 3 Execution Plan
 
-### Phase 3a: Blueprint Template Translation (37 sites)
+### Phase 3a: Blueprint Template Translation (32 of 37 sites)
 - Build `BlueprintID:PartName:FieldName` → Japanese template dictionary
 - Enumerate all blueprint XML overrides for the 15 null-default fields
 - Hook `GameObjectFactory` post-load to apply translations
-- **Expected result**: 37 EmitMessage STATIC_PARTIAL sites resolved
+- **Covered**: 32 sites via part parameter translation (28 direct + 4 RemotePowerSwitch auto-covered)
+- **Remaining**: 5 sites need separate handling (Pettable tag, BaseLiquid liquid field, Transmutation caller param, GameObject CustomDeathMessage tag)
+- **Excluded from scope**: 5 null-default fields confirmed unused in game v2.0.4 (Reconstitution.DropMessage, Spawner.SpawnMessage, SwapOnUse.Message, LifeSaver.CurrentHitpointsThresholdMessage/DefaultActivationMessage/DestroyWhenUsedUpMessage)
 
 ### Phase 3b: Static Dictionary Entries (17 sites)
 - Book content (Quotes, EndCredits, page text)
@@ -315,7 +317,7 @@ ReplaceBuilder L281/L287, ModCellView L14 (mod ID), PickGameObjectLine L162 (whi
 | Phase | Sites Resolved | Cumulative Coverage |
 |-------|---------------|-------------------|
 | Existing patches | 4,506 / 4,664 (96.6%) | 96.6% |
-| Phase 3a (Blueprint templates) | +37 | 97.4% |
+| Phase 3a (Blueprint templates) | +32 | 97.3% |
 | Phase 3b (Static dictionary) | +17 | 97.8% |
 | Phase 3c (UI template patches) | +14 | 98.1% |
 | Phase 3d (Runtime, if pursued) | up to +43 | 99.0% |

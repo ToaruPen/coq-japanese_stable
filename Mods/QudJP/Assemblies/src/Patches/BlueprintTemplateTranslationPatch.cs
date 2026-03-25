@@ -40,11 +40,19 @@ public static class BlueprintTemplateTranslationPatch
             ["BlowAwayGas"] = new[] { "Message" },
             ["CancelRangedAttacks"] = new[] { "Message" },
             ["Interactable"] = new[] { "Message" },
-            ["LifeSaver"] = new[] { "LethalMessage", "MaxHitpointsThresholdMessage" },
+            ["LifeSaver"] = new[]
+            {
+                "LethalMessage", "MaxHitpointsThresholdMessage",
+                "DestroyWhenUsedUpMessage",
+            },
             ["NephalProperties"] = new[] { "PhaseMessage" },
+            ["Pettable"] = new[] { "PetResponse" },
             ["RandomLongRangeTeleportOnDamage"] = new[] { "Message" },
+            ["Reconstitution"] = new[] { "DropMessage" },
             ["SpawnVessel"] = new[] { "SpawnMessage" },
+            ["Spawner"] = new[] { "SpawnMessage" },
             ["SplitOnDeath"] = new[] { "Message" },
+            ["SwapOnUse"] = new[] { "Message" },
             ["TimeCubeProtection"] = new[] { "Message" },
         };
 
@@ -143,9 +151,18 @@ public static class BlueprintTemplateTranslationPatch
             return null;
         }
 
-        using var stream = File.OpenRead(path);
-        var serializer = new DataContractJsonSerializer(typeof(TemplateDictionaryDocument));
-        var document = serializer.ReadObject(stream) as TemplateDictionaryDocument;
+        TemplateDictionaryDocument? document;
+        try
+        {
+            using var stream = File.OpenRead(path);
+            var serializer = new DataContractJsonSerializer(typeof(TemplateDictionaryDocument));
+            document = serializer.ReadObject(stream) as TemplateDictionaryDocument;
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: BlueprintTemplateTranslation: failed to parse dictionary {0}: {1}", path, ex.Message);
+            return null;
+        }
 
         if (document?.Entries is null)
         {

@@ -101,8 +101,9 @@ public sealed class BlueprintTemplateTranslationPatchTests
             "PowerSwitch", "ForceProjector", "Consumer", "DesalinationPellet",
             "Explores", "LootOnStep", "Preacher",
             "BlowAwayGas", "CancelRangedAttacks", "Interactable", "LifeSaver",
-            "NephalProperties", "RandomLongRangeTeleportOnDamage",
-            "SpawnVessel", "SplitOnDeath", "TimeCubeProtection",
+            "NephalProperties", "Pettable", "RandomLongRangeTeleportOnDamage",
+            "Reconstitution", "SpawnVessel", "Spawner", "SplitOnDeath",
+            "SwapOnUse", "TimeCubeProtection",
         };
 
         Assert.Multiple(() =>
@@ -149,5 +150,59 @@ public sealed class BlueprintTemplateTranslationPatchTests
                     "Each entry must have a 'text' property.");
             }
         });
+    }
+
+    [Test]
+    public void LoadTranslations_ReturnsNullWhenDictionaryFileMissing()
+    {
+        BlueprintTemplateTranslationPatch.SetDictionaryPathForTests(
+            Path.Combine(localizationRoot, "BlueprintTemplates", "nonexistent.json"));
+
+        var translations = BlueprintTemplateTranslationPatch.LoadTranslations();
+
+        Assert.That(translations, Is.Null);
+    }
+
+    [Test]
+    public void LoadTranslations_ReturnsEmptyDictionaryForEmptyEntries()
+    {
+        var tempDir = Path.Combine(Path.GetTempPath(), "qudJpTest_" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDir);
+        try
+        {
+            var tempFile = Path.Combine(tempDir, "empty.json");
+            File.WriteAllText(tempFile, """{"entries":[]}""");
+            BlueprintTemplateTranslationPatch.SetDictionaryPathForTests(tempFile);
+
+            var translations = BlueprintTemplateTranslationPatch.LoadTranslations();
+
+            Assert.That(translations, Is.Not.Null);
+            Assert.That(translations!.Count, Is.EqualTo(0));
+        }
+        finally
+        {
+            Directory.Delete(tempDir, recursive: true);
+        }
+    }
+
+    [Test]
+    public void LoadTranslations_ReturnsNullForMalformedJson()
+    {
+        var tempDir = Path.Combine(Path.GetTempPath(), "qudJpTest_" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDir);
+        try
+        {
+            var tempFile = Path.Combine(tempDir, "bad.json");
+            File.WriteAllText(tempFile, "{ not valid json }}}");
+            BlueprintTemplateTranslationPatch.SetDictionaryPathForTests(tempFile);
+
+            var translations = BlueprintTemplateTranslationPatch.LoadTranslations();
+
+            Assert.That(translations, Is.Null);
+        }
+        finally
+        {
+            Directory.Delete(tempDir, recursive: true);
+        }
     }
 }
