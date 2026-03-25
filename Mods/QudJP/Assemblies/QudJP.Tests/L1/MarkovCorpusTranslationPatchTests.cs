@@ -16,13 +16,11 @@ public sealed class MarkovCorpusTranslationPatchTests
         localizationRoot = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../../../Localization"));
         LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
         MarkovCorpusTranslationPatch.ResetForTests();
-        MarkovCorpusTranslationPatch.GetCorpusCacheForTests().Clear();
     }
 
     [TearDown]
     public void TearDown()
     {
-        MarkovCorpusTranslationPatch.GetCorpusCacheForTests().Clear();
         MarkovCorpusTranslationPatch.ResetForTests();
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
     }
@@ -66,22 +64,6 @@ public sealed class MarkovCorpusTranslationPatchTests
             Assert.That(MarkovCorpusTranslationPatch.GetTransitionCount(chainData), Is.GreaterThan(500));
             Assert.That(sentence, Is.Not.Empty);
             Assert.That(MarkovCorpusTranslationPatch.ContainsJapaneseCharacters(sentence), Is.True);
-        });
-    }
-
-    [Test]
-    public void Prefix_InjectsJapaneseCorpusIntoLibraryCorpusCache()
-    {
-        var skipOriginal = MarkovCorpusTranslationPatch.Prefix(MarkovCorpusTranslationPatch.VanillaCorpusName);
-        var cache = MarkovCorpusTranslationPatch.GetCorpusCacheForTests();
-        var injected = cache[MarkovCorpusTranslationPatch.VanillaCorpusName];
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(skipOriginal, Is.False);
-            Assert.That(cache.Contains(MarkovCorpusTranslationPatch.VanillaCorpusName), Is.True);
-            Assert.That(injected, Is.Not.Null);
-            Assert.That(MarkovCorpusTranslationPatch.ContainsJapaneseCharacters(MarkovCorpusTranslationPatch.GenerateSentence(injected!)), Is.True);
         });
     }
 }

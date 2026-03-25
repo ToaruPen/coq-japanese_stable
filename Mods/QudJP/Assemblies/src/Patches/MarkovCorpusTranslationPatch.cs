@@ -236,13 +236,23 @@ public static class MarkovCorpusTranslationPatch
         var chainData = BuildChainData(corpusText, order);
         corpusCache[corpus] = chainData;
 
-        var postprocessMethod = AccessTools.Method(markovBookType, "PostprocessLoadedCorpus");
-        if (postprocessMethod is null)
+        try
         {
-            throw new MissingMethodException(markovBookType.FullName, "PostprocessLoadedCorpus");
+            var postprocessMethod = AccessTools.Method(markovBookType, "PostprocessLoadedCorpus");
+            if (postprocessMethod is null)
+            {
+                throw new MissingMethodException(markovBookType.FullName, "PostprocessLoadedCorpus");
+            }
+
+            _ = postprocessMethod.Invoke(null, new[] { chainData });
+        }
+        catch
+        {
+            // Rollback cache entry on postprocess failure to allow English fallback
+            corpusCache.Remove(corpus);
+            throw;
         }
 
-        _ = postprocessMethod.Invoke(null, new[] { chainData });
         return true;
     }
 
