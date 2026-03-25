@@ -721,6 +721,11 @@
     },
     {
       "verb": "are",
+      "extra": "immobilized",
+      "text": "動けなくなった"
+    },
+    {
+      "verb": "are",
       "extra": "immune to conventional treatments",
       "text": "{subject}は通常の治療が効かない"
     },
@@ -771,8 +776,18 @@
     },
     {
       "verb": "are",
+      "extra": "no longer immobilized",
+      "text": "もう動けないことはなくなった"
+    },
+    {
+      "verb": "are",
       "extra": "no longer poisoned",
       "text": "毒が消えた"
+    },
+    {
+      "verb": "are",
+      "extra": "no longer stuck",
+      "text": "もうくっついていない"
     },
     {
       "verb": "are",
@@ -1113,6 +1128,11 @@
       "verb": "do",
       "extra": "nothing",
       "text": "{subject}は何もしなかった"
+    },
+    {
+      "verb": "draw",
+      "extra": "a bead on",
+      "text": "に照準を合わせた"
     },
     {
       "verb": "drink",
@@ -1773,6 +1793,11 @@
     },
     {
       "verb": "are",
+      "extra": "no longer (.+)",
+      "text": "もう{0}ではなくなった"
+    },
+    {
+      "verb": "are",
       "extra": "occupied\\.\\n\\nAttempting to enter is a hostile action and will function as an attack with (.+)",
       "text": "{subject}は占有されている。\\n\\n侵入しようとすると敵対行動と見なされ、{0}での攻撃として扱われる{endmark}"
     },
@@ -1795,6 +1820,11 @@
       "verb": "are",
       "extra": "pulled toward (?:the |a |an )?(.+?)",
       "text": "{subject}は{0}に引き寄せられた"
+    },
+    {
+      "verb": "are",
+      "extra": "revealed (.+)",
+      "text": "{0}に姿を現した"
     },
     {
       "verb": "are",
@@ -1927,6 +1957,11 @@
       "text": "{subject}は正常性の圧力に耐えきれず崩壊し、内破した"
     },
     {
+      "verb": "collect",
+      "extra": "(\\d+ drams?) of (.+)",
+      "text": "{1}を{0}集めた"
+    },
+    {
       "verb": "deploy",
       "extra": "(?:a |an |the )?(.+?)",
       "text": "{subject}は{0}を展開した"
@@ -2055,6 +2090,11 @@
       "verb": "gain",
       "extra": "{{rules|{0}}} XP",
       "text": "{{rules|{0}}}XPを獲得した"
+    },
+    {
+      "verb": "gain",
+      "extra": "(.+)",
+      "text": "{0}を得た"
     },
     {
       "verb": "gift",

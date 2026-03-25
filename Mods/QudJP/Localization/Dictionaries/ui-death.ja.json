@@ -15,6 +15,26 @@
         {
             "key": "QudJP.DeathWrapper.AccidentallyKilledBy.Bare",
             "text": "{killer}にうっかり殺された。"
+        },
+        {
+            "key": "You were vaporized.",
+            "text": "蒸発した。"
+        },
+        {
+            "key": "You were stepped on.",
+            "text": "踏みつぶされた。"
+        },
+        {
+            "key": "You were crushed by falling rocks.",
+            "text": "落石に押しつぶされた。"
+        },
+        {
+            "key": "You were resorbed into the Mass Mind.",
+            "text": "集合精神に再吸収された。"
+        },
+        {
+            "key": "Your psyche exploded",
+            "text": "精神が爆発した"
         }
     ]
 }
