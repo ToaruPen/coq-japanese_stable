@@ -1,0 +1,45 @@
+{
+  "entries": [
+    { "key": "ACTIVE EFFECTS:", "text": "アクティブ効果:" },
+    { "key": "TARGET:", "text": "ターゲット:" },
+    { "key": "TARGET: [none]", "text": "ターゲット: [なし]" },
+    { "key": "[none]", "text": "[なし]" },
+    { "key": "[disabled]", "text": "[無効]" },
+    { "key": "[on]", "text": "[オン]" },
+    { "key": "[off]", "text": "[オフ]" },
+
+    { "key": "Badly Wounded", "text": "瀕死" },
+    { "key": "Wounded", "text": "負傷" },
+    { "key": "Injured", "text": "軽傷" },
+    { "key": "Fine", "text": "良好" },
+    { "key": "Perfect", "text": "完全" },
+    { "key": "Badly Damaged", "text": "大破" },
+    { "key": "Damaged", "text": "損傷" },
+    { "key": "Lightly Damaged", "text": "軽微な損傷" },
+
+    { "key": "Impossible", "text": "不可能" },
+    { "key": "Very Tough", "text": "非常に困難" },
+    { "key": "Tough", "text": "困難" },
+    { "key": "Average", "text": "普通" },
+    { "key": "Easy", "text": "容易" },
+    { "key": "Trivial", "text": "取るに足りない" },
+
+    { "key": "Sated", "text": "満腹" },
+    { "key": "Hungry", "text": "空腹" },
+    { "key": "Famished!", "text": "飢餓！" },
+    { "key": "Wilted!", "text": "萎凋！" },
+    { "key": "Quenched", "text": "潤沢" },
+    { "key": "Thirsty", "text": "渇き" },
+    { "key": "Parched", "text": "乾き" },
+    { "key": "Dehydrated!", "text": "脱水！" },
+    { "key": "Desiccated!", "text": "干涸らび！" },
+    { "key": "Moist", "text": "湿潤" },
+    { "key": "Dry", "text": "乾燥" },
+    { "key": "Wet", "text": "濡れ" },
+    { "key": "Soaked", "text": "浸水" },
+    { "key": "Tumescent", "text": "膨満" },
+
+    { "key": "Ex:", "text": "排他:" },
+    { "key": "-2 License Tier\n+1 Toughness", "text": "-2 ライセンスティア\n+1 タフネス" }
+  ]
+}
