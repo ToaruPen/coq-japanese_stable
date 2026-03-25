@@ -46,7 +46,6 @@ public static class BlueprintTemplateTranslationPatch
                 "DestroyWhenUsedUpMessage",
             },
             ["NephalProperties"] = new[] { "PhaseMessage" },
-            ["Pettable"] = new[] { "PetResponse" },
             ["RandomLongRangeTeleportOnDamage"] = new[] { "Message" },
             ["Reconstitution"] = new[] { "DropMessage" },
             ["SpawnVessel"] = new[] { "SpawnMessage" },

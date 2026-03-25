@@ -101,7 +101,7 @@ public sealed class BlueprintTemplateTranslationPatchTests
             "PowerSwitch", "ForceProjector", "Consumer", "DesalinationPellet",
             "Explores", "LootOnStep", "Preacher",
             "BlowAwayGas", "CancelRangedAttacks", "Interactable", "LifeSaver",
-            "NephalProperties", "Pettable", "RandomLongRangeTeleportOnDamage",
+            "NephalProperties", "RandomLongRangeTeleportOnDamage",
             "Reconstitution", "SpawnVessel", "Spawner", "SplitOnDeath",
             "SwapOnUse", "TimeCubeProtection",
         };
