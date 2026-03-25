@@ -36,7 +36,7 @@ public sealed class OptionsLocalizationPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesOptionRows_WhenShowRuns()
+    public void Postfix_TranslatesOptionRows_WhenPatched()
     {
         WriteDictionary(
             ("Main volume", "主音量"),
@@ -72,7 +72,7 @@ public sealed class OptionsLocalizationPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesDefaultMenuDescriptions()
+    public void Postfix_TranslatesDefaultMenuDescriptions_WhenPatched()
     {
         WriteDictionary(
             ("Collapse All", "すべてたたむ"),

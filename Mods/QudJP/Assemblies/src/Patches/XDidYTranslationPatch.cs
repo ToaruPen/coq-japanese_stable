@@ -23,7 +23,20 @@ public static class XDidYTranslationPatch
         GameTypeResolver.FindType("XRL.World.The", "The");
 
     private static readonly MethodInfo? HandleMessageMethod = FindHandleMessageMethod();
-    private static readonly MethodInfo? ValidateMethod = AccessTools.Method("XRL.World.GameObject:Validate");
+    private static readonly MethodInfo? ValidateMethod = ResolveValidateMethod();
+
+    private static MethodInfo? ResolveValidateMethod()
+    {
+        if (GameObjectType is null) return null;
+        // Validate has two overloads: Validate(ref GameObject) and Validate(GameObject).
+        // Use the non-ref overload for simpler invocation.
+        var method = AccessTools.Method(GameObjectType, "Validate", new[] { GameObjectType });
+        if (method is null)
+        {
+            Trace.TraceError("QudJP: XDidYTranslationPatch failed to resolve GameObject.Validate(GameObject). Validation will be skipped.");
+        }
+        return method;
+    }
     private static readonly MethodInfo? ConsequentialColorMethod = AccessTools.Method("XRL.Messages.ColorCoding:ConsequentialColor");
 
     private static Action<object?, string, bool, bool>? messageDispatcherOverride;

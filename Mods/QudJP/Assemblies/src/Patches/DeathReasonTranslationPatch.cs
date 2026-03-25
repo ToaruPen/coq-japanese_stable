@@ -72,7 +72,7 @@ public static class DeathReasonTranslationPatch
             return stripped;
         }
 
-        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(reason, Context);
+        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(reason);
         if (!string.Equals(translated, reason, StringComparison.Ordinal))
         {
             return MessageFrameTranslator.MarkDirectTranslation(translated);

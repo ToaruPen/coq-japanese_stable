@@ -45,7 +45,7 @@ public sealed class MessageLogPatchTests
     }
 
     [Test]
-    public void Prefix_TranslatesHitMessage_WhenPatched()
+    public void Prefix_ObservationOnly_DoesNotTranslateHitMessage()
     {
         WritePatternDictionary(("^You hit (.+) for (\\d+) damage[.!]?$", "{0}に{1}ダメージを与えた"));
 
@@ -60,7 +60,7 @@ public sealed class MessageLogPatchTests
 
             DummyMessageQueue.AddPlayerMessage("You hit snapjaw for 7 damage.", "&w", Capitalize: true);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("snapjawに7ダメージを与えた"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You hit snapjaw for 7 damage."));
         }
         finally
         {
@@ -69,7 +69,7 @@ public sealed class MessageLogPatchTests
     }
 
     [Test]
-    public void Prefix_PreservesColorCodes_WhenTranslating()
+    public void Prefix_ObservationOnly_PreservesColorCodes()
     {
         WritePatternDictionary(("^You miss (.+?)[.!]?$", "{0}への攻撃をはずした"));
 
@@ -84,7 +84,7 @@ public sealed class MessageLogPatchTests
 
             DummyMessageQueue.AddPlayerMessage("{{G|You miss snapjaw.}}", "&y", Capitalize: false);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("{{G|snapjawへの攻撃をはずした}}"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("{{G|You miss snapjaw.}}"));
         }
         finally
         {
@@ -117,7 +117,7 @@ public sealed class MessageLogPatchTests
     }
 
     [Test]
-    public void Prefix_TranslatesMultipleMessagesInSequence()
+    public void Prefix_ObservationOnly_PassesThroughMultipleMessages()
     {
         WritePatternDictionary(
             ("^You pick up (.+?)[.!]?$", "{0}を拾った"),
@@ -133,10 +133,10 @@ public sealed class MessageLogPatchTests
                 prefix: new HarmonyMethod(RequireMethod(typeof(MessageLogPatch), nameof(MessageLogPatch.Prefix))));
 
             DummyMessageQueue.AddPlayerMessage("You pick up copper nugget.", "&W", Capitalize: false);
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("copper nuggetを拾った"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You pick up copper nugget."));
 
             DummyMessageQueue.AddPlayerMessage("You drop copper nugget.", "&W", Capitalize: false);
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("copper nuggetを落とした"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You drop copper nugget."));
         }
         finally
         {
@@ -145,7 +145,7 @@ public sealed class MessageLogPatchTests
     }
 
     [Test]
-    public void Prefix_TranslatesIncomingDamageAndPreservesOtherArguments()
+    public void Prefix_ObservationOnly_PreservesOtherArguments()
     {
         WritePatternDictionary(("^(.+) hits you for (\\d+) damage[.!]?$", "{0}の攻撃で{1}ダメージを受けた"));
 
@@ -162,7 +162,7 @@ public sealed class MessageLogPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("snapjawの攻撃で5ダメージを受けた"));
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("snapjaw hits you for 5 damage!"));
                 Assert.That(DummyMessageQueue.LastColor, Is.EqualTo("&R"));
                 Assert.That(DummyMessageQueue.LastCapitalize, Is.False);
             });
@@ -174,7 +174,7 @@ public sealed class MessageLogPatchTests
     }
 
     [Test]
-    public void Prefix_TranslatesStatusPredicateMessage_WhenPatched()
+    public void Prefix_ObservationOnly_DoesNotTranslateStatusPredicate()
     {
         WritePatternDictionary(("^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stunned[.!]?$", "{t0}は気絶した"));
         WriteExactDictionary(("snapjaw", "スナップジョー"));
@@ -192,7 +192,7 @@ public sealed class MessageLogPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("スナップジョーは気絶した"));
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("The snapjaw is stunned!"));
                 Assert.That(DummyMessageQueue.LastColor, Is.EqualTo("&R"));
                 Assert.That(DummyMessageQueue.LastCapitalize, Is.False);
             });
@@ -204,7 +204,7 @@ public sealed class MessageLogPatchTests
     }
 
     [Test]
-    public void Prefix_TranslatesWeaponCombatMessage_WhenPatched()
+    public void Prefix_ObservationOnly_DoesNotTranslateWeaponCombat()
     {
         WritePatternDictionary(
             ("^You hit \\((x\\d+)\\) for (\\d+) damage with your (.+?)[.!] \\[(.+?)\\]$", "{2}で{1}ダメージを与えた。({0}) [{3}]"));
@@ -220,7 +220,7 @@ public sealed class MessageLogPatchTests
 
             DummyMessageQueue.AddPlayerMessage("You hit (x1) for 2 damage with your 青銅の短剣! [11]", "&W", Capitalize: false);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("青銅の短剣で2ダメージを与えた。(x1) [11]"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You hit (x1) for 2 damage with your 青銅の短剣! [11]"));
         }
         finally
         {
@@ -229,7 +229,7 @@ public sealed class MessageLogPatchTests
     }
 
     [Test]
-    public void Prefix_TranslatesPassByMessageWithoutArticle_WhenPatched()
+    public void Prefix_ObservationOnly_DoesNotTranslatePassByMessage()
     {
         WritePatternDictionary(("^You pass by (.+?)[.!]?$", "{0}のそばを通り過ぎた。"));
 
@@ -244,7 +244,7 @@ public sealed class MessageLogPatchTests
 
             DummyMessageQueue.AddPlayerMessage("You pass by ウォーターヴァイン.", "&W", Capitalize: false);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("ウォーターヴァインのそばを通り過ぎた。"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You pass by ウォーターヴァイン."));
         }
         finally
         {
@@ -253,7 +253,7 @@ public sealed class MessageLogPatchTests
     }
 
     [Test]
-    public void Prefix_TranslatesFreezingWeaponDamage_WhenPatched()
+    public void Prefix_ObservationOnly_DoesNotTranslateFreezingWeaponDamage()
     {
         WritePatternDictionary(("^(.+?) takes (\\d+) damage from your freezing weapon![.!]?$", "{0}はあなたの凍てつく武器で{1}ダメージを受けた！"));
 
@@ -268,7 +268,7 @@ public sealed class MessageLogPatchTests
 
             DummyMessageQueue.AddPlayerMessage("タム takes 1 damage from your freezing weapon!", "&C", Capitalize: false);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("タムはあなたの凍てつく武器で1ダメージを受けた！"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("タム takes 1 damage from your freezing weapon!"));
         }
         finally
         {
@@ -277,7 +277,7 @@ public sealed class MessageLogPatchTests
     }
 
     [Test]
-    public void Prefix_TranslatesDirectionalSeeAndStop_WhenPatched()
+    public void Prefix_ObservationOnly_DoesNotTranslateDirectionalSeeAndStop()
     {
         WritePatternDictionary((
             "^You see (.+?) to the (north|south|east|west|northeast|northwest|southeast|southwest) and stop moving[.!]?$",
@@ -295,7 +295,7 @@ public sealed class MessageLogPatchTests
 
             DummyMessageQueue.AddPlayerMessage("You see タム、ドロマド商人 to the east and stop moving.", "&W", Capitalize: false);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("東にタム、ドロマド商人が見えたので移動をやめた。"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You see タム、ドロマド商人 to the east and stop moving."));
         }
         finally
         {
@@ -304,7 +304,7 @@ public sealed class MessageLogPatchTests
     }
 
     [Test]
-    public void Prefix_TranslatesDeathMessage_WhenPatched()
+    public void Prefix_ObservationOnly_DoesNotTranslateDeathMessage()
     {
         WritePatternDictionary(("^You hear (.+?)[.!]?$", "{0}を聞いた。"));
         WriteExactDictionary(("QudJP.DeathWrapper.KilledBy.Wrapped", "あなたは死んだ。\n\n{killer}に殺された。"));
@@ -320,7 +320,7 @@ public sealed class MessageLogPatchTests
 
             DummyMessageQueue.AddPlayerMessage("You died.\n\nYou were killed by メフメット.", "&R", Capitalize: false);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("あなたは死んだ。\n\nメフメットに殺された。"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You died.\n\nYou were killed by メフメット."));
         }
         finally
         {
@@ -329,7 +329,7 @@ public sealed class MessageLogPatchTests
     }
 
     [Test]
-    public void Prefix_TranslatesBittenToDeathMessage_WhenPatched()
+    public void Prefix_ObservationOnly_DoesNotTranslateBittenToDeathMessage()
     {
         WritePatternDictionary(("^You hear (.+?)[.!]?$", "{0}を聞いた。"));
         WriteExactDictionary(("QudJP.DeathWrapper.BittenToDeathBy.Wrapped", "あなたは死んだ。\n\n{killer}に噛み殺された。"));
@@ -345,7 +345,7 @@ public sealed class MessageLogPatchTests
 
             DummyMessageQueue.AddPlayerMessage("You died.\n\nYou were bitten to death by the ウォーターヴァイン農家.", "&R", Capitalize: false);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("あなたは死んだ。\n\nウォーターヴァイン農家に噛み殺された。"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You died.\n\nYou were bitten to death by the ウォーターヴァイン農家."));
         }
         finally
         {
@@ -383,7 +383,7 @@ public sealed class MessageLogPatchTests
     }
 
     [Test]
-    public void Prefix_TranslatesBareAccidentalDeathMessage_WhenPatched()
+    public void Prefix_ObservationOnly_DoesNotTranslateAccidentalDeathMessage()
     {
         WritePatternDictionary(("^You hear (.+?)[.!]?$", "{0}を聞いた。"));
         WriteExactDictionary(("QudJP.DeathWrapper.AccidentallyKilledBy.Bare", "{killer}にうっかり殺された。"));
@@ -399,7 +399,7 @@ public sealed class MessageLogPatchTests
 
             DummyMessageQueue.AddPlayerMessage("You were accidentally killed by a ウォーターヴァイン農家.", "&R", Capitalize: false);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("ウォーターヴァイン農家にうっかり殺された。"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You were accidentally killed by a ウォーターヴァイン農家."));
         }
         finally
         {

@@ -12,30 +12,12 @@ namespace QudJP.Patches;
 public static class PopupTranslationPatch
 {
     private const string TargetTypeName = "XRL.UI.Popup";
-    private static readonly Regex AttackPromptWithArticlePattern =
-        new Regex("^Do you really want to attack the (?<target>.+)\\?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
-    private static readonly Regex AttackPromptPattern =
-        new Regex("^Do you really want to attack (?<target>.+)\\?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
-    private static readonly Regex RefusesToSpeakPattern =
-        new Regex("^(?:The )?(?<target>.+) refuses to speak to you\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
-    private static readonly Regex HostilityPromptPattern =
-        new Regex("^You sense only hostility from (?:the )?(?<target>.+)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
-    private static readonly Regex DeleteSavePromptPattern =
-        new Regex("^Are you sure you want to delete the save game for (?<target>.+)\\?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
-    private static readonly Regex DeleteTitlePattern =
-        new Regex("^Delete (?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex HotkeyLabelPattern =
         new Regex("^\\[(?<hotkey>[^\\]]+)\\]\\s+(?<label>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PlainHotkeyLabelPattern =
         new Regex("^(?<hotkey>Enter|Esc|Tab|Space|space)\\s+(?<label>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
-    private static readonly Regex StyledHotkeyLabelPattern =
-        new Regex("^(?<prefix>.+?)(?<labelOpen>\\{\\{[^|]+\\|)(?<label>[^{}]+)(?<labelClose>\\}\\})$", RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
     private static readonly Regex NumberedConversationChoicePattern =
         new Regex("^\\[(?<index>\\d+)\\]\\s+(?<text>.+?)(?:\\s+\\[[^\\]]+\\])?\\s*$", RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
-    private static readonly Regex AbandonPromptPattern =
-        new Regex(
-            "^If you quit without saving, you will lose all your progress\\s+and your character will be lost\\. Are you sure you want\\s+to QUIT and LOSE YOUR PROGRESS\\?\\s+Type 'ABANDON' to confirm\\.$",
-            RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
 
     // ShowBlock parameter count for game version 2.0.4
     private const int ShowBlockParameterCount = 8;
@@ -161,6 +143,7 @@ public static class PopupTranslationPatch
         }
 
         var translated = new List<string>();
+        var anyChanged = false;
         foreach (var item in enumerable)
         {
             if (item is null)
@@ -174,70 +157,19 @@ public static class PopupTranslationPatch
                 return;
             }
 
-            translated.Add(TranslatePopupText(text));
+            var result = TranslatePopupText(text);
+            if (!anyChanged && !string.Equals(text, result, StringComparison.Ordinal))
+            {
+                anyChanged = true;
+            }
+
+            translated.Add(result);
         }
 
-        args[index] = translated;
-    }
-
-    internal static bool TryTranslatePopupTemplate(string source, out string translated)
-    {
-        if (TryTranslateAttackPrompt(source, out var candidate))
+        if (anyChanged)
         {
-            translated = candidate;
-            return true;
+            args[index] = translated;
         }
-
-        if (TryTranslateRefusesToSpeak(source, out candidate))
-        {
-            translated = candidate;
-            return true;
-        }
-
-        if (TryTranslateHostilityPrompt(source, out candidate))
-        {
-            translated = candidate;
-            return true;
-        }
-
-        if (TryTranslateDeleteSavePrompt(source, out candidate))
-        {
-            translated = candidate;
-            return true;
-        }
-
-        if (TryTranslateDeleteTitle(source, out candidate))
-        {
-            translated = candidate;
-            return true;
-        }
-
-        if (TryTranslateHotkeyLabel(source, out candidate))
-        {
-            translated = candidate;
-            return true;
-        }
-
-        if (TryTranslateNumberedConversationChoice(source, out candidate))
-        {
-            translated = candidate;
-            return true;
-        }
-
-        if (DeathWrapperFamilyTranslator.TryTranslatePopup(source, out candidate))
-        {
-            translated = candidate;
-            return true;
-        }
-
-        if (TryTranslateAbandonPrompt(source, out candidate))
-        {
-            translated = candidate;
-            return true;
-        }
-
-        translated = source;
-        return false;
     }
 
     internal static string TranslatePopupTextForRoute(string source, string route)
@@ -247,59 +179,18 @@ public static class PopupTranslationPatch
             return markedText;
         }
 
-        if (DoesVerbRouteTranslator.TryTranslateMarkedMessage(source, out var doesTranslated))
-        {
-            return doesTranslated;
-        }
-
-        if (!string.Equals(doesTranslated, source, StringComparison.Ordinal))
-        {
-            source = doesTranslated;
-        }
-
-        if (IsAlreadyLocalizedPopupText(source))
-        {
-            return source;
-        }
-
-        var popupMenuItemText = TranslatePopupMenuItemTextForRoute(source, route);
-        if (!string.Equals(popupMenuItemText, source, StringComparison.Ordinal))
-        {
-            return popupMenuItemText;
-        }
-
-        if (TryTranslatePopupTemplate(source, out var translated))
-        {
-            return translated;
-        }
-
-        var exact = TranslateLabelWithCaseFallback(source);
-        if (exact is not null)
-        {
-            return exact;
-        }
-
         var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
-        SinkObservation.LogUnclaimed(
-            nameof(PopupTranslationPatch),
-            route,
-            nameof(MessagePatternTranslator),
-            source,
-            stripped);
-        var patternTranslated = MessagePatternTranslator.Translate(source, route);
-        if (!string.Equals(patternTranslated, source, StringComparison.Ordinal))
+        if (!IsAlreadyLocalizedPopupTextCore(stripped))
         {
-            return patternTranslated;
+            SinkObservation.LogUnclaimed(
+                nameof(PopupTranslationPatch),
+                route,
+                SinkObservation.ObservationOnlyDetail,
+                source,
+                stripped);
         }
 
-        SinkObservation.LogUnclaimed(
-            nameof(PopupTranslationPatch),
-            route,
-            nameof(UITextSkinTranslationPatch),
-            source,
-            stripped);
-        using var _ = SinkObservation.PushSuppression(true);
-        return UITextSkinTranslationPatch.TranslatePreservingColors(source, route);
+        return source;
     }
 
     internal static string TranslatePopupMenuItemText(string source)
@@ -324,26 +215,6 @@ public static class PopupTranslationPatch
             return markedText;
         }
 
-        if (DoesVerbRouteTranslator.TryTranslateMarkedMessage(source, out var doesTranslated))
-        {
-            return doesTranslated;
-        }
-
-        if (!string.Equals(doesTranslated, source, StringComparison.Ordinal))
-        {
-            source = doesTranslated;
-        }
-
-        if (IsAlreadyLocalizedPopupText(source))
-        {
-            return source;
-        }
-
-        if (TryTranslateStyledHotkeyLabel(source, route, out var translated))
-        {
-            return translated;
-        }
-
         return source;
     }
 
@@ -355,6 +226,11 @@ public static class PopupTranslationPatch
         }
 
         var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
+        return IsAlreadyLocalizedPopupTextCore(stripped);
+    }
+
+    private static bool IsAlreadyLocalizedPopupTextCore(string stripped)
+    {
         if (stripped.Length == 0)
         {
             return true;
@@ -394,211 +270,6 @@ public static class PopupTranslationPatch
             nameof(PopupTranslationPatch));
     }
 
-    private static bool TryTranslateAttackPrompt(string source, out string translated)
-    {
-        var matchedWithArticle = true;
-        var translatedTemplate = Translator.Translate("Do you really want to attack the {0}?");
-        var match = AttackPromptWithArticlePattern.Match(source);
-        if (!match.Success)
-        {
-            matchedWithArticle = false;
-            translatedTemplate = Translator.Translate("Do you really want to attack {0}?");
-            match = AttackPromptPattern.Match(source);
-        }
-
-        if (!match.Success)
-        {
-            translated = source;
-            return false;
-        }
-
-        if ((!matchedWithArticle && string.Equals(translatedTemplate, "Do you really want to attack {0}?", StringComparison.Ordinal))
-            || (matchedWithArticle && string.Equals(translatedTemplate, "Do you really want to attack the {0}?", StringComparison.Ordinal)))
-        {
-            translated = source;
-            return false;
-        }
-
-        var target = TranslatePopupEntityReference(match.Groups["target"].Value);
-
-        translated = translatedTemplate.Replace("{0}", target);
-        DynamicTextObservability.RecordTransform(nameof(PopupTranslationPatch), "AttackPrompt", source, translated);
-        return true;
-    }
-
-    private static bool TryTranslateHostilityPrompt(string source, out string translated)
-    {
-        var match = HostilityPromptPattern.Match(source);
-        if (!match.Success)
-        {
-            translated = source;
-            return false;
-        }
-
-        var translatedTemplate = Translator.Translate("You sense only hostility from {0}.");
-        if (string.Equals(translatedTemplate, "You sense only hostility from {0}.", StringComparison.Ordinal))
-        {
-            translated = source;
-            return false;
-        }
-
-        var target = TranslatePopupEntityReference(match.Groups["target"].Value);
-
-        translated = translatedTemplate.Replace("{0}", target);
-        DynamicTextObservability.RecordTransform(nameof(PopupTranslationPatch), "HostilityPrompt", source, translated);
-        return true;
-    }
-
-    private static bool TryTranslateRefusesToSpeak(string source, out string translated)
-    {
-        var match = RefusesToSpeakPattern.Match(source);
-        if (!match.Success)
-        {
-            translated = source;
-            return false;
-        }
-
-        var translatedTemplate = Translator.Translate("The {0} refuses to speak to you.");
-        if (string.Equals(translatedTemplate, "The {0} refuses to speak to you.", StringComparison.Ordinal))
-        {
-            translated = source;
-            return false;
-        }
-
-        var target = TranslatePopupEntityReference(match.Groups["target"].Value);
-
-        translated = translatedTemplate.Replace("{0}", target);
-        DynamicTextObservability.RecordTransform(nameof(PopupTranslationPatch), "RefusesToSpeak", source, translated);
-        return true;
-    }
-
-    private static bool TryTranslateDeleteSavePrompt(string source, out string translated)
-    {
-        var match = DeleteSavePromptPattern.Match(source);
-        if (!match.Success)
-        {
-            translated = source;
-            return false;
-        }
-
-        var translatedTemplate = Translator.Translate("Are you sure you want to delete the save game for {0}?");
-        if (string.Equals(translatedTemplate, "Are you sure you want to delete the save game for {0}?", StringComparison.Ordinal))
-        {
-            translated = source;
-            return false;
-        }
-
-        translated = translatedTemplate.Replace("{0}", match.Groups["target"].Value);
-        DynamicTextObservability.RecordTransform(nameof(PopupTranslationPatch), "DeleteSavePrompt", source, translated);
-        return true;
-    }
-
-    private static bool TryTranslateNumberedConversationChoice(string source, out string translated)
-    {
-        var match = NumberedConversationChoicePattern.Match(source);
-        if (!match.Success)
-        {
-            translated = source;
-            return false;
-        }
-
-        var index = match.Groups["index"].Value;
-        var text = match.Groups["text"].Value.TrimEnd();
-        if (!UITextSkinTranslationPatch.IsAlreadyLocalizedDirectRouteTextForContext(text, nameof(PopupTranslationPatch)))
-        {
-            text = Translator.Translate(text);
-        }
-
-        translated = $"[{index}] {text}";
-        DynamicTextObservability.RecordTransform(nameof(PopupTranslationPatch), "ConversationChoice", source, translated);
-        return true;
-    }
-
-    private static bool TryTranslateAbandonPrompt(string source, out string translated)
-    {
-        if (!AbandonPromptPattern.IsMatch(source))
-        {
-            translated = source;
-            return false;
-        }
-
-        var canonicalKey = "If you quit without saving, you will lose all your progress and your character will be lost. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\nType 'ABANDON' to confirm.";
-        translated = Translator.Translate(canonicalKey);
-        var changed = !string.Equals(translated, canonicalKey, StringComparison.Ordinal);
-        if (changed)
-        {
-            DynamicTextObservability.RecordTransform(nameof(PopupTranslationPatch), "AbandonPrompt", source, translated);
-        }
-
-        return changed;
-    }
-
-    private static bool TryTranslateHotkeyLabel(string source, out string translated)
-    {
-        return HotkeyLabelFamilyTranslator.TryTranslateBracketedLabel(
-            source,
-            nameof(PopupTranslationPatch),
-            "HotkeyLabel",
-            rejectNumericHotkeys: true,
-            out translated);
-    }
-
-    private static bool TryTranslateStyledHotkeyLabel(string source, string route, out string translated)
-    {
-        var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
-        if (!HotkeyLabelFamilyTranslator.TryTranslateBracketedLabel(
-                stripped,
-                route,
-                "HotkeyLabel",
-                rejectNumericHotkeys: true,
-                out var translatedVisible))
-        {
-            translated = source;
-            return false;
-        }
-
-        var sourceMatch = StyledHotkeyLabelPattern.Match(source);
-        var visibleMatch = HotkeyLabelPattern.Match(translatedVisible);
-        if (!sourceMatch.Success || !visibleMatch.Success)
-        {
-            translated = source;
-            return false;
-        }
-
-        translated = sourceMatch.Groups["prefix"].Value
-            + sourceMatch.Groups["labelOpen"].Value
-            + visibleMatch.Groups["label"].Value
-            + sourceMatch.Groups["labelClose"].Value;
-        DynamicTextObservability.RecordTransform(route, "HotkeyLabelMarkup", source, translated);
-        return true;
-    }
-
-    private static string TranslatePopupEntityReference(string source)
-    {
-        return DeathWrapperFamilyTranslator.TranslateEntityReference(source, nameof(PopupTranslationPatch));
-    }
-
-    private static bool TryTranslateDeleteTitle(string source, out string translated)
-    {
-        var match = DeleteTitlePattern.Match(source);
-        if (!match.Success)
-        {
-            translated = source;
-            return false;
-        }
-
-        var translatedTemplate = Translator.Translate("Delete {0}");
-        if (string.Equals(translatedTemplate, "Delete {0}", StringComparison.Ordinal))
-        {
-            translated = source;
-            return false;
-        }
-
-        translated = translatedTemplate.Replace("{0}", match.Groups["target"].Value);
-        DynamicTextObservability.RecordTransform(nameof(PopupTranslationPatch), "DeleteTitle", source, translated);
-        return true;
-    }
-
     private static MethodBase? FindMethod(string methodName, int parameterCount)
     {
         var targetType = AccessTools.TypeByName(TargetTypeName);
@@ -623,23 +294,6 @@ public static class PopupTranslationPatch
         return null;
     }
 
-    private static string? TranslateLabelWithCaseFallback(string source)
-    {
-        return StringHelpers.TranslateExactOrLowerAscii(source);
-    }
-
-#pragma warning disable S1144
-    private static string TranslatePopupTemplateValue(string source)
-    {
-        var direct = TranslateLabelWithCaseFallback(source);
-        if (direct is not null)
-        {
-            return direct;
-        }
-
-        return TranslatePopupEntityReference(source);
-    }
-#pragma warning restore S1144
     private static void TranslatePopupMenuItemTextCollection(object? maybeCollection)
     {
         if (maybeCollection is null || maybeCollection is string || maybeCollection is not IList list)

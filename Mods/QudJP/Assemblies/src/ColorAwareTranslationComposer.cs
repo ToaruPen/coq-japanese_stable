@@ -23,6 +23,11 @@ internal static class ColorAwareTranslationComposer
             spans as List<ColorSpan> ?? new List<ColorSpan>(spans));
     }
 
+    internal static string TranslatePreservingColors(string? source)
+    {
+        return TranslatePreservingColors(source, Translator.Translate);
+    }
+
     internal static string TranslatePreservingColors(string? source, Func<string, string> translateVisible)
     {
         if (string.IsNullOrEmpty(source))

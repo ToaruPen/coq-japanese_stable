@@ -45,7 +45,7 @@ public sealed class PopupMessageTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_TranslatesAsyncPopupMessageTitleContextAndMenuItems()
+    public void Prefix_ObservationOnly_ReturnsSourceUnchanged()
     {
         WriteDictionary(
             ("Are you sure you want to delete the save game for {0}?", "{0}のセーブデータを本当に削除しますか？"),
@@ -85,18 +85,17 @@ public sealed class PopupMessageTranslationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("Yashurのセーブデータを本当に削除しますか？"));
-                Assert.That(DummyPopupMessageTarget.LastTitle, Is.EqualTo("Yashurを削除"));
-                Assert.That(DummyPopupMessageTarget.LastContextTitle, Is.EqualTo("セーブ一覧"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("Are you sure you want to delete the save game for Yashur?"));
+                Assert.That(DummyPopupMessageTarget.LastTitle, Is.EqualTo("Delete Yashur"));
+                Assert.That(DummyPopupMessageTarget.LastContextTitle, Is.EqualTo("Save Slots"));
                 Assert.That(DummyPopupMessageTarget.LastButtons, Is.Not.Null);
-                Assert.That(DummyPopupMessageTarget.LastButtons![0].text, Is.EqualTo("{{W|[Enter]}} {{y|承認}}"));
+                Assert.That(DummyPopupMessageTarget.LastButtons![0].text, Is.EqualTo("{{W|[Enter]}} {{y|Accept}}"));
                 Assert.That(DummyPopupMessageTarget.LastButtons[0].hotkey, Is.EqualTo("Accept"));
                 Assert.That(DummyPopupMessageTarget.LastButtons[0].command, Is.EqualTo("Accept"));
-                Assert.That(DummyPopupMessageTarget.LastButtons[1].text, Is.EqualTo("{{W|[Esc]}} {{y|キャンセル}}"));
+                Assert.That(DummyPopupMessageTarget.LastButtons[1].text, Is.EqualTo("{{W|[Esc]}} {{y|Cancel}}"));
                 Assert.That(DummyPopupMessageTarget.LastItems, Is.Not.Null);
-                Assert.That(DummyPopupMessageTarget.LastItems![0].text, Is.EqualTo("続ける"));
+                Assert.That(DummyPopupMessageTarget.LastItems![0].text, Is.EqualTo("Continue"));
                 Assert.That(DummyPopupMessageTarget.LastWantsSpecificPrompt, Is.EqualTo("ABANDON"));
-                Assert.That(Translator.GetMissingKeyHitCountForTests("Yashur"), Is.EqualTo(0));
             });
         }
         finally
@@ -106,7 +105,7 @@ public sealed class PopupMessageTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_IsIdempotentForSharedButtonLists()
+    public void Prefix_ObservationOnly_IsIdempotentForSharedButtonLists()
     {
         WriteDictionary(("Cancel", "キャンセル"));
 
@@ -128,7 +127,7 @@ public sealed class PopupMessageTranslationPatchTests
             target.ShowPopup("Prompt", sharedButtons);
             target.ShowPopup("Prompt", sharedButtons);
 
-            Assert.That(sharedButtons[0].text, Is.EqualTo("{{W|[Esc]}} {{y|キャンセル}}"));
+            Assert.That(sharedButtons[0].text, Is.EqualTo("{{W|[Esc]}} {{y|Cancel}}"));
         }
         finally
         {

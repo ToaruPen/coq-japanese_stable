@@ -80,8 +80,7 @@ public static class PopupShowTranslationPatch
                 return;
             }
 
-            var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
-                message, Context);
+            var translated = ColorAwareTranslationComposer.TranslatePreservingColors(message);
             if (!string.Equals(translated, message, StringComparison.Ordinal))
             {
                 DynamicTextObservability.RecordTransform(

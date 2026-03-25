@@ -99,7 +99,7 @@ public sealed class DescriptionLongDescriptionPatchTests
     }
 
     [Test]
-    public void Postfix_KeepsStatAbbreviationsUntranslated_WhenPatched()
+    public void Postfix_TranslatesStatAbbreviations_WhenPatched()
     {
         WriteDictionary(("STR", "筋力"), ("+1 STR", "+1 筋力"));
 
@@ -115,8 +115,8 @@ public sealed class DescriptionLongDescriptionPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(abbreviationBuilder.ToString(), Is.EqualTo("STR"));
-                Assert.That(signedBuilder.ToString(), Is.EqualTo("+1 STR"));
+                Assert.That(abbreviationBuilder.ToString(), Is.EqualTo("筋力"));
+                Assert.That(signedBuilder.ToString(), Is.EqualTo("+1 筋力"));
             });
         });
     }

@@ -36,7 +36,7 @@ internal static class SinkPrereqTextFieldTranslator
             return;
         }
 
-        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(currentText, context);
+        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(currentText);
         if (!string.Equals(currentText, translated, StringComparison.Ordinal))
         {
             UITextSkinReflectionAccessor.SetCurrentText(uiTextSkin, translated, context);

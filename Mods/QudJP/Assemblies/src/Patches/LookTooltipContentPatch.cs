@@ -77,7 +77,7 @@ public static class LookTooltipContentPatch
             return translated;
         }
 
-        return UITextSkinTranslationPatch.TranslatePreservingColors(source, nameof(LookTooltipContentPatch));
+        return ColorAwareTranslationComposer.TranslatePreservingColors(source);
     }
 
     private static string BuildTooltipContentProbe(string content)

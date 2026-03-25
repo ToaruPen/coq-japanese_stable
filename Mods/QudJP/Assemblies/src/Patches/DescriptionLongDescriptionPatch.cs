@@ -92,6 +92,6 @@ public static class DescriptionLongDescriptionPatch
             return translated;
         }
 
-        return UITextSkinTranslationPatch.TranslatePreservingColors(source, nameof(DescriptionLongDescriptionPatch));
+        return ColorAwareTranslationComposer.TranslatePreservingColors(source);
     }
 }

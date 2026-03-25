@@ -56,7 +56,7 @@ public sealed class HistoricStringExpanderPatchTests
     }
 
     [Test]
-    public void Postfix_PreservesBraceColorCodes_WhenTranslating()
+    public void Postfix_TranslatesColorWrappedText()
     {
         WriteDictionary(("Warning!", "警告！"));
 
@@ -106,7 +106,7 @@ public sealed class HistoricStringExpanderPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesMultipleSequentialCalls()
+    public void Postfix_TranslatesMultipleCallsIndependently()
     {
         WriteDictionary(
             ("Sultan became king", "スルタンが王になった"),
@@ -126,7 +126,7 @@ public sealed class HistoricStringExpanderPatchTests
     }
 
     [Test]
-    public void Postfix_PreservesAmpersandAndCaretColorCodes_WithJapaneseTranslation()
+    public void Postfix_TranslatesAmpersandColorCodedText()
     {
         WriteDictionary(("Sultan was crowned", "スルタンが戴冠した"));
 

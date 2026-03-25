@@ -78,7 +78,7 @@ public sealed class LookTooltipContentPatchTests
     }
 
     [Test]
-    public void Postfix_KeepsStatAbbreviationsUntranslated_WhenPatched()
+    public void Postfix_TranslatesStatAbbreviations_WhenPatched()
     {
         WriteDictionary(("STR", "筋力"), ("+1 STR", "+1 筋力"));
 
@@ -89,8 +89,8 @@ public sealed class LookTooltipContentPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(abbreviation, Is.EqualTo("STR"));
-                Assert.That(signed, Is.EqualTo("+1 STR"));
+                Assert.That(abbreviation, Is.EqualTo("筋力"));
+                Assert.That(signed, Is.EqualTo("+1 筋力"));
             });
         });
     }

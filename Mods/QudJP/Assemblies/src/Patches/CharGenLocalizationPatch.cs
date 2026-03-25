@@ -114,7 +114,7 @@ public static class CharGenLocalizationPatch
             }
 
             var translated = ChargenStructuredTextTranslator.Translate(__result);
-            __result = UITextSkinTranslationPatch.TranslatePreservingColors(translated, nameof(CharGenLocalizationPatch));
+            __result = ColorAwareTranslationComposer.TranslatePreservingColors(translated);
         }
         catch (Exception ex)
         {

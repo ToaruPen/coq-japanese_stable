@@ -36,7 +36,7 @@ public sealed class MainMenuLocalizationPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesMainMenuOptions_WhenShowRuns()
+    public void Postfix_TranslatesMenuOptions_WhenPatched()
     {
         WriteDictionary(
             ("Options", "設定"),
@@ -66,7 +66,7 @@ public sealed class MainMenuLocalizationPatchTests
     }
 
     [Test]
-    public void Postfix_PreservesColorCodes_WhenMenuTextHasMarkup()
+    public void Postfix_TranslatesMarkupWrappedText_WhenPatched()
     {
         WriteDictionary(("Mods", "モッド"));
 

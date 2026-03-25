@@ -77,13 +77,7 @@ public static class InventoryAndEquipmentStatusScreenTranslationPatch
             InventoryAndEquipmentStatusScreenTextTranslator.TryStripEmbeddedHotkeyLabel(sourceForTranslation, out sourceForTranslation);
         }
 
-        var translated = PopupTranslationPatch.TranslatePopupMenuItemText(sourceForTranslation);
-        if (string.Equals(translated, sourceForTranslation, StringComparison.Ordinal))
-        {
-            translated = UITextSkinTranslationPatch.TranslatePreservingColors(
-                sourceForTranslation,
-                nameof(InventoryAndEquipmentStatusScreenTranslationPatch));
-        }
+        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(sourceForTranslation);
 
         if (!string.Equals(translated, sourceForTranslation, StringComparison.Ordinal))
         {

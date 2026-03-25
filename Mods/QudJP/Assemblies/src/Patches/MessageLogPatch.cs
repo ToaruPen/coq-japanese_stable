@@ -28,31 +28,20 @@ public static class MessageLogPatch
         {
             _ = Color;
             _ = Capitalize;
+
             if (MessageFrameTranslator.TryStripDirectTranslationMarker(ref Message))
             {
                 return true;
             }
 
-            if (DoesVerbRouteTranslator.TryTranslateMarkedMessage(Message, out var doesTranslated))
-            {
-                Message = doesTranslated;
-                return true;
-            }
-
-            if (!string.Equals(doesTranslated, Message, StringComparison.Ordinal))
-            {
-                Message = doesTranslated;
-            }
-
-            var originalMessage = Message;
-            var (stripped, _) = ColorAwareTranslationComposer.Strip(originalMessage);
+            var (stripped, _) = ColorAwareTranslationComposer.Strip(Message);
             SinkObservation.LogUnclaimed(
                 nameof(MessageLogPatch),
                 nameof(MessageLogPatch),
-                nameof(MessagePatternTranslator),
-                originalMessage,
+                SinkObservation.ObservationOnlyDetail,
+                Message,
                 stripped);
-            Message = MessagePatternTranslator.Translate(Message, nameof(MessageLogPatch));
+
             return true;
         }
         catch (Exception ex)

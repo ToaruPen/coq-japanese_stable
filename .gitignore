@@ -52,3 +52,6 @@ docs/ilspy-raw/
 # Local tool installations
 .sisyphus/tools/
 .omx/
+
+# Claude Code worktrees
+.claude/worktrees/
