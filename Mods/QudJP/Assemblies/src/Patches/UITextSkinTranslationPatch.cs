@@ -40,10 +40,6 @@ public static class UITextSkinTranslationPatch
         new Regex("^Your [A-Za-z]+ score determines", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex CharGenBulletBlockPattern =
         new Regex("(^|\\n)ù ", RegexOptions.CultureInvariant | RegexOptions.Compiled);
-    private static readonly Regex TooltipStatAbbreviationPattern =
-        new Regex("^(?:STR|AGI|TOU|INT|WIL|EGO)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
-    private static readonly Regex TooltipSignedStatAbbreviationPattern =
-        new Regex("^[+-]\\d+\\s+(?:STR|AGI|TOU|INT|WIL|EGO)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 #pragma warning disable S1144, CA1823
     private static readonly ConcurrentDictionary<string, string?> ContextResolveCache =
         new ConcurrentDictionary<string, string?>(StringComparer.Ordinal);
@@ -58,19 +54,6 @@ public static class UITextSkinTranslationPatch
         "MutationsModule",
         "CallingModule",
         "CyberneticsModule",
-    };
-
-    private static readonly HashSet<string> ObservationOnlyRoutes = new(StringComparer.Ordinal)
-    {
-        // Route group 1
-        nameof(MainMenuLocalizationPatch),
-        nameof(OptionsLocalizationPatch),
-        nameof(CharGenLocalizationPatch),
-        nameof(PickTargetWindowTextTranslator),
-        // Route group 2
-        nameof(CharacterStatusScreenTranslationPatch),
-        nameof(FactionsStatusScreenTranslationPatch),
-        nameof(InventoryAndEquipmentStatusScreenTranslationPatch),
     };
 
     [HarmonyTargetMethod]
@@ -114,13 +97,8 @@ public static class UITextSkinTranslationPatch
             return markedText;
         }
 
-        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
         var effectiveContext = ResolveObservabilityContext(context, stripped);
-        var detailedContext = ObservabilityHelpers.ComposeContext(effectiveContext, contextDetails);
-        using var _ = Translator.PushLogContext(detailedContext);
-        using var __ = Translator.PushMissingKeyLoggingSuppression(
-            IsAlreadyLocalizedDirectRouteText(stripped, effectiveContext)
-            || ShouldSuppressMissingKeyLogging(stripped, effectiveContext));
 
         if (stripped.Length == 0)
         {
@@ -132,57 +110,18 @@ public static class UITextSkinTranslationPatch
             return source!;
         }
 
-        if (ShouldSkipTranslation(stripped, effectiveContext))
+        if (!IsAlreadyLocalizedDirectRouteText(stripped, effectiveContext)
+            && !ShouldSkipTranslation(stripped, effectiveContext))
         {
-            return source!;
+            SinkObservation.LogUnclaimed(
+                nameof(UITextSkinTranslationPatch),
+                effectiveContext ?? string.Empty,
+                "ObservationOnly",
+                source!,
+                stripped);
         }
 
-        var primaryRoute = ObservabilityHelpers.ExtractPrimaryContext(effectiveContext);
-
-        if (ObservationOnlyRoutes.Contains(primaryRoute))
-        {
-            if (!IsAlreadyLocalizedDirectRouteText(stripped, effectiveContext))
-            {
-                SinkObservation.LogUnclaimed(
-                    nameof(UITextSkinTranslationPatch),
-                    effectiveContext ?? string.Empty,
-                    "ObservationOnly",
-                    source!,
-                    stripped);
-            }
-
-            return source!;
-        }
-
-        if (TryTranslateDedicatedRouteText(stripped, primaryRoute, out var dedicatedRouteTranslation))
-        {
-            return ColorAwareTranslationComposer.Restore(dedicatedRouteTranslation, spans);
-        }
-
-        if (IsUITextSinkTemplateContext(effectiveContext)
-            && TryTranslateUITextSinkTemplate(stripped, primaryRoute, out var sinkTranslation))
-        {
-            return ColorAwareTranslationComposer.Restore(sinkTranslation, spans);
-        }
-
-        if (ShouldPreserveTooltipStatAbbreviation(stripped, primaryRoute))
-        {
-            return source!;
-        }
-
-        if (TryTranslateTrimmedLookup(stripped, primaryRoute, out var trimmedTranslation))
-        {
-            return ColorAwareTranslationComposer.Restore(trimmedTranslation, spans);
-        }
-
-        SinkObservation.LogUnclaimed(
-            nameof(UITextSkinTranslationPatch),
-            effectiveContext ?? string.Empty,
-            nameof(Translator),
-            source!,
-            stripped);
-        var translated = Translator.Translate(stripped);
-        return ColorAwareTranslationComposer.Restore(translated, spans);
+        return source!;
     }
 
     internal static bool ShouldSkipTranslationForTests(string source)
@@ -355,18 +294,6 @@ public static class UITextSkinTranslationPatch
         return !IsStrictDirectRouteContext(context) || !HasDirectRouteDynamicMarkers(source);
     }
 
-    private static bool ContainsJapanese(string source)
-    {
-        return !string.IsNullOrEmpty(source) && JapaneseCharacterPattern.IsMatch(source);
-    }
-
-    private static bool ShouldSuppressMissingKeyLogging(string source, string? context)
-    {
-        var primaryContext = ObservabilityHelpers.ExtractPrimaryContext(context);
-        return string.Equals(primaryContext, nameof(CharacterStatusScreenTranslationPatch), StringComparison.Ordinal)
-            && CharacterStatusScreenTextTranslator.ShouldSuppressMissingKeyLogging(source);
-    }
-
     private static bool IsDirectRouteAlreadyLocalizedContext(string? context)
     {
         var primaryContext = ObservabilityHelpers.ExtractPrimaryContext(context);
@@ -409,161 +336,6 @@ public static class UITextSkinTranslationPatch
     }
 
 #pragma warning disable S1144
-    private static bool IsPopupTemplateContext(string? context)
-    {
-        var primaryContext = ObservabilityHelpers.ExtractPrimaryContext(context);
-        return string.Equals(primaryContext, nameof(PopupTranslationPatch), StringComparison.Ordinal)
-            || string.Equals(primaryContext, nameof(PopupMessageTranslationPatch), StringComparison.Ordinal);
-    }
-
-    private static bool ShouldPreserveTooltipStatAbbreviation(string source, string? route)
-    {
-        if (!string.Equals(route, nameof(LookTooltipContentPatch), StringComparison.Ordinal)
-            && !string.Equals(route, nameof(DescriptionLongDescriptionPatch), StringComparison.Ordinal))
-        {
-            return false;
-        }
-
-        return TooltipStatAbbreviationPattern.IsMatch(source)
-            || TooltipSignedStatAbbreviationPattern.IsMatch(source);
-    }
-
-    private static bool TryTranslateDedicatedRouteText(string source, string route, out string translated)
-    {
-        if (string.Equals(route, nameof(FactionsStatusScreenTranslationPatch), StringComparison.Ordinal))
-        {
-            if (FactionsStatusScreenTranslationPatch.IsAlreadyLocalizedFactionText(source))
-            {
-                translated = source;
-                return true;
-            }
-
-            if (FactionsStatusScreenTranslationPatch.TryTranslateFactionText(source, route, out translated))
-            {
-                return true;
-            }
-        }
-
-        if (string.Equals(route, nameof(CharacterStatusScreenTranslationPatch), StringComparison.Ordinal)
-            && CharacterStatusScreenTextTranslator.TryTranslateUiText(source, route, out translated))
-        {
-            return true;
-        }
-
-        if (string.Equals(route, nameof(InventoryAndEquipmentStatusScreenTranslationPatch), StringComparison.Ordinal)
-            && InventoryAndEquipmentStatusScreenTextTranslator.TryTranslateUiText(source, route, out translated))
-        {
-            return true;
-        }
-
-        if (string.Equals(route, nameof(PickTargetWindowTextTranslator), StringComparison.Ordinal)
-            && PickTargetWindowTextTranslator.TryTranslateUiText(source, route, out translated))
-        {
-            return true;
-        }
-
-        translated = source;
-        return false;
-    }
-
-    private static bool IsUITextSinkTemplateContext(string? context)
-    {
-        return string.Equals(ObservabilityHelpers.ExtractPrimaryContext(context), nameof(UITextSkinTranslationPatch), StringComparison.Ordinal);
-    }
-
-    private static bool TryTranslateUITextSinkTemplate(string source, string route, out string translated)
-    {
-        if (SkillsAndPowersStatusScreenTranslationPatch.TryTranslateText(source, route, out translated))
-        {
-            return true;
-        }
-
-        if (TryTranslateExactUITextSinkLookup(source, route, out translated))
-        {
-            return true;
-        }
-
-        if (TryTranslateHotkeyLabel(source, route, out translated))
-        {
-            return true;
-        }
-
-        if (TryTranslateCompareStatusLine(source, route, out translated))
-        {
-            return true;
-        }
-
-        if (TryTranslateStatusLine(source, route, out translated))
-        {
-            return true;
-        }
-
-        if (TryTranslateLevelExpLine(source, route, out translated))
-        {
-            return true;
-        }
-
-        if (TryTranslateHpLine(source, route, out translated))
-        {
-            return true;
-        }
-
-        if (TryTranslateCompareStatusSequence(source, route, out translated))
-        {
-            return true;
-        }
-
-        translated = source;
-        return false;
-    }
-
-    private static bool TryTranslateExactUITextSinkLookup(string source, string route, out string translated)
-    {
-        if (StringHelpers.TryGetTranslationExactOrLowerAscii(source, out translated))
-        {
-            DynamicTextObservability.RecordTransform(route, "UITextSink.ExactLookup", source, translated);
-            return true;
-        }
-
-        translated = source;
-        return false;
-    }
-
-    private static bool TryTranslateHotkeyLabel(string source, string route, out string translated)
-    {
-        return HotkeyLabelFamilyTranslator.TryTranslateBracketedLabel(
-            source,
-            route,
-            "UITextSink.HotkeyLabel",
-            rejectNumericHotkeys: false,
-            out translated);
-    }
-
-    private static bool TryTranslateCompareStatusLine(string source, string route, out string translated)
-    {
-        return StatusLineTranslationHelpers.TryTranslateCompareStatusLine(source, route, "UITextSink.CompareStatus", out translated);
-    }
-
-    private static bool TryTranslateStatusLine(string source, string route, out string translated)
-    {
-        return StatusLineTranslationHelpers.TryTranslateActiveEffectsLine(source, route, "UITextSink.StatusLine", out translated);
-    }
-
-    private static bool TryTranslateLevelExpLine(string source, string route, out string translated)
-    {
-        return StatusLineTranslationHelpers.TryTranslateLevelExpLine(source, route, "UITextSink.LevelExp", out translated);
-    }
-
-    private static bool TryTranslateHpLine(string source, string route, out string translated)
-    {
-        return StatusLineTranslationHelpers.TryTranslateHpLine(source, route, "UITextSink.HpLine", out translated);
-    }
-
-    private static bool TryTranslateCompareStatusSequence(string source, string route, out string translated)
-    {
-        return StatusLineTranslationHelpers.TryTranslateCompareStatusSequence(source, route, "UITextSink.CompareStatusSequence", out translated);
-    }
-
     internal static bool LooksLikeCommandHotkeyToken(string source)
     {
         if (string.IsNullOrEmpty(source))
@@ -593,33 +365,6 @@ public static class UITextSkinTranslationPatch
         return StringHelpers.TranslateExactOrLowerAscii(source);
     }
 #pragma warning restore S1144
-
-    private static bool TryTranslateTrimmedLookup(string source, string route, out string translated)
-    {
-        translated = source;
-        var trimmed = source.Trim();
-        if (trimmed.Length == 0 || trimmed.Length == source.Length)
-        {
-            return false;
-        }
-
-        var trimmedTranslation = Translator.Translate(trimmed);
-        if (string.Equals(trimmedTranslation, trimmed, StringComparison.Ordinal))
-        {
-            return false;
-        }
-
-        var leadingLength = source.Length - source.TrimStart().Length;
-        var trailingLength = source.Length - source.TrimEnd().Length;
-#pragma warning disable CA1845 // net48 target keeps simple string APIs here
-        translated =
-            source.Substring(0, leadingLength) +
-            trimmedTranslation +
-            source.Substring(source.Length - trailingLength, trailingLength);
-#pragma warning restore CA1845
-        DynamicTextObservability.RecordTransform(route, "TrimmedLookup", source, translated);
-        return true;
-    }
 
     private static bool HasDirectRouteDynamicMarkers(string source)
     {

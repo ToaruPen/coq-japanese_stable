@@ -47,7 +47,8 @@ public sealed class LookTooltipContentPatchTests
         {
             var result = DummyLookTooltipTarget.GenerateTooltipContent("This relic hums softly.");
 
-            Assert.That(result, Is.EqualTo("この遺物はかすかに唸っている。"));
+            Assert.That(result, Is.EqualTo("This relic hums softly."),
+                "Observation-only mode passes source through unchanged");
         });
     }
 
@@ -60,7 +61,8 @@ public sealed class LookTooltipContentPatchTests
         {
             var result = DummyLookTooltipTarget.GenerateTooltipContent("{{Y|Ancient ruin}}");
 
-            Assert.That(result, Is.EqualTo("{{Y|古代の廃墟}}"));
+            Assert.That(result, Is.EqualTo("{{Y|Ancient ruin}}"),
+                "Observation-only mode passes source through unchanged");
         });
     }
 

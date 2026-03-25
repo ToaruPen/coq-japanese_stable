@@ -32,7 +32,7 @@ public sealed class HistoricStringExpanderPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesKnownExpandedText()
+    public void Postfix_ReturnsSourceUnchanged_ObservationOnly()
     {
         WriteDictionary(("In the beginning, Resheph created Qud", "はじめに、レシェフがクッドを創造した"));
 
@@ -40,7 +40,7 @@ public sealed class HistoricStringExpanderPatchTests
 
         HistoricStringExpanderPatch.Postfix(ref result);
 
-        Assert.That(result, Is.EqualTo("はじめに、レシェフがクッドを創造した"));
+        Assert.That(result, Is.EqualTo("In the beginning, Resheph created Qud"));
     }
 
     [Test]
@@ -56,7 +56,7 @@ public sealed class HistoricStringExpanderPatchTests
     }
 
     [Test]
-    public void Postfix_PreservesBraceColorCodes_WhenTranslating()
+    public void Postfix_ReturnsColorWrappedSourceUnchanged_ObservationOnly()
     {
         WriteDictionary(("Warning!", "警告！"));
 
@@ -64,7 +64,7 @@ public sealed class HistoricStringExpanderPatchTests
 
         HistoricStringExpanderPatch.Postfix(ref result);
 
-        Assert.That(result, Is.EqualTo("{{R|警告！}}"));
+        Assert.That(result, Is.EqualTo("{{R|Warning!}}"));
     }
 
     [Test]
@@ -106,7 +106,7 @@ public sealed class HistoricStringExpanderPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesMultipleSequentialCalls()
+    public void Postfix_ReturnsMultipleCallsUnchanged_ObservationOnly()
     {
         WriteDictionary(
             ("Sultan became king", "スルタンが王になった"),
@@ -120,13 +120,13 @@ public sealed class HistoricStringExpanderPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(first, Is.EqualTo("スルタンが王になった"));
-            Assert.That(second, Is.EqualTo("スルタンは追放された"));
+            Assert.That(first, Is.EqualTo("Sultan became king"));
+            Assert.That(second, Is.EqualTo("Sultan was exiled"));
         });
     }
 
     [Test]
-    public void Postfix_PreservesAmpersandAndCaretColorCodes_WithJapaneseTranslation()
+    public void Postfix_ReturnsAmpersandColorCodedSourceUnchanged_ObservationOnly()
     {
         WriteDictionary(("Sultan was crowned", "スルタンが戴冠した"));
 
@@ -134,7 +134,7 @@ public sealed class HistoricStringExpanderPatchTests
 
         HistoricStringExpanderPatch.Postfix(ref result);
 
-        Assert.That(result, Is.EqualTo("&Gスルタンが戴冠した^k"));
+        Assert.That(result, Is.EqualTo("&GSultan was crowned^k"));
     }
 
     private void WriteDictionary(params (string key, string text)[] entries)

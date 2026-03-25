@@ -35,14 +35,14 @@ public sealed class UITextSkinTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_TranslatesKnownKey()
+    public void Prefix_ReturnsSourceUnchanged_ObservationOnly()
     {
         WriteDictionary(("Hello", "こんにちは"));
 
         var text = "Hello";
         UITextSkinTranslationPatch.Prefix(ref text);
 
-        Assert.That(text, Is.EqualTo("こんにちは"));
+        Assert.That(text, Is.EqualTo("Hello"));
     }
 
     [Test]
@@ -57,14 +57,14 @@ public sealed class UITextSkinTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_PreservesColorCodes()
+    public void Prefix_ReturnsColorWrappedSourceUnchanged_ObservationOnly()
     {
         WriteDictionary(("Hello", "こんにちは"));
 
         var text = "{{W|Hello}}";
         UITextSkinTranslationPatch.Prefix(ref text);
 
-        Assert.That(text, Is.EqualTo("{{W|こんにちは}}"));
+        Assert.That(text, Is.EqualTo("{{W|Hello}}"));
     }
 
     [Test]
@@ -186,94 +186,93 @@ public sealed class UITextSkinTranslationPatchTests
     }
 
     [Test]
-    public void TranslatePreservingColors_KeepsExpLabelInLevelExpHudLineInSinkContext()
+    public void TranslatePreservingColors_ReturnsLevelExpHudLineUnchanged_ObservationOnly()
     {
         WriteDictionary(("LVL", "Lv"));
 
+        var source = "LVL: 1 Exp: 0 / 220";
         var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "LVL: 1 Exp: 0 / 220",
+            source,
             nameof(UITextSkinTranslationPatch));
 
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Is.EqualTo("Lv: 1 Exp: 0 / 220"));
-            Assert.That(Translator.GetMissingKeyHitCountForTests("LVL: 1 Exp: 0 / 220"), Is.EqualTo(0));
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(0));
         });
     }
 
     [Test]
-    public void TranslatePreservingColors_LogsDynamicTransformProbe_ForLevelExpSinkRoute()
+    public void TranslatePreservingColors_NoTransformProbe_ForLevelExpSinkRoute_ObservationOnly()
     {
         WriteDictionary(("LVL", "Lv"));
 
+        var source = "LVL: 1 Exp: 0 / 220";
         var output = TestTraceHelper.CaptureTrace(() =>
             Assert.That(
                 UITextSkinTranslationPatch.TranslatePreservingColors(
-                    "LVL: 1 Exp: 0 / 220",
+                    source,
                     nameof(UITextSkinTranslationPatch)),
-                Is.EqualTo("Lv: 1 Exp: 0 / 220")));
+                Is.EqualTo(source)));
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(output, Does.Contain("DynamicTextProbe/v1"));
-            Assert.That(output, Does.Contain("route='UITextSkinTranslationPatch'"));
-            Assert.That(output, Does.Contain("family='UITextSink.LevelExp'"));
-            Assert.That(output, Does.Contain("source='LVL: 1 Exp: 0 / 220'"));
-            Assert.That(output, Does.Contain("translated='Lv: 1 Exp: 0 / 220'"));
-        });
+        Assert.That(output, Does.Not.Contain("DynamicTextProbe/v1"),
+            "Observation-only routes do not emit transform probes");
     }
 
     [Test]
-    public void TranslatePreservingColors_KeepsHpLabelInHudLineInSinkContext()
+    public void TranslatePreservingColors_ReturnsHpHudLineUnchanged_ObservationOnly()
     {
+        var source = "HP: 18 / 18";
         var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "HP: 18 / 18",
+            source,
             nameof(UITextSkinTranslationPatch));
 
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Is.EqualTo("HP: 18 / 18"));
-            Assert.That(Translator.GetMissingKeyHitCountForTests("HP: 18 / 18"), Is.EqualTo(0));
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(0));
         });
     }
 
     [Test]
-    public void TranslatePreservingColors_TranslatesSpaceSeparatedStatusLineInSinkContext()
+    public void TranslatePreservingColors_ReturnsStatusLineUnchanged_ObservationOnly()
     {
         WriteDictionary(("Sated", "満腹"), ("Quenched", "潤っている"));
 
+        var source = "Sated Quenched";
         var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "Sated Quenched",
+            source,
             nameof(UITextSkinTranslationPatch));
 
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Is.EqualTo("満腹 潤っている"));
-            Assert.That(Translator.GetMissingKeyHitCountForTests("Sated Quenched"), Is.EqualTo(0));
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(0));
         });
     }
 
     [Test]
-    public void TranslatePreservingColors_TranslatesActiveEffectsStatusLineInSinkContext()
+    public void TranslatePreservingColors_ReturnsActiveEffectsLineUnchanged_ObservationOnly()
     {
         WriteDictionary(
             ("ACTIVE EFFECTS:", "発動中の効果:"),
             ("wading", "浅瀬を進んでいる"),
             ("wet", "濡れている"));
 
+        var source = "ACTIVE EFFECTS: wading, wet";
         var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "ACTIVE EFFECTS: wading, wet",
+            source,
             nameof(UITextSkinTranslationPatch));
 
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Is.EqualTo("発動中の効果: 浅瀬を進んでいる、濡れている"));
-            Assert.That(Translator.GetMissingKeyHitCountForTests("ACTIVE EFFECTS: wading, wet"), Is.EqualTo(0));
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(0));
         });
     }
 
     [Test]
-    public void TranslatePreservingColors_PrefersExactLookupOverSpaceSequenceInSinkContext()
+    public void TranslatePreservingColors_ReturnsExactLookupTextUnchanged_ObservationOnly()
     {
         WriteDictionary(
             ("take all", "すべて取る"),
@@ -288,31 +287,32 @@ public sealed class UITextSkinTranslationPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(takeAll, Is.EqualTo("すべて取る"));
-            Assert.That(displayOptions, Is.EqualTo("表示オプション"));
+            Assert.That(takeAll, Is.EqualTo("take all"));
+            Assert.That(displayOptions, Is.EqualTo("Display Options"));
             Assert.That(Translator.GetMissingKeyHitCountForTests("take all"), Is.EqualTo(0));
             Assert.That(Translator.GetMissingKeyHitCountForTests("Display Options"), Is.EqualTo(0));
         });
     }
 
     [Test]
-    public void TranslatePreservingColors_TranslatesCommaSeparatedThreatLineInSinkContext()
+    public void TranslatePreservingColors_ReturnsThreatLineUnchanged_ObservationOnly()
     {
         WriteDictionary(("Perfect", "完璧"), ("Injured", "負傷"), ("Hostile", "敵対的"), ("Average", "平均"));
 
+        var source = "Injured, Hostile, Average";
         var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "Injured, Hostile, Average",
+            source,
             nameof(UITextSkinTranslationPatch));
 
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Is.EqualTo("負傷、敵対的、平均"));
-            Assert.That(Translator.GetMissingKeyHitCountForTests("Injured, Hostile, Average"), Is.EqualTo(0));
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(0));
         });
     }
 
     [Test]
-    public void TranslatePreservingColors_TranslatesCompareStatusLinesInSinkContext()
+    public void TranslatePreservingColors_ReturnsCompareStatusLinesUnchanged_ObservationOnly()
     {
         WriteDictionary(
             ("Strength", "筋力"),
@@ -321,25 +321,17 @@ public sealed class UITextSkinTranslationPatchTests
             ("Long Blades (increased penetration on critical hit)", "長剣（クリティカル時に貫通力上昇）"),
             ("no limit", "なし"));
 
-        var cap = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "Strength Bonus Cap: 1",
-            nameof(UITextSkinTranslationPatch));
-        var egoCap = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "Ego Bonus Cap: 2",
-            nameof(UITextSkinTranslationPatch));
-        var noLimit = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "Strength Bonus Cap: no limit",
-            nameof(UITextSkinTranslationPatch));
-        var weaponClass = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "Weapon Class: Long Blades (increased penetration on critical hit)",
-            nameof(UITextSkinTranslationPatch));
+        var capSource = "Strength Bonus Cap: 1";
+        var egoCapSource = "Ego Bonus Cap: 2";
+        var noLimitSource = "Strength Bonus Cap: no limit";
+        var weaponClassSource = "Weapon Class: Long Blades (increased penetration on critical hit)";
 
         Assert.Multiple(() =>
         {
-            Assert.That(cap, Is.EqualTo("筋力ボーナス上限: 1"));
-            Assert.That(egoCap, Is.EqualTo("Ego ボーナス上限: 2"));
-            Assert.That(noLimit, Is.EqualTo("筋力ボーナス上限: なし"));
-            Assert.That(weaponClass, Is.EqualTo("武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
+            Assert.That(UITextSkinTranslationPatch.TranslatePreservingColors(capSource, nameof(UITextSkinTranslationPatch)), Is.EqualTo(capSource));
+            Assert.That(UITextSkinTranslationPatch.TranslatePreservingColors(egoCapSource, nameof(UITextSkinTranslationPatch)), Is.EqualTo(egoCapSource));
+            Assert.That(UITextSkinTranslationPatch.TranslatePreservingColors(noLimitSource, nameof(UITextSkinTranslationPatch)), Is.EqualTo(noLimitSource));
+            Assert.That(UITextSkinTranslationPatch.TranslatePreservingColors(weaponClassSource, nameof(UITextSkinTranslationPatch)), Is.EqualTo(weaponClassSource));
         });
     }
 
@@ -377,28 +369,22 @@ public sealed class UITextSkinTranslationPatchTests
     }
 
     [Test]
-    public void TranslatePreservingColors_LeavesFactionWrappersToDedicatedRoute()
+    public void TranslatePreservingColors_ReturnsFactionWrappersUnchanged_ObservationOnly()
     {
         WriteDictionary(
             ("The villagers of {0} don't care about you, but aggressive ones will attack you.", "{0}の村人たちはあなたを特に気に掛けていないが、攻撃的な者は襲ってくる。"),
             ("The {0}", "{0}"),
             ("Reputation: {0}", "評判: {0}"));
 
-        var relationship = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "The villagers of Abal don't care about you, but aggressive ones will attack you.",
-            nameof(UITextSkinTranslationPatch));
-        var label = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "The Arbitrarilyborn Cult",
-            nameof(UITextSkinTranslationPatch));
-        var reputation = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "Reputation:     0",
-            nameof(UITextSkinTranslationPatch));
+        var relationshipSource = "The villagers of Abal don't care about you, but aggressive ones will attack you.";
+        var labelSource = "The Arbitrarilyborn Cult";
+        var reputationSource = "Reputation:     0";
 
         Assert.Multiple(() =>
         {
-            Assert.That(relationship, Is.EqualTo("The villagers of Abal don't care about you, but aggressive ones will attack you."));
-            Assert.That(label, Is.EqualTo("The Arbitrarilyborn Cult"));
-            Assert.That(reputation, Is.EqualTo("Reputation:     0"));
+            Assert.That(UITextSkinTranslationPatch.TranslatePreservingColors(relationshipSource, nameof(UITextSkinTranslationPatch)), Is.EqualTo(relationshipSource));
+            Assert.That(UITextSkinTranslationPatch.TranslatePreservingColors(labelSource, nameof(UITextSkinTranslationPatch)), Is.EqualTo(labelSource));
+            Assert.That(UITextSkinTranslationPatch.TranslatePreservingColors(reputationSource, nameof(UITextSkinTranslationPatch)), Is.EqualTo(reputationSource));
         });
     }
 
@@ -419,7 +405,7 @@ public sealed class UITextSkinTranslationPatchTests
     }
 
     [Test]
-    public void TranslatePreservingColors_TranslatesSkillStatusFamiliesInSinkContext()
+    public void TranslatePreservingColors_ReturnsSkillStatusFamiliesUnchanged_ObservationOnly()
     {
         WriteDictionary(
             ("Learned", "習得済み"),
@@ -428,59 +414,54 @@ public sealed class UITextSkinTranslationPatchTests
             ("Tinker I", "工匠 I"),
             ("Tinker II", "工匠 II"));
 
-        var learned = UITextSkinTranslationPatch.TranslatePreservingColors("Learned [5/10]", nameof(UITextSkinTranslationPatch));
-        var startingCost = UITextSkinTranslationPatch.TranslatePreservingColors("Starting Cost [100 sp] [1/10]", nameof(UITextSkinTranslationPatch));
-        var requirementBlock = UITextSkinTranslationPatch.TranslatePreservingColors(":: 100 SP ::\n:: 23 Intelligence ::\n", nameof(UITextSkinTranslationPatch));
-        var skillLine = UITextSkinTranslationPatch.TranslatePreservingColors("    :Tinker II [200sp] 23 Intelligence, Tinker I", nameof(UITextSkinTranslationPatch));
+        var learnedSource = "Learned [5/10]";
+        var startingCostSource = "Starting Cost [100 sp] [1/10]";
+        var requirementBlockSource = ":: 100 SP ::\n:: 23 Intelligence ::\n";
+        var skillLineSource = "    :Tinker II [200sp] 23 Intelligence, Tinker I";
 
         Assert.Multiple(() =>
         {
-            Assert.That(learned, Is.EqualTo("習得済み [5/10]"));
-            Assert.That(startingCost, Is.EqualTo("初期コスト [100 sp] [1/10]"));
-            Assert.That(requirementBlock, Is.EqualTo(":: 100 SP ::\n:: 23 INT ::"));
-            Assert.That(skillLine, Is.EqualTo("    :工匠 II [200sp] 23 INT, 工匠 I"));
+            Assert.That(UITextSkinTranslationPatch.TranslatePreservingColors(learnedSource, nameof(UITextSkinTranslationPatch)), Is.EqualTo(learnedSource));
+            Assert.That(UITextSkinTranslationPatch.TranslatePreservingColors(startingCostSource, nameof(UITextSkinTranslationPatch)), Is.EqualTo(startingCostSource));
+            Assert.That(UITextSkinTranslationPatch.TranslatePreservingColors(requirementBlockSource, nameof(UITextSkinTranslationPatch)), Is.EqualTo(requirementBlockSource));
+            Assert.That(UITextSkinTranslationPatch.TranslatePreservingColors(skillLineSource, nameof(UITextSkinTranslationPatch)), Is.EqualTo(skillLineSource));
         });
     }
 
     [Test]
-    public void TranslatePreservingColors_TranslatesSkillSectionLabelsInSinkContext()
+    public void TranslatePreservingColors_ReturnsSkillSectionLabelsUnchanged_ObservationOnly()
     {
         WriteDictionary(
             ("Melee", "近接戦闘"),
             ("Melee Weapons", "近接武器"),
             ("Short Blades", "短剣"));
 
-        var section = UITextSkinTranslationPatch.TranslatePreservingColors(
-            ":Melee",
-            nameof(UITextSkinTranslationPatch));
-        var subsection = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "  :Melee Weapons",
-            nameof(UITextSkinTranslationPatch));
-        var skillLine = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "    :Short Blades [100sp] 15 Agility",
-            nameof(UITextSkinTranslationPatch));
+        var sectionSource = ":Melee";
+        var subsectionSource = "  :Melee Weapons";
+        var skillLineSource = "    :Short Blades [100sp] 15 Agility";
 
         Assert.Multiple(() =>
         {
-            Assert.That(section, Is.EqualTo(":近接戦闘"));
-            Assert.That(subsection, Is.EqualTo("  :近接武器"));
-            Assert.That(skillLine, Is.EqualTo("    :短剣 [100sp] 15 AGI"));
+            Assert.That(UITextSkinTranslationPatch.TranslatePreservingColors(sectionSource, nameof(UITextSkinTranslationPatch)), Is.EqualTo(sectionSource));
+            Assert.That(UITextSkinTranslationPatch.TranslatePreservingColors(subsectionSource, nameof(UITextSkinTranslationPatch)), Is.EqualTo(subsectionSource));
+            Assert.That(UITextSkinTranslationPatch.TranslatePreservingColors(skillLineSource, nameof(UITextSkinTranslationPatch)), Is.EqualTo(skillLineSource));
         });
     }
 
     [Test]
-    public void TranslatePreservingColors_UsesTrimmedLookupInSinkContext()
+    public void TranslatePreservingColors_ReturnsTrimmedLookupTextUnchanged_ObservationOnly()
     {
         WriteDictionary(("Joppa", "ジョッパ"));
 
+        var source = " Joppa";
         var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
-            " Joppa",
+            source,
             nameof(UITextSkinTranslationPatch));
 
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Is.EqualTo(" ジョッパ"));
-            Assert.That(Translator.GetMissingKeyHitCountForTests(" Joppa"), Is.EqualTo(0));
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(0));
         });
     }
 
@@ -668,22 +649,17 @@ public sealed class UITextSkinTranslationPatchTests
     [TestCase("OptionsLocalizationPatch")]
     [TestCase("CharGenLocalizationPatch")]
     [TestCase("PickTargetWindowTextTranslator")]
-    public void TranslatePreservingColors_ObservationOnlyRoute_ReturnsSourceUnchanged(string context)
-    {
-        SinkObservation.ResetForTests();
-        var source = "Some English label";
-        var result = UITextSkinTranslationPatch.TranslatePreservingColors(source, context);
-        Assert.That(result, Is.EqualTo(source));
-    }
-
-    [Test, Category("L2")]
     [TestCase("CharacterStatusScreenTranslationPatch")]
     [TestCase("FactionsStatusScreenTranslationPatch")]
     [TestCase("InventoryAndEquipmentStatusScreenTranslationPatch")]
-    public void TranslatePreservingColors_ScreenLocalRoute_ReturnsSourceUnchanged(string context)
+    [TestCase("ConversationDisplayTextPatch")]
+    [TestCase("DescriptionLongDescriptionPatch")]
+    [TestCase("LookTooltipContentPatch")]
+    [TestCase("UITextSkinTranslationPatch")]
+    public void TranslatePreservingColors_AllRoutes_ObservationOnly(string context)
     {
         SinkObservation.ResetForTests();
-        var source = "Some screen text";
+        var source = "English text that would normally be translated";
         var result = UITextSkinTranslationPatch.TranslatePreservingColors(source, context);
         Assert.That(result, Is.EqualTo(source));
     }
@@ -700,7 +676,7 @@ public sealed class UITextSkinTranslationPatchTests
     }
 
     [Test]
-    public void HarmonyPatch_AppliesPrefix_ToDummyUITextSkin()
+    public void HarmonyPatch_AppliesPrefix_ToDummyUITextSkin_ObservationOnly()
     {
         WriteDictionary(("World", "世界"));
 
@@ -716,7 +692,8 @@ public sealed class UITextSkinTranslationPatchTests
             var dummy = new DummyUITextSkin();
             dummy.SetText("World");
 
-            Assert.That(dummy.Text, Is.EqualTo("世界"));
+            Assert.That(dummy.Text, Is.EqualTo("World"),
+                "Observation-only mode passes source through unchanged");
         }
         finally
         {

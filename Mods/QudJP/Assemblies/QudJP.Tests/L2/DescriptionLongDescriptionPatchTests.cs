@@ -49,7 +49,8 @@ public sealed class DescriptionLongDescriptionPatchTests
             var builder = new StringBuilder();
             target.GetLongDescription(builder);
 
-            Assert.That(builder.ToString(), Is.EqualTo("それは静電気を散らしている。"));
+            Assert.That(builder.ToString(), Is.EqualTo("It crackles with static."),
+                "Observation-only mode passes source through unchanged");
         });
     }
 
@@ -64,7 +65,8 @@ public sealed class DescriptionLongDescriptionPatchTests
             var builder = new StringBuilder("prefix: ");
             target.GetLongDescription(builder);
 
-            Assert.That(builder.ToString(), Is.EqualTo("prefix: それは静電気を散らしている。"));
+            Assert.That(builder.ToString(), Is.EqualTo("prefix: It crackles with static."),
+                "Observation-only mode passes source through unchanged");
         });
     }
 
@@ -79,7 +81,8 @@ public sealed class DescriptionLongDescriptionPatchTests
             var builder = new StringBuilder();
             target.GetLongDescription(builder);
 
-            Assert.That(builder.ToString(), Is.EqualTo("{{C|帯電したアイテム}}"));
+            Assert.That(builder.ToString(), Is.EqualTo("{{C|Charged item}}"),
+                "Observation-only mode passes source through unchanged");
         });
     }
 

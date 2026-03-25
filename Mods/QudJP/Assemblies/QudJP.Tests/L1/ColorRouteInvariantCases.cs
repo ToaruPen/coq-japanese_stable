@@ -26,7 +26,7 @@ internal static class ColorRouteInvariantCases
         yield return new TestCaseData(
                 new ColorTranslationCase(
                     "{{W|Hello}}",
-                    "{{W|こんにちは}}",
+                    "{{W|Hello}}",
                     nameof(QudJP.Patches.UITextSkinTranslationPatch),
                     ("Hello", "こんにちは")))
             .SetName("UITextSkin_QudWrapper");
@@ -34,7 +34,7 @@ internal static class ColorRouteInvariantCases
         yield return new TestCaseData(
                 new ColorTranslationCase(
                     "<color=#44ff88>Hello</color>",
-                    "<color=#44ff88>こんにちは</color>",
+                    "<color=#44ff88>Hello</color>",
                     nameof(QudJP.Patches.UITextSkinTranslationPatch),
                     ("Hello", "こんにちは")))
             .SetName("UITextSkin_TmpWrapper");

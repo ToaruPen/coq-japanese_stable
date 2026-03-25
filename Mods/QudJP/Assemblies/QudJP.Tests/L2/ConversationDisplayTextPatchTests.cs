@@ -52,7 +52,8 @@ public sealed class ConversationDisplayTextPatchTests
             var element = new DummyConversationElement("Hello, traveler.");
             var result = element.GetDisplayText(withColor: false);
 
-            Assert.That(result, Is.EqualTo("旅人さん、こんにちは。"));
+            Assert.That(result, Is.EqualTo("Hello, traveler."),
+                "Observation-only mode passes source through unchanged");
         }
         finally
         {
@@ -102,7 +103,8 @@ public sealed class ConversationDisplayTextPatchTests
             var element = new DummyConversationElement("Farewell");
             var result = element.GetDisplayText(withColor: true);
 
-            Assert.That(result, Is.EqualTo("{{W|さらば}}"));
+            Assert.That(result, Is.EqualTo("{{W|Farewell}}"),
+                "Observation-only mode passes source through unchanged");
         }
         finally
         {

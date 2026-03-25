@@ -58,12 +58,13 @@ public sealed class PickGameObjectScreenTranslationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(target.defaultMenuOptions[0].Description, Is.EqualTo("メニューを閉じる"));
-                Assert.That(target.defaultMenuOptions[1].Description, Is.EqualTo("移動"));
-                Assert.That(target.getItemMenuOptions[0].Description, Is.EqualTo("メニューを閉じる"));
-                Assert.That(target.getItemMenuOptions[1].Description, Is.EqualTo("移動"));
-                Assert.That(target.TAKE_ALL.Description, Is.EqualTo("すべて取る"));
-                Assert.That(target.STORE_ITEM.Description, Is.EqualTo("アイテムを収納"));
+                Assert.That(target.defaultMenuOptions[0].Description, Is.EqualTo("Close Menu"),
+                    "Observation-only mode passes source through unchanged");
+                Assert.That(target.defaultMenuOptions[1].Description, Is.EqualTo("navigate"));
+                Assert.That(target.getItemMenuOptions[0].Description, Is.EqualTo("Close Menu"));
+                Assert.That(target.getItemMenuOptions[1].Description, Is.EqualTo("navigate"));
+                Assert.That(target.TAKE_ALL.Description, Is.EqualTo("take all"));
+                Assert.That(target.STORE_ITEM.Description, Is.EqualTo("store an item"));
             });
         }
         finally
