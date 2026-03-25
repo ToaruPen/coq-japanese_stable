@@ -180,7 +180,8 @@ public sealed class UITextSkinTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(translated, Is.EqualTo(text));
-            Assert.That(Translator.GetMissingKeyHitCountForTests(text), Is.EqualTo(1));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(text), Is.EqualTo(0),
+                "Observation-only routes skip Translator.Translate entirely");
         });
     }
 
@@ -343,7 +344,7 @@ public sealed class UITextSkinTranslationPatchTests
     }
 
     [Test]
-    public void TranslatePreservingColors_TranslatesCommandBarInPickTargetRouteContext()
+    public void TranslatePreservingColors_ReturnsSourceUnchangedForPickTargetObservationOnlyRoute()
     {
         WriteDictionary(
             ("Look", "調べる"),
@@ -352,15 +353,13 @@ public sealed class UITextSkinTranslationPatchTests
             ("walk", "歩く"),
             ("select", "選択"));
 
+        var source = "Look | ESC | (F1) lock | space interact | W walk | Enter-select";
         var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "Look | ESC | (F1) lock | space interact | W walk | Enter-select",
+            source,
             nameof(PickTargetWindowTextTranslator));
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(translated, Is.EqualTo("調べる | ESC | (F1) 固定 | space インタラクト | W 歩く | Enter-選択"));
-            Assert.That(Translator.GetMissingKeyHitCountForTests("Look | ESC | (F1) lock | space interact | W walk | Enter-select"), Is.EqualTo(0));
-        });
+        Assert.That(translated, Is.EqualTo(source),
+            "PickTargetWindowTextTranslator is observation-only — source must pass through unchanged");
     }
 
     [Test]
@@ -666,23 +665,21 @@ public sealed class UITextSkinTranslationPatchTests
     }
 
     [Test]
-    public void TranslateStringField_LogsRouteCollectionAndFieldDetails()
+    public void TranslateStringField_ReturnsSourceUnchangedForObservationOnlyRoute()
     {
         var option = new DummyMenuOption { Text = "Unknown text" };
 
-        var output = TestTraceHelper.CaptureTrace(() =>
-            UITextSkinTranslationPatch.TranslateStringField(
-                option,
-                nameof(DummyMenuOption.Text),
-                "MainMenuLocalizationPatch > collection=LeftOptions"));
+        UITextSkinTranslationPatch.TranslateStringField(
+            option,
+            nameof(DummyMenuOption.Text),
+            "MainMenuLocalizationPatch > collection=LeftOptions");
 
         Assert.Multiple(() =>
         {
-            Assert.That(option.Text, Is.EqualTo("Unknown text"));
-            Assert.That(
-                output,
-                Does.Contain("context: MainMenuLocalizationPatch > collection=LeftOptions > itemType=DummyMenuOption > field=Text"));
-            Assert.That(Translator.GetMissingRouteHitCountForTests(nameof(MainMenuLocalizationPatch)), Is.EqualTo(1));
+            Assert.That(option.Text, Is.EqualTo("Unknown text"),
+                "MainMenuLocalizationPatch is observation-only — field must stay unchanged");
+            Assert.That(Translator.GetMissingRouteHitCountForTests(nameof(MainMenuLocalizationPatch)), Is.EqualTo(0),
+                "Observation-only routes skip Translator.Translate entirely");
         });
     }
 
@@ -700,6 +697,19 @@ public sealed class UITextSkinTranslationPatchTests
             Assert.That(translated, Is.EqualTo(source));
             Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(0));
         });
+    }
+
+    [Test, Category("L2")]
+    [TestCase("MainMenuLocalizationPatch")]
+    [TestCase("OptionsLocalizationPatch")]
+    [TestCase("CharGenLocalizationPatch")]
+    [TestCase("PickTargetWindowTextTranslator")]
+    public void TranslatePreservingColors_ObservationOnlyRoute_ReturnsSourceUnchanged(string context)
+    {
+        SinkObservation.ResetForTests();
+        var source = "Some English label";
+        var result = UITextSkinTranslationPatch.TranslatePreservingColors(source, context);
+        Assert.That(result, Is.EqualTo(source));
     }
 
     [Test]

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text;
@@ -57,6 +58,14 @@ public static class UITextSkinTranslationPatch
         "MutationsModule",
         "CallingModule",
         "CyberneticsModule",
+    };
+
+    private static readonly HashSet<string> ObservationOnlyRoutes = new(StringComparer.Ordinal)
+    {
+        nameof(MainMenuLocalizationPatch),
+        nameof(OptionsLocalizationPatch),
+        nameof(CharGenLocalizationPatch),
+        nameof(PickTargetWindowTextTranslator),
     };
 
     [HarmonyTargetMethod]
@@ -124,6 +133,21 @@ public static class UITextSkinTranslationPatch
         }
 
         var primaryRoute = ObservabilityHelpers.ExtractPrimaryContext(effectiveContext);
+
+        if (ObservationOnlyRoutes.Contains(primaryRoute))
+        {
+            if (!IsAlreadyLocalizedDirectRouteText(stripped, effectiveContext))
+            {
+                SinkObservation.LogUnclaimed(
+                    nameof(UITextSkinTranslationPatch),
+                    effectiveContext ?? string.Empty,
+                    "ObservationOnly",
+                    source!,
+                    stripped);
+            }
+
+            return source!;
+        }
 
         if (TryTranslateDedicatedRouteText(stripped, primaryRoute, out var dedicatedRouteTranslation))
         {

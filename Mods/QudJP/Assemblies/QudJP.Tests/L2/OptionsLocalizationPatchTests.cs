@@ -36,7 +36,7 @@ public sealed class OptionsLocalizationPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesOptionRows_WhenShowRuns()
+    public void Postfix_LeavesOptionRowsUnchanged_WhenObservationOnly()
     {
         WriteDictionary(
             ("Main volume", "主音量"),
@@ -59,10 +59,14 @@ public sealed class OptionsLocalizationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(target.menuItems[0].Title, Is.EqualTo("{{W|主音量}}"));
-                Assert.That(target.menuItems[0].HelpText, Is.EqualTo("スライダーを調整"));
-                Assert.That(target.filteredMenuItems[0].Title, Is.EqualTo("主音量"));
-                Assert.That(target.filteredMenuItems[0].HelpText, Is.EqualTo("{{R|スライダーを調整}}"));
+                Assert.That(target.menuItems[0].Title, Is.EqualTo("{{W|Main volume}}"),
+                    "OptionsLocalizationPatch is observation-only — text must stay unchanged");
+                Assert.That(target.menuItems[0].HelpText, Is.EqualTo("Adjust slider"),
+                    "OptionsLocalizationPatch is observation-only — text must stay unchanged");
+                Assert.That(target.filteredMenuItems[0].Title, Is.EqualTo("Main volume"),
+                    "OptionsLocalizationPatch is observation-only — text must stay unchanged");
+                Assert.That(target.filteredMenuItems[0].HelpText, Is.EqualTo("{{R|Adjust slider}}"),
+                    "OptionsLocalizationPatch is observation-only — text must stay unchanged");
             });
         }
         finally
@@ -72,7 +76,7 @@ public sealed class OptionsLocalizationPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesDefaultMenuDescriptions()
+    public void Postfix_LeavesDefaultMenuDescriptionsUnchanged_WhenObservationOnly()
     {
         WriteDictionary(
             ("Collapse All", "すべてたたむ"),
@@ -91,8 +95,10 @@ public sealed class OptionsLocalizationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyOptionsTarget.defaultMenuOptions[0].Description, Is.EqualTo("すべてたたむ"));
-                Assert.That(DummyOptionsTarget.defaultMenuOptions[1].Description, Is.EqualTo("ヘルプ"));
+                Assert.That(DummyOptionsTarget.defaultMenuOptions[0].Description, Is.EqualTo("Collapse All"),
+                    "OptionsLocalizationPatch is observation-only — description must stay unchanged");
+                Assert.That(DummyOptionsTarget.defaultMenuOptions[1].Description, Is.EqualTo("Help"),
+                    "OptionsLocalizationPatch is observation-only — description must stay unchanged");
             });
         }
         finally
