@@ -145,6 +145,30 @@ public sealed class TargetMethodResolutionTests
     }
 
 #if HAS_GAME_DLL
+    [TestCase(typeof(SinkPrereqSetDataTranslationPatch), new[]
+    {
+        "XRL.UI.Framework.FrameworkDataElement",
+        "XRL.UI.Framework.FrameworkDataElement",
+        "XRL.UI.Framework.FrameworkDataElement",
+        "XRL.UI.Framework.FrameworkDataElement",
+        "XRL.UI.Framework.FrameworkDataElement",
+        "XRL.UI.Framework.FrameworkDataElement",
+        "XRL.UI.Framework.FrameworkDataElement",
+        "XRL.UI.Framework.FrameworkDataElement",
+        "XRL.UI.Framework.FrameworkDataElement",
+    })]
+    [TestCase(typeof(SinkPrereqUiMethodTranslationPatch), new[]
+    {
+        "XRL.UI.Framework.FrameworkDataElement",
+        "XRL.CharacterBuilds.EmbarkBuilderModuleWindowDescriptor|System.Collections.Generic.IEnumerable`1[[XRL.UI.Framework.FrameworkDataElement]]",
+        "XRL.CharacterBuilds.EmbarkBuilderModuleWindowDescriptor|System.Collections.Generic.IEnumerable`1[[XRL.UI.Framework.FrameworkDataElement]]",
+        "",
+        "",
+        "XRL.UI.Framework.FrameworkDataElement",
+        "XRL.UI.Framework.FrameworkDataElement",
+        "MapScrollerController+MapPinData",
+        "",
+    })]
     [TestCase(typeof(GrammarMakeOrListPatch), new[]
     {
         "System.String[]|System.Boolean",
