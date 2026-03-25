@@ -1,0 +1,124 @@
+{
+  "entries": [
+    {
+      "key": "=subject.The==subject.name= =verb:start= up with a hum.",
+      "text": "=subject.name=がうなり声を上げて起動した。"
+    },
+    {
+      "key": "Nothing happens.",
+      "text": "何も起こらなかった。"
+    },
+    {
+      "key": "=subject.The==subject.name= =verb:shut= down with a whir.",
+      "text": "=subject.name=がうなり声を上げて停止した。"
+    },
+    {
+      "key": "=subject.The==subject.name= =verb:recognize= your =object.name=.",
+      "text": "=subject.name=があなたの=object.name=を認識した。"
+    },
+    {
+      "key": "{{g|You touch =subject.the==subject.name= and recall =pronouns.possessive= passcode. =pronouns.Subjective= =verb:beep:afterpronoun= warmly.}}",
+      "text": "{{g|あなたは=subject.name=に触れ、パスコードを思い出した。=subject.name=が温かくビープ音を鳴らした。}}"
+    },
+    {
+      "key": "{{r|A loud buzz is emitted. The unauthorized glyph flashes on the display.}}",
+      "text": "{{r|大きなブザー音が鳴った。認証されていないグリフがディスプレイに点滅した。}}"
+    },
+    {
+      "key": "You touch =subject.t= and recall =pronouns.possessive= passcode. =pronouns.Subjective= =verb:beep:afterpronoun= warmly.",
+      "text": "あなたは=subject.name=に触れ、パスコードを思い出した。=subject.name=が温かくビープ音を鳴らした。"
+    },
+    {
+      "key": "A loud buzz is emitted. The unauthorized glyph flashes on the display.",
+      "text": "大きなブザー音が鳴った。認証されていないグリフがディスプレイに点滅した。"
+    },
+    {
+      "key": "{{R|=subject.T= =verb:consume= =object.an==object.directionIfAny=!}}",
+      "text": "{{R|=subject.name=が=object.name=を消費した！}}"
+    },
+    {
+      "key": "=subject.T= =verb:fizzle= for several seconds.",
+      "text": "=subject.name=が数秒間シュウシュウと泡立った。"
+    },
+    {
+      "key": "=subject.T= =verb:fizzle= for several seconds, then =verb:evaporate=.",
+      "text": "=subject.name=が数秒間シュウシュウと泡立ち、蒸発した。"
+    },
+    {
+      "key": "=object.T= =object.verb:react= strangely with =subject.t= and =object.verb:convert= =pronouns.objective= to =newLiquid=.",
+      "text": "=object.name=が=subject.name=と奇妙な反応を起こし、=newLiquid=に変換された。"
+    },
+    {
+      "key": "=subject.T= =verb:float= off.",
+      "text": "=subject.name=が浮かび上がって去っていった。"
+    },
+    {
+      "key": "=subject.T==subject.directionIfAny= =verb:flex= and =verb:splinter= apart, revealing =object.an=.",
+      "text": "=subject.name==subject.directionIfAny=がたわみ、砕け散り、=object.name=が現れた。"
+    },
+    {
+      "key": "=subject.T==subject.directionIfAny= =verb:flex= and =verb:splinter= apart.",
+      "text": "=subject.name==subject.directionIfAny=がたわみ、砕け散った。"
+    },
+    {
+      "key": "=subject.T= =verb:stare= at =object.t= blankly.",
+      "text": "=subject.name=が=object.name=をぼんやりと見つめた。"
+    },
+    {
+      "key": "=subject.T= =verb:yell= {{W|'",
+      "text": "=subject.name=が叫んだ、{{W|「"
+    },
+    {
+      "key": "'}}",
+      "text": "」}}"
+    },
+    {
+      "key": "You hear inaudible mumbling.",
+      "text": "聞き取れないつぶやきが聞こえた。"
+    },
+    {
+      "key": "=subject.T= =verb:bat= =subject.possessive= banded wings and blows the =gas= away!",
+      "text": "=subject.name=が縞模様の翼をはためかせ、=gas=を吹き飛ばした！"
+    },
+    {
+      "key": "=subject.T= =verb:swallow= =object.t=!",
+      "text": "=subject.name=が=object.name=を飲み込んだ！"
+    },
+    {
+      "key": "=object.Does:are= much too old and rusted to enter.",
+      "text": "古すぎて錆びついており、中に入ることはできない。"
+    },
+    {
+      "key": "=subject.Name's= =object.name= =object.verb:burst= outward, destroying =objpronouns.reflexive= to prevent potentially lethal damage.",
+      "text": "=subject.name=の=object.name=が外側に破裂し、致命的なダメージを防ぐために自壊した。"
+    },
+    {
+      "key": "=subject.Name's= =object.name= =object.verb:burst= outward, destroying =objpronouns.reflexive= to prevent catastrophic damage.",
+      "text": "=subject.name=の=object.name=が外側に破裂し、壊滅的なダメージを防ぐために自壊した。"
+    },
+    {
+      "key": "=subject.T's= crystalline rind splits in fractals!",
+      "text": "=subject.name=の結晶の外殻がフラクタル状に割れた！"
+    },
+    {
+      "key": "=subject.T= =verb:extrude= through the mirror of =pronouns.possessive= crystalline rind!",
+      "text": "=subject.name=が結晶の外殻の鏡面を通り抜けた！"
+    },
+    {
+      "key": "=subject.T= =verb:stumble= into =object.t=!",
+      "text": "=subject.name=が=object.name=によろめき入った！"
+    },
+    {
+      "key": "The crystalline eggs of =subject.t= swell and pop!",
+      "text": "=subject.name=の結晶の卵が膨らみ、弾けた！"
+    },
+    {
+      "key": "=subject.T= =verb:split= in two!",
+      "text": "=subject.name=が二つに分裂した！"
+    },
+    {
+      "key": "=subject.T= =verb:enter= a spacetime cocoon!",
+      "text": "=subject.name=が時空の繭に入った！"
+    }
+  ]
+}
