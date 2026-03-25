@@ -62,10 +62,15 @@ public static class UITextSkinTranslationPatch
 
     private static readonly HashSet<string> ObservationOnlyRoutes = new(StringComparer.Ordinal)
     {
+        // Route group 1
         nameof(MainMenuLocalizationPatch),
         nameof(OptionsLocalizationPatch),
         nameof(CharGenLocalizationPatch),
         nameof(PickTargetWindowTextTranslator),
+        // Route group 2
+        nameof(CharacterStatusScreenTranslationPatch),
+        nameof(FactionsStatusScreenTranslationPatch),
+        nameof(InventoryAndEquipmentStatusScreenTranslationPatch),
     };
 
     [HarmonyTargetMethod]

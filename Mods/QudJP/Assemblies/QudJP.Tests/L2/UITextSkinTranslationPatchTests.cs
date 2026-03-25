@@ -363,19 +363,17 @@ public sealed class UITextSkinTranslationPatchTests
     }
 
     [Test]
-    public void TranslatePreservingColors_TranslatesInventoryTooltipLabelInDedicatedRouteContext()
+    public void TranslatePreservingColors_ReturnsSourceUnchangedForInventoryObservationOnlyRoute()
     {
         WriteDictionary(("Show Tooltip", "ツールチップ表示"));
 
+        var source = "Show Tooltip";
         var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "Show Tooltip",
+            source,
             nameof(InventoryAndEquipmentStatusScreenTranslationPatch));
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(translated, Is.EqualTo("ツールチップ表示"));
-            Assert.That(Translator.GetMissingKeyHitCountForTests("Show Tooltip"), Is.EqualTo(0));
-        });
+        Assert.That(translated, Is.EqualTo(source),
+            "InventoryAndEquipmentStatusScreenTranslationPatch is observation-only — source must pass through unchanged");
     }
 
     [Test]
@@ -531,20 +529,22 @@ public sealed class UITextSkinTranslationPatchTests
     }
 
     [Test]
-    public void TranslatePreservingColors_TranslatesFactionFamiliesInDedicatedRouteContext()
+    public void TranslatePreservingColors_ReturnsSourceUnchangedForFactionsObservationOnlyRoute()
     {
         WriteDictionary(
             ("The villagers of {0} don't care about you, but aggressive ones will attack you.", "{0}の村人たちはあなたを特に気に掛けていないが、攻撃的な者は襲ってくる。"));
 
+        var source = "The villagers of Abal don't care about you, but aggressive ones will attack you.";
         var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "The villagers of Abal don't care about you, but aggressive ones will attack you.",
+            source,
             nameof(FactionsStatusScreenTranslationPatch));
 
-        Assert.That(translated, Is.EqualTo("Abalの村人たちはあなたを特に気に掛けていないが、攻撃的な者は襲ってくる。"));
+        Assert.That(translated, Is.EqualTo(source),
+            "FactionsStatusScreenTranslationPatch is observation-only — source must pass through unchanged");
     }
 
     [Test]
-    public void TranslatePreservingColors_TranslatesFactionTopicListsInDedicatedRouteContext()
+    public void TranslatePreservingColors_ReturnsSourceUnchangedForFactionsTopicListsObservationOnlyRoute()
     {
         WriteDictionary(
             ("The {0} are interested in learning about {1}.", "{0}は{1}について知ることに関心がある。"),
@@ -553,114 +553,78 @@ public sealed class UITextSkinTranslationPatchTests
             ("sultan they admire or despise", "彼らが好悪を抱くスルタン"),
             ("gossip that's about them", "彼ら自身に関するうわさ話"));
 
+        var source = "The apes are interested in learning about the locations of insect lair, the locations of ape lair, sultan they admire or despise, and gossip that's about them.";
         var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "The apes are interested in learning about the locations of insect lair, the locations of ape lair, sultan they admire or despise, and gossip that's about them.",
+            source,
             nameof(FactionsStatusScreenTranslationPatch));
 
-        Assert.That(
-            translated,
-            Is.EqualTo("apesは昆虫の巣の場所、類人猿の巣の場所、彼らが好悪を抱くスルタン、と彼ら自身に関するうわさ話について知ることに関心がある。"));
+        Assert.That(translated, Is.EqualTo(source),
+            "FactionsStatusScreenTranslationPatch is observation-only — source must pass through unchanged");
     }
 
     [Test]
-    public void TranslatePreservingColors_TranslatesCharacterStatusFamiliesInDedicatedRouteContext()
+    public void TranslatePreservingColors_ReturnsSourceUnchangedForCharacterStatusObservationOnlyRoute()
     {
         WriteDictionary(
             ("Attribute Points: {0}", "能力値ポイント: {0}"),
-            ("Mutation Points: {0}", "突然変異ポイント: {0}"),
-            ("Mutated Human", "変異人間"),
-            ("Tinker", "修理工"),
-            ("LVL", "Lv"),
-            ("Weight", "重量"),
-            ("Force Wall", "力場壁"),
-            ("RANK", "ランク"),
-            ("Mental Mutation", "精神突然変異"),
-            ("You see in the dark.", "暗闇でも見える。"),
-            ("Your {{W|Ego}} determines the potency of your mental mutations, your ability to haggle with merchants, and your ability to dominate the wills of other living creatures.", "あなたの{{W|自我}}は精神突然変異の威力、商人との取引能力、他者の意志を支配する力を決める。"));
+            ("Mutated Human", "変異人間"));
 
-        var attributePoints = UITextSkinTranslationPatch.TranslatePreservingColors(
+        var sources = new[]
+        {
             "Attribute Points: 0",
-            nameof(CharacterStatusScreenTranslationPatch));
-        var mutationPoints = UITextSkinTranslationPatch.TranslatePreservingColors(
             "Mutation Points: 0",
-            nameof(CharacterStatusScreenTranslationPatch));
-        var title = UITextSkinTranslationPatch.TranslatePreservingColors(
             "Mutated Human Tinker",
-            nameof(CharacterStatusScreenTranslationPatch));
-        var summary = UITextSkinTranslationPatch.TranslatePreservingColors(
             "Level: 1 ¯ HP: 18/18 ¯ XP: 0/220 ¯ Weight: 405#",
-            nameof(CharacterStatusScreenTranslationPatch));
-        var mutationLine = UITextSkinTranslationPatch.TranslatePreservingColors(
             "Force Wall (1)",
-            nameof(CharacterStatusScreenTranslationPatch));
-        var rank = UITextSkinTranslationPatch.TranslatePreservingColors(
             "{{G|RANK 1/10}}",
-            nameof(CharacterStatusScreenTranslationPatch));
-        var mutationType = UITextSkinTranslationPatch.TranslatePreservingColors(
             "{{c|[Mental Mutation]}}",
-            nameof(CharacterStatusScreenTranslationPatch));
-        var help = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "Your Ego determines the potency of your mental mutations, your ability to haggle with merchants, and your ability to dominate the wills of other living creatures.",
-            nameof(CharacterStatusScreenTranslationPatch));
-        var darkVision = UITextSkinTranslationPatch.TranslatePreservingColors(
             "You see in the dark.",
-            nameof(CharacterStatusScreenTranslationPatch));
+        };
 
         Assert.Multiple(() =>
         {
-            Assert.That(attributePoints, Is.EqualTo("能力値ポイント: 0"));
-            Assert.That(mutationPoints, Is.EqualTo("突然変異ポイント: 0"));
-            Assert.That(title, Is.EqualTo("変異人間 修理工"));
-            Assert.That(summary, Is.EqualTo("Lv: 1 ¯ HP: 18/18 ¯ XP: 0/220 ¯ 重量: 405#"));
-            Assert.That(mutationLine, Is.EqualTo("力場壁 (1)"));
-            Assert.That(rank, Is.EqualTo("{{G|ランク 1/10}}"));
-            Assert.That(mutationType, Is.EqualTo("{{c|[精神突然変異]}}"));
-            Assert.That(help, Is.EqualTo("あなたの{{W|自我}}は精神突然変異の威力、商人との取引能力、他者の意志を支配する力を決める。"));
-            Assert.That(darkVision, Is.EqualTo("暗闇でも見える。"));
+            foreach (var source in sources)
+            {
+                var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+                    source,
+                    nameof(CharacterStatusScreenTranslationPatch));
+
+                Assert.That(translated, Is.EqualTo(source),
+                    $"CharacterStatusScreenTranslationPatch is observation-only — '{source}' must pass through unchanged");
+            }
         });
     }
 
     [Test]
-    public void TranslatePreservingColors_KeepsHpAndExpLabelsInCharacterStatusCompactLines()
+    public void TranslatePreservingColors_ReturnsSourceUnchangedForCharacterStatusCompactLinesObservationOnlyRoute()
     {
         WriteDictionary(
             ("LVL", "Lv"),
             ("ACTIVE EFFECTS:", "発動中の効果:"),
             ("wading", "浅瀬を進んでいる"),
-            ("wet", "濡れている"),
-            ("Strength", "筋力"),
-            ("Bonus Cap:", "ボーナス上限:"),
-            ("Weapon Class:", "武器カテゴリ:"),
-            ("Long Blades (increased penetration on critical hit)", "長剣（クリティカル時に貫通力上昇）"),
-            ("no limit", "なし"));
+            ("wet", "濡れている"));
 
-        var levelExp = UITextSkinTranslationPatch.TranslatePreservingColors(
+        var sources = new[]
+        {
             "LVL: 1 Exp: 0 / 220",
-            nameof(CharacterStatusScreenTranslationPatch));
-        var hp = UITextSkinTranslationPatch.TranslatePreservingColors(
             "HP: 18 / 18",
-            nameof(CharacterStatusScreenTranslationPatch));
-        var activeEffects = UITextSkinTranslationPatch.TranslatePreservingColors(
             "ACTIVE EFFECTS: wading, wet",
-            nameof(CharacterStatusScreenTranslationPatch));
-        var cap = UITextSkinTranslationPatch.TranslatePreservingColors(
             "Strength Bonus Cap: no limit",
-            nameof(CharacterStatusScreenTranslationPatch));
-        var egoCap = UITextSkinTranslationPatch.TranslatePreservingColors(
             "Ego Bonus Cap: 2",
-            nameof(CharacterStatusScreenTranslationPatch));
-        var weaponClass = UITextSkinTranslationPatch.TranslatePreservingColors(
             "Weapon Class: Long Blades (increased penetration on critical hit)",
-            nameof(CharacterStatusScreenTranslationPatch));
+        };
 
         Assert.Multiple(() =>
         {
-            Assert.That(levelExp, Is.EqualTo("Lv: 1 Exp: 0 / 220"));
-            Assert.That(hp, Is.EqualTo("HP: 18 / 18"));
-            Assert.That(activeEffects, Is.EqualTo("発動中の効果: 浅瀬を進んでいる、濡れている"));
-            Assert.That(cap, Is.EqualTo("筋力ボーナス上限: なし"));
-            Assert.That(egoCap, Is.EqualTo("Ego ボーナス上限: 2"));
-            Assert.That(weaponClass, Is.EqualTo("武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
+            foreach (var source in sources)
+            {
+                var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+                    source,
+                    nameof(CharacterStatusScreenTranslationPatch));
+
+                Assert.That(translated, Is.EqualTo(source),
+                    $"CharacterStatusScreenTranslationPatch is observation-only — '{source}' must pass through unchanged");
+            }
         });
     }
 
@@ -708,6 +672,18 @@ public sealed class UITextSkinTranslationPatchTests
     {
         SinkObservation.ResetForTests();
         var source = "Some English label";
+        var result = UITextSkinTranslationPatch.TranslatePreservingColors(source, context);
+        Assert.That(result, Is.EqualTo(source));
+    }
+
+    [Test, Category("L2")]
+    [TestCase("CharacterStatusScreenTranslationPatch")]
+    [TestCase("FactionsStatusScreenTranslationPatch")]
+    [TestCase("InventoryAndEquipmentStatusScreenTranslationPatch")]
+    public void TranslatePreservingColors_ScreenLocalRoute_ReturnsSourceUnchanged(string context)
+    {
+        SinkObservation.ResetForTests();
+        var source = "Some screen text";
         var result = UITextSkinTranslationPatch.TranslatePreservingColors(source, context);
         Assert.That(result, Is.EqualTo(source));
     }
