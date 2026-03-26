@@ -1664,8 +1664,28 @@
     },
     {
       "verb": "were",
+      "extra": "crushed by falling rocks",
+      "text": "落石に押しつぶされた"
+    },
+    {
+      "verb": "were",
       "extra": "reduced to dust",
       "text": "塵に還った"
+    },
+    {
+      "verb": "were",
+      "extra": "resorbed into the Mass Mind",
+      "text": "集合精神に再吸収された"
+    },
+    {
+      "verb": "were",
+      "extra": "stepped on",
+      "text": "踏みつぶされた"
+    },
+    {
+      "verb": "were",
+      "extra": "vaporized",
+      "text": "気化された"
     }
   ],
   "tier3": [
