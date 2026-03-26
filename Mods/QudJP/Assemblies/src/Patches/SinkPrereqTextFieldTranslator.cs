@@ -17,14 +17,11 @@ internal static class SinkPrereqTextFieldTranslator
             return;
         }
 
-        var cacheKey = string.Concat(instance.GetType().FullName, ".", fieldName);
-        var field = FieldCache.GetOrAdd(cacheKey, _ => AccessTools.Field(instance.GetType(), fieldName));
-        if (field is null)
+        if (!TryGetMemberValue(instance, fieldName, out var uiTextSkin))
         {
             return;
         }
 
-        var uiTextSkin = field.GetValue(instance);
         TranslateTextSkin(uiTextSkin, context);
     }
 
@@ -51,31 +48,37 @@ internal static class SinkPrereqTextFieldTranslator
             return;
         }
 
-        var parentCacheKey = string.Concat(instance.GetType().FullName, ".", parentFieldName);
-        var parentField = FieldCache.GetOrAdd(parentCacheKey, _ => AccessTools.Field(instance.GetType(), parentFieldName));
-
-        object? parent = null;
-        if (parentField is not null)
+        if (TryGetMemberValue(instance, parentFieldName, out var parent)
+            && parent is not null
+            && TryGetMemberValue(parent, textSkinFieldName, out var uiTextSkin))
         {
-            parent = parentField.GetValue(instance);
-        }
-        else
-        {
-            var prop = AccessTools.Property(instance.GetType(), parentFieldName);
-            if (prop is not null && prop.CanRead)
-            {
-                parent = prop.GetValue(instance);
-            }
-        }
-
-        if (parent is not null)
-        {
-            TranslateField(parent, textSkinFieldName, context);
+            TranslateTextSkin(uiTextSkin, context);
         }
     }
 
     internal static void ResetForTests()
     {
         FieldCache.Clear();
+    }
+
+    private static bool TryGetMemberValue(object instance, string memberName, out object? value)
+    {
+        var cacheKey = string.Concat(instance.GetType().FullName, ".", memberName);
+        var field = FieldCache.GetOrAdd(cacheKey, _ => AccessTools.Field(instance.GetType(), memberName));
+        if (field is not null)
+        {
+            value = field.GetValue(instance);
+            return true;
+        }
+
+        var property = AccessTools.Property(instance.GetType(), memberName);
+        if (property is not null && property.CanRead)
+        {
+            value = property.GetValue(instance);
+            return true;
+        }
+
+        value = null;
+        return false;
     }
 }
