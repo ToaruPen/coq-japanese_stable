@@ -99,26 +99,30 @@ public sealed class QudJPModTests
     }
 
     [Test]
-    public void TryPreparePatchType_IncludesExceptionType_WhenTargetMethodThrows()
+    public void TryPreparePatchType_IncludesResolverAndExceptionType_WhenTargetMethodThrows()
     {
         var prepared = QudJPMod.TryPreparePatchType(typeof(ThrowingTargetPatch), out var reason);
 
         Assert.Multiple(() =>
         {
             Assert.That(prepared, Is.False);
+            Assert.That(reason, Does.Contain("ThrowingTargetPatch"));
+            Assert.That(reason, Does.Contain("threw:"));
             Assert.That(reason, Does.Contain(nameof(InvalidOperationException)));
             Assert.That(reason, Does.Contain("single target failed"));
         });
     }
 
     [Test]
-    public void TryPreparePatchType_IncludesExceptionType_WhenTargetMethodsThrows()
+    public void TryPreparePatchType_IncludesResolverAndExceptionType_WhenTargetMethodsThrows()
     {
         var prepared = QudJPMod.TryPreparePatchType(typeof(ThrowingTargetsPatch), out var reason);
 
         Assert.Multiple(() =>
         {
             Assert.That(prepared, Is.False);
+            Assert.That(reason, Does.Contain("ThrowingTargetsPatch"));
+            Assert.That(reason, Does.Contain("threw:"));
             Assert.That(reason, Does.Contain(nameof(InvalidOperationException)));
             Assert.That(reason, Does.Contain("multiple targets failed"));
         });

@@ -272,9 +272,10 @@ public static class QudJPMod
         }
         catch (Exception ex)
         {
-            failureReason = ex is TargetInvocationException tie
+            var details = ex is TargetInvocationException tie
                 ? tie.InnerException?.ToString() ?? tie.ToString()
                 : ex.ToString();
+            failureReason = $"{resolver.DeclaringType?.FullName}.{resolver.Name} threw: {details}";
             return false;
         }
     }
@@ -300,9 +301,10 @@ public static class QudJPMod
         }
         catch (Exception ex)
         {
-            failureReason = ex is TargetInvocationException tie
+            var details = ex is TargetInvocationException tie
                 ? tie.InnerException?.ToString() ?? tie.ToString()
                 : ex.ToString();
+            failureReason = $"{resolver.DeclaringType?.FullName}.{resolver.Name} threw: {details}";
             return false;
         }
     }
