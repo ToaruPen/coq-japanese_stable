@@ -54986,7 +54986,8 @@
     "needs_runtime": true,
     "pattern": "titleText.SetText(data.title)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
+    "note": "covered_by_current_patch",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
@@ -55002,7 +55003,8 @@
     "needs_runtime": true,
     "pattern": "detailsText.SetText(data.details)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
+    "note": "covered_by_current_patch",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
@@ -55129,7 +55131,8 @@
     "needs_runtime": true,
     "pattern": "rightSideHeaderText.SetText(abilityManagerLineData.ability.DisplayName)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
+    "note": "covered_by_current_patch",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
@@ -55160,7 +55163,8 @@
     "needs_runtime": true,
     "pattern": "rightSideHeaderText.SetText(abilityManagerLineData.category)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
+    "note": "covered_by_current_patch",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
@@ -55454,7 +55458,8 @@
     "needs_runtime": true,
     "pattern": "attributeText.SetText((characterAttributeLineData.data == null) ? characterAttributeLineData.stat : characterAttributeLineData.data.GetShortDisplayName())",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
+    "note": "covered_by_current_patch",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
@@ -55554,7 +55559,8 @@
     "needs_runtime": true,
     "pattern": "text.SetText(characterEffectLineData.effect.DisplayName ?? \"\")",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
+    "note": "covered_by_current_patch",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
@@ -55932,7 +55938,8 @@
     "needs_runtime": true,
     "pattern": "description.SetText(data.Text)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
+    "note": "covered_by_current_patch",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
@@ -55948,11 +55955,12 @@
     "needs_runtime": true,
     "pattern": "description.SetText(data.Text)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "SetText(data.Text) - full terminal text after cursor completes"
+    "classification_evidence": "SetText(data.Text) - full terminal text after cursor completes",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 7,
@@ -56709,11 +56717,12 @@
     "needs_runtime": true,
     "pattern": "text.SetText(\"{{C|\" + keybindCategoryRow.CategoryDescription + \"}}\")",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "\"{{C|\" + keybindCategoryRow.CategoryDescription + \"}}\" - category from keybind data"
+    "classification_evidence": "\"{{C|\" + keybindCategoryRow.CategoryDescription + \"}}\" - category from keybind data",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 4,
@@ -56725,11 +56734,12 @@
     "needs_runtime": true,
     "pattern": "text.SetText(\"{{C|\" + menuOption.getMenuText() + \"}}\")",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "\"{{C|\" + menuOption.getMenuText() + \"}}\" - menu option text from data"
+    "classification_evidence": "\"{{C|\" + menuOption.getMenuText() + \"}}\" - menu option text from data",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 4,
@@ -56741,11 +56751,12 @@
     "needs_runtime": true,
     "pattern": "text.SetText(\"{{C|\" + helpDataRow.CategoryId + \"}}\")",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "\"{{C|\" + helpDataRow.CategoryId + \"}}\" - help category ID from data"
+    "classification_evidence": "\"{{C|\" + helpDataRow.CategoryId + \"}}\" - help category ID from data",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 4,
@@ -56757,11 +56768,12 @@
     "needs_runtime": true,
     "pattern": "text.SetText(\"{{C|\" + optionsCategoryRow.CategoryId + \"}}\")",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "\"{{C|\" + optionsCategoryRow.CategoryId + \"}}\" - options category from data"
+    "classification_evidence": "\"{{C|\" + optionsCategoryRow.CategoryId + \"}}\" - options category from data",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 3,
@@ -57433,11 +57445,12 @@
     "needs_runtime": true,
     "pattern": "ZoneText.SetText(playerStringData[StringDataType.Zone])",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "SetText from playerStringData[Zone] - runtime zone name string"
+    "classification_evidence": "SetText from playerStringData[Zone] - runtime zone name string",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 6,
@@ -58099,11 +58112,12 @@
     "needs_runtime": true,
     "pattern": "text.SetText(tinkeringLineData.data.DisplayName)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "SetText(tinkeringLineData.data.DisplayName) - display name from TinkerData"
+    "classification_evidence": "SetText(tinkeringLineData.data.DisplayName) - display name from TinkerData",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 4,
@@ -58115,11 +58129,12 @@
     "needs_runtime": true,
     "pattern": "descriptionText.SetText(tinkeringLineData.data.UnclippedDescription)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "SetText(tinkeringLineData.data.UnclippedDescription) - description from blueprint"
+    "classification_evidence": "SetText(tinkeringLineData.data.UnclippedDescription) - description from blueprint",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 5,
@@ -58256,11 +58271,12 @@
     "needs_runtime": true,
     "pattern": "modDescriptionText.SetText(\"{{rules|\" + ItemModding.GetModificationDescription(tinkeringLineData.data.Blueprint, tinkeringLineData.modObject) + \"}}\")",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "ItemModding.GetModificationDescription - runtime modification description"
+    "classification_evidence": "ItemModding.GetModificationDescription - runtime modification description",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 5,
@@ -58746,11 +58762,12 @@
     "needs_runtime": true,
     "pattern": "detailsRightText.SetText(text)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "detailsRightText with weight, currency flag, formatted price - multiple runtime values"
+    "classification_evidence": "detailsRightText with weight, currency flag, formatted price - multiple runtime values",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 4,
@@ -59196,11 +59213,12 @@
     "needs_runtime": true,
     "pattern": "scroller.titleText.SetText(categoryIcons.Title)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "SetText(categoryIcons.Title) - category title from data"
+    "classification_evidence": "SetText(categoryIcons.Title) - category title from data",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 3,
@@ -59212,11 +59230,12 @@
     "needs_runtime": true,
     "pattern": "scroller.titleText.SetText(categoryMenuData.Title)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "SetText(categoryMenuData.Title) - category menu title from data"
+    "classification_evidence": "SetText(categoryMenuData.Title) - category menu title from data",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 4,
@@ -59228,11 +59247,12 @@
     "needs_runtime": true,
     "pattern": "selectedTitleText.SetText(prefixMenuOption.Description)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "SetText(prefixMenuOption.Description) - menu option description from data"
+    "classification_evidence": "SetText(prefixMenuOption.Description) - menu option description from data",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 4,
@@ -59244,11 +59264,12 @@
     "needs_runtime": true,
     "pattern": "selectedDescriptionText.SetText(prefixMenuOption.LongDescription)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "SetText(prefixMenuOption.LongDescription) - menu option long description from data"
+    "classification_evidence": "SetText(prefixMenuOption.LongDescription) - menu option long description from data",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 3,
@@ -59260,11 +59281,12 @@
     "needs_runtime": true,
     "pattern": "textSkin.SetText(d.Description)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "SetText(d.Description) - header description from data element"
+    "classification_evidence": "SetText(d.Description) - header description from data element",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 4,
@@ -59276,11 +59298,12 @@
     "needs_runtime": true,
     "pattern": "titleText.SetText(descriptor.title)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "SetText(descriptor.title) - scroller title from window descriptor"
+    "classification_evidence": "SetText(descriptor.title) - scroller title from window descriptor",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 5,
@@ -59322,11 +59345,12 @@
     "needs_runtime": true,
     "pattern": "descriptionText.SetText(item.Description)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "SetText(item.Description) - description text from data for height calculation"
+    "classification_evidence": "SetText(item.Description) - description text from data for height calculation",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 3,
@@ -59370,11 +59394,12 @@
     "needs_runtime": true,
     "pattern": "text.SetText(summaryBlockData.Description)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "SetText(summaryBlockData.Description) - summary block description from data"
+    "classification_evidence": "SetText(summaryBlockData.Description) - summary block description from data",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 4,
@@ -59430,11 +59455,12 @@
     "needs_runtime": true,
     "pattern": "RightText.SetText(data2.RightText)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "SetText(data2.RightText) - right text from object finder data"
+    "classification_evidence": "SetText(data2.RightText) - right text from object finder data",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 5,
@@ -59462,11 +59488,12 @@
     "needs_runtime": true,
     "pattern": "ObjectDescription.SetText(data2.Description)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "SetText(data2.Description) - description text from object finder data"
+    "classification_evidence": "SetText(data2.Description) - description text from object finder data",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 4,
@@ -59478,11 +59505,12 @@
     "needs_runtime": true,
     "pattern": "TitleText.SetText(Title)",
     "sink": "SetText",
-    "status": "unresolved",
+    "status": "excluded",
     "type": "Unresolved",
     "runtime_reason": "UI field receives a computed value or external data payload; final visible text requires runtime evidence.",
     "static_classification": "runtime_dependent",
-    "classification_evidence": "SetText(Title) - title string from field, set externally"
+    "classification_evidence": "SetText(Title) - title string from field, set externally",
+    "note": "covered_by_current_patch"
   },
   {
     "column": 5,
