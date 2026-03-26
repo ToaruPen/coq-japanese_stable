@@ -49,7 +49,12 @@
     {
       "key": "by ",
       "text": "作者: ",
-      "context": "ModManagerUI.SelectedModAuthor / ModMenuLine.authorText"
+      "context": "ModManagerUI.SelectedModAuthor"
+    },
+    {
+      "key": "by ",
+      "text": "作者: ",
+      "context": "ModMenuLine.authorText"
     },
     {
       "key": "Configuring Controller:",
