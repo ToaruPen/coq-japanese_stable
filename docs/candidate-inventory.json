@@ -9389,7 +9389,7 @@
     "needs_runtime": false,
     "pattern": "DidX(\"are\", Text, \"!\", null, null, null, Object)",
     "sink": "DidX",
-    "status": "needs_patch",
+    "status": "translated",
     "type": "MessageFrame",
     "verb": "are"
   },
@@ -9406,7 +9406,7 @@
     "needs_runtime": false,
     "pattern": "DidX(\"are\", \"no longer \" + Text, null, null, null, base.Object)",
     "sink": "DidX",
-    "status": "needs_patch",
+    "status": "translated",
     "type": "MessageFrame",
     "verb": "are"
   },
@@ -9930,7 +9930,8 @@
     "sink": "DidX",
     "status": "needs_patch",
     "type": "MessageFrame",
-    "verb": "are"
+    "verb": "are",
+    "note": "extra is runtime DisplayName from GetStateDescription(); requires a Stuck-specific patch"
   },
   {
     "column": 6,
@@ -11170,7 +11171,8 @@
     "sink": "DidX",
     "status": "needs_patch",
     "type": "MessageFrame",
-    "verb": "draw"
+    "verb": "draw",
+    "note": "extra concatenates direction text, nested Target.Does(\"are\"), and trailing \" marked\"; requires a Rifle_DrawABead-specific patch"
   },
   {
     "column": 4,
@@ -12662,10 +12664,10 @@
     "needs_runtime": false,
     "pattern": "DidXToY(Verb, Object, Preposition, Grammar.MakeAndList(list), null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: true)",
     "sink": "DidX",
-    "status": "needs_patch",
+    "status": "excluded",
     "type": "MessageFrame",
     "verb": "Verb",
-    "note": "VARIABLE_VERB: verb parameter is 'Verb'"
+    "note": "data-driven, no concrete verb in C#"
   },
   {
     "column": 5,
@@ -12697,10 +12699,10 @@
     "needs_runtime": false,
     "pattern": "DidXToY(Verb, Object, Preposition, Grammar.MakeAndList(list), null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: true)",
     "sink": "DidX",
-    "status": "needs_patch",
+    "status": "excluded",
     "type": "MessageFrame",
     "verb": "Verb",
-    "note": "VARIABLE_VERB: verb parameter is 'Verb'"
+    "note": "data-driven, no concrete verb in C#"
   },
   {
     "column": 5,
@@ -13774,7 +13776,8 @@
     "sink": "DidX",
     "status": "needs_patch",
     "type": "MessageFrame",
-    "verb": "gain"
+    "verb": "gain",
+    "note": "extra comes from RandomAltarBaetyl.GiveReward(...); reward text is dynamic and requires a GameObjectBaetylUnit-specific patch"
   },
   {
     "column": 5,
