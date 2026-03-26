@@ -11614,7 +11614,7 @@
     "needs_runtime": false,
     "pattern": "DidX(Verb, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, UsePopup: false, Context)",
     "sink": "DidX",
-    "status": "needs_patch",
+    "status": "translated",
     "type": "MessageFrame",
     "verb": "Verb",
     "note": "VARIABLE_VERB: verb parameter is 'Verb'"
@@ -11879,7 +11879,7 @@
     "needs_runtime": false,
     "pattern": "DidX(ActivationVerb, null, \"!\")",
     "sink": "DidX",
-    "status": "needs_patch",
+    "status": "translated",
     "type": "MessageFrame",
     "verb": "ActivationVerb",
     "note": "VARIABLE_VERB: verb parameter is 'ActivationVerb'"
@@ -12338,7 +12338,7 @@
     "needs_runtime": false,
     "pattern": "DidXToY(HeatVerb, \"to warm\", ParentObject, null, \"!\", null, null, ParentObject)",
     "sink": "DidX",
-    "status": "needs_patch",
+    "status": "translated",
     "type": "MessageFrame",
     "verb": "HeatVerb",
     "note": "VARIABLE_VERB: verb parameter is 'HeatVerb'"
@@ -12679,7 +12679,7 @@
     "needs_runtime": false,
     "pattern": "DidXToYWithZ(Verb, Object, Preposition, gameObject, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteDirectObject: true, IndefiniteIndirectObject: true)",
     "sink": "DidX",
-    "status": "needs_patch",
+    "status": "translated",
     "type": "MessageFrame",
     "verb": "Verb",
     "note": "VARIABLE_VERB: verb parameter is 'Verb'"
@@ -12714,7 +12714,7 @@
     "needs_runtime": false,
     "pattern": "DidXToYWithZ(Verb, Object, Preposition, gameObject, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteDirectObject: true, IndefiniteIndirectObject: true)",
     "sink": "DidX",
-    "status": "needs_patch",
+    "status": "translated",
     "type": "MessageFrame",
     "verb": "Verb",
     "note": "VARIABLE_VERB: verb parameter is 'Verb'"
@@ -13126,7 +13126,7 @@
     "needs_runtime": false,
     "pattern": "DidX(LeaveVerb, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: true, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, UsePopups)",
     "sink": "DidX",
-    "status": "needs_patch",
+    "status": "translated",
     "type": "MessageFrame",
     "verb": "LeaveVerb",
     "note": "VARIABLE_VERB: verb parameter is 'LeaveVerb'"
@@ -13143,7 +13143,7 @@
     "needs_runtime": false,
     "pattern": "DidX(ArriveVerb, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: true, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: true, AlwaysVisible: false, FromDialog: false, UsePopups)",
     "sink": "DidX",
-    "status": "needs_patch",
+    "status": "translated",
     "type": "MessageFrame",
     "verb": "ArriveVerb",
     "note": "VARIABLE_VERB: verb parameter is 'ArriveVerb'"
@@ -13228,7 +13228,7 @@
     "needs_runtime": false,
     "pattern": "DidXToY(Verb, obj, null, null, null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: true)",
     "sink": "DidX",
-    "status": "needs_patch",
+    "status": "translated",
     "type": "MessageFrame",
     "verb": "Verb",
     "note": "VARIABLE_VERB: verb parameter is 'Verb'"
@@ -13509,7 +13509,7 @@
     "needs_runtime": false,
     "pattern": "DidX(SpawnVerb)",
     "sink": "DidX",
-    "status": "needs_patch",
+    "status": "translated",
     "type": "MessageFrame",
     "verb": "SpawnVerb",
     "note": "VARIABLE_VERB: verb parameter is 'SpawnVerb'"
@@ -13526,7 +13526,7 @@
     "needs_runtime": false,
     "pattern": "DidXToY(SpawnVerb, gameObject, null, null, null, null, ParentObject, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: true)",
     "sink": "DidX",
-    "status": "needs_patch",
+    "status": "translated",
     "type": "MessageFrame",
     "verb": "SpawnVerb",
     "note": "VARIABLE_VERB: verb parameter is 'SpawnVerb'"
@@ -13804,7 +13804,7 @@
     "needs_runtime": false,
     "pattern": "Physics.DidX(DeathVerb, null, \"!\", null, null, null, this, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, AlwaysUsePopups)",
     "sink": "DidX",
-    "status": "needs_patch",
+    "status": "translated",
     "type": "MessageFrame",
     "verb": "DeathVerb",
     "note": "VARIABLE_VERB: verb parameter is 'DeathVerb'"
@@ -13821,7 +13821,7 @@
     "needs_runtime": false,
     "pattern": "Physics.DidX(GetTagOrStringProperty(\"CustomDeathVerb\", \"die\"), null, \"!\", null, null, null, this, UseFullNames: false, IndefiniteSubject: false, null, null, DescribeSubjectDirection: false, DescribeSubjectDirectionLate: false, AlwaysVisible: false, FromDialog: false, AlwaysUsePopups)",
     "sink": "DidX",
-    "status": "needs_patch",
+    "status": "translated",
     "type": "MessageFrame",
     "verb": "GetTagOrStringProperty(\"CustomDeathVerb\", \"die\")",
     "note": "VARIABLE_VERB: verb parameter is 'GetTagOrStringProperty(\"CustomDeathVerb\", \"die\")'"

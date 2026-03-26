@@ -43,12 +43,12 @@
       "text": "叩いた"
     },
     {
-      "verb": "beep",
-      "text": "ビープ音を鳴らした"
-    },
-    {
       "verb": "become",
       "text": "なった"
+    },
+    {
+      "verb": "beep",
+      "text": "ビープ音を鳴らした"
     },
     {
       "verb": "begin",
@@ -63,12 +63,12 @@
       "text": "瞬間移動した"
     },
     {
-      "verb": "bloop",
-      "text": "低い電子音を鳴らした"
-    },
-    {
       "verb": "block",
       "text": "防いだ"
+    },
+    {
+      "verb": "bloop",
+      "text": "低い電子音を鳴らした"
     },
     {
       "verb": "break",
@@ -87,6 +87,10 @@
       "text": "穴を掘った"
     },
     {
+      "verb": "buzz",
+      "text": "ブンブン鳴った"
+    },
+    {
       "verb": "cannot",
       "text": "できなかった"
     },
@@ -95,8 +99,16 @@
       "text": "突撃した"
     },
     {
+      "verb": "chime",
+      "text": "チンと鳴った"
+    },
+    {
       "verb": "chirp",
       "text": "鳴いた"
+    },
+    {
+      "verb": "clack",
+      "text": "カタッと鳴った"
     },
     {
       "verb": "clasp",
@@ -137,6 +149,10 @@
     {
       "verb": "cool",
       "text": "冷えた"
+    },
+    {
+      "verb": "cough",
+      "text": "ゴホッと鳴った"
     },
     {
       "verb": "crumble",
@@ -271,6 +287,10 @@
       "text": "集中した"
     },
     {
+      "verb": "fwoosh",
+      "text": "ゴウッと音を立てた"
+    },
+    {
       "verb": "gain",
       "text": "獲得した"
     },
@@ -291,6 +311,10 @@
       "text": "手渡した"
     },
     {
+      "verb": "hatch",
+      "text": "孵化した"
+    },
+    {
       "verb": "have",
       "text": "持った"
     },
@@ -309,6 +333,10 @@
     {
       "verb": "howl",
       "text": "吠えた"
+    },
+    {
+      "verb": "hum",
+      "text": "ブーンと唸った"
     },
     {
       "verb": "impel",
@@ -411,6 +439,10 @@
       "text": "ポトリと落ちた"
     },
     {
+      "verb": "pop",
+      "text": "ポンと鳴った"
+    },
+    {
       "verb": "pour",
       "text": "注いだ"
     },
@@ -447,16 +479,16 @@
       "text": "再生した"
     },
     {
-      "verb": "repair",
-      "text": "修理した"
-    },
-    {
       "verb": "release",
       "text": "放出した"
     },
     {
       "verb": "remain",
       "text": "とどまった"
+    },
+    {
+      "verb": "repair",
+      "text": "修理した"
     },
     {
       "verb": "rise",
@@ -511,6 +543,10 @@
       "text": "眠りについた"
     },
     {
+      "verb": "slough",
+      "text": "脱皮した"
+    },
+    {
       "verb": "smash",
       "text": "打ち破った"
     },
@@ -531,6 +567,10 @@
       "text": "吐き出した"
     },
     {
+      "verb": "sputter",
+      "text": "ガタガタ鳴った"
+    },
+    {
       "verb": "stand",
       "text": "立ち上がった"
     },
@@ -541,6 +581,10 @@
     {
       "verb": "start",
       "text": "始めた"
+    },
+    {
+      "verb": "still",
+      "text": "静止した"
     },
     {
       "verb": "stir",
@@ -557,6 +601,10 @@
     {
       "verb": "strike",
       "text": "攻撃した"
+    },
+    {
+      "verb": "strip",
+      "text": "引き剥がした"
     },
     {
       "verb": "submerge",
@@ -591,6 +639,10 @@
       "text": "テレポートした"
     },
     {
+      "verb": "thunk",
+      "text": "ドンと鳴った"
+    },
+    {
       "verb": "tighten",
       "text": "締めつけた"
     },
@@ -611,6 +663,10 @@
       "text": "試みた"
     },
     {
+      "verb": "tumble",
+      "text": "転がった"
+    },
+    {
       "verb": "unequip",
       "text": "装備を外した"
     },
@@ -621,6 +677,18 @@
     {
       "verb": "wake",
       "text": "目覚めた"
+    },
+    {
+      "verb": "whine",
+      "text": "キーンと鳴った"
+    },
+    {
+      "verb": "whir",
+      "text": "ウィーンと唸った"
+    },
+    {
+      "verb": "whirl",
+      "text": "グルグル回った"
     }
   ],
   "tier2": [
