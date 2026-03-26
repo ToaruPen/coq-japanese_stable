@@ -75,9 +75,13 @@ public sealed class LoadingStatusTranslationPatchTests
                 original: RequireMethod(typeof(DummyLoadingTarget), nameof(DummyLoadingTarget.SetLoadingStatus)),
                 prefix: new HarmonyMethod(RequireMethod(typeof(LoadingStatusTranslationPatch), nameof(LoadingStatusTranslationPatch.Prefix))));
 
-            DummyLoadingTarget.SetLoadingStatus("\u0001既に翻訳済み");
+            DummyLoadingTarget.SetLoadingStatus("\u0001既に翻訳済み", true);
 
-            Assert.That(DummyLoadingTarget.LastDescription, Is.EqualTo("既に翻訳済み"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyLoadingTarget.LastDescription, Is.EqualTo("既に翻訳済み"));
+                Assert.That(DummyLoadingTarget.LastWaitForUiUpdate, Is.True);
+            });
         }
         finally
         {
