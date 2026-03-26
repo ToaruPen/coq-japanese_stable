@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using HarmonyLib;
@@ -8,18 +9,38 @@ namespace QudJP.Patches;
 [HarmonyPatch]
 public static class MainMenuLocalizationPatch
 {
+    private const string Context = nameof(MainMenuLocalizationPatch);
     private const string TargetTypeName = "Qud.UI.MainMenu";
 
-    [HarmonyTargetMethod]
-    private static MethodBase? TargetMethod()
+    [HarmonyTargetMethods]
+    private static IEnumerable<MethodBase> TargetMethods()
     {
-        var method = AccessTools.Method(TargetTypeName + ":Show");
-        if (method is null)
+        var targetType = AccessTools.TypeByName(TargetTypeName);
+        if (targetType is null)
+        {
+            Trace.TraceError("QudJP: Failed to resolve Qud.UI.MainMenu type. Patch will not apply.");
+            yield break;
+        }
+
+        var showMethod = AccessTools.Method(targetType, "Show");
+        if (showMethod is not null)
+        {
+            yield return showMethod;
+        }
+        else
         {
             Trace.TraceError("QudJP: Failed to resolve Qud.UI.MainMenu.Show(). Patch will not apply.");
         }
 
-        return method;
+        var updateMenuBarsMethod = AccessTools.Method(targetType, "UpdateMenuBars");
+        if (updateMenuBarsMethod is not null)
+        {
+            yield return updateMenuBarsMethod;
+        }
+        else
+        {
+            Trace.TraceError("QudJP: Failed to resolve Qud.UI.MainMenu.UpdateMenuBars(). Patch will not apply.");
+        }
     }
 
     public static void Postfix(object __instance)
@@ -48,8 +69,10 @@ public static class MainMenuLocalizationPatch
             var rightOptions = AccessCollectionField(targetType, __instance, "RightOptions");
             UITextSkinTranslationPatch.TranslateStringFieldsInCollection(
                 rightOptions,
-                ObservabilityHelpers.ComposeContext(nameof(MainMenuLocalizationPatch), "collection=RightOptions"),
+                ObservabilityHelpers.ComposeContext(Context, "collection=RightOptions"),
                 "Text");
+
+            TranslateHotkeyBarChoices(targetType, __instance);
         }
         catch (Exception ex)
         {
@@ -78,5 +101,24 @@ public static class MainMenuLocalizationPatch
         }
 
         return field.GetValue(instance);
+    }
+
+    private static void TranslateHotkeyBarChoices(Type targetType, object? instance)
+    {
+        if (instance is null)
+        {
+            return;
+        }
+
+        var hotkeyBar = AccessTools.Field(targetType, "hotkeyBar")?.GetValue(instance);
+        if (hotkeyBar is null)
+        {
+            return;
+        }
+
+        UITextSkinTranslationPatch.TranslateStringFieldsInCollection(
+            AccessTools.Field(hotkeyBar.GetType(), "choices")?.GetValue(hotkeyBar),
+            ObservabilityHelpers.ComposeContext(Context, "collection=HotkeyBarChoices"),
+            "Description");
     }
 }

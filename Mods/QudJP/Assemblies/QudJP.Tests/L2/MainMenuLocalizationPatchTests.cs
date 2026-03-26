@@ -91,6 +91,39 @@ public sealed class MainMenuLocalizationPatchTests
         }
     }
 
+    [Test]
+    public void Postfix_TranslatesHotkeyBarDescriptions_WhenUpdateMenuBarsRuns()
+    {
+        WriteDictionary(
+            ("navigate", "移動"),
+            ("select", "選択"),
+            ("quit", "終了"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMainMenuTarget), nameof(DummyMainMenuTarget.UpdateMenuBars)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(MainMenuLocalizationPatch), nameof(MainMenuLocalizationPatch.Postfix))));
+
+            var target = new DummyMainMenuTarget();
+            target.UpdateMenuBars();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMainMenuTarget.LastHotkeyChoices[0].Description, Is.EqualTo("移動"));
+                Assert.That(DummyMainMenuTarget.LastHotkeyChoices[1].Description, Is.EqualTo("選択"));
+                Assert.That(DummyMainMenuTarget.LastHotkeyChoices[2].Description, Is.EqualTo("終了"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

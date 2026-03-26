@@ -58,6 +58,22 @@ public static class PopupShowTranslationPatch
             Trace.TraceWarning("QudJP: {0} failed to resolve Popup.ShowYesNo.", Context);
         }
 
+        var showYesNoCancelMethod = AccessTools.Method(popupType, "ShowYesNoCancel",
+            new[] { typeof(string), typeof(string), typeof(bool), AccessTools.TypeByName("XRL.UI.DialogResult") });
+        if (showYesNoCancelMethod is null)
+        {
+            showYesNoCancelMethod = AccessTools.Method(popupType, "ShowYesNoCancel");
+        }
+
+        if (showYesNoCancelMethod is not null)
+        {
+            targets.Add(showYesNoCancelMethod);
+        }
+        else
+        {
+            Trace.TraceWarning("QudJP: {0} failed to resolve Popup.ShowYesNoCancel.", Context);
+        }
+
         if (targets.Count == 0)
         {
             Trace.TraceError("QudJP: {0} resolved zero target methods.", Context);

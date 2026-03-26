@@ -140,6 +140,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(GrammarCardinalNumberPatch), "Cardinal", "XRL.Language.Grammar", "System.String", new[] { "System.Int32" })]
     [TestCase(typeof(QudMenuBottomContextTranslationPatch), "RefreshButtons", "Qud.UI.QudMenuBottomContext", "System.Void", new string[0])]
     [TestCase(typeof(SelectableTextMenuItemProbePatch), "Update", "Qud.UI.SelectableTextMenuItem", "System.Void", new string[0])]
+    [TestCase(typeof(LoadingStatusTranslationPatch), "SetLoadingStatus", "XRL.UI.Loading", "System.Void", new[] { "System.String", "System.Boolean" })]
 #endif
 #if HAS_TMP
     [TestCase(typeof(TextMeshProUguiFontPatch), "OnEnable", "TMPro.TextMeshProUGUI", "System.Void", new string[0])]
@@ -211,6 +212,12 @@ public sealed class TargetMethodResolutionTests
     {
         "System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
         "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
+        "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
+    })]
+    [TestCase(typeof(MainMenuLocalizationPatch), new[]
+    {
+        "",
+        "",
     })]
     public void TargetMethods_ResolveExpectedOverloads(Type patchType, string[] expectedSignatures)
     {
