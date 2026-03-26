@@ -1,0 +1,80 @@
+{
+  "meta": {
+    "id": "ui-issue121-template-static",
+    "lang": "ja",
+    "version": "0.1.0",
+    "description": "Issue #121 + #124: template_static + static_partial SetText/Does/EmitMessage sites translation entries"
+  },
+  "entries": [
+    {
+      "key": "{{K|| Bit Cost |}}",
+      "text": "{{K|| ビットコスト |}}",
+      "context": "TinkeringDetailsLine.modBitCostText"
+    },
+    {
+      "key": "{{K || Bit Cost |}}",
+      "text": "{{K || ビットコスト |}}",
+      "context": "TinkeringDetailsLine.modBitCostText"
+    },
+    {
+      "key": "{{K|| Ingredients |}}",
+      "text": "{{K|| 素材 |}}",
+      "context": "TinkeringDetailsLine.modBitCostText"
+    },
+    {
+      "key": "-or-",
+      "text": "または",
+      "context": "TinkeringDetailsLine.modBitCostText"
+    },
+    {
+      "key": "Unlocked ",
+      "text": "解除: ",
+      "context": "AchievementViewRow.Date.SetText"
+    },
+    {
+      "key": " hidden achievements remaining",
+      "text": "件の隠し実績が残っています",
+      "context": "AchievementViewRow.Name.SetText"
+    },
+    {
+      "key": "Location:",
+      "text": "場所:",
+      "context": "SaveManagementRow.TextSkins[1]"
+    },
+    {
+      "key": "Last saved:",
+      "text": "最終保存:",
+      "context": "SaveManagementRow.TextSkins[2]"
+    },
+    {
+      "key": "by ",
+      "text": "作者: ",
+      "context": "ModManagerUI.SelectedModAuthor, ModMenuLine.authorText"
+    },
+    {
+      "key": "Configuring Controller:",
+      "text": "コントローラー設定:",
+      "context": "KeybindsScreen.inputTypeText"
+    },
+    {
+      "key": "switch to modifications",
+      "text": "改造に切り替え",
+      "context": "TinkeringStatusScreen.modeToggleText"
+    },
+    {
+      "key": "switch to recipes",
+      "text": "レシピに切り替え",
+      "context": "TinkeringStatusScreen.modeToggleText"
+    },
+    {
+      "key": " Skills",
+      "text": "のスキル",
+      "context": "SkillsAndPowersStatusScreen.nameBlockText"
+    },
+    {
+      "key": "LEADERBOARD: ",
+      "text": "ランキング: ",
+      "context": "HighScoresScreen.titleText"
+    }
+  ]
+}
