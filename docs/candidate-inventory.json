@@ -12663,7 +12663,7 @@
     "pattern": "DidXToY(Verb, Object, Preposition, Grammar.MakeAndList(list), null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: true)",
     "sink": "DidX",
     "status": "needs_patch",
-    "note": "VARIABLE_VERB: verb parameter is 'Verb'",
+    "note": "VARIABLE_VERB: verb parameter is 'Verb'; blueprint XML data needed",
     "type": "MessageFrame",
     "verb": "Verb"
   },
@@ -12698,7 +12698,7 @@
     "pattern": "DidXToY(Verb, Object, Preposition, Grammar.MakeAndList(list), null, null, null, null, UseFullNames: false, IndefiniteSubject: false, IndefiniteObject: true)",
     "sink": "DidX",
     "status": "needs_patch",
-    "note": "VARIABLE_VERB: verb parameter is 'Verb'",
+    "note": "VARIABLE_VERB: verb parameter is 'Verb'; partial exact/pattern coverage only",
     "type": "MessageFrame",
     "verb": "Verb"
   },
@@ -32226,7 +32226,7 @@
     "pattern": "JournalAPI.AddAccomplishment(\"You \" + text + \" \" + gameObject.t(int.MaxValue, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: false) + \".\", \"While exploring \" + Object.CurrentZone.DisplayName + \", =name= \" + text + \" the fabled contraption called \" + gameObject.t(int.MaxValue, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: true) + \".\", \"While visiting an obscure <spice.professions.\" + text2 + \".guildhall>, =name= met with a group of <spice.professions.\" + text2 + \".plural> and commissed what came to be known as \" + gameObject.t(int.MaxValue, null, null, AsIfKnown: false, Single: false, NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, Short: true, BaseOnly: true) + \".\", null, \"general\", MuralCategory.FindsObject, MuralWeight.Medium, null, -1L)",
     "sink": "JournalAPI",
     "status": "needs_patch",
-    "note": "verb/object/zone/profession all dynamic; site-specific translator recommended",
+    "note": "verb/object/zone/profession components are all dynamic; translator extension required",
     "type": "NarrativeTemplate",
     "narrative_arguments": [
       {
