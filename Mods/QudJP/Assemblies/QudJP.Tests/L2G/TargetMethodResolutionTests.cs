@@ -180,6 +180,11 @@ public sealed class TargetMethodResolutionTests
         "System.String|System.Collections.Generic.IReadOnlyList`1[[System.String]]|System.Collections.Generic.IReadOnlyList`1[[System.Char]]|System.Int32|System.String|System.Int32|System.Boolean|System.Boolean|System.Int32|System.String|System.Action`1[[System.Int32]]|XRL.World.GameObject|System.Collections.Generic.IReadOnlyList`1[[ConsoleLib.Console.IRenderable]]|ConsoleLib.Console.IRenderable|System.Collections.Generic.IReadOnlyList`1[[Qud.UI.QudMenuItem]]|System.Boolean|System.Boolean|System.Int32|System.Boolean",
         "System.String|XRL.World.GameObject|System.String|System.Collections.Generic.List`1[[System.String]]|System.Boolean|System.Boolean|System.Boolean",
     })]
+    [TestCase(typeof(PopupShowTranslationPatch), new[]
+    {
+        "System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
+        "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
+    })]
     public void TargetMethods_ResolveExpectedOverloads(Type patchType, string[] expectedSignatures)
     {
         var targetMethodsMethod = patchType.GetMethod("TargetMethods", BindingFlags.NonPublic | BindingFlags.Static);

@@ -43,7 +43,7 @@ public static class PopupShowTranslationPatch
         }
 
         var showYesNoMethod = AccessTools.Method(popupType, "ShowYesNo",
-            new[] { typeof(string), typeof(string), typeof(bool), AccessTools.TypeByName("Qud.UI.DialogResult") });
+            new[] { typeof(string), typeof(string), typeof(bool), AccessTools.TypeByName("XRL.UI.DialogResult") });
         if (showYesNoMethod is null)
         {
             showYesNoMethod = AccessTools.Method(popupType, "ShowYesNo");

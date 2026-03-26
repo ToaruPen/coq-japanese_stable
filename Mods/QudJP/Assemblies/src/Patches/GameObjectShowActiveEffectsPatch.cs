@@ -48,13 +48,17 @@ public static class GameObjectShowActiveEffectsPatch
             {
                 if (string.Equals(literal, NoActiveEffectsText, StringComparison.Ordinal))
                 {
-                    yield return new CodeInstruction(OpCodes.Call, TranslateNoActiveEffectsTextMethod);
+                    instruction.opcode = OpCodes.Call;
+                    instruction.operand = TranslateNoActiveEffectsTextMethod;
+                    yield return instruction;
                     continue;
                 }
 
                 if (string.Equals(literal, ActiveEffectsTitlePrefix, StringComparison.Ordinal))
                 {
-                    yield return new CodeInstruction(OpCodes.Call, TranslateActiveEffectsTitlePrefixMethod);
+                    instruction.opcode = OpCodes.Call;
+                    instruction.operand = TranslateActiveEffectsTitlePrefixMethod;
+                    yield return instruction;
                     continue;
                 }
             }
