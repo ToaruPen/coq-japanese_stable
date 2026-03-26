@@ -298,26 +298,10 @@ public static class GrammarMakeOrListPatch
     }
 }
 
-[HarmonyPatch]
+// Grammar.SplitOfSentenceList is absent in game version 2.0.4, so this helper stays
+// test-covered but is not registered as a Harmony patch to avoid TargetMethod failures.
 public static class GrammarSplitOfSentenceListPatch
 {
-    [HarmonyTargetMethod]
-    private static MethodBase? TargetMethod()
-    {
-        try
-        {
-            return GrammarPatchHelpers.ResolveMethod(
-                methodName: "SplitOfSentenceList",
-                parameterTypes: new[] { typeof(string) },
-                signature: "SplitOfSentenceList(string)");
-        }
-        catch (Exception ex)
-        {
-            Trace.TraceError("QudJP: GrammarSplitOfSentenceListPatch.TargetMethod failed: {0}", ex);
-            return null;
-        }
-    }
-
     public static bool Prefix(string Text, ref List<string> __result)
     {
         try
@@ -346,9 +330,9 @@ public static class GrammarInitCapsPatch
         try
         {
             return GrammarPatchHelpers.ResolveMethod(
-                methodName: "InitCaps",
+                methodName: "InitCap",
                 parameterTypes: new[] { typeof(string) },
-                signature: "InitCaps(string)");
+                signature: "InitCap(string)");
         }
         catch (Exception ex)
         {
@@ -362,7 +346,7 @@ public static class GrammarInitCapsPatch
         try
         {
             __result = Text;
-            GrammarPatchHelpers.LogTransform("InitCaps", Text, __result, logWhenUnchanged: true);
+            GrammarPatchHelpers.LogTransform("InitCap", Text, __result, logWhenUnchanged: true);
             return false;
         }
         catch (Exception ex)
@@ -382,9 +366,9 @@ public static class GrammarCardinalNumberPatch
         try
         {
             return GrammarPatchHelpers.ResolveMethod(
-                methodName: "CardinalNumber",
+                methodName: "Cardinal",
                 parameterTypes: new[] { typeof(int) },
-                signature: "CardinalNumber(int)");
+                signature: "Cardinal(int)");
         }
         catch (Exception ex)
         {
@@ -398,7 +382,7 @@ public static class GrammarCardinalNumberPatch
         try
         {
             __result = Number.ToString(CultureInfo.InvariantCulture);
-            GrammarPatchHelpers.LogTransform("CardinalNumber", Number.ToString(CultureInfo.InvariantCulture), __result, logWhenUnchanged: true);
+            GrammarPatchHelpers.LogTransform("Cardinal", Number.ToString(CultureInfo.InvariantCulture), __result, logWhenUnchanged: true);
             return false;
         }
         catch (Exception ex)

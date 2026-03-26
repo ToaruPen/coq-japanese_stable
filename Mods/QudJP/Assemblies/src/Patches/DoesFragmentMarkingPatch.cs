@@ -32,8 +32,8 @@ public static class DoesFragmentMarkingPatch
                 typeof(bool),
                 typeof(bool),
                 typeof(bool),
-                typeof(bool),
                 typeof(bool?),
+                typeof(bool),
                 AccessTools.TypeByName("XRL.World.GameObject"),
                 typeof(bool),
             });

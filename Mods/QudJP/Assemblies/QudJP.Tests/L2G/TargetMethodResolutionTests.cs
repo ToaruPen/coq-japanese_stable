@@ -110,7 +110,34 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(BaseLineWithTooltipStartTooltipPatch), "StartTooltip", "Qud.UI.BaseLineWithTooltip", "System.Void", new[] { "XRL.World.GameObject", "XRL.World.GameObject", "System.Boolean", "UnityEngine.RectTransform" })]
     [TestCase(typeof(ConversationDisplayTextPatch), "GetDisplayText", "XRL.World.Conversations.Choice", "System.String", new[] { "System.Boolean" })]
+    [TestCase(typeof(DoesFragmentMarkingPatch), "Does", "XRL.World.GameObject", "System.String", new[]
+    {
+        "System.String",
+        "System.Int32",
+        "System.String",
+        "System.String",
+        "System.String",
+        "System.Boolean",
+        "System.Boolean",
+        "System.Boolean",
+        "System.Boolean",
+        "System.Boolean",
+        "System.Boolean",
+        "System.Boolean",
+        "System.Boolean",
+        "System.Boolean",
+        "System.String",
+        "System.Boolean",
+        "System.Boolean",
+        "System.Boolean",
+        "System.Nullable`1[[System.Boolean]]",
+        "System.Boolean",
+        "XRL.World.GameObject",
+        "System.Boolean",
+    })]
     [TestCase(typeof(GrammarMakeAndListPatch), "MakeAndList", "XRL.Language.Grammar", "System.String", new[] { "System.Collections.Generic.IReadOnlyList`1[[System.String]]", "System.Boolean" })]
+    [TestCase(typeof(GrammarInitCapsPatch), "InitCap", "XRL.Language.Grammar", "System.String", new[] { "System.String" })]
+    [TestCase(typeof(GrammarCardinalNumberPatch), "Cardinal", "XRL.Language.Grammar", "System.String", new[] { "System.Int32" })]
     [TestCase(typeof(QudMenuBottomContextTranslationPatch), "RefreshButtons", "Qud.UI.QudMenuBottomContext", "System.Void", new string[0])]
     [TestCase(typeof(SelectableTextMenuItemProbePatch), "Update", "Qud.UI.SelectableTextMenuItem", "System.Void", new string[0])]
 #endif

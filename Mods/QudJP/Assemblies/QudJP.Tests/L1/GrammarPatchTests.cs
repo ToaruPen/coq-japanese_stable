@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using HarmonyLib;
 using QudJP.Patches;
 
 namespace QudJP.Tests.L1;
@@ -381,6 +382,14 @@ public sealed class GrammarPatchTests
             Assert.That(skipped, Is.False);
             Assert.That(result, Is.EqualTo(new[] { "{{W|A}}", "&GB^k", "^rC^k" }));
         });
+    }
+
+    [Test]
+    public void SplitOfSentenceListPatch_IsDisabledForGrammarInGameVersion_2_0_4()
+    {
+        var isHarmonyPatch = typeof(GrammarSplitOfSentenceListPatch).IsDefined(typeof(HarmonyPatch), inherit: false);
+
+        Assert.That(isHarmonyPatch, Is.False);
     }
 
     [Test]
