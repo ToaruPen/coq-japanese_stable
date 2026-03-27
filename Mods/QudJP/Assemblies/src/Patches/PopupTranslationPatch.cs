@@ -281,9 +281,10 @@ public static class PopupTranslationPatch
                 family + ".DeleteSavePrompt",
                 DeleteSavePromptPattern,
                 "Are you sure you want to delete the save game for {0}?",
+                spans,
                 out var promptTranslated))
         {
-            translated = spans.Count == 0 ? promptTranslated : ColorAwareTranslationComposer.Restore(promptTranslated, spans);
+            translated = promptTranslated;
             return true;
         }
 
@@ -293,9 +294,10 @@ public static class PopupTranslationPatch
                 family + ".DeleteTitle",
                 DeleteTitlePattern,
                 "Delete {0}",
+                spans,
                 out var titleTranslated))
         {
-            translated = spans.Count == 0 ? titleTranslated : ColorAwareTranslationComposer.Restore(titleTranslated, spans);
+            translated = titleTranslated;
             return true;
         }
 
@@ -309,6 +311,7 @@ public static class PopupTranslationPatch
         string family,
         Regex pattern,
         string templateKey,
+        IReadOnlyList<ColorSpan> spans,
         out string translated)
     {
         var match = pattern.Match(source);
@@ -325,7 +328,19 @@ public static class PopupTranslationPatch
             return false;
         }
 
-        translated = translatedTemplate.Replace("{0}", match.Groups["value"].Value);
+        var value = match.Groups["value"].Value;
+        if (spans.Count > 0)
+        {
+            value = ColorAwareTranslationComposer.RestoreCapture(value, spans, match.Groups["value"]);
+        }
+
+        translated = translatedTemplate.Replace("{0}", value);
+        if (spans.Count > 0)
+        {
+            var boundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(spans, match, source.Length, translated.Length);
+            translated = ColorAwareTranslationComposer.Restore(translated, boundarySpans);
+        }
+
         DynamicTextObservability.RecordTransform(route, family, source, translated);
         return true;
     }

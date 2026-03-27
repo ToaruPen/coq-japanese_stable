@@ -107,6 +107,38 @@ public sealed class PopupMessageTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_PreservesColorCodes_WhenDeleteTemplatesReorderPlaceholder()
+    {
+        WriteDictionary(
+            ("Are you sure you want to delete the save game for {0}?", "{0}のセーブデータを本当に削除しますか？"),
+            ("Delete {0}", "{0}を削除"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            new DummyPopupMessageTarget().ShowPopup(
+                "Are you sure you want to delete the save game for {{W|Yashur}}?",
+                title: "Delete {{W|Yashur}}");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("{{W|Yashur}}のセーブデータを本当に削除しますか？"));
+                Assert.That(DummyPopupMessageTarget.LastTitle, Is.EqualTo("{{W|Yashur}}を削除"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_IsIdempotentForSharedButtonLists()
     {
         WriteDictionary(("[Esc] Cancel", "[Esc] キャンセル"));

@@ -40,7 +40,9 @@ public sealed class LoadingStatusTranslationPatchTests
     [Test]
     public void Prefix_TranslatesDescription_WhenPatched()
     {
-        WriteDictionary(("Loading world", "ワールドを読み込み中"));
+        WriteDictionary(
+            ("Loading world", "ワールドを読み込み中"),
+            ("{{Y|Loading world}}", "{{Y|ワールドを読み込み中}}"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -56,6 +58,14 @@ public sealed class LoadingStatusTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(DummyLoadingTarget.LastDescription, Is.EqualTo("ワールドを読み込み中"));
+                Assert.That(DummyLoadingTarget.LastWaitForUiUpdate, Is.True);
+            });
+
+            DummyLoadingTarget.SetLoadingStatus("{{Y|Loading world}}", waitForUiUpdate: true);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyLoadingTarget.LastDescription, Is.EqualTo("{{Y|ワールドを読み込み中}}"));
                 Assert.That(DummyLoadingTarget.LastWaitForUiUpdate, Is.True);
             });
         }
