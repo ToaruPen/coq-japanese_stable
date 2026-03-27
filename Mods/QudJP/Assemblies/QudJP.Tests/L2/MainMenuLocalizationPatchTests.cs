@@ -38,7 +38,7 @@ public sealed class MainMenuLocalizationPatchTests
     }
 
     [Test]
-    public void Postfix_ObservationOnly_LeavesMenuOptionsUnchanged_WhenPatched()
+    public void Postfix_TranslatesMenuOptions_WhenPatched()
     {
         WriteDictionary(
             ("Options", "設定"),
@@ -57,16 +57,8 @@ public sealed class MainMenuLocalizationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyMainMenuTarget.LeftOptions[0].Text, Is.EqualTo("Options"));
-                Assert.That(DummyMainMenuTarget.RightOptions[0].Text, Is.EqualTo("Help"));
-                Assert.That(
-                    SinkObservation.GetHitCountForTests(
-                        nameof(UITextSkinTranslationPatch),
-                        nameof(MainMenuLocalizationPatch),
-                        SinkObservation.ObservationOnlyDetail,
-                        "Options",
-                        "Options"),
-                    Is.GreaterThan(0));
+                Assert.That(DummyMainMenuTarget.LeftOptions[0].Text, Is.EqualTo("設定"));
+                Assert.That(DummyMainMenuTarget.RightOptions[0].Text, Is.EqualTo("ヘルプ"));
             });
         }
         finally
@@ -76,7 +68,7 @@ public sealed class MainMenuLocalizationPatchTests
     }
 
     [Test]
-    public void Postfix_ObservationOnly_LeavesMarkupWrappedTextUnchanged_WhenPatched()
+    public void Postfix_TranslatesMarkupWrappedText_WhenPatched()
     {
         WriteDictionary(("Mods", "モッド"));
 
@@ -95,15 +87,7 @@ public sealed class MainMenuLocalizationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyMainMenuTarget.LeftOptions[1].Text, Is.EqualTo("{{G|Mods}}"));
-                Assert.That(
-                    SinkObservation.GetHitCountForTests(
-                        nameof(UITextSkinTranslationPatch),
-                        nameof(MainMenuLocalizationPatch),
-                        SinkObservation.ObservationOnlyDetail,
-                        "{{G|Mods}}",
-                        "Mods"),
-                    Is.GreaterThan(0));
+                Assert.That(DummyMainMenuTarget.LeftOptions[1].Text, Is.EqualTo("{{G|モッド}}"));
             });
         }
         finally
@@ -113,7 +97,7 @@ public sealed class MainMenuLocalizationPatchTests
     }
 
     [Test]
-    public void Postfix_ObservationOnly_LeavesHotkeyBarDescriptionsUnchanged_WhenUpdateMenuBarsRuns()
+    public void Postfix_TranslatesHotkeyBarDescriptions_WhenUpdateMenuBarsRuns()
     {
         WriteDictionary(
             ("navigate", "移動"),
@@ -134,17 +118,9 @@ public sealed class MainMenuLocalizationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyMainMenuTarget.LastHotkeyChoices[0].Description, Is.EqualTo("navigate"));
-                Assert.That(DummyMainMenuTarget.LastHotkeyChoices[1].Description, Is.EqualTo("select"));
-                Assert.That(DummyMainMenuTarget.LastHotkeyChoices[2].Description, Is.EqualTo("quit"));
-                Assert.That(
-                    SinkObservation.GetHitCountForTests(
-                        nameof(UITextSkinTranslationPatch),
-                        nameof(MainMenuLocalizationPatch),
-                        SinkObservation.ObservationOnlyDetail,
-                        "navigate",
-                        "navigate"),
-                    Is.GreaterThan(0));
+                Assert.That(DummyMainMenuTarget.LastHotkeyChoices[0].Description, Is.EqualTo("移動"));
+                Assert.That(DummyMainMenuTarget.LastHotkeyChoices[1].Description, Is.EqualTo("選択"));
+                Assert.That(DummyMainMenuTarget.LastHotkeyChoices[2].Description, Is.EqualTo("終了"));
             });
         }
         finally

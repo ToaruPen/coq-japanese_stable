@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Collections;
 using System.Reflection;
 using HarmonyLib;
 
@@ -61,16 +62,10 @@ public static class MainMenuLocalizationPatch
             }
 
             var leftOptions = AccessCollectionField(targetType, __instance, "LeftOptions");
-            UITextSkinTranslationPatch.TranslateStringFieldsInCollection(
-                leftOptions,
-                ObservabilityHelpers.ComposeContext(nameof(MainMenuLocalizationPatch), "collection=LeftOptions"),
-                "Text");
+            TranslateCollectionField(leftOptions, "Text", "MainMenu.LeftOptions");
 
             var rightOptions = AccessCollectionField(targetType, __instance, "RightOptions");
-            UITextSkinTranslationPatch.TranslateStringFieldsInCollection(
-                rightOptions,
-                ObservabilityHelpers.ComposeContext(Context, "collection=RightOptions"),
-                "Text");
+            TranslateCollectionField(rightOptions, "Text", "MainMenu.RightOptions");
 
             TranslateHotkeyBarChoices(targetType, __instance);
         }
@@ -116,9 +111,75 @@ public static class MainMenuLocalizationPatch
             return;
         }
 
-        UITextSkinTranslationPatch.TranslateStringFieldsInCollection(
+        TranslateCollectionField(
             AccessTools.Field(hotkeyBar.GetType(), "choices")?.GetValue(hotkeyBar),
-            ObservabilityHelpers.ComposeContext(Context, "collection=HotkeyBarChoices"),
-            "Description");
+            "Description",
+            "MainMenu.HotkeyBar");
+    }
+
+    private static void TranslateCollectionField(object? maybeCollection, string fieldName, string family)
+    {
+        if (maybeCollection is null || string.IsNullOrEmpty(fieldName) || maybeCollection is string)
+        {
+            return;
+        }
+
+        if (maybeCollection is not IEnumerable collection)
+        {
+            return;
+        }
+
+        foreach (var item in collection)
+        {
+            TranslateField(item, fieldName, family);
+        }
+    }
+
+    private static void TranslateField(object? item, string fieldName, string family)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        var field = AccessTools.Field(item.GetType(), fieldName);
+        if (field is null || field.FieldType != typeof(string))
+        {
+            return;
+        }
+
+        var current = field.GetValue(item) as string;
+        if (string.IsNullOrEmpty(current))
+        {
+            return;
+        }
+
+        var translated = TranslateProducerText(current!);
+        if (string.Equals(translated, current, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        DynamicTextObservability.RecordTransform(Context, family, current, translated);
+        field.SetValue(item, translated);
+    }
+
+    private static string TranslateProducerText(string source)
+    {
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            return markedText;
+        }
+
+        var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
+        if (stripped.Length == 0
+            || UITextSkinTranslationPatch.IsAlreadyLocalizedDirectRouteTextForContext(stripped, Context))
+        {
+            return source;
+        }
+
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            static visible => StringHelpers.TranslateExactOrLowerAsciiFallback(visible));
     }
 }
