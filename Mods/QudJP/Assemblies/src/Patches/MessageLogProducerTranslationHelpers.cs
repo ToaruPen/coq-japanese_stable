@@ -23,7 +23,7 @@ internal static class MessageLogProducerTranslationHelpers
             return !string.Equals(source, stripped, StringComparison.Ordinal);
         }
 
-        translated = ColorAwareTranslationComposer.TranslatePreservingColors(source, TranslateVisibleZoneDisplayName);
+        translated = TranslateZoneDisplayNamePreservingColors(source);
         if (string.Equals(translated, source, StringComparison.Ordinal))
         {
             return false;
@@ -33,11 +33,34 @@ internal static class MessageLogProducerTranslationHelpers
         return true;
     }
 
+    private static string TranslateZoneDisplayNamePreservingColors(string source)
+    {
+        var segments = source.Split(new[] { ", " }, StringSplitOptions.None);
+        if (segments.Length == 1)
+        {
+            return ColorAwareTranslationComposer.TranslatePreservingColors(source, TranslateVisibleZoneDisplayName);
+        }
+
+        var translatedSegments = new string[segments.Length];
+        var anyChanged = false;
+        for (var index = 0; index < segments.Length; index++)
+        {
+            var translatedSegment = ColorAwareTranslationComposer.TranslatePreservingColors(segments[index], TranslateVisibleZoneDisplayName);
+            translatedSegments[index] = translatedSegment;
+            if (!string.Equals(translatedSegment, segments[index], StringComparison.Ordinal))
+            {
+                anyChanged = true;
+            }
+        }
+
+        return anyChanged ? string.Join(", ", translatedSegments) : source;
+    }
+
     internal static string PreparePassByMessage(string source, string route)
     {
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var stripped))
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
         {
-            return stripped;
+            return source;
         }
 
         var translated = MessagePatternTranslator.Translate(source, route);
@@ -52,9 +75,9 @@ internal static class MessageLogProducerTranslationHelpers
 
     internal static string PrepareZoneBannerMessage(string source, string route)
     {
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var stripped))
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
         {
-            return stripped;
+            return source;
         }
 
         if (TryTranslateZoneDisplayName(source, route, out var zoneTranslated)

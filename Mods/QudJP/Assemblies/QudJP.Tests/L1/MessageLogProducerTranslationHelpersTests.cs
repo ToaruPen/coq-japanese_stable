@@ -78,6 +78,40 @@ public sealed class MessageLogProducerTranslationHelpersTests
     }
 
     [Test]
+    public void TryTranslateZoneDisplayName_ReturnsFalseForEmptyInput()
+    {
+        var translated = MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+            string.Empty,
+            "ZoneDisplayNameTranslationPatch",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(result, Is.EqualTo(string.Empty));
+        });
+    }
+
+    [Test]
+    public void TryTranslateZoneDisplayName_PreservesColorTags()
+    {
+        WriteExactDictionary(
+            ("Joppa", "ジョッパ"),
+            ("surface", "地表"));
+
+        var translated = MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+            "<color=#ff0>Joppa</color>, <color=#0f0>surface</color>",
+            "ZoneDisplayNameTranslationPatch",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("<color=#ff0>ジョッパ</color>, <color=#0f0>地表</color>"));
+        });
+    }
+
+    [Test]
     public void PreparePassByMessage_MarksTranslatedMessage()
     {
         WritePatternDictionary(("^You pass by (.+?)[.!]?$", "{0}のそばを通り過ぎた。"));
@@ -90,6 +124,30 @@ public sealed class MessageLogProducerTranslationHelpersTests
     }
 
     [Test]
+    public void PreparePassByMessage_PreservesColorTags()
+    {
+        WritePatternDictionary(("^You pass by (.+?)[.!]?$", "{0}のそばを通り過ぎた。"));
+
+        var result = MessageLogProducerTranslationHelpers.PreparePassByMessage(
+            "You pass by <color=#ff0>ウォーターヴァイン</color>.",
+            "PhysicsEnterCellPassByTranslationPatch");
+
+        Assert.That(result, Is.EqualTo("\u0001<color=#ff0>ウォーターヴァイン</color>のそばを通り過ぎた。"));
+    }
+
+    [Test]
+    public void PreparePassByMessage_PreservesDirectTranslationMarker()
+    {
+        const string source = "\u0001You pass by ウォーターヴァイン.";
+
+        var result = MessageLogProducerTranslationHelpers.PreparePassByMessage(
+            source,
+            "PhysicsEnterCellPassByTranslationPatch");
+
+        Assert.That(result, Is.EqualTo(source));
+    }
+
+    [Test]
     public void PrepareZoneBannerMessage_MarksAlreadyLocalizedBanner()
     {
         var result = MessageLogProducerTranslationHelpers.PrepareZoneBannerMessage(
@@ -97,6 +155,42 @@ public sealed class MessageLogProducerTranslationHelpersTests
             "ZoneManagerSetActiveZoneTranslationPatch");
 
         Assert.That(result, Is.EqualTo("\u0001ジョッパ, 地表, 06:00"));
+    }
+
+    [Test]
+    public void PrepareZoneBannerMessage_ReturnsEmptyInputUnchanged()
+    {
+        var result = MessageLogProducerTranslationHelpers.PrepareZoneBannerMessage(
+            string.Empty,
+            "ZoneManagerSetActiveZoneTranslationPatch");
+
+        Assert.That(result, Is.EqualTo(string.Empty));
+    }
+
+    [Test]
+    public void PrepareZoneBannerMessage_PreservesColorTags()
+    {
+        WriteExactDictionary(
+            ("Joppa", "ジョッパ"),
+            ("surface", "地表"));
+
+        var result = MessageLogProducerTranslationHelpers.PrepareZoneBannerMessage(
+            "<color=#ff0>Joppa</color>, <color=#0f0>surface</color>, 06:00",
+            "ZoneManagerSetActiveZoneTranslationPatch");
+
+        Assert.That(result, Is.EqualTo("\u0001<color=#ff0>ジョッパ</color>, <color=#0f0>地表</color>, 06:00"));
+    }
+
+    [Test]
+    public void PrepareZoneBannerMessage_PreservesDirectTranslationMarker()
+    {
+        const string source = "\u0001ジョッパ, 地表, 06:00";
+
+        var result = MessageLogProducerTranslationHelpers.PrepareZoneBannerMessage(
+            source,
+            "ZoneManagerSetActiveZoneTranslationPatch");
+
+        Assert.That(result, Is.EqualTo(source));
     }
 
     private void WriteExactDictionary(params (string key, string text)[] entries)
