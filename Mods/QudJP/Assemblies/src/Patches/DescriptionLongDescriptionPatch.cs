@@ -83,15 +83,6 @@ public static class DescriptionLongDescriptionPatch
 
     internal static string TranslateLongDescription(string source)
     {
-        if (StatusLineTranslationHelpers.TryTranslateCompareStatusLine(
-                source,
-                nameof(DescriptionLongDescriptionPatch),
-                "DescriptionLong.CompareStatus",
-                out var translated))
-        {
-            return translated;
-        }
-
-        return ColorAwareTranslationComposer.TranslatePreservingColors(source);
+        return UITextSkinTranslationPatch.TranslatePreservingColors(source, nameof(DescriptionLongDescriptionPatch));
     }
 }

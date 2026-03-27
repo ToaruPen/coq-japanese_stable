@@ -21,12 +21,14 @@ public sealed class PickGameObjectScreenTranslationPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        SinkObservation.ResetForTests();
     }
 
     [TearDown]
     public void TearDown()
     {
         Translator.ResetForTests();
+        SinkObservation.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -35,7 +37,7 @@ public sealed class PickGameObjectScreenTranslationPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesMenuOptionDescriptions_WhenUpdateViewRuns()
+    public void Postfix_ObservationOnly_LeavesMenuOptionDescriptionsUnchanged_WhenUpdateViewRuns()
     {
         WriteDictionary(
             ("Close Menu", "メニューを閉じる"),
@@ -58,12 +60,20 @@ public sealed class PickGameObjectScreenTranslationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(target.defaultMenuOptions[0].Description, Is.EqualTo("メニューを閉じる"));
-                Assert.That(target.defaultMenuOptions[1].Description, Is.EqualTo("移動"));
-                Assert.That(target.getItemMenuOptions[0].Description, Is.EqualTo("メニューを閉じる"));
-                Assert.That(target.getItemMenuOptions[1].Description, Is.EqualTo("移動"));
-                Assert.That(target.TAKE_ALL.Description, Is.EqualTo("すべて取る"));
-                Assert.That(target.STORE_ITEM.Description, Is.EqualTo("アイテムを収納"));
+                Assert.That(target.defaultMenuOptions[0].Description, Is.EqualTo("Close Menu"));
+                Assert.That(target.defaultMenuOptions[1].Description, Is.EqualTo("navigate"));
+                Assert.That(target.getItemMenuOptions[0].Description, Is.EqualTo("Close Menu"));
+                Assert.That(target.getItemMenuOptions[1].Description, Is.EqualTo("navigate"));
+                Assert.That(target.TAKE_ALL.Description, Is.EqualTo("take all"));
+                Assert.That(target.STORE_ITEM.Description, Is.EqualTo("store an item"));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(PickGameObjectScreenTranslationPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        "Close Menu",
+                        "Close Menu"),
+                    Is.GreaterThan(0));
             });
         }
         finally

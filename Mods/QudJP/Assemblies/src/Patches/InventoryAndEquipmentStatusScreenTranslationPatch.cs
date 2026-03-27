@@ -70,16 +70,11 @@ public static class InventoryAndEquipmentStatusScreenTranslationPatch
             return;
         }
 
-        var sourceForTranslation = current!;
-        var inputCommand = AccessTools.Field(menuOption.GetType(), "InputCommand")?.GetValue(menuOption) as string;
-        if (!string.IsNullOrEmpty(inputCommand))
-        {
-            InventoryAndEquipmentStatusScreenTextTranslator.TryStripEmbeddedHotkeyLabel(sourceForTranslation, out sourceForTranslation);
-        }
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+            current!,
+            nameof(InventoryAndEquipmentStatusScreenTranslationPatch));
 
-        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(sourceForTranslation);
-
-        if (!string.Equals(translated, sourceForTranslation, StringComparison.Ordinal))
+        if (!string.Equals(translated, current, StringComparison.Ordinal))
         {
             descriptionField.SetValue(menuOption, translated);
         }

@@ -21,12 +21,14 @@ public sealed class UITextSkinTranslationPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        SinkObservation.ResetForTests();
     }
 
     [TearDown]
     public void TearDown()
     {
         Translator.ResetForTests();
+        SinkObservation.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -610,7 +612,7 @@ public sealed class UITextSkinTranslationPatchTests
     }
 
     [Test]
-    public void TranslateStringField_TranslatesKnownTextViaColorAwareComposer()
+    public void TranslateStringField_ObservationOnly_LeavesKnownTextUnchanged()
     {
         WriteDictionary(("New Game", "新しいゲーム"));
 
@@ -621,7 +623,16 @@ public sealed class UITextSkinTranslationPatchTests
             nameof(DummyMenuOption.Text),
             "MainMenuLocalizationPatch > collection=LeftOptions");
 
-        Assert.That(option.Text, Is.EqualTo("新しいゲーム"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(option.Text, Is.EqualTo("New Game"));
+            Assert.That(SinkObservation.GetHitCountForTests(
+                nameof(UITextSkinTranslationPatch),
+                "MainMenuLocalizationPatch > collection=LeftOptions",
+                SinkObservation.ObservationOnlyDetail,
+                "New Game",
+                "New Game"), Is.GreaterThan(0));
+        });
     }
 
     [Test]

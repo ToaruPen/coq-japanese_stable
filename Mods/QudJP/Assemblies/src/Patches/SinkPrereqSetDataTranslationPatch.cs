@@ -7,8 +7,8 @@ using HarmonyLib;
 namespace QudJP.Patches;
 
 /// <summary>
-/// Translates UI text fields set by setData(FrameworkDataElement) across 9 framework classes.
-/// Prerequisite for sink cutover (#103) — replaces UITextSkinTranslationPatch coverage for these sites.
+/// Observes UI text fields set by setData(FrameworkDataElement) across 9 framework classes.
+/// Uses shared sink-side observation and marker stripping for these sites.
 /// </summary>
 [HarmonyPatch]
 public static class SinkPrereqSetDataTranslationPatch

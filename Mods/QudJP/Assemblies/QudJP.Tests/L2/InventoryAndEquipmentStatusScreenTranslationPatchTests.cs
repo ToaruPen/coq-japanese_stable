@@ -21,12 +21,14 @@ public sealed class InventoryAndEquipmentStatusScreenTranslationPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        SinkObservation.ResetForTests();
     }
 
     [TearDown]
     public void TearDown()
     {
         Translator.ResetForTests();
+        SinkObservation.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -35,7 +37,7 @@ public sealed class InventoryAndEquipmentStatusScreenTranslationPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesMenuOptionDescriptions_WhenPatched()
+    public void Postfix_ObservationOnly_LeavesMenuOptionDescriptionsUnchanged_WhenPatched()
     {
         WriteDictionary(
             ("Display Options", "表示オプション"),
@@ -61,13 +63,49 @@ public sealed class InventoryAndEquipmentStatusScreenTranslationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(target.CMD_OPTIONS.Description, Is.EqualTo("表示オプション"));
-                Assert.That(target.SET_PRIMARY_LIMB.Description, Is.EqualTo("主肢に設定"));
-                Assert.That(target.SHOW_TOOLTIP.Description, Is.EqualTo("ツールチップ表示"));
-                Assert.That(target.QUICK_DROP.Description, Is.EqualTo("クイック投棄"));
-                Assert.That(target.QUICK_EAT.Description, Is.EqualTo("クイック食事"));
-                Assert.That(target.QUICK_DRINK.Description, Is.EqualTo("クイック飲用"));
-                Assert.That(target.QUICK_APPLY.Description, Is.EqualTo("クイック使用"));
+                Assert.That(target.CMD_OPTIONS.Description, Is.EqualTo("Display Options"));
+                Assert.That(target.SET_PRIMARY_LIMB.Description, Is.EqualTo("Set Primary Limb"));
+                Assert.That(target.SHOW_TOOLTIP.Description, Is.EqualTo("[{{W|Alt}}] Show Tooltip"));
+                Assert.That(target.QUICK_DROP.Description, Is.EqualTo("Quick Drop"));
+                Assert.That(target.QUICK_EAT.Description, Is.EqualTo("Quick Eat"));
+                Assert.That(target.QUICK_DRINK.Description, Is.EqualTo("Quick Drink"));
+                Assert.That(target.QUICK_APPLY.Description, Is.EqualTo("Quick Apply"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_ObservationOnly_LogsUnclaimedMenuOptionDescriptions_WhenPatched()
+    {
+        var target = new DummyInventoryAndEquipmentStatusScreen();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyInventoryAndEquipmentStatusScreen), nameof(DummyInventoryAndEquipmentStatusScreen.UpdateViewFromData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(InventoryAndEquipmentStatusScreenTranslationPatch), nameof(InventoryAndEquipmentStatusScreenTranslationPatch.Postfix))));
+
+            target.UpdateViewFromData();
+
+            const string source = "Display Options";
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.CMD_OPTIONS.Description, Is.EqualTo(source));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(InventoryAndEquipmentStatusScreenTranslationPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        source),
+                    Is.GreaterThan(0));
             });
         }
         finally

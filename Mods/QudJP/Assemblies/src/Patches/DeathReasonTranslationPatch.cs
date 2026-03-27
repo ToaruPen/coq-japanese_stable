@@ -6,8 +6,8 @@ using HarmonyLib;
 namespace QudJP.Patches;
 
 /// <summary>
-/// Translates Reason and ThirdPersonReason parameters passed to GameObject.Die().
-/// Covers P6 death reason fragments: AbsorbablePsyche, LootOnStep, Physics, TrembleEarthquakes.
+/// Observes Reason and ThirdPersonReason parameters passed to GameObject.Die().
+/// Producer-owned translations may arrive pre-marked; sink-side handling only strips markers and logs unclaimed text.
 /// </summary>
 [HarmonyPatch]
 public static class DeathReasonTranslationPatch
@@ -67,17 +67,6 @@ public static class DeathReasonTranslationPatch
 
     internal static string TranslateDeathReason(string reason)
     {
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(reason, out var stripped))
-        {
-            return stripped;
-        }
-
-        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(reason);
-        if (!string.Equals(translated, reason, StringComparison.Ordinal))
-        {
-            return MessageFrameTranslator.MarkDirectTranslation(translated);
-        }
-
-        return reason;
+        return UITextSkinTranslationPatch.TranslatePreservingColors(reason, Context);
     }
 }

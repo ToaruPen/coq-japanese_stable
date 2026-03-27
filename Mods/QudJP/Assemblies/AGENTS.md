@@ -19,6 +19,14 @@ dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCa
 dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L2G
 ```
 
+## Source of truth
+
+- Patch behavior is defined by tests in `QudJP.Tests/`.
+- Layer boundaries live in `docs/test-architecture.md`.
+- Runtime-only conclusions should be backed by fresh game logs.
+
+If a design note conflicts with tests or runtime evidence, follow tests first.
+
 ## Test Layers
 
 | Layer | Scope | Dependencies |
@@ -30,23 +38,13 @@ dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCa
 
 ## Translation Workflow Gate
 
-Before adding any translation, check `docs/contract-inventory.json`:
+Before adding any translation:
 
-1. **Leaf/MarkupLeaf** → dictionary entry is appropriate
-2. **Template/Builder/MessageFrame** → implement translation logic (patch or template route)
-3. **Route not registered** → investigate upstream producer first. Do NOT add a dictionary entry.
+1. Check the relevant L1/L2/L2G coverage in `QudJP.Tests/`
+2. Confirm the route is truly stable with current runtime evidence
+3. Investigate the upstream producer first if route ownership is unclear
 
-This gate exists because exact-key dictionary entries for dynamically composed text create maintenance debt.
-
-## Patch Architecture (Producer-First)
-
-See `docs/producer-first-design.md` for the full architecture.
-
-- **ContractRegistry**: design-time source of truth for route → contract type mappings.
-- **ClaimRegistry**: runtime `ConditionalWeakTable<string, ClaimInfo>` tracking translated strings.
-- **Category 1** (field-write patches): use `ClaimRegistry.Claim()` after rendering.
-- **Category 2** (`__result` rewrite patches): Scope Exempt — no claim needed.
-- **Category 3** (Leaf entries): sink-executed contract via `ContractRegistry` lookup.
+Prefer minimal, test-backed changes. Many sink and near-sink routes are intentionally observation-only; do not reintroduce sink-side dictionary translation unless tests explicitly require it.
 
 ## Game Source Reference
 

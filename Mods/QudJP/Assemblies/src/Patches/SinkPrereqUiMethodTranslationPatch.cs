@@ -7,8 +7,8 @@ using HarmonyLib;
 namespace QudJP.Patches;
 
 /// <summary>
-/// Translates UI text fields set by non-setData methods (Update, BeforeShow, HandleHighlight, etc.)
-/// across 9 classes. Prerequisite for sink cutover (#103).
+/// Observes UI text fields set by non-setData methods (Update, BeforeShow, HandleHighlight, etc.)
+/// across 9 classes using sink-side marker stripping and unclaimed logging.
 /// </summary>
 [HarmonyPatch]
 public static class SinkPrereqUiMethodTranslationPatch

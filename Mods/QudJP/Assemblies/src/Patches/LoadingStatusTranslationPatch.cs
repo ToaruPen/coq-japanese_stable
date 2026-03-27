@@ -38,18 +38,7 @@ public static class LoadingStatusTranslationPatch
                 return;
             }
 
-            if (MessageFrameTranslator.TryStripDirectTranslationMarker(description, out var markedText))
-            {
-                description = markedText;
-                return;
-            }
-
-            var translated = ColorAwareTranslationComposer.TranslatePreservingColors(description);
-            if (!string.Equals(translated, description, StringComparison.Ordinal))
-            {
-                DynamicTextObservability.RecordTransform(Context, "LoadingStatus.Description", description, translated);
-                description = MessageFrameTranslator.MarkDirectTranslation(translated);
-            }
+            description = UITextSkinTranslationPatch.TranslatePreservingColors(description, Context);
         }
         catch (Exception ex)
         {

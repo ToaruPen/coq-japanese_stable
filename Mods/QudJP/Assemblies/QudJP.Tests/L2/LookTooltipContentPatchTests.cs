@@ -25,12 +25,14 @@ public sealed class LookTooltipContentPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        SinkObservation.ResetForTests();
     }
 
     [TearDown]
     public void TearDown()
     {
         Translator.ResetForTests();
+        SinkObservation.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -39,7 +41,7 @@ public sealed class LookTooltipContentPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesKnownTooltip_WhenPatched()
+    public void Postfix_ObservationOnly_LeavesKnownTooltipUnchanged_WhenPatched()
     {
         WriteDictionary(("This relic hums softly.", "この遺物はかすかに唸っている。"));
 
@@ -47,7 +49,30 @@ public sealed class LookTooltipContentPatchTests
         {
             var result = DummyLookTooltipTarget.GenerateTooltipContent("This relic hums softly.");
 
-            Assert.That(result, Is.EqualTo("この遺物はかすかに唸っている。"));
+            Assert.That(result, Is.EqualTo("This relic hums softly."));
+        });
+    }
+
+    [Test]
+    public void Postfix_ObservationOnly_LogsUnclaimedTooltip_WhenPatched()
+    {
+        RunWithTooltipPatch(() =>
+        {
+            const string source = "This relic hums softly.";
+            var result = DummyLookTooltipTarget.GenerateTooltipContent(source);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo(source));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(LookTooltipContentPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        source),
+                    Is.GreaterThan(0));
+            });
         });
     }
 
@@ -60,7 +85,7 @@ public sealed class LookTooltipContentPatchTests
         {
             var result = DummyLookTooltipTarget.GenerateTooltipContent("{{Y|Ancient ruin}}");
 
-            Assert.That(result, Is.EqualTo("{{Y|古代の廃墟}}"));
+            Assert.That(result, Is.EqualTo("{{Y|Ancient ruin}}"));
         });
     }
 
@@ -78,7 +103,7 @@ public sealed class LookTooltipContentPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesStatAbbreviations_WhenPatched()
+    public void Postfix_ObservationOnly_LeavesStatAbbreviationsUnchanged_WhenPatched()
     {
         WriteDictionary(("STR", "筋力"), ("+1 STR", "+1 筋力"));
 
@@ -89,14 +114,14 @@ public sealed class LookTooltipContentPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(abbreviation, Is.EqualTo("筋力"));
-                Assert.That(signed, Is.EqualTo("+1 筋力"));
+                Assert.That(abbreviation, Is.EqualTo("STR"));
+                Assert.That(signed, Is.EqualTo("+1 STR"));
             });
         });
     }
 
     [Test]
-    public void Postfix_TranslatesCompareStatusLines_WhenPatched()
+    public void Postfix_ObservationOnly_LeavesCompareStatusLinesUnchanged_WhenPatched()
     {
         WriteDictionary(
             ("Strength", "筋力"),
@@ -114,9 +139,9 @@ public sealed class LookTooltipContentPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(cap, Is.EqualTo("筋力ボーナス上限: なし"));
-                Assert.That(egoCap, Is.EqualTo("Ego ボーナス上限: 2"));
-                Assert.That(weaponClass, Is.EqualTo("武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
+                Assert.That(cap, Is.EqualTo("Strength Bonus Cap: no limit"));
+                Assert.That(egoCap, Is.EqualTo("Ego Bonus Cap: 2"));
+                Assert.That(weaponClass, Is.EqualTo("Weapon Class: Long Blades (increased penetration on critical hit)"));
             });
         });
     }

@@ -9,20 +9,20 @@ namespace QudJP.Tests.L2;
 [TestFixture]
 [Category("L2")]
 [NonParallelizable]
-public sealed class LoadingStatusTranslationPatchTests
+public sealed class PopupShowTranslationPatchTests
 {
     private string tempDirectory = null!;
 
     [SetUp]
     public void SetUp()
     {
-        tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-loading-status-l2", Guid.NewGuid().ToString("N"));
+        tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-popup-show-l2", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDirectory);
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
         SinkObservation.ResetForTests();
-        DummyLoadingTarget.Reset();
+        DummyPopupShow.Reset();
     }
 
     [TearDown]
@@ -38,9 +38,9 @@ public sealed class LoadingStatusTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_ObservationOnly_LeavesDescriptionUnchanged_WhenPatched()
+    public void Prefix_ObservationOnly_LeavesPopupShowMessageUnchanged()
     {
-        WriteDictionary(("Loading world", "ワールドを読み込み中"));
+        WriteDictionary(("Delete save game?", "セーブデータを削除しますか？"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -48,16 +48,12 @@ public sealed class LoadingStatusTranslationPatchTests
         try
         {
             harmony.Patch(
-                original: RequireMethod(typeof(DummyLoadingTarget), nameof(DummyLoadingTarget.SetLoadingStatus)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(LoadingStatusTranslationPatch), nameof(LoadingStatusTranslationPatch.Prefix))));
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
 
-            DummyLoadingTarget.SetLoadingStatus("Loading world", waitForUiUpdate: true);
+            DummyPopupShow.Show("Delete save game?");
 
-            Assert.Multiple(() =>
-            {
-                Assert.That(DummyLoadingTarget.LastDescription, Is.EqualTo("Loading world"));
-                Assert.That(DummyLoadingTarget.LastWaitForUiUpdate, Is.True);
-            });
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("Delete save game?"));
         }
         finally
         {
@@ -66,53 +62,53 @@ public sealed class LoadingStatusTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_StripsDirectTranslationMarker_WhenAlreadyTranslated()
+    public void Prefix_ObservationOnly_LogsUnclaimedPopupShowMessage()
     {
+        WriteDictionary(("Delete save game?", "セーブデータを削除しますか？"));
+
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
 
         try
         {
             harmony.Patch(
-                original: RequireMethod(typeof(DummyLoadingTarget), nameof(DummyLoadingTarget.SetLoadingStatus)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(LoadingStatusTranslationPatch), nameof(LoadingStatusTranslationPatch.Prefix))));
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
 
-            DummyLoadingTarget.SetLoadingStatus("\u0001既に翻訳済み", true);
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(DummyLoadingTarget.LastDescription, Is.EqualTo("既に翻訳済み"));
-                Assert.That(DummyLoadingTarget.LastWaitForUiUpdate, Is.True);
-            });
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
-    }
-
-    [Test]
-    public void Prefix_ObservationOnly_LogsUnclaimedDescription_WhenPatched()
-    {
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
-        {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyLoadingTarget), nameof(DummyLoadingTarget.SetLoadingStatus)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(LoadingStatusTranslationPatch), nameof(LoadingStatusTranslationPatch.Prefix))));
-
-            const string source = "Loading world";
-            DummyLoadingTarget.SetLoadingStatus(source, waitForUiUpdate: true);
+            const string source = "Delete save game?";
+            DummyPopupShow.Show(source);
 
             var hitCount = SinkObservation.GetHitCountForTests(
-                nameof(UITextSkinTranslationPatch),
-                nameof(LoadingStatusTranslationPatch),
+                nameof(PopupTranslationPatch),
+                nameof(PopupShowTranslationPatch),
                 SinkObservation.ObservationOnlyDetail,
                 source,
                 source);
             Assert.That(hitCount, Is.GreaterThan(0));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_DirectMarker_StillStripped()
+    {
+        WriteDictionary(("既に翻訳済み", "別訳"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+
+            DummyPopupShow.Show("\u0001既に翻訳済み");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("既に翻訳済み"));
         }
         finally
         {
@@ -154,10 +150,8 @@ public sealed class LoadingStatusTranslationPatchTests
         builder.Append("]}");
         builder.AppendLine();
 
-        File.WriteAllText(
-            Path.Combine(tempDirectory, "loading-status.ja.json"),
-            builder.ToString(),
-            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        var path = Path.Combine(tempDirectory, "popup-show.ja.json");
+        File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 
     private static string EscapeJson(string value)

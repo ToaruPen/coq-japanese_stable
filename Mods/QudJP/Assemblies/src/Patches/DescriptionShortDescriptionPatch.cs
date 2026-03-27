@@ -36,11 +36,10 @@ public static class DescriptionShortDescriptionPatch
                 return;
             }
 
-            if (!WorldModsTextTranslator.TryTranslate(
-                    __result,
-                    nameof(DescriptionShortDescriptionPatch),
-                    "Description.ShortDescription",
-                    out var translated))
+            var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+                __result,
+                nameof(DescriptionShortDescriptionPatch));
+            if (string.Equals(translated, __result, StringComparison.Ordinal))
             {
                 return;
             }

@@ -7,8 +7,8 @@ using HarmonyLib;
 namespace QudJP.Patches;
 
 /// <summary>
-/// Translates Message parameter in Popup.Show and Popup.ShowYesNo.
-/// Covers P7 inline popup Does() consumers from TradeUI.
+/// Observes Message parameter in Popup.Show and Popup.ShowYesNo.
+/// Producer-owned translations may arrive pre-marked; sink-side patch only strips the marker.
 /// </summary>
 [HarmonyPatch]
 public static class PopupShowTranslationPatch
@@ -91,18 +91,7 @@ public static class PopupShowTranslationPatch
                 return;
             }
 
-            if (MessageFrameTranslator.TryStripDirectTranslationMarker(message, out _))
-            {
-                return;
-            }
-
-            var translated = ColorAwareTranslationComposer.TranslatePreservingColors(message);
-            if (!string.Equals(translated, message, StringComparison.Ordinal))
-            {
-                DynamicTextObservability.RecordTransform(
-                    Context, "PopupShow.Message", message, translated);
-                __args[0] = MessageFrameTranslator.MarkDirectTranslation(translated);
-            }
+            __args[0] = PopupTranslationPatch.TranslatePopupTextForRoute(message, Context);
         }
         catch (Exception ex)
         {

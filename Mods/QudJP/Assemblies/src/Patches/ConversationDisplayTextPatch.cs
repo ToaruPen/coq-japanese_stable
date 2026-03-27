@@ -60,7 +60,7 @@ public static class ConversationDisplayTextPatch
             }
 
             __result = NormalizeConversationDisplayText(__result);
-            __result = ColorAwareTranslationComposer.TranslatePreservingColors(__result);
+            __result = UITextSkinTranslationPatch.TranslatePreservingColors(__result, nameof(ConversationDisplayTextPatch));
         }
         catch (Exception ex)
         {

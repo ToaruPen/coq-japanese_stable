@@ -21,12 +21,14 @@ public sealed class ConversationDisplayTextPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        SinkObservation.ResetForTests();
     }
 
     [TearDown]
     public void TearDown()
     {
         Translator.ResetForTests();
+        SinkObservation.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -35,7 +37,7 @@ public sealed class ConversationDisplayTextPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesKnownDisplayText_WhenPatched()
+    public void Postfix_ObservationOnly_LeavesKnownDisplayTextUnchanged_WhenPatched()
     {
         WriteDictionary(("Hello, traveler.", "旅人さん、こんにちは。"));
 
@@ -51,7 +53,42 @@ public sealed class ConversationDisplayTextPatchTests
             var element = new DummyConversationElement("Hello, traveler.");
             var result = element.GetDisplayText(withColor: false);
 
-            Assert.That(result, Is.EqualTo("旅人さん、こんにちは。"));
+            Assert.That(result, Is.EqualTo("Hello, traveler."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_ObservationOnly_LogsUnclaimedDisplayText_WhenPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyConversationElement), nameof(DummyConversationElement.GetDisplayText)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(ConversationDisplayTextPatch), nameof(ConversationDisplayTextPatch.Postfix))));
+
+            const string source = "Hello, traveler.";
+            var element = new DummyConversationElement(source);
+            var result = element.GetDisplayText(withColor: false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo(source));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(ConversationDisplayTextPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        source),
+                    Is.GreaterThan(0));
+            });
         }
         finally
         {
@@ -101,7 +138,7 @@ public sealed class ConversationDisplayTextPatchTests
             var element = new DummyConversationElement("Farewell");
             var result = element.GetDisplayText(withColor: true);
 
-            Assert.That(result, Is.EqualTo("{{W|さらば}}"));
+            Assert.That(result, Is.EqualTo("{{W|Farewell}}"));
         }
         finally
         {

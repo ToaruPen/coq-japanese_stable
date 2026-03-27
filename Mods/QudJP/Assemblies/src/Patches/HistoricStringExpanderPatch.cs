@@ -20,7 +20,15 @@ public static class HistoricStringExpanderPatch
     {
         try
         {
-            __result = ColorAwareTranslationComposer.TranslatePreservingColors(__result);
+            var source = __result;
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(__result, out var markedText))
+            {
+                source = markedText;
+            }
+
+            __result = UITextSkinTranslationPatch.TranslatePreservingColors(
+                source,
+                nameof(HistoricStringExpanderPatch));
         }
         catch (Exception ex)
         {

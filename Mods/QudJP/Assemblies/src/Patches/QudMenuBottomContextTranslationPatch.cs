@@ -88,7 +88,9 @@ public static class QudMenuBottomContextTranslationPatch
                 continue;
             }
 
-            var translated = ColorAwareTranslationComposer.TranslatePreservingColors(current);
+            var translated = PopupTranslationPatch.TranslatePopupMenuItemTextForRoute(
+                current!,
+                nameof(QudMenuBottomContextTranslationPatch));
 
             if (string.Equals(translated, current, StringComparison.Ordinal))
             {

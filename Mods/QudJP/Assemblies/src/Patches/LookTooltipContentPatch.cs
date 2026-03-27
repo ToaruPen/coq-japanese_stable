@@ -68,16 +68,7 @@ public static class LookTooltipContentPatch
 
     internal static string TranslateTooltipContent(string source)
     {
-        if (StatusLineTranslationHelpers.TryTranslateCompareStatusLine(
-                source,
-                nameof(LookTooltipContentPatch),
-                "Tooltip.CompareStatus",
-                out var translated))
-        {
-            return translated;
-        }
-
-        return ColorAwareTranslationComposer.TranslatePreservingColors(source);
+        return UITextSkinTranslationPatch.TranslatePreservingColors(source, nameof(LookTooltipContentPatch));
     }
 
     private static string BuildTooltipContentProbe(string content)

@@ -25,12 +25,14 @@ public sealed class DescriptionLongDescriptionPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        SinkObservation.ResetForTests();
     }
 
     [TearDown]
     public void TearDown()
     {
         Translator.ResetForTests();
+        SinkObservation.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -39,7 +41,7 @@ public sealed class DescriptionLongDescriptionPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesAppendedDescription_WhenPatched()
+    public void Postfix_ObservationOnly_LeavesAppendedDescriptionUnchanged_WhenPatched()
     {
         WriteDictionary(("It crackles with static.", "それは静電気を散らしている。"));
 
@@ -49,7 +51,32 @@ public sealed class DescriptionLongDescriptionPatchTests
             var builder = new StringBuilder();
             target.GetLongDescription(builder);
 
-            Assert.That(builder.ToString(), Is.EqualTo("それは静電気を散らしている。"));
+            Assert.That(builder.ToString(), Is.EqualTo("It crackles with static."));
+        });
+    }
+
+    [Test]
+    public void Postfix_ObservationOnly_LogsUnclaimedAppendedDescription_WhenPatched()
+    {
+        RunWithDescriptionPatch(() =>
+        {
+            const string source = "It crackles with static.";
+            var target = new DummyDescriptionTarget(source);
+            var builder = new StringBuilder();
+            target.GetLongDescription(builder);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(builder.ToString(), Is.EqualTo(source));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(DescriptionLongDescriptionPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        source),
+                    Is.GreaterThan(0));
+            });
         });
     }
 
@@ -64,7 +91,7 @@ public sealed class DescriptionLongDescriptionPatchTests
             var builder = new StringBuilder("prefix: ");
             target.GetLongDescription(builder);
 
-            Assert.That(builder.ToString(), Is.EqualTo("prefix: それは静電気を散らしている。"));
+            Assert.That(builder.ToString(), Is.EqualTo("prefix: It crackles with static."));
         });
     }
 
@@ -79,7 +106,7 @@ public sealed class DescriptionLongDescriptionPatchTests
             var builder = new StringBuilder();
             target.GetLongDescription(builder);
 
-            Assert.That(builder.ToString(), Is.EqualTo("{{C|帯電したアイテム}}"));
+            Assert.That(builder.ToString(), Is.EqualTo("{{C|Charged item}}"));
         });
     }
 
@@ -99,7 +126,7 @@ public sealed class DescriptionLongDescriptionPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesStatAbbreviations_WhenPatched()
+    public void Postfix_ObservationOnly_LeavesStatAbbreviationsUnchanged_WhenPatched()
     {
         WriteDictionary(("STR", "筋力"), ("+1 STR", "+1 筋力"));
 
@@ -115,14 +142,14 @@ public sealed class DescriptionLongDescriptionPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(abbreviationBuilder.ToString(), Is.EqualTo("筋力"));
-                Assert.That(signedBuilder.ToString(), Is.EqualTo("+1 筋力"));
+                Assert.That(abbreviationBuilder.ToString(), Is.EqualTo("STR"));
+                Assert.That(signedBuilder.ToString(), Is.EqualTo("+1 STR"));
             });
         });
     }
 
     [Test]
-    public void Postfix_TranslatesCompareStatusLines_WhenPatched()
+    public void Postfix_ObservationOnly_LeavesCompareStatusLinesUnchanged_WhenPatched()
     {
         WriteDictionary(
             ("Strength", "筋力"),
@@ -148,9 +175,9 @@ public sealed class DescriptionLongDescriptionPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(capBuilder.ToString(), Is.EqualTo("筋力ボーナス上限: なし"));
-                Assert.That(egoCapBuilder.ToString(), Is.EqualTo("Ego ボーナス上限: 2"));
-                Assert.That(weaponClassBuilder.ToString(), Is.EqualTo("武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
+                Assert.That(capBuilder.ToString(), Is.EqualTo("Strength Bonus Cap: no limit"));
+                Assert.That(egoCapBuilder.ToString(), Is.EqualTo("Ego Bonus Cap: 2"));
+                Assert.That(weaponClassBuilder.ToString(), Is.EqualTo("Weapon Class: Long Blades (increased penetration on critical hit)"));
             });
         });
     }

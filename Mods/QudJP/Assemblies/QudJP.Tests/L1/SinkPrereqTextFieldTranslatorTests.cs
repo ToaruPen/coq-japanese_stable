@@ -17,6 +17,7 @@ public sealed class SinkPrereqTextFieldTranslatorTests
         Directory.CreateDirectory(tempDir);
         SinkPrereqTextFieldTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
+        SinkObservation.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDir);
     }
 
@@ -25,6 +26,7 @@ public sealed class SinkPrereqTextFieldTranslatorTests
     {
         Translator.ResetForTests();
         SinkPrereqTextFieldTranslator.ResetForTests();
+        SinkObservation.ResetForTests();
         if (Directory.Exists(tempDir))
         {
             Directory.Delete(tempDir, recursive: true);
@@ -32,7 +34,7 @@ public sealed class SinkPrereqTextFieldTranslatorTests
     }
 
     [Test]
-    public void TranslateField_TranslatesTextSkinField()
+    public void TranslateField_ObservationOnly_LeavesTextSkinFieldUnchanged()
     {
         WriteDictionary(("Keybinds", "キーバインド"));
         Translator.SetDictionaryDirectoryForTests(tempDir);
@@ -42,7 +44,39 @@ public sealed class SinkPrereqTextFieldTranslatorTests
 
         SinkPrereqTextFieldTranslator.TranslateField(target, "text", "Test");
 
-        Assert.That(target.text.text, Is.EqualTo("キーバインド"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(target.text.text, Is.EqualTo("Keybinds"));
+            Assert.That(SinkObservation.GetHitCountForTests(
+                nameof(UITextSkinTranslationPatch),
+                "Test",
+                SinkObservation.ObservationOnlyDetail,
+                "Keybinds",
+                "Keybinds"), Is.GreaterThan(0));
+        });
+    }
+
+    [Test]
+    public void TranslateField_ObservationOnly_LeavesPropertyBackedTextSkinUnchanged()
+    {
+        WriteDictionary(("Keybinds", "キーバインド"));
+        Translator.SetDictionaryDirectoryForTests(tempDir);
+
+        var target = new DummyPropertyBackedLeftSideCategory();
+        target.text.SetText("Keybinds");
+
+        SinkPrereqTextFieldTranslator.TranslateField(target, "text", "Test");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(target.text.text, Is.EqualTo("Keybinds"));
+            Assert.That(SinkObservation.GetHitCountForTests(
+                nameof(UITextSkinTranslationPatch),
+                "Test",
+                SinkObservation.ObservationOnlyDetail,
+                "Keybinds",
+                "Keybinds"), Is.GreaterThan(0));
+        });
     }
 
     [Test]
@@ -85,7 +119,7 @@ public sealed class SinkPrereqTextFieldTranslatorTests
     }
 
     [Test]
-    public void TranslateTextSkin_TranslatesDirectly()
+    public void TranslateTextSkin_ObservationOnly_LeavesTextUnchanged()
     {
         WriteDictionary(("Options", "設定"));
         Translator.SetDictionaryDirectoryForTests(tempDir);
@@ -95,7 +129,16 @@ public sealed class SinkPrereqTextFieldTranslatorTests
 
         SinkPrereqTextFieldTranslator.TranslateTextSkin(skin, "Test");
 
-        Assert.That(skin.text, Is.EqualTo("設定"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(skin.text, Is.EqualTo("Options"));
+            Assert.That(SinkObservation.GetHitCountForTests(
+                nameof(UITextSkinTranslationPatch),
+                "Test",
+                SinkObservation.ObservationOnlyDetail,
+                "Options",
+                "Options"), Is.GreaterThan(0));
+        });
     }
 
     [Test]
@@ -106,7 +149,7 @@ public sealed class SinkPrereqTextFieldTranslatorTests
     }
 
     [Test]
-    public void TranslateChainedField_TranslatesNestedField()
+    public void TranslateChainedField_ObservationOnly_LeavesNestedFieldUnchanged()
     {
         WriteDictionary(("Build Mode", "ビルドモード"));
         Translator.SetDictionaryDirectoryForTests(tempDir);
@@ -117,7 +160,16 @@ public sealed class SinkPrereqTextFieldTranslatorTests
         SinkPrereqTextFieldTranslator.TranslateChainedField(
             parent, "child", "text", "Test");
 
-        Assert.That(parent.child.text.text, Is.EqualTo("ビルドモード"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(parent.child.text.text, Is.EqualTo("Build Mode"));
+            Assert.That(SinkObservation.GetHitCountForTests(
+                nameof(UITextSkinTranslationPatch),
+                "Test",
+                SinkObservation.ObservationOnlyDetail,
+                "Build Mode",
+                "Build Mode"), Is.GreaterThan(0));
+        });
     }
 
     [Test]
@@ -150,6 +202,8 @@ public sealed class SinkPrereqTextFieldTranslatorTests
             "Text prefixed with \\x01 DirectTranslationMarker must not be dictionary-translated.");
         Assert.That(skin.text, Does.Not.Contain("設定"),
             "Marker-prefixed text must bypass translation entirely.");
+        Assert.That(skin.text, Is.EqualTo("Options"),
+            "Text prefixed with \\x01 DirectTranslationMarker should be returned without the marker.");
     }
 
     [Test]
@@ -165,6 +219,8 @@ public sealed class SinkPrereqTextFieldTranslatorTests
 
         Assert.That(target.text.text, Does.Not.Contain("キーバインド"),
             "Field text prefixed with \\x01 DirectTranslationMarker must not be dictionary-translated.");
+        Assert.That(target.text.text, Is.EqualTo("Keybinds"),
+            "Field text prefixed with \\x01 DirectTranslationMarker should be returned without the marker.");
     }
 
     [Test]
@@ -174,13 +230,15 @@ public sealed class SinkPrereqTextFieldTranslatorTests
         Translator.SetDictionaryDirectoryForTests(tempDir);
 
         var parent = new DummyParentWithChild();
-        parent.child.text.SetText("\x01Build Mode");
+        parent.child.text.SetText("\u0001Build Mode");
 
         SinkPrereqTextFieldTranslator.TranslateChainedField(
             parent, "child", "text", "Test");
 
         Assert.That(parent.child.text.text, Does.Not.Contain("ビルドモード"),
             "Chained field text prefixed with \\x01 DirectTranslationMarker must not be dictionary-translated.");
+        Assert.That(parent.child.text.text, Is.EqualTo("Build Mode"),
+            "Chained field text prefixed with \\x01 DirectTranslationMarker should be returned without the marker.");
     }
 
     private void WriteDictionary(params (string Key, string Text)[] entries)
@@ -210,5 +268,10 @@ public sealed class SinkPrereqTextFieldTranslatorTests
 #pragma warning disable CS0649
         public DummyLeftSideCategory? child;
 #pragma warning restore CS0649
+    }
+
+    internal sealed class DummyPropertyBackedLeftSideCategory
+    {
+        public DummyUITextSkinField text { get; } = new DummyUITextSkinField();
     }
 }

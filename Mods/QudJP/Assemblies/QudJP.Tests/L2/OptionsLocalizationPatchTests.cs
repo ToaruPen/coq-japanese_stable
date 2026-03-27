@@ -21,6 +21,7 @@ public sealed class OptionsLocalizationPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        SinkObservation.ResetForTests();
         DummyOptionsTarget.ResetDefaults();
     }
 
@@ -28,6 +29,7 @@ public sealed class OptionsLocalizationPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        SinkObservation.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -36,7 +38,7 @@ public sealed class OptionsLocalizationPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesOptionRows_WhenPatched()
+    public void Postfix_ObservationOnly_LeavesOptionRowsUnchanged_WhenPatched()
     {
         WriteDictionary(
             ("Main volume", "主音量"),
@@ -59,10 +61,18 @@ public sealed class OptionsLocalizationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(target.menuItems[0].Title, Is.EqualTo("{{W|主音量}}"));
-                Assert.That(target.menuItems[0].HelpText, Is.EqualTo("スライダーを調整"));
-                Assert.That(target.filteredMenuItems[0].Title, Is.EqualTo("主音量"));
-                Assert.That(target.filteredMenuItems[0].HelpText, Is.EqualTo("{{R|スライダーを調整}}"));
+                Assert.That(target.menuItems[0].Title, Is.EqualTo("{{W|Main volume}}"));
+                Assert.That(target.menuItems[0].HelpText, Is.EqualTo("Adjust slider"));
+                Assert.That(target.filteredMenuItems[0].Title, Is.EqualTo("Main volume"));
+                Assert.That(target.filteredMenuItems[0].HelpText, Is.EqualTo("{{R|Adjust slider}}"));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(OptionsLocalizationPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        "{{W|Main volume}}",
+                        "Main volume"),
+                    Is.GreaterThan(0));
             });
         }
         finally
@@ -72,7 +82,7 @@ public sealed class OptionsLocalizationPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesDefaultMenuDescriptions_WhenPatched()
+    public void Postfix_ObservationOnly_LeavesDefaultMenuDescriptionsUnchanged_WhenPatched()
     {
         WriteDictionary(
             ("Collapse All", "すべてたたむ"),
@@ -91,8 +101,16 @@ public sealed class OptionsLocalizationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyOptionsTarget.defaultMenuOptions[0].Description, Is.EqualTo("すべてたたむ"));
-                Assert.That(DummyOptionsTarget.defaultMenuOptions[1].Description, Is.EqualTo("ヘルプ"));
+                Assert.That(DummyOptionsTarget.defaultMenuOptions[0].Description, Is.EqualTo("Collapse All"));
+                Assert.That(DummyOptionsTarget.defaultMenuOptions[1].Description, Is.EqualTo("Help"));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(OptionsLocalizationPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        "Collapse All",
+                        "Collapse All"),
+                    Is.GreaterThan(0));
             });
         }
         finally

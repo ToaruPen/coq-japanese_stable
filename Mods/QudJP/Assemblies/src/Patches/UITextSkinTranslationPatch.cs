@@ -168,7 +168,12 @@ public static class UITextSkinTranslationPatch
         }
 
         var current = field.GetValue(instance) as string;
-        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(current);
+        if (current is null)
+        {
+            return;
+        }
+
+        var translated = TranslatePreservingColors(current, context ?? nameof(UITextSkinTranslationPatch));
         if (!string.Equals(current, translated, StringComparison.Ordinal))
         {
             field.SetValue(instance, translated);

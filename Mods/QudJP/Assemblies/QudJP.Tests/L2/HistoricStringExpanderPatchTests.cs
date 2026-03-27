@@ -21,12 +21,14 @@ public sealed class HistoricStringExpanderPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        SinkObservation.ResetForTests();
     }
 
     [TearDown]
     public void TearDown()
     {
         Translator.ResetForTests();
+        SinkObservation.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -35,7 +37,7 @@ public sealed class HistoricStringExpanderPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesKnownExpandedText_WhenPatched()
+    public void Postfix_ObservationOnly_LeavesKnownExpandedTextUnchanged_WhenPatched()
     {
         WriteDictionary(("In the beginning, Resheph created Qud", "はじめに、レシェフがクッドを創造した"));
 
@@ -48,9 +50,21 @@ public sealed class HistoricStringExpanderPatchTests
                 original: RequireMethod(typeof(DummyHistoricStringExpander), nameof(DummyHistoricStringExpander.ExpandString)),
                 postfix: new HarmonyMethod(RequireMethod(typeof(HistoricStringExpanderPatch), nameof(HistoricStringExpanderPatch.Postfix))));
 
-            var result = DummyHistoricStringExpander.ExpandString("In the beginning, Resheph created Qud");
+            const string source = "In the beginning, Resheph created Qud";
+            var result = DummyHistoricStringExpander.ExpandString(source);
 
-            Assert.That(result, Is.EqualTo("はじめに、レシェフがクッドを創造した"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo(source));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(HistoricStringExpanderPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        source),
+                    Is.GreaterThan(0));
+            });
         }
         finally
         {
@@ -83,7 +97,7 @@ public sealed class HistoricStringExpanderPatchTests
     }
 
     [Test]
-    public void Postfix_PreservesColorCodes_WhenPatched()
+    public void Postfix_ObservationOnly_PreservesColorCodes_WhenPatched()
     {
         WriteDictionary(("Sultan was crowned", "スルタンが戴冠した"));
 
@@ -96,9 +110,65 @@ public sealed class HistoricStringExpanderPatchTests
                 original: RequireMethod(typeof(DummyHistoricStringExpander), nameof(DummyHistoricStringExpander.ExpandString)),
                 postfix: new HarmonyMethod(RequireMethod(typeof(HistoricStringExpanderPatch), nameof(HistoricStringExpanderPatch.Postfix))));
 
-            var result = DummyHistoricStringExpander.ExpandString("{{C|Sultan was crowned}}");
+            const string source = "{{C|Sultan was crowned}}";
+            var result = DummyHistoricStringExpander.ExpandString(source);
 
-            Assert.That(result, Is.EqualTo("{{C|スルタンが戴冠した}}"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo(source));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(HistoricStringExpanderPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        "Sultan was crowned"),
+                    Is.GreaterThan(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_StripsDirectTranslationMarker_WhenPatched()
+    {
+        WriteDictionary(("In the beginning, Resheph created Qud", "はじめに、レシェフがクッドを創造した"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyHistoricStringExpander), nameof(DummyHistoricStringExpander.ExpandString)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(HistoricStringExpanderPatch), nameof(HistoricStringExpanderPatch.Postfix))));
+
+            const string source = "\u0001In the beginning, Resheph created Qud";
+            var result = DummyHistoricStringExpander.ExpandString(source);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("In the beginning, Resheph created Qud"));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(HistoricStringExpanderPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        "In the beginning, Resheph created Qud"),
+                    Is.EqualTo(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(HistoricStringExpanderPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        "In the beginning, Resheph created Qud",
+                        "In the beginning, Resheph created Qud"),
+                    Is.EqualTo(1));
+            });
         }
         finally
         {

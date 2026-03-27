@@ -215,6 +215,17 @@ public static class PopupTranslationPatch
             return markedText;
         }
 
+        var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
+        if (!IsAlreadyLocalizedPopupTextCore(stripped))
+        {
+            SinkObservation.LogUnclaimed(
+                nameof(PopupTranslationPatch),
+                route,
+                SinkObservation.ObservationOnlyDetail,
+                source,
+                stripped);
+        }
+
         return source;
     }
 

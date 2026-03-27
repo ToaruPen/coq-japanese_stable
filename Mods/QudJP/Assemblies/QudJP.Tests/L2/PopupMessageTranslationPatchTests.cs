@@ -28,6 +28,7 @@ public sealed class PopupMessageTranslationPatchTests
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
         MessagePatternTranslator.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
+        SinkObservation.ResetForTests();
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         DummyPopupMessageTarget.Reset();
     }
@@ -37,6 +38,7 @@ public sealed class PopupMessageTranslationPatchTests
     {
         Translator.ResetForTests();
         MessagePatternTranslator.ResetForTests();
+        SinkObservation.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -45,7 +47,7 @@ public sealed class PopupMessageTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_TranslatesPopupContent_WhenPatched()
+    public void Prefix_ObservationOnly_LeavesPopupContentUnchanged_WhenPatched()
     {
         WriteDictionary(
             ("Are you sure you want to delete the save game for {0}?", "{0}のセーブデータを本当に削除しますか？"),
@@ -87,14 +89,14 @@ public sealed class PopupMessageTranslationPatchTests
             {
                 Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("Are you sure you want to delete the save game for Yashur?"));
                 Assert.That(DummyPopupMessageTarget.LastTitle, Is.EqualTo("Delete Yashur"));
-                Assert.That(DummyPopupMessageTarget.LastContextTitle, Is.EqualTo("セーブ一覧"));
+                Assert.That(DummyPopupMessageTarget.LastContextTitle, Is.EqualTo("Save Slots"));
                 Assert.That(DummyPopupMessageTarget.LastButtons, Is.Not.Null);
-                Assert.That(DummyPopupMessageTarget.LastButtons![0].text, Is.EqualTo("{{W|[Enter]}} {{y|承認}}"));
+                Assert.That(DummyPopupMessageTarget.LastButtons![0].text, Is.EqualTo("{{W|[Enter]}} {{y|Accept}}"));
                 Assert.That(DummyPopupMessageTarget.LastButtons[0].hotkey, Is.EqualTo("Accept"));
                 Assert.That(DummyPopupMessageTarget.LastButtons[0].command, Is.EqualTo("Accept"));
-                Assert.That(DummyPopupMessageTarget.LastButtons[1].text, Is.EqualTo("{{W|[Esc]}} {{y|キャンセル}}"));
+                Assert.That(DummyPopupMessageTarget.LastButtons[1].text, Is.EqualTo("{{W|[Esc]}} {{y|Cancel}}"));
                 Assert.That(DummyPopupMessageTarget.LastItems, Is.Not.Null);
-                Assert.That(DummyPopupMessageTarget.LastItems![0].text, Is.EqualTo("続ける"));
+                Assert.That(DummyPopupMessageTarget.LastItems![0].text, Is.EqualTo("Continue"));
                 Assert.That(DummyPopupMessageTarget.LastWantsSpecificPrompt, Is.EqualTo("ABANDON"));
             });
         }
@@ -127,7 +129,7 @@ public sealed class PopupMessageTranslationPatchTests
             target.ShowPopup("Prompt", sharedButtons);
             target.ShowPopup("Prompt", sharedButtons);
 
-            Assert.That(sharedButtons[0].text, Is.EqualTo("{{W|[Esc]}} {{y|キャンセル}}"));
+            Assert.That(sharedButtons[0].text, Is.EqualTo("{{W|[Esc]}} {{y|Cancel}}"));
         }
         finally
         {
@@ -208,7 +210,36 @@ public sealed class PopupMessageTranslationPatchTests
 
             new DummyPopupMessageTarget().ShowPopup("Prompt", buttons);
 
-            Assert.That(DummyPopupMessageTarget.LastButtons![0].text, Is.EqualTo("{{W|B}} キャンセル"));
+            Assert.That(DummyPopupMessageTarget.LastButtons![0].text, Is.EqualTo("{{W|B}} Cancel"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_ObservationOnly_LogsUnclaimedPopupContent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            const string source = "Untranslated popup message";
+            new DummyPopupMessageTarget().ShowPopup(source);
+
+            var hitCount = SinkObservation.GetHitCountForTests(
+                nameof(PopupTranslationPatch),
+                nameof(PopupMessageTranslationPatch),
+                SinkObservation.ObservationOnlyDetail,
+                source,
+                source);
+            Assert.That(hitCount, Is.GreaterThan(0));
         }
         finally
         {
