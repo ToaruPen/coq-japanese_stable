@@ -72,7 +72,7 @@ public sealed class SinkPrereqTranslationPatchTests
     }
 
     [Test]
-    public void SetDataPatch_TranslatesFrameworkHeaderText()
+    public void SetDataPatch_ObservationOnly_LeavesFrameworkHeaderTextUnchanged()
     {
         WriteDictionary(("Choose your genotype", "遺伝子型を選択"));
         Translator.SetDictionaryDirectoryForTests(tempDir);
@@ -89,7 +89,7 @@ public sealed class SinkPrereqTranslationPatchTests
     }
 
     [Test]
-    public void SetDataPatch_TranslatesSummaryBlockBothFields()
+    public void SetDataPatch_ObservationOnly_LeavesSummaryBlockBothFieldsUnchanged()
     {
         WriteDictionary(("Summary Description", "概要説明"), ("Summary Title", "概要タイトル"));
         Translator.SetDictionaryDirectoryForTests(tempDir);
@@ -106,13 +106,24 @@ public sealed class SinkPrereqTranslationPatchTests
             Title = "Summary Title"
         });
 
-        Assert.That(instance.text.text, Is.EqualTo("Summary Description"));
-        Assert.That(instance.title.text, Is.EqualTo("Summary Title").Or.Contains("Summary Title"),
-            "Observation-only sink prerequisite patch should leave source text unchanged.");
+        Assert.Multiple(() =>
+        {
+            Assert.That(instance.text.text, Is.EqualTo("Summary Description"));
+            Assert.That(instance.title.text, Is.EqualTo("Summary Title").Or.Contains("Summary Title"),
+                "Observation-only sink prerequisite patch should leave source text unchanged.");
+            Assert.That(
+                SinkObservation.GetHitCountForTests(
+                    nameof(UITextSkinTranslationPatch),
+                    nameof(SinkPrereqSetDataTranslationPatch),
+                    SinkObservation.ObservationOnlyDetail,
+                    "Summary Description",
+                    "Summary Description"),
+                Is.GreaterThan(0));
+        });
     }
 
     [Test]
-    public void SetDataPatch_TranslatesObjectFinderLineBothFields()
+    public void SetDataPatch_ObservationOnly_LeavesObjectFinderLineBothFieldsUnchanged()
     {
         WriteDictionary(("nearby", "近く"), ("a sword", "剣"));
         Translator.SetDictionaryDirectoryForTests(tempDir);
@@ -130,7 +141,7 @@ public sealed class SinkPrereqTranslationPatchTests
     }
 
     [Test]
-    public void SetDataPatch_TranslatesCharacterEffectLineText()
+    public void SetDataPatch_ObservationOnly_LeavesCharacterEffectLineTextUnchanged()
     {
         WriteDictionary(("Confused", "混乱"));
         Translator.SetDictionaryDirectoryForTests(tempDir);
@@ -147,7 +158,7 @@ public sealed class SinkPrereqTranslationPatchTests
     }
 
     [Test]
-    public void SetDataPatch_TranslatesTinkeringDetailsLineMultipleFields()
+    public void SetDataPatch_ObservationOnly_LeavesTinkeringDetailsLineFieldsUnchanged()
     {
         WriteDictionary(
             ("Laser Pistol", "レーザーピストル"),
@@ -174,7 +185,7 @@ public sealed class SinkPrereqTranslationPatchTests
     }
 
     [Test]
-    public void UiMethodPatch_TranslatesCategoryMenusScrollerFields()
+    public void UiMethodPatch_ObservationOnly_LeavesCategoryMenusScrollerFieldsUnchanged()
     {
         WriteDictionary(("True Kin", "トゥルーキン"), ("Born of the ancient stock.", "古の血統に生まれし者。"));
         Translator.SetDictionaryDirectoryForTests(tempDir);
@@ -196,7 +207,7 @@ public sealed class SinkPrereqTranslationPatchTests
     }
 
     [Test]
-    public void UiMethodPatch_TranslatesTitledIconButtonTitle()
+    public void UiMethodPatch_ObservationOnly_LeavesTitledIconButtonTitleUnchanged()
     {
         WriteDictionary(("Accept", "承認"));
         Translator.SetDictionaryDirectoryForTests(tempDir);
@@ -213,7 +224,7 @@ public sealed class SinkPrereqTranslationPatchTests
     }
 
     [Test]
-    public void UiMethodPatch_TranslatesCyberneticsTerminalRowDescription()
+    public void UiMethodPatch_ObservationOnly_LeavesCyberneticsTerminalRowDescriptionUnchanged()
     {
         WriteDictionary(("Welcome to the terminal.", "ターミナルへようこそ。"));
         Translator.SetDictionaryDirectoryForTests(tempDir);
@@ -230,7 +241,7 @@ public sealed class SinkPrereqTranslationPatchTests
     }
 
     [Test]
-    public void UiMethodPatch_TranslatesAbilityManagerScreenFields()
+    public void UiMethodPatch_ObservationOnly_LeavesAbilityManagerScreenFieldsUnchanged()
     {
         WriteDictionary(("Sprint", "スプリント"), ("Move quickly.", "素早く移動する。"));
         Translator.SetDictionaryDirectoryForTests(tempDir);
@@ -252,7 +263,7 @@ public sealed class SinkPrereqTranslationPatchTests
     }
 
     [Test]
-    public void UiMethodPatch_TranslatesMapScrollerPinItemFields()
+    public void UiMethodPatch_ObservationOnly_LeavesMapScrollerPinItemFieldsUnchanged()
     {
         WriteDictionary(("Joppa", "ジョッパ"), ("A small village.", "小さな村。"));
         Translator.SetDictionaryDirectoryForTests(tempDir);
@@ -270,7 +281,7 @@ public sealed class SinkPrereqTranslationPatchTests
     }
 
     [Test]
-    public void UiMethodPatch_TranslatesPlayerStatusBarZone()
+    public void UiMethodPatch_ObservationOnly_LeavesPlayerStatusBarZoneUnchanged()
     {
         WriteDictionary(("World Map", "ワールドマップ"));
         Translator.SetDictionaryDirectoryForTests(tempDir);
@@ -287,7 +298,7 @@ public sealed class SinkPrereqTranslationPatchTests
     }
 
     [Test]
-    public void UiMethodPatch_TranslatesTradeScreenFields()
+    public void UiMethodPatch_ObservationOnly_LeavesTradeScreenFieldsUnchanged()
     {
         WriteDictionary(("a copper nugget", "銅のナゲット"), ("Trade Details", "取引詳細"));
         Translator.SetDictionaryDirectoryForTests(tempDir);

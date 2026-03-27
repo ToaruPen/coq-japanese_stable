@@ -20,8 +20,14 @@ public static class HistoricStringExpanderPatch
     {
         try
         {
+            var source = __result;
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(__result, out var markedText))
+            {
+                source = markedText;
+            }
+
             __result = UITextSkinTranslationPatch.TranslatePreservingColors(
-                __result,
+                source,
                 nameof(HistoricStringExpanderPatch));
         }
         catch (Exception ex)

@@ -160,6 +160,14 @@ public sealed class HistoricStringExpanderPatchTests
                         source,
                         "In the beginning, Resheph created Qud"),
                     Is.EqualTo(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(HistoricStringExpanderPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        "In the beginning, Resheph created Qud",
+                        "In the beginning, Resheph created Qud"),
+                    Is.EqualTo(1));
             });
         }
         finally
