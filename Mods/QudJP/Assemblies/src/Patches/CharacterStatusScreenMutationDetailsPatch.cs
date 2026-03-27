@@ -40,6 +40,9 @@ public static class CharacterStatusScreenMutationDetailsPatch
     {
         try
         {
+            TranslateStaticMenuOption(__instance, "BUY_MUTATION");
+            TranslateStaticMenuOption(__instance, "SHOW_EFFECTS");
+
             if (element is null)
             {
                 return;
@@ -55,8 +58,6 @@ public static class CharacterStatusScreenMutationDetailsPatch
             TranslateUiTextField(___mutationRankText, "mutationRankText");
             TranslateUiTextField(___mutationTypeText, "mutationTypeText");
             TranslateMutationDetailsField(mutation, ___mutationsDetails);
-            TranslateStaticMenuOption(__instance, "BUY_MUTATION");
-            TranslateStaticMenuOption(__instance, "SHOW_EFFECTS");
         }
         catch (Exception ex)
         {

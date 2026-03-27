@@ -11,6 +11,9 @@ internal static class DescriptionTextTranslator
     private static readonly Regex SignedStatAbbreviationPattern =
         new Regex("^[+-]\\d+\\s+[A-Z]{2,4}$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    // Keep TranslateShortDescription and TranslateLongDescription separate even though they
+    // currently delegate to TranslateDescriptionText, so short/long description routes can
+    // diverge later without changing their patch call sites.
     internal static string TranslateShortDescription(string source, string route)
     {
         return TranslateDescriptionText(source, route);
