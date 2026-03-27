@@ -13,8 +13,13 @@ public sealed class QudMenuBottomContextTranslationPatchTests
     [SetUp]
     public void SetUp()
     {
-        Translator.ResetForTests();
-        SinkObservation.ResetForTests();
+        ResetTestState();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        ResetTestState();
     }
 
     [Test]
@@ -103,6 +108,12 @@ public sealed class QudMenuBottomContextTranslationPatchTests
     {
         return AccessTools.Method(type, methodName)
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static void ResetTestState()
+    {
+        Translator.ResetForTests();
+        SinkObservation.ResetForTests();
     }
 
     private sealed class DummyQudMenuBottomContext

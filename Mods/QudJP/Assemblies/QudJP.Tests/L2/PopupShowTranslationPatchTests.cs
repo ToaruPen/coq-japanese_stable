@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
@@ -10,10 +11,16 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class PopupShowTranslationPatchTests
 {
+    private string tempDirectory = null!;
+
     [SetUp]
     public void SetUp()
     {
+        tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-popup-show-l2", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDirectory);
+
         Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(tempDirectory);
         SinkObservation.ResetForTests();
         DummyPopupShow.Reset();
     }
@@ -23,11 +30,18 @@ public sealed class PopupShowTranslationPatchTests
     {
         Translator.ResetForTests();
         SinkObservation.ResetForTests();
+
+        if (Directory.Exists(tempDirectory))
+        {
+            Directory.Delete(tempDirectory, recursive: true);
+        }
     }
 
     [Test]
     public void Prefix_ObservationOnly_LeavesPopupShowMessageUnchanged()
     {
+        WriteDictionary(("Delete save game?", "セーブデータを削除しますか？"));
+
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
 
@@ -50,6 +64,8 @@ public sealed class PopupShowTranslationPatchTests
     [Test]
     public void Prefix_ObservationOnly_LogsUnclaimedPopupShowMessage()
     {
+        WriteDictionary(("Delete save game?", "セーブデータを削除しますか？"));
+
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
 
@@ -79,6 +95,8 @@ public sealed class PopupShowTranslationPatchTests
     [Test]
     public void Prefix_DirectMarker_StillStripped()
     {
+        WriteDictionary(("既に翻訳済み", "別訳"));
+
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
 
@@ -107,5 +125,39 @@ public sealed class PopupShowTranslationPatchTests
     {
         return AccessTools.Method(type, methodName)
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private void WriteDictionary(params (string key, string text)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.Append('{');
+        builder.Append("\"entries\":[");
+
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        builder.AppendLine();
+
+        var path = Path.Combine(tempDirectory, "popup-show.ja.json");
+        File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private static string EscapeJson(string value)
+    {
+        return value
+            .Replace("\\", "\\\\", StringComparison.Ordinal)
+            .Replace("\"", "\\\"", StringComparison.Ordinal);
     }
 }

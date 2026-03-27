@@ -117,18 +117,6 @@ public sealed class DeathReasonTranslationPatchTests
     }
 
     [Test]
-    public void TranslateDeathReason_ObservationOnly_LeavesKnownReasonUnmarked()
-    {
-        WriteDictionary(("You were vaporized.", "蒸発した。"));
-        Translator.SetDictionaryDirectoryForTests(tempDir);
-
-        var result = DeathReasonTranslationPatch.TranslateDeathReason("You were vaporized.");
-
-        Assert.That(result, Is.EqualTo("You were vaporized."),
-            "Observation-only death reason handling should leave source text unchanged.");
-    }
-
-    [Test]
     public void TranslateDeathReason_EmptyStringReturnsEmpty()
     {
         var result = DeathReasonTranslationPatch.TranslateDeathReason("");

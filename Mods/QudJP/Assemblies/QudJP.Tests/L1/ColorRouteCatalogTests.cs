@@ -82,7 +82,7 @@ internal static class ColorRouteCatalog
         "GetDisplayNameRouteTranslator.TranslatePreservingColors(",
         "UITextSkinTranslationPatch.TranslatePreservingColors(",
         "PopupTranslationPatch.TranslatePopupTextForRoute(",
-        "PopupTranslationPatch.TranslatePopupMenuItemText(",
+        "PopupTranslationPatch.TranslatePopupMenuItemTextForRoute(",
     };
 
     internal static readonly SortedDictionary<string, int> ExpectedSymbolOccurrences =
@@ -105,7 +105,7 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/LoadingStatusTranslationPatch.cs|UITextSkinTranslationPatch.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/LookTooltipContentPatch.cs|UITextSkinTranslationPatch.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/PopupMessageTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForRoute("] = 1,
-            ["Mods/QudJP/Assemblies/src/Patches/QudMenuBottomContextTranslationPatch.cs|PopupTranslationPatch.TranslatePopupMenuItemText("] = 1,
+            ["Mods/QudJP/Assemblies/src/Patches/QudMenuBottomContextTranslationPatch.cs|PopupTranslationPatch.TranslatePopupMenuItemTextForRoute("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/SkillsAndPowersStatusScreenTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 3,
             ["Mods/QudJP/Assemblies/src/Patches/DeathReasonTranslationPatch.cs|UITextSkinTranslationPatch.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/PopupShowTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForRoute("] = 1,

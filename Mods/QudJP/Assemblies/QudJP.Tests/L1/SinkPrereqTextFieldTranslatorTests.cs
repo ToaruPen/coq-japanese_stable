@@ -207,7 +207,7 @@ public sealed class SinkPrereqTextFieldTranslatorTests
         Translator.SetDictionaryDirectoryForTests(tempDir);
 
         var parent = new DummyParentWithChild();
-        parent.child.text.SetText("\x01Build Mode");
+        parent.child.text.SetText("\u0001Build Mode");
 
         SinkPrereqTextFieldTranslator.TranslateChainedField(
             parent, "child", "text", "Test");

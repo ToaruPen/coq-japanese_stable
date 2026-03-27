@@ -24,6 +24,7 @@ public sealed class SinkPrereqTranslationPatchTests
         Directory.CreateDirectory(tempDir);
         SinkPrereqTextFieldTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
+        SinkObservation.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDir);
         harmony = new Harmony("QudJP.Tests.SinkPrereq." + Guid.NewGuid().ToString("N"));
     }
@@ -34,6 +35,7 @@ public sealed class SinkPrereqTranslationPatchTests
         harmony.UnpatchAll(harmony.Id);
         Translator.ResetForTests();
         SinkPrereqTextFieldTranslator.ResetForTests();
+        SinkObservation.ResetForTests();
         if (Directory.Exists(tempDir))
         {
             Directory.Delete(tempDir, recursive: true);
@@ -41,7 +43,7 @@ public sealed class SinkPrereqTranslationPatchTests
     }
 
     [Test]
-    public void SetDataPatch_TranslatesLeftSideCategoryText()
+    public void SetDataPatch_ObservationOnly_LeavesLeftSideCategoryTextUnchanged()
     {
         WriteDictionary(("Keybinds", "キーバインド"));
         Translator.SetDictionaryDirectoryForTests(tempDir);
@@ -54,8 +56,19 @@ public sealed class SinkPrereqTranslationPatchTests
         var instance = new DummyLeftSideCategory();
         instance.setData(new DummyFrameworkDataElement { Description = "Keybinds" });
 
-        Assert.That(instance.text.text, Does.Contain("Keybinds"),
-            "Observation-only sink prerequisite patch should leave source text unchanged.");
+        Assert.Multiple(() =>
+        {
+            Assert.That(instance.text.text, Does.Contain("Keybinds"),
+                "Observation-only sink prerequisite patch should leave source text unchanged.");
+            Assert.That(
+                SinkObservation.GetHitCountForTests(
+                    nameof(UITextSkinTranslationPatch),
+                    nameof(SinkPrereqSetDataTranslationPatch),
+                    SinkObservation.ObservationOnlyDetail,
+                    "{{C|Keybinds}}",
+                    "Keybinds"),
+                Is.GreaterThan(0));
+        });
     }
 
     [Test]
