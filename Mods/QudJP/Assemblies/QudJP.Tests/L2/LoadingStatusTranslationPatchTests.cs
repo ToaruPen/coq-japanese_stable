@@ -41,8 +41,7 @@ public sealed class LoadingStatusTranslationPatchTests
     public void Prefix_TranslatesDescription_WhenPatched()
     {
         WriteDictionary(
-            ("Loading world", "ワールドを読み込み中"),
-            ("{{Y|Loading world}}", "{{Y|ワールドを読み込み中}}"));
+            ("Loading world", "ワールドを読み込み中"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
