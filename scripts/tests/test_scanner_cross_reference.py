@@ -239,7 +239,10 @@ def test_cross_reference_marks_dictionary_xml_and_patch_matches(tmp_path: Path) 
     assert sites["popup-template"].existing_patch == "PopupTranslationPatch"
 
     assert sites["message-template"].status is SiteStatus.TRANSLATED
-    assert sites["message-template"].existing_patch == "MessageLogPatch"
+    assert (
+        "MessageLogPatch" in sites["message-template"].existing_patch
+        or "MessageQueuePatch" in sites["message-template"].existing_patch
+    )
 
     assert sites["needs-translation"].status is SiteStatus.NEEDS_TRANSLATION
     assert sites["needs-patch"].status is SiteStatus.NEEDS_PATCH
