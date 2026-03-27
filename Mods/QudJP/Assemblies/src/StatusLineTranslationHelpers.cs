@@ -7,6 +7,8 @@ internal static class StatusLineTranslationHelpers
 {
     private static readonly Regex HpLinePattern =
         new Regex("^HP:\\s*(?<current>\\d+)\\s*/\\s*(?<max>\\d+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex HpStatusLinePattern =
+        new Regex("^HP:\\s*(?<status>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex LevelExpLinePattern =
         new Regex("^LVL:\\s*(?<level>\\d+)\\s+Exp:\\s*(?<current>\\d+)\\s*/\\s*(?<next>\\d+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex BonusCapPattern =
@@ -187,6 +189,33 @@ internal static class StatusLineTranslationHelpers
             DynamicTextObservability.RecordTransform(route, family, source, translated);
         }
 
+        return true;
+    }
+
+    internal static bool TryTranslateHpStatusLine(string source, string route, string family, out string translated)
+    {
+        if (HpLinePattern.IsMatch(source))
+        {
+            translated = source;
+            return false;
+        }
+
+        var match = HpStatusLinePattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var translatedStatus = StringHelpers.TranslateExactOrLowerAscii(match.Groups["status"].Value);
+        if (translatedStatus is null)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = $"HP: {translatedStatus}";
+        DynamicTextObservability.RecordTransform(route, family, source, translated);
         return true;
     }
 }
