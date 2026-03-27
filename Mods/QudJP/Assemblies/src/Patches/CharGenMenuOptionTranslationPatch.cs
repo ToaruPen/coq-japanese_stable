@@ -29,23 +29,27 @@ public static class CharGenMenuOptionTranslationPatch
             var type = AccessTools.TypeByName(typeName);
             if (type is null)
             {
+                Trace.TraceWarning("QudJP: {0} target type '{1}' not found.", Context, typeName);
                 continue;
             }
 
             var method = AccessTools.Method(type, "GetKeyMenuBar", Type.EmptyTypes);
-            if (method is not null)
+            if (method is null)
             {
-                yield return method;
+                Trace.TraceWarning("QudJP: {0} method 'GetKeyMenuBar()' not found on '{1}'.", Context, typeName);
+                continue;
             }
+
+            yield return method;
         }
     }
 
-    public static IEnumerable Postfix(IEnumerable values)
+    public static IEnumerable? Postfix(IEnumerable? values)
     {
         try
         {
             return values is null
-                ? Array.Empty<object>()
+                ? values
                 : CharGenProducerTranslationHelpers.MaterializeTranslatedEnumerable(values, "Description", Context);
         }
         catch (Exception ex)

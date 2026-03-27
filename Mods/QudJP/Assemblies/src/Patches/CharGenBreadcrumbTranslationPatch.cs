@@ -35,14 +35,18 @@ public static class CharGenBreadcrumbTranslationPatch
             var type = AccessTools.TypeByName(typeName);
             if (type is null)
             {
+                Trace.TraceWarning("QudJP: {0} target type '{1}' not found.", Context, typeName);
                 continue;
             }
 
             var method = AccessTools.Method(type, "GetBreadcrumb", Type.EmptyTypes);
-            if (method is not null)
+            if (method is null)
             {
-                yield return method;
+                Trace.TraceWarning("QudJP: {0} method 'GetBreadcrumb()' not found on '{1}'.", Context, typeName);
+                continue;
             }
+
+            yield return method;
         }
     }
 

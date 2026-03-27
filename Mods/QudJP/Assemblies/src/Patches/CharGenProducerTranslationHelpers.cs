@@ -18,7 +18,7 @@ internal static class CharGenProducerTranslationHelpers
         var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
             source,
             static visible => ChargenStructuredTextTranslator.Translate(visible));
-        return ColorAwareTranslationComposer.TranslatePreservingColors(translated);
+        return translated;
     }
 
     internal static void TranslateStringMember(object target, string memberName, string context)

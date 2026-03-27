@@ -75,6 +75,7 @@ public sealed class CharGenProducerTranslationPatchResolutionTests
         Assert.That(result, Is.Not.Null, $"TargetMethods returned null for {patchType.FullName}");
 
         var actualSignatures = new List<string>();
+        var resolvedMethods = new List<MethodInfo>();
         foreach (var item in result!)
         {
             if (item is not MethodInfo methodInfo)
@@ -86,9 +87,11 @@ public sealed class CharGenProducerTranslationPatchResolutionTests
                 "|",
                 Array.ConvertAll(methodInfo.GetParameters(), static parameter => NormalizeTypeName(parameter.ParameterType.FullName)));
             actualSignatures.Add(signature);
+            resolvedMethods.Add(methodInfo);
         }
 
         Assert.That(actualSignatures, Is.EquivalentTo(expectedSignatures));
+        AssertStringMembersRemainResolvable(patchTypeName, resolvedMethods);
     }
 
     private static string NormalizeTypeName(string? typeName)
@@ -99,6 +102,116 @@ public sealed class CharGenProducerTranslationPatchResolutionTests
         }
 
         return System.Text.RegularExpressions.Regex.Replace(typeName, @",\s*[^\[\],]+,\s*Version=[^\]]+", string.Empty);
+    }
+
+    private static void AssertStringMembersRemainResolvable(string patchTypeName, IReadOnlyList<MethodInfo> resolvedMethods)
+    {
+        switch (patchTypeName)
+        {
+            case "QudJP.Patches.CharGenBreadcrumbTranslationPatch":
+                foreach (var methodInfo in resolvedMethods)
+                {
+                    AssertStringMemberExists(
+                        methodInfo.ReturnType,
+                        "Title",
+                        $"{patchTypeName} return type for {methodInfo.DeclaringType!.FullName}.{methodInfo.Name}");
+                }
+
+                return;
+
+            case "QudJP.Patches.CharGenMenuOptionTranslationPatch":
+                foreach (var methodInfo in resolvedMethods)
+                {
+                    var elementType = ResolveEnumerableElementType(methodInfo.ReturnType);
+                    Assert.That(
+                        elementType,
+                        Is.Not.Null,
+                        $"{patchTypeName} return type should expose an enumerable element type: {methodInfo.ReturnType.FullName}");
+                    AssertStringMemberExists(
+                        elementType!,
+                        "Description",
+                        $"{patchTypeName} enumerable element type for {methodInfo.DeclaringType!.FullName}.{methodInfo.Name}");
+                }
+
+                return;
+
+            case "QudJP.Patches.CharGenChromeTranslationPatch":
+                foreach (var methodInfo in resolvedMethods)
+                {
+                    var parameters = methodInfo.GetParameters();
+                    Assert.That(parameters.Length, Is.GreaterThan(0), $"{patchTypeName} expected at least one parameter on {methodInfo.Name}");
+
+                    string? memberName = null;
+                    if (string.Equals(methodInfo.Name, "BeforeShow", StringComparison.Ordinal))
+                    {
+                        memberName = "title";
+                    }
+                    else if (string.Equals(methodInfo.Name, "setData", StringComparison.Ordinal))
+                    {
+                        memberName = "Title";
+                    }
+
+                    Assert.That(memberName, Is.Not.Null, $"{patchTypeName} encountered unexpected target method {methodInfo.Name}");
+
+                    var runtimeType = parameters[0].ParameterType;
+                    if (string.Equals(methodInfo.Name, "setData", StringComparison.Ordinal))
+                    {
+                        runtimeType = parameters[0].ParameterType.Assembly.GetType(
+                            "XRL.UI.Framework.CategoryMenuData",
+                            throwOnError: false)
+                            ?? runtimeType;
+                    }
+
+                    AssertStringMemberExists(
+                        runtimeType,
+                        memberName!,
+                        $"{patchTypeName} first parameter type for {methodInfo.DeclaringType!.FullName}.{methodInfo.Name}");
+                }
+
+                return;
+        }
+    }
+
+    private static void AssertStringMemberExists(Type runtimeType, string memberName, string context)
+    {
+        var field = runtimeType.GetField(memberName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        if (field is not null && field.FieldType == typeof(string))
+        {
+            return;
+        }
+
+        var property = runtimeType.GetProperty(memberName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        if (property is not null && property.PropertyType == typeof(string) && property.CanRead)
+        {
+            return;
+        }
+
+        Assert.Fail($"{context} is missing readable string member '{memberName}' on runtime type '{runtimeType.FullName}'.");
+    }
+
+    private static Type? ResolveEnumerableElementType(Type sequenceType)
+    {
+        if (sequenceType.IsArray)
+        {
+            return sequenceType.GetElementType();
+        }
+
+        if (sequenceType.IsGenericType
+            && string.Equals(sequenceType.GetGenericTypeDefinition().FullName, "System.Collections.Generic.IEnumerable`1", StringComparison.Ordinal))
+        {
+            return sequenceType.GetGenericArguments()[0];
+        }
+
+        foreach (var current in sequenceType.GetInterfaces())
+        {
+            if (current.IsGenericType
+                && string.Equals(current.GetGenericTypeDefinition().FullName, "System.Collections.Generic.IEnumerable`1", StringComparison.Ordinal))
+            {
+                return current.GetGenericArguments()[0];
+            }
+        }
+
+        return null;
     }
 
     private static string ResolveManagedDirectory()
