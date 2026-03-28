@@ -155,6 +155,14 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
                 Assert.That(
                     SinkObservation.GetHitCountForTests(
                         nameof(UITextSkinTranslationPatch),
+                        nameof(PlayerStatusBarProducerTranslationPatch) + ".ZoneOnly",
+                        SinkObservation.ObservationOnlyDetail,
+                        "World Map",
+                        "World Map"),
+                    Is.EqualTo(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
                         nameof(PlayerStatusBarProducerTranslationPatch) + ".HPBar",
                         SinkObservation.ObservationOnlyDetail,
                         "HP: Seriously Wounded",
