@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text;
 using HarmonyLib;
+using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
 
 namespace QudJP.Tests.L2;
@@ -22,12 +23,16 @@ public sealed class AbilityBarAfterRenderTranslationPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        DynamicTextObservability.ResetForTests();
+        SinkObservation.ResetForTests();
     }
 
     [TearDown]
     public void TearDown()
     {
         Translator.ResetForTests();
+        DynamicTextObservability.ResetForTests();
+        SinkObservation.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -116,6 +121,76 @@ public sealed class AbilityBarAfterRenderTranslationPatchTests
                 Assert.That(target.GetEffectText(), Is.EqualTo("ACTIVE EFFECTS: unknown"));
                 Assert.That(target.GetTargetText(), Is.EqualTo("ターゲット: mysterious snapjaw"));
                 Assert.That(target.GetTargetHealthText(), Is.EqualTo("Healthy, uncertain"));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_RecordsOwnerRouteTransforms_WithoutUITextSkinSinkObservation()
+    {
+        WriteDictionary(
+            ("ACTIVE EFFECTS:", "発動中の効果:"),
+            ("poisoned", "毒状態"),
+            ("TARGET:", "ターゲット:"),
+            ("snapjaw", "スナップジョー"),
+            ("Healthy", "健康"),
+            ("calm", "平静"));
+
+        RunWithPostfixPatch(() =>
+        {
+            var target = new DummyAbilityBarAfterRenderTarget
+            {
+                NextEffectText = "ACTIVE EFFECTS: poisoned",
+                NextTargetText = "TARGET: snapjaw",
+                NextTargetHealthText = "Healthy, calm",
+            };
+
+            target.AfterRender(core: null, sb: null);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.GetEffectText(), Is.EqualTo("発動中の効果: 毒状態"));
+                Assert.That(target.GetTargetText(), Is.EqualTo("ターゲット: スナップジョー"));
+                Assert.That(target.GetTargetHealthText(), Is.EqualTo("健康、平静"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(AbilityBarAfterRenderTranslationPatch),
+                        "AbilityBar.ActiveEffects"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(AbilityBarAfterRenderTranslationPatch),
+                        "AbilityBar.TargetText"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(AbilityBarAfterRenderTranslationPatch),
+                        "AbilityBar.TargetHealth"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(AbilityBarAfterRenderTranslationPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        "ACTIVE EFFECTS: poisoned",
+                        "ACTIVE EFFECTS: poisoned"),
+                    Is.EqualTo(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(AbilityBarAfterRenderTranslationPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        "TARGET: snapjaw",
+                        "TARGET: snapjaw"),
+                    Is.EqualTo(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(AbilityBarAfterRenderTranslationPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        "Healthy, calm",
+                        "Healthy, calm"),
+                    Is.EqualTo(0));
             });
         });
     }

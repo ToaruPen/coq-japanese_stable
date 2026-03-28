@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text;
 using HarmonyLib;
+using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
 
 namespace QudJP.Tests.L2;
@@ -22,12 +23,16 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        DynamicTextObservability.ResetForTests();
+        SinkObservation.ResetForTests();
     }
 
     [TearDown]
     public void TearDown()
     {
         Translator.ResetForTests();
+        DynamicTextObservability.ResetForTests();
+        SinkObservation.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -78,6 +83,92 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_RecordsProducerStringDataOwnerRouteTransforms_WithoutUITextSkinSinkObservation()
+    {
+        WriteDictionary(
+            ("Sated", "満腹"),
+            ("Quenched", "潤沢"),
+            ("World Map", "ワールドマップ"),
+            ("Seriously Wounded", "重傷"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPlayerStatusBarTarget), nameof(DummyPlayerStatusBarTarget.BeginEndTurn)),
+                postfix: new HarmonyMethod(RequirePatchMethod("Postfix", typeof(object), typeof(MethodBase))));
+
+            var instance = new DummyPlayerStatusBarTarget
+            {
+                NextFoodWater = "Sated Quenched",
+                NextZone = "World Map",
+                NextZoneOnly = "World Map",
+                NextHpBar = "HP: Seriously Wounded",
+            };
+
+            instance.BeginEndTurn(core: null);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(instance.GetStringData("FoodWater"), Is.EqualTo("満腹 潤沢"));
+                Assert.That(instance.GetStringData("Zone"), Is.EqualTo("ワールドマップ"));
+                Assert.That(instance.GetStringData("ZoneOnly"), Is.EqualTo("ワールドマップ"));
+                Assert.That(instance.GetStringData("HPBar"), Is.EqualTo("HP: 重傷"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PlayerStatusBarProducerTranslationPatch) + ".FoodWater",
+                        "PlayerStatusBar.FoodWater"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PlayerStatusBarProducerTranslationPatch) + ".Zone",
+                        "PlayerStatusBar.Zone"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PlayerStatusBarProducerTranslationPatch) + ".ZoneOnly",
+                        "PlayerStatusBar.ZoneOnly"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PlayerStatusBarProducerTranslationPatch) + ".HPBar",
+                        "PlayerStatusBar.HPBar"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(PlayerStatusBarProducerTranslationPatch) + ".FoodWater",
+                        SinkObservation.ObservationOnlyDetail,
+                        "Sated Quenched",
+                        "Sated Quenched"),
+                    Is.EqualTo(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(PlayerStatusBarProducerTranslationPatch) + ".Zone",
+                        SinkObservation.ObservationOnlyDetail,
+                        "World Map",
+                        "World Map"),
+                    Is.EqualTo(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(PlayerStatusBarProducerTranslationPatch) + ".HPBar",
+                        SinkObservation.ObservationOnlyDetail,
+                        "HP: Seriously Wounded",
+                        "HP: Seriously Wounded"),
+                    Is.EqualTo(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Postfix_TranslatesXpBarTextAfterUpdate()
     {
         WriteDictionary(("LVL", "Lv"));
@@ -101,6 +192,54 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
             instance.Update();
 
             Assert.That(instance.XPBar.text.text, Is.EqualTo("Lv: 1 Exp: 0 / 220"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_RecordsLevelExpOwnerRouteTransform_WithoutUITextSkinSinkObservation()
+    {
+        WriteDictionary(("LVL", "Lv"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPlayerStatusBarTarget), nameof(DummyPlayerStatusBarTarget.Update)),
+                postfix: new HarmonyMethod(RequirePatchMethod("Postfix", typeof(object), typeof(MethodBase))));
+
+            var instance = new DummyPlayerStatusBarTarget
+            {
+                Level = 1,
+                Experience = 0,
+                NextLevelExperience = 220,
+            };
+
+            instance.Update();
+
+            const string source = "LVL: 1 Exp: 0 / 220";
+            Assert.Multiple(() =>
+            {
+                Assert.That(instance.XPBar.text.text, Is.EqualTo("Lv: 1 Exp: 0 / 220"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PlayerStatusBarProducerTranslationPatch) + ".XPBar",
+                        "PlayerStatusBar.LevelExp"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(PlayerStatusBarProducerTranslationPatch) + ".XPBar",
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        source),
+                    Is.EqualTo(0));
+            });
         }
         finally
         {

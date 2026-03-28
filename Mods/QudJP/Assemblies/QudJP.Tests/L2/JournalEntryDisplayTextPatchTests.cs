@@ -28,6 +28,8 @@ public sealed class JournalEntryDisplayTextPatchTests
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
         JournalPatternTranslator.ResetForTests();
         JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
+        DynamicTextObservability.ResetForTests();
+        SinkObservation.ResetForTests();
     }
 
     [TearDown]
@@ -35,6 +37,8 @@ public sealed class JournalEntryDisplayTextPatchTests
     {
         Translator.ResetForTests();
         JournalPatternTranslator.ResetForTests();
+        DynamicTextObservability.ResetForTests();
+        SinkObservation.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -91,6 +95,53 @@ public sealed class JournalEntryDisplayTextPatchTests
             };
 
             Assert.That(entry.GetDisplayText(), Is.EqualTo("キャクキャに旅した。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_RecordsJournalEntryOwnerRouteTransforms_WithoutUITextSkinSinkObservation_WhenPatched()
+    {
+        WriteExactDictionary(("You contracted glotrot.", "舌腐病に罹患した。"));
+        WritePatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyBaseJournalEntry), nameof(DummyBaseJournalEntry.GetDisplayText)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(JournalEntryDisplayTextPatch), nameof(JournalEntryDisplayTextPatch.Postfix))));
+
+            const string source = "You contracted glotrot.";
+            var entry = new DummyJournalAccomplishment
+            {
+                Category = "general",
+                Text = source,
+            };
+
+            var result = entry.GetDisplayText();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("舌腐病に罹患した。"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(JournalEntryDisplayTextPatch),
+                        "Journal.Exact"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(JournalEntryDisplayTextPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        source),
+                    Is.EqualTo(0));
+            });
         }
         finally
         {
@@ -174,6 +225,53 @@ public sealed class JournalEntryDisplayTextPatchTests
             };
 
             Assert.That(entry.GetDisplayText(), Is.EqualTo("{{w|ドロマド}}の隊商\nUt yara Uxの5th日に最後に訪れた。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_RecordsJournalMapNoteOwnerRouteTransforms_WithoutUITextSkinSinkObservation_WhenPatched()
+    {
+        WriteExactDictionary(("A dromad caravan", "ドロマドの隊商"));
+        WritePatternDictionary(("^Last visited on the (.+?) of (.+?)$", "{1}の{0}日に最後に訪れた。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyJournalMapNote), nameof(DummyJournalMapNote.GetDisplayText)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(JournalMapNoteDisplayTextPatch), nameof(JournalMapNoteDisplayTextPatch.Postfix))));
+
+            const string source = "A dromad caravan\nLast visited on the 5th of Ut yara Ux";
+            var entry = new DummyJournalMapNote
+            {
+                Category = "Merchants",
+                Text = source,
+            };
+
+            var result = entry.GetDisplayText();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("ドロマドの隊商\nUt yara Uxの5th日に最後に訪れた。"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(JournalMapNoteDisplayTextPatch),
+                        "Journal.Lines"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(JournalMapNoteDisplayTextPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        source),
+                    Is.EqualTo(0));
+            });
         }
         finally
         {

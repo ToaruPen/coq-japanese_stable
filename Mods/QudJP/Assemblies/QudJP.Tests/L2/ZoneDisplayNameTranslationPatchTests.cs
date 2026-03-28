@@ -21,12 +21,16 @@ public sealed class ZoneDisplayNameTranslationPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        DynamicTextObservability.ResetForTests();
+        SinkObservation.ResetForTests();
     }
 
     [TearDown]
     public void TearDown()
     {
         Translator.ResetForTests();
+        DynamicTextObservability.ResetForTests();
+        SinkObservation.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -109,6 +113,58 @@ public sealed class ZoneDisplayNameTranslationPatchTests
             var result = target.GetZoneDisplayName("zone", "world", 1, 1, 1, 1, 8);
 
             Assert.That(result, Is.EqualTo("錆びたアーチ道, 地下2層"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_RecordsOwnerRouteTransforms_WithoutUITextSkinSinkObservation_WhenPatched()
+    {
+        WriteDictionary(("Joppa", "ジョッパ"));
+
+        var target = new DummyZoneDisplayNameTarget
+        {
+            Result = "Joppa",
+        };
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyZoneDisplayNameTarget),
+                    nameof(DummyZoneDisplayNameTarget.GetZoneDisplayName),
+                    typeof(string),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(ZoneDisplayNameTranslationPatch), nameof(ZoneDisplayNameTranslationPatch.Postfix), typeof(string).MakeByRefType())));
+
+            const string source = "Joppa";
+            var result = target.GetZoneDisplayName("zone");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("ジョッパ"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(ZoneDisplayNameTranslationPatch),
+                        "ZoneDisplayName"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(ZoneDisplayNameTranslationPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        source),
+                    Is.EqualTo(0));
+            });
         }
         finally
         {

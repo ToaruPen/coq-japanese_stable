@@ -77,6 +77,59 @@ public sealed class CharacterStatusScreenMutationDetailsPatchTests
     }
 
     [Test]
+    public void Postfix_RecordsMutationDetailsOwnerRouteTransform_WithoutUITextSkinSinkObservation_WhenPatched()
+    {
+        WriteDictionary(
+            ("mutation:Force Wall", "力の壁を生み出し、9マス連続の力場で敵を遮る。\n\n飛び道具は壁を通過させられる。"),
+            ("mutation:Force Wall:rank:1", "9マス分の連続した固定力場を作る。\n持続: 16ラウンド\nクールダウン: 100ラウンド\n力場越しに飛び道具を撃てる。"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyCharacterStatusMutationScreen), nameof(DummyCharacterStatusMutationScreen.HandleHighlightMutation)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(CharacterStatusScreenMutationDetailsPatch), nameof(CharacterStatusScreenMutationDetailsPatch.Postfix))));
+
+            var screen = new DummyCharacterStatusMutationScreen();
+            screen.HandleHighlightMutation(new DummyCharacterMutationLineData
+            {
+                mutation = new DummyCharacterMutation
+                {
+                    Name = "Force Wall",
+                    Level = 1,
+                },
+            });
+
+            const string source = "You generate a wall of force...\n\n9 contiguous stationary force fields.";
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    screen.mutationsDetails.Text,
+                    Is.EqualTo("力の壁を生み出し、9マス連続の力場で敵を遮る。\n\n飛び道具は壁を通過させられる。\n\n9マス分の連続した固定力場を作る。\n持続: 16ラウンド\nクールダウン: 100ラウンド\n力場越しに飛び道具を撃てる。"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(CharacterStatusScreenTranslationPatch),
+                        "CharacterStatus.MutationDetails"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(CharacterStatusScreenTranslationPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        source),
+                    Is.EqualTo(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Postfix_TranslatesMutationOwnerFields_WhenPatched()
     {
         WriteDictionary(

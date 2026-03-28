@@ -28,6 +28,7 @@ public sealed class PopupMessageTranslationPatchTests
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
         MessagePatternTranslator.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
+        DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         DummyPopupMessageTarget.Reset();
@@ -38,6 +39,7 @@ public sealed class PopupMessageTranslationPatchTests
     {
         Translator.ResetForTests();
         MessagePatternTranslator.ResetForTests();
+        DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
@@ -243,6 +245,47 @@ public sealed class PopupMessageTranslationPatchTests
             new DummyPopupMessageTarget().ShowPopup("Prompt", buttons);
 
             Assert.That(DummyPopupMessageTarget.LastButtons![0].text, Is.EqualTo("{{W|B}} キャンセル"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_RecordsProducerRouteTransforms_WithoutPopupSinkObservation_WhenPatched()
+    {
+        WriteDictionary(("Save Slots", "セーブ一覧"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            const string source = "Save Slots";
+            new DummyPopupMessageTarget().ShowPopup(source);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("セーブ一覧"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PopupMessageTranslationPatch),
+                        "Popup.ProducerText.Exact"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(PopupTranslationPatch),
+                        nameof(PopupMessageTranslationPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        source),
+                    Is.EqualTo(0));
+            });
         }
         finally
         {

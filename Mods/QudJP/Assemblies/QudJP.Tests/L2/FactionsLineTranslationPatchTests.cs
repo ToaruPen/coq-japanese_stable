@@ -22,12 +22,16 @@ public sealed class FactionsLineTranslationPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        DynamicTextObservability.ResetForTests();
+        SinkObservation.ResetForTests();
     }
 
     [TearDown]
     public void TearDown()
     {
         Translator.ResetForTests();
+        DynamicTextObservability.ResetForTests();
+        SinkObservation.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -65,6 +69,48 @@ public sealed class FactionsLineTranslationPatchTests
                 Assert.That(line.detailsText.text, Is.EqualTo("Abalの村人たちはあなたを特に気に掛けていないが、攻撃的な者は襲ってくる。"));
                 Assert.That(line.detailsText2.text, Is.EqualTo("あなたは彼らの聖地では歓迎されていない。"));
                 Assert.That(line.detailsText3.text, Is.EqualTo("Arbitrarilyborn Cultは彼らが崇拝するスルタンに関する秘密の取引に関心があり、自分たちに関するうわさ話にも興味を示す。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_RecordsDelegatedOwnerRouteTransform_WithoutUITextSkinSinkObservation_WhenPatched()
+    {
+        WriteDictionary(("The villagers of {0}", "{0}の村人たち"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: AccessTools.Method(typeof(DummyFactionsLine), nameof(DummyFactionsLine.setData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(FactionsLineTranslationPatch), nameof(FactionsLineTranslationPatch.Postfix))));
+
+            var line = new DummyFactionsLine();
+            const string source = "The villagers of Abal";
+            line.setData(new DummyFactionsLineData(source));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(line.barText.text, Is.EqualTo("Abalの村人たち"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(FactionsStatusScreenTranslationPatch),
+                        "The villagers of {0}"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(FactionsStatusScreenTranslationPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        source),
+                    Is.EqualTo(0));
             });
         }
         finally

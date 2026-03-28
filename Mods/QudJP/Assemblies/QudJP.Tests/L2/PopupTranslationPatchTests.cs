@@ -719,6 +719,67 @@ public sealed class PopupTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_ShowConversation_LeavesPayloadForConversationDisplayOwner_WhenPatched()
+    {
+        WriteDictionary(
+            ("Trade", "取引"),
+            ("Choose your response.", "返答を選択してください。"),
+            ("Ask about water", "水について尋ねる"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowConversation)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyConversationElement), nameof(DummyConversationElement.GetDisplayText)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(ConversationDisplayTextPatch), nameof(ConversationDisplayTextPatch.Postfix))));
+
+            const string titleSource = "Trade";
+            const string introSource = "Choose your response.";
+            const string optionSource = "Ask about water";
+            DummyPopupTarget.ShowConversation(
+                Title: titleSource,
+                Intro: introSource,
+                Options: new List<string> { optionSource });
+
+            var translatedTitle = new DummyConversationElement(DummyPopupTarget.LastShowConversationTitle).GetDisplayText(withColor: false);
+            var translatedIntro = new DummyConversationElement(DummyPopupTarget.LastShowConversationIntro).GetDisplayText(withColor: false);
+            var translatedOption = new DummyConversationElement(DummyPopupTarget.LastShowConversationOptions![0]).GetDisplayText(withColor: false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupTarget.LastShowConversationTitle, Is.EqualTo(titleSource));
+                Assert.That(DummyPopupTarget.LastShowConversationIntro, Is.EqualTo(introSource));
+                Assert.That(DummyPopupTarget.LastShowConversationOptions![0], Is.EqualTo(optionSource));
+                Assert.That(translatedTitle, Is.EqualTo("取引"));
+                Assert.That(translatedIntro, Is.EqualTo("返答を選択してください。"));
+                Assert.That(translatedOption, Is.EqualTo("水について尋ねる"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(ConversationDisplayTextPatch),
+                        "ConversationDisplay.ExactLeaf"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(PopupTranslationPatch),
+                        nameof(PopupTranslationPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        titleSource,
+                        titleSource),
+                    Is.GreaterThan(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_ObservationOnly_ShowBlockLogsSinkObservation_WhenPatched()
     {
         WriteDictionary(("Test message", "テストメッセージ"));
