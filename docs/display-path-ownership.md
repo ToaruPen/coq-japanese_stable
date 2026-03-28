@@ -32,10 +32,15 @@ Each route family falls into one of three categories:
 | Player status bar / ability bar | Narrowable | Postfix, dictionary/text update | PlayerStatusBarProducerTranslationPatch, AbilityBarAfterRenderTranslationPatch |
 | Popup conversation | Narrowable | Prefix, `__args` rewrite | PopupTranslationPatch, ConversationDisplayTextPatch |
 | Popup (ShowBlock/ShowOptionList) | Runtime-required | Prefix, `__args` rewrite | PopupTranslationPatch |
-| Historic string expansion | Runtime-required | Postfix, `ref __result` (disabled at runtime) | HistoricStringExpanderPatch |
 | Message log | Runtime-required | Observation-only | MessageLogPatch |
 | UITextSkin | Runtime-required | Observation-only sink | UITextSkinTranslationPatch |
 | SinkPrereq | Runtime-required | Observation-only near-sink | SinkPrereqSetDataTranslationPatch, SinkPrereqUiMethodTranslationPatch |
+
+### Disabled (not subject to L2/L3 checklists until re-enabled)
+
+| Route family | Mechanism | Owner patch |
+|-------------|-----------|-------------|
+| Historic string expansion | Postfix, `ref __result` (TargetMethods yields nothing) | HistoricStringExpanderPatch |
 
 ## Layer Proof Rules
 
