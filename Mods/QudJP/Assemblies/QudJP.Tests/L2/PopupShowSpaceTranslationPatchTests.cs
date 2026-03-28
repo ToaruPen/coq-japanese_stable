@@ -92,6 +92,85 @@ public sealed class PopupShowSpaceTranslationPatchTests
         }
     }
 
+    [Test]
+    public void Prefix_LeavesUnknownShowSpaceMessageUnchanged()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowSpace)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowSpaceTranslationPatch), nameof(PopupShowSpaceTranslationPatch.Prefix), typeof(string).MakeByRefType(), typeof(string).MakeByRefType())));
+
+            const string source = "Untranslated show-space message";
+            DummyPopupShow.ShowSpace(source, "Untranslated title");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowSpaceMessage, Is.EqualTo(source));
+                Assert.That(DummyPopupShow.LastShowSpaceTitle, Is.EqualTo("Untranslated title"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_LeavesEmptyShowSpaceMessageUnchanged()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowSpace)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowSpaceTranslationPatch), nameof(PopupShowSpaceTranslationPatch.Prefix), typeof(string).MakeByRefType(), typeof(string).MakeByRefType())));
+
+            DummyPopupShow.ShowSpace(string.Empty, string.Empty);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowSpaceMessage, Is.EqualTo(string.Empty));
+                Assert.That(DummyPopupShow.LastShowSpaceTitle, Is.EqualTo(string.Empty));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_DirectMarker_StillStripped()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowSpace)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowSpaceTranslationPatch), nameof(PopupShowSpaceTranslationPatch.Prefix), typeof(string).MakeByRefType(), typeof(string).MakeByRefType())));
+
+            DummyPopupShow.ShowSpace("\u0001既に翻訳済みの本文", "\u0001既に翻訳済みのタイトル");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowSpaceMessage, Is.EqualTo("既に翻訳済みの本文"));
+                Assert.That(DummyPopupShow.LastShowSpaceTitle, Is.EqualTo("既に翻訳済みのタイトル"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

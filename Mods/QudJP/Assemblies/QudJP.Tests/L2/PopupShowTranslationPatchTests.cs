@@ -132,6 +132,51 @@ public sealed class PopupShowTranslationPatchTests
         }
     }
 
+    [Test]
+    public void Prefix_LeavesUnknownPopupShowYesNoAsyncMessageUnchanged()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNoAsync)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+
+            const string source = "Untranslated async popup message";
+            _ = DummyPopupShow.ShowYesNoAsync(source);
+
+            Assert.That(DummyPopupShow.LastShowYesNoAsyncMessage, Is.EqualTo(source));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_ShowYesNoAsyncDirectMarker_StillStripped()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNoAsync)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+
+            _ = DummyPopupShow.ShowYesNoAsync("\u0001既に翻訳済み");
+
+            Assert.That(DummyPopupShow.LastShowYesNoAsyncMessage, Is.EqualTo("既に翻訳済み"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
