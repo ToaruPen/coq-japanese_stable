@@ -100,6 +100,44 @@ Use this checklist before marking a route family as complete:
 7. **Death popup**: Die in combat — verify death message and menu options
 8. Check `Player.log` for unclaimed sink observations from `PopupTranslationPatch`
 
+### Message log (runtime-required)
+
+1. `dotnet build && python3 scripts/sync_mod.py`
+2. Launch via `scripts/launch_rosetta.sh`
+3. **Combat messages**: Enter combat with any creature — verify hit/miss/damage messages in the message log
+4. **Status messages**: Pick up, drop, eat, or drink an item — verify feedback messages
+5. **Environmental messages**: Walk into a zone with temperature or radiation — verify notifications
+6. **Zone transition**: Move between zones — verify zone entry messages
+7. Check `Player.log` — verify `[QudJP] MessagePatternTranslator: no pattern for` entries do NOT appear (their presence indicates unclaimed messages that lack a producer-side translation)
+8. Check `Player.log` for `[QudJP] SinkObserve/v1: sink='MessageLogPatch'` entries (observation-only sink recording)
+
+### UITextSkin (runtime-required)
+
+1. `dotnet build && python3 scripts/sync_mod.py`
+2. Launch via `scripts/launch_rosetta.sh`
+3. **Character creation**: Start a new game — verify all module titles, descriptions, and button labels through each CharGen step
+4. **Main menu**: Verify menu option labels and descriptions
+5. **Status screens**: Open character status (`x`), skills (`s`), factions — verify screen headers and section titles
+6. **Conversation UI**: Talk to an NPC — verify conversation text renders correctly
+7. **Options screen**: Open options — verify setting labels and help text
+8. Check `Player.log` for `[QudJP] SinkObserve/v1: sink='UITextSkinTranslationPatch'` entries with route context (e.g., `route='CharGenLocalizationPatch'`, `route='InventoryLocalizationPatch'`)
+
+### SinkPrereq (runtime-required)
+
+1. `dotnet build && python3 scripts/sync_mod.py`
+2. Launch via `scripts/launch_rosetta.sh`
+3. **setData route** (SinkPrereqSetDataTranslationPatch):
+   - Open inventory and hover over items — verify attribute text, description text, and mod descriptions
+   - Open tinkering screen — verify tinker detail lines (bit costs, requirements)
+   - Open character effects list — verify effect line descriptions
+   - Open category scrollers (abilities, mutations) — verify category titles
+4. **UI method route** (SinkPrereqUiMethodTranslationPatch):
+   - Trade with an NPC — verify trade screen highlight descriptions
+   - Open ability manager — verify ability selection detail text
+   - Open cybernetics terminal (if available) — verify terminal row descriptions
+   - Check player status bar for zone text and detail text
+5. Check `Player.log` for `[QudJP] SinkObserve/v1: sink='UITextSkinTranslationPatch'` entries where the route context is `SinkPrereqSetDataTranslationPatch` or `SinkPrereqUiMethodTranslationPatch` (these patches delegate to UITextSkinTranslationPatch via `TranslatePreservingColors`)
+
 ### General L3 verification notes
 
 - Always use Rosetta launch on Apple Silicon — native ARM64 Harmony results are not accepted as evidence.
