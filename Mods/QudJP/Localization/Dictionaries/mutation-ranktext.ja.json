@@ -2358,22 +2358,22 @@
         {
             "key": "mutation:Regeneration:rank:1",
             "context": "Chargen.Mutation.RankText",
-            "text": "戦闘中も自然治癒の全回復量が適用される。\n自然治癒速度+{{rules|20%}}\n毎ラウンド{{rules|10%}}の確率で欠損した部位を再生する。\n毎ラウンド{{rules|1}}%の確率で{{rules|minor physical debuff}}をランダムに解除する。"
+            "text": "戦闘中も自然治癒の全回復量が適用される。\n自然治癒速度+{{rules|20%}}\n毎ラウンド{{rules|10%}}の確率で欠損した部位を再生する。\n毎ラウンド{{rules|1}}%の確率で{{rules|軽度の肉体的デバフ}}をランダムに解除する。"
         },
         {
             "key": "mutation:Regeneration:rank:2",
             "context": "Chargen.Mutation.RankText",
-            "text": "戦闘中も自然治癒の全回復量が適用される。\n自然治癒速度+{{rules|30%}}\n毎ラウンド{{rules|20%}}の確率で欠損した部位を再生する。\n毎ラウンド{{rules|1}}%の確率で{{rules|minor physical debuff}}をランダムに解除する。"
+            "text": "戦闘中も自然治癒の全回復量が適用される。\n自然治癒速度+{{rules|30%}}\n毎ラウンド{{rules|20%}}の確率で欠損した部位を再生する。\n毎ラウンド{{rules|1}}%の確率で{{rules|軽度の肉体的デバフ}}をランダムに解除する。"
         },
         {
             "key": "mutation:Regeneration:rank:3",
             "context": "Chargen.Mutation.RankText",
-            "text": "戦闘中も自然治癒の全回復量が適用される。\n自然治癒速度+{{rules|40%}}\n毎ラウンド{{rules|30%}}の確率で欠損した部位を再生する。\n毎ラウンド{{rules|2}}%の確率で{{rules|minor physical debuff}}をランダムに解除する。"
+            "text": "戦闘中も自然治癒の全回復量が適用される。\n自然治癒速度+{{rules|40%}}\n毎ラウンド{{rules|30%}}の確率で欠損した部位を再生する。\n毎ラウンド{{rules|2}}%の確率で{{rules|軽度の肉体的デバフ}}をランダムに解除する。"
         },
         {
             "key": "mutation:Regeneration:rank:4",
             "context": "Chargen.Mutation.RankText",
-            "text": "戦闘中も自然治癒の全回復量が適用される。\n自然治癒速度+{{rules|50%}}\n毎ラウンド{{rules|40%}}の確率で欠損した部位を再生する。\n毎ラウンド{{rules|2}}%の確率で{{rules|minor physical debuff}}をランダムに解除する。"
+            "text": "戦闘中も自然治癒の全回復量が適用される。\n自然治癒速度+{{rules|50%}}\n毎ラウンド{{rules|40%}}の確率で欠損した部位を再生する。\n毎ラウンド{{rules|2}}%の確率で{{rules|軽度の肉体的デバフ}}をランダムに解除する。"
         },
         {
             "key": "mutation:Regeneration:rank:5",

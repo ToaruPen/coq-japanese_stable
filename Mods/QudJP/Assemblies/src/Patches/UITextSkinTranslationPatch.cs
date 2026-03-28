@@ -133,6 +133,25 @@ public static class UITextSkinTranslationPatch
         return IsAlreadyLocalizedDirectRouteText(source, context);
     }
 
+    internal static bool IsProbablyAlreadyLocalizedText(string? source)
+    {
+        if (string.IsNullOrEmpty(source) || !JapaneseCharacterPattern.IsMatch(source))
+        {
+            return false;
+        }
+
+        var matches = EnglishWordPattern.Matches(source);
+        for (var index = 0; index < matches.Count; index++)
+        {
+            if (!AllowedLocalizedEnglishTokenPattern.IsMatch(matches[index].Value))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     internal static bool IsAlreadyLocalizedDisplayNameText(string source, string? context)
     {
         _ = context;
@@ -272,18 +291,9 @@ public static class UITextSkinTranslationPatch
             return false;
         }
 
-        if (!JapaneseCharacterPattern.IsMatch(source))
+        if (!IsProbablyAlreadyLocalizedText(source))
         {
             return false;
-        }
-
-        var matches = EnglishWordPattern.Matches(source);
-        for (var index = 0; index < matches.Count; index++)
-        {
-            if (!AllowedLocalizedEnglishTokenPattern.IsMatch(matches[index].Value))
-            {
-                return false;
-            }
         }
 
         return !IsStrictDirectRouteContext(context) || !HasDirectRouteDynamicMarkers(source);

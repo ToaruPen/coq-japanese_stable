@@ -33,29 +33,42 @@ public static class LoadingStatusTranslationPatch
     {
         try
         {
-            if (string.IsNullOrEmpty(description))
-            {
-                return;
-            }
-
-            if (MessageFrameTranslator.TryStripDirectTranslationMarker(description, out var stripped))
-            {
-                description = stripped;
-                return;
-            }
-
-            var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
-                description,
-                static visible => StringHelpers.TranslateExactOrLowerAsciiFallback(visible));
-            if (!string.Equals(translated, description, StringComparison.Ordinal))
-            {
-                DynamicTextObservability.RecordTransform(Context, "Loading.Exact", description, translated);
-                description = translated;
-            }
+            description = TranslateStatusText(description, Context, "Loading.Exact");
         }
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: LoadingStatusTranslationPatch.Prefix failed: {0}", ex);
         }
+    }
+
+    internal static string TranslateStatusText(string? source, string route, string family)
+    {
+        var text = source ?? string.Empty;
+        if (text.Length == 0)
+        {
+            return text;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(text, out var stripped))
+        {
+            return stripped;
+        }
+
+        var (visible, _) = ColorAwareTranslationComposer.Strip(text);
+        if (visible.Length == 0 || UITextSkinTranslationPatch.IsProbablyAlreadyLocalizedText(visible))
+        {
+            return text;
+        }
+
+        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
+            text,
+            static visibleText => StringHelpers.TranslateExactOrLowerAsciiFallback(visibleText));
+        if (string.Equals(translated, text, StringComparison.Ordinal))
+        {
+            return text;
+        }
+
+        DynamicTextObservability.RecordTransform(route, family, text, translated);
+        return translated;
     }
 }

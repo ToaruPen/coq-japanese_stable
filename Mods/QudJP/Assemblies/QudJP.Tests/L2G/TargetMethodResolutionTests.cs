@@ -143,6 +143,10 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(QudMenuBottomContextTranslationPatch), "RefreshButtons", "Qud.UI.QudMenuBottomContext", "System.Void", new string[0])]
     [TestCase(typeof(SelectableTextMenuItemProbePatch), "Update", "Qud.UI.SelectableTextMenuItem", "System.Void", new string[0])]
     [TestCase(typeof(LoadingStatusTranslationPatch), "SetLoadingStatus", "XRL.UI.Loading", "System.Void", new[] { "System.String", "System.Boolean" })]
+    [TestCase(typeof(WorldCreationProgressStepProgressTranslationPatch), "StepProgress", "XRL.UI.WorldCreationProgress", "System.Void", new[] { "System.String", "System.Boolean" })]
+    [TestCase(typeof(AddPlayerMessagePatternTranslationPatch), "AddPlayerMessage", "XRL.Messages.MessageQueue", "System.Void", new[] { "System.String", "System.String", "System.Boolean" })]
+    [TestCase(typeof(PopupShowSpaceTranslationPatch), "ShowSpace", "XRL.UI.Popup", "System.Void", new[] { "System.String", "System.String", "System.String", "ConsoleLib.Console.Renderable", "System.Boolean", "System.Boolean", "System.String" })]
+    [TestCase(typeof(GameSummaryScreenTranslationPatch), "UpdateMenuBars", "Qud.UI.GameSummaryScreen", "System.Void", new string[0])]
 #endif
 #if HAS_TMP
     [TestCase(typeof(TextMeshProUguiFontPatch), "OnEnable", "TMPro.TextMeshProUGUI", "System.Void", new string[0])]
@@ -215,6 +219,7 @@ public sealed class TargetMethodResolutionTests
         "System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
         "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
         "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
+        "System.String",
     })]
     [TestCase(typeof(ZoneDisplayNameTranslationPatch), new[]
     {

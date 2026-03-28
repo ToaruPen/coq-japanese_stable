@@ -19,6 +19,7 @@ Each route family falls into one of three categories:
 | Conversation display text | Statically-provable | Postfix, `ref __result` | ConversationDisplayTextPatch |
 | Descriptions/tooltips | Statically-provable | Postfix, `ref __result` / StringBuilder | DescriptionShortDescriptionPatch, DescriptionLongDescriptionPatch, LookTooltipContentPatch |
 | Death reason | Runtime-required | Prefix, `ref` args rewrite | DeathReasonTranslationPatch |
+| Loading / world creation status | Statically-provable | Prefix, `ref` args rewrite | LoadingStatusTranslationPatch, WorldCreationProgressStepProgressTranslationPatch |
 | Zone display names | Statically-provable | Postfix, `ref __result` | ZoneDisplayNameTranslationPatch |
 | Journal entry display | Statically-provable | Postfix, `ref __result` | JournalEntryDisplayTextPatch, JournalMapNoteDisplayTextPatch |
 | Popup message | Statically-provable | Prefix, `__args` rewrite | PopupMessageTranslationPatch |
@@ -30,9 +31,10 @@ Each route family falls into one of three categories:
 | Pick game object screen | Narrowable | Postfix, field update | PickGameObjectScreenTranslationPatch |
 | Menu bottom context | Narrowable | Prefix, field update | QudMenuBottomContextTranslationPatch |
 | Player status bar / ability bar | Narrowable | Postfix, dictionary/text update | PlayerStatusBarProducerTranslationPatch, AbilityBarAfterRenderTranslationPatch |
+| Game summary / tombstone hotkeys | Narrowable | Postfix, field update | GameSummaryScreenTranslationPatch |
 | Popup conversation | Narrowable | Prefix, `__args` rewrite | PopupTranslationPatch, ConversationDisplayTextPatch |
-| Popup (ShowBlock/ShowOptionList) | Runtime-required | Prefix, `__args` rewrite | PopupTranslationPatch |
-| Message log | Runtime-required | Observation-only | MessageLogPatch |
+| Popup (Show/ShowSpace/ShowBlock/ShowOptionList) | Runtime-required | Prefix, `__args` rewrite | PopupShowTranslationPatch, PopupShowSpaceTranslationPatch, PopupTranslationPatch |
+| Message log | Runtime-required | Producer prefixes + observation-only sink | AddPlayerMessagePatternTranslationPatch, PhysicsEnterCellPassByTranslationPatch, ZoneManagerSetActiveZoneMessageQueuePatch, MessageLogPatch |
 | UITextSkin | Runtime-required | Observation-only sink | UITextSkinTranslationPatch |
 | SinkPrereq | Runtime-required | Observation-only near-sink | SinkPrereqSetDataTranslationPatch, SinkPrereqUiMethodTranslationPatch |
 
@@ -109,7 +111,7 @@ Runtime-required rows split into two subcases. Follow the contract declared in t
 7. Check `Player.log` for `MODWARN` or `[QudJP]` errors
 8. Automated pre-check: `python3 scripts/verify_inventory.py`
 
-### Popup ShowBlock/ShowOptionList (runtime-required)
+### Popup Show/ShowSpace/ShowBlock/ShowOptionList (runtime-required)
 
 1. `dotnet build && python3 scripts/sync_mod.py`
 2. Launch via `scripts/launch_rosetta.sh`
@@ -117,19 +119,29 @@ Runtime-required rows split into two subcases. Follow the contract declared in t
 4. **Save delete popup**: Go to load screen, attempt to delete a save — verify prompt text
 5. **Attack prompt**: Attempt to attack a friendly NPC — verify "Do you really want to attack..." text
 6. **Skill point popup**: Level up and attempt to buy a skill without enough points — verify message
-7. **Death popup**: Die in combat — verify death message and menu options
-8. Check `Player.log` for unclaimed sink observations from `PopupTranslationPatch`
+7. **Low HP popup**: Drop below the warning threshold — verify the `ShowSpace` body is Japanese
+8. **Death popup**: Die in combat — verify death title/body and menu options
+9. Check `Player.log` for unclaimed sink observations from `PopupTranslationPatch`, `PopupShowTranslationPatch`, and `PopupShowSpaceTranslationPatch`
 
 ### Message log (runtime-required)
 
 1. `dotnet build && python3 scripts/sync_mod.py`
 2. Launch via `scripts/launch_rosetta.sh`
 3. **Combat messages**: Enter combat with any creature — verify hit/miss/damage messages in the message log
-4. **Status messages**: Pick up, drop, eat, or drink an item — verify feedback messages
-5. **Environmental messages**: Walk into a zone with temperature or radiation — verify notifications
+4. **Combat barks**: Trigger enemy yells / taunts — verify quoted yell messages
+5. **Bleeding ticks**: Let a bleeding target tick — verify damage-from-bleeding messages
 6. **Zone transition**: Move between zones — verify zone entry messages
-7. Check `Player.log` — verify `[QudJP] MessagePatternTranslator: no pattern for` entries do NOT appear (their presence indicates unclaimed messages that lack a producer-side translation)
-8. Check `Player.log` for `[QudJP] SinkObserve/v1: sink='MessageLogPatch'` entries (observation-only sink recording)
+7. **Pass-by text**: Move past a visible creature — verify `You pass by ...` style messages
+8. Check `Player.log` — verify `[QudJP] MessagePatternTranslator: no pattern for` entries do NOT appear for in-scope combat routes
+9. Check `Player.log` for `[QudJP] SinkObserve/v1: sink='MessageLogPatch'` entries and confirm producer-owned routes are not falling back to the sink unexpectedly
+
+### Game summary / tombstone hotkeys (narrowable)
+
+1. `dotnet build && python3 scripts/sync_mod.py`
+2. Launch via `scripts/launch_rosetta.sh`
+3. Die or retire a character to reach the summary screen
+4. Verify the bottom hotkey bar shows Japanese for `Save Tombstone File` and `Exit`
+5. Check `Player.log` for `MODWARN` or `[QudJP]` errors
 
 ### UITextSkin (runtime-required)
 

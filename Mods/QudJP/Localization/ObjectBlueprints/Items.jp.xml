@@ -153,7 +153,7 @@
     <part Name="Physics" Weight="15" />
     <part Name="Description" Short="手指の骨をカーバイド合金に置換し、殴打と握力を大幅に強化する。" />
     <part Name="Render" DisplayName="{{Y|カーバイド製手骨}}" Tile="Items/sw_carbidehand.bmp" TileColor="&amp;b" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="2" BehaviorDescription="+2 STR" />
+    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="2" BehaviorDescription="筋力+2" />
     <part Name="CyberneticsFistReplacement" FistObject="CarbideFist" />
     <tag Name="StartingCybernetic:General" />
     <part Name="ItemElements" Elements="might::3" />
@@ -174,7 +174,7 @@
     <part Name="Physics" Weight="10" />
     <part Name="Description" Short="上腕二頭筋を五等分の人工筋に置換し、屈伸の瞬発力を劇的に高める。" />
     <part Name="Render" DisplayName="{{Y|ペンタセプス}}" Tile="Items/sw_pentacips.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Feet" Cost="2" BehaviorDescription="+2 STR" />
+    <part Name="CyberneticsBaseItem" Slots="Feet" Cost="2" BehaviorDescription="筋力+2" />
     <part Name="CyberneticsPropertyModifier" Props="ChargeRangeModifier:4" />
     <tag Name="StartingCybernetic:General" />
   </object>
@@ -189,7 +189,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="膨張する人工軸索が神経伝達を加速し、反射的な回避を助ける。" />
     <part Name="Render" DisplayName="{{Y|膨張軸索}}" Tile="Items/sw_axions.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="2" BehaviorDescription="+2 DEX" />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="2" BehaviorDescription="敏捷+2" />
     <part Name="CyberneticsInflatableAxons" Bonus="40" />
     <tag Name="StartingCybernetic:General" />
     <tag Name="CyberneticsOneOnly" />
@@ -311,14 +311,14 @@
     <part Name="Physics" Weight="5" />
     <part Name="Description" Short="滑らかな金属の義手。精密作業と握力が共に向上する。" />
     <part Name="Render" DisplayName="{{Y|バイオニックハンド}}" Tile="Items/sw_bionichands.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="3" BehaviorDescription="+2 STR&#10;+2 DEX" />
+    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="3" BehaviorDescription="筋力+2&#10;敏捷+2" />
     <part Name="CyberneticsStatModifier" Stats="Agility:2" />
   </object>
   <object Name="BionicArm" Inherits="BaseCyberneticsEquipment_3point" Replace="true">
     <part Name="Physics" Weight="8" />
     <part Name="Description" Short="骨格・筋肉・腱をすべて人工パーツに置換したバイオニックアーム。" />
     <part Name="Render" DisplayName="{{Y|バイオニックアーム}}" Tile="Items/sw_bionicarm.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Arm" Cost="3" BehaviorDescription="+3 STR" />
+    <part Name="CyberneticsBaseItem" Slots="Arm" Cost="3" BehaviorDescription="筋力+3" />
     <part Name="CyberneticsStatModifier" Stats="Strength:2" />
   </object>
   <object Name="UltraElasticAnkleTendons" Inherits="BaseCyberneticsEquipment_3point" Replace="true">
@@ -354,7 +354,7 @@
     <part Name="Physics" Weight="3" />
     <part Name="Description" Short="巨人族の遺伝子を模した義手。握れば岩さえ砕ける。" />
     <part Name="Render" DisplayName="{{Y|巨人の手}}" Tile="Items/sw_gianthands.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="3" BehaviorDescription="+4 STR" />
+    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="3" BehaviorDescription="筋力+4" />
     <part Name="GiantHands" WorksOnSelf="false" WorksOnImplantee="true" />
   </object>
   <object Name="MedassistModule" Inherits="BaseCyberneticsEquipment_3point" Replace="true">
@@ -462,7 +462,7 @@
     <part Name="Physics" Weight="18" />
     <part Name="Description" Short="フレライト合金の骨格を手に移植し、怪力を常時発揮する。" />
     <part Name="Render" DisplayName="{{Y|フレライト手骨}}" Tile="Items/sw_carbidehand.bmp" TileColor="&amp;K" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="4" BehaviorDescription="+4 STR" />
+    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="4" BehaviorDescription="筋力+4" />
     <part Name="CyberneticsFistReplacement" FistObject="FulleriteFist" />
     <part Name="ItemElements" Elements="might::5" />
   </object>
@@ -658,7 +658,7 @@
     <part Name="Physics" Weight="9" />
     <part Name="Description" Short="クリスティール骨を移植した究極の義手。信じがたい破壊力を誇る。" />
     <part Name="Render" DisplayName="{{Y|クリスティール手骨}}" Tile="Items/sw_carbidehand.bmp" TileColor="&amp;G" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="8" BehaviorDescription="+6 STR" />
+    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="8" BehaviorDescription="筋力+6" />
     <part Name="CyberneticsFistReplacement" FistObject="CrysteelFist" />
     <part Name="ItemElements" Elements="might::8" />
   </object>

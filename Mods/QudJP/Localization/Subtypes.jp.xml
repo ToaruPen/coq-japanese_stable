@@ -312,7 +312,7 @@
       <extrainfo>交易品を所持して開始</extrainfo>
     </subtype>
 
-    <subtype Name="Watervine Farmer" DisplayName="ウォーターバイン農家" Gear="StartingGear_WatervineFarmer" Tile="creatures/caste_24.bmp" DetailColor="y">
+    <subtype Name="Watervine Farmer" DisplayName="ウォーターヴァイン農家" Gear="StartingGear_WatervineFarmer" Tile="creatures/caste_24.bmp" DetailColor="y">
       <stat Name="Toughness" Bonus="2" />
       <skills>
         <skill Name="CookingAndGathering" />

@@ -7,7 +7,7 @@ using HarmonyLib;
 namespace QudJP.Patches;
 
 /// <summary>
-/// Observes Message parameter in Popup.Show and Popup.ShowYesNo.
+/// Observes Message parameter in Popup.Show / ShowYesNo / ShowYesNoCancel / ShowYesNoAsync.
 /// Producer-owned translations may arrive pre-marked; sink-side patch only strips the marker.
 /// </summary>
 [HarmonyPatch]
@@ -72,6 +72,21 @@ public static class PopupShowTranslationPatch
         else
         {
             Trace.TraceWarning("QudJP: {0} failed to resolve Popup.ShowYesNoCancel.", Context);
+        }
+
+        var showYesNoAsyncMethod = AccessTools.Method(popupType, "ShowYesNoAsync", new[] { typeof(string) });
+        if (showYesNoAsyncMethod is null)
+        {
+            showYesNoAsyncMethod = AccessTools.Method(popupType, "ShowYesNoAsync");
+        }
+
+        if (showYesNoAsyncMethod is not null)
+        {
+            targets.Add(showYesNoAsyncMethod);
+        }
+        else
+        {
+            Trace.TraceWarning("QudJP: {0} failed to resolve Popup.ShowYesNoAsync.", Context);
         }
 
         if (targets.Count == 0)

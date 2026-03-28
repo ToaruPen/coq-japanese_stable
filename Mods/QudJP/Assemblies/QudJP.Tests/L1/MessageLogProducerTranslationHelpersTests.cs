@@ -24,6 +24,7 @@ public sealed class MessageLogProducerTranslationHelpersTests
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
         MessagePatternTranslator.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
+        DynamicTextObservability.ResetForTests();
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 
@@ -32,6 +33,7 @@ public sealed class MessageLogProducerTranslationHelpersTests
     {
         Translator.ResetForTests();
         MessagePatternTranslator.ResetForTests();
+        DynamicTextObservability.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -74,6 +76,25 @@ public sealed class MessageLogProducerTranslationHelpersTests
         {
             Assert.That(translated, Is.True);
             Assert.That(result, Is.EqualTo("錆びたアーチ道, 地下2層"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateZoneDisplayName_TranslatesStrataHighTemplate()
+    {
+        WriteExactDictionary(
+            ("Joppa", "ジョッパ"),
+            ("{0} strata high", "地上{0}層"));
+
+        var translated = MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+            "Joppa, 3 strata high",
+            "ZoneDisplayNameTranslationPatch",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("ジョッパ, 地上3層"));
         });
     }
 
@@ -189,6 +210,80 @@ public sealed class MessageLogProducerTranslationHelpersTests
         var result = MessageLogProducerTranslationHelpers.PrepareZoneBannerMessage(
             source,
             "ZoneManagerSetActiveZoneTranslationPatch");
+
+        Assert.That(result, Is.EqualTo(source));
+    }
+
+    [Test]
+    public void PreparePatternMessage_MarksTranslatedMessageAndCountsProducerRoute()
+    {
+        WritePatternDictionary(("^You hit \\((x\\d+)\\) for (\\d+) damage with your (.+?)[.!] \\[(.+?)\\]$", "{2}で{1}ダメージを与えた。({0}) [{3}]"));
+
+        var result = MessageLogProducerTranslationHelpers.PreparePatternMessage(
+            "You hit (x1) for 2 damage with your 青銅の短剣! [11]",
+            nameof(AddPlayerMessagePatternTranslationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo("\u0001青銅の短剣で2ダメージを与えた。(x1) [11]"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(AddPlayerMessagePatternTranslationPatch), "Pattern"),
+                Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void PreparePatternMessage_MarksAlreadyLocalizedTextWithoutRelookup()
+    {
+        var result = MessageLogProducerTranslationHelpers.PreparePatternMessage(
+            "既に翻訳済みのメッセージ",
+            nameof(AddPlayerMessagePatternTranslationPatch));
+
+        Assert.That(result, Is.EqualTo("\u0001既に翻訳済みのメッセージ"));
+    }
+
+    [Test]
+    public void PreparePatternMessage_LeavesUnknownEnglishMessageUnchanged()
+    {
+        const string source = "Pattern-free message";
+
+        var result = MessageLogProducerTranslationHelpers.PreparePatternMessage(
+            source,
+            nameof(AddPlayerMessagePatternTranslationPatch));
+
+        Assert.That(result, Is.EqualTo(source));
+    }
+
+    [Test]
+    public void PreparePatternMessage_ReturnsEmptyInputUnchanged()
+    {
+        var result = MessageLogProducerTranslationHelpers.PreparePatternMessage(
+            string.Empty,
+            nameof(AddPlayerMessagePatternTranslationPatch));
+
+        Assert.That(result, Is.EqualTo(string.Empty));
+    }
+
+    [Test]
+    public void PreparePatternMessage_PreservesColorTags()
+    {
+        WritePatternDictionary(("^You hit \\((x\\d+)\\) for (\\d+) damage with your (.+?)[.!] \\[(.+?)\\]$", "{2}で{1}ダメージを与えた。({0}) [{3}]"));
+
+        var result = MessageLogProducerTranslationHelpers.PreparePatternMessage(
+            "You hit (x1) for 2 damage with your <color=#ff0>青銅の短剣</color>! [11]",
+            nameof(AddPlayerMessagePatternTranslationPatch));
+
+        Assert.That(result, Is.EqualTo("\u0001<color=#ff0>青銅の短剣</color>で2ダメージを与えた。(x1) [11]"));
+    }
+
+    [Test]
+    public void PreparePatternMessage_PreservesDirectTranslationMarker()
+    {
+        const string source = "\u0001You hit (x1) for 2 damage with your 青銅の短剣! [11]";
+
+        var result = MessageLogProducerTranslationHelpers.PreparePatternMessage(
+            source,
+            nameof(AddPlayerMessagePatternTranslationPatch));
 
         Assert.That(result, Is.EqualTo(source));
     }

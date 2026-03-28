@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace QudJP.Patches;
@@ -70,6 +71,43 @@ internal static class MessageLogProducerTranslationHelpers
         }
 
         DynamicTextObservability.RecordTransform(route, "PassBy", source, translated);
+        return MessageFrameTranslator.MarkDirectTranslation(translated);
+    }
+
+    internal static string PreparePatternMessage(string source, string route)
+    {
+        if (string.IsNullOrEmpty(source))
+        {
+            return source ?? string.Empty;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
+        {
+            return source;
+        }
+
+        var leadingLineBreakLength = GetLeadingLineBreakLength(source);
+        var core = leadingLineBreakLength == 0 ? source : source.Substring(leadingLineBreakLength);
+        if (core.Length == 0)
+        {
+            return source;
+        }
+
+        var (visible, _) = ColorAwareTranslationComposer.Strip(core);
+        if (UITextSkinTranslationPatch.IsProbablyAlreadyLocalizedText(visible))
+        {
+            return MessageFrameTranslator.MarkDirectTranslation(source);
+        }
+
+        if (!MessagePatternTranslator.TryTranslateWithoutLogging(core, out var translatedCore))
+        {
+            return source;
+        }
+
+        var translated = leadingLineBreakLength == 0
+            ? translatedCore
+            : PrependLeadingLineBreaks(source, leadingLineBreakLength, translatedCore);
+        DynamicTextObservability.RecordTransform(route, "Pattern", source, translated);
         return MessageFrameTranslator.MarkDirectTranslation(translated);
     }
 
@@ -196,5 +234,24 @@ internal static class MessageLogProducerTranslationHelpers
         }
 
         return false;
+    }
+
+    private static int GetLeadingLineBreakLength(string source)
+    {
+        var index = 0;
+        while (index < source.Length && (source[index] == '\r' || source[index] == '\n'))
+        {
+            index++;
+        }
+
+        return index;
+    }
+
+    private static string PrependLeadingLineBreaks(string source, int leadingLineBreakLength, string translatedCore)
+    {
+        var builder = new StringBuilder(leadingLineBreakLength + translatedCore.Length);
+        builder.Append(source, 0, leadingLineBreakLength);
+        builder.Append(translatedCore);
+        return builder.ToString();
     }
 }
