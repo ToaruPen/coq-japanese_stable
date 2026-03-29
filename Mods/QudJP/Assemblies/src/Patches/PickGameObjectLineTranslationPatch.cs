@@ -86,10 +86,6 @@ public static class PickGameObjectLineTranslationPatch
         var route = ObservabilityHelpers.ComposeContext(Context, "field=text");
         var translatedCategory = TranslateVisibleText(category, route, "PickGameObjectLine.CategoryText");
         var translated = "[" + (GetBoolMemberValue(data, "collapsed") ? "+" : "-") + "] {{K|" + translatedCategory + "}}";
-        if (!string.Equals(translated, source, StringComparison.Ordinal))
-        {
-            DynamicTextObservability.RecordTransform(route, "PickGameObjectLine.CategoryText", source, translated);
-        }
 
         OwnerTextSetter.SetTranslatedText(
             GetMemberValue(instance, "text"),
@@ -130,7 +126,7 @@ public static class PickGameObjectLineTranslationPatch
 
         var source = BuildItemText(go);
         var route = ObservabilityHelpers.ComposeContext(Context, "field=text");
-        var translated = TranslateItemText(go, source, route);
+        var translated = TranslateItemText(go, route);
         OwnerTextSetter.SetTranslatedText(
             GetMemberValue(instance, "text"),
             source,
@@ -169,7 +165,7 @@ public static class PickGameObjectLineTranslationPatch
         return builder.ToString();
     }
 
-    private static string TranslateItemText(object go, string source, string route)
+    private static string TranslateItemText(object go, string route)
     {
         var builder = new StringBuilder();
         var displayName = GetRequiredStringMemberValue(go, "DisplayName");
@@ -188,14 +184,7 @@ public static class PickGameObjectLineTranslationPatch
             builder.Append(TranslateVisibleText(context, route, "PickGameObjectLine.ItemText"));
             builder.Append(']');
         }
-
-        var translated = builder.ToString();
-        if (!string.Equals(translated, source, StringComparison.Ordinal))
-        {
-            DynamicTextObservability.RecordTransform(route, "PickGameObjectLine.ItemText", source, translated);
-        }
-
-        return translated;
+        return builder.ToString();
     }
 
     private static void ApplyHotkeyText(object instance, object data)
@@ -204,7 +193,7 @@ public static class PickGameObjectLineTranslationPatch
         var hotkeyDescription = GetStringMemberValue(data, "hotkeyDescription");
         var text = string.IsNullOrEmpty(hotkeyDescription)
             ? indent + " "
-            : indent + "{{Y|{{w|" + hotkeyDescription + "}})}} ";
+            : indent + "{{Y|{{w|" + hotkeyDescription + "}}}} ";
         OwnerTextSetter.SetTranslatedText(
             GetMemberValue(instance, "hotkey"),
             text,
@@ -269,25 +258,7 @@ public static class PickGameObjectLineTranslationPatch
         return GetStaticMemberValue(screenType, "ShowContext") as bool? ?? false;
     }
 
-    private static string TranslateVisibleText(string source, string route, string family)
-    {
-        if (string.IsNullOrEmpty(source))
-        {
-            return source;
-        }
-
-        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
-            source,
-            static visible => StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var candidate)
-                ? candidate
-                : visible);
-        if (!string.Equals(translated, source, StringComparison.Ordinal))
-        {
-            DynamicTextObservability.RecordTransform(route, family, source, translated);
-        }
-
-        return translated;
-    }
+    private static string TranslateVisibleText(string source, string route, string family) => UiBindingTranslationHelpers.TranslateVisibleText(source, route, family);
 
     private static Type? ResolvePickGameObjectScreenType()
     {
@@ -356,40 +327,14 @@ public static class PickGameObjectLineTranslationPatch
         return field?.GetValue(null);
     }
 
-    private static object? GetMemberValue(object instance, string memberName)
-    {
-        var type = instance.GetType();
-        var property = AccessTools.Property(type, memberName);
-        if (property is not null && property.CanRead)
-        {
-            return property.GetValue(instance);
-        }
+    private static object? GetMemberValue(object instance, string memberName) => UiBindingTranslationHelpers.GetMemberValue(instance, memberName);
 
-        var field = AccessTools.Field(type, memberName);
-        return field?.GetValue(instance);
-    }
-
-    private static string? GetStringMemberValue(object instance, string memberName)
-    {
-        return GetMemberValue(instance, memberName) as string;
-    }
+    private static string? GetStringMemberValue(object instance, string memberName) => UiBindingTranslationHelpers.GetStringMemberValue(instance, memberName);
 
     private static bool GetBoolMemberValue(object instance, string memberName)
     {
         return GetMemberValue(instance, memberName) as bool? ?? false;
     }
 
-    private static void SetMemberValue(object instance, string memberName, object? value)
-    {
-        var type = instance.GetType();
-        var property = AccessTools.Property(type, memberName);
-        if (property is not null && property.CanWrite)
-        {
-            property.SetValue(instance, value);
-            return;
-        }
-
-        var field = AccessTools.Field(type, memberName);
-        field?.SetValue(instance, value);
-    }
+    private static void SetMemberValue(object instance, string memberName, object? value) => UiBindingTranslationHelpers.SetMemberValue(instance, memberName, value);
 }

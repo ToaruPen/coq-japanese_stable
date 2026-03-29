@@ -421,9 +421,13 @@ public sealed class Issue201OtherUiBindingPatchTests
                 Assert.That(itemTarget.text.Text, Does.Contain("あなたの所有"));
                 Assert.That(itemTarget.text.Text, Does.Contain("装備中"));
                 Assert.That(itemTarget.rightFloatText.Text, Is.EqualTo("{{K|7#}}"));
+                Assert.That(itemTarget.hotkey.Text, Is.EqualTo("{{Y|{{w|a}}}} "));
                 Assert.That(DummyPickGameObjectLineTarget.categoryExpandOptions[0].Description, Is.EqualTo("展開"));
                 Assert.That(DummyPickGameObjectLineTarget.categoryCollapseOptions[0].Description, Is.EqualTo("折りたたむ"));
                 Assert.That(DummyPickGameObjectLineTarget.itemOptions[0].Description, Is.EqualTo("選択"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(PickGameObjectLineTranslationPatch), "PickGameObjectLine.CategoryText"),
+                    Is.EqualTo(1));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(PickGameObjectLineTranslationPatch), "PickGameObjectLine.ItemText"),
                     Is.GreaterThan(0));

@@ -75,10 +75,6 @@ public static class AbilityManagerLineTranslationPatch
         var source = "[" + (collapsed ? "+" : "-") + "] " + category;
         var route = ObservabilityHelpers.ComposeContext(Context, "field=text");
         var translated = "[" + (collapsed ? "+" : "-") + "] " + TranslateVisibleText(category, route, "AbilityManagerLine.CategoryText");
-        if (!string.Equals(translated, source, StringComparison.Ordinal))
-        {
-            DynamicTextObservability.RecordTransform(route, "AbilityManagerLine.CategoryText", source, translated);
-        }
 
         OwnerTextSetter.SetTranslatedText(
             GetMemberValue(instance, "text"),
@@ -281,25 +277,7 @@ public static class AbilityManagerLineTranslationPatch
         }
     }
 
-    private static string TranslateVisibleText(string source, string route, string family)
-    {
-        if (string.IsNullOrEmpty(source))
-        {
-            return source;
-        }
-
-        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
-            source,
-            static visible => StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var candidate)
-                ? candidate
-                : visible);
-        if (!string.Equals(translated, source, StringComparison.Ordinal))
-        {
-            DynamicTextObservability.RecordTransform(route, family, source, translated);
-        }
-
-        return translated;
-    }
+    private static string TranslateVisibleText(string source, string route, string family) => UiBindingTranslationHelpers.TranslateVisibleText(source, route, family);
 
     private static string GetRequiredStringMemberValue(object instance, string memberName)
     {
@@ -351,23 +329,9 @@ public static class AbilityManagerLineTranslationPatch
         return field?.GetValue(null);
     }
 
-    private static object? GetMemberValue(object instance, string memberName)
-    {
-        var type = instance.GetType();
-        var property = AccessTools.Property(type, memberName);
-        if (property is not null && property.CanRead)
-        {
-            return property.GetValue(instance);
-        }
+    private static object? GetMemberValue(object instance, string memberName) => UiBindingTranslationHelpers.GetMemberValue(instance, memberName);
 
-        var field = AccessTools.Field(type, memberName);
-        return field?.GetValue(instance);
-    }
-
-    private static string? GetStringMemberValue(object instance, string memberName)
-    {
-        return GetMemberValue(instance, memberName) as string;
-    }
+    private static string? GetStringMemberValue(object instance, string memberName) => UiBindingTranslationHelpers.GetStringMemberValue(instance, memberName);
 
     private static bool GetBoolMemberValue(object instance, string memberName)
     {
@@ -380,17 +344,5 @@ public static class AbilityManagerLineTranslationPatch
         return value is int intValue ? intValue : 0;
     }
 
-    private static void SetMemberValue(object instance, string memberName, object? value)
-    {
-        var type = instance.GetType();
-        var property = AccessTools.Property(type, memberName);
-        if (property is not null && property.CanWrite)
-        {
-            property.SetValue(instance, value);
-            return;
-        }
-
-        var field = AccessTools.Field(type, memberName);
-        field?.SetValue(instance, value);
-    }
+    private static void SetMemberValue(object instance, string memberName, object? value) => UiBindingTranslationHelpers.SetMemberValue(instance, memberName, value);
 }
