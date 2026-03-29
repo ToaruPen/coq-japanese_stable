@@ -101,6 +101,35 @@ internal static class MessageLogProducerTranslationHelpers
         return source;
     }
 
+    internal static bool TryPreparePatternMessage(
+        ref string source,
+        string route,
+        string detail,
+        bool markJapaneseAsDirect = false)
+    {
+        if (string.IsNullOrEmpty(source)
+            || MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
+        {
+            return false;
+        }
+
+        if (markJapaneseAsDirect && ContainsJapaneseCharacters(source))
+        {
+            source = MessageFrameTranslator.MarkDirectTranslation(source);
+            return true;
+        }
+
+        var translated = MessagePatternTranslator.Translate(source, route);
+        if (string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(route, detail, source, translated);
+        source = MessageFrameTranslator.MarkDirectTranslation(translated);
+        return true;
+    }
+
     private static string TranslateVisibleZoneDisplayName(string source)
     {
         if (TryTranslateZoneSegment(source, out var translated))

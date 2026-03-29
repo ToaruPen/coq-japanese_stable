@@ -503,6 +503,22 @@
         {
             "key": "You feel nauseous.",
             "text": "吐き気がする。"
+        },
+        {
+            "key": "You cannot go that way.",
+            "text": "そちらには行けない。"
+        },
+        {
+            "key": "ThawZone exception",
+            "text": "ゾーン解凍エラー"
+        },
+        {
+            "key": "Zone build failure:",
+            "text": "ゾーン構築失敗:"
+        },
+        {
+            "key": "WARNING: You have the Disable Zone Caching option enabled, this will cause massive memory use over time.",
+            "text": "警告: ゾーンキャッシュ無効オプションが有効なため、時間の経過とともに大量のメモリを消費する。"
         }
     ]
 }
