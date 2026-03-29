@@ -1,3 +1,5 @@
+#pragma warning disable CS0649
+
 using System.Linq;
 
 namespace QudJP.Tests.DummyTargets;
@@ -145,6 +147,8 @@ internal sealed class DummyPickGameObjectScreen
 
 internal sealed class DummyInventoryAndEquipmentStatusScreen
 {
+    public DummyMenuOption CMD_SHOWCYBERNETICS = new DummyMenuOption("Toggle Cybernetics");
+
     public DummyMenuOption CMD_OPTIONS = new DummyMenuOption("Display Options");
 
     public DummyMenuOption SET_PRIMARY_LIMB = new DummyMenuOption("Set Primary Limb");
@@ -159,8 +163,24 @@ internal sealed class DummyInventoryAndEquipmentStatusScreen
 
     public DummyMenuOption QUICK_APPLY = new DummyMenuOption("Quick Apply");
 
+    public DummyUITextSkin priceText = new DummyUITextSkin();
+
+    public DummyUITextSkin weightText = new DummyUITextSkin();
+
+    public DummyUITextSkin cyberneticsHotkeySkin = new DummyUITextSkin();
+
+    public DummyUITextSkin cyberneticsHotkeySkinForList = new DummyUITextSkin();
+
+    public bool showCybernetics;
+
     public void UpdateViewFromData()
     {
+        priceText.SetText("{{B|$42}}");
+        weightText.SetText("{{C|12{{K|/34}} lbs. }}");
+        cyberneticsHotkeySkin.text = showCybernetics ? "{{hotkey|[~Toggle]}} show equipment" : "{{hotkey|[~Toggle]}} show cybernetics";
+        cyberneticsHotkeySkin.Apply();
+        cyberneticsHotkeySkinForList.text = showCybernetics ? "{{hotkey|[~Toggle]}} show equipment" : "{{hotkey|[~Toggle]}} show cybernetics";
+        cyberneticsHotkeySkinForList.Apply();
         _ = CMD_OPTIONS;
     }
 }
