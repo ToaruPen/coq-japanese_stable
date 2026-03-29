@@ -179,10 +179,37 @@ internal sealed class DummyTradeScreen
 {
     public DummyUITextSkinField detailsRightText = new DummyUITextSkinField();
     public DummyUITextSkinField detailsLeftText = new DummyUITextSkinField();
+    public DummyUITextSkinField[] traderNames = new DummyUITextSkinField[]
+    {
+        new DummyUITextSkinField(),
+        new DummyUITextSkinField(),
+    };
 
     public void HandleHighlightObject(DummyFrameworkDataElement element)
     {
         detailsRightText.SetText(element.Description ?? "");
         detailsLeftText.SetText(element.Title ?? "");
+    }
+
+    public void UpdateTitleBars()
+    {
+        traderNames[0].SetText("Mehmet");
+        traderNames[1].SetText("Player Name");
+    }
+}
+
+internal sealed class DummyTradeLine
+{
+    public DummyUITextSkinField categoryText = new DummyUITextSkinField();
+    public DummyUITextSkinField text = new DummyUITextSkinField();
+    public DummyUITextSkinField check = new DummyUITextSkinField();
+    public DummyUITextSkinField rightFloatText = new DummyUITextSkinField();
+
+    public void setData(DummyFrameworkDataElement data)
+    {
+        categoryText.SetText("[+] " + (data.Title ?? ""));
+        text.SetText(data.Description ?? "");
+        check.SetText("{{W|1}}");
+        rightFloatText.SetText("[$1.00]");
     }
 }

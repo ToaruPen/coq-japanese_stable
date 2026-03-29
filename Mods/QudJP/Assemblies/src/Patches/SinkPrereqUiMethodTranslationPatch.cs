@@ -26,6 +26,7 @@ public static class SinkPrereqUiMethodTranslationPatch
         ("Qud.UI.TradeScreen", "HandleHighlightObject"),
         ("MapScrollerPinItem", "SetData"),
         ("Qud.UI.PlayerStatusBar", "Update"),
+        ("Qud.UI.TradeScreen", "UpdateTitleBars"),
     };
 
     [HarmonyTargetMethods]
@@ -119,6 +120,11 @@ public static class SinkPrereqUiMethodTranslationPatch
         "detailsRightText", "detailsLeftText", "detailsText", "ZoneText",
     };
 
+    private static readonly string[] ArrayTextSkinFieldNames =
+    {
+        "traderNames",
+    };
+
     public static void Postfix(object __instance)
     {
         try
@@ -127,6 +133,12 @@ public static class SinkPrereqUiMethodTranslationPatch
             {
                 SinkPrereqTextFieldTranslator.TranslateField(
                     __instance, TextSkinFieldNames[index], Context);
+            }
+
+            for (var index = 0; index < ArrayTextSkinFieldNames.Length; index++)
+            {
+                SinkPrereqTextFieldTranslator.TranslateArrayField(
+                    __instance, ArrayTextSkinFieldNames[index], Context);
             }
         }
         catch (Exception ex)
