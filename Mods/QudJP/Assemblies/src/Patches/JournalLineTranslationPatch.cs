@@ -362,7 +362,8 @@ public static class JournalLineTranslationPatch
         TrySetActive(GetMemberValue(instance, "imageContainer"), renderable is not null);
         if (renderable is not null)
         {
-            _ = AccessTools.Method(GetMemberValue(instance, "image")?.GetType(), "FromRenderable")?.Invoke(GetMemberValue(instance, "image"), new[] { renderable });
+            var image = GetMemberValue(instance, "image");
+            _ = AccessTools.Method(image?.GetType(), "FromRenderable")?.Invoke(image, new[] { renderable });
         }
     }
 
@@ -495,6 +496,9 @@ public static class JournalLineTranslationPatch
         return AccessTools.Method(instance.GetType(), methodName)?.Invoke(instance, args) as string;
     }
 
+    // No explicit parameter types: the target methods (e.g. JournalEntry.Has)
+    // have no conflicting overloads. Explicit types are reserved for cases with
+    // real ambiguity (e.g. SetActive). L2 tests validate resolution.
     private static bool InvokeBoolMethod(object instance, string methodName, params object?[]? args)
     {
         return AccessTools.Method(instance.GetType(), methodName)?.Invoke(instance, args) as bool? ?? false;

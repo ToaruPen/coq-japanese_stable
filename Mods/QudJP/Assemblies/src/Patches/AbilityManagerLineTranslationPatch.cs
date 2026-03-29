@@ -124,7 +124,11 @@ public static class AbilityManagerLineTranslationPatch
             ? TranslateVisibleText(displayNameSource, route, "AbilityManagerLine.AbilityText")
             : displayNameSource;
 
-        var quickKey = GetMemberValue(data, "quickKey")?.ToString() ?? string.Empty;
+        var quickKey = GetMemberValue(data, "quickKey")?.ToString();
+        if (quickKey is null)
+        {
+            quickKey = string.Empty;
+        }
         var hotkeyDescription = GetStringMemberValue(data, "hotkeyDescription");
         var enabled = GetBoolMemberValue(ability, "Enabled");
         var isAttack = GetBoolMemberValue(ability, "IsAttack");
