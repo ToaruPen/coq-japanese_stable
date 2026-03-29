@@ -112,6 +112,16 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^You miss!$",
+      "template": "攻撃は外れた！",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You miss! \\[(.+?) vs (.+?)\\]$",
+      "template": "攻撃は外れた！ [{0} vs {1}]",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^You miss (.+?)[.!]?$",
       "template": "{0}への攻撃は外れた",
       "route": "emit-message"
@@ -352,6 +362,11 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) misses you! \\[(.+?) vs (.+?)\\]$",
+      "template": "{0}の攻撃は外れた！ [{1} vs {2}]",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically (?:hits|hit) you \\(x(\\d+)\\) with (?:a |an |the )?(.+?) for (\\d+) damage!$",
       "template": "{0}の{2}が会心し、{3}ダメージを受けた！ (x{1})",
       "route": "message-frame"
@@ -532,8 +547,28 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^You don't penetrate (?:the )?(.+?)の armor with your (.+?)[.!] \\[(.+?)\\]$",
+      "pattern": "^You block with (.+?)! \\(\\+(\\d+) AV\\)$",
+      "template": "{0}で防御した！ (+{1} AV)",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stagger (.+) with your shield block!$",
+      "template": "盾で受け止めて{0}をよろめかせた！",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You are staggered by (?:the )?(.+?)(?:'s|s'|の) block!$",
+      "template": "{0}の防御でよろめいた！",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You don't penetrate (?:the )?(.+?)(?:'s|s'|の) armor with your (.+?)[.!] \\[(.+?)\\]$",
       "template": "{1}では{0}の装甲を貫けない。[{2}]",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You don't penetrate (?:the )?(.+?)(?:'s|s'|の) armor[.!] \\[(.+?)\\]$",
+      "template": "{0}の装甲を貫けない。[{1}]",
       "route": "emit-message"
     },
     {
@@ -567,17 +602,17 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s') armor!$",
+      "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s'|の) armor!$",
       "template": "{0}の防具を貫通できなかった！",
       "route": "emit-message"
     },
     {
-      "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s') armor\\.$",
+      "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s'|の) armor\\.$",
       "template": "{0}の防具を貫通できなかった。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s') armor$",
+      "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s'|の) armor$",
       "template": "{0}の防具を貫通できなかった",
       "route": "emit-message"
     },
@@ -940,6 +975,16 @@
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:isn't|aren't) working!$",
       "template": "{0}は作動していない！",
       "route": "emit-message"
+    },
+    {
+      "pattern": "^Your mental attack does not affect (.+?)\\.$",
+      "template": "あなたの精神攻撃は{0}に効かない。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You fail to deal damage with your attack! \\[(.+?)\\]$",
+      "template": "あなたの攻撃はダメージを与えられなかった！ [{0}]",
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:fails|fail) to deal damage with (?:his|her|its|their) attack! \\[(.+?)\\]$",

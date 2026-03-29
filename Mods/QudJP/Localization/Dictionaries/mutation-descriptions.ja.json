@@ -25,14 +25,34 @@
       "text": "購入するたびに突然変異ポイントを余計に1つ得るが、発現は後回しになる。レベルアップのたび{{rules|33%}}の確率でゲノムが不安定化し、ランダムな突然変異3つから1つを選んで発現する。"
     },
     {
+      "key": "mutation:Acid Slime Glands",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "腐食性の酸を吐き出す。"
+    },
+    {
       "key": "mutation:Adrenal Control",
       "context": "Chargen.Mutation.LongDescription",
       "text": "あなたは自分の体内でアドレナリンの分泌を制御できる。\n\n20ターンのあいだアドレナリンの流れを高められる。\nそのあいだ{{C|+10}}の俊敏を得て、ほかの肉体突然変異のランクが{{C|+1}}上昇する。\nクールダウン: 200ターン"
     },
     {
+      "key": "mutation:Astral",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "別の現実面に生きている。"
+    },
+    {
       "key": "mutation:Beak",
       "context": "Chargen.Mutation.LongDescription",
       "text": "顔に立派なくちばしが生えている。\n\n{{rules|+1}} 意力。時おり敵をついばむ。\n{{w|鳥}}との評判+200。"
+    },
+    {
+      "key": "mutation:Bilge Sphincter",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "括約筋で絞られたビルジホースを備え、近くの液体を吸い上げて敵へ吐きつける。"
+    },
+    {
+      "key": "mutation:Burrowing",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "地中を掘り進んで移動できる。"
     },
     {
       "key": "mutation:Burrowing Claws",
@@ -50,9 +70,54 @@
       "text": "{{rules|+3}} AV\n{{rules|-2}} DV\n{{rules|+10}} 耐熱力\n{{rules|+10}} 耐寒力\n{{rules|+400}} 亀派との評判\n静止しているあいだ甲殻を締め付ければ、AVボーナスが2倍になる代わりにDV-2のペナルティを受ける。\n胴体用の防具は装備できない。"
     },
     {
+      "key": "mutation:Confusing Breath",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "混乱ガスを吐き出す。"
+    },
+    {
+      "key": "mutation:Confusion Gas Generation",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "周囲に混乱ガスを噴出する。"
+    },
+    {
+      "key": "mutation:Corrosive Breath",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "腐食ガスを吐き出す。"
+    },
+    {
       "key": "mutation:Corrosive Gas Generation",
       "context": "Chargen.Mutation.LongDescription",
       "text": "周囲に腐食性のガスを噴出する。"
+    },
+    {
+      "key": "mutation:Crungling Gaze",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "視線で覚醒夢を引き起こす。"
+    },
+    {
+      "key": "mutation:Crystallinity",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "結晶性の存在である。"
+    },
+    {
+      "key": "mutation:Dark Vision",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "闇の中でも視界を保つ。"
+    },
+    {
+      "key": "mutation:Decarbonizer",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "生きた物質から炭素を抽出する。"
+    },
+    {
+      "key": "mutation:Defensive Chromatophores",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "危機に陥ると防御性色素胞がきらめく。"
+    },
+    {
+      "key": "mutation:Defoliant Generation",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "周囲に落葉剤を噴出する。"
     },
     {
       "key": "mutation:Double-muscled",
@@ -70,6 +135,16 @@
       "text": "周囲の機械やアーティファクトを無力化する電磁パルスを放てる。\n\n範囲: 自身を中心とした{{rules|5x5}}\n持続時間: {{rules|6-15}}ターン\nクールダウン: 200ターン"
     },
     {
+      "key": "mutation:Fear Aura",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "周囲のクリーチャーをおびえさせる。"
+    },
+    {
+      "key": "mutation:Fire Breath",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "火を吐く。"
+    },
+    {
       "key": "mutation:Flaming Ray",
       "context": "Chargen.Mutation.LongDescription",
       "text": "任意の方向へ火炎の光線を放つ。近接攻撃でも目標を加熱する力を帯びる。"
@@ -78,6 +153,36 @@
       "key": "mutation:Freezing Ray",
       "context": "Chargen.Mutation.LongDescription",
       "text": "任意の方向へ冷気の光線を放つ。近接攻撃でも目標の体温を下げる力を帯びる。"
+    },
+    {
+      "key": "mutation:Freezing Ultraray",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "口から霜の噴流を放つ。"
+    },
+    {
+      "key": "mutation:Frost Webs",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "近くの一帯を氷結した巣で満たす。\n\n射程: 12\nエリア: 3x3\nクールダウン: 30ラウンド"
+    },
+    {
+      "key": "mutation:Fungicide Generation",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "周囲に殺真菌剤を噴出する。"
+    },
+    {
+      "key": "mutation:Gills",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "エラを備えている。"
+    },
+    {
+      "key": "mutation:Glitter Dust Generation",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "周囲にグリッターダストを噴出する。"
+    },
+    {
+      "key": "mutation:Heat Absorption",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "熱を吸収して再生する。"
     },
     {
       "key": "mutation:Heightened Hearing",
@@ -90,9 +195,49 @@
       "text": "驚異的な速度を授かっている。\n\n+{{rules|15}} 俊敏"
     },
     {
+      "key": "mutation:Heightened Smell",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "並外れて鋭敏な嗅覚を持つ。"
+    },
+    {
       "key": "mutation:Horns",
       "context": "Chargen.Mutation.LongDescription",
       "text": "額に角が生えている。\n\n近接攻撃の{{rules|20%}}で角による突き刺しを行い、出血判定を難しくする。{{w|レイヨウ}}と{{w|ヤギ人}}との評判+100。"
+    },
+    {
+      "key": "mutation:Ice Breath",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "氷を吐く。"
+    },
+    {
+      "key": "mutation:Infiltrate",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "テレポートし、周囲のクリーチャーも一緒に移動させる。"
+    },
+    {
+      "key": "mutation:Irisdual Beam",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "光と物質のスペクトルにまたがる強力な光線を放つ。"
+    },
+    {
+      "key": "mutation:Liquid Font",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "体から液体がにじみ出る。"
+    },
+    {
+      "key": "mutation:Liquid Spitter",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "液体の水たまりを吐き出す。"
+    },
+    {
+      "key": "mutation:Lithifying Gaze",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "視線で対象を石に変える。"
+    },
+    {
+      "key": "mutation:Magnetic Pulse",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "強力な磁気パルスを放つ。"
     },
     {
       "key": "mutation:Metamorphosis",
@@ -105,6 +250,11 @@
       "text": "腕がもう1組ある。\n\n近接攻撃を行うたび、追加の腕それぞれが{{rules|10%}}の確率で追加の近接攻撃を繰り出す。"
     },
     {
+      "key": "mutation:Multiple Horns",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "頭から複数の角が突き出している。"
+    },
+    {
       "key": "mutation:Multiple Legs",
       "context": "Chargen.Mutation.LongDescription",
       "text": "脚がもう1組ある。\n\n移動速度が上がり、所持重量の許容量も増える。"
@@ -113,6 +263,16 @@
       "key": "mutation:Night Vision",
       "context": "Chargen.Mutation.LongDescription",
       "text": "暗闇の中でも見通せる。\n\n"
+    },
+    {
+      "key": "mutation:Normality Breath",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "正常化ガスを吐き出す。"
+    },
+    {
+      "key": "mutation:Normality Gas Generation",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "周囲に正常化ガスを噴出する。"
     },
     {
       "key": "mutation:Phasing",
@@ -125,6 +285,21 @@
       "text": "たくましい緑の皮膚で日光を吸収し、そこから養分を得る。\n\n食事の代わりに日光浴して{{rules|1 day}}のあいだ特別な代謝効果を得られる: 自然回復速度が{{rules|+30%}}、俊敏が{{rules|+15}}。\n日光の下にいるとデンプンとリグニンを蓄え、調理にそれぞれ{{rules|1}}食分まで使える。\n植生と同じマスにいるあいだはDVに{{rules|+1}}の迷彩ボーナス。\n{{w|根}}、{{w|木々}}、{{w|蔦}}、{{w|コンソーシアム・オブ・ファイタ}}との評判+200。"
     },
     {
+      "key": "mutation:Plasma Emission",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "周囲にプラズマを噴出する。"
+    },
+    {
+      "key": "mutation:Poison Breath",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "毒ガスを吐き出す。"
+    },
+    {
+      "key": "mutation:Poison Gas Generation",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "周囲に毒ガスを噴出する。"
+    },
+    {
       "key": "mutation:Quills",
       "context": "Chargen.Mutation.LongDescription",
       "text": "体が無数の針で覆われている。\n\n近接で攻撃してきた敵は針に刺さって反射ダメージを受け、一部の針は折れる。蓄えた針を周囲に射出して弾幕を張ることもできる。"
@@ -133,6 +308,16 @@
       "key": "mutation:Regeneration",
       "context": "Chargen.Mutation.LongDescription",
       "text": "傷が驚異的な速さで癒える。\n\n戦闘中でも自然回復速度がフルに適用される。\n自然回復速度が{{rules|+20%}}上昇する\n{{rules|10%}}の確率でターンごとに失った四肢を再生する\n毎ターン{{rules|1%}}の確率で{{rules|軽度の肉体的デバフ}}をランダムに取り除く"
+    },
+    {
+      "key": "mutation:Shame Breath",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "恥辱ガスを吐き出す。"
+    },
+    {
+      "key": "mutation:Sleep Breath",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "睡眠ガスを吐き出す。"
     },
     {
       "key": "mutation:Sleep Gas Generation",
@@ -145,9 +330,24 @@
       "text": "粘つくスライムを生成し、唾として吐きかけられる。\n\n射程8の3x3にスライムをまき散らし、クールダウンは40ラウンド。スライムの上を滑らずに歩ける。"
     },
     {
+      "key": "mutation:Spider Webs",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "粘着性の絹糸で巣を紡ぐ。"
+    },
+    {
       "key": "mutation:Spinnerets",
       "context": "Chargen.Mutation.LongDescription",
       "text": "どこを通っても粘糸を紡ぎ、移動した跡に巣を張る。\n\n{{w|クモ類}}との評判+300。"
+    },
+    {
+      "key": "mutation:Spore Puff",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "胞子の雲を噴き上げる。"
+    },
+    {
+      "key": "mutation:Sticky Tongue",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "粘着性の舌で獲物を捕らえる。"
     },
     {
       "key": "mutation:Stinger (Confusing Venom)",
@@ -163,6 +363,11 @@
       "key": "mutation:Stinger (Poisoning Venom)",
       "context": "Chargen.Mutation.LongDescription",
       "text": "臀部の毒針を持つ。長刃扱いで突撃・跳躍時は必ず刺突し、近接攻撃の{{rules|20%}}で敵を刺す。\n\n刺突では衰弱毒を与え、能動アビリティ「Sting」で確実に命中・貫通する。"
+    },
+    {
+      "key": "mutation:Stun Breath",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "朦朧ガスを吐き出す。"
     },
     {
       "key": "mutation:Thick Fur",
@@ -183,6 +388,21 @@
       "key": "mutation:Two-hearted",
       "context": "Chargen.Mutation.LongDescription",
       "text": "心臓が2つある。\n\n頑健性が向上し、スプリントできる時間が延びる。"
+    },
+    {
+      "key": "mutation:Urchin Belching",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "さまざまなウニを吐き出す。"
+    },
+    {
+      "key": "mutation:Wall Climber",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "壁を登って移動できるようになる。"
+    },
+    {
+      "key": "mutation:Waveform",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "波形に沿って突進する。"
     },
     {
       "key": "mutation:Wings",
@@ -272,12 +492,12 @@
     {
       "key": "mutation:Cryokinesis",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "意念で近くの空間を冷やし、寒冷ダメージを与える。"
+      "text": "精神で近くの一帯を凍てつかせる。"
     },
     {
       "key": "mutation:Disintegration",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "周囲の物質を分解する。防具や構造物にも大きなダメージを与える。"
+      "text": "精神で物体や生物の組成を崩壊させる。"
     },
     {
       "key": "mutation:Domination",
@@ -287,12 +507,12 @@
     {
       "key": "mutation:Ego Projection",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "純粋な意志力で肉体能力を押し上げる。\n\n意力修正の2倍だけ指定した肉体ステータスを強化し、短時間持続する。"
+      "text": "自身のエゴ修正値を物理的な能力に反映させる。"
     },
     {
       "key": "mutation:Force Bubble",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "自分を中心に3x3の力場を張る。\n\n力場の内外から飛び道具は通る。バブルを展開・解除して敵から身を守れる。"
+      "text": "自分の周囲に力場の球殻を展開する。"
     },
     {
       "key": "mutation:Force Wall",
@@ -300,9 +520,24 @@
       "text": "力の壁を生み出し、9マス連続の力場で敵を遮る。\n\n飛び道具は壁を通過させられる。"
     },
     {
+      "key": "mutation:Invisibility",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "姿を消す。"
+    },
+    {
+      "key": "mutation:Interdiction",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "視界内の対象を捕捉して移動を妨げる。"
+    },
+    {
       "key": "mutation:Kindle",
       "context": "Chargen.Mutation.LongDescription",
       "text": "意念で小さな火を点ける。\n\n射程12。クールダウン50。"
+    },
+    {
+      "key": "mutation:Ley Shifting",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "周囲の時空をずらす。\n\nクールダウン: 250"
     },
     {
       "key": "mutation:Light Manipulation",
@@ -312,12 +547,12 @@
     {
       "key": "mutation:Mass Mind",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "統合意識に接続し、ほかのエスパーから力を奪う。\n\n周囲の精神変異者から一時的にレベルを借り、自身の能力を高める。"
+      "text": "近くの生物たちに精神的な共鳴を張り巡らせる。"
     },
     {
       "key": "mutation:Mental Mirror",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "精神への干渉を鏡のように反射する。\n\nクールダウン中でなければ精神攻撃へのMAが上昇し、貫通に失敗した攻撃を攻撃者に跳ね返す。"
+      "text": "精神攻撃を受け流し、相手に跳ね返すことがある。"
     },
     {
       "key": "mutation:Precognition",
@@ -335,6 +570,21 @@
       "text": "意念で近くの空間を熱し、3ラウンドかけて焼き払う。\n\n熱ダメージと着火を与える。"
     },
     {
+      "key": "mutation:Quantum Fugue",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "時間を素早く行き来し、自分の複製をいくつも作り出す。"
+    },
+    {
+      "key": "mutation:Reflect Shame",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "近くのクリーチャーの恥辱に満ちた面貌を映し返す。"
+    },
+    {
+      "key": "mutation:Repelling Force",
+      "context": "Chargen.Mutation.LongDescription",
+      "text": "周囲に反発力を起こし、敵を吹き飛ばす。"
+    },
+    {
       "key": "mutation:Sense Psychic",
       "context": "Chargen.Mutation.LongDescription",
       "text": "サイコニックの気配を感じ取る。\n\n半径9マス（レベルに応じて拡大）の範囲にいる精神変異を持つ敵の存在を察知し、場合によっては正体も見抜く。"
@@ -347,17 +597,17 @@
     {
       "key": "mutation:Stunning Force",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "近くの区域に衝撃波を起こし、敵を吹き飛ばして気絶させる。"
+      "text": "近くの生物へ衝撃念力を叩き込み、朦朧させる。"
     },
     {
       "key": "mutation:Sunder Mind",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "敵の精神を断ち切り、激痛に陥れる。\n\n集中が途切れるとチャネリングは中断する。"
+      "text": "精神を断ち割るほどの激痛を相手に送り込む。"
     },
     {
       "key": "mutation:Syphon Vim",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "近くの有機体と繋がり、生命力を吸い上げる。\n\n精神判定に成功するとダメージを免れるが、抵抗されない限り生命力を吸収し続ける。"
+      "text": "相手の生命力を吸い上げ、自分を癒やす。"
     },
     {
       "key": "mutation:Telepathy",
@@ -377,22 +627,22 @@
     {
       "key": "mutation:Time Dilation",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "周囲の時間を歪め、敵を鈍らせる。\n\n自身を中心に距離が近いほど大きく速度を低下させる。"
+      "text": "局所的な時間の流れを引き伸ばす。"
     },
     {
       "key": "mutation:Temporal Fugue",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "時間の裂け目を行き来し、自分の分身を複数生み出す。"
+      "text": "時間を行き来して自分の複製を呼び出す。"
     },
     {
       "key": "mutation:Amnesia",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "ものや場所の記憶を失いやすい。\n\n秘密を1つ覚えるたびに別の秘密を忘れる可能性があり、過去に訪れたマップへ戻ると配置を忘れていることがある。"
+      "text": "記憶が頻繁に抜け落ちる。\n\nスキルを忘れることがある。"
     },
     {
       "key": "mutation:Blinking Tic",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "制御できない瞬間移動癖がある。\n\n戦闘中は毎ラウンド、小さな確率で近くへランダムにテレポートする。"
+      "text": "ときおり無意識に瞬間移動する。\n\n戦闘中の行動で低確率に発動する。"
     },
     {
       "key": "mutation:Dystechnia",

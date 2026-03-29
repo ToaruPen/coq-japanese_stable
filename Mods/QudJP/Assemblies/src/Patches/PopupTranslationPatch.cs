@@ -410,14 +410,19 @@ public static class PopupTranslationPatch
         for (var index = 0; index < methods.Count; index++)
         {
             var method = methods[index];
-            if (method.Name == methodName && method.GetParameters().Length == parameterCount)
+            if (method.Name != methodName || method.GetParameters().Length != parameterCount)
+            {
+                continue;
+            }
+
+            if (!method.IsDefined(typeof(ObsoleteAttribute), inherit: false))
             {
                 return method;
             }
         }
 
         Trace.TraceError(
-            $"QudJP: PopupTranslationPatch method '{methodName}' with {parameterCount} params not found on '{TargetTypeName}'.");
+            $"QudJP: PopupTranslationPatch method '{methodName}' with {parameterCount} params not found (or only obsolete overloads) on '{TargetTypeName}'.");
         return null;
     }
 

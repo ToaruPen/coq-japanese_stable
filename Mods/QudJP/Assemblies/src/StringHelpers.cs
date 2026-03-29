@@ -109,6 +109,15 @@ internal static class StringHelpers
         return source;
     }
 
+    internal static bool ContainsOrdinal(string source, string value)
+    {
+#if NET48
+        return source.IndexOf(value, StringComparison.Ordinal) >= 0;
+#else
+        return source.Contains(value, StringComparison.Ordinal);
+#endif
+    }
+
     internal static bool ContainsOrdinalIgnoreCase(string source, string value)
     {
 #if NET48

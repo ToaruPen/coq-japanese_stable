@@ -102,6 +102,30 @@ internal static class DummyPopupTarget
         return 0;
     }
 
+#pragma warning disable S1133 // Test dummy intentionally mirrors deprecated game overload ordering.
+    [Obsolete("Use ShowConversation(object? Icon)")]
+    public static int ShowConversation(
+        string Title,
+        string? Context,
+        string? Intro = null,
+        List<string>? Options = null,
+        bool AllowTrade = false,
+        bool AllowEscape = true,
+        bool AllowRenderMapBehind = false)
+    {
+        _ = Context;
+
+        return ShowConversation(
+            Title,
+            Icon: null,
+            Intro,
+            Options,
+            AllowTrade,
+            AllowEscape,
+            AllowRenderMapBehind);
+    }
+#pragma warning restore S1133
+
     public static int ShowConversation(
         string Title,
         object? Icon = null,

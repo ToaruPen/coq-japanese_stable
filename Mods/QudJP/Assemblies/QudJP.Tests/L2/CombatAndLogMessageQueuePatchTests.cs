@@ -608,6 +608,131 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
+    [Test]
+    public void CombatGetDefenderHitDice_TranslatesShieldBlockMessage_WhenPatched()
+    {
+        WritePatternDictionary(
+            ("^You block with (.+)! \\(\\+(\\d+) AV\\)$", "{0}で防御した！ (+{1} AV)"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyCombatGetDefenderHitDiceTarget), nameof(DummyCombatGetDefenderHitDiceTarget.HandleEvent), typeof(DummyCombatGetDefenderHitDiceEvent)),
+                typeof(CombatGetDefenderHitDiceTranslationPatch));
+
+            var target = new DummyCombatGetDefenderHitDiceTarget
+            {
+                MessageToSend = "You block with iron buckler! (+2 AV)",
+            };
+
+            target.HandleEvent(new DummyCombatGetDefenderHitDiceEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("iron bucklerで防御した！ (+2 AV)"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void CombatMeleeAttack_TranslatesMissMessage_WhenPatched()
+    {
+        WritePatternDictionary(
+            ("^You miss! \\[(.+?) vs (.+?)\\]$", "攻撃は外れた！ [{0} vs {1}]"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyCombatMeleeAttackTarget),
+                    nameof(DummyCombatMeleeAttackTarget.MeleeAttackWithWeaponInternal),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject),
+                    typeof(DummyCombatBodyPart),
+                    typeof(string),
+                    typeof(int),
+                    typeof(int),
+                    typeof(int),
+                    typeof(int),
+                    typeof(int),
+                    typeof(bool),
+                    typeof(bool)),
+                typeof(CombatMeleeAttackTranslationPatch));
+
+            var target = new DummyCombatMeleeAttackTarget
+            {
+                MessageToSend = "{{r|You miss!}} [10 vs 14]",
+                ColorToSend = null
+            };
+
+            _ = target.MeleeAttackWithWeaponInternal(new DummyGameObject(), new DummyGameObject(), new DummyGameObject(), new DummyCombatBodyPart());
+
+            // Partial color wrapper "{{r|You miss!}}" degenerates to "{{r|}}" after
+            // pattern translation because boundary spans cannot re-wrap translated text.
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("{{r|}}攻撃は外れた！ [10 vs 14]"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void CombatMeleeAttack_TranslatesFailDamageMessage_WhenPatched()
+    {
+        WritePatternDictionary(
+            ("^You fail to deal damage with your attack! \\[(.+?)\\]$", "あなたの攻撃はダメージを与えられなかった！ [{0}]"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyCombatMeleeAttackTarget),
+                    nameof(DummyCombatMeleeAttackTarget.MeleeAttackWithWeaponInternal),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject),
+                    typeof(DummyCombatBodyPart),
+                    typeof(string),
+                    typeof(int),
+                    typeof(int),
+                    typeof(int),
+                    typeof(int),
+                    typeof(int),
+                    typeof(bool),
+                    typeof(bool)),
+                typeof(CombatMeleeAttackTranslationPatch));
+
+            var target = new DummyCombatMeleeAttackTarget
+            {
+                MessageToSend = "You fail to deal damage with your attack! [17]",
+                ColorToSend = null
+            };
+
+            _ = target.MeleeAttackWithWeaponInternal(new DummyGameObject(), new DummyGameObject(), new DummyGameObject(), new DummyCombatBodyPart());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("あなたの攻撃はダメージを与えられなかった！ [17]"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static void PatchQueue(Harmony harmony)
     {
         harmony.Patch(

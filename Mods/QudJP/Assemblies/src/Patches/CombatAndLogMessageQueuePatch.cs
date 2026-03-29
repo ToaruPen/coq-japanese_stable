@@ -35,6 +35,8 @@ public static class CombatAndLogMessageQueuePatch
                 || GameObjectMoveTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
                 || GameObjectPerformThrowTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
                 || GameObjectToggleActivatedAbilityTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
+                || CombatGetDefenderHitDiceTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
+                || CombatMeleeAttackTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
                 || GameObjectDieTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
                 || GameObjectRegeneraTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
                 || GameObjectSpotTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)

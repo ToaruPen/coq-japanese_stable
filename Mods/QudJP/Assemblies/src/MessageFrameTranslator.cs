@@ -337,11 +337,11 @@ internal static class MessageFrameTranslator
         var score = pattern.Length;
         // Literal pronoun patterns are more specific than generic (?:the |a |an )?(.+?) patterns
         // even though they are shorter. Boost their score so they win over generic captures.
-        if (ContainsOrdinal(pattern, " you,") || ContainsOrdinal(pattern, " you ")
+        if (StringHelpers.ContainsOrdinal(pattern, " you,") || StringHelpers.ContainsOrdinal(pattern, " you ")
             || pattern.EndsWith(" you", StringComparison.Ordinal)
             || pattern.StartsWith("you ", StringComparison.Ordinal)
             || string.Equals(pattern, "you", StringComparison.Ordinal)
-            || ContainsOrdinal(pattern, "your "))
+            || StringHelpers.ContainsOrdinal(pattern, "your "))
         {
             score += 100;
         }
@@ -350,19 +350,14 @@ internal static class MessageFrameTranslator
 
     private static bool ContainsUntranslatedFunctionWords(string text)
     {
-        return ContainsOrdinal(text, " from ")
-            || ContainsOrdinal(text, " your ")
-            || ContainsOrdinal(text, " its ")
-            || ContainsOrdinal(text, " their ")
-            || ContainsOrdinal(text, " his ")
-            || ContainsOrdinal(text, " her ")
+        return StringHelpers.ContainsOrdinal(text, " from ")
+            || StringHelpers.ContainsOrdinal(text, " your ")
+            || StringHelpers.ContainsOrdinal(text, " its ")
+            || StringHelpers.ContainsOrdinal(text, " their ")
+            || StringHelpers.ContainsOrdinal(text, " his ")
+            || StringHelpers.ContainsOrdinal(text, " her ")
             || text.StartsWith("The ", StringComparison.Ordinal)
-            || ContainsOrdinal(text, " says, ");
-    }
-
-    private static bool ContainsOrdinal(string source, string value)
-    {
-        return source.Contains(value);
+            || StringHelpers.ContainsOrdinal(text, " says, ");
     }
 
     private static IReadOnlyDictionary<int, string> CreateReplacementValues(

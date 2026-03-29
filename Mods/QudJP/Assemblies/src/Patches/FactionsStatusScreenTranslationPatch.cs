@@ -100,7 +100,6 @@ public static class FactionsStatusScreenTranslationPatch
     };
 
 #pragma warning disable CA2249
-    private static bool ContainsOrdinal(string source, string value) => source.IndexOf(value, StringComparison.Ordinal) >= 0;
     private static bool ContainsChar(string source, char value) => source.IndexOf(value) >= 0;
 #pragma warning restore CA2249
 
@@ -150,7 +149,7 @@ public static class FactionsStatusScreenTranslationPatch
 
         for (var index = 0; index < LocalizedFactionSentenceMarkers.Length; index++)
         {
-            if (ContainsOrdinal(source, LocalizedFactionSentenceMarkers[index]))
+            if (StringHelpers.ContainsOrdinal(source, LocalizedFactionSentenceMarkers[index]))
             {
                 return true;
             }
@@ -808,7 +807,7 @@ public static class FactionsStatusScreenTranslationPatch
 
         for (var index = 0; index < EnglishFactionSentenceCues.Length; index++)
         {
-            if (ContainsOrdinal(source, EnglishFactionSentenceCues[index]))
+            if (StringHelpers.ContainsOrdinal(source, EnglishFactionSentenceCues[index]))
             {
                 return false;
             }

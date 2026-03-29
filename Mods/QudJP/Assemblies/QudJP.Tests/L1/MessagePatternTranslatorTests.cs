@@ -84,6 +84,7 @@ public sealed class MessagePatternTranslatorTests
         Assert.That(translated, Is.EqualTo("brass keyをwardenから受け取った"));
     }
 
+    [Test]
     public void Translate_UsesFirstMatchingPattern_WhenMultiplePatternsMatch()
     {
         WritePatternDictionary(
@@ -227,7 +228,7 @@ public sealed class MessagePatternTranslatorTests
     public void Translate_AppliesArmorPenetrationPatternWithLeadingArticle()
     {
         WritePatternDictionary(
-            ("^You don't penetrate (?:the )?(.+?)の armor with your (.+?)[.!] \\[(.+?)\\]$", "{1}では{0}の装甲を貫けない。[{2}]"));
+            ("^You don't penetrate (?:the )?(.+?)(?:'s|s'|の) armor with your (.+?)[.!] \\[(.+?)\\]$", "{1}では{0}の装甲を貫けない。[{2}]"));
 
         var translated = MessagePatternTranslator.Translate("You don't penetrate the 花瓶の armor with your 青銅の短剣. [19]");
 
@@ -238,11 +239,124 @@ public sealed class MessagePatternTranslatorTests
     public void Translate_AppliesArmorPenetrationPatternWithColorizedWeapon()
     {
         WritePatternDictionary(
-            ("^You don't penetrate (?:the )?(.+?)の armor with your (.+?)[.!] \\[(.+?)\\]$", "{1}では{0}の装甲を貫けない。[{2}]"));
+            ("^You don't penetrate (?:the )?(.+?)(?:'s|s'|の) armor with your (.+?)[.!] \\[(.+?)\\]$", "{1}では{0}の装甲を貫けない。[{2}]"));
 
         var translated = MessagePatternTranslator.Translate("You don't penetrate タムの armor with your {{w|青銅の短剣}}. [17]");
 
         Assert.That(translated, Is.EqualTo("{{w|青銅の短剣}}ではタムの装甲を貫けない。[17]"));
+    }
+
+    [Test]
+    public void Translate_AppliesArmorPenetrationPatternWithEnglishPossessive()
+    {
+        WritePatternDictionary(
+            ("^You don't penetrate (?:the )?(.+?)(?:'s|s'|の) armor with your (.+?)[.!] \\[(.+?)\\]$", "{1}では{0}の装甲を貫けない。[{2}]"));
+
+        var translated = MessagePatternTranslator.Translate("You don't penetrate the snapjaw's armor with your iron longsword. [21]");
+
+        Assert.That(translated, Is.EqualTo("iron longswordではsnapjawの装甲を貫けない。[21]"));
+    }
+
+    [Test]
+    public void Translate_AppliesArmorPenetrationPatternWithoutWeaponRoll()
+    {
+        WritePatternDictionary(
+            ("^You don't penetrate (?:the )?(.+?)(?:'s|s'|の) armor[.!] \\[(.+?)\\]$", "{0}の装甲を貫けない。[{1}]"));
+
+        var translated = MessagePatternTranslator.Translate("You don't penetrate タムの armor. [17]");
+
+        Assert.That(translated, Is.EqualTo("タムの装甲を貫けない。[17]"));
+    }
+
+    [Test]
+    public void Translate_AppliesShieldBlockPattern()
+    {
+        WritePatternDictionary(
+            ("^You block with (.+)! \\(\\+(\\d+) AV\\)$", "{0}で防御した！ (+{1} AV)"));
+
+        var translated = MessagePatternTranslator.Translate("You block with 乳棒! (+2 AV)");
+
+        Assert.That(translated, Is.EqualTo("乳棒で防御した！ (+2 AV)"));
+    }
+
+    [Test]
+    public void Translate_AppliesShieldStaggerPattern()
+    {
+        WritePatternDictionary(
+            ("^You stagger (.+) with your shield block!$", "盾で受け止めて{0}をよろめかせた！"));
+
+        var translated = MessagePatternTranslator.Translate("You stagger タム with your shield block!");
+
+        Assert.That(translated, Is.EqualTo("盾で受け止めてタムをよろめかせた！"));
+    }
+
+    [Test]
+    public void Translate_AppliesShieldStaggeredByMixedPossessivePattern()
+    {
+        WritePatternDictionary(
+            ("^You are staggered by (?:the )?(.+?)(?:'s|s'|の) block!$", "{0}の防御でよろめいた！"));
+
+        var translated = MessagePatternTranslator.Translate("You are staggered by タムの block!");
+
+        Assert.That(translated, Is.EqualTo("タムの防御でよろめいた！"));
+    }
+
+    [Test]
+    public void Translate_AppliesTerseMissPattern()
+    {
+        WritePatternDictionary(("^You miss!$", "攻撃は外れた！"));
+
+        var translated = MessagePatternTranslator.Translate("You miss!");
+
+        Assert.That(translated, Is.EqualTo("攻撃は外れた！"));
+    }
+
+    [Test]
+    public void Translate_AppliesMissWithRollPatternStrippingPartialColor()
+    {
+        WritePatternDictionary(("^You miss! \\[(.+?) vs (.+?)\\]$", "攻撃は外れた！ [{0} vs {1}]"));
+
+        // Game emits "{{r|You miss!}} [12 vs 14]" — color wraps only the miss text.
+        // ColorAwareTranslationComposer strips to "You miss! [12 vs 14]" for pattern match,
+        // then restores boundary spans. The partial wrapper cannot be re-applied to the
+        // translated text at the original positions, so the result carries a degenerate
+        // {{r|}} prefix rather than wrapping the translated fragment.
+        var translated = MessagePatternTranslator.Translate("{{r|You miss!}} [12 vs 14]");
+
+        Assert.That(translated, Is.EqualTo("{{r|}}攻撃は外れた！ [12 vs 14]"));
+    }
+
+    [Test]
+    public void Translate_AppliesIncomingMissWithRollPattern()
+    {
+        WritePatternDictionary(
+            ("^(?:The |the |[Aa]n? )?(.+?) misses you! \\[(.+?) vs (.+?)\\]$", "{0}の攻撃は外れた！ [{1} vs {2}]"));
+
+        var translated = MessagePatternTranslator.Translate("The snapjaw misses you! [8 vs 14]");
+
+        Assert.That(translated, Is.EqualTo("snapjawの攻撃は外れた！ [8 vs 14]"));
+    }
+
+    [Test]
+    public void Translate_AppliesMentalAttackNoEffectPattern()
+    {
+        WritePatternDictionary(
+            ("^Your mental attack does not affect (.+?)\\.$", "あなたの精神攻撃は{0}に効かない。"));
+
+        var translated = MessagePatternTranslator.Translate("Your mental attack does not affect the turret.");
+
+        Assert.That(translated, Is.EqualTo("あなたの精神攻撃はthe turretに効かない。"));
+    }
+
+    [Test]
+    public void Translate_AppliesFailToDealDamagePattern()
+    {
+        WritePatternDictionary(
+            ("^You fail to deal damage with your attack! \\[(.+?)\\]$", "あなたの攻撃はダメージを与えられなかった！ [{0}]"));
+
+        var translated = MessagePatternTranslator.Translate("You fail to deal damage with your attack! [17]");
+
+        Assert.That(translated, Is.EqualTo("あなたの攻撃はダメージを与えられなかった！ [17]"));
     }
 
     [Test]

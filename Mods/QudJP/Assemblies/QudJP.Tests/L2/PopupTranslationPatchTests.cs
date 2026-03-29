@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text;
+using System.Collections.Generic;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
@@ -11,6 +12,17 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class PopupTranslationPatchTests
 {
+    private static readonly Type[] ShowConversationNonObsoleteParameterTypes =
+    {
+        typeof(string),
+        typeof(object),
+        typeof(string),
+        typeof(List<string>),
+        typeof(bool),
+        typeof(bool),
+        typeof(bool),
+    };
+
     private string tempDirectory = null!;
     private string dictionaryDirectory = null!;
     private string patternFilePath = null!;
@@ -715,6 +727,50 @@ public sealed class PopupTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesShowConversationPayload_OnNonObsoleteOverload_WhenPatched()
+    {
+        WriteDictionary(
+            ("Trade", "取引"),
+            ("Choose your response.", "返答を選択してください。"),
+            ("Ask about water", "水について尋ねる"),
+            ("Leave", "立ち去る"));
+
+        var original = RequireMethod(
+            typeof(DummyPopupTarget),
+            nameof(DummyPopupTarget.ShowConversation),
+            ShowConversationNonObsoleteParameterTypes);
+        Assert.That(original.IsDefined(typeof(ObsoleteAttribute), inherit: false), Is.False);
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: original,
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+
+            DummyPopupTarget.ShowConversation(
+                Title: "Trade",
+                Intro: "Choose your response.",
+                Options: new List<string> { "Ask about water", "{{G|Leave}}" });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupTarget.LastShowConversationTitle, Is.EqualTo("取引"));
+                Assert.That(DummyPopupTarget.LastShowConversationIntro, Is.EqualTo("返答を選択してください。"));
+                Assert.That(DummyPopupTarget.LastShowConversationOptions, Is.Not.Null);
+                Assert.That(DummyPopupTarget.LastShowConversationOptions![0], Is.EqualTo("水について尋ねる"));
+                Assert.That(DummyPopupTarget.LastShowConversationOptions[1], Is.EqualTo("{{G|立ち去る}}"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_TranslatesShowConversationPayload_WhenPatched()
     {
         WriteDictionary(
@@ -729,7 +785,10 @@ public sealed class PopupTranslationPatchTests
         try
         {
             harmony.Patch(
-                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowConversation)),
+                original: RequireMethod(
+                    typeof(DummyPopupTarget),
+                    nameof(DummyPopupTarget.ShowConversation),
+                    ShowConversationNonObsoleteParameterTypes),
                 prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
 
             DummyPopupTarget.ShowConversation(
@@ -766,7 +825,10 @@ public sealed class PopupTranslationPatchTests
         try
         {
             harmony.Patch(
-                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowConversation)),
+                original: RequireMethod(
+                    typeof(DummyPopupTarget),
+                    nameof(DummyPopupTarget.ShowConversation),
+                    ShowConversationNonObsoleteParameterTypes),
                 prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
             harmony.Patch(
                 original: RequireMethod(typeof(DummyConversationElement), nameof(DummyConversationElement.GetDisplayText)),
@@ -934,6 +996,13 @@ public sealed class PopupTranslationPatchTests
     {
         return AccessTools.Method(type, methodName)
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static MethodInfo RequireMethod(Type type, string methodName, Type[] parameterTypes)
+    {
+        return AccessTools.Method(type, methodName, parameterTypes)
+            ?? throw new InvalidOperationException(
+                $"Method not found: {type.FullName}.{methodName}({string.Join(", ", Array.ConvertAll(parameterTypes, static type => type.Name))})");
     }
 
     private void WriteDictionary(params (string key, string text)[] entries)
