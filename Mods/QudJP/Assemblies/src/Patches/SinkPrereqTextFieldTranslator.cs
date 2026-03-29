@@ -7,6 +7,29 @@ namespace QudJP.Patches;
 
 internal static class SinkPrereqTextFieldTranslator
 {
+    internal static void TranslateArrayField(object? instance, string fieldName, string context)
+    {
+        if (instance is null)
+        {
+            return;
+        }
+
+        if (!TryGetMemberValue(instance, fieldName, out var arrayObj))
+        {
+            return;
+        }
+
+        if (arrayObj is not Array array)
+        {
+            return;
+        }
+
+        for (var i = 0; i < array.Length; i++)
+        {
+            TranslateTextSkin(array.GetValue(i), context);
+        }
+    }
+
     private static readonly ConcurrentDictionary<(Type Type, string MemberName), MemberInfo?> MemberCache =
         new ConcurrentDictionary<(Type Type, string MemberName), MemberInfo?>();
 

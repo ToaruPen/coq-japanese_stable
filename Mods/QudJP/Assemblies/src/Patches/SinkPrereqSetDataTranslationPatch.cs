@@ -26,6 +26,7 @@ public static class SinkPrereqSetDataTranslationPatch
         "Qud.UI.CharacterEffectLine",
         "Qud.UI.CharacterAttributeLine",
         "Qud.UI.TinkeringDetailsLine",
+        "Qud.UI.TradeLine",
     };
 
     [HarmonyTargetMethods]
@@ -73,6 +74,7 @@ public static class SinkPrereqSetDataTranslationPatch
         "text", "textSkin", "title", "attributeText",
         "descriptionText", "modDescriptionText", "modBitCostText",
         "requirementsHeaderText", "RightText", "ObjectDescription",
+        "categoryText", "check", "rightFloatText",
     };
 
     public static void Postfix(object __instance)

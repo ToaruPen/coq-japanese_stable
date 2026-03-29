@@ -441,6 +441,70 @@ public sealed class SinkPrereqTranslationPatchTests
     }
 
     [Test]
+    public void SetDataPatch_ObservationOnly_LeavesTradeLineFieldsUnchanged()
+    {
+        WriteDictionary(("Weapons", "武器"), ("iron sword", "鉄の剣"));
+        Translator.SetDictionaryDirectoryForTests(tempDir);
+
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyTradeLine), "setData"),
+            postfix: new HarmonyMethod(RequireMethod(
+                typeof(SinkPrereqSetDataTranslationPatch), "Postfix")));
+
+        var instance = new DummyTradeLine();
+        instance.setData(new DummyFrameworkDataElement
+        {
+            Title = "Weapons",
+            Description = "iron sword"
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(instance.categoryText.text, Is.EqualTo("[+] Weapons"));
+            Assert.That(instance.text.text, Is.EqualTo("iron sword"));
+            Assert.That(instance.check.text, Is.EqualTo("{{W|1}}"));
+            Assert.That(instance.rightFloatText.text, Is.EqualTo("[$1.00]"));
+            Assert.That(
+                SinkObservation.GetHitCountForTests(
+                    nameof(UITextSkinTranslationPatch),
+                    nameof(SinkPrereqSetDataTranslationPatch),
+                    SinkObservation.ObservationOnlyDetail,
+                    "iron sword",
+                    "iron sword"),
+                Is.GreaterThan(0));
+        });
+    }
+
+    [Test]
+    public void UiMethodPatch_ObservationOnly_LeavesTradeScreenTitleBarsUnchanged()
+    {
+        WriteDictionary(("Mehmet", "メフメト"), ("Player Name", "プレイヤー名"));
+        Translator.SetDictionaryDirectoryForTests(tempDir);
+
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyTradeScreen), "UpdateTitleBars"),
+            postfix: new HarmonyMethod(RequireMethod(
+                typeof(SinkPrereqUiMethodTranslationPatch), "Postfix")));
+
+        var instance = new DummyTradeScreen();
+        instance.UpdateTitleBars();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(instance.traderNames[0].text, Is.EqualTo("Mehmet"));
+            Assert.That(instance.traderNames[1].text, Is.EqualTo("Player Name"));
+            Assert.That(
+                SinkObservation.GetHitCountForTests(
+                    nameof(UITextSkinTranslationPatch),
+                    nameof(SinkPrereqUiMethodTranslationPatch),
+                    SinkObservation.ObservationOnlyDetail,
+                    "Mehmet",
+                    "Mehmet"),
+                Is.GreaterThan(0));
+        });
+    }
+
+    [Test]
     public void SetDataPatch_UntranslatedTextPassesThrough()
     {
         // No dictionary entries — text should pass through unchanged
