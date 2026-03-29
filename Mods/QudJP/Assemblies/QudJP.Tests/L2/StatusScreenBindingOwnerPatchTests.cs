@@ -56,7 +56,6 @@ public sealed class StatusScreenBindingOwnerPatchTests
     public void CharacterAttributeLineTranslationPatch_KeepsAbbreviationInEnglish_WhenPatched()
     {
         // Stat abbreviations (STR, AGI, MS, AV, DV, MA, etc.) are kept in English
-        // Stat abbreviations (STR, AGI, etc.) are intentionally kept in English
         // to avoid layout shifts (see commit 63cc3ad).
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
