@@ -120,6 +120,52 @@ public sealed class WorldCreationProgressTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_LeavesEmptyTextUnchanged_WhenPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyWorldCreationProgressTarget), nameof(DummyWorldCreationProgressTarget.NextStep)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(WorldCreationProgressTranslationPatch), nameof(WorldCreationProgressTranslationPatch.Prefix))));
+
+            DummyWorldCreationProgressTarget.NextStep(string.Empty, 2);
+
+            Assert.That(DummyWorldCreationProgressTarget.LastNextStepText, Is.EqualTo(string.Empty));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_TranslatesVisibleTextAndPreservesColorTags_WhenPatched()
+    {
+        WriteDictionary(("Generating topography...", "地形を生成しています..."));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyWorldCreationProgressTarget), nameof(DummyWorldCreationProgressTarget.NextStep)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(WorldCreationProgressTranslationPatch), nameof(WorldCreationProgressTranslationPatch.Prefix))));
+
+            DummyWorldCreationProgressTarget.NextStep("{{C|Generating topography...}}", 5);
+
+            Assert.That(DummyWorldCreationProgressTarget.LastNextStepText, Is.EqualTo("{{C|地形を生成しています...}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_StripsDirectTranslationMarker_WhenAlreadyTranslated()
     {
         var harmonyId = CreateHarmonyId();
