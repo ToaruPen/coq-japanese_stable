@@ -133,8 +133,14 @@ public static class EquipmentLineTranslationPatch
     {
         if (Interlocked.CompareExchange(ref _indentBodyPartsResolved, 1, 0) == 0)
         {
-            ResolveIndentBodyPartsMembers();
-            Interlocked.Exchange(ref _indentBodyPartsResolved, 2);
+            try
+            {
+                ResolveIndentBodyPartsMembers();
+            }
+            finally
+            {
+                Interlocked.Exchange(ref _indentBodyPartsResolved, 2);
+            }
         }
         else
         {
@@ -147,7 +153,8 @@ public static class EquipmentLineTranslationPatch
             return value is bool indent && indent;
         }
 
-        return _indentBodyPartsField?.GetValue(null) as bool? ?? false;
+        var fieldValue = _indentBodyPartsField?.GetValue(null);
+        return fieldValue is bool fieldIndent && fieldIndent;
     }
 
     private static void ResolveIndentBodyPartsMembers()
