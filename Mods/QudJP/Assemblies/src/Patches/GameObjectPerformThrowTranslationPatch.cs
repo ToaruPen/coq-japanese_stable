@@ -18,7 +18,7 @@ public static class GameObjectPerformThrowTranslationPatch
     {
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
         var cellType = AccessTools.TypeByName("XRL.World.Cell");
-        var missilePathType = AccessTools.TypeByName("XRL.World.MissilePath");
+        var missilePathType = AccessTools.TypeByName("XRL.World.Parts.MissilePath");
         if (gameObjectType is null || cellType is null || missilePathType is null)
         {
             Trace.TraceError("QudJP: GameObjectPerformThrowTranslationPatch parameter types not found.");

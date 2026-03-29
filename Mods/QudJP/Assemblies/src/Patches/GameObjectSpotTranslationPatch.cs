@@ -17,7 +17,7 @@ public static class GameObjectSpotTranslationPatch
     private static MethodBase? TargetMethod()
     {
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
-        var ongoingActionType = AccessTools.TypeByName("XRL.World.OngoingAction");
+        var ongoingActionType = AccessTools.TypeByName("XRL.OngoingAction");
         if (gameObjectType is null || ongoingActionType is null)
         {
             Trace.TraceError("QudJP: GameObjectSpotTranslationPatch target types not found.");
