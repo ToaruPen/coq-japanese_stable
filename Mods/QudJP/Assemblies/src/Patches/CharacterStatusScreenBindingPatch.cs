@@ -361,19 +361,26 @@ public static class CharacterStatusScreenBindingPatch
 
     private static object? ParseEnumMember(object instance, string memberName, string value)
     {
-        var field = AccessTools.Field(instance.GetType(), memberName);
-        if (field is not null && field.FieldType.IsEnum)
+        try
         {
-            return Enum.Parse(field.FieldType, value, ignoreCase: false);
-        }
+            var field = AccessTools.Field(instance.GetType(), memberName);
+            if (field is not null && field.FieldType.IsEnum)
+            {
+                return Enum.Parse(field.FieldType, value, ignoreCase: false);
+            }
 
-        var property = AccessTools.Property(instance.GetType(), memberName);
-        if (property is null || !property.PropertyType.IsEnum)
+            var property = AccessTools.Property(instance.GetType(), memberName);
+            if (property is null || !property.PropertyType.IsEnum)
+            {
+                return null;
+            }
+
+            return Enum.Parse(property.PropertyType, value, ignoreCase: false);
+        }
+        catch (ArgumentException)
         {
             return null;
         }
-
-        return Enum.Parse(property.PropertyType, value, ignoreCase: false);
     }
 
     private static object? FindStatByName(IEnumerable<object?> stats, string name)
