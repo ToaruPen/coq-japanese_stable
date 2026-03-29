@@ -66,6 +66,18 @@
             "text": "表示オプション"
         },
         {
+            "key": "Toggle Cybernetics",
+            "text": "サイバネティクス切替"
+        },
+        {
+            "key": "show equipment",
+            "text": "装備を表示"
+        },
+        {
+            "key": "show cybernetics",
+            "text": "サイバネティクスを表示"
+        },
+        {
             "key": "[{weight} lbs.]",
             "context": "Qud.UI.InventoryLine.ItemWeightLabel",
             "text": "[{weight} lbs.]"
