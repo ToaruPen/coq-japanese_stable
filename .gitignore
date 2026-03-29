@@ -55,3 +55,6 @@ docs/ilspy-raw/
 
 # Claude Code worktrees
 .claude/worktrees/
+
+# Claude session handoff files (contain local paths and session IDs)
+.claude/handoff.md

@@ -57,6 +57,7 @@ public static class CombatMeleeAttackTranslationPatch
         return method;
     }
 
+    [HarmonyPrefix]
     public static void Prefix()
     {
         try

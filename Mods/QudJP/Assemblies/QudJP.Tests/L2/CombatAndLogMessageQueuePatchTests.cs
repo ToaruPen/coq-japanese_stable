@@ -640,6 +640,37 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void CombatGetDefenderHitDice_TranslatesColorTaggedShieldBlockMessage_WhenPatched()
+    {
+        WritePatternDictionary(
+            ("^You block with (.+)! \\(\\+(\\d+) AV\\)$", "{0}で防御した！ (+{1} AV)"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyCombatGetDefenderHitDiceTarget), nameof(DummyCombatGetDefenderHitDiceTarget.HandleEvent), typeof(DummyCombatGetDefenderHitDiceEvent)),
+                typeof(CombatGetDefenderHitDiceTranslationPatch));
+
+            var target = new DummyCombatGetDefenderHitDiceTarget
+            {
+                MessageToSend = "You block with {{R|iron buckler}}! (+2 AV)",
+            };
+
+            target.HandleEvent(new DummyCombatGetDefenderHitDiceEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("{{R|iron buckler}}で防御した！ (+2 AV)"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void CombatMeleeAttack_TranslatesMissMessage_WhenPatched()
     {
         WritePatternDictionary(

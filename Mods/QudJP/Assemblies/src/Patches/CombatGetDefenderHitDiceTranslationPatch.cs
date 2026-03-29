@@ -39,6 +39,7 @@ public static class CombatGetDefenderHitDiceTranslationPatch
         return method;
     }
 
+    [HarmonyPrefix]
     public static void Prefix()
     {
         try

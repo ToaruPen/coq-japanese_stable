@@ -155,6 +155,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(SelectableTextMenuItemProbePatch), "Update", "Qud.UI.SelectableTextMenuItem", "System.Void", new string[0])]
     [TestCase(typeof(LoadingStatusTranslationPatch), "SetLoadingStatus", "XRL.UI.Loading", "System.Void", new[] { "System.String", "System.Boolean" })]
     [TestCase(typeof(CombatAndLogMessageQueuePatch), "AddPlayerMessage", "XRL.Messages.MessageQueue", "System.Void", new[] { "System.String", "System.String", "System.Boolean" })]
+    [TestCase(typeof(CombatGetDefenderHitDiceTranslationPatch), "HandleEvent", "XRL.World.Parts.Combat", "System.Boolean", new[] { "XRL.World.GetDefenderHitDiceEvent" })]
     [TestCase(typeof(PhysicsObjectEnteringCellTranslationPatch), "HandleEvent", "XRL.World.Parts.Physics", "System.Boolean", new[] { "XRL.World.ObjectEnteringCellEvent" })]
     [TestCase(typeof(PhysicsApplyDischargeTranslationPatch), "ApplyDischarge", "XRL.World.Parts.Physics", "System.Int32", new[]
     {
@@ -430,7 +431,7 @@ public sealed class TargetMethodResolutionTests
         var declaringType = assembly.GetType(declaringTypeName, throwOnError: false);
         Assert.That(declaringType, Is.Not.Null, $"Type not found: {declaringTypeName}");
 
-        var method = FindMethodByNameAndParameterCount(declaringType!, methodName, parameterCount) as MethodInfo;
+        var method = FindMethodByNameAndParameterCount(declaringType!, methodName, parameterCount, expectNonObsolete) as MethodInfo;
         Assert.Multiple(() =>
         {
             Assert.That(
@@ -658,7 +659,8 @@ public sealed class TargetMethodResolutionTests
     private static MethodBase? FindMethodByNameAndParameterCount(
         Type declaringType,
         string methodName,
-        int parameterCount)
+        int parameterCount,
+        bool requireNonObsolete = false)
     {
         var methods = declaringType.GetMethods(
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
@@ -671,7 +673,7 @@ public sealed class TargetMethodResolutionTests
                 continue;
             }
 
-            if (!method.IsDefined(typeof(ObsoleteAttribute), inherit: false))
+            if (!requireNonObsolete || !method.IsDefined(typeof(ObsoleteAttribute), inherit: false))
             {
                 return method;
             }

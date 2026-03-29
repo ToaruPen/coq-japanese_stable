@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
+using System.Threading;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -11,7 +12,7 @@ public static class EquipmentLineTranslationPatch
 {
     private const string Context = nameof(EquipmentLineTranslationPatch);
 
-    private static volatile bool _indentBodyPartsResolved;
+    private static int _indentBodyPartsResolved;
     private static PropertyInfo? _indentBodyPartsProperty;
     private static FieldInfo? _indentBodyPartsField;
 
@@ -129,7 +130,7 @@ public static class EquipmentLineTranslationPatch
 
     private static bool ShouldIndentBodyParts()
     {
-        if (!_indentBodyPartsResolved)
+        if (Interlocked.CompareExchange(ref _indentBodyPartsResolved, 1, 0) == 0)
         {
             ResolveIndentBodyPartsMembers();
         }
@@ -153,8 +154,6 @@ public static class EquipmentLineTranslationPatch
             _indentBodyPartsProperty = AccessTools.Property(optionsType, "IndentBodyParts");
             _indentBodyPartsField = AccessTools.Field(optionsType, "IndentBodyParts");
         }
-
-        _indentBodyPartsResolved = true;
     }
 
     private static string TranslateVisibleText(string source, string route, string family)
