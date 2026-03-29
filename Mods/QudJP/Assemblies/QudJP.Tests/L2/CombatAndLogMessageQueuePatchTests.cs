@@ -160,6 +160,58 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void GameObjectMove_TranslatesSingularStuckMessage_WhenPatched()
+    {
+        WritePatternDictionary(
+            ("^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stuck[.!]?$", "{0}は動けなくなった。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyGameObjectMoveTarget),
+                    nameof(DummyGameObjectMoveTarget.Move),
+                    typeof(string),
+                    typeof(DummyGameObject).MakeByRefType(),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject),
+                    typeof(bool),
+                    typeof(int?),
+                    typeof(string),
+                    typeof(int?),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject),
+                    typeof(int)),
+                typeof(GameObjectMoveTranslationPatch));
+
+            var target = new DummyGameObjectMoveTarget
+            {
+                MessageToSend = "The crate is stuck.",
+            };
+
+            target.Move("N", out _);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("crateは動けなくなった。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void GameObjectMove_TranslatesConfirmationMessage_WhenPatched()
     {
         WritePatternDictionary(

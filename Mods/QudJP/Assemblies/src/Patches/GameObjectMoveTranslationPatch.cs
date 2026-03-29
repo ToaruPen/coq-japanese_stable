@@ -103,6 +103,7 @@ public static class GameObjectMoveTranslationPatch
         return string.Equals(value, "You cannot go that way.", StringComparison.Ordinal)
             || value.StartsWith("You are stopped short by ", StringComparison.Ordinal)
             || value.EndsWith(" cannot be moved.", StringComparison.Ordinal)
+            || value.EndsWith(" is stuck.", StringComparison.Ordinal)
             || value.EndsWith(" are stuck.", StringComparison.Ordinal)
             || value.StartsWith("You can't budge ", StringComparison.Ordinal)
             || (value.Contains(" Move ")
