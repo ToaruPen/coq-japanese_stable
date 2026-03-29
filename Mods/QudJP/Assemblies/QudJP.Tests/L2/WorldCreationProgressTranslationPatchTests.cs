@@ -30,6 +30,7 @@ public sealed class WorldCreationProgressTranslationPatchTests
     {
         Translator.ResetForTests();
         SinkObservation.ResetForTests();
+        DummyWorldCreationProgressTarget.Reset();
 
         if (Directory.Exists(tempDirectory))
         {
