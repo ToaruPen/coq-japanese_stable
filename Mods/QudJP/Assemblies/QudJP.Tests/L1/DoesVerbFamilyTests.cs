@@ -13,8 +13,8 @@ public sealed class DoesVerbFamilyTests
     private string dictionaryDirectory = null!;
     private string leafFilePath = null!;
 
-    [SetUp]
-    public void SetUp()
+    [OneTimeSetUp]
+    public void OneTimeSetUp()
     {
         tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-does-l1", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDirectory);
@@ -60,8 +60,8 @@ public sealed class DoesVerbFamilyTests
         MessagePatternTranslator.SetLeafFileForTests(leafFilePath);
     }
 
-    [TearDown]
-    public void TearDown()
+    [OneTimeTearDown]
+    public void OneTimeTearDown()
     {
         MessagePatternTranslator.ResetForTests();
         MessageFrameTranslator.ResetForTests();
