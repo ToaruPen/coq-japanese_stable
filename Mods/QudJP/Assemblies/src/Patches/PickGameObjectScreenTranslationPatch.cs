@@ -30,7 +30,7 @@ public static class PickGameObjectScreenTranslationPatch
         return method;
     }
 
-    public static void Postfix(object? __instance)
+    public static void Prefix(object? __instance)
     {
         try
         {
@@ -59,7 +59,7 @@ public static class PickGameObjectScreenTranslationPatch
         }
         catch (Exception ex)
         {
-            Trace.TraceError("QudJP: PickGameObjectScreenTranslationPatch.Postfix failed: {0}", ex);
+            Trace.TraceError("QudJP: PickGameObjectScreenTranslationPatch.Prefix failed: {0}", ex);
         }
     }
 

@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace QudJP.Tests.DummyTargets;
 
 internal sealed class DummyOptionsTarget
@@ -5,6 +7,12 @@ internal sealed class DummyOptionsTarget
     public readonly List<DummyOptionsRow> menuItems = new List<DummyOptionsRow>();
 
     public readonly List<DummyOptionsRow> filteredMenuItems = new List<DummyOptionsRow>();
+
+    public List<DummyOptionsRow> renderedMenuItems = new List<DummyOptionsRow>();
+
+    public List<DummyOptionsRow> renderedFilteredMenuItems = new List<DummyOptionsRow>();
+
+    public static List<DummyMenuOption> renderedDefaultMenuOptions = new List<DummyMenuOption>();
 
     public static List<DummyMenuOption> defaultMenuOptions = new List<DummyMenuOption>
     {
@@ -19,10 +27,16 @@ internal sealed class DummyOptionsTarget
             new DummyMenuOption("Collapse All"),
             new DummyMenuOption("Help"),
         };
+        renderedDefaultMenuOptions = new List<DummyMenuOption>();
     }
 
     public void Show()
     {
+        renderedMenuItems = menuItems.Select(row => new DummyOptionsRow(row.Title, row.HelpText)).ToList();
+        renderedFilteredMenuItems = filteredMenuItems.Select(row => new DummyOptionsRow(row.Title, row.HelpText)).ToList();
+        renderedDefaultMenuOptions = defaultMenuOptions
+            .Select(option => new DummyMenuOption(option.Description, option.InputCommand, option.KeyDescription))
+            .ToList();
     }
 }
 

@@ -180,6 +180,8 @@ public static class MainMenuLocalizationPatch
 
         return ColorAwareTranslationComposer.TranslatePreservingColors(
             source,
-            static visible => StringHelpers.TranslateExactOrLowerAsciiFallback(visible));
+            static visible => StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var translated)
+                ? translated
+                : visible);
     }
 }
