@@ -9,14 +9,14 @@ namespace QudJP.Tests.L2;
 [TestFixture]
 [Category("L2")]
 [NonParallelizable]
-public sealed class PickGameObjectScreenTranslationPatchTests
+public sealed class MainMenuRowTranslationPatchTests
 {
     private string tempDirectory = null!;
 
     [SetUp]
     public void SetUp()
     {
-        tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-pick-game-object-l2", Guid.NewGuid().ToString("N"));
+        tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-mainmenu-row-l2", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDirectory);
 
         Translator.ResetForTests();
@@ -39,15 +39,9 @@ public sealed class PickGameObjectScreenTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_TranslatesMenuOptionDescriptions_BeforeBinding_WhenUpdateViewRuns()
+    public void Prefix_TranslatesRowText_BeforeUnityBinding_WhenPatched()
     {
-        WriteDictionary(
-            ("Close Menu", "メニューを閉じる"),
-            ("navigate", "移動"),
-            ("take all", "すべて取る"),
-            ("store an item", "アイテムを収納"));
-
-        var target = new DummyPickGameObjectScreen();
+        WriteDictionary(("Options", "設定"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -55,31 +49,27 @@ public sealed class PickGameObjectScreenTranslationPatchTests
         try
         {
             harmony.Patch(
-                original: RequireMethod(typeof(DummyPickGameObjectScreen), nameof(DummyPickGameObjectScreen.UpdateViewFromData)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(PickGameObjectScreenTranslationPatch), nameof(PickGameObjectScreenTranslationPatch.Prefix))));
+                original: RequireMethod(typeof(DummyMainMenuRow), nameof(DummyMainMenuRow.setData)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(MainMenuRowTranslationPatch), nameof(MainMenuRowTranslationPatch.Prefix))));
 
-            target.UpdateViewFromData(reentry: false);
+            var row = new DummyMainMenuRow();
+            row.setData(new DummyMainMenuOption("Options", "Pick:Options"));
 
             Assert.Multiple(() =>
             {
-                Assert.That(target.renderedDefaultMenuOptions[0].Description, Is.EqualTo("メニューを閉じる"));
-                Assert.That(target.renderedDefaultMenuOptions[1].Description, Is.EqualTo("移動"));
-                Assert.That(target.renderedGetItemMenuOptions[0].Description, Is.EqualTo("メニューを閉じる"));
-                Assert.That(target.renderedGetItemMenuOptions[1].Description, Is.EqualTo("移動"));
-                Assert.That(target.renderedTakeAll?.Description, Is.EqualTo("すべて取る"));
-                Assert.That(target.renderedStoreItem?.Description, Is.EqualTo("アイテムを収納"));
+                Assert.That(row.text.text, Is.EqualTo("設定"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
-                        nameof(PickGameObjectScreenTranslationPatch),
-                        "PickGameObject.Description"),
+                        nameof(MainMenuRowTranslationPatch),
+                        "MainMenu.Text"),
                     Is.GreaterThan(0));
                 Assert.That(
                     SinkObservation.GetHitCountForTests(
                         nameof(UITextSkinTranslationPatch),
-                        nameof(PickGameObjectScreenTranslationPatch),
+                        nameof(MainMenuRowTranslationPatch),
                         SinkObservation.ObservationOnlyDetail,
-                        "Close Menu",
-                        "Close Menu"),
+                        "Options",
+                        "Options"),
                     Is.EqualTo(0));
             });
         }
@@ -105,7 +95,6 @@ public sealed class PickGameObjectScreenTranslationPatchTests
         var builder = new StringBuilder();
         builder.Append('{');
         builder.Append("\"entries\":[");
-
         for (var index = 0; index < entries.Length; index++)
         {
             if (index > 0)
@@ -122,9 +111,10 @@ public sealed class PickGameObjectScreenTranslationPatchTests
 
         builder.Append("]}");
         builder.AppendLine();
-
-        var path = Path.Combine(tempDirectory, "ui-pick-game-object.ja.json");
-        File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        File.WriteAllText(
+            Path.Combine(tempDirectory, "main-menu-row-l2.ja.json"),
+            builder.ToString(),
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 
     private static string EscapeJson(string value)

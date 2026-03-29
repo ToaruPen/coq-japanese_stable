@@ -25,13 +25,13 @@ public static class OptionsLocalizationPatch
         return method;
     }
 
-    public static void Postfix(object __instance)
+    public static void Prefix(object __instance)
     {
         try
         {
             if (__instance is null)
             {
-                Trace.TraceError("QudJP: OptionsLocalizationPatch.Postfix received null __instance. Skipping translation.");
+                Trace.TraceError("QudJP: OptionsLocalizationPatch.Prefix received null __instance. Skipping translation.");
                 return;
             }
 
@@ -50,7 +50,7 @@ public static class OptionsLocalizationPatch
         }
         catch (Exception ex)
         {
-            Trace.TraceError("QudJP: OptionsLocalizationPatch.Postfix failed: {0}", ex);
+            Trace.TraceError("QudJP: OptionsLocalizationPatch.Prefix failed: {0}", ex);
         }
     }
 

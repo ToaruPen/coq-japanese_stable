@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace QudJP.Tests.DummyTargets;
 
 internal sealed class DummySkillsAndPowersStatusScreen
@@ -12,12 +14,78 @@ internal sealed class DummySkillsAndPowersStatusScreen
 
 internal sealed class DummyCharacterStatusScreen
 {
+    public static List<DummyStatusStatistic> stats = new List<DummyStatusStatistic>
+    {
+        new DummyStatusStatistic
+        {
+            Name = "Strength",
+            ShortDisplayName = "STR",
+            Value = 18,
+            BaseValue = 18,
+            Modifier = 2,
+        },
+    };
+
+    public static List<DummyCharacterMutationRecord> mutations = new List<DummyCharacterMutationRecord>();
+
+    public static List<DummyStatusEffect> effects = new List<DummyStatusEffect>();
+
+    public static string[] PrimaryAttributes = new[] { "Strength" };
+
+    public static string[] SecondaryAttributes = Array.Empty<string>();
+
+    public static string[] SecondaryAttributesWithCP = new[] { "CP" };
+
+    public static string[] ResistanceAttributes = Array.Empty<string>();
+
+    public static int CP = int.MinValue;
+
+    public DummyBindingScroller primaryAttributesController = new DummyBindingScroller();
+
+    public DummyBindingScroller secondaryAttributesController = new DummyBindingScroller();
+
+    public DummyBindingScroller resistanceAttributesController = new DummyBindingScroller();
+
+    public DummyBindingScroller mutationsController = new DummyBindingScroller();
+
+    public DummyBindingScroller effectsController = new DummyBindingScroller();
+
+    public DummyUiThreeColorProperties playerIcon = new DummyUiThreeColorProperties();
+
+    public DummyStatusGameObject GO = new DummyStatusGameObject();
+
+    public string mutationsTerm = "Mutations";
+
+    public string mutationTerm = "Mutation";
+
+    public string mutationTermCapital = "Mutation";
+
+    public string mutationColor = "C";
+
+    public DummyUITextSkin mutationTermText = new DummyUITextSkin();
+
+    public DummyUITextSkin nameText = new DummyUITextSkin();
+
+    public DummyUITextSkin classText = new DummyUITextSkin();
+
+    public DummyUITextSkin levelText = new DummyUITextSkin();
+
     public DummyUITextSkin attributePointsText = new DummyUITextSkin();
 
     public DummyUITextSkin mutationPointsText = new DummyUITextSkin();
 
     public void UpdateViewFromData()
     {
+        mutationTermText.SetText("MUTATIONS");
+        primaryAttributesController.BeforeShow(Array.Empty<object>());
+        secondaryAttributesController.BeforeShow(Array.Empty<object>());
+        resistanceAttributesController.BeforeShow(Array.Empty<object>());
+        mutationsController.BeforeShow(Array.Empty<object>());
+        effectsController.BeforeShow(Array.Empty<object>());
+        playerIcon.FromRenderable(new DummyRenderable("status-icon"));
+        nameText.SetText(GO.DisplayName);
+        classText.SetText(GO.GetGenotype() + " " + GO.GetSubtype());
+        levelText.SetText("Level: 1 ¯ HP: 10/10 ¯ XP: 100/200 ¯ Weight: 123#");
         attributePointsText.SetText("Attribute Points: 0");
         mutationPointsText.SetText("Mutation Points: 0");
     }
@@ -53,10 +121,25 @@ internal sealed class DummyPickGameObjectScreen
 
     public DummyMenuOption STORE_ITEM = new DummyMenuOption("store an item");
 
+    public List<DummyMenuOption> renderedDefaultMenuOptions = new List<DummyMenuOption>();
+
+    public List<DummyMenuOption> renderedGetItemMenuOptions = new List<DummyMenuOption>();
+
+    public DummyMenuOption? renderedTakeAll;
+
+    public DummyMenuOption? renderedStoreItem;
+
     public void UpdateViewFromData(bool reentry)
     {
         _ = reentry;
-        _ = TAKE_ALL;
+        renderedDefaultMenuOptions = defaultMenuOptions
+            .Select(option => new DummyMenuOption(option.Description, option.InputCommand, option.KeyDescription))
+            .ToList();
+        renderedGetItemMenuOptions = getItemMenuOptions
+            .Select(option => new DummyMenuOption(option.Description, option.InputCommand, option.KeyDescription))
+            .ToList();
+        renderedTakeAll = new DummyMenuOption(TAKE_ALL.Description, TAKE_ALL.InputCommand, TAKE_ALL.KeyDescription);
+        renderedStoreItem = new DummyMenuOption(STORE_ITEM.Description, STORE_ITEM.InputCommand, STORE_ITEM.KeyDescription);
     }
 }
 

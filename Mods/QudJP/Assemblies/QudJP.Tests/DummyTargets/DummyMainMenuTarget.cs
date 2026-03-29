@@ -57,6 +57,23 @@ internal sealed class DummyMainMenuTarget
     }
 }
 
+internal sealed class DummyMainMenuRow
+{
+    public DummyUnityText text = new DummyUnityText();
+
+    public DummyMainMenuOption? data;
+
+    public void setData(object data)
+    {
+        this.data = null;
+        if (data is DummyMainMenuOption option)
+        {
+            this.data = option;
+            text.text = option.Text;
+        }
+    }
+}
+
 internal sealed class DummyMainMenuOption
 {
     public DummyMainMenuOption(string text, string command)
@@ -68,6 +85,11 @@ internal sealed class DummyMainMenuOption
     public string Text;
 
     public string Command;
+}
+
+internal sealed class DummyUnityText
+{
+    public string text = string.Empty;
 }
 
 internal sealed class DummyFrameworkScroller

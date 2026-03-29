@@ -23,11 +23,12 @@ Each route family falls into one of three categories:
 | Journal entry display | Statically-provable | Postfix, `ref __result` | JournalEntryDisplayTextPatch, JournalMapNoteDisplayTextPatch |
 | Popup message | Statically-provable | Prefix, `__args` rewrite | PopupMessageTranslationPatch |
 | Inventory/equipment | Narrowable | Postfix, field update | InventoryAndEquipmentStatusScreenTranslationPatch |
-| Character status | Narrowable | Postfix, field update | CharacterStatusScreenTranslationPatch, CharacterStatusScreenMutationDetailsPatch |
-| Skills/powers | Narrowable | Postfix, field/text update | SkillsAndPowersStatusScreenTranslationPatch, SkillsAndPowersStatusScreenDetailsPatch |
+| Main menu options | Narrowable | Prefix, setData field rewrite | MainMenuRowTranslationPatch, MainMenuLocalizationPatch |
+| Character status | Narrowable | Prefix + Postfix, binding/screen fields | CharacterStatusScreenBindingPatch, CharacterAttributeLineTranslationPatch, CharacterMutationLineTranslationPatch, CharacterEffectLineTranslationPatch, CharacterStatusScreenTranslationPatch, CharacterStatusScreenMutationDetailsPatch |
+| Skills/powers | Narrowable | Prefix + Postfix, binding/field update | SkillsAndPowersLineTranslationPatch, SkillsAndPowersStatusScreenTranslationPatch, SkillsAndPowersStatusScreenDetailsPatch |
 | Factions | Narrowable | Postfix, field update | FactionsLineDataTranslationPatch, FactionsLineTranslationPatch, FactionsStatusScreenTranslationPatch |
-| Options screen | Narrowable | Postfix, field update | OptionsLocalizationPatch |
-| Pick game object screen | Narrowable | Postfix, field update | PickGameObjectScreenTranslationPatch |
+| Options screen | Narrowable | Prefix, field update | OptionsLocalizationPatch |
+| Pick game object screen | Narrowable | Prefix, field update | PickGameObjectScreenTranslationPatch |
 | Menu bottom context | Narrowable | Prefix, field update | QudMenuBottomContextTranslationPatch |
 | Player status bar / ability bar | Narrowable | Postfix, dictionary/text update | PlayerStatusBarProducerTranslationPatch, AbilityBarAfterRenderTranslationPatch |
 | Popup conversation | Narrowable | Prefix, `__args` rewrite | PopupTranslationPatch, ConversationDisplayTextPatch |

@@ -40,7 +40,7 @@ public sealed class OptionsLocalizationPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesOptionRows_WhenPatched()
+    public void Prefix_TranslatesOptionRows_BeforeBinding_WhenPatched()
     {
         WriteDictionary(
             ("Main volume", "主音量"),
@@ -57,16 +57,16 @@ public sealed class OptionsLocalizationPatchTests
         {
             harmony.Patch(
                 original: RequireMethod(typeof(DummyOptionsTarget), nameof(DummyOptionsTarget.Show)),
-                postfix: new HarmonyMethod(RequireMethod(typeof(OptionsLocalizationPatch), nameof(OptionsLocalizationPatch.Postfix))));
+                prefix: new HarmonyMethod(RequireMethod(typeof(OptionsLocalizationPatch), nameof(OptionsLocalizationPatch.Prefix))));
 
             target.Show();
 
             Assert.Multiple(() =>
             {
-                Assert.That(target.menuItems[0].Title, Is.EqualTo("{{W|主音量}}"));
-                Assert.That(target.menuItems[0].HelpText, Is.EqualTo("スライダーを調整"));
-                Assert.That(target.filteredMenuItems[0].Title, Is.EqualTo("主音量"));
-                Assert.That(target.filteredMenuItems[0].HelpText, Is.EqualTo("{{R|スライダーを調整}}"));
+                Assert.That(target.renderedMenuItems[0].Title, Is.EqualTo("{{W|主音量}}"));
+                Assert.That(target.renderedMenuItems[0].HelpText, Is.EqualTo("スライダーを調整"));
+                Assert.That(target.renderedFilteredMenuItems[0].Title, Is.EqualTo("主音量"));
+                Assert.That(target.renderedFilteredMenuItems[0].HelpText, Is.EqualTo("{{R|スライダーを調整}}"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(OptionsLocalizationPatch),
@@ -89,7 +89,7 @@ public sealed class OptionsLocalizationPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesDefaultMenuDescriptions_WhenPatched()
+    public void Prefix_TranslatesDefaultMenuDescriptions_BeforeBinding_WhenPatched()
     {
         WriteDictionary(
             ("Collapse All", "すべてたたむ"),
@@ -102,14 +102,14 @@ public sealed class OptionsLocalizationPatchTests
         {
             harmony.Patch(
                 original: RequireMethod(typeof(DummyOptionsTarget), nameof(DummyOptionsTarget.Show)),
-                postfix: new HarmonyMethod(RequireMethod(typeof(OptionsLocalizationPatch), nameof(OptionsLocalizationPatch.Postfix))));
+                prefix: new HarmonyMethod(RequireMethod(typeof(OptionsLocalizationPatch), nameof(OptionsLocalizationPatch.Prefix))));
 
             new DummyOptionsTarget().Show();
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyOptionsTarget.defaultMenuOptions[0].Description, Is.EqualTo("すべてたたむ"));
-                Assert.That(DummyOptionsTarget.defaultMenuOptions[1].Description, Is.EqualTo("ヘルプ"));
+                Assert.That(DummyOptionsTarget.renderedDefaultMenuOptions[0].Description, Is.EqualTo("すべてたたむ"));
+                Assert.That(DummyOptionsTarget.renderedDefaultMenuOptions[1].Description, Is.EqualTo("ヘルプ"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(OptionsLocalizationPatch),

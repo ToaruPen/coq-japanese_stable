@@ -87,7 +87,8 @@ def test_build_translation_index_reads_repo_samples() -> None:
 
     assert "Qud.UI.CharacterStatusScreen:UpdateViewFromData" in index.patch_targets
     assert index.patch_targets["Qud.UI.CharacterStatusScreen:UpdateViewFromData"] == {
-        "CharacterStatusScreenTranslationPatch"
+        "CharacterStatusScreenBindingPatch",
+        "CharacterStatusScreenTranslationPatch",
     }
 
     assert "XRL.UI.Popup:ShowBlock" in index.patch_targets
@@ -233,7 +234,8 @@ def test_cross_reference_marks_dictionary_xml_and_patch_matches(tmp_path: Path) 
     assert sites["xml-blueprint"].existing_xml == "ActivatedAbilities.jp.xml#CommandAmputateLimb"
 
     assert sites["screen-template"].status is SiteStatus.TRANSLATED
-    assert sites["screen-template"].existing_patch == "CharacterStatusScreenTranslationPatch"
+    expected_patch = "CharacterStatusScreenBindingPatch, CharacterStatusScreenTranslationPatch"
+    assert sites["screen-template"].existing_patch == expected_patch
 
     assert sites["popup-template"].status is SiteStatus.TRANSLATED
     assert sites["popup-template"].existing_patch == "PopupTranslationPatch"
@@ -293,4 +295,5 @@ def test_cross_reference_inventory_file_writes_candidate_inventory(tmp_path: Pat
     persisted = read_candidate_inventory_json(output_path)
     assert persisted == candidate
     assert persisted.sites[0].status is SiteStatus.TRANSLATED
-    assert persisted.sites[0].existing_patch == "CharacterStatusScreenTranslationPatch"
+    expected_patch = "CharacterStatusScreenBindingPatch, CharacterStatusScreenTranslationPatch"
+    assert persisted.sites[0].existing_patch == expected_patch
