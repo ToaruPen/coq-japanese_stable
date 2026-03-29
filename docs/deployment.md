@@ -15,9 +15,11 @@ How to deploy the QudJP mod to the Caves of Qud game directory.
 
 ### Method 1: sync_mod.py (Recommended)
 
+Always clean + full rebuild before deploying. Incremental builds may ship stale DLL artifacts.
+
 ```bash
-# Build then deploy
-dotnet build Mods/QudJP/Assemblies/QudJP.csproj
+dotnet clean Mods/QudJP/Assemblies/QudJP.csproj
+dotnet build Mods/QudJP/Assemblies/QudJP.csproj --no-incremental
 python3.12 scripts/sync_mod.py
 ```
 
