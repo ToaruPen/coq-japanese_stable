@@ -59,6 +59,10 @@ dotnet_diagnostic.CA1307.severity = none
 # string.EndsWith(char) is .NET Core 2.1+; source shared with net48 which lacks this overload
 dotnet_diagnostic.CA1865.severity = none
 
+# string.Concat(ReadOnlySpan<char>, ReadOnlySpan<char>) is .NET Core / .NET 5+; net48 lacks this overload
+# CA1845 is suppressed project-wide via severity = none; the Span-based overload is unavailable on net48
+dotnet_diagnostic.CA1845.severity = none
+
 # Harmony runtime patches must catch all exceptions to avoid crashing the game.
 # The fail-fast pattern for patches is: catch (Exception ex) { Trace.TraceError(...); }
 dotnet_diagnostic.CA1031.severity = none

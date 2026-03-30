@@ -95,9 +95,7 @@ public static class TradeScreenUpdateTotalsTranslationPatch
             return;
         }
 
-#pragma warning disable CA1845 // net48 does not support AsSpan
         var translated = currentText.Substring(0, tokenIndex) + translatedToken + currentText.Substring(tokenIndex + token.Length);
-#pragma warning restore CA1845
         if (string.Equals(translated, currentText, StringComparison.Ordinal))
         {
             return;

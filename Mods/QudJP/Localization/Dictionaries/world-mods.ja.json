@@ -945,6 +945,186 @@
       "text": "彫刻"
     },
     {
+      "context": "XRL.World.Parts.ModAirfoil.GetShortDescription",
+      "key": "Airfoil: This item can be thrown at +4 throwing range.",
+      "text": "エアフォイル: この品は投擲射程が+4される。"
+    },
+    {
+      "context": "XRL.World.Parts.ModBeetlehost.GetShortDescription",
+      "key": "When powered, discharges a clockwork beetle friend on hit. Drains cell power quickly.",
+      "text": "通電中、命中時に友好的な時計仕掛けの甲虫を放つ。セル電力を急速に消費する。"
+    },
+    {
+      "context": "XRL.World.Parts.ModBlinkEscape.GetShortDescription",
+      "key": "Whenever you're about to take avoidable damage, there's {0}% chance you blink away instead.",
+      "text": "回避可能なダメージを受けそうになるたび、{0}%の確率で代わりに瞬間移動して回避する。"
+    },
+    {
+      "context": "XRL.World.Parts.ModDisguise.GetDescription",
+      "key": "Disguise: This item changes its wearer's appearance and improves their reputation with the faction of the mimicked creature.",
+      "text": "変装: この品は装着者の外見を変え、模倣した生物の派閥に対する評判を高める。"
+    },
+    {
+      "context": "XRL.World.Parts.ModDisguise.GetShortDescription",
+      "key": "Disguise: This item makes its wearer appear to be {0}.",
+      "text": "変装: この品は装着者を{0}に見せかける。"
+    },
+    {
+      "context": "XRL.World.Parts.ModFactionSlayer.GetShortDescription",
+      "key": "{0}% chance to behead {1} on hit.",
+      "text": "命中時、{1}を斬首する確率は{0}%。"
+    },
+    {
+      "context": "XRL.World.Parts.ModFatecaller.GetShortDescription",
+      "key": "{0}% of the time, the Fates have their way.",
+      "text": "{0}%の確率で運命が介入する。"
+    },
+    {
+      "context": "XRL.World.Parts.ModGlassArmor.GetShortDescription",
+      "key": "Reflects {0}% damage back at your attackers, rounded up.",
+      "text": "受けたダメージの{0}%を切り上げて攻撃者に反射する。"
+    },
+    {
+      "context": "XRL.World.Parts.ModGlazed.GetShortDescription",
+      "key": "{0}% chance to dismember on hit.",
+      "text": "命中時、{0}%の確率で切断する。"
+    },
+    {
+      "context": "XRL.World.Parts.ModImprovedBerserk.GetShortDescription",
+      "key": "Your blood frenzies last twice as long.",
+      "text": "狂乱の持続時間が2倍になる。"
+    },
+    {
+      "context": "XRL.World.Parts.ModImprovedBlock.GetShortDescription",
+      "key": "Your chance to block with shields is increased by 25%.",
+      "text": "盾でブロックする確率が25%上昇する。"
+    },
+    {
+      "context": "XRL.World.Parts.ModImprovedBludgeon.GetShortDescription",
+      "key": "Your chance to Bludgeon is doubled.",
+      "text": "〈殴打〉の発動確率が2倍になる。"
+    },
+    {
+      "context": "XRL.World.Parts.ModImprovedHobble.GetShortDescription",
+      "key": "Your Hobble cooldown is reduced by 5 rounds.",
+      "text": "〈脚止め〉のクールダウンが5ラウンド短縮される。"
+    },
+    {
+      "context": "XRL.World.Parts.ModImprovedMutationBase.GetShortDescription",
+      "key": "Grants you {0} at level {1}. If you already have {0}, its level is increased by {1}.",
+      "text": "{0}をレベル{1}で得る。すでに{0}を持っている場合、そのレベルが{1}上昇する。"
+    },
+    {
+      "context": "XRL.World.Parts.ModJewelEncrusted.GetShortDescription",
+      "key": "Jewel-Encrusted: This item is much more valuable than usual and grants the wearer {0} reputation with water barons.",
+      "text": "宝石象嵌: この品は通常よりはるかに高価で、装着者に水の男爵たちとの評判{0}を与える。"
+    },
+    {
+      "context": "XRL.World.Parts.ModLiquidCooled.GetShortDescription",
+      "key": "Liquid-cooled: This weapon's rate of fire is increased by {0}, but it requires {1} to function. When fired, there's a one in {2} chance that 1 dram is consumed.",
+      "text": "液冷式: この武器の連射数は{0}増えるが、機能するには{1}が必要だ。発射時には{2}分の1の確率で1ドラム消費する。"
+    },
+    {
+      "context": "XRL.World.Parts.ModMagnetized.GetShortDescription",
+      "key": "Magnetized: This item floats around you.",
+      "text": "磁化: この品はあなたの周囲に浮遊する。"
+    },
+    {
+      "context": "XRL.World.Parts.ModNav.GetShortDescription",
+      "key": "Nav: When powered and booted up, this item enhances navigation.",
+      "text": "ナビ: 通電して起動すると、この品は移動を支援する。"
+    },
+    {
+      "context": "XRL.World.Parts.ModNulling.GetShortDescription",
+      "key": "Nulling: When powered, this armor astrally burdens its wearer. Compute power on the local lattice increases the effectiveness of this effect.",
+      "text": "無効化: 通電中、この防具は装着者に霊的負荷を与える。ローカルラティス上の計算力が高いほど効果が増す。"
+    },
+    {
+      "context": "XRL.World.Parts.ModNulling.GetShortDescription",
+      "key": "Nulling: When powered, this shield astrally burdens its wielder. Compute power on the local lattice increases the effectiveness of this effect.",
+      "text": "無効化: 通電中、この盾は使用者に霊的負荷を与える。ローカルラティス上の計算力が高いほど効果が増す。"
+    },
+    {
+      "context": "XRL.World.Parts.ModNulling.GetShortDescription",
+      "key": "Nulling: When powered, this weapon astrally burdens its target on hit. Compute power on the local lattice increases the effectiveness of this effect.",
+      "text": "無効化: 通電中、この武器は命中した対象に霊的負荷を与える。ローカルラティス上の計算力が高いほど効果が増す。"
+    },
+    {
+      "context": "XRL.World.Parts.ModPainted.GetShortDescription",
+      "key": "Painted: This item is painted with a scene from the life of the ancient {0}:",
+      "text": "彩色: この品には古代の{0}の生涯の一場面が描かれている:"
+    },
+    {
+      "context": "XRL.World.Parts.ModPhaseConjugate.GetShortDescription",
+      "key": "Phase-conjugate: This explosive shifts phase immediately before detonating.",
+      "text": "位相共役: この爆発物は爆発直前に位相をずらす。"
+    },
+    {
+      "context": "XRL.World.Parts.ModPhaseHarmonic.GetShortDescription",
+      "key": "Phase-Harmonic: This weapon can affect both in-phase and out-of-phase objects.",
+      "text": "位相調和: この武器は同位相・逆位相の対象の両方に作用する。"
+    },
+    {
+      "context": "XRL.World.Parts.ModRefractive.GetShortDescription",
+      "key": "Refractive: This item has {0}% chance to refract light-based attacks.",
+      "text": "屈折性: この品は{0}%の確率で光線系攻撃を屈折させる。"
+    },
+    {
+      "context": "XRL.World.Parts.ModScoped.GetShortDescription",
+      "key": "Scoped: This weapon has increased accuracy.",
+      "text": "スコープ付き: この武器は命中精度が向上する。"
+    },
+    {
+      "context": "XRL.World.Parts.ModTransmuteOnHit.GetShortDescription",
+      "key": "Small chance to transmute an enemy into {0} on hit.",
+      "text": "命中時、ごく低確率で敵を{0}に変成させる。"
+    },
+    {
+      "context": "XRL.World.Parts.ModTransmuteOnHit.GetShortDescription",
+      "key": "{0}% chance to transmute an enemy into {1} on hit.",
+      "text": "命中時、{1}に変成させる確率は{0}%。"
+    },
+    {
+      "context": "QudJP.WorldMods",
+      "key": "Clairvoyance",
+      "text": "千里眼"
+    },
+    {
+      "context": "QudJP.WorldMods",
+      "key": "Confusion",
+      "text": "混乱"
+    },
+    {
+      "context": "QudJP.WorldMods",
+      "key": "Electrical Generation",
+      "text": "発電"
+    },
+    {
+      "context": "QudJP.WorldMods",
+      "key": "Light Manipulation",
+      "text": "光操作"
+    },
+    {
+      "context": "QudJP.WorldMods",
+      "key": "Telekinesis",
+      "text": "念動力"
+    },
+    {
+      "context": "QudJP.WorldMods",
+      "key": "Teleportation",
+      "text": "テレポーテーション"
+    },
+    {
+      "context": "QudJP.WorldMods",
+      "key": "Temporal Fugue",
+      "text": "時間遁走"
+    },
+    {
+      "context": "QudJP.WorldMods",
+      "key": "a gemstone",
+      "text": "宝石"
+    },
+    {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Weapon Class: Cudgel",
       "text": "武器カテゴリ: 棍棒"
@@ -952,82 +1132,82 @@
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Weapon Class: Pistol",
-      "text": "??????: ??"
+      "text": "武器カテゴリ: ピストル"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
-      "key": "Weapon Class: Bows & Rifles",
-      "text": "??????: ????"
+      "key": "Weapon Class: Bows && Rifles",
+      "text": "武器カテゴリ: 弓・ライフル"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Weapon Class: Heavy Weapon",
-      "text": "??????: ???"
+      "text": "武器カテゴリ: 重火器"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Accuracy: Very High",
-      "text": "????: ?????"
+      "text": "命中率: 非常に高い"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Accuracy: High",
-      "text": "????: ??"
+      "text": "命中率: 高い"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Accuracy: Medium",
-      "text": "????: ??"
+      "text": "命中率: 普通"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Accuracy: Low",
-      "text": "????: ??"
+      "text": "命中率: 低い"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Accuracy: Very Low",
-      "text": "????: ?????"
+      "text": "命中率: 非常に低い"
     },
     {
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
       "key": "Weapon Class: Pistol",
-      "text": "??????: ??"
+      "text": "武器カテゴリ: ピストル"
     },
     {
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
-      "key": "Weapon Class: Bows & Rifles",
-      "text": "??????: ????"
+      "key": "Weapon Class: Bows && Rifles",
+      "text": "武器カテゴリ: 弓・ライフル"
     },
     {
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
       "key": "Weapon Class: Heavy Weapon",
-      "text": "??????: ???"
+      "text": "武器カテゴリ: 重火器"
     },
     {
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
       "key": "Accuracy: Very High",
-      "text": "????: ?????"
+      "text": "命中率: 非常に高い"
     },
     {
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
       "key": "Accuracy: High",
-      "text": "????: ??"
+      "text": "命中率: 高い"
     },
     {
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
       "key": "Accuracy: Medium",
-      "text": "????: ??"
+      "text": "命中率: 普通"
     },
     {
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
       "key": "Accuracy: Low",
-      "text": "????: ??"
+      "text": "命中率: 低い"
     },
     {
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
       "key": "Accuracy: Very Low",
-      "text": "????: ?????"
+      "text": "命中率: 非常に低い"
     }
   ]
 }

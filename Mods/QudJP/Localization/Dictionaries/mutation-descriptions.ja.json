@@ -673,11 +673,6 @@
       "key": "mutation:Socially Repugnant",
       "context": "Chargen.Mutation.LongDescription",
       "text": "人から疎まれる性質を持つ。\n\n全派閥との評判-50。"
-    },
-    {
-      "key": "You only manifest mental mutations, and all of your mutation choices when manifesting a new mutation are mental.",
-      "context": "XRL.World.Parts.Mutation.Esper",
-      "text": "精神変異のみを発現し、新しい変異を選ぶときの候補もすべて精神系になる。"
     }
   ]
 }

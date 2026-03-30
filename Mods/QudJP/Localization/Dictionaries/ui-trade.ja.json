@@ -13,6 +13,22 @@
       "key": " drams",
       "context": "Qud.UI.TradeScreen.UpdateTotals",
       "text": " ドラム"
+    },
+    {
+      "key": "offer",
+      "text": "提示"
+    },
+    {
+      "key": "toggle sort",
+      "text": "並び替え切替"
+    },
+    {
+      "key": "select an action",
+      "text": "操作を選択"
+    },
+    {
+      "key": "Add to trade",
+      "text": "取引に追加"
     }
   ]
 }

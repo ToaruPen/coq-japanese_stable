@@ -444,9 +444,7 @@ internal static class GetDisplayNameRouteTranslator
             return false;
         }
 
-#pragma warning disable CA1845 // net48 target keeps simple string APIs here
         translated = source.Substring(0, separatorIndex) + "、" + translatedSuffix;
-#pragma warning restore CA1845
         DynamicTextObservability.RecordTransform(route, "DisplayName.TitleSuffix", source, translated);
         return true;
     }
@@ -753,12 +751,10 @@ internal static class GetDisplayNameRouteTranslator
 
         var leadingLength = source.Length - source.TrimStart().Length;
         var trailingLength = source.Length - source.TrimEnd().Length;
-#pragma warning disable CA1845 // net48 target keeps simple string APIs here
         translated =
             source.Substring(0, leadingLength) +
             trimmedTranslation +
             source.Substring(source.Length - trailingLength, trailingLength);
-#pragma warning restore CA1845
         DynamicTextObservability.RecordTransform(route, "DisplayName.TrimmedLookup", source, translated);
         return true;
     }

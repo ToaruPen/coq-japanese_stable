@@ -116,6 +116,22 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void MutationDescriptionsDictionary_UsesCanonicalEsperKeyOnly()
+    {
+        const string legacyEsperKey = "You only manifest mental mutations, and all of your mutation choices when manifesting a new mutation are mental.";
+        var entries = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "mutation-descriptions.ja.json"));
+        var esperEntries = entries
+            .Where(static entry => string.Equals(entry.Key, "mutation:Esper", StringComparison.Ordinal))
+            .ToArray();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(esperEntries.Length, Is.EqualTo(1), "mutation-descriptions should keep a single canonical mutation:Esper entry.");
+            Assert.That(entries.Any(static entry => string.Equals(entry.Key, legacyEsperKey, StringComparison.Ordinal)), Is.False, "mutation-descriptions should not retain the legacy full-sentence Esper key.");
+        });
+    }
+
+    [Test]
     public void WorldPartsDictionary_DoesNotReuseCookingOwnerKeys()
     {
         var dictionariesRoot = Path.Combine(localizationRoot, "Dictionaries");

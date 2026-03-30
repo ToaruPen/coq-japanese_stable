@@ -1,0 +1,14 @@
+{
+  "meta": {
+    "id": "templates-format",
+    "lang": "ja",
+    "version": "0.1.0"
+  },
+  "entries": [
+    {
+      "key": "Add how many {0} to trade.",
+      "context": "Qud.UI.PopupAskNumber.AskNumberAsync",
+      "text": "{0}をいくつ取引に出す？"
+    }
+  ]
+}
