@@ -662,11 +662,40 @@ public sealed class MessagePatternTranslatorTests
     public void Translate_AppliesWrappedDeathWrapperViaSharedFamily()
     {
         WritePatternDictionary(("^You hear (.+?)[.!]?$", "{0}を聞いた。"));
-        WriteExactDictionary(("QudJP.DeathWrapper.KilledBy.Wrapped", "あなたは死んだ。\n\n{killer}に殺された。"));
+        WriteExactDictionary(
+            ("QudJP.DeathWrapper.Generic.Wrapped", "あなたは死んだ。\n\n{body}"),
+            ("QudJP.DeathWrapper.KilledBy.Bare", "{killer}に殺された。"));
 
         var translated = MessagePatternTranslator.Translate("You died.\n\nYou were killed by a ウォーターヴァイン農家.");
 
         Assert.That(translated, Is.EqualTo("あなたは死んだ。\n\nウォーターヴァイン農家に殺された。"));
+    }
+
+    [Test]
+    public void Translate_AppliesWrappedDeathWrapperWithFromPrepositionViaSharedFamily()
+    {
+        WritePatternDictionary(("^You hear (.+?)[.!]?$", "{0}を聞いた。"));
+        WriteExactDictionary(
+            ("QudJP.DeathWrapper.Generic.Wrapped", "あなたは死んだ。\n\n{body}"),
+            ("QudJP.DeathWrapper.DiedOfPoisonFrom.Bare", "{killer}の毒で死亡した。"));
+
+        var translated = MessagePatternTranslator.Translate("You died.\n\nYou died of poison from a ウォーターヴァイン農家.");
+
+        Assert.That(translated, Is.EqualTo("あなたは死んだ。\n\nウォーターヴァイン農家の毒で死亡した。"));
+    }
+
+    [Test]
+    public void Translate_AppliesExplosionDeathWrapperViaSharedFamily()
+    {
+        WritePatternDictionary(("^You hear (.+?)[.!]?$", "{0}を聞いた。"));
+        WriteExactDictionary(
+            ("QudJP.DeathWrapper.Generic.Wrapped", "あなたは死んだ。\n\n{body}"),
+            ("QudJP.DeathWrapper.DiedInExplosionOf.Bare", "{killer}の爆発で死んだ。"),
+            ("grenade", "グレネード"));
+
+        var translated = MessagePatternTranslator.Translate("You died.\n\nYou died in the explosion of a grenade.");
+
+        Assert.That(translated, Is.EqualTo("あなたは死んだ。\n\nグレネードの爆発で死んだ。"));
     }
 
     [Test]
