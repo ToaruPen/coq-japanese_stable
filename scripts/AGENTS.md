@@ -24,7 +24,7 @@ scripts/decompile_game_dll.sh --all    # All classes (slow)
 
 # Conversation diagnostic cycle (L3 — requires Rosetta + Hammerspoon IPC)
 scripts/diagnose_conversation.sh               # Full cycle: build → deploy → launch → talk to NPC → collect log
-scripts/diagnose_conversation.sh --skip-build  # Skip build+deploy; reuse last deployed DLL
+scripts/diagnose_conversation.sh --skip-build  # Skip build+deploy (requires an already deployed DLL)
 ```
 
 ### diagnose_conversation.sh
