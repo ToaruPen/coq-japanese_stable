@@ -125,6 +125,32 @@ public sealed class ConversationPronounExchangeTranslationPatchTests
     }
 
     [Test]
+    public void TryTranslate_ReturnsFalse_ForColorTags()
+    {
+        const string input = "<color=green>you and Mehmet exchange pronouns; his are he/him/his</color>";
+        var changed = ConversationPronounExchangeTranslationPatch.TryTranslate(input, out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.False);
+            Assert.That(translated, Is.EqualTo(input));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_ReturnsFalse_ForMarker01()
+    {
+        const string input = "\x01you and Mehmet exchange pronouns; his are he/him/his";
+        var changed = ConversationPronounExchangeTranslationPatch.TryTranslate(input, out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.False);
+            Assert.That(translated, Is.EqualTo(input));
+        });
+    }
+
+    [Test]
     public void Postfix_IsNoOp_ForNullResult()
     {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
