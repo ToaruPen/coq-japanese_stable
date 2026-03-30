@@ -385,7 +385,7 @@
       <zone Level="5-9" x="0-2" y="0-2" Name="月階の上空" IndefiniteArticle="the" AmbientBed="Sounds/Ambiences/amb_bed_moonstair">
         <builder Class="Sky"></builder>
       </zone>
-      <zone Level="10" x="0-2" y="0-2" Name="月階（ムーン・ステア）" IndefiniteArticle="the" AmbientBed="Sounds/Ambiences/amb_bed_moonstair">
+      <zone Level="10" x="0-2" y="0-2" Name="ムーン・ステアー" IndefiniteArticle="the" AmbientBed="Sounds/Ambiences/amb_bed_moonstair">
         <builder Class="MoonStair"></builder>        
         <builder Class="FactionEncounters" Population="GenericFactionPopulation"></builder>
         <music Track="Music/Moonstair" />
@@ -517,16 +517,16 @@
     </cell>
 
     <cell Name="DeepJungle" Inherits="DefaultJoppaCell" ApplyTo="TerrainDeepJungle">
-      <zone Level="5-9" x="0-2" y="0-2" Name="深いジャングルの上空" IndefiniteArticle="the" AmbientBed="Sounds/Ambiences/amb_bed_deepJungle">
+      <zone Level="5-9" x="0-2" y="0-2" Name="ディープジャングルの上空" IndefiniteArticle="the" AmbientBed="Sounds/Ambiences/amb_bed_deepJungle">
         <builder Class="Sky"></builder>
       </zone>
-      <zone Level="10" x="0-2" y="0-2" Name="深部ジャングル" HasWeather="true" WindSpeed="0-60" WindDirections="N,NW,NW,W,W,SW,S,SE" WindDuration="50-3000" AmbientBed="Sounds/Ambiences/amb_bed_deepJungle">
+      <zone Level="10" x="0-2" y="0-2" Name="ディープジャングル" HasWeather="true" WindSpeed="0-60" WindDirections="N,NW,NW,W,W,SW,S,SE" WindDuration="50-3000" AmbientBed="Sounds/Ambiences/amb_bed_deepJungle">
         <postbuilder Class="ZoneTemplate:Deep Jungle"></postbuilder>
         <builder Class="JungleRuins" Chance="5"></builder>
         <builder Class="FactionEncounters" Population="GenericFactionPopulation"></builder>
         <music Track="Music/Overworld" />
       </zone>
-      <zone Level="11-15" x="0-2" y="0-2" Name="地下深部ジャングル">
+      <zone Level="11-15" x="0-2" y="0-2" Name="地下ディープジャングル">
         <builder Class="Strata"></builder>
         <builder Class="ZoneTemplate:DeepJungleCaves"></builder>
         <builder Class="PossibleCryotube"></builder>
@@ -901,19 +901,19 @@
 
     <!-- Rust Well -->
 
-    <cell Name="ラストウェル" Inherits="DesertCanyon" ApplyTo="TerrainRustWell" Mutable="false">
+    <cell Name="ラスト・ウェル" Inherits="DesertCanyon" ApplyTo="TerrainRustWell" Mutable="false">
 
-      <zone Level="5-9" x="0-2" y="0-2" Name="ラストウェルズの上空" IndefiniteArticle="the">
+      <zone Level="5-9" x="0-2" y="0-2" Name="ラスト・ウェルズの上空" IndefiniteArticle="the">
         <builder Class="Sky"></builder>
       </zone>
 
-      <zone Level="10" x="1" y="1" Name="ラストウェル" AmbientBed="Sounds/Ambiences/amb_biome_rusty">
+      <zone Level="10" x="1" y="1" Name="ラスト・ウェル" AmbientBed="Sounds/Ambiences/amb_biome_rusty">
         <builder Class="Rustwells"></builder>
 		    <music Track="Music/Deep Dawn" />
 		    <postbuilder Class="ZoneTemplate:Rustwells Surface"></postbuilder>
 	    </zone>
 
-      <zone Level="11" x="1" y="1" Name="ラストウェル" AmbientBed="Sounds/Ambiences/amb_biome_rusty">
+      <zone Level="11" x="1" y="1" Name="ラスト・ウェル" AmbientBed="Sounds/Ambiences/amb_biome_rusty">
         <builder Class="SolidEarth"></builder>
         <builder Class="Rustwells"></builder>
 		    <builder Class="PossibleCryotube"></builder>
@@ -921,7 +921,7 @@
   		  <postbuilder Class="ZoneTemplate:Rustwells 1"></postbuilder>
 	    </zone>
 
-      <zone Level="12" x="1" y="1" Name="ラストウェル" AmbientBed="Sounds/Ambiences/amb_biome_rusty">
+      <zone Level="12" x="1" y="1" Name="ラスト・ウェル" AmbientBed="Sounds/Ambiences/amb_biome_rusty">
         <builder Class="SolidEarth"></builder>
         <builder Class="Rustwells"></builder>
 		    <builder Class="PossibleCryotube"></builder>
@@ -929,7 +929,7 @@
 		    <postbuilder Class="ZoneTemplate:Rustwells 2"></postbuilder>
 	    </zone>
 
-      <zone Level="13" x="1" y="1" Name="ラストウェル" AmbientBed="Sounds/Ambiences/amb_biome_rusty">
+      <zone Level="13" x="1" y="1" Name="ラスト・ウェル" AmbientBed="Sounds/Ambiences/amb_biome_rusty">
         <builder Class="SolidEarth"></builder>
         <builder Class="Rustwells"></builder>
 		    <builder Class="PossibleCryotube"></builder>
@@ -1241,7 +1241,7 @@
         <music Track="Music/Binaural Concept" />
       </zone>
 
-      <zone Level="28" x="0-2" y="0-2" Name="骨の都市" ProperName="true" NameContext="アスファルト鉱山" AmbientBed="Sounds/Ambiences/amb_biome_tarry">
+      <zone Level="28" x="0-2" y="0-2" Name="骨の都" ProperName="true" NameContext="アスファルト鉱山" AmbientBed="Sounds/Ambiences/amb_biome_tarry">
         <builder Class="SolidEarth"></builder>
         <builder Class="Mines"></builder>
         <builder Class="StairsUp"></builder>
@@ -1274,7 +1274,7 @@
         <music Track="Music/Binaural Concept" />
       </zone>
 
-      <zone Level="36-40" x="0-2" y="0-2" Name="スウィリングの広野" Tier="7" ProperName="true" NameContext="アスファルト鉱山" AmbientBed="Sounds/Ambiences/amb_biome_tarry">
+      <zone Level="36-40" x="0-2" y="0-2" Name="大呑の淵" Tier="7" ProperName="true" NameContext="アスファルト鉱山" AmbientBed="Sounds/Ambiences/amb_biome_tarry">
         <builder Class="SolidEarth"></builder>
         <builder Class="Mines2"></builder>
         <builder Class="StairsUp"></builder>
@@ -1285,7 +1285,7 @@
         <music Track="Music/Cave Addendum" />
       </zone>
 
-      <zone Level="40" x="1" y="1" Name="スウィリングの広野" Tier="7" ProperName="true" NameContext="アスファルト鉱山" AmbientBed="Sounds/Ambiences/amb_biome_tarry">
+      <zone Level="40" x="1" y="1" Name="大呑の淵" Tier="7" ProperName="true" NameContext="アスファルト鉱山" AmbientBed="Sounds/Ambiences/amb_biome_tarry">
         <builder Class="SolidEarth"></builder>
         <builder Class="Mines2"></builder>
         <builder Class="StairsUp"></builder>
@@ -1300,19 +1300,19 @@
 
     <!-- Bethesda Susa -->
 
-    <cell Name="ベセスダ・スーサ" Inherits="Hills" ApplyTo="TerrainBethesdaSusa" Mutable="false" Tier="4">
+    <cell Name="ベテスダ・スーサ" Inherits="Hills" ApplyTo="TerrainBethesdaSusa" Mutable="false" Tier="4">
 
-      <zone Level="5-9" x="0-2" y="0-2" Name="ベセスダ・スーサの上空" IndefiniteArticle="the">
+      <zone Level="5-9" x="0-2" y="0-2" Name="ベテスダ・スーサの上空" IndefiniteArticle="the">
         <builder Class="Sky"></builder>
       </zone>
 
-      <zone Level="10" x="0-2" y="0-2" Name="外縁" NameContext="ベセスダ・スーサ" IndefiniteArticle="some" IncludeStratumInZoneDisplay="false" HasWeather="true" WindSpeed="0-60" WindDirections="N,NW,NW,W,W,SW,S,SE" WindDuration="50-3000">
+      <zone Level="10" x="0-2" y="0-2" Name="外縁" NameContext="ベテスダ・スーサ" IndefiniteArticle="some" IncludeStratumInZoneDisplay="false" HasWeather="true" WindSpeed="0-60" WindDirections="N,NW,NW,W,W,SW,S,SE" WindDuration="50-3000">
         <postbuilder Class="ZoneTemplate:Bethesda Susa Surface"></postbuilder>        
         <builder Class="FactionEncounters" Population="GenericFactionPopulation"></builder>
         <music Track="Music/Overworld" />
       </zone>
 
-      <zone Level="10" x="1" y="1" Name="ベセスダ・スーサ" ProperName="true" HasWeather="true" WindSpeed="0-60" WindDirections="N,NW,NW,W,W,SW,S,SE" WindDuration="50-3000">
+      <zone Level="10" x="1" y="1" Name="ベテスダ・スーサ" ProperName="true" HasWeather="true" WindSpeed="0-60" WindDirections="N,NW,NW,W,W,SW,S,SE" WindDuration="50-3000">
         <builder Class="TileBuilding" WallMaterial="Marble" ShellMaterial="Fulcrete" XCorner="20" YCorner="2" Shell="false" Wide="7" High="4" TileStartMarker="6Tiles" TileEndMarker="6TilesEnd" VaultStartMarker="BethVaults" VaultEndMarker="BethVaultsEnd" VaultWidth="2" VaultHeight="1" NumberOfVaults="0" ChancePerVault="13"></builder>
         <builder Class="Ruiner" RuinLevel="24"></builder>
         <postbuilder Class="ZoneTemplate:Bethesda Susa Surface"></postbuilder>        
@@ -1322,7 +1322,7 @@
         <music Track="Music/Overworld" />
       </zone>
 
-      <zone Level="11-26" x="1" y="1" Name="トンネル" NameContext="ベセスダ・スーサ">
+      <zone Level="11-26" x="1" y="1" Name="トンネル" NameContext="ベテスダ・スーサ">
         <builder Class="Spire"></builder>
         <builder Class="StairsUp" x="13-57" y="5-19"></builder>
         <builder Class="StairsDown" x="13-57" y="5-19"></builder>
@@ -1335,7 +1335,7 @@
         <music Track="Music/Binaural Concept" />
       </zone>
 
-      <zone Level="11" x="1" y="0" Name="河川通路" NameContext="ベセスダ・スーサ" HasWeather="true" WindSpeed="0-40" WindDirections="N,S" WindDuration="50-3000">
+      <zone Level="11" x="1" y="0" Name="河川通路" NameContext="ベテスダ・スーサ" HasWeather="true" WindSpeed="0-40" WindDirections="N,S" WindDuration="50-3000">
         <builder Class="SolidEarth"></builder>
         <builder Class="Waterway"></builder>
         <postbuilder Class="ZoneTemplate:Bethesda Susa Wharf Outskirts"></postbuilder>
@@ -1344,7 +1344,7 @@
         <widget Blueprint="HolyPlaceNephilimWidget" />
       </zone>
 
-      <zone Level="11" x="1" y="1" Name="崩れた埠頭" NameContext="ベセスダ・スーサ" HasWeather="true" WindSpeed="0-40" WindDirections="N,S" WindDuration="50-3000">
+      <zone Level="11" x="1" y="1" Name="崩れた埠頭" NameContext="ベテスダ・スーサ" HasWeather="true" WindSpeed="0-40" WindDirections="N,S" WindDuration="50-3000">
         <builder Class="SolidEarth"></builder>
         <builder Class="TileBuilding" WallMaterial="Marble" XCorner="10" YCorner="2" Shell="true" Wide="12" High="4" TileStartMarker="6Tiles" TileEndMarker="6TilesEnd" VaultStartMarker="BethVaults" VaultEndMarker="BethVaultsEnd" VaultWidth="2" VaultHeight="1" NumberOfVaults="0" ChancePerVault="13"></builder>
         <builder Class="Waterway"></builder>
@@ -1357,7 +1357,7 @@
         <music Track="Music/Binaural Concept" />
       </zone>
 
-      <zone Level="11" x="1" y="2" Name="河川通路" NameContext="ベセスダ・スーサ" HasWeather="true" WindSpeed="0-40" WindDirections="N,S" WindDuration="50-3000">
+      <zone Level="11" x="1" y="2" Name="河川通路" NameContext="ベテスダ・スーサ" HasWeather="true" WindSpeed="0-40" WindDirections="N,S" WindDuration="50-3000">
         <builder Class="SolidEarth"></builder>
         <builder Class="Waterway"></builder>
         <postbuilder Class="ZoneTemplate:Bethesda Susa Wharf Outskirts"></postbuilder>
@@ -1367,7 +1367,7 @@
         <music Track="Music/Binaural Concept" />
       </zone>
 
-      <zone Level="12" x="1" y="1" Name="治癒の池" NameContext="ベセスダ・スーサ" DisableForcedConnections="Yes">
+      <zone Level="12" x="1" y="1" Name="治癒の池" NameContext="ベテスダ・スーサ" DisableForcedConnections="Yes">
         <builder Class="BathPools"></builder>
         <postbuilder Class="StairsUp"></postbuilder>
         <postbuilder Class="StairsDown"></postbuilder>
@@ -1378,7 +1378,7 @@
         <music Track="Music/Lazarus" />
       </zone>
 
-      <zone Level="13" x="1" y="1" Name="治癒の池" NameContext="ベセスダ・スーサ" DisableForcedConnections="Yes">
+      <zone Level="13" x="1" y="1" Name="治癒の池" NameContext="ベテスダ・スーサ" DisableForcedConnections="Yes">
         <builder Class="BathPools"></builder>
         <postbuilder Class="StairsUp"></postbuilder>
         <postbuilder Class="StairsDown"></postbuilder>
@@ -1389,7 +1389,7 @@
         <music Track="Music/Lazarus" />
       </zone>
 
-      <zone Level="14" x="1" y="1" Name="治癒の池" NameContext="ベセスダ・スーサ" DisableForcedConnections="Yes">
+      <zone Level="14" x="1" y="1" Name="治癒の池" NameContext="ベテスダ・スーサ" DisableForcedConnections="Yes">
         <builder Class="BathPools"></builder>
         <postbuilder Class="StairsUp"></postbuilder>
         <postbuilder Class="StairsDown"></postbuilder>
@@ -1400,7 +1400,7 @@
         <music Track="Music/Lazarus" />
       </zone>
 
-      <zone Level="15" x="1" y="1" Name="放棄された区画" NameContext="ベセスダ・スーサ">
+      <zone Level="15" x="1" y="1" Name="放棄された区画" NameContext="ベテスダ・スーサ">
         <builder Class="SolidEarth"></builder>
         <builder Class="TileBuilding" XCorner="10" YCorner="2" Shell="true"  WallMaterial="Marble" ShellMaterial="Fulcrete" Wide="12" High="4" TileStartMarker="6Tiles" TileEndMarker="6TilesEnd" VaultStartMarker="BethVaults" VaultEndMarker="BethVaultsEnd" VaultWidth="2" VaultHeight="1" NumberOfVaults="4" ChancePerVault="13" VaultStartMarker2="BathVaults" VaultEndMarker2="BathVaultsEnd" VaultWidth2="2" VaultHeight2="2" NumberOfVaults2="2" ChancePerVault2="30"></builder>
         <builder Class="UpperBethesdaElevator"></builder>
@@ -1416,7 +1416,7 @@
         <music Track="Music/Lazarus" />
       </zone>
 
-      <zone Level="16-17" x="1" y="1" Name="崩れた区画" NameContext="ベセスダ・スーサ">
+      <zone Level="16-17" x="1" y="1" Name="崩れた区画" NameContext="ベテスダ・スーサ">
         <builder Class="SolidEarth"></builder>
         <builder Class="TileBuilding" XCorner="10" YCorner="2" Shell="true"  WallMaterial="Marble" ShellMaterial="Fulcrete" Wide="12" High="4" TileStartMarker="6Tiles" TileEndMarker="6TilesEnd" VaultStartMarker="BethVaults" VaultEndMarker="BethVaultsEnd" VaultWidth="2" VaultHeight="1" NumberOfVaults="4" ChancePerVault="13" VaultStartMarker2="BathVaults" VaultEndMarker2="BathVaultsEnd" VaultWidth2="2" VaultHeight2="2" NumberOfVaults2="2" ChancePerVault2="30"></builder>
         <builder Class="Ruiner" RuinLevel="2"></builder>
@@ -1433,7 +1433,7 @@
         <music Track="Music/Lazarus" />
       </zone>
 
-      <zone Level="18" x="1" y="1" Name="崩れた区画" NameContext="ベセスダ・スーサ">
+      <zone Level="18" x="1" y="1" Name="崩れた区画" NameContext="ベテスダ・スーサ">
         <builder Class="SolidEarth"></builder>
         <builder Class="TileBuilding" XCorner="10" YCorner="2" Shell="true"  WallMaterial="Marble" ShellMaterial="Fulcrete" Wide="12" High="4" TileStartMarker="6Tiles" TileEndMarker="6TilesEnd" VaultStartMarker="AlchemistVault" VaultEndMarker="AlchemistVaultEnd" VaultWidth="2" VaultHeight="2" NumberOfVaults="1" ChancePerVault="100" CustomCharMap="a@Alchemist,-@Alchemist Table,_@Bedroll,*@Forge,g@Garbage"></builder>
         <builder Class="UpperBethesdaElevator"></builder>
@@ -1450,7 +1450,7 @@
         <music Track="Music/Lazarus" />
       </zone>
 
-      <zone Level="19-20" x="1" y="1" Name="崩れた区画" NameContext="ベセスダ・スーサ">
+      <zone Level="19-20" x="1" y="1" Name="崩れた区画" NameContext="ベテスダ・スーサ">
         <builder Class="SolidEarth"></builder>
         <builder Class="TileBuilding" XCorner="10" YCorner="2" Shell="true"  WallMaterial="Marble" ShellMaterial="Fulcrete" Wide="12" High="4" TileStartMarker="6Tiles" TileEndMarker="6TilesEnd" VaultStartMarker="BethVaults" VaultEndMarker="BethVaultsEnd" VaultWidth="2" VaultHeight="1" NumberOfVaults="4" ChancePerVault="13" VaultStartMarker2="BathVaults" VaultEndMarker2="BathVaultsEnd" VaultWidth2="2" VaultHeight2="2" NumberOfVaults2="2" ChancePerVault2="30"></builder>
         <builder Class="Ruiner" RuinLevel="2"></builder>
@@ -1467,7 +1467,7 @@
         <music Track="Music/Lazarus" />
       </zone>
 
-      <zone Level="21" x="1" y="1" Name="放棄された区画" NameContext="ベセスダ・スーサ">
+      <zone Level="21" x="1" y="1" Name="放棄された区画" NameContext="ベテスダ・スーサ">
         <builder Class="SolidEarth"></builder>
         <builder Class="TileBuilding" XCorner="10" YCorner="2" Shell="true"  WallMaterial="Marble" ShellMaterial="Fulcrete" Wide="12" High="4" TileStartMarker="6Tiles" TileEndMarker="6TilesEnd" VaultStartMarker="BethVaults" VaultEndMarker="BethVaultsEnd" VaultWidth="2" VaultHeight="1" NumberOfVaults="4" ChancePerVault="13" VaultStartMarker2="BathVaults" VaultEndMarker2="BathVaultsEnd" VaultWidth2="2" VaultHeight2="2" NumberOfVaults2="2" ChancePerVault2="30"></builder>
         <builder Class="UpperBethesdaElevator"></builder>
@@ -1483,7 +1483,7 @@
         <music Track="Music/Lazarus" />
       </zone>
 
-      <zone Level="22" x="1" y="1" Name="放棄された区画" NameContext="ベセスダ・スーサ">
+      <zone Level="22" x="1" y="1" Name="放棄された区画" NameContext="ベテスダ・スーサ">
         <builder Class="SolidEarth"></builder>
         <builder Class="TileBuilding" XCorner="10" YCorner="2" Shell="true"  WallMaterial="Marble" ShellMaterial="Fulcrete" Wide="12" High="4" TileStartMarker="6Tiles" TileEndMarker="6TilesEnd" VaultStartMarker="BethVaults" VaultEndMarker="BethVaultsEnd" VaultWidth="2" VaultHeight="1" NumberOfVaults="4" ChancePerVault="13" VaultStartMarker2="BathVaults" VaultEndMarker2="BathVaultsEnd" VaultWidth2="2" VaultHeight2="2" NumberOfVaults2="2" ChancePerVault2="30"></builder>
         <postbuilder Class="StairsUp"></postbuilder>
@@ -1498,7 +1498,7 @@
         <music Track="Music/Lazarus" />
       </zone>
 
-      <zone Level="23" x="1" y="1" Name="サイバネ区画" NameContext="ベセスダ・スーサ">
+      <zone Level="23" x="1" y="1" Name="サイバネ区画" NameContext="ベテスダ・スーサ">
         <builder Class="SolidEarth"></builder>
         <builder Class="TileBuilding" XCorner="10" YCorner="2" Shell="true"  WallMaterial="Marble" ShellMaterial="Fulcrete" Wide="12" High="4" TileStartMarker="6Tiles" TileEndMarker="6TilesEnd" VaultStartMarker="CyberVault" VaultEndMarker="CyberVaultEnd" VaultWidth="3" VaultHeight="3" NumberOfVaults="1" ChancePerVault="100" CustomCharMap="C@QuadCyberWStatues,-@(clear)"></builder>
         <postbuilder Class="StairsUp"></postbuilder>
@@ -1513,7 +1513,7 @@
 				<music Track="Music/Lazarus" />
       </zone>
 
-      <zone Level="24" x="1" y="1" Name="凍結街区" ProperName="true" NameContext="ベセスダ・スーサ" DisableForcedConnections="Yes">
+      <zone Level="24" x="1" y="1" Name="凍結街区" ProperName="true" NameContext="ベテスダ・スーサ" DisableForcedConnections="Yes">
         <builder Class="Cryobarrio1"></builder>
         <postbuilder Class="StairsUp"></postbuilder>
         <postbuilder Class="StairsDown" x="68" y="12" Reachable="false" EmptyOnly="false"></postbuilder>
@@ -1524,7 +1524,7 @@
         <music Track="Music/Lazarus" />
       </zone>
 
-      <zone Level="25" x="1" y="1" Name="凍結街区" ProperName="true" NameContext="ベセスダ・スーサ" DisableForcedConnections="Yes">
+      <zone Level="25" x="1" y="1" Name="凍結街区" ProperName="true" NameContext="ベテスダ・スーサ" DisableForcedConnections="Yes">
         <builder Class="Cryobarrio2"></builder>
         <postbuilder Class="StairsUp" x="68" y="12" Reachable="false" EmptyOnly="false"></postbuilder>
         <postbuilder Class="ZoneTemplate:Bethesda Susa Lower Cryobarrio"></postbuilder>
@@ -1534,7 +1534,7 @@
         <music Track="Music/Lazarus" />
       </zone>
 
-      <zone Level="26" x="1" y="1" Name="岩の寺院" ProperName="true" IncludeStratumInZoneDisplay="false" NameContext="ベセスダ・スーサ">
+      <zone Level="26" x="1" y="1" Name="岩の寺院" ProperName="true" IncludeStratumInZoneDisplay="false" NameContext="ベテスダ・スーサ">
         <map FileName="TempleOfTheRock.rpm"></map>
         <music Track="Music/Lazarus" />
       </zone>
@@ -1594,7 +1594,7 @@
 
     <cell Name="TheSpindle" Inherits="BananaGrove" ApplyTo="TerrainTheSpindle" Mutable="false">
 
-      <zone Level="0-9" x="0-2" y="0-2" Name="紡錘周囲の空" IndefiniteArticle="the" HasWeather="true" WindSpeed="0-60" WindDirections="W,SW,S,SE" WindDuration="50-3000">
+      <zone Level="0-9" x="0-2" y="0-2" Name="紡錘の大空" IndefiniteArticle="the" HasWeather="true" WindSpeed="0-60" WindDirections="W,SW,S,SE" WindDuration="50-3000">
         <builder Class="Sky"></builder>
       </zone>
 
@@ -2019,7 +2019,7 @@
 
       <!-- +5-10 Spindle Window in S map -->
 
-      <zone Level="0-5" x="1" y="2" Name="紡錘周囲の空" IndefiniteArticle="the" DisableForcedConnections="Yes" HasWeather="true" WindSpeed="0-60" WindDirections="W,SW,S,SE" WindDuration="50-3000">
+      <zone Level="0-5" x="1" y="2" Name="紡錘の大空" IndefiniteArticle="the" DisableForcedConnections="Yes" HasWeather="true" WindSpeed="0-60" WindDirections="W,SW,S,SE" WindDuration="50-3000">
         <map FileName="TombExteriorSultanTierSpindleWindow.rpm"></map>
         <music Track="Music/Deeper Eaters" />
       </zone>
@@ -2079,18 +2079,18 @@
 
     <cell Name="Redrock" Inherits="DesertCanyon" ApplyTo="TerrainRedRock" Mutable="false">
 
-      <zone Level="5-9" x="0-2" y="0-2" Name="レッドロック（赤岩）の上空" IndefiniteArticle="the" HasWeather="true" WindSpeed="0-60" WindDirections="N,NW,NW,W,W,SW,S,SE" WindDuration="50-3000">
+      <zone Level="5-9" x="0-2" y="0-2" Name="レッドロックの上空" IndefiniteArticle="the" HasWeather="true" WindSpeed="0-60" WindDirections="N,NW,NW,W,W,SW,S,SE" WindDuration="50-3000">
         <builder Class="Sky"></builder>
       </zone>
 
-      <zone Level="10" x="0-2" y="0-2" Name="外縁" NameContext="レッドロック（赤岩）" IndefiniteArticle="some" HasWeather="true" WindSpeed="0-60" WindDirections="N,NW,NW,W,W,SW,S,SE" WindDuration="50-3000">
+      <zone Level="10" x="0-2" y="0-2" Name="外縁" NameContext="レッドロック" IndefiniteArticle="some" HasWeather="true" WindSpeed="0-60" WindDirections="N,NW,NW,W,W,SW,S,SE" WindDuration="50-3000">
         <builder Class="Plains"></builder>
         <population Table="Redrock Surface"></population>        
         <music Track="Music/Deep Dawn" />
         <widget Blueprint="HazingRitualWidget" />
       </zone>
 
-      <zone Level="10" x="1" y="1" Name="レッドロック（赤岩）" ProperName="true" HasWeather="true" WindSpeed="0-60" WindDirections="N,NW,NW,W,W,SW,S,SE" WindDuration="50-3000">
+      <zone Level="10" x="1" y="1" Name="レッドロック" ProperName="true" HasWeather="true" WindSpeed="0-60" WindDirections="N,NW,NW,W,W,SW,S,SE" WindDuration="50-3000">
         <builder Class="Plains"></builder>
         <population Table="Redrock Surface"></population>        
         <builder Class="RedrockOutcrop"></builder>
@@ -2098,7 +2098,7 @@
         <widget Blueprint="HazingRitualWidget" />
       </zone>
 
-      <zone Level="11" x="1" y="1" Name="" NameContext="レッドロック（赤岩）">
+      <zone Level="11" x="1" y="1" Name="" NameContext="レッドロック">
         <builder Class="Redrock"></builder>
         <builder Class="PossibleCryotube"></builder>
         <postbuilder Class="ZoneTemplate:Redrock 1"></postbuilder>        
@@ -2106,7 +2106,7 @@
         <widget Blueprint="HazingRitualWidget" />
       </zone>
 
-      <zone Level="12" x="1" y="1" Name="" NameContext="レッドロック（赤岩）">
+      <zone Level="12" x="1" y="1" Name="" NameContext="レッドロック">
 		    <builder Class="Redrock"></builder>
         <builder Class="PossibleCryotube"></builder>
         <postbuilder Class="ZoneTemplate:Redrock 2"></postbuilder>        
@@ -2114,7 +2114,7 @@
         <widget Blueprint="HazingRitualWidget" />
       </zone>
 
-      <zone Level="13" x="1" y="1" Name="" NameContext="レッドロック（赤岩）" AmbientBed="Sounds/Ambiences/amb_creature_snapjaw">
+      <zone Level="13" x="1" y="1" Name="" NameContext="レッドロック" AmbientBed="Sounds/Ambiences/amb_creature_snapjaw">
         <builder Class="Redrock"></builder>
         <builder Class="PossibleCryotube"></builder>
         <postbuilder Class="ZoneTemplate:Redrock 3"></postbuilder>        
@@ -2122,7 +2122,7 @@
         <widget Blueprint="HazingRitualWidget" />
       </zone>
 
-      <zone Level="14" x="1" y="1" Name="" NameContext="レッドロック（赤岩）">
+      <zone Level="14" x="1" y="1" Name="" NameContext="レッドロック">
 		    <builder Class="Redrock"></builder>
 		    <builder Class="PossibleCryotube"></builder>
         <postbuilder Class="ZoneTemplate:Bottom Redrock"></postbuilder>        
@@ -2130,7 +2130,7 @@
         <widget Blueprint="HazingRitualWidget" />
       </zone>
 
-      <zone Level="14" x="1" y="2" Name="" NameContext="レッドロック（赤岩）">
+      <zone Level="14" x="1" y="2" Name="" NameContext="レッドロック">
         <builder Class="RiverNorthMouth"></builder>
         <builder Class="RiverSouthMouth"></builder>
         <!--<builder Class="SolidEarth"></builder>-->
@@ -2428,17 +2428,17 @@
       </zone>
     </cell>
     <cell Name="ArkArchCell" Inherits="DefaultNorthShevaCell" ApplyTo="TerrainShieldingArch">
-      <zone Level="10" x="1" y="2" Name="遮護のアーチ" NameContext="北方の方舟" IncludeStratumInZoneDisplay="false" DisableForcedConnections="Yes" AmbientBed="amb_endgame_supercomputer_lp" AmbientVolume="25">
+      <zone Level="10" x="1" y="2" Name="庇護のアーチ" NameContext="北方の方舟" IncludeStratumInZoneDisplay="false" DisableForcedConnections="Yes" AmbientBed="amb_endgame_supercomputer_lp" AmbientVolume="25">
         <map FileName="NorthSheva/ArkShieldArch1.rpm"/>
         <builder Class="FlagInside"></builder>
         <music Track="Music/A New World" />
       </zone>
-      <zone Level="10" x="1" y="1" Name="遮護のアーチ" NameContext="北方の方舟" IncludeStratumInZoneDisplay="false" DisableForcedConnections="Yes" AmbientBed="amb_endgame_supercomputer_lp" AmbientVolume="50">
+      <zone Level="10" x="1" y="1" Name="庇護のアーチ" NameContext="北方の方舟" IncludeStratumInZoneDisplay="false" DisableForcedConnections="Yes" AmbientBed="amb_endgame_supercomputer_lp" AmbientVolume="50">
         <map FileName="NorthSheva/ArkShieldArch2.rpm"/>
         <builder Class="FlagInside"></builder>
         <music Track="Music/A New World" />
       </zone>
-      <zone Level="10" x="1" y="0" Name="遮護のアーチ" NameContext="北方の方舟" IncludeStratumInZoneDisplay="false" DisableForcedConnections="Yes" AmbientBed="amb_endgame_supercomputer_lp" AmbientVolume="75">
+      <zone Level="10" x="1" y="0" Name="庇護のアーチ" NameContext="北方の方舟" IncludeStratumInZoneDisplay="false" DisableForcedConnections="Yes" AmbientBed="amb_endgame_supercomputer_lp" AmbientVolume="75">
         <map FileName="NorthSheva/ArkShieldArch3.rpm"/>
         <builder Class="FlagInside"></builder>
         <music Track="Music/A New World" />

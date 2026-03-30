@@ -78,6 +78,206 @@ public sealed class MessageLogProducerTranslationHelpersTests
     }
 
     [Test]
+    public void TryTranslateZoneDisplayName_TranslatesStrataHighTemplate()
+    {
+        WriteExactDictionary(
+            ("Joppa", "ジョッパ"),
+            ("{0} strata high", "地上{0}層"));
+
+        var translated = MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+            "Joppa, 3 strata high",
+            "ZoneDisplayNameTranslationPatch",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("ジョッパ, 地上3層"));
+        });
+    }
+
+    [TestCase("the lair of Joppa", "ジョッパの巣")]
+    [TestCase("the workshop of Joppa", "ジョッパの工房")]
+    [TestCase("the scriptorium of Joppa", "ジョッパの写字室")]
+    [TestCase("the kitchen of Joppa", "ジョッパの厨房")]
+    [TestCase("the distillery of Joppa", "ジョッパの蒸留所")]
+    [TestCase("the organ market of Joppa", "ジョッパの臓器市場")]
+    public void TryTranslateZoneDisplayName_TranslatesLairTemplates(string source, string expected)
+    {
+        WriteExactDictionary(("Joppa", "ジョッパ"));
+
+        var translated = MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+            source,
+            "ZoneDisplayNameTranslationPatch",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo(expected));
+        });
+    }
+
+    [Test]
+    public void TryTranslateZoneDisplayName_TranslatesFarmSuffixSegments()
+    {
+        WriteExactDictionary(
+            ("Joppa", "ジョッパ"),
+            ("farmstead", "農園"));
+
+        var translated = MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+            "Joppa Farmstead",
+            "ZoneDisplayNameTranslationPatch",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("ジョッパ農園"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateZoneDisplayName_TranslatesRuinsTopologyForms()
+    {
+        WriteExactDictionary(
+            ("Joppa", "ジョッパ"),
+            ("red", "赤"),
+            ("cross", "十字"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+                    "Red Joppa",
+                    "ZoneDisplayNameTranslationPatch",
+                    out var prefixed),
+                Is.True);
+            Assert.That(prefixed, Is.EqualTo("赤ジョッパ"));
+
+            Assert.That(
+                MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+                    "Joppa Cross",
+                    "ZoneDisplayNameTranslationPatch",
+                    out var suffixed),
+                Is.True);
+            Assert.That(suffixed, Is.EqualTo("ジョッパ十字"));
+
+            Assert.That(
+                MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+                    "Red Cross Joppa",
+                    "ZoneDisplayNameTranslationPatch",
+                    out var doubled),
+                Is.True);
+            Assert.That(doubled, Is.EqualTo("赤十字ジョッパ"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateZoneDisplayName_TranslatesBiomeAdjectivesAndTails()
+    {
+        WriteExactDictionary(
+            ("Joppa", "ジョッパ"),
+            ("slimy", "ぬめる"),
+            ("slime bog", "ぬめり沼"),
+            ("psychically refractive", "精神屈折の"),
+            ("future site", "未来址"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+                    "slimy Joppa",
+                    "ZoneDisplayNameTranslationPatch",
+                    out var fixedAdjective),
+                Is.True);
+            Assert.That(fixedAdjective, Is.EqualTo("ぬめるジョッパ"));
+
+            Assert.That(
+                MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+                    "Joppa and slime bog",
+                    "ZoneDisplayNameTranslationPatch",
+                    out var fixedTail),
+                Is.True);
+            Assert.That(fixedTail, Is.EqualTo("ジョッパとぬめり沼"));
+
+            Assert.That(
+                MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+                    "psychically refractive Joppa",
+                    "ZoneDisplayNameTranslationPatch",
+                    out var psychicAdjective),
+                Is.True);
+            Assert.That(psychicAdjective, Is.EqualTo("精神屈折のジョッパ"));
+
+            Assert.That(
+                MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+                    "Joppa and future site",
+                    "ZoneDisplayNameTranslationPatch",
+                    out var psychicTail),
+                Is.True);
+            Assert.That(psychicTail, Is.EqualTo("ジョッパと未来址"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateZoneDisplayName_TranslatesGoatfolkSuffixWithJapaneseComma()
+    {
+        WriteExactDictionary(
+            ("Joppa", "ジョッパ"),
+            (", goatfolk village", "、ヤギ人の村"));
+
+        var translated = MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+            "Joppa, goatfolk village",
+            "ZoneDisplayNameTranslationPatch",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("ジョッパ、ヤギ人の村"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateZoneDisplayName_TranslatesStaticZonePhrasesAndSegments()
+    {
+        WriteExactDictionary(
+            ("some forgotten ruins", "忘れられた遺跡"),
+            ("abandoned village", "廃村"),
+            ("outskirts", "外れ"),
+            ("sky", "上空"),
+            ("undervillage", "地下集落"),
+            ("liminal floor", "境界層"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+                    "some forgotten ruins",
+                    "ZoneDisplayNameTranslationPatch",
+                    out var ruins),
+                Is.True);
+            Assert.That(ruins, Is.EqualTo("忘れられた遺跡"));
+
+            Assert.That(
+                MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+                    "abandoned village",
+                    "ZoneDisplayNameTranslationPatch",
+                    out var village),
+                Is.True);
+            Assert.That(village, Is.EqualTo("廃村"));
+
+            Assert.That(
+                MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+                    "outskirts, sky, undervillage, liminal floor",
+                    "ZoneDisplayNameTranslationPatch",
+                    out var layered),
+                Is.True);
+            Assert.That(layered, Is.EqualTo("外れ, 上空, 地下集落, 境界層"));
+        });
+    }
+
+    [Test]
     public void TryTranslateZoneDisplayName_ReturnsFalseForEmptyInput()
     {
         var translated = MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(

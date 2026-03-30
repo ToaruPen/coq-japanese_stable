@@ -1558,7 +1558,7 @@
     <tag Name="Tier" Value="4" />
   </object>
   <object Name="Bethesda Susa Recoiler" Inherits="BaseRecoiler" Replace="true">
-    <part Name="Render" DisplayName="{{C|ベセスダ・スーサ}}・リコイラー" />
+    <part Name="Render" DisplayName="{{C|ベテスダ・スーサ}}・リコイラー" />
     <part Name="Teleporter" DestinationZone="JoppaWorld.25.3.1.1.10" DestinationX="38" DestinationY="19" />
     <part Name="TinkerItem" CanBuild="false" />
     <part Name="Commerce" Value="55" />
@@ -8570,7 +8570,7 @@
     <xtagGrammar Proper="true" />
     <tag Name="IndefiniteArticle" Value="the" />
     <tag Name="DefiniteArticle" Value="the" />
-    <part Name="TakenAccomplishment" Text="天空の熊は再び飛翔する！ 凍てついた過去の爪から =this.refname= を奪い返した。" Hagiograph="地下界の熱く湿った吐息が天空の熊を脱化石化させ、この真実を告げた――=name= はサード・アムスであり、サード・アムスこそ =name= である。" HagiographCategory="遺物奪還" HagiographWeight="高" Gospel="=month= のあいだじゅう、=name= は =player.possessive= ジェットパックでベセスダ・スーサ州を &lt;spice.commonPhrases.ravaged.!random&gt; し、=mostHatedFaction.t= と =secondMostHatedFaction.t= を &lt;spice.elements.entity[random].ravaging.!random&gt; にした。=player.Subjective= はやがて「ベセスダの&lt;spice.commonPhrases.scourge.!random.capitalize&gt;」の異名で知られるようになった。" />
+    <part Name="TakenAccomplishment" Text="天空の熊は再び飛翔する！ 凍てついた過去の爪から =this.refname= を奪い返した。" Hagiograph="地下界の熱く湿った吐息が天空の熊を脱化石化させ、この真実を告げた――=name= はサード・アムスであり、サード・アムスこそ =name= である。" HagiographCategory="遺物奪還" HagiographWeight="高" Gospel="=month= のあいだじゅう、=name= は =player.possessive= ジェットパックでベテスダ・スーサ州を &lt;spice.commonPhrases.ravaged.!random&gt; し、=mostHatedFaction.t= と =secondMostHatedFaction.t= を &lt;spice.elements.entity[random].ravaging.!random&gt; にした。=player.Subjective= はやがて「ベセスダの&lt;spice.commonPhrases.scourge.!random.capitalize&gt;」の異名で知られるようになった。" />
     <tag Name="ExcludeFromDynamicEncounters" Value="*noinherit" />
     <stag Name="Travel" />
   </object>

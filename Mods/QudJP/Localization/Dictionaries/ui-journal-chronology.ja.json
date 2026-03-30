@@ -17,7 +17,7 @@
     {
       "key": "You drank the bright cream of the Palladium Reef and were quickened.",
       "context": "Qud.UI.Qud.API.JournalAPI",
-      "text": "パラディウム礁のまばゆい乳脂を飲み、素早くなった。"
+      "text": "パラジウム礁のまばゆい乳脂を飲み、素早くなった。"
     },
     {
       "key": "You drank the raw entropy of the universe and your mind fluctuated in and out of coherence.",
@@ -217,7 +217,7 @@
     {
       "key": "the Six Day Stilt",
       "context": "Qud.UI.Qud.API.JournalAPI",
-      "text": "六日竹馬"
+      "text": "六日のスティルト"
     },
     {
       "key": "Red Rock",
@@ -247,7 +247,7 @@
     {
       "key": "Bethesda Susa",
       "context": "Qud.UI.Qud.API.JournalAPI",
-      "text": "ベセスダ・スーサ"
+      "text": "ベテスダ・スーサ"
     },
     {
       "key": "the Tomb of the Eaters",

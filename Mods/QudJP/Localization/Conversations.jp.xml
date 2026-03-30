@@ -1810,7 +1810,7 @@
       <text>
         さっき言ったろ、ここの美人（べっぴん）を飼ってるってな。
 
-        フリーホルダーは、土地を自分のもんだと主張するのをあまり好かん。俺の望んだ形じゃねえが、イッサカリの言い草にゃこうある。「羅針盤が六日間の高架へ導くなら、井戸へ投げ込め」。
+        フリーホルダーは、土地を自分のもんだと主張するのをあまり好かん。俺の望んだ形じゃねえが、イッサカリの言い草にゃこうある。「羅針盤が六日のスティルトへ導くなら、井戸へ投げ込め」。
       </text>
       <choice GotoID="Hometown">砂漠の出か？ どうしてここへ？</choice>
       <choice UseID="RokhasSlugs" />
@@ -2063,7 +2063,7 @@
         <part Name="SlynthCandidatesReady" />
       </choice>
       <choice ID="Joppa" IfSlynthCandidate="Joppa">ヨッパの村が同胞を家族として迎えてくれると言っている。</choice>
-      <choice ID="Mechanimists" IfSlynthCandidate="Mechanimists">六日の柱のメカニミストが、同胞を受け入れてくれるそうだ。</choice>
+      <choice ID="Mechanimists" IfSlynthCandidate="Mechanimists">六日のスティルトのメカニミストが、同胞を受け入れてくれるそうだ。</choice>
       <choice ID="Barathrumites" IfSlynthCandidate="Barathrumites">グリット・ゲートのバラサラム派が、同胞を弟子として迎えてくれる。</choice>
       <choice ID="Kyakukya" IfSlynthCandidate="Kyakukya">キャクキャの村が、私たちを受け入れてくれる。</choice>
       <choice ID="Ezra" IfSlynthCandidate="Ezra">エズラの人々が、私たちと一緒に暮らすと言っている。</choice>
@@ -2108,7 +2108,7 @@
       <text IfSlynthChosen="Mechanimists">
         話し合いと熟慮の末、合意に至った。同胞の多くはメカニミストの信仰に入り、モグラヤイの縁のスティルトグラウンズに住まう。
 
-        旅立ちは朝、六日間の高架へ。
+        旅立ちは朝、六日のスティルトへ。
       </text>
       <text IfSlynthChosen="Barathrumites">
         話し合いと熟慮の末、合意に至った。新しい家はバラサラムの弟子たちのもとだ。同胞は学びと奉仕の営みに身を捧げることにした。
@@ -2427,7 +2427,7 @@
 
     <node ID="Cave" Replace="true">
       <text>
-        洞窟ならそこら中にあるだろ、この間抜け！湿原の表土を掬うか、東のラストウェルズへ行くか、砂漠をうろつくか、好きにしろ…
+        洞窟ならそこら中にあるだろ、この間抜け！湿原の表土を掬うか、東のラスト・ウェルズへ行くか、砂漠をうろつくか、好きにしろ…
       </text>
       <choice Target="End" StartQuest="Fetch Argyve a Knickknack">ガラクタを持って戻る。</choice>
       <choice Target="End">興味はない。</choice>
@@ -2475,7 +2475,7 @@
       <text>
         {{emote|*Argyve が両眉を跳ね上げる。*}}
 
-        よし、話のナットにボルトを噛ませよう！私は今、発見の瀬戸際にいる。ウィアードワイヤ導管の組み上げも終盤でな、完成しさえすれば、このジョッパからイドに至るまで誰とでも即時通信ができるようになる。だが仕上げるにはワイヤがいる。できるだけたくさん――最低でも二百フィートだ。ラストウェルズを漁れば拾えるはずだ。
+        よし、話のナットにボルトを噛ませよう！私は今、発見の瀬戸際にいる。ウィアードワイヤ導管の組み上げも終盤でな、完成しさえすれば、このジョッパからイドに至るまで誰とでも即時通信ができるようになる。だが仕上げるにはワイヤがいる。できるだけたくさん――最低でも二百フィートだ。ラスト・ウェルズを漁れば拾えるはずだ。
       </text>
       <choice GotoID="End" StartQuest="Weirdwire Conduit... Eureka!">ワイヤを集めてこよう。</choice>
       <choice GotoID="End">興味はない。</choice>
@@ -2687,7 +2687,7 @@
 
         我が実験室へようこそ、=name=。旅路に戻る前に、ここで=player.reflexive= を休め、養え。
       </text>
-      <choice ID="BajaBlast" GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ベセスダ・スーサについて何か知っているか？</choice>
+      <choice ID="BajaBlast" GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ベテスダ・スーサについて何か知っているか？</choice>
       <choice ID="BananasFoster" GotoID="Omonporch" IfHaveActiveQuest="The Earl of Omonporch">オモンポーチと、自称の伯爵については？</choice>
       <choice ID="VanillaShake" GotoID="Rumbling" IfHaveActiveQuest="Grave Thoughts">あの地鳴りを感じたか、ダルディ？</choice>
       <choice ID="MushroomRisotto" GotoID="Klanq" IfHaveActiveQuest="Pax Klanq, I Presume?">パクス・クランクに会ったことは？</choice>
@@ -2908,7 +2908,7 @@
 
         私を静かに職務に戻らせるよう説得されてはくれまいか？ 旅人の興味を引くことは何も知らん。私の日々はどれも同じだ――子らを整備し、守る。それで十分だ。語らいが欲しければ、エレシュキガルがいる。
       </text>
-      <choice ID="Aloysusa" GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ベセスダ・スーサについて何か知っているか？</choice>
+      <choice ID="Aloysusa" GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ベテスダ・スーサについて何か知っているか？</choice>
       <choice ID="Aloyporch" GotoID="Omonporch" IfHaveActiveQuest="The Earl of Omonporch">オモンポーチと、自称の伯爵については？</choice>
       <choice ID="Aloyrumbling" GotoID="Rumbling" IfHaveActiveQuest="Grave Thoughts">あの地鳴りを感じたか、アロイシウス？</choice>
       <choice ID="Aloyklanq" GotoID="Klanq" IfHaveActiveQuest="Pax Klanq, I Presume?">パクス・クランクに会ったことは？</choice>
@@ -2920,7 +2920,7 @@
 
     <node ID="Bethesda">
       <text>
-        ベセスダ・スーサは活気に満ちた生態系だが、我々の居場所はない。とはいえ、誰かがあの機械主義者の巣を一掃してくれるなら、私は文句は言わん。
+        ベテスダ・スーサは活気に満ちた生態系だが、我々の居場所はない。とはいえ、誰かがあの機械主義者の巣を一掃してくれるなら、私は文句は言わん。
 
         向かうのなら足元に注意しろ。潜むベスの葉が、我々のような肉の生き物からあっという間に血を抜く。
       </text>
@@ -3080,7 +3080,7 @@
       <text>
         命をたっぷりと飲みな、=player.offspringTerm=。道は見つけられているかい？
       </text>
-      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ベセスダ・スーサについて何か知っているか？</choice>
+      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ベテスダ・スーサについて何か知っているか？</choice>
       <choice GotoID="Omonporch" IfHaveActiveQuest="The Earl of Omonporch">オモンポーチと、自称の伯爵については？</choice>
       <choice GotoID="Rumbling" IfHaveActiveQuest="Grave Thoughts">あの地鳴りを感じたか、ホーテンサ？</choice>
       <choice GotoID="Klanq" IfHaveActiveQuest="Pax Klanq, I Presume?">パクス・クランクに会ったことは？</choice>
@@ -3109,7 +3109,7 @@
       <text>
         持論くらいかな――スピンドルは層流する液体だ、というね。
       </text>
-      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ベセスダ・スーサについて何か知っているか？</choice>
+      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ベテスダ・スーサについて何か知っているか？</choice>
       <choice GotoID="Rumbling" IfHaveActiveQuest="Grave Thoughts">あの地鳴りを感じたか、ホーテンサ？</choice>
       <choice GotoID="Klanq" IfHaveActiveQuest="Pax Klanq, I Presume?">パクス・クランクに会ったことは？</choice>
       <choice GotoID="HowLong">どれくらいグリット・ゲートで暮らしている？</choice>
@@ -3122,7 +3122,7 @@
       <text>
         確かに！ 私の作業台の液体はこの居留地の微振動に敏感でね、おかげであれの一瞬前兆すら教えてくれたよ。
       </text>
-      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ベセスダ・スーサについて何か知っているか？</choice>
+      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ベテスダ・スーサについて何か知っているか？</choice>
       <choice GotoID="Omonporch" IfHaveActiveQuest="The Earl of Omonporch">オモンポーチと、自称の伯爵については？</choice>
       <choice GotoID="Klanq" IfHaveActiveQuest="Pax Klanq, I Presume?">パクス・クランクに会ったことは？</choice>
       <choice GotoID="HowLong">どれくらいグリット・ゲートで暮らしている？</choice>
@@ -3137,7 +3137,7 @@
 
         ああ、その話はやめておこう。
       </text>
-      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ベセスダ・スーサについて何か知っているか？</choice>
+      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ベテスダ・スーサについて何か知っているか？</choice>
       <choice GotoID="Omonporch" IfHaveActiveQuest="The Earl of Omonporch">オモンポーチと、自称の伯爵については？</choice>
       <choice GotoID="Rumbling" IfHaveActiveQuest="Grave Thoughts">あの地鳴りを感じたか、ホーテンサ？</choice>
       <choice GotoID="HowLong">どれくらいグリット・ゲートで暮らしている？</choice>
@@ -3392,7 +3392,7 @@
         光があなたを透りますように、友よ。
       </text>
       <choice ID="JacoboRumblingChoice" GotoID="Rumbling" IfHaveActiveQuest="Grave Thoughts">あの地鳴りを感じたか、ヤコボ？</choice>
-      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベセスダ・スーサに入る助言はないか？</choice>
+      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベテスダ・スーサに入る助言はないか？</choice>
       <choice GotoID="Music">
         その……音楽は……君のスピーカーから流れているのか？
         虚空を逆行して響く鐘みたいに聞こえる。
@@ -3420,7 +3420,7 @@
         そう！ 気に入ってくれた？ シーバ・ハグと一緒に波旋盤で作ったんだ。カサフェセンスの誕生と生涯を歌う曲集で、まとめて『宇宙の織機で紡いで』と呼んでいる。
       </text>
       <choice UseID="JacoboRumblingChoice" />
-      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベセスダ・スーサに入る助言はないか？</choice>
+      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベテスダ・スーサに入る助言はないか？</choice>
       <choice GotoID="Sheba">シーバ・ハグ？</choice>
       <choice GotoID="Kasaphescence">カサフェセンスって何だ？</choice>
       <choice GotoID="Mechanimist">君はメカニマス教徒なのか？</choice>
@@ -3435,7 +3435,7 @@
         シーバ・ハガディアスさ。スティルト大聖堂の司書で、私の水の姉妹にしてクロム仲間だ。
       </text>
       <choice UseID="JacoboRumblingChoice" />
-      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベセスダ・スーサに入る助言はないか？</choice>
+      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベテスダ・スーサに入る助言はないか？</choice>
       <choice GotoID="Kasaphescence">カサフェセンスって何だ？</choice>
       <choice GotoID="Mechanimist">君はメカニマス教徒なのか？</choice>
       <choice GotoID="Songs">ほかの曲も作ったのか？</choice>
@@ -3451,7 +3451,7 @@
         私にとっては金属にとどまらない。秩序だったものすべてにその本質は染みわたる――詩、数学の証明、整った作業机……つまり Qガールの机ではない、ということだ。
       </text>
       <choice UseID="JacoboRumblingChoice" />
-      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベセスダ・スーサに入る助言はないか？</choice>
+      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベテスダ・スーサに入る助言はないか？</choice>
       <choice GotoID="Mechanimist">君はメカニマス教徒なのか？</choice>
       <choice GotoID="Orb">そのクロムの耳飾りはどういう意味だ？</choice>
       <choice GotoID="Machine">データディスクをそんなに積み上げているんだな。</choice>
@@ -3463,7 +3463,7 @@
         まあ、ある意味ではね。私はカサフェセンスだけを神格化する分派なんだ。アルジェントの父たちは地上的な存在――信仰初期の歴史には重要だが、神ではない――と考えている。
       </text>
       <choice UseID="JacoboRumblingChoice" />
-      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベセスダ・スーサに入る助言はないか？</choice>
+      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベテスダ・スーサに入る助言はないか？</choice>
       <choice GotoID="Songs">ほかの曲も作ったのか？</choice>
       <choice GotoID="Orb">そのクロムの耳飾りはどういう意味だ？</choice>
       <choice GotoID="Machine">データディスクをそんなに積み上げているんだな。</choice>
@@ -3475,7 +3475,7 @@
         たくさん作ったよ。これはシーバとの三度目の共作で、最初の二作は『無垢なるクロム』と『外から内へ』って題にしたんだ。
       </text>
       <choice UseID="JacoboRumblingChoice" />
-      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベセスダ・スーサに入る助言はないか？</choice>
+      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベテスダ・スーサに入る助言はないか？</choice>
       <choice GotoID="Sheba">シーバ・ハグ？</choice>
       <choice GotoID="Kasaphescence">カサフェセンスって何だ？</choice>
       <choice GotoID="Orb">そのクロムの耳飾りはどういう意味だ？</choice>
@@ -3488,7 +3488,7 @@
         ああ、銀の円珠さ。カサフェセンスへの献身の印だよ。
       </text>
       <choice UseID="JacoboRumblingChoice" />
-      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベセスダ・スーサに入る助言はないか？</choice>
+      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベテスダ・スーサに入る助言はないか？</choice>
       <choice GotoID="Kasaphescence">カサフェセンスって何だ？</choice>
       <choice GotoID="Mechanimist">君はメカニマス教徒なのか？</choice>
       <choice GotoID="Music">
@@ -3508,7 +3508,7 @@
         見ていきなよ。気に入るものがあるかもしれない。
       </text>
       <choice UseID="JacoboRumblingChoice" />
-      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベセスダ・スーサに入る助言はないか？</choice>
+      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベテスダ・スーサに入る助言はないか？</choice>
       <choice GotoID="Music">
         その……音楽は……君のスピーカーから流れているのか？
         虚空を逆行して響く鐘みたいに聞こえる。
@@ -3524,7 +3524,7 @@
         身を守るために世間から隠れている。オソとバラサラムがそう決めたんだ。彼らは賢いし、私も従っている。シーバ・ハグとの共作は少し心配させてしまうけれど、寛大にも認めてくれているよ。
       </text>
       <choice UseID="JacoboRumblingChoice" />
-      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベセスダ・スーサに入る助言はないか？</choice>
+      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベテスダ・スーサに入る助言はないか？</choice>
       <choice GotoID="Sheba2">シーバ・ハグ？</choice>
       <choice GotoID="Music">
         その……音楽は……君のスピーカーから流れているのか？
@@ -3539,7 +3539,7 @@
         シーバ・ハガディアスさ。スティルト大聖堂の司書で、私の水の姉妹にしてクロム仲間だ。
       </text>
       <choice UseID="JacoboRumblingChoice" />
-      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベセスダ・スーサに入る助言はないか？</choice>
+      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベテスダ・スーサに入る助言はないか？</choice>
       <choice GotoID="Music">
         その……音楽は……君のスピーカーから流れているのか？
         虚空を逆行して響く鐘みたいに聞こえる。
@@ -4684,7 +4684,7 @@
         ..............................................
       </text>
       <choice GotoID="Joke">……や、やあ？</choice>
-      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ベセスダ・スーサについて何か知ってる？</choice>
+      <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ベテスダ・スーサについて何か知ってる？</choice>
       <choice GotoID="Omonporch" IfHaveActiveQuest="The Earl of Omonporch">オモンポーチ伯については？</choice>
       <choice GotoID="Rumbling" IfHaveActiveQuest="Grave Thoughts">あの地鳴りって何だった？</choice>
       <choice GotoID="Klanq" IfHaveActiveQuest="Pax Klanq, I Presume?">パクス・クランクのこと知ってる？</choice>
@@ -4828,7 +4828,7 @@
         ようこそグリット・ゲートへ、=factionaddress:Barathrumites=。賢明な買い物で滞在の質を高めていかないかい？
       </text>
       <choice ID="MafeoGolgotha" GotoID="Golgotha" IfHaveActiveQuest="More Than a Willing Spirit">ゴルゴタへ行く任務を受けた。</choice>
-      <choice ID="MafeoBethesda" GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ベセスダ・スーサについて何か知っているか？</choice>
+      <choice ID="MafeoBethesda" GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ベテスダ・スーサについて何か知っているか？</choice>
       <choice ID="MafeoOmonporch" GotoID="Omonporch" IfHaveActiveQuest="The Earl of Omonporch">オモンポーチと自称の伯爵については？</choice>
       <choice ID="MafeoRumbling" GotoID="Rumbling" IfHaveActiveQuest="Grave Thoughts">あの地鳴りを感じたか、マフェオ？</choice>
       <choice ID="MafeoKlanq" GotoID="Klanq" IfHaveActiveQuest="Pax Klanq, I Presume?">パクス・クランクに会ったことは？</choice>
@@ -4854,7 +4854,7 @@
     </node>
     <node ID="Bethesda">
       <text>
-        ベセスダ・スーサ？ 素敵な場所だが、休暇先としては少し危ないね。包帯と防寒具は必須だ。私の品を見ていかないかい？ 役に立つものがあるかもしれない。
+        ベテスダ・スーサ？ 素敵な場所だが、休暇先としては少し危ないね。包帯と防寒具は必須だ。私の品を見ていかないかい？ 役に立つものがあるかもしれない。
       </text>
       <choice UseID="MafeoGolgotha" />
       <choice UseID="MafeoOmonporch" />
@@ -6076,7 +6076,7 @@
         じっくり見ていったか、へ？~
         ふん。まだ首はつながってるようだな。
       </text>
-      <choice GotoID="Rustwells" IfHaveActiveQuest="Weirdwire Conduit... Eureka!">ラストウェルズを探らねばならない。</choice>
+      <choice GotoID="Rustwells" IfHaveActiveQuest="Weirdwire Conduit... Eureka!">ラスト・ウェルズを探らねばならない。</choice>
       <choice GotoID="Red Rock" IfHaveActiveQuest="What's Eating the Watervine?">メフメトに言われてレッドロックへ向かうところだ。</choice>
       <choice GotoID="Grit Gate" IfHaveActiveQuest="A Canticle for Barathrum">まもなくグリット・ゲートへ旅立つ。</choice>
       <choice GotoID="Stilt" IfHaveActiveQuest="O Glorious Shekhinah!">北のスティルトへ巡礼する。</choice>
@@ -7208,7 +7208,7 @@
       <text>
         その信号は、どこからとも知れぬ場所から繰り返し送信されているものだ。=V0tinkeraddendum= 我らが修理工の一人、&amp;mQガール&amp;y が長波検出器を仕掛けている最中に見つけた。残念ながら暗号化されており、ここには解読手段がない。だが、この件でお前が助けになれるかもしれない。
 
-        我々はずっと以前から、大広間 &amp;Cベセスダ・スーサ&amp;y の底に、完全に機能する &amp;Wbaetyl&amp;y があると知っている。メカニマス教はその周囲を聖別して神殿を建てた。Qガールは信号を解読する方法を考案したと主張しているが、ベテルの計算資源が必要だ。もしメカニマスの施設に潜入できるなら、ベテルに接続して信号を解読できるだろう。
+        我々はずっと以前から、大広間 &amp;Cベテスダ・スーサ&amp;y の底に、完全に機能する &amp;Wbaetyl&amp;y があると知っている。メカニマス教はその周囲を聖別して神殿を建てた。Qガールは信号を解読する方法を考案したと主張しているが、ベテルの計算資源が必要だ。もしメカニマスの施設に潜入できるなら、ベテルに接続して信号を解読できるだろう。
       </text>
       <choice GotoID="Baetyl?">ベテルってなんだ？</choice>
     </node>
@@ -7797,7 +7797,7 @@
 
     <node ID="Quest">
       <text>
-        そうだ。お前の同胞団への奉仕は称賛に値する、=factionaddress:Barathrumites=。ベセスダ・スーサの蒸気深部に挑み、信号を解読し、スピンドル外輪を確保し、自称伯爵をあしらい、そして何より我らの飛地を聖堂騎士団から守った。
+        そうだ。お前の同胞団への奉仕は称賛に値する、=factionaddress:Barathrumites=。ベテスダ・スーサの蒸気深部に挑み、信号を解読し、スピンドル外輪を確保し、自称伯爵をあしらい、そして何より我らの飛地を聖堂騎士団から守った。
 
         ベセスダから戻って以来、信号の中身を気にしていたことだろう。真実の重みから守るため、私は隠していた。今その荷を負うのは、オソと Qガール、そして私だけだった。だが状況は変わった。時の川が我らの仕掛けと機械の歯車を回し、流れを速めている。ここから先は、荷を分かち合わねばならん。お前も知るんだ。
       </text>
@@ -7895,7 +7895,7 @@
       <text>
         {{emote|*スパラフチレが細い指の長い手を上げて挨拶する。*}}
       </text>
-      <choice ID="BethesdaSpara" GotoID="SparaSusa" IfHaveActiveQuest="Decoding the Signal">ベセスダ・スーサについて何か知ってるか？</choice>
+      <choice ID="BethesdaSpara" GotoID="SparaSusa" IfHaveActiveQuest="Decoding the Signal">ベテスダ・スーサについて何か知ってるか？</choice>
       <choice ID="RumbleSpara" GotoID="GrimNod" IfHaveActiveQuest="Grave Thoughts">さっきの地鳴りを感じたか、スパラフチレ？</choice>
       <choice ID="KlanqSpara" GotoID="ShroomPal" IfHaveActiveQuest="Pax Klanq, I Presume?">パクス・クランクに会ったことは？</choice>
       <choice ID="TombSpara" GotoID="Sparagon" IfHaveActiveQuest="Tomb of the Eaters">ブライトシェオルへ行くため、イーターの墓所に入らなきゃならない。</choice>
@@ -8159,7 +8159,7 @@
 
         呪文でもいいし、イセッパでもいいのよ。イセッパが好きなら、ここは最高の場所だもの。
       </text>
-      <choice ID="IseppaSusa" GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ベセスダ・スーサについて何か知ってる？</choice>
+      <choice ID="IseppaSusa" GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ベテスダ・スーサについて何か知ってる？</choice>
       <choice ID="Isepporch" GotoID="Omonporch" IfHaveActiveQuest="The Earl of Omonporch">オモンポーチと自称伯について教えて。</choice>
       <choice ID="Isepquake" GotoID="Rumbling" IfHaveActiveQuest="Grave Thoughts">さっきの地鳴りを感じた？</choice>
       <choice ID="Isepshroom" GotoID="Klanq" IfHaveActiveQuest="Pax Klanq, I Presume?">パクス・クランクに会ったことは？</choice>
@@ -8187,7 +8187,7 @@
 
     <node ID="Bethesda">
       <text>
-        ベセスダ・スーサは対極にある場所。生と死、その狭間まで並べたギャラリーだわ。深部は命を引き延ばしもするし、早く終わらせもする。日々の流れから切り離したり、そこへ戻したりもする。
+        ベテスダ・スーサは対極にある場所。生と死、その狭間まで並べたギャラリーだわ。深部は命を引き延ばしもするし、早く終わらせもする。日々の流れから切り離したり、そこへ戻したりもする。
 
         あそこは君を遅刻させようとしてくる。時間通りに戻ってくるよう気を付けて。
       </text>

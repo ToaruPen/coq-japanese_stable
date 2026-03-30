@@ -3,7 +3,7 @@
 
   <class ID="Castes" ChargenTitle="カーストを選択" SingularTitle="カースト" StatBoxDisplay="true">
 
-    <category Name="Ekuemekiyye" DisplayName="{{G|聖都エクエメキイエの有毒樹木園}}">
+    <category Name="Ekuemekiyye" DisplayName="{{G|聖都エクエメキイェの有毒樹木園}}">
 
       <subtype Name="Horticulturist" DisplayName="園芸家" Gear="StartingGear_Horticulturist" Tile="creatures/caste_1.bmp" DetailColor="g">
         <stat Name="Intelligence" Bonus="3" />

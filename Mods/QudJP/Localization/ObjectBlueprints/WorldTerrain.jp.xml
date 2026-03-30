@@ -485,7 +485,7 @@
   </object>
 
 <object Name="TerrainRustWell" Inherits="Terrain" Replace="true">
-    <part Name="Render" DisplayName="ラストウェルズ" Tile="terrain/tile_location3.bmp" DetailColor="R" RenderString="007" ColorString="&amp;r^k" />
+    <part Name="Render" DisplayName="ラスト・ウェルズ" Tile="terrain/tile_location3.bmp" DetailColor="R" RenderString="007" ColorString="&amp;r^k" />
     <part Name="Description" Short="赤いクッズーの蔓が、地に穿たれたクロームの井戸を棚として巻きつく。" />
     <tag Name="Gender" Value="plural" />
     <xtagGrammar iArticle="the" />
@@ -509,7 +509,7 @@
   </object>
 
 <object Name="TerrainBethesdaSusa" Inherits="Terrain" Replace="true">
-    <part Name="Render" DisplayName="ベセスダ・スーサ" Tile="terrain/tile_location.bmp" TileColor="&amp;Y^k" DetailColor="R" RenderString="206" ColorString="&amp;R^k" />
+    <part Name="Render" DisplayName="ベテスダ・スーサ" Tile="terrain/tile_location.bmp" TileColor="&amp;Y^k" DetailColor="R" RenderString="206" ColorString="&amp;R^k" />
     <part Name="Description" Short="永劫のずれで歪んだ岩石が、ベサイダの巣が持つ角のない建築を封じ込めている。" />
     <tag Name="NoBiomes" Value="1" />
     <xtagGrammar Proper="true" massNoun="false" />

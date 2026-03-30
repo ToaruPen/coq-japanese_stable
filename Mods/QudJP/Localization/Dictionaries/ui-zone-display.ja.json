@@ -1,0 +1,1080 @@
+{
+  "entries": [
+    {
+      "key": ", goatfolk haunt",
+      "text": "、ヤギ人の棲処"
+    },
+    {
+      "key": ", goatfolk village",
+      "text": "、ヤギ人の村"
+    },
+    {
+      "key": "-1st",
+      "text": "第-1"
+    },
+    {
+      "key": "0th",
+      "text": "第0"
+    },
+    {
+      "key": "10th",
+      "text": "第10"
+    },
+    {
+      "key": "11th",
+      "text": "第11"
+    },
+    {
+      "key": "12th",
+      "text": "第12"
+    },
+    {
+      "key": "13th",
+      "text": "第13"
+    },
+    {
+      "key": "14th",
+      "text": "第14"
+    },
+    {
+      "key": "15th",
+      "text": "第15"
+    },
+    {
+      "key": "16th",
+      "text": "第16"
+    },
+    {
+      "key": "17th",
+      "text": "第17"
+    },
+    {
+      "key": "18th",
+      "text": "第18"
+    },
+    {
+      "key": "19th",
+      "text": "第19"
+    },
+    {
+      "key": "1st",
+      "text": "第1"
+    },
+    {
+      "key": "20th",
+      "text": "第20"
+    },
+    {
+      "key": "21st",
+      "text": "第21"
+    },
+    {
+      "key": "22nd",
+      "text": "第22"
+    },
+    {
+      "key": "23rd",
+      "text": "第23"
+    },
+    {
+      "key": "24th",
+      "text": "第24"
+    },
+    {
+      "key": "25th",
+      "text": "第25"
+    },
+    {
+      "key": "26th",
+      "text": "第26"
+    },
+    {
+      "key": "27th",
+      "text": "第27"
+    },
+    {
+      "key": "28th",
+      "text": "第28"
+    },
+    {
+      "key": "29th",
+      "text": "第29"
+    },
+    {
+      "key": "2nd",
+      "text": "第2"
+    },
+    {
+      "key": "30th",
+      "text": "第30"
+    },
+    {
+      "key": "3rd",
+      "text": "第3"
+    },
+    {
+      "key": "4th",
+      "text": "第4"
+    },
+    {
+      "key": "5th",
+      "text": "第5"
+    },
+    {
+      "key": "6th",
+      "text": "第6"
+    },
+    {
+      "key": "7th",
+      "text": "第7"
+    },
+    {
+      "key": "8th",
+      "text": "第8"
+    },
+    {
+      "key": "9th",
+      "text": "第9"
+    },
+    {
+      "key": "abandoned village",
+      "text": "廃村"
+    },
+    {
+      "key": "abode",
+      "text": "住処"
+    },
+    {
+      "key": "aluminum",
+      "text": "アルミニウム"
+    },
+    {
+      "key": "amber",
+      "text": "琥珀色"
+    },
+    {
+      "key": "ankh",
+      "text": "アンク"
+    },
+    {
+      "key": "annulus",
+      "text": "円環"
+    },
+    {
+      "key": "anterior",
+      "text": "前方"
+    },
+    {
+      "key": "anteversion",
+      "text": "前捻"
+    },
+    {
+      "key": "apeirogon",
+      "text": "無限角形"
+    },
+    {
+      "key": "arbelos",
+      "text": "アルベロス"
+    },
+    {
+      "key": "astroid",
+      "text": "アストロイド"
+    },
+    {
+      "key": "axial",
+      "text": "軸性"
+    },
+    {
+      "key": "balbis",
+      "text": "バルビス"
+    },
+    {
+      "key": "berth",
+      "text": "停泊地"
+    },
+    {
+      "key": "bilateral",
+      "text": "両側"
+    },
+    {
+      "key": "bismuth",
+      "text": "ビスマス"
+    },
+    {
+      "key": "black",
+      "text": "黒い"
+    },
+    {
+      "key": "blaring",
+      "text": "轟く"
+    },
+    {
+      "key": "blinking",
+      "text": "瞬いている"
+    },
+    {
+      "key": "blue",
+      "text": "青"
+    },
+    {
+      "key": "borough",
+      "text": "自治区"
+    },
+    {
+      "key": "brass",
+      "text": "黄銅"
+    },
+    {
+      "key": "bronze",
+      "text": "青銅"
+    },
+    {
+      "key": "brown",
+      "text": "茶"
+    },
+    {
+      "key": "bubbly",
+      "text": "泡立つ"
+    },
+    {
+      "key": "burgeoning",
+      "text": "生い茂る"
+    },
+    {
+      "key": "cadmium",
+      "text": "カドミウム"
+    },
+    {
+      "key": "cardioid",
+      "text": "カージオイド"
+    },
+    {
+      "key": "central",
+      "text": "中心地"
+    },
+    {
+      "key": "chevron",
+      "text": "山形"
+    },
+    {
+      "key": "chromium",
+      "text": "クロム"
+    },
+    {
+      "key": "circle",
+      "text": "円"
+    },
+    {
+      "key": "cobalt",
+      "text": "コバルト"
+    },
+    {
+      "key": "cone",
+      "text": "円錐"
+    },
+    {
+      "key": "contralateral",
+      "text": "対側"
+    },
+    {
+      "key": "copper",
+      "text": "銅"
+    },
+    {
+      "key": "coronal",
+      "text": "冠状"
+    },
+    {
+      "key": "cranial",
+      "text": "頭側"
+    },
+    {
+      "key": "crescent",
+      "text": "三日月形"
+    },
+    {
+      "key": "cross",
+      "text": "十字"
+    },
+    {
+      "key": "cube",
+      "text": "立方体"
+    },
+    {
+      "key": "cyan",
+      "text": "シアン"
+    },
+    {
+      "key": "cylinder",
+      "text": "円柱"
+    },
+    {
+      "key": "decagon",
+      "text": "十角形"
+    },
+    {
+      "key": "deltoid",
+      "text": "デルタ曲線"
+    },
+    {
+      "key": "den",
+      "text": "巣穴"
+    },
+    {
+      "key": "diamond",
+      "text": "菱形"
+    },
+    {
+      "key": "digon",
+      "text": "二角形"
+    },
+    {
+      "key": "dihedron",
+      "text": "二面体"
+    },
+    {
+      "key": "distal",
+      "text": "遠位"
+    },
+    {
+      "key": "district",
+      "text": "地区"
+    },
+    {
+      "key": "dodecahedron",
+      "text": "十二面体"
+    },
+    {
+      "key": "dorsal",
+      "text": "背側"
+    },
+    {
+      "key": "drowsy",
+      "text": "まどろむ"
+    },
+    {
+      "key": "dwelling",
+      "text": "住居"
+    },
+    {
+      "key": "ebony",
+      "text": "エボニー"
+    },
+    {
+      "key": "ellipse",
+      "text": "楕円"
+    },
+    {
+      "key": "ellipsoid",
+      "text": "楕円体"
+    },
+    {
+      "key": "encomium",
+      "text": "頌歌"
+    },
+    {
+      "key": "environs",
+      "text": "周縁"
+    },
+    {
+      "key": "eye",
+      "text": "目"
+    },
+    {
+      "key": "field",
+      "text": "野"
+    },
+    {
+      "key": "flame meadow",
+      "text": "炎の草原"
+    },
+    {
+      "key": "flaming tar pits",
+      "text": "燃えるタール坑"
+    },
+    {
+      "key": "flower",
+      "text": "花"
+    },
+    {
+      "key": "force bastion",
+      "text": "フォースの砦"
+    },
+    {
+      "key": "fringe",
+      "text": "外縁"
+    },
+    {
+      "key": "frontal",
+      "text": "前頭"
+    },
+    {
+      "key": "frost meadow",
+      "text": "霜の草原"
+    },
+    {
+      "key": "fungus forest",
+      "text": "菌樹海"
+    },
+    {
+      "key": "fungus grove",
+      "text": "菌林"
+    },
+    {
+      "key": "fungus patch",
+      "text": "菌地"
+    },
+    {
+      "key": "future site",
+      "text": "未来址"
+    },
+    {
+      "key": "goatfolk haunt",
+      "text": "ヤギ人の棲処"
+    },
+    {
+      "key": "goatfolk village",
+      "text": "ヤギ人の村"
+    },
+    {
+      "key": "gold",
+      "text": "金"
+    },
+    {
+      "key": "green",
+      "text": "緑"
+    },
+    {
+      "key": "hamlet",
+      "text": "集落"
+    },
+    {
+      "key": "heart",
+      "text": "ハート"
+    },
+    {
+      "key": "heartagon",
+      "text": "ハート形"
+    },
+    {
+      "key": "henagon",
+      "text": "ヘナゴン"
+    },
+    {
+      "key": "heptagon",
+      "text": "七角形"
+    },
+    {
+      "key": "hermitage",
+      "text": "隠修地"
+    },
+    {
+      "key": "hexagon",
+      "text": "六角形"
+    },
+    {
+      "key": "hexagram",
+      "text": "六芒星"
+    },
+    {
+      "key": "hideout",
+      "text": "隠れ家"
+    },
+    {
+      "key": "hosohedron",
+      "text": "ホソヘドロン"
+    },
+    {
+      "key": "hyperboloid",
+      "text": "双曲面"
+    },
+    {
+      "key": "icosagon",
+      "text": "二十角形"
+    },
+    {
+      "key": "icosahedron",
+      "text": "二十面体"
+    },
+    {
+      "key": "illuminated",
+      "text": "輝く"
+    },
+    {
+      "key": "inferior",
+      "text": "下方"
+    },
+    {
+      "key": "ipsilateral",
+      "text": "同側"
+    },
+    {
+      "key": "iron",
+      "text": "鉄"
+    },
+    {
+      "key": "ivory",
+      "text": "アイボリー"
+    },
+    {
+      "key": "jittery",
+      "text": "震える"
+    },
+    {
+      "key": "kindling",
+      "text": "燃え立つ"
+    },
+    {
+      "key": "knot",
+      "text": "結び目"
+    },
+    {
+      "key": "lateral",
+      "text": "外側"
+    },
+    {
+      "key": "lead",
+      "text": "鉛"
+    },
+    {
+      "key": "liminal floor",
+      "text": "境界層"
+    },
+    {
+      "key": "lune",
+      "text": "月形"
+    },
+    {
+      "key": "magnesium",
+      "text": "マグネシウム"
+    },
+    {
+      "key": "medial",
+      "text": "内側"
+    },
+    {
+      "key": "median",
+      "text": "正中"
+    },
+    {
+      "key": "mercury",
+      "text": "水銀"
+    },
+    {
+      "key": "mindmoot",
+      "text": "精神集会"
+    },
+    {
+      "key": "mirrorsteppe",
+      "text": "鏡原"
+    },
+    {
+      "key": "monogon",
+      "text": "一角形"
+    },
+    {
+      "key": "naked",
+      "text": "裸の"
+    },
+    {
+      "key": "niche",
+      "text": "壁龕"
+    },
+    {
+      "key": "nickel",
+      "text": "ニッケル"
+    },
+    {
+      "key": "nonagon",
+      "text": "九角形"
+    },
+    {
+      "key": "nook",
+      "text": "一隅"
+    },
+    {
+      "key": "octagon",
+      "text": "八角形"
+    },
+    {
+      "key": "octagram",
+      "text": "八芒星"
+    },
+    {
+      "key": "octohedron",
+      "text": "八面体"
+    },
+    {
+      "key": "oppidan",
+      "text": "城塞市"
+    },
+    {
+      "key": "outskirts",
+      "text": "外れ"
+    },
+    {
+      "key": "oval",
+      "text": "楕円形"
+    },
+    {
+      "key": "ovoid",
+      "text": "卵形"
+    },
+    {
+      "key": "palladium",
+      "text": "パラジウム"
+    },
+    {
+      "key": "panopticon",
+      "text": "パノプティコン"
+    },
+    {
+      "key": "paraboloid",
+      "text": "放物面"
+    },
+    {
+      "key": "parietal",
+      "text": "壁側"
+    },
+    {
+      "key": "pastless",
+      "text": "過去なき"
+    },
+    {
+      "key": "pentacle",
+      "text": "五芒星円"
+    },
+    {
+      "key": "pentagon",
+      "text": "五角形"
+    },
+    {
+      "key": "pentagram",
+      "text": "五芒星"
+    },
+    {
+      "key": "platinum",
+      "text": "プラチナ"
+    },
+    {
+      "key": "point",
+      "text": "地点"
+    },
+    {
+      "key": "polyform",
+      "text": "ポリフォーム"
+    },
+    {
+      "key": "polygon",
+      "text": "ポリゴン"
+    },
+    {
+      "key": "posterior",
+      "text": "後方"
+    },
+    {
+      "key": "precinct",
+      "text": "区"
+    },
+    {
+      "key": "prism",
+      "text": "角柱"
+    },
+    {
+      "key": "proximal",
+      "text": "近位"
+    },
+    {
+      "key": "psychic graveyard",
+      "text": "サイキック墓場"
+    },
+    {
+      "key": "psychic maze",
+      "text": "サイキック迷宮"
+    },
+    {
+      "key": "psychically refractive",
+      "text": "精神屈折の"
+    },
+    {
+      "key": "purple",
+      "text": "紫"
+    },
+    {
+      "key": "pyramid",
+      "text": "角錐"
+    },
+    {
+      "key": "quadragon",
+      "text": "四辺形"
+    },
+    {
+      "key": "quadrilateral",
+      "text": "四角形"
+    },
+    {
+      "key": "quarter",
+      "text": "区画"
+    },
+    {
+      "key": "quincunx",
+      "text": "五点配列"
+    },
+    {
+      "key": "rapidly resonating",
+      "text": "急速に共鳴する"
+    },
+    {
+      "key": "rectangle",
+      "text": "長方形"
+    },
+    {
+      "key": "red",
+      "text": "赤"
+    },
+    {
+      "key": "refuge",
+      "text": "避難地"
+    },
+    {
+      "key": "region",
+      "text": "地域"
+    },
+    {
+      "key": "regressive",
+      "text": "退行した"
+    },
+    {
+      "key": "retrocognate",
+      "text": "遡及認知の"
+    },
+    {
+      "key": "retroversion",
+      "text": "後捻"
+    },
+    {
+      "key": "rhomb",
+      "text": "菱形"
+    },
+    {
+      "key": "rhomboid",
+      "text": "斜平行四辺形"
+    },
+    {
+      "key": "ring",
+      "text": "環"
+    },
+    {
+      "key": "rod",
+      "text": "棒"
+    },
+    {
+      "key": "room",
+      "text": "室"
+    },
+    {
+      "key": "rose",
+      "text": "薔薇"
+    },
+    {
+      "key": "rostral",
+      "text": "吻側"
+    },
+    {
+      "key": "rust bog",
+      "text": "錆沼"
+    },
+    {
+      "key": "rust field",
+      "text": "錆原"
+    },
+    {
+      "key": "rust patch",
+      "text": "錆地"
+    },
+    {
+      "key": "rust-shrouded",
+      "text": "錆に覆われた"
+    },
+    {
+      "key": "rusty",
+      "text": "錆びた"
+    },
+    {
+      "key": "sagittal",
+      "text": "矢状"
+    },
+    {
+      "key": "salinon",
+      "text": "サリノン"
+    },
+    {
+      "key": "sanctuary",
+      "text": "聖域"
+    },
+    {
+      "key": "seal",
+      "text": "印章"
+    },
+    {
+      "key": "seat",
+      "text": "座"
+    },
+    {
+      "key": "selfmoot",
+      "text": "自己集会"
+    },
+    {
+      "key": "semicircle",
+      "text": "半円"
+    },
+    {
+      "key": "shelter",
+      "text": "避難所"
+    },
+    {
+      "key": "sickle",
+      "text": "鎌"
+    },
+    {
+      "key": "silver",
+      "text": "銀"
+    },
+    {
+      "key": "site",
+      "text": "址"
+    },
+    {
+      "key": "sky",
+      "text": "上空"
+    },
+    {
+      "key": "slaughterfield",
+      "text": "殺戮地"
+    },
+    {
+      "key": "slime bog",
+      "text": "ぬめり沼"
+    },
+    {
+      "key": "slime field",
+      "text": "ぬめり原"
+    },
+    {
+      "key": "slime patch",
+      "text": "ぬめり地"
+    },
+    {
+      "key": "slime-drenched",
+      "text": "ぬめり浸しの"
+    },
+    {
+      "key": "slimy",
+      "text": "ぬめる"
+    },
+    {
+      "key": "some forgotten ruins",
+      "text": "忘れられた遺跡"
+    },
+    {
+      "key": "spacetime hub",
+      "text": "時空の結節点"
+    },
+    {
+      "key": "spacetime karst",
+      "text": "時空カルスト"
+    },
+    {
+      "key": "spade",
+      "text": "スペード"
+    },
+    {
+      "key": "sphere",
+      "text": "球"
+    },
+    {
+      "key": "spheroid",
+      "text": "回転楕円体"
+    },
+    {
+      "key": "spiral",
+      "text": "螺旋"
+    },
+    {
+      "key": "spot",
+      "text": "場"
+    },
+    {
+      "key": "square",
+      "text": "マス"
+    },
+    {
+      "key": "star",
+      "text": "星"
+    },
+    {
+      "key": "steel",
+      "text": "鋼"
+    },
+    {
+      "key": "superior",
+      "text": "上方"
+    },
+    {
+      "key": "surface",
+      "text": "地表"
+    },
+    {
+      "key": "tantalum",
+      "text": "タンタル"
+    },
+    {
+      "key": "tar patch",
+      "text": "タール地"
+    },
+    {
+      "key": "tar pools",
+      "text": "タール池"
+    },
+    {
+      "key": "tarry",
+      "text": "タール塗れの"
+    },
+    {
+      "key": "telekinetic",
+      "text": "念動力の"
+    },
+    {
+      "key": "telepathic",
+      "text": "テレパシーの"
+    },
+    {
+      "key": "terminal",
+      "text": "末端"
+    },
+    {
+      "key": "tetractys",
+      "text": "テトラクテュス"
+    },
+    {
+      "key": "tetrahedron",
+      "text": "四面体"
+    },
+    {
+      "key": "theater of wills",
+      "text": "意志の劇場"
+    },
+    {
+      "key": "tile",
+      "text": "タイル"
+    },
+    {
+      "key": "time prism",
+      "text": "時のプリズム"
+    },
+    {
+      "key": "tin",
+      "text": "スズ"
+    },
+    {
+      "key": "titanium",
+      "text": "チタン"
+    },
+    {
+      "key": "torus",
+      "text": "トーラス"
+    },
+    {
+      "key": "town",
+      "text": "町"
+    },
+    {
+      "key": "transverse",
+      "text": "横断"
+    },
+    {
+      "key": "trapezoid",
+      "text": "台形"
+    },
+    {
+      "key": "trapezus",
+      "text": "梯形"
+    },
+    {
+      "key": "tree",
+      "text": "樹"
+    },
+    {
+      "key": "trefoil",
+      "text": "三つ葉"
+    },
+    {
+      "key": "triad",
+      "text": "三組"
+    },
+    {
+      "key": "triangle",
+      "text": "三角形"
+    },
+    {
+      "key": "triquetra",
+      "text": "トリケトラ"
+    },
+    {
+      "key": "tungsten",
+      "text": "タングステン"
+    },
+    {
+      "key": "undervillage",
+      "text": "地下集落"
+    },
+    {
+      "key": "unilateral",
+      "text": "片側"
+    },
+    {
+      "key": "ventral",
+      "text": "腹側"
+    },
+    {
+      "key": "village",
+      "text": "村"
+    },
+    {
+      "key": "warped",
+      "text": "歪んだ"
+    },
+    {
+      "key": "wheel",
+      "text": "車輪"
+    },
+    {
+      "key": "white",
+      "text": "白"
+    },
+    {
+      "key": "wretchmoot",
+      "text": "惨めな者の集会"
+    },
+    {
+      "key": "yellow",
+      "text": "黄"
+    },
+    {
+      "key": "zinc",
+      "text": "亜鉛"
+    },
+    {
+      "key": "zone",
+      "text": "域"
+    },
+    {
+      "key": "{0} strata deep",
+      "text": "地下{0}層"
+    },
+    {
+      "key": "{0} strata high",
+      "text": "地上{0}層"
+    }
+  ]
+}

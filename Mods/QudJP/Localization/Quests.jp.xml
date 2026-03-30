@@ -81,7 +81,7 @@
          Gospel="ジョッパのオアシスの外れにある工房で、＝name＝と＝player.possessive＝弟子アーギヴは、打楽器と灼熱のワイヤーの存在を喚起する装置を発明した。それを「ワイヤー・コンジット」と名付けた。">
 
     <step Name="Find 200 Feet of Wire" XP="50">
-      <text>ジョッパ東のラストウェルでワイヤー200フィートを探す。</text>
+      <text>ジョッパ東のラスト・ウェルでワイヤー200フィートを探す。</text>
     </step>
 
     <step Name="Return to Argyve" XP="250">
@@ -165,7 +165,7 @@
     </step>
 
     <step Name="Locate the Mechanimist Compound at Bethesda Susa" XP="1000">
-      <text>北の大洞窟ベセスダ・スーサへ行き、メカニマス寺院を見つける。</text>
+      <text>北の大洞窟ベテスダ・スーサへ行き、メカニマス寺院を見つける。</text>
     </step>
 
     <step Name="Decode the Signal" XP="1000">

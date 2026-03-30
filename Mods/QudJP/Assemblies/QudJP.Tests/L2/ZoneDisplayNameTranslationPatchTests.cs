@@ -121,6 +121,51 @@ public sealed class ZoneDisplayNameTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesDynamicZoneNamePatterns_WhenPatched()
+    {
+        WriteDictionary(
+            ("Joppa", "ジョッパ"),
+            ("slimy", "ぬめる"),
+            ("slime bog", "ぬめり沼"),
+            (", goatfolk village", "、ヤギ人の村"));
+
+        var target = new DummyZoneDisplayNameTarget
+        {
+            Result = "Joppa and slime bog",
+        };
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyZoneDisplayNameTarget),
+                    nameof(DummyZoneDisplayNameTarget.GetZoneDisplayName),
+                    typeof(string),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(ZoneDisplayNameTranslationPatch), nameof(ZoneDisplayNameTranslationPatch.Postfix), typeof(string).MakeByRefType())));
+
+            var biomeResult = target.GetZoneDisplayName("zone");
+            target.Result = "Joppa, goatfolk village";
+            var goatfolkResult = target.GetZoneDisplayName("zone");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(biomeResult, Is.EqualTo("ジョッパとぬめり沼"));
+                Assert.That(goatfolkResult, Is.EqualTo("ジョッパ、ヤギ人の村"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Postfix_RecordsOwnerRouteTransforms_WithoutUITextSkinSinkObservation_WhenPatched()
     {
         WriteDictionary(("Joppa", "ジョッパ"));

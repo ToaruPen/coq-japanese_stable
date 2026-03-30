@@ -124,6 +124,53 @@ public sealed class ZoneManagerSetActiveZoneTranslationPatchTests
         }
     }
 
+    [Test]
+    public void PrefixAndPostfix_TranslateDynamicZoneBannerPatterns_WhenPatched()
+    {
+        WriteDictionary(
+            ("Joppa", "ジョッパ"),
+            ("slime bog", "ぬめり沼"),
+            (", goatfolk village", "、ヤギ人の村"));
+        DummyZoneWorldFactory.WorldId = "JoppaWorld";
+        DummyZoneWorldFactory.ZoneId = "JoppaWorld.11.22.1.1.10";
+        DummyZoneCalendar.TimeValue = "06:00";
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyZoneManagerSetActiveZoneTarget), nameof(DummyZoneManagerSetActiveZoneTarget.SetActiveZone)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(ZoneManagerSetActiveZoneTranslationPatch), nameof(ZoneManagerSetActiveZoneTranslationPatch.Prefix))),
+                postfix: new HarmonyMethod(RequireMethod(typeof(ZoneManagerSetActiveZoneTranslationPatch), nameof(ZoneManagerSetActiveZoneTranslationPatch.Postfix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(ZoneManagerSetActiveZoneMessageQueuePatch), nameof(ZoneManagerSetActiveZoneMessageQueuePatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(MessageLogPatch), nameof(MessageLogPatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+
+            DummyZoneWorldFactory.ZoneDisplayNameValue = "Joppa and slime bog";
+            var manager = new DummyZoneManagerSetActiveZoneTarget();
+            manager.SetActiveZone();
+            var biomeMessage = DummyMessageQueue.LastMessage;
+
+            DummyZoneWorldFactory.ZoneDisplayNameValue = "Joppa, goatfolk village";
+            manager.SetActiveZone();
+            var goatfolkMessage = DummyMessageQueue.LastMessage;
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(biomeMessage, Is.EqualTo("ジョッパとぬめり沼, 06:00"));
+                Assert.That(goatfolkMessage, Is.EqualTo("ジョッパ、ヤギ人の村, 06:00"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
