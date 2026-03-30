@@ -390,7 +390,9 @@ internal static class WorldModsTextTranslator
             return source;
         }
 
+#pragma warning disable CA1845
         return headTranslation + source.Substring(separator);
+#pragma warning restore CA1845
     }
 
     private static string TranslateDisguiseAppearance(string source)
