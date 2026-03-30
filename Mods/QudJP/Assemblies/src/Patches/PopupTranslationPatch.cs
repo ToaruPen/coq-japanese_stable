@@ -267,6 +267,12 @@ public static class PopupTranslationPatch
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
 
+        if (DeathWrapperFamilyTranslator.TryTranslatePopup(stripped, spans, route, out var deathTranslated))
+        {
+            translated = deathTranslated;
+            return true;
+        }
+
         if (StringHelpers.TryGetTranslationExactOrLowerAscii(stripped, out var exact)
             && !string.Equals(exact, stripped, StringComparison.Ordinal))
         {

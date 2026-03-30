@@ -362,12 +362,12 @@ public sealed class PopupTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_ObservationOnly_DeathPopupReturnsSourceUnchanged()
+    public void Prefix_TranslatesDeathPopup_WhenPatched()
     {
         WriteDictionary(
-            ("QudJP.DeathWrapper.KilledBy.Wrapped", "あなたは死んだ。\n\n{killer}に殺された。"),
-            ("dromad merchant", "ドロマド商人"),
-            ("sitting", "座っている"));
+            ("QudJP.DeathWrapper.Generic.Wrapped", "あなたは死んだ。\n\n{body}"),
+            ("QudJP.DeathWrapper.KilledBy.Bare", "{killer}に殺された。"),
+            ("dromad merchant", "ドロマド商人"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -378,9 +378,9 @@ public sealed class PopupTranslationPatchTests
                 original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
                 prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
 
-            DummyPopupTarget.ShowBlock("You died.\n\nYou were killed by タム, dromad merchant [sitting].", "Warning");
+            DummyPopupTarget.ShowBlock("You died.\n\nYou were killed by a dromad merchant.", "Warning");
 
-            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("You died.\n\nYou were killed by タム, dromad merchant [sitting]."));
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("あなたは死んだ。\n\nドロマド商人に殺された。"));
         }
         finally
         {
@@ -389,9 +389,12 @@ public sealed class PopupTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_ObservationOnly_DeathPopupWithArticleReturnsSourceUnchanged()
+    public void Prefix_TranslatesDeathPopupWithFromPreposition_WhenPatched()
     {
-        WriteDictionary(("QudJP.DeathWrapper.KilledBy.Wrapped", "あなたは死んだ。\n\n{killer}に殺された。"));
+        WriteDictionary(
+            ("QudJP.DeathWrapper.Generic.Wrapped", "あなたは死んだ。\n\n{body}"),
+            ("QudJP.DeathWrapper.DiedOfPoisonFrom.Bare", "{killer}の毒で死亡した。"),
+            ("viper", "毒蛇"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -402,9 +405,9 @@ public sealed class PopupTranslationPatchTests
                 original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
                 prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
 
-            DummyPopupTarget.ShowBlock("You died.\n\nYou were killed by a ウォーターヴァイン農家.", "Warning");
+            DummyPopupTarget.ShowBlock("You died.\n\nYou died of poison from a viper.", "Warning");
 
-            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("You died.\n\nYou were killed by a ウォーターヴァイン農家."));
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("あなたは死んだ。\n\n毒蛇の毒で死亡した。"));
         }
         finally
         {
@@ -413,9 +416,12 @@ public sealed class PopupTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_ObservationOnly_BittenToDeathReturnsSourceUnchanged()
+    public void Prefix_TranslatesBittenToDeathPopup_WhenPatched()
     {
-        WriteDictionary(("QudJP.DeathWrapper.BittenToDeathBy.Wrapped", "あなたは死んだ。\n\n{killer}に噛み殺された。"));
+        WriteDictionary(
+            ("QudJP.DeathWrapper.Generic.Wrapped", "あなたは死んだ。\n\n{body}"),
+            ("QudJP.DeathWrapper.BittenToDeathBy.Bare", "{killer}に噛み殺された。"),
+            ("snapjaw", "スナップジョー"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -426,9 +432,36 @@ public sealed class PopupTranslationPatchTests
                 original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
                 prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
 
-            DummyPopupTarget.ShowBlock("You died.\n\nYou were bitten to death by the ウォーターヴァイン農家.", "Warning");
+            DummyPopupTarget.ShowBlock("You died.\n\nYou were bitten to death by a snapjaw.", "Warning");
 
-            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("You died.\n\nYou were bitten to death by the ウォーターヴァイン農家."));
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("あなたは死んだ。\n\nスナップジョーに噛み殺された。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_TranslatesExplosionDeathPopup_WhenPatched()
+    {
+        WriteDictionary(
+            ("QudJP.DeathWrapper.Generic.Wrapped", "あなたは死んだ。\n\n{body}"),
+            ("QudJP.DeathWrapper.DiedInExplosionOf.Bare", "{killer}の爆発で死んだ。"),
+            ("grenade", "グレネード"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+
+            DummyPopupTarget.ShowBlock("You died.\n\nYou died in the explosion of a grenade.", "Warning");
+
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("あなたは死んだ。\n\nグレネードの爆発で死んだ。"));
         }
         finally
         {

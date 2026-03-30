@@ -1,6 +1,10 @@
 {
     "entries": [
         {
+            "key": "QudJP.DeathWrapper.Generic.Wrapped",
+            "text": "あなたは死んだ。\n\n{body}"
+        },
+        {
             "key": "QudJP.DeathWrapper.KilledBy.Wrapped",
             "text": "あなたは死んだ。\n\n{killer}に殺された。"
         },
@@ -13,8 +17,140 @@
             "text": "{killer}に殺された。"
         },
         {
+            "key": "QudJP.DeathWrapper.KilledByCollidingWith.Bare",
+            "text": "{killer}に衝突して死亡した。"
+        },
+        {
             "key": "QudJP.DeathWrapper.AccidentallyKilledBy.Bare",
             "text": "{killer}にうっかり殺された。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.BittenToDeathBy.Bare",
+            "text": "{killer}に噛み殺された。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.FrozenToDeathBy.Bare",
+            "text": "{killer}に凍死させられた。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.ImmolatedBy.Bare",
+            "text": "{killer}に焼き殺された。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.VaporizedBy.Bare",
+            "text": "{killer}に蒸発させられた。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.ElectrocutedBy.Bare",
+            "text": "{killer}に感電死させられた。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.DissolvedBy.Bare",
+            "text": "{killer}に溶解させられた。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.DisintegratedBy.Bare",
+            "text": "{killer}に分解された。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.PlasmaBurnedToDeathBy.Bare",
+            "text": "{killer}にプラズマで焼き殺された。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.LasedToDeathBy.Bare",
+            "text": "{killer}にレーザーで殺された。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.IlluminatedToDeathBy.Bare",
+            "text": "{killer}に光で殺された。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.CookedBy.Bare",
+            "text": "{killer}に調理された。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.DiedOfPoisonFrom.Bare",
+            "text": "{killer}の毒で死亡した。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.BledToDeathBecauseOf.Bare",
+            "text": "{killer}のせいで出血死した。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.DiedOfAsphyxiationFrom.Bare",
+            "text": "{killer}による窒息で死亡した。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.MetabolismFailedFrom.Bare",
+            "text": "{killer}による代謝不全で死亡した。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.VitalEssenceDrainedToExtinctionBy.Bare",
+            "text": "{killer}に生命力を吸い尽くされた。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.PsychicallyExtinguishedBy.Bare",
+            "text": "{killer}に精神的に消滅させられた。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.MentallyObliteratedBy.Bare",
+            "text": "{killer}に精神破壊された。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.PrickedToDeathBy.Bare",
+            "text": "{killer}に刺し殺された。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.DecapitatedBy.Bare",
+            "text": "{killer}に斬首された。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.ConsumedWholeBy.Bare",
+            "text": "{killer}に丸呑みにされた。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.SlammedBy.Bare",
+            "text": "{killer}に叩きつけられて死んだ。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.SlammedIntoWallBy.Bare",
+            "text": "{killer}に壁へ叩きつけられて死んだ。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.SlammedIntoTwoWallsBy.Bare",
+            "text": "{killer}に二つの壁へ叩きつけられて死んだ。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.RelievedOfYourVitalAnatomyBy.Bare",
+            "text": "{killer}に生命維持に必要な部位を失わされて死んだ。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.DiedInExplosionOf.Bare",
+            "text": "{killer}の爆発で死んだ。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.DiedInExplosion.Bare",
+            "text": "爆発で死んだ。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.Exploded.Bare",
+            "text": "爆発した。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.CrushedUnderSuns.Bare",
+            "text": "千の太陽の重みで押し潰された。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.DiedOfThirst.Bare",
+            "text": "渇きで死んだ。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.Suicide.Bare",
+            "text": "自殺した。"
+        },
+        {
+            "key": "QudJP.DeathWrapper.AccidentalSuicide.Bare",
+            "text": "うっかり自殺した。"
         },
         {
             "key": "You were vaporized.",
