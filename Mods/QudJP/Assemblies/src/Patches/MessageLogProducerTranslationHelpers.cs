@@ -115,6 +115,14 @@ internal static class MessageLogProducerTranslationHelpers
 
         if (markJapaneseAsDirect && ContainsJapaneseCharacters(source))
         {
+            var patternTranslated = MessagePatternTranslator.Translate(source, route);
+            if (!string.Equals(patternTranslated, source, StringComparison.Ordinal))
+            {
+                DynamicTextObservability.RecordTransform(route, detail, source, patternTranslated);
+                source = MessageFrameTranslator.MarkDirectTranslation(patternTranslated);
+                return true;
+            }
+
             source = MessageFrameTranslator.MarkDirectTranslation(source);
             return true;
         }
