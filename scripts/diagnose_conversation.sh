@@ -64,8 +64,8 @@ wait_for_log() {
   local pattern=$1
   local timeout=${2:-120}
   local interval=${3:-2}
-  for i in $(seq 1 $((timeout / interval))); do
-    if grep -q "$pattern" "$PLAYER_LOG" 2>/dev/null; then
+  for _ in $(seq 1 $((timeout / interval))); do
+    if grep -qE "$pattern" "$PLAYER_LOG" 2>/dev/null; then
       return 0
     fi
     sleep "$interval"
@@ -122,10 +122,10 @@ sleep 0.5
 send_key space 300000
 
 # Wait for save to load
-if ! wait_for_log "AbilityBar\|LVL:\|満腹" 60 2; then
+if ! wait_for_log "AbilityBar|LVL:|満腹" 60 2; then
   echo "  First Space didn't work, retrying..."
   send_key space 300000
-  if ! wait_for_log "AbilityBar\|LVL:\|満腹" 30 2; then
+  if ! wait_for_log "AbilityBar|LVL:|満腹" 30 2; then
     echo "  TIMEOUT loading save"
     kill "$GAME_PID" 2>/dev/null
     exit 1
@@ -138,7 +138,7 @@ sleep 2
 # Step 6: Talk to NPC
 # ---------------------------------------------------------------------------
 echo "=== Step 6: Talk to NPC ==="
-LOG_BEFORE=$(wc -l < "$PLAYER_LOG")
+LOG_BEFORE=$(wc -l < "$PLAYER_LOG")  # Capture baseline to filter newly appended lines
 
 # Press 'c' for Talk, wait, then right arrow
 send_key c 500000
@@ -155,19 +155,19 @@ echo ""
 echo "=== Diagnostic Results ==="
 echo ""
 
-DIAG_LINES=$(grep "$DIAG_TAG" "$PLAYER_LOG" 2>/dev/null || true)
+DIAG_LINES=$(tail -n +"$((LOG_BEFORE + 1))" "$PLAYER_LOG" 2>/dev/null | grep "$DIAG_TAG" || true)
 if [[ -z "$DIAG_LINES" ]]; then
   echo "  NO DIAGNOSTIC OUTPUT (patch may not have loaded)"
   echo ""
   echo "  Checking for Talk prompt:"
-  grep "Talk.*direction" "$PLAYER_LOG" | tail -3
+  grep "Talk.*direction" "$PLAYER_LOG" | tail -3 || true
 else
   echo "$DIAG_LINES"
 fi
 
 echo ""
 echo "=== Recent Talk-related log ==="
-grep "Talk\|ConversationDiag\|HaveConversation\|ShowConversation" "$PLAYER_LOG" | tail -20
+grep -E "Talk|ConversationDiag|HaveConversation|ShowConversation" "$PLAYER_LOG" | tail -20 || true
 
 # ---------------------------------------------------------------------------
 # Step 8: Kill game

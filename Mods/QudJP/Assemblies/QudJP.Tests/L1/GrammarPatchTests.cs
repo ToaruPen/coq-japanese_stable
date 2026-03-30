@@ -414,6 +414,20 @@ public sealed class GrammarPatchTests
     }
 
     [Test]
+    public void InitCapsPatch_LeavesNonAsciiFirstCharUnchanged_ForJapaneseText()
+    {
+        var result = string.Empty;
+
+        var skipped = GrammarInitCapsPatch.Prefix("こんにちは", ref result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(skipped, Is.False);
+            Assert.That(result, Is.EqualTo("こんにちは"));
+        });
+    }
+
+    [Test]
     public void InitCapsPatch_ReturnsEmptyString_WhenInputIsEmpty()
     {
         var result = "placeholder";
