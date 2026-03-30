@@ -307,8 +307,24 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (ShouldTryMessagePatternFallback(route))
+        {
+            var patternTranslated = MessagePatternTranslator.Translate(source, route);
+            if (!string.Equals(patternTranslated, source, StringComparison.Ordinal))
+            {
+                translated = patternTranslated;
+                DynamicTextObservability.RecordTransform(route, family + ".Pattern", source, translated);
+                return true;
+            }
+        }
+
         translated = source;
         return false;
+    }
+
+    private static bool ShouldTryMessagePatternFallback(string route)
+    {
+        return string.Equals(route, nameof(PopupShowTranslationPatch), StringComparison.Ordinal);
     }
 
     private static bool TryTranslateSinglePlaceholderTemplate(

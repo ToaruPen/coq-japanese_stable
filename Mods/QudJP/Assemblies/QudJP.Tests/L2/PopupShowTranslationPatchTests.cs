@@ -12,15 +12,21 @@ namespace QudJP.Tests.L2;
 public sealed class PopupShowTranslationPatchTests
 {
     private string tempDirectory = null!;
+    private string patternFilePath = null!;
 
     [SetUp]
     public void SetUp()
     {
         tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-popup-show-l2", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDirectory);
+        patternFilePath = Path.Combine(tempDirectory, "messages.ja.json");
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        MessagePatternTranslator.ResetForTests();
+        MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
+        File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
         DummyPopupShow.Reset();
     }
@@ -29,6 +35,8 @@ public sealed class PopupShowTranslationPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        MessagePatternTranslator.ResetForTests();
+        DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
@@ -108,6 +116,38 @@ public sealed class PopupShowTranslationPatchTests
         }
     }
 
+    [Test]
+    public void Prefix_TranslatesHistoricPopupMessagePattern()
+    {
+        WriteMessagePatternDictionary(("^You eat the meal\\.$", "食事をとった。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+
+            DummyPopupShow.Show("You eat the meal.");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("食事をとった。"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PopupShowTranslationPatch),
+                        "Popup.ProducerText.Pattern"),
+                    Is.GreaterThan(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
@@ -146,10 +186,38 @@ public sealed class PopupShowTranslationPatchTests
         File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 
+    private void WriteMessagePatternDictionary(params (string pattern, string template)[] patterns)
+    {
+        var builder = new StringBuilder();
+        builder.Append("{\"patterns\":[");
+
+        for (var index = 0; index < patterns.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"pattern\":\"");
+            builder.Append(EscapeJson(patterns[index].pattern));
+            builder.Append("\",\"template\":\"");
+            builder.Append(EscapeJson(patterns[index].template));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        builder.AppendLine();
+
+        File.WriteAllText(patternFilePath, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
     private static string EscapeJson(string value)
     {
         return value
             .Replace("\\", "\\\\", StringComparison.Ordinal)
-            .Replace("\"", "\\\"", StringComparison.Ordinal);
+            .Replace("\"", "\\\"", StringComparison.Ordinal)
+            .Replace("\r", "\\r", StringComparison.Ordinal)
+            .Replace("\n", "\\n", StringComparison.Ordinal)
+            .Replace("\t", "\\t", StringComparison.Ordinal);
     }
 }

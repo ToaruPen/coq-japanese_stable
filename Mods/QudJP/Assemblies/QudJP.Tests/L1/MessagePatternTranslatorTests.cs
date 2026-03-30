@@ -916,6 +916,16 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_AppliesCookingAtePattern()
+    {
+        WritePatternDictionary(("^You eat the meal\\.$", "食事をとった。"));
+
+        var translated = MessagePatternTranslator.Translate("You eat the meal.");
+
+        Assert.That(translated, Is.EqualTo("食事をとった。"));
+    }
+
+    [Test]
     public void Translate_IgnoresRouteFieldInPatternEntries()
     {
         WriteRawPatternFile(

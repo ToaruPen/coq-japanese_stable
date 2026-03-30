@@ -133,6 +133,19 @@ public sealed class JournalPatternTranslatorTests
     }
 
     [Test]
+    public void Translate_AppliesHistoricGossipPatternWithTranslatedCaptures()
+    {
+        WriteDictionaryFile(
+            "historyspice-common.ja.json",
+            new[] { ("some organization", "ある組織"), ("some party", "ある一団") });
+        WritePatternDictionary(("^(.+?) repeatedly beat (.+?) at dice\\.$", "{t0}は{t1}を何度も賽子で打ち負かした。"));
+
+        var translated = JournalPatternTranslator.Translate("some organization repeatedly beat some party at dice.");
+
+        Assert.That(translated, Is.EqualTo("ある組織はある一団を何度も賽子で打ち負かした。"));
+    }
+
+    [Test]
     public void GetPatternLoadSummaryForTests_ContainsJournalPatternTranslator()
     {
         WritePatternDictionary(("^Notes: (.+)$", "備考: {0}"));

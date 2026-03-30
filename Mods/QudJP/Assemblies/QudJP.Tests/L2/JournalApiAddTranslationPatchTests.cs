@@ -166,6 +166,39 @@ public sealed class JournalApiAddTranslationPatchTests
         }
     }
 
+    [Test]
+    public void AddObservation_TranslatesHistoricGossip_WhenPatched()
+    {
+        WriteExactDictionary(("some organization", "ある組織"), ("some party", "ある一団"));
+        WritePatternDictionary(("^(.+?) repeatedly beat (.+?) at dice\\.$", "{t0}は{t1}を何度も賽子で打ち負かした。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyJournalApi), nameof(DummyJournalApi.AddObservation)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(JournalObservationAddTranslationPatch), nameof(JournalObservationAddTranslationPatch.Prefix))));
+
+            DummyJournalApi.AddObservation(
+                "some organization repeatedly beat some party at dice.",
+                "gossip-1",
+                "general",
+                additionalRevealText: "some organization repeatedly beat some party at dice.");
+
+            var entry = DummyJournalApi.Observations.Single();
+            Assert.Multiple(() =>
+            {
+                Assert.That(entry.Text, Is.EqualTo("\u0001ある組織はある一団を何度も賽子で打ち負かした。"));
+                Assert.That(entry.RevealText, Is.EqualTo("\u0001ある組織はある一団を何度も賽子で打ち負かした。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

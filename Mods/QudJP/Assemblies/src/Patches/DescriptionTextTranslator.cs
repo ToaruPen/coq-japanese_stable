@@ -103,6 +103,13 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        translated = MessagePatternTranslator.Translate(source, route);
+        if (!string.Equals(source, translated, StringComparison.Ordinal))
+        {
+            DynamicTextObservability.RecordTransform(route, "Description.Pattern", source, translated);
+            return true;
+        }
+
         translated = source;
         return false;
     }

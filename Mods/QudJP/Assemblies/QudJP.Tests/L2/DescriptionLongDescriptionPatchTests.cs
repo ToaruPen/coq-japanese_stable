@@ -16,15 +16,20 @@ public sealed class DescriptionLongDescriptionPatchTests
     private static readonly UTF8Encoding Utf8WithoutBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
     private string tempDirectory = null!;
+    private string patternFilePath = null!;
 
     [SetUp]
     public void SetUp()
     {
         tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-description-long-l2", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDirectory);
+        patternFilePath = Path.Combine(tempDirectory, "messages.ja.json");
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        MessagePatternTranslator.ResetForTests();
+        MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
+        File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", Utf8WithoutBom);
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
     }
@@ -33,6 +38,7 @@ public sealed class DescriptionLongDescriptionPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        MessagePatternTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
 
@@ -191,6 +197,35 @@ public sealed class DescriptionLongDescriptionPatchTests
         });
     }
 
+    [Test]
+    public void Postfix_TranslatesVillageDescriptionPattern_WhenPatched()
+    {
+        WriteDictionary(
+            ("conclave", "会合"),
+            ("kin", "血縁"),
+            ("some organization", "ある組織"));
+        WriteMessagePatternDictionary((
+            "^(.+?), there's a ((?i:gathering|conclave|congregation|settlement|band|flock|society)) of (.+?) and their ((?i:folk|communities|kindred|families|kin|kind|kinsfolk|tribe|clan))\\.$",
+            "{0}、{t2}とその{t3}の{t1}がある。"));
+
+        RunWithDescriptionPatch(() =>
+        {
+            var target = new DummyDescriptionTarget("sun-baked ruins, there's a conclave of some organization and their kin.");
+            var builder = new StringBuilder();
+            target.GetLongDescription(builder);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(builder.ToString(), Is.EqualTo("sun-baked ruins、ある組織とその血縁の会合がある。"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(DescriptionLongDescriptionPatch),
+                        "Description.Pattern"),
+                    Is.GreaterThan(0));
+            });
+        });
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
@@ -267,6 +302,29 @@ public sealed class DescriptionLongDescriptionPatchTests
     {
         var path = Path.Combine(tempDirectory, "description-long-l2.ja.json");
         File.WriteAllText(path, content, Utf8WithoutBom);
+    }
+
+    private void WriteMessagePatternDictionary(params (string pattern, string template)[] patterns)
+    {
+        var builder = new StringBuilder();
+        builder.Append("{\"patterns\":[");
+        for (var index = 0; index < patterns.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"pattern\":\"");
+            builder.Append(EscapeJson(patterns[index].pattern));
+            builder.Append("\",\"template\":\"");
+            builder.Append(EscapeJson(patterns[index].template));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        builder.AppendLine();
+        File.WriteAllText(patternFilePath, builder.ToString(), Utf8WithoutBom);
     }
 
     private sealed class DummyDescriptionTarget
