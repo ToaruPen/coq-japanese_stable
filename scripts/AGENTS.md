@@ -21,7 +21,30 @@ pytest scripts/tests/ -k <pat>   # Filtered tests
 scripts/decompile_game_dll.sh          # Text pipeline classes (37)
 scripts/decompile_game_dll.sh --list   # List classes only
 scripts/decompile_game_dll.sh --all    # All classes (slow)
+
+# Conversation diagnostic cycle (L3 — requires Rosetta + Hammerspoon IPC)
+scripts/diagnose_conversation.sh               # Full cycle: build → deploy → launch → talk to NPC → collect log
+scripts/diagnose_conversation.sh --skip-build  # Skip build+deploy (requires an already deployed DLL)
 ```
+
+### diagnose_conversation.sh
+
+Automates the full conversation diagnostic cycle for L3 in-game verification:
+
+1. Clean + full build and deploy via `sync_mod.py`
+2. Launch game under Rosetta (`arch -x86_64`)
+3. Navigate to Continue and wait for save to load
+4. Send Talk key sequence (`c` + right arrow) to open a conversation with an adjacent NPC
+5. Collect `ConversationDiag` log lines from `Player.log` and print a summary
+
+**Prerequisites:**
+- Hammerspoon running with IPC enabled (`require("hs.ipc")` in `init.lua`)
+- Save game with player adjacent to a talkable NPC (e.g. Mehmet in Joppa)
+- `ConversationDiagnosticPatch.cs` present in `src/Patches/` (temporary diagnostic patch)
+
+**Outputs:**
+- Diagnostic lines tagged `ConversationDiag` from `~/Library/Logs/Freehold Games/CavesOfQud/Player.log`
+- Recent Talk-related log lines (`Talk`, `HaveConversation`, `ShowConversation`)
 
 ## Editing Rules
 

@@ -400,7 +400,7 @@ public sealed class GrammarPatchTests
     }
 
     [Test]
-    public void InitCapsPatch_ReturnsInputUnchanged_ForNormalText()
+    public void InitCapsPatch_CapitalizesAsciiFirstChar_ForNormalText()
     {
         var result = string.Empty;
 
@@ -409,7 +409,21 @@ public sealed class GrammarPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(skipped, Is.False);
-            Assert.That(result, Is.EqualTo("hello"));
+            Assert.That(result, Is.EqualTo("Hello"));
+        });
+    }
+
+    [Test]
+    public void InitCapsPatch_LeavesNonAsciiFirstCharUnchanged_ForJapaneseText()
+    {
+        var result = string.Empty;
+
+        var skipped = GrammarInitCapsPatch.Prefix("こんにちは", ref result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(skipped, Is.False);
+            Assert.That(result, Is.EqualTo("こんにちは"));
         });
     }
 
