@@ -250,6 +250,14 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(ZoneManagerTickTranslationPatch), "Tick", "XRL.World.ZoneManager", "System.Void", new[] { "System.Boolean" })]
     [TestCase(typeof(ZoneManagerSetActiveZoneMapNotesTranslationPatch), "SetActiveZone", "XRL.World.ZoneManager", "XRL.World.Zone", new[] { "XRL.World.Zone" })]
     [TestCase(typeof(ZoneManagerGenerateZoneTranslationPatch), "GenerateZone", "XRL.World.ZoneManager", "System.Void", new[] { "System.String" })]
+    [TestCase(typeof(ConversationPronounExchangeTranslationPatch), "PronounExchangeDescription", "XRL.World.Parts.ConversationScript", "System.String", new[]
+    {
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "System.Boolean",
+        "System.Boolean",
+        "System.Boolean",
+    })]
 #endif
 #if HAS_TMP
     [TestCase(typeof(TextMeshProUguiFontPatch), "OnEnable", "TMPro.TextMeshProUGUI", "System.Void", new string[0])]
@@ -348,6 +356,12 @@ public sealed class TargetMethodResolutionTests
     {
         "System.Boolean",
         "System.Boolean",
+    })]
+    [TestCase(typeof(TradeScreenUiTranslationPatch), new[]
+    {
+        "",
+        "System.String|System.Int32|System.Int32|System.Int32|System.String|System.Boolean",
+        "System.Double[]|System.Int32[]|System.Collections.Generic.List`1[[XRL.UI.TradeEntry]][]|System.Int32[][]",
     })]
     public void TargetMethods_ResolveExpectedOverloads(Type patchType, string[] expectedSignatures)
     {

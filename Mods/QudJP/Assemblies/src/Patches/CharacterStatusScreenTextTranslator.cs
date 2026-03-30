@@ -206,7 +206,7 @@ internal static class CharacterStatusScreenTextTranslator
             return false;
         }
 
-        var mutationName = GetStringMemberValue(mutation, "Name");
+        var mutationName = GetStringMethodValue(mutation, "GetDisplayName");
         if (string.IsNullOrWhiteSpace(mutationName))
         {
             return false;
@@ -532,19 +532,15 @@ internal static class CharacterStatusScreenTextTranslator
             : null;
     }
 
-    private static string? GetStringMemberValue(object instance, string memberName)
+    private static string? GetStringMethodValue(object instance, string methodName)
     {
-        var type = instance.GetType();
-        var property = AccessTools.Property(type, memberName);
-        if (property is not null && property.CanRead && property.PropertyType == typeof(string))
+        var method = AccessTools.Method(instance.GetType(), methodName, Type.EmptyTypes);
+        if (method is null || method.ReturnType != typeof(string))
         {
-            return property.GetValue(instance) as string;
+            return null;
         }
 
-        var field = AccessTools.Field(type, memberName);
-        return field?.FieldType == typeof(string)
-            ? field.GetValue(instance) as string
-            : null;
+        return method.Invoke(instance, null) as string;
     }
 
     private static int? GetIntMemberValue(object instance, string memberName)

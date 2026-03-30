@@ -61,7 +61,8 @@ public sealed class CharacterStatusScreenMutationDetailsPatchTests
             {
                 mutation = new DummyCharacterMutation
                 {
-                    Name = "Force Wall",
+                    Name = "ForceWall",
+                    DisplayName = "Force Wall",
                     Level = 1,
                 },
             });
@@ -97,7 +98,8 @@ public sealed class CharacterStatusScreenMutationDetailsPatchTests
             {
                 mutation = new DummyCharacterMutation
                 {
-                    Name = "Force Wall",
+                    Name = "ForceWall",
+                    DisplayName = "Force Wall",
                     Level = 1,
                 },
             });
@@ -155,7 +157,8 @@ public sealed class CharacterStatusScreenMutationDetailsPatchTests
             {
                 mutation = new DummyCharacterMutation
                 {
-                    Name = "Force Wall",
+                    Name = "ForceWall",
+                    DisplayName = "Force Wall",
                     Level = 1,
                 },
             });
@@ -244,7 +247,7 @@ public sealed class CharacterStatusScreenMutationDetailsPatchTests
             ("Next rank", "次ランク"));
 
         var changed = CharacterStatusScreenTextTranslator.TryTranslateMutationDetails(
-            new DummyCharacterMutation { Name = "Force Wall", Level = 1 },
+            new DummyCharacterMutation { Name = "ForceWall", DisplayName = "Force Wall", Level = 1 },
             "You generate a wall of force.\n\n{{w|This rank}}:\n9 contiguous stationary force fields.\n\n{{w|Next rank}}:\n10 contiguous stationary force fields.",
             nameof(CharacterStatusScreenTranslationPatch),
             out var translated);
@@ -270,7 +273,7 @@ public sealed class CharacterStatusScreenMutationDetailsPatchTests
             ("Next rank", "次ランク"));
 
         var changed = CharacterStatusScreenTextTranslator.TryTranslateMutationDetails(
-            new DummyCharacterMutation { Name = "Force Wall", Level = 1 },
+            new DummyCharacterMutation { Name = "ForceWall", DisplayName = "Force Wall", Level = 1 },
             source,
             nameof(CharacterStatusScreenTranslationPatch),
             out var translated);
@@ -279,6 +282,26 @@ public sealed class CharacterStatusScreenMutationDetailsPatchTests
         {
             Assert.That(changed, Is.False);
             Assert.That(translated, Is.EqualTo(source));
+        });
+    }
+
+    [Test]
+    public void TryTranslateMutationDetails_UsesDisplayNameInsteadOfInternalName()
+    {
+        WriteDictionary(
+            ("mutation:Acid Slime Glands", "酸を吐き出す。"),
+            ("mutation:Acid Slime Glands:rank:3", "酸の勢いが増す。"));
+
+        var changed = CharacterStatusScreenTextTranslator.TryTranslateMutationDetails(
+            new DummyCharacterMutation { Name = "AcidSlimeGlands", DisplayName = "Acid Slime Glands", Level = 3 },
+            "Spit acid.\n\nStronger acid.",
+            nameof(CharacterStatusScreenTranslationPatch),
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(translated, Is.EqualTo("酸を吐き出す。\n\n酸の勢いが増す。"));
         });
     }
 

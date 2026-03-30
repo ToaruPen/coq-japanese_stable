@@ -95,9 +95,16 @@ internal sealed class DummyCharacterStatusScreen
 
 internal sealed class DummyCharacterMutation
 {
-    public string Name { get; set; } = "Force Wall";
+    public string Name { get; set; } = "ForceWall";
+
+    public string DisplayName { get; set; } = "Force Wall";
 
     public int Level { get; set; } = 1;
+
+    public string GetDisplayName()
+    {
+        return DisplayName;
+    }
 }
 
 internal sealed class DummyCharacterMutationLineData
