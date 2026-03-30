@@ -69,4 +69,20 @@ internal static class DummyConversationPronounExchangeTarget
 
         return null!;
     }
+
+    /// <summary>Returns null to exercise the Postfix null guard.</summary>
+    public static string PronounExchangeDescriptionNull(object player, DummyConversationSpeaker speaker)
+    {
+        _ = player;
+        _ = speaker;
+        return null!;
+    }
+
+    /// <summary>Returns a fixed unmatched string to exercise the Postfix no-op path.</summary>
+    public static string PronounExchangeDescriptionFixed(object player, DummyConversationSpeaker speaker)
+    {
+        _ = player;
+        _ = speaker;
+        return "unmatched pronoun text";
+    }
 }

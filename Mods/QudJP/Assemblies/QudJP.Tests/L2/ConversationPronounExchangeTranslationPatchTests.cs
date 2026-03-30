@@ -74,6 +74,78 @@ public sealed class ConversationPronounExchangeTranslationPatchTests
         });
     }
 
+    [Test]
+    public void TryTranslate_ReturnsFalse_ForEmptyString()
+    {
+        var changed = ConversationPronounExchangeTranslationPatch.TryTranslate(string.Empty, out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.False);
+            Assert.That(translated, Is.EqualTo(string.Empty));
+        });
+    }
+
+    [Test]
+    public void Postfix_IsNoOp_ForNullResult()
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyConversationPronounExchangeTarget), nameof(DummyConversationPronounExchangeTarget.PronounExchangeDescriptionNull)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(ConversationPronounExchangeTranslationPatch), nameof(ConversationPronounExchangeTranslationPatch.Postfix))));
+
+            var result = DummyConversationPronounExchangeTarget.PronounExchangeDescriptionNull(new object(), new DummyConversationSpeaker());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.Null);
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(ConversationPronounExchangeTranslationPatch),
+                        "Conversation.PronounExchange"),
+                    Is.EqualTo(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_IsNoOp_ForUnmatchedText()
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyConversationPronounExchangeTarget), nameof(DummyConversationPronounExchangeTarget.PronounExchangeDescriptionFixed)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(ConversationPronounExchangeTranslationPatch), nameof(ConversationPronounExchangeTranslationPatch.Postfix))));
+
+            var result = DummyConversationPronounExchangeTarget.PronounExchangeDescriptionFixed(new object(), new DummyConversationSpeaker());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("unmatched pronoun text"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(ConversationPronounExchangeTranslationPatch),
+                        "Conversation.PronounExchange"),
+                    Is.EqualTo(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string InvokePatched(DummyConversationSpeaker speaker, bool speakerGivePronouns, bool speakerGetPronouns, bool speakerGetNewPronouns)
     {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";

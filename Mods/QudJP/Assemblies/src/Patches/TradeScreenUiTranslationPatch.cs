@@ -74,50 +74,77 @@ public static class TradeScreenUiTranslationPatch
     private static void AddTradeScreenUpdateMenuBars(List<MethodBase> methods)
     {
         var tradeScreenType = GameTypeResolver.FindType("Qud.UI.TradeScreen", "TradeScreen");
-        var method = tradeScreenType is null
-            ? null
-            : AccessTools.Method(tradeScreenType, "UpdateMenuBars");
-        if (method is not null)
+        if (tradeScreenType is null)
         {
-            methods.Add(method);
+            Trace.TraceError("QudJP: TradeScreenUiTranslationPatch could not resolve type Qud.UI.TradeScreen / TradeScreen.");
+            return;
         }
+
+        var method = AccessTools.Method(tradeScreenType, "UpdateMenuBars");
+        if (method is null)
+        {
+            Trace.TraceError("QudJP: TradeScreenUiTranslationPatch could not resolve {0}.UpdateMenuBars.", tradeScreenType.FullName);
+            return;
+        }
+
+        methods.Add(method);
     }
 
     private static void AddPopupAskNumberAsync(List<MethodBase> methods)
     {
         var popupType = AccessTools.TypeByName("XRL.UI.Popup");
-        var method = popupType is null
-            ? null
-            : AccessTools.Method(
-                popupType,
-                "AskNumberAsync",
-                new[] { typeof(string), typeof(int), typeof(int), typeof(int), typeof(string), typeof(bool) });
-        if (method is not null)
+        if (popupType is null)
         {
-            methods.Add(method);
+            Trace.TraceError("QudJP: TradeScreenUiTranslationPatch could not resolve type XRL.UI.Popup.");
+            return;
         }
+
+        var method = AccessTools.Method(
+            popupType,
+            "AskNumberAsync",
+            new[] { typeof(string), typeof(int), typeof(int), typeof(int), typeof(string), typeof(bool) });
+        if (method is null)
+        {
+            Trace.TraceError("QudJP: TradeScreenUiTranslationPatch could not resolve XRL.UI.Popup.AskNumberAsync(string, int, int, int, string, bool).");
+            return;
+        }
+
+        methods.Add(method);
     }
 
     private static void AddLegacyTradeUpdateTotals(List<MethodBase> methods)
     {
         var tradeUiType = AccessTools.TypeByName("XRL.UI.TradeUI");
-        var tradeEntryType = AccessTools.TypeByName("XRL.UI.TradeEntry");
-        var method = tradeUiType is null || tradeEntryType is null
-            ? null
-            : AccessTools.Method(
-                tradeUiType,
-                "UpdateTotals",
-                new[]
-                {
-                    typeof(double[]),
-                    typeof(int[]),
-                    typeof(List<>).MakeGenericType(tradeEntryType).MakeArrayType(),
-                    typeof(int[][]),
-                });
-        if (method is not null)
+        if (tradeUiType is null)
         {
-            methods.Add(method);
+            Trace.TraceError("QudJP: TradeScreenUiTranslationPatch could not resolve type XRL.UI.TradeUI.");
+            return;
         }
+
+        var tradeEntryType = AccessTools.TypeByName("XRL.UI.TradeEntry");
+        if (tradeEntryType is null)
+        {
+            Trace.TraceError("QudJP: TradeScreenUiTranslationPatch could not resolve type XRL.UI.TradeEntry.");
+            return;
+        }
+
+        var method = AccessTools.Method(
+            tradeUiType,
+            "UpdateTotals",
+            new[]
+            {
+                typeof(double[]),
+                typeof(int[]),
+                typeof(List<>).MakeGenericType(tradeEntryType).MakeArrayType(),
+                typeof(int[][]),
+            });
+        if (method is null)
+        {
+            Trace.TraceError("QudJP: TradeScreenUiTranslationPatch could not resolve XRL.UI.TradeUI.UpdateTotals with expected signature.");
+            return;
+        }
+
+        methods.Add(method);
     }
 
     private static void TranslateModernMenuOptions(Type? targetType)

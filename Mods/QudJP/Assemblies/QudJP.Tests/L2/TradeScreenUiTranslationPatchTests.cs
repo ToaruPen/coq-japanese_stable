@@ -112,6 +112,63 @@ public sealed class TradeScreenUiTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesTradeSomePrompt_PreservesColorTags_WhenPatched()
+    {
+        // Color tags wrapping the item name survive the Strip/Restore round-trip.
+        // Restore re-inserts them at the same character offset they had in the
+        // stripped source, so the exact output position shifts but the tag itself
+        // is preserved.
+        WriteDictionary(
+            ("Add how many {0} to trade.", "{0}をいくつ取引に出す？"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupAskNumberTarget), nameof(DummyPopupAskNumberTarget.AskNumberAsync)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(TradeScreenUiTranslationPatch), nameof(TradeScreenUiTranslationPatch.Prefix))));
+
+            _ = DummyPopupAskNumberTarget.AskNumberAsync("Add how many {{R|lead slug}} to trade.", 2, 0, 5).GetAwaiter().GetResult();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupAskNumberTarget.LastMessage, Does.Contain("lead slug"));
+                Assert.That(DummyPopupAskNumberTarget.LastMessage, Does.Contain("をいくつ"));
+                Assert.That(DummyPopupAskNumberTarget.LastMessage, Does.Contain("取引に出す？"));
+                Assert.That(DummyPopupAskNumberTarget.LastMessage, Does.Contain("{{R|"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_TradeSomePrompt_FallsBackToEnglish_WhenKeyMissing()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupAskNumberTarget), nameof(DummyPopupAskNumberTarget.AskNumberAsync)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(TradeScreenUiTranslationPatch), nameof(TradeScreenUiTranslationPatch.Prefix))));
+
+            _ = DummyPopupAskNumberTarget.AskNumberAsync("Add how many lead slug to trade.", 2, 0, 5).GetAwaiter().GetResult();
+
+            Assert.That(DummyPopupAskNumberTarget.LastMessage, Is.EqualTo("Add how many lead slug to trade."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Postfix_TranslatesLegacyReadout_WhenPatched()
     {
         WriteDictionary(

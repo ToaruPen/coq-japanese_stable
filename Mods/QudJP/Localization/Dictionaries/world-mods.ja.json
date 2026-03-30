@@ -1137,7 +1137,7 @@
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Weapon Class: Pistol",
-      "text": "??????: ??"
+      "text": "武器カテゴリ: ピストル"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
@@ -1147,37 +1147,37 @@
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Weapon Class: Heavy Weapon",
-      "text": "??????: ???"
+      "text": "武器カテゴリ: 重火器"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Accuracy: Very High",
-      "text": "????: ?????"
+      "text": "命中率: 非常に高い"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Accuracy: High",
-      "text": "????: ??"
+      "text": "命中率: 高い"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Accuracy: Medium",
-      "text": "????: ??"
+      "text": "命中率: 普通"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Accuracy: Low",
-      "text": "????: ??"
+      "text": "命中率: 低い"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Accuracy: Very Low",
-      "text": "????: ?????"
+      "text": "命中率: 非常に低い"
     },
     {
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
       "key": "Weapon Class: Pistol",
-      "text": "??????: ??"
+      "text": "武器カテゴリ: ピストル"
     },
     {
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
@@ -1187,32 +1187,32 @@
     {
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
       "key": "Weapon Class: Heavy Weapon",
-      "text": "??????: ???"
+      "text": "武器カテゴリ: 重火器"
     },
     {
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
       "key": "Accuracy: Very High",
-      "text": "????: ?????"
+      "text": "命中率: 非常に高い"
     },
     {
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
       "key": "Accuracy: High",
-      "text": "????: ??"
+      "text": "命中率: 高い"
     },
     {
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
       "key": "Accuracy: Medium",
-      "text": "????: ??"
+      "text": "命中率: 普通"
     },
     {
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
       "key": "Accuracy: Low",
-      "text": "????: ??"
+      "text": "命中率: 低い"
     },
     {
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
       "key": "Accuracy: Very Low",
-      "text": "????: ?????"
+      "text": "命中率: 非常に低い"
     }
   ]
 }
