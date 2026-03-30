@@ -245,7 +245,6 @@ public sealed class TargetMethodResolutionTests
         "System.String",
     })]
     [TestCase(typeof(GameObjectRegeneraTranslationPatch), "FireEvent", "XRL.World.GameObject", "System.Boolean", new[] { "XRL.World.Event" })]
-    [TestCase(typeof(GameObjectEmitMessageTranslationPatch), "EmitMessage", "XRL.World.GameObject", "System.Void", new[] { "System.String", "XRL.World.GameObject", "System.String", "System.Boolean" })]
     [TestCase(typeof(GameObjectToggleActivatedAbilityTranslationPatch), "ToggleActivatedAbility", "XRL.World.GameObject", "System.Boolean", new[] { "System.Guid", "System.Boolean", "System.Nullable`1[[System.Boolean]]" })]
     [TestCase(typeof(ZoneManagerTryThawZoneTranslationPatch), "TryThawZone", "XRL.World.ZoneManager", "System.Boolean", new[] { "System.String", "XRL.World.Zone&" })]
     [TestCase(typeof(ZoneManagerTickTranslationPatch), "Tick", "XRL.World.ZoneManager", "System.Void", new[] { "System.Boolean" })]
@@ -334,6 +333,11 @@ public sealed class TargetMethodResolutionTests
     {
         "",
         "",
+    })]
+    [TestCase(typeof(GameObjectEmitMessageTranslationPatch), new[]
+    {
+        "System.String|XRL.World.GameObject|System.String|System.Boolean",
+        "XRL.World.GameObject|System.String|System.Char|System.Boolean|System.Boolean|System.Boolean|XRL.World.GameObject|XRL.World.GameObject",
     })]
     [TestCase(typeof(BookScreenTranslationPatch), new[]
     {

@@ -318,6 +318,34 @@ internal sealed class DummyGameObjectEmitMessageTarget
     }
 }
 
+internal static class DummyMessagingEmitMessageTarget
+{
+    public static string MessageToSend { get; set; } = string.Empty;
+
+    public static string? ColorToSend { get; set; }
+
+    public static void EmitMessage(
+        DummyGameObject who,
+        string message,
+        char ifPlayer,
+        bool inScreenBuffer,
+        bool log,
+        bool single,
+        DummyGameObject? fromDialog = null,
+        DummyGameObject? fromCurrentCell = null)
+    {
+        _ = who;
+        _ = message;
+        _ = ifPlayer;
+        _ = inScreenBuffer;
+        _ = log;
+        _ = single;
+        _ = fromDialog;
+        _ = fromCurrentCell;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+}
+
 internal sealed class DummyZoneManagerTryThawZoneTarget
 {
     public string MessageToSend { get; set; } = string.Empty;

@@ -485,6 +485,80 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void MessagingEmitMessage_TranslatesVariableReplaceOutput_WhenPatched()
+    {
+        WritePatternDictionary(
+            ("^You are surrounded by (.+?)\\.$", "{0}に包囲されている。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyMessagingEmitMessageTarget),
+                    nameof(DummyMessagingEmitMessageTarget.EmitMessage),
+                    typeof(DummyGameObject),
+                    typeof(string),
+                    typeof(char),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject)),
+                typeof(GameObjectEmitMessageTranslationPatch));
+
+            DummyMessagingEmitMessageTarget.MessageToSend = "You are surrounded by baboons.";
+            DummyMessagingEmitMessageTarget.EmitMessage(new DummyGameObject(), "unused", 'W', false, false, false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("baboonsに包囲されている。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void MessagingEmitMessage_TranslatesMixedJapaneseAndEnglishCombatMessage_WhenPatched()
+    {
+        WritePatternDictionary(
+            ("^(?:The )?(.+) hits \\((x\\d+)\\) for (\\d+) damage with (?:his|her|its) (.+?)[.!] \\[(.+?)\\]$", "{0}の{3}で{2}ダメージを受けた。({1}) [{4}]"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyMessagingEmitMessageTarget),
+                    nameof(DummyMessagingEmitMessageTarget.EmitMessage),
+                    typeof(DummyGameObject),
+                    typeof(string),
+                    typeof(char),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject)),
+                typeof(GameObjectEmitMessageTranslationPatch));
+
+            DummyMessagingEmitMessageTarget.MessageToSend = "The ウォーターヴァイン農家 hits (x2) for 4 damage with his 鉄の蔓刈り斧. [17]";
+            DummyMessagingEmitMessageTarget.EmitMessage(new DummyGameObject(), "unused", 'W', false, false, false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("ウォーターヴァイン農家の鉄の蔓刈り斧で4ダメージを受けた。(x2) [17]"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void ZoneManagerTryThawZone_TranslatesLeafMessage_WhenPatched()
     {
         WriteLeafDictionary(("ThawZone exception", "ゾーン解凍エラー"));
@@ -565,6 +639,37 @@ public sealed class CombatAndLogMessageQueuePatchTests
             var target = new DummyZoneManagerMapNotesTarget
             {
                 MessageToSend = "Notes: ancient bones",
+            };
+
+            target.SetActiveZone(new DummyZone());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("注記: ancient bones"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void ZoneManagerSetActiveZoneMapNotes_PreservesMixedLocalizedNotes_WhenPatched()
+    {
+        WritePatternDictionary(
+            ("^Notes: (.+)$", "注記: {0}"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyZoneManagerMapNotesTarget), nameof(DummyZoneManagerMapNotesTarget.SetActiveZone), typeof(DummyZone)),
+                typeof(ZoneManagerSetActiveZoneMapNotesTranslationPatch));
+
+            var target = new DummyZoneManagerMapNotesTarget
+            {
+                MessageToSend = "注記: ancient bones",
             };
 
             target.SetActiveZone(new DummyZone());
