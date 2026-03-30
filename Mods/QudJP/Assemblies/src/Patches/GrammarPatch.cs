@@ -345,7 +345,25 @@ public static class GrammarInitCapsPatch
     {
         try
         {
-            __result = word;
+            if (string.IsNullOrEmpty(word))
+            {
+                __result = word ?? string.Empty;
+                return false;
+            }
+
+            // Preserve ASCII first-character capitalization.
+            // The game's XML loader uses InitCap to normalize element names
+            // (e.g. "start" → "Start"), so skipping this breaks conversation loading.
+            var first = word[0];
+            if (first >= 'a' && first <= 'z')
+            {
+                __result = char.ToUpper(first, System.Globalization.CultureInfo.InvariantCulture) + word.Substring(1);
+            }
+            else
+            {
+                __result = word;
+            }
+
             GrammarPatchHelpers.LogTransform("InitCap", word, __result, logWhenUnchanged: true);
             return false;
         }
