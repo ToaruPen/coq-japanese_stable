@@ -17,8 +17,11 @@ public static class TradeScreenUiTranslationPatch
     private static readonly Regex TradeSomePromptPattern = new(
         "^Add how many (?<name>.+) to trade\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
-    private static readonly Regex SortModeDescriptionPattern = new(
-        "^(?<prefix>sort: )(?<az>a-z)/(?<category>by class)$",
+    private static readonly Regex SortPrefixPattern = new(
+        "^(?<label>sort:\\s)",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex ByClassPattern = new(
+        "(?<label>by class)",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [HarmonyTargetMethods]
@@ -196,44 +199,69 @@ public static class TradeScreenUiTranslationPatch
         }
 
         var route = ObservabilityHelpers.ComposeContext(Context, "field=" + routeSuffix);
-        var translated = TryTranslateSortModeDescription(current!, route, out var sortModeDescription)
-            ? sortModeDescription
-            : UiBindingTranslationHelpers.TranslateVisibleText(current!, route, "TradeScreenUi.MenuOption");
+        var translated = TranslateMenuOptionText(current!, memberName, route);
         if (!string.Equals(translated, current, StringComparison.Ordinal))
         {
             UiBindingTranslationHelpers.SetMemberValue(menuOption, memberName, translated);
         }
     }
 
-    private static bool TryTranslateSortModeDescription(string source, string route, out string translated)
+    private static string TranslateMenuOptionText(string source, string memberName, string route)
     {
-        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
-        var match = SortModeDescriptionPattern.Match(stripped);
-        if (!match.Success)
+        if (string.Equals(memberName, "Description", StringComparison.Ordinal)
+            && TryTranslateSortDescription(source, route, out var translatedSortDescription))
         {
-            translated = source;
-            return false;
+            return translatedSortDescription;
         }
 
-        var translatedPrefix = Translator.Translate(match.Groups["prefix"].Value);
-        var translatedCategory = Translator.Translate(match.Groups["category"].Value);
-        var azLabel = ColorAwareTranslationComposer.RestoreCapture(
-            match.Groups["az"].Value,
-            spans,
-            match.Groups["az"]);
-        var categoryLabel = ColorAwareTranslationComposer.RestoreCapture(
-            translatedCategory,
-            spans,
-            match.Groups["category"]);
+        return UiBindingTranslationHelpers.TranslateVisibleText(source, route, "TradeScreenUi.MenuOption");
+    }
 
-        translated = translatedPrefix + azLabel + "/" + categoryLabel;
-        if (string.Equals(translated, source, StringComparison.Ordinal))
+    private static bool TryTranslateSortDescription(string source, string route, out string translated)
+    {
+        var changed = false;
+        translated = ReplaceLiteralSegment(source, SortPrefixPattern, ref changed);
+        translated = ReplaceLiteralSegment(translated, ByClassPattern, ref changed);
+
+        if (changed)
         {
-            return false;
+            DynamicTextObservability.RecordTransform(route, "TradeScreenUi.MenuOption", source, translated);
         }
 
-        DynamicTextObservability.RecordTransform(route, "TradeScreenUi.SortModeDescription", source, translated);
-        return true;
+        return changed;
+    }
+
+    private static string ReplaceLiteralSegment(string source, Regex pattern, ref bool changed)
+    {
+        var localChanged = changed;
+        var translated = pattern.Replace(
+            source,
+            match =>
+            {
+                var label = match.Groups["label"].Value;
+                var translatedLabel = StringHelpers.TranslateExactOrLowerAscii(label);
+                if (translatedLabel is null || string.Equals(translatedLabel, label, StringComparison.Ordinal))
+                {
+                    return match.Value;
+                }
+
+                localChanged = true;
+                return ReplaceFirstOrdinal(match.Value, label, translatedLabel);
+            });
+
+        changed = localChanged;
+        return translated;
+    }
+
+    private static string ReplaceFirstOrdinal(string source, string oldValue, string newValue)
+    {
+        var index = source.IndexOf(oldValue, StringComparison.Ordinal);
+        if (index < 0)
+        {
+            return source;
+        }
+
+        return source.Substring(0, index) + newValue + source.Substring(index + oldValue.Length);
     }
 
     private static void TranslateAskNumberArgs(object[] args)

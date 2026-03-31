@@ -22,12 +22,12 @@ internal sealed class DummyTinkeringStatusScreenTarget
 
     public DummyUITextSkin modeToggleText = new DummyUITextSkin();
 
-     public List<DummyTinkeringCategoryInfo> categoryInfos = new List<DummyTinkeringCategoryInfo>
-     {
-         new DummyTinkeringCategoryInfo
-         {
+    public List<DummyTinkeringCategoryInfo> categoryInfos = new List<DummyTinkeringCategoryInfo>
+    {
+        new DummyTinkeringCategoryInfo
+        {
             Name = "Build",
-         },
+        },
         new DummyTinkeringCategoryInfo
         {
             N = 1,

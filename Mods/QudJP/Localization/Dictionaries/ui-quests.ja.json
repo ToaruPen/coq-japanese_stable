@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "id": "ui-quests",
+    "lang": "ja",
+    "version": "0.1.0"
+  },
+  "rules": {
+    "protectColorTags": true,
+    "protectHtmlEntities": true
+  },
+  "entries": [
+    { "key": "You have no active quests.", "text": "進行中のクエストがない。" },
+    { "key": "Expand", "text": "展開" },
+    { "key": "Collapse", "text": "折りたたむ" },
+    { "key": "<unknown>", "text": "<不明>" },
+    { "key": "quest:", "text": "クエスト:" },
+    { "key": "Optional: ", "text": "任意: " },
+    { "key": "Bonus reward for completing this quest by level &C{0}&y.", "text": "レベル&C{0}&yまでにクエストを完了するとボーナス報酬。" }
+  ]
+}

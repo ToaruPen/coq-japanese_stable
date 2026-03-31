@@ -28,6 +28,7 @@ public sealed partial class Issue201OtherUiBindingPatchTests
         BookUI.Reset();
         DummyAbilityManagerLineTarget.ResetStaticMenuOptions();
         DummyPickGameObjectLineTarget.ResetStaticMenuOptions();
+        DummyHighScoresScreenTarget.ResetStaticMenuOptions();
         PickGameObjectScreen.Reset();
     }
 
@@ -41,6 +42,7 @@ public sealed partial class Issue201OtherUiBindingPatchTests
         BookUI.Reset();
         DummyAbilityManagerLineTarget.ResetStaticMenuOptions();
         DummyPickGameObjectLineTarget.ResetStaticMenuOptions();
+        DummyHighScoresScreenTarget.ResetStaticMenuOptions();
         PickGameObjectScreen.Reset();
 
         if (Directory.Exists(tempDirectory))
