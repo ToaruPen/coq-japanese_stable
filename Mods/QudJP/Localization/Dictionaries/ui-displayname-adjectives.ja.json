@@ -292,7 +292,7 @@
     {
       "key": "{{m|gesticulating}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{m|身ぶり強調}}"
+      "text": "{{m|蠢く}}"
     },
     {
       "key": "HUD",
@@ -357,7 +357,7 @@
     {
       "key": "masterwork",
       "context": "GetDisplayName.Adjective",
-      "text": "名工品"
+      "text": "傑作"
     },
     {
       "key": "{{overloaded|massively overloaded}}",
@@ -447,7 +447,7 @@
     {
       "key": "{{scaled|scaled}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{scaled|鱗装甲}}"
+      "text": "{{scaled|鱗状の}}"
     },
     {
       "key": "{{Y|serra{{R|t}}ed}}",
@@ -482,7 +482,7 @@
     {
       "key": "spring-loaded",
       "context": "GetDisplayName.Adjective",
-      "text": "スプリング"
+      "text": "バネ仕掛けの"
     },
     {
       "key": "{{urban camouflage|urban camo}}",
@@ -1097,7 +1097,7 @@
     {
       "key": "gesticulating",
       "context": "GetDisplayName.Adjective",
-      "text": "{{m|身ぶり強調}}"
+      "text": "{{m|蠢く}}"
     },
     {
       "key": "heartstopper",
@@ -1217,7 +1217,7 @@
     {
       "key": "scaled",
       "context": "GetDisplayName.Adjective",
-      "text": "{{scaled|鱗装甲}}"
+      "text": "{{scaled|鱗状の}}"
     },
     {
       "key": "serra{{R|ted}}",
