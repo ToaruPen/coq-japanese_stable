@@ -870,8 +870,8 @@
         <text>彼らが来る前にノースフィアを耕さねばならぬ。</text>
         <part Name="EndGame" Type="Accede" Grade="Super" />
       </choice>
-      <choice Target="Gyre" IfNotHaveState="ReshephResigned">I must think on this further.</choice>
-      <choice Target="GyreResigned" IfHaveState="ReshephResigned">I must think on this further.</choice>
+      <choice Target="Gyre" IfNotHaveState="ReshephResigned">もう少し考えたい。</choice>
+      <choice Target="GyreResigned" IfHaveState="ReshephResigned">もう少し考えたい。</choice>
     </node>
     <node ID="ReshephUltra">
       <text>

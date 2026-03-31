@@ -4,7 +4,7 @@
 <object Name="Ehalcodon" Inherits="BaseNephal" Replace="true">
     <part Name="Body" Anatomy="Quadruped" />
     <part Name="Render" DisplayName="{{M|エハルコドン}}" Tile="Creatures/nephilim_ehalcodon.png" DetailColor="Y" />
-    <part Name="Description" Short="巨大な存在が視界の上縁にまたがり、神光を放つ。スピンドルの煌めきをまぶされた腰が、この位相の感応的背景放射に描き起こされた生体の輪郭を支え、幅広い帯状の翼は星風を捉える刃で縁取られている。最後に、その TX ガラスの肌の下で渦巻く二色の光が不可能のメタスペクトルへ屈折し、角状の螺旋となって体外へ溢れ出す。" />
+    <part Name="Description" Short="巨大な存在が視界の上縁にまたがり、神光を放つ。スピンドルの煌めきをまぶされた腰が、この位相の感応的背景放射に描き起こされた生体の輪郭を支え、幅広い帯状の翼は星風を捉える刃で縁取られている。最後に、=pronouns.possessive= TXガラスの肌の下で渦巻く二彩の光が不可能のメタスペクトルへと屈折し、角状の螺旋となって体外へ溢れ出す。" />
     <part Name="Honorifics" Ordinary="{{M|Starformed}}" />
     <part Name="Physics" VaporTemperature="15000" />
     <tag Name="PronounSet" Value="qe/qem/qyr" />
@@ -54,7 +54,7 @@
 
 <object Name="BaseEaterGreatMachineShrine" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="大いなる機械の祠" TileColor="&amp;Y" DetailColor="c" />
-    <part Name="Description" Short="大いなる機械に調和する司祭のように大理石喰らいたちが跪き、レバーを引き、給水弁を充填して演算された意志を操り、また操られる。水晶ダイオードの台座が、数十万光年の彼方で沸き立つ地上文化の計器盤を映し出す。" />
+    <part Name="Description" Short="大いなる機械に調和する司祭のように大理石喰らいたちが跪き、レバーを引き、給水栓を開いて演算された意志を操り、また操られる。水晶ダイオードの台座が、数十万光年の彼方で沸き立つ地上文化の計器盤を映し出す。" />
     <part Name="Physics" Weight="10000" FlameTemperature="99999" VaporTemperature="1500" Solid="true" />
     <stat Name="AV" Value="20" />
     <stat Name="Hitpoints" Value="6000" />
@@ -1619,7 +1619,7 @@
 
   <object Name="Mechanical Golem" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" ColorString="&amp;c" DetailColor="y" />
-    <part Name="Description" Short="元素表の外から集めた金属屑を溶接して神話的な姿 (=body.features=) を彫り上げてある。古いスープや =catalyst= の飛沫が錆びた胴を染みだらけにし、燻る光の中でその姿勢は死にゆく =atzmus.creature= の気配を呼び寄せる。鉄の四肢は =armament.skill.snippet= の形になるまで叩き延ばされ、中心質には =hamsa.an= の砕けた印章が吊り下がっている。" />
+    <part Name="Description" Short="元素表の外から集めた金属屑を溶接して神話的な姿 (=body.features=) を彫り上げてある。古いスープや =catalyst= の飛沫が錆びた胴を染みだらけにし、燻る光の中でその姿勢は死にゆく =atzmus.creature= の気配を呼び寄せる。鉄の四肢は =armament.skill.snippet= の形になるまで叩き延ばされ、胴の中央には =hamsa.an= の砕けた印章が吊り下がっている。" />
     <part Name="Interactable" Action="enter" Message="この機械は古びて錆び付きすぎており、中に入ることなどできない。" UsePopup="true" CanSmartUse="false" />
     <part Name="ElectricalPowerTransmission" ChargeRate="10000" IsConsumer="true" SparkWhenBrokenAndPowered="false" />
     <part Name="ChargeSink" ChargeUse="1" NameForStatus="PrimeMover" />

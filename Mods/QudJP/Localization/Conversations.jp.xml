@@ -893,7 +893,7 @@
 
     <node ID="Suborned" Inherits="Orphaned">
       <text>
-        {{M|You}} が私の意志を従属させる！ この道へ踏み出させ、そして遮る。そうなのだろう？
+        {{M|あなた}}が私の意志を従属させる！ この道へ踏み出させ、そして遮る。そうなのだろう？
 
         今や私は本当に漂っている。
       </text>
@@ -2417,7 +2417,7 @@
       <text>
         {{emote|*ぶつぶつ*}} …クランク定数からの予期せぬ偏差だ。
 
-        {{emote|*Argyve が咳き込む。*}}
+        {{emote|*アルジーヴが咳き込む。*}}
 
         邪魔をしに来たのか？お前は水狂いか？フーンドレン目の巡礼か？アーコノートか？ =player.reflexive= を役に立たせて、どこかの洞窟からガラクタを拾ってこい。「報酬」をやるかもしれん。
       </text>
@@ -2464,7 +2464,7 @@
 
     <node ID="Impressive" Replace="true">
       <text>
-        {{emote|*Argyve が口笛を吹く。*}}
+        {{emote|*アルジーヴが口笛を吹く。*}}
 
         見事じゃないか！お前なら私の工房を嗅ぎ回ってスクラップをやり取りするくらいはできそうだ。ちょうど弟子がもう一人ほしかったところだ。スクレフが腸をぶちまけた件は実に不運だったがな。そこに腰を下ろせ。
       </text>
@@ -2473,7 +2473,7 @@
 
     <node ID="Weirdwire" Replace="true">
       <text>
-        {{emote|*Argyve が両眉を跳ね上げる。*}}
+        {{emote|*アルジーヴが両眉を跳ね上げる。*}}
 
         よし、話のナットにボルトを噛ませよう！私は今、発見の瀬戸際にいる。ウィアードワイヤ導管の組み上げも終盤でな、完成しさえすれば、このジョッパからイドに至るまで誰とでも即時通信ができるようになる。だが仕上げるにはワイヤがいる。できるだけたくさん――最低でも二百フィートだ。ラスト・ウェルを漁れば拾えるはずだ。
       </text>
@@ -2494,7 +2494,7 @@
 
     <node ID="GiveWire" Replace="true">
       <text>
-        {{emote|*Argyve が歓声を上げる。*}}
+        {{emote|*アルジーヴが歓声を上げる。*}}
 
         いいぞ、いいぞ！なんて美しいワイヤだ！ ……おっと、忘れるところだった。古いリコイラーをお前用に修理しておいた。ジョッパへひとっ飛びしたくなったら使え。さて、ワイヤを取り付けるから少し待っていろ……。
       </text>
@@ -2521,7 +2521,7 @@
 
     <node ID="Signal2" Replace="true">
       <text>
-        {{emote|*Argyve が数分間ぶつぶつ呟き続ける。*}}
+        {{emote|*アルジーヴが数分間ぶつぶつ呟き続ける。*}}
       </text>
       <choice Target="Signal3">...</choice>
     </node>
@@ -2547,7 +2547,7 @@
       </text>
       <choice Target="CanticleAccept1" IfNotHaveQuest="A Canticle for Barathrum">その任務、引き受けよう。</choice>
       <choice Target="End" IfNotHaveQuest="A Canticle for Barathrum">少し考えさせてくれ。</choice>
-      <choice Target="End" IfHaveQuest="A Canticle for Barathrum">さらばだ、Argyve。</choice>
+      <choice Target="End" IfHaveQuest="A Canticle for Barathrum">さらばだ、アルジーヴ。</choice>
     </node>
 
     <node ID="CanticleAccept1" Replace="true">
@@ -2561,7 +2561,7 @@
 
     <node ID="CanticleAccept2" Replace="true">
       <text>
-        {{emote|*Argyve が数分間ぶつぶつ呟き続ける。*}}
+        {{emote|*アルジーヴが数分間ぶつぶつ呟き続ける。*}}
       </text>
       <choice Target="CanticleAccept3">...</choice>
     </node>
@@ -2571,23 +2571,23 @@
         さあ、受け取れ。さあ行け！私の命令を遂げるまで生き延びるのだ。さあ、さっさと！
       </text>
       <choice GotoID="End" StartQuest="A Canticle for Barathrum">
-        <text>さらばだ、Argyve。</text>
+        <text>さらばだ、アルジーヴ。</text>
         <part Name="ReceiveItem" Blueprints="Droid Scrambler,Argyve's Data Disk" Identify="All" />
       </choice>
     </node>
 
     <start ID="StartFinishedCanticle" IfFinishedQuest="A Canticle for Barathrum" Replace="true">
       <text>
-        {{emote|*Argyve が短く頷き、片眉を跳ね上げる。*}}
+        {{emote|*アルジーヴが短く頷き、片眉を跳ね上げる。*}}
 
         弟子よ。
 
-        {{emote|*Argyve は作業へ戻る。*}}
+        {{emote|*アルジーヴは作業へ戻る。*}}
       </text>
       <choice Target="Golgotha" IfHaveActiveQuest="More Than a Willing Spirit">バラサラム派は、加入前にゴルゴタと呼ばれる洞へ潜れと言う。</choice>
-      <choice Target="RankUp" IfFinishedQuest="Decoding the Signal">Argyve、俺はもう見習いじゃない。今の俺は =factionaddress:Barathrumites= だ。</choice>
+      <choice Target="RankUp" IfFinishedQuest="Decoding the Signal">アルジーヴ、俺はもう見習いじゃない。今の俺は =factionaddress:Barathrumites= だ。</choice>
       <choice Target="AskAfter" IfFinishedQuest="More Than a Willing Spirit">何か必要なものは？</choice>
-      <choice Target="End">さらばだ、Argyve。</choice>
+      <choice Target="End">さらばだ、アルジーヴ。</choice>
     </start>
 
     <start ID="StartCanticleActive" IfHaveQuest="A Canticle for Barathrum" Replace="true">
@@ -2602,7 +2602,7 @@
       <text>
         そうか。オソなら言いそうだ。ふむ。
 
-        {{emote|*Argyve が不自然なほど長く沈黙する。*}}
+        {{emote|*アルジーヴが不自然なほど長く沈黙する。*}}
 
         よろしい。
 
@@ -3258,7 +3258,7 @@
         気体の蝶が濃い虫からひらひらと飛び出す。~
         ぼくは鋭い。器用なんだ。~
         {{emote|*シェムがあくびをする。*}} あくびしてる。~
-        『Immaculate Chrome』が一番好き。
+        『イマキュレート・クローム』が一番好き。
       </text>
       <choice ID="ShemSafe" GotoID="YouAreSafe" IfFinishedQuest="A Call to Arms">無事でよかったよ、シェム。</choice>
       <choice ID="ShemPax" GotoID="Klanq" IfFinishedQuestStep="Tomb of the Eaters~Disable the Spindle's Magnetic Field">クランクの来訪をどう思う？</choice>
@@ -6299,7 +6299,7 @@
   <conversation ID="Vivira" Replace="true">
     <node ID="Start">
       <text>
-        {{emote|*BEEP* *crackle*}}
+        {{emote|*ピッ* *パチパチ*}}
 
         彼女の光のもとより、=player.formalAddressTerm=。
 
@@ -6313,7 +6313,7 @@
 
     <node ID="ViviQuest">
       <text>
-        {{emote|*crackle, crackle*}}―ゾソムか？ 同情するよ。
+        {{emote|*パチパチ、パチパチ*}}―ゾソムか？ 同情するよ。
 
         もちろん、=ifplayerplural:君たちは:そなたは=ここで歓迎される、旅人。何か必要ならアギラに声をかけてくれ。もてなしが大好きなんだ。
       </text>
@@ -6325,11 +6325,11 @@
 
     <node ID="ViviZothom">
       <text>
-        {{emote|*crackle-sigh*}}
+        {{emote|*パチ…はぁ*}}
 
         ちょっと意地悪を言っただけだ。ゾソムがここで過ごしたわずかな時間が何週間にも感じられてね。あの悲嘆は傲慢で攻撃的だった。でもそんなことを言えばアギラにたしなめられる。自己を見つける道のりはまだ長いようだ。
 
-        とはいえ、ゾソムの道は私よりもずっと長いと思う。{{emote|*BEEP*}}
+        とはいえ、ゾソムの道は私よりもずっと長いと思う。{{emote|*ピッ*}}
       </text>
       <choice GotoID="ViviFriendly">タレットにしては随分と礼儀正しいな。</choice>
       <choice GotoID="ViviWelcome">ここはどんな場所だ？</choice>
@@ -6349,7 +6349,7 @@
 
     <node ID="ViviWelcome">
       <text>
-        ここが食らう者たちの墓所であることは=ifplayerplural:君たちも:そなたも=知っているだろう。でも私の後ろには番人たちが築いた小さな集落があって、モパンゴの小さな集団が暮らしている。
+        ここが喰らう者の墓所であることは=ifplayerplural:君たちも:そなたも=知っているだろう。でも私の後ろには番人たちが築いた小さな集落があって、モパンゴの小さな集団が暮らしている。
 
         集落についてもっと知りたいなら、奥にいるアギラという番人に尋ねてくれ。知識を分かち合うのが大好きなんだ。
       </text>
@@ -6382,7 +6382,7 @@
 
     <node ID="ViviTaboo">
       <text>
-        {{emote|*BEEP*}}
+        {{emote|*ピッ*}}
 
         信条には外から与えられる意味なんてない。=ifplayerplural:君たちも:そなたも=知ってのとおり、モパンゴのあいだで信条の意味を問いただすのは無作法とされている。
       </text>
@@ -6392,10 +6392,10 @@
 
     <node ID="ViviRude">
       <text>
-        {{emote|*BEEP*}}
+        {{emote|*ピッ*}}
         バカバカしくても、無礼よりはましだ。=ifplayerplural:君たちは:そなたは=今まさに後者だ。
 
-        {{emote|*crackle*}} アギラと話すといい。あの子のほうが無礼に寛容だから。
+        {{emote|*パチパチ*}} アギラと話すといい。あの子のほうが無礼に寛容だから。
       </text>
       <choice GotoID="End">分かった。</choice>
     </node>
@@ -6610,7 +6610,7 @@
 
     <node ID="AgyraTomb">
       <text>
-        食らう者たちの墓所は十二層――移行層を数えれば十層――で成っている。民の地下墓地（=ifplayerplural:君たちが今立っている場所だ:そなたが今立っている場所だ=）、火葬場と納骨堂、二つの墳墓、そしてクッドのスルタンたち六つの墓がその上に連なる。
+        喰らう者の墓所は十二層――移行層を数えれば十層――で成っている。民の地下墓地（=ifplayerplural:君たちが今立っている場所だ:そなたが今立っている場所だ=）、火葬場と納骨堂、二つの墳墓、そしてクッドのスルタンたち六つの墓がその上に連なる。
 
         ここで財貨を探すなら、失望に備えておくといい。墓所には奇跡も冒涜も同じように眠っているが、地表の民が宝と呼ぶようなものはほとんどない。
       </text>
@@ -7208,7 +7208,7 @@
       <text>
         その信号は、どこからとも知れぬ場所から繰り返し送信されているものだ。=V0tinkeraddendum= 我らが修理工の一人、&amp;mQガール&amp;y が長波検出器を仕掛けている最中に見つけた。残念ながら暗号化されており、ここには解読手段がない。だが、この件でお前が助けになれるかもしれない。
 
-        我々はずっと以前から、大広間 &amp;Cベテスダ・スーサ&amp;y の底に、完全に機能する &amp;Wbaetyl&amp;y があると知っている。メカニマス教はその周囲を聖別して神殿を建てた。Qガールは信号を解読する方法を考案したと主張しているが、ベテルの計算資源が必要だ。もしメカニマスの施設に潜入できるなら、ベテルに接続して信号を解読できるだろう。
+        我々はずっと以前から、大広間 &amp;Cベテスダ・スーサ&amp;y の底に、完全に機能する &amp;Wベテル&amp;y があると知っている。メカニマス教はその周囲を聖別して神殿を建てた。Qガールは信号を解読する方法を考案したと主張しているが、ベテルの計算資源が必要だ。もしメカニマスの施設に潜入できるなら、ベテルに接続して信号を解読できるだろう。
       </text>
       <choice GotoID="Baetyl?">ベテルってなんだ？</choice>
     </node>
@@ -7241,7 +7241,7 @@
         よくやった、=factionaddress:Barathrumites=。ディスクを見せてくれ。
       </text>
       <choice GotoID="InterpretSignal" CompleteQuestStep="Decoding the Signal~Return to Grit Gate|6000" FinishQuest="Decoding the Signal">
-        <text>[Otho にディスクを渡す]</text>
+        <text>[オソにディスクを渡す]</text>
         <part Name="GritGateHandler" Rank="Journeyfriend" />
       </choice>
     </node>

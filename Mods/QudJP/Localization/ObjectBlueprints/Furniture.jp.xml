@@ -4,7 +4,7 @@
   <!-- Furniture translations -->
 <object Name="Sewing Machine" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="ミシン" ColorString="&amp;R" TileColor="&amp;w" DetailColor="C" RenderString="247" Tile="Items/sw_sewing_machine.bmp" />
-    <part Name="Description" Short="傷のある金属 C の内側で、針とボビンが本縫いに一対の糸を打ち込む準備をする。台座の全周にイニシャルが彫られている。" />
+    <part Name="Description" Short="傷だらけのC字型金属枠の内側で、針とボビンが本縫いへ一対の糸を打ち込む準備をしている。台座の全周にイニシャルが彫られている。" />
     <part Name="Metal" />
     <part Name="Examiner" Alternate="UnknownBizarreContraption" Complexity="2" />
     <part Name="Physics" Weight="80" Solid="false" />
@@ -53,7 +53,7 @@
 
   <object Name="Light Sculpture" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="光の彫刻" ColorString="&amp;y" DetailColor="B" RenderString="238" Tile="Items/sw_art_hologram_1.bmp" />
-    <part Name="Description" Short="青色レーザー光が参照ビームから飛び出し、軽旋盤で彫刻された波面を再現する。空気により粒子の層が追加される。" />
+    <part Name="Description" Short="青色レーザー光が参照ビームから飛び出し、光旋盤で削り出された波面を再現する。空気が粒子の層を重ねる。" />
     <builder Name="RandomTile" Tiles="Items/sw_art_hologram_1.bmp,Items/sw_art_hologram_2.bmp" />
     <part Name="HologramMaterial" />
     <part Name="Physics" Weight="10" Solid="false" />
@@ -84,7 +84,7 @@
 
   <object Name="Unfinished Sculpture" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="未完成の彫刻" ColorString="&amp;y" DetailColor="R" RenderString="156" Tile="Items/sw_unfinished_sculpture_1.bmp" />
-    <part Name="Description" Short="粘土、スラグ、クロム、染料などの土の湿った絵の具は、物質的な重さで半分アイデアを前かがみにしてしまう。変化は優柔不断や怠慢によって阻止される。" />
+    <part Name="Description" Short="粘土、スラグ、クロム、染料——大地の湿った顔料たちが、半ば形になりかけた着想を物質の重みでうなだれさせる。変化は優柔不断か怠慢によって途中で止められている。" />
     <builder Name="RandomTile" Tiles="Items/sw_unfinished_sculpture_1.bmp,Items/sw_unfinished_sculpture_2.bmp" />
     <part Name="RandomColors" DetailColor="all" />
     <part Name="Physics" Weight="80" Solid="false" />
@@ -128,7 +128,7 @@
 
   <object Name="Mushroom Case" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="キノコケース" ColorString="&amp;Y" DetailColor="c" RenderString="231" Tile="Items/sw_mushroom_case.bmp" />
-    <part Name="Description" Short="半月型のガラスが地下室の屋根を覆い、内部で繁栄している死体喰い人たちを保護している。それらはエラの一種だ。" />
+    <part Name="Description" Short="半月型のガラスがサブテラリウムの屋根を覆い、内部で繁栄する腐肉喰らいを守っている。それらは鰓のアーコロジーだ。" />
     <part Name="Physics" Weight="20" Solid="true" />
     <stat Name="AV" Value="1" />
     <stat Name="Hitpoints" Value="80" />
@@ -142,7 +142,7 @@
 
   <object Name="Harp" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="ハープ" ColorString="&amp;W" DetailColor="y" RenderString="14" Tile="Items/sw_harp.bmp" />
-    <part Name="Description" Short="ヌーガットの弦が響板全体に張り巡らされ、ローズゴールドが豊かな木の膝とヘッドを覆っている。フレームはハートの半分を形成する。喰らう者のお気に入りが残っている。" />
+    <part Name="Description" Short="ヌー（gnu）のガット弦が響板の全面に幾重もの層をなし、ローズゴールドが豊かな木の膝とヘッドを戴く。フレームはハートの半分を形づくる——喰らう者の愛したものが今も残っている。" />
     <part Name="Physics" Weight="100" Solid="true" />
     <stat Name="AV" Value="3" />
     <stat Name="Hitpoints" Value="150" />
@@ -170,7 +170,7 @@
 
   <object Name="Hammered Dulcimer" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="ハンマーダルシマー" ColorString="&amp;w" DetailColor="W" RenderString="13" Tile="Items/sw_dulcimer.bmp" />
-    <part Name="Description" Short="台形にヌーガットの弦が張られている。メモスプーンは木製の鞘に入っている。" />
+    <part Name="Description" Short="ヌー（gnu）のガット弦が台形の上に張り渡されている。音符スプーンは木製の鞘に収まっている。" />
     <part Name="Physics" Weight="50" Solid="true" />
     <stat Name="AV" Value="4" />
     <stat Name="Hitpoints" Value="150" />
@@ -214,7 +214,7 @@
   <object Name="Hookah" Inherits="Furniture" Replace="true">
     <part Name="Render" DisplayName="水タバコ" ColorString="&amp;R" DetailColor="w" RenderString="227" Tile="Items/sw_hookah.bmp" Occluding="false" RenderIfDark="false" />
     <part Name="Physics" Weight="10" />
-    <part Name="Description" Short="クリスタルの水パイプからは喫煙用の茎が咲く。" />
+    <part Name="Description" Short="クリスタルの水パイプから喫煙用のステムが花のように広がっている。" />
     <part Name="LiquidVolume" MaxVolume="8" Volume="8" StartVolume="1d4" InitialLiquid="water-1000" ManualSeal="true" LiquidVisibleWhenSealed="true" />
     <part Name="LeakWhenBroken" />
     <part Name="Hookah" />
@@ -495,7 +495,7 @@
 
   <object Name="AgolgotShrine" Inherits="NephilimShrine" Replace="true">
     <part Name="Render" DisplayName="ギルシュ・アゴルゴットの神殿" Tile="Furniture/nephilim_statue_agolgot.bmp" />
-    <part Name="Description" Short="古い石の中に巨大な頭がうずくまり、中央の顎から発芽したエッチングされた嚢胞が、半神の根源からの病気の蔓延を想起させる。何世代もの苔が獣のいぼの足を覆っている。" />
+    <part Name="Description" Short="古い石の中に巨大な頭がうずくまり、中央の背骨から芽吹いた刻まれた嚢胞が、半神の根源からの病の蔓延を想起させる。何世代もの苔が獣のいぼだらけの足を覆っている。" />
     <tag Name="Worshippable" />
     <tag Name="WorshippedAs" Value="Agolgot" />
     <tag Name="WorshipPower" Value="3" />
@@ -504,7 +504,7 @@
 
   <object Name="BethsaidaShrine" Inherits="NephilimShrine" Replace="true">
     <part Name="Render" DisplayName="ギルシュ・ベツセイダの神殿" Tile="Furniture/nephilim_statue_bethsaida.bmp" />
-    <part Name="Description" Short="傾いた肩がひび割れた石の背の谷を縁取り、二対の組み合った腕が百関節で結合し、半神の精力を高める様子を石彫刻家が描いている。何世代もの苔が獣の静脈瘤の脚を覆っている。" />
+    <part Name="Description" Short="傾いた肩がひび割れた石の背の谷を縁取り、二対の組み合った腕が百の関節で結合し、半神の胎動を石彫刻家が描いている。何世代もの苔が獣の静脈瘤の脚を覆っている。" />
     <tag Name="Worshippable" />
     <tag Name="WorshippedAs" Value="Bethsaida" />
     <tag Name="WorshipPower" Value="5" />
@@ -513,7 +513,7 @@
 
   <object Name="RermadonShrine" Inherits="NephilimShrine" Replace="true">
     <part Name="Render" DisplayName="ギルシュ・レルマドンの神殿" Tile="Furniture/nephilim_statue_rermadon.bmp" />
-    <part Name="Description" Short="石に彫られた水の池の中にとげのある巨大な魚が座っている。その下には、詩人がマッコムのパイプから泡状の塩水を打ち出してヒンノム湖を形成したときに付けたヒレの付いた尾がある。何世代にもわたって苔がその下を覆っている。" />
+    <part Name="Description" Short="とげのある巨大な魚が石彫りの水の池に鎮座している。その下には、詩人たちがマッコムの水道管から泡立つ塩水を打ち出してヒンノム湖を形成したと謳ったヒレの尾がある。何世代もの苔がその下腹を覆っている。" />
     <tag Name="Worshippable" />
     <tag Name="WorshippedAs" Value="Rermadon" />
     <tag Name="WorshipPower" Value="4" />
@@ -531,7 +531,7 @@
 
   <object Name="QasShrine" Inherits="NephilimShrine" Replace="true">
     <part Name="Render" DisplayName="ギルシュ・カスの神殿" Tile="Furniture/nephilim_statue_qas.bmp" />
-    <part Name="Description" Short="半神は後ろにひざまずき、古い石の中で広く働いた。タイル張りの多角形が彫像の基部からこぼれ出ており、カスによる空間、時間、山、村の正しさを思い出させる。何世代もの苔が獣の木こりのひづめを覆っている。" />
+    <part Name="Description" Short="半神は古い石の中で大きく広げた後ろ足でひざまずいている。タイル状の多角形が彫像の台座からこぼれ出て、カスが空間・時間・山・村を正した偉業を想起させる。何世代もの苔が獣の木こり蹄を覆っている。" />
     <tag Name="Worshippable" />
     <tag Name="WorshippedAs" Value="Qas" />
     <tag Name="WorshipPower" Value="2" />
@@ -540,7 +540,7 @@
 
   <object Name="QonShrine" Inherits="NephilimShrine" Replace="true">
     <part Name="Render" DisplayName="ギルシュ・クオンの神殿" Tile="Furniture/nephilim_statue_qon.bmp" />
-    <part Name="Description" Short="ゴッドワンは、巨大な凧列を目もくらむような旋回方向に巻き上げながら、石のように優雅に座っている。彼女は、自分が不確実性のインキュバスであるという彫刻家の感覚を呼び起こすために、うつろで読めない表情をしている。何世代もの苔が獣の羽毛を覆っている。" />
+    <part Name="Description" Short="神鳥は巨大な凧尾を目もくらむ旋回に畳んで、石の優雅さの中に佇む。その面には空白で何も読み取れぬ表情が刻まれており、彫刻師が感じた——彼女こそ不確かさを宿す魔の化身なのだという——その感覚を呼び起こす。何世代もの苔が獣の産毛を覆っている。" />
     <tag Name="Worshippable" />
     <tag Name="WorshippedAs" Value="Qon" />
     <tag Name="WorshipPower" Value="1" />
@@ -1943,7 +1943,7 @@
 
   <object Name="Life Gate W" Inherits="Double Door W" Replace="true">
     <part Name="Render" DisplayName="ライフゲート" Tile="Tiles2/sw_lifegate_w.bmp" ColorString="&amp;C" TileColor="&amp;W" DetailColor="c" RenderString="234" />
-    <part Name="Description" Short="緑青は、巨大な青銅のドアを海の泡とサンゴの大きな棚に変えた。生命の劇場が高浮き彫りでパネルに描かれている。ヤシの葉がピラミッドを星散る空に持ち上げ、水がオイノコエの唇に注がれる。恋人たちはフリーズをくびきで越え、ヤギはコーニスで銅の反芻を噛む。" />
+    <part Name="Description" Short="緑青が巨大な青銅の扉を、波の泡と珊瑚の大きな棚へと変えた。生命の劇場が高浮き彫りでパネルに刻まれている。ヤシの葉がピラミッドを星の帯をなす空へと持ち上げ、水はオイノコエの縁から注がれる。恋人たちはフリーズで身を寄せ合い、ヤギはコーニスで銅の反芻草を噛む。" />
     <part Name="Door" Locked="true" ClosedTile="Tiles2/sw_lifegate_w.bmp" OpenTile="Tiles2/sw_tombgate_w_open.bmp" />
     <part Name="LifeGate" />
     <stat Name="Hitpoints" sValue="10000" />
@@ -1956,7 +1956,7 @@
 
   <object Name="Life Gate E" Inherits="Double Door E" Replace="true">
     <part Name="Render" DisplayName="ライフゲート" Tile="Tiles2/sw_lifegate_e.bmp" ColorString="&amp;C" TileColor="&amp;W" DetailColor="c" RenderString="234" />
-    <part Name="Description" Short="緑青は、巨大な青銅のドアを海の泡とサンゴの大きな棚に変えた。生命の劇場が高浮き彫りでパネルに描かれている。ヤシの葉がピラミッドを星散る空に持ち上げ、水がオイノコエの唇に注がれる。恋人たちはフリーズをくびきで越え、ヤギはコーニスで銅の反芻を噛む。" />
+    <part Name="Description" Short="緑青が巨大な青銅の扉を、波の泡と珊瑚の大きな棚へと変えた。生命の劇場が高浮き彫りでパネルに刻まれている。ヤシの葉がピラミッドを星の帯をなす空へと持ち上げ、水はオイノコエの縁から注がれる。恋人たちはフリーズで身を寄せ合い、ヤギはコーニスで銅の反芻草を噛む。" />
     <part Name="Door" Locked="true" ClosedTile="Tiles2/sw_lifegate_e.bmp" OpenTile="Tiles2/sw_tombgate_e_open.bmp" />
     <part Name="LifeGate" />
     <stat Name="Hitpoints" sValue="10000" />
@@ -2398,7 +2398,7 @@
   <object Name="Clockthing_QGirl" Inherits="Clockthing" Replace="true">
     <part Name="Render" DisplayName="{{M|Qガール}} {{Y|pendulum}} を使用したバラサラム時計" ColorString="&amp;c" />
     <part Name="Physics" Weight="18" Takeable="true" />
-    <part Name="Description" Short="Qガールは、このバラサラム時計の古い発振器をスイング振り子に置き換えた。現在では、タイムが観測者から不正行為を行っていた 1 日あたり数時間は、わずか数分に短縮される。" />
+    <part Name="Description" Short="Qガールはこのバラサラム時計の古い発振器を振り子式に換装した。今では、時間が観測者から欺き取っていた一日あたり数時間が、ほんの数分にまで縮まっている。" />
     <part Name="HydraulicPowerTransmission" ChargeRate="1000" IsConsumer="true" DischargeLiquidWhenBrokenAndPowered="true" MingleLiquidsWhenPowered="true" ChanceBreakOnMove="0" ChanceBreakConnectedOnMove="0" />
     <part Name="ElectricalPowerTransmission" ChargeRate="1000" IsConsumer="true" ChanceBreakOnMove="0" ChanceBreakConnectedOnMove="0" />
     <part Name="LiquidVolume" MaxVolume="32" StartVolume="32" InitialLiquid="water-1000" Sealed="true" ShowSeal="false" />
@@ -4528,7 +4528,7 @@
 
   <object Name="Woven Basket" Inherits="Furniture" Replace="true">
     <part Name="Render" DisplayName="編みかご" ColorString="&amp;w" DetailColor="w" RenderString="229" Tile="Items/sw_basket.bmp" Occluding="false" RenderIfDark="true" />
-    <part Name="Description" Short="マーシュリードは縦糸と横糸で手編みされ、束やその他の乾物用の容器になりました。" />
+    <part Name="Description" Short="マーシュリードが縦糸と横糸で手編みされ、穂束やその他の乾物を入れる容器となっている。" />
     <tag Name="EmptyTile" Value="Items/sw_basket.bmp" />
     <tag Name="FullTile" Value="Items/sw_basket.bmp" />
     <part Name="Physics" Weight="3" Organic="true" Takeable="false" />
