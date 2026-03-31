@@ -142,7 +142,7 @@
 
   <object Name="Harp" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="ハープ" ColorString="&amp;W" DetailColor="y" RenderString="14" Tile="Items/sw_harp.bmp" />
-    <part Name="Description" Short="ヌーガットの弦が響板全体に張り巡らされ、ローズゴールドが豊かな木の膝とヘッドを覆っている。フレームはハートの半分を形成する。イーターのお気に入りが残っている。" />
+    <part Name="Description" Short="ヌーガットの弦が響板全体に張り巡らされ、ローズゴールドが豊かな木の膝とヘッドを覆っている。フレームはハートの半分を形成する。喰らう者のお気に入りが残っている。" />
     <part Name="Physics" Weight="100" Solid="true" />
     <stat Name="AV" Value="3" />
     <stat Name="Hitpoints" Value="150" />
@@ -292,7 +292,7 @@
 
 
   <object Name="ImplantedEaterStatue" Inherits="Statue" Replace="true">
-    <part Name="Render" DisplayName="埋め込まれたイーターの像" RenderString="|" ColorString="&amp;Y" DetailColor="g" Occluding="true" Tile="Terrain/sw_ueater1.bmp" />
+    <part Name="Render" DisplayName="埋め込まれた喰らう者の像" RenderString="|" ColorString="&amp;Y" DetailColor="g" Occluding="true" Tile="Terrain/sw_ueater1.bmp" />
     <stat Name="Hitpoints" Value="6000" />
     <part Name="Description" Short="浸食によってその特徴は抽象化されましたが、かつては機械と民俗の結合の記念碑として立っていたものだ。" />
     <builder Name="RandomTile" Tiles="Terrain/sw_ueater1.bmp,Terrain/sw_ueater2.bmp,Terrain/sw_ueater3.bmp,Terrain/sw_ueater4.bmp" />
@@ -302,9 +302,9 @@
 
 
   <object Name="EaterStatue" Inherits="Statue" Replace="true">
-    <part Name="Render" DisplayName="イーターの像" RenderString="228" ColorString="&amp;Y" DetailColor="y" Occluding="true" Tile="Terrain/sw_ueater1.bmp" />
+    <part Name="Render" DisplayName="喰らう者の像" RenderString="228" ColorString="&amp;Y" DetailColor="y" Occluding="true" Tile="Terrain/sw_ueater1.bmp" />
     <stat Name="Hitpoints" Value="6000" />
-    <part Name="Description" Short="石のキャンバスから特徴が飛び出し、砕け散って深い過去の姿になる。髪、肌、眉、太もも、その細部があなたの中に新たな感情、つまり見慣れないものの感覚を生み出す。石化した肖像の周りを歩き回ると、このイーターがどのようにしてあなたの時空の三つ編みに自分自身を切り込んだのか不思議に思う。" />
+    <part Name="Description" Short="石のキャンバスから特徴が飛び出し、砕け散って深い過去の姿になる。髪、肌、眉、太もも、その細部があなたの中に新たな感情、つまり見慣れないものの感覚を生み出す。石化した肖像の周りを歩き回ると、この喰らう者がどのようにしてあなたの時空の三つ編みに自分自身を切り込んだのか不思議に思う。" />
     <builder Name="RandomTile" Tiles="Creatures/sw_eater_1.bmp,Creatures/sw_eater_2.bmp,Creatures/sw_eater_3.bmp,Creatures/sw_eater_4.bmp,Creatures/sw_eater_5.bmp,Creatures/sw_eater_6.bmp,Creatures/sw_eater_7.bmp,Creatures/sw_eater_8.bmp,Creatures/sw_eater_9.bmp,Creatures/sw_eater_10.bmp,Creatures/sw_eater_11.bmp,Creatures/sw_eater_12.bmp,Creatures/sw_eater_13.bmp,Creatures/sw_eater_14.bmp,Creatures/sw_eater_15.bmp,Creatures/sw_eater_16.bmp,Creatures/sw_eater_17.bmp,Creatures/sw_eater_18.bmp,Creatures/sw_eater_19.bmp,Creatures/sw_eater_20.bmp,Creatures/sw_eater_21.bmp,Creatures/sw_eater_22.bmp,Creatures/sw_eater_23.bmp,Creatures/sw_eater_24.bmp,Creatures/sw_eater_25.bmp,Creatures/sw_eater_26.bmp,Creatures/sw_eater_27.bmp,Creatures/sw_eater_28.bmp,Creatures/sw_eater_ruined_1.bmp,Creatures/sw_eater_ruined_2.bmp,Creatures/sw_eater_ruined_3.bmp,Creatures/sw_eater_ruined_4.bmp,Creatures/sw_eater_ruined_5.bmp,Creatures/sw_eater_ruined_1.bmp,Creatures/sw_eater_ruined_2.bmp,Creatures/sw_eater_ruined_3.bmp,Creatures/sw_eater_ruined_4.bmp,Creatures/sw_eater_ruined_5.bmp" />
     <tag Name="NoVillageStrip" />
     <part Name="Shrine" />
@@ -494,7 +494,7 @@
 
 
   <object Name="AgolgotShrine" Inherits="NephilimShrine" Replace="true">
-    <part Name="Render" DisplayName="ギルシュ・アゴルゴットの神社" Tile="Furniture/nephilim_statue_agolgot.bmp" />
+    <part Name="Render" DisplayName="ギルシュ・アゴルゴットの神殿" Tile="Furniture/nephilim_statue_agolgot.bmp" />
     <part Name="Description" Short="古い石の中に巨大な頭がうずくまり、中央の顎から発芽したエッチングされた嚢胞が、半神の根源からの病気の蔓延を想起させる。何世代もの苔が獣のいぼの足を覆っている。" />
     <tag Name="Worshippable" />
     <tag Name="WorshippedAs" Value="Agolgot" />
@@ -503,7 +503,7 @@
 
 
   <object Name="BethsaidaShrine" Inherits="NephilimShrine" Replace="true">
-    <part Name="Render" DisplayName="ギルシュ ベツサイダの神社" Tile="Furniture/nephilim_statue_bethsaida.bmp" />
+    <part Name="Render" DisplayName="ギルシュ・ベツセイダの神殿" Tile="Furniture/nephilim_statue_bethsaida.bmp" />
     <part Name="Description" Short="傾いた肩がひび割れた石の背の谷を縁取り、二対の組み合った腕が百関節で結合し、半神の精力を高める様子を石彫刻家が描いている。何世代もの苔が獣の静脈瘤の脚を覆っている。" />
     <tag Name="Worshippable" />
     <tag Name="WorshippedAs" Value="Bethsaida" />
@@ -512,7 +512,7 @@
 
 
   <object Name="RermadonShrine" Inherits="NephilimShrine" Replace="true">
-    <part Name="Render" DisplayName="ガーシュ・レルマドンの神社" Tile="Furniture/nephilim_statue_rermadon.bmp" />
+    <part Name="Render" DisplayName="ギルシュ・レルマドンの神殿" Tile="Furniture/nephilim_statue_rermadon.bmp" />
     <part Name="Description" Short="石に彫られた水の池の中にとげのある巨大な魚が座っている。その下には、詩人がマッコムのパイプから泡状の塩水を打ち出してヒンノム湖を形成したときに付けたヒレの付いた尾がある。何世代にもわたって苔がその下を覆っている。" />
     <tag Name="Worshippable" />
     <tag Name="WorshippedAs" Value="Rermadon" />
@@ -521,8 +521,8 @@
 
 
   <object Name="ShugruithShrine" Inherits="NephilimShrine" Replace="true">
-    <part Name="Render" DisplayName="Shug'ruith the Burrower の神社" Tile="Furniture/nephilim_statue_shugruith.bmp" />
-    <part Name="Description" Short="彫りの深い棘が曲がりくねったワールドイーターを巻き付けており、彼らは後期のトログロダイトが住む地上の洞窟を掘っていた。伝説の 19 の目は時を越えて見つめ、何世代もの苔が獣の縞模様の下着を覆っている。" />
+    <part Name="Render" DisplayName="掘り穿つ者シュグルイスの神殿" Tile="Furniture/nephilim_statue_shugruith.bmp" />
+    <part Name="Description" Short="彫りの深い棘が曲がりくねったワールド喰らう者を巻き付けており、彼らは後期のトログロダイトが住む地上の洞窟を掘っていた。伝説の109の目は時を越えて見つめ、何世代もの苔が獣の縞模様の下腹部を覆っている。" />
     <tag Name="Worshippable" />
     <tag Name="WorshippedAs" Value="Shug'ruith" />
     <tag Name="WorshipPower" Value="6" />
@@ -531,7 +531,7 @@
 
   <object Name="QasShrine" Inherits="NephilimShrine" Replace="true">
     <part Name="Render" DisplayName="ギルシュ・カスの神殿" Tile="Furniture/nephilim_statue_qas.bmp" />
-    <part Name="Description" Short="半神は後ろにひざまずき、古い石の中で広く働いた。タイル張りの多角形が彫像の基部からこぼれ出ており、Qas による空間、時間、山、村の正しさを思い出させる。何世代もの苔が獣の木こりのひづめを覆っている。" />
+    <part Name="Description" Short="半神は後ろにひざまずき、古い石の中で広く働いた。タイル張りの多角形が彫像の基部からこぼれ出ており、カスによる空間、時間、山、村の正しさを思い出させる。何世代もの苔が獣の木こりのひづめを覆っている。" />
     <tag Name="Worshippable" />
     <tag Name="WorshippedAs" Value="Qas" />
     <tag Name="WorshipPower" Value="2" />
@@ -539,7 +539,7 @@
 
 
   <object Name="QonShrine" Inherits="NephilimShrine" Replace="true">
-    <part Name="Render" DisplayName="ガーシュ・クオンの神殿" Tile="Furniture/nephilim_statue_qon.bmp" />
+    <part Name="Render" DisplayName="ギルシュ・クオンの神殿" Tile="Furniture/nephilim_statue_qon.bmp" />
     <part Name="Description" Short="ゴッドワンは、巨大な凧列を目もくらむような旋回方向に巻き上げながら、石のように優雅に座っている。彼女は、自分が不確実性のインキュバスであるという彫刻家の感覚を呼び起こすために、うつろで読めない表情をしている。何世代もの苔が獣の羽毛を覆っている。" />
     <tag Name="Worshippable" />
     <tag Name="WorshippedAs" Value="Qon" />
@@ -548,7 +548,7 @@
 
 
   <object Name="RuinedNephilimShrime" Inherits="NephilimShrine" Replace="true">
-    <part Name="Render" DisplayName="廃墟の神社" Tile="Furniture/nephilim_statue_ruined.bmp" />
+    <part Name="Render" DisplayName="廃墟の神殿" Tile="Furniture/nephilim_statue_ruined.bmp" />
   </object>
 
 
@@ -571,10 +571,10 @@
 
 
   <object Name="Eater Hologram" Inherits="Item" Replace="true">
-    <part Name="Render" DisplayName="イーターのホログラム" Tile="Creatures/sw_eater_1.bmp" RenderLayer="6" RenderString="228" ColorString="&amp;y" DetailColor="k" Occluding="false" />
+    <part Name="Render" DisplayName="喰らう者のホログラム" Tile="Creatures/sw_eater_1.bmp" RenderLayer="6" RenderString="228" ColorString="&amp;y" DetailColor="k" Occluding="false" />
     <part Name="Physics" Weight="12000" Takeable="false" Solid="false" />
     <stat Name="Hitpoints" Value="1200" />
-    <part Name="Description" Short="焼けた光がクロムプレートに噴出し、深い過去の姿に砕け散る。髪、肌、眉、太もも、その特徴があなたの中に新たな感情、つまり見慣れないものの感覚を生み出す。あなたが動き回ると、図は視差を持って動く。あなたは、このイーターがどのようにしてあなたの時空の三つ編みに自分自身を切り込んだのか不思議に思う。" />
+    <part Name="Description" Short="焼けた光がクロムプレートに噴出し、深い過去の姿に砕け散る。髪、肌、眉、太もも、その特徴があなたの中に新たな感情、つまり見慣れないものの感覚を生み出す。あなたが動き回ると、図は視差を持って動く。あなたは、この喰らう者がどのようにしてあなたの時空の三つ編みに自分自身を切り込んだのか不思議に思う。" />
     <part Name="HologramMaterial" />
     <part Name="HologramInvulnerability" />
     <tag Name="IgnoresGravity" />
@@ -869,7 +869,7 @@
 
   <object Name="ArmorSign1" Inherits="Sign" Replace="true">
     <part Name="Render" DisplayName="看板" Tile="Items/sw_sign_body.bmp" Occluding="false" />
-    <part Name="Chat" Says="ベストと郵便物" ShowInShortDescription="true" />
+    <part Name="Chat" Says="ベストとメイル" ShowInShortDescription="true" />
   </object>
 
 
@@ -1085,7 +1085,7 @@
 
   <object Name="ImplantSign3" Inherits="Sign" Replace="true">
     <part Name="Render" DisplayName="看板" Tile="Items/sw_sign_gutsmonger.bmp" Occluding="false" />
-    <part Name="Chat" Says="機械と民俗のためのオルガン" ShowInShortDescription="true" />
+    <part Name="Chat" Says="機械と肉体のための臓器" ShowInShortDescription="true" />
   </object>
 
 
@@ -1943,7 +1943,7 @@
 
   <object Name="Life Gate W" Inherits="Double Door W" Replace="true">
     <part Name="Render" DisplayName="ライフゲート" Tile="Tiles2/sw_lifegate_w.bmp" ColorString="&amp;C" TileColor="&amp;W" DetailColor="c" RenderString="234" />
-    <part Name="Description" Short="緑青は、巨大な青銅のドアを海の泡とサンゴの大きな棚に変えた。生命の劇場が高浮き彫りでパネルに描かれている。ヤシの葉がピラミッドを星条旗の空に持ち上げ、水がオイノコエの唇に注がれる。恋人たちはフリーズをくびきで越え、ヤギはコーニスで銅の反芻を噛む。" />
+    <part Name="Description" Short="緑青は、巨大な青銅のドアを海の泡とサンゴの大きな棚に変えた。生命の劇場が高浮き彫りでパネルに描かれている。ヤシの葉がピラミッドを星散る空に持ち上げ、水がオイノコエの唇に注がれる。恋人たちはフリーズをくびきで越え、ヤギはコーニスで銅の反芻を噛む。" />
     <part Name="Door" Locked="true" ClosedTile="Tiles2/sw_lifegate_w.bmp" OpenTile="Tiles2/sw_tombgate_w_open.bmp" />
     <part Name="LifeGate" />
     <stat Name="Hitpoints" sValue="10000" />
@@ -1956,7 +1956,7 @@
 
   <object Name="Life Gate E" Inherits="Double Door E" Replace="true">
     <part Name="Render" DisplayName="ライフゲート" Tile="Tiles2/sw_lifegate_e.bmp" ColorString="&amp;C" TileColor="&amp;W" DetailColor="c" RenderString="234" />
-    <part Name="Description" Short="緑青は、巨大な青銅のドアを海の泡とサンゴの大きな棚に変えた。生命の劇場が高浮き彫りでパネルに描かれている。ヤシの葉がピラミッドを星条旗の空に持ち上げ、水がオイノコエの唇に注がれる。恋人たちはフリーズをくびきで越え、ヤギはコーニスで銅の反芻を噛む。" />
+    <part Name="Description" Short="緑青は、巨大な青銅のドアを海の泡とサンゴの大きな棚に変えた。生命の劇場が高浮き彫りでパネルに描かれている。ヤシの葉がピラミッドを星散る空に持ち上げ、水がオイノコエの唇に注がれる。恋人たちはフリーズをくびきで越え、ヤギはコーニスで銅の反芻を噛む。" />
     <part Name="Door" Locked="true" ClosedTile="Tiles2/sw_lifegate_e.bmp" OpenTile="Tiles2/sw_tombgate_e_open.bmp" />
     <part Name="LifeGate" />
     <stat Name="Hitpoints" sValue="10000" />
@@ -3916,7 +3916,7 @@
 
   <object Name="Kline" Inherits="BaseChair" Replace="true">
     <part Name="Render" DisplayName="クライン" ColorString="&amp;w" DetailColor="W" Tile="Items/sw_cot.bmp" />
-    <part Name="Description" Short="太陽で焼いたモグラーイーとスピンドルの日陰との境界であるライメンのコンビヴィアでは、サイダーの混練、ホログラフィー、そしてクリナイの直角な配置が行われる。" />
+    <part Name="Description" Short="太陽で焼いたモグラヤイとスピンドルの日陰との境界であるライメンのコンビヴィアでは、サイダーの混練、ホログラフィー、そしてクリナイの直角な配置が行われる。" />
     <part Name="Bed" NoSmartUse="true" />
     <part Name="Chair" NoSmartUse="true" />
     <tag Name="Tier" Value="0" />
@@ -4138,7 +4138,7 @@
   <object Name="Gravchair" Inherits="BaseChair" Replace="true">
     <part Name="Render" DisplayName="{{K|grav}} 椅子" ColorString="&amp;C" DetailColor="c" Tile="Items/sw_chair_grav.bmp" />
     <part Name="Physics" Organic="false" Weight="80" />
-    <part Name="Description" Short="熱旋盤で滑らかにされたプラスチックは、完璧なボールがそれ自身の周りの時空をどのように歪ませるかについてのイーターの直観を呼び起こすデザインに練り込まれました。" />
+    <part Name="Description" Short="熱旋盤で滑らかにされたプラスチックは、完璧なボールがそれ自身の周りの時空をどのように歪ませるかについての喰らう者の直観を呼び起こすデザインに練り込まれました。" />
     <part Name="Chair" Level="2" LevelWhenDisabled="-2" IsEMPSensitive="true" IsTechScannable="true" NameForStatus="ContragravSystems" />
     <part Name="Capacitor" Charge="5" MaxCharge="5" ChargeDisplayStyle="" />
     <part Name="ZeroPointEnergyCollector" ChargeRate="5" />
@@ -4173,7 +4173,7 @@
 
   <object Name="Ornate Bench" Inherits="Ornate Chair" Replace="true">
     <part Name="Render" DisplayName="華やかなベンチ" ColorString="&amp;C" TileColor="&amp;y" DetailColor="C" Tile="Items/sw_chair_ornate_1.bmp" />
-    <part Name="Description" Short="ギルドの家具職人たちは、イーターの太陽の下、明るい作業室で共謀し、二人の熱烈な恋人たちの正確なサイズにクッションを伸ばし、心地よいメール ダイヤモンドを直角に設置した。かぎ爪とボールのような足が動きを連想させる。" />
+    <part Name="Description" Short="ギルドの家具職人たちは、喰らう者の太陽の下、明るい作業室で共謀し、二人の熱烈な恋人たちの正確なサイズにクッションを伸ばし、心地よいメール ダイヤモンドを直角に設置した。かぎ爪とボールのような足が動きを連想させる。" />
   </object>
 
 
@@ -4467,7 +4467,7 @@
 
   <object Name="Reliquary" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="聖遺物箱" RenderString="254" Tile="Items/sw_reliquary.bmp" ColorString="&amp;W" TileColor="&amp;c" DetailColor="W" />
-    <part Name="Description" Short="過去のほこりっぽい片隅で、名もなき労働者たちが縞模様の大理石に釉薬をかけて金を象嵌し、肩を落としたイーターの家宝や副葬品を保管していました。" />
+    <part Name="Description" Short="過去のほこりっぽい片隅で、名もなき労働者たちが縞模様の大理石に釉薬をかけて金を象嵌し、肩を落とした喰らう者の家宝や副葬品を保管していました。" />
     <part Name="Container" />
     <part Name="Inventory" />
     <part Name="Physics" Weight="300" />
@@ -4504,7 +4504,7 @@
 
   <object Name="Recoming Reliquary" Inherits="Reliquary" Replace="true">
     <part Name="Render" DisplayName="戻ってくる聖遺物箱" RenderString="254" Tile="Items/sw_reliquary.bmp" ColorString="&amp;m" TileColor="&amp;Y" DetailColor="m" />
-    <part Name="Description" Short="過去のほこりっぽい片隅で、名もなき労働者たちが縞模様の大理石に釉薬をかけ、アメジストをはめ込んで、帰還したハイイーターの地上の装備を収納していました。" />
+    <part Name="Description" Short="過去のほこりっぽい片隅で、名もなき労働者たちが縞模様の大理石に釉薬をかけ、アメジストをはめ込んで、帰還したハイ喰らう者の地上の装備を収納していました。" />
     <part Name="Container" />
     <part Name="Inventory" />
     <part Name="Physics" Weight="300" />
@@ -4528,7 +4528,7 @@
 
   <object Name="Woven Basket" Inherits="Furniture" Replace="true">
     <part Name="Render" DisplayName="編みかご" ColorString="&amp;w" DetailColor="w" RenderString="229" Tile="Items/sw_basket.bmp" Occluding="false" RenderIfDark="true" />
-    <part Name="Description" Short="マーシュリードは縦糸と横糸で手交雑され、束やその他の乾物用の容器になりました。" />
+    <part Name="Description" Short="マーシュリードは縦糸と横糸で手編みされ、束やその他の乾物用の容器になりました。" />
     <tag Name="EmptyTile" Value="Items/sw_basket.bmp" />
     <tag Name="FullTile" Value="Items/sw_basket.bmp" />
     <part Name="Physics" Weight="3" Organic="true" Takeable="false" />
@@ -5225,7 +5225,7 @@
     <tag Name="EmptyTile" Value="Items/sw_table_ornate_1.bmp" />
     <tag Name="FullTile" Value="Items/sw_table_ornate_1.bmp" />
     <tag Name="FullDetailColor" Value="*delete" />
-    <part Name="Description" Short="贅沢な脚のエッチングされたクロムは、かぎ爪とボールの足に向かって先細りになっており、大理石の表面では幾何学的な欠陥が削り取られ、鉄のバケツに投げ込まれており、今もどこかに残っているかもしれません。イーターたちはここで話し合い、計画を立てました。" />
+    <part Name="Description" Short="贅沢な脚のエッチングされたクロムは、かぎ爪とボールの足に向かって先細りになっており、大理石の表面では幾何学的な欠陥が削り取られ、鉄のバケツに投げ込まれており、今もどこかに残っているかもしれません。喰らう者たちはここで話し合い、計画を立てました。" />
     <part Name="Metal" />
   </object>
 
@@ -5388,7 +5388,7 @@
 
   <object Name="Ornate Potted Plant 1" Inherits="Plant" Replace="true">
     <part Name="Render" DisplayName="華やかな鉢に植える" RenderString="231" ColorString="&amp;g" Tile="Items/sw_pottedplant_ornate_1.bmp" TileColor="&amp;g" DetailColor="C" Occluding="false" />
-    <part Name="Description" Short="クロムの切り込みが入った古代の大釜から、スリンクグリーンの植物の葉が広がっている。彼らはロームに囲まれたいとこたちと同じように生き、呼吸しているが、彼らの生体データはアマランチンの種子とつなぎ合わされていた。彼らは周囲のイーターが分解しても死ぬことはない。" />
+    <part Name="Description" Short="クロムの切り込みが入った古代の大釜から、スリンクグリーンの植物の葉が広がっている。彼らはロームに囲まれたいとこたちと同じように生き、呼吸しているが、彼らの生体データはアマランチンの種子とつなぎ合わされていた。彼らは周囲の喰らう者が分解しても死ぬことはない。" />
     <stag Name="Luxury" />
     <stag Name="Beauty" />
   </object>
@@ -5396,7 +5396,7 @@
 
   <object Name="Ornate Potted Plant 2" Inherits="Plant" Replace="true">
     <part Name="Render" DisplayName="華やかな鉢に植える" RenderString="231" ColorString="&amp;g" Tile="Items/sw_pottedplant_ornate_2.bmp" TileColor="&amp;g" DetailColor="C" Occluding="false" />
-    <part Name="Description" Short="クロムの切り込みが入った古代の大釜から、スリンクグリーンの植物の葉が広がっている。彼らはロームに囲まれたいとこたちと同じように生き、呼吸しているが、彼らの生体データはアマランチンの種子とつなぎ合わされていた。彼らは周囲のイーターが分解しても死ぬことはない。" />
+    <part Name="Description" Short="クロムの切り込みが入った古代の大釜から、スリンクグリーンの植物の葉が広がっている。彼らはロームに囲まれたいとこたちと同じように生き、呼吸しているが、彼らの生体データはアマランチンの種子とつなぎ合わされていた。彼らは周囲の喰らう者が分解しても死ぬことはない。" />
     <stag Name="Luxury" />
     <stag Name="Beauty" />
   </object>
@@ -5404,7 +5404,7 @@
 
   <object Name="Ornate Potted Plant 3" Inherits="Plant" Replace="true">
     <part Name="Render" DisplayName="華やかな鉢に植える" RenderString="231" ColorString="&amp;g" Tile="Items/sw_pottedplant_ornate_3.bmp" TileColor="&amp;g" DetailColor="C" Occluding="false" />
-    <part Name="Description" Short="クロムの切り込みが入った古代の大釜から、スリンクグリーンの植物の葉が広がっている。彼らはロームに囲まれたいとこたちと同じように生き、呼吸しているが、彼らの生体データはアマランチンの種子とつなぎ合わされていた。彼らは周囲のイーターが分解しても死ぬことはない。" />
+    <part Name="Description" Short="クロムの切り込みが入った古代の大釜から、スリンクグリーンの植物の葉が広がっている。彼らはロームに囲まれたいとこたちと同じように生き、呼吸しているが、彼らの生体データはアマランチンの種子とつなぎ合わされていた。彼らは周囲の喰らう者が分解しても死ぬことはない。" />
     <stag Name="Luxury" />
     <stag Name="Beauty" />
   </object>
@@ -5412,7 +5412,7 @@
 
   <object Name="Ornate Potted Plant 4" Inherits="Plant" Replace="true">
     <part Name="Render" DisplayName="華やかな鉢に植える" RenderString="231" ColorString="&amp;g" Tile="Items/sw_bonsai.bmp" TileColor="&amp;g" DetailColor="C" Occluding="false" />
-    <part Name="Description" Short="クロムの切り込みが入った古代の大釜から、スリンクグリーンの植物の葉が広がっている。彼らはロームに囲まれたいとこたちと同じように生き、呼吸しているが、彼らの生体データはアマランチンの種子とつなぎ合わされていた。彼らは周囲のイーターが分解しても死ぬことはない。" />
+    <part Name="Description" Short="クロムの切り込みが入った古代の大釜から、スリンクグリーンの植物の葉が広がっている。彼らはロームに囲まれたいとこたちと同じように生き、呼吸しているが、彼らの生体データはアマランチンの種子とつなぎ合わされていた。彼らは周囲の喰らう者が分解しても死ぬことはない。" />
     <stag Name="Luxury" />
     <stag Name="Beauty" />
   </object>

@@ -54,7 +54,7 @@
 
 <object Name="BaseEaterGreatMachineShrine" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="大いなる機械の祠" TileColor="&amp;Y" DetailColor="c" />
-    <part Name="Description" Short="大いなる機械に調和する司祭のように大理石喰らいたちが跪き、レバーを引き、消火栓を充填して演算された意志を操り、また操られる。水晶ダイオードの台座が、数十万光年の彼方で沸き立つ地上文化の計器盤を映し出す。" />
+    <part Name="Description" Short="大いなる機械に調和する司祭のように大理石喰らいたちが跪き、レバーを引き、給水弁を充填して演算された意志を操り、また操られる。水晶ダイオードの台座が、数十万光年の彼方で沸き立つ地上文化の計器盤を映し出す。" />
     <part Name="Physics" Weight="10000" FlameTemperature="99999" VaporTemperature="1500" Solid="true" />
     <stat Name="AV" Value="20" />
     <stat Name="Hitpoints" Value="6000" />
@@ -934,14 +934,14 @@
   </object>
   <object Name="StarshipBookshelf W" Inherits="BaseBookshelf" Replace="true">
     <part Name="Render" DisplayName="造り付け本棚" RenderString="178" Tile="Walls2/starship-1-wallbookshelf-w.png" ColorString="&amp;w^k" TileColor="&amp;w^k" DetailColor="W" />
-    <part Name="Description" Short="雨を浴びたベリル世界のオーク板を bulkhead に釘打ちした。足元の座布団から虹色の背表紙が見渡せ、宇宙の果てを繋ぐ読み口となる。" />
+    <part Name="Description" Short="雨を浴びたベリル世界のオーク板を隔壁に釘打ちした。足元の座布団から虹色の背表紙が見渡せ、宇宙の果てを繋ぐ読み口となる。" />
     <part Name="MarkovBookshelf" BookTable="MarkovCorpus_Underground" />
     <tag Name="PaintWith" Value="StarshipGeometricWall" />
     <tag Name="ExcludeFromDynamicEncounters" />
   </object>
   <object Name="StarshipBookshelf E" Inherits="BaseBookshelf" Replace="true">
     <part Name="Render" DisplayName="造り付け本棚" RenderString="178" Tile="Walls2/starship-1-wallbookshelf-e.png" ColorString="&amp;w^k" TileColor="&amp;w^k" DetailColor="W" />
-    <part Name="Description" Short="雨を浴びたベリル世界のオーク板を bulkhead に釘打ちした。足元の座布団から虹色の背表紙が見渡せ、宇宙の果てを繋ぐ読み口となる。" />
+    <part Name="Description" Short="雨を浴びたベリル世界のオーク板を隔壁に釘打ちした。足元の座布団から虹色の背表紙が見渡せ、宇宙の果てを繋ぐ読み口となる。" />
     <part Name="MarkovBookshelf" BookTable="MarkovCorpus_Starship" />
     <tag Name="PaintWith" Value="StarshipGeometricWall" />
     <tag Name="ExcludeFromDynamicEncounters" />

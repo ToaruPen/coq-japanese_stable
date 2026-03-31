@@ -2063,7 +2063,7 @@
         <part Name="SlynthCandidatesReady" />
       </choice>
       <choice ID="Joppa" IfSlynthCandidate="Joppa">ヨッパの村が同胞を家族として迎えてくれると言っている。</choice>
-      <choice ID="Mechanimists" IfSlynthCandidate="Mechanimists">六日のスティルトのメカニミストが、同胞を受け入れてくれるそうだ。</choice>
+      <choice ID="Mechanimists" IfSlynthCandidate="Mechanimists">六日のスティルトのメカニマス教徒が、同胞を受け入れてくれるそうだ。</choice>
       <choice ID="Barathrumites" IfSlynthCandidate="Barathrumites">グリット・ゲートのバラサラム派が、同胞を弟子として迎えてくれる。</choice>
       <choice ID="Kyakukya" IfSlynthCandidate="Kyakukya">キャクキャの村が、私たちを受け入れてくれる。</choice>
       <choice ID="Ezra" IfSlynthCandidate="Ezra">エズラの人々が、私たちと一緒に暮らすと言っている。</choice>
@@ -2106,7 +2106,7 @@
         旅立ちは朝、塩の湿地へ。
       </text>
       <text IfSlynthChosen="Mechanimists">
-        話し合いと熟慮の末、合意に至った。同胞の多くはメカニミストの信仰に入り、モグラヤイの縁のスティルトグラウンズに住まう。
+        話し合いと熟慮の末、合意に至った。同胞の多くはメカニマス教徒の信仰に入り、モグラヤイの縁のスティルトグラウンズに住まう。
 
         旅立ちは朝、六日のスティルトへ。
       </text>
@@ -11765,7 +11765,7 @@
   <conversation ID="Crystals" Replace="true">
     <node ID="Start">
       <text>
-        {{emote||水晶が澄んだ音色で鳴る。}}
+        {{emote|水晶が澄んだ音色で鳴る。}}
       </text>
       <choice GotoID="End">生きて飲め。</choice>
     </node>

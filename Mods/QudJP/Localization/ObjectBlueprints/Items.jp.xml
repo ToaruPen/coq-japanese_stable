@@ -47,7 +47,7 @@
     <tag Name="StartingCybernetic:Consul" />
     <tag Name="StartingCybernetic:Praetorian" />
     <tag Name="StartingCybernetic:Eunuch" />
-    <tag Name="SpecialArcologyText" Value="{{C|[Ibul only]}}" />
+    <tag Name="SpecialArcologyText" Value="{{C|[イブル限定]}}" />
   </object>
   <object Name="ElectromagneticSensor" Inherits="BaseCyberneticsEquipment_1point" Replace="true">
     <part Name="Physics" Weight="0" />
@@ -205,7 +205,7 @@
     <tag Name="StartingCybernetic:Syzygyrior" />
     <tag Name="StartingCybernetic:Horticulturist" />
     <tag Name="CyberneticsOneOnly" />
-    <tag Name="SpecialArcologyText" Value="{{G|[Ekuemekiyye only]}}" />
+    <tag Name="SpecialArcologyText" Value="{{G|[エクエメキーエ限定]}}" />
   </object>
   <object Name="AirCurrentMicrosensor" Inherits="BaseCyberneticsEquipment_2point" Replace="true">
     <part Name="Physics" Weight="0" />
@@ -217,7 +217,7 @@
     <tag Name="StartingCybernetic:Child of the Wheel" />
     <tag Name="StartingCybernetic:Child of the Hearth" />
     <tag Name="StartingCybernetic:Fuming God-Child" />
-    <tag Name="SpecialArcologyText" Value="{{R|[Yawningmoon only]}}" />
+    <tag Name="SpecialArcologyText" Value="{{R|[ヤウニングムーン限定]}}" />
   </object>
   <object Name="PneumaticPistons" Inherits="BaseCyberneticsEquipment_2point" Replace="true">
     <part Name="Physics" Weight="8" />
@@ -460,17 +460,17 @@
   </object>
   <object Name="FulleriteHandBones" Inherits="BaseCyberneticsEquipment_4point" Replace="true">
     <part Name="Physics" Weight="18" />
-    <part Name="Description" Short="フレライト合金の骨格を手に移植し、怪力を常時発揮する。" />
-    <part Name="Render" DisplayName="{{Y|フレライト手骨}}" Tile="Items/sw_carbidehand.bmp" TileColor="&amp;K" DetailColor="r" />
+    <part Name="Description" Short="フラーレン合金の骨格を手に移植し、怪力を常時発揮する。" />
+    <part Name="Render" DisplayName="{{Y|フラーレン手骨}}" Tile="Items/sw_carbidehand.bmp" TileColor="&amp;K" DetailColor="r" />
     <part Name="CyberneticsBaseItem" Slots="Hands" Cost="4" BehaviorDescription="+4 STR" />
     <part Name="CyberneticsFistReplacement" FistObject="FulleriteFist" />
     <part Name="ItemElements" Elements="might::5" />
   </object>
   <object Name="FulleriteFist" Inherits="BaseCudgel" Replace="true">
-    <part Name="Render" DisplayName="{{Y|フレライト拳}}" Tile="Items/sw_carbidehand.bmp" ColorString="&amp;K" DetailColor="r" />
+    <part Name="Render" DisplayName="{{Y|フラーレン拳}}" Tile="Items/sw_carbidehand.bmp" ColorString="&amp;K" DetailColor="r" />
     <part Name="MeleeWeapon" MaxStrengthBonus="999" BaseDamage="2d4+1" Skill="Cudgel" Stat="Strength" />
     <part Name="Commerce" Value="0" />
-    <part Name="Description" Short="拳をフレライト製の塊に置換し、殴打の破壊力を最大まで引き上げる。" />
+    <part Name="Description" Short="拳をフラーレン製の塊に置換し、殴打の破壊力を最大まで引き上げる。" />
     <part Name="Metal" />
     <tag Name="Tier" Value="4" />
     <part Name="Physics" Weight="0" IsReal="false" />
@@ -2457,7 +2457,7 @@
     <tag Name="EquipSound" Value="Sounds/Equip/sfx_equip_weapon_bludgeon_glass" />
   </object>
   <object Name="Cudgel8" Inherits="BaseCudgel" Replace="true">
-    <part Name="Render" DisplayName="{{zetachrome|ジータクロームのハンマー}}" Tile="Items/sw_cudgel_8.bmp" ColorString="&amp;m" DetailColor="y" />
+    <part Name="Render" DisplayName="{{zetachrome|ゼータクロームのハンマー}}" Tile="Items/sw_cudgel_8.bmp" ColorString="&amp;m" DetailColor="y" />
     <part Name="MeleeWeapon" MaxStrengthBonus="9" BaseDamage="3d4+1" Skill="Cudgel" Stat="Strength" />
     <part Name="Commerce" Value="1500" />
     <part Name="Description" Short="クォーク・グルーオンのプラズマが虚空峰で急冷して消えたが、球塊の一部は六次元の時空の折れ目に囚われた。そこを数十億年も滑り続けたそれらを誰かが見つけ、抽出して冷やす機械を築き、恒星炉で再び熱した。" />
@@ -2471,7 +2471,7 @@
     <stag Name="Historical" />
   </object>
   <object Name="Cudgel8th" Inherits="BaseCudgel" Replace="true">
-    <part Name="Render" DisplayName="{{zetachrome|ジータクロームのウォーハンマー}}" Tile="Items/sw_cudgel_9.bmp" ColorString="&amp;m" DetailColor="y" />
+    <part Name="Render" DisplayName="{{zetachrome|ゼータクロームのウォーハンマー}}" Tile="Items/sw_cudgel_9.bmp" ColorString="&amp;m" DetailColor="y" />
     <part Name="MeleeWeapon" PenBonus="1" MaxStrengthBonus="9" BaseDamage="4d6" Skill="Cudgel" Stat="Strength" />
     <part Name="Commerce" Value="1500" />
     <part Name="Description" Short="クォーク・グルーオンのプラズマが虚空峰で急冷して消えたが、球塊の一部は六次元の時空の折れ目に囚われた。そこを数十億年も滑り続けたそれらを誰かが見つけ、抽出して冷やす機械を築き、恒星炉で再び熱した。" />
@@ -2723,7 +2723,7 @@
     <tag Name="Tier" Value="7" />
   </object>
   <object Name="Dagger8" Inherits="BaseDagger" Replace="true">
-    <part Name="Render" DisplayName="{{zetachrome|ジータクロームの短剣}}" Tile="Items/sw_shortblade_6.bmp" ColorString="&amp;m" DetailColor="y" />
+    <part Name="Render" DisplayName="{{zetachrome|ゼータクロームの短剣}}" Tile="Items/sw_shortblade_6.bmp" ColorString="&amp;m" DetailColor="y" />
     <part Name="MeleeWeapon" MaxStrengthBonus="9" BaseDamage="1d12+2" />
     <part Name="ThrownWeapon" Penetration="9" Damage="1d12+2" Attributes="ShortBlades" />
     <part Name="Commerce" Value="1390" />
@@ -3014,7 +3014,7 @@
     <tag Name="EquipSound" Value="Sounds/Equip/sfx_equip_weapon_axe_glass" />
   </object>
   <object Name="Battle Axe8" Inherits="BaseAxe" Replace="true">
-    <part Name="Render" DisplayName="{{zetachrome|ジータクロームの戦斧}}" Tile="Items/sw_axe_7.bmp" ColorString="&amp;m" DetailColor="y" />
+    <part Name="Render" DisplayName="{{zetachrome|ゼータクロームの戦斧}}" Tile="Items/sw_axe_7.bmp" ColorString="&amp;m" DetailColor="y" />
     <part Name="MeleeWeapon" MaxStrengthBonus="9" BaseDamage="1d8+4" />
     <part Name="Commerce" Value="1500" />
     <part Name="Description" Short="クォーク・グルーオンのプラズマが虚空峰で急冷して消えたが、球塊の一部は六次元の時空の折れ目に囚われた。そこを数十億年も滑り続けたそれらを誰かが見つけ、抽出して冷やす機械を築き、恒星炉で再び熱した。" />
@@ -3028,7 +3028,7 @@
     <stag Name="Historical" />
   </object>
   <object Name="Battle Axe8th" Inherits="BaseAxe" Replace="true">
-    <part Name="Render" DisplayName="{{zetachrome|ジータクロームのハルバード}}" Tile="Items/sw_axe_8.bmp" ColorString="&amp;m" DetailColor="y" />
+    <part Name="Render" DisplayName="{{zetachrome|ゼータクロームのハルバード}}" Tile="Items/sw_axe_8.bmp" ColorString="&amp;m" DetailColor="y" />
     <part Name="MeleeWeapon" PenBonus="1" MaxStrengthBonus="9" BaseDamage="1d8+6" />
     <part Name="Commerce" Value="1500" />
     <part Name="Description" Short="クォーク・グルーオンのプラズマが虚空峰で急冷して消えたが、球塊の一部は六次元の時空の折れ目に囚われた。そこを数十億年も滑り続けたそれらを誰かが見つけ、抽出して冷やす機械を築き、恒星炉で再び熱した。" />
@@ -3267,7 +3267,7 @@
     <stag Name="Historical" />
   </object>
   <object Name="Long Sword8" Inherits="BaseLongBlade" Replace="true">
-    <part Name="Render" DisplayName="{{zetachrome|ジータクロームの長剣}}" Tile="items/sw_longblade_7.bmp" ColorString="&amp;m" DetailColor="y" />
+    <part Name="Render" DisplayName="{{zetachrome|ゼータクロームの長剣}}" Tile="items/sw_longblade_7.bmp" ColorString="&amp;m" DetailColor="y" />
     <part Name="MeleeWeapon" MaxStrengthBonus="9" BaseDamage="2d8" Skill="LongBlades" />
     <part Name="Commerce" Value="1500" />
     <part Name="Description" Short="クォーク・グルーオンのプラズマが虚空峰で急冷して消えたが、球塊の一部は六次元の時空の折れ目に囚われた。そこを数十億年も滑り続けたそれらを誰かが見つけ、抽出して冷やす機械を築き、恒星炉で再び熱した。" />
@@ -3282,7 +3282,7 @@
     <stag Name="Historical" />
   </object>
   <object Name="Long Sword8th" Inherits="BaseLongBlade" Replace="true">
-    <part Name="Render" DisplayName="両手用{{zetachrome|ジータクロームの長剣}}" Tile="items/sw_longblade_8.bmp" ColorString="&amp;m" DetailColor="y" />
+    <part Name="Render" DisplayName="両手用{{zetachrome|ゼータクロームの長剣}}" Tile="items/sw_longblade_8.bmp" ColorString="&amp;m" DetailColor="y" />
     <part Name="MeleeWeapon" PenBonus="1" MaxStrengthBonus="9" BaseDamage="2d12" Skill="LongBlades" />
     <part Name="Commerce" Value="1500" />
     <part Name="Description" Short="クォーク・グルーオンのプラズマが虚空峰で急冷して消えたが、球塊の一部は六次元の時空の折れ目に囚われた。そこを数十億年も滑り続けたそれらを誰かが見つけ、抽出して冷やす機械を築き、恒星炉で再び熱した。" />
@@ -4174,15 +4174,15 @@
     <tag Name="ProjectileVFXConfiguration" Value="duration::0.25;;shaftColor::#b1c9c3;;headColor::#00c420;;trailColor::#808080" />
   </object>
   <object Name="Zetachrome Arrow" Inherits="BaseArrow" Replace="true">
-    <part Name="Render" DisplayName="{{zetachrome|ジータクロームの矢}}" ColorString="&amp;m" />
+    <part Name="Render" DisplayName="{{zetachrome|ゼータクロームの矢}}" ColorString="&amp;m" />
     <part Name="AmmoArrow" ProjectileObject="ProjectileZetachromeArrow" />
-    <part Name="Description" Short="鳥の羽根で羽根飾りをした細いシャフトに、ジータクロームの穂先を冠している。" />
+    <part Name="Description" Short="鳥の羽根で羽根飾りをした細いシャフトに、ゼータクロームの穂先を冠している。" />
     <part Name="MissileStatusColor" Color="m" />
     <part Name="Commerce" Value="2" />
     <part Name="Zetachrome" />
   </object>
   <object Name="ProjectileZetachromeArrow" Inherits="BaseArrowProjectile" Replace="true">
-    <part Name="Render" DisplayName="{{zetachrome|ジータクロームの矢}}" ColorString="&amp;m" />
+    <part Name="Render" DisplayName="{{zetachrome|ゼータクロームの矢}}" ColorString="&amp;m" />
     <part Name="Projectile" StrengthPenetration="9" BaseDamage="1d4+6" ColorString="&amp;m" />
     <tag Name="ProjectileVFX" Value="MissileWeaponsEffects/arrow" />
     <tag Name="ProjectileVFXConfiguration" Value="duration::0.25;;shaftColor::#b1c9c3;;headColor::#b154cf;;trailColor::#808080" />
@@ -5262,7 +5262,9 @@
   <object Name="SunderGrenade1" Inherits="Grenade" Replace="true">
     <part Name="Render" DisplayName="{{resonance|共振}}グレネード mk I" Tile="Items/sw_grenade_mki.bmp" ColorString="&amp;r" />
     <part Name="SunderGrenade" Radius="3" Level="2" />
-    <part Name="Description" Short="引き輪付きのレバーで鋳鉄の球体を挟み込んである。特有のパチパチという唸りを放つ。            &amp;C構造物に2d100+20ダメージ。           &amp;C非構造物に2d10+4ダメージ。" />
+    <part Name="Description" Short="引き輪付きのレバーで鋳鉄の球体を挟み込んである。特有のパチパチという唸りを放つ。
+          {{C|構造物に2d100+20ダメージ。}}
+          {{C|非構造物に2d10+4ダメージ。}}" />
     <part Name="MissileStatusColor" Color="r" />
     <tag Name="Mark" Value="1" />
     <tag Name="Tier" Value="2" />
@@ -5271,7 +5273,9 @@
   <object Name="SunderGrenade2" Inherits="Grenade" Replace="true">
     <part Name="Render" DisplayName="{{resonance|共振}}グレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;r" />
     <part Name="SunderGrenade" Radius="3" Level="4" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。特有のパチパチという唸りを放つ。            &amp;C構造物に4d100+20ダメージ。           &amp;C非構造物に4d10+8ダメージ。" />
+    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。特有のパチパチという唸りを放つ。
+          {{C|構造物に4d100+20ダメージ。}}
+          {{C|非構造物に4d10+8ダメージ。}}" />
     <part Name="MissileStatusColor" Color="r" />
     <part Name="TinkerItem" Bits="001" />
     <tag Name="Mark" Value="2" />
@@ -5281,7 +5285,9 @@
   <object Name="SunderGrenade3" Inherits="Grenade" Replace="true">
     <part Name="Render" DisplayName="{{resonance|共振}}グレネード mk III" Tile="Items/sw_grenade_mkiii.bmp" ColorString="&amp;r" />
     <part Name="SunderGrenade" Radius="3" Level="6" />
-    <part Name="Description" Short="厚い金属ジャケットが炸薬を包み、クイックリリースのレバーで締め付けられている。特有のパチパチという唸りを放つ。            &amp;C構造物に6d100+20ダメージ。           &amp;C非構造物に6d10+12ダメージ。" />
+    <part Name="Description" Short="厚い金属ジャケットが炸薬を包み、クイックリリースのレバーで締め付けられている。特有のパチパチという唸りを放つ。
+          {{C|構造物に6d100+20ダメージ。}}
+          {{C|非構造物に6d10+12ダメージ。}}" />
     <part Name="MissileStatusColor" Color="r" />
     <part Name="TinkerItem" Bits="002" />
     <tag Name="Mark" Value="3" />
@@ -6264,7 +6270,7 @@
     <tag Name="Role" Value="Uncommon" />
   </object>
   <object Name="Zetachrome Lune" Inherits="BaseArmor" Replace="true">
-    <part Name="Render" DisplayName="{{zetachrome|ゼタクロム}}のルーン" Tile="Items/sw_chest_hightier2.bmp" ColorString="&amp;m" TileColor="&amp;C" DetailColor="m" RenderString="]" />
+    <part Name="Render" DisplayName="{{zetachrome|ゼータクローム}}のルーン" Tile="Items/sw_chest_hightier2.bmp" ColorString="&amp;m" TileColor="&amp;C" DetailColor="m" RenderString="]" />
     <part Name="Description" Short="クォーク・グルーオンプラズマは初期宇宙の虚無峰で急冷され消滅したが、一部は時空の6次元の折れ目に捕らわれた。そこですべり流に乗って何十億年も漂い、やがてそれを見つけた者たちが抽出と冷却の機械を作り、自らの恒星炉で再加熱した。" />
     <part Name="Armor" AV="8" DV="-2" Heat="11" Cold="11" Acid="11" Elec="11" WornOn="Body" />
     <part Name="Physics" Weight="35" />
@@ -7399,7 +7405,7 @@
 <object Name="Hologram Bracelet" Inherits="BaseUtilityBracelet" Replace="true">
     <part Name="Render" DisplayName="{{hologram|ホログラム}}ブレスレット" RenderString="]" ColorString="&amp;B" DetailColor="b" />
     <part Name="Commerce" Value="125" />
-    <part Name="Description" Short="バングルの留め金にまばゆいコバルトのボタンが付いている。&#10;「=name= 本人だと思うか？ ああ、本物さ。」" />
+    <part Name="Description" Short="バングルの留め金にまばゆいコバルトのボタンが付いている。&#xA;「=name= 本人だと思うか？ ああ、本物さ。」" />
     <part Name="Physics" Weight="1" />
     <part Name="DecoyHologramEmitter" ChargeUse="5" />
     <part Name="EnergyCellSocket" SlotType="EnergyCell" />
@@ -7946,7 +7952,7 @@
     <part Name="Armor" AV="2" DV="-3" WornOn="Feet" />
     <part Name="Render" DisplayName="グリースドスチールブーツ" RenderString="]" ColorString="&amp;Y" DetailColor="K" Tile="Items/sw_metal_boots.bmp" />
     <part Name="Commerce" Value="100" />
-    <part Name="Description" Short="こじ開け痕の残る鋼の帯をひだ状の猪革ブーツへ鋲留めし、底にはEatersの墓所の油圧プレスから拭い取った滑走蝋を塗り込めてある。" />
+    <part Name="Description" Short="こじ開け痕の残る鋼の帯をひだ状の猪革ブーツへ鋲留めし、底には喰らう者の墓所の油圧プレスから拭い取った滑走蝋を塗り込めてある。" />
     <part Name="Physics" Weight="12" />
     <tag Name="EquipSound" Value="sfx_equip_armor_leather" />
     <tag Name="Tier" Value="4" />
@@ -9291,7 +9297,7 @@
 
 <object Name="BaseTierFace1" Inherits="BaseTierFace" Replace="true">
     <part Name="Render" Tile="Items/sw_veil.bmp" ColorString="&amp;Y" DetailColor="r" />
-    <part Name="Description" Short="イーターたちが自分の顔に縫い付ける術を失ってなお、仮面は生活の中で聖なる地位を保ち続けた。この仮面も例外ではない。" />
+    <part Name="Description" Short="喰らう者たちが自分の顔に縫い付ける術を失ってなお、仮面は生活の中で聖なる地位を保ち続けた。この仮面も例外ではない。" />
     <part Name="Physics" Weight="2" />
   </object>
 
@@ -9304,7 +9310,7 @@
 
 <object Name="BaseTierHands1_AV" Inherits="BaseTierHands" Replace="true">
     <part Name="Render" ColorString="&amp;w" DetailColor="r" Tile="Items/sw_leather_gloves.bmp" />
-    <part Name="Description" Short="初期のスルタン朝ではパーチ魚の革を魚働きが身につけていたが、*スルタン*の時代には紳士淑女の嗜みとなった。この一組も精緻な仕立てだ。" />
+    <part Name="Description" Short="初期のスルタン朝ではパーチ魚の革を魚働きが身につけていたが、*sultan*の時代には紳士淑女の嗜みとなった。この一組も精緻な仕立てだ。" />
     <part Name="Armor" AV="1" DV="0" WornOn="Hands" />
     <part Name="Physics" Weight="3" />
     <tag Name="Tier" Value="1" />
@@ -9318,7 +9324,7 @@
 
 <object Name="BaseTierFeet1" Inherits="BaseTierFeet" Replace="true">
     <part Name="Render" ColorString="&amp;w" DetailColor="y" Tile="Items/sw_leather_boots.bmp" />
-    <part Name="Description" Short="最上の仕立てによるパーチ魚革のブーツ。古いイーターの墳墓から盗まれたか、そう見えるよう靴職人がこしらえたかのどちらかだ。" />
+    <part Name="Description" Short="最上の仕立てによるパーチ魚革のブーツ。古い喰らう者の墳墓から盗まれたか、そう見えるよう靴職人がこしらえたかのどちらかだ。" />
     <part Name="Armor" AV="1" DV="0" WornOn="Feet" />
     <part Name="Physics" Weight="3" />
     <tag Name="Tier" Value="1" />
@@ -9348,7 +9354,7 @@
 
 <object Name="BaseTierBody2_DV" Inherits="BaseTierBody" Replace="true">
     <part Name="Render" Tile="Items/sw_chainmail.bmp" ColorString="&amp;y" DetailColor="Y" />
-    <part Name="Description" Short="初期のイーターは遺伝子を改造してウルフィラメントの髪を生やしていた。やがて技術が失われると、墓荒らしがその屍頭皮から刈り取るようになった。*スルタン*の頃にはそれが晴れ着と呼ばれ、このベストもその糸で編まれている。" />
+    <part Name="Description" Short="初期の喰らう者は遺伝子を改造してウルフィラメントの髪を生やしていた。やがて技術が失われると、墓荒らしがその屍頭皮から刈り取るようになった。*sultan*の頃にはそれが晴れ着と呼ばれ、このベストもその糸で編まれている。" />
     <part Name="Armor" AV="3" DV="-1" WornOn="Body" />
     <part Name="Physics" Weight="25" />
     <part Name="Metal" />
@@ -9357,7 +9363,7 @@
 
 <object Name="BaseTierHead2_AV" Inherits="BaseTierHead" Replace="true">
     <part Name="Render" ColorString="&amp;Y" DetailColor="y" Tile="Items/sw_knollworm_skull.bmp" />
-    <part Name="Description" Short="初期のイーターは美観のため頭蓋を肥大させていた。*スルタン*の時代には高塔の住人がそれらを兜として被るようになり、この一品も精巧な装飾で飾られている。" />
+    <part Name="Description" Short="初期の喰らう者は美観のため頭蓋を肥大させていた。*sultan*の時代には高塔の住人がそれらを兜として被るようになり、この一品も精巧な装飾で飾られている。" />
     <part Name="Armor" AV="1" DV="0" WornOn="Head" />
     <part Name="Physics" Weight="3" />
     <tag Name="Tier" Value="2" />
@@ -9365,7 +9371,7 @@
 
 <object Name="BaseTierHead2_DV" Inherits="BaseTierHead" Replace="true">
     <part Name="Render" Tile="Items/sw_cap.bmp" ColorString="&amp;Y" DetailColor="y" />
-    <part Name="Description" Short="初期のイーターは遺伝子を改造してウルフィラメントの髪を生やしていた。やがて技術が失われると、墓荒らしがその屍頭皮から刈り取るようになった。*スルタン*の頃にはそれが晴れ着と呼ばれ、この帽子もその糸で編まれている。" />
+    <part Name="Description" Short="初期の喰らう者は遺伝子を改造してウルフィラメントの髪を生やしていた。やがて技術が失われると、墓荒らしがその屍頭皮から刈り取るようになった。*sultan*の頃にはそれが晴れ着と呼ばれ、この帽子もその糸で編まれている。" />
     <part Name="Armor" AV="0" DV="1" WornOn="Head" />
     <part Name="Physics" Weight="3" />
     <tag Name="Tier" Value="2" />
@@ -9373,7 +9379,7 @@
 
 <object Name="BaseTierFace2" Inherits="BaseTierFace" Replace="true">
     <part Name="Render" Tile="Items/sw_veil.bmp" ColorString="&amp;Y" DetailColor="r" />
-    <part Name="Description" Short="イーターたちが自分の顔に縫い付ける術を失ってなお、仮面は生活の中で聖なる地位を保ち続けた。この仮面も例外ではない。" />
+    <part Name="Description" Short="喰らう者たちが自分の顔に縫い付ける術を失ってなお、仮面は生活の中で聖なる地位を保ち続けた。この仮面も例外ではない。" />
     <part Name="Armor" AV="0" DV="1" WornOn="Face" />
     <part Name="Physics" Weight="2" />
     <tag Name="Mods" Value="None" />
@@ -9381,7 +9387,7 @@
 
 <object Name="BaseTierBack2" Inherits="BaseTierBack" Replace="true">
     <part Name="Render" Tile="items/sw_cloak.bmp" ColorString="&amp;w" DetailColor="w" />
-    <part Name="Description" Short="この外套は、初期のEatersの墓所から盗み取ったウルフィラメントの髪の束を編んで仕立てた。" />
+    <part Name="Description" Short="この外套は、初期の喰らう者の墓所から盗み取ったウルフィラメントの髪の束を編んで仕立てた。" />
     <part Name="Armor" AV="0" DV="1" WornOn="Back" />
     <part Name="Physics" Weight="3" />
     <tag Name="Tier" Value="2" />
@@ -9389,7 +9395,7 @@
 
 <object Name="BaseTierHands2_AV" Inherits="BaseTierHands" Replace="true">
     <part Name="Render" ColorString="&amp;w" DetailColor="y" Tile="Items/sw_leather_gloves.bmp" />
-    <part Name="Description" Short="初期のスルタン朝ではパーチ魚の革を魚働きが身につけていたが、*スルタン*の時代には紳士淑女の嗜みとなった。この一組も精緻な仕立てだ。" />
+    <part Name="Description" Short="初期のスルタン朝ではパーチ魚の革を魚働きが身につけていたが、*sultan*の時代には紳士淑女の嗜みとなった。この一組も精緻な仕立てだ。" />
     <part Name="Armor" AV="1" DV="0" WornOn="Hands" />
     <part Name="Physics" Weight="3" />
     <tag Name="Tier" Value="2" />
@@ -9404,7 +9410,7 @@
 
 <object Name="BaseTierFeet2" Inherits="BaseTierFeet" Replace="true">
     <part Name="Render" ColorString="&amp;w" DetailColor="y" Tile="Items/sw_leather_boots.bmp" />
-    <part Name="Description" Short="最上の仕立てによるパーチ魚革のブーツ。古いイーターの墳墓から盗まれたか、そう見えるよう靴職人がこしらえたかのどちらかだ。" />
+    <part Name="Description" Short="最上の仕立てによるパーチ魚革のブーツ。古い喰らう者の墳墓から盗まれたか、そう見えるよう靴職人がこしらえたかのどちらかだ。" />
     <part Name="Armor" AV="1" DV="0" WornOn="Feet" />
     <part Name="Physics" Weight="3" />
     <tag Name="Tier" Value="2" />
@@ -9427,7 +9433,7 @@
 
 <object Name="BaseTierBody3_AV" Inherits="BaseTierBody" Replace="true">
     <part Name="Render" ColorString="&amp;y" DetailColor="Y" Tile="Items/sw_plate_mail.bmp" />
-    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*スルタン*の時代にはそのスラグが採掘され、クリスティール胴着のガラス複製に鋳込まれた。" />
+    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*sultan*の時代にはそのスラグが採掘され、クリスティール胴着のガラス複製に鋳込まれた。" />
     <part Name="Armor" AV="4" DV="-4" WornOn="Body" />
     <part Name="Physics" Weight="60" />
     <part Name="Metal" />
@@ -9444,7 +9450,7 @@
 
 <object Name="BaseTierHead3_AV" Inherits="BaseTierHead" Replace="true">
     <part Name="Render" ColorString="&amp;Y" Tile="Items/sw_metal_helmet.bmp" DetailColor="y" />
-    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*スルタン*の時代にはそのスラグが採掘され、クリスティールのミトラを模したガラス複製に鋳込まれた。" />
+    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*sultan*の時代にはそのスラグが採掘され、クリスティールのミトラを模したガラス複製に鋳込まれた。" />
     <part Name="Armor" AV="2" DV="-3" WornOn="Head" />
     <part Name="Physics" Weight="12" />
     <part Name="Metal" />
@@ -9461,7 +9467,7 @@
 
 <object Name="BaseTierFace3" Inherits="BaseTierFace" Replace="true">
     <part Name="Render" Tile="Items/sw_veil.bmp" ColorString="&amp;Y" DetailColor="r" />
-    <part Name="Description" Short="イーターたちが自分の顔に縫い付ける術を失ってなお、仮面は生活の中で聖なる地位を保ち続けた。この仮面も例外ではない。" />
+    <part Name="Description" Short="喰らう者たちが自分の顔に縫い付ける術を失ってなお、仮面は生活の中で聖なる地位を保ち続けた。この仮面も例外ではない。" />
     <part Name="Armor" AV="0" DV="1" WornOn="Face" />
     <part Name="Physics" Weight="2" />
     <tag Name="Tier" Value="3" />
@@ -9477,7 +9483,7 @@
 
 <object Name="BaseTierHands3_AV" Inherits="BaseTierHands" Replace="true">
     <part Name="Render" ColorString="&amp;y" DetailColor="Y" Tile="Items/sw_metal_gloves.bmp" />
-    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*スルタン*の時代にはそのスラグが採掘され、クリスティールの篭手を模したガラス複製に鋳込まれた。" />
+    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*sultan*の時代にはそのスラグが採掘され、クリスティールの篭手を模したガラス複製に鋳込まれた。" />
     <part Name="Armor" AV="2" DV="-3" WornOn="Hands" />
     <part Name="Physics" Weight="10" />
     <part Name="Metal" />
@@ -9502,7 +9508,7 @@
 
 <object Name="BaseTierFeet3_AV" Inherits="BaseTierFeet" Replace="true">
     <part Name="Render" ColorString="&amp;y" DetailColor="Y" Tile="Items/sw_chain_boots.bmp" />
-    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*スルタン*の時代にはそのスラグが採掘され、クリスティールのソレレット一対を模したガラス複製に鋳込まれた。" />
+    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*sultan*の時代にはそのスラグが採掘され、クリスティールのソレレット一対を模したガラス複製に鋳込まれた。" />
     <part Name="Armor" AV="2" DV="-3" WornOn="Feet" />
     <part Name="Physics" Weight="10" />
     <part Name="Metal" />
@@ -9528,7 +9534,7 @@
 
 <object Name="BaseTierShield3" Inherits="BaseTierShield" Replace="true">
     <part Name="Render" ColorString="&amp;Y" />
-    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*スルタン*の時代にはそのスラグが採掘され、天を衝くアイギスを模した鋼の複製に鋳込まれた。" />
+    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*sultan*の時代にはそのスラグが採掘され、天を衝くアイギスを模した鋼の複製に鋳込まれた。" />
     <part Name="Shield" AV="3" DV="-2" WornOn="Hand" />
     <part Name="Physics" Weight="12" />
     <part Name="Metal" />
@@ -9537,7 +9543,7 @@
 
 <object Name="BaseTierBody4_AV" Inherits="BaseTierBody" Replace="true">
     <part Name="Render" Tile="Items/sw_plate_mail.bmp" ColorString="&amp;y" DetailColor="y" />
-    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*スルタン*の時代にはそのスラグが採掘され、クリスティール胴着のガラス複製に鋳込まれ、さらにストーンガットで補強された。" />
+    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*sultan*の時代にはそのスラグが採掘され、クリスティール胴着のガラス複製に鋳込まれ、さらにストーンガットで補強された。" />
     <part Name="Armor" AV="5" DV="-5" WornOn="Body" />
     <part Name="Physics" Weight="45" />
     <part Name="Metal" />
@@ -9554,7 +9560,7 @@
 
 <object Name="BaseTierHead4_AV" Inherits="BaseTierHead" Replace="true">
     <part Name="Render" ColorString="&amp;y" Tile="Items/sw_metal_helmet.bmp" DetailColor="y" />
-    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*スルタン*の時代にはそのスラグが採掘され、クリスティールのミトラを模したガラス複製に鋳込まれ、ストーンガットで補強された。" />
+    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*sultan*の時代にはそのスラグが採掘され、クリスティールのミトラを模したガラス複製に鋳込まれ、ストーンガットで補強された。" />
     <part Name="Armor" AV="2" DV="-3" WornOn="Head" />
     <part Name="Physics" Weight="12" />
     <part Name="Metal" />
@@ -9571,7 +9577,7 @@
 
 <object Name="BaseTierFace4" Inherits="BaseTierFace" Replace="true">
     <part Name="Render" Tile="Items/sw_veil.bmp" ColorString="&amp;Y" DetailColor="r" />
-    <part Name="Description" Short="イーターたちが自分の顔に縫い付ける術を失ってなお、仮面は生活の中で聖なる地位を保ち続けた。この仮面も例外ではない。" />
+    <part Name="Description" Short="喰らう者たちが自分の顔に縫い付ける術を失ってなお、仮面は生活の中で聖なる地位を保ち続けた。この仮面も例外ではない。" />
     <part Name="Armor" AV="0" DV="2" WornOn="Face" />
     <part Name="Physics" Weight="2" />
     <tag Name="Tier" Value="4" />
@@ -9587,7 +9593,7 @@
 
 <object Name="BaseTierHands4_AV" Inherits="BaseTierHands" Replace="true">
     <part Name="Render" ColorString="&amp;y" DetailColor="y" Tile="Items/sw_metal_gloves.bmp" />
-    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*スルタン*の時代にはそのスラグが採掘され、クリスティールのミトラを模したガラス複製に鋳込まれ、ストーンガットで補強された。" />
+    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*sultan*の時代にはそのスラグが採掘され、クリスティールのミトラを模したガラス複製に鋳込まれ、ストーンガットで補強された。" />
     <part Name="Armor" AV="3" DV="-5" WornOn="Hands" />
     <part Name="Physics" Weight="18" />
     <part Name="Metal" />
@@ -9612,7 +9618,7 @@
 
 <object Name="BaseTierFeet4_AV" Inherits="BaseTierFeet" Replace="true">
     <part Name="Render" ColorString="&amp;y" DetailColor="y" Tile="Items/sw_metal_boots.bmp" />
-    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*スルタン*の時代にはそのスラグが採掘され、クリスティールのソレレット一対を模したガラス複製に鋳込まれ、さらにストーンガットで補強された。" />
+    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*sultan*の時代にはそのスラグが採掘され、クリスティールのソレレット一対を模したガラス複製に鋳込まれ、さらにストーンガットで補強された。" />
     <part Name="Armor" AV="3" DV="-5" WornOn="Feet" />
     <part Name="Physics" Weight="15" />
     <part Name="Metal" />
@@ -9636,7 +9642,7 @@
 
 <object Name="BaseTierShield4" Inherits="BaseTierShield" Replace="true">
     <part Name="Render" ColorString="&amp;y" />
-    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*スルタン*の時代にはそのスラグが採掘され、天を衝くアイギスを模した鋼の複製に鋳込まれ、ストーンガットで補強された。" />
+    <part Name="Description" Short="クリスティールの高炉が稼働していた頃、噴出するスラグが旧アーコロジーを締める丘陵帯へ吐き出された。*sultan*の時代にはそのスラグが採掘され、天を衝くアイギスを模した鋼の複製に鋳込まれ、ストーンガットで補強された。" />
     <part Name="Shield" AV="4" DV="-3" WornOn="Hand" />
     <part Name="Physics" Weight="14" />
     <part Name="Metal" />
@@ -9669,7 +9675,7 @@
 
 <object Name="BaseTierFace5" Inherits="BaseTierFace" Replace="true">
     <part Name="Render" Tile="Items/sw_veil.bmp" ColorString="&amp;Y" DetailColor="R" />
-    <part Name="Description" Short="イーターたちが自分の顔に縫い付ける術を失ってなお、仮面は生活の中で聖なる地位を保ち続けた。この仮面も例外ではない。" />
+    <part Name="Description" Short="喰らう者たちが自分の顔に縫い付ける術を失ってなお、仮面は生活の中で聖なる地位を保ち続けた。この仮面も例外ではない。" />
     <part Name="Armor" AV="0" DV="2" WornOn="Face" />
     <part Name="Physics" Weight="2" />
     <tag Name="Tier" Value="5" />
@@ -9733,7 +9739,7 @@
 
 <object Name="BaseTierFace6" Inherits="BaseTierFace" Replace="true">
     <part Name="Render" Tile="Items/sw_veil.bmp" ColorString="&amp;Y" DetailColor="r" />
-    <part Name="Description" Short="蜜漬けの皮膚を色彩豊かなウーフラックスに縫い合わせ、*スルタン*の時代のイーター偶像を幻覚模倣的に写し取っている。" />
+    <part Name="Description" Short="蜜漬けの皮膚を色彩豊かなウーフラックスに縫い合わせ、*sultan*の時代の喰らう者偶像を幻覚模倣的に写し取っている。" />
     <part Name="Armor" AV="0" DV="3" WornOn="Face" />
     <part Name="Physics" Weight="2" />
     <tag Name="Tier" Value="6" />
@@ -9764,7 +9770,7 @@
 
 <object Name="BaseTierFace7" Inherits="BaseTierFace" Replace="true">
     <part Name="Render" Tile="Items/sw_veil.bmp" ColorString="&amp;Y" DetailColor="r" />
-    <part Name="Description" Short="蜜漬けの皮膚を色彩豊かなウーフラックスに縫い合わせ、*スルタン*の時代のイーター偶像を幻覚模倣的に写し取っている。" />
+    <part Name="Description" Short="蜜漬けの皮膚を色彩豊かなウーフラックスに縫い合わせ、*sultan*の時代の喰らう者偶像を幻覚模倣的に写し取っている。" />
     <part Name="Armor" AV="0" DV="3" WornOn="Face" />
     <part Name="Physics" Weight="2" />
     <tag Name="Tier" Value="7" />
@@ -9825,7 +9831,7 @@
   </object>
 
 <object Name="Albino Ape Pelt" Inherits="Item" Replace="true">
-    <part Name="Render" DisplayName="{{Y|}}" Tile="Items/sw_ape_pelt.bmp" ColorString="&amp;Y" DetailColor="y" RenderString="*" RenderLayer="5" />
+    <part Name="Render" DisplayName="{{Y|アルビノエイプの毛皮}}" Tile="Items/sw_ape_pelt.bmp" ColorString="&amp;Y" DetailColor="y" RenderString="*" RenderLayer="5" />
     <part Name="Description" Short="" />
     <part Name="Physics" Weight="10" Category="Trade Goods" />
     <part Name="Commerce" Value="100" />
@@ -9845,7 +9851,7 @@
   </object>
 
 <object Name="EyelessCrabShell" Inherits="BaseShield" Replace="true">
-    <part Name="Render" DisplayName="{{Y|}}" Tile="Items/sw_crab_shield.bmp" ColorString="&amp;Y" DetailColor="y" />
+    <part Name="Render" DisplayName="{{Y|アイレスクラブの殻}}" Tile="Items/sw_crab_shield.bmp" ColorString="&amp;Y" DetailColor="y" />
     <part Name="Shield" AV="4" DV="-3" WornOn="Hand" />
     <part Name="Description" Short="" />
     <part Name="Commerce" Value="50" />
@@ -10249,7 +10255,7 @@
   </object>
 
 <object Name="Canticles3" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W| XVIIXXIV}}" ColorString="&amp;c" RenderString="=" RenderLayer="5" Tile="Items/sw_book_1.bmp" TileColor="&amp;c" DetailColor="W" />
+    <part Name="Render" DisplayName="{{W|クロムの雅歌 第17-24節}}" ColorString="&amp;c" RenderString="=" RenderLayer="5" Tile="Items/sw_book_1.bmp" TileColor="&amp;c" DetailColor="W" />
     <part Name="Description" Short="" />
     <part Name="Book" ID="Canticles3" />
     <part Name="Commerce" Value="50" />

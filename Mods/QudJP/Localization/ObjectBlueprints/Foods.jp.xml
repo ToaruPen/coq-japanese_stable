@@ -240,7 +240,7 @@
     <stag Name="Food" />
   </object>
   <object Name="Black Puma Haunch" Inherits="Corpse" Replace="true">
-    <part Name="Render" DisplayName="{{K|黒豹}}の腿肉" Tile="Items/sw_haunch.bmp" ColorString="&amp;r" DetailColor="K" />
+    <part Name="Render" DisplayName="{{K|黒ピューマ}}の腿肉" Tile="Items/sw_haunch.bmp" ColorString="&amp;r" DetailColor="K" />
     <part Name="Description" Short="オパール黒の毛束が濡れた脚肉に貼り付いている。" />
     <part Name="Food" Message="燻した旨味がある。" />
     <part Name="Physics" Weight="20" />
@@ -1090,7 +1090,7 @@
     <stag Name="Heat" />
   </object>
   <object Name="Congealed Salve" Inherits="Preservable" Replace="true">
-    <part Name="Render" DisplayName="凝縮した &amp;Yサルヴ" RenderString="%" ColorString="&amp;y" TileColor="&amp;y" DetailColor="Y" RenderLayer="5" Tile="Items/sw_sparktick_plasma.bmp" />
+    <part Name="Render" DisplayName="凝縮した{{Y|サルヴ}}" RenderString="%" ColorString="&amp;y" TileColor="&amp;y" DetailColor="Y" RenderLayer="5" Tile="Items/sw_sparktick_plasma.bmp" />
     <part Name="Commerce" Value="4" />
     <part Name="Description" Short="サルヴをインジェクターから抜き取り、刺すような空気で濃縮し、料理用に瓶詰めにした。" />
     <part Name="PreparedCookingIngredient" type="regenLowtier" charges="1" />

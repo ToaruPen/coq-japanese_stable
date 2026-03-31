@@ -17,7 +17,7 @@
     {
       "key": "counterweighted",
       "context": "GetDisplayName.Adjective",
-      "text": "カウンターウェイト付き"
+      "text": "つり合い調整"
     },
     {
       "key": "Some ",
@@ -47,7 +47,7 @@
     {
       "key": "{{B|recycling}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{B|再循環式}}"
+      "text": "{{B|再生処理}}"
     },
     {
       "key": "{{C|radio-powered}}",
@@ -57,7 +57,7 @@
     {
       "key": "{{phase-conjugate}}",
       "context": "GetDisplayName.Adjective",
-      "text": "位相結合"
+      "text": "位相共役"
     },
     {
       "key": "chromed",
@@ -92,7 +92,7 @@
     {
       "key": "reinforced",
       "context": "GetDisplayName.Adjective",
-      "text": "強化"
+      "text": "補強"
     },
     {
       "key": "overbuilt",
@@ -262,7 +262,7 @@
     {
       "key": "{{displacer|displacer}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{displacer|転位}}"
+      "text": "{{displacer|位相転移}}"
     },
     {
       "key": "{{electrical|electrified}}",
@@ -292,7 +292,7 @@
     {
       "key": "{{m|gesticulating}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{m|蠢く}}"
+      "text": "{{m|身ぶり強調}}"
     },
     {
       "key": "HUD",
@@ -312,7 +312,7 @@
     {
       "key": "{{c|high-capacity}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{c|高容量}}"
+      "text": "{{c|大容量}}"
     },
     {
       "key": "{{hypervelocity|hypervelocity}}",
@@ -322,7 +322,7 @@
     {
       "key": "[{{illuminated|illuminated}}]",
       "context": "GetDisplayName.Adjective",
-      "text": "[{{illuminated|発光}}]"
+      "text": "[{{illuminated|彩飾}}]"
     },
     {
       "key": "{{Y|induction}}",
@@ -337,7 +337,7 @@
     {
       "key": "{{lacquered|lacquered}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{lacquered|漆塗り}}"
+      "text": "{{lacquered|漆仕上げ}}"
     },
     {
       "key": "{{lanterned|lanterned}}",
@@ -357,7 +357,7 @@
     {
       "key": "masterwork",
       "context": "GetDisplayName.Adjective",
-      "text": "傑作"
+      "text": "名工品"
     },
     {
       "key": "{{overloaded|massively overloaded}}",
@@ -367,7 +367,7 @@
     {
       "key": "{{Y|masterwork}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{Y|傑作}}"
+      "text": "{{Y|名工品}}"
     },
     {
       "key": "{{Y|mercurial}}",
@@ -392,7 +392,7 @@
     {
       "key": "{{m|morphogenetic}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{m|形態形成}}"
+      "text": "{{m|形態同調}}"
     },
     {
       "key": "{{K|nanochelated}}",
@@ -402,7 +402,7 @@
     {
       "key": "{{K|nanon}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{K|ナノン}}"
+      "text": "{{K|ナノ刃}}"
     },
     {
       "key": "{{r|nav}}",
@@ -422,7 +422,7 @@
     {
       "key": "{{K|phase-conjugate}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{K|位相結合}}"
+      "text": "{{K|位相共役}}"
     },
     {
       "key": "{{phase-harmonic|phase-harmonic}}",
@@ -447,7 +447,7 @@
     {
       "key": "{{scaled|scaled}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{scaled|鱗状の}}"
+      "text": "{{scaled|鱗装甲}}"
     },
     {
       "key": "{{Y|serra{{R|t}}ed}}",
@@ -482,7 +482,7 @@
     {
       "key": "spring-loaded",
       "context": "GetDisplayName.Adjective",
-      "text": "バネ仕掛けの"
+      "text": "スプリング"
     },
     {
       "key": "{{urban camouflage|urban camo}}",
@@ -502,7 +502,7 @@
     {
       "key": "{{Y|wooly}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{Y|ウール製の}}"
+      "text": "{{Y|毛皮張り}}"
     },
     {
       "key": "{{auroral|auroral}}",
@@ -997,7 +997,7 @@
     {
       "key": "recycling",
       "context": "GetDisplayName.Adjective",
-      "text": "{{B|再循環式}}"
+      "text": "{{B|再生処理}}"
     },
     {
       "key": "radio-powered",
@@ -1007,7 +1007,7 @@
     {
       "key": "phase-conjugate",
       "context": "GetDisplayName.Adjective",
-      "text": "位相結合"
+      "text": "位相共役"
     },
     {
       "key": "[Implant] -",
@@ -1067,7 +1067,7 @@
     {
       "key": "displacer",
       "context": "GetDisplayName.Adjective",
-      "text": "{{displacer|転位}}"
+      "text": "{{displacer|位相転移}}"
     },
     {
       "key": "electrified",
@@ -1097,7 +1097,7 @@
     {
       "key": "gesticulating",
       "context": "GetDisplayName.Adjective",
-      "text": "{{m|蠢く}}"
+      "text": "{{m|身ぶり強調}}"
     },
     {
       "key": "heartstopper",
@@ -1107,7 +1107,7 @@
     {
       "key": "high-capacity",
       "context": "GetDisplayName.Adjective",
-      "text": "{{c|高容量}}"
+      "text": "{{c|大容量}}"
     },
     {
       "key": "hypervelocity",
@@ -1117,7 +1117,7 @@
     {
       "key": "[illuminated]",
       "context": "GetDisplayName.Adjective",
-      "text": "[{{illuminated|発光}}]"
+      "text": "[{{illuminated|彩飾}}]"
     },
     {
       "key": "induction",
@@ -1132,7 +1132,7 @@
     {
       "key": "lacquered",
       "context": "GetDisplayName.Adjective",
-      "text": "{{lacquered|漆塗り}}"
+      "text": "{{lacquered|漆仕上げ}}"
     },
     {
       "key": "lanterned",
@@ -1172,7 +1172,7 @@
     {
       "key": "morphogenetic",
       "context": "GetDisplayName.Adjective",
-      "text": "{{m|形態形成}}"
+      "text": "{{m|形態同調}}"
     },
     {
       "key": "nanochelated",
@@ -1182,7 +1182,7 @@
     {
       "key": "nanon",
       "context": "GetDisplayName.Adjective",
-      "text": "{{K|ナノン}}"
+      "text": "{{K|ナノ刃}}"
     },
     {
       "key": "nav",
@@ -1217,7 +1217,7 @@
     {
       "key": "scaled",
       "context": "GetDisplayName.Adjective",
-      "text": "{{scaled|鱗状の}}"
+      "text": "{{scaled|鱗装甲}}"
     },
     {
       "key": "serra{{R|ted}}",
@@ -1262,7 +1262,7 @@
     {
       "key": "wooly",
       "context": "GetDisplayName.Adjective",
-      "text": "{{Y|ウール製の}}"
+      "text": "{{Y|毛皮張り}}"
     },
     {
       "key": "auroral",
