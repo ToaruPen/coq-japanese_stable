@@ -29,6 +29,156 @@
     {
       "key": "Add to trade",
       "text": "取引に追加"
+    },
+    {
+      "key": "{0} cannot carry things.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "{0}は物を運べない。"
+    },
+    {
+      "key": "{0} engaged in melee combat and is too busy to trade with you.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "{0}は近接戦闘中で、あなたと取引している暇がない。"
+    },
+    {
+      "key": "{0} on fire and is too busy to trade with you.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "{0}は燃えていて、あなたと取引している暇がない。"
+    },
+    {
+      "key": "{0} will not trade with you until you pay {1} the {2} you owe {3}.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "{0}は、あなたが{1}に借りている{2}を支払うまで取引してくれない。"
+    },
+    {
+      "key": "{0} will not trade with you until you pay {1} the {2} you owe {3}. Do you want to give {4} your {5} now?",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "{0}は、あなたが{1}に借りている{2}を支払うまで取引してくれない。今すぐあなたの{5}を{4}に渡しますか？"
+    },
+    {
+      "key": "{0} will not trade with you until you pay {1} the {2} you owe {3}. Do you want to give it to {4} now?",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "{0}は、あなたが{1}に借りている{2}を支払うまで取引してくれない。今すぐそれを{4}に渡しますか？"
+    },
+    {
+      "key": "You can't understand {0} explanation.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "{0}説明は理解できない。"
+    },
+    {
+      "key": "This item is too complex for {0} to identify.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "この品は{0}には複雑すぎて鑑定できない。"
+    },
+    {
+      "key": "You do not have the required {0} to identify this item.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "この品を鑑定するのに必要な{0}が足りない。"
+    },
+    {
+      "key": "You may identify this for {0}.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "これを{0}で鑑定できる。"
+    },
+    {
+      "key": "{0} identifies {1} as {2}.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "{0}は{1}を{2}だと鑑定した。"
+    },
+    {
+      "key": "{0} are too complex for {1} to repair.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "{0}は{1}には複雑すぎて修理できない。"
+    },
+    {
+      "key": "You need {0} to repair {1}.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "{1}を修理するには{0}が必要だ。"
+    },
+    {
+      "key": "You may repair {0} for {1}.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "{0}を{1}で修理できる。"
+    },
+    {
+      "key": "You'll have to pony up {0} to even up the trade. Agreed?",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "取引を釣り合わせるには{0}を支払う必要がある。承諾する？"
+    },
+    {
+      "key": "You don't have {0} to even up the trade!",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "取引を釣り合わせるための{0}が足りない！"
+    },
+    {
+      "key": "You pony up {0}, and now owe {1} {2}.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "あなたは{0}を支払い、今や{1}に{2}借りている。"
+    },
+    {
+      "key": "You now owe {0} {1}.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "今や{0}に{1}借りている。"
+    },
+    {
+      "key": "{0} will have to pony up {1} to even up the trade. Agreed?",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "{0}は取引を釣り合わせるために{1}を支払う必要がある。承諾する？"
+    },
+    {
+      "key": "{0} don't have {1} to even up the trade! Do you want to complete the trade anyway?",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "{0}には取引を釣り合わせるための{1}がない！ それでも取引を成立させる？"
+    },
+    {
+      "key": "You don't have enough water containers to carry that many drams! You can store {0}.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "そんな量のドラムを運ぶだけの水容器が足りない！ 保管できるのは{0}までだ。"
+    },
+    {
+      "key": "You don't have enough water containers to carry that many drams! Do you want to complete the trade for the {0} you can store?",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "そんな量のドラムを運ぶだけの水容器が足りない！ 保管できる{0}分だけで取引を成立させる？"
+    },
+    {
+      "key": "You need {0} to charge {1}.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "{1}を充電するには{0}が必要だ。"
+    },
+    {
+      "key": "You may recharge {0} for {1}.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "{0}を{1}で充電できる。"
+    },
+    {
+      "key": "Trade could not be completed, {0} couldn't drop object: {1}",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "取引を完了できなかった。{0}は{1}を落とせなかった。"
+    },
+    {
+      "key": "In the end, though, it makes no difference.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "結局のところ、何も変わらなかった。"
+    },
+    {
+      "key": "As a result, the trade costs you {0} rather than {1}.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "その結果、取引費用は{1}ではなく{0}になった。"
+    },
+    {
+      "key": "As a result, the trade is worth {0} rather than {1}.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "その結果、その取引の価値は{1}ではなく{0}になった。"
+    },
+    {
+      "key": "As a result, the trade goes from costing you {0} to being worth {1}.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "その結果、その取引は{0}の支払いから{1}の得になる形へ変わった。"
+    },
+    {
+      "key": "As a result, the trade goes from being worth {0} to being worth {1}.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "その結果、その取引は{0}の得から{1}の得へ変わった。"
     }
   ]
 }

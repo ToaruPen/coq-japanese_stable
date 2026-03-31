@@ -422,6 +422,11 @@ public sealed class TargetMethodResolutionTests
         "System.String|System.Int32|System.Int32|System.Int32|System.String|System.Boolean",
         "System.Double[]|System.Int32[]|System.Collections.Generic.List`1[[XRL.UI.TradeEntry]][]|System.Int32[][]",
     })]
+    [TestCase(typeof(TradeUiPopupTranslationPatch), new[]
+    {
+        "System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
+        "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
+    })]
     [TestCase(typeof(PopupAskStringTranslationPatch), new[]
     {
         "System.String|System.String|System.String|System.String|System.String|System.Int32|System.Int32|System.Boolean|System.Boolean|System.Nullable`1[[System.Boolean]]",

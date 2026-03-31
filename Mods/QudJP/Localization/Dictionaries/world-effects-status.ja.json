@@ -186,12 +186,12 @@
         {
             "key": "In power conservation mode.\n-12 DV.\nAttackers receive +4 to penetration rolls.\nWill return to normal operations dazed if damage is taken.",
             "context": "XRL.World.Effects.Asleep.Details",
-            "text": "省電力モード。\n-12 DV。\n攻撃者は penetration roll に +4 を得る。\nダメージを受けると朦朧状態で通常動作に戻る。"
+            "text": "省電力モード。\n-12 DV。\n攻撃者は貫通判定に +4 を得る。\nダメージを受けると朦朧状態で通常動作に戻る。"
         },
         {
             "key": "Unconscious.\n-12 DV.\nAttackers receive +4 to penetration rolls.\nWill wake up dazed if damage is taken.",
             "context": "XRL.World.Effects.Asleep.Details",
-            "text": "意識を失っている。\n-12 DV。\n攻撃者は penetration roll に +4 を得る。\nダメージを受けると朦朧状態で目を覚ます。"
+            "text": "意識を失っている。\n-12 DV。\n攻撃者は貫通判定に +4 を得る。\nダメージを受けると朦朧状態で目を覚ます。"
         },
         {
             "key": "{{C|prone}}",
