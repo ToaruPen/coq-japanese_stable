@@ -116,6 +116,18 @@ public sealed class PopupAskNumberTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_PreservesColorTagsWithinTranslatedAskNumberPrompt()
+    {
+        WriteDictionary(("How many waterskins?", "ウォータースキンを{{C|いくつ}}選びますか？"));
+
+        using var patch = PatchMethod(nameof(DummyPopupGenericTarget.AskNumber));
+
+        DummyPopupGenericTarget.AskNumber("How many waterskins?");
+
+        Assert.That(DummyPopupGenericTarget.LastAskNumberMessage, Is.EqualTo("ウォータースキンを{{C|いくつ}}選びますか？"));
+    }
+
+    [Test]
     public void Prefix_StripsDirectTranslationMarker_FromAskNumberPrompt()
     {
         WriteDictionary(("既に翻訳済み", "別訳"));

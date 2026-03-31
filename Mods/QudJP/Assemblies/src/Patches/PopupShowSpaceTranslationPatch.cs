@@ -42,12 +42,8 @@ public static class PopupShowSpaceTranslationPatch
 
         if (method is null)
         {
-            method = AccessTools.Method(targetType, "ShowSpace");
-        }
-
-        if (method is null)
-        {
-            Trace.TraceError($"QudJP: {Context} method 'ShowSpace' not found on '{TargetTypeName}'.");
+            Trace.TraceError("QudJP: PopupShowSpaceTranslationPatch.ShowSpace() signature not found.");
+            return null;
         }
 
         return method;

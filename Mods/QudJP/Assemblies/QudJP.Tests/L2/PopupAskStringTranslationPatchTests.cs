@@ -116,6 +116,18 @@ public sealed class PopupAskStringTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_PreservesColorTagsWithinTranslatedAskStringPrompt()
+    {
+        WriteDictionary(("Name your pet.", "ペットに{{G|名前}}を付けてください。"));
+
+        using var patch = PatchMethod(nameof(DummyPopupGenericTarget.AskString));
+
+        DummyPopupGenericTarget.AskString("Name your pet.");
+
+        Assert.That(DummyPopupGenericTarget.LastAskStringMessage, Is.EqualTo("ペットに{{G|名前}}を付けてください。"));
+    }
+
+    [Test]
     public void Prefix_StripsDirectTranslationMarker_FromAskStringPrompt()
     {
         WriteDictionary(("既に翻訳済み", "別訳"));

@@ -71,12 +71,8 @@ public static class PopupPickOptionTranslationPatch
 
         if (method is null)
         {
-            method = AccessTools.Method(targetType, "PickOption");
-        }
-
-        if (method is null)
-        {
-            Trace.TraceError($"QudJP: {Context} method 'PickOption' not found on '{TargetTypeName}'.");
+            Trace.TraceError("QudJP: PopupPickOptionTranslationPatch.PickOption() signature not found.");
+            return null;
         }
 
         return method;
