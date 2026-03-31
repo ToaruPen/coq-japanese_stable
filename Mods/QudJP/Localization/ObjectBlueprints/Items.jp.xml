@@ -2301,7 +2301,7 @@
     <part Name="MeleeWeapon" MaxStrengthBonus="3" BaseDamage="1d2" Skill="Cudgel" Stat="Strength" />
     <part Name="Commerce" Value="12" />
     <part Name="Physics" Weight="4" />
-    <part Name="Description" Short="モグライ各地で北方の巨木を伐り、異郷の術者が棒に削り、樹皮の片端を樫の瘤に編み上げる。" />
+    <part Name="Description" Short="モグラヤイ各地で北方の巨木を伐り、異郷の術者が棒に削り、樹皮の片端を樫の瘤に編み上げる。" />
     <tag Name="Tier" Value="0" />
     <part Name="ModSturdy" />
     <tag Name="NoSparkingQuest" />

@@ -386,9 +386,9 @@
 
   <quest Name="If, Then, Else"
          Accomplishment="生命の樹チャヴァの“-else化”の儀式を完遂し、その実体チャイムの一つを永遠に断った。"
-         Hagiograph="美は引き算にあり！ 剪定者＝name＝は生命の木をより美しく整えた。"
+         Hagiograph="美は引き算にあり！ 剪定者＝name＝は生命の樹をより美しく整えた。"
          HagiographCategory="DoesSomethingRad"
-         Gospel="生命の木の多くの意志に従い、＝name＝はトランジット岩をチャヴァの根の下にある発光するソフトへ運んだ。そこで＝player.subjective＝は秘儀を行い、地上へ戻って永遠に変わった。">
+         Gospel="生命の樹の多くの意志に従い、＝name＝はトランジット岩をチャヴァの根の下にある発光するソフトへ運んだ。そこで＝player.subjective＝は秘儀を行い、地上へ戻って永遠に変わった。">
     <step Name="Gather Tau's Chime" XP="0">
       <text>ケテルにある彼女の枝から、タウのチャイムを回収する。</text>
     </step>

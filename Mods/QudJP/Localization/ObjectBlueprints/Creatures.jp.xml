@@ -13274,11 +13274,11 @@
   </object>
 
 <object Name="BasePaxKlanq" Inherits="SapientMutatedFungus" Replace="true">
-    <part Name="Render" DisplayName="パックス・クランク" ColorString="&amp;O" RenderString="K" DetailColor="w" Tile="Creatures/sw_pax_klanq.bmp" />
+    <part Name="Render" DisplayName="パクス・クランク" ColorString="&amp;O" RenderString="K" DetailColor="w" Tile="Creatures/sw_pax_klanq.bmp" />
     <part Name="ConversationScript" ConversationID="PaxKlanq" />
     <part Name="Brain" Mobile="true" Wanders="false" Factions="Fungi-100" />
     <part Name="FungusProperties" Rooted="false" />
-    <part Name="Description" Short="パックス・クランクという結び目だらけで噴き出した臓器の群れは、偶然にも人形の輪郭をしているのか。それとも次元を超えて訪れた人類の客人を、奇才の菌糸が温かな身振りで迎えているのか。どちらにせよ、見事な橙色の笠は飾り帽子のようだ。しかし類似はそこで終わる。顔のかわりに、うねる触手が三本揺れている。視界の端ではさらに多くの触手が道具や本、回路基板、カエルの死骸や真珠をまさぐっている。クランクが同時にこなす作業量を思い知れば、自然が最高の有機知性を菌に授けた理由にも思い当たる。" />
+    <part Name="Description" Short="パクス・クランクという結び目だらけで噴き出した臓器の群れは、偶然にも人形の輪郭をしているのか。それとも次元を超えて訪れた人類の客人を、奇才の菌糸が温かな身振りで迎えているのか。どちらにせよ、見事な橙色の笠は飾り帽子のようだ。しかし類似はそこで終わる。顔のかわりに、うねる触手が三本揺れている。視界の端ではさらに多くの触手が道具や本、回路基板、カエルの死骸や真珠をまさぐっている。クランクが同時にこなす作業量を思い知れば、自然が最高の有機知性を菌に授けた理由にも思い当たる。" />
     <stat Name="Level" Value="30" />
     <stat Name="Strength" Value="16" />
     <stat Name="Intelligence" Value="51" />

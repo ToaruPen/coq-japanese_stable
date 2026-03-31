@@ -546,7 +546,7 @@
 
 <object Name="TerrainEynRoj" Inherits="TerrainMoonStair" Replace="true">
     <part Name="Render" DisplayName="エイン・ロージ" RenderString="005" ColorString="&amp;M" TileColor="&amp;m" DetailColor="Y" Tile="Terrain/sw_chavvah_worldmap.bmp" HFlip="false" />
-    <part Name="Description" Short="大理石の木立に生命の木ハヴァの裂けた幹がうずくまり、落ち葉は鏡の絨毯のように敷き詰められ、夢レンが精神の賛歌をさえずる。" />
+    <part Name="Description" Short="大理石の木立に生命の樹チャヴァの裂けた幹がうずくまり、落ち葉は鏡の絨毯のように敷き詰められ、夢レンが精神の賛歌をさえずる。" />
     <xtagGrammar Proper="true" massNoun="false" />
     <removepart Name="RandomRenderString" />
     <removepart Name="RandomWorldTile" />

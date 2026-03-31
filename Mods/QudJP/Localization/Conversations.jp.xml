@@ -364,7 +364,7 @@
     </node>
     <node ID="Accept"><text>ありがとう、旅人 =name=。</text><choice GotoID="Welcome">……</choice></node>
     <node ID="Tau" Inherits="Welcome"><text>私の小鈴、燃えて輝く、心は星光と直角で満ちている。彼女はチャヴァを去る――それは彼女の選択だ。私 は……。</text><choice GotoID="Work2" Priority="1">私は何をすべき？</choice><choice Target="Chime" Load="Remove" /><choice Target="Barathrum" Load="Remove" /></node>
-    <node ID="Name" Inherits="Welcome"><text>かつて〈自我〉の詩人が、私に〈生命の木〉の名をこぼした。私にとって私は、浸潤する〈柔(ソフト)〉から吸い上げた多数の〈自我〉だ。私はチャヴァ、そして私はディヴラックだ。</text><choice GotoID="ManySelves" Priority="99">多数の自我？ どういうことだ？</choice></node>
+    <node ID="Name" Inherits="Welcome"><text>かつて〈自我〉の詩人が、私に〈生命の樹〉の名をこぼした。私にとって私は、浸潤する〈柔(ソフト)〉から吸い上げた多数の〈自我〉だ。私はチャヴァ、そして私はディヴラックだ。</text><choice GotoID="ManySelves" Priority="99">多数の自我？ どういうことだ？</choice></node>
     <node ID="ManySelves"><text>チャヴァとして私は多数。ディヴラックとして私は一。私は一であり多数。一なるものは私を〈樹の都市〉、〈知性ある場所〉と呼んだ。君は〈二堅(ツーファーム)〉から芽吹いた自我を、そのように思えばよい。</text></node>
     <node ID="Physiology" SetSpeakerIntProperty="PhysiologyExplained,1">
       <text>大地の深く、我らの根に浸潤しているのが〈柔(ソフト)〉、感じる物質だ。地圧に押され、それは導幹を遡って幹へと上がり、そこで〈二堅(ツーファーム)〉へと凝縮する。二つのセフィロト、-then と -else を含む両位相だ。</text>

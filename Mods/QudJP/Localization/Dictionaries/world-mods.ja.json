@@ -387,12 +387,12 @@
     {
       "context": "XRL.World.Parts.ModMasterwork.GetShortDescription",
       "key": "{{Y|masterwork}}",
-      "text": "{{Y|名工品}}"
+      "text": "{{Y|傑作}}"
     },
     {
       "context": "XRL.World.Parts.ModMasterwork.GetShortDescription",
       "key": "{{rules|Masterwork",
-      "text": "{{rules|名工品"
+      "text": "{{rules|傑作"
     },
     {
       "context": "XRL.World.Parts.ModMasterwork.GetShortDescription",
@@ -577,12 +577,12 @@
     {
       "context": "XRL.World.Parts.ModScaled.GetShortDescription",
       "key": "Scaled: This item grants the wearer reputation with unshelled reptiles.",
-      "text": "鱗装甲: 装着者に甲無し爬虫類との評判を与える。"
+      "text": "鱗状の: 装着者に甲無し爬虫類との評判を与える。"
     },
     {
       "context": "XRL.World.Parts.ModScaled.GetShortDescription",
       "key": "Scaled: This item grants the wearer ",
-      "text": "鱗装甲: 装着者に"
+      "text": "鱗状の: 装着者に"
     },
     {
       "context": "XRL.World.Parts.ModScaled.GetShortDescription",
