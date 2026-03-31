@@ -222,7 +222,7 @@
         {
             "key": "{target} begin bleeding from another wound!",
             "context": "XRL.Messages.Combat",
-            "text": "装備していません："
+            "text": "{target}は別の傷口からも出血し始めた！"
         },
         {
             "key": "{target} stop bleeding.",

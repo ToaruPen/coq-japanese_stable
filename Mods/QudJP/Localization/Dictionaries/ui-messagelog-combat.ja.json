@@ -137,7 +137,7 @@
         {
             "key": "{target}'s armor with your .penetratedon't.",
             "context": "XRL.Messages.Combat",
-            "text": "{target}の装甲を貫通できなかった。（バグ回避）"
+            "text": "{target}の装甲を貫通できなかった。"
         },
         {
             "key": "You take {damage} damage from {source}!",

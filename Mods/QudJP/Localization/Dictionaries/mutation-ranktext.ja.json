@@ -2858,52 +2858,52 @@
         {
             "key": "mutation:Burrowing Claws:rank:1",
             "context": "Chargen.Mutation.RankText",
-            "text": "壁に対する爪の貫通力: {{rules|+3}}\n爪s destroy walls after 4 penetrating hits.\n爪s are also a short-blade class natural weapon that deal {{rules|1d2}} base damage to non-walls.\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+3}}の基礎ダメージを与える。"
+            "text": "壁に対する爪の貫通力: {{rules|+3}}\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+3}}の基礎ダメージを与える。"
         },
         {
             "key": "mutation:Burrowing Claws:rank:2",
             "context": "Chargen.Mutation.RankText",
-            "text": "壁に対する爪の貫通力: {{rules|+6}}\n爪s destroy walls after 4 penetrating hits.\n爪s are also a short-blade class natural weapon that deal {{rules|1d2}} base damage to non-walls.\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+6}}の基礎ダメージを与える。"
+            "text": "壁に対する爪の貫通力: {{rules|+6}}\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+6}}の基礎ダメージを与える。"
         },
         {
             "key": "mutation:Burrowing Claws:rank:3",
             "context": "Chargen.Mutation.RankText",
-            "text": "壁に対する爪の貫通力: {{rules|+9}}\n爪s destroy walls after 4 penetrating hits.\n爪s are also a short-blade class natural weapon that deal {{rules|1d2}} base damage to non-walls.\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+9}}の基礎ダメージを与える。"
+            "text": "壁に対する爪の貫通力: {{rules|+9}}\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+9}}の基礎ダメージを与える。"
         },
         {
             "key": "mutation:Burrowing Claws:rank:4",
             "context": "Chargen.Mutation.RankText",
-            "text": "壁に対する爪の貫通力: {{rules|+12}}\n爪s destroy walls after 4 penetrating hits.\n爪s are also a short-blade class natural weapon that deal {{rules|1d3}} base damage to non-walls.\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+12}}の基礎ダメージを与える。"
+            "text": "壁に対する爪の貫通力: {{rules|+12}}\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+12}}の基礎ダメージを与える。"
         },
         {
             "key": "mutation:Burrowing Claws:rank:5",
             "context": "Chargen.Mutation.RankText",
-            "text": "壁に対する爪の貫通力: {{rules|+15}}\n爪s destroy walls after 4 penetrating hits.\n爪s are also a short-blade class natural weapon that deal {{rules|1d3}} base damage to non-walls.\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+15}}の基礎ダメージを与える。"
+            "text": "壁に対する爪の貫通力: {{rules|+15}}\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+15}}の基礎ダメージを与える。"
         },
         {
             "key": "mutation:Burrowing Claws:rank:6",
             "context": "Chargen.Mutation.RankText",
-            "text": "壁に対する爪の貫通力: {{rules|+18}}\n爪s destroy walls after 4 penetrating hits.\n爪s are also a short-blade class natural weapon that deal {{rules|1d3}} base damage to non-walls.\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+18}}の基礎ダメージを与える。"
+            "text": "壁に対する爪の貫通力: {{rules|+18}}\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+18}}の基礎ダメージを与える。"
         },
         {
             "key": "mutation:Burrowing Claws:rank:7",
             "context": "Chargen.Mutation.RankText",
-            "text": "壁に対する爪の貫通力: {{rules|+21}}\n爪s destroy walls after 4 penetrating hits.\n爪s are also a short-blade class natural weapon that deal {{rules|1d4}} base damage to non-walls.\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+21}}の基礎ダメージを与える。"
+            "text": "壁に対する爪の貫通力: {{rules|+21}}\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+21}}の基礎ダメージを与える。"
         },
         {
             "key": "mutation:Burrowing Claws:rank:8",
             "context": "Chargen.Mutation.RankText",
-            "text": "壁に対する爪の貫通力: {{rules|+24}}\n爪s destroy walls after 4 penetrating hits.\n爪s are also a short-blade class natural weapon that deal {{rules|1d4}} base damage to non-walls.\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+24}}の基礎ダメージを与える。"
+            "text": "壁に対する爪の貫通力: {{rules|+24}}\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+24}}の基礎ダメージを与える。"
         },
         {
             "key": "mutation:Burrowing Claws:rank:9",
             "context": "Chargen.Mutation.RankText",
-            "text": "壁に対する爪の貫通力: {{rules|+27}}\n爪s destroy walls after 4 penetrating hits.\n爪s are also a short-blade class natural weapon that deal {{rules|1d4}} base damage to non-walls.\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+27}}の基礎ダメージを与える。"
+            "text": "壁に対する爪の貫通力: {{rules|+27}}\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+27}}の基礎ダメージを与える。"
         },
         {
             "key": "mutation:Burrowing Claws:rank:10",
             "context": "Chargen.Mutation.RankText",
-            "text": "壁に対する爪の貫通力: {{rules|+30}}\n爪s destroy walls after 4 penetrating hits.\n爪s are also a short-blade class natural weapon that deal {{rules|1d6}} base damage to non-walls.\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+30}}の基礎ダメージを与える。"
+            "text": "壁に対する爪の貫通力: {{rules|+30}}\n爪で4回貫通すると壁を破壊する。\n爪は短剣カテゴリの自然武器でもあり、壁以外には{{rules|+30}}の基礎ダメージを与える。"
         },
         {
             "key": "mutation:Quills:rank:1",
@@ -3608,52 +3608,52 @@
         {
             "key": "mutation:Electrical Generation:rank:1",
             "context": "Chargen.Mutation.RankText",
-            "text": "最大チャージ: {{C|4000}}\n基本チャージ獲得: ターンごとに{{C|100}}\n蓄えたチャージをすべて放出し、チャージ1点ごとに4d1000ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。最大1チャージあたり1000体まで。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
+            "text": "最大チャージ: {{C|4000}}\n基本チャージ獲得: ターンごとに{{C|100}}\n蓄えたチャージをすべて放出し、1000チャージごとに1d4ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。1000チャージごとに最大1体へ連鎖する。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
         },
         {
             "key": "mutation:Electrical Generation:rank:2",
             "context": "Chargen.Mutation.RankText",
-            "text": "最大チャージ: {{C|6000}}\n基本チャージ獲得: ターンごとに{{C|200}}\n蓄えたチャージをすべて放出し、チャージ1点ごとに4d1000ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。最大1チャージあたり1000体まで。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
+            "text": "最大チャージ: {{C|6000}}\n基本チャージ獲得: ターンごとに{{C|200}}\n蓄えたチャージをすべて放出し、1000チャージごとに1d4ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。1000チャージごとに最大1体へ連鎖する。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
         },
         {
             "key": "mutation:Electrical Generation:rank:3",
             "context": "Chargen.Mutation.RankText",
-            "text": "最大チャージ: {{C|8000}}\n基本チャージ獲得: ターンごとに{{C|300}}\n蓄えたチャージをすべて放出し、チャージ1点ごとに4d1000ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。最大1チャージあたり1000体まで。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
+            "text": "最大チャージ: {{C|8000}}\n基本チャージ獲得: ターンごとに{{C|300}}\n蓄えたチャージをすべて放出し、1000チャージごとに1d4ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。1000チャージごとに最大1体へ連鎖する。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
         },
         {
             "key": "mutation:Electrical Generation:rank:4",
             "context": "Chargen.Mutation.RankText",
-            "text": "最大チャージ: {{C|10000}}\n基本チャージ獲得: ターンごとに{{C|400}}\n蓄えたチャージをすべて放出し、チャージ1点ごとに4d1000ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。最大1チャージあたり1000体まで。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
+            "text": "最大チャージ: {{C|10000}}\n基本チャージ獲得: ターンごとに{{C|400}}\n蓄えたチャージをすべて放出し、1000チャージごとに1d4ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。1000チャージごとに最大1体へ連鎖する。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
         },
         {
             "key": "mutation:Electrical Generation:rank:5",
             "context": "Chargen.Mutation.RankText",
-            "text": "最大チャージ: {{C|12000}}\n基本チャージ獲得: ターンごとに{{C|500}}\n蓄えたチャージをすべて放出し、チャージ1点ごとに4d1000ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。最大1チャージあたり1000体まで。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
+            "text": "最大チャージ: {{C|12000}}\n基本チャージ獲得: ターンごとに{{C|500}}\n蓄えたチャージをすべて放出し、1000チャージごとに1d4ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。1000チャージごとに最大1体へ連鎖する。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
         },
         {
             "key": "mutation:Electrical Generation:rank:6",
             "context": "Chargen.Mutation.RankText",
-            "text": "最大チャージ: {{C|14000}}\n基本チャージ獲得: ターンごとに{{C|600}}\n蓄えたチャージをすべて放出し、チャージ1点ごとに4d1000ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。最大1チャージあたり1000体まで。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
+            "text": "最大チャージ: {{C|14000}}\n基本チャージ獲得: ターンごとに{{C|600}}\n蓄えたチャージをすべて放出し、1000チャージごとに1d4ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。1000チャージごとに最大1体へ連鎖する。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
         },
         {
             "key": "mutation:Electrical Generation:rank:7",
             "context": "Chargen.Mutation.RankText",
-            "text": "最大チャージ: {{C|16000}}\n基本チャージ獲得: ターンごとに{{C|700}}\n蓄えたチャージをすべて放出し、チャージ1点ごとに4d1000ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。最大1チャージあたり1000体まで。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
+            "text": "最大チャージ: {{C|16000}}\n基本チャージ獲得: ターンごとに{{C|700}}\n蓄えたチャージをすべて放出し、1000チャージごとに1d4ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。1000チャージごとに最大1体へ連鎖する。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
         },
         {
             "key": "mutation:Electrical Generation:rank:8",
             "context": "Chargen.Mutation.RankText",
-            "text": "最大チャージ: {{C|18000}}\n基本チャージ獲得: ターンごとに{{C|800}}\n蓄えたチャージをすべて放出し、チャージ1点ごとに4d1000ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。最大1チャージあたり1000体まで。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
+            "text": "最大チャージ: {{C|18000}}\n基本チャージ獲得: ターンごとに{{C|800}}\n蓄えたチャージをすべて放出し、1000チャージごとに1d4ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。1000チャージごとに最大1体へ連鎖する。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
         },
         {
             "key": "mutation:Electrical Generation:rank:9",
             "context": "Chargen.Mutation.RankText",
-            "text": "最大チャージ: {{C|20000}}\n基本チャージ獲得: ターンごとに{{C|900}}\n蓄えたチャージをすべて放出し、チャージ1点ごとに4d1000ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。最大1チャージあたり1000体まで。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
+            "text": "最大チャージ: {{C|20000}}\n基本チャージ獲得: ターンごとに{{C|900}}\n蓄えたチャージをすべて放出し、1000チャージごとに1d4ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。1000チャージごとに最大1体へ連鎖する。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
         },
         {
             "key": "mutation:Electrical Generation:rank:10",
             "context": "Chargen.Mutation.RankText",
-            "text": "最大チャージ: {{C|22000}}\n基本チャージ獲得: ターンごとに{{C|1000}}\n蓄えたチャージをすべて放出し、チャージ1点ごとに4d1000ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。最大1チャージあたり1000体まで。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
+            "text": "最大チャージ: {{C|22000}}\n基本チャージ獲得: ターンごとに{{C|1000}}\n蓄えたチャージをすべて放出し、1000チャージごとに1d4ダメージを与える。\n放電は隣接目標へ連鎖し、ダメージは減少する。1000チャージごとに最大1体へ連鎖する。\nEMPで強制放電する（難易度18の意志力セーブ）。\nエネルギーセルやコンデンサからチャージを吸える。\n電撃ダメージを1受けるごとにチャージ100を得る。\n内蔵電源を持つ装備にチャージを供給できる。"
         },
         {
             "key": "mutation:Sleep Gas Generation:rank:1",

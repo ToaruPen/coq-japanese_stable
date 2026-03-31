@@ -52,7 +52,7 @@
     {
       "key": "You touched the chiming rock and attuned to Chavvah, the Tree of Life.",
       "context": "Qud.UI.Qud.API.JournalAPI",
-      "text": "鳴り響く岩に触れ、生命の樹チャヴァに同調した。"
+      "text": "鳴り響く岩に触れ、生命の木チャヴァに同調した。"
     },
     {
       "key": "You rejoiced in a drop of nectar.",
@@ -147,7 +147,7 @@
     {
       "key": "Thah gifted you a miraculous sculpture for helping the slynth.",
       "context": "Qud.UI.Qud.API.JournalAPI",
-      "text": "スリンスを助けた礼として、タァから奇跡の彫像を授かった。"
+      "text": "スリンスを助けた礼として、タハから奇跡の彫像を授かった。"
     },
     {
       "key": "You stumbled upon some flattened remains.",
@@ -187,7 +187,7 @@
     {
       "key": "The roaming keter of Chavvah, Tree of Life",
       "context": "Qud.UI.Qud.API.JournalAPI",
-      "text": "生命の樹チャヴァの放浪するケテル"
+      "text": "生命の木チャヴァの放浪するケテル"
     },
     {
       "key": "Bey Lah",
@@ -252,7 +252,7 @@
     {
       "key": "the Tomb of the Eaters",
       "context": "Qud.UI.Qud.API.JournalAPI",
-      "text": "喰らう者の墓"
+      "text": "喰らう者の墓所"
     },
     {
       "key": "the asphalt mines",
@@ -277,7 +277,7 @@
     {
       "key": "the Swilling Vast",
       "context": "Qud.UI.Qud.API.JournalAPI",
-      "text": "スウィリング・ヴァスト"
+      "text": "大呑の淵"
     }
   ]
 }

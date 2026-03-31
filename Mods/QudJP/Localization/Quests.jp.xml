@@ -36,7 +36,7 @@
     </step>
 
     <step Name="Recover the Amaranthine Prism" XP="3250">
-      <text>アマランサイン・プリズムを取り戻し、監視官インドリクスに返す。</text>
+      <text>黒いガラスを取り戻し、監視官インドリクスに返す。</text>
     </step>
 
   </quest>
@@ -239,12 +239,12 @@
   </quest>
 
   <quest Name="Pax Klanq, I Presume?"
-         Accomplishment="コーラルの道を歩み、キノコの天才パックス・クランクを説得してQガール設計のバッテリーを造らせた。"
+         Accomplishment="コーラルの道を歩み、キノコの天才パクス・クランクを説得してQガール設計のバッテリーを造らせた。"
          Hagiograph="宇宙の虚空で、石工＝name＝は星煉瓦でコーラルの道を築き、聖なる言葉でキノコと語らった。"
          HagiographCategory="TalksToThing"
-         Gospel="珊瑚と菌肉でできた異次元の大聖堂で、＝name＝はキノコ「パックス・クランク」と結婚し、真菌と関係を結んだ。">
+         Gospel="珊瑚と菌肉でできた異次元の大聖堂で、＝name＝はキノコ「パクス・クランク」と結婚し、真菌と関係を結んだ。">
     <step Name="Get Q Girl's Blueprints for the Climber" XP="0">
-      <text>クライマーの設計図を入手し、パックス・クランクに渡す。</text>
+      <text>クライマーの設計図を入手し、パクス・クランクに渡す。</text>
     </step>
     <step Name="Seek the Heart of the Rainbow" XP="0">
       <text>謎の第一部を解読する。</text>
@@ -256,7 +256,7 @@
       <text>謎の第三部を解読する。</text>
     </step>
     <step Name="Convince Pax Klanq to Construct the Climber" XP="0">
-      <text>パックス・クランクに、Qガールの設計でクライマーを作るよう同意させる。</text>
+      <text>パクス・クランクに、Qガールの設計でクライマーを作るよう同意させる。</text>
     </step>
     <step Name="Return to Grit Gate" XP="0">
       <text>グリット・ゲートに戻り、バラサラムに報告する。</text>
@@ -321,11 +321,11 @@
 
   <quest Name="The Buried Watchers"
          Accomplishment="墓に住むモパンゴの一団を訪ねた。"
-         Hagiograph="オモンポーチの食らう者の墓の奥深くで、＝name＝は秘儀を行うモパンゴの一族に出会った。彼／彼女／eyはスルタンを仲間に迎え、＝player.objective＝に秘奥を授けた。"
+         Hagiograph="オモンポーチの喰らう者の墓所の奥深くで、＝name＝は秘儀を行うモパンゴの一族に出会った。彼／彼女／eyはスルタンを仲間に迎え、＝player.objective＝に秘奥を授けた。"
          HagiographCategory="TalksToThing"
-         Gospel="オモンポーチの食らう者の墓の奥深くで、＝name＝は秘儀を行うモパンゴの一族に出会った。彼／彼女／eyは＝sultanTerm＝を仲間に迎え、＝player.objective＝に秘奥を授けた。">
+         Gospel="オモンポーチの喰らう者の墓所の奥深くで、＝name＝は秘儀を行うモパンゴの一族に出会った。彼／彼女／eyは＝sultanTerm＝を仲間に迎え、＝player.objective＝に秘奥を授けた。">
     <step Name="Visit the Mopango Settlement in the Tomb of the Eaters" XP="0">
-      <text>食らう者の墓の北西墓地にいる友好的なタレット、ヴィヴィラを見つけ、ゾソムが寄越したと伝える。</text>
+      <text>喰らう者の墓所の北西墓地にいる友好的なタレット、ビヴィラを見つけ、ゾソムが寄越したと伝える。</text>
     </step>
   </quest>
 
@@ -337,7 +337,7 @@
       <text>フォーク地下墓地でk-ゴニノンを探し、反発装置を回収する。</text>
     </step>
     <step Name="Speak with the Watchers" XP="0">
-      <text>モパンゴ監視者ダドゴム、ドヨバ、ジャミョ、ヨナに反発装置について尋ねる。</text>
+      <text>モパンゴ監視者ダドゴム、ドヨバ、ギャミオ、ヨナに反発装置について尋ねる。</text>
     </step>
     <step Name="Use the Repulsive Device" XP="0">
       <text>反発装置をどう使うか決める。</text>
@@ -345,7 +345,7 @@
   </quest>
 
   <quest Name="Tomb of the Eaters"
-         Accomplishment="食らう者の墓から帰還し、スピンドルの磁場を停止させた。">
+         Accomplishment="喰らう者の墓所から帰還し、スピンドルの磁場を停止させた。">
     <step Name="Recover the Mark of Death" XP="0">
       <text>食らう者が死者に刻む失われた印章を取り戻す。</text>
     </step>
@@ -356,7 +356,7 @@
       <text>封印された墓に入る方法を得る。</text>
     </step>
     <step Name="Ascend the Tomb and Cross into Brightsheol" XP="0">
-      <text>墓を登り、レシェフの埋葬室を見つける。そこからブライトシールへ渡る方法を探す。</text>
+      <text>墓を登り、レシェフの埋葬室を見つける。そこからブライトシェオルへ渡る方法を探す。</text>
     </step>
     <step Name="Disable the Spindle's Magnetic Field" XP="0">
       <text>スピンドルの制御装置にアクセスし、磁場を停止させる。</text>
@@ -368,19 +368,19 @@
 
   <quest Name="Landing Pads">
     <step Name="Consult Settlements" XP="0">
-      <text>少なくとも3つの集落の指導者を説得し、スリンとを受け入れさせる。</text>
+      <text>少なくとも3つの集落の指導者を説得し、スリンスを受け入れさせる。</text>
     </step>
     <step Name="Sanctuary Candidates" XP="0">
-      <text>以下の派閥がスリンとの受け入れに同意した。</text>
+      <text>以下の派閥がスリンスの受け入れに同意した。</text>
     </step>
     <step Name="Bid the Slynth to Choose" XP="0">
-      <text>タアに話しかけ、スリンとを招集して決断させる。</text>
+      <text>タハに話しかけ、スリンスを招集して決断させる。</text>
     </step>
   </quest>
 
   <quest Name="Return to the Hydropon">
     <step Name="Return to the Hydropon" XP="0">
-      <text>スリンとが新居に到着したら、ハイドロポンでタアに話しかける。</text>
+      <text>スリンスが新居に到着したら、ハイドロポンでタハに話しかける。</text>
     </step>
   </quest>
 
@@ -399,14 +399,14 @@
       <text>タップルートにチャイムを触れさせ、-else化の儀式を終える。</text>
     </step>
     <step Name="Return to the Keter" XP="0">
-      <text>ケテルへ戻り、ディヴヴラフと話す。</text>
+      <text>ケテルへ戻り、ディヴラックと話す。</text>
     </step>
   </quest>
 
   <quest Name="The Golem"
          Accomplishment="">
     <step ID="Soup" Name="Procure the Sanguine Fluid" XP="0">
-      <text>パックス・クランクに原始スープを20ドラム届ける。</text>
+      <text>パクス・クランクに原始スープを20ドラム届ける。</text>
     </step>
     <step ID="Body" Name="Choose a Body" XP="0">
       <text>レベル30以上の従者を提供する。</text>

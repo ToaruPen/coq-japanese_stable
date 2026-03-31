@@ -1055,7 +1055,7 @@
     },
     {
       "pattern": "^With the help of Pax Klanq and the Barathrumites, you constructed (.+?)\\.$",
-      "template": "パクス・クランクとバラスルム派の助けを借りて{0}を建造した。",
+      "template": "パクス・クランクとバラサラム派の助けを借りて{0}を建造した。",
       "route": "emit-message"
     },
     {

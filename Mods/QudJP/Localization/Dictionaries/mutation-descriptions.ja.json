@@ -282,7 +282,7 @@
     {
       "key": "mutation:Photosynthetic Skin",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "たくましい緑の皮膚で日光を吸収し、そこから養分を得る。\n\n食事の代わりに日光浴して{{rules|1 day}}のあいだ特別な代謝効果を得られる: 自然回復速度が{{rules|+30%}}、俊敏が{{rules|+15}}。\n日光の下にいるとデンプンとリグニンを蓄え、調理にそれぞれ{{rules|1}}食分まで使える。\n植生と同じマスにいるあいだはDVに{{rules|+1}}の迷彩ボーナス。\n{{w|根}}、{{w|木々}}、{{w|蔦}}、{{w|コンソーシアム・オブ・ファイタ}}との評判+200。"
+      "text": "たくましい緑の皮膚で日光を吸収し、そこから養分を得る。\n\n食事の代わりに日光浴して{{rules|1日}}のあいだ特別な代謝効果を得られる: 自然回復速度が{{rules|+30%}}、俊敏が{{rules|+15}}。\n日光の下にいるとデンプンとリグニンを蓄え、調理にそれぞれ{{rules|1}}食分まで使える。\n植生と同じマスにいるあいだはDVに{{rules|+1}}の迷彩ボーナス。\n{{w|根}}、{{w|木々}}、{{w|蔦}}、{{w|フィタ・コンソーシアム（植物連合）}}との評判+200。"
     },
     {
       "key": "mutation:Plasma Emission",
@@ -352,17 +352,17 @@
     {
       "key": "mutation:Stinger (Confusing Venom)",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "臀部の毒針を持つ。長刃扱いで突撃・跳躍時は必ず刺突し、近接攻撃の{{rules|20%}}で敵を刺す。\n\n刺突では混乱毒を与え、能動アビリティ「Sting」で確実に命中・貫通する。"
+      "text": "臀部の毒針を持つ。長刃扱いで突撃・跳躍時は必ず刺突し、近接攻撃の{{rules|20%}}で敵を刺す。\n\n刺突では混乱毒を与え、能動アビリティ「刺突」で確実に命中・貫通する。"
     },
     {
       "key": "mutation:Stinger (Paralyzing Venom)",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "臀部の毒針を持つ。長刃扱いで突撃・跳躍時は必ず刺突し、近接攻撃の{{rules|20%}}で敵を刺す。\n\n刺突では麻痺毒を与え、能動アビリティ「Sting」で確実に命中・貫通する。"
+      "text": "臀部の毒針を持つ。長刃扱いで突撃・跳躍時は必ず刺突し、近接攻撃の{{rules|20%}}で敵を刺す。\n\n刺突では麻痺毒を与え、能動アビリティ「刺突」で確実に命中・貫通する。"
     },
     {
       "key": "mutation:Stinger (Poisoning Venom)",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "臀部の毒針を持つ。長刃扱いで突撃・跳躍時は必ず刺突し、近接攻撃の{{rules|20%}}で敵を刺す。\n\n刺突では衰弱毒を与え、能動アビリティ「Sting」で確実に命中・貫通する。"
+      "text": "臀部の毒針を持つ。長刃扱いで突撃・跳躍時は必ず刺突し、近接攻撃の{{rules|20%}}で敵を刺す。\n\n刺突では衰弱毒を与え、能動アビリティ「刺突」で確実に命中・貫通する。"
     },
     {
       "key": "mutation:Stun Breath",

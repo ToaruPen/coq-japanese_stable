@@ -19,7 +19,7 @@
     <mutation Name="Heightened Hearing" Cost="2" MaxSelected="1" Class="HeightenedHearing" Exclusions="" Tile="Mutations/heightened_hearing.bmp" DisplayName="強化聴覚" />
     <mutation Name="Heightened Quickness" Cost="3" MaxSelected="1" Class="HeightenedSpeed" Exclusions="" Tile="Mutations/heightened_quickness.bmp" DisplayName="強化俊敏" />
     <mutation Name="Horns" Cost="4" MaxSelected="1" Class="Horns" Exclusions="" Tile="Mutations/horns.bmp" DisplayName="角" />
-    <mutation Name="Metamorphosis" Cost="4" MaxSelected="1" Class="Metamorphosis" Exclusions="" Prerelease="true" Tile="Mutations/metamorphosis.bmp" DisplayName="変態" />
+    <mutation Name="Metamorphosis" Cost="4" MaxSelected="1" Class="Metamorphosis" Exclusions="" Prerelease="true" Tile="Mutations/metamorphosis.bmp" DisplayName="変容" />
     <mutation Name="Multiple Arms" Cost="4" MaxSelected="1" Class="MultipleArms" Exclusions="" Tile="Mutations/multiple_arms.bmp" DisplayName="多腕" />
     <mutation Name="Multiple Legs" Cost="5" MaxSelected="1" Class="MultipleLegs" Exclusions="" Tile="Mutations/multiple_legs.bmp" DisplayName="多脚" />
     <mutation Name="Night Vision" Cost="1" MaxSelected="1" Class="DarkVision" Exclusions="" Tile="Mutations/night_vision_mutation.bmp" DisplayName="暗視" />
