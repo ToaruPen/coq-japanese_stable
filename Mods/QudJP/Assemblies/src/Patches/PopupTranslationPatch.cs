@@ -50,6 +50,34 @@ public static class PopupTranslationPatch
         new Regex("^That save file looks like it's from an older save format revision \\((?<value>.+?)\\)\\. Sorry!\\n\\nYou can probably change to a previous branch in your game client and get it to load if you want to finish it off\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex XRLCoreGameInfoPattern =
         new Regex("^\\s+(?<mode>.+?) mode\\.\\s+Turn (?<turn>\\d+)\\s+World seed: (?<seed>.+?)\\s+$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CampfireStaunchPassThroughPattern =
+        new Regex("^You try to staunch the wounds of (?<value>.+?), but your limbs pass through .+\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CampfireStaunchCannotAffectPattern =
+        new Regex("^You try to staunch the wounds of (?<value>.+?), but cannot affect .+\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CampfireStaunchPartialPattern =
+        new Regex("^You staunch the wounds of (?<value>.+?), though some are too deep to treat\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CampfireStaunchFullPattern =
+        new Regex("^You staunch the wounds of (?<value>.+?)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CampfireWoundsTooDeepPattern =
+        new Regex("^(?<value>.+?) are too deep to treat\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CampfireNeitherBleedingPattern =
+        new Regex("^Neither you nor (?<value>.+) are bleeding\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CampfireNoMedicinalPattern =
+        new Regex("^You have no medicinal ingredients with which to treat the poison coursing through (?<value>.+?)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CampfirePoisonPassThroughPattern =
+        new Regex("^You try to cure the poison coursing through (?<value>.+?), but your limbs pass through .+\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CampfirePoisonCannotAffectPattern =
+        new Regex("^You try to cure the poison coursing through (?<value>.+?), but cannot affect .+\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CampfirePoisonIneffectivePattern =
+        new Regex("^You try to cure the poison coursing through (?<value>.+?), but your cures are ineffective\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CampfireCurePoisonPattern =
+        new Regex("^You cure the (?<poison>poison|poisons) coursing through (?<target>.+?) with a balm made from (?<ingredient>.+?)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CampfireNewRecipePattern =
+        new Regex("^You create a new recipe for \\{\\{\\|(?<value>.+?)\\}\\}!$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CampfireMetabolizePattern =
+        new Regex("^You start to metabolize the meal, gaining the following effect for the rest of the day:\\n\\n\\{\\{W\\|(?<value>.+?)\\}\\}$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CampfirePreservePattern =
+        new Regex("^(?<item>.+): how many do you want to preserve\\? \\(max = (?<max>.+)\\)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     // ShowBlock parameter count for game version 2.0.4
     private const int ShowBlockParameterCount = 8;
@@ -515,6 +543,184 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".CampfireStaunchPassThrough",
+                CampfireStaunchPassThroughPattern,
+                "You try to staunch the wounds of {0}, but your limbs pass through them.",
+                spans,
+                out var campfireStaunchPassThroughTranslated))
+        {
+            translated = campfireStaunchPassThroughTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".CampfireStaunchCannotAffect",
+                CampfireStaunchCannotAffectPattern,
+                "You try to staunch the wounds of {0}, but cannot affect them.",
+                spans,
+                out var campfireStaunchCannotAffectTranslated))
+        {
+            translated = campfireStaunchCannotAffectTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".CampfireStaunchPartial",
+                CampfireStaunchPartialPattern,
+                "You staunch the wounds of {0}, though some are too deep to treat.",
+                spans,
+                out var campfireStaunchPartialTranslated))
+        {
+            translated = campfireStaunchPartialTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".CampfireStaunchFull",
+                CampfireStaunchFullPattern,
+                "You staunch the wounds of {0}.",
+                spans,
+                out var campfireStaunchFullTranslated))
+        {
+            translated = campfireStaunchFullTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".CampfireWoundsTooDeep",
+                CampfireWoundsTooDeepPattern,
+                "{0} are too deep to treat.",
+                spans,
+                out var campfireWoundsTooDeepTranslated))
+        {
+            translated = campfireWoundsTooDeepTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".CampfireNeitherBleeding",
+                CampfireNeitherBleedingPattern,
+                "Neither you nor {0} are bleeding.",
+                spans,
+                out var campfireNeitherBleedingTranslated))
+        {
+            translated = campfireNeitherBleedingTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".CampfireNoMedicinal",
+                CampfireNoMedicinalPattern,
+                "You have no medicinal ingredients with which to treat the poison coursing through {0}.",
+                spans,
+                out var campfireNoMedicinalTranslated))
+        {
+            translated = campfireNoMedicinalTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".CampfirePoisonPassThrough",
+                CampfirePoisonPassThroughPattern,
+                "You try to cure the poison coursing through {0}, but your limbs pass through them.",
+                spans,
+                out var campfirePoisonPassThroughTranslated))
+        {
+            translated = campfirePoisonPassThroughTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".CampfirePoisonCannotAffect",
+                CampfirePoisonCannotAffectPattern,
+                "You try to cure the poison coursing through {0}, but cannot affect them.",
+                spans,
+                out var campfirePoisonCannotAffectTranslated))
+        {
+            translated = campfirePoisonCannotAffectTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".CampfirePoisonIneffective",
+                CampfirePoisonIneffectivePattern,
+                "You try to cure the poison coursing through {0}, but your cures are ineffective.",
+                spans,
+                out var campfirePoisonIneffectiveTranslated))
+        {
+            translated = campfirePoisonIneffectiveTranslated;
+            return true;
+        }
+
+        if (TryTranslateCampfireCurePoison(
+                stripped,
+                route,
+                family + ".CampfireCurePoison",
+                spans,
+                out var campfireCurePoisonTranslated))
+        {
+            translated = campfireCurePoisonTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                source,
+                route,
+                family + ".CampfireNewRecipe",
+                CampfireNewRecipePattern,
+                "You create a new recipe for {{|{0}}}!",
+                Array.Empty<ColorSpan>(),
+                out var campfireNewRecipeTranslated))
+        {
+            translated = campfireNewRecipeTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                source,
+                route,
+                family + ".CampfireMetabolize",
+                CampfireMetabolizePattern,
+                "You start to metabolize the meal, gaining the following effect for the rest of the day:\n\n{{W|{0}}}",
+                Array.Empty<ColorSpan>(),
+                out var campfireMetabolizeTranslated))
+        {
+            translated = campfireMetabolizeTranslated;
+            return true;
+        }
+
+        if (TryTranslateCampfirePreserve(
+                stripped,
+                route,
+                family + ".CampfirePreserve",
+                spans,
+                out var campfirePreserveTranslated))
+        {
+            translated = campfirePreserveTranslated;
+            return true;
+        }
+
         if (ShouldTryMessagePatternFallback(route))
         {
             var patternTranslated = MessagePatternTranslator.Translate(source, route);
@@ -565,6 +771,95 @@ public static class PopupTranslationPatch
         }
 
         translated = translatedTemplate.Replace("{0}", value);
+        if (spans.Count > 0)
+        {
+            var boundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(spans, match, source.Length, translated.Length);
+            translated = ColorAwareTranslationComposer.Restore(translated, boundarySpans);
+        }
+
+        DynamicTextObservability.RecordTransform(route, family, source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateCampfireCurePoison(
+        string source,
+        string route,
+        string family,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated)
+    {
+        var match = CampfireCurePoisonPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        const string templateKey = "You cure the {0} coursing through {1} with a balm made from {2}.";
+        var translatedTemplate = Translator.Translate(templateKey);
+        if (string.Equals(translatedTemplate, templateKey, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var poison = match.Groups["poison"].Value;
+        var target = match.Groups["target"].Value;
+        var ingredient = match.Groups["ingredient"].Value;
+        if (spans.Count > 0)
+        {
+            poison = ColorAwareTranslationComposer.RestoreCapture(poison, spans, match.Groups["poison"]);
+            target = ColorAwareTranslationComposer.RestoreCapture(target, spans, match.Groups["target"]);
+            ingredient = ColorAwareTranslationComposer.RestoreCapture(ingredient, spans, match.Groups["ingredient"]);
+        }
+
+        translated = translatedTemplate
+            .Replace("{0}", poison)
+            .Replace("{1}", target)
+            .Replace("{2}", ingredient);
+        if (spans.Count > 0)
+        {
+            var boundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(spans, match, source.Length, translated.Length);
+            translated = ColorAwareTranslationComposer.Restore(translated, boundarySpans);
+        }
+
+        DynamicTextObservability.RecordTransform(route, family, source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateCampfirePreserve(
+        string source,
+        string route,
+        string family,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated)
+    {
+        var match = CampfirePreservePattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        const string templateKey = "{0}: how many do you want to preserve? (max = {1})";
+        var translatedTemplate = Translator.Translate(templateKey);
+        if (string.Equals(translatedTemplate, templateKey, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var item = match.Groups["item"].Value;
+        var max = match.Groups["max"].Value;
+        if (spans.Count > 0)
+        {
+            item = ColorAwareTranslationComposer.RestoreCapture(item, spans, match.Groups["item"]);
+            max = ColorAwareTranslationComposer.RestoreCapture(max, spans, match.Groups["max"]);
+        }
+
+        translated = translatedTemplate
+            .Replace("{0}", item)
+            .Replace("{1}", max);
         if (spans.Count > 0)
         {
             var boundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(spans, match, source.Length, translated.Length);

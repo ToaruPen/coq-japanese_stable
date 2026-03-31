@@ -1355,6 +1355,10 @@
             "text": "あなたも近くの仲間も出血していない。"
         },
         {
+            "key": "Neither you nor {0} are bleeding.",
+            "text": "あなたも{0}も出血していない。"
+        },
+        {
             "key": "Neither you nor any of your nearby companions are ill.",
             "context": "XRL.UI.Popup.ShowFail.Message",
             "text": "あなたも近くの仲間も病気ではない。"
@@ -2528,6 +2532,14 @@
             "text": "混濁した頭から水を振り払うが、すでに他人の思考が根を下ろしている。"
         },
         {
+            "key": "You staunch the wounds of {0}, though some are too deep to treat.",
+            "text": "{0}の傷を止血したが、深すぎて処置できないものもある。"
+        },
+        {
+            "key": "You staunch the wounds of {0}.",
+            "text": "{0}の傷を止血した。"
+        },
+        {
             "key": "You should view the tooltip before equipping the axe.",
             "context": "XRL.UI.Popup.Show.Message",
             "text": "斧を装備する前にツールチップを見ておけ。"
@@ -2541,6 +2553,50 @@
             "key": "You staunch your wounds.",
             "context": "XRL.UI.Popup.Show.Message",
             "text": "傷口を止血する。"
+        },
+        {
+            "key": "You try to staunch the wounds of {0}, but your limbs pass through them.",
+            "text": "{0}の傷を止血しようとするが、手が体をすり抜ける。"
+        },
+        {
+            "key": "You try to staunch the wounds of {0}, but cannot affect them.",
+            "text": "{0}の傷を止血しようとするが、影響を与えられない。"
+        },
+        {
+            "key": "{0} are too deep to treat.",
+            "text": "{0}は深すぎて処置できない。"
+        },
+        {
+            "key": "You have no medicinal ingredients with which to treat the poison coursing through {0}.",
+            "text": "{0}を蝕む毒を治療する薬用素材がない。"
+        },
+        {
+            "key": "You try to cure the poison coursing through {0}, but your limbs pass through them.",
+            "text": "{0}を蝕む毒を治そうとするが、手が体をすり抜ける。"
+        },
+        {
+            "key": "You try to cure the poison coursing through {0}, but cannot affect them.",
+            "text": "{0}を蝕む毒を治そうとするが、影響を与えられない。"
+        },
+        {
+            "key": "You try to cure the poison coursing through {0}, but your cures are ineffective.",
+            "text": "{0}を蝕む毒を治そうとするが、治療が効かない。"
+        },
+        {
+            "key": "You cure the {0} coursing through {1} with a balm made from {2}.",
+            "text": "{2}で作った塗り薬で{1}を蝕む毒を治した。"
+        },
+        {
+            "key": "You create a new recipe for {{|{0}}}!",
+            "text": "{{|{0}}}の新しいレシピを生み出した！"
+        },
+        {
+            "key": "You start to metabolize the meal, gaining the following effect for the rest of the day:\n\n{{W|{0}}}",
+            "text": "食事を消化し始め、今日の残りの間、以下の効果を得る:\n\n{{W|{0}}}"
+        },
+        {
+            "key": "{0}: how many do you want to preserve? (max = {1})",
+            "text": "{0}: いくつ保存するか？ (最大 = {1})"
         },
         {
             "key": "You think you've made a terrible mistake...",

@@ -590,6 +590,96 @@ public sealed class PopupTranslationPatchTests
             Is.EqualTo("\n\n           Classicモード\n\n           ターン12345\n\n          ワールドシード: QUD-SEED     \n\n\n   "));
     }
 
+    [TestCase(
+        "You try to staunch the wounds of {0}, but your limbs pass through them.",
+        "{0}の傷を止血しようとするが、手が体をすり抜ける。",
+        "You try to staunch the wounds of {{C|salt kraken}}, but your limbs pass through them.",
+        "{{C|salt kraken}}の傷を止血しようとするが、手が体をすり抜ける。")]
+    [TestCase(
+        "You try to staunch the wounds of {0}, but cannot affect them.",
+        "{0}の傷を止血しようとするが、影響を与えられない。",
+        "You try to staunch the wounds of frozen cherub, but cannot affect them.",
+        "frozen cherubの傷を止血しようとするが、影響を与えられない。")]
+    [TestCase(
+        "You staunch the wounds of {0}, though some are too deep to treat.",
+        "{0}の傷を止血したが、深すぎて処置できないものもある。",
+        "You staunch the wounds of {{Y|warden}}, though some are too deep to treat.",
+        "{{Y|warden}}の傷を止血したが、深すぎて処置できないものもある。")]
+    [TestCase(
+        "You staunch the wounds of {0}.",
+        "{0}の傷を止血した。",
+        "You staunch the wounds of goatfolk pariah.",
+        "goatfolk pariahの傷を止血した。")]
+    [TestCase(
+        "{0} are too deep to treat.",
+        "{0}は深すぎて処置できない。",
+        "your wounds are too deep to treat.",
+        "your woundsは深すぎて処置できない。")]
+    [TestCase(
+        "Neither you nor {0} are bleeding.",
+        "あなたも{0}も出血していない。",
+        "Neither you nor {{M|Eskhind}} are bleeding.",
+        "あなたも{{M|Eskhind}}も出血していない。")]
+    [TestCase(
+        "You have no medicinal ingredients with which to treat the poison coursing through {0}.",
+        "{0}を蝕む毒を治療する薬用素材がない。",
+        "You have no medicinal ingredients with which to treat the poison coursing through snapjaw scavenger.",
+        "snapjaw scavengerを蝕む毒を治療する薬用素材がない。")]
+    [TestCase(
+        "You try to cure the poison coursing through {0}, but your limbs pass through them.",
+        "{0}を蝕む毒を治そうとするが、手が体をすり抜ける。",
+        "You try to cure the poison coursing through {{G|salt weep}}, but your limbs pass through them.",
+        "{{G|salt weep}}を蝕む毒を治そうとするが、手が体をすり抜ける。")]
+    [TestCase(
+        "You try to cure the poison coursing through {0}, but cannot affect them.",
+        "{0}を蝕む毒を治そうとするが、影響を与えられない。",
+        "You try to cure the poison coursing through frozen cherub, but cannot affect them.",
+        "frozen cherubを蝕む毒を治そうとするが、影響を与えられない。")]
+    [TestCase(
+        "You try to cure the poison coursing through {0}, but your cures are ineffective.",
+        "{0}を蝕む毒を治そうとするが、治療が効かない。",
+        "You try to cure the poison coursing through goatfolk hero, but your cures are ineffective.",
+        "goatfolk heroを蝕む毒を治そうとするが、治療が効かない。")]
+    [TestCase(
+        "You create a new recipe for {{|{0}}}!",
+        "{{|{0}}}の新しいレシピを生み出した！",
+        "You create a new recipe for {{|starapple stew}}!",
+        "{{|starapple stew}}の新しいレシピを生み出した！")]
+    [TestCase(
+        "You start to metabolize the meal, gaining the following effect for the rest of the day:\n\n{{W|{0}}}",
+        "食事を消化し始め、今日の残りの間、以下の効果を得る:\n\n{{W|{0}}}",
+        "You start to metabolize the meal, gaining the following effect for the rest of the day:\n\n{{W|+5 to heat resistance}}",
+        "食事を消化し始め、今日の残りの間、以下の効果を得る:\n\n{{W|+5 to heat resistance}}")]
+    public void TranslatePopupTextForProducerRoute_TranslatesCampfireSinglePlaceholderPatterns(
+        string templateKey,
+        string templateText,
+        string source,
+        string expected)
+    {
+        WriteDictionary((templateKey, templateText));
+
+        var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(source, nameof(PopupTranslationPatch));
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void TranslatePopupTextForProducerRoute_TranslatesCampfireCurePoisonPattern()
+    {
+        WriteDictionary((
+            "You cure the {0} coursing through {1} with a balm made from {2}.",
+            "{2}で作った塗り薬で{1}を蝕む毒を治した。"));
+
+        const string source =
+            "You cure the poisons coursing through {{G|snapjaw scavenger}} with a balm made from {{Y|witchwood bark}}.";
+
+        var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(source, nameof(PopupTranslationPatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{Y|witchwood bark}}で作った塗り薬で{{G|snapjaw scavenger}}を蝕む毒を治した。"));
+    }
+
     [Test]
     public void Prefix_StripsDirectTranslationMarkerAndSkipsTranslation()
     {
