@@ -1,0 +1,84 @@
+{
+  "meta": {
+    "id": "ui-scores",
+    "lang": "ja",
+    "version": "0.1.0",
+    "description": "Score / leaderboard / achievement screen UI strings"
+  },
+  "rules": {
+    "protectColorTags": true,
+    "protectHtmlEntities": true
+  },
+  "entries": [
+    {
+      "key": "Achievements",
+      "context": "Qud.UI.HighScoresScreen.MenuOption.Description",
+      "text": "実績"
+    },
+    {
+      "key": "Ended Runs",
+      "context": "Qud.UI.HighScoresScreen.MenuOption.Description",
+      "text": "終了した冒険"
+    },
+    {
+      "key": "Daily (steam)",
+      "context": "Qud.UI.HighScoresScreen.MenuOption.Description",
+      "text": "デイリー (Steam)"
+    },
+    {
+      "key": "Daily (friends)",
+      "context": "Qud.UI.HighScoresScreen.MenuOption.Description",
+      "text": "デイリー (フレンド)"
+    },
+    {
+      "key": "Previous Day",
+      "context": "Qud.UI.HighScoresScreen.MenuOption.Description",
+      "text": "前日"
+    },
+    {
+      "key": "Next Day",
+      "context": "Qud.UI.HighScoresScreen.MenuOption.Description",
+      "text": "翌日"
+    },
+    {
+      "key": "{{W|ACHIEVEMENTS}}",
+      "context": "Qud.UI.HighScoresScreen.titleText",
+      "text": "{{W|実績}}"
+    },
+    {
+      "key": "{{W|ENDED RUNS}}",
+      "context": "Qud.UI.HighScoresScreen.titleText",
+      "text": "{{W|終了した冒険}}"
+    },
+    {
+      "key": "Fetching leaderboard",
+      "context": "Qud.UI.HighScoresScreen",
+      "text": "リーダーボードを取得中"
+    },
+    {
+      "key": "Empty leaderboard",
+      "context": "Qud.UI.HighScoresScreen",
+      "text": "リーダーボードが空です"
+    },
+    {
+      "key": " (friends only)",
+      "context": "Qud.UI.HighScoresScreen.titleText",
+      "text": " (フレンドのみ)"
+    },
+    {
+      "key": "{N} hidden achievements remaining",
+      "context": "Qud.UI.AchievementViewRow.Name.SetText",
+      "text": "残り{N}件の隠し実績"
+    },
+    {
+      "key": "Details will be revealed once unlocked.",
+      "context": "Qud.UI.AchievementViewRow.Description.SetText",
+      "text": "解除すると詳細が表示されます。"
+    },
+    {
+      "key": "Unlocked ",
+      "context": "Qud.UI.AchievementViewRow.Date.SetText",
+      "text": "解除日: "
+    }
+  ]
+}

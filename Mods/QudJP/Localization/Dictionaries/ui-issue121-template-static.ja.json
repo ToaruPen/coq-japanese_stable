@@ -27,16 +27,6 @@
       "context": "TinkeringDetailsLine.modBitCostText"
     },
     {
-      "key": "Unlocked ",
-      "text": "解除: ",
-      "context": "AchievementViewRow.Date.SetText"
-    },
-    {
-      "key": " hidden achievements remaining",
-      "text": "件の隠し実績が残っています",
-      "context": "AchievementViewRow.Name.SetText"
-    },
-    {
       "key": "Location:",
       "text": "場所:",
       "context": "SaveManagementRow.TextSkins[1]"

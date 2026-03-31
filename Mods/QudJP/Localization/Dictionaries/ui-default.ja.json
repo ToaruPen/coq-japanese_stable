@@ -918,24 +918,9 @@
       "text": "氷に閉じ込められた狂信者が、聞き取れないほどに呟いた。"
     },
     {
-      "key": "Details will be revealed once unlocked.",
-      "context": "Qud.UI.AchievementViewRow",
-      "text": "解除後に詳細が表示されます。"
-    },
-    {
       "key": "{{C|[Morphotype]}}",
       "context": "Qud.UI.CharacterStatusScreen",
       "text": "{{C|[モーフォタイプ]}}"
-    },
-    {
-      "key": "{{W|ACHIEVEMENTS}}",
-      "context": "Qud.UI.HighScoresScreen",
-      "text": "{{W|実績}}"
-    },
-    {
-      "key": "{{W|ENDED RUNS}}",
-      "context": "Qud.UI.HighScoresScreen",
-      "text": "{{W|終了した冒険}}"
     },
     {
       "key": "{{K|[none]}}",
@@ -986,10 +971,6 @@
     {
       "key": "-or-",
       "text": "または"
-    },
-    {
-      "key": " (friends only)",
-      "text": " (フレンドのみ)"
     },
     {
       "key": "Configuring Controller: Keyboard && Mouse",
@@ -1101,16 +1082,6 @@
       "key": "switch to build",
       "context": "Qud.UI.TinkeringStatusScreen",
       "text": "製作に切り替え"
-    },
-    {
-      "key": "Fetching leaderboard",
-      "context": "Qud.UI.HighScoresScreen",
-      "text": "リーダーボードを取得中"
-    },
-    {
-      "key": "Empty leaderboard",
-      "context": "Qud.UI.HighScoresScreen",
-      "text": "リーダーボードは空です"
     }
   ]
 }
