@@ -98,11 +98,11 @@
         },
         {
             "key": "Do you really want to attack the {0}?",
-            "text": "本当に{0}を攻撃しますか？"
+            "text": "本当に{0}を攻撃するか？"
         },
         {
             "key": "Do you really want to attack {0}?",
-            "text": "本当に{0}を攻撃しますか？"
+            "text": "本当に{0}を攻撃するか？"
         },
         {
             "key": "The {0} refuses to speak to you.",
@@ -110,7 +110,7 @@
         },
         {
             "key": "That is not owned by you. Are you sure you want to open it?",
-            "text": "それはあなたの所有物ではない。本当に開けますか？"
+            "text": "それはあなたの所有物ではない。本当に開けるか？"
         },
         {
             "key": "Are you sure you want to delete the save game for {0}?",
@@ -163,7 +163,7 @@
         },
         {
             "key": "Would you like to walk to the nearest stairway down?",
-            "text": "最寄りの下り階段まで移動しますか？"
+            "text": "最寄りの下り階段まで移動するか？"
         },
         {
             "key": "drop",
@@ -223,11 +223,11 @@
         },
         {
             "key": "How long would you like to sleep?",
-            "text": "どれくらい眠りますか？"
+            "text": "どれくらい眠るか？"
         },
         {
             "key": "There's nothing on that. Would you like to store an item?",
-            "text": "そこには何も置かれていません。アイテムを預けますか？"
+            "text": "そこには何も置かれていない。アイテムを預けるか？"
         },
         {
             "key": "You need a dram of either blood or putrescence to desecrate a shrine.",
@@ -353,12 +353,12 @@
         {
             "key": "What do you want to draw?",
             "context": "Popup.AskString.Prompt",
-            "text": "何を描きますか？"
+            "text": "何を描くか？"
         },
         {
             "key": "Describe your engraving. For example: \"a tiny snail\".",
             "context": "Popup.AskString.Prompt",
-            "text": "刻印の内容を入力してください。例: \\\"a tiny snail\\\"."
+            "text": "刻印の内容を入力せよ。例: \\\"a tiny snail\\\"。"
         },
         {
             "key": "[~Accept] Continue",
@@ -602,7 +602,7 @@
         {
             "key": "You don't have anything to use in that slot.",
             "context": "Qud.UI.PopupMessage.ShowPopup.Message",
-            "text": "そのスロットで使えるものがありません。"
+            "text": "そのスロットで使えるものがない。"
         },
         {
             "key": "For how many rounds would you like to set the timer? (max=10)",
@@ -647,7 +647,7 @@
         {
             "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\nType 'ABANDON' to confirm.",
             "context": "XRL.UI.Popup.AskString.Prompt",
-            "text": "セーブせずに終了すると未保存の進行状況がすべて失われる。本当に終了して進行状況を失うか？\n\n「ABANDON」と入力すると確定する。"
+            "text": "セーブせずに終了すると未保存の進行状況がすべて失われます。本当に終了して進行状況を失いますか？\n\n「ABANDON」と入力すると確定します。"
         },
         {
             "key": "Your wish is my command!",
@@ -972,22 +972,22 @@
         {
             "key": "Are you sure you want to RESET ALL YOUR ACHIEVEMENTS?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "本当に実績をすべてリセットするか？"
+            "text": "本当に実績をすべてリセットしますか？"
         },
         {
             "key": "Are you sure you want to delete this entry?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "本当にこの項目を削除するか？"
+            "text": "本当にこの項目を削除しますか？"
         },
         {
             "key": "Are you sure you want to delete this saved game?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "本当にこのセーブデータを削除するか？"
+            "text": "本当にこのセーブデータを削除しますか？"
         },
         {
             "key": "Are you sure you want to discard your changes?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "本当に変更を破棄するか？"
+            "text": "本当に変更を破棄しますか？"
         },
         {
             "key": "Are you sure you want to forget this recipe?",
@@ -1002,7 +1002,7 @@
         {
             "key": "Are you sure you want to save and quit?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "本当にセーブして終了するか？"
+            "text": "本当にセーブして終了しますか？"
         },
         {
             "key": "Are you sure you want to sunder your own mind?",
@@ -1067,7 +1067,7 @@
         {
             "key": "Do you want to save first?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "先にセーブするか？"
+            "text": "先にセーブしますか？"
         },
         {
             "key": "Do you want to stop travelling?",
@@ -1132,12 +1132,12 @@
         {
             "key": "Load your last quick save?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "最後のクイックセーブを読み込むか？"
+            "text": "最後のクイックセーブを読み込みますか？"
         },
         {
             "key": "Quick save the game?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "クイックセーブするか？"
+            "text": "クイックセーブしますか？"
         },
         {
             "key": "Test1",
@@ -1526,7 +1526,7 @@
         {
             "key": "This saved game predates world seed info.",
             "context": "XRL.UI.Popup.ShowFail.Message",
-            "text": "このセーブデータはワールドシード情報より前のものだ。"
+            "text": "このセーブデータはワールドシード情報より前のものです。"
         },
         {
             "key": "That save file looks like it's from an older save format revision ({0}). Sorry!\nYou can probably change to a previous branch in your game client and get it to load if you want to finish it off.",
@@ -1774,7 +1774,7 @@
         {
             "key": "You have no existing saved games.",
             "context": "XRL.UI.Popup.ShowFail.Message",
-            "text": "既存のセーブデータがない。"
+            "text": "既存のセーブデータがありません。"
         },
         {
             "key": "You have no explosives to deploy!",
@@ -1974,7 +1974,7 @@
         {
             "key": "Huh, you destroyed the tutorial chest we were going to teach you how to use.\n\nGo ahead and pick of the torch and dagger from the floor.",
             "context": "XRL.UI.Popup.Show.Message",
-            "text": "なんと、使い方を教えるはずだったチュートリアル用の箱を壊してしまった。\n\n床から松明と短剣を拾え。"
+            "text": "なんと、使い方を教えるはずだったチュートリアル用の箱を壊してしまいました。\n\n床から松明と短剣を拾ってください。"
         },
         {
             "key": "Huh? Get some mutations first if you want me to eat them!",
@@ -1999,7 +1999,7 @@
         {
             "key": "It's quite dangerous to fight this bear in melee combat! Try backing away and using Freezing Ray.",
             "context": "XRL.UI.Popup.Show.Message",
-            "text": "このクマと近接戦闘をするのはかなり危険だ！ 距離を取って凍結光線を使え。"
+            "text": "このクマと近接戦闘をするのはかなり危険です！ 距離を取って凍結光線を使ってください。"
         },
         {
             "key": "Just before your demise, your health is restored!",
@@ -2009,12 +2009,12 @@
         {
             "key": "Let's take a look at the bear before we continue.",
             "context": "XRL.UI.Popup.Show.Message",
-            "text": "先へ進む前にクマを見てみよう。"
+            "text": "先へ進む前にクマを見てみましょう。"
         },
         {
             "key": "Make sure the bear is in the path of your freezing ray.",
             "context": "XRL.UI.Popup.Show.Message",
-            "text": "凍結光線の射線上にクマを入れろ。"
+            "text": "凍結光線の射線上にクマが入るようにしてください。"
         },
         {
             "key": "Matching quest target not found.",
@@ -2044,12 +2044,12 @@
         {
             "key": "Notes added.",
             "context": "XRL.UI.Popup.Show.Message",
-            "text": "メモを追加した。"
+            "text": "メモを追加しました。"
         },
         {
             "key": "Notes removed.",
             "context": "XRL.UI.Popup.Show.Message",
-            "text": "メモを削除した。"
+            "text": "メモを削除しました。"
         },
         {
             "key": "Nothing happens.",
@@ -2074,7 +2074,7 @@
         {
             "key": "Take a look at the snapjaw before we continue.",
             "context": "XRL.UI.Popup.Show.Message",
-            "text": "先へ進む前にスナップジャウを見てみよう。"
+            "text": "先へ進む前にスナップジャウを見てみましょう。"
         },
         {
             "key": "That item cannot be recharged this way.",
@@ -2214,7 +2214,7 @@
         {
             "key": "There was a duplication glitch involving your player character. It'd be helpful to send the save folder and Player.log to support@freeholdgames.com along with what you were currently doing.",
             "context": "XRL.UI.Popup.Show.Message",
-            "text": "プレイヤーキャラクターに関わる重複グリッチが発生した。何をしていたかとともに、セーブフォルダと Player.log を support@freeholdgames.com に送ってほしい。"
+            "text": "プレイヤーキャラクターに関わる重複グリッチが発生しました。何をしていたかとともに、セーブフォルダと Player.log を support@freeholdgames.com に送っていただけると助かります。"
         },
         {
             "key": "There's nothing there to dismember.",
@@ -2269,12 +2269,12 @@
         {
             "key": "Wait for the bear to take a step towards you.",
             "context": "XRL.UI.Popup.Show.Message",
-            "text": "クマがこちらへ一歩踏み出すのを待て。"
+            "text": "クマがこちらへ一歩踏み出すのを待ってください。"
         },
         {
             "key": "We're not quite ready to leave yet.",
             "context": "XRL.UI.Popup.Show.Message",
-            "text": "まだ出発の準備ができていない。"
+            "text": "まだ出発する準備ができていません。"
         },
         {
             "key": "You are already wearing a disguise.",
@@ -2339,7 +2339,7 @@
         {
             "key": "You can't delete automatically recorded chronology entries.",
             "context": "XRL.UI.Popup.Show.Message",
-            "text": "自動記録された年表項目は削除できない。"
+            "text": "自動記録された年表項目は削除できません。"
         },
         {
             "key": "You can't exit here.",
@@ -2542,7 +2542,7 @@
         {
             "key": "You should view the tooltip before equipping the axe.",
             "context": "XRL.UI.Popup.Show.Message",
-            "text": "斧を装備する前にツールチップを見ておけ。"
+            "text": "斧を装備する前にツールチップを確認してください。"
         },
         {
             "key": "You staunch your wounds, though some are too deep to treat.",
@@ -2611,7 +2611,7 @@
         {
             "key": "You'll be able to explore the world freely after the tutorial.\n\nFor now, let's visit Joppa.",
             "context": "XRL.UI.Popup.Show.Message",
-            "text": "チュートリアルが終われば、世界を自由に探索できる。\n\n今はジョッパへ行こう。"
+            "text": "チュートリアルの後は世界を自由に探索できます。\n\n今はジョッパを訪れましょう。"
         },
         {
             "key": "You're not talented enough to draw that.",
@@ -2761,7 +2761,7 @@
         {
             "key": "Your work applied the mod, but catastrophically poorly.",
             "context": "XRL.UI.Popup.Show.Message",
-            "text": "作業はモッドを適用したが、出来は壊滅的に悪かった。"
+            "text": "作業によってモッドは適用されましたが、出来は壊滅的に悪いものでした。"
         },
         {
             "key": "Zone has no parts.",
