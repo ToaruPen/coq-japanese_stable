@@ -325,36 +325,6 @@
             "text": "[~Accept] 続行"
         },
         {
-            "key": "[~Accept] Continue",
-            "context": "Qud.UI.JoppaTutorial.BattleRemains",
-            "text": "[~Accept] 続行"
-        },
-        {
-            "key": "[~Accept] Continue",
-            "context": "Qud.UI.JoppaTutorial.ExamineChemcell",
-            "text": "[~Accept] 続行"
-        },
-        {
-            "key": "[~Accept] Continue",
-            "context": "Qud.UI.JoppaTutorial.FightBear",
-            "text": "[~Accept] 続行"
-        },
-        {
-            "key": "[~Accept] Continue",
-            "context": "Qud.UI.JoppaTutorial.FightSnapjaw",
-            "text": "[~Accept] 続行"
-        },
-        {
-            "key": "[~Accept] Continue",
-            "context": "Qud.UI.JoppaTutorial.GetBooks",
-            "text": "[~Accept] 続行"
-        },
-        {
-            "key": "[~Accept] Continue",
-            "context": "Qud.UI.JoppaTutorial.MakeCamp",
-            "text": "[~Accept] 続行"
-        },
-        {
             "key": "chat",
             "context": "QudMenuItem",
             "text": "話す"
@@ -417,16 +387,6 @@
         {
             "key": "You embark for the caves of Qud.",
             "context": "Qud.UI.PopupMessage.ShowPopup.Message",
-            "text": "クッドの洞窟へ旅立つ。"
-        },
-        {
-            "key": "You embark for the caves of Qud.",
-            "context": "XRL.UI.XRL.CharacterBuilds.Qud.QudSpecificBootHandlersModule",
-            "text": "クッドの洞窟へ旅立つ。"
-        },
-        {
-            "key": "You embark for the caves of Qud.",
-            "context": "XRL.UI.Popup.ShowBlock.Message",
             "text": "クッドの洞窟へ旅立つ。"
         },
         {
@@ -598,6 +558,2361 @@
             "key": "You don't have anything to use in that slot.",
             "context": "Qud.UI.PopupMessage.ShowPopup.Message",
             "text": "そのスロットで使えるものがありません。"
+        },
+        {
+            "key": "For how many rounds would you like to set the timer? (max=10)",
+            "context": "XRL.UI.Popup.AskNumber.Prompt",
+            "text": "タイマーを何ラウンドに設定するか？（最大10）"
+        },
+        {
+            "key": "How many do you want to drop?",
+            "context": "XRL.UI.Popup.AskNumber.Prompt",
+            "text": "いくつ落とすか？"
+        },
+        {
+            "key": "How many turns would you like to wait?",
+            "context": "XRL.UI.Popup.AskNumber.Prompt",
+            "text": "何ターン待つか？"
+        },
+        {
+            "key": "Set target temperature.",
+            "context": "XRL.UI.Popup.AskNumber.Prompt",
+            "text": "目標温度を設定する。"
+        },
+        {
+            "key": "Are you sure you want to ascend the Spindle? You know of no means to descend again.\n\nType 'ASCEND' to confirm.",
+            "context": "XRL.UI.Popup.AskString.Prompt",
+            "text": "本当にスピンドルを登るか？ 再び下りる手段はない。\n\n「ASCEND」と入力すると確定する。"
+        },
+        {
+            "key": "Are you sure you want to return to Qud? \n\nType 'RETURN' to confirm.",
+            "context": "XRL.UI.Popup.AskString.Prompt",
+            "text": "本当にクッドへ戻るか？\n\n「RETURN」と入力すると確定する。"
+        },
+        {
+            "key": "Crossing into Brightsheol will retire your character. Are you sure you want to do it? Type 'CROSS' to confirm.",
+            "context": "XRL.UI.Popup.AskString.Prompt",
+            "text": "ブライトシェオルへ渡るとキャラクターは引退する。本当にそうするか？「CROSS」と入力すると確定する。"
+        },
+        {
+            "key": "Describe your tattoo. For example: \"a tiny snail\".",
+            "context": "XRL.UI.Popup.AskString.Prompt",
+            "text": "刺青の内容を入力する。例: \"a tiny snail\"。"
+        },
+        {
+            "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\nType 'ABANDON' to confirm.",
+            "context": "XRL.UI.Popup.AskString.Prompt",
+            "text": "セーブせずに終了すると未保存の進行状況がすべて失われる。本当に終了して進行状況を失うか？\n\n「ABANDON」と入力すると確定する。"
+        },
+        {
+            "key": "Your wish is my command!",
+            "context": "XRL.UI.Popup.AskString.Prompt",
+            "text": "願いを申せ！"
+        },
+        {
+            "key": "Accede",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "同意"
+        },
+        {
+            "key": "Accede Ultra",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "同意（究極）"
+        },
+        {
+            "key": "Covenant",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "契約"
+        },
+        {
+            "key": "Covenant Ultra",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "契約（究極）"
+        },
+        {
+            "key": "Launch",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "発射"
+        },
+        {
+            "key": "Launch Ultra",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "発射（究極）"
+        },
+        {
+            "key": "Marooned",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "遭難"
+        },
+        {
+            "key": "Marooned Ultra",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "遭難（究極）"
+        },
+        {
+            "key": "Option 1",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "選択肢 1"
+        },
+        {
+            "key": "Option 1:\nHas multiple lines",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "選択肢 1:\n複数行あり"
+        },
+        {
+            "key": "Option 2",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "選択肢 2"
+        },
+        {
+            "key": "Option 2:\nHas multiple lines",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "選択肢 2:\n複数行あり"
+        },
+        {
+            "key": "Option 3",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "選択肢 3"
+        },
+        {
+            "key": "Option 3:\nHas multiple lines",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "選択肢 3:\n複数行あり"
+        },
+        {
+            "key": "Option g:\nHas multiple lines",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "選択肢 g:\n複数行あり"
+        },
+        {
+            "key": "Option x:\nHas multiple lines",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "選択肢 x:\n複数行あり"
+        },
+        {
+            "key": "Option y:\nHas multiple lines",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "選択肢 y:\n複数行あり"
+        },
+        {
+            "key": "Option z:\nHas multiple lines",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "選択肢 z:\n複数行あり"
+        },
+        {
+            "key": "Return",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "帰還"
+        },
+        {
+            "key": "Return Ultra",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "帰還（究極）"
+        },
+        {
+            "key": "medium",
+            "context": "XRL.UI.Popup.PickOption.Option",
+            "text": "中"
+        },
+        {
+            "key": "<Quest Debug>",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "<クエストデバッグ>"
+        },
+        {
+            "key": "Amputate which limb?",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "どの手足を切断するか？"
+        },
+        {
+            "key": "Choose a body part to engrave.",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "刻印する体の部位を選ぶ。"
+        },
+        {
+            "key": "Choose a body part to tattoo.",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "刺青を入れる部位を選ぶ。"
+        },
+        {
+            "key": "Choose a desecration liquid",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "冒涜に使う液体を選ぶ。"
+        },
+        {
+            "key": "Choose a disguise to make.",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "作る変装を選ぶ。"
+        },
+        {
+            "key": "Choose a faction's chapter to insert your good deed.",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "善行を挿入する派閥の章を選ぶ。"
+        },
+        {
+            "key": "Choose a model faction for your facial reconstruction.",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "顔面再構成のモデルにする派閥を選ぶ。"
+        },
+        {
+            "key": "Choose a model faction for your holographic glamour.",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "ホログラム仮装のモデルにする派閥を選ぶ。"
+        },
+        {
+            "key": "Choose a mutation for me to gobble up!",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "私が飲み込む変異を選ぶ！"
+        },
+        {
+            "key": "Choose a recipe",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "レシピを選ぶ。"
+        },
+        {
+            "key": "Choose a reward",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "報酬を選ぶ。"
+        },
+        {
+            "key": "Choose a secret to share:\n",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "共有する秘密を選ぶ:\n"
+        },
+        {
+            "key": "Choose a style",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "スタイルを選ぶ。"
+        },
+        {
+            "key": "Choose an object to animate.",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "動かす物体を選ぶ。"
+        },
+        {
+            "key": "Choose exotic foods to preserve.",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "保存する珍味を選ぶ。"
+        },
+        {
+            "key": "Choose ingredients to cook with.",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "料理に使う材料を選ぶ。"
+        },
+        {
+            "key": "Go to which point of interest?",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "どの注目地点へ行くか？"
+        },
+        {
+            "key": "Invoke whom?",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "誰を召喚するか？"
+        },
+        {
+            "key": "Obliterate all nearby members of what faction?",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "周囲のどの派閥の者を殲滅するか？"
+        },
+        {
+            "key": "Pick a Blueprint:",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "ブループリントを選ぶ:"
+        },
+        {
+            "key": "Pick a filter to change",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "変更するフィルタを選ぶ"
+        },
+        {
+            "key": "Pick end game state",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "エンドゲーム状態を選ぶ"
+        },
+        {
+            "key": "Select Fire Mode",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "射撃モードを選ぶ"
+        },
+        {
+            "key": "Select Move Style",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "移動スタイルを選ぶ"
+        },
+        {
+            "key": "Select Wait Style",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "待機スタイルを選ぶ"
+        },
+        {
+            "key": "Select a destination",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "目的地を選ぶ"
+        },
+        {
+            "key": "Select your maker's mark.",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "製作者の印を選ぶ。"
+        },
+        {
+            "key": "Title - intro - newlines - no respect",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "タイトル - 導入 - 改行無視"
+        },
+        {
+            "key": "Title - intro - newlines - no respect - scrolling",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "タイトル - 導入 - 改行無視 - スクロール"
+        },
+        {
+            "key": "Title - intro - newlines - no respect - spacing",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "タイトル - 導入 - 改行無視 - 間隔"
+        },
+        {
+            "key": "Title - intro - newlines - respect - scrolling",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "タイトル - 導入 - 改行保持 - スクロール"
+        },
+        {
+            "key": "Title - intro - newlines - respect - spacing",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "タイトル - 導入 - 改行保持 - 間隔"
+        },
+        {
+            "key": "Title - intro - newlines - respect - spacing - scrolling",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "タイトル - 導入 - 改行保持 - 間隔 - スクロール"
+        },
+        {
+            "key": "Title - newlines - no respect",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "タイトル - 改行無視"
+        },
+        {
+            "key": "Title - newlines - no respect - keymap",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "タイトル - 改行無視 - キーマップ"
+        },
+        {
+            "key": "Title - short - keymap",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "タイトル - 短文 - キーマップ"
+        },
+        {
+            "key": "Title only - short",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "タイトルのみ - 短文"
+        },
+        {
+            "key": "Wish Menu",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "願い事メニュー"
+        },
+        {
+            "key": "You let inspiration guide you toward a mouthwatering dish.",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "ひらめきに導かれ、食欲をそそる料理へ向かう。"
+        },
+        {
+            "key": "You swell with the inspiration to name an item.",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "アイテムに名を付けるひらめきが湧く。"
+        },
+        {
+            "key": "charset",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "文字セット"
+        },
+        {
+            "key": "Are you sure you want to RESET ALL YOUR ACHIEVEMENTS?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "本当に実績をすべてリセットするか？"
+        },
+        {
+            "key": "Are you sure you want to delete this entry?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "本当にこの項目を削除するか？"
+        },
+        {
+            "key": "Are you sure you want to delete this saved game?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "本当にこのセーブデータを削除するか？"
+        },
+        {
+            "key": "Are you sure you want to discard your changes?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "本当に変更を破棄するか？"
+        },
+        {
+            "key": "Are you sure you want to forget this recipe?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "本当にこのレシピを忘れるか？"
+        },
+        {
+            "key": "Are you sure you want to go to the world map?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "本当にワールドマップへ行くか？"
+        },
+        {
+            "key": "Are you sure you want to save and quit?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "本当にセーブして終了するか？"
+        },
+        {
+            "key": "Are you sure you want to sunder your own mind?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "本当に自分の心を引き裂くか？"
+        },
+        {
+            "key": "Barathrum is not in the golem. Ascend anyway?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "ゴーレムにバラサラムはいない。それでも昇るか？"
+        },
+        {
+            "key": "DEBUG: Do you really want to die?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "DEBUG: 本当に死ぬか？"
+        },
+        {
+            "key": "Do you want to continue despite being unable to use Psychometry?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "サイコメトリーを使えないまま続けるか？"
+        },
+        {
+            "key": "Do you want to finish haggling as matters stand?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "現状のまま取引を終えるか？"
+        },
+        {
+            "key": "Do you want to finish the attempt as matters stand?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "現状のまま試行を終えるか？"
+        },
+        {
+            "key": "Do you want to finish the beguiling attempt as matters stand?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "現状のまま魅了の試みを終えるか？"
+        },
+        {
+            "key": "Do you want to finish the formal water ritual as matters stand?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "現状のまま正式な水儀を終えるか？"
+        },
+        {
+            "key": "Do you want to finish the naming ritual as matters stand?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "現状のまま命名の儀式を終えるか？"
+        },
+        {
+            "key": "Do you want to finish the offering ritual as matters stand?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "現状のまま献上の儀式を終えるか？"
+        },
+        {
+            "key": "Do you want to finish the proselytization attempt as matters stand?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "現状のまま布教の試みを終えるか？"
+        },
+        {
+            "key": "Do you want to finish the rebuking attempt as matters stand?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "現状のまま叱責の試みを終えるか？"
+        },
+        {
+            "key": "Do you want to save first?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "先にセーブするか？"
+        },
+        {
+            "key": "Do you want to stop travelling?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "移動をやめるか？"
+        },
+        {
+            "key": "Do you want to use a low-level hack? Low-level hacks make it more difficult to read the terminal output but reduce the chance of triggering security alerts.",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "低レベルハックを使うか？低レベルハックは端末出力の可読性を下げるが、セキュリティ警告を引き起こす可能性を下げる。"
+        },
+        {
+            "key": "Do you want to wait until the ascent is done?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "上昇が終わるまで待つか？"
+        },
+        {
+            "key": "Drinking that much will probably make you sick, do you want to continue?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "それだけ飲むとたぶん気分が悪くなる。それでも続けるか？"
+        },
+        {
+            "key": "Exiting now will finish haggling as matters stand. Are you sure you want to exit?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "今終了すると現状のまま取引が終わる。本当に終了するか？"
+        },
+        {
+            "key": "Exiting now will finish the attempt as matters stand. Are you sure you want to exit?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "今終了すると現状のまま試行が終わる。本当に終了するか？"
+        },
+        {
+            "key": "Exiting now will finish the beguiling attempt as matters stand. Are you sure you want to exit?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "今終了すると現状のまま魅了の試みが終わる。本当に終了するか？"
+        },
+        {
+            "key": "Exiting now will finish the formal water ritual as matters stand. Are you sure you want to exit?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "今終了すると現状のまま正式な水儀が終わる。本当に終了するか？"
+        },
+        {
+            "key": "Exiting now will finish the naming ritual as matters stand. Are you sure you want to exit?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "今終了すると現状のまま命名の儀式が終わる。本当に終了するか？"
+        },
+        {
+            "key": "Exiting now will finish the offering ritual as matters stand. Are you sure you want to exit?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "今終了すると現状のまま献上の儀式が終わる。本当に終了するか？"
+        },
+        {
+            "key": "Exiting now will finish the proselytization attempt as matters stand. Are you sure you want to exit?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "今終了すると現状のまま布教の試みが終わる。本当に終了するか？"
+        },
+        {
+            "key": "Exiting now will finish the rebuking attempt as matters stand. Are you sure you want to exit?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "今終了すると現状のまま叱責の試みが終わる。本当に終了するか？"
+        },
+        {
+            "key": "Load your last quick save?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "最後のクイックセーブを読み込むか？"
+        },
+        {
+            "key": "Quick save the game?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "クイックセーブするか？"
+        },
+        {
+            "key": "Test1",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "テスト1"
+        },
+        {
+            "key": "Test2",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "テスト2"
+        },
+        {
+            "key": "Test3",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "テスト3"
+        },
+        {
+            "key": "That is not owned by you. Are you sure you want to take it?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "それはあなたの所有物ではない。本当に取るか？"
+        },
+        {
+            "key": "The control pit dissolves to silence.\n\nDo you want to wait until the ascent is done?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "制御坑は静寂に溶ける。\n\n上昇が終わるまで待つか？"
+        },
+        {
+            "key": "This zone didn't build properly, do you wish to rebuild it?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "このゾーンは正常に生成されていない。再生成するか？"
+        },
+        {
+            "key": "This zone isn't building properly. Do you want to force it to stop and build immediately?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "このゾーンは正常に生成されていない。強制的に停止して直ちに生成し直すか？"
+        },
+        {
+            "key": "Would you like to walk to the nearest stairway up?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "最寄りの上り階段まで移動するか？"
+        },
+        {
+            "key": "You are leaving the ambient broadcast power grid and transitioning to backup power. Are you sure?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "環境放送電力網を離れ、予備電源に切り替える。本当にいいか？"
+        },
+        {
+            "key": "You aren't finished! Are you sure you want to abort the process?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "まだ終わっていない。本当に処理を中断するか？"
+        },
+        {
+            "key": "You do not have the skill associated with that power. Would you like to purchase the required skill?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "その能力に対応する技能を持っていない。必要な技能を購入するか？"
+        },
+        {
+            "key": "You have mastered beguilement at this level of challenge. Do you want to perform detailed beguilement anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at beguilement if that is possible.",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "この難度での魅了は熟達済みだ。それでも詳細に魅了を試みるか？『いいえ』なら、可能なら魅了が自動で成功する。"
+        },
+        {
+            "key": "You have mastered disarming operations of this complexity. Do you want to perform detailed disarming anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed.",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "この難度での解除作業は熟達済みだ。それでも詳細に解除を試みるか？『いいえ』なら、自動で成功する。"
+        },
+        {
+            "key": "You have mastered examining artifacts of this complexity. Do you want to perform detailed examination anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the examination.",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "この難度での遺物調査は熟達済みだ。それでも詳細に遺物調査を試みるか？『いいえ』なら、可能なら自動で成功する。"
+        },
+        {
+            "key": "You have mastered hacks of this complexity. Do you want to perform a detailed hack anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the hack.",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "この難度でのハッキングは熟達済みだ。それでも詳細なハッキングを試みるか？『いいえ』なら、可能なら自動で成功する。"
+        },
+        {
+            "key": "You have mastered proselytization at this level of discourse. Do you want to perform detailed proselytization anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at proselytization if that is possible.",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "このレベルの布教は熟達済みだ。それでも詳細な布教を試みるか？『いいえ』なら、可能なら布教が自動で成功する。"
+        },
+        {
+            "key": "You have mastered reality distortion at this level of difficulty. Do you want to guide the process in detail anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically receive the results of strong but unexceptional performance.",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "この難度での現実歪曲は熟達済みだ。それでも詳細に制御するか？『いいえ』なら、強いが平凡な結果を自動で得る。"
+        },
+        {
+            "key": "You have mastered rebuking robots of this grade. Do you want to perform a detailed rebuke anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed t the rebuke if that is possible.",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "この難度でのロボット叱責は熟達済みだ。それでも詳細な叱責を試みるか？『いいえ』なら、可能なら叱責が自動で成功する。"
+        },
+        {
+            "key": "You have mastered repairs of this complexity. Do you want to perform detailed repairs anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the repairs.",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "この難度での修理は熟達済みだ。それでも詳細な修理を試みるか？『いいえ』なら、可能なら修理が自動で成功する。"
+        },
+        {
+            "key": "You have no hands to beat at the flames with. Do you want to roll on the ground to try to put them out?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "炎を叩く手がない。地面を転がって消火を試みるか？"
+        },
+        {
+            "key": "You haven't selected an option for every slot. Are you sure you want to complete the turn?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "すべてのスロットで選択を終えていない。本当にターンを完了するか？"
+        },
+        {
+            "key": "You sense your imminent demise. Would you like to return to the start of your vision?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "死が目前に迫っている。予知視の始まりに戻るか？"
+        },
+        {
+            "key": "Your precognition is about to run out. Would you like to return to the start of your vision?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "予知視がもうすぐ尽きる。予知視の始まりに戻るか？"
+        },
+        {
+            "key": "Your {{sphynx|sphynx}} {{Y|salt}} is about to run out. Would you like to return to the start of your vision?",
+            "context": "XRL.UI.Popup.ShowYesNo.Message",
+            "text": "あなたの{{sphynx|スフィンクス}} {{Y|ソルト}}がもうすぐ尽きる。予知視の始まりに戻るか？"
+        },
+        {
+            "key": "You died.\n\nEntombed in the burial chamber of Resheph, the Last Sultan.",
+            "context": "XRL.UI.Popup.ShowSpace.Message",
+            "text": "あなたは死んだ。\n\nレシェフ、最後のスルタンの埋葬室に葬られた。"
+        },
+        {
+            "key": "You recognize the area and stop being lost!",
+            "context": "XRL.UI.Popup.ShowSpace.Message",
+            "text": "見覚えのある場所だ。迷子ではなくなった！"
+        },
+        {
+            "key": "You regain your bearings.",
+            "context": "XRL.UI.Popup.ShowSpace.Message",
+            "text": "見当を取り戻した。"
+        },
+        {
+            "key": "You stumble upon some flattened remains.",
+            "context": "XRL.UI.Popup.ShowSpace.Message",
+            "text": "押し潰された遺骸を見つけた。"
+        },
+        {
+            "key": "You're lost! Regain your bearings by exploring your surroundings.",
+            "context": "XRL.UI.Popup.ShowSpace.Message",
+            "text": "迷子だ。周囲を探索して見当を取り戻せ。"
+        },
+        {
+            "key": "You've reached the temporary end of the main questline.\n\nYou may continue to explore the world, and stay tuned for updates as we prepare to leave Early Access.",
+            "context": "XRL.UI.Popup.ShowSpace.Message",
+            "text": "メインクエストラインは一時的にここまでだ。\n\n世界の探索は続けられる。アーリーアクセス終了に向けた更新を待て。"
+        },
+        {
+            "key": "1) random maze\n2) recursive backtrack maze",
+            "context": "XRL.UI.Popup.ShowBlock.Message",
+            "text": "1) ランダム迷路\n2) 再帰的バックトラック迷路"
+        },
+        {
+            "key": "You are cured of glotrot. Your tongue regrows.",
+            "context": "XRL.UI.Popup.ShowBlock.Message",
+            "text": "舌腐病が治った。舌が生え直した。"
+        },
+        {
+            "key": "You lose your way beneath a dense canopy of spores.",
+            "context": "XRL.UI.Popup.ShowBlock.Message",
+            "text": "濃密な胞子の天蓋の下で道に迷う。"
+        },
+        {
+            "key": "You tear open the tender muscle fibers of your tongue.",
+            "context": "XRL.UI.Popup.ShowBlock.Message",
+            "text": "舌の柔らかな筋繊維を引き裂く。"
+        },
+        {
+            "key": "Your tongue begins to bleed as the muscle rots away.",
+            "context": "XRL.UI.Popup.ShowBlock.Message",
+            "text": "筋肉が腐り、舌から血がにじみ始める。"
+        },
+        {
+            "key": "Your tongue has rotted away.",
+            "context": "XRL.UI.Popup.ShowBlock.Message",
+            "text": "舌が腐り落ちた。"
+        },
+        {
+            "key": "{{G|You are filled with the true vision! The {{B|Cubic Form}} is {{M|Infinite}}, {{W|Harmonic}} and transcends the {{R|1 Day rotation}}!}}",
+            "context": "XRL.UI.Popup.ShowBlock.Message",
+            "text": "{{G|真の予知視に満たされた！ {{B|立方形態}} は {{M|無限}}、{{W|調和的}}で、{{R|1日回転}} を超越する！}}"
+        },
+        {
+            "key": "A loud buzz is emitted. The unauthorized glyph flashes on the side of the applicator.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "大きなブザーが鳴る。アプリケーター側面の未承認グリフが点滅する。"
+        },
+        {
+            "key": "All options are correct responses to some requirement.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "すべての選択肢は、何らかの要件に対する正解だ。"
+        },
+        {
+            "key": "All options which are not correct responses to any requirement have already been eliminated.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "どの要件にも正しく応答しない選択肢は、すでに除外されている。"
+        },
+        {
+            "key": "Cannot proceed, no usable base genders",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "進行できない。使える基本性別がない。"
+        },
+        {
+            "key": "Error dropping object, removing to graveyard zone! (Inventory.cs:CommandEquipObject)",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "オブジェクトのドロップエラー。墓場ゾーンへ移す！ (Inventory.cs:CommandEquipObject)"
+        },
+        {
+            "key": "Neither you nor any of your nearby companions are bleeding.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "あなたも近くの仲間も出血していない。"
+        },
+        {
+            "key": "Neither you nor any of your nearby companions are ill.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "あなたも近くの仲間も病気ではない。"
+        },
+        {
+            "key": "Neither you nor any of your nearby companions are poisoned.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "あなたも近くの仲間も毒状態ではない。"
+        },
+        {
+            "key": "Neither you nor any of your nearby companions are suffering from the onset of a disease.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "あなたも近くの仲間も病気の発症兆候がない。"
+        },
+        {
+            "key": "No modification specified.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "変更が指定されていない。"
+        },
+        {
+            "key": "No notes found.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "メモが見つからない。"
+        },
+        {
+            "key": "No one is there for you to syphon vim from.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "ヴィムを吸い取れる相手がいない。"
+        },
+        {
+            "key": "None of your companions are nearby.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "近くに仲間がいない。"
+        },
+        {
+            "key": "Not found.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "見つからない。"
+        },
+        {
+            "key": "Set up a trade, then haggle for it.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "まず取引を成立させ、それから値切れ。"
+        },
+        {
+            "key": "That is out of range! (10 squares)",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "射程外だ！(10マス)"
+        },
+        {
+            "key": "That is out of range! (12 squares)",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "射程外だ！(12マス)"
+        },
+        {
+            "key": "That is out of range! (8 squares)",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "射程外だ！(8マス)"
+        },
+        {
+            "key": "That isn't an energy cell and does not have a rechargeable capacitor.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "それはエネルギーセルではなく、再充電可能なコンデンサもない。"
+        },
+        {
+            "key": "That target is already locked in psychic battle!",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "その対象はすでに精神戦闘でロックされている！"
+        },
+        {
+            "key": "That target is out of range! (5 squares)",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "その対象は射程外だ！(5マス)"
+        },
+        {
+            "key": "The gates are sealed for eternity.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "門は永遠に封じられている。"
+        },
+        {
+            "key": "The operation fails.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "操作は失敗する。"
+        },
+        {
+            "key": "The poison affecting you and your companions is too strong to be cured by your nostrums.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "あなたと仲間にかかった毒は、薬では治せないほど強い。"
+        },
+        {
+            "key": "The poison affecting you is too strong to be cured by your nostrums.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "あなたにかかった毒は、薬では治せないほど強い。"
+        },
+        {
+            "key": "The sprayer head won't move.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "噴霧器のヘッドは動かない。"
+        },
+        {
+            "key": "There are no creatures in range.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "範囲内に生き物がいない。"
+        },
+        {
+            "key": "There is no liquid here for you to spew.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "ここには噴き出せる液体がない。"
+        },
+        {
+            "key": "There is no one there to sting.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "そこに刺す相手がいない。"
+        },
+        {
+            "key": "There is no one there you can sting.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "そこに刺せる相手がいない。"
+        },
+        {
+            "key": "There is nothing for you to submerge in here.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "ここには潜れるものがない。"
+        },
+        {
+            "key": "There is nothing you can telekinetically manipulate there.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "そこには念動力で操作できるものがない。"
+        },
+        {
+            "key": "There's no target with a mind there.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "そこに精神を持つ対象はいない。"
+        },
+        {
+            "key": "There's nothing there to hobble.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "そこに足止めする相手がいない。"
+        },
+        {
+            "key": "There's nothing there to lunge at.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "そこに飛びかかる相手がいない。"
+        },
+        {
+            "key": "There's nothing there to lunge away from.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "そこから飛びのく相手がいない。"
+        },
+        {
+            "key": "There's nothing there to swipe at.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "そこに薙ぎ払う相手がいない。"
+        },
+        {
+            "key": "There's nothing there you can lunge at.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "そこに踏み込める相手がいない。"
+        },
+        {
+            "key": "There's nothing there you can swipe at.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "そこに薙ぎ払える相手がいない。"
+        },
+        {
+            "key": "This saved game predates world seed info.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "このセーブデータはワールドシード情報より前のものだ。"
+        },
+        {
+            "key": "You already understand this item.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "このアイテムはすでに理解している。"
+        },
+        {
+            "key": "You are already meditating.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "すでに瞑想している。"
+        },
+        {
+            "key": "You are already within a precognitive vision.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "すでに予知視の中にいる。"
+        },
+        {
+            "key": "You are not bleeding.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "出血していない。"
+        },
+        {
+            "key": "You are not ill.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "病気ではない。"
+        },
+        {
+            "key": "You are not poisoned.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "毒状態ではない。"
+        },
+        {
+            "key": "You are not suffering from the onset of a disease.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "病気の発症はない。"
+        },
+        {
+            "key": "You are nut currently in a landmark location.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "今はランドマーク地点にいない。"
+        },
+        {
+            "key": "You are stuck in a remote pocket dimension and cannot recoil out.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "遠隔ポケット次元に閉じ込められており、リコイルで脱出できない。"
+        },
+        {
+            "key": "You are too exhausted to do that.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "それを行うには疲れすぎている。"
+        },
+        {
+            "key": "You are {{C|paralyzed}}!",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "あなたは{{C|麻痺}}している！"
+        },
+        {
+            "key": "You can only teleport to a place you have seen before!",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "以前見た場所にしかテレポートできない！"
+        },
+        {
+            "key": "You can't Demolish until Slam is off cooldown.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "叩きつけのクールダウンが終わるまで破壊できない。"
+        },
+        {
+            "key": "You can't be mutated.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "変異を受けられない。"
+        },
+        {
+            "key": "You can't excavate the sky!",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "空は掘れない！"
+        },
+        {
+            "key": "You can't excavate with hostiles nearby.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "敵対者が近くにいると掘削できない。"
+        },
+        {
+            "key": "You can't go berserk until Dismember is off cooldown.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "切断のクールダウンが終わるまで狂戦できない。"
+        },
+        {
+            "key": "You can't imprint yet.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "まだ刻印できない。"
+        },
+        {
+            "key": "You can't infiltrate on the world map.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "ワールドマップ上では潜入できない。"
+        },
+        {
+            "key": "You can't teleport with hostiles nearby!",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "敵対者が近くにいるとテレポートできない！"
+        },
+        {
+            "key": "You cannot autoattack while you are confused.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "混乱中はオート攻撃できない。"
+        },
+        {
+            "key": "You cannot do that right now.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "今はそれができない。"
+        },
+        {
+            "key": "You cannot do that while submerged.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "水中ではそんなことはできない。"
+        },
+        {
+            "key": "You cannot examine things while you are confused.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "混乱中は物を調べられない。"
+        },
+        {
+            "key": "You cannot examine things while you are enraged.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "激昂中は物を調べられない。"
+        },
+        {
+            "key": "You cannot sufficiently grasp the mind there to sunder it.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "そこにある精神を断つほど深く掴めない。"
+        },
+        {
+            "key": "You cannot use disassemble all with hostiles nearby.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "敵対者が近くにいると一括分解は使えない。"
+        },
+        {
+            "key": "You cannot use the ingredient!",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "その材料は使えない！"
+        },
+        {
+            "key": "You do not budge.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "びくともしない。"
+        },
+        {
+            "key": "You do not have a Barathrumite token.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "バラサラム派の証票がない。"
+        },
+        {
+            "key": "You do not have a copy of the Canticles Chromaic.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "『カンティクル・クロマイック』の写しがない。"
+        },
+        {
+            "key": "You do not have a farmer's token.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "農夫の証票がない。"
+        },
+        {
+            "key": "You do not have a hookah.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "水煙管がない。"
+        },
+        {
+            "key": "You do not have a leather whip.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "革鞭がない。"
+        },
+        {
+            "key": "You do not have a merchant's token.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "商人の証票がない。"
+        },
+        {
+            "key": "You do not have a minstrel's token.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "吟遊詩人の証票がない。"
+        },
+        {
+            "key": "You do not have a missile weapon equipped!",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "射撃武器を装備していない！"
+        },
+        {
+            "key": "You do not have a toolkit.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "ツールキットがない。"
+        },
+        {
+            "key": "You do not have a usable advanced toolkit.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "使える上級ツールキットがない。"
+        },
+        {
+            "key": "You do not have an advanced toolkit.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "上級ツールキットがない。"
+        },
+        {
+            "key": "You do not have any copper wire.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "銅線がない。"
+        },
+        {
+            "key": "You do not have any more copper wire.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "銅線がもうない。"
+        },
+        {
+            "key": "You don't have a missile weapon equipped that uses that ammunition.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "その弾薬に対応する射撃武器を装備していない。"
+        },
+        {
+            "key": "You don't have a target.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "対象がいない。"
+        },
+        {
+            "key": "You don't have enough skill points.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "スキルポイントが足りない。"
+        },
+        {
+            "key": "You have no bodily tether to recoil.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "リコイルできる肉体の係留がない。"
+        },
+        {
+            "key": "You have no companions.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "仲間がいない。"
+        },
+        {
+            "key": "You have no existing saved games.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "既存のセーブデータがない。"
+        },
+        {
+            "key": "You have no explosives to deploy!",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "設置できる爆発物がない！"
+        },
+        {
+            "key": "You have no hands to beat at the flames with!",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "炎を叩ける手がない！"
+        },
+        {
+            "key": "You have no hands to beat at the flames with, and cannot roll on the ground because you are flying!",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "炎を叩ける手がなく、飛んでいるので地面を転がることもできない！"
+        },
+        {
+            "key": "You have no items that require charging.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "充電が必要なアイテムがない。"
+        },
+        {
+            "key": "You have no more usable options, so your haggling so far will determine the outcome.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "使える手はもうない。ここまでの値切りが結果を決める。"
+        },
+        {
+            "key": "You have no more usable options.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "使える手がもうない。"
+        },
+        {
+            "key": "You have no usable options to employ toward beguilement, giving you no chance of success. You can remedy this situation by improving your Ego and social skills, or by obtaining items useful in social situations.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "魅了に使える手段がなく、成功の見込みもない。自我や社交スキルを上げるか、社交で役立つアイテムを手に入れれば改善できる。"
+        },
+        {
+            "key": "You haven't found any points of interest nearby.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "近くに注目地点は見つかっていない。"
+        },
+        {
+            "key": "You may not use this mutation on the world map.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "ワールドマップではこの変異は使えない。"
+        },
+        {
+            "key": "You may not {{Y|w}}alk into a hostile creature!",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "敵対クリーチャーへ{{Y|w}}歩み込むことはできない！"
+        },
+        {
+            "key": "You may only select a visible square!",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "見えているマスにしか選択できない！"
+        },
+        {
+            "key": "You may only select an explored square!",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "探索済みのマスにしか選択できない！"
+        },
+        {
+            "key": "You may only teleport into an empty square!",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "空きマスにしかテレポートできない！"
+        },
+        {
+            "key": "You must have a cudgel equipped in your primary hand to demolish things.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "物を破壊するには主手に棍棒を装備していなければならない。"
+        },
+        {
+            "key": "You must have a long blade equipped to effectively yell out 'En garde!'",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "『En garde!』を叫ぶには長剣が必要だ。"
+        },
+        {
+            "key": "You must have a long blade equipped to switch stances.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "スタンスを切り替えるには長剣が必要だ。"
+        },
+        {
+            "key": "You must have a short blade equipped in your primary hand to hobble.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "足止めするには主手に短剣が必要だ。"
+        },
+        {
+            "key": "You must have an axe equipped in your primary hand to go berserk.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "狂戦するには主手に斧が必要だ。"
+        },
+        {
+            "key": "You must have at least half the fresh water you would need to pay for this trade available in order to attempt to haggle for it.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "値切るには、この取引の支払い額の少なくとも半分の真水が必要だ。"
+        },
+        {
+            "key": "Your bilge sphincter is missing.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "ビルジ括約筋がない。"
+        },
+        {
+            "key": "Your health is too weak to do that.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "それを行うには体力が弱りすぎている。"
+        },
+        {
+            "key": "Your hookah is not filled with water.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "水煙管に水が入っていない。"
+        },
+        {
+            "key": "Your psyche is too exhausted.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "精神が疲弊しすぎている。"
+        },
+        {
+            "key": "...",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "……"
+        },
+        {
+            "key": "A force of repulsion from inside the sarcophagus prevents your entry.\n\nYou do not bear the Mark of Death.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "棺の内側からの反発力が侵入を妨げる。\n\nあなたは死の印を持っていない。"
+        },
+        {
+            "key": "A quartet of prisms shatter out of you and grow. Each quinfurcates at the tip into five finger prisms.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "4つのプリズムがあなたの中から砕け散って成長する。各々は先端で5本の指状プリズムに分かれる。"
+        },
+        {
+            "key": "A torrent of life rushes over you.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "生命の奔流があなたに押し寄せる。"
+        },
+        {
+            "key": "Access diodes flash in the affirmative.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "アクセスダイオードが肯定を示して点滅する。"
+        },
+        {
+            "key": "An abrading force cuts the surfaces of your torso until you feel polished and perfectly smooth.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "研磨する力が胴体の表面を削り、磨き上げられて完全に滑らかになったように感じる。"
+        },
+        {
+            "key": "Asphodel yells, '{{R|You ruined the First Council of Omonporch, you barbaric lout!}}'",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "アスフォデルが叫ぶ。'{{R|オモンポーチの第一評議会を台無しにしやがって、この野蛮な愚か者め！}}'"
+        },
+        {
+            "key": "Before you move on, you should equip yourself from the nearby chest.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "先へ進む前に、近くの箱から装備を整えておけ。"
+        },
+        {
+            "key": "Before you move on, you should loot the corpse of the snapjaw.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "先へ進む前に、スナップジャウの死体を漁っておけ。"
+        },
+        {
+            "key": "Chavvah roams out of feeling range. You are no longer attuned.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "チャヴァが感覚範囲の外へ出ていく。あなたの同調は解けた。"
+        },
+        {
+            "key": "Death has no meaning here.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "ここでは死に意味はない。"
+        },
+        {
+            "key": "Degenerate markup here: {{text}}",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "ここには崩れたマークアップがある: {{text}}"
+        },
+        {
+            "key": "Didn't find that one. Try again?",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "それは見つからなかった。もう一度試すか？"
+        },
+        {
+            "key": "Done.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "完了。"
+        },
+        {
+            "key": "Feelers rip through your scalp and shudder with curiosity.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "触手が頭皮を突き破って現れ、好奇心に震える。"
+        },
+        {
+            "key": "From across the psychic sea, you feel the glare of unseen eyes. Someone is disappointed in you.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "霊的な海の向こうから、見えざる眼差しのにらみを感じる。誰かがあなたに失望している。"
+        },
+        {
+            "key": "Herododicus says '&WI'm done!&Y'",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "ヘロドディクスが「&Wもう終わりだ！&Y」と言う"
+        },
+        {
+            "key": "Huh, you destroyed the tutorial chest we were going to teach you how to use.\n\nGo ahead and pick of the torch and dagger from the floor.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "なんと、使い方を教えるはずだったチュートリアル用の箱を壊してしまった。\n\n床から松明と短剣を拾え。"
+        },
+        {
+            "key": "Huh? Get some mutations first if you want me to eat them!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "はあ？ それを食わせたいなら、まず変異をいくつか手に入れろ！"
+        },
+        {
+            "key": "In the midst of your disorientation, you find a passageway to another dimension.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "混乱のさなか、別次元への通路を見つける。"
+        },
+        {
+            "key": "Inventory quick keys\r\n\r\n&WCtrl+D&y - Drop\r\n&WCtrl+A&y - Eat\r\n&WCtrl+E&y - Auto-equip\r\n&WCtrl+R&y - Drink\r\n&WCtrl+P&y - Apply\n&WCtrl+F or ,&y - Filter",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "インベントリのショートキー\r\n\r\n&WCtrl+D&y - 落とす\r\n&WCtrl+A&y - 食べる\r\n&WCtrl+E&y - 自動装備\r\n&WCtrl+R&y - 飲む\n&WCtrl+P&y - 適用\n&WCtrl+F or ,&y - 絞り込み"
+        },
+        {
+            "key": "It tastes even worse than you had imagined -- like a dead turtle boiled in phlegm.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "想像していたよりさらにまずい -- まるで痰で煮た死んだカメのようだ。"
+        },
+        {
+            "key": "It's quite dangerous to fight this bear in melee combat! Try backing away and using Freezing Ray.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "このクマと近接戦闘をするのはかなり危険だ！ 距離を取って凍結光線を使え。"
+        },
+        {
+            "key": "Just before your demise, your health is restored!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "死の寸前で体力が回復する！"
+        },
+        {
+            "key": "Let's take a look at the bear before we continue.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "先へ進む前にクマを見てみよう。"
+        },
+        {
+            "key": "Make sure the bear is in the path of your freezing ray.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "凍結光線の射線上にクマを入れろ。"
+        },
+        {
+            "key": "Matching quest target not found.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "一致するクエスト対象が見つからない。"
+        },
+        {
+            "key": "No adjacent empty squares to create your wish!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "願いを生み出せる隣接空きマスがない！"
+        },
+        {
+            "key": "No mound of scrap and clay was found to complete.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "完成させるためのくず鉄と粘土の山が見つからなかった。"
+        },
+        {
+            "key": "No problems found.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "問題は見つからなかった。"
+        },
+        {
+            "key": "No skill by that name could be found.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "その名前のスキルは見つからなかった。"
+        },
+        {
+            "key": "Notes added.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "メモを追加した。"
+        },
+        {
+            "key": "Notes removed.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "メモを削除した。"
+        },
+        {
+            "key": "Nothing happens.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "何も起こらない。"
+        },
+        {
+            "key": "Nothing to trade.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "交換するものがない。"
+        },
+        {
+            "key": "One dram of {{neutronic|neutron}} flux evaporates from your inventory.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "{{neutronic|中性子}}フラックスが1ドラム、持ち物から蒸発した。"
+        },
+        {
+            "key": "Something went wrong.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "何かがおかしい。"
+        },
+        {
+            "key": "Take a look at the snapjaw before we continue.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "先へ進む前にスナップジャウを見てみよう。"
+        },
+        {
+            "key": "That item cannot be recharged this way.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "そのアイテムはこの方法では再充電できない。"
+        },
+        {
+            "key": "That item has no cell or rechargeable capacitor in it.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "そのアイテムには電池も充電可能なコンデンサもない。"
+        },
+        {
+            "key": "That was awful!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "ひどかった！"
+        },
+        {
+            "key": "That wouldn't leave you with NEARLY enough junk! You can't drop that!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "それではジャンクがまるで足りなくなる！ それは捨てられない！"
+        },
+        {
+            "key": "The North Sheva superstrate evanesces, and the latches that prevent descent unlock.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "北シェバ上層が消え失せ、下降を妨げる留め具が外れる。"
+        },
+        {
+            "key": "The ark was broken.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "方舟は壊れていた。"
+        },
+        {
+            "key": "The astral friction diffuses.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "星界の摩擦が霧散する。"
+        },
+        {
+            "key": "The chrome platform begins to hum as it ascends into the darkness.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "クロームのプラットフォームがうなり始め、闇へ昇っていく。"
+        },
+        {
+            "key": "The chrome platform begins to hum as it descends into the darkness.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "クロームのプラットフォームがうなり始め、闇へ降りていく。"
+        },
+        {
+            "key": "The clouds part in your mind and a ray of clarity strikes through.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "心の雲が晴れ、ひらめきの光が射し込む。"
+        },
+        {
+            "key": "The colossal lid slams shut. Darkness engulfs you.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "巨大な蓋が勢いよく閉じる。闇があなたを呑み込む。"
+        },
+        {
+            "key": "The cool swelling deflates as your organs dim.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "冷たい膨らみがしぼみ、内臓の輝きが弱まる。"
+        },
+        {
+            "key": "The darkness recedes, and a new light breaks on the shores of your mind.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "闇が退き、新たな光が心の岸辺に差し込む。"
+        },
+        {
+            "key": "The gates swing wide.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "門が大きく開く。"
+        },
+        {
+            "key": "The hack fails, but you manage to cover your tracks before any security measures kick in.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "ハックは失敗したが、セキュリティ対策が動く前に痕跡を隠せた。"
+        },
+        {
+            "key": "The limb rejects the infection!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "その手足は感染を退けた！"
+        },
+        {
+            "key": "The matter of your new body starts to thicken and clot. You're inlaid with ribbons of bone, tissue, nerve, and flesh.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "新しい体の物質が濃くなって凝固し始める。骨、組織、神経、肉の帯があなたに埋め込まれていく。"
+        },
+        {
+            "key": "The moors rattle and a marble brick crumbles as a starship takes off.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "荒野が震え、星船の離昇で大理石の煉瓦が崩れる。"
+        },
+        {
+            "key": "The neoteric body is differently charged. Tying inside you is another of the secret knots that bind the world.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "その新奇な肉体は異なる電荷を帯びている。あなたの内には、世界を結ぶ秘密の結び目がもうひとつ結ばれている。"
+        },
+        {
+            "key": "The pain in your joints subsides.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "関節の痛みが和らぐ。"
+        },
+        {
+            "key": "The picture stretches into the 3rd dimension and becomes real.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "その絵は3次元へ広がり、現実になる。"
+        },
+        {
+            "key": "The sarcophagus is inert.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "石棺は反応しない。"
+        },
+        {
+            "key": "The soothing tingle fades.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "心地よいぴりぴり感が消える。"
+        },
+        {
+            "key": "The tonics you ingested react adversely to each other. Aaaaaaaaargh!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "飲んだ薬液が互いに悪反応を起こす。あああああああ！"
+        },
+        {
+            "key": "The tonics you ingested react adversely to each other. The soothing tingle fades.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "飲んだ薬液が互いに悪反応を起こす。心地よいぴりぴり感が消える。"
+        },
+        {
+            "key": "The tonics you ingested react adversely to each other. The torrent of life sweeps away.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "飲んだ薬液が互いに悪反応を起こす。生命の奔流が押し流す。"
+        },
+        {
+            "key": "The tonics you ingested react adversely to each other. You cannot see to see -- your mind cracks as a bell struck by a hammer.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "飲んだ薬液が互いに悪反応を起こす。見ようにも見えない。心が槌で打たれた鈴のように砕ける。"
+        },
+        {
+            "key": "The tonics you ingested react adversely to each other. You erupt into flames!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "飲んだ薬液が互いに悪反応を起こす。あなたは炎を噴き上げる！"
+        },
+        {
+            "key": "The tonics you ingested react adversely to each other. You feel awfully frigid.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "飲んだ薬液が互いに悪反応を起こす。ひどく凍えた気分だ。"
+        },
+        {
+            "key": "The tonics you ingested react adversely to each other. You flicker through spacetime uncontrollably.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "飲んだ薬液が互いに悪反応を起こす。時空を制御不能にちらつきながら抜ける。"
+        },
+        {
+            "key": "The tonics you ingested react adversely to each other. Your field of vision erupts into a plane of blinding, white light.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "飲んだ薬液が互いに悪反応を起こす。視界がまばゆい白光の平面と化す。"
+        },
+        {
+            "key": "The tonics you ingested react adversely to each other. Your skin starts to knot and misshape.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "飲んだ薬液が互いに悪反応を起こす。皮膚がこぶだらけに歪み始める。"
+        },
+        {
+            "key": "The torrent of life sweeps away.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "生命の奔流が押し流す。"
+        },
+        {
+            "key": "The walls creak, loose objects skid about, and dust is stirred up in iridescent clouds.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "壁が軋み、緩んだ物が滑り回り、ほこりが虹色の雲となって舞い上がる。"
+        },
+        {
+            "key": "The whole compound rumbles around you.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "施設全体があなたの周囲でうなりを上げる。"
+        },
+        {
+            "key": "There doesn't seem to be anywhere else to explore from here.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "ここから先に探索できる場所はなさそうだ。"
+        },
+        {
+            "key": "There doesn't seem to be anywhere else to explore.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "もう探索できる場所はなさそうだ。"
+        },
+        {
+            "key": "There is nothing there to rebuke.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "そこに叱責する相手はいない。"
+        },
+        {
+            "key": "There is only darkness from an unusual source left to explore.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "残る探索対象は、異常な出所の闇だけだ。"
+        },
+        {
+            "key": "There was a duplication glitch involving your player character. It'd be helpful to send the save folder and Player.log to support@freeholdgames.com along with what you were currently doing.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "プレイヤーキャラクターに関わる重複グリッチが発生した。何をしていたかとともに、セーブフォルダと Player.log を support@freeholdgames.com に送ってほしい。"
+        },
+        {
+            "key": "There's nothing there to dismember.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "そこに切断する相手はいない。"
+        },
+        {
+            "key": "There's nothing there to shank.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "そこに短剣で刺す相手はいない。"
+        },
+        {
+            "key": "There's nothing there you can dismember.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "そこに切断できる相手はいない。"
+        },
+        {
+            "key": "There's nothing there you can shank.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "そこに短剣で刺せる相手はいない。"
+        },
+        {
+            "key": "There's nothing viable to animate here.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "ここには活性化できるものがない。"
+        },
+        {
+            "key": "This body part cannot be set as your primary.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "この体の部位は主部位に設定できない。"
+        },
+        {
+            "key": "This place already has a name.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "ここにはすでに名前がある。"
+        },
+        {
+            "key": "Too far! The aggregate mind is stretched to gossamers, and even the closest mind is too far away.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "遠すぎる！ 集合精神は蜘蛛の糸のように引き伸ばされ、最も近い精神でさえ遠すぎる。"
+        },
+        {
+            "key": "Trade complete!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "取引完了！"
+        },
+        {
+            "key": "Ugh, you feel sick.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "うう、気分が悪い。"
+        },
+        {
+            "key": "Wait for the bear to take a step towards you.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "クマがこちらへ一歩踏み出すのを待て。"
+        },
+        {
+            "key": "We're not quite ready to leave yet.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "まだ出発の準備ができていない。"
+        },
+        {
+            "key": "You are already wearing a disguise.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "すでに変装している。"
+        },
+        {
+            "key": "You are covered in sticky goop!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "ねばつく粘液まみれだ！"
+        },
+        {
+            "key": "You are cured of monochrome.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "単色症が治った。"
+        },
+        {
+            "key": "You are famished! You'll act more slowly until you eat again.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "飢え切っている！ また食べるまで行動が鈍くなる。"
+        },
+        {
+            "key": "You are startled!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "びっくりした！"
+        },
+        {
+            "key": "You are too exhausted to act!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "疲れ切って行動できない！"
+        },
+        {
+            "key": "You are transported!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "転送された！"
+        },
+        {
+            "key": "You aren't familiar enough with any creatures to make a disguise.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "変装に使えるほど見知った生き物がいない。"
+        },
+        {
+            "key": "You aren't hungry. Instead, you relax by the warmth of the fire.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "空腹ではない。代わりに、火のぬくもりでくつろぐ。"
+        },
+        {
+            "key": "You ask about your location and are no longer lost.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "場所を尋ね、もう迷子ではなくなる。"
+        },
+        {
+            "key": "You can't animate an object that already has a brain.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "すでに脳を持つ物体は動かせない。"
+        },
+        {
+            "key": "You can't cook with hostile creatures nearby.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "敵対生物が近くにいると料理できない。"
+        },
+        {
+            "key": "You can't delete automatically recorded chronology entries.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "自動記録された年表項目は削除できない。"
+        },
+        {
+            "key": "You can't exit here.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "ここからは出られない。"
+        },
+        {
+            "key": "You can't give that object.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "その物体は渡せない。"
+        },
+        {
+            "key": "You can't scintillate again so soon.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "まだそんなにすぐにはきらめけない。"
+        },
+        {
+            "key": "You can't switch primary limbs in combat.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "戦闘中は主肢を切り替えられない。"
+        },
+        {
+            "key": "You cannot access someone else's precognitive vision.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "他人の予知視にはアクセスできない。"
+        },
+        {
+            "key": "You cannot cross into Brightsheol from this place.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "この場所からはブライトシェオルへ渡れない。"
+        },
+        {
+            "key": "You cannot do that from here.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "ここからはそれはできない。"
+        },
+        {
+            "key": "You climb into the sarcophagus.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "石棺に入る。"
+        },
+        {
+            "key": "You do not have any unshared secrets about the life of Resheph.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "レシェフの生涯に関する未共有の秘密はない。"
+        },
+        {
+            "key": "You don't have a tongue!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "舌がない！"
+        },
+        {
+            "key": "You don't have anything to preserve.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "保存するものがない。"
+        },
+        {
+            "key": "You don't have the Cooking and Gathering skill.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "料理と採集の技能がない。"
+        },
+        {
+            "key": "You don't have the proper key standin message",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "正しいキーの代替メッセージがない。"
+        },
+        {
+            "key": "You don't know any recipes.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "レシピを何も知らない。"
+        },
+        {
+            "key": "You draw a pretty picture.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "きれいな絵を描く。"
+        },
+        {
+            "key": "You feel a cool swelling as your organs start to glow through your skin.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "ひんやりした膨らみを感じ、臓器が皮膚越しに光り始める。"
+        },
+        {
+            "key": "You feel a soothing tingle in your chest as your wounds start to close.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "胸に心地よいぴりつきを感じ、傷がふさがり始める。"
+        },
+        {
+            "key": "You feel drowsy.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "眠気が差す。"
+        },
+        {
+            "key": "You feel sick.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "気分が悪くなる。"
+        },
+        {
+            "key": "You feel some ambient astral friction here.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "ここでは周囲の星界摩擦を感じる。"
+        },
+        {
+            "key": "You gain an additional {{rules|Floating Nearby}} slot!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "追加の{{rules|浮遊物}}スロットを得た！"
+        },
+        {
+            "key": "You gained the mutation {{C|Crystallinity}}!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "変異{{C|結晶性}}を得た！"
+        },
+        {
+            "key": "You have contracted glotrot! Your tongue begins to bleed as the muscle rots away.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "舌腐病にかかった！ 舌の筋肉が腐り、血がにじみ始める。"
+        },
+        {
+            "key": "You have contracted monochrome! Color starts to seep out of the world.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "単色症にかかった！ 世界から色が抜け始める。"
+        },
+        {
+            "key": "You have no abilities to manage!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "管理できる能力がない！"
+        },
+        {
+            "key": "You have no artifacts to give.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "渡せるアーティファクトがない。"
+        },
+        {
+            "key": "You have no infectable body parts.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "感染させられる体の部位がない。"
+        },
+        {
+            "key": "You have no inventory!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "持ち物がない！"
+        },
+        {
+            "key": "You have the feeling of waking from a dream.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "夢から覚めたような気分がする。"
+        },
+        {
+            "key": "You have wilted! You'll move and regenerate slower until you eat or bask in the sunlight again.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "しおれた！ 再び食べるか日光浴するまで、移動と再生が遅くなる。"
+        },
+        {
+            "key": "You hear a distant click.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "遠くでカチリと音がする。"
+        },
+        {
+            "key": "You hear a loud click from across the room.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "部屋の向こうから大きなカチリという音がする。"
+        },
+        {
+            "key": "You lose {{rules|1}} point of Willpower permanently.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "意志力を{{rules|1}}点、永久に失う。"
+        },
+        {
+            "key": "You maintain your balance and kick the eel away.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "体勢を保ち、ウナギを蹴り飛ばす。"
+        },
+        {
+            "key": "You maintain your balance and shake the eel off.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "体勢を保ち、ウナギを振り払う。"
+        },
+        {
+            "key": "You melt through the floor and descend with your meal.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "床を溶かして、そのまま食事とともに降下する。"
+        },
+        {
+            "key": "You mind swerves from afar, and a force of repulsion from inside the sarcophagus prevents your entry.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "精神が遠くへそれ、石棺の内側からの反発力が侵入を阻む。"
+        },
+        {
+            "key": "You must have a short blade equipped to shank.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "シャンクするには短剣を装備していなければならない。"
+        },
+        {
+            "key": "You ponder how best to sow chaos with your words.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "言葉でどうやって混乱を撒くか思案する。"
+        },
+        {
+            "key": "You shake the water from your addled brain, but someone else's thoughts have already taken root.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "混濁した頭から水を振り払うが、すでに他人の思考が根を下ろしている。"
+        },
+        {
+            "key": "You should view the tooltip before equipping the axe.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "斧を装備する前にツールチップを見ておけ。"
+        },
+        {
+            "key": "You start to cool off.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "熱が引き始める。"
+        },
+        {
+            "key": "You staunch your wounds, though some are too deep to treat.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "傷口を止血するが、いくつかは深すぎて手当てできない。"
+        },
+        {
+            "key": "You staunch your wounds.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "傷口を止血する。"
+        },
+        {
+            "key": "You think you've made a terrible mistake...",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "とんでもない間違いをした気がする..."
+        },
+        {
+            "key": "You try to push through the normality lattice, but it snaps back into place.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "正常性格子を押し通ろうとするが、すぐに元の位置へ戻る。"
+        },
+        {
+            "key": "You'll be able to explore the world freely after the tutorial.\n\nFor now, let's visit Joppa.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "チュートリアルが終われば、世界を自由に探索できる。\n\n今はジョッパへ行こう。"
+        },
+        {
+            "key": "You're not talented enough to draw that.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "それを描くには腕が足りない。"
+        },
+        {
+            "key": "You're not under enough stress to scintillate.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "きらめくほどのストレスがまだ足りない。"
+        },
+        {
+            "key": "Your abysmal ritual performance deeply shames you.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "惨憺たる儀式の出来に、深く恥じ入る。"
+        },
+        {
+            "key": "Your arms shrink into your torso.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "腕が胴体へ縮み込む。"
+        },
+        {
+            "key": "Your friends may lease the Spindle, as we agreed.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "約束どおり、スピンドルを借り受けるのは友人たちだ。"
+        },
+        {
+            "key": "Your genome enters an excited state!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "ゲノムが励起状態に入る！"
+        },
+        {
+            "key": "Your head explodes!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "頭が爆発する！"
+        },
+        {
+            "key": "Your head is too sensitive to wear that.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "頭が敏感すぎて、それを被れない。"
+        },
+        {
+            "key": "Your heart begins to beat faster and your pupils dilate.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "心臓の鼓動が速まり、瞳孔が開く。"
+        },
+        {
+            "key": "Your heart rate returns to normal and your pupils shrink.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "心拍が正常に戻り、瞳孔が縮む。"
+        },
+        {
+            "key": "Your heart rate slows again.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "心拍が再び落ち着く。"
+        },
+        {
+            "key": "Your heart swells with a burning sensation.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "心臓が灼けつくように脹れる。"
+        },
+        {
+            "key": "Your hearts begin to beat faster and your pupils dilate.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "複数の心臓の鼓動が速まり、瞳孔が開く。"
+        },
+        {
+            "key": "Your legs bones are nearly fused at the joints.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "脚の骨は関節でほとんど癒着している。"
+        },
+        {
+            "key": "Your limbs suddenly feel perversely round and bumpy before they shrink back into your body.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "手足が突然、妙に丸くでこぼこしてから、胴体に縮み戻る。"
+        },
+        {
+            "key": "Your lunge is interrupted.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "踏み込みは中断される。"
+        },
+        {
+            "key": "Your mind begins to morph but the physiology of your brain restricts it.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "心が変容し始めるが、脳の生理がそれを制限する。"
+        },
+        {
+            "key": "Your mind clouds over once again.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "心が再び曇る。"
+        },
+        {
+            "key": "Your muscles bulge grotesquely.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "筋肉が醜悪に膨れ上がる。"
+        },
+        {
+            "key": "Your muscles deflate to their usual size.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "筋肉が元の大きさまでしぼむ。"
+        },
+        {
+            "key": "Your mutant physiology reacts adversely to the tonic. Aaaaaaaaargh!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "変異体質がそのトニックに悪く反応する。ぐあああああああああ！"
+        },
+        {
+            "key": "Your mutant physiology reacts adversely to the tonic. The soothing tingle fades.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "変異体質がそのトニックに悪く反応する。心地よいしびれは消える。"
+        },
+        {
+            "key": "Your mutant physiology reacts adversely to the tonic. The torrent of life sweeps away.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "変異体質がそのトニックに悪く反応する。生命の奔流に洗い流される。"
+        },
+        {
+            "key": "Your mutant physiology reacts adversely to the tonic. You cannot see to see -- your mind cracks as a bell struck by a hammer.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "変異体質がそのトニックに悪く反応する。見えも見えず、心はハンマーで打たれた鐘のようにひび割れる。"
+        },
+        {
+            "key": "Your mutant physiology reacts adversely to the tonic. You erupt into flames!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "変異体質がそのトニックに悪く反応する。あなたは燃え上がる！"
+        },
+        {
+            "key": "Your mutant physiology reacts adversely to the tonic. You feel awfully frigid.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "変異体質がそのトニックに悪く反応する。ひどく冷え切った気分になる。"
+        },
+        {
+            "key": "Your mutant physiology reacts adversely to the tonic. You flicker through spacetime uncontrollably.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "変異体質がそのトニックに悪く反応する。時空の中で制御不能にちらつく。"
+        },
+        {
+            "key": "Your mutant physiology reacts adversely to the tonic. Your field of vision erupts into a plane of blinding, white light.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "変異体質がそのトニックに悪く反応する。視界が目もくらむ白い平面へと爆ぜる。"
+        },
+        {
+            "key": "Your mutant physiology reacts adversely to the tonic. Your skin starts to knot and misshape.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "変異体質がそのトニックに悪く反応する。皮膚が結び目を作り、歪み始める。"
+        },
+        {
+            "key": "Your performance of the formal water ritual was adequate, if barely.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "正式な水儀の出来は、ぎりぎり及第点だった。"
+        },
+        {
+            "key": "Your performance of the formal water ritual was passable.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "正式な水儀はまずまずだった。"
+        },
+        {
+            "key": "Your performance of the formal water ritual was solemn and dignified.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "正式な水儀は厳粛で威厳があった。"
+        },
+        {
+            "key": "Your performance of the formal water ritual was sublime and inspiring.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "正式な水儀は崇高で感動的だった。"
+        },
+        {
+            "key": "Your performance of the naming ritual was adequate, if barely.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "命名の儀式は、かろうじて及第点だった。"
+        },
+        {
+            "key": "Your performance of the naming ritual was passable.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "命名の儀式はまずまずだった。"
+        },
+        {
+            "key": "Your performance of the naming ritual was solemn and dignified.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "命名の儀式は厳粛で威厳があった。"
+        },
+        {
+            "key": "Your performance of the naming ritual was sublime and inspiring.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "命名の儀式は崇高で感動的だった。"
+        },
+        {
+            "key": "Your performance of the offering ritual was adequate, if barely.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "献上の儀式は、かろうじて及第点だった。"
+        },
+        {
+            "key": "Your performance of the offering ritual was gracious and dignified.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "献上の儀式は優雅で威厳があった。"
+        },
+        {
+            "key": "Your performance of the offering ritual was passable.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "献上の儀式はまずまずだった。"
+        },
+        {
+            "key": "Your performance of the offering ritual was solemn and respectful.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "献上の儀式は厳粛で敬意に満ちていた。"
+        },
+        {
+            "key": "Your sense of self is pulled apart by what feels like a billion years of geologic pressure.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "自我が、十億年にも感じる地質圧に引き裂かれる。"
+        },
+        {
+            "key": "Your skin flattens out and stretches tautly around your body once again.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "皮膚が再び平たく伸び、体にぴんと張りつく。"
+        },
+        {
+            "key": "Your skin shrivels and dimples.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "皮膚が縮み、凹む。"
+        },
+        {
+            "key": "Your stomach swells with a burning sensation.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "胃が焼けるように膨れる。"
+        },
+        {
+            "key": "Your tongue regrows.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "舌が再生する。"
+        },
+        {
+            "key": "Your work applied the mod, but catastrophically poorly.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "作業はモッドを適用したが、出来は壊滅的に悪かった。"
+        },
+        {
+            "key": "Zone has no parts.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "ゾーンにパーツがない。"
+        },
+        {
+            "key": "Zone has null parts list.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "ゾーンのパーツ一覧が null だ。"
+        },
+        {
+            "key": "[Debug: Naming failed.]",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "[デバッグ: 命名失敗。]"
+        },
+        {
+            "key": "[{{R|!!! ERROR: REMOTE MANAGEMENT OFFLINE !!!}}]\n[{{R|!!! CHAIN LASER EMPLACEMENTS MUST BE ACTIVATED MANUALLY !!!}}]",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "[{{R|!!! エラー: リモート管理はオフライン !!!}}]\n[{{R|!!! チェーンレーザー設置は手動で起動する必要がある !!!}}]"
+        },
+        {
+            "key": "[{{R|!!! ERROR: REMOTE MANAGEMENT OFFLINE !!!}}]\n[{{R|!!! FORCE PROJECTORS MUST BE ACTIVATED MANUALLY !!!}}]",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "[{{R|!!! エラー: リモート管理はオフライン !!!}}]\n[{{R|!!! フォース・プロジェクターは手動で起動する必要がある !!!}}]"
+        },
+        {
+            "key": "{{C|Your golem is ready for use.}}",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "{{C|ゴーレムは使用可能だ。}}"
+        },
+        {
+            "key": "{{G|You wake up peacefully.}}",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "{{G|安らかに目覚める。}}"
+        },
+        {
+            "key": "{{G|Your heart restarts!}}",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "{{G|心臓が再起動する！}}"
+        },
+        {
+            "key": "{{G|Your hearts restart!}}",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "{{G|心臓たちが再起動する！}}"
+        },
+        {
+            "key": "{{K|What you understood to be the psychic sea was only a pond. There are other watchers now, countless in number, beyond the gulf of materiality. Points of light glimmer in all directions, but what are directions on a space that cannot be ordered? All you know now is of an aether vaster than the very mathematics that describe it. And you are not nor will you ever be again alone.}}",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "{{K|あなたが理解していたものは、広大な海ではなくただの池だった。今や見張る者はさらにいる。物質の彼方に無数にいるのだ。光の点が四方八方で瞬くが、秩序づけられない空間における方角とは何だろう？ いま知るのは、それを記述する数学ですら及ばないほど広大なエーテルのことだけだ。そしてあなたは、もう二度と独りではない。}}"
+        },
+        {
+            "key": "{{R|Fraudulent}} {{W|ONEness}} is taught by {{O|evil}} {{G|educators}}! Nothing happens!",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "{{R|偽りの}} {{W|一体性}}は{{O|邪悪な}} {{G|教育者}}に教えられる！ 何も起こらない！"
+        },
+        {
+            "key": "{{W|The space around you starts to glitch.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "{{W|周囲の空間が歪み始める。"
+        },
+        {
+            "key": "{{c|You sense the animus of a vast mind. Someone is near.}}",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "{{c|巨大な心の気配を感じる。誰かが近くにいる。}}"
+        },
+        {
+            "key": "{{c|You sense the animus of a vast mind. They are near.}}",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "{{c|巨大な心の気配を感じる。彼らが近くにいる。}}"
+        },
+        {
+            "key": "{{r|The ceiling collapses and rocks come pouring in!}}",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "{{r|天井が崩れ落ち、岩が雪崩れ込んでくる！}}"
+        },
+        {
+            "key": "{{r|Unwelcome images of {{G|budding plants}} fill your mind.}}",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "{{r|{{G|芽吹く植物}}の不快な幻が心に満ちる。}}"
+        },
+        {
+            "key": "{{r|You wake in a fitful start.}}",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "{{r|びくりと目を覚ます。}}"
+        },
+        {
+            "key": "{{r|Your domination is broken!}}",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "{{r|支配が破られた！}}"
+        },
+        {
+            "key": "{{r|Your mind is stranded here.}}",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "{{r|心がここに取り残されている。}}"
         }
     ]
 }
