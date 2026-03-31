@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace QudJP.Tests.DummyTargets;
 
 internal static class DummyMessageQueue
@@ -10,6 +12,8 @@ internal static class DummyMessageQueue
 
     public static bool LastUsePopup => LastCapitalize;
 
+    // Harmony integration tests patch this method at runtime; prevent JIT inlining in Release.
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static void AddPlayerMessage(string Message, string? Color = null, bool Capitalize = true)
     {
         LastMessage = Message;
