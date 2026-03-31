@@ -268,7 +268,7 @@
     },
     {
       "key": "dromad merchant",
-      "text": "ドロマド商人"
+      "text": "ドロマド商団"
     },
     {
       "key": "the Last Sultan",
@@ -751,7 +751,7 @@
     },
     {
       "key": "Welcome to the Caves of Qud tutorial. We'll just be scratching the surface here, learning enough of the basics to help you get your footing.\\n\\nIn Caves of Qud, you play as a mutated human or true kin.\\n\\nFor the tutorial, we're picking mutated human.",
-      "text": "『Caves of Qud』のチュートリアルへようこそ。ここではごく基本だけをなぞり、歩き出すのに必要な基本を身に付けます。\\n\\nこのゲームでは突然変異した人間か、真の人間を操作します。\\n\\nチュートリアルでは突然変異した人間を選びましょう。"
+      "text": "『Caves of クッド』のチュートリアルへようこそ。ここではごく基本だけをなぞり、歩き出すのに必要な基本を身に付けます。\\n\\nこのゲームでは突然変異した人間か、真の人間を操作します。\\n\\nチュートリアルでは突然変異した人間を選びましょう。"
     },
     {
       "key": "Character creation is a deep and sometimes long process. We included some preset builds to help you get started. After the tutorial, you can try another build, or make a character from scratch. (The recommended way! Once you get your footing.) \\n\\nFor now, pick the marsh taur.",
@@ -1014,11 +1014,11 @@
     },
     {
       "key": "You freed the Spindle for another's ascent and crossed into Brightsheol.",
-      "text": "あなたは紡錘を解放し、他の者の昇華に道を譲り、ブライトシオルへと渡った。"
+      "text": "あなたは紡錘を解放し、他の者の昇華に道を譲り、ブライトシェオルへと渡った。"
     },
     {
       "key": "You annulled the plagues of the Gyre.\n\nThen you freed the Spindle for another's ascent and crossed into Brightsheol",
-      "text": "あなたは回転の疫病を無効化した。\n\nそして紡錘を解放し、他の者の昇華に道を譲り、ブライトシオルへと渡った。"
+      "text": "あなたは回転の疫病を無効化した。\n\nそして紡錘を解放し、他の者の昇華に道を譲り、ブライトシェオルへと渡った。"
     },
     {
       "key": "You destroyed Resheph to save the burgeoning world but marooned yourself at the North Sheva.",
@@ -1030,27 +1030,27 @@
     },
     {
       "key": "You entered into a covenant with Resheph to help prepare Qud for the Coven's return.",
-      "text": "あなたはレシェフと契約を結び、魔女団の帰還に備えてQudを整えることにした。"
+      "text": "あなたはレシェフと契約を結び、魔女団の帰還に備えてクッドを整えることにした。"
     },
     {
       "key": "You annulled the plagues of the Gyre.\n\nThen you entered into a covenant with Resheph to help prepare Qud for the Coven's return.",
-      "text": "あなたは回転の疫病を無効化した。\n\nそしてレシェフと契約を結び、魔女団の帰還に備えてQudを整えることにした。"
+      "text": "あなたは回転の疫病を無効化した。\n\nそしてレシェフと契約を結び、魔女団の帰還に備えてクッドを整えることにした。"
     },
     {
       "key": "You destroyed Resheph and returned to Qud to help garden the burgeoning world.",
-      "text": "あなたはレシェフを滅ぼし、Qudに戻って芽吹く世界の庭を耕すことにした。"
+      "text": "あなたはレシェフを滅ぼし、クッドに戻って芽吹く世界の庭を耕すことにした。"
     },
     {
       "key": "You annulled the plagues of the Gyre.\n\nThen you destroyed Resheph and returned to Qud to help garden the burgeoning world.",
-      "text": "あなたは回転の疫病を無効化した。\n\nそしてレシェフを滅ぼし、Qudに戻って芽吹く世界の庭を耕すことにした。"
+      "text": "あなたは回転の疫病を無効化した。\n\nそしてレシェフを滅ぼし、クッドに戻って芽吹く世界の庭を耕すことにした。"
     },
     {
       "key": "You rebuked Resheph and returned to Qud to help garden the burgeoning world.",
-      "text": "あなたはレシェフを退け、Qudに戻って芽吹く世界の庭を耕すことにした。"
+      "text": "あなたはレシェフを退け、クッドに戻って芽吹く世界の庭を耕すことにした。"
     },
     {
       "key": "You annulled the plagues of the Gyre.\n\nThen you returned to Qud to help garden the burgeoning world.",
-      "text": "あなたは回転の疫病を無効化した。\n\nそしてQudに戻り、芽吹く世界の庭を耕すことにした。"
+      "text": "あなたは回転の疫病を無効化した。\n\nそしてクッドに戻り、芽吹く世界の庭を耕すことにした。"
     },
     {
       "key": "You acceded to Resheph's plan to purge the world of higher life in preparation for the Coven's return.",

@@ -1464,12 +1464,12 @@
         {
             "key": "The svardym eggs hatch.",
             "context": "XRL.World.Parts.SpawningEggSac",
-            "text": "スヴァルディムの卵が孵化した。"
+            "text": "スヴァーディムの卵が孵化した。"
         },
         {
             "key": "The svardym egg hatches.",
             "context": "XRL.World.Parts.SpawningEggSac",
-            "text": "スヴァルディムの卵が孵化した。"
+            "text": "スヴァーディムの卵が孵化した。"
         },
         {
             "key": "The darkness absorbs the laser beam.",

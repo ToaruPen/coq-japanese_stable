@@ -52,7 +52,7 @@
     {
       "key": "You touched the chiming rock and attuned to Chavvah, the Tree of Life.",
       "context": "Qud.UI.Qud.API.JournalAPI",
-      "text": "鳴り響く岩に触れ、生命の木チャヴァに同調した。"
+      "text": "鳴り響く岩に触れ、生命の樹チャヴァに同調した。"
     },
     {
       "key": "You rejoiced in a drop of nectar.",
@@ -187,7 +187,7 @@
     {
       "key": "The roaming keter of Chavvah, Tree of Life",
       "context": "Qud.UI.Qud.API.JournalAPI",
-      "text": "生命の木チャヴァの放浪するケテル"
+      "text": "生命の樹チャヴァの放浪するケテル"
     },
     {
       "key": "Bey Lah",

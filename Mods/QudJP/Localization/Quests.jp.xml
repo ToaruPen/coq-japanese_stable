@@ -45,7 +45,7 @@
          Accomplishment="老爺に小物を届けた。"
          Hagiograph="水と蔓の寺院で、＝name＝は老爺にクロームの価値を教えた。"
          HagiographCategory="Trysts"
-         Gospel="&lt;spice.elements.entity$elements[random].weddingConditions.!random.capitalize&gt;、＝name＝は修理工協会との友情を固めるため、アーギヴと結婚した。">
+         Gospel="&lt;spice.elements.entity$elements[random].weddingConditions.!random.capitalize&gt;、＝name＝は工匠協会との友情を固めるため、アーギヴと結婚した。">
     
     <step Name="Find a Knickknack" XP="0">
       <text>ジョッパ周辺の地帯で遺物を探す。</text>
@@ -61,7 +61,7 @@
          Accomplishment="老爺にもう一つ小物を届けた。"
          Hagiograph="ハイソルトサンの下、鋼の影で、＝name＝は老爺にクロームの価値を教えた。"
          HagiographCategory="Trysts"
-         Gospel="&lt;spice.elements.entity$elements[random].weddingConditions.!random.capitalize&gt;、＝name＝は修理工協会との友情を固めるため、二度目の結婚でアーギヴと結ばれた。">
+         Gospel="&lt;spice.elements.entity$elements[random].weddingConditions.!random.capitalize&gt;、＝name＝は工匠協会との友情を固めるため、二度目の結婚でアーギヴと結ばれた。">
 
     <step Name="Find Another Knickknack" XP="0">
 			<text>ジョッパ周辺の地帯で別の遺物を探す。</text>
@@ -158,7 +158,7 @@
          Accomplishment="岩の寺院のベテルと話し、謎の信号を解読した。"
          Hagiograph="勇気！ ＝name＝は開いた氷棚の口へ飛び込み、聖なる言葉でベテルと会話した。"
          HagiographCategory="TalksToThing"
-         Gospel="巨大な氷塊の中で、＝name＝はベテルと囁き誓いを交わし、メカニマス教と友情を結んだ。">
+         Gospel="巨大な氷塊の中で、＝name＝はベテルと囁き誓いを交わし、メカニマス教団と友情を結んだ。">
     
     <step Name="Get Q Girl's Instructions onto the Data Disk" XP="1000">
       <text>工房のQガールに話しかけ、ベテル用の指示をディスクにエンコードしてもらう。</text>
@@ -347,7 +347,7 @@
   <quest Name="Tomb of the Eaters"
          Accomplishment="喰らう者の墓所から帰還し、スピンドルの磁場を停止させた。">
     <step Name="Recover the Mark of Death" XP="0">
-      <text>食らう者が死者に刻む失われた印章を取り戻す。</text>
+      <text>喰らう者が死者に刻む失われた印章を取り戻す。</text>
     </step>
     <step Name="Inscribe the Mark" XP="0">
       <text>その印を自分の体に刻む。</text>
@@ -385,7 +385,7 @@
   </quest>
 
   <quest Name="If, Then, Else"
-         Accomplishment="生命の木チャヴァの“-else化”の儀式を完遂し、その実体チャイムの一つを永遠に断った。"
+         Accomplishment="生命の樹チャヴァの“-else化”の儀式を完遂し、その実体チャイムの一つを永遠に断った。"
          Hagiograph="美は引き算にあり！ 剪定者＝name＝は生命の木をより美しく整えた。"
          HagiographCategory="DoesSomethingRad"
          Gospel="生命の木の多くの意志に従い、＝name＝はトランジット岩をチャヴァの根の下にある発光するソフトへ運んだ。そこで＝player.subjective＝は秘儀を行い、地上へ戻って永遠に変わった。">

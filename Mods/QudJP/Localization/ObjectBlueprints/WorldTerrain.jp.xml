@@ -84,7 +84,7 @@
     <part Name="Render" DisplayName="塩砂丘" RenderString="247" ColorString="&amp;Y^k" Tile="Terrain/sw_desert.bmp" />
     <part Name="TerrainTravel" Segments="2500" LostChance="10" TravelClass="Survival_SaltDesertSurvival" />
     <part Name="AnimatedMaterialSaltDunes" />
-    <part Name="Description" Short="象牙の海の砂丘は、その場で凍りついた波だ。宝石の太陽に焼かれた大地は身を縮めて割れ、塩にひびの筋が刻まれる。地平線では空とモグライー――大塩砂漠の無辺の平原――が溶け合う。" />
+    <part Name="Description" Short="象牙の海の砂丘は、その場で凍りついた波だ。宝石の太陽に焼かれた大地は身を縮めて割れ、塩にひびの筋が刻まれる。地平線では空とモグラヤイ――大塩砂漠の無辺の平原――が溶け合う。" />
     <tag Name="Gender" Value="plural" />
     <part Name="UnityPrefabImposterChance" Chance="10" PrefabID="Prefabs/Particles/DesertWinds" />
     <tag Name="DungeonAttributes" Value="Desert" />
@@ -98,7 +98,7 @@
     <part Name="Render" DisplayName="塩砂丘" RenderString="~" ColorString="&amp;Y^k" Tile="Terrain/sw_plains.bmp" />
     <part Name="TerrainTravel" Segments="3000" LostChance="10" TravelClass="Survival_SaltDesertSurvival" />
     <part Name="AnimatedMaterialSaltDunes" />
-    <part Name="Description" Short="象牙の海の砂丘は、その場で凍りついた波だ。宝石の太陽に焼かれた大地は身を縮めて割れ、塩にひびの筋が刻まれる。地平線では空とモグライー――大塩砂漠の無辺の平原――が溶け合う。" />
+    <part Name="Description" Short="象牙の海の砂丘は、その場で凍りついた波だ。宝石の太陽に焼かれた大地は身を縮めて割れ、塩にひびの筋が刻まれる。地平線では空とモグラヤイ――大塩砂漠の無辺の平原――が溶け合う。" />
     <tag Name="Gender" Value="plural" />
     <part Name="UnityPrefabImposterChance" Chance="10" PrefabID="Prefabs/Particles/DesertWinds" />
     <tag Name="DungeonAttributes" Value="Desert" />
@@ -109,7 +109,7 @@
     <part Name="Render" DisplayName="塩砂丘" RenderString="247" ColorString="&amp;Y^k" Tile="Terrain/sw_desert.bmp" />
     <part Name="TerrainTravel" Segments="1250" TravelClass="Survival_SaltDesertSurvival" />
     <part Name="AnimatedMaterialSaltDunes" />
-    <part Name="Description" Short="象牙の海の砂丘は、その場で凍りついた波だ。宝石の太陽に焼かれた大地は身を縮めて割れ、塩にひびの筋が刻まれる。地平線では空とモグライー――大塩砂漠の無辺の平原――が溶け合う。" />
+    <part Name="Description" Short="象牙の海の砂丘は、その場で凍りついた波だ。宝石の太陽に焼かれた大地は身を縮めて割れ、塩にひびの筋が刻まれる。地平線では空とモグラヤイ――大塩砂漠の無辺の平原――が溶け合う。" />
     <tag Name="Gender" Value="plural" />
     <part Name="UnityPrefabImposter" PrefabID="Prefabs/Particles/DesertWinds" />
   </object>

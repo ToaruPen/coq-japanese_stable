@@ -134,7 +134,7 @@
       RecipeText="イドの住民の大好物を分けてもらえますか？"
     />
   </faction>
-  <faction Name="Chavvah" DisplayName="生命の木チャヴァ">
+  <faction Name="Chavvah" DisplayName="生命の樹チャヴァ">
     <waterritual
       Skill="Nonlinearity_Tomorrowful"
       Recipe="CrystalDelight"

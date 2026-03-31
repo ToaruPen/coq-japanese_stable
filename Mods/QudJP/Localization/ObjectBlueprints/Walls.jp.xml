@@ -134,7 +134,7 @@
     <part Name="Render" DisplayName="岩塩" RenderString="176" ColorString="&amp;Y^r" TileColor="&amp;Y" DetailColor="r" Occluding="true" />
     <stat Name="AV" Value="10" />
     <stat Name="Hitpoints" Value="500" />
-    <part Name="Description" Short="深紅の雲が結晶の習性に従い、内にも外にも入れ子状の立方体となる。なぜモグラ＝イはこの形を太陽から隠すのだろう？" />
+    <part Name="Description" Short="深紅の雲が結晶の習性に従い、内にも外にも入れ子状の立方体となる。なぜモグラヤイはこの形を太陽から隠すのだろう？" />
     <tag Name="PaintedWall" Value="wall_marble" />
     <xtagGrammar massNoun="true" />
   </object>

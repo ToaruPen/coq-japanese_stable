@@ -35,7 +35,7 @@
   </object>
 
 <object Name="Prism Girshling" Inherits="BaseNephalGirshling" Replace="true">
-    <part Name="Render" DisplayName="プリズム・ガーシュリング" DetailColor="Y" />
+    <part Name="Render" DisplayName="プリズム・ギルシュリング" DetailColor="Y" />
     <part Name="RefractCosmic" />
   </object>
 
@@ -434,7 +434,7 @@
   </object>
   <object Name="TerrainOutworldVault" Inherits="TerrainNorthSheva" Replace="true">
     <part Name="Render" DisplayName="外界の金庫" RenderString="155" ColorString="&amp;W" />
-    <part Name="Description" Short="星の民が贈った至高の品は、ダイアモンド化したゼタクロムと注入式停滞場の金庫に保管されていた。ムーヴァーから見る限り、時間の電離が旧銀行の時空柵を弱めたかどうかはうかがい知れない。" />
+    <part Name="Description" Short="星の民が贈った至高の品は、ダイアモンド化したゼータクロームと注入式停滞場の金庫に保管されていた。ムーヴァーから見る限り、時間の電離が旧銀行の時空柵を弱めたかどうかはうかがい知れない。" />
   </object>
   <object Name="TerrainTelescope" Inherits="TerrainNorthSheva" Replace="true">
     <part Name="Render" DisplayName="占視の角笛" RenderString="011" ColorString="&amp;C" />
@@ -689,7 +689,7 @@
   </object>
   <object Name="Sheva Bell" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="歌う鐘" Tile="Furniture/eater-bell.png" ColorString="&amp;W" TileColor="&amp;W" DetailColor="w" />
-    <part Name="Description" Short="輝く星青銅のサウンドボウをロタクトンの完璧な口に鋳込み、ゼタクロムのクラッパーを差し込んだ。鐘が打てば音波は聞き手の主観と並置しながら揺らぎ、行き来の儀式を告げる。" />
+    <part Name="Description" Short="輝く星青銅のサウンドボウをロタクトンの完璧な口に鋳込み、ゼータクロームのクラッパーを差し込んだ。鐘が打てば音波は聞き手の主観と並置しながら揺らぎ、行き来の儀式を告げる。" />
     <stat Name="AV" Value="40" />
     <stat Name="Hitpoints" Value="6000" />
     <tag Name="ForceSmartUse" />
@@ -1231,7 +1231,7 @@
   </object>
   <object Name="ReshephWall3" Inherits="BaseReshephWall" Replace="true">
     <part Name="Render" DisplayName="メインフレーム状態パネル" />
-    <part Name="Description" Short="真空ガラスの原野でゼタクロムのダイオードが渦を描きながら点滅する。" />
+    <part Name="Description" Short="真空ガラスの原野でゼータクロームのダイオードが渦を描きながら点滅する。" />
     <tag Name="PaintedWall" Value="walls_resheph_3" />
     <part Name="AnimatedMaterialGeneric" AnimationLength="200" LowFrameOffset="1" HighFrameOffset="1" ColorStringAnimationFrames="0=&amp;y^k,100=&amp;y^C" TileColorAnimationFrames="0=&amp;y^k,100=&amp;y^C" />
     <part Name="ChargeSink" NameForStatus="QualiaObservation" />
@@ -1780,7 +1780,7 @@
 
 
   <object Name="Godling" Inherits="Creature" Replace="true">
-    <part Name="Render" DisplayName="ガーシュの小神" Tile="Creatures/chiliad-godling.png" ColorString="&amp;m" DetailColor="M" />
+    <part Name="Render" DisplayName="ギルシュの小神" Tile="Creatures/chiliad-godling.png" ColorString="&amp;m" DetailColor="M" />
     <part Name="Description" Short="翼と蹄と脊の生き物が歳月の重みで身をかがめ、舌が「トララ」と甘く切ない余韻を歌う。顔立ちは感情の明るいスペクトラムで輝き、その の半透明の肌の下では虹彩二重の油が渦巻き、虹が三次元の帯となって跳ね飛ぶ。そいつは誰にも請われずに待っている。" />
     <part Name="Brain" Wanders="false" Feelings="Player:0" />
     <part Name="ConversationScript" ConversationID="PartialGodling" />
@@ -1793,7 +1793,7 @@
 
 
   <object Name="True Godling" Inherits="Godling" Replace="true">
-    <part Name="Render" DisplayName="ガーシュの小神" Tile="Creatures/chiliad-true-godling.png" ColorString="&amp;m" DetailColor="M" />
+    <part Name="Render" DisplayName="ギルシュの小神" Tile="Creatures/chiliad-true-godling.png" ColorString="&amp;m" DetailColor="M" />
     <part Name="Description" Short="翼と蹄と脊の生き物が歳月の重みで身をかがめ、舌が「トララ」と豊かで切ない余韻を歌う。顔立ちは感情の明るいスペクトラムで輝き、その のモザイクめいた肌（多重の血統でフラクタル化されている）の下では虹彩二重の油が渦巻き、虹が七次元の帯となって跳ね飛ぶ。そいつは誰にも請われずに待っている。" />
     <part Name="Brain" Wanders="false" Feelings="Player:0" />
     <part Name="ConversationScript" ConversationID="InheritorGodling" />
@@ -2083,7 +2083,7 @@
 
 
   <object Name="Chiliad Creature Girsh" Inherits="Girshling" Replace="true">
-    <part Name="Render" DisplayName="=creatureRegionAdjective= のガーシュリング" Tile="Creatures/chiliad-girshling.png" />
+    <part Name="Render" DisplayName="=creatureRegionAdjective= のギルシュリング" Tile="Creatures/chiliad-girshling.png" />
     <part Name="Brain" Factions="Girsh-100" />
     <part Name="Description" Short="星蘭の蘭汁が その の牙の先に溜まり、ぽたりと地面へ落ちる。" />
     <inventoryobject Blueprint="Chiliad Creature Pincer" Number="2" />

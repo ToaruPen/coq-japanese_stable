@@ -10,7 +10,7 @@
     },
     {
       "key": "Welcome to Qud",
-      "text": "Qudへようこそ"
+      "text": "クッドへようこそ"
     },
     {
       "key": "Die.",
@@ -442,7 +442,7 @@
     },
     {
       "key": "Mechanimist Reformer",
-      "text": "メカニミスト改革者"
+      "text": "メカニマス教徒改革者"
     },
     {
       "key": "Convince the High Priest of the Stilt to join your party.",
@@ -630,7 +630,7 @@
     },
     {
       "key": "Cross into Brightsheol.",
-      "text": "ブライトシオルに渡る。"
+      "text": "ブライトシェオルに渡る。"
     },
     {
       "key": "All Those Who Wander",
@@ -898,11 +898,11 @@
     },
     {
       "key": "Tomb of the Eaters",
-      "text": "喰らう者の墓"
+      "text": "喰らう者の墓所"
     },
     {
       "key": "Travel to Brightsheol and disable the Spindle's magnetic field.",
-      "text": "ブライトシオルに赴き、スピンドルの磁場を無効化する。"
+      "text": "ブライトシェオルに赴き、スピンドルの磁場を無効化する。"
     },
     {
       "key": "The Golem",
@@ -1158,7 +1158,7 @@
     },
     {
       "key": "Caves of Qud",
-      "text": "Caves of Qud"
+      "text": "Caves of クッド"
     },
     {
       "key": "Beat the game.",
@@ -1170,7 +1170,7 @@
     },
     {
       "key": "Enter into a covenant with Resheph and help prepare Qud for the Coven's return.",
-      "text": "レシェフと契約を結び、カヴンの帰還に向けてQudを準備する。"
+      "text": "レシェフと契約を結び、カヴンの帰還に向けてクッドを準備する。"
     },
     {
       "key": "The Dusted Cosmos",
@@ -1186,7 +1186,7 @@
     },
     {
       "key": "Spurn Resheph and return to Qud.",
-      "text": "レシェフを拒み、Qudに帰還する。"
+      "text": "レシェフを拒み、クッドに帰還する。"
     },
     {
       "key": "The Tillage of the Noosphere",

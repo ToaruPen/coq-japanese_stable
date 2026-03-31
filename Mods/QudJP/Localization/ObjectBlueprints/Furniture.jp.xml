@@ -316,7 +316,7 @@
     <part Name="Render" DisplayName="オボロコルの像" Tile="creatures/sw_oboroqoru_statue.bmp" RenderLayer="6" RenderString="A" ColorString="&amp;y" DetailColor="g" Occluding="true" />
     <part Name="Physics" Weight="12000" Owner="Kyakukya" />
     <stat Name="Hitpoints" Value="1200" />
-    <part Name="Description" Short="このオボロコルの石像は高さ二十スパンある。この無名の彫刻家は、三対の巨大な腕をそれぞれ掴み合い、足を組んで座る猿の神を描くことにした。その偶像は蔓に覆われており、その管理者は草がオボロコルの穏やかな表情を覆い隠す恐れのある場所を除いて自然に身を委ねている。紺碧、シャルトルーズ、インディゴ、カーネリアンなど、森が生み出すあらゆる色合いの花の花輪が神社の基礎に散らばっており、無神経な神と思われる者への取るに足らない捧げ物である。" />
+    <part Name="Description" Short="このオボロコルの石像は高さ二十スパンある。この無名の彫刻家は、三対の巨大な腕をそれぞれ掴み合い、足を組んで座る猿の神を描くことにした。その偶像は蔓に覆われており、その管理者は草がオボロコルの穏やかな表情を覆い隠す恐れのある場所を除いて自然に身を委ねている。紺碧、シャルトルーズ、インディゴ、カーネリアンなど、森が生み出すあらゆる色合いの花の花輪が神殿の基礎に散らばっており、無神経な神と思われる者への取るに足らない捧げ物である。" />
     <part Name="Shrine" />
     <part Name="SmartuseTwiddles" />
     <tag Name="Worshippable" />
@@ -404,7 +404,7 @@
 
 
   <object Name="SultanShrine" Inherits="MountedFurniture" Replace="true">
-    <part Name="Render" DisplayName="神社" RenderString="228" ColorString="&amp;y" DetailColor="g" Occluding="true" Tile="Terrain/tile_tombstone1.png" RenderLayer="8" />
+    <part Name="Render" DisplayName="神殿" RenderString="228" ColorString="&amp;y" DetailColor="g" Occluding="true" Tile="Terrain/tile_tombstone1.png" RenderLayer="8" />
     <part Name="Physics" Weight="10000" FlameTemperature="99999" VaporTemperature="1500" Solid="true" />
     <stat Name="AV" Value="20" />
     <stat Name="Hitpoints" Value="6000" />
@@ -425,50 +425,50 @@
 
 
   <object Name="JoppaSultanShrine" Inherits="SultanShrine" Replace="true">
-    <part Name="Render" DisplayName="神社" ColorString="&amp;y^k" Occluding="false" Tile="Terrain/tile_tombstone1.png" />
+    <part Name="Render" DisplayName="神殿" ColorString="&amp;y^k" Occluding="false" Tile="Terrain/tile_tombstone1.png" />
     <part Name="SultanShrine" PresetLocation="0" />
     <tag Name="ExcludeFromDynamicEncounters" Value="*noinherit" />
   </object>
 
 
   <object Name="Period1SultanShrine" Inherits="SultanShrine" Replace="true">
-    <part Name="Render" DisplayName="神社" ColorString="&amp;y^k" Occluding="false" Tile="Terrain/tile_tombstone1.png" />
+    <part Name="Render" DisplayName="神殿" ColorString="&amp;y^k" Occluding="false" Tile="Terrain/tile_tombstone1.png" />
     <part Name="SultanShrine" Period="1" />
   </object>
 
 
   <object Name="Period2SultanShrine" Inherits="SultanShrine" Replace="true">
-    <part Name="Render" DisplayName="神社" ColorString="&amp;y^k" Occluding="false" Tile="Terrain/tile_tombstone1.png" />
+    <part Name="Render" DisplayName="神殿" ColorString="&amp;y^k" Occluding="false" Tile="Terrain/tile_tombstone1.png" />
     <part Name="SultanShrine" Period="2" />
   </object>
 
 
   <object Name="Period3SultanShrine" Inherits="SultanShrine" Replace="true">
-    <part Name="Render" DisplayName="神社" ColorString="&amp;y^k" Occluding="false" Tile="Terrain/tile_tombstone1.png" />
+    <part Name="Render" DisplayName="神殿" ColorString="&amp;y^k" Occluding="false" Tile="Terrain/tile_tombstone1.png" />
     <part Name="SultanShrine" Period="3" />
   </object>
 
 
   <object Name="Period4SultanShrine" Inherits="SultanShrine" Replace="true">
-    <part Name="Render" DisplayName="神社" ColorString="&amp;y^k" Occluding="false" Tile="Terrain/tile_tombstone1.png" />
+    <part Name="Render" DisplayName="神殿" ColorString="&amp;y^k" Occluding="false" Tile="Terrain/tile_tombstone1.png" />
     <part Name="SultanShrine" Period="4" />
   </object>
 
 
   <object Name="Period5SultanShrine" Inherits="SultanShrine" Replace="true">
-    <part Name="Render" DisplayName="神社" ColorString="&amp;y^k" Occluding="false" Tile="Terrain/tile_tombstone1.png" />
+    <part Name="Render" DisplayName="神殿" ColorString="&amp;y^k" Occluding="false" Tile="Terrain/tile_tombstone1.png" />
     <part Name="SultanShrine" Period="5" />
   </object>
 
 
   <object Name="Period6SultanShrine" Inherits="SultanShrine" Replace="true">
-    <part Name="Render" DisplayName="神社" ColorString="&amp;y^k" Occluding="false" Tile="Terrain/tile_tombstone1.png" />
+    <part Name="Render" DisplayName="神殿" ColorString="&amp;y^k" Occluding="false" Tile="Terrain/tile_tombstone1.png" />
     <part Name="SultanShrine" Period="6" />
   </object>
 
 
   <object Name="NephilimShrine" Inherits="MountedFurniture" Replace="true">
-    <part Name="Render" DisplayName="ネフィリム神社" RenderString="228" ColorString="&amp;y" DetailColor="g" RenderLayer="8" />
+    <part Name="Render" DisplayName="ネフィリム神殿" RenderString="228" ColorString="&amp;y" DetailColor="g" RenderLayer="8" />
     <part Name="Physics" Weight="10000" FlameTemperature="99999" VaporTemperature="1500" Solid="true" />
     <stat Name="AV" Value="20" />
     <stat Name="Hitpoints" Value="6000" />
@@ -1097,7 +1097,7 @@
 
   <object Name="JoppaNorthSign" Inherits="Sign" Replace="true">
     <part Name="Render" DisplayName="看板" Tile="Items/sw_sign_graveyard.bmp" Occluding="false" />
-    <part Name="Chat" Says="墓地や神社へ" ShowInShortDescription="true" />
+    <part Name="Chat" Says="墓地や神殿へ" ShowInShortDescription="true" />
   </object>
 
 
@@ -4775,7 +4775,7 @@
   <object Name="Bottle" Inherits="Vessel" Replace="true">
     <part Name="Render" DisplayName="ガラス瓶" ColorString="&amp;c" DetailColor="c" Tile="Items/sw_jug2.bmp" RenderLayer="6" Occluding="false" />
     <part Name="Physics" Weight="5" Takeable="true" />
-    <part Name="Description" Short="フリーブローガラスの容器が月の弧で曲がる。この様式は、モグライーの向こう側にある噴神海の海岸で産出され、おそらくドロマドによって輸出されたものであることを示唆している。" />
+    <part Name="Description" Short="フリーブローガラスの容器が月の弧で曲がる。この様式は、モグラヤイの向こう側にある噴神海の海岸で産出され、おそらくドロマドによって輸出されたものであることを示唆している。" />
     <part Name="LiquidVolume" StartVolume="0" MaxVolume="16" ManualSeal="true" LiquidVisibleWhenSealed="true" />
     <tag Name="DetailColorByLiquid" Value="c" />
     <tag Name="Transparent" />

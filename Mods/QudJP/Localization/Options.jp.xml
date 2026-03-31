@@ -165,7 +165,7 @@
 
   <!-- App Settings -->
   <option ID="OptionShowAdvancedOptions" DisplayText="詳細オプションを表示" Category="アプリ設定" Type="Checkbox" Default="No"></option>
-  <option ID="OptionMusicBackground" Requires="OptionShowAdvancedOptions==Yes" DisplayText="バックグラウンドでも Caves of Qud をアクティブ維持" Category="アプリ設定" Type="Checkbox" Default="No"></option>
+  <option ID="OptionMusicBackground" Requires="OptionShowAdvancedOptions==Yes" DisplayText="バックグラウンドでも Caves of クッド をアクティブ維持" Category="アプリ設定" Type="Checkbox" Default="No"></option>
   <option ID="OptionSessionBackups" Requires="OptionShowAdvancedOptions==Yes" DisplayText="ローリングバックアップ数" Category="アプリ設定" Type="Combo" Values="None,1,2,3,5,7,10,15,20,30,40" Default="3">
     <helptext>
       メインメニューからセーブを読み込むと、CavesOfQud/Local/Session に指定数までバックアップを保持します。

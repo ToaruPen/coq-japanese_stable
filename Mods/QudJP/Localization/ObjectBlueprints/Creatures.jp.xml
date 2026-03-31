@@ -229,7 +229,7 @@
     <tag Name="BaseObject" Value="*noinherit" />
     <part Name="ConversationScript" ConversationID="Humanoids" ClearLost="true" />
     <tag Name="Humanoid" />
-    <xtagTextFragments Skin="肌" PoeticFeatures="広い額,伸ばした脚,驚異に満ちた目" Activity="仲間との退屈な会話,狩猟採集,塩の砂丘を彷徨う" VillageActivity="寝袋で眠り椅子に座る,のんびり過ごす,本を読む,ムサの皮を剥いて食べる" NeedsItemFor="自分のコレクションのため,欲望を満たすため,換金するため,芸術のインスピレーションのため,詩のインスピレーションのため,ミューズにするため,農作業を手伝わせるため,甲虫の月の下で遊ぶゲームのため" SacredThing="生殖行為,哲学,アルコール,大地の穀物,核果,芸術,詩,温かい食事,パンとワイン,陶芸,絵画" ArableLand="耕作地,家畜,大地の恵み" ValuedOre="貴金属,アーティファクト,クロム,ジャスパー,サイバネティクス,イーターの蜜" />
+    <xtagTextFragments Skin="肌" PoeticFeatures="広い額,伸ばした脚,驚異に満ちた目" Activity="仲間との退屈な会話,狩猟採集,塩の砂丘を彷徨う" VillageActivity="寝袋で眠り椅子に座る,のんびり過ごす,本を読む,ムサの皮を剥いて食べる" NeedsItemFor="自分のコレクションのため,欲望を満たすため,換金するため,芸術のインスピレーションのため,詩のインスピレーションのため,ミューズにするため,農作業を手伝わせるため,甲虫の月の下で遊ぶゲームのため" SacredThing="生殖行為,哲学,アルコール,大地の穀物,核果,芸術,詩,温かい食事,パンとワイン,陶芸,絵画" ArableLand="耕作地,家畜,大地の恵み" ValuedOre="貴金属,アーティファクト,クロム,ジャスパー,サイバネティクス,喰らう者の蜜" />
     <tag Name="SimpleConversation" Value="月と太陽。知恵と意志。~この季節、大地が実りをもたらさんことを。~安らぎあれ、=player.formalAddressTerm=。" />
     <tag Name="PrimaryLimbType" Value="Hand" />
     <tag Name="LairAmbientBed" Value="Sounds/Ambiences/amb_creature_humanoid_generic" />
@@ -1588,7 +1588,7 @@
     <stat Name="Hitpoints" Value="8" />
     <part Name="Brain" Hostile="True" Factions="Crabs-100" />
     <inventoryobject Blueprint="Chute Crab Claw" Number="2" />
-    <part Name="Description" Short="童精のような貝殻から年を取らない小さな目が柄の先に突き出し、その幾何はイーターが造ったシュートや通風孔の形に不思議なほど寄り添う。" />
+    <part Name="Description" Short="童精のような貝殻から年を取らない小さな目が柄の先に突き出し、その幾何は喰らう者が造ったシュートや通風孔の形に不思議なほど寄り添う。" />
     <skill Name="Cudgel" />
     <skill Name="Multiweapon_Fighting" />
     <tag Name="Role" Value="Minion" />
@@ -1861,7 +1861,7 @@
   </object>
 
 <object Name="Mechnamist rummager" Inherits="Mechanimist" Replace="true">
-    <part Name="Render" DisplayName="メカニマス教の漁り屋" Tile="Creatures/sw_rummager.bmp" RenderString="m" ColorString="&amp;c" DetailColor="w" />
+    <part Name="Render" DisplayName="メカニマス教徒の漁り屋" Tile="Creatures/sw_rummager.bmp" RenderString="m" ColorString="&amp;c" DetailColor="w" />
     <stat Name="Strength" sValue="14,1d3" />
     <stat Name="Agility" sValue="14,1d3" />
     <stat Name="Toughness" sValue="14,1d3" />
@@ -2034,7 +2034,7 @@
 <object Name="Scrapbot Mechanimist" Inherits="Scrapbot" Replace="true">
     <part Name="Render" DisplayName="再プログラム済み {{c|スクラップ・ショベラー}}" RenderString="3" ColorString="&amp;c" Tile="Creatures/sw_scrapbot.bmp" DetailColor="W" />
     <part Name="Brain" Hostile="false" Calm="True" Factions="Mechanimists-100" />
-    <part Name="RulesDescription" Text="{{y|メカニマス教による再プログラム}}" />
+    <part Name="RulesDescription" Text="{{y|メカニマス教団による再プログラム}}" />
     <tag Name="Culture" Value="Mechanimist" />
   </object>
 
@@ -2227,7 +2227,7 @@
   </object>
 
 <object Name="Girshling" Inherits="BaseSpider" Replace="true">
-    <part Name="Render" DisplayName="ガーシュリング" Tile="Assets_Content_Textures_Creatures_sw_solifuge.bmp" RenderString="x" ColorString="&amp;m" />
+    <part Name="Render" DisplayName="ギルシュリング" Tile="Assets_Content_Textures_Creatures_sw_solifuge.bmp" RenderString="x" ColorString="&amp;m" />
     <part Name="Corpse" CorpseChance="8" CorpseBlueprint="Girshling Corpse" />
     <stat Name="Hitpoints" Value="28" />
     <stat Name="Level" Value="9" />
@@ -2248,7 +2248,7 @@
   </object>
 
 <object Name="Girshling Corpse" Inherits="Arthropod Corpse" Replace="true">
-    <part Name="Render" DisplayName="{{m|ガーシュリング}}の死体" ColorString="&amp;m" RenderLayer="6" />
+    <part Name="Render" DisplayName="{{m|ギルシュリング}}の死体" ColorString="&amp;m" RenderLayer="6" />
     <part Name="Description" Short="蒼白い脚もどきが生命を訴えるように痙攣し、二本の牙が虚空を突き刺す。" />
     <part Name="Physics" Weight="20" />
     <part Name="Commerce" Value="20" />
@@ -2258,7 +2258,7 @@
   </object>
 
 <object Name="Defanged Girshling" Inherits="Girshling" Replace="true">
-    <part Name="Render" DisplayName="牙を抜かれたガーシュリング" DetailColor="y" />
+    <part Name="Render" DisplayName="牙を抜かれたギルシュリング" DetailColor="y" />
     <part Name="Description" Short="星蘭の唾液がかつて牙のあった空洞に溜まり、蒼白い脚もどきへ滴る。時空に失われた純然たるエクスタシーを捕まえて身震いし、誇り高く甲高い嗚咽を上げる。" />
     <part Name="Corpse" CorpseChance="8" CorpseBlueprint="Defanged Girshling Corpse" />
     <removeinventoryobject Blueprint="Girshling_Bite" />
@@ -2271,7 +2271,7 @@
   </object>
 
 <object Name="Rank Girshling" Inherits="BaseNephalGirshling" Replace="true">
-    <part Name="Render" DisplayName="腐蝕ガーシュリング" DetailColor="g" />
+    <part Name="Render" DisplayName="腐蝕ギルシュリング" DetailColor="g" />
     <part Name="Description" Short="泡立つ死のヘドロが牙の先端に溜まり、蒼白い脚もどきへ滴る。時空に失われた純然たるエクスタシーを捕まえて身震いし、誇り高く甲高い嗚咽を上げる。" />
     <part Name="Corpse" CorpseBlueprint="Rank Girshling Corpse" />
     <part Name="DropOnDeath" Blueprints="RankPool" />
@@ -2294,7 +2294,7 @@
   </object>
 
 <object Name="Conjoined Girshling" Inherits="BaseNephalGirshling" Replace="true">
-    <part Name="Render" DisplayName="結合ガーシュリング" DetailColor="W" />
+    <part Name="Render" DisplayName="結合ギルシュリング" DetailColor="W" />
     <part Name="Description" Short="星蘭の唾液が結合した牙の先に溜まり、蒼白い脚もどきへ滴る。時空に失われた純然たるエクスタシーを捕まえて身震いし、誇り高く甲高い嗚咽を上げる。" />
     <part Name="SplitOnDeath" Blueprint="Girshling" Amount="2" Message="=subject.T= は二つに分裂した！" />
     <tag Name="Gender" Value="plural" />
@@ -2308,7 +2308,7 @@
   </object>
 
 <object Name="Plasmatic Girshling" Inherits="BaseNephalGirshling" Replace="true">
-    <part Name="Render" DisplayName="プラズマガーシュリング" DetailColor="G" />
+    <part Name="Render" DisplayName="プラズマギルシュリング" DetailColor="G" />
     <part Name="Description" Short="凝縮された星ガスが牙の先に溜まり、蒼白い脚もどきへ滴る。時空に失われた純然たるエクスタシーを捕まえて身震いし、誇り高く甲高い嗚咽を上げる。" />
     <part Name="Corpse" CorpseBlueprint="Plasmatic Girshling Corpse" />
     <part Name="DropOnDeath" Blueprints="Plasma1000" />
@@ -2330,7 +2330,7 @@
   </object>
 
 <object Name="Polarized Girshling" Inherits="BaseNephalGirshling" Replace="true">
-    <part Name="Render" DisplayName="偏向ガーシュリング" DetailColor="c" />
+    <part Name="Render" DisplayName="偏向ギルシュリング" DetailColor="c" />
     <part Name="Description" Short="星蘭の唾液が直行する角度で格子状の牙の先に溜まり、蒼白い脚もどきへ滴る。時空に失われた純然たるエクスタシーを捕まえて身震いし、誇り高く甲高い嗚咽を上げる。" />
     <part Name="ForcePylon" Walls="2" Range="5" />
     <tag Name="DynamicObjectsTable:MoonStair_Creatures" />
@@ -2343,7 +2343,7 @@
   </object>
 
 <object Name="Cryptic Girshling" Inherits="BaseNephalGirshling" Replace="true">
-    <part Name="Render" DisplayName="神秘ガーシュリング" DetailColor="b" />
+    <part Name="Render" DisplayName="神秘ギルシュリング" DetailColor="b" />
     <part Name="Description" Short="凝縮された夢ガスがジグザグ牙の先に溜まり、蒼白い脚もどきへ滴る。時空に失われた純然たるエクスタシーを捕まえて身震いし、誇り高く甲高い嗚咽を上げる。" />
     <part Name="Corpse" CorpseBlueprint="Cryptic Girshling Corpse" />
     <removeinventoryobject Blueprint="Girshling_Bite" />
@@ -2365,7 +2365,7 @@
   </object>
 
 <object Name="Burrowing Girshling" Inherits="BaseNephalGirshling" Replace="true">
-    <part Name="Render" DisplayName="穿孔ガーシュリング" DetailColor="w" />
+    <part Name="Render" DisplayName="穿孔ギルシュリング" DetailColor="w" />
     <part Name="Description" Short="星蘭の唾液が掘削牙の先に溜まり、蒼白い脚もどきへ滴る。時空に失われた純然たるエクスタシーを捕まえて身震いし、誇り高く甲高い嗚咽を上げる。" />
     <part Name="LeaveTrailWhileHasEffect" Specification="BaseNephilimWall_Shug'rithSpawn" Effect="Burrowed" />
     <mutation Name="Burrowing" Level="5" />
@@ -2380,7 +2380,7 @@
   </object>
 
 <object Name="Defanged Girshling Corpse" Inherits="Girshling Corpse" Replace="true">
-    <part Name="Render" DisplayName="牙を抜かれたガーシュリングの死体" />
+    <part Name="Render" DisplayName="牙を抜かれたギルシュリングの死体" />
     <part Name="Description" Short="蒼白い脚もどきが生命を訴えるように痙攣している。" />
     <removepart Name="Butcherable" />
     <part Name="QuestStepFinisher" Trigger="Taken" Quest="What's Eating the Watervine?" Step="Get a Corpse" />
@@ -2422,7 +2422,7 @@
   </object>
 
 <object Name="Girshling Fangs" Inherits="BaseFangs" Replace="true">
-    <part Name="Render" DisplayName="{{m|ガーシュリング}}の牙" />
+    <part Name="Render" DisplayName="{{m|ギルシュリング}}の牙" />
     <part Name="Description" Short="二本の石灰化した杭が代々研ぎ澄まされ、皮膚の層ケーキを穿つ。" />
     <tag Name="AggregateWith" Value="GirshlingFangs" />
     <tag Name="Role" Value="Uncommon" />
@@ -3119,7 +3119,7 @@
   </object>
 
 <object Name="Girshworm" Inherits="BaseWorm" Replace="true">
-    <part Name="Render" DisplayName="ガーシュワーム" Tile="Creatures/sw_girshworm.bmp" RenderString="w" ColorString="&amp;m" />
+    <part Name="Render" DisplayName="ギルシュワーム" Tile="Creatures/sw_girshworm.bmp" RenderString="w" ColorString="&amp;m" />
     <stat Name="Strength" Boost="1" />
     <stat Name="AV" Value="3" />
     <stat Name="Level" Value="14" />
@@ -5492,7 +5492,7 @@
   </object>
 
 <object Name="Mechanimist Zealot" Inherits="Mechanimist" Replace="true">
-    <part Name="Render" DisplayName="メカニマス教の狂信者" ColorString="&amp;r" RenderString="m" />
+    <part Name="Render" DisplayName="メカニマス教徒の狂信者" ColorString="&amp;r" RenderString="m" />
     <part Name="Description" Short="あらゆる大きさの歯車と円背が身体の余白に墨入れされ、クロマイック礼賛を唱える唇が震えている。" />
     <stat Name="Level" Value="16" />
     <stat Name="Hitpoints" Value="20" />
@@ -5505,7 +5505,7 @@
   </object>
 
 <object Name="Mechanimist Catechist" Inherits="Mechanimist" Replace="true">
-    <part Name="Render" DisplayName="メカニマス教の教導者" ColorString="&amp;W" RenderString="m" Tile="creatures/sw_preacher.bmp" DetailColor="W" />
+    <part Name="Render" DisplayName="メカニマス教徒の教導者" ColorString="&amp;W" RenderString="m" Tile="creatures/sw_preacher.bmp" DetailColor="W" />
     <part Name="DisplayNameColor" Color="W" />
     <stat Name="Level" Value="25" />
     <stat Name="Hitpoints" Value="60" />
@@ -5521,7 +5521,7 @@
 
 <object Name="Mechanimist Choraler" Inherits="Mechanimist" Replace="true">
     <stat Name="Level" Value="20" />
-    <part Name="Render" ColorString="&amp;K" RenderString="m" DisplayName="{{K|メカニマス教の合唱者}}" />
+    <part Name="Render" ColorString="&amp;K" RenderString="m" DisplayName="{{K|メカニマス教徒の合唱者}}" />
     <part Name="Description" Short="ピストンを描いた手が、星の残響が宇宙のクッションだまりでカサフェセンスの球体をかすめる音を再現しようとするファルセットの鐘声に合わせて舞う。" />
     <inventoryobject Blueprint="Sandals" Number="1" />
     <inventoryobject Blueprint="Slate Frock" Number="1" />
@@ -5530,7 +5530,7 @@
   </object>
 
 <object Name="Mechanimist Houndmaster" Inherits="Mechanimist" Replace="true">
-    <part Name="Render" DisplayName="メカニマス教の猟犬師" ColorString="&amp;g" RenderString="m" />
+    <part Name="Render" DisplayName="メカニマス教徒の猟犬師" ColorString="&amp;g" RenderString="m" />
     <stat Name="Level" Value="25" />
     <stat Name="Hitpoints" Value="80" />
     <stat Name="Speed" Value="100" />
@@ -5547,7 +5547,7 @@
   </object>
 
 <object Name="Mechanimist Priest 1" Inherits="Mechanimist" Replace="true">
-    <part Name="Render" DisplayName="メカニマス教の司祭" ColorString="&amp;G" RenderString="m" Tile="creatures/sw_preacher2.bmp" DetailColor="W" />
+    <part Name="Render" DisplayName="メカニマス教徒の司祭" ColorString="&amp;G" RenderString="m" Tile="creatures/sw_preacher2.bmp" DetailColor="W" />
     <stat Name="Level" Value="25" />
     <stat Name="Hitpoints" Value="60" />
     <stat Name="Intelligence" Boost="2" />
@@ -5569,31 +5569,31 @@
   </object>
 
 <object Name="Mechanimist Preacher 1" Inherits="Mechanimist Priest 1" Replace="true">
-    <part Name="Render" DisplayName="メカニマス教の説教者" ColorString="&amp;c" RenderString="m" Tile="creatures/sw_preacher2.bmp" DetailColor="W" />
+    <part Name="Render" DisplayName="メカニマス教徒の説教者" ColorString="&amp;c" RenderString="m" Tile="creatures/sw_preacher2.bmp" DetailColor="W" />
     <part Name="Brain" Hostile="false" Wanders="false" />
     <part Name="Preacher" Book="Preacher1" Prefix="The preacher says, {{W|'" Frozen="The preacher mumbles inaudibly, encased in ice." inOrder="true" ChatWait="200" />
   </object>
 
 <object Name="Mechanimist Preacher 2" Inherits="Mechanimist Priest 1" Replace="true">
-    <part Name="Render" ColorString="&amp;c" RenderString="m" DisplayName="メカニマス教の説教者" Tile="creatures/sw_preacher2.bmp" DetailColor="W" />
+    <part Name="Render" ColorString="&amp;c" RenderString="m" DisplayName="メカニマス教徒の説教者" Tile="creatures/sw_preacher2.bmp" DetailColor="W" />
     <part Name="Brain" Hostile="false" Wanders="false" />
     <part Name="Preacher" Book="Preacher2" Prefix="The preacher says, {{W|'" Frozen="The preacher mumbles inaudibly, encased in ice." inOrder="true" ChatWait="200" />
   </object>
 
 <object Name="Mechanimist Preacher 3" Inherits="Mechanimist Priest 1" Replace="true">
-    <part Name="Render" ColorString="&amp;c" RenderString="m" DisplayName="メカニマス教の説教者" Tile="creatures/sw_preacher2.bmp" DetailColor="W" />
+    <part Name="Render" ColorString="&amp;c" RenderString="m" DisplayName="メカニマス教徒の説教者" Tile="creatures/sw_preacher2.bmp" DetailColor="W" />
     <part Name="Brain" Hostile="false" Wanders="false" />
     <part Name="Preacher" Book="Preacher3" Prefix="The preacher says, {{W|'" Frozen="The preacher mumbles inaudibly, encased in ice." inOrder="true" ChatWait="200" />
   </object>
 
 <object Name="Mechanimist Preacher 4" Inherits="Mechanimist Priest 1" Replace="true">
-    <part Name="Render" ColorString="&amp;c" RenderString="m" DisplayName="メカニマス教の説教者" Tile="creatures/sw_preacher2.bmp" DetailColor="W" />
+    <part Name="Render" ColorString="&amp;c" RenderString="m" DisplayName="メカニマス教徒の説教者" Tile="creatures/sw_preacher2.bmp" DetailColor="W" />
     <part Name="Brain" Hostile="false" Wanders="false" />
     <part Name="Preacher" Book="Preacher4" Prefix="The preacher says, {{W|'" Frozen="The preacher mumbles inaudibly, encased in ice." inOrder="true" ChatWait="200" />
   </object>
 
 <object Name="Mechanimist Temple Paladin" Inherits="Mechanimist" Replace="true">
-    <part Name="Render" DisplayName="メカニマス教の聖堂聖騎士" ColorString="&amp;Y" RenderString="m" Tile="creatures/sw_mechanimist_paladin.bmp" DetailColor="B" />
+    <part Name="Render" DisplayName="メカニマス教徒の聖堂聖騎士" ColorString="&amp;Y" RenderString="m" Tile="creatures/sw_mechanimist_paladin.bmp" DetailColor="B" />
     <part Name="DisplayNameColor" Color="b" />
     <stat Name="Level" Value="25" />
     <stat Name="Hitpoints" Value="60" />
@@ -5767,7 +5767,7 @@
   </object>
 
 <object Name="Newfather" Inherits="Templar" Replace="true">
-    <part Name="Render" ColorString="&amp;Y" TileColor="&amp;r" RenderString="t" Tile="Creatures/sw_newfather.bmp" DetailColor="Y" DisplayName="メカニマス教の新父" />
+    <part Name="Render" ColorString="&amp;Y" TileColor="&amp;r" RenderString="t" Tile="Creatures/sw_newfather.bmp" DetailColor="Y" DisplayName="メカニマス教徒の新父" />
     <part Name="Description" Short="フードに隠された大きな顎の顔から白い唇が垂れ、落胆の非対称を描く。眉が色を吸い取られた眼差しに影を落とし、新たな子らを鋭い慈愛と嫌悪の入り混じった目で見つめる。彼らは小さな操り人形であり、腕や脚は愛情深い精度で関節に巻き付けてやらねば、自我のままに四肢を投げ出して壊れてしまうのだ。" />
     <stat Name="Level" Value="24" />
     <stat Name="Hitpoints" Value="90" />
@@ -7966,7 +7966,7 @@
     <part Name="AIWanderingJuggernaut" />
     <part Name="LeavesTrail" TrailChance="100" TrailBlueprint="@SaltKrakenTrail" OnEnter="false" />
     <tag Name="NoCure" />
-    <part Name="Description" Short="まがい物の砂丘から塩の雪崩がはがれ落ち、末期の世界が焦がれた夢の遺物――モグラ＝イの広大な浮遊波原に育まれてあり得ぬ巨大さへと至った、生けるヨウ素の洞――が姿を現す。ガラスの雨幕が濾過摂食の流入口を流れ落ち、その奥では呑み込まれた惑星が粉砕された地層として横たわる。" />
+    <part Name="Description" Short="まがい物の砂丘から塩の雪崩がはがれ落ち、末期の世界が焦がれた夢の遺物――モグラヤイの広大な浮遊波原に育まれてあり得ぬ巨大さへと至った、生けるヨウ素の洞――が姿を現す。ガラスの雨幕が濾過摂食の流入口を流れ落ち、その奥では呑み込まれた惑星が粉砕された地層として横たわる。" />
     <inventoryobject Blueprint="Saltwurm_Crush" Number="1" />
     <tag Name="Role" Value="Brute" />
     <tag Name="Gigantic" />
@@ -10279,7 +10279,7 @@
   </object>
 
 <object Name="BaseGirshCresh" Inherits="BaseNest" Replace="true">
-    <part Name="Render" RenderIfDark="true" Tile="Items/sw_egg_sac.bmp" DisplayName="ガーシュリングのクレッシュ" RenderString="233" ColorString="&amp;y" />
+    <part Name="Render" RenderIfDark="true" Tile="Items/sw_egg_sac.bmp" DisplayName="ギルシュリングのクレッシュ" RenderString="233" ColorString="&amp;y" />
     <part Name="Description" Short="" />
     <part Name="Brain" Factions="Girsh-100" />
     <part Name="Physics" Weight="35" />
@@ -11681,7 +11681,7 @@
   </object>
 
 <object Name="IssachariConvert" Inherits="VillageZeroConvert" Replace="true">
-    <part Name="Render" DisplayName="イッサカリの襲撃者でメカニマス教の改宗者" Tile="Creatures/Issachari_convert.bmp" ColorString="&amp;C" DetailColor="R" RenderString="z" />
+    <part Name="Render" DisplayName="イッサカリの襲撃者でメカニマス教徒の改宗者" Tile="Creatures/Issachari_convert.bmp" ColorString="&amp;C" DetailColor="R" RenderString="z" />
     <part Name="Description" Short="クフィーヤは切り分けられて頭巾になり、ぼろ布の旗を縫い替えてクロマイックの民のスレート色の修道衣に似せている。銅線で包んだ青銅の短剣が腰にかかり、塩で白くなった親指でひび割れた回路板のお守りを撫でる。" />
     <inventoryobject Blueprint="Dagger" />
     <inventoryobject Blueprint="Sandals" />

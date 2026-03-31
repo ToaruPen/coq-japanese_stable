@@ -279,7 +279,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="図面・設計術を脳に直接書き込むソフトウェアの第二世代。" />
     <part Name="Render" DisplayName="{{Y|スキーマソフト Mk2}}" Tile="Items/sw_schemasoft.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="2" BehaviorDescription="修理工IIIまでの設計図を1つ会得する。" />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="2" BehaviorDescription="工匠IIIまでの設計図を1つ会得する。" />
     <part Name="CyberneticsSchemasoft" MaxTier="3" />
     <tag Name="CyberneticsDestroyOnRemoval" />
     <part Name="ItemElements" Elements="scholarship::3" />
@@ -453,7 +453,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="希少な設計図を脳に直接ロードする第三世代スキーマソフト。" />
     <part Name="Render" DisplayName="{{Y|スキーマソフト Mk3}}" Tile="Items/sw_schemasoft.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="3" BehaviorDescription="修理工IV相当の設計図を1つ会得する。" />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="3" BehaviorDescription="工匠IV相当の設計図を1つ会得する。" />
     <part Name="CyberneticsSchemasoft" MaxTier="5" />
     <tag Name="CyberneticsDestroyOnRemoval" />
     <part Name="ItemElements" Elements="scholarship::4" />
@@ -541,7 +541,7 @@
   </object>
   <object Name="Schemasoft4" Inherits="BaseCyberneticsEquipment_4point" Replace="true">
     <part Name="Physics" Weight="0" />
-    <part Name="Description" Short="修理工上級者向けの最上位スキーマソフト。古代図面を完全再現する。" />
+    <part Name="Description" Short="工匠上級者向けの最上位スキーマソフト。古代図面を完全再現する。" />
     <part Name="Render" DisplayName="{{Y|スキーマソフト Mk4}}" Tile="Items/sw_schemasoft.bmp" ColorString="&amp;C" DetailColor="R" />
     <part Name="CyberneticsBaseItem" Slots="Head" Cost="4" BehaviorDescription="高Tierの設計図を1つ会得し、工作難易度を1段階下げる。" />
     <part Name="CyberneticsSchemasoft" MaxTier="7" />
@@ -1611,7 +1611,7 @@
     <part Name="Examiner" Complexity="2" Alternate="UnknownBottle" />
     <part Name="Render" Tile="items/sw_spray.bmp" DisplayName="スプレーボトル" ColorString="&amp;C" DetailColor="c" RenderString="012" RenderLayer="5" />
     <part Name="Physics" Category="Applicators" />
-    <part Name="Description" Short="ある修理工がサイフォン管と加圧ノズルを組み合わせ、注ぎたくない液体を噴霧する道具を作った。" />
+    <part Name="Description" Short="ある工匠がサイフォン管と加圧ノズルを組み合わせ、注ぎたくない液体を噴霧する道具を作った。" />
     <part Name="Commerce" Value="20" />
     <part Name="Applicator" />
     <part Name="Spraybottle" />
@@ -7003,7 +7003,7 @@
     <part Name="Armor" AV="0" DV="1" WornOn="Face" />
     <part Name="Render" DisplayName="微笑む{{sun|太陽}}の仮面" RenderString="]" DetailColor="W" ColorString="&amp;Y" Tile="items/sw_mask.bmp" />
     <part Name="Commerce" Value="8" />
-    <part Name="Description" Short="太陽が石鹸石に笑みを刻み、赭で飾った頬と歯が高く誇らしげに張り出す。真昼の天幕が落とす影は、台地にもモグラ＝イ以北にも存在しないほど葉に満ちた木立を語っている。" />
+    <part Name="Description" Short="太陽が石鹸石に笑みを刻み、赭で飾った頬と歯が高く誇らしげに張り出す。真昼の天幕が落とす影は、台地にもモグラヤイ以北にも存在しないほど葉に満ちた木立を語っている。" />
     <part Name="Physics" Weight="1" />
     <tag Name="EquipSound" Value="sfx_equip_material_generic_organic" />
     <tag Name="Tier" Value="1" />
@@ -7050,7 +7050,7 @@
     <part Name="Armor" AV="0" DV="0" WornOn="Face" />
     <part Name="Render" DisplayName="ゴーグル" RenderString="]" Tile="Items/sw_goggles.bmp" ColorString="&amp;K" DetailColor="y" />
     <part Name="Commerce" Value="25" />
-    <part Name="Description" Short="クローム真鍮の環と革の帯を修理工の型紙どおり正確に切り出したが、真価はガラスにある。高塩の疾風が散りばめた微細なひび割れがそこに署名を残している。" />
+    <part Name="Description" Short="クローム真鍮の環と革の帯を工匠の型紙どおり正確に切り出したが、真価はガラスにある。高塩の疾風が散りばめた微細なひび割れがそこに署名を残している。" />
     <part Name="Physics" Weight="1" />
     <part Name="Metal" />
     <part Name="ItemElements" Elements="glass::3" />
@@ -7936,7 +7936,7 @@
     <part Name="Armor" AV="1" DV="0" WornOn="Feet" />
     <part Name="Render" DisplayName="跳躍ブーツ" RenderString="]" ColorString="&amp;C" DetailColor="c" Tile="Items/sw_boots_tech.bmp" />
     <part Name="Commerce" Value="100" />
-    <part Name="Description" Short="巧みな修理工が、それぞれのブーツにバネ仕掛けの腱を巻き付け、大きな疾走鳥の歩みに似せた。" />
+    <part Name="Description" Short="巧みな工匠が、それぞれのブーツにバネ仕掛けの腱を巻き付け、大きな疾走鳥の歩みに似せた。" />
     <part Name="RulesDescription" Text="このアイテムを 100 ラウンド以上着用しているあいだ、スプリント時の移動速度が通常の 3 倍になる。" />
     <part Name="Physics" Weight="7" />
     <tag Name="Tier" Value="4" />
@@ -10847,7 +10847,7 @@
 <object Name="Dormant Waydroid" Inherits="Item" Replace="true">
     <part Name="Render" DisplayName="{{c|休眠中のウェイドロイド}}" RenderString="2" ColorString="&amp;c" Tile="Creatures/sw_waydroid.bmp" DetailColor="W" RenderLayer="5" />
     <part Name="Commerce" Value="30" />
-    <part Name="Description" Short="ここに、知覚のない眠りにあるウェイドロイドが横たわっている。心ある修理工なら、ふたたび命を与えられるだろうか。" />
+    <part Name="Description" Short="ここに、知覚のない眠りにあるウェイドロイドが横たわっている。心ある工匠なら、ふたたび命を与えられるだろうか。" />
     <part Name="Physics" Category="Quest Items" />
     <tag Name="ExcludeFromDynamicEncounters" />
     <tag Name="NoSparkingQuest" />

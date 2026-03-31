@@ -16,7 +16,7 @@
       <mode ID="Tutorial" Title="チュートリアル">
         <icon Tile="Items/sw_square_cap.bmp" Foreground="K" Detail="W"></icon>
         <description>
-          Caves of Qud の基礎を学ぶ。
+          Caves of クッド の基礎を学ぶ。
         </description>
         <stringgamestate Name="GameMode" Value="Tutorial"></stringgamestate>
       </mode>
