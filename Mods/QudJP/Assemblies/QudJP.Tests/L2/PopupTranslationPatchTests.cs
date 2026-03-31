@@ -681,6 +681,20 @@ public sealed class PopupTranslationPatchTests
     }
 
     [Test]
+    public void TranslatePopupTextForProducerRoute_TranslatesWaterRitualLowReputationPattern()
+    {
+        WriteDictionary((
+            "You don't have a high enough reputation with {0}.",
+            "{0}との評判が十分に高くない。"));
+
+        const string source = "You don't have a high enough reputation with {{C|Barathrumites}}.";
+
+        var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(source, nameof(PopupTranslationPatch));
+
+        Assert.That(translated, Is.EqualTo("{{C|Barathrumites}}との評判が十分に高くない。"));
+    }
+
+    [Test]
     public void Prefix_StripsDirectTranslationMarkerAndSkipsTranslation()
     {
         // Set up a dictionary entry that would match the stripped text if translation were applied.

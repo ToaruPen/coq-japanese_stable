@@ -1,0 +1,238 @@
+{
+  "meta": {
+    "id": "ui-cybernetics",
+    "lang": "ja",
+    "version": "0.1.0",
+    "description": "Cybernetics terminal screens, options, and dynamic templates"
+  },
+  "rules": {
+    "protectColorTags": true,
+    "protectHtmlEntities": true
+  },
+  "entries": [
+    {
+      "key": "navigate",
+      "text": "移動"
+    },
+    {
+      "key": "accept",
+      "text": "決定"
+    },
+    {
+      "key": "quit",
+      "text": "終了"
+    },
+    {
+      "key": " Credits: {0}  License Tier: {1}  Points Used: {2}",
+      "text": " クレジット: {0}  ライセンスティア: {1}  使用ポイント: {2}"
+    },
+    {
+      "key": "Hack Level: {0}",
+      "text": "ハックレベル: {0}"
+    },
+    {
+      "key": "Security Alert Level: {0}",
+      "text": "セキュリティ警戒度: {0}"
+    },
+    {
+      "key": "Hack Level",
+      "text": "ハックレベル"
+    },
+    {
+      "key": "Security Alert Level",
+      "text": "セキュリティ警戒度"
+    },
+    {
+      "key": "Welcome, Aristocrat, to a becoming nook. {0} one step closer to the Grand Unification. Please choose from the following options.",
+      "text": "ようこそ、貴顕よ、変容の窪みへ。{0}は大統一へまた一歩近づいた。以下の選択肢から選ぶがよい。"
+    },
+    {
+      "key": "Learn About Cybernetics",
+      "text": "サイバネティクスについて学ぶ"
+    },
+    {
+      "key": "Install Cybernetics",
+      "text": "サイバネティクスを装着"
+    },
+    {
+      "key": "Uninstall Cybernetics",
+      "text": "サイバネティクスを取り外す"
+    },
+    {
+      "key": "Upgrade Your License",
+      "text": "ライセンスをアップグレード"
+    },
+    {
+      "key": "Select Subject",
+      "text": "対象を選択"
+    },
+    {
+      "key": "Attempt Hack to Select Subject",
+      "text": "ハックして対象を選択"
+    },
+    {
+      "key": "You are becoming, aristocrat. Choose an implant to install.",
+      "text": "変容しつつあるな、貴顕よ。装着するインプラントを選ぶがよい。"
+    },
+    {
+      "key": "\n\n{{R|<No implants available>}}",
+      "text": "\n\n{{R|<利用可能なインプラントはない>}}"
+    },
+    {
+      "key": "[already installed]",
+      "text": "[装着済み]"
+    },
+    {
+      "key": "[{0} license points]",
+      "text": "[{0} ライセンスポイント]"
+    },
+    {
+      "key": "Please choose a target body part.",
+      "text": "対象となる部位を選ぶがよい。"
+    },
+    {
+      "key": " [will replace {0}]",
+      "text": " [{0} を置き換える]"
+    },
+    {
+      "key": "[destroyed on uninstall]",
+      "text": "[取り外すと破壊される]"
+    },
+    {
+      "key": "<cancel operation, return to main menu>",
+      "text": "<操作を中止してメインメニューに戻る>"
+    },
+    {
+      "key": "Your curiosity is admirable, aristocrat.\n\nCybernetics are bionic augmentations implanted in your body to assist in your self-actualization. You can have implants installed at becoming nooks such as this one. Either load them in the rack or carry them on your person.",
+      "text": "その好奇心は見事である、貴顕よ。\n\nサイバネティクスとは、自己実現を助けるために肉体へ埋め込む生体改造である。このような変容の窪みで装着できる。ラックに載せるか、自ら携えるがよい。"
+    },
+    {
+      "key": "How many implants can I install?",
+      "text": "インプラントは何個まで装着できますか?"
+    },
+    {
+      "key": "Can I uninstall implants?",
+      "text": "インプラントは取り外せますか?"
+    },
+    {
+      "key": "Return To Main Menu",
+      "text": "メインメニューに戻る"
+    },
+    {
+      "key": "Insightful question, Aristocrat.\n\nEach implant has a point cost, and the total point cost of your installed implants can't exceed your license tier (displayed at the bottom of this screen). You can upgrade your license at a nook by spending cybernetic credits.",
+      "text": "鋭い問いである、貴顕よ。\n\n各インプラントにはポイントコストがあり、装着済みインプラントの合計ポイントはライセンスティアを超えられない（この画面下部に表示される）。変容の窪みではサイバネティクス・クレジットを支払ってライセンスをアップグレードできる。"
+    },
+    {
+      "key": "<back>",
+      "text": "<戻る>"
+    },
+    {
+      "key": "Aristocrat, your question was most finely uttered.\n\nYou may freely install and uninstall implants at a nook, though some implants are destroyed when uninstalled or can't be uninstalled at all.",
+      "text": "見事な問いである、貴顕よ。\n\n変容の窪みではインプラントを自由に装着・取り外しできる。ただし、取り外すと破壊されるものや、そもそも取り外せないものもある。"
+    },
+    {
+      "key": "Become a finer Aristocrat. Upgrade your license tier with cybernetics credits.\n\n{{C|1}} credit for license tiers 1-8\n{{C|2}} credits for license tiers 9-16\n{{C|3}} credits for license tiers 17-24\n{{C|4}} credits for license tiers 25+\n",
+      "text": "さらに上等な貴顕となるがよい。サイバネティクス・クレジットでライセンスティアをアップグレードできる。\n\n{{C|1}} クレジットでライセンスティア 1-8\n{{C|2}} クレジットでライセンスティア 9-16\n{{C|3}} クレジットでライセンスティア 17-24\n{{C|4}} クレジットでライセンスティア 25+\n"
+    },
+    {
+      "key": "Remember, Aristocrat, your base license tier is {0}.",
+      "text": "貴顕よ、あなたの基本ライセンスティアは {0} である。"
+    },
+    {
+      "key": "[{0} credits]",
+      "text": "[{0} クレジット]"
+    },
+    {
+      "key": "insufficent credits",
+      "text": "クレジット不足"
+    },
+    {
+      "key": "{{R|Insufficient credits to upgrade}}",
+      "text": "{{R|アップグレードに必要なクレジットが不足している}}"
+    },
+    {
+      "key": "You are Becoming, Aristocrat.",
+      "text": "あなたは変容しつつある、貴顕よ。"
+    },
+    {
+      "key": "You are given to whimsy, Aristocrat. Choose an implant to uninstall.",
+      "text": "気まぐれであるな、貴顕よ。取り外すインプラントを選ぶがよい。"
+    },
+    {
+      "key": "\n\n{{R|<no implants installed>}}",
+      "text": "\n\n{{R|<インプラントは装着されていない>}}"
+    },
+    {
+      "key": "[cannot be uninstalled]",
+      "text": "[取り外せない]"
+    },
+    {
+      "key": "Whimsy must yield to necessity, Aristocrat.",
+      "text": "気まぐれは必要に従わねばならぬ、貴顕よ。"
+    },
+    {
+      "key": "Select who is to Become, aristocrat.",
+      "text": "誰を変容させるか選ぶがよい、貴顕よ。"
+    },
+    {
+      "key": "Return to main menu",
+      "text": "メインメニューに戻る"
+    },
+    {
+      "key": "You are no aristocrat. Goodbye.",
+      "text": "あなたは貴顕ではない。さらばだ。"
+    },
+    {
+      "key": "...",
+      "text": "..."
+    },
+    {
+      "key": "attempt hack",
+      "text": "ハックを試みる"
+    },
+    {
+      "key": "Cybernetics already present:\n  -{0}\n\nPlease uninstall existing implant.",
+      "text": "既にサイバネティクスは装着済みである:\n  -{0}\n\n既存のインプラントを取り外すがよい。"
+    },
+    {
+      "key": "Insufficent license points to install:\n  -{0}\n\nPlease uninstall an implant or upgrade your license.",
+      "text": "ライセンスポイントが不足しているため装着できない:\n  -{0}\n\nインプラントを取り外すか、ライセンスをアップグレードするがよい。"
+    },
+    {
+      "key": "Error: Condition inadequate for installation\n  -{0}\n\nPlease supply a replacement.",
+      "text": "エラー: この状態では装着できない\n  -{0}\n\n交換品を用意するがよい。"
+    },
+    {
+      "key": "Installing {0}{1}",
+      "text": "{0} を装着中{1}"
+    },
+    {
+      "key": "Uninstalling {0}{1}",
+      "text": "{0} を取り外し中{1}"
+    },
+    {
+      "key": "Interfacing with nervous system...................\n",
+      "text": "神経系に接続中...................\n"
+    },
+    {
+      "key": ".....Complete!\n\n",
+      "text": ".....完了!\n\n"
+    },
+    {
+      "key": "Congratulations! Your cybernetic implant was successfully installed.\n",
+      "text": "おめでとう! サイバネティクス・インプラントの装着に成功した。\n"
+    },
+    {
+      "key": "Congratulations! Your cybernetic implant was successfully uninstalled.",
+      "text": "おめでとう! サイバネティクス・インプラントの取り外しに成功した。"
+    },
+    {
+      "key": "You are becoming.",
+      "text": "あなたは変容しつつある。"
+    },
+    {
+      "key": "!Error: cannot unequip that limb",
+      "text": "!エラー: その肢は外せない"
+    }
+  ]
+}

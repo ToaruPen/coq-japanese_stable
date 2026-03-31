@@ -62,6 +62,38 @@ public sealed class PlayerStatusBarProducerTranslationHelpersTests
     }
 
     [Test]
+    public void TranslateStringDataValue_TranslatesCalendarStatus()
+    {
+        WriteDictionary(
+            ("Harvest Dawn", "ハーヴェスト・ドーン"),
+            ("Kisu Ux", "キス・ウクス"));
+
+        var translated = InvokeHelperStringMethod(
+            "TranslateStringDataValue",
+            "Time",
+            "Harvest Dawn 16th of Kisu Ux",
+            "PlayerStatusBarProducerTranslationPatch.BeginEndTurn");
+
+        Assert.That(translated, Is.EqualTo("ハーヴェスト・ドーン キス・ウクス16日"));
+    }
+
+    [Test]
+    public void TranslateStringDataValue_TranslatesCalendarIdesToFifteenthDay()
+    {
+        WriteDictionary(
+            ("Beetle Moon Zenith", "ビートルムーン・ゼニス"),
+            ("Nivvun Ut", "ニヴン・ウト"));
+
+        var translated = InvokeHelperStringMethod(
+            "TranslateStringDataValue",
+            "Time",
+            "Beetle Moon Zenith Ides of Nivvun Ut",
+            "PlayerStatusBarProducerTranslationPatch.BeginEndTurn");
+
+        Assert.That(translated, Is.EqualTo("ビートルムーン・ゼニス ニヴン・ウト15日"));
+    }
+
+    [Test]
     public void TranslateStringDataValue_PreservesColorMarkupForHpStatus()
     {
         WriteDictionary(("Seriously Wounded", "重傷"));

@@ -78,6 +78,8 @@ public static class PopupTranslationPatch
         new Regex("^You start to metabolize the meal, gaining the following effect for the rest of the day:\\n\\n\\{\\{W\\|(?<value>.+?)\\}\\}$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex CampfirePreservePattern =
         new Regex("^(?<item>.+): how many do you want to preserve\\? \\(max = (?<max>.+)\\)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex WaterRitualLowReputationPattern =
+        new Regex("^You don't have a high enough reputation with (?<value>.+?)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     // ShowBlock parameter count for game version 2.0.4
     private const int ShowBlockParameterCount = 8;
@@ -718,6 +720,19 @@ public static class PopupTranslationPatch
                 out var campfirePreserveTranslated))
         {
             translated = campfirePreserveTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".WaterRitualLowReputation",
+                WaterRitualLowReputationPattern,
+                "You don't have a high enough reputation with {0}.",
+                spans,
+                out var waterRitualLowReputationTranslated))
+        {
+            translated = waterRitualLowReputationTranslated;
             return true;
         }
 

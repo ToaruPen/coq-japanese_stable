@@ -17,6 +17,24 @@ internal sealed class DummyJournalStatusScreenTarget
     public static string NO_ENTRIES_TEXT = " No entries found.";
 
     public int CurrentCategory { get; set; } = 2;
+
+    public DummyUITextSkin categoryText = new DummyUITextSkin();
+
+    public DummyMenuOption CMD_INSERT = new DummyMenuOption("Add", "CmdInsert");
+
+    public DummyMenuOption CMD_DELETE = new DummyMenuOption("Delete", "CmdDelete");
+
+    public string NextCategoryText { get; set; } = "Locations";
+
+    public void UpdateViewFromData()
+    {
+        categoryText.SetText(NextCategoryText);
+    }
+
+    public static string GetTabString()
+    {
+        return "Journal";
+    }
 }
 
 internal sealed class DummyJournalLineDataTarget

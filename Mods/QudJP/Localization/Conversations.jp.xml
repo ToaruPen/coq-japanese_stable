@@ -2471,6 +2471,9 @@
       <choice Target="Weirdwire">...</choice>
     </node>
 
+    <start ID="StartBeforeWeirwire" IfFinishedQuest="Fetch Argyve Another Knickknack" IfNotHaveQuest="Weirdwire Conduit... Eureka!" Inherits="Impressive">
+    </start>
+
     <node ID="Weirdwire" Replace="true">
       <text>
         {{emote|*アルジーヴが両眉を跳ね上げる。*}}
@@ -3223,6 +3226,158 @@
       <choice GotoID="Dardi">ダルディ。</choice>
       <choice GotoID="Shem -1">シェム -1。</choice>
       <choice GotoID="Aloysius">アロイシウス。</choice>
+      <choice GotoID="Ereshkigal">エレシュキガル。</choice>
+      <choice GotoID="Start">別のことを尋ねたい。</choice>
+      <choice GotoID="End">生きて飲め。</choice>
+    </node>
+
+    <node ID="Jacobo">
+      <text>
+        針のように鋭く、深い意味を携えて生きている。独創的で、秩序立っている。彼の音楽を私が理解しているとは言えないが、あれほど雄弁に己を表すところは実に好きだよ。
+      </text>
+      <choice GotoID="Barathrum">バラサラム。</choice>
+      <choice GotoID="Otho">オトー。</choice>
+      <choice GotoID="Sparafucile">スパラフチレ。</choice>
+      <choice GotoID="Q Girl">Qガール。</choice>
+      <choice GotoID="Mafeo">マフェオ。</choice>
+      <choice GotoID="Iseppa">イセッパ。</choice>
+      <choice GotoID="Neek">ニーク。</choice>
+      <choice GotoID="Dardi">ダルディ。</choice>
+      <choice GotoID="Shem -1">シェム -1。</choice>
+      <choice GotoID="Aloysius">アロイシウス。</choice>
+      <choice GotoID="Ereshkigal">エレシュキガル。</choice>
+      <choice GotoID="Start">別のことを尋ねたい。</choice>
+      <choice GotoID="End">生きて飲め。</choice>
+    </node>
+
+    <node ID="Sparafucile">
+      <text>
+        ああ、愛しい隣人を眺めるには実にいい場所にいるんだ。技に完全な瞬間が訪れるとね――螺旋が寸分違わず刻まれた銃身、粒に至るまで量り切った火薬の山――彼は高い塩陽のようにぱっと輝く。なんて素敵な笑顔だろう。
+      </text>
+      <choice GotoID="Barathrum">バラサラム。</choice>
+      <choice GotoID="Otho">オトー。</choice>
+      <choice GotoID="Jacobo">ヤコボ。</choice>
+      <choice GotoID="Q Girl">Qガール。</choice>
+      <choice GotoID="Mafeo">マフェオ。</choice>
+      <choice GotoID="Iseppa">イセッパ。</choice>
+      <choice GotoID="Neek">ニーク。</choice>
+      <choice GotoID="Dardi">ダルディ。</choice>
+      <choice GotoID="Shem -1">シェム -1。</choice>
+      <choice GotoID="Aloysius">アロイシウス。</choice>
+      <choice GotoID="Ereshkigal">エレシュキガル。</choice>
+      <choice GotoID="Start">別のことを尋ねたい。</choice>
+      <choice GotoID="End">生きて飲め。</choice>
+    </node>
+
+    <node ID="Q Girl">
+      <text>
+        あの子は銀河の静かな片隅で、ガスと塵が爆ぜるように現れる。輝かしく、革命的だ。意外かもしれないが、夕食の席では聞き上手で、よき話し相手でもある。
+      </text>
+      <choice GotoID="Barathrum">バラサラム。</choice>
+      <choice GotoID="Otho">オトー。</choice>
+      <choice GotoID="Sparafucile">スパラフチレ。</choice>
+      <choice GotoID="Jacobo">ヤコボ。</choice>
+      <choice GotoID="Mafeo">マフェオ。</choice>
+      <choice GotoID="Iseppa">イセッパ。</choice>
+      <choice GotoID="Neek">ニーク。</choice>
+      <choice GotoID="Dardi">ダルディ。</choice>
+      <choice GotoID="Shem -1">シェム -1。</choice>
+      <choice GotoID="Aloysius">アロイシウス。</choice>
+      <choice GotoID="Ereshkigal">エレシュキガル。</choice>
+      <choice GotoID="Start">別のことを尋ねたい。</choice>
+      <choice GotoID="End">生きて飲め。</choice>
+    </node>
+
+    <node ID="Mafeo">
+      <text>
+        夕食のあとは図書室に引っ込み、書棚から物語の本を抜き出して、チェアベアにどさりと寝そべり、別の世界に没頭するのが好きなんだ。そうした世界には宮殿や市場、庭園や船がよく出てくる。その多くの場所には鐘がある。鐘が出てくるたび、私はいつもマフェオを思う。誰よりも彼こそ、まばゆい物語世界の登場人物になれそうだ――この埃っぽい場所のほうが一冊の本に閉じ込められた作り話でしかない、そんな世界のね。
+      </text>
+      <choice GotoID="Barathrum">バラサラム。</choice>
+      <choice GotoID="Otho">オトー。</choice>
+      <choice GotoID="Sparafucile">スパラフチレ。</choice>
+      <choice GotoID="Jacobo">ヤコボ。</choice>
+      <choice GotoID="Q Girl">Qガール。</choice>
+      <choice GotoID="Iseppa">イセッパ。</choice>
+      <choice GotoID="Neek">ニーク。</choice>
+      <choice GotoID="Dardi">ダルディ。</choice>
+      <choice GotoID="Shem -1">シェム -1。</choice>
+      <choice GotoID="Aloysius">アロイシウス。</choice>
+      <choice GotoID="Ereshkigal">エレシュキガル。</choice>
+      <choice GotoID="Start">別のことを尋ねたい。</choice>
+      <choice GotoID="End">生きて飲め。</choice>
+    </node>
+
+    <node ID="Iseppa">
+      <text>
+        我らが眠たげな賢者だ。なんとも愛らしい。彼女といると心が静まる。私は彼女の部屋に座り、物事の本性について一緒に思索するんだ。
+      </text>
+      <choice GotoID="Barathrum">バラサラム。</choice>
+      <choice GotoID="Otho">オトー。</choice>
+      <choice GotoID="Sparafucile">スパラフチレ。</choice>
+      <choice GotoID="Jacobo">ヤコボ。</choice>
+      <choice GotoID="Q Girl">Qガール。</choice>
+      <choice GotoID="Mafeo">マフェオ。</choice>
+      <choice GotoID="Neek">ニーク。</choice>
+      <choice GotoID="Dardi">ダルディ。</choice>
+      <choice GotoID="Shem -1">シェム -1。</choice>
+      <choice GotoID="Aloysius">アロイシウス。</choice>
+      <choice GotoID="Ereshkigal">エレシュキガル。</choice>
+      <choice GotoID="Start">別のことを尋ねたい。</choice>
+      <choice GotoID="End">生きて飲め。</choice>
+    </node>
+
+    <node ID="Neek">
+      <text>
+        ニークにはあの子が小さな仔だった頃から教えてきた。なんて不思議な子だろう！ ぴょんぴょん跳ね回り、笑顔だらけ。それでいて、あの子なりのやり方で実に聡明だ。世界でいちばん好きな本はニークの「ホバースレッドの上の蜘蛛の巣」だよ。まさかそんなことになるなんて、誰が思っただろう？
+      </text>
+      <choice GotoID="Barathrum">バラサラム。</choice>
+      <choice GotoID="Otho">オトー。</choice>
+      <choice GotoID="Sparafucile">スパラフチレ。</choice>
+      <choice GotoID="Jacobo">ヤコボ。</choice>
+      <choice GotoID="Q Girl">Qガール。</choice>
+      <choice GotoID="Mafeo">マフェオ。</choice>
+      <choice GotoID="Iseppa">イセッパ。</choice>
+      <choice GotoID="Dardi">ダルディ。</choice>
+      <choice GotoID="Shem -1">シェム -1。</choice>
+      <choice GotoID="Aloysius">アロイシウス。</choice>
+      <choice GotoID="Ereshkigal">エレシュキガル。</choice>
+      <choice GotoID="Start">別のことを尋ねたい。</choice>
+      <choice GotoID="End">生きて飲め。</choice>
+    </node>
+
+    <node ID="Dardi">
+      <text>
+        火のようで、荒っぽくて、彼の煮込み料理そっくりだ。彼と話すつもりなら、予定を空けて、蜂蜜酒の水差しを一つ用意しておくことだね。
+      </text>
+      <choice GotoID="Barathrum">バラサラム。</choice>
+      <choice GotoID="Otho">オトー。</choice>
+      <choice GotoID="Sparafucile">スパラフチレ。</choice>
+      <choice GotoID="Jacobo">ヤコボ。</choice>
+      <choice GotoID="Q Girl">Qガール。</choice>
+      <choice GotoID="Mafeo">マフェオ。</choice>
+      <choice GotoID="Iseppa">イセッパ。</choice>
+      <choice GotoID="Neek">ニーク。</choice>
+      <choice GotoID="Shem -1">シェム -1。</choice>
+      <choice GotoID="Aloysius">アロイシウス。</choice>
+      <choice GotoID="Ereshkigal">エレシュキガル。</choice>
+      <choice GotoID="Start">別のことを尋ねたい。</choice>
+      <choice GotoID="End">生きて飲め。</choice>
+    </node>
+
+    <node ID="Aloysius">
+      <text>
+        あの棘だらけのトログロダイトには、数え切れないほど長いあいだ私の蜂蜜を分けてきた。どうしたって好いてしまうし、本人は認めないだろうけれど、向こうも同じ気持ちだよ。
+      </text>
+      <choice GotoID="Barathrum">バラサラム。</choice>
+      <choice GotoID="Otho">オトー。</choice>
+      <choice GotoID="Sparafucile">スパラフチレ。</choice>
+      <choice GotoID="Jacobo">ヤコボ。</choice>
+      <choice GotoID="Q Girl">Qガール。</choice>
+      <choice GotoID="Mafeo">マフェオ。</choice>
+      <choice GotoID="Iseppa">イセッパ。</choice>
+      <choice GotoID="Neek">ニーク。</choice>
+      <choice GotoID="Dardi">ダルディ。</choice>
+      <choice GotoID="Shem -1">シェム -1。</choice>
       <choice GotoID="Ereshkigal">エレシュキガル。</choice>
       <choice GotoID="Start">別のことを尋ねたい。</choice>
       <choice GotoID="End">生きて飲め。</choice>
@@ -13177,8 +13332,12 @@
     </node>
   </conversation>
 
-
-  <conversation ID="BaseDynamicShim" />
+  <conversation ID="BaseDynamicShim">
+    <start ID="DynamicStart">
+    </start>
+    <node ID="DynamicNode">
+    </node>
+  </conversation>
 
   <conversation ID="Euclid" Replace="true">
     <node ID="Start">

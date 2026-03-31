@@ -138,6 +138,11 @@ internal sealed class DummyQuestsStatusScreenTarget
                 },
             });
     }
+
+    public static string GetTabString()
+    {
+        return "Quests";
+    }
 }
 
 internal static class DummyQuestLogTarget

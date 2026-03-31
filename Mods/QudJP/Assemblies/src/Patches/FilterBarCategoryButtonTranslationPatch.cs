@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Diagnostics;
 using System.Reflection;
 using HarmonyLib;
@@ -40,6 +41,9 @@ public static class FilterBarCategoryButtonTranslationPatch
 
             TranslateTooltip(__instance);
             TranslateButtonText(__instance);
+            TranslateMenuOptions(__instance.GetType(), "categoryExpandOptions");
+            TranslateMenuOptions(__instance.GetType(), "categoryCollapseOptions");
+            TranslateMenuOptions(__instance.GetType(), "itemOptions");
         }
         catch (Exception ex)
         {
@@ -92,6 +96,41 @@ public static class FilterBarCategoryButtonTranslationPatch
     }
 
     private static string TranslateVisibleText(string source, string route, string family) => UiBindingTranslationHelpers.TranslateVisibleText(source, route, family);
+
+    private static void TranslateMenuOptions(Type targetType, string memberName)
+    {
+        var field = AccessTools.Field(targetType, memberName);
+        if (field?.GetValue(null) is not IEnumerable options)
+        {
+            return;
+        }
+
+        var index = 0;
+        foreach (var option in options)
+        {
+            if (option is null)
+            {
+                index++;
+                continue;
+            }
+
+            var current = UiBindingTranslationHelpers.GetStringMemberValue(option, "Description");
+            if (string.IsNullOrEmpty(current))
+            {
+                index++;
+                continue;
+            }
+
+            var route = ObservabilityHelpers.ComposeContext(Context, memberName + "[" + index + "].Description");
+            var translated = TranslateVisibleText(current!, route, "FilterBarCategoryButton.MenuOption");
+            if (!string.Equals(translated, current, StringComparison.Ordinal))
+            {
+                UiBindingTranslationHelpers.SetMemberValue(option, "Description", translated);
+            }
+
+            index++;
+        }
+    }
 
     private static object? GetMemberValue(object instance, string memberName) => UiBindingTranslationHelpers.GetMemberValue(instance, memberName);
 

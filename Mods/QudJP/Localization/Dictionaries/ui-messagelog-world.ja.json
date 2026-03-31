@@ -62,6 +62,34 @@
             "text": "南西"
         },
         {
+            "key": "moving",
+            "text": "移動"
+        },
+        {
+            "key": "resting",
+            "text": "休息"
+        },
+        {
+            "key": "digging",
+            "text": "掘削"
+        },
+        {
+            "key": "gathering",
+            "text": "回収"
+        },
+        {
+            "key": "attacking",
+            "text": "攻撃"
+        },
+        {
+            "key": "acting",
+            "text": "行動"
+        },
+        {
+            "key": "auto-exploring",
+            "text": "自動探索"
+        },
+        {
             "key": "ThawZone exception",
             "context": "XRL.Messages.MessageQueue",
             "text": "ThawZone 例外"

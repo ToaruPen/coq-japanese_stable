@@ -150,6 +150,10 @@
             "text": "あなたには{0}から敵意しか感じられない。"
         },
         {
+            "key": "You don't have a high enough reputation with {0}.",
+            "text": "{0}との評判が十分に高くない。"
+        },
+        {
             "key": "You already have that power.",
             "text": "その能力はすでに習得している。"
         },

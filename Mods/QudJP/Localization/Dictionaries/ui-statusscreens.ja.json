@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "id": "ui-statusscreens",
+    "lang": "ja",
+    "version": "0.1.0"
+  },
+  "rules": {
+    "protectColorTags": true,
+    "protectHtmlEntities": true
+  },
+  "entries": [
+    {
+      "key": "Filter",
+      "text": "絞り込み"
+    },
+    {
+      "key": "navigation",
+      "text": "移動"
+    },
+    {
+      "key": "Accept",
+      "text": "決定"
+    }
+  ]
+}

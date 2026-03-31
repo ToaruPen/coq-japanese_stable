@@ -304,6 +304,26 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^You see (?:a |an |the )?(.+?) to the (north|south|east|west|northeast|northwest|southeast|southwest) and stop (moving|resting|digging|gathering|attacking|acting|auto-exploring)[.!]?$",
+      "template": "{t1}に{0}が見えたので{t2}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You see (.+?) above and stop (moving|resting|digging|gathering|attacking|acting|auto-exploring)[.!]?$",
+      "template": "頭上に{0}が見えたので{t1}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You see (.+?) below and stop (moving|resting|digging|gathering|attacking|acting|auto-exploring)[.!]?$",
+      "template": "足元に{0}が見えたので{t1}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You see (?:a |an |the )?(.+?) and stop (moving|resting|digging|gathering|attacking|acting|auto-exploring)[.!]?$",
+      "template": "{0}が見えたので{t1}をやめた。",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^You see (.+?)[.!]?$",
       "template": "あなたは{0}を見た",
       "route": "emit-message"
@@ -806,6 +826,71 @@
     {
       "pattern": "^You stop moving because the (.+?) is in the way[.!]?$",
       "template": "{0}が邪魔で移動をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring) because (?:the |a |an )?(.+?) is in the way[.!]?$",
+      "template": "{1}が邪魔なので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring) because (?:the |a |an )?(.+?) are in the way[.!]?$",
+      "template": "{1}が邪魔なので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring) because you cannot keep (.+?) open[.!]?$",
+      "template": "{1}を開けたままにできないので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring) because you cannot open (.+?)[.!]?$",
+      "template": "{1}を開けられないので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring) because you cannot seem to make any progress[.!]?$",
+      "template": "進展がないので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring) because you tried to move but stayed in the same place[.!]?$",
+      "template": "同じ場所に留まったので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring) because you can go no further[.!]?$",
+      "template": "これ以上進めないので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring) because your spacetime context is incoherent[.!]?$",
+      "template": "時空間の状態が不整合なので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring) because something is wrong with the spacetime connectivity of your environment[.!]?$",
+      "template": "周囲の時空間接続に異常があるので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring) because the direction you seem to be trying to go makes no sense[.!]?$",
+      "template": "進もうとしている方向が不正なので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring) because you chose not to enter (.+?)[.!]?$",
+      "template": "{1}へ入るのをやめたので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring) because (.+?)[.!]?$",
+      "template": "{1}ので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^Resetting (.+?) on (.+?)$",
+      "template": "{1}上の{0}をリセットした。",
       "route": "emit-message"
     },
     {

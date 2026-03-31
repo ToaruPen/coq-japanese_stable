@@ -47,6 +47,8 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
             ("Sated", "満腹"),
             ("Quenched", "潤沢"),
             ("World Map", "ワールドマップ"),
+            ("Harvest Dawn", "ハーヴェスト・ドーン"),
+            ("Kisu Ux", "キス・ウクス"),
             ("Seriously Wounded", "重傷"));
 
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
@@ -61,6 +63,7 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
             var instance = new DummyPlayerStatusBarTarget
             {
                 NextFoodWater = "Sated Quenched",
+                NextTime = "Harvest Dawn 16th of Kisu Ux",
                 NextZone = "World Map",
                 NextZoneOnly = "World Map",
                 NextHpBar = "{{Y|HP: {{R|Seriously Wounded}}}}"
@@ -71,6 +74,7 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(instance.GetStringData("FoodWater"), Is.EqualTo("満腹 潤沢"));
+                Assert.That(instance.GetStringData("Time"), Is.EqualTo("ハーヴェスト・ドーン キス・ウクス16日"));
                 Assert.That(instance.GetStringData("Zone"), Is.EqualTo("ワールドマップ"));
                 Assert.That(instance.GetStringData("ZoneOnly"), Is.EqualTo("ワールドマップ"));
                 Assert.That(instance.GetStringData("HPBar"), Is.EqualTo("{{Y|HP: {{R|重傷}}}}"));
@@ -89,6 +93,8 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
             ("Sated", "満腹"),
             ("Quenched", "潤沢"),
             ("World Map", "ワールドマップ"),
+            ("Harvest Dawn", "ハーヴェスト・ドーン"),
+            ("Kisu Ux", "キス・ウクス"),
             ("Seriously Wounded", "重傷"));
 
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
@@ -103,6 +109,7 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
             var instance = new DummyPlayerStatusBarTarget
             {
                 NextFoodWater = "Sated Quenched",
+                NextTime = "Harvest Dawn 16th of Kisu Ux",
                 NextZone = "World Map",
                 NextZoneOnly = "World Map",
                 NextHpBar = "HP: Seriously Wounded",
@@ -113,6 +120,7 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(instance.GetStringData("FoodWater"), Is.EqualTo("満腹 潤沢"));
+                Assert.That(instance.GetStringData("Time"), Is.EqualTo("ハーヴェスト・ドーン キス・ウクス16日"));
                 Assert.That(instance.GetStringData("Zone"), Is.EqualTo("ワールドマップ"));
                 Assert.That(instance.GetStringData("ZoneOnly"), Is.EqualTo("ワールドマップ"));
                 Assert.That(instance.GetStringData("HPBar"), Is.EqualTo("HP: 重傷"));
@@ -120,6 +128,11 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(PlayerStatusBarProducerTranslationPatch) + ".FoodWater",
                         "PlayerStatusBar.FoodWater"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PlayerStatusBarProducerTranslationPatch) + ".Time",
+                        "PlayerStatusBar.Time"),
                     Is.GreaterThan(0));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
@@ -143,6 +156,14 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
                         SinkObservation.ObservationOnlyDetail,
                         "Sated Quenched",
                         "Sated Quenched"),
+                    Is.EqualTo(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(PlayerStatusBarProducerTranslationPatch) + ".Time",
+                        SinkObservation.ObservationOnlyDetail,
+                        "Harvest Dawn 16th of Kisu Ux",
+                        "Harvest Dawn 16th of Kisu Ux"),
                     Is.EqualTo(0));
                 Assert.That(
                     SinkObservation.GetHitCountForTests(

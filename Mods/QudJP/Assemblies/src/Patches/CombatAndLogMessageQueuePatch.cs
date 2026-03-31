@@ -30,6 +30,7 @@ public static class CombatAndLogMessageQueuePatch
             _ = Capitalize;
 
             _ = PhysicsApplyDischargeTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
+                || AutoActTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
                 || PhysicsObjectEnteringCellTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
                 || GameObjectHealTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
                 || GameObjectMoveTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
