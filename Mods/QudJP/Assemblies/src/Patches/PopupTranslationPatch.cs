@@ -36,6 +36,20 @@ public static class PopupTranslationPatch
         new Regex("^Choosing (?<value>.+) is disabled for this turn\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex SifrahInsightPattern =
         new Regex("^You have gained insight into (?<value>.+)\\. In a future Sifrah task of this kind, you can use this insight to determine which of your game options are not correct for any requirement\\. This will expend your insight, unless there are no such options\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex XRLCoreHPWarningPattern =
+        new Regex("^\\{\\{R\\|Your health has dropped below \\{\\{C\\|(?<value>\\d+)%\\}\\}!\\}\\}$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex XRLCoreFleePattern =
+        new Regex("^You can't find a way to flee from (?<value>.+)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex XRLCoreReachPattern =
+        new Regex("^You can't find a way to reach (?<value>.+)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex XRLCoreAutoattackPattern =
+        new Regex("^You do not autoattack (?<value>.+?) because .+ not hostile to you\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex XRLCoreReloadPattern =
+        new Regex("^You need to reload! \\((?<value>.+)\\)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex XRLCoreOldSavePattern =
+        new Regex("^That save file looks like it's from an older save format revision \\((?<value>.+?)\\)\\. Sorry!\\n\\nYou can probably change to a previous branch in your game client and get it to load if you want to finish it off\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex XRLCoreGameInfoPattern =
+        new Regex("^\\s+(?<mode>.+?) mode\\.\\s+Turn (?<turn>\\d+)\\s+World seed: (?<seed>.+?)\\s+$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     // ShowBlock parameter count for game version 2.0.4
     private const int ShowBlockParameterCount = 8;
@@ -412,6 +426,95 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (TryTranslateSinglePlaceholderTemplate(
+                source,
+                route,
+                family + ".XRLCoreHPWarning",
+                XRLCoreHPWarningPattern,
+                "{{R|Your health has dropped below {{C|{0}%}}!}}",
+                Array.Empty<ColorSpan>(),
+                out var xrlCoreHpWarningTranslated))
+        {
+            translated = xrlCoreHpWarningTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".XRLCoreFlee",
+                XRLCoreFleePattern,
+                "You can't find a way to flee from {0}.",
+                spans,
+                out var xrlCoreFleeTranslated))
+        {
+            translated = xrlCoreFleeTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".XRLCoreReach",
+                XRLCoreReachPattern,
+                "You can't find a way to reach {0}.",
+                spans,
+                out var xrlCoreReachTranslated))
+        {
+            translated = xrlCoreReachTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".XRLCoreAutoattack",
+                XRLCoreAutoattackPattern,
+                "You do not autoattack {0} because it is not hostile to you.",
+                spans,
+                out var xrlCoreAutoattackTranslated))
+        {
+            translated = xrlCoreAutoattackTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".XRLCoreReload",
+                XRLCoreReloadPattern,
+                "You need to reload! ({0})",
+                spans,
+                out var xrlCoreReloadTranslated))
+        {
+            translated = xrlCoreReloadTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".XRLCoreOldSave",
+                XRLCoreOldSavePattern,
+                "That save file looks like it's from an older save format revision ({0}). Sorry!\nYou can probably change to a previous branch in your game client and get it to load if you want to finish it off.",
+                spans,
+                out var xrlCoreOldSaveTranslated))
+        {
+            translated = xrlCoreOldSaveTranslated;
+            return true;
+        }
+
+        if (TryTranslateGameInfoBlock(
+                stripped,
+                route,
+                family + ".XRLCoreGameInfo",
+                spans,
+                out var xrlCoreGameInfoTranslated))
+        {
+            translated = xrlCoreGameInfoTranslated;
+            return true;
+        }
+
         if (ShouldTryMessagePatternFallback(route))
         {
             var patternTranslated = MessagePatternTranslator.Translate(source, route);
@@ -462,6 +565,52 @@ public static class PopupTranslationPatch
         }
 
         translated = translatedTemplate.Replace("{0}", value);
+        if (spans.Count > 0)
+        {
+            var boundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(spans, match, source.Length, translated.Length);
+            translated = ColorAwareTranslationComposer.Restore(translated, boundarySpans);
+        }
+
+        DynamicTextObservability.RecordTransform(route, family, source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateGameInfoBlock(
+        string source,
+        string route,
+        string family,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated)
+    {
+        var match = XRLCoreGameInfoPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        const string templateKey = "\n\n           {0} mode.\n\n           Turn {1}\n\n          World seed: {2}     \n\n\n   ";
+        var translatedTemplate = Translator.Translate(templateKey);
+        if (string.Equals(translatedTemplate, templateKey, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var mode = match.Groups["mode"].Value;
+        var turn = match.Groups["turn"].Value;
+        var seed = match.Groups["seed"].Value;
+        if (spans.Count > 0)
+        {
+            mode = ColorAwareTranslationComposer.RestoreCapture(mode, spans, match.Groups["mode"]);
+            turn = ColorAwareTranslationComposer.RestoreCapture(turn, spans, match.Groups["turn"]);
+            seed = ColorAwareTranslationComposer.RestoreCapture(seed, spans, match.Groups["seed"]);
+        }
+
+        translated = translatedTemplate
+            .Replace("{0}", mode)
+            .Replace("{1}", turn)
+            .Replace("{2}", seed);
         if (spans.Count > 0)
         {
             var boundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(spans, match, source.Length, translated.Length);

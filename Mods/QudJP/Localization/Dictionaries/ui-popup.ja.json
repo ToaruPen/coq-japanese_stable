@@ -206,6 +206,22 @@
             "text": "体力が40%を下回った！"
         },
         {
+            "key": "{{R|Your health has dropped below {{C|{0}%}}!}}",
+            "text": "{{R|HPが{{C|{0}%}}を下回った！}}"
+        },
+        {
+            "key": "You can't find a way to flee from {0}.",
+            "text": "{0}から逃げる経路が見つからない。"
+        },
+        {
+            "key": "You can't find a way to reach {0}.",
+            "text": "{0}に到達する経路が見つからない。"
+        },
+        {
+            "key": "You do not autoattack {0} because it is not hostile to you.",
+            "text": "{0}は敵対していないため自動攻撃しない。"
+        },
+        {
             "key": "How long would you like to sleep?",
             "text": "どれくらい眠りますか？"
         },
@@ -578,6 +594,10 @@
             "key": "<color=#B1C9C3FF>You need to reload! (R) </color>",
             "context": "TMP.PopupMessage.Message",
             "text": "<color=#B1C9C3FF>リロードが必要だ！（R） </color>"
+        },
+        {
+            "key": "You need to reload! ({0})",
+            "text": "リロードが必要だ！ ({0})"
         },
         {
             "key": "You don't have anything to use in that slot.",
@@ -1503,6 +1523,14 @@
             "key": "This saved game predates world seed info.",
             "context": "XRL.UI.Popup.ShowFail.Message",
             "text": "このセーブデータはワールドシード情報より前のものだ。"
+        },
+        {
+            "key": "That save file looks like it's from an older save format revision ({0}). Sorry!\nYou can probably change to a previous branch in your game client and get it to load if you want to finish it off.",
+            "text": "このセーブデータは古いフォーマット（{0}）のようです。\nゲームクライアントで以前のブランチに切り替えれば読み込める可能性があります。"
+        },
+        {
+            "key": "\n\n           {0} mode.\n\n           Turn {1}\n\n          World seed: {2}     \n\n\n   ",
+            "text": "\n\n           {0}モード\n\n           ターン{1}\n\n          ワールドシード: {2}     \n\n\n   "
         },
         {
             "key": "You already understand this item.",

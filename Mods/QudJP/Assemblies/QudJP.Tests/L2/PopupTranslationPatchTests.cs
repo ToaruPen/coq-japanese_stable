@@ -425,6 +425,172 @@ public sealed class PopupTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesXRLCoreHPWarningMessage_WhenPatched()
+    {
+        WriteDictionary(("{{R|Your health has dropped below {{C|{0}%}}!}}", "{{R|HPが{{C|{0}%}}を下回った！}}"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+
+            DummyPopupTarget.ShowBlock("{{R|Your health has dropped below {{C|23%}}!}}", "Warning");
+
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("{{R|HPが{{C|23%}}を下回った！}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_TranslatesXRLCoreFleeMessage_WhenPatched()
+    {
+        WriteDictionary(("You can't find a way to flee from {0}.", "{0}から逃げる経路が見つからない。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+
+            DummyPopupTarget.ShowBlock("You can't find a way to flee from {{C|salt kraken}}.", "Warning");
+
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("{{C|salt kraken}}から逃げる経路が見つからない。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_TranslatesXRLCoreReachMessage_WhenPatched()
+    {
+        WriteDictionary(("You can't find a way to reach {0}.", "{0}に到達する経路が見つからない。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+
+            DummyPopupTarget.ShowBlock("You can't find a way to reach {{Y|the stairs}}.", "Warning");
+
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("{{Y|the stairs}}に到達する経路が見つからない。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_TranslatesXRLCoreAutoattackMessage_WhenPatched()
+    {
+        WriteDictionary(("You do not autoattack {0} because it is not hostile to you.", "{0}は敵対していないため自動攻撃しない。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+
+            DummyPopupTarget.ShowBlock("You do not autoattack {{G|snapjaw scavenger}} because it is not hostile to you.", "Warning");
+
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("{{G|snapjaw scavenger}}は敵対していないため自動攻撃しない。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_TranslatesXRLCoreReloadMessage_WhenPatched()
+    {
+        WriteDictionary(("You need to reload! ({0})", "リロードが必要だ！ ({0})"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+
+            DummyPopupTarget.ShowBlock("You need to reload! (Ctrl+R)", "Warning");
+
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("リロードが必要だ！ (Ctrl+R)"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_TranslatesXRLCoreOldSaveMessage_WhenPatched()
+    {
+        WriteDictionary((
+            "That save file looks like it's from an older save format revision ({0}). Sorry!\nYou can probably change to a previous branch in your game client and get it to load if you want to finish it off.",
+            "このセーブデータは古いフォーマット（{0}）のようです。\nゲームクライアントで以前のブランチに切り替えれば読み込める可能性があります。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+
+            DummyPopupTarget.ShowBlock(
+                "That save file looks like it's from an older save format revision (2.0.3). Sorry!\n\nYou can probably change to a previous branch in your game client and get it to load if you want to finish it off.",
+                "Warning");
+
+            Assert.That(
+                DummyPopupTarget.LastShowBlockMessage,
+                Is.EqualTo("このセーブデータは古いフォーマット（2.0.3）のようです。\nゲームクライアントで以前のブランチに切り替えれば読み込める可能性があります。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void TranslatePopupTextForProducerRoute_TranslatesXRLCoreGameInfoBlock()
+    {
+        WriteDictionary((
+            "\n\n           {0} mode.\n\n           Turn {1}\n\n          World seed: {2}     \n\n\n   ",
+            "\n\n           {0}モード\n\n           ターン{1}\n\n          ワールドシード: {2}     \n\n\n   "));
+
+        const string source = "\n\n           Classic mode.\n\n           Turn 12345\n\n          World seed: QUD-SEED     \n\n\n   ";
+
+        var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(source, nameof(PopupTranslationPatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("\n\n           Classicモード\n\n           ターン12345\n\n          ワールドシード: QUD-SEED     \n\n\n   "));
+    }
+
+    [Test]
     public void Prefix_StripsDirectTranslationMarkerAndSkipsTranslation()
     {
         // Set up a dictionary entry that would match the stripped text if translation were applied.
