@@ -16,7 +16,7 @@
   <mod Part="ModNanon" Tables="BeamWeaponMods" Rarity="R" NativeTier="4" TinkerTier="7" TinkerDisplayName="ナノ刃" NoSparkingQuest="true" Value="1.3" TinkerCategory="rifles" />
 
   <mod Part="ModSharp" Tables="BladeMods,ThrownWeaponMods" Rarity="C" TinkerDisplayName="鋭角" Value="1.1" NoSparkingQuest="true" Description="鋭角: 貫通判定+1" TinkerCategory="melee weapons" />
-  <mod Part="ModMasterwork" Tables="WeaponMods,MissileWeaponMods,ThrownWeaponMods" Rarity="U" TinkerDisplayName="名工品" Value="1.2" TinkerCategory="melee weapons" Description="名工品: この武器はクリティカルヒットの発生率が通常の2倍。" />
+  <mod Part="ModMasterwork" Tables="WeaponMods,MissileWeaponMods,ThrownWeaponMods" Rarity="U" TinkerDisplayName="傑作" Value="1.2" TinkerCategory="melee weapons" Description="傑作: この武器はクリティカルヒットの発生率が通常の2倍。" />
   <mod Part="ModDisplacer" Tables="WeaponMods,MissileWeaponMods,ThrownWeaponMods" Rarity="R" NativeTier="6" TinkerTier="6" CanAutoTinker="false" TinkerDisplayName="位相転移" Value="1.5" TinkerCategory="melee weapons" />
   <mod Part="ModMorphogenetic" Tables="WeaponMods,MissileWeaponMods,ThrownWeaponMods" Rarity="R" NativeTier="6" TinkerTier="7" CanAutoTinker="false" TinkerDisplayName="形態同調" Value="1.5" TinkerCategory="melee weapons" />
 
@@ -49,14 +49,14 @@
 
   <mod Part="ModSixFingered" Tables="GloveMods,GauntletMods" Rarity="R" MinTier="3" TinkerTier="3" TinkerDisplayName="六指" Value="1.3" Description="六指: 敏捷+1" TinkerCategory="armor" />
   
-  <mod Part="ModGesticulating" Tables="GloveMods,GauntletMods,ExoskeletonMods" Rarity="R" MinTier="3" TinkerTier="3" TinkerDisplayName="身ぶり強調" Value="1.3" TinkerCategory="armor" />
+  <mod Part="ModGesticulating" Tables="GloveMods,GauntletMods,ExoskeletonMods" Rarity="R" MinTier="3" TinkerTier="3" TinkerDisplayName="蠢く" Value="1.3" TinkerCategory="armor" />
   
   <mod Part="ModFeathered" Tables="GloveMods,GauntletMods,HeadwearMods,BodyMods,CloakMods,ShieldMods,BootMods,TreadAccessoryMods,ExoskeletonMods,WingsMods" Rarity="U" TinkerTier="2" TinkerDisplayName="羽飾り" Value="1.2" TinkerCategory="armor" Description="羽飾り: 装着者に鳥類との評判+250。" />
-  <mod Part="ModScaled" Tables="GloveMods,GauntletMods,HeadwearMods,BodyMods,CloakMods,ShieldMods,BootMods,TreadAccessoryMods,ExoskeletonMods,WingsMods" Rarity="U" TinkerTier="2" TinkerDisplayName="鱗装甲" Value="1.2" TinkerCategory="armor" Description="鱗装甲: 装着者に甲無し爬虫類との評判+250。" />
+  <mod Part="ModScaled" Tables="GloveMods,GauntletMods,HeadwearMods,BodyMods,CloakMods,ShieldMods,BootMods,TreadAccessoryMods,ExoskeletonMods,WingsMods" Rarity="U" TinkerTier="2" TinkerDisplayName="鱗状の" Value="1.2" TinkerCategory="armor" Description="鱗状の: 装着者に甲無し爬虫類との評判+250。" />
   <mod Part="ModWooly" Tables="GloveMods,GauntletMods,HeadwearMods,BodyMods,CloakMods,BootMods,ExoskeletonMods,WingsMods,BracerMods" Rarity="U" TinkerTier="2" TinkerDisplayName="毛皮張り" Value="1.2" TinkerCategory="armor" Description="毛皮張り: 熱と冷気への耐性を与える。" />
   <mod Part="ModSnailEncrusted" Tables="GloveMods,GauntletMods,HeadwearMods,BodyMods,CloakMods,ShieldMods,BootMods,TreadAccessoryMods,ExoskeletonMods" Rarity="R" TinkerTier="2" TinkerDisplayName="巻貝まみれ" TinkerAllowed="false" Value="1.2" TinkerCategory="armor" Description="巻貝まみれ: 装着者に軟体動物との評判+250。" />
   
-  <mod Part="ModSpringLoaded" Tables="BootMods,ExoskeletonMods" Rarity="U" TinkerTier="2" TinkerDisplayName="スプリング" Value="1.2" TinkerCategory="armor" Description="スプリング: 移動速度+5～10。" />
+  <mod Part="ModSpringLoaded" Tables="BootMods,ExoskeletonMods" Rarity="U" TinkerTier="2" TinkerDisplayName="バネ仕掛け" Value="1.2" TinkerCategory="armor" Description="バネ仕掛け: 移動速度+5～10。" />
   <mod Part="ModCleated" Tables="BootMods,ExoskeletonMods" Rarity="C" TinkerTier="1" TinkerDisplayName="スパイク付き" Value="1.1" TinkerCategory="armor" />
 
   <mod Part="ModPolarized" Tables="EyewearMods" Rarity="C" NativeTier="0" TinkerTier="2" TinkerDisplayName="偏光" Value="1.1" TinkerCategory="armor" />

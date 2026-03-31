@@ -267,7 +267,7 @@
     {
       "context": "XRL.World.Parts.ModGesticulating.GetShortDescription",
       "key": "Gesticulating: This item grants +",
-      "text": "身ぶり強調: この装備で筋力が+"
+      "text": "蠢く: この装備で筋力が+"
     },
     {
       "context": "XRL.World.Parts.ModGesticulating.GetShortDescription",
@@ -682,7 +682,7 @@
     {
       "context": "XRL.World.Parts.ModSpringLoaded.GetShortDescription",
       "key": "Spring-loaded: This item grants bonus move speed.",
-      "text": "スプリング: 移動速度ボーナスを与える。"
+      "text": "バネ仕掛け: 移動速度ボーナスを与える。"
     },
     {
       "context": "XRL.World.Parts.ModSturdy.GetShortDescription",
