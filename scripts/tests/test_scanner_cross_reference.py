@@ -92,7 +92,10 @@ def test_build_translation_index_reads_repo_samples() -> None:
     }
 
     assert "XRL.UI.Popup:ShowBlock" in index.patch_targets
-    assert index.patch_targets["XRL.UI.Popup:ShowBlock"] == {"PopupTranslationPatch"}
+    assert index.patch_targets["XRL.UI.Popup:ShowBlock"] == {
+        "PopupTranslationPatch",
+        "TradeUiPopupTranslationPatch",
+    }
 
 
 def test_cross_reference_marks_dictionary_xml_and_patch_matches(tmp_path: Path) -> None:
