@@ -311,11 +311,6 @@
       "text": "殴打"
     },
     {
-      "key": "Bow and Rifle",
-      "context": "TMP.Skill Name",
-      "text": "弓とライフル"
-    },
-    {
       "key": "Butchery",
       "context": "TMP.Text",
       "text": "解体術"
@@ -444,11 +439,6 @@
       "key": "Cudgel Proficiency",
       "context": "TMP.Skill Name",
       "text": "棍棒の習熟"
-    },
-    {
-      "key": "Customs and Folklore",
-      "context": "TMP.Skill Name",
-      "text": "慣習と伝承"
     },
     {
       "key": "Dead Shot",
@@ -781,11 +771,6 @@
       "text": "習得済み"
     },
     {
-      "key": "Lionheart",
-      "context": "TMP.Skill Name",
-      "text": "ライオンハート"
-    },
-    {
       "key": "Long Blade",
       "context": "TMP.Skill Name",
       "text": "長剣"
@@ -856,11 +841,6 @@
       "text": "多肢の熟練"
     },
     {
-      "key": "Multiweapon Fighting",
-      "context": "TMP.Skill Name",
-      "text": "多肢格闘"
-    },
-    {
       "key": "Multiweapon Mastery",
       "context": "TMP.Skill Name",
       "text": "多肢の達人"
@@ -901,11 +881,6 @@
       "text": "貫通打撃"
     },
     {
-      "key": "Persuasion",
-      "context": "TMP.Skill Name",
-      "text": "説得"
-    },
-    {
       "key": "Physic",
       "context": "TMP.Description",
       "text": "治療"
@@ -916,19 +891,9 @@
       "text": "治療"
     },
     {
-      "key": "Pistol",
-      "context": "TMP.Skill Name",
-      "text": "拳銃術"
-    },
-    {
       "key": "Pointed Circle",
       "context": "TMP.Skill Name",
       "text": "ポインテッド・サークル"
-    },
-    {
-      "key": "Poison Tolerance",
-      "context": "TMP.Skill Name",
-      "text": "耐毒"
     },
     {
       "key": "Proselytize",
@@ -976,11 +941,6 @@
       "text": "廃品漁り"
     },
     {
-      "key": "Self-discipline",
-      "context": "TMP.Skill Name",
-      "text": "自律"
-    },
-    {
       "key": "Shake It Off",
       "context": "TMP.Skill Name",
       "text": "振り払う"
@@ -989,11 +949,6 @@
       "key": "Shank",
       "context": "TMP.Skill Name",
       "text": "シャンク"
-    },
-    {
-      "key": "Shield",
-      "context": "TMP.Skill Name",
-      "text": "盾術"
     },
     {
       "key": "Shield Slam",
@@ -1009,11 +964,6 @@
       "key": "Shield Wall",
       "context": "TMP.Skill Name",
       "text": "シールドウォール"
-    },
-    {
-      "key": "Short Blade",
-      "context": "TMP.Skill Name",
-      "text": "短剣術"
     },
     {
       "key": "Short Blade Expertise",
@@ -1064,11 +1014,6 @@
       "key": "Spicer",
       "context": "TMP.Skill Name",
       "text": "香辛師"
-    },
-    {
-      "key": "Spry",
-      "context": "TMP.Skill Name",
-      "text": "身軽"
     },
     {
       "key": "Staggering Block",
@@ -1214,16 +1159,6 @@
       "key": "Ultra Fire",
       "context": "TMP.Skill Name",
       "text": "究極射撃"
-    },
-    {
-      "key": "Wayfaring",
-      "context": "TMP.Text",
-      "text": "サバイバル"
-    },
-    {
-      "key": "Wayfaring",
-      "context": "TMP.Skill Name",
-      "text": "辺境行"
     },
     {
       "key": "Weak Spotter",

@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "id": "ui-skillsandpowers-skill-names",
+    "lang": "ja",
+    "version": "0.0.1"
+  },
+  "rules": {
+    "protectColorTags": true,
+    "protectHtmlEntities": true
+  },
+  "entries": [
+    { "key": "Bow and Rifle", "context": "TMP.Skill Name", "text": "弓とライフル" },
+    { "key": "Customs and Folklore", "context": "TMP.Skill Name", "text": "慣習と伝承" },
+    { "key": "Lionheart", "context": "TMP.Skill Name", "text": "ライオンハート" },
+    { "key": "Multiweapon Fighting", "context": "TMP.Skill Name", "text": "多肢格闘" },
+    { "key": "Persuasion", "context": "TMP.Skill Name", "text": "説得" },
+    { "key": "Pistol", "context": "TMP.Skill Name", "text": "拳銃術" },
+    { "key": "Poison Tolerance", "context": "TMP.Skill Name", "text": "耐毒" },
+    { "key": "Self-discipline", "context": "TMP.Skill Name", "text": "自律" },
+    { "key": "Shield", "context": "TMP.Skill Name", "text": "盾術" },
+    { "key": "Short Blade", "context": "TMP.Skill Name", "text": "短剣術" },
+    { "key": "Spry", "context": "TMP.Skill Name", "text": "身軽" },
+    { "key": "Wayfaring", "context": "TMP.Skill Name", "text": "辺境行" }
+  ]
+}

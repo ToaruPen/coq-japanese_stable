@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using HarmonyLib;
@@ -11,6 +12,8 @@ namespace QudJP.Patches;
 [HarmonyPatch]
 public static class SkillsAndPowersStatusScreenTranslationPatch
 {
+    private static readonly string SkillNameDictionaryFile =
+        Path.Combine("Scoped", "ui-skillsandpowers-skill-names.ja.json");
     private static readonly IReadOnlyDictionary<string, string> AttributeRequirementAbbreviations =
         new Dictionary<string, string>(StringComparer.Ordinal)
         {
@@ -199,6 +202,12 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
 
     internal static string TranslateLeaf(string source)
     {
+        var scoped = ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, SkillNameDictionaryFile);
+        if (scoped is not null && !string.Equals(scoped, source, StringComparison.Ordinal))
+        {
+            return scoped;
+        }
+
         var direct = Translator.Translate(source);
         return string.Equals(direct, source, StringComparison.Ordinal) ? source : direct;
     }

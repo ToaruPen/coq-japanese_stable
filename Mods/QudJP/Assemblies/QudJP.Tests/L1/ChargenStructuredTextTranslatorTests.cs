@@ -239,6 +239,34 @@ public sealed class ChargenStructuredTextTranslatorTests
         Assert.That(translated, Is.EqualTo(expected));
     }
 
+    [Test]
+    public void Translate_PrefersChargenScopedSkillDictionaryOverGlobalCollision()
+    {
+        WriteDictionaryFile(
+            "ui-skillsandpowers.ja.json",
+            ("Persuasion", "説得"),
+            ("Wayfaring", "辺境行"));
+        WriteDictionaryFile(
+            Path.Combine("Scoped", "ui-chargen-skill-context.ja.json"),
+            ("{{c|ù}} Persuasion", "{{c|ù}} 説得術"),
+            ("Persuasion", "説得術"),
+            ("Wayfaring", "サバイバル"));
+
+        var source = """
+            {{c|ù}} Persuasion
+            ù Wayfaring
+            """;
+
+        var translated = ChargenStructuredTextTranslator.Translate(source);
+
+        var expected = """
+            {{c|ù}} 説得術
+            ù サバイバル
+            """;
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
     [TestCase("optical bioscanner (Face)", "光学バイオスキャナ（顔）")]
     [TestCase("hyper-elastic ankle tendons (Feet)", "高弾性足首腱（足）")]
     [TestCase("parabolic muscular subroutine (Arm)", "放物筋サブルーチン（腕）")]
@@ -310,6 +338,11 @@ public sealed class ChargenStructuredTextTranslatorTests
 
     private void WriteDictionary(params (string key, string text)[] entries)
     {
+        WriteDictionaryFile("chargen-structured-l1.ja.json", entries);
+    }
+
+    private void WriteDictionaryFile(string relativePath, params (string key, string text)[] entries)
+    {
         var builder = new StringBuilder();
         builder.Append("{\"entries\":[");
 
@@ -330,10 +363,9 @@ public sealed class ChargenStructuredTextTranslatorTests
         builder.Append("]}");
         builder.AppendLine();
 
-        File.WriteAllText(
-            Path.Combine(dictionariesDirectory, "chargen-structured-l1.ja.json"),
-            builder.ToString(),
-            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        var path = Path.Combine(dictionariesDirectory, relativePath);
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 
     private void WriteXmlFile(string relativePath, string content)

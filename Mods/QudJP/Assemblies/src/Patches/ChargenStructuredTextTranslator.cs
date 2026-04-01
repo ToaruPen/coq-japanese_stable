@@ -10,6 +10,8 @@ namespace QudJP.Patches;
 
 internal static class ChargenStructuredTextTranslator
 {
+    private static readonly string ChargenSkillDictionaryFile =
+        Path.Combine("Scoped", "ui-chargen-skill-context.ja.json");
     private static readonly object SyncRoot = new object();
     private static readonly Regex BulletLinePattern =
         new Regex(@"^(?<indent>\s*)(?<bullet>(?:\{\{[^{}]+\}\}|[\u00F9])\s*)?(?<content>.*)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -235,12 +237,7 @@ internal static class ChargenStructuredTextTranslator
             return content;
         }
 
-        if (Translator.TryGetTranslation(content, out var translated) && !string.Equals(content, translated, StringComparison.Ordinal))
-        {
-            return translated;
-        }
-
-        if (TryTranslateExactLeaf(content, out translated))
+        if (TryTranslateExactLeaf(content, out var translated))
         {
             return translated;
         }
@@ -270,6 +267,13 @@ internal static class ChargenStructuredTextTranslator
 
     private static bool TryTranslateExactLeaf(string source, out string translated)
     {
+        var scoped = ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, ChargenSkillDictionaryFile);
+        if (scoped is not null && !string.Equals(source, scoped, StringComparison.Ordinal))
+        {
+            translated = scoped;
+            return true;
+        }
+
         if (Translator.TryGetTranslation(source, out translated) && !string.Equals(source, translated, StringComparison.Ordinal))
         {
             return true;

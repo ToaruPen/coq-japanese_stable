@@ -44,13 +44,15 @@ public sealed class LocalizationCoverageTests
             .Cast<string>()
             .ToHashSet(StringComparer.Ordinal);
 
-        var skillDictionaryPath = Path.Combine(localizationRoot, "Dictionaries", "ui-skillsandpowers.ja.json");
-        var skillNameKeys = LoadKeysByContext(skillDictionaryPath, "TMP.Skill Name");
+        var skillsDictionaryPath = Path.Combine(localizationRoot, "Dictionaries", "ui-skillsandpowers.ja.json");
+        var scopedSkillsDictionaryPath = Path.Combine(localizationRoot, "Dictionaries", "Scoped", "ui-skillsandpowers-skill-names.ja.json");
+        var skillNameKeys = LoadKeysByContext(skillsDictionaryPath, "TMP.Skill Name");
+        skillNameKeys.UnionWith(LoadKeysByContext(scopedSkillsDictionaryPath, "TMP.Skill Name"));
 
         Assert.Multiple(() =>
         {
-            Assert.That(skillNames.Except(skillNameKeys).ToArray(), Is.Empty, "Missing skill-name entries in ui-skillsandpowers.");
-            Assert.That(powerNames.Except(skillNameKeys).ToArray(), Is.Empty, "Missing power-name entries in ui-skillsandpowers.");
+            Assert.That(skillNames.Except(skillNameKeys).ToArray(), Is.Empty, "Missing skill-name entries in skills dictionaries.");
+            Assert.That(powerNames.Except(skillNameKeys).ToArray(), Is.Empty, "Missing power-name entries in skills dictionaries.");
         });
     }
 
