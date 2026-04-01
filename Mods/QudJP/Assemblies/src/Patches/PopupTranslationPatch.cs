@@ -331,6 +331,18 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (BedTranslationPatch.TryTranslatePopupMessage(source, route, family, out var bedTranslated))
+        {
+            translated = bedTranslated;
+            return true;
+        }
+
+        if (ChairTranslationPatch.TryTranslatePopupMessage(source, route, family, out var chairTranslated))
+        {
+            translated = chairTranslated;
+            return true;
+        }
+
         if (StringHelpers.TryGetTranslationExactOrLowerAscii(stripped, out var exact)
             && !string.Equals(exact, stripped, StringComparison.Ordinal))
         {

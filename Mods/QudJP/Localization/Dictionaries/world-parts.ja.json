@@ -2420,11 +2420,6 @@
             "text": "待たなければならない "
         },
         {
-            "key": "You cannot sleep on ",
-            "context": "XRL.World.Parts.XRL.World.Parts.Bed",
-            "text": "上で眠れない: "
-        },
-        {
             "key": "You cannot do that while sitting.",
             "context": "XRL.World.Parts.XRL.World.Parts.Bed",
             "text": "座っている間はそれを行えない。"
@@ -2440,24 +2435,9 @@
             "text": "飛行中はそれを行えない。"
         },
         {
-            "key": "You cannot reach ",
-            "context": "XRL.World.Parts.XRL.World.Parts.Bed",
-            "text": "手が届かない: "
-        },
-        {
-            "key": "You are out of phase with ",
-            "context": "XRL.World.Parts.XRL.World.Parts.Bed",
-            "text": "あなたは と位相がずれている。"
-        },
-        {
             "key": "You can't go to sleep right now.",
             "context": "XRL.World.Parts.XRL.World.Parts.Bed",
             "text": "今は眠れない。"
-        },
-        {
-            "key": "You cannot sit on ",
-            "context": "XRL.World.Parts.XRL.World.Parts.Chair",
-            "text": "座れない: "
         },
         {
             "key": "You are already sitting down.",
@@ -2473,31 +2453,6 @@
             "key": "You cannot do that while burrowed.",
             "context": "XRL.World.Parts.XRL.World.Parts.Chair",
             "text": "潜伏中はそれを行えない。"
-        },
-        {
-            "key": "You cannot reach ",
-            "context": "XRL.World.Parts.XRL.World.Parts.Chair",
-            "text": "手が届かない: "
-        },
-        {
-            "key": "You are out of phase with ",
-            "context": "XRL.World.Parts.XRL.World.Parts.Chair",
-            "text": "あなたは と位相がずれている。"
-        },
-        {
-            "key": "You cannot unequip ",
-            "context": "XRL.World.Parts.XRL.World.Parts.Chair",
-            "text": " を外せない。"
-        },
-        {
-            "key": "You cannot set ",
-            "context": "XRL.World.Parts.XRL.World.Parts.Chair",
-            "text": " を設定できない。"
-        },
-        {
-            "key": "You think you broke ",
-            "context": "XRL.World.Parts.XRL.World.Parts.Chair",
-            "text": " を壊してしまった気がする。"
         },
         {
             "key": "You are not sitting down.",

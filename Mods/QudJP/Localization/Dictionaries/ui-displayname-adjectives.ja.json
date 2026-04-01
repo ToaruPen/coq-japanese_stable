@@ -975,11 +975,6 @@
       "text": "{{w|粘ついた}}"
     },
     {
-      "key": "word",
-      "context": "GetDisplayName.Adjective",
-      "text": "word"
-    },
-    {
       "key": "painted",
       "context": "GetDisplayName.Adjective",
       "text": "{{painted|彩色された}}"
