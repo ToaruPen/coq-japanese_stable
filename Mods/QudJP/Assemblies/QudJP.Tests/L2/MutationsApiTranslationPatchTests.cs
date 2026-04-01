@@ -38,6 +38,7 @@ public sealed class MutationsApiTranslationPatchTests
     public void TearDown()
     {
         DummyMutationsApiTarget.Reset();
+        DummyPopupShow.Reset();
         Translator.ResetForTests();
         MessagePatternTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
@@ -117,7 +118,7 @@ public sealed class MutationsApiTranslationPatchTests
     }
 
     [Test]
-    public void TryTranslatePopupMessage_PreservesColorTags_OnExactFallback()
+    public void TryTranslatePopupMessage_PreservesColorTags_WhenExactDictionaryMatchFound()
     {
         var ok = TryTranslatePopupMessageDuringMutationPurchase(
             "Are you sure you want to spend 4 mutation points to buy a new {{G|mutation}}?",
