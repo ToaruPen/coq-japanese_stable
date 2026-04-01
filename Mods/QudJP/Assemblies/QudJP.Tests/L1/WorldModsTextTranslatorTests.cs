@@ -185,6 +185,62 @@ public sealed class WorldModsTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslate_FallbackToEnglishForUntranslatedKey()
+    {
+        WriteDictionary("world-mods.ja.json");
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            "This is an untranslated English phrase.",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(translated, Is.EqualTo("This is an untranslated English phrase."));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_HandlesEmptyInput()
+    {
+        WriteDictionary("world-mods.ja.json");
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            "",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(translated, Is.EqualTo(""));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_PreservesMarkerAndColorTagsCombined()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("Flaming: When powered, this weapon deals additional heat damage on hit.", "火炎: 通電中、この武器は命中時に追加の熱ダメージを与える。"));
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            "\x01{{r|Flaming: When powered, this weapon deals additional heat damage on hit.}}",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("\x01{{r|火炎: 通電中、この武器は命中時に追加の熱ダメージを与える。}}"));
+        });
+    }
+
+    [Test]
     public void TryTranslateCompareStatusLine_TranslatesBowsAndRifles()
     {
         WriteDictionary(
