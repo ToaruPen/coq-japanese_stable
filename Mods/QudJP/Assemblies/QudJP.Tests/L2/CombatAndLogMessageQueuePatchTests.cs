@@ -412,6 +412,34 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void GameObjectRegenera_TranslatesRegeneratedLimbMessage_WhenPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyGameObjectFireEventTarget), nameof(DummyGameObjectFireEventTarget.FireEvent), typeof(DummyGameEvent)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(GameObjectRegeneraTranslationPatch), nameof(GameObjectRegeneraTranslationPatch.Prefix), typeof(object))),
+                finalizer: new HarmonyMethod(RequireMethod(typeof(GameObjectRegeneraTranslationPatch), nameof(GameObjectRegeneraTranslationPatch.Finalizer), typeof(Exception))));
+
+            var target = new DummyGameObjectFireEventTarget
+            {
+                MessageToSend = "You regenerate your {{G|arm}}!",
+            };
+
+            target.FireEvent(new DummyGameEvent { ID = "Regenera" });
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("{{G|arm}}を再生した！"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void GameObjectSpot_TranslatesSpotMessage_WhenPatched()
     {
         WritePatternDictionary(

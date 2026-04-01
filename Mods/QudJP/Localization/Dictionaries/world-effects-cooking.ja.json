@@ -89,11 +89,6 @@
             "text": "@they は身構える。"
         },
         {
-            "key": "whenever @thisCreature suffer@s a 2X or greater physical penetration,",
-            "context": "XRL.World.Effects.CookingDomainArmor_OnPenetration.GetTemplatedTriggerDescription",
-            "text": "@thisCreature が2X以上の物理貫通を受けるたび、"
-        },
-        {
             "key": "+2 AV",
             "context": "XRL.World.Effects.CookingDomainArmor_UnitAV.GetTemplatedDescription",
             "text": "AV+2"
@@ -204,29 +199,9 @@
             "text": "自身の身体でないあいだ、クイックネス+40～70。"
         },
         {
-            "key": "@they release an electrical discharge per Electrical Generation at level ",
-            "context": "XRL.World.Effects.CookingDomainElectric_Discharge_ProceduralCookingTriggeredAction.GetDescription",
-            "text": "@they は電気生成に応じた放電を行う。"
-        },
-        {
-            "key": "@they release an electrical discharge per Electrical Generation at level 5-6.",
-            "context": "XRL.World.Effects.CookingDomainElectric_Discharge_ProceduralCookingTriggeredAction.GetTemplatedDescription",
-            "text": "@they は電気生成レベル5～6に応じた放電を行う。"
-        },
-        {
             "key": "@they release a powerful electrical discharge.",
             "context": "XRL.World.Effects.CookingDomainElectric_Discharge_ProceduralCookingTriggeredAction.GetNotification",
             "text": "@they は強力な放電を行う。"
-        },
-        {
-            "key": "@they release an electromagnetic pulse at level ",
-            "context": "XRL.World.Effects.CookingDomainElectric_EMP_ProceduralCookingTriggeredAction.GetDescription",
-            "text": "@they は電磁パルスを放つ。"
-        },
-        {
-            "key": "@they release an electromagnetic pulse at level 8-9.",
-            "context": "XRL.World.Effects.CookingDomainElectric_EMP_ProceduralCookingTriggeredAction.GetTemplatedDescription",
-            "text": "@they はレベル8～9の電磁パルスを放つ。"
         },
         {
             "key": "@they release a powerful electromagnetic pulse.",
@@ -252,11 +227,6 @@
             "key": "whenever @thisCreature deal@s electric damage, there's a 25% chance",
             "context": "XRL.World.Effects.CookingDomainElectric_OnDealingElectricDamage.GetTriggerDescription",
             "text": "@thisCreature が電撃ダメージを与えるたび、25%の確率で"
-        },
-        {
-            "key": "whenever @thisCreature take@s electric damage, there's a 50% chance",
-            "context": "XRL.World.Effects.CookingDomainElectric_OnElectricDamaged.GetTemplatedTriggerDescription",
-            "text": "@thisCreature が電撃ダメージを受けるたび、50%の確率で"
         },
         {
             "key": "whenever @thisCreature deal@s fire damage, there's a 10% chance",
@@ -789,16 +759,6 @@
             "text": "クイックネス+4～5"
         },
         {
-            "key": "Reflect 100% damage the next time @they take damage.",
-            "context": "XRL.World.Effects.CookingDomainReflect_Reflect100_ProceduralCookingTriggeredAction_Effect.GetDetails",
-            "text": "@they は次に受けるダメージを100%反射する。"
-        },
-        {
-            "key": "Reflect 100% damage the next @n times @they take damage.",
-            "context": "XRL.World.Effects.CookingDomainReflect_Reflect100_ProceduralCookingTriggeredAction_Effect.GetDetails",
-            "text": "@they は次の@n回受けるダメージを100%反射する。"
-        },
-        {
             "key": "Can use Quills at level 5-6. If @they already have Quills, it's enhanced by 3-4 levels.",
             "context": "XRL.World.Effects.CookingDomainReflect_UnitQuills.GetTemplatedDescription",
             "text": "〈棘〉をレベル5～6で使用できる。既に持つ場合、さらにレベル3～4強化される。"
@@ -917,11 +877,6 @@
             "key": "+4 Willpower",
             "context": "XRL.World.Effects.CookingDomainWillpower_UnitWillpower.GetTemplatedDescription",
             "text": "意志力+4"
-        },
-        {
-            "key": "Reflect 100% damage the next 3 times @they take damage.",
-            "context": "XRL.World.Effects.CookingDomainReflect_Reflect100_ProceduralCookingTriggeredAction_Effect.GetDetails",
-            "text": "@they は次の3回受けるダメージを100%反射する。"
         },
         {
             "key": "Reveals a secret to @thisCreature.",
@@ -1119,26 +1074,6 @@
             "text": "〈威圧〉を使用できる。既に習得している場合は〈威圧〉使用時の意志判定に+2のボーナス。"
         },
         {
-            "key": "@they release an electrical discharge per Electrical Generation at level 5.",
-            "context": "XRL.World.Effects.CookingDomainElectric_Discharge_ProceduralCookingTriggeredAction.GetDescription",
-            "text": "@they は電気生成レベル5に応じた放電を行う。"
-        },
-        {
-            "key": "@they release an electrical discharge per Electrical Generation at level 6.",
-            "context": "XRL.World.Effects.CookingDomainElectric_Discharge_ProceduralCookingTriggeredAction.GetDescription",
-            "text": "@they は電気生成レベル6に応じた放電を行う。"
-        },
-        {
-            "key": "@they release an electromagnetic pulse at level 8.",
-            "context": "XRL.World.Effects.CookingDomainElectric_EMP_ProceduralCookingTriggeredAction.GetDescription",
-            "text": "@they はレベル8の電磁パルスを放つ。"
-        },
-        {
-            "key": "@they release an electromagnetic pulse at level 9.",
-            "context": "XRL.World.Effects.CookingDomainElectric_EMP_ProceduralCookingTriggeredAction.GetDescription",
-            "text": "@they はレベル9の電磁パルスを放つ。"
-        },
-        {
             "key": "@they get +30% max HP for 1 hour.",
             "context": "XRL.World.Effects.CookingDomainHP_IncreaseHP_ProceduralCookingTriggeredAction.GetDescription",
             "text": "@they は1時間のあいだ最大HP+30%を得る。"
@@ -1274,26 +1209,6 @@
             "text": "@thisCreature が真水を飲むたび、25%の確率で"
         },
         {
-            "key": "whenever @thisCreature suffer@s",
-            "context": "XRL.World.Effects.CookingDomainArmor_OnPenetration.GetTemplatedTriggerDescription",
-            "text": "@thisCreature が物理貫通を受けるたび、"
-        },
-        {
-            "key": "@they release an electrical discharge per Electrical Generation at level",
-            "context": "XRL.World.Effects.CookingDomainElectric_Discharge_ProceduralCookingTriggeredAction.GetDescription",
-            "text": "@they は電気生成レベルに応じた放電を行う。"
-        },
-        {
-            "key": "@they release an electromagnetic pulse at level",
-            "context": "XRL.World.Effects.CookingDomainElectric_EMP_ProceduralCookingTriggeredAction.GetDescription",
-            "text": "@they はそのレベルに応じた電磁パルスを放つ。"
-        },
-        {
-            "key": "whenever @thisCreature take@s electric damage, there's",
-            "context": "XRL.World.Effects.CookingDomainElectric_OnElectricDamaged.GetTriggerDescription",
-            "text": "@thisCreature が電撃ダメージを受けるたび、"
-        },
-        {
             "key": "@they get +",
             "context": "XRL.World.Effects.CookingDomainHP_IncreaseHP_ProceduralCookingTriggeredAction.GetDescription",
             "text": "@they は最大HPが増加する。"
@@ -1302,11 +1217,6 @@
             "key": "@they expel quills per the Quills mutation at level",
             "context": "XRL.World.Effects.CookingDomainReflect_QuillBurst_ProceduralCookingTriggeredAction.GetDescription",
             "text": "@they は棘の変異レベルに応じて棘を放つ。"
-        },
-        {
-            "key": "Reflect 100% damage the next",
-            "context": "XRL.World.Effects.CookingDomainReflect_Reflect100_ProceduralCookingTriggeredAction_Effect.GetDetails",
-            "text": "次に受けるダメージを100%反射する。"
         },
         {
             "key": "Reflect",
@@ -1344,24 +1254,9 @@
             "text": "今後3時間、筋力+3。"
         },
         {
-            "key": "whenever @thisCreature suffer@s ",
-            "context": "XRL.World.Effects.CookingDomainArmor_OnPenetration.GetTriggerDescription",
-            "text": "@thisCreature が物理貫通を受けるたび、"
-        },
-        {
-            "key": "whenever @thisCreature take@s electric damage, there's ",
-            "context": "XRL.World.Effects.CookingDomainElectric_OnElectricDamaged.GetTriggerDescription",
-            "text": "@thisCreature が電撃ダメージを受けるたび、"
-        },
-        {
             "key": "@they expel quills per the Quills mutation at level ",
             "context": "XRL.World.Effects.CookingDomainReflect_QuillBurst_ProceduralCookingTriggeredAction.GetDescription",
             "text": "@they は棘の変異レベルに応じて棘を放つ。"
-        },
-        {
-            "key": "Reflect 100% damage the next ",
-            "context": "XRL.World.Effects.CookingDomainReflect_Reflect100_ProceduralCookingTriggeredAction_Effect.GetDetails",
-            "text": "次に受けるダメージを100%反射する。"
         },
         {
             "key": "Reflect ",

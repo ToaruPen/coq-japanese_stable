@@ -40,6 +40,7 @@ public static class CombatAndLogMessageQueuePatch
                 || CombatMeleeAttackTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
                 || GameObjectDieTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
                 || GameObjectRegeneraTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
+                || ClonelingVehicleTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
                 || GameObjectSpotTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
                 || GameObjectEmitMessageTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
                 || ZoneManagerTryThawZoneTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)

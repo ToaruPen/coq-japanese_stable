@@ -365,26 +365,6 @@
       "text": "突然変異ポイントを使いすぎています。"
     },
     {
-      "key": "You don't have ",
-      "context": "Chargen.Mutations.InsufficientPoints.Prefix",
-      "text": "突然変異ポイントが足りません。"
-    },
-    {
-      "key": " mutation points!",
-      "context": "Chargen.Mutations.InsufficientPoints.Suffix",
-      "text": "ポイントが不足しています！"
-    },
-    {
-      "key": "Are you sure you want to spend ",
-      "context": "Chargen.Mutations.SpendConfirm.Prefix",
-      "text": "本当にそのポイントを消費しますか？ "
-    },
-    {
-      "key": " mutation points to buy a new ",
-      "context": "Chargen.Mutations.SpendConfirm.Suffix",
-      "text": " ポイントを使って新しい突然変異を購入します。"
-    },
-    {
       "key": "BuyNew",
       "context": "Chargen.Mutations.Action.BuyNew",
       "text": "新規購入"

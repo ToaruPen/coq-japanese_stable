@@ -480,16 +480,6 @@
             "text": "液体を飲むことができない。"
         },
         {
-            "key": "You cannot seem to interact with ",
-            "context": "XRL.World.Parts.XRL.World.Parts.LiquidVolume",
-            "text": "何かが邪魔で "
-        },
-        {
-            "key": " in any way.",
-            "context": "XRL.World.Parts.XRL.World.Parts.LiquidVolume",
-            "text": " とやり取りできない。"
-        },
-        {
             "key": "Are you sure you want to drink that?",
             "context": "XRL.World.Parts.XRL.World.Parts.LiquidVolume",
             "text": "本当にそれを飲みますか？"
@@ -498,16 +488,6 @@
             "key": "It's fizzy.",
             "context": "XRL.World.Parts.XRL.World.Parts.LiquidVolume",
             "text": "発泡している。"
-        },
-        {
-            "key": " not owned by you. Are you sure you want to drink from ",
-            "context": "XRL.World.Parts.XRL.World.Parts.LiquidVolume",
-            "text": " はあなたの所有物ではない。本当に "
-        },
-        {
-            "key": "You are now ",
-            "context": "XRL.World.Parts.XRL.World.Parts.LiquidVolume",
-            "text": "あなたは今 "
         },
         {
             "key": "It's empty, there's nothing left to drink!",
@@ -520,34 +500,9 @@
             "text": "アイテム 飲む"
         },
         {
-            "key": " no drain.",
-            "context": "XRL.World.Parts.XRL.World.Parts.LiquidVolume",
-            "text": " 排出なし。"
-        },
-        {
-            "key": " sealed.",
-            "context": "XRL.World.Parts.XRL.World.Parts.LiquidVolume",
-            "text": " 密封。"
-        },
-        {
-            "key": " empty.",
-            "context": "XRL.World.Parts.XRL.World.Parts.LiquidVolume",
-            "text": " 空。"
-        },
-        {
-            "key": " not owned by you. Are you sure you want to drain ",
-            "context": "XRL.World.Parts.XRL.World.Parts.LiquidVolume",
-            "text": " はあなたの所有物ではない。本当に排出しますか: "
-        },
-        {
             "key": "Are you sure you want to drain ",
             "context": "XRL.World.Parts.XRL.World.Parts.LiquidVolume",
             "text": "本当に排出しますか: "
-        },
-        {
-            "key": " not owned by you. Are you sure you want to fill ",
-            "context": "XRL.World.Parts.XRL.World.Parts.LiquidVolume",
-            "text": " はあなたの所有物ではない。本当に満たしますか: "
         },
         {
             "key": "You have no containers to pour from.",
@@ -558,21 +513,6 @@
             "key": "[Select a container to fill from]",
             "context": "XRL.World.Parts.XRL.World.Parts.LiquidVolume",
             "text": "[注ぎ元の容器を選択]"
-        },
-        {
-            "key": "You can't pour from a container into ",
-            "context": "XRL.World.Parts.XRL.World.Parts.LiquidVolume",
-            "text": "容器から注ぐことはできない: "
-        },
-        {
-            "key": "Do you want to empty ",
-            "context": "XRL.World.Parts.XRL.World.Parts.LiquidVolume",
-            "text": "先に "
-        },
-        {
-            "key": " first?",
-            "context": "XRL.World.Parts.XRL.World.Parts.LiquidVolume",
-            "text": " を空にしますか？"
         },
         {
             "key": "How many drams? (max=",
@@ -1245,29 +1185,9 @@
             "text": " 自我が +{{C|1}} {{Y|上昇}}！"
         },
         {
-            "key": "You slew ",
+            "key": "In the month of {Calendar.GetMonth()} of {Calendar.GetYear()}, =name= was challenged by <spice.commonPhrases.pretender.!random.article> to a duel over the rights of {Factions.GetMostLikedFormattedName()}. =name= won and had the pretender's psyche kibbled and absorbed into {The.Player.GetPronounProvider().PossessiveAdjective} own.",
             "context": "XRL.World.Parts.XRL.World.Parts.AbsorbablePsyche",
-            "text": "あなたは を殺し、"
-        },
-        {
-            "key": " and encoded their psyche's psionic bits on the holographic boundary of your own psyche.",
-            "context": "XRL.World.Parts.XRL.World.Parts.AbsorbablePsyche",
-            "text": " その精神のサイオニック片を自分の精神を囲むホログラフィック境界に刻みつけた。"
-        },
-        {
-            "key": "After a climactic battle of wills, =name= slew ",
-            "context": "XRL.World.Parts.XRL.World.Parts.AbsorbablePsyche",
-            "text": "意志の頂上決戦の末、=name= は を殺し、"
-        },
-        {
-            "key": " and absorbed ",
-            "context": "XRL.World.Parts.XRL.World.Parts.AbsorbablePsyche",
-            "text": " の精神を吸収し、"
-        },
-        {
-            "key": " psyche, thickening toward Godhood.",
-            "context": "XRL.World.Parts.XRL.World.Parts.AbsorbablePsyche",
-            "text": " 神格化へと濃密化した。"
+            "text": "{Calendar.GetYear()}年{Calendar.GetMonth()}、=name= は {Factions.GetMostLikedFormattedName()}の権利を巡り<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name= は勝利し、偽者の精神を刻んで吸収した。"
         },
         {
             "key": "general",
@@ -1775,11 +1695,6 @@
             "text": "強制"
         },
         {
-            "key": "You extricate ",
-            "context": "XRL.World.Parts.XRL.World.Parts.Enclosing",
-            "text": "あなたは を引き抜いた。"
-        },
-        {
             "key": "extricate",
             "context": "XRL.World.Parts.XRL.World.Parts.Enclosing",
             "text": "引き抜く"
@@ -2118,16 +2033,6 @@
             "key": " nearby",
             "context": "XRL.World.Parts.XRL.World.Parts.RandomAltarBaetyl",
             "text": " の近く"
-        },
-        {
-            "key": "You appeased a baetyl with ",
-            "context": "XRL.World.Parts.XRL.World.Parts.RandomAltarBaetyl",
-            "text": "あなたは でベートルをなだめ、"
-        },
-        {
-            "key": ", and in return received ",
-            "context": "XRL.World.Parts.XRL.World.Parts.RandomAltarBaetyl",
-            "text": " 見返りに を受け取った"
         },
         {
             "key": "While leading a small army through ",
@@ -2660,21 +2565,6 @@
             "text": " 代名詞、それは "
         },
         {
-            "key": "you give ",
-            "context": "XRL.World.Parts.XRL.World.Parts.ConversationScript",
-            "text": "あなたは を伝える"
-        },
-        {
-            "key": " your new pronouns",
-            "context": "XRL.World.Parts.XRL.World.Parts.ConversationScript",
-            "text": " 新しい代名詞を伝える"
-        },
-        {
-            "key": " your pronouns",
-            "context": "XRL.World.Parts.XRL.World.Parts.ConversationScript",
-            "text": " 代名詞を伝える"
-        },
-        {
             "key": "You're too confused to do that.",
             "context": "XRL.World.Parts.XRL.World.Parts.Examiner",
             "text": "混乱しすぎてそれはできない。"
@@ -2885,11 +2775,6 @@
             "text": " クローンに失敗した。"
         },
         {
-            "key": "You do not have 1 dram of ",
-            "context": "XRL.World.Parts.XRL.World.Parts.Cloneling",
-            "text": "1ドラムの がない。"
-        },
-        {
             "key": "Your cloning capacity is refreshed.",
             "context": "XRL.World.Parts.XRL.World.Parts.Cloneling",
             "text": "クローン容量が回復した。"
@@ -2898,11 +2783,6 @@
             "key": "There is nothing there for you to clone.",
             "context": "XRL.World.Parts.XRL.World.Parts.Cloneling",
             "text": "クローンできるものがそこにはない。"
-        },
-        {
-            "key": "Your onboard systems are out of ",
-            "context": "XRL.World.Parts.XRL.World.Parts.Cloneling",
-            "text": "搭載システムの が枯渇している。"
         },
         {
             "key": "Your onboard cloning systems are offline.",
@@ -2930,24 +2810,9 @@
             "text": "シュロープという音とともに、周囲の世界がずれる。"
         },
         {
-            "key": "You are water-bonded with ",
-            "context": "XRL.World.Parts.XRL.World.Parts.GivesRep",
-            "text": "あなたは と水の儀式で結ばれている。"
-        },
-        {
             "key": "You violated the covenant of the water ritual and killed your bonded kith. You are cursed.",
             "context": "XRL.World.Parts.XRL.World.Parts.GivesRep",
             "text": "水の契りを破り、結んだ仲間を殺した。あなたは呪われている。"
-        },
-        {
-            "key": "You slew your bonded kith ",
-            "context": "XRL.World.Parts.XRL.World.Parts.GivesRep",
-            "text": "あなたは契りを結んだ仲間 を殺した。"
-        },
-        {
-            "key": "You slew ",
-            "context": "XRL.World.Parts.XRL.World.Parts.GivesRep",
-            "text": "あなたは を殺した。"
         },
         {
             "key": "You fall down a deep shaft!",
@@ -2998,11 +2863,6 @@
             "key": "You have recovered the use of your ",
             "context": "XRL.World.Parts.XRL.World.Parts.Body",
             "text": "あなたは の機能を回復した。"
-        },
-        {
-            "key": "You regenerate your ",
-            "context": "XRL.World.Parts.XRL.World.Parts.Body",
-            "text": "あなたは を再生した。"
         },
         {
             "key": "ValidateGameObjects",

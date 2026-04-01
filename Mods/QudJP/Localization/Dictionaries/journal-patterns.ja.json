@@ -142,6 +142,11 @@
       "route": "journal"
     },
     {
+      "pattern": "^After a climactic battle of wills, (.+?) slew (.+?) and absorbed (?:his|her|their|its) psyche, thickening toward Godhood\\.$",
+      "template": "意志の頂上決戦の末、{0}は{1}を倒してその精神を吸収し、神格へと近づいた。",
+      "route": "journal"
+    },
+    {
       "pattern": "^You slew your bonded kith (.+?), violating the covenant of the water ritual and earning the emnity of all\\.$",
       "template": "水の儀式で結ばれた同胞{0}を殺し、その誓約を破って全ての者の敵意を買った。",
       "route": "journal"

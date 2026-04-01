@@ -326,6 +326,9 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(ZoneManagerGenerateZoneTranslationPatch), "GenerateZone", "XRL.World.ZoneManager", "System.Void", new[] { "System.String" })]
     [TestCase(typeof(BedTranslationPatch), "AttemptSleep", "XRL.World.Parts.Bed", "System.Void", new[] { "XRL.World.GameObject", "System.Boolean&", "System.Boolean&", "System.Boolean&" })]
     [TestCase(typeof(ChairTranslationPatch), "SitDown", "XRL.World.Parts.Chair", "System.Boolean", new[] { "XRL.World.GameObject", "XRL.World.IEvent" })]
+    [TestCase(typeof(EnclosingTranslationPatch), "ExitEnclosure", "XRL.World.Parts.Enclosing", "System.Boolean", new[] { "XRL.World.GameObject", "XRL.World.IEvent", "XRL.World.Effects.Enclosed" })]
+    [TestCase(typeof(GivesRepShortDescriptionTranslationPatch), "HandleEvent", "XRL.World.Parts.GivesRep", "System.Boolean", new[] { "XRL.World.GetShortDescriptionEvent" })]
+    [TestCase(typeof(MutationsApiTranslationPatch), "BuyRandomMutation", "Qud.API.MutationsAPI", "System.Boolean", new[] { "XRL.World.GameObject", "System.Int32", "System.Boolean", "System.String" })]
     [TestCase(typeof(ConversationPronounExchangeTranslationPatch), "PronounExchangeDescription", "XRL.World.Parts.ConversationScript", "System.String", new[]
     {
         "XRL.World.GameObject",
@@ -471,6 +474,31 @@ public sealed class TargetMethodResolutionTests
     {
         "System.String|System.String|System.String|System.Int32|System.Int32|System.Int32",
         "System.String|System.Int32|System.Int32|System.Int32|System.String|System.Boolean",
+    })]
+    [TestCase(typeof(LiquidVolumeTranslationPatch), new[]
+    {
+        "XRL.World.InventoryActionEvent",
+        "System.Boolean&|XRL.World.GameObject|XRL.World.Cell|System.Boolean|System.Boolean|System.Int32|System.Boolean",
+        "XRL.World.GameObject|System.Boolean&|System.Boolean",
+    })]
+    [TestCase(typeof(ClonelingVehicleTranslationPatch), new[]
+    {
+        "XRL.World.InventoryActionEvent",
+        "",
+        "XRL.World.InventoryActionEvent",
+        "XRL.World.InventoryActionEvent",
+    })]
+    [TestCase(typeof(CookingEffectTranslationPatch), new[]
+    {
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
     })]
     public void TargetMethods_ResolveExpectedOverloads(Type patchType, string[] expectedSignatures)
     {

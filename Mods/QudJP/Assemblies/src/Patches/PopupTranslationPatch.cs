@@ -343,6 +343,30 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (LiquidVolumeTranslationPatch.TryTranslatePopupMessage(source, route, family, out var liquidVolumeTranslated))
+        {
+            translated = liquidVolumeTranslated;
+            return true;
+        }
+
+        if (ClonelingVehicleTranslationPatch.TryTranslatePopupMessage(source, route, family, out var clonelingVehicleTranslated))
+        {
+            translated = clonelingVehicleTranslated;
+            return true;
+        }
+
+        if (EnclosingTranslationPatch.TryTranslatePopupMessage(source, route, family, out var enclosingTranslated))
+        {
+            translated = enclosingTranslated;
+            return true;
+        }
+
+        if (MutationsApiTranslationPatch.TryTranslatePopupMessage(source, route, family, out var mutationTranslated))
+        {
+            translated = mutationTranslated;
+            return true;
+        }
+
         if (StringHelpers.TryGetTranslationExactOrLowerAscii(stripped, out var exact)
             && !string.Equals(exact, stripped, StringComparison.Ordinal))
         {

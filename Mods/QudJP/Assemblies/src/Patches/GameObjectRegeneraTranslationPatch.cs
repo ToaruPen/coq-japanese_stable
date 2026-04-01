@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -11,6 +12,8 @@ public static class GameObjectRegeneraTranslationPatch
 {
     private const string Context = nameof(GameObjectRegeneraTranslationPatch);
     private const string RegeneraEventId = "Regenera";
+    private static readonly Regex RegenerateLimbPattern =
+        new Regex("^You regenerate your (?<part>.+?)!$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [ThreadStatic]
     private static int activeDepth;
@@ -90,11 +93,30 @@ public static class GameObjectRegeneraTranslationPatch
     {
         _ = color;
 
-        return activeDepth > 0
-            && !string.IsNullOrEmpty(message)
-            && (message.Contains("cures you of")
+        if (activeDepth <= 0 || string.IsNullOrEmpty(message))
+        {
+            return false;
+        }
+
+        if ((message.Contains("cures you of")
                 || message.EndsWith(" a malady.", StringComparison.Ordinal))
-            && MessageLogProducerTranslationHelpers.TryPreparePatternMessage(ref message, Context, "Regenera");
+            && MessageLogProducerTranslationHelpers.TryPreparePatternMessage(ref message, Context, "Regenera"))
+        {
+            return true;
+        }
+
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(message);
+        var limbMatch = RegenerateLimbPattern.Match(stripped);
+        if (!limbMatch.Success)
+        {
+            return false;
+        }
+
+        var part = ColorAwareTranslationComposer.RestoreCapture(limbMatch.Groups["part"].Value, spans, limbMatch.Groups["part"]).Trim();
+        var translated = string.Concat(part, "を再生した！");
+        DynamicTextObservability.RecordTransform(Context, "Regenera.RegenerateLimb", message, translated);
+        message = MessageFrameTranslator.MarkDirectTranslation(translated);
+        return true;
     }
 
     private static bool ShouldTrack(object? eventObject)
