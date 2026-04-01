@@ -52,87 +52,42 @@ public sealed class MutationsApiTranslationPatchTests
     [Test]
     public void BuyRandomMutation_TranslatesInsufficientPointsMessage_WhenPatched()
     {
-        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
-        var harmony = new Harmony(harmonyId);
-
-        try
+        WithPatchedBuyRandomMutation(nameof(DummyPopupShow.Show), () =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyMutationsApiTarget), nameof(DummyMutationsApiTarget.BuyRandomMutation)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(MutationsApiTranslationPatch), nameof(MutationsApiTranslationPatch.Prefix))),
-                finalizer: new HarmonyMethod(RequireMethod(typeof(MutationsApiTranslationPatch), nameof(MutationsApiTranslationPatch.Finalizer), typeof(Exception))));
-
             DummyMutationsApiTarget.FailureMessageToShow = "You don't have 4 mutation points!";
 
             _ = DummyMutationsApiTarget.BuyRandomMutation(new DummyGameObject(), 4, MutationTerm: "mutation");
 
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("突然変異ポイントが4ポイント足りない！"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        });
     }
 
     [Test]
     public void BuyRandomMutation_TranslatesConfirmationMessage_WhenPatched()
     {
-        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
-        var harmony = new Harmony(harmonyId);
-
-        try
+        WithPatchedBuyRandomMutation(nameof(DummyPopupShow.ShowYesNo), () =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNo)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyMutationsApiTarget), nameof(DummyMutationsApiTarget.BuyRandomMutation)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(MutationsApiTranslationPatch), nameof(MutationsApiTranslationPatch.Prefix))),
-                finalizer: new HarmonyMethod(RequireMethod(typeof(MutationsApiTranslationPatch), nameof(MutationsApiTranslationPatch.Finalizer), typeof(Exception))));
-
             DummyMutationsApiTarget.ConfirmMessageToShow =
                 "Are you sure you want to spend 4 mutation points to buy a new mutation?";
 
             _ = DummyMutationsApiTarget.BuyRandomMutation(new DummyGameObject(), 4, MutationTerm: "mutation");
 
             Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo("本当に4ポイントを消費して新しい突然変異を購入しますか？"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        });
     }
 
     [Test]
     public void BuyRandomMutation_PreservesColorTagsInConfirmationMessage_WhenPatched()
     {
-        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
-        var harmony = new Harmony(harmonyId);
-
-        try
+        WithPatchedBuyRandomMutation(nameof(DummyPopupShow.ShowYesNo), () =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNo)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyMutationsApiTarget), nameof(DummyMutationsApiTarget.BuyRandomMutation)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(MutationsApiTranslationPatch), nameof(MutationsApiTranslationPatch.Prefix))),
-                finalizer: new HarmonyMethod(RequireMethod(typeof(MutationsApiTranslationPatch), nameof(MutationsApiTranslationPatch.Finalizer), typeof(Exception))));
-
             DummyMutationsApiTarget.ConfirmMessageToShow =
                 "Are you sure you want to spend 4 mutation points to buy a new {{G|mutation}}?";
 
             _ = DummyMutationsApiTarget.BuyRandomMutation(new DummyGameObject(), 4, MutationTerm: "mutation");
 
             Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo("本当に4ポイントを消費して新しい{{G|突然変異}}を購入しますか？"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        });
     }
 
     [Test]
@@ -232,6 +187,29 @@ public sealed class MutationsApiTranslationPatchTests
         return parameterTypes.Length == 0
             ? AccessTools.Method(type, methodName) ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}")
             : AccessTools.Method(type, methodName, parameterTypes) ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static void WithPatchedBuyRandomMutation(string popupMethodName, Action assertion)
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupShow), popupMethodName),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMutationsApiTarget), nameof(DummyMutationsApiTarget.BuyRandomMutation)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(MutationsApiTranslationPatch), nameof(MutationsApiTranslationPatch.Prefix))),
+                finalizer: new HarmonyMethod(RequireMethod(typeof(MutationsApiTranslationPatch), nameof(MutationsApiTranslationPatch.Finalizer), typeof(Exception))));
+
+            assertion();
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private static bool TryTranslatePopupMessageDuringMutationPurchase(string source, out string translated)
