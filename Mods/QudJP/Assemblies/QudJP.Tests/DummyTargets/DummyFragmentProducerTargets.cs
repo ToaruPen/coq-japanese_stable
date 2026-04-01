@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace QudJP.Tests.DummyTargets;
@@ -21,6 +22,7 @@ internal sealed class DummyLiquidVolumeProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public bool HandleEvent(DummyInventoryActionEvent e)
     {
         _ = e;
@@ -28,6 +30,7 @@ internal sealed class DummyLiquidVolumeProducerTarget
         return true;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public bool Pour(
         ref bool requestInterfaceExit,
         DummyGameObject? actor = null,
@@ -48,6 +51,7 @@ internal sealed class DummyLiquidVolumeProducerTarget
         return true;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public bool PerformFill(DummyGameObject actor, ref bool requestInterfaceExit, bool ownershipHandled = false)
     {
         _ = actor;
@@ -64,6 +68,7 @@ internal sealed class DummyClonelingProducerTarget
 
     public string QueuedMessageToSend { get; set; } = string.Empty;
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public bool HandleEvent(DummyInventoryActionEvent e)
     {
         _ = e;
@@ -71,6 +76,7 @@ internal sealed class DummyClonelingProducerTarget
         return true;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public bool AttemptCloning()
     {
         DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, null, Capitalize: false);
@@ -82,6 +88,7 @@ internal sealed class DummyVehicleRepairProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public bool HandleEvent(DummyInventoryActionEvent e)
     {
         _ = e;
@@ -94,6 +101,7 @@ internal sealed class DummyVehicleRecallProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public bool HandleEvent(DummyInventoryActionEvent e)
     {
         _ = e;
@@ -106,6 +114,7 @@ internal sealed class DummyEnclosingProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public bool ExitEnclosure(DummyGameObject who, DummyGameEvent? e = null, DummyEnclosedEffect? enc = null)
     {
         _ = who;
@@ -120,6 +129,7 @@ internal sealed class DummyGivesRepProducerTarget
 {
     public string PostfixTextToAppend { get; set; } = string.Empty;
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public bool HandleEvent(DummyGetShortDescriptionEvent E)
     {
         E.Postfix.Append(PostfixTextToAppend);
@@ -139,6 +149,7 @@ internal static class DummyMutationsApiTarget
         ConfirmMessageToShow = null;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static bool BuyRandomMutation(DummyGameObject obj, int Cost = 4, bool Confirm = true, string? MutationTerm = null)
     {
         _ = obj;
@@ -164,26 +175,31 @@ internal sealed class DummyCookingEffectTextTarget
 {
     public string ReturnValue { get; set; } = string.Empty;
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public string GetDescription()
     {
         return ReturnValue;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public string GetTemplatedDescription()
     {
         return ReturnValue;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public string GetTriggerDescription()
     {
         return ReturnValue;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public string GetTemplatedTriggerDescription()
     {
         return ReturnValue;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public string GetDetails()
     {
         return ReturnValue;

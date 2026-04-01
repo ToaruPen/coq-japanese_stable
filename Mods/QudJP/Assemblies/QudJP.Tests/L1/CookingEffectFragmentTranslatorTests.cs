@@ -9,11 +9,26 @@ public sealed class CookingEffectFragmentTranslatorTests
 {
     [TestCase("@they release an electrical discharge per Electrical Generation at level 5.", "@they は電気生成レベル5の放電を行う。")]
     [TestCase("@they release an electromagnetic pulse at level 8-9.", "@they はレベル8-9の電磁パルスを放つ。")]
+    [TestCase("@they release an electromagnetic pulse at level <color=yellow>8-9</color>.", "@they はレベル<color=yellow>8-9</color>の電磁パルスを放つ。")]
     [TestCase("whenever @thisCreature take@s electric damage, there's a 50% chance", "@thisCreature が電撃ダメージを受けるたび、50%の確率で")]
+    [TestCase("whenever @thisCreature take@s electric damage, there's an 80% chance", "@thisCreature が電撃ダメージを受けるたび、80%の確率で")]
     [TestCase("whenever @thisCreature suffer@s 2X or greater physical penetration,", "@thisCreature が2倍以上の物理貫通を受けるたび、")]
     [TestCase("Reflect 100% damage the next time @they take damage.", "@they が次にダメージを受けたとき、そのダメージを100%反射する。")]
     [TestCase("Reflect 100% damage the next 3 times @they take damage.", "@they が次の3回ダメージを受けたとき、そのダメージを100%反射する。")]
     public void TryTranslate_TranslatesConfiguredFragments(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
+    [TestCase("")]
+    [TestCase("whenever @thisCreature take@s fire damage, there's a 50% chance")]
+    [TestCase("\u0001Reflect 100% damage the next time @they take damage.")]
+    public void TryTranslate_ReturnsFalse_ForPassthroughFragments(string input)
+    {
+        AssertPassthrough(input);
+    }
+
+    private static void AssertTranslated(string input, string expected)
     {
         var ok = CookingEffectFragmentTranslator.TryTranslate(
             input,
@@ -25,6 +40,21 @@ public sealed class CookingEffectFragmentTranslatorTests
         {
             Assert.That(ok, Is.True);
             Assert.That(translated, Is.EqualTo(expected));
+        });
+    }
+
+    private static void AssertPassthrough(string input)
+    {
+        var ok = CookingEffectFragmentTranslator.TryTranslate(
+            input,
+            nameof(CookingEffectFragmentTranslatorTests),
+            "Cooking",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(translated, Is.EqualTo(input));
         });
     }
 }

@@ -103,7 +103,15 @@ internal static class LiquidVolumeFragmentTranslator
     {
         if (string.IsNullOrEmpty(source))
         {
-            translated = source ?? string.Empty;
+            if (source is null)
+            {
+                translated = string.Empty;
+            }
+            else
+            {
+                translated = source;
+            }
+
             return false;
         }
 

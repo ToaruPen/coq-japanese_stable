@@ -880,11 +880,6 @@
             "text": "ダメージを跳ね返した。"
         },
         {
-            "key": "You regenerate your ",
-            "context": "XRL.World.Parts.Body",
-            "text": "{part}が再生した！"
-        },
-        {
             "key": "You rejoinder with ",
             "context": "XRL.World.Parts.Skill.ShortBlades_Rejoinder",
             "text": "{weapon}で反撃した。"
