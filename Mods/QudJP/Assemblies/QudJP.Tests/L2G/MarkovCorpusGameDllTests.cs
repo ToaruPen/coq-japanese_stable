@@ -35,8 +35,8 @@ public sealed class MarkovCorpusGameDllTests
         Assert.Multiple(() =>
         {
             Assert.That(order, Is.EqualTo(2));
-            Assert.That(MarkovCorpusTranslationPatch.GetOpeningWordCount(chainData), Is.GreaterThan(50));
-            Assert.That(MarkovCorpusTranslationPatch.GetTransitionCount(chainData), Is.GreaterThan(500));
+            Assert.That(MarkovCorpusTranslationPatch.GetOpeningWordCount(chainData), Is.GreaterThan(700));
+            Assert.That(MarkovCorpusTranslationPatch.GetTransitionCount(chainData), Is.GreaterThan(20000));
             Assert.That(sentence, Is.Not.Empty);
             Assert.That(MarkovCorpusTranslationPatch.ContainsJapaneseCharacters(sentence), Is.True);
         });
