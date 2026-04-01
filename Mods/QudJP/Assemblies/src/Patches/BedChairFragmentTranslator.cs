@@ -147,10 +147,39 @@ internal static class BedChairFragmentTranslator
         }
 
         var targetGroup = match.Groups["target"];
-        var visible = rule.Build(NormalizeTarget(targetGroup.Value), match);
-        translated = spans.Count == 0
-            ? visible
-            : ColorAwareTranslationComposer.Restore(visible, spans);
+        var normalizedTarget = NormalizeTarget(targetGroup.Value);
+        var visible = rule.Build(normalizedTarget, match);
+
+        if (spans.Count == 0)
+        {
+            translated = visible;
+            return true;
+        }
+
+        // Extract color spans that belong to the target
+        var targetColorSpans = ColorCodePreserver.SliceSpans(spans, targetGroup.Index, targetGroup.Length);
+
+        // Apply the target's color spans to the normalized target in the translated sentence
+        var coloredTarget = targetColorSpans.Count > 0
+            ? ColorAwareTranslationComposer.Restore(normalizedTarget, targetColorSpans)
+            : normalizedTarget;
+
+        // Replace the normalized target in the visible translation with the colored version
+        if (targetColorSpans.Count > 0 && visible.StartsWith(normalizedTarget))
+        {
+            visible = coloredTarget + visible.Substring(normalizedTarget.Length);
+        }
+
+        // Create boundary-only spans for sentence-level color tags
+        var boundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(
+            spans,
+            match,
+            source.Length,
+            visible.Length);
+
+        translated = boundarySpans.Count > 0
+            ? ColorAwareTranslationComposer.Restore(visible, boundarySpans)
+            : visible;
         return true;
     }
 
