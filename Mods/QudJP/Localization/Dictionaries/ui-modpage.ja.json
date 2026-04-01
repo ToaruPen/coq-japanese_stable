@@ -77,16 +77,6 @@
       "text": "{{W|未承認のスクリプト}}"
     },
     {
-      "context": "XRL.World.Parts.Qud.UI.ModManagerUI",
-      "key": "{{C|by ",
-      "text": "{{C|作者: "
-    },
-    {
-      "context": "XRL.World.Parts.Qud.UI.ModMenuLine",
-      "key": "{{y|by ",
-      "text": "{{y|作者: "
-    },
-    {
       "context": "XRL.World.Parts.Qud.UI.ModScrollerOne",
       "key": " contains scripts and has been permanently disabled in the options.\n{{K|(Options->Modding->Allow scripting mods)}}",
       "text": " にはスクリプトが含まれていますが、オプションで永続的に無効化されています。\n{{K|(オプション->Mod->スクリプトModを許可)}}"

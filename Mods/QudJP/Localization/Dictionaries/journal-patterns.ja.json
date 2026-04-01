@@ -192,6 +192,31 @@
       "route": "journal"
     },
     {
+      "pattern": "^<spice\\.commonPhrases\\.blessed\\.!random\\.capitalize> =name= dreamed of a thousand years of peace, and the people of Qud <spice\\.history\\.gospels\\.Celebration\\.LateSultanate\\.!random> in <spice\\.commonPhrases\\.celebration\\.!random>\\.$",
+      "template": "<spice.commonPhrases.blessed.!random.capitalize>=name=は千年の平和を夢見、クッドの民は<spice.commonPhrases.celebration.!random>で<spice.history.gospels.Celebration.LateSultanate.!random>した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^<spice\\.commonPhrases\\.blessed\\.!random\\.capitalize> =name= dreamed of a thousand years of woe, and the people of Qud <spice\\.history\\.gospels\\.Celebration\\.LateSultanate\\.!random> in <spice\\.commonPhrases\\.woe\\.!random>\\.$",
+      "template": "<spice.commonPhrases.blessed.!random.capitalize>=name=は千年の災厄を夢見、クッドの民は<spice.commonPhrases.woe.!random>で<spice.history.gospels.Celebration.LateSultanate.!random>した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^In the month of (.+?) of (.+?), =name= was challenged by <spice\\.commonPhrases\\.pretender\\.!random\\.article> to a duel over the rights of (.+?)\\. =name= won and had the pretender's psyche kibbled and absorbed into (.+?) own\\.$",
+      "template": "{1}年{0}、=name= は {2}の権利を巡り<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name= は勝利し、偽者の精神を刻んで吸収した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^In the month of (.+?) of (.+?), =name= was challenged by <spice\\.commonPhrases\\.pretender\\.!random\\.article> to a duel over the rights of (.+?)\\. =name= won and had the pretender's psyche kibbled and radiated into nothingness\\.$",
+      "template": "{1}年{0}、=name= は {2}の権利を巡って<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name= は勝利し、偽者の精神を刻んで無へと放射させた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^In the month of (.+?) of (.+?), =name= was challenged by <spice\\.commonPhrases\\.pretender\\.!random\\.article> to a duel over the rights of (.+?)\\. =name= won and slew the pretender, charitably not radiating <spice\\.pronouns\\.possessive\\.!random> psyche into nothingness\\.$",
+      "template": "{1}年{0}、=name= は {2}の権利を巡って<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name= は勝利し、偽者を倒したが、その精神を無へと放射することは慈悲としてしなかった。",
+      "route": "journal"
+    },
+    {
       "pattern": "^You woke from a long, convincing dream and returned to your life as the (.+?) (.+?)\\.$",
       "template": "長く信じ込むような夢から目覚め、{0}の{1}としての日常に戻った。",
       "route": "journal"

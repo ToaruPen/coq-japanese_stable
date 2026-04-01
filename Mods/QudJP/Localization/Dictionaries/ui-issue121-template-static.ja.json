@@ -37,11 +37,6 @@
       "context": "SaveManagementRow.TextSkins[2]"
     },
     {
-      "key": "by ",
-      "text": "作者: ",
-      "context": "ModManagerUI.SelectedModAuthor, ModMenuLine.authorText"
-    },
-    {
       "key": "Configuring Controller:",
       "text": "コントローラー設定:",
       "context": "KeybindsScreen.inputTypeText"

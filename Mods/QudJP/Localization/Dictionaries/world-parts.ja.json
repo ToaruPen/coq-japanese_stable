@@ -1270,11 +1270,6 @@
             "text": " 神格化へと濃密化した。"
         },
         {
-            "key": "In the month of {Calendar.GetMonth()} of {Calendar.GetYear()}, =name= was challenged by <spice.commonPhrases.pretender.!random.article> to a duel over the rights of {Factions.GetMostLikedFormattedName()}. =name= won and had the pretender's psyche kibbled and absorbed into {The.Player.GetPronounProvider().PossessiveAdjective} own.",
-            "context": "XRL.World.Parts.XRL.World.Parts.AbsorbablePsyche",
-            "text": "{Calendar.GetYear()}年{Calendar.GetMonth()}、=name= は {Factions.GetMostLikedFormattedName()}の権利を巡り<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name= は勝利し、偽者の精神を刻んで吸収した。"
-        },
-        {
             "key": "general",
             "context": "XRL.World.Parts.XRL.World.Parts.AbsorbablePsyche",
             "text": "general"
@@ -1303,16 +1298,6 @@
             "key": " psyche radiate into nothingness.",
             "context": "XRL.World.Parts.XRL.World.Parts.AbsorbablePsyche",
             "text": " の精神が無へと放射されるのを。"
-        },
-        {
-            "key": "In the month of {Calendar.GetMonth()} of {Calendar.GetYear()}, =name= was challenged by <spice.commonPhrases.pretender.!random.article> to a duel over the rights of {Factions.GetMostLikedFormattedName()}. =name= won and had the pretender's psyche kibbled and radiated into nothingness.",
-            "context": "XRL.World.Parts.XRL.World.Parts.AbsorbablePsyche",
-            "text": "{Calendar.GetYear()}年{Calendar.GetMonth()}、=name= は {Factions.GetMostLikedFormattedName()}の権利を巡って<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name= は勝利し、偽者の精神を刻んで無へと放射させた。"
-        },
-        {
-            "key": "In the month of {Calendar.GetMonth()} of {Calendar.GetYear()}, =name= was challenged by <spice.commonPhrases.pretender.!random.article> to a duel over the rights of {Factions.GetMostLikedFormattedName()}. =name= won and slew the pretender, charitably not radiating <spice.pronouns.possessive.!random> psyche into nothingness.",
-            "context": "XRL.World.Parts.XRL.World.Parts.AbsorbablePsyche",
-            "text": "{Calendar.GetYear()}年{Calendar.GetMonth()}、=name= は {Factions.GetMostLikedFormattedName()}の権利を巡って<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name= は勝利し、偽者を倒したが、その精神を無へと放射することは慈悲としてしなかった。"
         },
         {
             "key": "StopFighting",

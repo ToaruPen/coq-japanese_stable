@@ -6410,16 +6410,6 @@
       "text": "<spice.history.gospels.RitualName."
     },
     {
-      "context": "XRL.World.Parts.XRL.World.Effects.WakingDream",
-      "key": "<spice.commonPhrases.blessed.!random.capitalize> =name= dreamed of a thousand years of peace, and the people of Qud <spice.history.gospels.Celebration.LateSultanate.!random> in <spice.commonPhrases.celebration.!random>.",
-      "text": "<spice.commonPhrases.blessed.!random.capitalize>=name=は千年の平和を夢見、クッドの民は<spice.commonPhrases.celebration.!random>で<spice.history.gospels.Celebration.LateSultanate.!random>した。"
-    },
-    {
-      "context": "XRL.World.Parts.XRL.World.Effects.WakingDream",
-      "key": "<spice.commonPhrases.blessed.!random.capitalize> =name= dreamed of a thousand years of woe, and the people of Qud <spice.history.gospels.Celebration.LateSultanate.!random> in <spice.commonPhrases.woe.!random>.",
-      "text": "<spice.commonPhrases.blessed.!random.capitalize>=name=は千年の災厄を夢見、クッドの民は<spice.commonPhrases.woe.!random>で<spice.history.gospels.Celebration.LateSultanate.!random>した。"
-    },
-    {
       "context": "XRL.World.Parts.XRL.World.Parts.GenerateFriendOrFoe_HEB",
       "key": "<spice.history.gospels.EarlySultanate.location.!random>",
       "text": "<spice.history.gospels.EarlySultanate.location.!random>"

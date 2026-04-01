@@ -38,11 +38,6 @@
       "key": "{{W|Select an item to store}}",
       "context": "XRL.UI.PickItem",
       "text": "{{W|預けるアイテムを選択}}"
-    },
-    {
-      "key": " {{G|[owned by you]}}",
-      "context": "XRL.UI.PickItem",
-      "text": " {{G|[あなたの持ち物]}}"
     }
   ]
 }

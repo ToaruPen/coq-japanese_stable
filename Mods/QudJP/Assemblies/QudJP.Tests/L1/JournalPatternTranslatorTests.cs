@@ -146,6 +146,38 @@ public sealed class JournalPatternTranslatorTests
     }
 
     [Test]
+    public void Translate_AppliesWakingDreamGospelPattern()
+    {
+        WritePatternDictionary(
+            (
+                "^<spice\\.commonPhrases\\.blessed\\.!random\\.capitalize> =name= dreamed of a thousand years of peace, and the people of Qud <spice\\.history\\.gospels\\.Celebration\\.LateSultanate\\.!random> in <spice\\.commonPhrases\\.celebration\\.!random>\\.$",
+                "<spice.commonPhrases.blessed.!random.capitalize>=name=は千年の平和を夢見、クッドの民は<spice.commonPhrases.celebration.!random>で<spice.history.gospels.Celebration.LateSultanate.!random>した。"));
+
+        var translated = JournalPatternTranslator.Translate(
+            "<spice.commonPhrases.blessed.!random.capitalize> =name= dreamed of a thousand years of peace, and the people of Qud <spice.history.gospels.Celebration.LateSultanate.!random> in <spice.commonPhrases.celebration.!random>.");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("<spice.commonPhrases.blessed.!random.capitalize>=name=は千年の平和を夢見、クッドの民は<spice.commonPhrases.celebration.!random>で<spice.history.gospels.Celebration.LateSultanate.!random>した。"));
+    }
+
+    [Test]
+    public void Translate_AppliesAbsorbablePsycheGospelPattern()
+    {
+        WritePatternDictionary(
+            (
+                "^In the month of (.+?) of (.+?), =name= was challenged by <spice\\.commonPhrases\\.pretender\\.!random\\.article> to a duel over the rights of (.+?)\\. =name= won and had the pretender's psyche kibbled and absorbed into (.+?) own\\.$",
+                "{1}年{0}、=name= は {2}の権利を巡り<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name= は勝利し、偽者の精神を刻んで吸収した。"));
+
+        var translated = JournalPatternTranslator.Translate(
+            "In the month of Ut yara Ux of 1012, =name= was challenged by <spice.commonPhrases.pretender.!random.article> to a duel over the rights of the Mechanimists. =name= won and had the pretender's psyche kibbled and absorbed into their own.");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("1012年Ut yara Ux、=name= は the Mechanimistsの権利を巡り<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name= は勝利し、偽者の精神を刻んで吸収した。"));
+    }
+
+    [Test]
     public void GetPatternLoadSummaryForTests_ContainsJournalPatternTranslator()
     {
         WritePatternDictionary(("^Notes: (.+)$", "備考: {0}"));
