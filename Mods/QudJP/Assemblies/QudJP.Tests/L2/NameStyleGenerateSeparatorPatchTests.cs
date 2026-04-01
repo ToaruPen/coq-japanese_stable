@@ -70,6 +70,35 @@ public sealed class NameStyleGenerateSeparatorPatchTests
         });
     }
 
+    [Test]
+    public void TargetMethod_ReturnsNullAndLogs_WhenResolutionThrows()
+    {
+        var method = typeof(NameStyleGenerateSeparatorPatch).GetMethod(
+            "ResolveTargetMethod",
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        Assert.That(method, Is.Not.Null);
+
+        var trace = TestTraceHelper.CaptureTrace(() =>
+        {
+            var result = method!.Invoke(
+                null,
+                new object[]
+                {
+                    (Func<Type?>)(() => throw new InvalidOperationException("boom")),
+                    (Func<Type, MethodInfo?>)(_ => null),
+                });
+
+            Assert.That(result, Is.Null);
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(trace, Does.Contain("NameStyleGenerateSeparatorPatch.TargetMethod failed"));
+            Assert.That(trace, Does.Contain("boom"));
+        });
+    }
+
     private static void RunWithPatch(Action assertion)
     {
         var harmonyId = $"qudjp.tests.name-style.{Guid.NewGuid():N}";

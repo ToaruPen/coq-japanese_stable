@@ -20,20 +20,9 @@ public static class NameStyleGenerateSeparatorPatch
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
     {
-        var targetType = GameTypeResolver.FindType("XRL.Names.NameStyle", "NameStyle");
-        if (targetType is null)
-        {
-            Trace.TraceError("QudJP: {0} target type not found.", Context);
-            return null;
-        }
-
-        var method = AccessTools.Method(targetType, "Generate");
-        if (method is null)
-        {
-            Trace.TraceError("QudJP: {0}.Generate() not found.", Context);
-        }
-
-        return method;
+        return ResolveTargetMethod(
+            () => GameTypeResolver.FindType("XRL.Names.NameStyle", "NameStyle"),
+            targetType => AccessTools.Method(targetType, "Generate"));
     }
 
     public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -187,5 +176,33 @@ public static class NameStyleGenerateSeparatorPatch
     {
         instruction.opcode = OpCodes.Ldc_I4;
         instruction.operand = (int)value;
+    }
+
+    private static MethodBase? ResolveTargetMethod(
+        Func<Type?> targetTypeResolver,
+        Func<Type, MethodInfo?> methodResolver)
+    {
+        try
+        {
+            var targetType = targetTypeResolver();
+            if (targetType is null)
+            {
+                Trace.TraceError("QudJP: {0} target type not found.", Context);
+                return null;
+            }
+
+            var method = methodResolver(targetType);
+            if (method is null)
+            {
+                Trace.TraceError("QudJP: {0}.Generate() not found.", Context);
+            }
+
+            return method;
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.TargetMethod failed: {1}", Context, ex);
+            return null;
+        }
     }
 }
