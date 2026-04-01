@@ -120,7 +120,7 @@ public sealed class WorldModsTextTranslatorTests
         "Flaming: When powered, this weapon deals additional heat damage on hit.",
         "火炎: 通電中、この武器は命中時に追加の熱ダメージを与える。")]
     [TestCase(
-        "Freezing: When powered, this weapon deals  cold damage on hit.",
+        "Freezing: When powered, this weapon deals additional cold damage on hit.",
         "冷却: 通電中、この武器は命中時に追加の冷気ダメージを与える。")]
     [TestCase(
         "Feathered: This item grants the wearer +250 reputation with birds.",
