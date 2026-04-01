@@ -1672,7 +1672,7 @@
         <builder Class="FlagInside"></builder>
       </zone>
 
-      <zone Level="8" x="1" y="1" Name="紡錘の水路" IndefiniteArticle="the" DisableForcedConnetions="Yes">
+      <zone Level="8" x="1" y="1" Name="スピンドルの水路" IndefiniteArticle="the" DisableForcedConnetions="Yes">
         <map FileName="SpindleChannel.rpm"></map>
         <builder Class="FlagInside"></builder>
       </zone>
@@ -1683,7 +1683,7 @@
         <music Track="Music/Among The Tombs of Eaters" />
         <builder Class="FlagInside"></builder>
       </zone>
-      <zone Level="7" x="1" y="1" Name="紡錘の水路" IndefiniteArticle="the" DisableForcedConnetions="Yes">
+      <zone Level="7" x="1" y="1" Name="スピンドルの水路" IndefiniteArticle="the" DisableForcedConnetions="Yes">
         <map FileName="SpindleChannel.rpm"></map>
         <builder Class="FlagInside"></builder>
       </zone>
@@ -2004,7 +2004,7 @@
         <part Name="AmbientStabilization" Strength="40" />
       </zone>
 
-      <zone Level="0-14" x="1" y="1" Name="紡錘の水路" IndefiniteArticle="the" DisableForcedConnections="Yes">   <map FileName="SpindleChannel.rpm"></map>
+      <zone Level="0-14" x="1" y="1" Name="スピンドルの水路" IndefiniteArticle="the" DisableForcedConnections="Yes">   <map FileName="SpindleChannel.rpm"></map>
         <map FileName="SpindleChannel.rpm"></map>
         <builder Class="FlagInside"></builder>
       </zone>

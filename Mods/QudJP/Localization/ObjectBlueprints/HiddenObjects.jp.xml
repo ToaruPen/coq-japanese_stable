@@ -529,9 +529,9 @@
     <part Name="AnimatedMaterialGreenFire" />
   </object>
   <object Name="ChevronWall" Inherits="BaseWallMetal" Replace="true">
-    <part Name="Render" DisplayName="クロムのチブル" ColorString="&amp;c^y" TileColor="&amp;c^y" DetailColor="k" Occluding="true" />
+    <part Name="Render" DisplayName="クロームのチブル" ColorString="&amp;c^y" TileColor="&amp;c^y" DetailColor="k" Occluding="true" />
     <part Name="Physics" Weight="10000" />
-    <part Name="Description" Short="アズルムがアンドロメダの採石場から星帆で運ばれ、クロムで鍛えられてチブルの儀礼形状に彫られ、天蓋を支える控え壁となった。" />
+    <part Name="Description" Short="アズルムがアンドロメダの採石場から星帆で運ばれ、クロームで鍛えられてチブルの儀礼形状に彫られ、天蓋を支える控え壁となった。" />
     <stat Name="AV" Value="50" />
     <stat Name="Hitpoints" Value="10000" />
     <tag Name="PaintedWall" Value="sw_chevron" />
@@ -698,9 +698,9 @@
     <tag Name="ExcludeFromDynamicEncounters" />
   </object>
   <object Name="Blueshifted Chrome" Inherits="BaseWallMetal" Replace="true">
-    <part Name="Render" DisplayName="ブルーシフトしたクロム" ColorString="&amp;b^C" TileColor="&amp;b^C" DetailColor="k" Occluding="true" />
+    <part Name="Render" DisplayName="ブルーシフトしたクローム" ColorString="&amp;b^C" TileColor="&amp;b^C" DetailColor="k" Occluding="true" />
     <part Name="Physics" Weight="10000" />
-    <part Name="Description" Short="光が彫刻された装飾槽にきらめき、液体を新鮮で流動的に保つ。素材のクロム鉱石は観測者の座標へ押しやられ、静止エンジンで色を封じられている。" />
+    <part Name="Description" Short="光が彫刻された装飾槽にきらめき、液体を新鮮で流動的に保つ。素材のクローム鉱石は観測者の座標へ押しやられ、静止エンジンで色を封じられている。" />
     <stat Name="AV" Value="50" />
     <stat Name="Hitpoints" Value="10000" />
     <tag Name="PaintedWall" Value="walls_disk" />
@@ -785,7 +785,7 @@
     <xtagGrammar iArticle="" />
   </object>
   <object Name="Mover Baetyl" Inherits="Baetyl" Replace="true">
-    <part Name="Render" DisplayName="操縦のベタイル" ColorString="&amp;m" TileColor="&amp;m" />
+    <part Name="Render" DisplayName="操縦のベテル" ColorString="&amp;m" TileColor="&amp;m" />
     <part Name="Description" Short="滑らかな石の表面にガラスのレンズが成長し、神聖な数学の熱が空気を燃やしてから Q.E.D. で冷まされた痕跡を覆う。電磁の星空の上で電気仕掛けの心臓が脈打ち、地理座標への服従を瞬きで示す。" />
     <part Name="VehicleControl" />
     <tag Name="ExcludeFromDynamicEncounters" />
@@ -1027,11 +1027,11 @@
     <tag Name="ExcludeFromDynamicEncounters" />
   </object>
   <object Name="Starship Ornate Potted Plant 2" Inherits="Ornate Potted Plant 2" Replace="true">
-    <part Name="Description" Short="ねっとりした緑の葉片が古い大釜からクロム切子の縁を越えて広がる。土に育つ従兄弟と同じように息をし、アマランスの種で遺伝子を書き換えられている。" />
+    <part Name="Description" Short="ねっとりした緑の葉片が古い大釜からクローム切子の縁を越えて広がる。土に育つ従兄弟と同じように息をし、アマランスの種で遺伝子を書き換えられている。" />
     <tag Name="ExcludeFromDynamicEncounters" />
   </object>
   <object Name="Starship Ornate Potted Plant 3" Inherits="Ornate Potted Plant 3" Replace="true">
-    <part Name="Description" Short="ねっとりした緑の葉片が古い大釜からクロム切子の縁を越えて広がる。土に育つ従兄弟と同じように息をし、アマランスの種で遺伝子を書き換えられている。" />
+    <part Name="Description" Short="ねっとりした緑の葉片が古い大釜からクローム切子の縁を越えて広がる。土に育つ従兄弟と同じように息をし、アマランスの種で遺伝子を書き換えられている。" />
     <tag Name="ExcludeFromDynamicEncounters" />
   </object>
   <object Name="Starship1 Power Core" Inherits="SolidHighTechInstallation" Replace="true">
@@ -1041,7 +1041,7 @@
   </object>
   <object Name="Starship1 Status Panel" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="ステータスパネル" Tile="Furniture/starship-1-status-panel.png" ColorString="&amp;y" TileColor="&amp;y" DetailColor="W" />
-    <part Name="Description" Short="真空ガラスとクロムのフィールドにジロジロとダイオードが点滅し、ヘドロンの順序を伝える。" />
+    <part Name="Description" Short="真空ガラスとクロームのフィールドにジロジロとダイオードが点滅し、ヘドロンの順序を伝える。" />
     <stat Name="Hitpoints" Value="5000" />
     <part Name="Examiner" Complexity="4" />
     <part Name="ElectricalPowerTransmission" ChargeRate="100" IsConsumer="true" />
@@ -1468,7 +1468,7 @@
   </object>
   <object Name="Engine Crabs" Inherits="BaseCrab" Replace="true">
     <part Name="Render" DisplayName="エンジン・クラブ" Tile="creatures/tiny-crabs-1.png" ColorString="&amp;c" DetailColor="C" />
-    <part Name="Description" Short="クロムの甲殻を持つ小さな十脚はヘドロンエンジンの寄生虫として星々を旅し、トーチの排液を飲み導線をかじった。退役船のノズルから噴き出してスクラップ場へ滑り着いた今は、余生の庭について思案している。" />
+    <part Name="Description" Short="クロームの甲殻を持つ小さな十脚はヘドロンエンジンの寄生虫として星々を旅し、トーチの排液を飲み導線をかじった。退役船のノズルから噴き出してスクラップ場へ滑り着いた今は、余生の庭について思案している。" />
     <part Name="Brain" Hostile="False" Calm="True" Factions="Crabs-100" MaxWanderRadius="3" />
     <builder Name="RandomTile" Tiles="Creatures/tiny-crabs-1.png,Creatures/tiny-crabs-2.png" />
     <stat Name="AV" Value="1" />
@@ -1686,7 +1686,7 @@
 
   <object Name="Chiliad Slynth Mechanimists" Inherits="BaseChiliadSlynth" Replace="true">
     <part Name="Render" DisplayName="スリンスの聖歌師" Tile="Creatures/chiliad-slynth-stilt.png" ColorString="&amp;W" DetailColor="W" />
-    <part Name="Description" Short="花の民はクロマ教会のダイオード・フードを被り、賛歌の拍に合わせて乾いた花弁を擦り合わせて音を立てる。磨かれたクロムのブローチが その の葉を首元で挟んでいる。" />
+    <part Name="Description" Short="花の民はクロマ教会のダイオード・フードを被り、賛歌の拍に合わせて乾いた花弁を擦り合わせて音を立てる。磨かれたクロームのブローチが その の葉を首元で挟んでいる。" />
     <inventoryobject Blueprint="@Trinkets 1" Number="1-2" />
     <inventoryobject Blueprint="Canticles3" />
     <tag Name="ExcludeFromDynamicEncounters" />

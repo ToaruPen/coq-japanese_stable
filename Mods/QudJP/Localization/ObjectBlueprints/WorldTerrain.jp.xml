@@ -381,7 +381,7 @@
   </object>
 
 <object Name="TerrainJoppa" Inherits="Terrain" Replace="true">
-    <part Name="Render" DisplayName="ヨッパ" RenderString="216" Tile="Terrain/sw_joppa.bmp" ColorString="&amp;w^k" DetailColor="y" />
+    <part Name="Render" DisplayName="ジョッパ" RenderString="216" Tile="Terrain/sw_joppa.bmp" ColorString="&amp;w^k" DetailColor="y" />
     <part Name="Description" Short="緑の籾殻に紛れた蟻のように、農夫たちは塩粉を散らす大地から最後の清らかな水気を吸い尽くす。" />
     <xtagGrammar Proper="true" massNoun="false" />
     <tag Name="NoBiomes" Value="1" />

@@ -1523,7 +1523,7 @@
     <tag Name="DynamicObjectsTable:Trinkets" />
   </object>
   <object Name="Joppa Recoiler" Inherits="BaseRecoiler" Replace="true">
-    <part Name="Render" DisplayName="ヨッパ・リコイラー" />
+    <part Name="Render" DisplayName="ジョッパ・リコイラー" />
     <part Name="Teleporter" DestinationZone="JoppaWorld.11.22.1.1.10" DestinationX="37" DestinationY="23" />
     <part Name="TinkerItem" CanBuild="false" />
     <part Name="Commerce" Value="25" />
@@ -3531,7 +3531,7 @@
     <part Name="Commerce" Value="750" />
     <part Name="EnergyAmmoLoader" ChargeUse="500" ProjectileObject="ProjectileFreezeRay" />
     <part Name="EnergyCellSocket" SlotType="EnergyCell" />
-    <part Name="Description" Short="気化した冷却材がシフォンの管をたなびき、広い平面の銃身クロムに露を結ぶ。氷片で欠けた銃口から冷気が空気へこぼれ落ちる。" />
+    <part Name="Description" Short="気化した冷却材がシフォンの管をたなびき、広い平面の銃身クロームに露を結ぶ。氷片で欠けた銃口から冷気が空気へこぼれ落ちる。" />
     <part Name="Examiner" Complexity="5" />
     <part Name="TinkerItem" Bits="12345" CanDisassemble="true" CanBuild="true" />
     <part Name="Metal" />
@@ -3697,7 +3697,7 @@
     <part Name="Examiner" Unknown="UnknownStrangeTubes" Alternate="UnknownStrangeTubes" Complexity="4" />
     <part Name="MissileWeapon" AnimationDelay="0" Skill="HeavyWeapons" ShotsPerAction="6" AmmoPerAction="6" ShotsPerAnimation="1" WeaponAccuracy="16" RangeIncrement="6" />
     <part Name="MagazineAmmoLoader" ProjectileObject="ProjectileChaingunBullet" AmmoPart="AmmoSlug" MaxAmmo="42" />
-    <part Name="Description" Short="クロムの鎖が自巻きフライホイールをぐるりと取り巻き、油の露が点々と付いている。長い銃身の一本には鋼の傷痕が刻まれている。" />
+    <part Name="Description" Short="クロームの鎖が自巻きフライホイールをぐるりと取り巻き、油の露が点々と付いている。長い銃身の一本には鋼の傷痕が刻まれている。" />
     <part Name="Metal" />
     <part Name="TinkerItem" Bits="004" CanDisassemble="true" CanBuild="true" />
     <tag Name="Tier" Value="4" />
@@ -3711,7 +3711,7 @@
     <part Name="MissileWeapon" Skill="HeavyWeapons" NoWildfire="false" MaxRange="80" AnimationDelay="5" AmmoChar="ë" ShotsPerAction="1" AmmoPerAction="1" ShotsPerAnimation="1" WeaponAccuracy="5" />
     <part Name="Commerce" Value="490" />
     <part Name="MagazineAmmoLoader" ProjectileObject="" AmmoPart="AmmoGrenade" MaxAmmo="1" />
-    <part Name="Description" Short="発射ピンが鋼を弾くカチリという音だけで獣たちは身をすくめる。クロムの照準器が放物線の弧をなだめる。" />
+    <part Name="Description" Short="発射ピンが鋼を弾くカチリという音だけで獣たちは身をすくめる。クロームの照準器が放物線の弧をなだめる。" />
     <part Name="Examiner" Unknown="UnknownStrangeTubes" Alternate="UnknownStrangeTubes" Complexity="3" />
     <part Name="TinkerItem" Bits="0023" CanDisassemble="true" CanBuild="true" />
     <part Name="Metal" />
@@ -3791,7 +3791,7 @@
     <part Name="LeakWhenBroken" />
     <part Name="AIShootCooldown" Cooldown="2d4" />
     <part Name="Corpse" CorpseChance="100" CorpseBlueprint="AcidGas60" />
-    <part Name="Description" Short="手押しポンプがクロムのカニスターに差し込まれ、落葉した植物のレリーフが刻まれている。" />
+    <part Name="Description" Short="手押しポンプがクロームのカニスターに差し込まれ、落葉した植物のレリーフが刻まれている。" />
     <part Name="Examiner" Alternate="UnknownRifle" Complexity="4" />
     <part Name="TinkerItem" Bits="0024" CanDisassemble="true" CanBuild="true" />
     <part Name="Metal" />
@@ -3810,7 +3810,7 @@
     <part Name="LeakWhenBroken" />
     <part Name="AIShootCooldown" Cooldown="2d4" />
     <part Name="Corpse" CorpseChance="100" CorpseBlueprint="AcidGas60" />
-    <part Name="Description" Short="手押しポンプがクロムのカニスターに差し込まれ、腐れ落ちる菌類のレリーフが刻まれている。" />
+    <part Name="Description" Short="手押しポンプがクロームのカニスターに差し込まれ、腐れ落ちる菌類のレリーフが刻まれている。" />
     <part Name="Examiner" Alternate="UnknownRifle" Complexity="4" />
     <part Name="TinkerItem" Bits="0024" CanDisassemble="true" CanBuild="true" />
     <part Name="Metal" />
@@ -3955,7 +3955,7 @@
     <part Name="Commerce" Value="3200" />
     <part Name="MagazineAmmoLoader" ProjectileObject="ProjectileSwarmRocket" AmmoPart="AmmoMissile" MaxAmmo="100" />
     <intproperty Name="IntegratedWeaponHostShots" Value="1" />
-    <part Name="Description" Short="クロムと石英で塵をまぶしたハニカムが照準面に据えられ、すべてを滅ぼすと脅す。棒鋼の溶接がその重量にたわみ、六角の巣穴からロケットヘッドが覗く。" />
+    <part Name="Description" Short="クロームと石英で塵をまぶしたハニカムが照準面に据えられ、すべてを滅ぼすと脅す。棒鋼の溶接がその重量にたわみ、六角の巣穴からロケットヘッドが覗く。" />
     <part Name="Examiner" Unknown="UnknownStrangeTubes" Alternate="UnknownStrangeTubes" Complexity="8" />
     <part Name="TinkerItem" Bits="0678" CanDisassemble="true" CanBuild="false" />
     <part Name="ModGigantic" />
@@ -4267,7 +4267,7 @@
   </object>
   <object Name="Arc Winder" Inherits="BasePistol" Replace="true">
     <part Name="Render" DisplayName="アークワインダー" ColorString="&amp;W" Tile="Items/sw_techpistol_6.bmp" TileColor="&amp;c" DetailColor="W" />
-    <part Name="Description" Short="螺旋クランクがクロムのケースに収まった回路を閉じ、二つの接触端から電荷を吐き出す。黄色く輝く先端を煙がくるりと舞う。" />
+    <part Name="Description" Short="螺旋クランクがクロームのケースに収まった回路を閉じ、二つの接触端から電荷を吐き出す。黄色く輝く先端を煙がくるりと舞う。" />
     <part Name="Physics" Weight="4" />
     <part Name="MissileWeapon" Skill="Pistol" AmmoChar="&amp;W*" ShotsPerAction="1" AmmoPerAction="1" ShotsPerAnimation="1" WeaponAccuracy="4" />
     <part Name="Commerce" Value="750" />
@@ -4377,11 +4377,11 @@
     <tag Name="ImpactSound" Value="Sounds/Damage/sfx_damage_elemental_cold" />
   </object>
   <object Name="Borderlands Revolver" Inherits="BaseMagazinePistol" Replace="true">
-    <part Name="Render" DisplayName="クロム・リボルバー" Tile="items/sw_revolver.bmp" ColorString="&amp;y" />
+    <part Name="Render" DisplayName="クローム・リボルバー" Tile="items/sw_revolver.bmp" ColorString="&amp;y" />
     <part Name="Commerce" Value="50" />
     <part Name="MissileWeapon" AnimationDelay="0" Skill="Pistol" ShotsPerAction="1" AmmoPerAction="1" ShotsPerAnimation="1" WeaponAccuracy="12" RangeIncrement="6" />
     <part Name="MagazineAmmoLoader" ProjectileObject="ProjectileBorderlandsRevolverShell" AmmoPart="AmmoSlug" MaxAmmo="6" />
-    <part Name="Description" Short="塩と煤で曇ったクロムのシリンダーが月時を刻み、ブラインストークのハンドパネルの上にはデルフィア裔のグリップメダリオンが輝いている。" />
+    <part Name="Description" Short="塩と煤で曇ったクロームのシリンダーが月時を刻み、ブラインストークのハンドパネルの上にはデルフィア裔のグリップメダリオンが輝いている。" />
     <part Name="Metal" />
     <part Name="TinkerItem" Bits="002" CanDisassemble="true" CanBuild="true" />
     <tag Name="TurretName" Value="sixgun turret" />
@@ -4412,7 +4412,7 @@
     <part Name="Commerce" Value="150" />
     <part Name="MissileWeapon" AnimationDelay="0" Skill="Pistol" ShotsPerAction="4" AmmoPerAction="4" ShotsPerAnimation="1" WeaponAccuracy="16" RangeIncrement="6" />
     <part Name="MagazineAmmoLoader" ProjectileObject="ProjectileSlugThrower" AmmoPart="AmmoSlug" MaxAmmo="24" />
-    <part Name="Description" Short="錫のように細いクリップが傷だらけのクロム製マガジンウェルにぶら下がっている。" />
+    <part Name="Description" Short="錫のように細いクリップが傷だらけのクローム製マガジンウェルにぶら下がっている。" />
     <part Name="Metal" />
     <part Name="TinkerItem" Bits="0014" CanDisassemble="true" CanBuild="true" />
     <tag Name="TurretName" Value="miniature chaingun turret" />
@@ -4486,7 +4486,7 @@
   </object>
   <object Name="High-Voltage Arc Winder" Inherits="Arc Winder" Replace="true">
     <part Name="Render" DisplayName="{{W|ハイボルテージ}}アークワインダー" ColorString="&amp;Y" DetailColor="Y" />
-    <part Name="Description" Short="螺旋クランクがクロムケースに収まった回路を閉じ、莫大な電荷を二つの接触端から吐き出す。白熱の輝きのまわりを煙が螺旋に舞う。" />
+    <part Name="Description" Short="螺旋クランクがクロームケースに収まった回路を閉じ、莫大な電荷を二つの接触端から吐き出す。白熱の輝きのまわりを煙が螺旋に舞う。" />
     <part Name="Commerce" Value="1250" />
     <part Name="ElectricalDischargeLoader" ChargeUse="425" />
     <part Name="Examiner" Complexity="7" Difficulty="1" />
@@ -4554,7 +4554,7 @@
     <part Name="Commerce" Value="50" />
     <part Name="MissileWeapon" Skill="Rifle" NoWildfire="true" ShotsPerAction="8" AmmoPerAction="1" ShotsPerAnimation="8" WeaponAccuracy="45" RangeIncrement="6" />
     <part Name="MagazineAmmoLoader" ProjectileObject="ProjectileShotgunPellet" AmmoPart="AmmoShotgunShell" MaxAmmo="1" />
-    <part Name="Description" Short="クロムのリブの下にナッツウッドのフォアエンドが垂れ下がり、ポンプを引けば恍惚のクリックが迸る。" />
+    <part Name="Description" Short="クロームのリブの下にナッツウッドのフォアエンドが垂れ下がり、ポンプを引けば恍惚のクリックが迸る。" />
     <part Name="Metal" />
     <part Name="TinkerItem" Bits="003" CanDisassemble="true" CanBuild="true" />
     <tag Name="Tier" Value="3" />
@@ -4731,7 +4731,7 @@
     <part Name="Commerce" Value="500" />
     <part Name="MissileWeapon" AnimationDelay="0" Skill="Pistol" ShotsPerAction="1" AmmoPerAction="1" ShotsPerAnimation="1" WeaponAccuracy="5" RangeIncrement="6" />
     <part Name="MagazineAmmoLoader" ProjectileObject="ProjectileRuinsOfHouseIsnerShell" AmmoPart="AmmoSlug" MaxAmmo="7" />
-    <part Name="Description" Short="真鍮とクロムで仕立てられたこの拳銃の工芸は息を呑む。王木のグリップが掌を空気の抜けた抱擁へ誘い、ハンマーはマイクロインチ単位で親指に沿い、サイトは絹が滑るように視線を銃身の先へ導く。全体に枯れ蔦が刻まれ、銃口には血が口づけしている。" />
+    <part Name="Description" Short="真鍮とクロームで仕立てられたこの拳銃の工芸は息を呑む。王木のグリップが掌を空気の抜けた抱擁へ誘い、ハンマーはマイクロインチ単位で親指に沿い、サイトは絹が滑るように視線を銃身の先へ導く。全体に枯れ蔦が刻まれ、銃口には血が口づけしている。" />
     <part Name="RulesDescription" Text="+1 Ego この武器でクリティカルヒットを与えると、貫通ロールに追加で+4のボーナスを得る。最後の弾で射撃すると、その射撃は必中になり、必ずクリティカルヒットになる。" />
     <part Name="TinkerItem" Bits="2222" CanDisassemble="true" CanBuild="false" />
     <part Name="RuinOfHouseIsner" />
@@ -4889,7 +4889,7 @@
     <part Name="Render" DisplayName="{{w|睡眠}}ガスグレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;w" />
     <part Name="GasGrenade" Density="80" GasObject="SleepGas" />
     <part Name="Commerce" Value="20" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。ラグには夢露の湿り気が宿る。" />
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。ラグには夢露の湿り気が宿る。" />
     <part Name="MissileStatusColor" Color="w" />
     <tag Name="Mark" Value="2" />
     <tag Name="Tier" Value="3" />
@@ -4925,7 +4925,7 @@
     <part Name="Render" DisplayName="{{g|毒}}ガスグレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;g" />
     <part Name="GasGrenade" Density="80" GasObject="PoisonGas" />
     <part Name="Commerce" Value="30" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。危険を示す骨章が刻まれている。" />
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。危険を示す骨章が刻まれている。" />
     <part Name="MissileStatusColor" Color="g" />
     <tag Name="Mark" Value="2" />
     <tag Name="Tier" Value="3" />
@@ -4961,7 +4961,7 @@
     <part Name="Render" DisplayName="スタンガスグレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;c" />
     <part Name="GasGrenade" Density="80" GasObject="StunGas" />
     <part Name="Commerce" Value="30" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。キャップの縁には鋭い刃が並ぶ。" />
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。キャップの縁には鋭い刃が並ぶ。" />
     <part Name="MissileStatusColor" Color="c" />
     <tag Name="Mark" Value="2" />
     <tag Name="Tier" Value="3" />
@@ -4997,7 +4997,7 @@
     <part Name="Render" DisplayName="{{G|酸}}ガスグレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;G" />
     <part Name="GasGrenade" Density="80" GasObject="AcidGas" />
     <part Name="Commerce" Value="30" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。内部で泡立つ音がする。" />
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。内部で泡立つ音がする。" />
     <part Name="MissileStatusColor" Color="G" />
     <tag Name="Mark" Value="2" />
     <tag Name="Tier" Value="3" />
@@ -5033,7 +5033,7 @@
     <part Name="Render" DisplayName="フラッシュバンググレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;Y" />
     <part Name="FlashbangGrenade" Radius="3" Duration="2d4+4" />
     <part Name="Commerce" Value="30" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。目の図が刻まれている。" />
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。目の図が刻まれている。" />
     <part Name="MissileStatusColor" Color="Y" />
     <tag Name="Mark" Value="2" />
     <tag Name="Tier" Value="3" />
@@ -5069,7 +5069,7 @@
     <part Name="Render" DisplayName="{{R|熱線}}グレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;R" />
     <part Name="ThermalGrenade" TemperatureDelta="1000" />
     <part Name="Commerce" Value="30" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。触れると熱い。" />
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。触れると熱い。" />
     <part Name="MissileStatusColor" Color="R" />
     <tag Name="Mark" Value="2" />
     <tag Name="Tier" Value="3" />
@@ -5104,7 +5104,7 @@
     <part Name="Render" DisplayName="{{C|凍結}}グレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;C" />
     <part Name="ThermalGrenade" TemperatureDelta="-2000" />
     <part Name="Commerce" Value="30" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。触れると冷たい。" />
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。触れると冷たい。" />
     <part Name="MissileStatusColor" Color="C" />
     <tag Name="Mark" Value="2" />
     <tag Name="Tier" Value="3" />
@@ -5138,7 +5138,7 @@
     <part Name="Render" DisplayName="{{W|高性能爆薬}}グレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;W" />
     <part Name="HEGrenade" Force="7000" Damage="5d6" />
     <part Name="Commerce" Value="30" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。外向きの矢束が刻まれている。" />
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。外向きの矢束が刻まれている。" />
     <part Name="MissileStatusColor" Color="W" />
     <tag Name="Mark" Value="2" />
     <tag Name="Tier" Value="3" />
@@ -5170,7 +5170,7 @@
   <object Name="EMPGrenade2" Inherits="Grenade" Replace="true">
     <part Name="Render" DisplayName="{{B|EMP}}グレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;B" />
     <part Name="EMPGrenade" Radius="4" Duration="2d2+5" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。稲妻模様が刻まれている。" />
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。稲妻模様が刻まれている。" />
     <part Name="MissileStatusColor" Color="B" />
     <part Name="TinkerItem" Bits="001" />
     <tag Name="DetonatedSound" Value="Spark2" />
@@ -5206,7 +5206,7 @@
     <part Name="Render" DisplayName="{{normal|常態ガス}}グレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;K" />
     <part Name="GasGrenade" Density="80" GasObject="NormalityGas" />
     <part Name="Commerce" Value="30" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。殻には格子細工が刻まれている。" />
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。殻には格子細工が刻まれている。" />
     <part Name="MissileStatusColor" Color="K" />
     <part Name="TinkerItem" Bits="002" />
     <tag Name="Mark" Value="2" />
@@ -5240,7 +5240,7 @@
   <object Name="StasisGrenade2" Inherits="Grenade" Replace="true">
     <part Name="Render" DisplayName="{{m|静止}}グレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;C" />
     <part Name="DeploymentGrenade" Blueprint="Stasisfield" Radius="1" Duration="2d3+3" ActivationVerb="detonate" BlockedBySolid="false" BlockedByNonEmpty="false" DustPuff="false" DustPuffEach="false" IsRealityDistortionBased="true" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。停止の象徴が刻まれている。" />
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。停止の象徴が刻まれている。" />
     <part Name="MissileStatusColor" Color="m" />
     <part Name="TinkerItem" Bits="001" />
     <tag Name="Mark" Value="2" />
@@ -5273,7 +5273,7 @@
   <object Name="SunderGrenade2" Inherits="Grenade" Replace="true">
     <part Name="Render" DisplayName="{{resonance|共振}}グレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;r" />
     <part Name="SunderGrenade" Radius="3" Level="4" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。特有のパチパチという唸りを放つ。
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。特有のパチパチという唸りを放つ。
           {{C|構造物に4d100+20ダメージ。}}
           {{C|非構造物に4d10+8ダメージ。}}" />
     <part Name="MissileStatusColor" Color="r" />
@@ -5310,7 +5310,7 @@
     <part Name="Render" DisplayName="{{plasma|プラズマ}}グレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;G" />
     <part Name="GasGrenade" Density="80" GasObject="Plasma" Level="10" />
     <part Name="Commerce" Value="80" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。内部で泡立ち膨張している。" />
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。内部で泡立ち膨張している。" />
     <part Name="MissileStatusColor" Color="G" />
     <part Name="TinkerItem" Bits="024" />
     <tag Name="Mark" Value="2" />
@@ -5344,7 +5344,7 @@
     <part Name="Render" DisplayName="{{defoliant|落葉剤}}グレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;w" />
     <part Name="GasGrenade" Density="400" GasObject="DefoliantGas" />
     <part Name="Commerce" Value="30" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。枯れゆく植物の図像が刻まれている。" />
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。枯れゆく植物の図像が刻まれている。" />
     <part Name="MissileStatusColor" Color="W" />
     <part Name="TinkerItem" Bits="002" />
     <tag Name="Mark" Value="2" />
@@ -5376,7 +5376,7 @@
     <part Name="Render" DisplayName="{{fungicide|殺菌剤}}グレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;m" />
     <part Name="GasGrenade" Density="400" GasObject="FungicideGas" />
     <part Name="Commerce" Value="30" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。枯死する菌類の図像が刻まれている。" />
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。枯死する菌類の図像が刻まれている。" />
     <part Name="MissileStatusColor" Color="M" />
     <part Name="TinkerItem" Bits="002" />
     <tag Name="Mark" Value="2" />
@@ -5412,7 +5412,7 @@
     <part Name="Physics" Weight="2" />
     <part Name="Commerce" Value="40" />
     <part Name="DeploymentGrenade" Blueprint="Microturret" Count="2" Radius="2" RealRadius="true" LoyalToThrower="true" ActivationVerb="deploy" BlockedBySolid="true" BlockedByNonEmpty="true" DustPuff="true" DustPuffEach="true" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。レバーは多方向のバネ仕掛け機構で支えられている。" />
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。レバーは多方向のバネ仕掛け機構で支えられている。" />
     <part Name="MissileStatusColor" Color="C" />
     <part Name="TinkerItem" Bits="024" />
     <tag Name="Mark" Value="2" />
@@ -5447,7 +5447,7 @@
   </object>
   <object Name="GravityGrenade2" Inherits="Grenade" Replace="true">
     <part Name="Render" DisplayName="{{K|重力}}グレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;K" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。内向きの矢束が刻まれている。" />
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。内向きの矢束が刻まれている。" />
     <part Name="Commerce" Value="60" />
     <part Name="GravityGrenade" Force="8000" Radius="5" ForceDropoff="1250" />
     <part Name="MissileStatusColor" Color="K" />
@@ -5487,7 +5487,7 @@
     <part Name="Render" DisplayName="{{b|時間延伸}}グレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;b" />
     <part Name="Commerce" Value="40" />
     <part Name="TimeDilationGrenade" Level="5" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。ラグにはダイヤル目盛りが並ぶ。" />
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。ラグにはダイヤル目盛りが並ぶ。" />
     <part Name="MissileStatusColor" Color="b" />
     <part Name="TinkerItem" Bits="024" />
     <tag Name="Mark" Value="2" />
@@ -5527,7 +5527,7 @@
     <part Name="Render" DisplayName="{{glittering|煌めき}}グレネード mk II" Tile="Items/sw_grenade_mkii.bmp" ColorString="&amp;M" />
     <part Name="GasGrenade" Density="400" GasObject="GlitterGas" />
     <part Name="Commerce" Value="30" />
-    <part Name="Description" Short="クロムのレバーでワッフル状の六角金属群を挟み込んである。柔らかな光で煌めく。" />
+    <part Name="Description" Short="クロームのレバーでワッフル状の六角金属群を挟み込んである。柔らかな光で煌めく。" />
     <part Name="MissileStatusColor" Color="M" />
     <part Name="TinkerItem" Bits="001" CanBuild="false" />
     <tag Name="Mark" Value="2" />
@@ -5966,7 +5966,7 @@
     <part Name="Armor" AV="3" DV="-2" WornOn="Body" />
     <part Name="Render" DisplayName="鋲打ち革鎧" RenderString="]" Tile="Items/sw_leather_armor.bmp" ColorString="&amp;w" DetailColor="y" />
     <part Name="Commerce" Value="5" />
-    <part Name="Description" Short="ごみの海で釣り上げた謎のクロム杭が、煮締めた山羊革の楔板にびっしり打ち込まれている。" />
+    <part Name="Description" Short="ごみの海で釣り上げた謎のクローム杭が、煮締めた山羊革の楔板にびっしり打ち込まれている。" />
     <part Name="Physics" Weight="20" Organic="true" />
     <part Name="Metal" />
     <tag Name="EquipSound" Value="sfx_equip_armor_leather" />
@@ -5994,7 +5994,7 @@
     <part Name="Armor" AV="0" DV="2" WornOn="Body" />
     <part Name="Render" DisplayName="石板色のフロック" RenderString="]" />
     <part Name="Commerce" Value="6" />
-    <part Name="Description" Short="亜麻を体に合わせて裁ち、ディカリプタスの葉と鉄粉の染浴に浸してクロムめいた光沢を出した。" />
+    <part Name="Description" Short="亜麻を体に合わせて裁ち、ディカリプタスの葉と鉄粉の染浴に浸してクロームめいた光沢を出した。" />
     <part Name="Physics" Weight="3" />
     <tag Name="Tier" Value="2" />
   </object>
@@ -6083,7 +6083,7 @@
     <part Name="Armor" AV="0" DV="3" WornOn="Body" />
     <part Name="Render" DisplayName="石板色のマントル" RenderString="]" />
     <part Name="Commerce" Value="6" />
-    <part Name="Description" Short="布をディカリプタスの葉と鉄屑の染浴でクロム色に染め、肩を覆うフリル付きスカートに仕立てた。" />
+    <part Name="Description" Short="布をディカリプタスの葉と鉄屑の染浴でクローム色に染め、肩を覆うフリル付きスカートに仕立てた。" />
     <part Name="Physics" Weight="3" />
     <tag Name="Tier" Value="4" />
   </object>
@@ -6417,7 +6417,7 @@
   </object>
   <object Name="Chrome Mantle" Inherits="BaseCloak" Replace="true">
     <part Name="Armor" Ego="1" AV="0" DV="2" Elec="8" Cold="8" Heat="8" Acid="8" WornOn="Back" />
-    <part Name="Render" DisplayName="{{c|クロム}}のマントル" Tile="Items/sw_cloak_fancy.bmp" ColorString="&amp;c" DetailColor="C" RenderString="]" />
+    <part Name="Render" DisplayName="{{c|クローム}}のマントル" Tile="Items/sw_cloak_fancy.bmp" ColorString="&amp;c" DetailColor="C" RenderString="]" />
     <part Name="Commerce" Value="300" />
     <part Name="Description" Short="肩布を電路のように分岐しながら煌めくステッチが走る。" />
     <part Name="Physics" Weight="3" />
@@ -6605,7 +6605,7 @@
   </object>
   <object Name="Gigantic Chassis Plate" Inherits="BaseCloak" Replace="true">
     <part Name="Render" DisplayName="{{c|シャーシプレート}}" ColorString="&amp;c" RenderString="]" DetailColor="C" Tile="Items/sw_chassis_plate.bmp" />
-    <part Name="Description" Short="焼いて圧延した巨大なクロムの板を掘削車から外し、星帆のようにその怪物的な使い手を影で包む。" />
+    <part Name="Description" Short="焼いて圧延した巨大なクロームの板を掘削車から外し、星帆のようにその怪物的な使い手を影で包む。" />
     <part Name="Armor" AV="6" DV="-2" Cold="20" Heat="20" />
     <part Name="Physics" Weight="300" />
     <tag Name="Tier" Value="8" />
@@ -7452,7 +7452,7 @@
 
 <object Name="Precinct Navigator" Inherits="BaseUtilityBracelet" Replace="true">
     <part Name="Render" DisplayName="プリシンクトナビゲーター" RenderString="]" Tile="Items/sw_cuff_tech.bmp" ColorString="&amp;W" TileColor="&amp;c" DetailColor="W" />
-    <part Name="Description" Short="ガラスの弦月に格子と赤い点が描かれ、かつて秩序立っていたクロムの街路を示す長方形は、時空を突き破った節くれだつ根のように裂けている。" />
+    <part Name="Description" Short="ガラスの弦月に格子と赤い点が描かれ、かつて秩序立っていたクロームの街路を示す長方形は、時空を突き破った節くれだつ根のように裂けている。" />
     <part Name="Physics" Weight="1" />
     <part Name="Commerce" Value="40" />
     <part Name="EnergyCellSocket" SlotType="EnergyCell" />
@@ -10255,7 +10255,7 @@
   </object>
 
 <object Name="Canticles3" Inherits="Book" Replace="true">
-    <part Name="Render" DisplayName="{{W|クロムの雅歌 第17-24節}}" ColorString="&amp;c" RenderString="=" RenderLayer="5" Tile="Items/sw_book_1.bmp" TileColor="&amp;c" DetailColor="W" />
+    <part Name="Render" DisplayName="{{W|クロームの雅歌 第17-24節}}" ColorString="&amp;c" RenderString="=" RenderLayer="5" Tile="Items/sw_book_1.bmp" TileColor="&amp;c" DetailColor="W" />
     <part Name="Description" Short="" />
     <part Name="Book" ID="Canticles3" />
     <part Name="Commerce" Value="50" />

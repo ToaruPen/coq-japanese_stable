@@ -458,7 +458,7 @@
   </object>
 
 <object Name="Verdigris" Inherits="BaseWallMetal" Replace="true">
-    <part Name="Render" DisplayName="曇ったクロム" RenderString="177" ColorString="&amp;c^g" TileColor="&amp;c" DetailColor="g" Occluding="true" />
+    <part Name="Render" DisplayName="曇ったクローム" RenderString="177" ColorString="&amp;c^g" TileColor="&amp;c" DetailColor="g" Occluding="true" />
     <part Name="Physics" Weight="25000" FlameTemperature="25000" VaporTemperature="58000" Takeable="false" Solid="true" />
     <stat Name="AV" Value="50" />
     <stat Name="Hitpoints" Value="300" />
@@ -935,7 +935,7 @@
 <object Name="WalltrapFire" Inherits="Walltrap" Replace="true">
     <part Name="Render" DisplayName="蒸気ベント" />
     <part Name="WalltrapFire" />
-    <part Name="Description" Short="曇ったクロムの柱に穿たれた垂直ベントから、蒸気の細糸が巻き出している。" />
+    <part Name="Description" Short="曇ったクロームの柱に穿たれた垂直ベントから、蒸気の細糸が巻き出している。" />
     <tag Name="Gender" Value="plural" />
     <tag Name="Tier" Value="4" />
     <xtagGrammar massNoun="true" />
@@ -944,7 +944,7 @@
 <object Name="WalltrapAcid" Inherits="Walltrap" Replace="true">
     <part Name="Render" DisplayName="噴煙ベント" />
     <part Name="Walltrap" WarmColor="^K&amp;g" ReadyColor="^K&amp;G" />
-    <part Name="Description" Short="曇ったクロムの柱に穿たれた垂直ベントから、有毒な煙が細い糸となって巻き上がる。" />
+    <part Name="Description" Short="曇ったクロームの柱に穿たれた垂直ベントから、有毒な煙が細い糸となって巻き上がる。" />
     <part Name="WalltrapAcid" />
     <tag Name="Gender" Value="plural" />
     <tag Name="Tier" Value="4" />
@@ -955,7 +955,7 @@
     <part Name="Render" DisplayName="火花を散らすベント" />
     <part Name="Walltrap" WarmColor="^g&amp;w" ReadyColor="^g&amp;W" />
     <part Name="WalltrapShock" />
-    <part Name="Description" Short="曇ったクロムの柱に穿たれた垂直ベントから火花が飛び散る。" />
+    <part Name="Description" Short="曇ったクロームの柱に穿たれた垂直ベントから火花が飛び散る。" />
     <tag Name="Gender" Value="plural" />
     <tag Name="Tier" Value="4" />
     <xtagGrammar massNoun="true" />
@@ -967,7 +967,7 @@
     <part Name="Render" DisplayName="擦り傷の付いたベント" RenderString="c" />
     <part Name="Walltrap" WarmColor="^g&amp;k" ReadyColor="^g&amp;Y" />
     <part Name="WalltrapCrabs" />
-    <part Name="Description" Short="曇ったクロムに列状に穿たれた側面ベントには細かな傷が刻まれている。" />
+    <part Name="Description" Short="曇ったクロームに列状に穿たれた側面ベントには細かな傷が刻まれている。" />
     <tag Name="Gender" Value="plural" />
     <tag Name="Tier" Value="4" />
     <xtagGrammar massNoun="true" />
@@ -977,7 +977,7 @@
     <part Name="Render" DisplayName="チクタクと刻むベント" RenderString="c" />
     <part Name="Walltrap" WarmColor="^W&amp;c" ReadyColor="^W&amp;C" />
     <part Name="WalltrapClockworkBeetles" SpawnLimit="30" />
-    <part Name="Description" Short="曇ったクロムに列状に穿たれた側面ベントには細かな傷が刻まれている。" />
+    <part Name="Description" Short="曇ったクロームに列状に穿たれた側面ベントには細かな傷が刻まれている。" />
     <tag Name="Gender" Value="plural" />
     <tag Name="Tier" Value="5" />
     <xtagGrammar massNoun="true" />
@@ -987,7 +987,7 @@
     <part Name="Render" DisplayName="六角形の残滓が付いたベント" RenderString="c" />
     <part Name="Walltrap" WarmColor="^K&amp;y" ReadyColor="^K&amp;Y" />
     <part Name="WalltrapGas" GasBlueprint="NormalityGas" Density="1d60+40" PrimaryColor="K" SecondaryColor="y" />
-    <part Name="Description" Short="曇ったクロムの柱に穿たれた垂直ベントを、常態化の凝縮物がタイル張りのように覆っている。" />
+    <part Name="Description" Short="曇ったクロームの柱に穿たれた垂直ベントを、常態化の凝縮物がタイル張りのように覆っている。" />
     <tag Name="Gender" Value="plural" />
     <tag Name="Tier" Value="6" />
     <xtagGrammar massNoun="true" />
@@ -997,7 +997,7 @@
     <part Name="Render" DisplayName="コケ粒子の付いたベント" />
     <part Name="Walltrap" WarmColor="^K&amp;w" ReadyColor="^K&amp;W" />
     <part Name="WalltrapGas" GasBlueprint="DefoliantGas" Density="1d60+40" PrimaryColor="W" SecondaryColor="w" />
-    <part Name="Description" Short="黄金の暁の吹きだまりに粉砕され久しく死んだ苔が、曇ったクロムのベントに貼り付いている。" />
+    <part Name="Description" Short="黄金の暁の吹きだまりに粉砕され久しく死んだ苔が、曇ったクロームのベントに貼り付いている。" />
     <tag Name="Gender" Value="plural" />
     <tag Name="Tier" Value="4" />
     <xtagGrammar massNoun="true" />
@@ -1007,7 +1007,7 @@
     <part Name="Render" DisplayName="カビ粒子の付いたベント" />
     <part Name="Walltrap" WarmColor="^K&amp;m" ReadyColor="^K&amp;M" />
     <part Name="WalltrapGas" GasBlueprint="FungicideGas" Density="1d60+40" PrimaryColor="M" SecondaryColor="m" />
-    <part Name="Description" Short="マゼンタの驟雨に侵食され粉末になった死んだカビが、曇ったクロムのベントに貼り付いている。" />
+    <part Name="Description" Short="マゼンタの驟雨に侵食され粉末になった死んだカビが、曇ったクロームのベントに貼り付いている。" />
     <tag Name="Gender" Value="plural" />
     <tag Name="Tier" Value="4" />
     <xtagGrammar massNoun="true" />
@@ -1017,7 +1017,7 @@
     <part Name="Render" DisplayName="蒸気ベント" ColorString="&amp;r^y" TileColor="&amp;r" DetailColor="y" />
     <part Name="Walltrap" WarmColor="^y&amp;r" ReadyColor="^y&amp;R" />
     <part Name="WalltrapFire" />
-    <part Name="Description" Short="煤で染まったクロムの柱に穿たれた垂直ベントから、蒸気の細糸が巻き出している。" />
+    <part Name="Description" Short="煤で染まったクロームの柱に穿たれた垂直ベントから、蒸気の細糸が巻き出している。" />
     <tag Name="Gender" Value="plural" />
     <xtagGrammar massNoun="true" />
   </object>
@@ -1026,7 +1026,7 @@
     <part Name="Render" RenderString="240" DisplayName="曇りガラスの柱" />
     <part Name="Physics" FreezeTemperature="-9999" BrittleTemperature="-9999" />
     <part Name="CryochamberWall" />
-    <part Name="Description" Short="大理石の柱を縁取るクロム羽目板の側面ベントから凍てつく霧が巻き出している。" />
+    <part Name="Description" Short="大理石の柱を縁取るクローム羽目板の側面ベントから凍てつく霧が巻き出している。" />
     <part Name="Walltrap" TurnInterval="8" WarmColor="^y&amp;c" ReadyColor="^y&amp;C" />
     <stat Name="ColdResistance" Value="100" />
     <stat Name="AV" Value="10" />
@@ -1038,7 +1038,7 @@
 <object Name="CryochamberWallBroken" Inherits="Walltrap" Replace="true">
     <part Name="Render" RenderString="240" DisplayName="曇りガラスの柱" />
     <part Name="Physics" FreezeTemperature="-9999" BrittleTemperature="-9999" />
-    <part Name="Description" Short="大理石の柱を縁取るクロムの羽目板に穿たれた側面ベントを冷たい露が飾っている。" />
+    <part Name="Description" Short="大理石の柱を縁取るクロームの羽目板に穿たれた側面ベントを冷たい露が飾っている。" />
     <part Name="Walltrap" TurnInterval="2" WarmColor="^y&amp;c" ReadyColor="^y&amp;c" />
     <stat Name="ColdResistance" Value="100" />
     <tag Name="Tier" Value="5" />
@@ -1164,7 +1164,7 @@
   </object>
 
 <object Name="Relief1" Inherits="Relief" Replace="true">
-    <part Name="Description" Short="これは貴重なセルリアン大理石から精緻に彫り出された高浮き彫りで、神殿の大神官に父シェキーナが語った聖なる結合を描いている。宇宙の曙、銀の父祖たちは不活性の心を抱いたまま無時間のエーテルをさまよい、最も冷たい宇宙の彼方で美とクロムの化身カサフェセンスを見いだした。彼女の裸の胎から百の地を住まわせる機械を共に作り、ここでは父祖たちが初めてその輝きへと近づく場面が描かれ、指導する位置に立つのはシェキーナだ。" />
+    <part Name="Description" Short="これは貴重なセルリアン大理石から精緻に彫り出された高浮き彫りで、神殿の大神官に父シェキーナが語った聖なる結合を描いている。宇宙の曙、銀の父祖たちは不活性の心を抱いたまま無時間のエーテルをさまよい、最も冷たい宇宙の彼方で美とクロームの化身カサフェセンスを見いだした。彼女の裸の胎から百の地を住まわせる機械を共に作り、ここでは父祖たちが初めてその輝きへと近づく場面が描かれ、指導する位置に立つのはシェキーナだ。" />
     <tag Name="NoSparkingQuest" />
     <tag Name="BaseObject" Value="*noinherit" />
     <part Name="Graffitied" ChanceOneIn="300" />
@@ -1702,11 +1702,11 @@
   </object>
 
 <object Name="CryochamberPlaque" Inherits="Wall" Replace="true">
-    <part Name="Render" DisplayName="クロムの銘板" ColorString="&amp;y" RenderString="254" Occluding="false" />
+    <part Name="Render" DisplayName="クロームの銘板" ColorString="&amp;y" RenderString="254" Occluding="false" />
     <part Name="Physics" FreezeTemperature="-9999" BrittleTemperature="-9999" />
     <part Name="Chat" Says="CHAMBER UNOCCUPIED: AWAITING SPECIMEN" ShowInShortDescription="true" />
     <part Name="SmartuseLooks" />
-    <part Name="Description" Short="クイッククロムの輝く表面が揺らめく屈折模様を泳ぎ、光が一点に集まると象形が現れ始める。" />
+    <part Name="Description" Short="クイッククロームの輝く表面が揺らめく屈折模様を泳ぎ、光が一点に集まると象形が現れ始める。" />
     <stat Name="AV" Value="10" />
     <stat Name="Hitpoints" Value="80" />
     <tag Name="BodyType" Value="MetalWall" />
@@ -1727,7 +1727,7 @@
 
 <object Name="GritGate Mainframe Status Panel" Inherits="GritGateMainframeWall" Replace="true">
     <part Name="Render" DisplayName="メインフレーム状態パネル" />
-    <part Name="Description" Short="真鍮とクロムの野にダイオードが渦を描いて点滅している。" />
+    <part Name="Description" Short="真鍮とクロームの野にダイオードが渦を描いて点滅している。" />
     <part Name="ElectricalPowerTransmission" ChargeRate="10000" IsConsumer="true" />
     <part Name="ChargeSink" ChargeUse="10" NameForStatus="展示" />
     <part Name="AnimatedMaterialGeneric" AnimationLength="160" LowFrameOffset="1" HighFrameOffset="1" ColorStringAnimationFrames="0=&amp;y^K,120=&amp;y^G" TileColorAnimationFrames="disable" DetailColorAnimationFrames="0=K,120=G" RequiresOperationalActivePart="ChargeSink" />
@@ -1763,7 +1763,7 @@
 
 <object Name="Crematory Mainframe Status Panel" Inherits="CrematoryMainframeWall" Replace="true">
     <part Name="Render" DisplayName="メインフレーム状態パネル" />
-    <part Name="Description" Short="真鍮とクロムの野にダイオードが渦を描いて点滅している。" />
+    <part Name="Description" Short="真鍮とクロームの野にダイオードが渦を描いて点滅している。" />
     <part Name="ElectricalPowerTransmission" ChargeRate="10000" IsConsumer="true" />
     <part Name="ChargeSink" ChargeUse="10" NameForStatus="展示" />
     <part Name="AnimatedMaterialGeneric" AnimationLength="160" LowFrameOffset="1" HighFrameOffset="1" ColorStringAnimationFrames="0=&amp;y^K,120=&amp;y^G" TileColorAnimationFrames="disable" DetailColorAnimationFrames="0=K,120=G" RequiresOperationalActivePart="ChargeSink" />

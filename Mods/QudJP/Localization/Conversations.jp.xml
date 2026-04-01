@@ -1312,7 +1312,7 @@
         おおネフィリムよ！ 星の沐浴に来たか？？~
         口いっぱいに塩を、放射の闇で曇った死んだ目を、そして友だちになるカエルがほしい。~
         おお生命よ、おお変化よ！ 抱きしめ、絡み合ってくれ……~
-        野生の蟻のようにクロムに溝を穿ち、肉と殻の断面を見よ！~
+        野生の蟻のようにクロームに溝を穿ち、肉と殻の断面を見よ！~
         下層の隙間に潜り、燃えるギャイアよりも汗を流し、別の地平へ目を覗かせる夢を見る。~
         十三年の土。十七年の土。千年の土！
       </text>
@@ -2013,7 +2013,7 @@
     <node ID="LandingPadsCommentary">
       <text Priority="-1">あっ！ 話そうか？</text>
       <text IfLastChoice="Joppa">
-        ヨッパ！ 由緒ある土地だ。ええと、まだ村として、存続しているのか自信がなかったんだ。
+        ジョッパ！ 由緒ある土地だ。ええと、まだ村として、存続しているのか自信がなかったんだ。
 
         潟の静けさは私の同胞には奇妙かもしれないが、礁が与えられる以上の平穏を望む声もあった。=name=、この選択に感謝する。
       </text>
@@ -2062,7 +2062,7 @@
         <text>伝えるべきことは伝えた。さあ、同胞が新しい家を選ぶ番だ。</text>
         <part Name="SlynthCandidatesReady" />
       </choice>
-      <choice ID="Joppa" IfSlynthCandidate="Joppa">ヨッパの村が同胞を家族として迎えてくれると言っている。</choice>
+      <choice ID="Joppa" IfSlynthCandidate="Joppa">ジョッパの村が同胞を家族として迎えてくれると言っている。</choice>
       <choice ID="Mechanimists" IfSlynthCandidate="Mechanimists">六日のスティルトのメカニマス教徒が、同胞を受け入れてくれるそうだ。</choice>
       <choice ID="Barathrumites" IfSlynthCandidate="Barathrumites">グリット・ゲートのバラサラム派が、同胞を弟子として迎えてくれる。</choice>
       <choice ID="Kyakukya" IfSlynthCandidate="Kyakukya">キャクキャの村が、私たちを受け入れてくれる。</choice>
@@ -2101,7 +2101,7 @@
 
     <node ID="SlynthDecision">
       <text IfSlynthChosen="Joppa">
-        話し合いと熟慮の末、合意に至った。スリンスの新しい家はヨッパだ。永続する、平和で、ええと、目的ある暮らし――多くの同胞にとって魅力だろう。ならばアブラムの水角瓜の湿地ほどふさわしい場所はない。
+        話し合いと熟慮の末、合意に至った。スリンスの新しい家はジョッパだ。永続する、平和で、ええと、目的ある暮らし――多くの同胞にとって魅力だろう。ならばアブラムの水角瓜の湿地ほどふさわしい場所はない。
 
         旅立ちは朝、塩の湿地へ。
       </text>
@@ -2983,7 +2983,7 @@
 
     <node ID="Children">
       <text>
-        私のクロムリングたち、機械、作物。私がそれらを世話し、それらもまた私を支えてくれる。
+        私のクローメリングたち、機械、作物。私がそれらを世話し、それらもまた私を支えてくれる。
       </text>
       <choice UseID="Aloysusa" />
       <choice UseID="Aloyporch" />
@@ -3417,7 +3417,7 @@
       </text>
       <choice ID="ShemSafe" GotoID="YouAreSafe" IfFinishedQuest="A Call to Arms">無事でよかったよ、シェム。</choice>
       <choice ID="ShemPax" GotoID="Klanq" IfFinishedQuestStep="Tomb of the Eaters~Disable the Spindle's Magnetic Field">クランクの来訪をどう思う？</choice>
-      <choice ID="ShemSpeak" GotoID="Speak">君は喋るクロムリング……なのか？ ぼくの言葉が分かる？</choice>
+      <choice ID="ShemSpeak" GotoID="Speak">君は喋るクローメリング……なのか？ ぼくの言葉が分かる？</choice>
       <choice ID="Shem-1" GotoID="-1">どうして『シェム -1』と呼ばれているの？</choice>
       <choice ID="ShemFriend" GotoID="Friend">ぼくは君の友だちだ、シェム。</choice>
       <choice ID="ShemEnd" GotoID="End">生きて……錆び知らずでいて。</choice>
@@ -3552,7 +3552,7 @@
         その……音楽は……君のスピーカーから流れているのか？
         虚空を逆行して響く鐘みたいに聞こえる。
       </choice>
-      <choice GotoID="Orb">そのクロムの耳飾りはどういう意味だ？</choice>
+      <choice GotoID="Orb">そのクロームの耳飾りはどういう意味だ？</choice>
       <choice GotoID="Machine">データディスクをそんなに積み上げているんだな。</choice>
       <choice GotoID="GritGate">グリット・ゲートについて教えてくれ。</choice>
       <choice GotoID="End">生きて飲め。</choice>
@@ -3565,7 +3565,7 @@
         その……音楽は……君のスピーカーから流れているのか？
         虚空を逆行して響く鐘みたいに聞こえる。
       </choice>
-      <choice GotoID="Orb">そのクロムの耳飾りはどういう意味だ？</choice>
+      <choice GotoID="Orb">そのクロームの耳飾りはどういう意味だ？</choice>
       <choice GotoID="Machine">データディスクをそんなに積み上げているんだな。</choice>
       <choice GotoID="GritGate">グリット・ゲートについて教えてくれ。</choice>
       <choice GotoID="End">生きて飲め。</choice>
@@ -3580,35 +3580,35 @@
       <choice GotoID="Kasaphescence">カサフェセンスって何だ？</choice>
       <choice GotoID="Mechanimist">君はメカニマス教徒なのか？</choice>
       <choice GotoID="Songs">ほかの曲も作ったのか？</choice>
-      <choice GotoID="Orb">そのクロムの耳飾りはどういう意味だ？</choice>
+      <choice GotoID="Orb">そのクロームの耳飾りはどういう意味だ？</choice>
       <choice GotoID="Machine">データディスクをそんなに積み上げているんだな。</choice>
       <choice GotoID="GritGate">グリット・ゲートについて教えてくれ。</choice>
       <choice GotoID="End">生きて飲め。</choice>
     </node>
     <node ID="Sheba">
       <text>
-        シーバ・ハガディアスさ。スティルト大聖堂の司書で、私の水の姉妹にしてクロム仲間だ。
+        シーバ・ハガディアスさ。スティルト大聖堂の司書で、私の水の姉妹にしてクローム仲間だ。
       </text>
       <choice UseID="JacoboRumblingChoice" />
       <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベテスダ・スーサに入る助言はないか？</choice>
       <choice GotoID="Kasaphescence">カサフェセンスって何だ？</choice>
       <choice GotoID="Mechanimist">君はメカニマス教徒なのか？</choice>
       <choice GotoID="Songs">ほかの曲も作ったのか？</choice>
-      <choice GotoID="Orb">そのクロムの耳飾りはどういう意味だ？</choice>
+      <choice GotoID="Orb">そのクロームの耳飾りはどういう意味だ？</choice>
       <choice GotoID="Machine">データディスクをそんなに積み上げているんだな。</choice>
       <choice GotoID="GritGate">グリット・ゲートについて教えてくれ。</choice>
       <choice GotoID="End">生きて飲め。</choice>
     </node>
     <node ID="Kasaphescence">
       <text>
-        顕れた美、クロムの浅瀬は畏敬そのもの。私の信仰では、カサフェセンスは永劫の虚空であらゆる金属を産み落とした存在だ。クロムの鐘楼にも、あらゆる機械にも、そして私たち自身の血にも、その方の欠片が宿っている。
+        顕れた美、クロームの浅瀬は畏敬そのもの。私の信仰では、カサフェセンスは永劫の虚空であらゆる金属を産み落とした存在だ。クロームの鐘楼にも、あらゆる機械にも、そして私たち自身の血にも、その方の欠片が宿っている。
         
         私にとっては金属にとどまらない。秩序だったものすべてにその本質は染みわたる――詩、数学の証明、整った作業机……つまり Qガールの机ではない、ということだ。
       </text>
       <choice UseID="JacoboRumblingChoice" />
       <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベテスダ・スーサに入る助言はないか？</choice>
       <choice GotoID="Mechanimist">君はメカニマス教徒なのか？</choice>
-      <choice GotoID="Orb">そのクロムの耳飾りはどういう意味だ？</choice>
+      <choice GotoID="Orb">そのクロームの耳飾りはどういう意味だ？</choice>
       <choice GotoID="Machine">データディスクをそんなに積み上げているんだな。</choice>
       <choice GotoID="GritGate">グリット・ゲートについて教えてくれ。</choice>
       <choice GotoID="End">生きて飲め。</choice>
@@ -3620,20 +3620,20 @@
       <choice UseID="JacoboRumblingChoice" />
       <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベテスダ・スーサに入る助言はないか？</choice>
       <choice GotoID="Songs">ほかの曲も作ったのか？</choice>
-      <choice GotoID="Orb">そのクロムの耳飾りはどういう意味だ？</choice>
+      <choice GotoID="Orb">そのクロームの耳飾りはどういう意味だ？</choice>
       <choice GotoID="Machine">データディスクをそんなに積み上げているんだな。</choice>
       <choice GotoID="GritGate">グリット・ゲートについて教えてくれ。</choice>
       <choice GotoID="End">生きて飲め。</choice>
     </node>
     <node ID="Songs">
       <text>
-        たくさん作ったよ。これはシーバとの三度目の共作で、最初の二作は『無垢なるクロム』と『外から内へ』って題にしたんだ。
+        たくさん作ったよ。これはシーバとの三度目の共作で、最初の二作は『無垢なるクローム』と『外から内へ』って題にしたんだ。
       </text>
       <choice UseID="JacoboRumblingChoice" />
       <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベテスダ・スーサに入る助言はないか？</choice>
       <choice GotoID="Sheba">シーバ・ハグ？</choice>
       <choice GotoID="Kasaphescence">カサフェセンスって何だ？</choice>
-      <choice GotoID="Orb">そのクロムの耳飾りはどういう意味だ？</choice>
+      <choice GotoID="Orb">そのクロームの耳飾りはどういう意味だ？</choice>
       <choice GotoID="Machine">データディスクをそんなに積み上げているんだな。</choice>
       <choice GotoID="GritGate">グリット・ゲートについて教えてくれ。</choice>
       <choice GotoID="End">生きて飲め。</choice>
@@ -3668,7 +3668,7 @@
         その……音楽は……君のスピーカーから流れているのか？
         虚空を逆行して響く鐘みたいに聞こえる。
       </choice>
-      <choice GotoID="Orb">そのクロムの耳飾りはどういう意味だ？</choice>
+      <choice GotoID="Orb">そのクロームの耳飾りはどういう意味だ？</choice>
       <choice GotoID="GritGate">グリット・ゲートについて教えてくれ。</choice>
       <choice GotoID="End">生きて飲め。</choice>
     </node>
@@ -3685,13 +3685,13 @@
         その……音楽は……君のスピーカーから流れているのか？
         虚空を逆行して響く鐘みたいに聞こえる。
       </choice>
-      <choice GotoID="Orb">そのクロムの耳飾りはどういう意味だ？</choice>
+      <choice GotoID="Orb">そのクロームの耳飾りはどういう意味だ？</choice>
       <choice GotoID="Machine">データディスクをそんなに積み上げているんだな。</choice>
       <choice GotoID="End">生きて飲め。</choice>
     </node>
     <node ID="Sheba2">
       <text>
-        シーバ・ハガディアスさ。スティルト大聖堂の司書で、私の水の姉妹にしてクロム仲間だ。
+        シーバ・ハガディアスさ。スティルト大聖堂の司書で、私の水の姉妹にしてクローム仲間だ。
       </text>
       <choice UseID="JacoboRumblingChoice" />
       <choice GotoID="Bethesda" IfHaveActiveQuest="Decoding the Signal">ヤコボ、ベテスダ・スーサに入る助言はないか？</choice>
@@ -3699,7 +3699,7 @@
         その……音楽は……君のスピーカーから流れているのか？
         虚空を逆行して響く鐘みたいに聞こえる。
       </choice>
-      <choice GotoID="Orb">そのクロムの耳飾りはどういう意味だ？</choice>
+      <choice GotoID="Orb">そのクロームの耳飾りはどういう意味だ？</choice>
       <choice GotoID="Machine">データディスクをそんなに積み上げているんだな。</choice>
       <choice GotoID="GritGate">グリット・ゲートについて教えてくれ。</choice>
       <choice GotoID="End">生きて飲め。</choice>
@@ -3712,7 +3712,7 @@
         その……音楽は……君のスピーカーから流れているのか？
         虚空を逆行して響く鐘みたいに聞こえる。
       </choice>
-      <choice GotoID="Orb">そのクロムの耳飾りはどういう意味だ？</choice>
+      <choice GotoID="Orb">そのクロームの耳飾りはどういう意味だ？</choice>
       <choice GotoID="Machine">データディスクをそんなに積み上げているんだな。</choice>
       <choice GotoID="GritGate">グリット・ゲートについて教えてくれ。</choice>
       <choice GotoID="End">生きて飲め。</choice>
@@ -3731,7 +3731,7 @@
     </node>
     <node ID="BeginCallToArms">
       <text>
-        渡したクロムのキーで、君は私たちの電力網にアクセスできる。砦のあちこちに連装レーザー砲座とフォースプロジェクターがあるから、エレシュキガルの偵察結果を見て、どの防衛を稼働させるか決めてくれ。エレシュキガルと接続してオーバークロックを指示したり、ロダニス Y を起動したりもできる。
+        渡したクロームのキーで、君は私たちの電力網にアクセスできる。砦のあちこちに連装レーザー砲座とフォースプロジェクターがあるから、エレシュキガルの偵察結果を見て、どの防衛を稼働させるか決めてくれ。エレシュキガルと接続してオーバークロックを指示したり、ロダニス Y を起動したりもできる。
         
         ただし電流の引きすぎには注意しろ。電力を食わせすぎると停電を招きかねない。
         
@@ -4859,7 +4859,7 @@
     </node>
     <node ID="Bethesda">
       <text>
-        こんな感じ。バエティルのところに行ってこう言うの。「ねえ、密林のビーズの腕輪は全部どこ？ 水蔓湿原の腕輪はどこ？ スヴィ川のは？」
+        こんな感じ。ベテルのところに行ってこう言うの。「ねえ、密林のビーズの腕輪は全部どこ？ 水蔓湿原の腕輪はどこ？ スヴィ川のは？」
         
         そうすると教えてくれるから、腕輪を取りに行くの。
       </text>
@@ -4875,7 +4875,7 @@
     </node>
     <node ID="Rumbling">
       <text>
-        君も感じたでしょ！ 石。全部。動いた。わあああ！ みんなで踊ったみたいだった。マフェオもスパラフチレもクロムっ子も岩も、残りのみんなも。
+        君も感じたでしょ！ 石。全部。動いた。わあああ！ みんなで踊ったみたいだった。マフェオもスパラフチレもクローメリングも岩も、残りのみんなも。
       </text>
       <choice GotoID="Start">……</choice>
       <choice GotoID="End">生きて飲め、友よ。</choice>
@@ -4934,7 +4934,7 @@
     </node>
     <node ID="GritGate2">
       <text>
-        Qガールに駆け寄って全部のガジェットをつついて、頭もトントンする。そのままオソの執務室をそっと通り抜けて、シェム -1 を抱きしめて図書室に連れていって読み聞かせする。ときどきバラサラムとホルテンザもいて、笑ってくれる。それからお腹がすくから台所へ転がっていって、花瓶から蜂蜜をすすってダルディににらまれる。「ジディングだよ」って言って、パイプをよじ登ってアロイシアスに「生きて飲め、生きて飲め、生きて飲め」ってささやく。クロムっ子の頭を撫でて、エレシュキガルには「どんどんどんどん、好きだよ」って言う。それから倉庫に忍び込んでクロムっ子全員の頭を撫でて、消化椅子で昼寝をして、ひらめいたら部屋に戻ってノートに書きつけるの。
+        Qガールに駆け寄って全部のガジェットをつついて、頭もトントンする。そのままオソの執務室をそっと通り抜けて、シェム -1 を抱きしめて図書室に連れていって読み聞かせする。ときどきバラサラムとホルテンザもいて、笑ってくれる。それからお腹がすくから台所へ転がっていって、花瓶から蜂蜜をすすってダルディににらまれる。「ジディングだよ」って言って、パイプをよじ登ってアロイシアスに「生きて飲め、生きて飲め、生きて飲め」ってささやく。クローメリングの頭を撫でて、エレシュキガルには「どんどんどんどん、好きだよ」って言う。それから倉庫に忍び込んでクローメリング全員の頭を撫でて、消化椅子で昼寝をして、ひらめいたら部屋に戻ってノートに書きつけるの。
       </text>
       <choice GotoID="Start">……</choice>
       <choice GotoID="End">生きて飲め、ニーク。</choice>
@@ -5153,7 +5153,7 @@
     </node>
     <node ID="Qud" Inherits="Start">
       <text>
-        -んむ、あちら？ 大地はせり上がり、クロムの尖塔が歯を立てる。朽ちた密林と菌の茂みを枕にして古地球の坑道を見下ろし、北の山並みに砕け散り、スピンドルの影に沈んでいる……
+        -んむ、あちら？ 大地はせり上がり、クロームの尖塔が歯を立てる。朽ちた密林と菌の茂みを枕にして古地球の坑道を見下ろし、北の山並みに砕け散り、スピンドルの影に沈んでいる……
 
         人も友も共同体もある。同時に誰の友でもない者も。歴史は高い塩の太陽ほど濃く、過去がマッツ粉のように挽かれた場所では多様な生が芽吹く。
 
@@ -5427,7 +5427,7 @@
 
         知恵を軽んじることは、カサフェセンスを軽んじることだ。彼女は虚空の中で輝きを屈折させ、周囲を照らす。私たちの先人の書いた知恵も同じなんだ。
 
-        クロムの機構は神性ゆえに複雑だ。それを知らずにいること、過去も未来も知らずにいることは、父祖への侮辱ではないか？ 知る喜びを求める価値はないか？ 我が同士エシェルシュタット二世、最初の子は私と同じ考えを持っている。
+        クロームの機構は神性ゆえに複雑だ。それを知らずにいること、過去も未来も知らずにいることは、父祖への侮辱ではないか？ 知る喜びを求める価値はないか？ 我が同士エシェルシュタット二世、最初の子は私と同じ考えを持っている。
       </text>
       <choice GotoID="Start" Transient="true">
         <text>本を寄贈しよう。</text>
@@ -6121,7 +6121,7 @@
         生きて飲め、旅人。スティルトへようこそ。
       </text>
       <choice GotoID="Praise">シェキーナを称えよ！ おお父祖たちよ……ようやくここまで来た！</choice>
-      <choice GotoID="Huh">ここがスティルトか。でかいし、美しい……クロムの守人が集まるわけだ。</choice>
+      <choice GotoID="Huh">ここがスティルトか。でかいし、美しい……クロームの守人が集まるわけだ。</choice>
       <choice GotoID="Folks">なんて……人混み……だ。</choice>
       <choice GotoID="True">噂は本当かい？ ここは石になったクラーケンだって？</choice>
       <choice GotoID="Bazaar">なんて壮大なバザールだ。あの天幕には何があるんだ？</choice>
@@ -7159,7 +7159,7 @@
     </node>
     <node ID="Well">
       <text>
-        月と太陽よ！ 銀の父祖は我らを祝福し、道筋をクロムに輝かせてくださった。
+        月と太陽よ！ 銀の父祖は我らを祝福し、道筋をクロームに輝かせてくださった。
 
         礼を言うよ、友よ。ベルがあなたを護りますように。
       </text>
@@ -7257,7 +7257,7 @@
     </node>
     <node ID="Bauble">
       <text ID="FindTrinket">
-        そう！ 近所の仲間はもうこの話にうんざりしている。蔓を刈っていたら、刃の平で土から何かが外れたんだ。クロムを見て心が躍ったことは何度もあるが、自分の手で小さな欠片を掘り出し、美の算盤に珠を滑らせたのは初めてでね……
+        そう！ 近所の仲間はもうこの話にうんざりしている。蔓を刈っていたら、刃の平で土から何かが外れたんだ。クロームを見て心が躍ったことは何度もあるが、自分の手で小さな欠片を掘り出し、美の算盤に珠を滑らせたのは初めてでね……
 
         行ってくれるだろう？ 井戸で私の飾り玉を捧げてくれないか？
       </text>
@@ -7268,7 +7268,7 @@
     </node>
     <node ID="Fathers">
       <text>
-        私は司祭ではないが、あの御方らはクロムの鋳型だ。シェキーナのもとで、原初のカサフェセンスから金属の聖堂を作り上げた神々だよ。
+        私は司祭ではないが、あの御方らはクロームの鋳型だ。シェキーナのもとで、原初のカサフェセンスから金属の聖堂を作り上げた神々だよ。
 
         それでも行ってくれるか？
       </text>
@@ -7316,7 +7316,7 @@
     </node>
     <node ID="Bauble">
       <text ID="FindTrinket" Load="Replace">
-        そう！ 近所の仲間はこの話に飽き飽きしている。蔓を刈っていて、刃の平で土からそいつをこそぎ落としたんだ。クロムを見て胸が高鳴るのは何度もあったが、自分で小さな欠片を解き放ち、美の算盤で梁へ向かって珠を滑らせたのは初めてでね……
+        そう！ 近所の仲間はこの話に飽き飽きしている。蔓を刈っていて、刃の平で土からそいつをこそぎ落としたんだ。クロームを見て胸が高鳴るのは何度もあったが、自分で小さな欠片を解き放ち、美の算盤で梁へ向かって珠を滑らせたのは初めてでね……
 
         行ってくれるだろう？ 井戸で私の飾り玉を捧げてくれないか？
       </text>
@@ -7326,7 +7326,7 @@
   <conversation ID="CannibalConvert" Inherits="WatervineFarmerConvert" Replace="true">
     <node ID="Bauble">
       <text ID="FindTrinket" Load="Replace">
-        そう！ 近所の仲間はもうこの話を聞き飽きている。夏の内臓料理をすすっていたら、臓物の中で何かがきらめいているのに気づいたんだ。クロムを見て心が揺れたことはあったが、自分の手で小さな欠片を解き放ち、美の算盤に珠を滑らせたのは初めてでね……
+        そう！ 近所の仲間はもうこの話を聞き飽きている。夏の内臓料理をすすっていたら、臓物の中で何かがきらめいているのに気づいたんだ。クロームを見て心が揺れたことはあったが、自分の手で小さな欠片を解き放ち、美の算盤に珠を滑らせたのは初めてでね……
 
         行ってくれるだろう？ 井戸で私の飾り玉を捧げてくれないか？
       </text>
@@ -7343,7 +7343,7 @@
   <conversation ID="IssachariConvert" Inherits="WatervineFarmerConvert" Replace="true">
     <node ID="Bauble">
       <text ID="FindTrinket" Load="Replace">
-        そう！ 近所の仲間はこの話に疲れている。旗から湿り気をしぼっていたら、塩の下で何かを蹴飛ばしたんだ。クロムを見て心が震えたことはあったが、自分で小さな欠片を解き放ち、美の算盤に珠を滑らせたのは初めてでね……
+        そう！ 近所の仲間はこの話に疲れている。旗から湿り気をしぼっていたら、塩の下で何かを蹴飛ばしたんだ。クロームを見て心が震えたことはあったが、自分で小さな欠片を解き放ち、美の算盤に珠を滑らせたのは初めてでね……
 
         行ってくれるだろう？ 井戸で私の飾り玉を捧げてくれないか？
       </text>
@@ -8553,7 +8553,7 @@
       </text>
       <choice ID="ShemSafe" GotoID="YouAreSafe" IfFinishedQuest="A Call to Arms">無事でよかったよ、シェム。</choice>
       <choice ID="ShemPax" GotoID="Klanq" IfFinishedQuestStep="Tomb of the Eaters~Disable the Spindle's Magnetic Field">クランクが来ていること、どう思う？</choice>
-      <choice ID="ShemSpeak" GotoID="Speak">喋るクロムリングって……？ 君には私の言葉がわかるのか？</choice>
+      <choice ID="ShemSpeak" GotoID="Speak">喋るクローメリングって……？ 君には私の言葉がわかるのか？</choice>
       <choice ID="Shem-1" GotoID="-1">どうしてシェム -1 と呼ばれているんだ？</choice>
       <choice ID="ShemFriend" GotoID="Friend">ぼくは君の友だちだよ、シェム。</choice>
       <choice ID="ShemEnd" GotoID="End">生きて……錆び知らずでね。</choice>
@@ -8783,7 +8783,7 @@
       <choice Target="Village">なぜ「君の」村なんて呼ぶんだ？</choice>
       <choice Target="Kyakukya">キャクキャはどんな場所なんだ？</choice>
       <choice Target="Work" IfNotHaveQuest="RaisingIndrix">ここで仕事を探せるか？</choice>
-      <choice Target="Joppa" IfFinishedQuest="What's Eating the Watervine?">地表でギルシュリングが現れたって聞いたか？ ヨッパのウォーターヴァイン農家が確認している。</choice>
+      <choice Target="Joppa" IfFinishedQuest="What's Eating the Watervine?">地表でギルシュリングが現れたって聞いたか？ ジョッパのウォーターヴァイン農家が確認している。</choice>
       <choice Target="End">生きて飲め。</choice>
     </start>
     <node ID="Service" Inherits="Welcome">
@@ -8831,7 +8831,7 @@
       <text>ウォーターハンドなのかい？ なら友であり監視官でもあるインドリクスに話してみな。村を巡回しているはずだ。</text>
     </node>
     <node ID="Joppa" Inherits="Welcome">
-      <text>ヨッパのさらに西まで？ なんと……。ああ、恐ろしい！ こちらでもスヴィの河口で蒼い化け物の残骸を見つけた。ジャイアは再び口を開きつつあるのか？ ふむむ。</text>
+      <text>ジョッパのさらに西まで？ なんと……。ああ、恐ろしい！ こちらでもスヴィの河口で蒼い化け物の残骸を見つけた。ジャイアは再び口を開きつつあるのか？ ふむむ。</text>
     </node>
 
     <node ID="SlynthRequest">
@@ -9184,7 +9184,7 @@
   <conversation ID="PigFarmerConvert" Inherits="WatervineFarmerConvert" Replace="true">
     <node ID="Bauble">
       <text ID="FindTrinket" Load="Replace">
-        そう！ 近所の仲間はもうこの話に飽き飽きしている。豚の糞の山をかき回していて、そこから掬い上げたんだ。クロムを見て胸が高鳴ったことはあったが、自分の手で小さな欠片を解き放ち、美の算盤に珠を滑らせたのは初めてでね……
+        そう！ 近所の仲間はもうこの話に飽き飽きしている。豚の糞の山をかき回していて、そこから掬い上げたんだ。クロームを見て胸が高鳴ったことはあったが、自分の手で小さな欠片を解き放ち、美の算盤に珠を滑らせたのは初めてでね……
 
         行ってくれるだろう？ 井戸で私の飾り玉を捧げてくれないか？
       </text>
@@ -10543,7 +10543,7 @@
     </node>
     <node ID="Merchants">
       <text>
-        北西に漆黒の箱がある。そこに植物と娘が住み、クロムの猫が小さな太陽に喉を鳴らす。
+        北西に漆黒の箱がある。そこに植物と娘が住み、クロームの猫が小さな太陽に喉を鳴らす。
       </text>
       <choice UseID="TreeChoice" />
       <choice UseID="ReliefsChoice" />
@@ -13362,7 +13362,7 @@
         山羊人はいないのか？~
         ああ。~
         種まく者の目が汝を見守らんことを。~
-        クロムを見いだせ、孤りの者よ。~
+        クロームを見いだせ、孤りの者よ。~
         ああ、孤りの者よ。~
         我らが磨き、押し上げるゴッドヘッドに祝福あれ。~
         木々があなたを守る。

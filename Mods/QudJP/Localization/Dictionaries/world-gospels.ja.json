@@ -2512,7 +2512,7 @@
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",
       "key": "by trapping <spice.pronouns.object.!random> in <^.nouns.!random.article>",
-      "text": "<spice.pronouns.object.!random>を<^.nouns.!random.article>に閉じ込めることで"
+      "text": "<spice.pronouns.object.!random>を<^.nouns.!random>に閉じ込めることで"
     },
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",
@@ -2637,12 +2637,12 @@
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",
       "key": "chrome",
-      "text": "クロム"
+      "text": "クローム"
     },
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",
       "key": "chromium",
-      "text": "クロム"
+      "text": "クローム"
     },
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",
@@ -2882,22 +2882,22 @@
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",
       "key": "crash into <spice.history.gospels.EarlySultanate.location.!random.article>",
-      "text": "<spice.history.gospels.EarlySultanate.location.!random.article>に衝突した"
+      "text": "<spice.history.gospels.EarlySultanate.location.!random>に衝突した"
     },
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",
       "key": "crash into <spice.history.gospels.LateSultanate.location.!random.article>",
-      "text": "<spice.history.gospels.LateSultanate.location.!random.article>に衝突した"
+      "text": "<spice.history.gospels.LateSultanate.location.!random>に衝突した"
     },
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",
       "key": "crashed it into <spice.history.gospels.EarlySultanate.location.!random.article>",
-      "text": "それを<spice.history.gospels.EarlySultanate.location.!random.article>に激突させた"
+      "text": "それを<spice.history.gospels.EarlySultanate.location.!random>に激突させた"
     },
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",
       "key": "crashed it into <spice.history.gospels.LateSultanate.location.!random.article>",
-      "text": "それを<spice.history.gospels.LateSultanate.location.!random.article>に激突させた"
+      "text": "それを<spice.history.gospels.LateSultanate.location.!random>に激突させた"
     },
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",
@@ -5002,7 +5002,7 @@
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",
       "key": "set <spice.elements.jewels.adjectives.!random.article> <spice.elements.jewels.nouns.!random> into a newly forged <spice.jewelry.!random>",
-      "text": "鍛えたばかりの<spice.jewelry.!random>に<spice.elements.jewels.adjectives.!random.article><spice.elements.jewels.nouns.!random>をはめ込んだ"
+      "text": "鍛えたばかりの<spice.jewelry.!random>に<spice.elements.jewels.adjectives.!random><spice.elements.jewels.nouns.!random>をはめ込んだ"
     },
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",
@@ -5012,7 +5012,7 @@
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",
       "key": "setting a jewel into <spice.jewelry.!random.article>",
-      "text": "<spice.jewelry.!random.article>に宝石をはめ込んでいた"
+      "text": "<spice.jewelry.!random>に宝石をはめ込んでいた"
     },
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",
@@ -5817,7 +5817,7 @@
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",
       "key": "trapped in <spice.elements.entity$elements[random].nouns.!random.article>",
-      "text": "<spice.elements.entity$elements[random].nouns.!random.article>に閉じ込められた"
+      "text": "<spice.elements.entity$elements[random].nouns.!random>に閉じ込められた"
     },
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",
@@ -6127,12 +6127,12 @@
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",
       "key": "with <^.adjectives.!random.article> <^.nouns.!random> in each hand",
-      "text": "両手に<^.adjectives.!random.article><^.nouns.!random>を携えて"
+      "text": "両手に<^.adjectives.!random><^.nouns.!random>を携えて"
     },
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",
       "key": "with <^.nouns.!random.article> made of <^.materials.!random>",
-      "text": "<^.materials.!random>製の<^.nouns.!random.article>を手に"
+      "text": "<^.materials.!random>製の<^.nouns.!random>を手に"
     },
     {
       "context": "HistoryKit.HistoricStringExpander.ExpandQuery.Token",

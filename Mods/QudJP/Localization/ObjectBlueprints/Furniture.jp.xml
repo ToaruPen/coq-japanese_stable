@@ -84,7 +84,7 @@
 
   <object Name="Unfinished Sculpture" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="未完成の彫刻" ColorString="&amp;y" DetailColor="R" RenderString="156" Tile="Items/sw_unfinished_sculpture_1.bmp" />
-    <part Name="Description" Short="粘土、スラグ、クロム、染料——大地の湿った顔料たちが、半ば形になりかけた着想を物質の重みでうなだれさせる。変化は優柔不断か怠慢によって途中で止められている。" />
+    <part Name="Description" Short="粘土、スラグ、クローム、染料——大地の湿った顔料たちが、半ば形になりかけた着想を物質の重みでうなだれさせる。変化は優柔不断か怠慢によって途中で止められている。" />
     <builder Name="RandomTile" Tiles="Items/sw_unfinished_sculpture_1.bmp,Items/sw_unfinished_sculpture_2.bmp" />
     <part Name="RandomColors" DetailColor="all" />
     <part Name="Physics" Weight="80" Solid="false" />
@@ -574,7 +574,7 @@
     <part Name="Render" DisplayName="喰らう者のホログラム" Tile="Creatures/sw_eater_1.bmp" RenderLayer="6" RenderString="228" ColorString="&amp;y" DetailColor="k" Occluding="false" />
     <part Name="Physics" Weight="12000" Takeable="false" Solid="false" />
     <stat Name="Hitpoints" Value="1200" />
-    <part Name="Description" Short="焼けた光がクロムプレートに噴出し、深い過去の姿に砕け散る。髪、肌、眉、太もも、その特徴があなたの中に新たな感情、つまり見慣れないものの感覚を生み出す。あなたが動き回ると、図は視差を持って動く。あなたは、この喰らう者がどのようにしてあなたの時空の三つ編みに自分自身を切り込んだのか不思議に思う。" />
+    <part Name="Description" Short="焼けた光がクロームプレートに噴出し、深い過去の姿に砕け散る。髪、肌、眉、太もも、その特徴があなたの中に新たな感情、つまり見慣れないものの感覚を生み出す。あなたが動き回ると、図は視差を持って動く。あなたは、この喰らう者がどのようにしてあなたの時空の三つ編みに自分自身を切り込んだのか不思議に思う。" />
     <part Name="HologramMaterial" />
     <part Name="HologramInvulnerability" />
     <tag Name="IgnoresGravity" />
@@ -658,7 +658,7 @@
 
 
   <object Name="Village Monument Sculpture" Inherits="Village Monument" Replace="true">
-    <part Name="Render" DisplayName="クロム彫刻" Tile="Terrain/sw_monument7.bmp" />
+    <part Name="Render" DisplayName="クローム彫刻" Tile="Terrain/sw_monument7.bmp" />
     <part Name="Description" Short="金属細工師の手から棒と細片が噴出し、冷却されて形が整えられました。" />
     <part Name="Examiner" Unknown="UnknownBizarreContraption" Alternate="UnknownBizarreContraption" Complexity="2" Difficulty="1" />
     <part Name="TinkerItem" Bits="00" CanDisassemble="false" CanBuild="false" />
@@ -1079,7 +1079,7 @@
 
   <object Name="ImplantSign2" Inherits="Sign" Replace="true">
     <part Name="Render" DisplayName="看板" Tile="Items/sw_sign_gutsmonger.bmp" Occluding="false" />
-    <part Name="Chat" Says="クロムガッツ" ShowInShortDescription="true" />
+    <part Name="Chat" Says="クロームガッツ" ShowInShortDescription="true" />
   </object>
 
 
@@ -1522,7 +1522,7 @@
 
 
   <object Name="Platform" Inherits="MountedFurniture" Replace="true">
-    <part Name="Render" DisplayName="クロムプラットフォーム" RenderString="197" Tile="Items/sw_platform_chrome.bmp" RenderLayer="9" ColorString="&amp;y^K" Occluding="false" RenderIfDark="true" />
+    <part Name="Render" DisplayName="クロームプラットフォーム" RenderString="197" Tile="Items/sw_platform_chrome.bmp" RenderLayer="9" ColorString="&amp;y^K" Occluding="false" RenderIfDark="true" />
     <part Name="Physics" Weight="5000" FreezeTemperature="-200" BrittleTemperature="-200" FlameTemperature="9999" VaporTemperature="99999" />
     <part Name="NoMove" />
     <part Name="Interesting" />
@@ -1699,7 +1699,7 @@
   <object Name="Wavy Door" Inherits="Door" Replace="true">
     <part Name="Render" Tile="Tiles/sw_door_wavy.bmp" RenderLayer="6" DisplayName="ドア" TileColor="&amp;C" DetailColor="c" RenderString="+" Occluding="false" RenderIfDark="true" />
     <part Name="Physics" Organic="false" />
-    <part Name="Description" Short="コサインソーで切断した金属を鉄骨に嵌め込み溶接していく。ロック框はクロムでパッドされている。" />
+    <part Name="Description" Short="コサインソーで切断した金属を鉄骨に嵌め込み溶接していく。ロック框はクロームでパッドされている。" />
     <part Name="Door" ClosedTile="Tiles/sw_door_wavy.bmp" />
     <part Name="Metal" />
     <tag Name="OpenSound" Value="Sounds/Interact/sfx_interact_door_metal_open" />
@@ -1770,7 +1770,7 @@
   <object Name="BaseDoubleWavyDoor" Inherits="Double Door" Replace="true">
     <part Name="Render" TileColor="&amp;C" DetailColor="c" />
     <part Name="Physics" Organic="false" />
-    <part Name="Description" Short="コサインソーで切断した金属を2倍幅の鉄骨フレームに嵌め込み溶接していく。ロック框はクロムでパッドされている。" />
+    <part Name="Description" Short="コサインソーで切断した金属を2倍幅の鉄骨フレームに嵌め込み溶接していく。ロック框はクロームでパッドされている。" />
     <part Name="Metal" />
     <tag Name="OpenSound" Value="Sounds/Interact/sfx_interact_door_reallybig_open" />
     <tag Name="CloseSound" Value="Sounds/Interact/sfx_interact_door_reallybig_close" />
@@ -2358,7 +2358,7 @@
 
   <object Name="Hydraulic Irrigator" Inherits="SolidHighTechInstallation" Replace="true">
     <part Name="Render" DisplayName="{{B|hydraulic}} 洗浄器" ColorString="&amp;B" TileColor="&amp;c" DetailColor="B" RenderString="157" Tile="Items/sw_hydraulic_irrigator_1.bmp" />
-    <part Name="Description" Short="磁化された鋼がダイヤフラムを上向きに駆動し、生命の水がクロムパイプを通って渇いた植物に送られる。" />
+    <part Name="Description" Short="磁化された鋼がダイヤフラムを上向きに駆動し、生命の水がクロームパイプを通って渇いた植物に送られる。" />
     <part Name="Physics" Weight="1000" />
     <part Name="RadiusEventSender" ChargeUse="5" Event="AccelerateRipening" Radius="10" NameForStatus="IrrigationSystem" />
     <part Name="LiquidVolume" MaxVolume="32" StartVolume="32" InitialLiquid="water-1000" Sealed="true" />
@@ -2577,7 +2577,7 @@
 
   <object Name="Solar Pumping Station" Inherits="SolidHighTechInstallation" Replace="true">
     <part Name="Render" DisplayName="{{W|solar}} {{c|pumping station}}" ColorString="&amp;K" TileColor="&amp;K" DetailColor="C" RenderString="232" Tile="Items/sw_solar_pumping_station.bmp" />
-    <part Name="Description" Short="太陽光線は、クロムシリンダーの周囲の基礎全体で太陽光発電によって捕らえられ、その熱は分散のために水をパイプに送り込むのに使用される。" />
+    <part Name="Description" Short="太陽光線は、クロームシリンダーの周囲の基礎全体で太陽光発電によって捕らえられ、その熱は分散のために水をパイプに送り込むのに使用される。" />
     <part Name="SolarArray" ChargeRate="10" />
     <part Name="Flywheel" Charge="10000" MaxCharge="10000" ChargeRate="10" StartCharge="0-10000" />
     <part Name="ChargeSink" ChargeUse="1" NameForStatus="HydraulicLossManager" />
@@ -2656,7 +2656,7 @@
   <object Name="Universal Charging Station" Inherits="HighTechInstallation" Replace="true">
     <part Name="Render" DisplayName="ユニバーサル充電ステーション" ColorString="&amp;C" DetailColor="W" RenderString="227" Tile="Items/sw_universal_station.bmp" Occluding="false" RenderIfDark="true" />
     <part Name="Physics" Weight="100" />
-    <part Name="Description" Short="棚、パッド、スレート、クレードルはクロムハニカムのような金属から加工されている。電力はバッテリージュースに集中され、ドッキングされたセルに供給される。" />
+    <part Name="Description" Short="棚、パッド、スレート、クレードルはクロームハニカムのような金属から加工されている。電力はバッテリージュースに集中され、ドッキングされたセルに供給される。" />
     <part Name="ElectricalPowerTransmission" ChargeRate="1000" IsConsumer="true" />
     <part Name="UniversalCharger" ChargeRate="300" />
     <part Name="Metal" />
@@ -2685,7 +2685,7 @@
 
   <object Name="Hydraulic Turbine" Inherits="SolidHighTechInstallation" Replace="true">
     <part Name="Render" DisplayName="{{B|hydraulic}} タービン" ColorString="&amp;c" DetailColor="B" RenderString="158" Tile="Items/sw_thermoelectric_turbine.png" />
-    <part Name="Description" Short="完璧にカットされたクロムローターが発電機のシャフトに沿って積み重ねられ、幅広のフィンブレードが流体を捉えて電気糸を回転させる。" />
+    <part Name="Description" Short="完璧にカットされたクロームローターが発電機のシャフトに沿って積み重ねられ、幅広のフィンブレードが流体を捉えて電気糸を回転させる。" />
     <part Name="Physics" Weight="6000" />
     <part Name="LiquidVolume" MaxVolume="64" StartVolume="64" InitialLiquid="water-1000" Sealed="true" />
     <part Name="HydraulicPowerTransmission" ChargeRate="10000" IsConsumer="true" DischargeLiquidWhenBrokenAndPowered="true" MingleLiquidsWhenPowered="true" />
@@ -2997,7 +2997,7 @@
 
   <object Name="Fusion Power Station" Inherits="SolidHighTechInstallation" Replace="true">
     <part Name="Render" DisplayName="{{C|fusion}} 発電所" ColorString="&amp;W" TileColor="&amp;c" DetailColor="W" RenderString="232" Tile="Items/sw_fusion_power_station.png" />
-    <part Name="Description" Short="小さな物質の破片がクロムシリンダーの月の裏側で粉砕され、その熱を利用して電力を下流に送電する。" />
+    <part Name="Description" Short="小さな物質の破片がクロームシリンダーの月の裏側で粉砕され、その熱を利用して電力を下流に送電する。" />
     <part Name="FusionReactor" ChargeRate="1000" />
     <part Name="Circuitry" StartCharge="1000" />
     <part Name="ElectricalPowerTransmission" ChargeRate="10000" IsProducer="true" />
@@ -3361,7 +3361,7 @@
   <object Name="Solar Condenser" Inherits="SolidHighTechInstallation" Replace="true">
     <part Name="Render" DisplayName="ソーラーコンデンサー" Occluding="false" ColorString="&amp;W" DetailColor="C" RenderString="157" Tile="Items/sw_solar_condenser.bmp" />
     <part Name="Physics" Weight="200" />
-    <part Name="Description" Short="クロムフランジは、蒸発した空気が蒸留露として再沈するための表面積を最大化する。" />
+    <part Name="Description" Short="クロームフランジは、蒸発した空気が蒸留露として再沈するための表面積を最大化する。" />
     <part Name="SolarArray" ChargeRate="10" />
     <part Name="Capacitor" MaxCharge="2000" ChargeRate="10" />
     <part Name="TemperatureAdjuster" ChargeUse="1" TemperatureAmount="-10" TemperatureThreshold="0" ThresholdAbove="false" WorksOnSelf="true" WorksOnHolder="false" WorksOnWearer="false" WorksOnCarrier="false" WorksOnCellContents="false" WorksOnAdjacentCellContents="false" IsEMPSensitive="true" NameForStatus="CoolingSystem" />
@@ -4381,7 +4381,7 @@
 
   <object Name="Scrapable Deposit Box 6" Inherits="Chest" Replace="true">
     <part Name="Render" DisplayName="スクレイピング可能な金庫" Tile="Items/sw_deposit_box.bmp" ColorString="&amp;W" TileColor="&amp;c" DetailColor="W" Occluding="false" />
-    <part Name="Description" Short="金属スレートはクロムカートンを金色の長方形に分割する。内部では、アーティファクトが計画的に磨耗して鉱物の形に戻るのを待っている。" />
+    <part Name="Description" Short="金属スレートはクロームカートンを金色の長方形に分割する。内部では、アーティファクトが計画的に磨耗して鉱物の形に戻るのを待っている。" />
     <part Name="Physics" Weight="500" Takeable="false" />
     <part Name="MountedFurniture" />
     <tag Name="NoSparkingQuest" />
@@ -4393,7 +4393,7 @@
 
   <object Name="Weapon Rack" Inherits="Chest" Replace="true">
     <part Name="Render" DisplayName="武器ラック" Tile="Items/sw_weapons_rack.bmp" ColorString="&amp;c" />
-    <part Name="Description" Short="木製とクロム製のポールが武器を安らかに休ませる。" />
+    <part Name="Description" Short="木製とクローム製のポールが武器を安らかに休ませる。" />
     <part Name="Container" Preposition="on" />
     <tag Name="InventoryPopulationTable" Value="WeaponRack" />
     <tag Name="Tier" Value="2" />
@@ -4405,7 +4405,7 @@
 
   <object Name="Gun Rack" Inherits="Weapon Rack" Replace="true">
     <part Name="Render" DisplayName="ガンラック" Tile="Items/sw_weapons_rack.bmp" ColorString="&amp;c" DetailColor="K" />
-    <part Name="Description" Short="木製とクロム製のポールにより、銃が安らかに置かれる。" />
+    <part Name="Description" Short="木製とクローム製のポールにより、銃が安らかに置かれる。" />
     <tag Name="InventoryPopulationTable" Value="GunRack" />
     <tag Name="Tier" Value="3" />
     <tag Name="NoSparkingQuest" />
@@ -4417,7 +4417,7 @@
   <object Name="Armor Rack" Inherits="Weapon Rack" Replace="true">
     <part Name="Render" DisplayName="アーマーラック" Tile="Items/sw_weapons_rack.bmp" ColorString="&amp;c" DetailColor="Y" />
     <tag Name="InventoryPopulationTable" Value="ArmorRack" />
-    <part Name="Description" Short="木製とクロム製のポールが鎧を安らかに休ませる。" />
+    <part Name="Description" Short="木製とクローム製のポールが鎧を安らかに休ませる。" />
     <tag Name="Tier" Value="2" />
     <tag Name="NoSparkingQuest" />
     <tag Name="DynamicObjectsTable:Chests" />
@@ -4428,7 +4428,7 @@
   <object Name="CyberneticsRack" Inherits="Chest" Replace="true">
     <part Name="Physics" Weight="200" FlameTemperature="99999" VaporTemperature="1500" Takeable="false" Solid="false" />
     <part Name="Render" RenderLayer="6" RenderString="240" ColorString="&amp;C^k" DetailColor="Y" DisplayName="サイバネティクスラック" Tile="tiles/sw_shelf.bmp" />
-    <part Name="Description" Short="クロムペグはバイオニックモジュールが結合を待つ格子を形成する。" />
+    <part Name="Description" Short="クロームペグはバイオニックモジュールが結合を待つ格子を形成する。" />
     <part Name="CyberneticsRack" />
     <part Name="Container" Preposition="on" />
     <part Name="MountedFurniture" />
@@ -4443,7 +4443,7 @@
   <object Name="CyberneticsStationRack" Inherits="Chest" Replace="true">
     <part Name="Physics" Weight="200" FlameTemperature="99999" VaporTemperature="1500" Takeable="false" Solid="false" />
     <part Name="Render" RenderLayer="6" RenderString="240" ColorString="&amp;c^k" DisplayName="サイバネティクスラック" Tile="tiles/sw_shelf.bmp" DetailColor="C" />
-    <part Name="Description" Short="クロムペグはモジュールが結合を待つ格子を形成する。" />
+    <part Name="Description" Short="クロームペグはモジュールが結合を待つ格子を形成する。" />
     <part Name="CyberneticsRack" />
     <part Name="Container" Preposition="on" />
     <part Name="MountedFurniture" />
@@ -4630,7 +4630,7 @@
 
   <object Name="Techlight1" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="アーク燭台" RenderString="249" ColorString="&amp;C" DetailColor="y" Occluding="false" Tile="items/sw_hitech_lightsource1.bmp" />
-    <part Name="Description" Short="クロムの鋭い先端がこの実用的な照明器具の頂点だ。輝きはその端からほとばしり、世界を照らす。" />
+    <part Name="Description" Short="クロームの鋭い先端がこの実用的な照明器具の頂点だ。輝きはその端からほとばしり、世界を照らす。" />
     <part Name="AnimatedMaterialTechlight" baseColor="&amp;c" />
     <part Name="Physics" Weight="20" />
     <part Name="LightSource" Lit="true" Radius="6" />
@@ -4643,7 +4643,7 @@
 
   <object Name="Techlight2" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="アーク燭台" RenderString="249" ColorString="&amp;C" DetailColor="y" Occluding="false" Tile="items/sw_hitech_lightsource2.bmp" />
-    <part Name="Description" Short="クロムの鋭い先端がこの実用的な照明器具の頂点だ。輝きはその端からほとばしり、世界を照らす。" />
+    <part Name="Description" Short="クロームの鋭い先端がこの実用的な照明器具の頂点だ。輝きはその端からほとばしり、世界を照らす。" />
     <part Name="AnimatedMaterialTechlight" baseColor="&amp;c" />
     <part Name="Physics" Weight="20" />
     <part Name="LightSource" Lit="true" Radius="6" />
@@ -4659,7 +4659,7 @@
     <part Name="AnimatedMaterialTechlight" baseColor="&amp;c" />
     <part Name="Physics" Weight="20" />
     <part Name="LightSource" Lit="true" Radius="6" />
-    <part Name="Description" Short="クロムの鋭い先端がこの実用的な照明器具の頂点だ。輝きはその端からほとばしり、世界を照らす。" />
+    <part Name="Description" Short="クロームの鋭い先端がこの実用的な照明器具の頂点だ。輝きはその端からほとばしり、世界を照らす。" />
     <part Name="Metal" />
     <stag Name="LightSource" />
     <tag Name="TechTier" Value="5" />
@@ -4672,7 +4672,7 @@
     <part Name="AnimatedMaterialTechlight" baseColor="&amp;c" />
     <part Name="Physics" Weight="20" />
     <part Name="LightSource" Lit="true" Radius="10" />
-    <part Name="Description" Short="クロムの鋭い先端がこの実用的な照明器具の頂点だ。フルスペクトルの明るさが端から溢れ出て世界を照らす。" />
+    <part Name="Description" Short="クロームの鋭い先端がこの実用的な照明器具の頂点だ。フルスペクトルの明るさが端から溢れ出て世界を照らす。" />
     <part Name="Metal" />
     <stag Name="LightSource" />
     <tag Name="TechTier" Value="6" />
@@ -4703,7 +4703,7 @@
     <part Name="AnimatedMaterialTechlight" baseColor="&amp;c" />
     <part Name="Physics" Weight="20" />
     <part Name="LightSource" Lit="true" Radius="6" />
-    <part Name="Description" Short="クロムの鋭い先端がこの装飾用照明器具の頂点だ。輝きがその端からほとばしり、世界を照らす。" />
+    <part Name="Description" Short="クロームの鋭い先端がこの装飾用照明器具の頂点だ。輝きがその端からほとばしり、世界を照らす。" />
     <part Name="Metal" />
     <stag Name="LightSource" />
     <tag Name="TechTier" Value="6" />
@@ -5091,7 +5091,7 @@
     <tag Name="EmptyDetailColor" Value="C" />
     <tag Name="FullDetailColor" Value="C,w,y,W" />
     <tag Name="HeroNameTitleDescriptor" Value="Flat,Level,L-Shaped,Sturdy,Three-Legged,Wobbly" />
-    <part Name="Description" Short="鋼に液体クロムを塗布し、冷却して平らで加工可能な表面に叩きました。" />
+    <part Name="Description" Short="鋼に液体クロームを塗布し、冷却して平らで加工可能な表面に叩きました。" />
     <part Name="Metal" />
   </object>
 
@@ -5225,7 +5225,7 @@
     <tag Name="EmptyTile" Value="Items/sw_table_ornate_1.bmp" />
     <tag Name="FullTile" Value="Items/sw_table_ornate_1.bmp" />
     <tag Name="FullDetailColor" Value="*delete" />
-    <part Name="Description" Short="贅沢な脚のエッチングされたクロムは、かぎ爪とボールの足に向かって先細りになっており、大理石の表面では幾何学的な欠陥が削り取られ、鉄のバケツに投げ込まれており、今もどこかに残っているかもしれません。喰らう者たちはここで話し合い、計画を立てました。" />
+    <part Name="Description" Short="贅沢な脚のエッチングされたクロームは、かぎ爪とボールの足に向かって先細りになっており、大理石の表面では幾何学的な欠陥が削り取られ、鉄のバケツに投げ込まれており、今もどこかに残っているかもしれません。喰らう者たちはここで話し合い、計画を立てました。" />
     <part Name="Metal" />
   </object>
 
@@ -5363,7 +5363,7 @@
   <object Name="Bust of K4K5" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="K4K5のクローム胸像" RenderString="234" ColorString="&amp;C" DetailColor="y" Tile="Items/sw_bust1.bmp" RenderLayer="6" Occluding="false" />
     <part Name="Physics" Weight="60" Organic="false" />
-    <part Name="Description" Short="タングステン キングのデルフィックな顔はクロムで凍結され、完璧な仕様に鋳造されている。" />
+    <part Name="Description" Short="タングステン キングのデルフィックな顔はクロームで凍結され、完璧な仕様に鋳造されている。" />
     <part Name="SmartuseLooks" />
     <tag Name="TechTier" Value="1" />
     <stag Name="Scholarly" />
@@ -5374,9 +5374,9 @@
 
 
   <object Name="Bust of Mehmet I" Inherits="MountedFurniture" Replace="true">
-    <part Name="Render" DisplayName="メフメット１世のクロム胸像" RenderString="234" ColorString="&amp;C" DetailColor="y" Tile="Items/sw_bust2.bmp" RenderLayer="6" Occluding="false" />
+    <part Name="Render" DisplayName="メフメット１世のクローム胸像" RenderString="234" ColorString="&amp;C" DetailColor="y" Tile="Items/sw_bust2.bmp" RenderLayer="6" Occluding="false" />
     <part Name="Physics" Weight="60" />
-    <part Name="Description" Short="柔らかい頬と丸い眉の型に硬質クロムが鋳造されました。学問の守護王が列聖される。" />
+    <part Name="Description" Short="柔らかい頬と丸い眉の型に硬質クロームが鋳造されました。学問の守護王が列聖される。" />
     <part Name="SmartuseLooks" />
     <tag Name="TechTier" Value="1" />
     <stag Name="Scholarly" />
@@ -5388,7 +5388,7 @@
 
   <object Name="Ornate Potted Plant 1" Inherits="Plant" Replace="true">
     <part Name="Render" DisplayName="華やかな鉢に植える" RenderString="231" ColorString="&amp;g" Tile="Items/sw_pottedplant_ornate_1.bmp" TileColor="&amp;g" DetailColor="C" Occluding="false" />
-    <part Name="Description" Short="クロムの切り込みが入った古代の大釜から、スリンクグリーンの植物の葉が広がっている。彼らはロームに囲まれたいとこたちと同じように生き、呼吸しているが、彼らの生体データはアマランチンの種子とつなぎ合わされていた。彼らは周囲の喰らう者が分解しても死ぬことはない。" />
+    <part Name="Description" Short="クロームの切り込みが入った古代の大釜から、スリンクグリーンの植物の葉が広がっている。彼らはロームに囲まれたいとこたちと同じように生き、呼吸しているが、彼らの生体データはアマランチンの種子とつなぎ合わされていた。彼らは周囲の喰らう者が分解しても死ぬことはない。" />
     <stag Name="Luxury" />
     <stag Name="Beauty" />
   </object>
@@ -5396,7 +5396,7 @@
 
   <object Name="Ornate Potted Plant 2" Inherits="Plant" Replace="true">
     <part Name="Render" DisplayName="華やかな鉢に植える" RenderString="231" ColorString="&amp;g" Tile="Items/sw_pottedplant_ornate_2.bmp" TileColor="&amp;g" DetailColor="C" Occluding="false" />
-    <part Name="Description" Short="クロムの切り込みが入った古代の大釜から、スリンクグリーンの植物の葉が広がっている。彼らはロームに囲まれたいとこたちと同じように生き、呼吸しているが、彼らの生体データはアマランチンの種子とつなぎ合わされていた。彼らは周囲の喰らう者が分解しても死ぬことはない。" />
+    <part Name="Description" Short="クロームの切り込みが入った古代の大釜から、スリンクグリーンの植物の葉が広がっている。彼らはロームに囲まれたいとこたちと同じように生き、呼吸しているが、彼らの生体データはアマランチンの種子とつなぎ合わされていた。彼らは周囲の喰らう者が分解しても死ぬことはない。" />
     <stag Name="Luxury" />
     <stag Name="Beauty" />
   </object>
@@ -5404,7 +5404,7 @@
 
   <object Name="Ornate Potted Plant 3" Inherits="Plant" Replace="true">
     <part Name="Render" DisplayName="華やかな鉢に植える" RenderString="231" ColorString="&amp;g" Tile="Items/sw_pottedplant_ornate_3.bmp" TileColor="&amp;g" DetailColor="C" Occluding="false" />
-    <part Name="Description" Short="クロムの切り込みが入った古代の大釜から、スリンクグリーンの植物の葉が広がっている。彼らはロームに囲まれたいとこたちと同じように生き、呼吸しているが、彼らの生体データはアマランチンの種子とつなぎ合わされていた。彼らは周囲の喰らう者が分解しても死ぬことはない。" />
+    <part Name="Description" Short="クロームの切り込みが入った古代の大釜から、スリンクグリーンの植物の葉が広がっている。彼らはロームに囲まれたいとこたちと同じように生き、呼吸しているが、彼らの生体データはアマランチンの種子とつなぎ合わされていた。彼らは周囲の喰らう者が分解しても死ぬことはない。" />
     <stag Name="Luxury" />
     <stag Name="Beauty" />
   </object>
@@ -5412,7 +5412,7 @@
 
   <object Name="Ornate Potted Plant 4" Inherits="Plant" Replace="true">
     <part Name="Render" DisplayName="華やかな鉢に植える" RenderString="231" ColorString="&amp;g" Tile="Items/sw_bonsai.bmp" TileColor="&amp;g" DetailColor="C" Occluding="false" />
-    <part Name="Description" Short="クロムの切り込みが入った古代の大釜から、スリンクグリーンの植物の葉が広がっている。彼らはロームに囲まれたいとこたちと同じように生き、呼吸しているが、彼らの生体データはアマランチンの種子とつなぎ合わされていた。彼らは周囲の喰らう者が分解しても死ぬことはない。" />
+    <part Name="Description" Short="クロームの切り込みが入った古代の大釜から、スリンクグリーンの植物の葉が広がっている。彼らはロームに囲まれたいとこたちと同じように生き、呼吸しているが、彼らの生体データはアマランチンの種子とつなぎ合わされていた。彼らは周囲の喰らう者が分解しても死ぬことはない。" />
     <stag Name="Luxury" />
     <stag Name="Beauty" />
   </object>

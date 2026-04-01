@@ -229,7 +229,7 @@
     <tag Name="BaseObject" Value="*noinherit" />
     <part Name="ConversationScript" ConversationID="Humanoids" ClearLost="true" />
     <tag Name="Humanoid" />
-    <xtagTextFragments Skin="肌" PoeticFeatures="広い額,伸ばした脚,驚異に満ちた目" Activity="仲間との退屈な会話,狩猟採集,塩の砂丘を彷徨う" VillageActivity="寝袋で眠り椅子に座る,のんびり過ごす,本を読む,ムサの皮を剥いて食べる" NeedsItemFor="自分のコレクションのため,欲望を満たすため,換金するため,芸術のインスピレーションのため,詩のインスピレーションのため,ミューズにするため,農作業を手伝わせるため,甲虫の月の下で遊ぶゲームのため" SacredThing="生殖行為,哲学,アルコール,大地の穀物,核果,芸術,詩,温かい食事,パンとワイン,陶芸,絵画" ArableLand="耕作地,家畜,大地の恵み" ValuedOre="貴金属,アーティファクト,クロム,ジャスパー,サイバネティクス,喰らう者の蜜" />
+    <xtagTextFragments Skin="肌" PoeticFeatures="広い額,伸ばした脚,驚異に満ちた目" Activity="仲間との退屈な会話,狩猟採集,塩の砂丘を彷徨う" VillageActivity="寝袋で眠り椅子に座る,のんびり過ごす,本を読む,ムサの皮を剥いて食べる" NeedsItemFor="自分のコレクションのため,欲望を満たすため,換金するため,芸術のインスピレーションのため,詩のインスピレーションのため,ミューズにするため,農作業を手伝わせるため,甲虫の月の下で遊ぶゲームのため" SacredThing="生殖行為,哲学,アルコール,大地の穀物,核果,芸術,詩,温かい食事,パンとワイン,陶芸,絵画" ArableLand="耕作地,家畜,大地の恵み" ValuedOre="貴金属,アーティファクト,クローム,ジャスパー,サイバネティクス,喰らう者の蜜" />
     <tag Name="SimpleConversation" Value="月と太陽。知恵と意志。~この季節、大地が実りをもたらさんことを。~安らぎあれ、=player.formalAddressTerm=。" />
     <tag Name="PrimaryLimbType" Value="Hand" />
     <tag Name="LairAmbientBed" Value="Sounds/Ambiences/amb_creature_humanoid_generic" />
@@ -4753,7 +4753,7 @@
   </object>
 
 <object Name="Baetyl" Inherits="InorganicObject" Replace="true">
-    <part Name="Render" DisplayName="{{G|ベタイル}}" Tile="items/sw_betyl.bmp" DetailColor="W" RenderLayer="6" RenderString="004" ColorString="&amp;B^g" TileColor="&amp;B^k" Occluding="true" />
+    <part Name="Render" DisplayName="{{G|ベテル}}" Tile="items/sw_betyl.bmp" DetailColor="W" RenderLayer="6" RenderString="004" ColorString="&amp;B^g" TileColor="&amp;B^k" Occluding="true" />
     <part Name="Physics" Weight="12000" Takeable="false" Solid="true" />
     <part Name="Brain" Factions="Baetyls-100" Wanders="false" Mobile="false" />
     <part Name="BaetylHostility" />
@@ -4779,7 +4779,7 @@
   </object>
 
 <object Name="SparkingBaetyl" Inherits="Baetyl" Replace="true">
-    <part Name="Render" DisplayName="{{W|火花を散らすベタイル}}" RenderLayer="6" RenderString="004" ColorString="&amp;W^g" Occluding="true" />
+    <part Name="Render" DisplayName="{{W|火花を散らすベテル}}" RenderLayer="6" RenderString="004" ColorString="&amp;W^g" Occluding="true" />
     <part Name="Description" Short="滑らかな石の上にガラスのレンズが硬くこびり付き、聖なる数式の熱が空気を焼いて Q.E.D. へ冷え固まった。表皮と隕鉄層の下では、電気の心臓が地核の磁場で駆動し続け、火花のシャワーを放射する。" />
     <part Name="ConversationScript" ConversationID="SparkingBaetyl" />
     <part Name="RandomAltarBaetyl" />
@@ -9454,7 +9454,7 @@
   </object>
 
 <object Name="Baetyls Cherub" Inherits="BaseRobot" Replace="true">
-    <part Name="Render" DisplayName="ベタイルの智天使" Tile="Creatures/sw_cherub_baetyl.bmp" RenderString="b" ColorString="&amp;Y" DetailColor="y" />
+    <part Name="Render" DisplayName="ベテルの智天使" Tile="Creatures/sw_cherub_baetyl.bmp" RenderString="b" ColorString="&amp;Y" DetailColor="y" />
     <part Name="Body" Anatomy="HoverRobot" />
     <part Name="Brain" Factions="Baetyls-100" />
     <part Name="Description" Short="" />
@@ -9473,7 +9473,7 @@
   </object>
 
 <object Name="Mechanical Baetyls Cherub" Inherits="BaseRobot" Replace="true">
-    <part Name="Render" DisplayName="機械仕掛けのベタイルの智天使" Tile="Creatures/sw_cherub_baetyl_mechanical.bmp" RenderString="b" ColorString="&amp;C" DetailColor="W" />
+    <part Name="Render" DisplayName="機械仕掛けのベテルの智天使" Tile="Creatures/sw_cherub_baetyl_mechanical.bmp" RenderString="b" ColorString="&amp;C" DetailColor="W" />
     <part Name="Body" Anatomy="HoverRobot" />
     <part Name="Brain" Factions="Baetyls-100" />
     <part Name="Description" Short="" />
@@ -10342,7 +10342,7 @@
 
 <object Name="Baetyl Golem" Inherits="BaseRobot" Replace="true">
     <mixin Name="BaseVehicleGolem" />
-    <part Name="Render" DisplayName="ベタイルのゴーレム" RenderString="004" Tile="Creatures/sw_golem_baetyl.png" />
+    <part Name="Render" DisplayName="ベテルのゴーレム" RenderString="004" Tile="Creatures/sw_golem_baetyl.png" />
     <part Name="Body" Anatomy="HoverRobot" />
     <tag Name="Species" Value="baetyl" />
   </object>
@@ -11551,7 +11551,7 @@
 
 <object Name="Argyve" Inherits="HumanTinker_Village0" Replace="true">
     <part Name="Render" DisplayName="アルジーヴ" Tile="Creatures/npc-argyve.bmp" RenderString="h" />
-    <part Name="Description" Short="髭のキノコ雲はごみの海の擦過物で粉をふいている――白い石灰、赤い鉄、金のフィラメント、オパール光のプラスチグロメレートの削り屑。クロムの継手やスクラップの水晶片が胴のポケットに引っかけてあり、茂った片眉はいつも片方だけ跳ね上がっている――それが飽くなき好奇心の徴か、額の突然変異の症状かは分からない。" />
+    <part Name="Description" Short="髭のキノコ雲はごみの海の擦過物で粉をふいている――白い石灰、赤い鉄、金のフィラメント、オパール光のプラスチグロメレートの削り屑。クロームの継手やスクラップの水晶片が胴のポケットに引っかけてあり、茂った片眉はいつも片方だけ跳ね上がっている――それが飽くなき好奇心の徴か、額の突然変異の症状かは分からない。" />
     <part Name="ConversationScript" ConversationID="Argyve" />
     <part Name="Brain" Wanders="false" Factions="Joppa-100,Barathrumites-100" />
     <part Name="Interesting" />
@@ -11581,7 +11581,7 @@
 <object Name="Ctesiphus" Inherits="Ray Cat" Replace="true">
     <part Name="Render" DisplayName="クテシフス" Tile="creatures/sw_kitty.bmp" RenderString="l" ColorString="&amp;m" DetailColor="y" />
     <part Name="Brain" Wanders="True" Calm="True" Factions="Joppa-100" />
-    <part Name="Description" Short="星の帯がかかったある夜、レイキャットが湿った沃土を横切ってヨッパへ迷い込んだ。小さな少女の歓声に起こされたウォーターヴァイン農家たちは集まり、吉兆を寿ぎ、ビートルムーンの寛大さを称えた。それ以来、クテシフスは塩茎の小屋の陰で体を丸め、土の道をのんびりと歩いて過ごしている。慎重に近づきさえすれば、友にも見知らぬ者にも撫でさせてくれる。  &amp;mphosphorescent&amp;y" />
+    <part Name="Description" Short="星の帯がかかったある夜、レイキャットが湿った沃土を横切ってジョッパへ迷い込んだ。小さな少女の歓声に起こされたウォーターヴァイン農家たちは集まり、吉兆を寿ぎ、ビートルムーンの寛大さを称えた。それ以来、クテシフスは塩茎の小屋の陰で体を丸め、土の道をのんびりと歩いて過ごしている。慎重に近づきさえすれば、友にも見知らぬ者にも撫でさせてくれる。  &amp;mphosphorescent&amp;y" />
     <part Name="Raycat" />
     <part Name="Pettable" PettableIfPositiveFeeling="True" UseFactionForFeelingFloor="Joppa" />
     <tag Name="ExcludeFromDynamicEncounters" Value="*noinherit" />
@@ -12301,7 +12301,7 @@
     <part Name="ConversationScript" ConversationID="Aloysius" />
     <part Name="FactionRank" Ranks="Barathrumites::meyvn" />
     <stat Name="Hitpoints" Value="110" />
-    <part Name="Description" Short="白い毛並みと細かな皺がおずおずした目尻から放射している。予備のボルトを指関節の上で転がし、千一番目のクロム子の修理に備えて、誰かと雑談する代わりに待機している。" />
+    <part Name="Description" Short="白い毛並みと細かな皺がおずおずした目尻から放射している。予備のボルトを指関節の上で転がし、千一番目のクローム子の修理に備えて、誰かと雑談する代わりに待機している。" />
     <part Name="AISelfPreservation" Threshold="85" />
     <part Name="Interesting" />
     <part Name="Memorial" Eulogies="Barathrumites::I mourn my dear friend. Aloysius, should you persist in pale blue to flicker through the thin world... tell me so. I eagerly await you." />
