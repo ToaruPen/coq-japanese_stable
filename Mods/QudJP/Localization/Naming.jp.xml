@@ -1,0 +1,4409 @@
+<?xml version="1.0" encoding="utf-8"?>
+<naming Load="Merge">
+  <namestyles>
+    <namestyle Name="Qudish" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ファ" />
+        <prefix Name="ハ" />
+        <prefix Name="イ" Weight="2" />
+        <prefix Name="カ" />
+        <prefix Name="キ" />
+        <prefix Name="ク" />
+        <prefix Name="マ" />
+        <prefix Name="メフ" />
+        <prefix Name="モ" />
+        <prefix Name="ム" />
+        <prefix Name="ナ" />
+        <prefix Name="ニ" />
+        <prefix Name="ヌ" />
+        <prefix Name="ニ" />
+        <prefix Name="オ" />
+        <prefix Name="ク" />
+        <prefix Name="シュウ" />
+        <prefix Name="シュイ" />
+        <prefix Name="スイ" />
+        <prefix Name="シ" />
+        <prefix Name="タ" />
+        <prefix Name="ティ" />
+        <prefix Name="ティ" />
+        <prefix Name="ウ" />
+        <prefix Name="ウー" />
+        <prefix Name="イ" />
+        <prefix Name="ヤ" />
+        <prefix Name="イイ" />
+        <prefix Name="ッイ" />
+      </prefixes>
+      <infixes Amount="0-2" Load="Replace">
+        <infix Name="ガ" />
+        <infix Name="メ" />
+        <infix Name="モ" />
+        <infix Name="モオ" />
+        <infix Name="ム" />
+        <infix Name="ムウ" />
+        <infix Name="ラ" />
+        <infix Name="ロ" />
+        <infix Name="ロオ" />
+        <infix Name="ル" />
+        <infix Name="ルウ" />
+        <infix Name="シ" />
+        <infix Name="シュラ" />
+        <infix Name="シュリ" />
+        <infix Name="シュロ" />
+        <infix Name="シュル" />
+        <infix Name="シュワ" />
+        <infix Name="シュウォ" />
+        <infix Name="シュウ" />
+        <infix Name="ユ" Weight="2" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="バス" />
+        <postfix Name="ド" />
+        <postfix Name="ジル" />
+        <postfix Name="カス" />
+        <postfix Name="カト" />
+        <postfix Name="ラ" />
+        <postfix Name="ム" />
+        <postfix Name="メト" />
+        <postfix Name="ミル" />
+        <postfix Name="ムト" />
+        <postfix Name="ク" />
+        <postfix Name="カト" />
+        <postfix Name="ラク" />
+        <postfix Name="レム" />
+        <postfix Name="ロク" />
+        <postfix Name="シュム" />
+        <postfix Name="シュル" />
+        <postfix Name="テプ" />
+        <postfix Name="ウン" />
+        <postfix Name="ウル" />
+        <postfix Name="ウーン" />
+        <postfix Name="ワル" />
+        <postfix Name="ウェル" />
+        <postfix Name="ウール" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Qudish Site" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ア" />
+        <prefix Name="アラ" />
+        <prefix Name="ビ" />
+        <prefix Name="ダ" />
+        <prefix Name="ドゥ" />
+        <prefix Name="エカ" />
+        <prefix Name="ハ" />
+        <prefix Name="イ" />
+        <prefix Name="カ" />
+        <prefix Name="キ" />
+        <prefix Name="マ" />
+        <prefix Name="ミ" />
+        <prefix Name="ナ" />
+        <prefix Name="カ" />
+        <prefix Name="サ" />
+        <prefix Name="シャ" />
+        <prefix Name="シェ" />
+        <prefix Name="シュ" />
+        <prefix Name="ス" />
+        <prefix Name="タ" />
+        <prefix Name="テ" />
+        <prefix Name="トゥ" />
+        <prefix Name="ウ" />
+      </prefixes>
+      <infixes Amount="0-1" Load="Replace">
+        <infix Name="アッラ" />
+        <infix Name="アゾ" />
+        <infix Name="バ" />
+        <infix Name="ビ" />
+        <infix Name="ガ" />
+        <infix Name="ッガ" />
+        <infix Name="イリ" />
+        <infix Name="ムリ" />
+        <infix Name="ネ" />
+        <infix Name="ラ" />
+        <infix Name="ルクヘ" />
+        <infix Name="ルカ" />
+        <infix Name="ルク" />
+        <infix Name="ルスイ" />
+        <infix Name="ルヴァ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="バル" />
+        <postfix Name="ド" />
+        <postfix Name="ケスフ" />
+        <postfix Name="クフ" />
+        <postfix Name="キスフ" />
+        <postfix Name="レプ" />
+        <postfix Name="リル" />
+        <postfix Name="マス" />
+        <postfix Name="ミスフ" />
+        <postfix Name="ッム" />
+        <postfix Name="モル" />
+        <postfix Name="ムロド" />
+        <postfix Name="ムル" />
+        <postfix Name="ニプ" />
+        <postfix Name="ンナ" />
+        <postfix Name="パド" />
+        <postfix Name="ッパ" />
+        <postfix Name="ッパル" />
+        <postfix Name="ッピル" />
+        <postfix Name="ップル" />
+        <postfix Name="ル" />
+        <postfix Name="ルク" />
+        <postfix Name="スフ" />
+        <postfix Name="シャン" />
+        <postfix Name="シュル" />
+        <postfix Name="タラ" />
+        <postfix Name="トゥム" />
+        <postfix Name="ヴァフ" />
+        <postfix Name="ヴフ" />
+        <postfix Name="ワン" />
+        <postfix Name="ワル" />
+        <postfix Name="ゾル" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Qudish Banana Grove Site" Load="Merge">
+      <templates Load="Replace">
+        <template Name="バナナ園・*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Qudish Baroque Ruins Site" Load="Merge">
+      <templates Load="Replace">
+        <template Name="バロック遺構・*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Qudish Deep Jungle Site" Load="Merge">
+      <templates Load="Replace">
+        <template Name="深密林・*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Qudish Desert Canyon Site" Load="Merge">
+      <templates Load="Replace">
+        <template Name="砂漠峡谷・*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Qudish Flower Fields Site" Load="Merge">
+      <templates Load="Replace">
+        <template Name="花原・*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Qudish Fungal Site" Load="Merge">
+      <templates Load="Replace">
+        <template Name="菌類森・*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Qudish Hills Site" Load="Merge">
+      <templates Load="Replace">
+        <template Name="丘陵・*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Qudish Jungle Site" Load="Merge">
+      <templates Load="Replace">
+        <template Name="ジャングル・*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Qudish Lake Hinnom Site" Load="Merge">
+      <templates Load="Replace">
+        <template Name="水辺・*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Qudish Moon Stair Site" Load="Merge">
+      <templates Load="Replace">
+        <template Name="ムーン・ステアー・*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Qudish Mountains Site" Load="Merge">
+      <templates Load="Replace">
+        <template Name="山岳・*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Qudish Palladium Reef Site" Load="Merge">
+      <templates Load="Replace">
+        <template Name="パラジウム礁・*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Qudish Ruins Site" Load="Merge">
+      <templates Load="Replace">
+        <template Name="遺構・*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Qudish Salt Dunes Site" Load="Merge">
+      <templates Load="Replace">
+        <template Name="塩砂漠・*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Qudish Salt Marsh Site" Load="Merge">
+      <templates Load="Replace">
+        <template Name="塩湿原・*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Qudish Spindle Site" Load="Merge">
+      <templates Load="Replace">
+        <template Name="スピンドル・*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Qudish Water Site" Load="Merge">
+      <templates Load="Replace">
+        <template Name="水辺・*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Eater" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="アンティ" />
+        <prefix Name="アルタ" />
+        <prefix Name="バ" />
+        <prefix Name="ダ" />
+        <prefix Name="ダリ" />
+        <prefix Name="ドジャ" />
+        <prefix Name="ギ" />
+        <prefix Name="イ" />
+        <prefix Name="クホ" />
+        <prefix Name="クフウ" />
+        <prefix Name="メフ" />
+        <prefix Name="ミ" />
+        <prefix Name="ム" />
+        <prefix Name="ナ" />
+        <prefix Name="オ" />
+        <prefix Name="オロ" />
+        <prefix Name="ポリ" />
+        <prefix Name="ク" />
+        <prefix Name="シャ" />
+        <prefix Name="ス" />
+        <prefix Name="ウ" />
+        <prefix Name="ウー" />
+        <prefix Name="クスエル" />
+        <prefix Name="イ" />
+        <prefix Name="ヤ" />
+        <prefix Name="ユ" />
+        <prefix Name="ッイ" />
+      </prefixes>
+      <infixes Amount="0-1" Load="Replace">
+        <infix Name="レ" />
+        <infix Name="ラ" />
+        <infix Name="トフリ" />
+        <infix Name="クスエル" />
+        <infix Name="ユ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="ダテス" />
+        <postfix Name="ドクフト" />
+        <postfix Name="ドゥクフト" />
+        <postfix Name="ヒム" />
+        <postfix Name="マスプ" />
+        <postfix Name="メド" />
+        <postfix Name="パテル" />
+        <postfix Name="プル" />
+        <postfix Name="ラド" />
+        <postfix Name="ラム" />
+        <postfix Name="セフ" />
+        <postfix Name="シド" />
+        <postfix Name="シル" />
+        <postfix Name="タファ" />
+        <postfix Name="クスエス" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Ekuemekiyyen" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="アブ" />
+        <prefix Name="アド" />
+        <prefix Name="アフィ" />
+        <prefix Name="アフ" />
+        <prefix Name="アカ" />
+        <prefix Name="アキ" />
+        <prefix Name="アク" />
+        <prefix Name="アマ" />
+        <prefix Name="アヨ" />
+        <prefix Name="バ" />
+        <prefix Name="クヒ" />
+        <prefix Name="クフウ" />
+        <prefix Name="ディ" />
+        <prefix Name="ドゥ" />
+        <prefix Name="エベ" />
+        <prefix Name="エフ" />
+        <prefix Name="エケ" />
+        <prefix Name="エク" />
+        <prefix Name="エメ" />
+        <prefix Name="イフェ" />
+        <prefix Name="イマ" />
+        <prefix Name="コ" />
+        <prefix Name="クァ" />
+        <prefix Name="マ" />
+        <prefix Name="モ" />
+        <prefix Name="ナ" />
+        <prefix Name="ンケ" />
+        <prefix Name="ンキ" />
+        <prefix Name="ンネ" />
+        <prefix Name="ノ" />
+        <prefix Name="ヌ" />
+        <prefix Name="ニャ" />
+        <prefix Name="オバ" />
+        <prefix Name="オゲ" />
+        <prefix Name="オラ" />
+        <prefix Name="オル" />
+        <prefix Name="タ" />
+        <prefix Name="ザ" />
+        <prefix Name="ズ" />
+      </prefixes>
+      <infixes Amount="0-2" Load="Replace">
+        <infix Name="アマ" />
+        <infix Name="バ" />
+        <infix Name="バジ" />
+        <infix Name="バトゥ" />
+        <infix Name="ボ" />
+        <infix Name="クヒ" />
+        <infix Name="クフウ" />
+        <infix Name="ディ" />
+        <infix Name="ファ" />
+        <infix Name="フェ" />
+        <infix Name="フ" />
+        <infix Name="ジ" />
+        <infix Name="ケ" />
+        <infix Name="クゥ" />
+        <infix Name="ラ" />
+        <infix Name="ムバ" />
+        <infix Name="ムベ" />
+        <infix Name="ムボ" />
+        <infix Name="ンガ" />
+        <infix Name="ンゴ" />
+        <infix Name="ング" />
+        <infix Name="ンザ" />
+        <infix Name="ピ" />
+        <infix Name="ラ" />
+        <infix Name="セ" />
+        <infix Name="トゥ" />
+        <infix Name="イエ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="ベム" />
+        <postfix Name="ビ" />
+        <postfix Name="ボラ" />
+        <postfix Name="クヒ" />
+        <postfix Name="ダ" />
+        <postfix Name="デ" />
+        <postfix Name="ディ" />
+        <postfix Name="フェ" />
+        <postfix Name="フィ" />
+        <postfix Name="ゴ" />
+        <postfix Name="ジ" />
+        <postfix Name="ジョ" />
+        <postfix Name="カ" />
+        <postfix Name="カン" />
+        <postfix Name="ケ" />
+        <postfix Name="コ" />
+        <postfix Name="ク" />
+        <postfix Name="ラ" />
+        <postfix Name="レ" />
+        <postfix Name="ムベ" />
+        <postfix Name="メ" />
+        <postfix Name="ミ" />
+        <postfix Name="ム" />
+        <postfix Name="ンデ" />
+        <postfix Name="ンティ" />
+        <postfix Name="ニイ" />
+        <postfix Name="オイエ" />
+        <postfix Name="ポ" />
+        <postfix Name="ラ" />
+        <postfix Name="レ" />
+        <postfix Name="リ" />
+        <postfix Name="サ" />
+        <postfix Name="ト" />
+        <postfix Name="ワレ" />
+        <postfix Name="ヤ" Weight="2" />
+        <postfix Name="ヨ" />
+        <postfix Name="ザ" />
+        <postfix Name="ゾ" />
+      </postfixes>
+      <templates Load="Replace">
+        <template Name="*Name*・*Suffix*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Suffix">
+          <value Name="カ" />
+          <value Name="キ" />
+          <value Name="ク" />
+          <value Name="コ" />
+          <value Name="" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Ibulian" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ア" Weight="2" />
+        <prefix Name="アエ" />
+        <prefix Name="アン" />
+        <prefix Name="アウ" />
+        <prefix Name="バ" />
+        <prefix Name="ブラ" />
+        <prefix Name="ブル" />
+        <prefix Name="カエ" />
+        <prefix Name="カイ" />
+        <prefix Name="カミ" />
+        <prefix Name="カッスイ" />
+        <prefix Name="スイ" />
+        <prefix Name="クラウ" />
+        <prefix Name="クナエ" />
+        <prefix Name="コ" />
+        <prefix Name="クリ" />
+        <prefix Name="デ" />
+        <prefix Name="ディオ" />
+        <prefix Name="ド" />
+        <prefix Name="ドル" />
+        <prefix Name="エグナ" />
+        <prefix Name="ファ" />
+        <prefix Name="ファウ" />
+        <prefix Name="フェ" />
+        <prefix Name="フラ" />
+        <prefix Name="フロ" />
+        <prefix Name="ガ" />
+        <prefix Name="ゲ" />
+        <prefix Name="グナエ" />
+        <prefix Name="ハ" />
+        <prefix Name="ヘ" />
+        <prefix Name="ホ" />
+        <prefix Name="イオ" />
+        <prefix Name="イウ" />
+        <prefix Name="ジャ" />
+        <prefix Name="ジュ" />
+        <prefix Name="ラ" />
+        <prefix Name="ラウ" />
+        <prefix Name="リ" />
+        <prefix Name="ル" />
+        <prefix Name="マ" />
+        <prefix Name="ネ" />
+        <prefix Name="ノ" />
+        <prefix Name="オクタ" />
+        <prefix Name="オヴィ" />
+        <prefix Name="プリ" />
+        <prefix Name="ポ" />
+        <prefix Name="プリ" />
+        <prefix Name="プ" />
+        <prefix Name="クイ" />
+        <prefix Name="ル" />
+        <prefix Name="サ" />
+        <prefix Name="セ" />
+        <prefix Name="スプ" />
+        <prefix Name="タ" />
+        <prefix Name="ティ" />
+        <prefix Name="トゥ" />
+        <prefix Name="ヴァ" />
+        <prefix Name="ヴェ" />
+        <prefix Name="ヴィ" />
+      </prefixes>
+      <infixes Amount="0-1" Load="Replace">
+        <infix Name="ビ" Weight="2" />
+        <infix Name="ブリ" />
+        <infix Name="セ" />
+        <infix Name="スイ" />
+        <infix Name="クレ" />
+        <infix Name="ドリ" />
+        <infix Name="ガ" />
+        <infix Name="グリ" />
+        <infix Name="グ" Weight="2" />
+        <infix Name="ッル" />
+        <infix Name="ル" />
+        <infix Name="ミ" Weight="2" />
+        <infix Name="ナ" />
+        <infix Name="ンディ" />
+        <infix Name="ニ" />
+        <infix Name="ヌ" />
+        <infix Name="ピ" />
+        <infix Name="プリ" />
+        <infix Name="ラ" />
+        <infix Name="ルディ" />
+        <infix Name="レ" Weight="2" />
+        <infix Name="レンティ" />
+        <infix Name="ルマ" />
+        <infix Name="ルネ" />
+        <infix Name="スイ" />
+        <infix Name="スピ" />
+        <infix Name="ッスイ" />
+        <infix Name="スティ" />
+        <infix Name="ティ" />
+        <infix Name="ト" />
+        <infix Name="ヴィ" />
+        <infix Name="クスエ" />
+        <infix Name="クスイ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="バ" />
+        <postfix Name="ビウス" />
+        <postfix Name="ブス" />
+        <postfix Name="スイウス" />
+        <postfix Name="ディア" />
+        <postfix Name="ディナ" />
+        <postfix Name="ディヌス" />
+        <postfix Name="ディウス" />
+        <postfix Name="ギナ" />
+        <postfix Name="ギヌス" />
+        <postfix Name="イウス" />
+        <postfix Name="リア" />
+        <postfix Name="リアナ" />
+        <postfix Name="リウス" />
+        <postfix Name="リクス" />
+        <postfix Name="ッラ" />
+        <postfix Name="ルス" />
+        <postfix Name="ムス" />
+        <postfix Name="ナ" />
+        <postfix Name="ニウス" />
+        <postfix Name="ヌス" />
+        <postfix Name="ピウス" />
+        <postfix Name="ッパ" />
+        <postfix Name="ッピナ" />
+        <postfix Name="プス" />
+        <postfix Name="ロ" />
+        <postfix Name="サル" />
+        <postfix Name="スイウス" />
+        <postfix Name="スタ" />
+        <postfix Name="ストゥス" />
+        <postfix Name="ト" />
+        <postfix Name="トゥス" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Yawningmoon" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="アパ" />
+        <prefix Name="ヂャ" />
+        <prefix Name="グフルタ" />
+        <prefix Name="ジナ" />
+        <prefix Name="クサ" />
+        <prefix Name="クセ" />
+        <prefix Name="クソ" />
+        <prefix Name="ミ" />
+        <prefix Name="ニル" />
+        <prefix Name="プリ" />
+        <prefix Name="プ" />
+        <prefix Name="ル" />
+        <prefix Name="サヴィ" />
+        <prefix Name="タル" />
+        <prefix Name="トヴァ" />
+        <prefix Name="トヴィ" />
+        <prefix Name="トヴォ" />
+        <prefix Name="ウル" />
+        <prefix Name="ヴリ" />
+      </prefixes>
+      <infixes Amount="0-1" Load="Replace">
+        <infix Name="ルトフ" />
+        <infix Name="スフ" />
+        <infix Name="トフ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="タル" />
+        <postfix Name="ドラ" />
+        <postfix Name="ヴラ" />
+        <postfix Name="ヴリン" />
+        <postfix Name="トル" />
+        <postfix Name="ヴリ" />
+        <postfix Name="ヌ" />
+        <postfix Name="ドル" />
+        <postfix Name="クラス" />
+        <postfix Name="クラ" />
+        <postfix Name="トラ" />
+        <postfix Name="トリ" />
+        <postfix Name="トルウ" />
+        <postfix Name="ニュ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Arcologian" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ア" Weight="3" />
+        <prefix Name="アド" />
+        <prefix Name="アエ" />
+        <prefix Name="バ" />
+        <prefix Name="クフリ" />
+        <prefix Name="クラウ" />
+        <prefix Name="クレオ" />
+        <prefix Name="コ" />
+        <prefix Name="クロ" />
+        <prefix Name="シ" />
+        <prefix Name="ダ" />
+        <prefix Name="デ" />
+        <prefix Name="ディ" />
+        <prefix Name="ディオ" />
+        <prefix Name="エ" />
+        <prefix Name="エウ" />
+        <prefix Name="ガ" />
+        <prefix Name="ゲオ" />
+        <prefix Name="ギ" />
+        <prefix Name="グレ" />
+        <prefix Name="ヘ" />
+        <prefix Name="ヒエ" />
+        <prefix Name="ホ" />
+        <prefix Name="ヒャ" />
+        <prefix Name="イ" />
+        <prefix Name="ジャ" />
+        <prefix Name="ジェ" />
+        <prefix Name="ジュ" />
+        <prefix Name="カ" />
+        <prefix Name="クフロ" />
+        <prefix Name="クラウ" />
+        <prefix Name="クリ" />
+        <prefix Name="キル" />
+        <prefix Name="ラ" />
+        <prefix Name="レア" />
+        <prefix Name="レオ" />
+        <prefix Name="リ" />
+        <prefix Name="マ" />
+        <prefix Name="ミ" />
+        <prefix Name="ネ" />
+        <prefix Name="ニ" />
+        <prefix Name="オ" />
+        <prefix Name="パ" />
+        <prefix Name="ペ" />
+        <prefix Name="プヒ" />
+        <prefix Name="ピエ" />
+        <prefix Name="プラ" />
+        <prefix Name="プロ" />
+        <prefix Name="プト" />
+        <prefix Name="ピ" />
+        <prefix Name="ラ" />
+        <prefix Name="サ" />
+        <prefix Name="セ" />
+        <prefix Name="ソ" />
+        <prefix Name="スタ" />
+        <prefix Name="ステ" />
+        <prefix Name="トハ" />
+        <prefix Name="トヘ" />
+        <prefix Name="トヘオ" />
+        <prefix Name="ティ" />
+        <prefix Name="クスア" />
+        <prefix Name="ゼ" />
+      </prefixes>
+      <infixes Amount="0-1" Load="Replace">
+        <infix Name="アンデ" />
+        <infix Name="ビ" />
+        <infix Name="ビウ" />
+        <infix Name="セ" />
+        <infix Name="クハエ" />
+        <infix Name="クヒ" />
+        <infix Name="クホ" />
+        <infix Name="スイ" Weight="2" />
+        <infix Name="クリ" />
+        <infix Name="クラ" />
+        <infix Name="ッダエウ" />
+        <infix Name="デ" />
+        <infix Name="ド" Weight="2" />
+        <infix Name="ドレ" />
+        <infix Name="ディ" />
+        <infix Name="エス" />
+        <infix Name="ゲ" />
+        <infix Name="ゲスイ" />
+        <infix Name="ギ" />
+        <infix Name="ゴ" />
+        <infix Name="レ" />
+        <infix Name="リ" />
+        <infix Name="ムブロ" />
+        <infix Name="メ" Weight="2" />
+        <infix Name="モ" />
+        <infix Name="ムピ" />
+        <infix Name="ナ" />
+        <infix Name="ナエウ" />
+        <infix Name="ネア" />
+        <infix Name="ンゲロ" />
+        <infix Name="ンゲル" />
+        <infix Name="ンティ" />
+        <infix Name="ンティオ" Weight="2" />
+        <infix Name="ニ" />
+        <infix Name="オニ" />
+        <infix Name="プホ" Weight="2" />
+        <infix Name="プフロ" />
+        <infix Name="ピ" />
+        <infix Name="ラ" Weight="2" />
+        <infix Name="ルカ" />
+        <infix Name="リ" />
+        <infix Name="ロ" />
+        <infix Name="ルプヘウ" />
+        <infix Name="サ" />
+        <infix Name="スクヒ" />
+        <infix Name="セ" />
+        <infix Name="スイ" />
+        <infix Name="スイア" />
+        <infix Name="スム" />
+        <infix Name="スタ" Weight="2" />
+        <infix Name="ストヘ" />
+        <infix Name="スティア" />
+        <infix Name="トハ" Weight="2" />
+        <infix Name="ティウ" />
+        <infix Name="ト" />
+        <infix Name="トゥ" />
+        <infix Name="クスア" />
+        <infix Name="クスイ" />
+        <infix Name="クスイア" />
+        <infix Name="ヤ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="ア" />
+        <postfix Name="アン" />
+        <postfix Name="ベ" />
+        <postfix Name="ビル" />
+        <postfix Name="ビウス" />
+        <postfix Name="セ" />
+        <postfix Name="クヒア" />
+        <postfix Name="クフウス" />
+        <postfix Name="クラ" />
+        <postfix Name="クレス" Weight="2" />
+        <postfix Name="クリド" />
+        <postfix Name="クトラ" />
+        <postfix Name="シ" />
+        <postfix Name="ダ" />
+        <postfix Name="ダセ" />
+        <postfix Name="ダス" />
+        <postfix Name="デル" />
+        <postfix Name="デス" Weight="2" />
+        <postfix Name="ディテ" />
+        <postfix Name="ディウス" />
+        <postfix Name="ドネ" Weight="2" />
+        <postfix Name="ドラ" Weight="3" />
+        <postfix Name="ドリア" />
+        <postfix Name="ゴル" />
+        <postfix Name="イオネ" />
+        <postfix Name="ジャ" />
+        <postfix Name="ラ" />
+        <postfix Name="ラス" />
+        <postfix Name="ラウス" />
+        <postfix Name="レ" />
+        <postfix Name="レエン" />
+        <postfix Name="レン" />
+        <postfix Name="レス" />
+        <postfix Name="リア" />
+        <postfix Name="リン" />
+        <postfix Name="リネ" />
+        <postfix Name="リプ" />
+        <postfix Name="リップ" />
+        <postfix Name="リウス" />
+        <postfix Name="ッラ" />
+        <postfix Name="ッレン" />
+        <postfix Name="マス" />
+        <postfix Name="ミア" />
+        <postfix Name="ミス" />
+        <postfix Name="モン" Weight="2" />
+        <postfix Name="ムス" Weight="3" />
+        <postfix Name="ミ" />
+        <postfix Name="ン" Weight="2" />
+        <postfix Name="ナ" Weight="2" />
+        <postfix Name="ンダ" />
+        <postfix Name="ンデル" Weight="2" />
+        <postfix Name="ンドレウ" />
+        <postfix Name="ネ" Weight="3" />
+        <postfix Name="ネス" />
+        <postfix Name="ンゲル" />
+        <postfix Name="ニア" />
+        <postfix Name="ニセ" />
+        <postfix Name="ニス" Weight="2" />
+        <postfix Name="ニセ" />
+        <postfix Name="ンナ" Weight="2" />
+        <postfix Name="ンネ" Weight="2" />
+        <postfix Name="ントフ" />
+        <postfix Name="ントハ" />
+        <postfix Name="ントヘ" Weight="2" />
+        <postfix Name="ニス" />
+        <postfix Name="プヘン" />
+        <postfix Name="プヘル" Weight="2" />
+        <postfix Name="プヘウス" />
+        <postfix Name="プフネ" />
+        <postfix Name="プホネ" />
+        <postfix Name="ル" />
+        <postfix Name="ラス" />
+        <postfix Name="ルカス" />
+        <postfix Name="レ" />
+        <postfix Name="レン" />
+        <postfix Name="レス" />
+        <postfix Name="レト" />
+        <postfix Name="レット" />
+        <postfix Name="ルゲ" />
+        <postfix Name="ルギア" />
+        <postfix Name="リル" />
+        <postfix Name="リン" />
+        <postfix Name="リネ" />
+        <postfix Name="リオン" />
+        <postfix Name="リス" Weight="3" />
+        <postfix Name="ルス" />
+        <postfix Name="ルス" />
+        <postfix Name="リ" />
+        <postfix Name="リン" Weight="2" />
+        <postfix Name="ス" Weight="3" />
+        <postfix Name="サ" />
+        <postfix Name="セ" />
+        <postfix Name="スイル" />
+        <postfix Name="スイス" />
+        <postfix Name="ッサ" Weight="2" />
+        <postfix Name="ッセウス" />
+        <postfix Name="スタ" />
+        <postfix Name="ストル" />
+        <postfix Name="スス" />
+        <postfix Name="シネ" />
+        <postfix Name="タ" Weight="2" />
+        <postfix Name="テル" />
+        <postfix Name="テス" Weight="2" />
+        <postfix Name="トハ" />
+        <postfix Name="トヘア" Weight="2" />
+        <postfix Name="トヘウス" />
+        <postfix Name="トヒア" />
+        <postfix Name="トヒ" />
+        <postfix Name="ティアン" Weight="2" />
+        <postfix Name="ティウス" />
+        <postfix Name="ト" />
+        <postfix Name="トル" />
+        <postfix Name="トレ" />
+        <postfix Name="ッタ" Weight="2" />
+        <postfix Name="トゥス" Weight="4" />
+        <postfix Name="ティクヘ" />
+        <postfix Name="ウス" Weight="2" />
+        <postfix Name="ヴェン" />
+        <postfix Name="クス" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Baboon" Load="Merge">
+      <prefixes Amount="1-3" Load="Replace">
+        <prefix Name="オー" />
+        <prefix Name="オーオ" />
+        <prefix Name="オ" />
+        <prefix Name="オー" />
+        <prefix Name="オーー" />
+        <prefix Name="ホ" />
+        <prefix Name="ホオ" />
+      </prefixes>
+      <infixes Amount="1-3" Load="Replace">
+        <infix Name="オ" />
+        <infix Name="オー" Weight="2" />
+        <infix Name="オーオ" />
+        <infix Name="ホオ" />
+        <infix Name="ホオー" />
+        <infix Name="アー" Weight="3" />
+        <infix Name="エ" />
+        <infix Name="エー" />
+        <infix Name="エーエ" />
+      </infixes>
+      <postfixes Amount="0-2" Load="Replace">
+        <postfix Name="アー" />
+        <postfix Name="アッフ" />
+        <postfix Name="オ" />
+        <postfix Name="オー" />
+        <postfix Name="オーオ" />
+        <postfix Name="ホ" />
+        <postfix Name="ホオ" />
+        <postfix Name="エ" />
+        <postfix Name="エー" />
+        <postfix Name="エーエ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Baboon Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*Rings*輪のヒヒ・*Position*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Position">
+          <value Name="プヒランデレル" />
+          <value Name="リッドレル" />
+          <value Name="ヘルミト" />
+          <value Name="ソプヒスティカテ" />
+          <value Name="デマゴグエ" />
+          <value Name="王" />
+          <value Name="女王" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Clam" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="アコ" />
+        <prefix Name="アガ" />
+        <prefix Name="バ" />
+        <prefix Name="ボ" />
+        <prefix Name="カ" />
+        <prefix Name="ディ" />
+        <prefix Name="ギ" />
+        <prefix Name="ハ" Weight="2" />
+        <prefix Name="ヒ" />
+        <prefix Name="ジャ" />
+        <prefix Name="マ" />
+        <prefix Name="ム" />
+        <prefix Name="ルホ" />
+        <prefix Name="サ" />
+        <prefix Name="ソ" />
+        <prefix Name="テ" />
+        <prefix Name="イ" />
+        <prefix Name="ザ" />
+      </prefixes>
+      <infixes Amount="1-2" Load="Replace">
+        <infix Name="ブニ" />
+        <infix Name="ド" />
+        <infix Name="ッギ" />
+        <infix Name="ゴ" />
+        <infix Name="ル" />
+        <infix Name="ミル" />
+        <infix Name="ムプスイ" />
+        <infix Name="ンニ" />
+        <infix Name="プホ" />
+        <infix Name="ラ" />
+        <infix Name="ルカ" />
+        <infix Name="ルトハ" />
+        <infix Name="スドル" />
+        <infix Name="スゴ" />
+        <infix Name="トラ" />
+        <infix Name="ッティ" />
+        <infix Name="ゼ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="クラム" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Crab" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="アコ" />
+        <prefix Name="アガ" />
+        <prefix Name="バ" />
+        <prefix Name="ボ" />
+        <prefix Name="カ" />
+        <prefix Name="ディ" />
+        <prefix Name="ギ" />
+        <prefix Name="ハ" Weight="2" />
+        <prefix Name="ヒ" />
+        <prefix Name="ジャ" />
+        <prefix Name="マ" />
+        <prefix Name="ム" />
+        <prefix Name="ルホ" />
+        <prefix Name="サ" />
+        <prefix Name="ソ" />
+        <prefix Name="テ" />
+        <prefix Name="イ" />
+        <prefix Name="ザ" />
+      </prefixes>
+      <infixes Amount="1-2" Load="Replace">
+        <infix Name="ブニ" />
+        <infix Name="ド" />
+        <infix Name="ッギ" />
+        <infix Name="ゴ" />
+        <infix Name="ル" />
+        <infix Name="ミル" />
+        <infix Name="ムプスイ" />
+        <infix Name="ンニ" />
+        <infix Name="プホ" />
+        <infix Name="ラ" />
+        <infix Name="ルカ" />
+        <infix Name="ルトハ" />
+        <infix Name="スドル" />
+        <infix Name="スゴ" />
+        <infix Name="トラ" />
+        <infix Name="ッティ" />
+        <infix Name="ゼ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="クラブ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Crab Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*Adjective*な*CreatureTypeCap*・*Position*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Adjective">
+          <value Name="エクホイング" />
+          <value Name="フレネティク" />
+          <value Name="マニ・レッゲド" />
+          <value Name="マッスイヴェ" />
+          <value Name="オネ・クラウェド" />
+          <value Name="シェッル・クラッケド" />
+        </templatevar>
+        <templatevar Name="Position">
+          <value Name="アンスイエント" />
+          <value Name="デエプクラウレル" />
+          <value Name="ゴリアトフ" />
+          <value Name="ロルド" />
+          <value Name="パトリアルクフ" />
+          <value Name="スクットレル" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Goatfolk" Load="Merge">
+      <prefixes Amount="0-1" Load="Replace">
+        <prefix Name="バ" />
+        <prefix Name="バア" Weight="2" />
+        <prefix Name="ナ" />
+        <prefix Name="ナア" />
+        <prefix Name="ラ" />
+        <prefix Name="ラア" />
+      </prefixes>
+      <infixes Amount="0-3" Load="Replace">
+        <infix Name="バ" Weight="2" />
+        <infix Name="バア" />
+        <infix Name="ナア" />
+        <infix Name="ラ" Weight="2" />
+        <infix Name="ラア" />
+      </infixes>
+      <postfixes Amount="1-2" Load="Replace">
+        <postfix Name="ア" />
+        <postfix Name="アーア" />
+        <postfix Name="アーアーアー" />
+        <postfix Name="アーアー" />
+        <postfix Name="アーー" />
+        <postfix Name="アー" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Goatfolk Hero" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Goatfolk Hero Epithet" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*Epithet*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Epithet">
+          <value Name="スタルガゼル" />
+          <value Name="ヘアルトビテル" />
+          <value Name="トウィセタルケル" />
+          <value Name="ソウルドリンケル" />
+          <value Name="ウヒテフィンゲル" />
+          <value Name="クロヴェンホルン" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Goatfolk Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="氏族*Clan*の山羊人シャーマン" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Clan">
+          <value Name="ホトゥル" />
+          <value Name="イベクス" />
+          <value Name="ソル" />
+          <value Name="ウヒテトングエ" />
+          <value Name="イル" />
+          <value Name="ムニム" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Goatfolk Site" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="バ" />
+        <prefix Name="バア" Weight="2" />
+        <prefix Name="ナ" />
+        <prefix Name="ナア" />
+        <prefix Name="ラ" />
+        <prefix Name="ラア" />
+      </prefixes>
+      <infixes Amount="0-1" Load="Replace">
+        <infix Name="バ" Weight="2" />
+        <infix Name="バア" />
+        <infix Name="ナア" />
+        <infix Name="ラ" Weight="2" />
+        <infix Name="ラア" />
+      </infixes>
+      <templates Load="Replace">
+        <template Name="*Name**Suffix*" Weight="1800" />
+        <template Name="*Prefix**Suffix*" Weight="1800" />
+        <template Name="*Sultan**Suffix*" Weight="450" />
+        <template Name="*Name**Location*" Weight="1125" />
+        <template Name="*Prefix**Location*" Weight="1125" />
+        <template Name="*Sultan**Location*" Weight="250" />
+        <template Name="*Name**Forest*" Weight="1575" />
+        <template Name="*Prefix**Forest*" Weight="1575" />
+        <template Name="*Sultan**Forest*" Weight="350" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Prefix">
+          <value Name="アスフ" />
+          <value Name="ブラック" />
+          <value Name="ブロオド" />
+          <value Name="ボネ" />
+          <value Name="クロヴェン" />
+          <value Name="フェルン" />
+          <value Name="ヘアルト" />
+          <value Name="モオン" />
+          <value Name="モッス" />
+          <value Name="ライン" />
+          <value Name="サプ" />
+          <value Name="スクッル" />
+          <value Name="スタル" />
+          <value Name="ウヒテ" />
+        </templatevar>
+        <templatevar Name="Sultan">
+          <value Name="レシェフ" />
+        </templatevar>
+        <templatevar Name="Suffix">
+          <value Name="バア" />
+          <value Name="バアーアーアー" />
+          <value Name="バアーアーー" />
+          <value Name="バアーアー" />
+          <value Name="バアーー" />
+          <value Name="バアー" />
+          <value Name="ナアー" />
+          <value Name="ナアーアーアー" />
+          <value Name="ナアーアーー" />
+          <value Name="ナアーアー" />
+          <value Name="ナアーー" />
+          <value Name="ラア" />
+          <value Name="ラアーアーアー" />
+          <value Name="ラアーアーー" />
+          <value Name="ラアーアー" />
+          <value Name="ラアーー" />
+          <value Name="ラアー" />
+        </templatevar>
+        <templatevar Name="Forest">
+          <value Name="ボスク" />
+          <value Name="ダレ" />
+          <value Name="デッル" />
+          <value Name="グラデ" />
+          <value Name="グレン" />
+          <value Name="ゴルゲ" />
+          <value Name="グロヴェ" />
+          <value Name="メアドウ" />
+          <value Name="ロオト" />
+          <value Name="ヴァレ" />
+          <value Name="ウェアルド" />
+          <value Name="ウェエプ" />
+          <value Name="ウォオド" />
+        </templatevar>
+        <templatevar Name="Location">
+          <value Name="ベンド" />
+          <value Name="ビテ" />
+          <value Name="ボウ" />
+          <value Name="クレフト" />
+          <value Name="クレッセント" />
+          <value Name="デエプ" />
+          <value Name="ポオル" />
+          <value Name="スタル" />
+          <value Name="ヴォイド" />
+          <value Name="ウェッル" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Qlippoth Site" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="バ" />
+        <prefix Name="バア" Weight="2" />
+        <prefix Name="ナ" />
+        <prefix Name="ナア" />
+        <prefix Name="ラ" />
+        <prefix Name="ラア" />
+      </prefixes>
+      <infixes Amount="0-1" Load="Replace">
+        <infix Name="バ" Weight="2" />
+        <infix Name="バア" />
+        <infix Name="ナア" />
+        <infix Name="ラ" Weight="2" />
+        <infix Name="ラア" />
+      </infixes>
+      <templates Load="Replace">
+        <template Name="*Prefix**Suffix*" Weight="1800" />
+        <template Name="*Name**Location*" Weight="1125" />
+        <template Name="*Prefix**Location*" Weight="1125" />
+        <template Name="*Sultan**Location*" Weight="250" />
+        <template Name="*Prefix**Forest*" Weight="1575" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Prefix">
+          <value Name="アスフ" />
+          <value Name="ブラック" />
+          <value Name="グホスト" />
+          <value Name="ドゥスト" />
+          <value Name="ウライトフ" />
+          <value Name="モオン" />
+          <value Name="ドレアム" />
+          <value Name="スタル" />
+          <value Name="ウヒテ" />
+          <value Name="グレイ" />
+          <value Name="グロオム" />
+          <value Name="ディム" />
+          <value Name="ドゥスク" />
+          <value Name="エヴェル" />
+          <value Name="ヌッル" />
+        </templatevar>
+        <templatevar Name="Sultan">
+          <value Name="レシェフ" />
+        </templatevar>
+        <templatevar Name="Suffix">
+          <value Name="バア" />
+          <value Name="バアーアーアー" />
+          <value Name="バアーアーー" />
+          <value Name="バアーアー" />
+          <value Name="バアーー" />
+          <value Name="バアー" />
+          <value Name="ナアー" />
+          <value Name="ナアーアーアー" />
+          <value Name="ナアーアーー" />
+          <value Name="ナアーアー" />
+          <value Name="ナアーー" />
+          <value Name="ラア" />
+          <value Name="ラアーアーアー" />
+          <value Name="ラアーアーー" />
+          <value Name="ラアーアー" />
+          <value Name="ラアーー" />
+          <value Name="ラアー" />
+        </templatevar>
+        <templatevar Name="Forest">
+          <value Name="ボスク" />
+          <value Name="ダレ" />
+          <value Name="デッル" />
+          <value Name="グラデ" />
+          <value Name="グレン" />
+          <value Name="ゴルゲ" />
+          <value Name="グロヴェ" />
+          <value Name="メアドウ" />
+          <value Name="ロオト" />
+          <value Name="ヴァレ" />
+          <value Name="ウェアルド" />
+          <value Name="ウェエプ" />
+          <value Name="ウォオド" />
+          <value Name="ホッロウ" />
+        </templatevar>
+        <templatevar Name="Location">
+          <value Name="クレッセント" />
+          <value Name="デエプ" />
+          <value Name="ポオル" />
+          <value Name="スタル" />
+          <value Name="ヴォイド" />
+          <value Name="ウェッル" />
+          <value Name="ドレアム" />
+          <value Name="ミトフ" />
+          <value Name="カルム" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Naphtaali" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ア" />
+        <prefix Name="バア" />
+        <prefix Name="ベエ" />
+        <prefix Name="ベ" />
+        <prefix Name="クヘ" />
+        <prefix Name="ダ" />
+        <prefix Name="エル" />
+        <prefix Name="ガ" />
+        <prefix Name="ゴ" />
+        <prefix Name="ハウ" />
+        <prefix Name="イ" />
+        <prefix Name="イ" />
+        <prefix Name="マ" />
+        <prefix Name="モ" />
+        <prefix Name="ナ" />
+        <prefix Name="ネ" />
+        <prefix Name="ニ" />
+        <prefix Name="コ" />
+        <prefix Name="レ" />
+        <prefix Name="シャ" />
+        <prefix Name="ヤ" />
+        <prefix Name="ス" />
+      </prefixes>
+      <infixes Amount="1-2" Load="Replace">
+        <infix Name="ドラッメ" />
+        <infix Name="ム" />
+        <infix Name="ナッメレ" />
+        <infix Name="シェラ" />
+        <infix Name="スタロ" />
+        <infix Name="スタ" />
+        <infix Name="トヘ" />
+        <infix Name="エモ" />
+        <infix Name="ゴ" />
+        <infix Name="ロヒ" />
+        <infix Name="リョ" />
+        <infix Name="ナンナ" />
+        <infix Name="ロ" />
+        <infix Name="フウスフタ" />
+        <infix Name="ルガ" />
+        <infix Name="ヌルタ" />
+        <infix Name="ムプハ" />
+        <infix Name="シェ" />
+        <infix Name="アプシュ" />
+        <infix Name="ラ" />
+        <infix Name="フウェ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="クフ" />
+        <postfix Name="ン" />
+        <postfix Name="フ" />
+        <postfix Name="トフ" />
+        <postfix Name="ルテ" />
+        <postfix Name="ル" />
+        <postfix Name="スフ" />
+        <postfix Name="ド" />
+        <postfix Name="ム" />
+        <postfix Name="ンナ" />
+        <postfix Name="ルト" />
+        <postfix Name="ト" />
+        <postfix Name="ルタ" />
+        <postfix Name="ス" />
+        <postfix Name="プフ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Godhed Hero Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*Honorific*・ゴッドヘッド" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Honorific">
+          <value Name="spice.adjectives.!random" />
+          <value Name="spice.nouns.!random" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Godhed Hero Epithet" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*Adjective*・ゴッドヘッド" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Adjective">
+          <value Name="spice.adjectives.!random" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Godhed Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*Noun1*のゴッドヘッド" />
+        <template Name="*Noun1*・*Noun2*のゴッドヘッド" Weight="2" />
+        <template Name="*Adj*・*Noun1*のゴッドヘッド" Weight="2" />
+        <template Name="*NounPlural*のゴッドヘッド" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Noun1">
+          <value Name="spice.nouns.!random" />
+        </templatevar>
+        <templatevar Name="Noun2">
+          <value Name="spice.nouns.!random" />
+        </templatevar>
+        <templatevar Name="NounPlural">
+          <value Name="spice.nouns.!random.pluralize" />
+        </templatevar>
+        <templatevar Name="Adj">
+          <value Name="spice.adjectives.!random" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Godhed Hero Title Empty" Load="Merge">
+      <templates Load="Replace">
+        <template Name="" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Snapjaw" Load="Merge">
+      <prefixes Amount="0-2" Load="Replace">
+        <prefix Name="バル" />
+        <prefix Name="バウル" />
+        <prefix Name="ボル" />
+        <prefix Name="ボウル" />
+        <prefix Name="ブル" />
+        <prefix Name="ブウル" />
+        <prefix Name="ダ" />
+        <prefix Name="ド" />
+        <prefix Name="ドゥ" />
+        <prefix Name="グラ" />
+        <prefix Name="グロ" />
+        <prefix Name="グル" />
+        <prefix Name="マフ" />
+        <prefix Name="モフ" />
+        <prefix Name="ムフ" />
+        <prefix Name="ラフ" />
+        <prefix Name="ロフ" />
+        <prefix Name="ルフ" />
+        <prefix Name="スカル" />
+        <prefix Name="スコル" />
+        <prefix Name="スクル" />
+      </prefixes>
+      <infixes Amount="1-4" Load="Replace">
+        <infix Name="アフォ" />
+        <infix Name="アゴ" />
+        <infix Name="アホ" />
+        <infix Name="オボ" />
+        <infix Name="オフォ" />
+        <infix Name="オゴ" />
+        <infix Name="オホ" />
+        <infix Name="ス" />
+        <infix Name="ウブ" />
+        <infix Name="ウフォ" />
+        <infix Name="ウゴ" />
+        <infix Name="ウホ" />
+        <infix Name="ウル" />
+        <infix Name="ウォフ" />
+      </infixes>
+      <postfixes Amount="0-2" Load="Replace">
+        <postfix Name="アブ" />
+        <postfix Name="アフ" />
+        <postfix Name="アゴ" />
+        <postfix Name="アウ" />
+        <postfix Name="アズ" />
+        <postfix Name="バ" />
+        <postfix Name="ボ" />
+        <postfix Name="ブ" />
+        <postfix Name="マ" />
+        <postfix Name="モ" />
+        <postfix Name="ム" />
+        <postfix Name="オブ" />
+        <postfix Name="オフ" />
+        <postfix Name="オウ" />
+        <postfix Name="オズ" />
+        <postfix Name="ウブ" />
+        <postfix Name="ウフ" />
+        <postfix Name="ウー" />
+        <postfix Name="ウズ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Snapjaw Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*Adjective*なスナップジョー・*Occupation*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Adjective">
+          <value Name="カッロウセド" />
+          <value Name="フェアルソメ" />
+          <value Name="フレエト・フォオテド" />
+          <value Name="フウルキング" />
+          <value Name="レアルネド" />
+          <value Name="ニムブレ" />
+          <value Name="スタルワルト" />
+        </templatevar>
+        <templatevar Name="Occupation">
+          <value Name="ベアル・バイテル" />
+          <value Name="フィレスナルレル" />
+          <value Name="グトスピッレル" />
+          <value Name="王" />
+          <value Name="スクッルスプリッテル" />
+          <value Name="トト・エアテル" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Star" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="アブホ" />
+        <prefix Name="アラ" />
+        <prefix Name="アッム" />
+        <prefix Name="アモ" />
+        <prefix Name="アプホ" />
+        <prefix Name="アポ" />
+        <prefix Name="アルワ" />
+        <prefix Name="アトラ" />
+        <prefix Name="バオ" />
+        <prefix Name="バ" />
+        <prefix Name="ブグヌ" />
+        <prefix Name="ボ" />
+        <prefix Name="ブ" />
+        <prefix Name="ビャ" />
+        <prefix Name="コア" />
+        <prefix Name="クロ" />
+        <prefix Name="クトハ" />
+        <prefix Name="クトハエ" />
+        <prefix Name="クトヒ" />
+        <prefix Name="シャ" />
+        <prefix Name="シノ" />
+        <prefix Name="ドフウ" />
+        <prefix Name="ディ" />
+        <prefix Name="ドゼ" />
+        <prefix Name="エイ" />
+        <prefix Name="エテ" />
+        <prefix Name="グハ" />
+        <prefix Name="ギ" />
+        <prefix Name="グレエ" />
+        <prefix Name="グロオ" />
+        <prefix Name="ゴ" />
+        <prefix Name="グロ" />
+        <prefix Name="グトゥ" />
+        <prefix Name="グズクス" />
+        <prefix Name="ハ" />
+        <prefix Name="フナ" />
+        <prefix Name="フズイ" />
+        <prefix Name="イドフ" />
+        <prefix Name="インペ" />
+        <prefix Name="イオ" />
+        <prefix Name="イ" />
+        <prefix Name="ジャ" />
+        <prefix Name="ジュ" />
+        <prefix Name="カア" />
+        <prefix Name="クハ" />
+        <prefix Name="クナ" />
+        <prefix Name="クラ" />
+        <prefix Name="クトハ" />
+        <prefix Name="ク" />
+        <prefix Name="ラ" />
+        <prefix Name="リ" />
+        <prefix Name="マ" />
+        <prefix Name="ムバ" />
+        <prefix Name="ムナ" />
+        <prefix Name="ムノ" />
+        <prefix Name="モ" />
+        <prefix Name="ミノ" />
+        <prefix Name="ンクト" />
+        <prefix Name="ンギ" />
+        <prefix Name="ンッス" />
+        <prefix Name="ヌ" />
+        <prefix Name="ニャ" />
+        <prefix Name="ニクラ" />
+        <prefix Name="ニョ" />
+        <prefix Name="オー" />
+        <prefix Name="オトフウ" />
+        <prefix Name="ペ" />
+        <prefix Name="プハ" />
+        <prefix Name="プス" />
+        <prefix Name="プタ" />
+        <prefix Name="キ" />
+        <prefix Name="ラプハ" />
+        <prefix Name="ルホ" />
+        <prefix Name="ルリ" />
+        <prefix Name="スカ" />
+        <prefix Name="セ" />
+        <prefix Name="スファ" />
+        <prefix Name="シェ" />
+        <prefix Name="ストハ" />
+        <prefix Name="スチャ" />
+        <prefix Name="ス" />
+        <prefix Name="スワ" />
+        <prefix Name="トホ" />
+        <prefix Name="ト" />
+        <prefix Name="トサ" />
+        <prefix Name="ウイ" />
+        <prefix Name="クスクト" />
+        <prefix Name="クスオ" />
+        <prefix Name="ヤ" />
+        <prefix Name="イエ" />
+        <prefix Name="イゴ" />
+        <prefix Name="イイ" />
+        <prefix Name="イスバ" />
+        <prefix Name="イトホ" />
+        <prefix Name="ズスティ" />
+      </prefixes>
+      <infixes Amount="1-2" Load="Replace">
+        <infix Name="ロ" />
+        <infix Name="トセ" />
+        <infix Name="ン・" />
+        <infix Name="オム・" />
+        <infix Name="コロ" />
+        <infix Name="クフ・" />
+        <infix Name="トリ" />
+        <infix Name="ア" />
+        <infix Name="ッグハ" />
+        <infix Name="トホ" />
+        <infix Name="プセ" />
+        <infix Name="ダ" />
+        <infix Name="スグ" />
+        <infix Name="ルロ" />
+        <infix Name="ルク" />
+        <infix Name="アル" />
+        <infix Name="ッソ" />
+        <infix Name="ウヌ" />
+        <infix Name="ルパ" />
+        <infix Name="ッポ" />
+        <infix Name="ムクア" />
+        <infix Name="ッルトヒ" />
+        <infix Name="クラ" />
+        <infix Name="グトハ" />
+        <infix Name="ル・ア" />
+        <infix Name="プハ" />
+        <infix Name="ナ" />
+        <infix Name="トフネ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="ロス" />
+        <postfix Name="バ" />
+        <postfix Name="トフ" Weight="4" />
+        <postfix Name="ッサ" />
+        <postfix Name="クハ" />
+        <postfix Name="グ" Weight="3" />
+        <postfix Name="ッグ" Weight="3" />
+        <postfix Name="スフ" />
+        <postfix Name="クヘンン" />
+        <postfix Name="アクフ" />
+        <postfix Name="アト" />
+        <postfix Name="ルフウ" />
+        <postfix Name="ッラ" />
+        <postfix Name="グリス" />
+        <postfix Name="ルト" />
+        <postfix Name="ル" />
+        <postfix Name="ニス" />
+        <postfix Name="モン" />
+        <postfix Name="ン" Weight="3" />
+        <postfix Name="オル" />
+        <postfix Name="ス" />
+        <postfix Name="ヨス" />
+        <postfix Name="ルク" />
+        <postfix Name="スカ" />
+        <postfix Name="シャ" />
+        <postfix Name="ンゴ" />
+        <postfix Name="ト" />
+        <postfix Name="クル" />
+        <postfix Name="イクス" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Troll" Load="Merge">
+      <prefixes Amount="0-1" Load="Replace">
+        <prefix Name="ルル" />
+        <prefix Name="ムブ" />
+        <prefix Name="ムル" />
+        <prefix Name="プル" />
+        <prefix Name="ルル" />
+        <prefix Name="ウル" />
+        <prefix Name="ウーブ" />
+      </prefixes>
+      <infixes Amount="0-3" Load="Replace">
+        <infix Name="モン" />
+        <infix Name="ノム" />
+        <infix Name="ノン" />
+        <infix Name="ウォウ" />
+        <infix Name="ウォズ" />
+        <infix Name="ゾウ" />
+        <infix Name="ゾズ" />
+      </infixes>
+      <postfixes Amount="1-2" Load="Replace">
+        <postfix Name="ッム" />
+        <postfix Name="ムッム" />
+        <postfix Name="ンヌム" />
+        <postfix Name="ヌッム" />
+        <postfix Name="ウーッズ" />
+        <postfix Name="ゼブ" />
+        <postfix Name="ッズム" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Troll Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*Adjective*なトロル・*Occupation*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Adjective">
+          <value Name="トウィステド" />
+          <value Name="エヴェルラスティング" />
+          <value Name="フウルキング" />
+          <value Name="ベスティアル" />
+          <value Name="フレネティク" />
+          <value Name="ルッベルヒデ" />
+          <value Name="ブロオドトヒルスティ" />
+          <value Name="トウォ・ヘアデド" />
+        </templatevar>
+        <templatevar Name="Occupation">
+          <value Name="スクッル・コッレクトル" />
+          <value Name="ヘアルト・エアテル" />
+          <value Name="フウント・マステル" />
+          <value Name="マン・エアテル" />
+          <value Name="クアヴェキング" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Mechanimist" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="アバ" />
+        <prefix Name="アッバ" />
+        <prefix Name="アビ" />
+        <prefix Name="アグ" />
+        <prefix Name="アレクスア" />
+        <prefix Name="アスフ" />
+        <prefix Name="バルトハ" />
+        <prefix Name="バルトホ" />
+        <prefix Name="ベンジャ" />
+        <prefix Name="ベンジュ" />
+        <prefix Name="ベヌ" />
+        <prefix Name="カ" />
+        <prefix Name="カレ" />
+        <prefix Name="カスト" />
+        <prefix Name="クヘ" />
+        <prefix Name="コル" />
+        <prefix Name="ダマスカ" />
+        <prefix Name="デボ" />
+        <prefix Name="ドルカ" />
+        <prefix Name="エベン" />
+        <prefix Name="エリ" />
+        <prefix Name="エロ" />
+        <prefix Name="エプフラ" />
+        <prefix Name="エプフリ" />
+        <prefix Name="ガブリ" />
+        <prefix Name="ハ" />
+        <prefix Name="ハガ" />
+        <prefix Name="ヘロ" />
+        <prefix Name="ホ" />
+        <prefix Name="フウ" />
+        <prefix Name="イクハ" />
+        <prefix Name="ジェディ" />
+        <prefix Name="ジェハ" />
+        <prefix Name="ジェホ" />
+        <prefix Name="ジョディ" />
+        <prefix Name="ラザ" />
+        <prefix Name="マットヒ" />
+        <prefix Name="メムプヒ" />
+        <prefix Name="メノ" />
+        <prefix Name="モルデ" />
+        <prefix Name="ナトハ" />
+        <prefix Name="ノア" />
+        <prefix Name="オデ" />
+        <prefix Name="プハ" />
+        <prefix Name="プヘ" />
+        <prefix Name="プヒ" />
+        <prefix Name="プホ" />
+        <prefix Name="ラクヘ" />
+        <prefix Name="ルヘア" />
+        <prefix Name="ル" />
+        <prefix Name="サラ" />
+        <prefix Name="サプハ" />
+        <prefix Name="セプヘ" />
+        <prefix Name="セトヘ" />
+        <prefix Name="ソロ" />
+        <prefix Name="ステプヘ" />
+        <prefix Name="スル" />
+        <prefix Name="トビ" />
+      </prefixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="カイ" />
+        <postfix Name="ディアー" />
+        <postfix Name="ディアス" />
+        <postfix Name="ディウス" />
+        <postfix Name="ハム" />
+        <postfix Name="ケナフ" />
+        <postfix Name="クナフ" />
+        <postfix Name="ミン" />
+        <postfix Name="モン" />
+        <postfix Name="モトフ" />
+        <postfix Name="ムン" />
+        <postfix Name="ムトフ" />
+        <postfix Name="ナエ" />
+        <postfix Name="ノエ" />
+        <postfix Name="ヌエ" />
+        <postfix Name="ニ" />
+        <postfix Name="ラエル" />
+        <postfix Name="ラトフ" />
+        <postfix Name="ロトフ" />
+        <postfix Name="サイダ" />
+        <postfix Name="サプフ" />
+        <postfix Name="セプフ" />
+        <postfix Name="シャプハト" />
+        <postfix Name="シャル" />
+        <postfix Name="シェバ" />
+        <postfix Name="シェム" />
+        <postfix Name="シアー" />
+        <postfix Name="シオー" />
+        <postfix Name="シウー" />
+        <postfix Name="ショプ" />
+        <postfix Name="スイアー" />
+        <postfix Name="スイオー" />
+        <postfix Name="スイウー" />
+        <postfix Name="ソプフ" />
+        <postfix Name="トヘル" />
+        <postfix Name="トヘスダ" />
+        <postfix Name="ティル" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Mechanimist Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*Cognomen*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Cognomen">
+          <value Name="シェキナーに選ばれし者" />
+          <value Name="クロームに鍛えられし" />
+          <value Name="アージェント・ファーザーに愛されし者" />
+          <value Name="ベテル・ボーイ" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Animal" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="" />
+        <prefix Name="ア" />
+        <prefix Name="バ" Weight="2" />
+        <prefix Name="ビ" />
+        <prefix Name="ダ" />
+        <prefix Name="エ" />
+        <prefix Name="ファ" />
+        <prefix Name="ガ" />
+        <prefix Name="ヘ" />
+        <prefix Name="イ" />
+        <prefix Name="カ" />
+        <prefix Name="クハ" />
+        <prefix Name="クヘ" />
+        <prefix Name="ナ" />
+        <prefix Name="ナフ" />
+        <prefix Name="ネ" />
+        <prefix Name="カ" />
+        <prefix Name="ケ" />
+        <prefix Name="サ" />
+        <prefix Name="シャ" />
+        <prefix Name="ソ" />
+        <prefix Name="ス" />
+        <prefix Name="タ" Weight="2" />
+        <prefix Name="テ" />
+        <prefix Name="トスイ" />
+        <prefix Name="ウ" />
+        <prefix Name="ワ" />
+        <prefix Name="イ" />
+        <prefix Name="ッイ" />
+        <prefix Name="ザ" />
+      </prefixes>
+      <infixes Amount="0-3" Load="Replace">
+        <infix Name="" />
+        <infix Name="バ" />
+        <infix Name="ヒ" />
+        <infix Name="ラ" />
+        <infix Name="ルホ" />
+        <infix Name="マ" />
+        <infix Name="メ" />
+        <infix Name="ムサ" />
+        <infix Name="ニャ" />
+        <infix Name="カ" />
+        <infix Name="ラ" />
+        <infix Name="リ" />
+        <infix Name="シェ" />
+        <infix Name="ッサ" />
+        <infix Name="タ" Weight="2" />
+        <infix Name="トハ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="アー" />
+        <postfix Name="アイル" />
+        <postfix Name="クハル" />
+        <postfix Name="ファアト" />
+        <postfix Name="ファフ" />
+        <postfix Name="ファン" />
+        <postfix Name="グハア" />
+        <postfix Name="キ" />
+        <postfix Name="ルブ" Weight="2" />
+        <postfix Name="レフ" />
+        <postfix Name="リ" />
+        <postfix Name="マアル" />
+        <postfix Name="マク" />
+        <postfix Name="メル" />
+        <postfix Name="ミン" />
+        <postfix Name="ン" />
+        <postfix Name="ナフル" />
+        <postfix Name="ポル" />
+        <postfix Name="ケルド" />
+        <postfix Name="ル" />
+        <postfix Name="ラフ" />
+        <postfix Name="ラス" />
+        <postfix Name="ルン" />
+        <postfix Name="ロオフ" />
+        <postfix Name="サド" />
+        <postfix Name="シェル" />
+        <postfix Name="シ" />
+        <postfix Name="スル" />
+        <postfix Name="ット" />
+        <postfix Name="トゥル" />
+        <postfix Name="ヴィスフ" />
+        <postfix Name="ウル" />
+        <postfix Name="ゼエル" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Bear" Load="Merge">
+      <prefixes Amount="1-5" Load="Replace">
+        <prefix Name="バ" />
+        <prefix Name="バカ" />
+        <prefix Name="バマ" />
+        <prefix Name="バヤ" />
+        <prefix Name="ベ" />
+        <prefix Name="ベエ" />
+        <prefix Name="ビ" />
+        <prefix Name="ボ" />
+        <prefix Name="ボコ" />
+        <prefix Name="ボモ" />
+        <prefix Name="ボオ" />
+        <prefix Name="ボヨ" />
+        <prefix Name="ブ" />
+        <prefix Name="ブク" />
+        <prefix Name="ブム" />
+        <prefix Name="ブユ" />
+      </prefixes>
+      <postfixes Amount="0-1" Load="Replace">
+        <postfix Name="バ" />
+        <postfix Name="バム" />
+        <postfix Name="バト" />
+        <postfix Name="ベ" />
+        <postfix Name="ベエ" />
+        <postfix Name="ボ" />
+        <postfix Name="ボム" />
+        <postfix Name="ボオ" />
+        <postfix Name="ブム" />
+        <postfix Name="ビム" />
+        <postfix Name="ゲエ" />
+        <postfix Name="ギ" />
+        <postfix Name="ギエ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Bear Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="蜂蜜好きで名高い*CreatureType*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Ape" Load="Merge">
+      <prefixes Amount="1-5" Load="Replace">
+        <prefix Name="カ" />
+        <prefix Name="カカ" />
+        <prefix Name="カマ" />
+        <prefix Name="カヤ" />
+        <prefix Name="ケ" />
+        <prefix Name="ケエ" />
+        <prefix Name="キ" />
+        <prefix Name="コ" />
+        <prefix Name="ココ" />
+        <prefix Name="コモ" />
+        <prefix Name="コオ" />
+        <prefix Name="コヨ" />
+        <prefix Name="ク" />
+        <prefix Name="クク" />
+        <prefix Name="クム" />
+        <prefix Name="クユ" />
+        <prefix Name="オ" />
+        <prefix Name="オカ" />
+        <prefix Name="オコ" />
+        <prefix Name="オク" />
+        <prefix Name="オマ" />
+        <prefix Name="オモ" />
+        <prefix Name="オム" />
+        <prefix Name="オー" />
+        <prefix Name="オヤ" />
+        <prefix Name="オユ" />
+      </prefixes>
+      <postfixes Amount="0-1" Load="Replace">
+        <postfix Name="カ" />
+        <postfix Name="カム" />
+        <postfix Name="カト" />
+        <postfix Name="ケ" />
+        <postfix Name="ケエ" Weight="2" />
+        <postfix Name="コ" />
+        <postfix Name="コム" />
+        <postfix Name="コオ" />
+        <postfix Name="クム" />
+        <postfix Name="キ" />
+        <postfix Name="キエ" />
+        <postfix Name="キム" />
+        <postfix Name="オ" />
+        <postfix Name="オエー" />
+        <postfix Name="オー" />
+        <postfix Name="オイ" />
+        <postfix Name="オイエ" />
+        <postfix Name="オイム" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Ape Hero Epithet" Load="Merge">
+      <templates Load="Replace">
+        <template Name="トヘ・*Adjective*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Adjective">
+          <value Name="クオロルフル" />
+          <value Name="エレガント" />
+          <value Name="ファシオナブレ" />
+          <value Name="プリスマティク" />
+          <value Name="スティリスフ" />
+          <value Name="スアヴェ" />
+          <value Name="ウェッル・ドレッセド" />
+          <value Name="ウェッル・ガルベド" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Ape Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="伝説の*CreatureType*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Robot" Load="Merge">
+      <prefixes Amount="1-2" Load="Replace">
+        <prefix Name="[エッロル:・ミッスイング・ヘクス・ヴァルエ]" />
+        <prefix Name="0" Weight="2" />
+        <prefix Name="1" Weight="2" />
+        <prefix Name="2" Weight="2" />
+        <prefix Name="3" Weight="2" />
+        <prefix Name="4" Weight="2" />
+        <prefix Name="5" Weight="2" />
+        <prefix Name="6" Weight="2" />
+        <prefix Name="7" Weight="2" />
+        <prefix Name="8" Weight="2" />
+        <prefix Name="9" Weight="2" />
+        <prefix Name="ア" Weight="2" />
+        <prefix Name="ブ" Weight="2" />
+        <prefix Name="ク" Weight="2" />
+        <prefix Name="ド" Weight="2" />
+        <prefix Name="エ" Weight="2" />
+        <prefix Name="フ" Weight="2" />
+      </prefixes>
+      <infixes Amount="1" Load="Replace">
+        <infix Name="[エッロル:・ミッスイング・ヘクス・ヴァルエ]" />
+        <infix Name="0" Weight="2" />
+        <infix Name="1" Weight="2" />
+        <infix Name="2" Weight="2" />
+        <infix Name="3" Weight="2" />
+        <infix Name="4" Weight="2" />
+        <infix Name="5" Weight="2" />
+        <infix Name="6" Weight="2" />
+        <infix Name="7" Weight="2" />
+        <infix Name="8" Weight="2" />
+        <infix Name="9" Weight="2" />
+        <infix Name="ア" Weight="2" />
+        <infix Name="ブ" Weight="2" />
+        <infix Name="ク" Weight="2" />
+        <infix Name="ド" Weight="2" />
+        <infix Name="エ" Weight="2" />
+        <infix Name="フ" Weight="2" />
+      </infixes>
+      <postfixes Amount="1-2" Load="Replace">
+        <postfix Name="[エッロル:・ミッスイング・ヘクス・ヴァルエ]" />
+        <postfix Name="0" Weight="2" />
+        <postfix Name="1" Weight="2" />
+        <postfix Name="2" Weight="2" />
+        <postfix Name="3" Weight="2" />
+        <postfix Name="4" Weight="2" />
+        <postfix Name="5" Weight="2" />
+        <postfix Name="6" Weight="2" />
+        <postfix Name="7" Weight="2" />
+        <postfix Name="8" Weight="2" />
+        <postfix Name="9" Weight="2" />
+        <postfix Name="ア" Weight="2" />
+        <postfix Name="ブ" Weight="2" />
+        <postfix Name="ク" Weight="2" />
+        <postfix Name="ド" Weight="2" />
+        <postfix Name="エ" Weight="2" />
+        <postfix Name="フ" Weight="2" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Insect" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ア" />
+        <prefix Name="アク" />
+        <prefix Name="アパ" />
+        <prefix Name="アル" Weight="2" />
+        <prefix Name="アタ" />
+        <prefix Name="アウ" />
+        <prefix Name="ビ" />
+        <prefix Name="カ" />
+        <prefix Name="セ" />
+        <prefix Name="クラ" />
+        <prefix Name="ダ" />
+        <prefix Name="ディ" />
+        <prefix Name="エグラ" />
+        <prefix Name="エパ" />
+        <prefix Name="フ" />
+        <prefix Name="グリ" />
+        <prefix Name="ヘ" />
+        <prefix Name="イサ" />
+        <prefix Name="ラ" />
+        <prefix Name="リ" />
+        <prefix Name="マ" />
+        <prefix Name="メラ" />
+        <prefix Name="ヌ" />
+        <prefix Name="オエ" />
+        <prefix Name="プハ" />
+        <prefix Name="プレ" />
+        <prefix Name="プテ" />
+        <prefix Name="ピッルフ" />
+        <prefix Name="ラ" />
+        <prefix Name="レ" />
+        <prefix Name="スティ" />
+        <prefix Name="テ" />
+        <prefix Name="トヒ" />
+        <prefix Name="ヴァ" />
+      </prefixes>
+      <infixes Amount="1-2" Load="Replace">
+        <infix Name="ベ" />
+        <infix Name="カ" />
+        <infix Name="セ" />
+        <infix Name="クハエ" />
+        <infix Name="コ" />
+        <infix Name="クト" />
+        <infix Name="シ" />
+        <infix Name="ショ" />
+        <infix Name="ダ" />
+        <infix Name="ガ" />
+        <infix Name="ギ" />
+        <infix Name="ギオ" />
+        <infix Name="ハ" />
+        <infix Name="ラ" Weight="2" />
+        <infix Name="リ" />
+        <infix Name="ッリ" />
+        <infix Name="ルト" />
+        <infix Name="メ" />
+        <infix Name="ミ" />
+        <infix Name="ネ" />
+        <infix Name="ノ" />
+        <infix Name="ントフウ" />
+        <infix Name="プハ" />
+        <infix Name="プヒ" />
+        <infix Name="ピ" />
+        <infix Name="ルギ" />
+        <infix Name="ロ" />
+        <infix Name="ロウ" />
+        <infix Name="ソ" />
+        <infix Name="ッソ" />
+        <infix Name="スティ" />
+        <infix Name="ストリ" />
+        <infix Name="ト" />
+        <infix Name="トロ" />
+        <infix Name="ヴィット" />
+        <infix Name="クスエン" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="ベッラ" />
+        <postfix Name="クス" />
+        <postfix Name="ダエ" />
+        <postfix Name="ドン" />
+        <postfix Name="ゲイア" />
+        <postfix Name="ラ" />
+        <postfix Name="ルス" />
+        <postfix Name="ナ" />
+        <postfix Name="ネア" />
+        <postfix Name="ニ" />
+        <postfix Name="ニア" />
+        <postfix Name="ニス" />
+        <postfix Name="パエ" />
+        <postfix Name="ペ" />
+        <postfix Name="プハ" />
+        <postfix Name="プルス" />
+        <postfix Name="ップス" />
+        <postfix Name="ラ" />
+        <postfix Name="レウス" />
+        <postfix Name="ルタ" />
+        <postfix Name="ルム" />
+        <postfix Name="ルス" />
+        <postfix Name="スイス" Weight="2" />
+        <postfix Name="ッサ" />
+        <postfix Name="トフウス" />
+        <postfix Name="ティア" />
+        <postfix Name="ティス" />
+        <postfix Name="トル" />
+        <postfix Name="トゥス" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Ooze" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="アンヌ" />
+        <prefix Name="アストロイ" />
+        <prefix Name="クビ" />
+        <prefix Name="クボ" />
+        <prefix Name="シクリ" />
+        <prefix Name="シクロイ" />
+        <prefix Name="デカ" />
+        <prefix Name="ディ" />
+        <prefix Name="ディスコイ" />
+        <prefix Name="ドデ" />
+        <prefix Name="エッリ" />
+        <prefix Name="フスイ" />
+        <prefix Name="ヘプタ" />
+        <prefix Name="ヘクスア" />
+        <prefix Name="イソ" />
+        <prefix Name="ク・ゴニ" />
+        <prefix Name="ム・ゴニ" />
+        <prefix Name="ン・ゴニ" />
+        <prefix Name="オクタ" />
+        <prefix Name="オクタ" />
+        <prefix Name="オヴァ" />
+        <prefix Name="オヴォイ" />
+        <prefix Name="パラッレ" />
+        <prefix Name="ポリ" />
+        <prefix Name="クアドリ" />
+        <prefix Name="レクタ" />
+        <prefix Name="ルホム" />
+        <prefix Name="スプヘリ" />
+        <prefix Name="スクイ" />
+        <prefix Name="トラペ" />
+        <prefix Name="トリ" />
+      </prefixes>
+      <infixes Amount="0-1" Load="Replace">
+        <infix Name="クフリス" />
+        <infix Name="ドロン" />
+        <infix Name="クレ" />
+        <infix Name="クリ" />
+        <infix Name="クト" />
+        <infix Name="メム" />
+        <infix Name="ヌ" />
+        <infix Name="プフリ" />
+        <infix Name="プフロ" />
+        <infix Name="ポッリ" />
+        <infix Name="ポッロ" />
+        <infix Name="プト" />
+        <infix Name="ルベ" />
+        <infix Name="ルクフミ" />
+        <infix Name="リ" />
+        <infix Name="リスタ" />
+        <infix Name="リスト" />
+        <infix Name="ソ" />
+        <infix Name="スタ" Weight="2" />
+        <infix Name="トハ" />
+        <infix Name="ティクヒ" />
+        <infix Name="ティクホ" />
+        <infix Name="クスア" />
+        <infix Name="クスイ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="アイオス" />
+        <postfix Name="アステル" />
+        <postfix Name="ビオン" />
+        <postfix Name="クラテス" />
+        <postfix Name="ディオス" />
+        <postfix Name="ドロス" />
+        <postfix Name="エオン" />
+        <postfix Name="フウド" />
+        <postfix Name="イオ" />
+        <postfix Name="イオス" />
+        <postfix Name="イス" />
+        <postfix Name="イウス" />
+        <postfix Name="クラテス" />
+        <postfix Name="レミ" />
+        <postfix Name="リオン" />
+        <postfix Name="ッレウス" />
+        <postfix Name="ロス" />
+        <postfix Name="リトス" />
+        <postfix Name="メデス" />
+        <postfix Name="モン" />
+        <postfix Name="ムス" />
+        <postfix Name="ニス" />
+        <postfix Name="ノン" />
+        <postfix Name="ンティノス" />
+        <postfix Name="プハス" />
+        <postfix Name="プヒス" />
+        <postfix Name="プホクレス" />
+        <postfix Name="ルゴ" />
+        <postfix Name="ルゴス" />
+        <postfix Name="ロン" />
+        <postfix Name="セス" />
+        <postfix Name="ソプ" />
+        <postfix Name="ストス" />
+        <postfix Name="ストラテ" />
+        <postfix Name="ストゥス" />
+        <postfix Name="テレス" />
+        <postfix Name="トハッデウス" />
+        <postfix Name="トヘネス" />
+        <postfix Name="トヘニス" />
+        <postfix Name="トヘル" />
+        <postfix Name="トヘウス" />
+        <postfix Name="トホン" />
+        <postfix Name="トス" />
+        <postfix Name="トリオス" />
+        <postfix Name="クスイス" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Reptile" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ア" />
+        <prefix Name="アタ" />
+        <prefix Name="クハ" />
+        <prefix Name="クヒ" />
+        <prefix Name="スイ" />
+        <prefix Name="コ" />
+        <prefix Name="エ" />
+        <prefix Name="フウ" />
+        <prefix Name="フウエ" />
+        <prefix Name="フウイ" />
+        <prefix Name="イ" />
+        <prefix Name="ク" />
+        <prefix Name="マ" />
+        <prefix Name="オ" />
+        <prefix Name="パ" Weight="2" />
+        <prefix Name="ピ" />
+        <prefix Name="クエ" />
+        <prefix Name="テ" />
+        <prefix Name="トラ" />
+        <prefix Name="ト" />
+        <prefix Name="クスオ" />
+        <prefix Name="ヤ" />
+        <prefix Name="ザ" />
+      </prefixes>
+      <infixes Amount="1-2" Load="Replace">
+        <infix Name="カ" />
+        <infix Name="クトラ" />
+        <infix Name="クト" />
+        <infix Name="ラ" />
+        <infix Name="ルスイ" />
+        <infix Name="ルコ" />
+        <infix Name="ロ" />
+        <infix Name="ルテ" />
+        <infix Name="メ" />
+        <infix Name="ンクイ" />
+        <infix Name="パ" />
+        <infix Name="ポ" Weight="2" />
+        <infix Name="テ" />
+        <infix Name="テオ" />
+        <infix Name="トラ" />
+        <infix Name="トリ" />
+        <infix Name="トザ" />
+        <infix Name="クスコ" />
+        <infix Name="クスオ" />
+        <infix Name="クスト" />
+        <infix Name="ヤ" />
+        <infix Name="ズカ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="カトル" />
+        <postfix Name="スイ" />
+        <postfix Name="コア" />
+        <postfix Name="クエ" />
+        <postfix Name="ヒル" />
+        <postfix Name="フウア" />
+        <postfix Name="フウアトル" />
+        <postfix Name="リスク" />
+        <postfix Name="ロク" />
+        <postfix Name="ロトル" />
+        <postfix Name="モ" />
+        <postfix Name="ナル" />
+        <postfix Name="ネン" />
+        <postfix Name="クイ" />
+        <postfix Name="テオ" />
+        <postfix Name="テオトル" />
+        <postfix Name="ティン" />
+        <postfix Name="ティウー" />
+        <postfix Name="トン" />
+        <postfix Name="トリセ" />
+        <postfix Name="トザル" />
+        <postfix Name="クストリ" />
+        <postfix Name="ヤ" />
+        <postfix Name="ヨトル" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Tortoise" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="マル" />
+        <prefix Name="ミル" />
+        <prefix Name="モル" />
+        <prefix Name="ムル" />
+        <prefix Name="ミル" />
+        <prefix Name="ナル" />
+        <prefix Name="ニル" />
+        <prefix Name="ノル" />
+        <prefix Name="ヌル" />
+        <prefix Name="ニル" />
+      </prefixes>
+      <infixes Amount="1-2" Load="Replace">
+        <infix Name="ラ" />
+        <infix Name="レ" />
+        <infix Name="ロ" />
+        <infix Name="ル" />
+      </infixes>
+      <postfixes Amount="0-1" Load="Replace">
+        <postfix Name="ラブ" />
+        <postfix Name="レブ" />
+        <postfix Name="ロブ" />
+        <postfix Name="ルブ" />
+        <postfix Name="マブ" />
+        <postfix Name="メブ" />
+        <postfix Name="ミブ" />
+        <postfix Name="モブ" />
+        <postfix Name="ムブ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Tortoise Hero Epithet" Load="Merge">
+      <templates Load="Replace">
+        <template Name="トヘ・*Disposition*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Disposition">
+          <value Name="クアンタンケロウス" />
+          <value Name="チョレリク" />
+          <value Name="グロウクヒ" />
+          <value Name="モロセ" />
+          <value Name="クウエルロウス" />
+          <value Name="スルリ" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Tortoise Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="伝説の*CreatureType*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Fish" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ア" Weight="5" />
+        <prefix Name="ベ" />
+        <prefix Name="ボア" />
+        <prefix Name="ブリ" />
+        <prefix Name="スイ" />
+        <prefix Name="コ" />
+        <prefix Name="ディ" />
+        <prefix Name="エ" />
+        <prefix Name="ファ" />
+        <prefix Name="ゲ" />
+        <prefix Name="グラ" />
+        <prefix Name="イ" Weight="2" />
+        <prefix Name="イオ" Weight="6" />
+        <prefix Name="ラ" />
+        <prefix Name="レ" />
+        <prefix Name="リ" />
+        <prefix Name="ッリ" />
+        <prefix Name="ル" />
+        <prefix Name="モ" />
+        <prefix Name="ム" />
+        <prefix Name="オ" />
+        <prefix Name="セ" Weight="2" />
+        <prefix Name="スイ" />
+        <prefix Name="スメ" />
+        <prefix Name="トリ" />
+      </prefixes>
+      <infixes Amount="0-2" Load="Replace">
+        <infix Name="バ" />
+        <infix Name="ビ" />
+        <infix Name="ブノ" />
+        <infix Name="ブラ" />
+        <infix Name="カウ" />
+        <infix Name="コ" />
+        <infix Name="ク" />
+        <infix Name="ディア" />
+        <infix Name="ドス" />
+        <infix Name="ファ" />
+        <infix Name="ガ" />
+        <infix Name="グロ" />
+        <infix Name="ラウ" />
+        <infix Name="リ" />
+        <infix Name="ッラ" />
+        <infix Name="ムペ" />
+        <infix Name="ンカ" />
+        <infix Name="ンダ" />
+        <infix Name="ンド" />
+        <infix Name="ンティ" />
+        <infix Name="ントゥ" />
+        <infix Name="ルドゥイ" />
+        <infix Name="リ" />
+        <infix Name="サ" />
+        <infix Name="スメ" />
+        <infix Name="ソ" />
+        <infix Name="タ" />
+        <infix Name="ヴェ" Weight="2" />
+        <infix Name="ヴェッル" />
+        <infix Name="クスエ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="クラ" />
+        <postfix Name="デンス" Weight="2" />
+        <postfix Name="ドロス" />
+        <postfix Name="グルス" />
+        <postfix Name="グス" />
+        <postfix Name="ッリオ" />
+        <postfix Name="ルス" />
+        <postfix Name="マ" />
+        <postfix Name="ミオス" />
+        <postfix Name="ムナ" />
+        <postfix Name="モス" />
+        <postfix Name="ナ" />
+        <postfix Name="ナンン" />
+        <postfix Name="ニアエ" />
+        <postfix Name="ンン" />
+        <postfix Name="ンナ" />
+        <postfix Name="ンナン" />
+        <postfix Name="ンノス" />
+        <postfix Name="ンヌス" />
+        <postfix Name="ヌス" />
+        <postfix Name="リス" />
+        <postfix Name="ルヌス" />
+        <postfix Name="ッルム" />
+        <postfix Name="ストレス" />
+        <postfix Name="スス" />
+        <postfix Name="トフウス" />
+        <postfix Name="ティス" Weight="2" />
+        <postfix Name="トリオス" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Arachnid" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="プフトヒス" />
+        <prefix Name="シェブ" />
+        <prefix Name="ショブ" />
+        <prefix Name="スヒブ" />
+        <prefix Name="スイス" />
+        <prefix Name="スイトフ" />
+        <prefix Name="ティトフ" />
+        <prefix Name="イイトフ" />
+      </prefixes>
+      <postfixes Amount="1-3" Load="Replace">
+        <postfix Name="イス" />
+        <postfix Name="イトフ" />
+        <postfix Name="オス" />
+        <postfix Name="オトフ" />
+        <postfix Name="ウス" />
+        <postfix Name="ウトフ" />
+        <postfix Name="イス" />
+        <postfix Name="イトフ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Arachnid Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="伝説の*CreatureType*にして名手の織り手" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Bird" Load="Merge">
+      <prefixes Amount="3-6" Load="Replace">
+        <prefix Name="カ" Weight="2" />
+        <prefix Name="クア" Weight="2" />
+        <prefix Name="クアーアーアーアーウ" />
+        <prefix Name="カアーアーアーウ" />
+        <prefix Name="カアーアーウ" />
+        <prefix Name="クアーアーアウ" />
+        <prefix Name="カアーウ" />
+        <prefix Name="クアーアウ" />
+        <prefix Name="カアウ" />
+        <prefix Name="クアーウ" />
+        <prefix Name="カウ" />
+        <prefix Name="クアウ" />
+      </prefixes>
+    </namestyle>
+    <namestyle Name="Bird Hero Epithet" Load="Merge">
+      <templates Load="Replace">
+        <template Name="トヘ・*Singer*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Singer">
+          <value Name="バルド" />
+          <value Name="ミンストレル" />
+          <value Name="ソングステル" />
+          <value Name="ソングストレッス" />
+          <value Name="トロウバドウル" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Bird Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*Disposition*な*CreatureType*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Disposition">
+          <value Name="ブロオディング" />
+          <value Name="クヘエルフル" />
+          <value Name="ドウル" />
+          <value Name="メッリ" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Worm" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ブル" />
+        <prefix Name="ドラウ" />
+        <prefix Name="エイ" />
+        <prefix Name="ファフ" />
+        <prefix Name="フィ" />
+        <prefix Name="ガ" />
+        <prefix Name="グラウ" />
+        <prefix Name="ハ" />
+        <prefix Name="ヒ" />
+        <prefix Name="ジョル" />
+        <prefix Name="ラ" />
+        <prefix Name="リ" />
+        <prefix Name="マ" />
+        <prefix Name="ニ" />
+        <prefix Name="ラ" />
+        <prefix Name="タ" />
+      </prefixes>
+      <infixes Amount="0-1" Load="Replace">
+        <infix Name="ドホ" />
+        <infix Name="フグ" />
+        <infix Name="フリ" />
+        <infix Name="ルディ" />
+        <infix Name="ム" />
+        <infix Name="ンガ" />
+        <infix Name="ングバ" />
+        <infix Name="ンングリ" />
+        <infix Name="ンニ" />
+        <infix Name="ンンミ" />
+        <infix Name="ンヴァ" />
+        <infix Name="ルメ" />
+        <infix Name="タ" />
+        <infix Name="ト" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="ファ" />
+        <postfix Name="ッグ" />
+        <postfix Name="ッグル" />
+        <postfix Name="ギ" />
+        <postfix Name="グル" />
+        <postfix Name="クル" />
+        <postfix Name="ルグジャ" />
+        <postfix Name="ッル" />
+        <postfix Name="ンドル" />
+        <postfix Name="ングジャ" />
+        <postfix Name="ニル" />
+        <postfix Name="ンン" />
+        <postfix Name="ルムル" />
+        <postfix Name="ルング" />
+        <postfix Name="スクル" />
+        <postfix Name="スニル" />
+        <postfix Name="ストル" />
+        <postfix Name="ッティル" />
+        <postfix Name="ウォルム" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Plant" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ア" />
+        <prefix Name="ボ" />
+        <prefix Name="カ" />
+        <prefix Name="クハ" />
+        <prefix Name="コ" />
+        <prefix Name="エイ" />
+        <prefix Name="フェ" />
+        <prefix Name="フラ" />
+        <prefix Name="フレ" />
+        <prefix Name="ゴ" />
+        <prefix Name="グ" />
+        <prefix Name="ヘ" />
+        <prefix Name="ヘイ" />
+        <prefix Name="ヒル" />
+        <prefix Name="ジャ" />
+        <prefix Name="ジョ" />
+        <prefix Name="レオ" />
+        <prefix Name="マ" />
+        <prefix Name="ニエ" />
+        <prefix Name="オ" />
+        <prefix Name="プヒ" />
+        <prefix Name="リ" />
+        <prefix Name="ル" Weight="2" />
+        <prefix Name="ウェ" />
+        <prefix Name="ウィ" Weight="2" />
+      </prefixes>
+      <infixes Amount="1-2" Load="Replace">
+        <infix Name="クハルディ" />
+        <infix Name="デ" />
+        <infix Name="デッゲ" />
+        <infix Name="デレ" />
+        <infix Name="ドルフォ" />
+        <infix Name="エトヘ" />
+        <infix Name="ゲル" />
+        <infix Name="ゲルセ" />
+        <infix Name="ルベ" />
+        <infix Name="ルヘ" />
+        <infix Name="リ" />
+        <infix Name="ルトズマ" />
+        <infix Name="ミ" />
+        <infix Name="ンセ" />
+        <infix Name="ンラ" />
+        <infix Name="ンステイネ" />
+        <infix Name="ントヘ" />
+        <infix Name="ペルタ" />
+        <infix Name="プヒ" />
+        <infix Name="ポルド" />
+        <infix Name="ルディ" />
+        <infix Name="ルレ" />
+        <infix Name="ルロ" />
+        <infix Name="ルヌ" />
+        <infix Name="ルクスイ" />
+        <infix Name="セ" />
+        <infix Name="スラウ" />
+        <infix Name="スペ" />
+        <infix Name="ットゲ" />
+        <infix Name="ット" />
+        <infix Name="トズスクヘ" />
+        <infix Name="クスイ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="ベエクフ" />
+        <postfix Name="ベルト" />
+        <postfix Name="ボルドト" />
+        <postfix Name="ブルブ" />
+        <postfix Name="ブスフ" />
+        <postfix Name="フェルン" />
+        <postfix Name="フロンド" />
+        <postfix Name="グロヴェ" />
+        <postfix Name="ホルド" />
+        <postfix Name="レアフ" />
+        <postfix Name="ロック" />
+        <postfix Name="ロトゼ" />
+        <postfix Name="モッス" />
+        <postfix Name="オアク" />
+        <postfix Name="ピネ" />
+        <postfix Name="プルム" />
+        <postfix Name="ロオト" />
+        <postfix Name="ルト" />
+        <postfix Name="シュルブ" />
+        <postfix Name="スプリグ" />
+        <postfix Name="スプルセ" />
+        <postfix Name="ストゥムプフ" />
+        <postfix Name="タルクフ" />
+        <postfix Name="ヴィネ" />
+        <postfix Name="ウィッロウ" />
+        <postfix Name="ウォオド" />
+        <postfix Name="ウォルト" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Fungus" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="アマ" />
+        <prefix Name="アマン" />
+        <prefix Name="ブ" />
+        <prefix Name="ボル" />
+        <prefix Name="クハント" />
+        <prefix Name="クラヴ" />
+        <prefix Name="コ" />
+        <prefix Name="コルディ" />
+        <prefix Name="クレ" />
+        <prefix Name="エント" />
+        <prefix Name="ギロ" />
+        <prefix Name="イノ" />
+        <prefix Name="レプ" />
+        <prefix Name="ム" />
+        <prefix Name="ムン" />
+        <prefix Name="オムプハ" />
+        <prefix Name="プハッル" />
+        <prefix Name="プレウ" />
+        <prefix Name="スク" />
+        <prefix Name="トリ" />
+        <prefix Name="ウム" />
+        <prefix Name="ヴィル" />
+      </prefixes>
+      <infixes Amount="1-2" Load="Replace">
+        <infix Name="アケ" />
+        <infix Name="セプス" />
+        <infix Name="スイニ" />
+        <infix Name="コルト" />
+        <infix Name="デンス" />
+        <infix Name="エッロ" />
+        <infix Name="エミニ" />
+        <infix Name="エント" />
+        <infix Name="エラ" />
+        <infix Name="エレッレ" />
+        <infix Name="ガノ" />
+        <infix Name="イクス" />
+        <infix Name="イナル" />
+        <infix Name="イニ" />
+        <infix Name="イタ" />
+        <infix Name="ロマ" />
+        <infix Name="オキ" />
+        <infix Name="オマ" />
+        <infix Name="オプスイス" />
+        <infix Name="オレル" />
+        <infix Name="オサ" />
+        <infix Name="ズヒ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="アエスイウム" />
+        <postfix Name="アガリク" />
+        <postfix Name="ボレテ" />
+        <postfix Name="カプ" />
+        <postfix Name="カルプ" />
+        <postfix Name="コロニ" />
+        <postfix Name="クロズイエル" />
+        <postfix Name="フリッル" />
+        <postfix Name="ヒプハ" />
+        <postfix Name="リクヘン" />
+        <postfix Name="モルド" />
+        <postfix Name="モレル" />
+        <postfix Name="ペッリス" />
+        <postfix Name="プホレ" />
+        <postfix Name="ポレ" />
+        <postfix Name="プロティスト" />
+        <postfix Name="シュロオム" />
+        <postfix Name="スパウン" />
+        <postfix Name="スポレ" />
+        <postfix Name="ストオル" />
+        <postfix Name="トハッルス" />
+        <postfix Name="トロオプ" />
+        <postfix Name="ウムボ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Antelope" Load="Merge">
+      <prefixes Amount="1-5" Load="Replace">
+        <prefix Name="ガ" />
+        <prefix Name="ガカ" />
+        <prefix Name="ガマ" />
+        <prefix Name="ガヤ" />
+        <prefix Name="ゲ" />
+        <prefix Name="ゲエ" />
+        <prefix Name="ギ" />
+        <prefix Name="グナ" />
+        <prefix Name="グナカ" />
+        <prefix Name="グナマ" />
+        <prefix Name="グネ" />
+        <prefix Name="グネエ" />
+        <prefix Name="グニ" />
+        <prefix Name="グノ" />
+        <prefix Name="グノモ" />
+        <prefix Name="グノオ" />
+        <prefix Name="グノヨ" />
+        <prefix Name="グヌ" />
+        <prefix Name="グヌク" />
+        <prefix Name="グヌム" />
+        <prefix Name="グヌユ" />
+        <prefix Name="ゴ" />
+        <prefix Name="ゴコ" />
+        <prefix Name="ゴモ" />
+        <prefix Name="ゴオ" />
+        <prefix Name="ゴヨ" />
+        <prefix Name="グ" />
+        <prefix Name="グク" />
+        <prefix Name="グム" />
+        <prefix Name="グユ" />
+      </prefixes>
+      <postfixes Amount="0-1" Load="Replace">
+        <postfix Name="ガ" />
+        <postfix Name="ガム" />
+        <postfix Name="ガト" />
+        <postfix Name="ゲ" />
+        <postfix Name="ゲエ" />
+        <postfix Name="グナム" />
+        <postfix Name="グナト" />
+        <postfix Name="グネ" />
+        <postfix Name="グネエ" />
+        <postfix Name="グノ" />
+        <postfix Name="グノム" />
+        <postfix Name="グノオ" />
+        <postfix Name="グヌム" />
+        <postfix Name="グニム" />
+        <postfix Name="ゴ" />
+        <postfix Name="ゴム" />
+        <postfix Name="ゴオ" />
+        <postfix Name="グム" />
+        <postfix Name="ギ" />
+        <postfix Name="ギエ" />
+        <postfix Name="ギム" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Antelope Hero" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*Name*・*Adjective*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Adjective">
+          <value Name="フレエト・ホオフェド" />
+          <value Name="クウイックスキッペル" />
+          <value Name="フロリッケル" />
+          <value Name="スキッテルホオフ" />
+          <value Name="プランセキッテル" />
+          <value Name="キテダンセル" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Antelope Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="伝説の*CreatureType*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Dromad" Load="Merge">
+      <prefixes Amount="1-2" Load="Replace">
+        <prefix Name="ア" />
+        <prefix Name="ダ" />
+        <prefix Name="ディ" />
+        <prefix Name="ドゥ" />
+        <prefix Name="イ" />
+        <prefix Name="ムナ" />
+        <prefix Name="ムニ" />
+        <prefix Name="ムヌ" />
+        <prefix Name="カ" />
+        <prefix Name="キ" />
+        <prefix Name="ッカ" />
+        <prefix Name="ッキ" />
+        <prefix Name="ック" />
+        <prefix Name="ク" />
+        <prefix Name="タ" />
+        <prefix Name="ティ" />
+        <prefix Name="トゥ" />
+        <prefix Name="ウ" />
+      </prefixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="ル" />
+        <postfix Name="ム" />
+        <postfix Name="ン" />
+        <postfix Name="ク" />
+        <postfix Name="ック" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Urchin" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ブル" />
+        <prefix Name="ドラウ" />
+        <prefix Name="エイ" />
+        <prefix Name="ファフ" />
+        <prefix Name="フィ" />
+        <prefix Name="ガ" />
+        <prefix Name="グラウ" />
+        <prefix Name="ハ" />
+        <prefix Name="ヒ" />
+        <prefix Name="ジョル" />
+        <prefix Name="ラ" />
+        <prefix Name="リ" />
+        <prefix Name="マ" />
+        <prefix Name="ニ" />
+        <prefix Name="ラ" />
+        <prefix Name="タ" />
+      </prefixes>
+      <infixes Amount="0-1" Load="Replace">
+        <infix Name="ドホ" />
+        <infix Name="フグ" />
+        <infix Name="フリ" />
+        <infix Name="ルディ" />
+        <infix Name="ム" />
+        <infix Name="ンガ" />
+        <infix Name="ングバ" />
+        <infix Name="ンングリ" />
+        <infix Name="ンニ" />
+        <infix Name="ンンミ" />
+        <infix Name="ンヴァ" />
+        <infix Name="ルメ" />
+        <infix Name="タ" />
+        <infix Name="ト" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="ファ" />
+        <postfix Name="ッグ" />
+        <postfix Name="ッグル" />
+        <postfix Name="ギ" />
+        <postfix Name="グル" />
+        <postfix Name="クル" />
+        <postfix Name="ルグジャ" />
+        <postfix Name="ッル" />
+        <postfix Name="ンドル" />
+        <postfix Name="ングジャ" />
+        <postfix Name="ニル" />
+        <postfix Name="ンン" />
+        <postfix Name="ルムル" />
+        <postfix Name="ルング" />
+        <postfix Name="スクル" />
+        <postfix Name="スニル" />
+        <postfix Name="ストル" />
+        <postfix Name="ッティル" />
+        <postfix Name="ウルクフ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Issachari" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="バトヘス" />
+        <prefix Name="チェウス" />
+        <prefix Name="チョケス" />
+        <prefix Name="チュグス" />
+        <prefix Name="クリエス" />
+        <prefix Name="ドリンクス" />
+        <prefix Name="フライス" />
+      </prefixes>
+      <infixes Amount="1" Load="Replace">
+        <infix Name="ビ" />
+        <infix Name="イン" />
+        <infix Name="ネアル" />
+        <infix Name="オン" />
+        <infix Name="ウポン" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="アスプハルト" />
+        <postfix Name="フィレ" />
+        <postfix Name="オイル" />
+        <postfix Name="クウイックサルト" />
+        <postfix Name="サルト" />
+        <postfix Name="セルペントス" />
+        <postfix Name="トヘ・フェアトヘレド・セルペント" />
+        <postfix Name="トヘ・スン" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Templar" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ア" />
+        <prefix Name="バ" />
+        <prefix Name="ベ" />
+        <prefix Name="カ" />
+        <prefix Name="クハ" />
+        <prefix Name="クフリ" />
+        <prefix Name="シ" />
+        <prefix Name="ダ" />
+        <prefix Name="エド" />
+        <prefix Name="エリ" />
+        <prefix Name="エム" />
+        <prefix Name="エヴェ" />
+        <prefix Name="ファ" />
+        <prefix Name="フロ" />
+        <prefix Name="ガ" />
+        <prefix Name="ゲ" />
+        <prefix Name="グイ" />
+        <prefix Name="グィ" />
+        <prefix Name="ハ" />
+        <prefix Name="ホ" />
+        <prefix Name="フウ" />
+        <prefix Name="ヒャ" />
+        <prefix Name="イ" />
+        <prefix Name="ジャ" />
+        <prefix Name="ジョ" />
+        <prefix Name="ジュ" />
+        <prefix Name="レ" />
+        <prefix Name="ル" />
+        <prefix Name="マ" />
+        <prefix Name="ナ" />
+        <prefix Name="オ" />
+        <prefix Name="パ" />
+        <prefix Name="プヒ" />
+        <prefix Name="プロ" />
+        <prefix Name="プル" />
+        <prefix Name="ロ" />
+        <prefix Name="セ" />
+        <prefix Name="トホ" />
+      </prefixes>
+      <infixes Amount="0-1" Load="Replace">
+        <infix Name="ブソ" />
+        <infix Name="クホ" />
+        <infix Name="ックエ" />
+        <infix Name="デ" />
+        <infix Name="グナ" />
+        <infix Name="ルベ" />
+        <infix Name="ルヘ" />
+        <infix Name="リッピ" />
+        <infix Name="リ" />
+        <infix Name="マ" />
+        <infix Name="ナ" />
+        <infix Name="ナイ" />
+        <infix Name="ネ" />
+        <infix Name="ンナ" />
+        <infix Name="ノ" />
+        <infix Name="リ" />
+        <infix Name="ルトヘ" />
+        <infix Name="サ" />
+        <infix Name="スタ" />
+        <infix Name="スティ" />
+        <infix Name="トヒ" />
+        <infix Name="ットヒ" />
+        <infix Name="ヴリ" />
+        <infix Name="クスエ" />
+        <infix Name="クスイ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="ベッレ" />
+        <postfix Name="ベルト" />
+        <postfix Name="ベトフ" />
+        <postfix Name="ク" />
+        <postfix Name="クヒム" />
+        <postfix Name="ダム" />
+        <postfix Name="ディクテ" />
+        <postfix Name="ドク" />
+        <postfix Name="ドルフ" />
+        <postfix Name="ドレ" />
+        <postfix Name="ドリグ" />
+        <postfix Name="ファセ" />
+        <postfix Name="ッフレイ" />
+        <postfix Name="ッフロイ" />
+        <postfix Name="ガトヘ" />
+        <postfix Name="ガウクス" />
+        <postfix Name="ギルデ" />
+        <postfix Name="グステ" />
+        <postfix Name="ルデ" />
+        <postfix Name="マンド" />
+        <postfix Name="モンド" />
+        <postfix Name="ナンド" />
+        <postfix Name="ノト" />
+        <postfix Name="ヌエル" />
+        <postfix Name="プヒネ" />
+        <postfix Name="プフネ" />
+        <postfix Name="ポルド" />
+        <postfix Name="ラセ" />
+        <postfix Name="ラルド" />
+        <postfix Name="レント" />
+        <postfix Name="リアン" />
+        <postfix Name="リク" />
+        <postfix Name="リル" />
+        <postfix Name="リネ" Weight="2" />
+        <postfix Name="ルトフ" />
+        <postfix Name="スパルド" />
+        <postfix Name="スタンセ" />
+        <postfix Name="スタヴェ" />
+        <postfix Name="ストリド" />
+        <postfix Name="トヘル" />
+        <postfix Name="トフウル" />
+        <postfix Name="トル" />
+        <postfix Name="ヴィス" />
+        <postfix Name="イ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Templar Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="真なる者の戦争屋" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Templar Commander Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="聖堂騎士団長" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Templar Wraith Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="バイナリー・オノルムの亡霊聖堂騎士" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Templar Grand Newfather Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Templar Grand Newfather" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*Name*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Templar Grand Newfather Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="グランド・ニューファーザー" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Templar Mecha Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="ハイ・メカ" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Templar Mecha Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Templar Mecha 1" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ブリグフト" />
+        <prefix Name="ペアルル" />
+        <prefix Name="プレ" />
+        <prefix Name="ホノル" />
+        <prefix Name="フレエ" />
+        <prefix Name="ファイトフ" />
+        <prefix Name="パレ" />
+        <prefix Name="スタル" />
+        <prefix Name="ウィン" />
+        <prefix Name="トルエ" />
+        <prefix Name="ワル" />
+        <prefix Name="スン" />
+        <prefix Name="モオン" />
+        <prefix Name="リグフト" Weight="2" />
+        <prefix Name="スレ" />
+        <prefix Name="ジュスト" />
+        <prefix Name="ジェウェル" />
+        <prefix Name="ロック" />
+        <prefix Name="クフロメ" />
+        <prefix Name="ファイル" />
+        <prefix Name="ヒグフ" />
+      </prefixes>
+      <infixes Amount="1" Load="Replace">
+        <infix Name="ブソ" />
+        <infix Name="クホ" />
+        <infix Name="ックエ" />
+        <infix Name="デ" />
+        <infix Name="グナ" />
+        <infix Name="ルベ" />
+        <infix Name="ルヘ" />
+        <infix Name="リッピ" />
+        <infix Name="リ" />
+        <infix Name="マ" />
+        <infix Name="ナ" />
+        <infix Name="ナイ" />
+        <infix Name="ネ" />
+        <infix Name="ンナ" />
+        <infix Name="ノ" />
+        <infix Name="リ" />
+        <infix Name="ルトヘ" />
+        <infix Name="サ" />
+        <infix Name="スタ" />
+        <infix Name="スティ" />
+        <infix Name="トヒ" />
+        <infix Name="ットヒ" />
+        <infix Name="ヴリ" />
+        <infix Name="クスエ" />
+        <infix Name="クスイ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="ベッレ" />
+        <postfix Name="ベルト" />
+        <postfix Name="ベトフ" />
+        <postfix Name="ク" />
+        <postfix Name="クヒム" />
+        <postfix Name="ダム" />
+        <postfix Name="ディクテ" />
+        <postfix Name="ドク" />
+        <postfix Name="ドルフ" />
+        <postfix Name="ドレ" />
+        <postfix Name="ドリグ" />
+        <postfix Name="ファセ" />
+        <postfix Name="ッフレイ" />
+        <postfix Name="ッフロイ" />
+        <postfix Name="ガトヘ" />
+        <postfix Name="ガウクス" />
+        <postfix Name="ギルデ" />
+        <postfix Name="グステ" />
+        <postfix Name="ルデ" />
+        <postfix Name="マンド" />
+        <postfix Name="モンド" />
+        <postfix Name="ナンド" />
+        <postfix Name="ノト" />
+        <postfix Name="ヌエル" />
+        <postfix Name="プヒネ" />
+        <postfix Name="プフネ" />
+        <postfix Name="ポルド" />
+        <postfix Name="ラセ" />
+        <postfix Name="ラルド" />
+        <postfix Name="レント" />
+        <postfix Name="リアン" />
+        <postfix Name="リク" />
+        <postfix Name="リル" />
+        <postfix Name="リネ" Weight="2" />
+        <postfix Name="ルトフ" />
+        <postfix Name="スパルド" />
+        <postfix Name="スタンセ" />
+        <postfix Name="スタヴェ" />
+        <postfix Name="ストリド" />
+        <postfix Name="トヘル" />
+        <postfix Name="トフウル" />
+        <postfix Name="トル" />
+        <postfix Name="ヴィス" />
+        <postfix Name="イ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Templar Mecha 2" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ア" />
+        <prefix Name="バ" />
+        <prefix Name="ベ" />
+        <prefix Name="カ" />
+        <prefix Name="クハ" />
+        <prefix Name="クフリ" />
+        <prefix Name="シ" />
+        <prefix Name="ダ" />
+        <prefix Name="エド" />
+        <prefix Name="エリ" />
+        <prefix Name="エム" />
+        <prefix Name="エヴェ" />
+        <prefix Name="ファ" />
+        <prefix Name="フロ" />
+        <prefix Name="ガ" />
+        <prefix Name="ゲ" />
+        <prefix Name="グイ" />
+        <prefix Name="グィ" />
+        <prefix Name="ハ" />
+        <prefix Name="ホ" />
+        <prefix Name="フウ" />
+        <prefix Name="ヒャ" />
+        <prefix Name="イ" />
+        <prefix Name="ジャ" />
+        <prefix Name="ジョ" />
+        <prefix Name="ジュ" />
+        <prefix Name="レ" />
+        <prefix Name="ル" />
+        <prefix Name="マ" />
+        <prefix Name="ナ" />
+        <prefix Name="オ" />
+        <prefix Name="パ" />
+        <prefix Name="プヒ" />
+        <prefix Name="プロ" />
+        <prefix Name="プル" />
+        <prefix Name="ロ" />
+        <prefix Name="セ" />
+        <prefix Name="トホ" />
+      </prefixes>
+      <infixes Amount="1" Load="Replace">
+        <infix Name="ブソ" />
+        <infix Name="クホ" />
+        <infix Name="ックエ" />
+        <infix Name="デ" />
+        <infix Name="グナ" />
+        <infix Name="ルベ" />
+        <infix Name="ルヘ" />
+        <infix Name="リッピ" />
+        <infix Name="リ" />
+        <infix Name="マ" />
+        <infix Name="ナ" />
+        <infix Name="ナイ" />
+        <infix Name="ネ" />
+        <infix Name="ンナ" />
+        <infix Name="ノ" />
+        <infix Name="リ" />
+        <infix Name="ルトヘ" />
+        <infix Name="サ" />
+        <infix Name="スタ" />
+        <infix Name="スティ" />
+        <infix Name="トヒ" />
+        <infix Name="ットヒ" />
+        <infix Name="ヴリ" />
+        <infix Name="クスエ" />
+        <infix Name="クスイ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="ベッレ" Weight="2" />
+        <postfix Name="ソン" />
+        <postfix Name="ダウグフテル" />
+        <postfix Name="キン" />
+        <postfix Name="クヒルド" />
+        <postfix Name="ダイ" />
+        <postfix Name="ニグフト" />
+        <postfix Name="ファッル" />
+        <postfix Name="スプリング" />
+        <postfix Name="スッメル" />
+        <postfix Name="ウィンテル" />
+        <postfix Name="クルステル" Weight="2" />
+        <postfix Name="エアテル" />
+        <postfix Name="ピグ" />
+        <postfix Name="ステエド" />
+        <postfix Name="マレ" />
+        <postfix Name="シャフ" />
+        <postfix Name="クヒエフ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Barathrumite" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ブ" />
+        <prefix Name="クフ" />
+        <prefix Name="ド" />
+        <prefix Name="フ" />
+        <prefix Name="ジ" />
+        <prefix Name="ル" />
+        <prefix Name="ム" />
+        <prefix Name="ン" />
+        <prefix Name="オトフ" />
+        <prefix Name="プ" />
+        <prefix Name="スフ" />
+        <prefix Name="スプ" />
+        <prefix Name="トフ" />
+      </prefixes>
+      <infixes Amount="1" Load="Replace">
+        <infix Name="アコ" />
+        <infix Name="アフェ" />
+        <infix Name="アフォ" />
+        <infix Name="アノ" />
+        <infix Name="アラ" />
+        <infix Name="アルディ" />
+        <infix Name="アルニ" />
+        <infix Name="アッティ" />
+        <infix Name="イッティ" />
+        <infix Name="オカ" />
+        <infix Name="オコ" />
+        <infix Name="オフェ" />
+        <infix Name="オフォ" />
+        <infix Name="オナ" />
+        <infix Name="オノ" />
+        <infix Name="オロ" />
+        <infix Name="オトホ" />
+        <infix Name="オッティ" />
+      </infixes>
+      <postfixes Amount="0-1" Load="Replace">
+        <postfix Name="クセア" />
+        <postfix Name="クセオ" />
+        <postfix Name="ダ" />
+        <postfix Name="ディ" Weight="2" />
+        <postfix Name="ド" />
+        <postfix Name="フェア" />
+        <postfix Name="フェオ" />
+        <postfix Name="フスイラ" />
+        <postfix Name="フスイレ" />
+        <postfix Name="ペア" />
+        <postfix Name="ペオ" />
+        <postfix Name="ピア" />
+        <postfix Name="ピオ" />
+        <postfix Name="トハ" />
+        <postfix Name="トホ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Barathrumite Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*Adjective*・バラサラム派・*Role*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Adjective">
+          <value Name="アックライメド" />
+          <value Name="ディスティングイシェド" />
+          <value Name="エステエメド" />
+        </templatevar>
+        <templatevar Name="Role">
+          <value Name="アーコノート" />
+          <value Name="講師" />
+          <value Name="修理工" />
+          <value Name="教師" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Hindren" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ビ" />
+        <prefix Name="ダ" />
+        <prefix Name="デ" />
+        <prefix Name="デル" />
+        <prefix Name="ハ" />
+        <prefix Name="イス" />
+        <prefix Name="カ" />
+        <prefix Name="カフ" />
+        <prefix Name="ケフ" />
+        <prefix Name="キ" />
+        <prefix Name="リ" />
+        <prefix Name="メフ" />
+        <prefix Name="ナ" />
+        <prefix Name="ネル" />
+        <prefix Name="ノ" />
+        <prefix Name="ラ" />
+        <prefix Name="レ" />
+        <prefix Name="レフ" />
+        <prefix Name="リ" />
+        <prefix Name="サ" />
+        <prefix Name="サン" />
+        <prefix Name="セ" />
+        <prefix Name="セフ" />
+        <prefix Name="セル" />
+        <prefix Name="タ" />
+        <prefix Name="テフ" />
+        <prefix Name="ヴェ" />
+        <prefix Name="ヴェル" />
+        <prefix Name="ヴィ" />
+        <prefix Name="ヴォ" />
+      </prefixes>
+      <infixes Amount="0-2" Load="Replace">
+        <infix Name="アー" />
+        <infix Name="アー" />
+        <infix Name="アウ" />
+        <infix Name="ダ" />
+        <infix Name="デ" />
+        <infix Name="ディ" />
+        <infix Name="エ" />
+        <infix Name="ファ" />
+        <infix Name="フェ" />
+        <infix Name="フェフ" />
+        <infix Name="フィ" />
+        <infix Name="イ" />
+        <infix Name="カ" />
+        <infix Name="ケ" />
+        <infix Name="ケフ" />
+        <infix Name="キ" />
+        <infix Name="レ" />
+        <infix Name="レフ" />
+        <infix Name="マ" />
+        <infix Name="ン" />
+        <infix Name="ナ" />
+        <infix Name="ト" />
+        <infix Name="テ" />
+        <infix Name="テフ" />
+        <infix Name="ティ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="" />
+        <postfix Name="ハルト" Weight="2" />
+        <postfix Name="ヒンド" Weight="11" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Mopango" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ア" />
+        <prefix Name="ダ" />
+        <prefix Name="ド" />
+        <prefix Name="ガ" />
+        <prefix Name="ゴ" />
+        <prefix Name="グ" />
+        <prefix Name="ギャ" />
+        <prefix Name="ギョ" />
+        <prefix Name="ラ" />
+        <prefix Name="レ" />
+        <prefix Name="ロ" />
+        <prefix Name="マ" />
+        <prefix Name="メ" />
+        <prefix Name="モ" />
+        <prefix Name="ム" />
+        <prefix Name="オ" />
+        <prefix Name="パ" />
+        <prefix Name="ポ" />
+        <prefix Name="ピャ" />
+        <prefix Name="ピョ" />
+        <prefix Name="ヴィ" />
+        <prefix Name="ヤ" />
+        <prefix Name="ヨ" />
+      </prefixes>
+      <infixes Amount="0-2" Load="Replace">
+        <infix Name="バ" />
+        <infix Name="クフラ" />
+        <infix Name="クフレ" />
+        <infix Name="クフロ" />
+        <infix Name="ダ" />
+        <infix Name="デ" />
+        <infix Name="ド" />
+        <infix Name="ガ" />
+        <infix Name="ゴ" />
+        <infix Name="グ" />
+        <infix Name="ギ" />
+        <infix Name="ギャ" />
+        <infix Name="ギョ" />
+        <infix Name="カ" />
+        <infix Name="キ" />
+        <infix Name="ラ" />
+        <infix Name="メ" />
+        <infix Name="ミャ" />
+        <infix Name="ミョ" />
+        <infix Name="ネ" />
+        <infix Name="パ" />
+        <infix Name="ラ" />
+        <infix Name="ロ" />
+        <infix Name="ヴァ" />
+        <infix Name="ヴェ" />
+        <infix Name="ヴィ" />
+        <infix Name="ヴォ" />
+        <infix Name="ヴィ" />
+        <infix Name="ゾ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="ブ" />
+        <postfix Name="バ" />
+        <postfix Name="クフ" />
+        <postfix Name="ド" />
+        <postfix Name="ド" />
+        <postfix Name="グ" />
+        <postfix Name="ゴ" />
+        <postfix Name="フ" />
+        <postfix Name="ム" />
+        <postfix Name="ン" />
+        <postfix Name="ナ" />
+        <postfix Name="ラ" />
+        <postfix Name="タ" />
+        <postfix Name="ヴィ" />
+        <postfix Name="ヴォ" />
+        <postfix Name="ヴィア" />
+        <postfix Name="ヨ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Two-Headed" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*Name*／*AltName*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Seeker" Load="Merge" Format="SpacesToHyphens">
+      <templates Load="Replace">
+        <template Name="*Name*・ノー・ロンガー" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Seeker Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*Position*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="Position">
+          <value Name="プトーの従者" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Seeker Dervish Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="伝説の*CreatureType*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Pariah Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*CreatureTypeCap*の棄民" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Barathrumite Pariah Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*CreatureTypeCap*の偶像破壊者" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Mechanimist Pariah Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*CreatureTypeCap*の異端者" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Hindren Pariah Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*CreatureTypeCap*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="General Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="伝説の*CreatureType*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Lair Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="伝説の*CreatureType*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Newly Sentient Being Hero Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*Descriptor*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Newly Sentient Being Hero Epithet" Load="Merge">
+      <templates Load="Replace">
+        <template Name="トヘ・*Descriptor*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Newly Sentient Being Hero Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="伝説の*CreatureType*" Weight="6" />
+        <template Name="名高い*CreatureType*" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Newly Sentient Being Hero Extra Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*Clientele*の友" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Mayor Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*MayorSynCap*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="MayorSyn">
+          <value Name="村長" />
+          <value Name="長老" />
+        </templatevar>
+        <templatevar Name="MayorSynCap">
+          <value Name="村長" />
+          <value Name="長老" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Mayor Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="村の*MayorSyn*" />
+        <template Name="村の*MayorSyn*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="MayorSyn">
+          <value Name="村長" />
+          <value Name="長老" />
+        </templatevar>
+        <templatevar Name="MayorSynCap">
+          <value Name="村長" />
+          <value Name="長老" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="King Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*MonarchSynCap*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="MonarchSyn">
+          <value Name="王" />
+        </templatevar>
+        <templatevar Name="MonarchSynCap">
+          <value Name="王" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Queen Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*MonarchSynCap*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="MonarchSyn">
+          <value Name="女王" />
+        </templatevar>
+        <templatevar Name="MonarchSynCap">
+          <value Name="女王" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Councilor Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*CouncilorSynCap*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="CouncilorSyn">
+          <value Name="評議員" />
+        </templatevar>
+        <templatevar Name="CouncilorSynCap">
+          <value Name="評議員" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Senator Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*CouncilorSynCap*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="CouncilorSyn">
+          <value Name="元老院議員" />
+        </templatevar>
+        <templatevar Name="CouncilorSynCap">
+          <value Name="元老院議員" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Parliamentarian Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*CouncilorSynCap*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="CouncilorSyn">
+          <value Name="議員" />
+        </templatevar>
+        <templatevar Name="CouncilorSynCap">
+          <value Name="議員" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Viceroy Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*ViceroySynCap*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="ViceroySyn">
+          <value Name="総督" />
+        </templatevar>
+        <templatevar Name="ViceroySynCap">
+          <value Name="総督" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Governor Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="*ViceroySynCap*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="ViceroySyn">
+          <value Name="総督" />
+        </templatevar>
+        <templatevar Name="ViceroySynCap">
+          <value Name="総督" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Administrator Epithet" Load="Merge">
+      <templates Load="Replace">
+        <template Name="トヘ・*WiseAdjective*" />
+      </templates>
+      <templatevars Load="Replace">
+        <templatevar Name="WiseAdjective">
+          <value Name="エルディテ" />
+          <value Name="ジュディスイオウス" />
+          <value Name="サゲ" />
+          <value Name="センスイブレ" />
+          <value Name="シュレウド" />
+          <value Name="ソプヒク" />
+          <value Name="ワリ" />
+          <value Name="ウィセ" />
+        </templatevar>
+      </templatevars>
+    </namestyle>
+    <namestyle Name="Warden Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="監視官" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Warden Two-Headed Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="監視官" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Warden Plural Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="監視官" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Merchant Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="村の商人" Weight="2" />
+        <template Name="村の商人" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Dromad Merchant Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="ドロマド商人" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Tinker Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="村の修理工" Weight="2" />
+        <template Name="村の修理工" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Apothecary Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="村の薬師" Weight="2" />
+        <template Name="村の薬師" />
+      </templates>
+    </namestyle>
+    <namestyle Name="GeneralGenderName" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="" Weight="2" />
+        <prefix Name="ア" />
+        <prefix Name="アル" />
+        <prefix Name="エ" />
+        <prefix Name="エオ" />
+        <prefix Name="エクス" />
+        <prefix Name="ホ" />
+        <prefix Name="ジャ" />
+        <prefix Name="ム" />
+        <prefix Name="ネオ" />
+        <prefix Name="ノン" />
+        <prefix Name="ヌ" />
+        <prefix Name="オ" />
+        <prefix Name="シン" />
+        <prefix Name="ウン" />
+        <prefix Name="クスエノ" />
+        <prefix Name="クスイン" />
+      </prefixes>
+      <infixes Amount="1" Load="Replace">
+        <infix Name="クラ" />
+        <infix Name="ドレ" />
+        <infix Name="ファ" />
+        <infix Name="フィ" />
+        <infix Name="フラ" />
+        <infix Name="ゲ" />
+        <infix Name="グロ" />
+        <infix Name="グラ" />
+        <infix Name="マ" />
+        <infix Name="メ" />
+        <infix Name="ム" />
+        <infix Name="ナ" />
+        <infix Name="ナオ" />
+        <infix Name="ノ" />
+        <infix Name="スタ" />
+        <infix Name="タ" />
+        <infix Name="ヴァ" />
+        <infix Name="ヴェ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="セル" />
+        <postfix Name="ダン" />
+        <postfix Name="デ" />
+        <postfix Name="ラテ" />
+        <postfix Name="レ" />
+        <postfix Name="リ" />
+        <postfix Name="リテ" />
+        <postfix Name="ミテ" />
+        <postfix Name="ン" />
+        <postfix Name="ンド" />
+        <postfix Name="ンデル" />
+        <postfix Name="ンデル" />
+        <postfix Name="ル" />
+        <postfix Name="ルゲ" />
+        <postfix Name="リネ" />
+        <postfix Name="テ" />
+        <postfix Name="ティネ" />
+        <postfix Name="ヴェ" />
+        <postfix Name="クス" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="GeneralGenderPersonTerm" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="クフ" />
+        <prefix Name="エクスム" />
+        <prefix Name="グル" />
+        <prefix Name="ム" />
+        <prefix Name="ネオム" />
+        <prefix Name="スト" />
+        <prefix Name="ウォム" />
+      </prefixes>
+      <infixes Amount="1" Load="Replace">
+        <infix Name="アー" />
+        <infix Name="ア" Weight="3" />
+        <infix Name="アダ" />
+        <infix Name="アイ" />
+        <infix Name="アウ" />
+        <infix Name="エラ" />
+        <infix Name="ヤ" />
+        <infix Name="イ" Weight="2" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="ク" />
+        <postfix Name="ル" />
+        <postfix Name="ン" />
+        <postfix Name="ンン" />
+        <postfix Name="ント" />
+        <postfix Name="クス" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="GeneralGenderImmaturePersonTerm" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ブ" />
+        <prefix Name="ブフ" />
+        <prefix Name="クフ" />
+        <prefix Name="グ" />
+        <prefix Name="グル" />
+        <prefix Name="クス" />
+        <prefix Name="ズフ" />
+      </prefixes>
+      <infixes Amount="1" Load="Replace">
+        <infix Name="ア" />
+        <infix Name="エ" />
+        <infix Name="イ" />
+        <infix Name="オ" />
+        <infix Name="ヤ" />
+        <infix Name="イ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="ディ" />
+        <postfix Name="ルド" />
+        <postfix Name="リ" />
+        <postfix Name="ッリ" />
+        <postfix Name="ンディ" />
+        <postfix Name="ルル" />
+        <postfix Name="イ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="GeneralGenderFormalAddressTerm" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="フル" />
+        <prefix Name="グル" />
+        <prefix Name="ム" />
+        <prefix Name="マド" />
+        <prefix Name="プル" />
+        <prefix Name="ス" />
+        <prefix Name="ヴ" />
+      </prefixes>
+      <infixes Amount="1" Load="Replace">
+        <infix Name="ア" />
+        <infix Name="エ" />
+        <infix Name="イ" />
+        <infix Name="イエ" />
+        <infix Name="ウ" />
+        <infix Name="イ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="イア" />
+        <postfix Name="イ" />
+        <postfix Name="ム" />
+        <postfix Name="ン" />
+        <postfix Name="ンド" />
+        <postfix Name="ヌ" />
+        <postfix Name="ル" />
+        <postfix Name="ラ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="GeneralGenderOffspringTerm" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ブ" />
+        <prefix Name="ブフ" />
+        <prefix Name="クフ" />
+        <prefix Name="ド" />
+        <prefix Name="グ" />
+        <prefix Name="グル" />
+        <prefix Name="ス" />
+        <prefix Name="クス" />
+        <prefix Name="ズフ" />
+      </prefixes>
+      <infixes Amount="1" Load="Replace">
+        <infix Name="ア" />
+        <infix Name="アウ" />
+        <infix Name="エ" />
+        <infix Name="イ" />
+        <infix Name="オ" />
+        <infix Name="ヤ" />
+        <infix Name="イ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="ビ" />
+        <postfix Name="ディ" />
+        <postfix Name="グフテル" />
+        <postfix Name="ルド" />
+        <postfix Name="リ" />
+        <postfix Name="ッリ" />
+        <postfix Name="ン" />
+        <postfix Name="ンディ" />
+        <postfix Name="ルル" />
+        <postfix Name="ット" />
+        <postfix Name="ッテル" />
+        <postfix Name="イ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="GeneralGenderSiblingTerm" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ブ" />
+        <prefix Name="ブフ" />
+        <prefix Name="ブル" />
+        <prefix Name="クフ" />
+        <prefix Name="ド" />
+        <prefix Name="グ" />
+        <prefix Name="グル" />
+        <prefix Name="ス" />
+        <prefix Name="クス" />
+        <prefix Name="ズフ" />
+      </prefixes>
+      <infixes Amount="1" Load="Replace">
+        <infix Name="ア" />
+        <infix Name="アウ" />
+        <infix Name="エ" />
+        <infix Name="イ" />
+        <infix Name="オ" />
+        <infix Name="ヤ" />
+        <infix Name="イ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="ブ" />
+        <postfix Name="ッビ" />
+        <postfix Name="ディ" />
+        <postfix Name="ルド" />
+        <postfix Name="リ" />
+        <postfix Name="ッリ" />
+        <postfix Name="ン" />
+        <postfix Name="ンディ" />
+        <postfix Name="ルル" />
+        <postfix Name="ステル" />
+        <postfix Name="トヘル" />
+        <postfix Name="イ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="GeneralGenderParentTerm" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ブ" />
+        <prefix Name="ブフ" />
+        <prefix Name="ブル" />
+        <prefix Name="クフ" />
+        <prefix Name="フ" />
+        <prefix Name="ド" />
+        <prefix Name="グ" />
+        <prefix Name="グル" />
+        <prefix Name="ム" />
+        <prefix Name="ス" />
+        <prefix Name="クス" />
+        <prefix Name="ズフ" />
+      </prefixes>
+      <infixes Amount="1" Load="Replace">
+        <infix Name="ア" />
+        <infix Name="アウ" />
+        <infix Name="エ" />
+        <infix Name="イ" />
+        <infix Name="オ" />
+        <infix Name="ヤ" />
+        <infix Name="イ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="ブ" />
+        <postfix Name="ド" />
+        <postfix Name="ッディ" />
+        <postfix Name="ディ" />
+        <postfix Name="ルド" />
+        <postfix Name="レル" />
+        <postfix Name="ロ" />
+        <postfix Name="ム" />
+        <postfix Name="ッミ" />
+        <postfix Name="ン" />
+        <postfix Name="ンディ" />
+        <postfix Name="ルル" />
+        <postfix Name="ステル" />
+        <postfix Name="トヘル" />
+        <postfix Name="イ" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Confused" Load="Merge">
+      <prefixes Amount="1-2" Load="Replace">
+        <prefix Name="ドゥフ" />
+        <prefix Name="エル" />
+        <prefix Name="フウ" />
+        <prefix Name="ウー" />
+        <prefix Name="ウム" />
+        <prefix Name="ウッム" />
+        <prefix Name="ワフ" />
+        <prefix Name="ウーー" />
+      </prefixes>
+      <infixes Amount="1-2" Load="Replace">
+        <infix Name="カル" />
+        <infix Name="クフウ" />
+        <infix Name="エル" />
+        <infix Name="マフ" />
+        <infix Name="ウー" />
+        <infix Name="ウッム" />
+        <infix Name="ワフ" />
+      </infixes>
+      <postfixes Amount="1-2" Load="Replace">
+        <postfix Name="カル" />
+        <postfix Name="クハ" />
+        <postfix Name="クフウ" />
+        <postfix Name="エル" />
+        <postfix Name="イト" />
+        <postfix Name="マフ" />
+        <postfix Name="ウー" />
+        <postfix Name="ウム" />
+        <postfix Name="ウッム" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="FuriousConfused" Load="Merge">
+      <prefixes Amount="1-2" Load="Replace">
+        <prefix Name="アー" />
+        <prefix Name="バフ" />
+        <prefix Name="ガル" />
+        <prefix Name="ムグフ" />
+        <prefix Name="ラウ" />
+        <prefix Name="ルグ" />
+        <prefix Name="ウル" />
+        <prefix Name="ウル" />
+      </prefixes>
+      <infixes Amount="1-2" Load="Replace">
+        <infix Name="アーア" />
+        <infix Name="アッフ" />
+        <infix Name="アルグ" />
+        <infix Name="ガア" />
+        <infix Name="ッフ" />
+        <infix Name="マグ" />
+        <infix Name="ルッグ" />
+        <infix Name="ルグフ" />
+      </infixes>
+      <postfixes Amount="1-2" Load="Replace">
+        <postfix Name="!!!" />
+        <postfix Name="!!" />
+        <postfix Name="!!1!" />
+        <postfix Name="!" />
+        <postfix Name="アー!" />
+        <postfix Name="オー!" />
+        <postfix Name="ラウ!!!" />
+        <postfix Name="ルグ!" />
+        <postfix Name="ルグフ!!" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Gyre Wight" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ファ" />
+        <prefix Name="ハ" />
+        <prefix Name="イ" Weight="2" />
+        <prefix Name="カ" />
+        <prefix Name="キ" />
+        <prefix Name="ク" />
+        <prefix Name="マ" />
+        <prefix Name="メフ" />
+        <prefix Name="モ" />
+        <prefix Name="ム" />
+        <prefix Name="ナ" />
+        <prefix Name="ニ" />
+        <prefix Name="ヌ" />
+        <prefix Name="ニ" />
+        <prefix Name="オ" />
+        <prefix Name="ク" />
+        <prefix Name="シュウ" />
+        <prefix Name="シュイ" />
+        <prefix Name="スイ" />
+        <prefix Name="シ" />
+        <prefix Name="タ" />
+        <prefix Name="ティ" />
+        <prefix Name="ティ" />
+        <prefix Name="ウ" />
+        <prefix Name="ウー" />
+        <prefix Name="イ" />
+        <prefix Name="ヤ" />
+        <prefix Name="イイ" />
+        <prefix Name="ッイ" />
+      </prefixes>
+      <infixes Amount="0-1" Load="Replace">
+        <infix Name="ガ" />
+        <infix Name="メ" />
+        <infix Name="モ" />
+        <infix Name="モオ" />
+        <infix Name="ム" />
+        <infix Name="ムウ" />
+        <infix Name="ラ" />
+        <infix Name="ロ" />
+        <infix Name="ロオ" />
+        <infix Name="ル" />
+        <infix Name="ルウ" />
+        <infix Name="シ" />
+        <infix Name="シュラ" />
+        <infix Name="シュリ" />
+        <infix Name="シュロ" />
+        <infix Name="シュル" />
+        <infix Name="シュワ" />
+        <infix Name="シュウォ" />
+        <infix Name="シュウ" />
+        <infix Name="ユ" Weight="2" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="バス" />
+        <postfix Name="ド" />
+        <postfix Name="ジル" />
+        <postfix Name="カス" />
+        <postfix Name="カト" />
+        <postfix Name="ラ" />
+        <postfix Name="ム" />
+        <postfix Name="メト" />
+        <postfix Name="ミル" />
+        <postfix Name="ムト" />
+        <postfix Name="ク" />
+        <postfix Name="カト" />
+        <postfix Name="ラク" />
+        <postfix Name="レム" />
+        <postfix Name="ロク" />
+        <postfix Name="シュム" />
+        <postfix Name="シュル" />
+        <postfix Name="テプ" />
+        <postfix Name="ウン" />
+        <postfix Name="ウル" />
+        <postfix Name="ウーン" />
+        <postfix Name="ワル" />
+        <postfix Name="ウェル" />
+        <postfix Name="ウール" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Gyre Wight Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Agolgot Gyre Wight Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="パイプ・ミルカー" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Agolgot Gyre Wight Epithet" Load="Merge">
+      <templates Load="Replace">
+        <template Name="アゴルゴトの" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Agolgot Gyre Wight Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Bethsaida Gyre Wight Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="ジャイア・ツイン" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Bethsaida Gyre Wight Epithet" Load="Merge">
+      <templates Load="Replace">
+        <template Name="ベツセイダの" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Bethsaida Gyre Wight Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Shug'ruith Gyre Wight Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="ディープ" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Shug'ruith Gyre Wight Epithet" Load="Merge">
+      <templates Load="Replace">
+        <template Name="シュグルイスの" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Shug'ruith Gyre Wight Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Rermadon Gyre Wight Honorific" Load="Merge">
+      <templates Load="Replace">
+        <template Name="ガスブライト" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Rermadon Gyre Wight Epithet" Load="Merge">
+      <templates Load="Replace">
+        <template Name="・レルマドン" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Rermadon Gyre Wight Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Qas Gyre Wight Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="カスの花嫁介添え" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Qon Gyre Wight Title" Load="Merge">
+      <templates Load="Replace">
+        <template Name="コンの花嫁介添え" />
+      </templates>
+    </namestyle>
+    <namestyle Name="Chiliad Qudish" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ファ" />
+        <prefix Name="ハ" />
+        <prefix Name="イ" Weight="2" />
+        <prefix Name="カ" />
+        <prefix Name="キ" />
+        <prefix Name="ク" />
+        <prefix Name="マ" />
+        <prefix Name="マエー" />
+        <prefix Name="モ" />
+        <prefix Name="ム" />
+        <prefix Name="ナ" />
+        <prefix Name="ニ" />
+        <prefix Name="ヌ" />
+        <prefix Name="オ" />
+        <prefix Name="ク" />
+        <prefix Name="スヴ" />
+        <prefix Name="スヴィ" />
+        <prefix Name="シ" />
+        <prefix Name="タ" />
+        <prefix Name="ティ" />
+        <prefix Name="ウ" />
+        <prefix Name="ウー" />
+        <prefix Name="ヤ" />
+        <prefix Name="ッイ" />
+      </prefixes>
+      <infixes Amount="0-2" Load="Replace">
+        <infix Name="ガ" />
+        <infix Name="メ" />
+        <infix Name="ノ" />
+        <infix Name="ノオ" />
+        <infix Name="ム" />
+        <infix Name="ムウ" />
+        <infix Name="ヴァ" />
+        <infix Name="ヴォ" />
+        <infix Name="ヴォオ" />
+        <infix Name="ヴ" />
+        <infix Name="ヴウ" />
+        <infix Name="スヒ" />
+        <infix Name="スヴァ" />
+        <infix Name="スヴィ" />
+        <infix Name="スヴ" />
+        <infix Name="スヴォ" />
+        <infix Name="ユ" Weight="2" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="バス" />
+        <postfix Name="ド" />
+        <postfix Name="ジル" />
+        <postfix Name="カエス" />
+        <postfix Name="カエト" />
+        <postfix Name="ラ" />
+        <postfix Name="ム" />
+        <postfix Name="マエト" />
+        <postfix Name="ミル" />
+        <postfix Name="ムト" />
+        <postfix Name="ク" />
+        <postfix Name="ラク" />
+        <postfix Name="レム" />
+        <postfix Name="ロク" />
+        <postfix Name="スヴム" />
+        <postfix Name="シュル" />
+        <postfix Name="テプ" />
+        <postfix Name="ウン" />
+        <postfix Name="ウル" />
+        <postfix Name="ウーン" />
+        <postfix Name="ワル" />
+        <postfix Name="ウェル" />
+        <postfix Name="ウール" />
+      </postfixes>
+    </namestyle>
+    <namestyle Name="Chiliad Qudish Site" Load="Merge">
+      <prefixes Amount="1" Load="Replace">
+        <prefix Name="ア" />
+        <prefix Name="アラ" />
+        <prefix Name="ビ" />
+        <prefix Name="ダ" />
+        <prefix Name="ドゥ" />
+        <prefix Name="エカ" />
+        <prefix Name="ハ" />
+        <prefix Name="イ" />
+        <prefix Name="カ" />
+        <prefix Name="キ" />
+        <prefix Name="マ" />
+        <prefix Name="ミ" />
+        <prefix Name="ナ" />
+        <prefix Name="サ" />
+        <prefix Name="スヴァ" />
+        <prefix Name="スヴェ" />
+        <prefix Name="スヴ" />
+        <prefix Name="ス" />
+        <prefix Name="タ" />
+        <prefix Name="テ" />
+        <prefix Name="トゥ" />
+        <prefix Name="ウ" />
+      </prefixes>
+      <infixes Amount="0-1" Load="Replace">
+        <infix Name="アッラ" />
+        <infix Name="アゾ" />
+        <infix Name="バ" />
+        <infix Name="ビ" />
+        <infix Name="ガ" />
+        <infix Name="ッガ" />
+        <infix Name="イリ" />
+        <infix Name="ムリ" />
+        <infix Name="ネ" />
+        <infix Name="ラ" />
+        <infix Name="ルクヘ" />
+        <infix Name="ルカ" />
+        <infix Name="ルク" />
+        <infix Name="ルシ" />
+        <infix Name="ルヴァ" />
+      </infixes>
+      <postfixes Amount="1" Load="Replace">
+        <postfix Name="バル" />
+        <postfix Name="ド" />
+        <postfix Name="ケヴフ" />
+        <postfix Name="クフ" />
+        <postfix Name="キスフ" />
+        <postfix Name="レプ" />
+        <postfix Name="リル" />
+        <postfix Name="ヴァス" />
+        <postfix Name="ヴィスフ" />
+        <postfix Name="ッヴ" />
+        <postfix Name="マオル" />
+        <postfix Name="ムラオド" />
+        <postfix Name="ムル" />
+        <postfix Name="ニプ" />
+        <postfix Name="ンナ" />
+        <postfix Name="ヴァド" />
+        <postfix Name="ッヴァ" />
+        <postfix Name="ッヴァル" />
+        <postfix Name="ッヴィル" />
+        <postfix Name="ッヴル" />
+        <postfix Name="ル" />
+        <postfix Name="ルク" />
+        <postfix Name="スフ" />
+        <postfix Name="シャン" />
+        <postfix Name="シュル" />
+        <postfix Name="タラ" />
+        <postfix Name="トゥム" />
+        <postfix Name="ヴァフ" />
+        <postfix Name="ヴフ" />
+        <postfix Name="ヴァン" />
+        <postfix Name="ヴァル" />
+        <postfix Name="ザオル" />
+      </postfixes>
+    </namestyle>
+  </namestyles>
+</naming>
