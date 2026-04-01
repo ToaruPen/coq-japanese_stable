@@ -35,26 +35,6 @@
       "text": "アイテム改造{{W|{mod}}}を習得した。"
     },
     {
-      "context": "XRL.World.Parts.ModAntiGravity.GetShortDescription",
-      "key": "Anti-gravity: When powered, this item's weight is reduced by ",
-      "text": "反重力: 通電中は重量が"
-    },
-    {
-      "context": "XRL.World.Parts.ModAntiGravity.GetShortDescription",
-      "key": " % plus ",
-      "text": " %減り、さらに"
-    },
-    {
-      "context": "XRL.World.Parts.ModAntiGravity.GetShortDescription",
-      "key": "lb",
-      "text": "lb"
-    },
-    {
-      "context": "XRL.World.Parts.ModAntiGravity.GetShortDescription",
-      "key": "lbs",
-      "text": "lbs"
-    },
-    {
       "context": "XRL.World.Parts.ModBeamsplitter.GetShortDescription",
       "key": "Fitted with beamsplitter: This weapon has ",
       "text": "ビームスプリッタ装着: この武器は"
@@ -85,36 +65,6 @@
       "text": "効果なし"
     },
     {
-      "context": "XRL.World.Parts.ModCoProcessor.GetShortDescription",
-      "key": "Co-Processor: When powered, this item grants ",
-      "text": "共同処理装置: 通電中は"
-    },
-    {
-      "context": "XRL.World.Parts.ModCoProcessor.GetShortDescription",
-      "key": "bonus",
-      "text": "ボーナス"
-    },
-    {
-      "context": "XRL.World.Parts.ModCoProcessor.GetShortDescription",
-      "key": " Intelligence and provides ",
-      "text": "知力が上昇し、さらに"
-    },
-    {
-      "context": "XRL.World.Parts.ModCounterweighted.GetShortDescription",
-      "key": "Counterweighted: Adds ",
-      "text": "つり合い調整: "
-    },
-    {
-      "context": "XRL.World.Parts.ModCounterweighted.GetShortDescription",
-      "key": "a bonus",
-      "text": "命中ボーナスを"
-    },
-    {
-      "context": "XRL.World.Parts.ModCounterweighted.GetShortDescription",
-      "key": " to hit.",
-      "text": "与える。"
-    },
-    {
       "context": "XRL.World.Parts.ModCybrid.GetShortDescription",
       "key": "Cybrid: Can draw power from biomechanical power transmission systems in addition to an electrical power grid.",
       "text": "サイブリッド: 電力網に加えて生体機械式の伝達機構からも給電できる。"
@@ -131,16 +81,6 @@
     },
     {
       "context": "XRL.World.Parts.ModDisplacer.GetShortDescription",
-      "key": "Displacer: When powered, this weapon randomly teleports its target ",
-      "text": "位相転移: 通電中、この武器は命中時に対象を無作為に"
-    },
-    {
-      "context": "XRL.World.Parts.ModDisplacer.GetShortDescription",
-      "key": " tiles away on a successful hit.",
-      "text": "マス離れた場所へ転移させる。"
-    },
-    {
-      "context": "XRL.World.Parts.ModDisplacer.GetShortDescription",
       "key": "You are suddenly elsewhere!",
       "text": "気がつくと別の場所にいた！"
     },
@@ -148,31 +88,6 @@
       "context": "XRL.World.Parts.ModDrumLoaded.GetShortDescription",
       "key": "Drum-loaded: This weapon may hold 20% additional ammo.",
       "text": "ドラム弾倉: 装弾数が20%増える。"
-    },
-    {
-      "context": "XRL.World.Parts.ModElectrified.GetShortDescription",
-      "key": "Electrified: When powered, this weapon deals ",
-      "text": "電化: 通電中、この武器は"
-    },
-    {
-      "context": "XRL.World.Parts.ModElectrified.GetShortDescription",
-      "key": "an additional ",
-      "text": "追加で"
-    },
-    {
-      "context": "XRL.World.Parts.ModElectrified.GetShortDescription",
-      "key": "additional",
-      "text": "追加の"
-    },
-    {
-      "context": "XRL.World.Parts.ModElectrified.GetShortDescription",
-      "key": " electrical damage on hit.",
-      "text": "電撃ダメージを与える。"
-    },
-    {
-      "context": "XRL.World.Parts.ModElectrified.GetShortDescription",
-      "key": "Electrified: When powered, this weapon deals an additional ",
-      "text": "電化: 通電中、この武器は追加で"
     },
     {
       "context": "XRL.World.Parts.ModExtradimensional.GetShortDescription",
@@ -185,44 +100,9 @@
       "text": "}}。\n"
     },
     {
-      "context": "XRL.World.Parts.ModFeathered.GetShortDescription",
-      "key": "Feathered: This item grants the wearer ",
-      "text": "羽飾り: 装着者に"
-    },
-    {
-      "context": "XRL.World.Parts.ModFeathered.GetShortDescription",
-      "key": " reputation with birds.",
-      "text": "の鳥類評判を与える。"
-    },
-    {
       "context": "XRL.World.Parts.ModFilters.GetShortDescription",
       "key": "Fitted with filters: This item protects against breathing in dangerous gases.",
       "text": "フィルター付き: 有害なガスを吸い込むのを防ぐ。"
-    },
-    {
-      "context": "XRL.World.Parts.ModFlaming.GetShortDescription",
-      "key": "Flaming: When powered, this weapon deals ",
-      "text": "火炎: 通電中、この武器は"
-    },
-    {
-      "context": "XRL.World.Parts.ModFlaming.GetShortDescription",
-      "key": "an additional ",
-      "text": "追加で"
-    },
-    {
-      "context": "XRL.World.Parts.ModFlaming.GetShortDescription",
-      "key": "additional",
-      "text": "追加の"
-    },
-    {
-      "context": "XRL.World.Parts.ModFlaming.GetShortDescription",
-      "key": " heat damage on hit.",
-      "text": "熱ダメージを与える。"
-    },
-    {
-      "context": "XRL.World.Parts.ModFlaming.GetShortDescription",
-      "key": "Flaming: When powered, this weapon deals an additional ",
-      "text": "火炎: 通電中、この武器は追加で"
     },
     {
       "context": "XRL.World.Parts.ModFlareCompensating.GetShortDescription",
@@ -233,31 +113,6 @@
       "context": "XRL.World.Parts.ModFlexiweaved.GetShortDescription",
       "key": "Flexiweaved: This item's DV penalty is reduced",
       "text": "柔繊維仕立て: この装備のDVペナルティが軽くなる"
-    },
-    {
-      "context": "XRL.World.Parts.ModFreezing.GetShortDescription",
-      "key": "Freezing: When powered, this weapon deals ",
-      "text": "冷却: 通電中、この武器は"
-    },
-    {
-      "context": "XRL.World.Parts.ModFreezing.GetShortDescription",
-      "key": "Freezing: When powered, this weapon deals an additional ",
-      "text": "冷却: 通電中、この武器は追加で"
-    },
-    {
-      "context": "XRL.World.Parts.ModRelicFreezing.GetShortDescription",
-      "key": "Freezing: When powered, this weapon deals ",
-      "text": "冷却: 通電中、この武器は"
-    },
-    {
-      "context": "XRL.World.Parts.ModFreezing.GetShortDescription",
-      "key": " additional",
-      "text": "追加の"
-    },
-    {
-      "context": "XRL.World.Parts.ModFreezing.GetShortDescription",
-      "key": " cold damage on hit.",
-      "text": "冷気ダメージを与える。"
     },
     {
       "context": "XRL.World.Parts.ModGearbox.GetShortDescription",
@@ -580,16 +435,6 @@
       "text": "鱗状の: 装着者に甲無し爬虫類との評判を与える。"
     },
     {
-      "context": "XRL.World.Parts.ModScaled.GetShortDescription",
-      "key": "Scaled: This item grants the wearer ",
-      "text": "鱗状の: 装着者に"
-    },
-    {
-      "context": "XRL.World.Parts.ModScaled.GetShortDescription",
-      "key": " reputation with unshelled reptiles.",
-      "text": "の甲無し爬虫類評判を与える。"
-    },
-    {
       "context": "XRL.World.Parts.ModSereneVisage.GetShortDescription",
       "key": "Serene visage: This item grants bonus Willpower, reduces the cooldown of Meditate by 40 rounds, and is worn on both the head and face. It requires both the head and face to wear.",
       "text": "静謐な面貌: 意志力が上昇し、瞑想のクールダウンを40ラウンド短縮する。頭部と顔の両方を占有する。"
@@ -653,16 +498,6 @@
       "context": "XRL.World.Parts.ModSnailEncrusted.GetShortDescription",
       "key": "Snail-Encrusted: This item is crawling with tiny snails and grants the wearer reputation with mollusks.",
       "text": "巻貝まみれ: 小さなカタツムリが這っており、装着者に軟体動物との評判を与える。"
-    },
-    {
-      "context": "XRL.World.Parts.ModSnailEncrusted.GetShortDescription",
-      "key": "Snail-Encrusted: This item is crawling with tiny snails and grants the wearer ",
-      "text": "巻貝まみれ: 小さなカタツムリが這っており、装着者に"
-    },
-    {
-      "context": "XRL.World.Parts.ModSnailEncrusted.GetShortDescription",
-      "key": " reputation with mollusks.",
-      "text": "の軟体動物評判を与える。"
     },
     {
       "context": "XRL.World.Parts.ModSpiked.GetShortDescription",
@@ -1208,6 +1043,70 @@
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
       "key": "Accuracy: Very Low",
       "text": "命中率: 非常に低い"
+    },
+    {
+      "key": "Adds item modification: {0}",
+      "text": "アイテム改造: {0}"
+    },
+    {
+      "key": "Anti-gravity: When powered, this item's weight is reduced by {0}% plus {1} {2}.",
+      "text": "反重力: 通電中、この品の重量は{0}%減り、さらに{1}{2}軽くなる。"
+    },
+    {
+      "key": "Co-Processor: When powered, this item grants {0} {1} and provides compute power to the local lattice.",
+      "text": "共同処理装置: 通電中、{1}に{0}を与え、局所格子に演算力を供給する。"
+    },
+    {
+      "key": "Co-Processor: When powered, this item grants {0} {1} and provides {2} units of compute power to the local lattice.",
+      "text": "共同処理装置: 通電中、{1}に{0}を与え、局所格子に{2}ユニットの演算力を供給する。"
+    },
+    {
+      "key": "Counterweighted: Adds a bonus to hit.",
+      "text": "つり合い調整: 命中にボーナスを与える。"
+    },
+    {
+      "key": "Counterweighted: Adds {0} to hit.",
+      "text": "つり合い調整: 命中に{0}のボーナスを与える。"
+    },
+    {
+      "key": "Displacer: When powered, this weapon randomly teleports its target {0} tiles away on a successful hit.",
+      "text": "位相転移: 通電中、この武器は命中時に対象を無作為に{0}マス離れた場所へ転移させる。"
+    },
+    {
+      "key": "Electrified: When powered, this weapon deals additional electrical damage on hit.",
+      "text": "電化: 通電中、この武器は命中時に追加の電撃ダメージを与える。"
+    },
+    {
+      "key": "Electrified: When powered, this weapon deals an additional {0} electrical damage on hit.",
+      "text": "電化: 通電中、この武器は命中時に追加で{0}の電撃ダメージを与える。"
+    },
+    {
+      "key": "Feathered: This item grants the wearer {0} reputation with birds.",
+      "text": "羽飾り: 装着者に鳥類との評判{0}を与える。"
+    },
+    {
+      "key": "Flaming: When powered, this weapon deals additional heat damage on hit.",
+      "text": "火炎: 通電中、この武器は命中時に追加の熱ダメージを与える。"
+    },
+    {
+      "key": "Flaming: When powered, this weapon deals an additional {0} heat damage on hit.",
+      "text": "火炎: 通電中、この武器は命中時に追加で{0}の熱ダメージを与える。"
+    },
+    {
+      "key": "Freezing: When powered, this weapon deals additional cold damage on hit.",
+      "text": "冷却: 通電中、この武器は命中時に追加の冷気ダメージを与える。"
+    },
+    {
+      "key": "Freezing: When powered, this weapon deals an additional {0} cold damage on hit.",
+      "text": "冷却: 通電中、この武器は命中時に追加で{0}の冷気ダメージを与える。"
+    },
+    {
+      "key": "Scaled: This item grants the wearer {0} reputation with unshelled reptiles.",
+      "text": "鱗状の: 装着者に甲無し爬虫類との評判{0}を与える。"
+    },
+    {
+      "key": "Snail-Encrusted: This item is crawling with tiny snails and grants the wearer {0} reputation with mollusks.",
+      "text": "巻貝まみれ: 小さなカタツムリが這っており、装着者に軟体動物との評判{0}を与える。"
     }
   ]
 }

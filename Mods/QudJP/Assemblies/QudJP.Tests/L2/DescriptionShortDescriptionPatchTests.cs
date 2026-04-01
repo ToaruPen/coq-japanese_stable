@@ -162,6 +162,44 @@ public sealed class DescriptionShortDescriptionPatchTests
         }
     }
 
+    [Test]
+    public void DescriptionShortDescriptionPatch_TranslatesDynamicWorldModsTemplates_WhenPatched()
+    {
+        WriteScopedDictionary(
+            ("Adds item modification: {0}", "アイテム改造: {0}"),
+            ("Counterweighted: Adds {0} to hit.", "つり合い調整: 命中に{0}のボーナスを与える。"),
+            ("Co-Processor: When powered, this item grants {0} {1} and provides {2} units of compute power to the local lattice.", "共同処理装置: 通電中、{1}に{0}を与え、局所格子に{2}ユニットの演算力を供給する。"),
+            ("Intelligence", "知力"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyDescriptionShortDescriptionTarget), nameof(DummyDescriptionShortDescriptionTarget.GetShortDescription)),
+                postfix: new HarmonyMethod(RequirePostfix(typeof(DescriptionShortDescriptionPatch), nameof(DescriptionShortDescriptionPatch.Postfix))));
+
+            var target = new DummyDescriptionShortDescriptionTarget(
+                "Co-processor: When powered, this item grants +2 Intelligence and provides 13 units of compute power to the local lattice.\nAdds item modification: Counterweighted: Adds +2 to hit.");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    target.GetShortDescription(useShort: true, useLong: false, prefix: string.Empty),
+                    Is.EqualTo("共同処理装置: 通電中、知力に+2を与え、局所格子に13ユニットの演算力を供給する。\nアイテム改造: つり合い調整: 命中に+2のボーナスを与える。"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(DescriptionShortDescriptionPatch),
+                        "Description.WorldMods"),
+                    Is.GreaterThan(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

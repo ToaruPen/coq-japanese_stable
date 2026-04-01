@@ -15,8 +15,41 @@ internal static class WorldModsTextTranslator
     private static readonly Regex PaintedPattern = new Regex(
         "^Painted: This item is painted with a scene from the life of the ancient (?<subject>.+):$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex DataDiskItemModificationPattern = new Regex(
+        "^Adds item modification: (?<description>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex AntiGravityPattern = new Regex(
+        "^Anti-gravity: When powered, this item's weight is reduced by (?<percent>\\d+)% plus (?<force>\\d+) (?<unit>lb|lbs)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CoProcessorPattern = new Regex(
+        "^[Cc]o-processor: When powered, this item grants (?<bonus>bonus|[+-]\\d+) (?<attribute>.+?) and provides (?:(?<units>\\d+) units of )?compute power to the local lattice\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CounterweightedPattern = new Regex(
+        "^Counterweighted: Adds (?<bonus>a bonus|[+-]\\d+) to hit\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex DisplacerPattern = new Regex(
+        "^Displacer: When powered, this weapon randomly teleports its target (?<distance>\\d+-\\d+) tiles away on a successful hit\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex ElectrifiedPattern = new Regex(
+        "^Electrified: When powered, this weapon deals(?: an additional (?<damage>\\d+(?:-\\d+)?)| additional)?\\s+electrical damage on hit\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex FlamingPattern = new Regex(
+        "^Flaming: When powered, this weapon deals(?: an additional (?<damage>\\d+(?:-\\d+)?)| additional)?\\s+heat damage on hit\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex FreezingPattern = new Regex(
+        "^Freezing: When powered, this weapon deals(?: an additional (?<damage>\\d+(?:-\\d+)?)| additional)?\\s+cold damage on hit\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex FeatheredPattern = new Regex(
+        "^Feathered: This item grants the wearer (?<amount>[+-]?\\d+) reputation with birds\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex JewelEncrustedPattern = new Regex(
         "^Jewel-Encrusted: This item is much more valuable than usual and grants the wearer (?<amount>[+-]\\d+) reputation with water barons\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex ScaledPattern = new Regex(
+        "^Scaled: This item grants the wearer (?<amount>[+-]?\\d+) reputation with unshelled reptiles\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex SnailEncrustedPattern = new Regex(
+        "^Snail-Encrusted: This item is crawling with tiny snails and grants the wearer (?<amount>[+-]?\\d+) reputation with mollusks\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex ImprovedMutationPattern = new Regex(
         "^Grants you (?<mutation>.+) at level (?<level>\\d+)\\. If you already have (?<repeatMutation>.+), its level is increased by (?<repeatLevel>\\d+)\\.$",
@@ -102,6 +135,105 @@ internal static class WorldModsTextTranslator
 
     private static bool TryTranslateTemplated(string source, string route, string family, out string translated)
     {
+        if (TryTranslateTemplate(
+            source,
+            route,
+            family,
+            DataDiskItemModificationPattern,
+            "Adds item modification: {0}",
+            (match, spans) => new[] { GetTranslatedCapture(match, spans, "description", TranslateNestedWorldModDescription) },
+            out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateTemplate(
+            source,
+            route,
+            family,
+            AntiGravityPattern,
+            "Anti-gravity: When powered, this item's weight is reduced by {0}% plus {1} {2}.",
+            (match, spans) => new[]
+            {
+                GetTranslatedCapture(match, spans, "percent"),
+                GetTranslatedCapture(match, spans, "force"),
+                GetTranslatedCapture(match, spans, "unit"),
+            },
+            out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateCoProcessorTemplate(source, route, family, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateCounterweightedTemplate(source, route, family, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateTemplate(
+            source,
+            route,
+            family,
+            DisplacerPattern,
+            "Displacer: When powered, this weapon randomly teleports its target {0} tiles away on a successful hit.",
+            (match, spans) => new[] { GetTranslatedCapture(match, spans, "distance") },
+            out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateElementalDamageTemplate(
+            source,
+            route,
+            family,
+            ElectrifiedPattern,
+            "Electrified: When powered, this weapon deals additional electrical damage on hit.",
+            "Electrified: When powered, this weapon deals an additional {0} electrical damage on hit.",
+            out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateElementalDamageTemplate(
+            source,
+            route,
+            family,
+            FlamingPattern,
+            "Flaming: When powered, this weapon deals additional heat damage on hit.",
+            "Flaming: When powered, this weapon deals an additional {0} heat damage on hit.",
+            out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateElementalDamageTemplate(
+            source,
+            route,
+            family,
+            FreezingPattern,
+            "Freezing: When powered, this weapon deals additional cold damage on hit.",
+            "Freezing: When powered, this weapon deals an additional {0} cold damage on hit.",
+            out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateTemplate(
+            source,
+            route,
+            family,
+            FeatheredPattern,
+            "Feathered: This item grants the wearer {0} reputation with birds.",
+            (match, spans) => new[] { GetTranslatedCapture(match, spans, "amount") },
+            out translated))
+        {
+            return true;
+        }
+
         if (TryTranslateMasterworkTemplate(source, route, family, out translated))
         {
             return true;
@@ -125,6 +257,30 @@ internal static class WorldModsTextTranslator
             family,
             JewelEncrustedPattern,
             "Jewel-Encrusted: This item is much more valuable than usual and grants the wearer {0} reputation with water barons.",
+            (match, spans) => new[] { GetTranslatedCapture(match, spans, "amount") },
+            out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateTemplate(
+            source,
+            route,
+            family,
+            ScaledPattern,
+            "Scaled: This item grants the wearer {0} reputation with unshelled reptiles.",
+            (match, spans) => new[] { GetTranslatedCapture(match, spans, "amount") },
+            out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateTemplate(
+            source,
+            route,
+            family,
+            SnailEncrustedPattern,
+            "Snail-Encrusted: This item is crawling with tiny snails and grants the wearer {0} reputation with mollusks.",
             (match, spans) => new[] { GetTranslatedCapture(match, spans, "amount") },
             out translated))
         {
@@ -317,6 +473,102 @@ internal static class WorldModsTextTranslator
         return !string.Equals(source, translated, StringComparison.Ordinal);
     }
 
+    private static bool TryTranslateCoProcessorTemplate(string source, string route, string family, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = CoProcessorPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var templateKey = match.Groups["units"].Success
+            ? "Co-Processor: When powered, this item grants {0} {1} and provides {2} units of compute power to the local lattice."
+            : "Co-Processor: When powered, this item grants {0} {1} and provides compute power to the local lattice.";
+        var template = ScopedDictionaryLookup.TranslateExactOrLowerAscii(templateKey, WorldModsDictionaryFile);
+        if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var args = match.Groups["units"].Success
+            ? new[]
+            {
+                GetTranslatedCapture(match, spans, "bonus", TranslateCoProcessorBonus),
+                GetTranslatedCapture(match, spans, "attribute"),
+                GetTranslatedCapture(match, spans, "units"),
+            }
+            : new[]
+            {
+                GetTranslatedCapture(match, spans, "bonus", TranslateCoProcessorBonus),
+                GetTranslatedCapture(match, spans, "attribute"),
+            };
+
+        return TryFormatTemplate(source, stripped, spans, route, family, match, template!, args, out translated);
+    }
+
+    private static bool TryTranslateCounterweightedTemplate(string source, string route, string family, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = CounterweightedPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var templateKey = string.Equals(match.Groups["bonus"].Value, "a bonus", StringComparison.Ordinal)
+            ? "Counterweighted: Adds a bonus to hit."
+            : "Counterweighted: Adds {0} to hit.";
+        var template = ScopedDictionaryLookup.TranslateExactOrLowerAscii(templateKey, WorldModsDictionaryFile);
+        if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var args = string.Equals(match.Groups["bonus"].Value, "a bonus", StringComparison.Ordinal)
+            ? Array.Empty<string>()
+            : new[] { GetTranslatedCapture(match, spans, "bonus") };
+
+        return TryFormatTemplate(source, stripped, spans, route, family, match, template!, args, out translated);
+    }
+
+    private static bool TryTranslateElementalDamageTemplate(
+        string source,
+        string route,
+        string family,
+        Regex pattern,
+        string withoutRangeTemplateKey,
+        string withRangeTemplateKey,
+        out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = pattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var hasDamageRange = match.Groups["damage"].Success;
+        var templateKey = hasDamageRange ? withRangeTemplateKey : withoutRangeTemplateKey;
+        var template = ScopedDictionaryLookup.TranslateExactOrLowerAscii(templateKey, WorldModsDictionaryFile);
+        if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var args = hasDamageRange
+            ? new[] { GetTranslatedCapture(match, spans, "damage") }
+            : Array.Empty<string>();
+
+        return TryFormatTemplate(source, stripped, spans, route, family, match, template!, args, out translated);
+    }
+
     private static bool TryTranslateTemplate(
         string source,
         string route,
@@ -341,7 +593,21 @@ internal static class WorldModsTextTranslator
             return false;
         }
 
-        var visible = string.Format(CultureInfo.InvariantCulture, template, buildArguments(match, spans));
+        return TryFormatTemplate(source, stripped, spans, route, family, match, template!, buildArguments(match, spans), out translated);
+    }
+
+    private static bool TryFormatTemplate(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string family,
+        Match match,
+        string template,
+        object[] args,
+        out string translated)
+    {
+        var visible = string.Format(CultureInfo.InvariantCulture, template, args);
         if (spans.Count > 0)
         {
             var boundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(spans, match, stripped.Length, visible.Length);
@@ -413,6 +679,20 @@ internal static class WorldModsTextTranslator
         }
 
         return TranslateTemplateCapture(normalized);
+    }
+
+    private static string TranslateNestedWorldModDescription(string source)
+    {
+        return TryTranslate(source, "WorldModsNestedTemplate", "Description.WorldMods.Nested", out var translated)
+            ? translated
+            : TranslateTemplateCapture(source);
+    }
+
+    private static string TranslateCoProcessorBonus(string source)
+    {
+        return string.Equals(source, "bonus", StringComparison.Ordinal)
+            ? "ボーナス"
+            : TranslateTemplateCapture(source);
     }
 
     private static string TranslateTemplateCapture(string source)
