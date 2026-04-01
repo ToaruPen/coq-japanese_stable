@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Diagnostics;
 using System.Reflection;
 using HarmonyLib;
@@ -14,14 +14,14 @@ public static class ModMenuLineTranslationPatch
     private const string AuthorPrefix = "by ";
     private const string JapaneseAuthorPrefix = "作者: ";
 
-    [HarmonyTargetMethods]
-    private static IEnumerable<MethodBase> TargetMethods()
+    [HarmonyTargetMethod]
+    private static MethodBase? TargetMethod()
     {
         var targetType = AccessTools.TypeByName(TargetTypeName);
         if (targetType is null)
         {
             Trace.TraceError("QudJP: {0} target type '{1}' not found.", Context, TargetTypeName);
-            yield break;
+            return null;
         }
 
         var updateMethod = AccessTools.Method(targetType, "Update", Type.EmptyTypes);
@@ -29,48 +29,8 @@ public static class ModMenuLineTranslationPatch
         {
             Trace.TraceError("QudJP: {0}.Update() not found on '{1}'.", Context, TargetTypeName);
         }
-        else
-        {
-            yield return updateMethod;
-        }
 
-        var setTagMethod = AccessTools.Method(
-            targetType,
-            "SetTag",
-            new[] { typeof(string), typeof(int).MakeByRefType(), typeof(bool) });
-        if (setTagMethod is null)
-        {
-            Trace.TraceError("QudJP: {0}.SetTag(string, ref int, bool) not found on '{1}'.", Context, TargetTypeName);
-        }
-        else
-        {
-            yield return setTagMethod;
-        }
-    }
-
-    public static void Prefix(MethodBase? __originalMethod, object[]? __args)
-    {
-        try
-        {
-            if (!string.Equals(__originalMethod?.Name, "SetTag", StringComparison.Ordinal)
-                || __args is null
-                || __args.Length == 0
-                || __args[0] is not string source
-                || string.IsNullOrEmpty(source))
-            {
-                return;
-            }
-
-            var translated = TranslateTagText(source);
-            if (!string.Equals(translated, source, StringComparison.Ordinal))
-            {
-                __args[0] = translated;
-            }
-        }
-        catch (Exception ex)
-        {
-            Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
-        }
+        return updateMethod;
     }
 
     public static void Postfix(MethodBase? __originalMethod, object? __instance)
@@ -96,10 +56,34 @@ public static class ModMenuLineTranslationPatch
                 DynamicTextObservability.RecordTransform(Context, "ModMenuLine.AuthorText", current!, translated);
                 OwnerTextSetter.SetTranslatedText(authorText, current!, translated, Context, typeof(ModMenuLineTranslationPatch));
             }
+
+            TranslateTags(__instance);
         }
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: {0}.Postfix failed: {1}", Context, ex);
+        }
+    }
+
+    private static void TranslateTags(object instance)
+    {
+        if (UiBindingTranslationHelpers.GetMemberValue(instance, "tags") is not IList tags)
+        {
+            return;
+        }
+
+        for (var index = 0; index < tags.Count; index++)
+        {
+            if (tags[index] is not string source || string.IsNullOrEmpty(source))
+            {
+                continue;
+            }
+
+            var translated = TranslateTagText(source);
+            if (!string.Equals(translated, source, StringComparison.Ordinal))
+            {
+                tags[index] = translated;
+            }
         }
     }
 

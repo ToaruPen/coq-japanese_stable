@@ -329,6 +329,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(TextMeshProFontPatch), "OnEnable", "TMPro.TextMeshPro", "System.Void", new string[0])]
     [TestCase(typeof(TmpInputFieldFontPatch), "OnEnable", "TMPro.TMP_InputField", "System.Void", new string[0])]
     [TestCase(typeof(LegacyUITextFontPatch), "OnEnable", "UnityEngine.UI.Text", "System.Void", new string[0])]
+    [TestCase(typeof(ModMenuLineTranslationPatch), "Update", "Qud.UI.ModMenuLine", "System.Void", new string[0])]
 #endif
     public void TargetMethod_ResolvesExpectedSignature(
         Type patchType,
@@ -432,11 +433,6 @@ public sealed class TargetMethodResolutionTests
     {
         "System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
         "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
-    })]
-    [TestCase(typeof(ModMenuLineTranslationPatch), new[]
-    {
-        "",
-        "System.String|System.Int32&|System.Boolean",
     })]
     [TestCase(typeof(SteamWorkshopUploaderViewTranslationPatch), new[]
     {

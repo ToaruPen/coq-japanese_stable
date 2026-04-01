@@ -52,9 +52,6 @@ public sealed class ModMenuLineTranslationPatchTests
             harmony.Patch(
                 original: RequireMethod(typeof(DummyModMenuLineTarget), nameof(DummyModMenuLineTarget.Update)),
                 postfix: new HarmonyMethod(RequireMethod(typeof(ModMenuLineTranslationPatch), nameof(ModMenuLineTranslationPatch.Postfix))));
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyModMenuLineTarget), nameof(DummyModMenuLineTarget.SetTag)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(ModMenuLineTranslationPatch), nameof(ModMenuLineTranslationPatch.Prefix))));
 
             var target = new DummyModMenuLineTarget();
             target.Update();
