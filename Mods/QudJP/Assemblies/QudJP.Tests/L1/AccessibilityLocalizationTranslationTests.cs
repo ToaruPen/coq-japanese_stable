@@ -129,6 +129,38 @@ public sealed class AccessibilityLocalizationTranslationTests
         Assert.That(result, Is.EqualTo(markedResult));
     }
 
+    [Test]
+    public void Postfix_LeavesResultUnchanged_WhenKeyIsNull()
+    {
+        string resultNull = null!;
+        AccessibilityLocalizationPatch.Postfix(null, ref resultNull);
+        Assert.That(resultNull, Is.Null);
+
+        var resultEmpty = string.Empty;
+        AccessibilityLocalizationPatch.Postfix(null, ref resultEmpty);
+        Assert.That(resultEmpty, Is.Empty);
+
+        var resultNonEmpty = "unknown-value";
+        AccessibilityLocalizationPatch.Postfix(null, ref resultNonEmpty);
+        Assert.That(resultNonEmpty, Is.EqualTo("unknown-value"));
+    }
+
+    [Test]
+    public void Postfix_LeavesResultUnchanged_WhenKeyIsEmpty()
+    {
+        string resultNull = null!;
+        AccessibilityLocalizationPatch.Postfix(string.Empty, ref resultNull);
+        Assert.That(resultNull, Is.Null);
+
+        var resultEmpty = string.Empty;
+        AccessibilityLocalizationPatch.Postfix(string.Empty, ref resultEmpty);
+        Assert.That(resultEmpty, Is.Empty);
+
+        var resultNonEmpty = "unknown-value";
+        AccessibilityLocalizationPatch.Postfix(string.Empty, ref resultNonEmpty);
+        Assert.That(resultNonEmpty, Is.EqualTo("unknown-value"));
+    }
+
     private static Dictionary<string, string> GetTranslations()
     {
         var field = typeof(AccessibilityLocalizationPatch).GetField("Translations", BindingFlags.NonPublic | BindingFlags.Static);
