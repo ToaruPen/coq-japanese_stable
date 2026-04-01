@@ -93,6 +93,7 @@ class _ExcerptSpec:
 @dataclass(frozen=True)
 class _ReuseContainer:
     english_key: str
+    english_text: str
     japanese_text: str
 
 
@@ -456,6 +457,14 @@ def _add_parallel_units(mapping: dict[str, str], english_units: list[str], japan
         _add_mapping(mapping, english_unit, japanese_unit)
 
 
+def _validate_page_alignment(book_id: str, english_pages: list[str], japanese_pages: list[str]) -> None:
+    """Fail fast when translated book page counts drift out of alignment."""
+    if len(english_pages) == len(japanese_pages):
+        return
+    msg = f"Books page count mismatch for '{book_id}': en={len(english_pages)} ja={len(japanese_pages)}"
+    raise ValueError(msg)
+
+
 def _build_books_map(english_books: dict[str, list[str]], japanese_books: dict[str, list[str]]) -> dict[str, str]:
     """Build a reuse map from translated book pages."""
     mapping: dict[str, str] = {}
@@ -463,7 +472,8 @@ def _build_books_map(english_books: dict[str, list[str]], japanese_books: dict[s
         japanese_pages = japanese_books.get(book_id)
         if not japanese_pages:
             continue
-        for english_page, japanese_page in zip(english_pages, japanese_pages, strict=False):
+        _validate_page_alignment(book_id, english_pages, japanese_pages)
+        for english_page, japanese_page in zip(english_pages, japanese_pages, strict=True):
             _add_mapping(mapping, english_page, japanese_page)
             _add_parallel_units(mapping, _split_nonblank_lines(english_page), _split_nonblank_lines(japanese_page))
             _add_parallel_units(mapping, _split_paragraph_text(english_page), _split_paragraph_text(japanese_page))
@@ -481,13 +491,16 @@ def _build_book_containers(
         japanese_pages = japanese_books.get(book_id)
         if not japanese_pages:
             continue
-        for english_page, japanese_page in zip(english_pages, japanese_pages, strict=False):
+        _validate_page_alignment(book_id, english_pages, japanese_pages)
+        for english_page, japanese_page in zip(english_pages, japanese_pages, strict=True):
+            english_text = _normalize_text(english_page)
             english_key = _match_key(english_page)
             if not english_key:
                 continue
             containers.append(
                 _ReuseContainer(
                     english_key=english_key,
+                    english_text=english_text,
                     japanese_text=_normalize_text(japanese_page),
                 ),
             )
@@ -577,21 +590,51 @@ def _build_excerpt_containers(
             containers.append(
                 _ReuseContainer(
                     english_key=english_key,
+                    english_text=_normalize_text(english_paragraph),
                     japanese_text=_normalize_text(japanese_paragraph),
                 ),
             )
     return containers
 
 
+def _lookup_sentence_in_container(key: str, container: _ReuseContainer) -> tuple[int, str] | None:
+    """Return a sentence-level fallback from a container when alignment is unambiguous."""
+    english_units = _split_english_text(container.english_text)
+    japanese_units = _split_japanese_text(container.japanese_text)
+    if len(english_units) != len(japanese_units):
+        return None
+
+    matches: list[tuple[int, str]] = []
+    for english_unit, japanese_unit in zip(english_units, japanese_units, strict=True):
+        english_unit_key = _match_key(english_unit)
+        if key not in english_unit_key:
+            continue
+        matches.append((len(english_unit_key), _normalize_text(japanese_unit)))
+
+    if len(matches) != 1:
+        return None
+    return matches[0]
+
+
 def _lookup_container_text(key: str, containers: list[_ReuseContainer]) -> str | None:
-    """Return the shortest containing Japanese text for a normalized English key."""
-    best_match: _ReuseContainer | None = None
+    """Return the shortest containing Japanese sentence for a normalized English key."""
+    best_match: tuple[int, str] | None = None
     for container in containers:
         if key not in container.english_key:
             continue
-        if best_match is None or len(container.english_key) < len(best_match.english_key):
-            best_match = container
-    return None if best_match is None else best_match.japanese_text
+        sentence_match = _lookup_sentence_in_container(key, container)
+        if sentence_match is None:
+            continue
+        if best_match is None or sentence_match[0] < best_match[0]:
+            best_match = sentence_match
+    return None if best_match is None else best_match[1]
+
+
+def _resolve_cli_path(path: Path, project_root: Path) -> Path:
+    """Resolve relative CLI paths against the repository root."""
+    if path.is_absolute():
+        return path.resolve()
+    return (project_root / path).resolve()
 
 
 def _build_manifest(
@@ -639,7 +682,7 @@ def _build_manifest(
 
 def main(argv: list[str] | None = None) -> int:
     """Build and write the reuse manifest."""
-    _find_project_root()
+    project_root = _find_project_root()
 
     parser = argparse.ArgumentParser(
         description="Build a reuse manifest for LibraryCorpus sentences",
@@ -675,6 +718,8 @@ def main(argv: list[str] | None = None) -> int:
         help=f"Output path for manifest JSON (default: {_DEFAULT_OUTPUT})",
     )
     args = parser.parse_args(argv)
+    for field in ("corpus_raw", "books_en", "books_ja", "corpus_dir", "output"):
+        setattr(args, field, _resolve_cli_path(getattr(args, field), project_root))
 
     try:
         _validate_file(args.corpus_raw, label="Raw corpus")

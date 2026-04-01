@@ -72,7 +72,22 @@ public sealed class MarkovCorpusTranslationPatchTests
             .ToArray();
 
         // Protected lore terms must appear as single tokens (no space inside)
-        var protectedTerms = new[] { "喰らう者", "スルタン", "クローム", "レシェフ", "スピンドル", "ジョッパ", "ゴルゴタ", "バラサラム", "チャヴァ", "クッド", "ベテル" };
+        var protectedTerms = new[]
+        {
+            "喰らう者",
+            "喰らう者の墓所",
+            "スルタン",
+            "クローム",
+            "レシェフ",
+            "スピンドル",
+            "ジョッパ",
+            "ゴルゴタ",
+            "バラサラム",
+            "チャヴァ",
+            "クッド",
+            "ベテル",
+            "六日のスティルト",
+        };
 
         Assert.Multiple(() =>
         {
@@ -80,10 +95,12 @@ public sealed class MarkovCorpusTranslationPatchTests
             {
                 // Find sentences containing this term and verify it's a single token
                 var containingSentences = sentences.Where(s => s.Contains(term)).ToArray();
+                Assert.That(containingSentences, Is.Not.Empty,
+                    $"Lore term '{term}' should appear in the production corpus.");
                 foreach (var sentence in containingSentences)
                 {
                     var tokens = sentence.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                    Assert.That(tokens.Any(t => t.Contains(term)), Is.True,
+                    Assert.That(tokens.Any(t => t.Equals(term, StringComparison.Ordinal) || t.Contains(term, StringComparison.Ordinal)), Is.True,
                         $"Lore term '{term}' should appear within a single token in: {sentence[..Math.Min(80, sentence.Length)]}...");
                 }
             }

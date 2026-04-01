@@ -159,6 +159,7 @@ def _merge_japanese_sentences(
 
     if missing:
         sample = "\n".join(f"  - {item}" for item in missing[:10])
+        total_llm = source_counts["translated"] + len(missing)
         raise RuntimeError(
             "Missing Japanese for llm-backed manifest rows after merge.\n"
             f"cause: translated corpus covers {source_counts['translated']} llm rows, but "
@@ -166,7 +167,8 @@ def _merge_japanese_sentences(
             "impact: LibraryCorpus.ja.json was not written.\n"
             "sample missing rows:\n"
             f"{sample}\n"
-            "next action: complete scripts/corpus_ja_translated.json so all 7441 llm rows "
+            "next action: complete scripts/corpus_ja_translated.json so all "
+            f"{total_llm} llm rows "
             "from scripts/corpus_en_for_translation.json are present in order."
         )
 
@@ -219,17 +221,27 @@ def _tokenize_sentences(sentences: list[str]) -> list[str]:
         raise RuntimeError(msg)
 
     tokenizer, protection_pattern = create_tokenizer()
-    tokenized = []
-    for sentence in sentences:
+    tokenized: list[str] = []
+    invalid_rows: list[str] = []
+    for index, sentence in enumerate(sentences):
         normalized = _normalize_sentence(sentence)
         result = tokenize_sentence(normalized, tokenizer, protection_pattern)
         result = _normalize_tokenized_sentence(result)
-        # Skip empty or period-only sentences
+        reasons: list[str] = []
         if result.strip() in ("", "."):
-            continue
+            reasons.append("empty-or-period-only")
         if not JAPANESE_CHARACTER_PATTERN.search(result):
+            reasons.append("missing-japanese-characters")
+        if reasons:
+            invalid_rows.append(
+                f"index={index} reason={'+'.join(reasons)} "
+                f"source={sentence[:80]!r} normalized={normalized[:80]!r} tokenized={result[:80]!r}"
+            )
             continue
         tokenized.append(result)
+    if invalid_rows:
+        sample = "\n".join(f"  - {item}" for item in invalid_rows[:10])
+        raise ValueError(f"Tokenization produced invalid corpus rows:\n{sample}")
     return tokenized
 
 

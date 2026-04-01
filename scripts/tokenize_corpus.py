@@ -42,6 +42,9 @@ def _load_protected_terms() -> list[str]:
 
 def _build_protection_pattern(terms: list[str]) -> re.Pattern[str]:
     """Build a regex pattern that matches any protected term."""
+    if not terms:
+        msg = "Protection terms list is empty; docs/glossary.csv has no confirmed/approved Japanese terms."
+        raise ValueError(msg)
     escaped = [re.escape(t) for t in terms]
     return re.compile("|".join(escaped))
 

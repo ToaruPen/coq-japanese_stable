@@ -15,25 +15,11 @@ CHUNKS_DIR = Path("scripts/translation_chunks")
 GLOSSARY_PATH = Path("scripts/translation_glossary.txt")
 CHUNK_SIZE = 300  # sentences per Codex call
 
-TRANSLATION_PROMPT = """\
+TRANSLATION_PROMPT_TEMPLATE = """\
 以下のJSON配列に含まれる英文を日本語に翻訳し、[{{"id": N, "ja": "翻訳文"}}] 形式のJSON配列のみを出力してください。
 
 ## 必須用語（必ずこの訳語を使うこと）
-- Eaters = 喰らう者
-- Sultan / Sultans = スルタン
-- Chrome = クローム（金属元素のクロムではなくロア上の概念）
-- Resheph = レシェフ
-- Spindle / The Spindle = スピンドル
-- Joppa = ジョッパ
-- Golgotha = ゴルゴタ
-- Barathrum = バラサラム
-- Chavvah = チャヴァ
-- Qud = クッド
-- Baetyls = ベテル
-- salt = 塩（ロア上の物質として言及されている場合）
-- The Six Day Stilt = 六日のスティルト
-- Chrome Pyramid = クローム・ピラミッド
-- Tomb of the Eaters = 喰らう者の墓所
+{glossary}
 
 ## 翻訳ルール
 1. 原文のレジスターを維持する — 文語体は文語体のまま、科学的な文は分析的に、格言は簡潔に
@@ -48,6 +34,24 @@ TRANSLATION_PROMPT = """\
 ## 入力
 {input_json}
 """
+
+
+def load_glossary() -> str:
+    """Load the canonical glossary text used by translators."""
+    if not GLOSSARY_PATH.is_file():
+        msg = f"Glossary file not found: {GLOSSARY_PATH}"
+        raise FileNotFoundError(msg)
+    glossary = GLOSSARY_PATH.read_text(encoding="utf-8").strip()
+    if not glossary:
+        msg = f"Glossary file is empty: {GLOSSARY_PATH}"
+        raise ValueError(msg)
+    return glossary
+
+
+def build_translation_prompt(input_json: str) -> str:
+    """Build the translation prompt from the canonical glossary and JSON payload."""
+    glossary = load_glossary()
+    return TRANSLATION_PROMPT_TEMPLATE.format(glossary=glossary, input_json=input_json)
 
 
 def load_input() -> list[dict]:
@@ -93,7 +97,7 @@ def extract_json_array(text: str) -> list[dict] | None:
 def translate_chunk(chunk: list[dict], chunk_idx: int, total_chunks: int) -> list[dict]:
     """Call Codex to translate a chunk of sentences."""
     input_json = json.dumps(chunk, ensure_ascii=False, indent=1)
-    prompt = TRANSLATION_PROMPT.format(input_json=input_json)
+    prompt = build_translation_prompt(input_json)
 
     print(f"  Chunk {chunk_idx}/{total_chunks}: {len(chunk)} sentences, calling Codex...")
 
@@ -143,6 +147,45 @@ def translate_chunk(chunk: list[dict], chunk_idx: int, total_chunks: int) -> lis
     return []
 
 
+def _normalize_translation_text(text: str) -> str | None:
+    """Normalize a translated sentence or return None when it is unusable."""
+    normalized = text.rstrip()
+    normalized = re.sub(r"[。！？]+$", "", normalized)
+    if not normalized:
+        return None
+    if not normalized.endswith("."):
+        normalized += "."
+    return normalized
+
+
+def _collect_chunk_translations(chunk: list[dict], translated: list[dict]) -> tuple[dict[int, str], list[str]]:
+    """Collect only valid translations for the current chunk."""
+    expected_ids = {entry["id"] for entry in chunk}
+    chunk_translations: dict[int, str] = {}
+    invalid_results: list[str] = []
+
+    for item in translated:
+        tid = item.get("id")
+        ja = item.get("ja")
+        if tid not in expected_ids:
+            invalid_results.append(f"unexpected id={tid!r}")
+            continue
+        if tid in chunk_translations:
+            invalid_results.append(f"duplicate id={tid!r}")
+            continue
+        if not isinstance(ja, str):
+            invalid_results.append(f"id={tid!r} ja is not a string")
+            continue
+
+        normalized = _normalize_translation_text(ja)
+        if normalized is None:
+            invalid_results.append(f"id={tid!r} empty or invalid punctuation")
+            continue
+        chunk_translations[tid] = normalized
+
+    return chunk_translations, invalid_results
+
+
 def save_progress(translations: dict[int, str], all_entries: list[dict]) -> None:
     """Save current progress to output file."""
     output = [{"id": e["id"], "ja": translations[e["id"]]} for e in all_entries if e["id"] in translations]
@@ -177,23 +220,18 @@ def main() -> None:
             try:
                 translated = translate_chunk(chunk, idx, total_chunks)
                 if translated:
-                    matched = 0
-                    for t in translated:
-                        tid = t.get("id")
-                        ja = t.get("ja", "")
-                        if tid is not None and ja:
-                            # Normalize: ensure ends with '.'
-                            ja = ja.rstrip()
-                            ja = re.sub(r"[。！？]+$", "", ja)
-                            if not ja.endswith("."):
-                                ja += "."
-                            translations[tid] = ja
-                            matched += 1
+                    chunk_translations, invalid_results = _collect_chunk_translations(chunk, translated)
+                    matched = len(chunk_translations)
                     print(f"  -> Translated {matched}/{len(chunk)} sentences")
+                    if invalid_results:
+                        print(f"  -> Ignored {len(invalid_results)} invalid results")
                     if matched < len(chunk) * 0.8:
                         print("  WARNING: Low match rate, retrying...")
                         retries += 1
                         continue
+                    translations.update(chunk_translations)
+                    save_progress(translations, entries)
+                    print(f"  Progress saved: {len(translations)}/{len(entries)} total")
                     break
                 print(f"  -> No output, retry {retries + 1}/{max_retries}")
                 retries += 1
@@ -207,10 +245,6 @@ def main() -> None:
         if retries > max_retries:
             failed_chunks.append(idx)
             print(f"  FAILED chunk {idx} after {max_retries} retries")
-
-        # Save progress after each chunk
-        save_progress(translations, entries)
-        print(f"  Progress saved: {len(translations)}/{len(entries)} total")
 
         # Brief pause between API calls
         if idx < total_chunks:
