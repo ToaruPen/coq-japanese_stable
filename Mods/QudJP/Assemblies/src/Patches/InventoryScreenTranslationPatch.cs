@@ -29,21 +29,29 @@ public static class InventoryScreenTranslationPatch
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
     {
-        var targetType = GameTypeResolver.FindType("XRL.UI.InventoryScreen", "InventoryScreen");
-        var gameObjectType = GameTypeResolver.FindType("XRL.World.GameObject", "GameObject");
-        if (targetType is null || gameObjectType is null)
+        try
         {
-            Trace.TraceError("QudJP: {0} target type or GameObject type not found.", Context);
+            var targetType = GameTypeResolver.FindType("XRL.UI.InventoryScreen", "InventoryScreen");
+            var gameObjectType = GameTypeResolver.FindType("XRL.World.GameObject", "GameObject");
+            if (targetType is null || gameObjectType is null)
+            {
+                Trace.TraceError("QudJP: {0} target type or GameObject type not found.", Context);
+                return null;
+            }
+
+            var method = AccessTools.Method(targetType, "Show", new[] { gameObjectType });
+            if (method is null)
+            {
+                Trace.TraceError("QudJP: {0}.Show(GameObject) not found.", Context);
+            }
+
+            return method;
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.TargetMethod failed: {1}", Context, ex);
             return null;
         }
-
-        var method = AccessTools.Method(targetType, "Show", new[] { gameObjectType });
-        if (method is null)
-        {
-            Trace.TraceError("QudJP: {0}.Show(GameObject) not found.", Context);
-        }
-
-        return method;
     }
 
     public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
