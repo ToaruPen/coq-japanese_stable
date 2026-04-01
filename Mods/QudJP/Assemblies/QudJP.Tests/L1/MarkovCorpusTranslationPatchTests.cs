@@ -26,7 +26,7 @@ public sealed class MarkovCorpusTranslationPatchTests
     }
 
     [Test]
-    public void JapaneseCorpusFile_HasSegmentedSourceMaterialWithinTargetRange()
+    public void JapaneseCorpusFile_HasExpandedSegmentedSourceMaterial()
     {
         var path = MarkovCorpusTranslationPatch.ResolveJapaneseCorpusPath();
 
@@ -42,8 +42,8 @@ public sealed class MarkovCorpusTranslationPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(sentences.Length, Is.InRange(50, 100), "The corpus should provide enough sentence variety for Markov chaining.");
-            Assert.That(wordCount, Is.InRange(2000, 3000), "The corpus should stay within the requested source-material size.");
+            Assert.That(sentences.Length, Is.InRange(700, 900), "The expanded corpus should provide broad sentence variety for Markov chaining.");
+            Assert.That(wordCount, Is.InRange(20000, 26000), "The expanded corpus should carry substantially more translated source material.");
             Assert.That(sentences.All(static sentence => sentence.IndexOf(' ') >= 0), Is.True, "Each sentence should be morpheme-segmented with spaces.");
             Assert.That(sentences.All(static sentence => sentence.EndsWith(".", StringComparison.Ordinal)), Is.True, "Each sentence should end in '.' so the vanilla Markov chain can detect sentence boundaries.");
             Assert.That(MarkovCorpusTranslationPatch.ContainsJapaneseCharacters(string.Join(" ", sentences)), Is.True);
