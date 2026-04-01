@@ -305,6 +305,86 @@
       "key": "press button",
       "context": "QudMenuItem",
       "text": "ボタンを押す"
+    },
+    {
+      "context": "ModMenuLineTranslationPatch",
+      "key": "{{green|ENABLED}}",
+      "text": "{{green|有効}}"
+    },
+    {
+      "context": "ModMenuLineTranslationPatch",
+      "key": "{{black|DISABLED}}",
+      "text": "{{black|無効}}"
+    },
+    {
+      "context": "ModMenuLineTranslationPatch",
+      "key": "{{red|FAILED}}",
+      "text": "{{red|エラー}}"
+    },
+    {
+      "context": "ModMenuLineTranslationPatch",
+      "key": "{{W|# UPDATE AVAILABLE}}",
+      "text": "{{W|# 更新あり}}"
+    },
+    {
+      "context": "SteamWorkshopUploaderViewTranslationPatch",
+      "key": "Committing changes...",
+      "text": "変更を確定中…"
+    },
+    {
+      "context": "SteamWorkshopUploaderViewTranslationPatch",
+      "key": "Uploading preview image...",
+      "text": "プレビュー画像をアップロード中…"
+    },
+    {
+      "context": "SteamWorkshopUploaderViewTranslationPatch",
+      "key": "Uploading content...",
+      "text": "コンテンツをアップロード中…"
+    },
+    {
+      "context": "SteamWorkshopUploaderViewTranslationPatch",
+      "key": "Preparing configuration...",
+      "text": "設定を準備中…"
+    },
+    {
+      "context": "SteamWorkshopUploaderViewTranslationPatch",
+      "key": "Preparing content...",
+      "text": "コンテンツを準備中…"
+    },
+    {
+      "context": "SteamWorkshopUploaderViewTranslationPatch",
+      "key": "Submitting update... Please wait.",
+      "text": "更新を送信中…お待ちください。"
+    },
+    {
+      "context": "SteamWorkshopUploaderViewTranslationPatch",
+      "key": "Copying files for deployment...",
+      "text": "デプロイ用にファイルをコピー中…"
+    },
+    {
+      "context": "SteamWorkshopUploaderViewTranslationPatch",
+      "key": "SUCCESS! Item submitted!",
+      "text": "成功！アイテムが送信されました！"
+    },
+    {
+      "context": "SteamWorkshopUploaderViewTranslationPatch",
+      "key": "Upload complete!",
+      "text": "アップロード完了！"
+    },
+    {
+      "context": "SteamWorkshopUploaderViewTranslationPatch",
+      "key": "Upload failed",
+      "text": "アップロード失敗"
+    },
+    {
+      "context": "SteamWorkshopUploaderViewTranslationPatch",
+      "key": "Error: I/O Failure!",
+      "text": "エラー: I/O失敗!"
+    },
+    {
+      "context": "SteamWorkshopUploaderViewTranslationPatch",
+      "key": "Error: I/O Failure! :(",
+      "text": "エラー: I/O失敗! :("
     }
   ]
 }

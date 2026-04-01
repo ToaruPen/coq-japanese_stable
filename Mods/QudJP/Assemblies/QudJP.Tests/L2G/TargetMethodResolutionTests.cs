@@ -216,6 +216,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(GrammarInitCapsPatch), "InitCap", "XRL.Language.Grammar", "System.String", new[] { "System.String" })]
     [TestCase(typeof(GrammarCardinalNumberPatch), "Cardinal", "XRL.Language.Grammar", "System.String", new[] { "System.Int32" })]
     [TestCase(typeof(QudMenuBottomContextTranslationPatch), "RefreshButtons", "Qud.UI.QudMenuBottomContext", "System.Void", new string[0])]
+    [TestCase(typeof(ModManagerUITranslationPatch), "OnSelect", "Qud.UI.ModManagerUI", "System.Void", new[] { "XRL.ModInfo" })]
     [TestCase(typeof(SelectableTextMenuItemProbePatch), "Update", "Qud.UI.SelectableTextMenuItem", "System.Void", new string[0])]
     [TestCase(typeof(LoadingStatusTranslationPatch), "SetLoadingStatus", "XRL.UI.Loading", "System.Void", new[] { "System.String", "System.Boolean" })]
     [TestCase(typeof(CombatAndLogMessageQueuePatch), "AddPlayerMessage", "XRL.Messages.MessageQueue", "System.Void", new[] { "System.String", "System.String", "System.Boolean" })]
@@ -431,6 +432,28 @@ public sealed class TargetMethodResolutionTests
     {
         "System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
         "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
+    })]
+    [TestCase(typeof(ModMenuLineTranslationPatch), new[]
+    {
+        "",
+        "System.String|System.Int32&|System.Boolean",
+    })]
+    [TestCase(typeof(SteamWorkshopUploaderViewTranslationPatch), new[]
+    {
+        "System.String",
+        "System.String",
+        "System.String|System.Single",
+    })]
+    [TestCase(typeof(ModInfoTranslationPatch), new[]
+    {
+        "",
+        "",
+        "",
+        "Cysharp.Text.Utf16ValueStringBuilder&|System.String|System.String",
+    })]
+    [TestCase(typeof(ModScrollerOneTranslationPatch), new[]
+    {
+        "",
     })]
     [TestCase(typeof(PopupAskStringTranslationPatch), new[]
     {
