@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
@@ -45,7 +46,10 @@ public static class NameStyleGenerateSeparatorPatch
 
         try
         {
-            var rewritten = new List<CodeInstruction>(instructions);
+            var originalInstructions = instructions.ToList();
+            var rewritten = originalInstructions
+                .Select(instruction => new CodeInstruction(instruction))
+                .ToList();
             var replacements = 0;
 
             for (var index = 0; index < rewritten.Count - 1; index++)
@@ -68,7 +72,11 @@ public static class NameStyleGenerateSeparatorPatch
 
             if (replacements != 4)
             {
-                Trace.TraceWarning("QudJP: {0} replaced {1} separator site(s); expected 4.", Context, replacements);
+                Trace.TraceWarning(
+                    "QudJP: {0} replaced {1} separator site(s); expected 4; leaving instructions unchanged.",
+                    Context,
+                    replacements);
+                return originalInstructions;
             }
 
             return rewritten;

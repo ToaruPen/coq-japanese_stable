@@ -1,4 +1,6 @@
 using System.Reflection;
+using System.Reflection.Emit;
+using System.Text;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
@@ -37,6 +39,37 @@ public sealed class NameStyleGenerateSeparatorPatchTests
         });
     }
 
+    [Test]
+    public void Transpiler_LeavesInstructionsUnchanged_WhenSeparatorSiteCountIsUnexpected()
+    {
+        var appendCharMethod = RequireMethod(typeof(StringBuilder), nameof(StringBuilder.Append), typeof(char));
+        var originalInstructions = new List<CodeInstruction>
+        {
+            new(OpCodes.Ldarg_0),
+            new(OpCodes.Ldc_I4, (int)'-'),
+            new(OpCodes.Callvirt, appendCharMethod),
+            new(OpCodes.Ldarg_0),
+            new(OpCodes.Ldc_I4, (int)'-'),
+            new(OpCodes.Callvirt, appendCharMethod),
+            new(OpCodes.Ldarg_0),
+            new(OpCodes.Ldc_I4, (int)'-'),
+            new(OpCodes.Callvirt, appendCharMethod),
+        };
+
+        var trace = TestTraceHelper.CaptureTrace(() =>
+        {
+            var rewritten = NameStyleGenerateSeparatorPatch.Transpiler(originalInstructions).ToList();
+
+            Assert.That(GetLoadedChars(rewritten), Is.EqualTo(new[] { '-', '-', '-' }));
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(GetLoadedChars(originalInstructions), Is.EqualTo(new[] { '-', '-', '-' }));
+            Assert.That(trace, Does.Contain("expected 4; leaving instructions unchanged."));
+        });
+    }
+
     private static void RunWithPatch(Action assertion)
     {
         var harmonyId = $"qudjp.tests.name-style.{Guid.NewGuid():N}";
@@ -64,5 +97,13 @@ public sealed class NameStyleGenerateSeparatorPatchTests
 
         return method
                ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static IReadOnlyList<char> GetLoadedChars(IEnumerable<CodeInstruction> instructions)
+    {
+        return instructions
+            .Where(instruction => instruction.opcode == OpCodes.Ldc_I4 && instruction.operand is int)
+            .Select(instruction => (char)(int)instruction.operand!)
+            .ToList();
     }
 }
