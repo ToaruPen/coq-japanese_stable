@@ -90,6 +90,18 @@ internal static class WorldModsTextTranslator
 
     internal static bool TryTranslate(string source, string route, string family, out string translated)
     {
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var withoutMarker))
+        {
+            if (TryTranslate(withoutMarker, route, family, out var innerTranslated))
+            {
+                translated = MessageFrameTranslator.MarkDirectTranslation(innerTranslated);
+                return true;
+            }
+
+            translated = source;
+            return false;
+        }
+
         if (TryTranslateScopedExact(source, route, family, out translated))
         {
             return true;
