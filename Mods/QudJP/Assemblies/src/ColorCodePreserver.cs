@@ -176,10 +176,11 @@ public static class ColorCodePreserver
         {
             if (span.SourceLength > 0
                 && span.Index == span.SourceLength - 1
-                && textLength <= span.SourceLength - 1
-                && IsClosingBoundaryToken(span.Token))
+                && textLength < span.SourceLength
+                && textLength > 0
+                && (IsOpeningBoundaryToken(span.Token) || IsClosingBoundaryToken(span.Token)))
             {
-                return textLength;
+                return textLength - 1;
             }
 
             return MapIndex(span.Index, span.SourceLength, textLength);

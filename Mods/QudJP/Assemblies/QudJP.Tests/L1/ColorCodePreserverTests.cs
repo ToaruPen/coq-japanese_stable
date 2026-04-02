@@ -170,6 +170,16 @@ public sealed class ColorCodePreserverTests
     }
 
     [Test]
+    public void TranslatePreservingColors_PreservesTerminalSingleCharacterWrapper()
+    {
+        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
+            "{{W|foo}}{{R|!}}",
+            _ => "訳!");
+
+        Assert.That(translated, Is.EqualTo("{{W|訳}}{{R|!}}"));
+    }
+
+    [Test]
     public void Strip_ReturnsEmptyValue_ForNullOrEmptyInput()
     {
         var nullResult = ColorCodePreserver.Strip(null);
