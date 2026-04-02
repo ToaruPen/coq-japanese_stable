@@ -85,6 +85,18 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesDynamicUntilTimeOfDayOption_FromCalendarLeafTranslation()
+    {
+        WriteDictionary(("Waxing Salt Sun", "塩の満ちる太陽"));
+
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(Options: new[] { "Until Waxing Salt Sun" });
+
+        Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "次の塩の満ちる太陽まで" }));
+    }
+
+    [Test]
     public void Prefix_TranslatesPickOptionSpacingText()
     {
         WriteDictionary(("Prompt", "案内"));

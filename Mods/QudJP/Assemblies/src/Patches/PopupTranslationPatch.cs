@@ -12,6 +12,7 @@ namespace QudJP.Patches;
 public static class PopupTranslationPatch
 {
     private const string TargetTypeName = "XRL.UI.Popup";
+    private const string UntilPrefix = "Until ";
     private static readonly Regex HotkeyLabelPattern =
         new Regex("^\\[(?<hotkey>[^\\]]+)\\]\\s+(?<label>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PlainHotkeyLabelPattern =
@@ -364,6 +365,12 @@ public static class PopupTranslationPatch
         if (MutationsApiTranslationPatch.TryTranslatePopupMessage(source, route, family, out var mutationTranslated))
         {
             translated = mutationTranslated;
+            return true;
+        }
+
+        if (TryTranslateUntilCalendarTimeOfDay(source, stripped, spans, route, family, out var untilTranslated))
+        {
+            translated = untilTranslated;
             return true;
         }
 
@@ -785,6 +792,34 @@ public static class PopupTranslationPatch
 
         translated = source;
         return false;
+    }
+
+    private static bool TryTranslateUntilCalendarTimeOfDay(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string family,
+        out string translated)
+    {
+        if (!stripped.StartsWith(UntilPrefix, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var timeOfDay = stripped.Substring(UntilPrefix.Length);
+        if (string.IsNullOrEmpty(timeOfDay)
+            || !StringHelpers.TryGetTranslationExactOrLowerAscii(timeOfDay, out var translatedTimeOfDay))
+        {
+            translated = source;
+            return false;
+        }
+
+        var visibleTranslated = "次の" + translatedTimeOfDay + "まで";
+        translated = spans.Count == 0 ? visibleTranslated : ColorAwareTranslationComposer.Restore(visibleTranslated, spans);
+        DynamicTextObservability.RecordTransform(route, family + ".UntilTimeOfDay", source, translated);
+        return true;
     }
 
     private static bool ShouldTryMessagePatternFallback(string route)

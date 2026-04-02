@@ -97,6 +97,8 @@ internal sealed class DummyCharacterMutation
 {
     public string Name { get; set; } = "ForceWall";
 
+    public string EntryName { get; set; } = "Force Wall";
+
     public string DisplayName { get; set; } = "Force Wall";
 
     public int Level { get; set; } = 1;
@@ -105,6 +107,16 @@ internal sealed class DummyCharacterMutation
     {
         return DisplayName;
     }
+
+    public DummyMutationEntry GetMutationEntry()
+    {
+        return new DummyMutationEntry { Name = EntryName };
+    }
+}
+
+internal sealed class DummyMutationEntry
+{
+    public string Name { get; set; } = "Force Wall";
 }
 
 internal sealed class DummyCharacterMutationLineData

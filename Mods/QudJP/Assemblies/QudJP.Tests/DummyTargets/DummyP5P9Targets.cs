@@ -51,6 +51,15 @@ internal static class DummyPopupShow
         return 0;
     }
 
+    public static void ShowFail(
+        string Message,
+        bool CopyScrap = true,
+        bool Capitalize = true,
+        bool DimBackground = true)
+    {
+        LastShowMessage = Message;
+    }
+
     public static void Reset()
     {
         LastShowMessage = null;

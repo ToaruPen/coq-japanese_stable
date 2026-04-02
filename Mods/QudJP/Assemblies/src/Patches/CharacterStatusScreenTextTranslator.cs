@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 using HarmonyLib;
@@ -206,7 +207,7 @@ internal static class CharacterStatusScreenTextTranslator
             return false;
         }
 
-        var mutationName = GetStringMethodValue(mutation, "GetDisplayName");
+        var mutationName = GetStableMutationDictionaryName(mutation);
         if (string.IsNullOrWhiteSpace(mutationName))
         {
             return false;
@@ -532,15 +533,48 @@ internal static class CharacterStatusScreenTextTranslator
             : null;
     }
 
-    private static string? GetStringMethodValue(object instance, string methodName)
+    private static string? GetStableMutationDictionaryName(object mutation)
     {
-        var method = AccessTools.Method(instance.GetType(), methodName, Type.EmptyTypes);
-        if (method is null || method.ReturnType != typeof(string))
+        var mutationEntry = GetObjectMethodValue(mutation, "GetMutationEntry");
+        if (mutationEntry is null)
         {
+            Trace.TraceWarning(
+                "QudJP: CharacterStatusScreenTextTranslator could not resolve GetMutationEntry() for mutation details on type '{0}'.",
+                mutation.GetType().FullName);
             return null;
         }
 
-        return method.Invoke(instance, null) as string;
+        var entryName = GetStringMemberValue(mutationEntry, "Name");
+        if (!string.IsNullOrWhiteSpace(entryName))
+        {
+            return entryName;
+        }
+
+        Trace.TraceWarning(
+            "QudJP: CharacterStatusScreenTextTranslator received a mutation entry without a stable Name for type '{0}'.",
+            mutation.GetType().FullName);
+        return null;
+    }
+
+    private static object? GetObjectMethodValue(object instance, string methodName)
+    {
+        var method = AccessTools.Method(instance.GetType(), methodName, Type.EmptyTypes);
+        return method?.Invoke(instance, null);
+    }
+
+    private static string? GetStringMemberValue(object instance, string memberName)
+    {
+        var type = instance.GetType();
+        var property = AccessTools.Property(type, memberName);
+        if (property is not null && property.CanRead && property.PropertyType == typeof(string))
+        {
+            return property.GetValue(instance) as string;
+        }
+
+        var field = AccessTools.Field(type, memberName);
+        return field?.FieldType == typeof(string)
+            ? field.GetValue(instance) as string
+            : null;
     }
 
     private static int? GetIntMemberValue(object instance, string memberName)

@@ -89,6 +89,11 @@ internal static class GrammarPatchHelpers
             return source.Substring(3);
         }
 
+        if (source.Length > 5 && source.StartsWith("some ", StringComparison.OrdinalIgnoreCase))
+        {
+            return source.Substring(5);
+        }
+
         return source;
     }
 

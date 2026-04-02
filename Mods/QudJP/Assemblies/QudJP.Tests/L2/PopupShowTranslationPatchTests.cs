@@ -148,6 +148,47 @@ public sealed class PopupShowTranslationPatchTests
         }
     }
 
+    [Test]
+    public void Prefix_TranslatesPopupShowFailMessage()
+    {
+        WriteDictionary(("You are frozen solid!", "あなたは完全に凍り付いている！"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowFail)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+
+            DummyPopupShow.ShowFail("You are frozen solid!");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("あなたは完全に凍り付いている！"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void TargetMethods_ResolvesShowFailOverload()
+    {
+        _ = typeof(Genkit.Location2D);
+        _ = typeof(XRL.UI.DialogResult);
+
+        var targetMethods = RequireMethod(typeof(PopupShowTranslationPatch), "TargetMethods");
+        var resolved = ((IEnumerable<MethodBase>)targetMethods.Invoke(null, null)!).ToList();
+
+        Assert.That(
+            resolved.Any(method => method.DeclaringType?.FullName == "XRL.UI.Popup"
+                && method.Name == nameof(DummyPopupShow.ShowFail)
+                && string.Join("|", method.GetParameters().Select(parameter => parameter.ParameterType.FullName))
+                    == "System.String|System.Boolean|System.Boolean|System.Boolean"),
+            Is.True);
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

@@ -70,6 +70,20 @@ public sealed class GrammarPatchTests
     }
 
     [Test]
+    public void APatch_StripsLeadingSomePrefix()
+    {
+        var result = string.Empty;
+
+        var skipped = GrammarAPatch.Prefix("some ブラインストーク", Capitalize: false, ref result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(skipped, Is.False);
+            Assert.That(result, Is.EqualTo("ブラインストーク"));
+        });
+    }
+
+    [Test]
     public void PluralizePatch_ReturnsInputUnchanged_ForNormalWord()
     {
         var result = string.Empty;
@@ -240,6 +254,21 @@ public sealed class GrammarPatchTests
         {
             Assert.That(skipped, Is.False);
             Assert.That(result, Is.EqualTo("ドアと薄めの塩の水たまり"));
+        });
+    }
+
+    [Test]
+    public void MakeAndListPatch_StripsLeadingSomePrefixFromItems()
+    {
+        var result = string.Empty;
+        var input = new List<string> { "a ウォーターヴァイン", "some ブラインストーク", "some ブラインストーク" };
+
+        var skipped = GrammarMakeAndListPatch.Prefix(input, false, ref result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(skipped, Is.False);
+            Assert.That(result, Is.EqualTo("ウォーターヴァイン、ブラインストーク、とブラインストーク"));
         });
     }
 

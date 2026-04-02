@@ -286,14 +286,20 @@ public sealed class CharacterStatusScreenMutationDetailsPatchTests
     }
 
     [Test]
-    public void TryTranslateMutationDetails_UsesDisplayNameInsteadOfInternalName()
+    public void TryTranslateMutationDetails_UsesStableMutationEntryName_WhenDisplayNameIsLocalized()
     {
         WriteDictionary(
             ("mutation:Acid Slime Glands", "酸を吐き出す。"),
             ("mutation:Acid Slime Glands:rank:3", "酸の勢いが増す。"));
 
         var changed = CharacterStatusScreenTextTranslator.TryTranslateMutationDetails(
-            new DummyCharacterMutation { Name = "AcidSlimeGlands", DisplayName = "Acid Slime Glands", Level = 3 },
+            new DummyCharacterMutation
+            {
+                Name = "AcidSlimeGlands",
+                EntryName = "Acid Slime Glands",
+                DisplayName = "酸腺",
+                Level = 3,
+            },
             "Spit acid.\n\nStronger acid.",
             nameof(CharacterStatusScreenTranslationPatch),
             out var translated);

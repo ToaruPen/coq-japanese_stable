@@ -205,6 +205,46 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void UiDefaultDictionary_ContainsCurrentCalendarStatusKeys()
+    {
+        var uiDefaultKeys = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "ui-default.ja.json"))
+            .Select(static entry => entry.Key)
+            .ToHashSet(StringComparer.Ordinal);
+        var expectedCalendarKeys = new[]
+        {
+            "Beetle Moon Zenith",
+            "Waning Beetle Moon",
+            "The Shallows",
+            "Harvest Dawn",
+            "Waxing Salt Sun",
+            "High Salt Sun",
+            "Waning Salt Sun",
+            "Hindsun",
+            "Jeweled Dusk",
+            "Waxing Beetle Moon",
+            "Zero Hour",
+            "Nivvun Ut",
+            "Iyur Ut",
+            "Simmun Ut",
+            "Tuum Ut",
+            "Ubu Ut",
+            "Uulu Ut",
+            "Ut yara Ux",
+            "Tishru i Ux",
+            "Tishru ii Ux",
+            "Kisu Ux",
+            "Tebet Ux",
+            "Shwut Ux",
+            "Uru Ux",
+        };
+
+        Assert.That(
+            expectedCalendarKeys.Except(uiDefaultKeys).ToArray(),
+            Is.Empty,
+            "ui-default should contain the full canonical calendar time-of-day and month key set.");
+    }
+
+    [Test]
     public void ConversationsOverlay_DefinesKindrishSharedChoiceIdsForCurrentInherits()
     {
         var conversationsDocument = XDocument.Load(Path.Combine(localizationRoot, "Conversations.jp.xml"));

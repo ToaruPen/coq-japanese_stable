@@ -242,14 +242,6 @@
             "text": "この情報をジャーナルの「スルタン史 > レシェフ」欄に記録した。"
         },
         {
-            "key": "Until Waxing Salt Sun",
-            "text": "次の塩の満ちる太陽まで"
-        },
-        {
-            "key": "Until Hindsun",
-            "text": "次の後陽まで"
-        },
-        {
             "key": "{{W|[y]}} {{y|Yes}}",
             "context": "Qud.UI.PopupMessage.Button.Yes.Hotkey",
             "text": "{{W|[y]}} {{y|はい}}"

@@ -395,6 +395,102 @@
       "text": "潤っている"
     },
     {
+      "key": "Harvest Dawn",
+      "text": "ハーヴェスト・ドーン"
+    },
+    {
+      "key": "Waning Beetle Moon",
+      "text": "甲虫の月が欠ける"
+    },
+    {
+      "key": "The Shallows",
+      "text": "浅瀬"
+    },
+    {
+      "key": "Waxing Salt Sun",
+      "text": "塩の満ちる太陽"
+    },
+    {
+      "key": "High Salt Sun",
+      "text": "ハイ・ソルト・サン"
+    },
+    {
+      "key": "Waning Salt Sun",
+      "text": "塩の陽が欠ける"
+    },
+    {
+      "key": "Hindsun",
+      "text": "後陽"
+    },
+    {
+      "key": "Kisu Ux",
+      "text": "キス・ウクス"
+    },
+    {
+      "key": "Beetle Moon Zenith",
+      "text": "ビートルムーン・ゼニス"
+    },
+    {
+      "key": "Jeweled Dusk",
+      "text": "宝石の黄昏"
+    },
+    {
+      "key": "Waxing Beetle Moon",
+      "text": "甲虫の月が満ちる"
+    },
+    {
+      "key": "Zero Hour",
+      "text": "零刻"
+    },
+    {
+      "key": "Nivvun Ut",
+      "text": "ニヴン・ウト"
+    },
+    {
+      "key": "Iyur Ut",
+      "text": "イユル・ウト"
+    },
+    {
+      "key": "Simmun Ut",
+      "text": "シムン・ウト"
+    },
+    {
+      "key": "Tuum Ut",
+      "text": "トゥーム・ウト"
+    },
+    {
+      "key": "Ubu Ut",
+      "text": "ウブ・ウト"
+    },
+    {
+      "key": "Uulu Ut",
+      "text": "ウール・ウト"
+    },
+    {
+      "key": "Ut yara Ux",
+      "text": "ウト・ヤラ・ウクス"
+    },
+    {
+      "key": "Tishru i Ux",
+      "text": "ティシュル I・ウクス"
+    },
+    {
+      "key": "Tishru ii Ux",
+      "text": "ティシュル II・ウクス"
+    },
+    {
+      "key": "Tebet Ux",
+      "text": "テベト・ウクス"
+    },
+    {
+      "key": "Shwut Ux",
+      "text": "シュウト・ウクス"
+    },
+    {
+      "key": "Uru Ux",
+      "text": "ウル・ウクス"
+    },
+    {
       "key": "Perfect",
       "text": "完璧"
     },
@@ -861,51 +957,6 @@
       "key": "Reset Selection",
       "context": "TMPro.TextMeshProUGUI",
       "text": "選択をリセット"
-    },
-    {
-      "key": "Until Waning Salt Sun",
-      "context": "QudMenuItem",
-      "text": "塩の陽が欠けるまで待つ"
-    },
-    {
-      "key": "Until Waning Salt Sun",
-      "context": "QudMenuItem.option:0",
-      "text": "塩の陽が欠けるまで待つ"
-    },
-    {
-      "key": "Until Waning Salt Sun",
-      "context": "QudMenuItem.option:1",
-      "text": "塩の陽が欠けるまで待つ"
-    },
-    {
-      "key": "Until Waxing Beetle Moon",
-      "context": "QudMenuItem",
-      "text": "甲虫の月が満ちるまで待つ"
-    },
-    {
-      "key": "Until Waxing Beetle Moon",
-      "context": "QudMenuItem.option:0",
-      "text": "甲虫の月が満ちるまで待つ"
-    },
-    {
-      "key": "Until Waxing Beetle Moon",
-      "context": "QudMenuItem.option:1",
-      "text": "甲虫の月が満ちるまで待つ"
-    },
-    {
-      "key": "Until Jeweled Dusk",
-      "context": "QudMenuItem",
-      "text": "宝玉の夕暮れまで待つ"
-    },
-    {
-      "key": "Until Jeweled Dusk",
-      "context": "QudMenuItem.option:0",
-      "text": "宝玉の夕暮れまで待つ"
-    },
-    {
-      "key": "Until Jeweled Dusk",
-      "context": "QudMenuItem.option:1",
-      "text": "宝玉の夕暮れまで待つ"
     },
     {
       "key": "Your shot goes wild!",
