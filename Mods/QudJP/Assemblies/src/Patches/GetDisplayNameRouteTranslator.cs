@@ -141,12 +141,6 @@ internal static class GetDisplayNameRouteTranslator
             return true;
         }
 
-        if (TryTranslateGeneratedTitleSuffix(transformed, route, out var titleTranslated))
-        {
-            transformed = titleTranslated;
-            changed = true;
-        }
-
         if (TryTranslateExactDisplayNameLookup(source, route, out translated))
         {
             return true;
@@ -155,6 +149,12 @@ internal static class GetDisplayNameRouteTranslator
         if (TryTranslateTrimmedDisplayNameLookup(source, route, out translated))
         {
             return true;
+        }
+
+        if (TryTranslateGeneratedTitleSuffix(transformed, route, out var titleTranslated))
+        {
+            transformed = titleTranslated;
+            changed = true;
         }
 
         if (TryTranslateMixedDisplayName(transformed, route, out var modifierTranslated))
