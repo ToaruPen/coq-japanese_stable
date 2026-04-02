@@ -153,6 +153,11 @@ public static class Translator
         return new MissingKeySuppressionScope();
     }
 
+    private static bool IsMissingKeyLoggingSuppressed()
+    {
+        return suppressMissingKeyLoggingDepth > 0;
+    }
+
     private static string TranslateCore(string key)
     {
         var translations = GetLoadedTranslations();
@@ -163,7 +168,7 @@ public static class Translator
         }
 
         var hitCount = RecordMissingKey(key);
-        if (ObservabilityHelpers.ShouldLogMissingHit(hitCount))
+        if (!IsMissingKeyLoggingSuppressed() && ObservabilityHelpers.ShouldLogMissingHit(hitCount))
         {
             LogObservability(
                 $"[QudJP] Translator: missing key '{key}' (hit {hitCount}).{GetCurrentLogContextSuffix()}");
@@ -303,11 +308,6 @@ public static class Translator
 
     private static int RecordMissingKey(string key)
     {
-        if (suppressMissingKeyLoggingDepth > 0)
-        {
-            return 0;
-        }
-
         var hitCount = MissingKeyCounts.AddOrUpdate(key, 1, ObservabilityHelpers.IncrementCounter);
         _ = MissingRouteCounts.AddOrUpdate(
             ObservabilityHelpers.ExtractPrimaryContext(GetCurrentLogContext()),

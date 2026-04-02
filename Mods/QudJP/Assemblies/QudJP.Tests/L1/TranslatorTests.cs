@@ -84,6 +84,31 @@ public sealed class TranslatorTests
     }
 
     [Test]
+    public void Translate_PushMissingKeyLoggingSuppression_PreservesCounters()
+    {
+        WriteDictionary("ui-test.ja.json", "Hello", "こんにちは");
+        _ = Translator.Translate("Hello");
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+        {
+            using var route = Translator.PushLogContext("MessageLogPatch");
+            using var suppression = Translator.PushMissingKeyLoggingSuppression(true);
+
+            _ = Translator.Translate("MISSING_KEY_FOR_Suppressed_A");
+            _ = Translator.Translate("MISSING_KEY_FOR_Suppressed_B");
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(output, Does.Not.Contain("Translator: missing key 'MISSING_KEY_FOR_Suppressed_A'"));
+            Assert.That(output, Does.Not.Contain("Translator: missing key 'MISSING_KEY_FOR_Suppressed_B'"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("MISSING_KEY_FOR_Suppressed_A"), Is.EqualTo(1));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("MISSING_KEY_FOR_Suppressed_B"), Is.EqualTo(1));
+            Assert.That(Translator.GetMissingRouteHitCountForTests("MessageLogPatch"), Is.EqualTo(2));
+        });
+    }
+
+    [Test]
     public void Translate_LogsNestedContextDetails_WhileKeepingPrimaryRouteCounts()
     {
         WriteDictionary("ui-test.ja.json", "Hello", "こんにちは");
