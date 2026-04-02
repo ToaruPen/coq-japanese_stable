@@ -172,6 +172,7 @@ public sealed class PopupShowTranslationPatchTests
         }
     }
 
+#if !HAS_GAME_DLL
     [Test]
     public void TargetMethods_ResolvesShowFailOverload()
     {
@@ -188,6 +189,7 @@ public sealed class PopupShowTranslationPatchTests
                     == "System.String|System.Boolean|System.Boolean|System.Boolean"),
             Is.True);
     }
+#endif
 
     private static string CreateHarmonyId()
     {

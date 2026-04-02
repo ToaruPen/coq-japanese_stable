@@ -408,6 +408,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(PopupShowTranslationPatch), new[]
     {
         "System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
+        "System.String|System.Boolean|System.Boolean|System.Boolean",
         "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
         "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
     })]

@@ -14,11 +14,7 @@ namespace XRL.UI
         Yes = 1,
         Cancel = 2,
     }
-}
-#endif
 
-namespace XRL.UI
-{
     internal static class Popup
     {
         public static void Show(
@@ -60,3 +56,4 @@ namespace XRL.UI
         }
     }
 }
+#endif
