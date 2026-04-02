@@ -13,6 +13,11 @@ internal sealed class DummyZone
     public string ZoneId { get; set; } = string.Empty;
 }
 
+internal sealed class DummyScreenBuffer
+{
+    public int Width { get; set; }
+}
+
 internal sealed class DummyMissilePath
 {
     public int Length { get; set; }
@@ -201,6 +206,19 @@ internal sealed class DummyGameObjectPerformThrowTarget
         _ = energyCost;
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
         return true;
+    }
+}
+
+internal sealed class DummyXrlCoreRenderTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public void RenderBaseToBuffer(DummyScreenBuffer buffer)
+    {
+        _ = buffer;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
     }
 }
 

@@ -172,6 +172,55 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [Test]
+    public void XrlCoreLostSightPatch_RecordsOwnerRouteTransforms_WithoutMessageLogSinkObservation_WhenPatched()
+    {
+        WritePatternDictionary(("^You have lost sight of (.+?)[.!]?$", "{0}を見失った。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchMessageLog(harmony);
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyXrlCoreRenderTarget), nameof(DummyXrlCoreRenderTarget.RenderBaseToBuffer), typeof(DummyScreenBuffer)),
+                typeof(XrlCoreLostSightTranslationPatch));
+
+            const string source = "You have lost sight of bloody Naruur.";
+            var target = new DummyXrlCoreRenderTarget
+            {
+                MessageToSend = source,
+            };
+
+            target.RenderBaseToBuffer(new DummyScreenBuffer());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("bloody Naruurを見失った。"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(XrlCoreLostSightTranslationPatch),
+                        "LostSight"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(MessageLogPatch),
+                        nameof(XrlCoreLostSightTranslationPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        source),
+                    Is.EqualTo(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void EnclosingPatch_TranslatesExtricatePopup_WhenPatched()
     {
         var harmonyId = CreateHarmonyId();
@@ -249,12 +298,52 @@ public sealed class WorldPartsProducerTranslationPatchTests
             prefix: new HarmonyMethod(RequireMethod(typeof(CombatAndLogMessageQueuePatch), nameof(CombatAndLogMessageQueuePatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
     }
 
+    private static void PatchMessageLog(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(MessageLogPatch), nameof(MessageLogPatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+    }
+
     private static void PatchOwner(Harmony harmony, MethodInfo original, Type patchType)
     {
         harmony.Patch(
             original: original,
             prefix: new HarmonyMethod(RequireMethod(patchType, nameof(LiquidVolumeTranslationPatch.Prefix))),
             finalizer: new HarmonyMethod(RequireMethod(patchType, nameof(LiquidVolumeTranslationPatch.Finalizer), typeof(Exception))));
+    }
+
+    private void WritePatternDictionary(params (string pattern, string template)[] patterns)
+    {
+        var builder = new StringBuilder();
+        builder.Append('{');
+        builder.Append("\"patterns\":[");
+
+        for (var index = 0; index < patterns.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"pattern\":\"");
+            builder.Append(EscapeJson(patterns[index].pattern));
+            builder.Append("\",\"template\":\"");
+            builder.Append(EscapeJson(patterns[index].template));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        builder.AppendLine();
+
+        File.WriteAllText(patternFilePath, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private static string EscapeJson(string value)
+    {
+        return value
+            .Replace("\\", "\\\\", StringComparison.Ordinal)
+            .Replace("\"", "\\\"", StringComparison.Ordinal);
     }
 
     private static string CreateHarmonyId()
