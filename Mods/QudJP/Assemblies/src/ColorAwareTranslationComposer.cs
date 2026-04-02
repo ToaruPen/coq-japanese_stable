@@ -281,16 +281,6 @@ internal static class ColorAwareTranslationComposer
                 var relativeIndex = span.Index - suffixSourceStart;
                 if (ColorCodePreserver.IsClosingBoundaryToken(span.Token))
                 {
-                    if (relativeIndex >= suffixSourceLength - 1)
-                    {
-                        boundarySpans.Add(new ColorSpan(
-                            suffixSourceLength,
-                            span.Token,
-                            suffixSourceLength,
-                            usesRelativeIndex: true));
-                        continue;
-                    }
-
                     if (anchorClosingTokensToSourceSuffix && relativeIndex >= suffixSourceLength)
                     {
                         boundarySpans.Add(new ColorSpan(suffixSourceLength, span.Token));
