@@ -348,6 +348,25 @@ public sealed class MessageLogProducerTranslationHelpersTests
     }
 
     [Test]
+    public void TryPreparePatternMessage_StripsLeadingControlHeaderBeforePatternTranslation()
+    {
+        WritePatternDictionary(("^(?:The |the |[Aa]n? )?(.+?) (?:has|have) nothing to trade[.!]?$", "{0}には取引するものがない"));
+
+        var source = "\u0002have\u001F10\u001F14\u001F\u0003The 濡れた 光葉 has nothing to trade.";
+
+        var translated = MessageLogProducerTranslationHelpers.TryPreparePatternMessage(
+            ref source,
+            "PopupShowTranslationPatch",
+            "Popup");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(source, Is.EqualTo("\u0001濡れた 光葉には取引するものがない"));
+        });
+    }
+
+    [Test]
     public void PrepareZoneBannerMessage_MarksAlreadyLocalizedBanner()
     {
         var result = MessageLogProducerTranslationHelpers.PrepareZoneBannerMessage(
