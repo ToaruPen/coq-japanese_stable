@@ -1,0 +1,17 @@
+Baetyls = ベテル
+Barathrum = バラサラム
+Chavvah = チャヴァ
+Chrome = クローム
+Chrome Pyramid = クローム・ピラミッド
+Eaters = 喰らう者
+Golgotha = ゴルゴタ
+Joppa = ジョッパ
+Qud = クッド
+Resheph = レシェフ
+salt = 塩
+Spindle = スピンドル
+Sultan = スルタン
+Sultans = スルタン
+The Six Day Stilt = 六日のスティルト
+The Spindle = スピンドル
+Tomb of the Eaters = 喰らう者の墓所
