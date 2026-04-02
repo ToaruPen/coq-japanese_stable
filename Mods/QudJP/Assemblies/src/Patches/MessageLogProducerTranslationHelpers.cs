@@ -224,22 +224,24 @@ internal static class MessageLogProducerTranslationHelpers
             return false;
         }
 
-        if (markJapaneseAsDirect && ContainsJapaneseCharacters(source))
+        var patternSource = StripLeadingPatternControlHeader(source);
+
+        if (markJapaneseAsDirect && ContainsJapaneseCharacters(patternSource))
         {
-            var patternTranslated = MessagePatternTranslator.Translate(source, route);
-            if (!string.Equals(patternTranslated, source, StringComparison.Ordinal))
+            var patternTranslated = MessagePatternTranslator.Translate(patternSource, route);
+            if (!string.Equals(patternTranslated, patternSource, StringComparison.Ordinal))
             {
                 DynamicTextObservability.RecordTransform(route, detail, source, patternTranslated);
                 source = MessageFrameTranslator.MarkDirectTranslation(patternTranslated);
                 return true;
             }
 
-            source = MessageFrameTranslator.MarkDirectTranslation(source);
+            source = MessageFrameTranslator.MarkDirectTranslation(patternSource);
             return true;
         }
 
-        var translated = MessagePatternTranslator.Translate(source, route);
-        if (string.Equals(translated, source, StringComparison.Ordinal))
+        var translated = MessagePatternTranslator.Translate(patternSource, route);
+        if (string.Equals(translated, patternSource, StringComparison.Ordinal))
         {
             return false;
         }
@@ -247,6 +249,22 @@ internal static class MessageLogProducerTranslationHelpers
         DynamicTextObservability.RecordTransform(route, detail, source, translated);
         source = MessageFrameTranslator.MarkDirectTranslation(translated);
         return true;
+    }
+
+    private static string StripLeadingPatternControlHeader(string source)
+    {
+        if (string.IsNullOrEmpty(source) || source[0] != '\u0002')
+        {
+            return source;
+        }
+
+        var headerEnd = source.IndexOf('\u0003');
+        if (headerEnd < 0 || headerEnd >= source.Length - 1)
+        {
+            return source;
+        }
+
+        return source.Substring(headerEnd + 1);
     }
 
     private static string TranslateVisibleZoneDisplayName(string source)

@@ -141,6 +141,16 @@ internal static class GetDisplayNameRouteTranslator
             return true;
         }
 
+        if (TryTranslateExactDisplayNameLookup(source, route, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateTrimmedDisplayNameLookup(source, route, out translated))
+        {
+            return true;
+        }
+
         if (TryTranslateGeneratedTitleSuffix(transformed, route, out var titleTranslated))
         {
             transformed = titleTranslated;
@@ -168,16 +178,6 @@ internal static class GetDisplayNameRouteTranslator
         if (changed)
         {
             translated = transformed;
-            return true;
-        }
-
-        if (TryTranslateExactDisplayNameLookup(source, route, out translated))
-        {
-            return true;
-        }
-
-        if (TryTranslateTrimmedDisplayNameLookup(source, route, out translated))
-        {
             return true;
         }
 

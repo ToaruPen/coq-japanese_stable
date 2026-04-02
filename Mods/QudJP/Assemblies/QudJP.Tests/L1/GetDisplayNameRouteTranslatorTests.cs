@@ -127,6 +127,36 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_PrefersExactWholeDisplayNameLookupBeforeProperNameModifierHeuristic()
+    {
+        WriteDictionary(("Water Containers", "水容器"));
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("water", "{{B|水の}}"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "Water Containers",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("水容器"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_PrefersTrimmedExactLookupBeforeProperNameModifierHeuristic()
+    {
+        WriteDictionary(("Water Containers", "水容器"));
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("water", "{{B|水の}}"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "Water Containers  ",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("水容器  "));
+    }
+
+    [Test]
     public void TranslatePreservingColors_PrefersDisplayNameScopedDictionaryForConflictingLiquidAdjectiveKey()
     {
         WriteDictionaryFile(
