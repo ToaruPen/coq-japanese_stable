@@ -1,3 +1,22 @@
+#if !HAS_GAME_DLL
+namespace Genkit
+{
+    internal struct Location2D
+    {
+    }
+}
+
+namespace XRL.UI
+{
+    internal enum DialogResult
+    {
+        No = 0,
+        Yes = 1,
+        Cancel = 2,
+    }
+}
+#endif
+
 namespace XRL.UI
 {
     internal static class Popup
