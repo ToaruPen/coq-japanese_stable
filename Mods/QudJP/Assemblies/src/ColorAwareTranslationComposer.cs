@@ -70,7 +70,9 @@ internal static class ColorAwareTranslationComposer
             return value;
         }
 
-        return RestoreSlice(value, spans, group.Index, group.Length);
+        var captureSpans = ColorCodePreserver.SliceSpans(spans, group.Index, group.Length);
+        captureSpans.AddRange(ColorCodePreserver.SliceAdjacentCaptureBoundarySpans(spans, group.Index, group.Length));
+        return Restore(value, captureSpans);
     }
 
     internal static string RestoreSlice(string value, IReadOnlyList<ColorSpan>? spans, int startIndex, int length)
@@ -237,13 +239,20 @@ internal static class ColorAwareTranslationComposer
         for (var index = 0; index < spans.Count; index++)
         {
             var span = spans[index];
+            if (span.Index == suffixSourceStart + 1
+                && ColorCodePreserver.IsClosingBoundaryToken(span.Token))
+            {
+                continue;
+            }
+
             if (span.Index > suffixSourceStart)
             {
                 var relativeIndex = span.Index - suffixSourceStart;
-                if (relativeIndex == suffixSourceLength - 1
-                    && IsClosingBoundaryToken(span.Token))
+                if (ColorCodePreserver.IsClosingBoundaryToken(span.Token)
+                    && relativeIndex >= suffixSourceLength)
                 {
-                    relativeIndex = suffixSourceLength;
+                    boundarySpans.Add(new ColorSpan(suffixSourceLength, span.Token));
+                    continue;
                 }
 
                 boundarySpans.Add(new ColorSpan(
@@ -274,12 +283,5 @@ internal static class ColorAwareTranslationComposer
         }
 
         return true;
-    }
-
-    private static bool IsClosingBoundaryToken(string token)
-    {
-        return string.Equals(token, "}}", StringComparison.Ordinal)
-            || string.Equals(token, "</color>", StringComparison.OrdinalIgnoreCase)
-            || (token.Length == 2 && (token[0] == '&' || token[0] == '^'));
     }
 }

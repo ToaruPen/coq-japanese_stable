@@ -112,6 +112,33 @@ public static class ColorCodePreserver
         return sliced;
     }
 
+    internal static List<ColorSpan> SliceAdjacentCaptureBoundarySpans(IReadOnlyList<ColorSpan>? spans, int startIndex, int length)
+    {
+        var sliced = new List<ColorSpan>();
+        if (spans is null || spans.Count == 0 || length < 0)
+        {
+            return sliced;
+        }
+
+        var endIndex = startIndex + length;
+        for (var index = 0; index < spans.Count; index++)
+        {
+            var span = spans[index];
+            if (span.Index == startIndex - 1 && IsOpeningBoundaryToken(span.Token))
+            {
+                sliced.Add(new ColorSpan(0, span.Token));
+                continue;
+            }
+
+            if (span.Index == endIndex + 1 && IsClosingBoundaryToken(span.Token))
+            {
+                sliced.Add(new ColorSpan(length, span.Token));
+            }
+        }
+
+        return sliced;
+    }
+
     private static int ResolveIndex(ColorSpan span, int textLength)
     {
         if (span.UsesRelativeIndex)
@@ -119,7 +146,7 @@ public static class ColorCodePreserver
             if (span.SourceLength > 0
                 && span.Index == span.SourceLength - 1
                 && textLength <= span.SourceLength - 1
-                && IsTrailingClosingToken(span.Token))
+                && IsClosingBoundaryToken(span.Token))
             {
                 return textLength;
             }
@@ -156,11 +183,23 @@ public static class ColorCodePreserver
         return scaled > textLength ? textLength : (int)scaled;
     }
 
-    private static bool IsTrailingClosingToken(string token)
+    internal static bool IsOpeningBoundaryToken(string token)
+    {
+        return (token.StartsWith("{{", StringComparison.Ordinal) && token.EndsWith("|", StringComparison.Ordinal))
+            || token.StartsWith(TmpColorOpenTagPrefix, StringComparison.OrdinalIgnoreCase)
+            || (token.Length == MarkupTokenLength && (token[0] == '&' || token[0] == '^'));
+    }
+
+    internal static bool IsBoundaryToken(string token)
     {
         return string.Equals(token, "}}", StringComparison.Ordinal)
             || string.Equals(token, TmpColorCloseTag, StringComparison.OrdinalIgnoreCase)
             || (token.Length == MarkupTokenLength && (token[0] == '&' || token[0] == '^'));
+    }
+
+    internal static bool IsClosingBoundaryToken(string token)
+    {
+        return IsBoundaryToken(token);
     }
 
     private static bool IsCaptureClosingToken(string token)
