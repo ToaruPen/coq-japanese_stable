@@ -261,6 +261,31 @@ public sealed class WorldModsTextTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateActiveEffectsLine_PartiallyTranslatesKnownEffectsAndKeepsMissingEffectsVisible()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("ACTIVE EFFECTS:", "発動中の効果:"),
+            ("wet", "濡れている"));
+
+        var ok = StatusLineTranslationHelpers.TryTranslateActiveEffectsLine(
+            "ACTIVE EFFECTS: unknown, wet",
+            "TestRoute",
+            "Description.ActiveEffects",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("発動中の効果: unknown、濡れている"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("unknown"), Is.EqualTo(1));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests("TestRoute", "Description.ActiveEffects"),
+                Is.GreaterThan(0));
+        });
+    }
+
     private void WriteDynamicWorldModsDictionary()
     {
         WriteDictionary(

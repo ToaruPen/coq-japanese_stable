@@ -121,16 +121,20 @@ internal static class StatusLineTranslationHelpers
         var status = Translator.Translate(activeEffectsPrefix);
         if (string.Equals(status, activeEffectsPrefix, StringComparison.Ordinal))
         {
-            translated = source;
-            return false;
+            // Translation unchanged; continue translating known effect fragments.
         }
 
         var tail = source.Substring(activeEffectsPrefix.Length).Trim();
         if (tail.Length == 0)
         {
             translated = status;
-            DynamicTextObservability.RecordTransform(route, family, source, translated);
-            return true;
+            if (!string.Equals(translated, source, StringComparison.Ordinal))
+            {
+                DynamicTextObservability.RecordTransform(route, family, source, translated);
+                return true;
+            }
+
+            return false;
         }
 
         var parts = tail.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
@@ -138,16 +142,15 @@ internal static class StatusLineTranslationHelpers
         for (var index = 0; index < parts.Length; index++)
         {
             var translatedPart = StringHelpers.TranslateExactOrLowerAscii(parts[index]);
-            if (translatedPart is null)
-            {
-                translated = source;
-                return false;
-            }
-
-            translatedParts[index] = translatedPart;
+            translatedParts[index] = translatedPart ?? parts[index];
         }
 
         translated = status + " " + string.Join("、", translatedParts);
+        if (string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
         DynamicTextObservability.RecordTransform(route, family, source, translated);
         return true;
     }
