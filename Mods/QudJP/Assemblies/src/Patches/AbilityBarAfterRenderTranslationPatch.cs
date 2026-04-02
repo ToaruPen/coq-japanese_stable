@@ -87,6 +87,8 @@ public static class AbilityBarAfterRenderTranslationPatch
         field.SetValue(instance, translated);
     }
 
+    // Keep color-aware restoration here even if shared active-effects parsing is
+    // later extracted alongside StatusLineTranslationHelpers.TryTranslateActiveEffectsLine.
     private static bool TryTranslateEffectText(string source, string route, out string translated)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
