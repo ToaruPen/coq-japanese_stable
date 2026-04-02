@@ -89,7 +89,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
             target.ApplyDischarge(new DummyCell(), new DummyCell(), 3);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("{{electrical|}}電弧がchrome turretからyouへ走った！"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("{{electrical|電弧}}がchrome turretからyouへ走った！"));
         }
         finally
         {
@@ -903,9 +903,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
             _ = target.MeleeAttackWithWeaponInternal(new DummyGameObject(), new DummyGameObject(), new DummyGameObject(), new DummyCombatBodyPart());
 
-            // Partial color wrapper "{{r|You miss!}}" degenerates to "{{r|}}" after
-            // pattern translation because boundary spans cannot re-wrap translated text.
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("{{r|}}攻撃は外れた！ [10 vs 14]"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("{{r|攻撃は外れた！}} [10 vs 14]"));
         }
         finally
         {

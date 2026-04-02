@@ -144,10 +144,6 @@ public sealed class TradeScreenUiTranslationPatchTests
     [Test]
     public void Prefix_TranslatesTradeSomePrompt_PreservesColorTags_WhenPatched()
     {
-        // Color tags wrapping the item name survive the Strip/Restore round-trip.
-        // Restore re-inserts them at the same character offset they had in the
-        // stripped source, so the exact output position shifts but the tag itself
-        // is preserved.
         WriteDictionary(
             ("Add how many {0} to trade.", "{0}をいくつ取引に出す？"));
 
@@ -162,13 +158,7 @@ public sealed class TradeScreenUiTranslationPatchTests
 
             _ = DummyPopupAskNumberTarget.AskNumberAsync("Add how many {{R|lead slug}} to trade.", 2, 0, 5).GetAwaiter().GetResult();
 
-            Assert.Multiple(() =>
-            {
-                Assert.That(DummyPopupAskNumberTarget.LastMessage, Does.Contain("lead slug"));
-                Assert.That(DummyPopupAskNumberTarget.LastMessage, Does.Contain("をいくつ"));
-                Assert.That(DummyPopupAskNumberTarget.LastMessage, Does.Contain("取引に出す？"));
-                Assert.That(DummyPopupAskNumberTarget.LastMessage, Does.Contain("{{R|"));
-            });
+            Assert.That(DummyPopupAskNumberTarget.LastMessage, Is.EqualTo("{{R|lead slug}}をいくつ取引に出す？"));
         }
         finally
         {

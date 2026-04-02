@@ -461,7 +461,48 @@ internal static class MessagePatternTranslator
         int? strippedSourceLength,
         IReadOnlyList<ColorSpan>? spans)
     {
+        if (spans is not null
+            && spans.Count > 0
+            && strippedSourceLength is not null
+            && HasInteriorBoundarySpans(spans, strippedSourceLength.Value)
+            && TryApplySegmentedColorAwareTemplate(template, match, strippedSourceLength.Value, spans, out var segmented))
+        {
+            return segmented;
+        }
+
         var builder = new StringBuilder(template.Length);
+        var firstCaptureGroupIndex = -1;
+        var lastCaptureGroupIndex = -1;
+        if (strippedSourceLength is not null)
+        {
+            var firstCaptureStart = strippedSourceLength.Value;
+            var lastCaptureEnd = 0;
+            for (var groupIndex = 1; groupIndex < match.Groups.Count; groupIndex++)
+            {
+                var group = match.Groups[groupIndex];
+                if (!group.Success || group.Length == 0)
+                {
+                    continue;
+                }
+
+                if (firstCaptureGroupIndex < 0 || group.Index < firstCaptureStart)
+                {
+                    firstCaptureGroupIndex = groupIndex;
+                    firstCaptureStart = group.Index;
+                }
+
+                var groupEnd = group.Index + group.Length;
+                if (groupEnd >= lastCaptureEnd)
+                {
+                    lastCaptureGroupIndex = groupIndex;
+                    lastCaptureEnd = groupEnd;
+                }
+            }
+        }
+
+        var translatedFirstCaptureStart = -1;
+        var translatedLastCaptureEnd = -1;
+        var lastCaptureConsumesAdjacentClosingBoundary = false;
         for (var index = 0; index < template.Length; index++)
         {
             var character = template[index];
@@ -520,7 +561,21 @@ internal static class MessagePatternTranslator
                 value = ColorAwareTranslationComposer.RestoreCapture(value, spans, group);
             }
 
+            if (captureIndex + 1 == firstCaptureGroupIndex && translatedFirstCaptureStart < 0)
+            {
+                translatedFirstCaptureStart = builder.Length;
+            }
+
             builder.Append(value);
+            if (captureIndex + 1 == lastCaptureGroupIndex)
+            {
+                translatedLastCaptureEnd = builder.Length;
+                lastCaptureConsumesAdjacentClosingBoundary =
+                    spans is not null
+                    && spans.Count > 0
+                    && ColorCodePreserver.HasAdjacentCaptureWrapper(spans, group.Index, group.Length);
+            }
+
             index = closeIndex;
         }
 
@@ -530,8 +585,226 @@ internal static class MessagePatternTranslator
             return translated;
         }
 
-        var boundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(spans, match, strippedSourceLength.Value, translated.Length);
-        return ColorAwareTranslationComposer.Restore(translated, boundarySpans);
+        if (translatedFirstCaptureStart < 0
+            || translatedLastCaptureEnd < 0
+            || translatedFirstCaptureStart > translatedLastCaptureEnd)
+        {
+            var boundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(spans, match, strippedSourceLength.Value, translated.Length);
+            return ColorAwareTranslationComposer.Restore(translated, boundarySpans);
+        }
+
+        return ColorAwareTranslationComposer.RestoreMatchBoundaries(
+            translated,
+            spans,
+            match,
+            strippedSourceLength.Value,
+            translatedFirstCaptureStart,
+            translatedLastCaptureEnd,
+            lastCaptureConsumesAdjacentClosingBoundary);
+    }
+
+    private static bool TryApplySegmentedColorAwareTemplate(
+        string template,
+        Match match,
+        int strippedSourceLength,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated)
+    {
+        var parts = ParseTemplateParts(template, match.Groups.Count - 1);
+        var referencedGroups = new HashSet<int>();
+        for (var index = 0; index < parts.Count; index++)
+        {
+            var part = parts[index];
+            if (!part.IsCapture)
+            {
+                continue;
+            }
+
+            var groupIndex = part.CaptureIndex + 1;
+            var group = match.Groups[groupIndex];
+            if (!group.Success || !referencedGroups.Add(groupIndex))
+            {
+                translated = string.Empty;
+                return false;
+            }
+        }
+
+        for (var groupIndex = 1; groupIndex < match.Groups.Count; groupIndex++)
+        {
+            var group = match.Groups[groupIndex];
+            if (group.Success
+                && group.Length > 0
+                && !referencedGroups.Contains(groupIndex))
+            {
+                translated = string.Empty;
+                return false;
+            }
+        }
+
+        var builder = new StringBuilder(template.Length);
+        var nextSourceStart = 0;
+        for (var index = 0; index < parts.Count; index++)
+        {
+            var part = parts[index];
+            if (!part.IsCapture)
+            {
+                var nextCaptureStart = GetNextReferencedCaptureStart(parts, index + 1, match);
+                var sourceEnd = nextCaptureStart.HasValue
+                    ? nextCaptureStart.Value
+                    : strippedSourceLength;
+                var sourceLength = sourceEnd - nextSourceStart;
+                if (sourceLength < 0)
+                {
+                    translated = string.Empty;
+                    return false;
+                }
+
+                builder.Append(RestoreLiteralSegment(part.Literal, spans, nextSourceStart, sourceLength));
+                nextSourceStart = sourceEnd;
+                continue;
+            }
+
+            var group = match.Groups[part.CaptureIndex + 1];
+            if (group.Index != nextSourceStart)
+            {
+                translated = string.Empty;
+                return false;
+            }
+
+            var value = part.TranslateCapture ? TranslateTemplateCapture(group.Value) : group.Value;
+            builder.Append(ColorAwareTranslationComposer.RestoreSlice(value, spans, group.Index, group.Length));
+            nextSourceStart = group.Index + group.Length;
+        }
+
+        if (nextSourceStart != strippedSourceLength)
+        {
+            translated = string.Empty;
+            return false;
+        }
+
+        translated = builder.ToString();
+        return true;
+    }
+
+    private static string RestoreLiteralSegment(
+        string literal,
+        IReadOnlyList<ColorSpan> spans,
+        int startIndex,
+        int sourceLength)
+    {
+        if (literal.Length == 0 || sourceLength <= 0)
+        {
+            return literal;
+        }
+
+        var closingQuoteIndex = literal.IndexOf('」');
+        if (closingQuoteIndex >= 0 && closingQuoteIndex + 1 < literal.Length)
+        {
+            var quotedLiteral = literal.Substring(0, closingQuoteIndex + 1);
+            var trailingLiteral = literal.Substring(closingQuoteIndex + 1);
+            return ColorAwareTranslationComposer.RestoreSlice(quotedLiteral, spans, startIndex, sourceLength)
+                + trailingLiteral;
+        }
+
+        return ColorAwareTranslationComposer.RestoreSlice(literal, spans, startIndex, sourceLength);
+    }
+
+    private static List<TemplatePart> ParseTemplateParts(string template, int captureCount)
+    {
+        var parts = new List<TemplatePart>();
+        var literal = new StringBuilder();
+        for (var index = 0; index < template.Length; index++)
+        {
+            var character = template[index];
+            if (character == '{' && index + 1 < template.Length && template[index + 1] == '{')
+            {
+                literal.Append('{');
+                index++;
+                continue;
+            }
+
+            if (character == '}' && index + 1 < template.Length && template[index + 1] == '}')
+            {
+                literal.Append('}');
+                index++;
+                continue;
+            }
+
+            if (character != '{')
+            {
+                literal.Append(character);
+                continue;
+            }
+
+            var closeIndex = template.IndexOf('}', index + 1);
+            if (closeIndex < 0)
+            {
+                throw new FormatException($"QudJP: malformed message pattern template '{template}'.");
+            }
+
+            if (literal.Length > 0)
+            {
+                parts.Add(TemplatePart.CreateLiteral(literal.ToString()));
+                literal.Clear();
+            }
+
+            var token = template.Substring(index + 1, closeIndex - index - 1);
+            var translateCapture = token.Length > 1 && token[0] == 't';
+            if (translateCapture)
+            {
+                token = token.Substring(1);
+            }
+
+            if (!int.TryParse(token, NumberStyles.None, CultureInfo.InvariantCulture, out var captureIndex))
+            {
+                throw new FormatException($"QudJP: unsupported placeholder '{{{token}}}' in message pattern template '{template}'.");
+            }
+
+            if (captureIndex < 0 || captureIndex >= captureCount)
+            {
+                throw new FormatException($"QudJP: placeholder '{{{token}}}' exceeds capture count in message pattern template '{template}'.");
+            }
+
+            parts.Add(TemplatePart.CreateCapture(captureIndex, translateCapture));
+            index = closeIndex;
+        }
+
+        if (literal.Length > 0)
+        {
+            parts.Add(TemplatePart.CreateLiteral(literal.ToString()));
+        }
+
+        return parts;
+    }
+
+    private static int? GetNextReferencedCaptureStart(List<TemplatePart> parts, int startIndex, Match match)
+    {
+        for (var index = startIndex; index < parts.Count; index++)
+        {
+            var part = parts[index];
+            if (part.IsCapture)
+            {
+                return match.Groups[part.CaptureIndex + 1].Index;
+            }
+        }
+
+        return null;
+    }
+
+    private static bool HasInteriorBoundarySpans(IReadOnlyList<ColorSpan> spans, int strippedSourceLength)
+    {
+        for (var index = 0; index < spans.Count; index++)
+        {
+            var span = spans[index];
+            if (span.Index > 0
+                && span.Index < strippedSourceLength
+                && ColorCodePreserver.IsOpeningBoundaryToken(span.Token))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static string TranslateTemplateCapture(string source)
@@ -620,5 +893,33 @@ internal static class MessagePatternTranslator
 
         [DataMember(Name = "text")]
         public string? Value { get; set; }
+    }
+
+    private readonly struct TemplatePart
+    {
+        private TemplatePart(string literal, int captureIndex, bool translateCapture)
+        {
+            Literal = literal;
+            CaptureIndex = captureIndex;
+            TranslateCapture = translateCapture;
+        }
+
+        internal string Literal { get; }
+
+        internal int CaptureIndex { get; }
+
+        internal bool TranslateCapture { get; }
+
+        internal bool IsCapture => CaptureIndex >= 0;
+
+        internal static TemplatePart CreateLiteral(string literal)
+        {
+            return new TemplatePart(literal, captureIndex: -1, translateCapture: false);
+        }
+
+        internal static TemplatePart CreateCapture(int captureIndex, bool translateCapture)
+        {
+            return new TemplatePart(string.Empty, captureIndex, translateCapture);
+        }
     }
 }

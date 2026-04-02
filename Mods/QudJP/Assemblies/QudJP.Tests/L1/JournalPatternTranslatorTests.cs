@@ -146,6 +146,16 @@ public sealed class JournalPatternTranslatorTests
     }
 
     [Test]
+    public void Translate_PreservesColorOwnershipForSpecialErosYellPattern()
+    {
+        WritePatternDictionary(("^E-Ros yells, 'I'm coming, (.+?)!'$", "E-Rosは「今行くよ、{0}！」と叫んだ"));
+
+        var translated = JournalPatternTranslator.Translate("E-Ros yells, {{W|'I'm coming, リーダー!'}}");
+
+        Assert.That(translated, Is.EqualTo("E-Rosは{{W|「今行くよ、リーダー！」}}と叫んだ"));
+    }
+
+    [Test]
     public void Translate_AppliesWakingDreamGospelPattern()
     {
         WritePatternDictionary(

@@ -294,8 +294,10 @@ public static class TradeScreenUiTranslationPatch
             return false;
         }
 
-        var visible = string.Format(CultureInfo.InvariantCulture, template, match.Groups["name"].Value);
-        translated = ColorAwareTranslationComposer.Restore(visible, spans);
+        var name = spans.Count == 0
+            ? match.Groups["name"].Value
+            : ColorAwareTranslationComposer.RestoreCapture(match.Groups["name"].Value, spans, match.Groups["name"]);
+        translated = string.Format(CultureInfo.InvariantCulture, template, name);
         DynamicTextObservability.RecordTransform(Context, "TradeScreenUi.AskNumber", source, translated);
         return !string.Equals(source, translated, StringComparison.Ordinal);
     }

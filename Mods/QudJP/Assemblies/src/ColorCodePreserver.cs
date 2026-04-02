@@ -42,15 +42,7 @@ public static class ColorCodePreserver
                 continue;
             }
 
-            var index = span.Index;
-            if (index < 0)
-            {
-                index = 0;
-            }
-            else if (index > textLength)
-            {
-                index = textLength;
-            }
+            var index = ResolveIndex(span, textLength);
 
             if (!buckets.TryGetValue(index, out var tokenList))
             {
@@ -104,10 +96,147 @@ public static class ColorCodePreserver
                 continue;
             }
 
-            sliced.Add(new ColorSpan(span.Index - startIndex, span.Token));
+            if (span.Index == startIndex && IsCaptureClosingToken(span.Token))
+            {
+                continue;
+            }
+
+            if (span.Index == endIndex && !IsCaptureClosingToken(span.Token))
+            {
+                continue;
+            }
+
+            sliced.Add(new ColorSpan(span.Index - startIndex, span.Token, length, usesRelativeIndex: true));
         }
 
         return sliced;
+    }
+
+    internal static List<ColorSpan> SliceAdjacentCaptureBoundarySpans(IReadOnlyList<ColorSpan>? spans, int startIndex, int length)
+    {
+        var sliced = new List<ColorSpan>();
+        if (spans is null || spans.Count == 0 || length < 0)
+        {
+            return sliced;
+        }
+
+        var endIndex = startIndex + length;
+        var hasAdjacentOpeningBoundary = false;
+        for (var index = 0; index < spans.Count; index++)
+        {
+            var span = spans[index];
+            if (span.Index == startIndex - 1 && IsOpeningBoundaryToken(span.Token))
+            {
+                hasAdjacentOpeningBoundary = true;
+                sliced.Add(new ColorSpan(0, span.Token));
+                continue;
+            }
+
+            if (hasAdjacentOpeningBoundary
+                && span.Index == endIndex + 1
+                && IsClosingBoundaryToken(span.Token))
+            {
+                sliced.Add(new ColorSpan(length, span.Token));
+            }
+        }
+
+        return sliced;
+    }
+
+    internal static bool HasAdjacentCaptureWrapper(IReadOnlyList<ColorSpan>? spans, int startIndex, int length)
+    {
+        if (spans is null || spans.Count == 0 || length < 0)
+        {
+            return false;
+        }
+
+        var endIndex = startIndex + length;
+        var hasOpening = false;
+        var hasClosing = false;
+        for (var index = 0; index < spans.Count; index++)
+        {
+            var span = spans[index];
+            if (span.Index == startIndex - 1 && IsOpeningBoundaryToken(span.Token))
+            {
+                hasOpening = true;
+            }
+
+            if (span.Index == endIndex + 1 && IsClosingBoundaryToken(span.Token))
+            {
+                hasClosing = true;
+            }
+        }
+
+        return hasOpening && hasClosing;
+    }
+
+    private static int ResolveIndex(ColorSpan span, int textLength)
+    {
+        if (span.UsesRelativeIndex)
+        {
+            if (span.SourceLength > 0
+                && span.Index == span.SourceLength - 1
+                && textLength <= span.SourceLength - 1
+                && IsClosingBoundaryToken(span.Token))
+            {
+                return textLength;
+            }
+
+            return MapIndex(span.Index, span.SourceLength, textLength);
+        }
+
+        if (span.Index < 0)
+        {
+            return 0;
+        }
+
+        return span.Index > textLength ? textLength : span.Index;
+    }
+
+    private static int MapIndex(int index, int sourceLength, int textLength)
+    {
+        if (index <= 0 || textLength == 0)
+        {
+            return 0;
+        }
+
+        if (sourceLength <= 0 || index >= sourceLength)
+        {
+            return textLength;
+        }
+
+        var scaled = ((long)index * textLength + (sourceLength / 2)) / sourceLength;
+        if (scaled < 0)
+        {
+            return 0;
+        }
+
+        return scaled > textLength ? textLength : (int)scaled;
+    }
+
+    internal static bool IsOpeningBoundaryToken(string token)
+    {
+        return (token.StartsWith("{{", StringComparison.Ordinal) && token.EndsWith("|", StringComparison.Ordinal))
+            || token.StartsWith(TmpColorOpenTagPrefix, StringComparison.OrdinalIgnoreCase)
+            || (token.Length == MarkupTokenLength && (token[0] == '&' || token[0] == '^'));
+    }
+
+    internal static bool IsBoundaryToken(string token)
+    {
+        return string.Equals(token, "}}", StringComparison.Ordinal)
+            || string.Equals(token, TmpColorCloseTag, StringComparison.OrdinalIgnoreCase)
+            || (token.Length == MarkupTokenLength && (token[0] == '&' || token[0] == '^'));
+    }
+
+    internal static bool IsClosingBoundaryToken(string token)
+    {
+        return IsBoundaryToken(token);
+    }
+
+    private static bool IsCaptureClosingToken(string token)
+    {
+        return string.Equals(token, "}}", StringComparison.Ordinal)
+            || string.Equals(token, TmpColorCloseTag, StringComparison.OrdinalIgnoreCase);
     }
 
     private static void ParseSegment(string input, int startIndex, int endIndex, StringBuilder builder, List<ColorSpan> spans)
@@ -281,7 +410,7 @@ public static class ColorCodePreserver
 
 public sealed class ColorSpan
 {
-    public ColorSpan(int index, string token)
+    public ColorSpan(int index, string token, int sourceLength = -1, bool usesRelativeIndex = false)
     {
         if (token is null)
         {
@@ -290,9 +419,20 @@ public sealed class ColorSpan
 
         Index = index;
         Token = token;
+        SourceLength = sourceLength;
+        UsesRelativeIndex = usesRelativeIndex;
     }
 
     public int Index { get; }
 
     public string Token { get; }
+
+    public int SourceLength { get; }
+
+    public bool UsesRelativeIndex { get; }
+
+    internal ColorSpan WithRelativeIndex(int sourceLength)
+    {
+        return new ColorSpan(Index, Token, sourceLength, usesRelativeIndex: true);
+    }
 }

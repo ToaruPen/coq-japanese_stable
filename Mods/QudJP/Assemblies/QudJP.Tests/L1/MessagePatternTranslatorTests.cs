@@ -316,14 +316,9 @@ public sealed class MessagePatternTranslatorTests
     {
         WritePatternDictionary(("^You miss! \\[(.+?) vs (.+?)\\]$", "攻撃は外れた！ [{0} vs {1}]"));
 
-        // Game emits "{{r|You miss!}} [12 vs 14]" — color wraps only the miss text.
-        // ColorAwareTranslationComposer strips to "You miss! [12 vs 14]" for pattern match,
-        // then restores boundary spans. The partial wrapper cannot be re-applied to the
-        // translated text at the original positions, so the result carries a degenerate
-        // {{r|}} prefix rather than wrapping the translated fragment.
         var translated = MessagePatternTranslator.Translate("{{r|You miss!}} [12 vs 14]");
 
-        Assert.That(translated, Is.EqualTo("{{r|}}攻撃は外れた！ [12 vs 14]"));
+        Assert.That(translated, Is.EqualTo("{{r|攻撃は外れた！}} [12 vs 14]"));
     }
 
     [Test]
@@ -556,6 +551,16 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate("The ウォーターヴァイン農家のメカニマス教徒改宗者 yells, 'Is it a dybbuk that possesses the robot? It should be sacred and still.'");
 
         Assert.That(translated, Is.EqualTo("The ウォーターヴァイン農家のメカニマス教徒改宗者は「Is it a dybbuk that possesses the robot? It should be sacred and still.」と叫んだ。"));
+    }
+
+    [Test]
+    public void Translate_PreservesColorOwnershipForSpecialErosYellPattern()
+    {
+        WritePatternDictionary(("^E-Ros yells, 'I'm coming, (.+?)!'$", "E-Rosは「今行くよ、{0}！」と叫んだ"));
+
+        var translated = MessagePatternTranslator.Translate("E-Ros yells, {{W|'I'm coming, リーダー!'}}");
+
+        Assert.That(translated, Is.EqualTo("E-Rosは{{W|「今行くよ、リーダー！」}}と叫んだ"));
     }
 
     [Test]

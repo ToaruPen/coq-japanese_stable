@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace QudJP.Tests.L1;
 
 [TestFixture]
@@ -16,6 +18,21 @@ public sealed class ColorCodePreserverTests
         {
             Assert.That(stripped, Is.EqualTo("a sword"));
             Assert.That(restored, Is.EqualTo("{{W|刀}}"));
+        });
+    }
+
+    [Test]
+    public void StripRestore_PreservesWholeWrapperOnShorterSentence()
+    {
+        var input = "{{r|Your irritable genome acts up.}}";
+        var (stripped, spans) = ColorCodePreserver.Strip(input);
+
+        var restored = ColorCodePreserver.Restore("あなたの過敏ゲノムが暴走した", spans);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stripped, Is.EqualTo("Your irritable genome acts up."));
+            Assert.That(restored, Is.EqualTo("{{r|あなたの過敏ゲノムが暴走した}}"));
         });
     }
 
@@ -97,6 +114,28 @@ public sealed class ColorCodePreserverTests
     }
 
     [Test]
+    public void SliceBoundarySpans_PreservesPrefixWrapperOwnership_WhenTemplateTextShrinks()
+    {
+        var source = "{{r|You miss!}} [12 vs 14]";
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = Regex.Match(stripped, "^You miss! \\[(.+?) vs (.+?)\\]$");
+        var translated = "攻撃は外れた！ [12 vs 14]";
+        var firstCaptureStart = translated.IndexOf("12", StringComparison.Ordinal);
+        var lastCaptureEnd = translated.IndexOf("14", StringComparison.Ordinal) + 2;
+
+        var restored = ColorAwareTranslationComposer.RestoreMatchBoundaries(
+            translated,
+            spans,
+            match,
+            stripped.Length,
+            firstCaptureStart,
+            lastCaptureEnd,
+            skipAdjacentClosingBoundary: false);
+
+        Assert.That(restored, Is.EqualTo("{{r|攻撃は外れた！}} [12 vs 14]"));
+    }
+
+    [Test]
     public void SliceSpans_ReturnsRangeRelativeMarkup()
     {
         var input = "{{W|[Esc]}} {{y|Cancel}}";
@@ -110,6 +149,23 @@ public sealed class ColorCodePreserverTests
             Assert.That(stripped, Is.EqualTo("[Esc] Cancel"));
             Assert.That(hotkey, Is.EqualTo("{{W|[Esc]}}"));
             Assert.That(label, Is.EqualTo("{{y|キャンセル}}"));
+        });
+    }
+
+    [Test]
+    public void SliceSpans_DoesNotCaptureNextWrapperOpeningToken()
+    {
+        var input = "{{R|lead}}{{G|slug}}";
+        var (stripped, spans) = ColorCodePreserver.Strip(input);
+
+        var first = ColorCodePreserver.Restore("鉛", ColorCodePreserver.SliceSpans(spans, 0, 4));
+        var second = ColorCodePreserver.Restore("弾", ColorCodePreserver.SliceSpans(spans, 4, 4));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stripped, Is.EqualTo("leadslug"));
+            Assert.That(first, Is.EqualTo("{{R|鉛}}"));
+            Assert.That(second, Is.EqualTo("{{G|弾}}"));
         });
     }
 

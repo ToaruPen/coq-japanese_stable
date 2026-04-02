@@ -1015,7 +1015,7 @@ public sealed class DoesVerbFamilyTests
 
     [TestCase("E-Ros yells, 'I'm coming, リーダー!'", "E-Rosは「今行くよ、リーダー！」と叫んだ")]
     // Actual game format: {{W|...}} wraps inner quote only (ErosTeleportation.cs:139)
-    [TestCase("E-Ros yells, {{W|'I'm coming, リーダー!'}}", "{{W|E-Rosは「今行くよ、リーダー！」と叫んだ}}")]
+    [TestCase("E-Ros yells, {{W|'I'm coming, リーダー!'}}", "E-Rosは{{W|「今行くよ、リーダー！」}}と叫んだ")]
     public void Translate_ErosTeleportationFamily(string input, string expected)
     {
         AssertTranslated(input, expected);
