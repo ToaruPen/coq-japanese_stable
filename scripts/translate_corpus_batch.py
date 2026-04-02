@@ -14,9 +14,11 @@ OUTPUT_PATH = Path("scripts/corpus_ja_translated.json")
 CHUNKS_DIR = Path("scripts/translation_chunks")
 GLOSSARY_PATH = Path("scripts/translation_glossary.txt")
 CHUNK_SIZE = 300  # sentences per Codex call
+ENTRY_INDEX_FIELD = "index"
 
 TRANSLATION_PROMPT_TEMPLATE = """\
-以下のJSON配列に含まれる英文を日本語に翻訳し、[{{"id": N, "ja": "翻訳文"}}] 形式のJSON配列のみを出力してください。
+以下のJSON配列に含まれる英文を日本語に翻訳し、
+[{{"index": N, "id": M, "ja": "翻訳文"}}] 形式のJSON配列のみを出力してください。
 
 ## 必須用語（必ずこの訳語を使うこと）
 {glossary}
@@ -56,20 +58,124 @@ def build_translation_prompt(input_json: str) -> str:
 
 def load_input() -> list[dict]:
     """Load the English corpus."""
-    return json.loads(INPUT_PATH.read_text(encoding="utf-8"))
+    return [
+        {**entry, ENTRY_INDEX_FIELD: index}
+        for index, entry in enumerate(json.loads(INPUT_PATH.read_text(encoding="utf-8")))
+    ]
 
 
-def load_existing_translations() -> dict[int, str]:
+def _entry_index(entry: dict, *, label: str) -> int:
+    """Return the stable per-entry index used for progress tracking."""
+    index = entry.get(ENTRY_INDEX_FIELD)
+    if not isinstance(index, int):
+        msg = f"{label} is missing int field '{ENTRY_INDEX_FIELD}': {entry!r}"
+        raise TypeError(msg)
+    return index
+
+
+def _build_progress_id_lookup(all_entries: list[dict]) -> tuple[dict[int, int], set[int]]:
+    """Build safe legacy-id lookup and detect ambiguous duplicate ids."""
+    indexes_by_id: dict[int, list[int]] = {}
+    for entry in all_entries:
+        entry_id = entry["id"]
+        indexes_by_id.setdefault(entry_id, []).append(_entry_index(entry, label="input entry"))
+
+    unique_ids = {entry_id: indexes[0] for entry_id, indexes in indexes_by_id.items() if len(indexes) == 1}
+    duplicate_ids = {entry_id for entry_id, indexes in indexes_by_id.items() if len(indexes) > 1}
+    return unique_ids, duplicate_ids
+
+
+def _resolve_progress_key(
+    entry: dict,
+    *,
+    all_entries: list[dict],
+    duplicate_ids: set[int],
+    label: str,
+    row_index: int,
+    unique_ids: dict[int, int],
+) -> int:
+    """Resolve a saved progress row to the unique translation key."""
+    progress_index = entry.get(ENTRY_INDEX_FIELD)
+    if isinstance(progress_index, int):
+        if not 0 <= progress_index < len(all_entries):
+            msg = f"{label} row {row_index} has out-of-range index {progress_index!r}."
+            raise ValueError(msg)
+        expected_id = all_entries[progress_index]["id"]
+        actual_id = entry.get("id")
+        if actual_id != expected_id:
+            msg = (
+                f"{label} row {row_index} has id {actual_id!r} for index {progress_index}, "
+                f"expected {expected_id!r}."
+            )
+            raise ValueError(msg)
+        return progress_index
+
+    entry_id = entry.get("id")
+    if not isinstance(entry_id, int):
+        msg = f"{label} row {row_index} field 'id' must be an int: {entry_id!r}"
+        raise TypeError(msg)
+    if entry_id in duplicate_ids:
+        msg = (
+            f"{label} row {row_index} uses duplicate id {entry_id!r} without '{ENTRY_INDEX_FIELD}'; "
+            "delete the stale progress file and rerun with the indexed format."
+        )
+        raise ValueError(msg)
+    if entry_id not in unique_ids:
+        msg = f"{label} row {row_index} references unknown id {entry_id!r}."
+        raise ValueError(msg)
+    return unique_ids[entry_id]
+
+
+def _load_progress_file(
+    path: Path,
+    *,
+    all_entries: list[dict],
+    duplicate_ids: set[int],
+    label: str,
+    unique_ids: dict[int, int],
+) -> dict[int, str]:
+    """Load a progress file keyed by the stable per-entry index."""
+    progress: dict[int, str] = {}
+    if not path.exists():
+        return progress
+
+    for row_index, entry in enumerate(json.loads(path.read_text(encoding="utf-8"))):
+        key = _resolve_progress_key(
+            entry,
+            all_entries=all_entries,
+            duplicate_ids=duplicate_ids,
+            label=label,
+            row_index=row_index,
+            unique_ids=unique_ids,
+        )
+        if key in progress:
+            msg = f"{label} row {row_index} duplicates index {key!r}."
+            raise ValueError(msg)
+        progress[key] = entry["ja"]
+    return progress
+
+
+def load_existing_translations(all_entries: list[dict]) -> dict[int, str]:
     """Load already-translated entries to allow resume."""
-    existing: dict[int, str] = {}
-    if OUTPUT_PATH.exists():
-        for entry in json.loads(OUTPUT_PATH.read_text(encoding="utf-8")):
-            existing[entry["id"]] = entry["ja"]
+    unique_ids, duplicate_ids = _build_progress_id_lookup(all_entries)
+    existing = _load_progress_file(
+        OUTPUT_PATH,
+        all_entries=all_entries,
+        duplicate_ids=duplicate_ids,
+        label=str(OUTPUT_PATH),
+        unique_ids=unique_ids,
+    )
+
     # Also check tmp file from earlier Copilot run
     tmp = Path("scripts/corpus_ja_translated.json.tmp")
-    if tmp.exists():
-        for entry in json.loads(tmp.read_text(encoding="utf-8")):
-            existing.setdefault(entry["id"], entry["ja"])
+    for key, value in _load_progress_file(
+        tmp,
+        all_entries=all_entries,
+        duplicate_ids=duplicate_ids,
+        label=str(tmp),
+        unique_ids=unique_ids,
+    ).items():
+        existing.setdefault(key, value)
     return existing
 
 
@@ -160,46 +266,66 @@ def _normalize_translation_text(text: str) -> str | None:
 
 def _collect_chunk_translations(chunk: list[dict], translated: list[dict]) -> tuple[dict[int, str], list[str]]:
     """Collect only valid translations for the current chunk."""
-    expected_ids = {entry["id"] for entry in chunk}
+    expected_entries = {_entry_index(entry, label="chunk entry"): entry for entry in chunk}
     chunk_translations: dict[int, str] = {}
     invalid_results: list[str] = []
 
     for item in translated:
+        translation_index = item.get(ENTRY_INDEX_FIELD)
+        if not isinstance(translation_index, int):
+            invalid_results.append(f"missing or invalid index={translation_index!r}")
+            continue
+        if translation_index not in expected_entries:
+            invalid_results.append(f"unexpected index={translation_index!r}")
+            continue
+        if translation_index in chunk_translations:
+            invalid_results.append(f"duplicate index={translation_index!r}")
+            continue
+
+        expected_entry = expected_entries[translation_index]
         tid = item.get("id")
+        if tid != expected_entry["id"]:
+            invalid_results.append(
+                f"index={translation_index!r} expected id={expected_entry['id']!r}, got {tid!r}"
+            )
+            continue
+
         ja = item.get("ja")
-        if tid not in expected_ids:
-            invalid_results.append(f"unexpected id={tid!r}")
-            continue
-        if tid in chunk_translations:
-            invalid_results.append(f"duplicate id={tid!r}")
-            continue
         if not isinstance(ja, str):
-            invalid_results.append(f"id={tid!r} ja is not a string")
+            invalid_results.append(f"index={translation_index!r} ja is not a string")
             continue
 
         normalized = _normalize_translation_text(ja)
         if normalized is None:
-            invalid_results.append(f"id={tid!r} empty or invalid punctuation")
+            invalid_results.append(f"index={translation_index!r} empty or invalid punctuation")
             continue
-        chunk_translations[tid] = normalized
+        chunk_translations[translation_index] = normalized
 
     return chunk_translations, invalid_results
 
 
 def save_progress(translations: dict[int, str], all_entries: list[dict]) -> None:
     """Save current progress to output file."""
-    output = [{"id": e["id"], "ja": translations[e["id"]]} for e in all_entries if e["id"] in translations]
+    output = [
+        {
+            ENTRY_INDEX_FIELD: _entry_index(entry, label="input entry"),
+            "id": entry["id"],
+            "ja": translations[_entry_index(entry, label="input entry")],
+        }
+        for entry in all_entries
+        if _entry_index(entry, label="input entry") in translations
+    ]
     OUTPUT_PATH.write_text(json.dumps(output, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def main() -> None:
     entries = load_input()
-    translations = load_existing_translations()
+    translations = load_existing_translations(entries)
     print(f"Total sentences: {len(entries)}")
     print(f"Already translated: {len(translations)}")
 
     # Filter out already-translated entries
-    remaining = [e for e in entries if e["id"] not in translations]
+    remaining = [entry for entry in entries if _entry_index(entry, label="input entry") not in translations]
     print(f"Remaining to translate: {len(remaining)}")
 
     if not remaining:

@@ -35,7 +35,7 @@ def _load_protected_terms() -> list[str]:
                 terms.add(ja)
 
     # Sort longest first for greedy replacement
-    sorted_terms = sorted(terms, key=len, reverse=True)
+    sorted_terms = sorted(terms, key=lambda term: (-len(term), term))
     _PROTECTED_TERMS.extend(sorted_terms)
     return _PROTECTED_TERMS
 
