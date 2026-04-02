@@ -51,8 +51,10 @@ public static class HelpScreenTranslationPatch
             }
 
             var hotkeyBar = UiBindingTranslationHelpers.GetMemberValue(__instance, "hotkeyBar");
-            var beforeShow = hotkeyBar is null ? null : AccessTools.Method(hotkeyBar.GetType(), "BeforeShow");
-            _ = beforeShow?.Invoke(hotkeyBar, new object?[] { null, menuOptions });
+            if (hotkeyBar is not null)
+            {
+                InvokeBeforeShow(hotkeyBar, menuOptions);
+            }
         }
         catch (Exception ex)
         {
@@ -91,5 +93,29 @@ public static class HelpScreenTranslationPatch
         }
 
         return changed;
+    }
+
+    private static void InvokeBeforeShow(object hotkeyBar, IEnumerable menuOptions)
+    {
+        var beforeShow = AccessTools.Method(hotkeyBar.GetType(), "BeforeShow");
+        if (beforeShow is null)
+        {
+            return;
+        }
+
+        var parameterCount = beforeShow.GetParameters().Length;
+        if (parameterCount == 0)
+        {
+            _ = beforeShow.Invoke(hotkeyBar, null);
+            return;
+        }
+
+        if (parameterCount == 1)
+        {
+            _ = beforeShow.Invoke(hotkeyBar, new object?[] { menuOptions });
+            return;
+        }
+
+        _ = beforeShow.Invoke(hotkeyBar, new object?[] { null, menuOptions });
     }
 }
