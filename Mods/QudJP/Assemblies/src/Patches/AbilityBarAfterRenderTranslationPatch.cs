@@ -100,8 +100,7 @@ public static class AbilityBarAfterRenderTranslationPatch
         var translatedLabel = Translator.Translate("ACTIVE EFFECTS:");
         if (string.Equals(translatedLabel, "ACTIVE EFFECTS:", StringComparison.Ordinal))
         {
-            translated = source;
-            return false;
+            translatedLabel = match.Groups["label"].Value;
         }
 
         translated = ColorAwareTranslationComposer.RestoreCapture(translatedLabel, spans, match.Groups["label"]);
@@ -113,13 +112,7 @@ public static class AbilityBarAfterRenderTranslationPatch
             for (var index = 0; index < parts.Length; index++)
             {
                 var translatedPart = StringHelpers.TranslateExactOrLowerAscii(parts[index]);
-                if (translatedPart is null)
-                {
-                    translated = source;
-                    return false;
-                }
-
-                translatedParts[index] = translatedPart;
+                translatedParts[index] = translatedPart ?? parts[index];
             }
 
             var translatedTail = string.Join("、", translatedParts);

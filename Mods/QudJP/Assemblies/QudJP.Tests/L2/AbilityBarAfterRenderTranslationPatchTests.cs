@@ -98,10 +98,11 @@ public sealed class AbilityBarAfterRenderTranslationPatchTests
     }
 
     [Test]
-    public void Postfix_PreservesEnglishFallbackWhenNoTranslationExists()
+    public void Postfix_PartiallyTranslatesActiveEffectsAndKeepsMissingEffectsVisible()
     {
         WriteDictionary(
             ("ACTIVE EFFECTS:", "発動中の効果:"),
+            ("wet", "濡れている"),
             ("TARGET:", "ターゲット:"),
             ("Healthy", "健康"));
 
@@ -109,7 +110,7 @@ public sealed class AbilityBarAfterRenderTranslationPatchTests
         {
             var target = new DummyAbilityBarAfterRenderTarget
             {
-                NextEffectText = "ACTIVE EFFECTS: unknown",
+                NextEffectText = "ACTIVE EFFECTS: unknown, wet",
                 NextTargetText = "TARGET: mysterious snapjaw",
                 NextTargetHealthText = "Healthy, uncertain",
             };
@@ -118,9 +119,15 @@ public sealed class AbilityBarAfterRenderTranslationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(target.GetEffectText(), Is.EqualTo("ACTIVE EFFECTS: unknown"));
+                Assert.That(target.GetEffectText(), Is.EqualTo("発動中の効果: unknown、濡れている"));
                 Assert.That(target.GetTargetText(), Is.EqualTo("ターゲット: mysterious snapjaw"));
                 Assert.That(target.GetTargetHealthText(), Is.EqualTo("Healthy, uncertain"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("unknown"), Is.EqualTo(1));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(AbilityBarAfterRenderTranslationPatch),
+                        "AbilityBar.ActiveEffects"),
+                    Is.GreaterThan(0));
             });
         });
     }
