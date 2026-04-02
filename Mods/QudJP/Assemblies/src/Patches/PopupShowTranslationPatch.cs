@@ -85,6 +85,23 @@ public static class PopupShowTranslationPatch
             Trace.TraceWarning("QudJP: {0} failed to resolve Popup.ShowYesNo.", Context);
         }
 
+        var showYesNoAsyncMethod = AccessTools.Method(popupType, "ShowYesNoAsync", new[] { typeof(string) });
+        if (showYesNoAsyncMethod is null)
+        {
+            Trace.TraceWarning(
+                "QudJP: {0} failed to resolve Popup.ShowYesNoAsync(string); falling back to name-only lookup.",
+                Context);
+            showYesNoAsyncMethod = AccessTools.Method(popupType, "ShowYesNoAsync");
+        }
+        if (showYesNoAsyncMethod is not null)
+        {
+            targets.Add(showYesNoAsyncMethod);
+        }
+        else
+        {
+            Trace.TraceWarning("QudJP: {0} failed to resolve Popup.ShowYesNoAsync.", Context);
+        }
+
         MethodInfo? showYesNoCancelMethod = null;
         if (dialogResultType is not null)
         {
@@ -103,6 +120,23 @@ public static class PopupShowTranslationPatch
         else
         {
             Trace.TraceWarning("QudJP: {0} failed to resolve Popup.ShowYesNoCancel.", Context);
+        }
+
+        var showYesNoCancelAsyncMethod = AccessTools.Method(popupType, "ShowYesNoCancelAsync", new[] { typeof(string) });
+        if (showYesNoCancelAsyncMethod is null)
+        {
+            Trace.TraceWarning(
+                "QudJP: {0} failed to resolve Popup.ShowYesNoCancelAsync(string); falling back to name-only lookup.",
+                Context);
+            showYesNoCancelAsyncMethod = AccessTools.Method(popupType, "ShowYesNoCancelAsync");
+        }
+        if (showYesNoCancelAsyncMethod is not null)
+        {
+            targets.Add(showYesNoCancelAsyncMethod);
+        }
+        else
+        {
+            Trace.TraceWarning("QudJP: {0} failed to resolve Popup.ShowYesNoCancelAsync.", Context);
         }
 
         if (targets.Count == 0)

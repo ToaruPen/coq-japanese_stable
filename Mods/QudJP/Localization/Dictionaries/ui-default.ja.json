@@ -62,6 +62,14 @@
       "text": "ゾーンを構築中..."
     },
     {
+      "key": "Freezing zone...",
+      "text": "ゾーンを凍結中..."
+    },
+    {
+      "key": "Thawing zone...",
+      "text": "ゾーンを解凍中..."
+    },
+    {
       "key": "Sort Options",
       "text": "並び替えオプション"
     },
@@ -289,6 +297,10 @@
     {
       "key": "Last saved:",
       "text": "最終セーブ："
+    },
+    {
+      "key": "Total size: {0}",
+      "text": "合計サイズ：{0}"
     },
     {
       "key": "Expand",

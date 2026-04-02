@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace QudJP.Tests.DummyTargets;
 
 internal sealed class DummyGameObjectDie
@@ -28,6 +30,8 @@ internal static class DummyPopupShow
 {
     public static string? LastShowMessage;
     public static string? LastShowYesNoMessage;
+    public static string? LastShowYesNoAsyncMessage;
+    public static string? LastShowYesNoCancelAsyncMessage;
 
     public static void Show(
         string Message,
@@ -51,6 +55,18 @@ internal static class DummyPopupShow
         return 0;
     }
 
+    public static Task<int> ShowYesNoAsync(string Message)
+    {
+        LastShowYesNoAsyncMessage = Message;
+        return Task.FromResult(0);
+    }
+
+    public static Task<int> ShowYesNoCancelAsync(string Message)
+    {
+        LastShowYesNoCancelAsyncMessage = Message;
+        return Task.FromResult(0);
+    }
+
     public static void ShowFail(
         string Message,
         bool CopyScrap = true,
@@ -64,5 +80,7 @@ internal static class DummyPopupShow
     {
         LastShowMessage = null;
         LastShowYesNoMessage = null;
+        LastShowYesNoAsyncMessage = null;
+        LastShowYesNoCancelAsyncMessage = null;
     }
 }

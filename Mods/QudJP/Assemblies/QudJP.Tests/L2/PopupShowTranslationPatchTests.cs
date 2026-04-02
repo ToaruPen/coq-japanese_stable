@@ -172,9 +172,57 @@ public sealed class PopupShowTranslationPatchTests
         }
     }
 
+    [Test]
+    public void Prefix_TranslatesPopupShowYesNoAsyncMessage()
+    {
+        WriteDictionary(("Are you sure you want to quit?", "本当に終了しますか？"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNoAsync)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+
+            _ = DummyPopupShow.ShowYesNoAsync("Are you sure you want to quit?").GetAwaiter().GetResult();
+
+            Assert.That(DummyPopupShow.LastShowYesNoAsyncMessage, Is.EqualTo("本当に終了しますか？"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_TranslatesPopupShowYesNoCancelAsyncMessage()
+    {
+        WriteDictionary(("Delete save game?", "セーブデータを削除しますか？"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNoCancelAsync)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+
+            _ = DummyPopupShow.ShowYesNoCancelAsync("Delete save game?").GetAwaiter().GetResult();
+
+            Assert.That(DummyPopupShow.LastShowYesNoCancelAsyncMessage, Is.EqualTo("セーブデータを削除しますか？"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
 #if !HAS_GAME_DLL
     [Test]
-    public void TargetMethods_ResolvesShowFailOverload()
+    public void TargetMethods_ResolvesShowFamilyOverloads()
     {
         _ = typeof(Genkit.Location2D);
         _ = typeof(XRL.UI.DialogResult);
@@ -187,6 +235,18 @@ public sealed class PopupShowTranslationPatchTests
                 && method.Name == nameof(DummyPopupShow.ShowFail)
                 && string.Join("|", method.GetParameters().Select(parameter => parameter.ParameterType.FullName))
                     == "System.String|System.Boolean|System.Boolean|System.Boolean"),
+            Is.True);
+        Assert.That(
+            resolved.Any(method => method.DeclaringType?.FullName == "XRL.UI.Popup"
+                && method.Name == nameof(DummyPopupShow.ShowYesNoAsync)
+                && string.Join("|", method.GetParameters().Select(parameter => parameter.ParameterType.FullName))
+                    == "System.String"),
+            Is.True);
+        Assert.That(
+            resolved.Any(method => method.DeclaringType?.FullName == "XRL.UI.Popup"
+                && method.Name == nameof(DummyPopupShow.ShowYesNoCancelAsync)
+                && string.Join("|", method.GetParameters().Select(parameter => parameter.ParameterType.FullName))
+                    == "System.String"),
             Is.True);
     }
 #endif

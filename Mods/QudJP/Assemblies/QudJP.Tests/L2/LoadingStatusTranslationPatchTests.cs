@@ -41,7 +41,8 @@ public sealed class LoadingStatusTranslationPatchTests
     public void Prefix_TranslatesDescription_WhenPatched()
     {
         WriteDictionary(
-            ("Loading world", "ワールドを読み込み中"));
+            ("Loading world", "ワールドを読み込み中"),
+            ("Freezing zone...", "ゾーンを凍結中..."));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -66,6 +67,14 @@ public sealed class LoadingStatusTranslationPatchTests
             {
                 Assert.That(DummyLoadingTarget.LastDescription, Is.EqualTo("{{Y|ワールドを読み込み中}}"));
                 Assert.That(DummyLoadingTarget.LastWaitForUiUpdate, Is.True);
+            });
+
+            DummyLoadingTarget.SetLoadingStatus("Freezing zone...", waitForUiUpdate: false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyLoadingTarget.LastDescription, Is.EqualTo("ゾーンを凍結中..."));
+                Assert.That(DummyLoadingTarget.LastWaitForUiUpdate, Is.False);
             });
         }
         finally

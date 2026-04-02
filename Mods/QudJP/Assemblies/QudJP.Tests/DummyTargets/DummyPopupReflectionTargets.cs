@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 #if !HAS_GAME_DLL
 namespace Genkit
 {
@@ -46,6 +48,11 @@ namespace XRL.UI
             return (int)defaultResult;
         }
 
+        public static Task<DialogResult> ShowYesNoAsync(string Message)
+        {
+            return Task.FromResult(DialogResult.No);
+        }
+
         public static int ShowYesNoCancel(
             string Message,
             string? Sound = null,
@@ -53,6 +60,11 @@ namespace XRL.UI
             DialogResult defaultResult = DialogResult.No)
         {
             return (int)defaultResult;
+        }
+
+        public static Task<DialogResult> ShowYesNoCancelAsync(string Message)
+        {
+            return Task.FromResult(DialogResult.Cancel);
         }
     }
 }
