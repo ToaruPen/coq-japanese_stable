@@ -73,6 +73,18 @@ public sealed class PopupGetPopupOptionTranslationPatchTests
         Assert.That(option.text, Is.EqualTo("{{W|[n]}} {{y|起爆}}"));
     }
 
+    [Test]
+    public void Postfix_LeavesUnknownHotkeyOptionTextUnchanged()
+    {
+        WriteDictionary(("[n] detonate", "[n] 起爆"));
+
+        using var patch = PatchGetPopupOption();
+
+        var option = DummyPopupGenericTarget.GetPopupOption(0, new[] { "Untranslated" }, new[] { 'x' });
+
+        Assert.That(option.text, Is.EqualTo("{{W|[x]}} {{y|Untranslated}}"));
+    }
+
     private static IDisposable PatchGetPopupOption()
     {
         var harmonyId = CreateHarmonyId();

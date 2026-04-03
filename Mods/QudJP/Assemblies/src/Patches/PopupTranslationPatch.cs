@@ -324,9 +324,14 @@ public static class PopupTranslationPatch
 
     private static string NormalizeProducerText(string translated)
     {
-        if (string.IsNullOrEmpty(translated))
+        if (translated is null)
         {
-            return translated ?? string.Empty;
+            return string.Empty;
+        }
+
+        if (translated.Length == 0)
+        {
+            return string.Empty;
         }
 
         return translated.Replace("{{hotkey|}}", string.Empty);

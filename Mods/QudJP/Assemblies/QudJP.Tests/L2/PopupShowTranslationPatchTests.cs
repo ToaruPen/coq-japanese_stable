@@ -248,7 +248,7 @@ public sealed class PopupShowTranslationPatchTests
             DummyPopupShow.ShowFail("You do not have a missile weapon equipped!");
             new DummyPopupMessageTarget().ShowPopup(DummyPopupShow.LastShowMessage!, buttons);
 
-            var renderedMessage = "{{y|" + DummyPopupMessageTarget.LastMessage + "}}";
+            var renderedMessage = DummyPopupMessageTarget.LastRenderedBodyText;
             var renderedButton = DummyPopupMessageTarget.LastButtons![0].text;
             UITextSkinTranslationPatch.Prefix(ref renderedMessage);
             UITextSkinTranslationPatch.Prefix(ref renderedButton);

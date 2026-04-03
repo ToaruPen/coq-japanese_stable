@@ -40,12 +40,8 @@ public static class PopupGetPopupOptionTranslationPatch
 
         if (method is null)
         {
-            method = AccessTools.Method(targetType, "GetPopupOption");
-        }
-
-        if (method is null)
-        {
-            Trace.TraceError($"QudJP: {Context} method 'GetPopupOption' not found on '{TargetTypeName}'.");
+            Trace.TraceError($"QudJP: {Context} expected 'GetPopupOption' signature not found on '{TargetTypeName}'.");
+            return null;
         }
 
         return method;

@@ -122,6 +122,20 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesReadOnlyPickOptionButtons()
+    {
+        WriteDictionary(("Cancel", "キャンセル"));
+
+        using var patch = PatchPickOption();
+
+        var buttons = Array.AsReadOnly(new[] { new DummyPopupMenuItem("{{W|Cancel}}") });
+        DummyPopupGenericTarget.PickOption(Buttons: buttons);
+
+        Assert.That(DummyPopupGenericTarget.LastPickOptionButtons, Is.Not.Null);
+        Assert.That(DummyPopupGenericTarget.LastPickOptionButtons![0].text, Is.EqualTo("{{W|キャンセル}}"));
+    }
+
+    [Test]
     public void Prefix_LeavesAlreadyLocalizedTextUnchanged()
     {
         using var patch = PatchPickOption();

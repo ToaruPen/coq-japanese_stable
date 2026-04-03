@@ -123,15 +123,19 @@ public static class PopupPickOptionTranslationPatch
 
     private static void TranslatePopupMenuItemTextCollection(object? maybeList)
     {
-        if (maybeList is null || maybeList is string || maybeList is not IList list)
+        if (maybeList is null || maybeList is string || maybeList is not IEnumerable items)
         {
             return;
         }
 
-        for (var itemIndex = 0; itemIndex < list.Count; itemIndex++)
+        foreach (var item in items)
         {
-            var item = list[itemIndex];
             if (item is null)
+            {
+                continue;
+            }
+
+            if (item.GetType().IsValueType)
             {
                 continue;
             }
@@ -155,7 +159,6 @@ public static class PopupPickOptionTranslationPatch
             }
 
             textField.SetValue(item, translated);
-            list[itemIndex] = item;
         }
     }
 }
