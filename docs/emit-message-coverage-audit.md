@@ -19,7 +19,7 @@ This document is intentionally conservative. It does **not** claim universal emi
 
 `GameObjectEmitMessageTranslationPatch` wraps two producer entrypoints: the 4-argument `GameObject.EmitMessage` instance method and the 8-argument `Messaging.EmitMessage` helper. Its `Prefix()` increments a thread-static `activeDepth`, its `Finalizer()` decrements it, and `TryTranslateQueuedMessage()` only claims queued messages while `activeDepth > 0`, forwarding them through `MessageLogProducerTranslationHelpers.TryPreparePatternMessage(..., markJapaneseAsDirect: true)`.[^emit-patch]
 
-The actual queue interception happens in `CombatAndLogMessageQueuePatch`, which short-circuits through a fixed OR-chain before it reaches the emit route. `GameObjectEmitMessageTranslationPatch` is slot **15** in a chain of **19** delegates, after 14 earlier owner-specific routes including heal, move, melee attack, die, regenera, spot, and lost-sight patches.[^queue-patch] The emit route is therefore a **generic fallback inside the queue patch**, not the sole owner of every string produced during an `EmitMessage` call.
+The actual queue interception happens in `CombatAndLogMessageQueuePatch`, which short-circuits through a fixed OR-chain before it reaches the emit route. `GameObjectEmitMessageTranslationPatch` is slot **15** in a chain of **19** delegates, after 14 earlier owner-specific routes including heal, move, melee attack, die, regeneration, spot, and lost-sight patches.[^queue-patch] The emit route is therefore a **generic fallback inside the queue patch**, not the sole owner of every string produced during an `EmitMessage` call.
 
 `markJapaneseAsDirect: true` is the key mixed-language behavior. If stripped text already contains Japanese, `TryPreparePatternMessage()` either:
 
