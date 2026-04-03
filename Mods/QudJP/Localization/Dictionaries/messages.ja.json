@@ -769,13 +769,18 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^One of (.+?)の wounds stops bleeding[.!]?$",
+      "template": "{0}の傷のひとつの出血が止まった。",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^(.+) stops bleeding[.!]?$",
       "template": "{0}の出血は止まった。",
       "route": "emit-message"
     },
     {
-      "pattern": "^One of (.+?)の wounds stops bleeding[.!]?$",
-      "template": "{0}の傷のひとつの出血が止まった。",
+      "pattern": "^You take (\\d+) damage from bleeding[.!]?$",
+      "template": "あなたは出血で{0}ダメージを受けた。",
       "route": "emit-message"
     },
     {

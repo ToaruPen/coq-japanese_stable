@@ -696,6 +696,53 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
+    [TestCase("You take 1 damage from bleeding.", "あなたは出血で1ダメージを受けた。")]
+    [TestCase("The ワニ hits (x1) for 2 damage with his 噛みつき. [18]", "ワニの噛みつきで2ダメージを受けた。(x1) [18]")]
+    [TestCase("You hit glowfish for 3 damage.", "glowfishに3ダメージを与えた")]
+    [TestCase("The タム fails to penetrate your armor [17]!", "タムはあなたの装甲を貫けなかった！ [17]")]
+    [TestCase("The ワニ cannot reach the スナップジョー.", "ワニはスナップジョーに届かない")]
+    [TestCase("Your attack passes through the ワニ!", "あなたの攻撃はワニをすり抜けた！")]
+    [TestCase("One of タムの wounds stops bleeding.", "タムの傷のひとつの出血が止まった。")]
+    [TestCase("The タム's nose begins to bleed.", "タムの鼻から血が流れ始めた")]
+    [TestCase("The タム's brain begins to hemorrhage.", "タムの脳から出血が始まった")]
+    [TestCase("You lose 3 HP.", "あなたは3HPを失った")]
+    [TestCase("You recover 5 HP.", "あなたは5HP回復した")]
+    [TestCase("You harvest a ヴァインウェイファー from the ワーターヴァイン.", "ワーターヴァインからヴァインウェイファーを収穫した")]
+    public void MessagingEmitMessage_TranslatesStableRepositoryFamilies_WhenPatched(string message, string expected)
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyMessagingEmitMessageTarget),
+                    nameof(DummyMessagingEmitMessageTarget.EmitMessage),
+                    typeof(DummyGameObject),
+                    typeof(string),
+                    typeof(char),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject)),
+                typeof(GameObjectEmitMessageTranslationPatch));
+
+            DummyMessagingEmitMessageTarget.MessageToSend = message;
+            DummyMessagingEmitMessageTarget.EmitMessage(new DummyGameObject(), "unused", 'W', false, false, false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     [Test]
     public void ZoneManagerTryThawZone_TranslatesLeafMessage_WhenPatched()
     {

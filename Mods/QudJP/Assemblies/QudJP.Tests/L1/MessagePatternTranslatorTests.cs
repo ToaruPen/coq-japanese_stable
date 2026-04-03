@@ -450,6 +450,26 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_RepositoryDictionary_TranslatesPlayerBleedingDamageMessage()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("You take 1 damage from bleeding.");
+
+        Assert.That(translated, Is.EqualTo("あなたは出血で1ダメージを受けた。"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_UsesSpecificWoundStopBleedingPatternBeforeGenericBleedingStopPattern()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("One of タムの wounds stops bleeding.");
+
+        Assert.That(translated, Is.EqualTo("タムの傷のひとつの出血が止まった。"));
+    }
+
+    [Test]
     public void Translate_AppliesPassByPattern()
     {
         WritePatternDictionary(("^You pass by a (.+?)[.!]?$", "{0}のそばを通り過ぎた。"));
