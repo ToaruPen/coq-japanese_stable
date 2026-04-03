@@ -165,7 +165,7 @@ ruff check scripts/
 3. 必要なら L2G で hook inventory / namespace probe を追加する
 4. 最後に L3 で表示確認を行う
 
-inventory / equipment 表示確認は `docs/inventory-verification.md` の手順で自動化できます。
+inventory / equipment を含む L3 表示確認は、`docs/RULES.md` の runtime evidence ルールに従って fresh log と再現メモを残してください。
 
 ---
 

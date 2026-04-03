@@ -1,47 +1,31 @@
 # Localization
 
-Shipped localization assets: XML merge files and JSON dictionaries.
+## Why
 
-## Area Map
+This area contains the shipped XML merge files and JSON dictionaries that provide stable localization assets.
 
-- `*.jp.xml` — XML localization overlays (game merge system, `Load="Merge"`)
-- `Dictionaries/*.ja.json` — dictionary assets for UI text, messages, display names
-- `Dictionaries/README.md` — local dictionary handling notes
+## What
 
-## Validation
+- Main paths:
+  - `*.jp.xml` for XML merge overlays
+  - `Dictionaries/*.ja.json` for dictionary assets
+  - `Dictionaries/README.md` for local asset notes
+- Source of truth:
+  - tests and fresh runtime evidence decide whether a route should use localization assets at all
+  - layer boundaries live in `docs/test-architecture.md`
+  - translation-route, ownership, and markup rules live in `docs/RULES.md`
+
+## How
+
+- Validate assets with:
 
 ```bash
-xmllint --noout <file>         # XML well-formedness
-file <file>                    # Encoding check
-hexdump -C <file> | head -1   # BOM check
+xmllint --noout <file>
+file <file>
+hexdump -C <file> | head -1
 ```
 
-## Source of truth
-
-- Tests and current runtime evidence determine whether a route should use localization assets at all.
-- Use `docs/test-architecture.md` for layer boundaries and fresh game logs for current sink/runtime findings.
-
-Do not treat old design notes as authority for adding new asset entries.
-
-## Translation Workflow Gate
-
-Before adding a dictionary entry:
-
-1. Confirm from tests and current runtime evidence that the text is a stable leaf string
-2. If the text is dynamic, procedural, or already covered by translator/patch tests, do not add a sink-side asset entry
-3. Investigate the upstream producer first when route ownership is unclear
-
-## Editing Rules
-
-- Use dictionary/XML for true stable leaf strings, fixed labels, and atomic names only.
-- If tests show a route is observation-only at the sink, do not add a compensating dictionary entry there.
-- Verify target object/conversation IDs match game version `2.0.4`.
-- Preserve markup and placeholders exactly:
-  - `{{...}}`, `&X`, `^x`, `&&`, `^^` — game color codes
-  - `=variable.name=` — runtime variable tokens
-
-## Constraints
-
-- UTF-8 without BOM, LF line endings.
-- Do not alter color-code structure or placeholder syntax while translating.
-- Treat mojibake as an encoding failure, not source text.
+- Use dictionary or XML assets only for true stable leaf strings, fixed labels, and atomic names.
+- If a route is dynamic, procedural, or observation-only at the sink, do not add a compensating asset entry there.
+- Preserve markup and placeholders exactly, including `{{...}}`, `&X`, `^x`, `&&`, `^^`, and `=variable.name=`.
+- Verify target object and conversation IDs against game version `2.0.4`.

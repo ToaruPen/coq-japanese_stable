@@ -125,8 +125,8 @@ Caves-of-Qud_Japanese/
 │   ├── sync_mod.py               # Mod ファイルをゲームディレクトリに配備
 │   └── tests/                    # pytest テストスイート
 ├── docs/
-│   ├── test-architecture.md      # 3 層テストアーキテクチャの説明
-│   ├── translation-process.md    # 翻訳追加手順
+│   ├── test-architecture.md      # テスト層と責務境界
+│   ├── RULES.md                  # 翻訳パッチと運用の判断基準
 │   ├── contributing.md           # コントリビューションガイド
 │   └── glossary.csv              # 用語集（84 エントリ）
 ├── .github/workflows/ci.yml      # GitHub Actions CI
@@ -138,7 +138,7 @@ Caves-of-Qud_Japanese/
 ## Documentation
 
 - [テストアーキテクチャ](docs/test-architecture.md) — L1/L2/L2G/L3 の役割、game-DLL-assisted TDD、DummyTarget の使い分け
-- [翻訳追加手順](docs/translation-process.md) — XML 翻訳ファイルの作り方
+- [QudJP Rules](docs/RULES.md) — 翻訳パッチ、route ownership、runtime evidence、deployment の判断基準
 - [コントリビューションガイド](docs/contributing.md) — 開発環境セットアップ、コーディング規約、PR フロー
 - [スクリプトガイド](scripts/README.md) — Python ツールの使い方
 

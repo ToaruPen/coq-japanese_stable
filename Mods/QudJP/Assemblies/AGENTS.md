@@ -1,15 +1,24 @@
 # Assemblies
 
-C# mod DLL and automated tests for Harmony patch behavior.
+## Why
 
-## Area Map
+This area contains the shipped mod DLL and the automated tests that define Harmony patch behavior.
 
-- `QudJP.csproj` — mod DLL (`net48`)
-- `QudJP.Tests/` — test project (`net10.0`)
-- `src/Patches/` — Harmony patches (one class per file)
-- `src/` — translators, renderers, observability helpers, shared utilities
+## What
 
-## Build and Test
+- Main paths:
+  - `QudJP.csproj` for the `net48` mod DLL
+  - `QudJP.Tests/` for the `net10.0` test project
+  - `src/Patches/` for Harmony patch classes
+  - `src/` for translators, renderers, observability helpers, and shared utilities
+- Source of truth:
+  - patch behavior is defined by tests in `QudJP.Tests/`
+  - layer boundaries live in `docs/test-architecture.md`
+  - translation-route, ownership, runtime, and deployment rules live in `docs/RULES.md`
+
+## How
+
+- Build and test:
 
 ```bash
 dotnet build Mods/QudJP/Assemblies/QudJP.csproj
@@ -19,49 +28,9 @@ dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCa
 dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L2G
 ```
 
-## Source of truth
-
-- Patch behavior is defined by tests in `QudJP.Tests/`.
-- Layer boundaries live in `docs/test-architecture.md`.
-- Runtime-only conclusions should be backed by fresh game logs.
-
-If a design note conflicts with tests or runtime evidence, follow tests first.
-
-## Test Layers
-
-| Layer | Scope | Dependencies |
-|-------|-------|-------------|
-| L1 | Pure logic | No HarmonyLib, no UnityEngine |
-| L2 | Harmony integration | HarmonyLib NuGet 2.4.2, no Unity runtime |
-| L2G | DLL-assisted resolution | Assembly-CSharp.dll for target/signature checks |
-| L3 | Manual in-game verification | Rosetta on Apple Silicon |
-
-## Translation Workflow Gate
-
-Before adding any translation:
-
-1. Check the relevant L1/L2/L2G coverage in `QudJP.Tests/`
-2. Confirm the route is truly stable with current runtime evidence
-3. Investigate the upstream producer first if route ownership is unclear
-
-Prefer minimal, test-backed changes. Many sink and near-sink routes are intentionally observation-only; do not reintroduce sink-side dictionary translation unless tests explicitly require it.
-
-## Game Source Reference
-
-Decompiled game source: `~/Dev/coq-decompiled/` (outside repo, never committed).
-Regenerate: `scripts/decompile_game_dll.sh`
-
-Use to trace upstream producers, verify method signatures, investigate unclaimed routes.
-
-## Constraints
-
-- Do not commit `Assembly-CSharp.dll` or other game DLLs.
-- Do not instantiate real game types in tests — use DummyTargets with matching signatures.
-- One patch class per file in `src/Patches/`.
-- Runtime Harmony comes from the game; tests use HarmonyLib NuGet `2.4.2`.
-
-## Failure Model
-
-- Initialization failures fail fast.
-- `TargetMethod()` resolution failures log and skip patch application.
-- Runtime Prefix/Postfix failures log via `Trace.TraceError` — never crash the game loop.
+- Prefer producer-owned or stable mid-pipeline fixes. Many sink and near-sink routes are intentionally observation-only.
+- Use `~/Dev/coq-decompiled/` to trace upstream producers, verify signatures, and investigate unclaimed routes.
+- Constraints:
+  - one patch class per file in `src/Patches/`
+  - do not instantiate real game types in tests; use dummy targets with matching signatures
+  - runtime Harmony comes from the game; tests use HarmonyLib NuGet `2.4.2`
