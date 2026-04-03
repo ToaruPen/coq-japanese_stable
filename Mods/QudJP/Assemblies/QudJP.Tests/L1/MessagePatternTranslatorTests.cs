@@ -26,6 +26,7 @@ public sealed class MessagePatternTranslatorTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
         MessagePatternTranslator.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
     }
@@ -34,6 +35,7 @@ public sealed class MessagePatternTranslatorTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
         MessagePatternTranslator.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
@@ -415,6 +417,36 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate("The ウォーターヴァイン農家 misses you with his 鉄の蔓刈り斧! [3 vs 7]");
 
         Assert.That(translated, Is.EqualTo("ウォーターヴァイン農家の鉄の蔓刈り斧は外れた。[3 vs 7]"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_UsesPlayerHitWithRollPatternBeforeGenericHitPattern()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("You hit (x1) for 1 damage with your レンチ! [18]");
+
+        Assert.That(translated, Is.EqualTo("レンチで1ダメージを与えた。(x1) [18]"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesPlayerAcidDamageMessage()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("You take 1 damage from the 腐食性ガスの acid!");
+
+        Assert.That(translated, Is.EqualTo("腐食性ガスの酸で1ダメージを受けた！"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesThirdPersonAcidDamageMessage()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("The ワニ takes 1 damage from the 腐食性ガスの acid!");
+
+        Assert.That(translated, Is.EqualTo("ワニは腐食性ガスの酸で1ダメージを受けた！"));
     }
 
     [Test]
@@ -1015,5 +1047,12 @@ public sealed class MessagePatternTranslatorTests
             .Replace("\r", "\\r", StringComparison.Ordinal)
             .Replace("\n", "\\n", StringComparison.Ordinal)
             .Replace("\"", "\\\"", StringComparison.Ordinal);
+    }
+
+    private static void UseRepositoryPatternDictionary()
+    {
+        var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        MessagePatternTranslator.SetPatternFileForTests(null);
     }
 }

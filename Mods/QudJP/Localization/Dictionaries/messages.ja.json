@@ -19,6 +19,16 @@
       "route": "message-frame"
     },
     {
+      "pattern": "^You hit \\((x\\d+)\\) for (\\d+) damage with your (.+?)[.!] \\[(.+?)\\]$",
+      "template": "{2}で{1}ダメージを与えた。({0}) [{3}]",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You critically hit \\((x\\d+)\\) for (\\d+) damage with your (.+?)[.!] \\[(.+?)\\]$",
+      "template": "{2}で会心の一撃、{1}ダメージを与えた。({0}) [{3}]",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^You critically hit (?:the |a |an )?(.+?) \\(x(\\d+)\\) with (?:a |an |the )?(.+?) for (\\d+) damage!$",
       "template": "{2}で{0}に会心の一撃、{3}ダメージを与えた！ (x{1})",
       "route": "emit-message"
@@ -141,6 +151,16 @@
     {
       "pattern": "^You take (\\d+) damage from (.+?)の freezing effect![.!]?$",
       "template": "{1}の凍結効果で{0}ダメージを受けた！",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You take (\\d+) damage from (?:the )?(.+?)の acid![.!]?$",
+      "template": "{1}の酸で{0}ダメージを受けた！",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The )?(.+?) takes (\\d+) damage from (?:the )?(.+?)の acid![.!]?$",
+      "template": "{0}は{2}の酸で{1}ダメージを受けた！",
       "route": "emit-message"
     },
     {
@@ -346,16 +366,6 @@
     {
       "pattern": "^You recover (\\d+) HP[.!]?$",
       "template": "あなたは{0}HP回復した",
-      "route": "emit-message"
-    },
-    {
-      "pattern": "^You hit \\((x\\d+)\\) for (\\d+) damage with your (.+?)[.!] \\[(.+?)\\]$",
-      "template": "{2}で{1}ダメージを与えた。({0}) [{3}]",
-      "route": "emit-message"
-    },
-    {
-      "pattern": "^You critically hit \\((x\\d+)\\) for (\\d+) damage with your (.+?)[.!] \\[(.+?)\\]$",
-      "template": "{2}で会心の一撃、{1}ダメージを与えた。({0}) [{3}]",
       "route": "emit-message"
     },
     {
