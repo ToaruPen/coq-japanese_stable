@@ -23,6 +23,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
         MessagePatternTranslator.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
@@ -33,6 +34,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
         MessagePatternTranslator.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
@@ -587,6 +589,114 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void MessagingEmitMessage_TranslatesPlayerWeaponHitWithRoll_WhenPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyMessagingEmitMessageTarget),
+                    nameof(DummyMessagingEmitMessageTarget.EmitMessage),
+                    typeof(DummyGameObject),
+                    typeof(string),
+                    typeof(char),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject)),
+                typeof(GameObjectEmitMessageTranslationPatch));
+
+            DummyMessagingEmitMessageTarget.MessageToSend = "You hit (x1) for 1 damage with your レンチ! [18]";
+            DummyMessagingEmitMessageTarget.EmitMessage(new DummyGameObject(), "unused", 'W', false, false, false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("レンチで1ダメージを与えた。(x1) [18]"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void MessagingEmitMessage_TranslatesPlayerAcidDamageMessage_WhenPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyMessagingEmitMessageTarget),
+                    nameof(DummyMessagingEmitMessageTarget.EmitMessage),
+                    typeof(DummyGameObject),
+                    typeof(string),
+                    typeof(char),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject)),
+                typeof(GameObjectEmitMessageTranslationPatch));
+
+            DummyMessagingEmitMessageTarget.MessageToSend = "You take 1 damage from the 腐食性ガスの acid!";
+            DummyMessagingEmitMessageTarget.EmitMessage(new DummyGameObject(), "unused", 'W', false, false, false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("腐食性ガスの酸で1ダメージを受けた！"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void MessagingEmitMessage_TranslatesThirdPersonAcidDamageMessage_WhenPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyMessagingEmitMessageTarget),
+                    nameof(DummyMessagingEmitMessageTarget.EmitMessage),
+                    typeof(DummyGameObject),
+                    typeof(string),
+                    typeof(char),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject)),
+                typeof(GameObjectEmitMessageTranslationPatch));
+
+            DummyMessagingEmitMessageTarget.MessageToSend = "The ワニ takes 1 damage from the 腐食性ガスの acid!";
+            DummyMessagingEmitMessageTarget.EmitMessage(new DummyGameObject(), "unused", 'W', false, false, false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("ワニは腐食性ガスの酸で1ダメージを受けた！"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void ZoneManagerTryThawZone_TranslatesLeafMessage_WhenPatched()
     {
         WriteLeafDictionary(("ThawZone exception", "ゾーン解凍エラー"));
@@ -1053,5 +1163,20 @@ public sealed class CombatAndLogMessageQueuePatchTests
         return value
             .Replace("\\", "\\\\", StringComparison.Ordinal)
             .Replace("\"", "\\\"", StringComparison.Ordinal);
+    }
+
+    private static void UseRepositoryPatternDictionary()
+    {
+        var localizationRoot = Path.GetFullPath(
+            Path.Combine(
+                TestContext.CurrentContext.TestDirectory,
+                "..",
+                "..",
+                "..",
+                "..",
+                "..",
+                "Localization"));
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        MessagePatternTranslator.SetPatternFileForTests(null);
     }
 }
