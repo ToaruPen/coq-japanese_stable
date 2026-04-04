@@ -109,8 +109,19 @@ public static class PopupPickOptionTranslationPatch
         var anyChanged = false;
         foreach (var text in source)
         {
-            var result = PopupTranslationPatch.TranslatePopupTextForProducerRoute(text ?? string.Empty, Context);
-            if (!anyChanged && !string.Equals(text, result, StringComparison.Ordinal))
+            string originalText;
+            if (text is null)
+            {
+                Trace.TraceWarning("QudJP: {0} encountered null option text.", Context);
+                originalText = string.Empty;
+            }
+            else
+            {
+                originalText = text;
+            }
+
+            var result = PopupTranslationPatch.TranslatePopupTextForProducerRoute(originalText, Context);
+            if (!anyChanged && !string.Equals(originalText, result, StringComparison.Ordinal))
             {
                 anyChanged = true;
             }
