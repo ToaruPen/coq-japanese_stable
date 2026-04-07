@@ -500,6 +500,16 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_RepositoryDictionary_PreservesMarkerAndColorCodesOnFallback()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("\u0001&GThis specific phrase has no matching pattern.^k");
+
+        Assert.That(translated, Is.EqualTo("\u0001&GThis specific phrase has no matching pattern.^k"));
+    }
+
+    [Test]
     public void Translate_AppliesPassByPattern()
     {
         WritePatternDictionary(("^You pass by a (.+?)[.!]?$", "{0}のそばを通り過ぎた。"));
