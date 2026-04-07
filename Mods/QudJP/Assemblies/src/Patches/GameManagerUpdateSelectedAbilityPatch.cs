@@ -55,7 +55,20 @@ public static class GameManagerUpdateSelectedAbilityPatch
     private static void TranslateSelectedAbilityText(object? textComponent)
     {
         var current = GetCurrentText(textComponent);
-        if (string.IsNullOrEmpty(current))
+        if (current is null)
+        {
+            if (textComponent is not null)
+            {
+                Trace.TraceError(
+                    "QudJP: {0}.TranslateSelectedAbilityText failed to extract text from component={1}.",
+                    Context,
+                    GetComponentIdentifier(textComponent));
+            }
+
+            return;
+        }
+
+        if (current.Length == 0)
         {
             return;
         }
@@ -69,11 +82,10 @@ public static class GameManagerUpdateSelectedAbilityPatch
 
         if (!SetCurrentText(textComponent, translated))
         {
-            var componentIdentifier = textComponent?.GetType().FullName ?? "<null>";
             Trace.TraceError(
                 "QudJP: {0}.TranslateSelectedAbilityText failed to write translated text. component={1}, translated={2}",
                 Context,
-                componentIdentifier,
+                GetComponentIdentifier(textComponent),
                 translated);
             return;
         }
@@ -165,8 +177,14 @@ public static class GameManagerUpdateSelectedAbilityPatch
         }
 
         var legacyProperty = AccessTools.Property(textComponent.GetType(), "Text");
-        return legacyProperty is not null && legacyProperty.CanRead && legacyProperty.PropertyType == typeof(string)
-            ? legacyProperty.GetValue(textComponent, null) as string
+        if (legacyProperty is not null && legacyProperty.CanRead && legacyProperty.PropertyType == typeof(string))
+        {
+            return legacyProperty.GetValue(textComponent, null) as string;
+        }
+
+        var legacyField = AccessTools.Field(textComponent.GetType(), "Text");
+        return legacyField?.FieldType == typeof(string)
+            ? legacyField.GetValue(textComponent) as string
             : null;
     }
 
@@ -198,6 +216,18 @@ public static class GameManagerUpdateSelectedAbilityPatch
             return true;
         }
 
+        var legacyField = AccessTools.Field(textComponent.GetType(), "Text");
+        if (legacyField?.FieldType == typeof(string))
+        {
+            legacyField.SetValue(textComponent, translated);
+            return true;
+        }
+
         return false;
+    }
+
+    private static string GetComponentIdentifier(object? textComponent)
+    {
+        return textComponent?.GetType().FullName ?? "<null>";
     }
 }
