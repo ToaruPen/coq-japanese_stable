@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -109,16 +110,7 @@ public static class AbilityBarAfterRenderTranslationPatch
         var tailGroup = match.Groups["tail"];
         if (tailGroup.Success)
         {
-            var parts = tailGroup.Value.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
-            var translatedParts = new string[parts.Length];
-            for (var index = 0; index < parts.Length; index++)
-            {
-                var translatedPart = StringHelpers.TranslateExactOrLowerAscii(parts[index]);
-                translatedParts[index] = translatedPart ?? parts[index];
-            }
-
-            var translatedTail = string.Join("、", translatedParts);
-            translated += " " + ColorAwareTranslationComposer.RestoreCapture(translatedTail, spans, tailGroup);
+            translated += " " + TranslateActiveEffectTailParts(tailGroup.Value, spans, tailGroup.Index);
         }
 
         if (string.Equals(translated, source, StringComparison.Ordinal))
@@ -128,6 +120,33 @@ public static class AbilityBarAfterRenderTranslationPatch
 
         DynamicTextObservability.RecordTransform(route, "AbilityBar.ActiveEffects", source, translated);
         return true;
+    }
+
+    private static string TranslateActiveEffectTailParts(string tail, IReadOnlyList<ColorSpan>? spans, int startIndex)
+    {
+        var translatedParts = new List<string>();
+        var partStart = 0;
+
+        while (partStart < tail.Length)
+        {
+            var separatorIndex = tail.IndexOf(", ", partStart, StringComparison.Ordinal);
+            var partLength = separatorIndex >= 0 ? separatorIndex - partStart : tail.Length - partStart;
+            if (partLength > 0)
+            {
+                var part = tail.Substring(partStart, partLength);
+                var translatedPart = StringHelpers.TranslateExactOrLowerAscii(part);
+                translatedParts.Add(ColorAwareTranslationComposer.RestoreSlice(translatedPart ?? part, spans, startIndex + partStart, partLength));
+            }
+
+            if (separatorIndex < 0)
+            {
+                break;
+            }
+
+            partStart = separatorIndex + 2;
+        }
+
+        return string.Join("、", translatedParts);
     }
 
     private static bool TryTranslateTargetText(string source, string route, out string translated)

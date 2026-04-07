@@ -135,6 +135,30 @@ public sealed class AbilityBarAfterRenderTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_PreservesPerEffectTmpSegments_ForMixedTmpAndQudActiveEffects()
+    {
+        WriteDictionary(
+            ("ACTIVE EFFECTS:", "アクティブ効果:"),
+            ("wet", "濡れた"));
+
+        RunWithPostfixPatch(() =>
+        {
+            var target = new DummyAbilityBarAfterRenderTarget
+            {
+                NextEffectText =
+                    "<color=#FFFFFFFF><color=#508d75>ACTIVE EFFECTS:</color></color> <color=#0096FFFF>swimming</color>, <color=#B1C9C3FF>{{B|wet}}</color>",
+            };
+
+            target.AfterRender(core: null, sb: null);
+
+            Assert.That(
+                target.GetEffectText(),
+                Is.EqualTo(
+                    "<color=#FFFFFFFF><color=#508d75>アクティブ効果:</color></color> <color=#0096FFFF>swimming</color>、<color=#B1C9C3FF>{{B|濡れた}}</color>"));
+        });
+    }
+
+    [Test]
     public void Postfix_RecordsOwnerRouteTransforms_WithoutUITextSkinSinkObservation()
     {
         WriteDictionary(
