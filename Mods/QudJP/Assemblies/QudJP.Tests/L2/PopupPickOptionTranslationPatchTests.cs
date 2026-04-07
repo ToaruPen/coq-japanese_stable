@@ -85,6 +85,16 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_CoercesNullPickOptionEntriesToEmptyStrings()
+    {
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(Options: new string[] { null!, "Continue" });
+
+        Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { string.Empty, "Continue" }));
+    }
+
+    [Test]
     public void Prefix_TranslatesDynamicUntilTimeOfDayOption_FromCalendarLeafTranslation()
     {
         WriteDictionary(("Waxing Salt Sun", "塩の満ちる太陽"));

@@ -105,31 +105,46 @@ public static class PopupPickOptionTranslationPatch
             return null;
         }
 
-        var translated = new List<string>(source.Count);
+        List<string>? translated = null;
         var anyChanged = false;
-        foreach (var text in source)
+        for (var index = 0; index < source.Count; index++)
         {
-            string originalText;
-            if (text is null)
+            var originalText = source[index];
+            if (originalText is null)
             {
                 Trace.TraceWarning("QudJP: {0} encountered null option text.", Context);
-                originalText = string.Empty;
-            }
-            else
-            {
-                originalText = text;
+                anyChanged = true;
             }
 
-            var result = PopupTranslationPatch.TranslatePopupTextForProducerRoute(originalText, Context);
+            var result = TranslateOrEmpty(originalText);
             if (!anyChanged && !string.Equals(originalText, result, StringComparison.Ordinal))
             {
                 anyChanged = true;
             }
 
+            if (!anyChanged)
+            {
+                continue;
+            }
+
+            if (translated is null)
+            {
+                translated = new List<string>(source.Count);
+                for (var previousIndex = 0; previousIndex < index; previousIndex++)
+                {
+                    translated.Add(TranslateOrEmpty(source[previousIndex]));
+                }
+            }
+
             translated.Add(result);
         }
 
-        return anyChanged ? translated : source;
+        return anyChanged ? translated! : source;
+    }
+
+    private static string TranslateOrEmpty(string? originalText)
+    {
+        return PopupTranslationPatch.TranslatePopupTextForProducerRoute(originalText ?? string.Empty, Context);
     }
 
     private static void TranslatePopupMenuItemTextCollection(object? maybeList)
