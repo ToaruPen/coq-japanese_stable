@@ -25,7 +25,7 @@ from scripts.scanner.inventory import (
 )
 from scripts.scanner.rule_classifier import classify_raw_hits
 
-DEFAULT_SOURCE_ROOT = Path("~/Dev/coq-decompiled")
+DEFAULT_SOURCE_ROOT = Path("~/dev/coq-decompiled_stable")
 DEFAULT_CACHE_DIR = Path(".scanner-cache")
 DEFAULT_OUTPUT_PATH = Path("docs/candidate-inventory.json")
 DEFAULT_INVENTORY_DRAFT_PATH = Path("inventory_draft.json")

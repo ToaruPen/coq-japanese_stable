@@ -9,7 +9,7 @@ Use evidence in this order:
 1. Tests in `Mods/QudJP/Assemblies/QudJP.Tests/`
 2. Layer boundaries in `docs/test-architecture.md`
 3. Fresh runtime evidence from current game logs
-4. Decompiled game source in `~/Dev/coq-decompiled/`
+4. Decompiled game source in `~/dev/coq-decompiled_stable/`
 5. Older notes in `docs/archive/` and past investigations
 
 If a stale note conflicts with tests or fresh runtime evidence, follow tests first.
@@ -177,7 +177,7 @@ Do not deploy arbitrary source files. The game will try to compile any `.cs` fil
 
 Decompiled source is a tracing aid, not a shipped artifact.
 
-- location: `~/Dev/coq-decompiled/`
+- location: `~/dev/coq-decompiled_stable/`
 - regenerate with `scripts/decompile_game_dll.sh`
 - never commit decompiled output or game binaries
 

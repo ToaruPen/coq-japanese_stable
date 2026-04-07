@@ -30,6 +30,6 @@ pytest scripts/tests/
 python3.12 scripts/sync_mod.py
 ```
 
-- Decompiled game source lives in `~/Dev/coq-decompiled/` and must never be committed.
+- Decompiled game source lives in `~/dev/coq-decompiled_stable/` and must never be committed.
 - Do not commit `Assembly-CSharp.dll` or other game binaries.
 - Only the built DLL and localization assets ship; `.cs` source files do not.

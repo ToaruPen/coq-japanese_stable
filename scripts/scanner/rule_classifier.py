@@ -465,7 +465,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "source_root",
         nargs="?",
-        default="~/Dev/coq-decompiled",
+        default="~/dev/coq-decompiled_stable",
         help="Path to the decompiled C# source root.",
     )
     parser.add_argument(

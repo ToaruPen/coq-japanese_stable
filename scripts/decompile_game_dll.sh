@@ -16,7 +16,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-OUTPUT_DIR="${COQ_DECOMPILED_DIR:-$HOME/Dev/coq-decompiled}"
+OUTPUT_DIR="${COQ_DECOMPILED_DIR:-$HOME/dev/coq-decompiled_stable}"
 
 # Game DLL path (macOS Steam default)
 DLL_PATH="$HOME/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/Resources/Data/Managed/Assembly-CSharp.dll"

@@ -22,7 +22,7 @@ from scripts.scanner.inventory import (
 
 DEFAULT_INPUT_PATH = Path(".scanner-cache/inventory_draft.json")
 DEFAULT_OUTPUT_PATH = Path("docs/candidate-inventory.json")
-DEFAULT_SOURCE_ROOT = Path("~/Dev/coq-decompiled")
+DEFAULT_SOURCE_ROOT = Path("~/dev/coq-decompiled_stable")
 _IDENTIFIER_ATTRIBUTES = ("ID", "Name", "Command", "Class")
 _METHOD_DECLARATION_RE = re.compile(
     r"""
@@ -124,9 +124,7 @@ def cross_reference_inventory(
 ) -> InventoryDraft:
     """Mark sites translated when existing dictionaries, XML, or patches already cover them."""
     index = build_translation_index(repo_root)
-    candidate_sites = tuple(
-        _cross_reference_site(site, index, source_root=source_root) for site in draft.sites
-    )
+    candidate_sites = tuple(_cross_reference_site(site, index, source_root=source_root) for site in draft.sites)
     return replace(draft, sites=candidate_sites)
 
 
@@ -424,10 +422,7 @@ def main(argv: list[str] | None = None) -> int:
         output_path=Path(args.output),
     )
     translated = sum(site.status is SiteStatus.TRANSLATED for site in candidate.sites)
-    sys.stdout.write(
-        "Phase 1d cross-reference complete: "
-        f"{translated} translated of {len(candidate.sites)} sites.\n"
-    )
+    sys.stdout.write(f"Phase 1d cross-reference complete: {translated} translated of {len(candidate.sites)} sites.\n")
     return 0
 
 

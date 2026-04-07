@@ -29,7 +29,7 @@ dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCa
 ```
 
 - Prefer producer-owned or stable mid-pipeline fixes. Many sink and near-sink routes are intentionally observation-only.
-- Use `~/Dev/coq-decompiled/` to trace upstream producers, verify signatures, and investigate unclaimed routes.
+- Use `~/dev/coq-decompiled_stable/` to trace upstream producers, verify signatures, and investigate unclaimed routes.
 - Constraints:
   - one patch class per file in `src/Patches/`
   - do not instantiate real game types in tests; use dummy targets with matching signatures
