@@ -11643,7 +11643,7 @@
   </object>
 
 <object Name="WatervineFarmerConvert" Inherits="VillageZeroConvert" Replace="true">
-    <part Name="Description" Short="切り分けて縫い直したクフィーヤが頭巾へ姿を変え、ヴァインウェイファーの袋を仕立ててクロマイックの民のスレート色の修道衣になぞらえている。銅線で束ねたウォーターヴァインの束を腰にかけ、塩で白くなった親指でひび割れた回路板のお守りを擦っている。" />
+    <part Name="Description" Short="切り分けて縫い直したクフィーヤが頭巾へ姿を変え、ヴァインウェハーの袋を仕立ててクロマイックの民のスレート色の修道衣になぞらえている。銅線で束ねたウォーターヴァインの束を腰にかけ、塩で白くなった親指でひび割れた回路板のお守りを擦っている。" />
     <part Name="ConversationScript" ConversationID="WatervineFarmerConvert" />
     <stat Name="Level" Value="3" />
     <stat Name="DV" Value="3" />
@@ -14097,5 +14097,4 @@
   </object>
 
 </objects>
-
 

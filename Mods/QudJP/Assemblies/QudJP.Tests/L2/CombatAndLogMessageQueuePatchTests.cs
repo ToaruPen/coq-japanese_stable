@@ -707,7 +707,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("The タム's brain begins to hemorrhage.", "タムの脳から出血が始まった")]
     [TestCase("You lose 3 HP.", "あなたは3HPを失った")]
     [TestCase("You recover 5 HP.", "あなたは5HP回復した")]
-    [TestCase("You harvest a ヴァインウェイファー from the ワーターヴァイン.", "ワーターヴァインからヴァインウェイファーを収穫した")]
+    [TestCase("You harvest a ヴァインウェハー from the ウォーターヴァイン.", "ウォーターヴァインからヴァインウェハーを収穫した")]
     public void MessagingEmitMessage_TranslatesStableRepositoryFamilies_WhenPatched(string message, string expected)
     {
         UseRepositoryPatternDictionary();

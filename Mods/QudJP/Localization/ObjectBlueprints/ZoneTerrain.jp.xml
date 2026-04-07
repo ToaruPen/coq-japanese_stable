@@ -194,7 +194,7 @@
 <object Name="Watervine" Inherits="Plant" Replace="true">
     <part Name="Render" DisplayName="ウォーターヴァイン" RenderString="244" ColorString="&amp;g" Tile="Assets_Content_Textures_Tiles_sw_watervine1.bmp" TileColor="&amp;w" DetailColor="g" Occluding="false" />
     <part Name="Harvestable" OnSuccess="Vinewafer" OnSuccessAmount="1" StartRipeChance="1:20" RipeColor="&amp;g" RipeTileColor="&amp;w" RipeDetailColor="g" UnripeColor="&amp;K" UnripeTileColor="&amp;w" UnripeDetailColor="K" />
-    <part Name="Description" Short="溝には塩が溜まり、葉の代わりに水気を吸って膨らんだウェイファーが結ばれている。" />
+    <part Name="Description" Short="溝には塩が溜まり、葉の代わりに水気を吸って膨らんだウェハーが結ばれている。" />
     <part Name="Fireflies" />
     <builder Name="RandomTile" Tiles="Assets_Content_Textures_Tiles_sw_watervine1.bmp,Assets_Content_Textures_Tiles_sw_watervine2.bmp,Assets_Content_Textures_Tiles_sw_watervine3.bmp" />
     <tag Name="LiquidNative" Value="water" />
@@ -210,7 +210,7 @@
 
 <object Name="Gnawed Watervine" Inherits="Watervine" Replace="true">
     <part Name="Render" DisplayName="かじられたウォーターヴァイン" ColorString="&amp;g" RenderString="'" RenderLayer="5" />
-    <part Name="Description" Short="溝には塩が溜まり、葉の代わりに水気を吸ったウェイファーが結ばれ、半ば食べられたように見える。" />
+    <part Name="Description" Short="溝には塩が溜まり、葉の代わりに水気を吸ったウェハーが結ばれ、半ば食べられたように見える。" />
     <tag Name="ExcludeFromDynamicEncounters" Value="*noinherit" />
   </object>
 
@@ -1225,4 +1225,3 @@
   </object>
 
 </objects>
-

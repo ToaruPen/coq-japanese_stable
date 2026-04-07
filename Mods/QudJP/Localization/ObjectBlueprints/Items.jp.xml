@@ -10962,7 +10962,7 @@
 <object Name="Clue_VillageStores" Inherits="Chest" Replace="true">
     <mixin Name="BaseHindrenClue" />
     <part Name="Render" DisplayName="村の備蓄品" RenderLayer="10" />
-    <part Name="Description" Short="蓋の裏の棒線が中身の勘定書きだ。乾いたラーの花弁、ヴァインウェイファー、水袋。" />
+    <part Name="Description" Short="蓋の裏の棒線が中身の勘定書きだ。乾いたラーの花弁、ヴァインウェハー、水袋。" />
     <part Name="WidgetAutoPlacement" Widget="Clue_VillageStores_Placement" />
     <tag Name="IndefiniteArticle" Value="the" />
     <tag Name="DefiniteArticle" Value="the" />

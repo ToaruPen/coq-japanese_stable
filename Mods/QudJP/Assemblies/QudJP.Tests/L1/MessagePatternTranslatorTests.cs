@@ -740,9 +740,9 @@ public sealed class MessagePatternTranslatorTests
     {
         WritePatternDictionary(("^The (.+?) harvests a (.+?)[.!]?$", "{0}は{1}を収穫した。"));
 
-        var translated = MessagePatternTranslator.Translate("The ウォーターヴァイン農家 harvests a ヴァインウェイファー.");
+        var translated = MessagePatternTranslator.Translate("The ウォーターヴァイン農家 harvests a ヴァインウェハー.");
 
-        Assert.That(translated, Is.EqualTo("ウォーターヴァイン農家はヴァインウェイファーを収穫した。"));
+        Assert.That(translated, Is.EqualTo("ウォーターヴァイン農家はヴァインウェハーを収穫した。"));
     }
 
     [Test]

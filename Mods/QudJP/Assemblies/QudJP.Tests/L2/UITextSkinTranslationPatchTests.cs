@@ -150,7 +150,7 @@ public sealed class UITextSkinTranslationPatchTests
     [TestCase("甲殻", nameof(GetDisplayNamePatch))]
     [TestCase("木製バックラー", nameof(GetDisplayNameProcessPatch))]
     [TestCase("イッサカリ族", nameof(FactionsStatusScreenTranslationPatch))]
-    [TestCase("ヴァインウェイファー", nameof(InventoryLocalizationPatch))]
+    [TestCase("ヴァインウェハー", nameof(InventoryLocalizationPatch))]
     [TestCase("ウォーターヴァイン農家", nameof(PopupTranslationPatch))]
     [TestCase("[■] 効果音", nameof(OptionsLocalizationPatch))]
     [TestCase("移動", nameof(OptionsLocalizationPatch))]

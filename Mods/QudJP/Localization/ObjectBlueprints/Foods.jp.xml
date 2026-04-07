@@ -592,7 +592,7 @@
     <stag Name="Travel" />
   </object>
   <object Name="Vinewafer" Inherits="Snack" Replace="true">
-    <part Name="Render" DisplayName="ヴァインウェイファー" RenderString="%" ColorString="&amp;g" TileColor="&amp;g" DetailColor="w" RenderLayer="5" Tile="Items/sw_vinewafer.bmp" />
+    <part Name="Render" DisplayName="ヴァインウェハー" RenderString="%" ColorString="&amp;g" TileColor="&amp;g" DetailColor="w" RenderLayer="5" Tile="Items/sw_vinewafer.bmp" />
     <part Name="Description" Short="小さなコルクの芽が湿気でふくらむ。灼け付く週のあいだ、櫛のように広がった葉が非人間的な忍耐で雨粒を吸い、百里の風から一粒の雫をすすって育てた。" />
     <part Name="Commerce" Value="0.01" />
     <part Name="Food" Satiation="None" Thirst="500" />
@@ -760,9 +760,9 @@
     <tag Name="DynamicObjectsTable:Saltdunes_Ingredients" />
   </object>
   <object Name="Vinewafer Sheaf" Inherits="Preservable" Replace="true">
-    <part Name="Render" DisplayName="{{g|ヴァインウェイファーの束}}" RenderString="%" ColorString="&amp;g" DetailColor="w" RenderLayer="5" Tile="Items/sw_vinewafer_sheaf.bmp" />
+    <part Name="Render" DisplayName="{{g|ヴァインウェハーの束}}" RenderString="%" ColorString="&amp;g" DetailColor="w" RenderLayer="5" Tile="Items/sw_vinewafer_sheaf.bmp" />
     <part Name="Commerce" Value="0.01" />
-    <part Name="Description" Short="吸湿するウォーターヴァインから刈り取ったウェイファーを束ね、紐で縛った。" />
+    <part Name="Description" Short="吸湿するウォーターヴァインから刈り取ったウェハーを束ね、紐で縛った。" />
     <part Name="PreparedCookingIngredient" type="thirst" charges="1" />
     <tag Name="Plant" />
     <tag Name="DynamicObjectsTable:Saltmarsh_Ingredients" />
