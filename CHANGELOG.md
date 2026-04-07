@@ -75,4 +75,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[0.1.0]: https://github.com/ToaruPen/Caves-of-Qud_Japanese/releases/tag/v0.1.0
+[0.1.0]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.1.0
