@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Reflection;
 using System.Text.Json;
 using QudJP.Patches;
 
@@ -81,6 +83,12 @@ public sealed class BlueprintTemplateTranslationPatchTests
     [TestCase("You hear inaudible mumbling.", "聞き取れないつぶやきが聞こえた。")]
     [TestCase("=subject.The==subject.name= =verb:start= up with a hum.",
         "=subject.name=がうなり声を上げて起動した。")]
+    [TestCase("=subject.The==subject.name= =verb:recognize= your =object.name=.",
+        "=subject.name=があなたの=object.name=を認識した。")]
+    [TestCase("You touch =subject.t= and recall =pronouns.possessive= passcode. =pronouns.Subjective= =verb:beep:afterpronoun= warmly.",
+        "あなたは=subject.name=に触れ、パスコードを思い出した。=subject.name=が温かくビープ音を鳴らした。")]
+    [TestCase("A loud buzz is emitted. The unauthorized glyph flashes on the display.",
+        "大きなブザー音が鳴った。認証されていないグリフがディスプレイに点滅した。")]
     public void LoadTranslations_ContainsExpectedMapping(string englishKey, string expectedJapanese)
     {
         var translations = BlueprintTemplateTranslationPatch.LoadTranslations();
@@ -124,6 +132,29 @@ public sealed class BlueprintTemplateTranslationPatchTests
         Assert.That(fields.ContainsKey("PowerSwitch"), Is.True);
         Assert.That(fields["PowerSwitch"].Length, Is.EqualTo(7),
             "PowerSwitch should have 7 translatable fields.");
+    }
+
+    [Test]
+    public void LoadTranslations_PowerSwitchAndForceProjectorTemplatesPreserveAccessPlaceholders()
+    {
+        var translations = BlueprintTemplateTranslationPatch.LoadTranslations();
+
+        Assert.That(translations, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                translations!["=subject.The==subject.name= =verb:recognize= your =object.name=."],
+                Does.Contain("=object.name="),
+                "KeyObjectAccessMessage translation should preserve the accessed object placeholder.");
+            Assert.That(
+                translations["You touch =subject.t= and recall =pronouns.possessive= passcode. =pronouns.Subjective= =verb:beep:afterpronoun= warmly."],
+                Does.Contain("=subject.name="),
+                "PsychometryAccessMessage translation should preserve the subject placeholder.");
+            Assert.That(
+                translations["A loud buzz is emitted. The unauthorized glyph flashes on the display."],
+                Does.Not.Contain("=object.name="),
+                "AccessFailureMessage should remain a stable leaf without inventing placeholders.");
+        });
     }
 
     [Test]
@@ -204,5 +235,77 @@ public sealed class BlueprintTemplateTranslationPatchTests
         {
             Directory.Delete(tempDir, recursive: true);
         }
+    }
+
+    [Test]
+    public void TranslatePartFields_NormalizesPowerSwitchAccessTemplates_BeforeEmitStage()
+    {
+        var translations = BlueprintTemplateTranslationPatch.LoadTranslations();
+        Assert.That(translations, Is.Not.Null);
+
+        SetPrivateStaticField("settersCacheField", typeof(DummyBlueprintPart).GetField("_SettersCache")!);
+        SetPrivateStaticField("originalValueField", typeof(DummyPartSetter).GetField(nameof(DummyPartSetter.OriginalValue))!);
+        SetPrivateStaticField("parsedValueField", typeof(DummyPartSetter).GetField(nameof(DummyPartSetter.ParsedValue))!);
+
+        var part = new DummyBlueprintPart();
+        part._SettersCache["KeyObjectAccessMessage"] = new DummyPartSetter
+        {
+            OriginalValue = "=subject.The==subject.name= =verb:recognize= your =object.name=.",
+            ParsedValue = "=subject.The==subject.name= =verb:recognize= your =object.name=.",
+        };
+        part._SettersCache["PsychometryAccessMessage"] = new DummyPartSetter
+        {
+            OriginalValue = "You touch =subject.t= and recall =pronouns.possessive= passcode. =pronouns.Subjective= =verb:beep:afterpronoun= warmly.",
+            ParsedValue = "You touch =subject.t= and recall =pronouns.possessive= passcode. =pronouns.Subjective= =verb:beep:afterpronoun= warmly.",
+        };
+        part._SettersCache["AccessFailureMessage"] = new DummyPartSetter
+        {
+            OriginalValue = "A loud buzz is emitted. The unauthorized glyph flashes on the display.",
+            ParsedValue = "A loud buzz is emitted. The unauthorized glyph flashes on the display.",
+        };
+
+        var translatedCount = (int)typeof(BlueprintTemplateTranslationPatch)
+            .GetMethod("TranslatePartFields", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { part, BlueprintTemplateTranslationPatch.GetTranslatablePartFields()["PowerSwitch"], translations! })!;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translatedCount, Is.EqualTo(3));
+            Assert.That(
+                GetDummyPartSetter(part, "KeyObjectAccessMessage").OriginalValue,
+                Is.EqualTo("=subject.name=があなたの=object.name=を認識した。"));
+            Assert.That(
+                GetDummyPartSetter(part, "PsychometryAccessMessage").OriginalValue,
+                Is.EqualTo("あなたは=subject.name=に触れ、パスコードを思い出した。=subject.name=が温かくビープ音を鳴らした。"));
+            Assert.That(
+                GetDummyPartSetter(part, "AccessFailureMessage").OriginalValue,
+                Is.EqualTo("大きなブザー音が鳴った。認証されていないグリフがディスプレイに点滅した。"));
+        });
+    }
+
+    private static void SetPrivateStaticField(string fieldName, object value)
+    {
+        typeof(BlueprintTemplateTranslationPatch)
+            .GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static)!
+            .SetValue(null, value);
+    }
+
+    private static DummyPartSetter GetDummyPartSetter(DummyBlueprintPart part, string fieldName)
+    {
+        var setter = part._SettersCache[fieldName] as DummyPartSetter;
+        Assert.That(setter, Is.Not.Null, $"Missing dummy setter for {fieldName}");
+        return setter!;
+    }
+
+    private sealed class DummyBlueprintPart
+    {
+        // Match the reflected cache shape expected by BlueprintTemplateTranslationPatch.
+        public IDictionary _SettersCache = new Hashtable();
+    }
+
+    private sealed class DummyPartSetter
+    {
+        public string OriginalValue = string.Empty;
+        public string ParsedValue = string.Empty;
     }
 }

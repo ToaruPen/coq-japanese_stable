@@ -180,6 +180,36 @@ internal sealed class DummyGameObjectMoveTarget
     }
 }
 
+internal sealed class DummyDoorAttemptOpenTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public bool AttemptOpen(
+        DummyGameObject? actor = null,
+        bool usePopups = false,
+        bool usePopupsForFailures = false,
+        bool ignoreMobility = false,
+        bool ignoreSpecialConditions = false,
+        bool fromMove = false,
+        bool silent = false,
+        object? fromEvent = null)
+    {
+        _ = actor;
+        _ = usePopups;
+        _ = usePopupsForFailures;
+        _ = ignoreMobility;
+        _ = ignoreSpecialConditions;
+        _ = fromMove;
+        _ = silent;
+        _ = fromEvent;
+
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return false;
+    }
+}
+
 internal sealed class DummyGameObjectPerformThrowTarget
 {
     public string MessageToSend { get; set; } = string.Empty;

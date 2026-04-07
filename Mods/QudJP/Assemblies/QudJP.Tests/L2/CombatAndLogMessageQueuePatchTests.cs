@@ -266,6 +266,92 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void DoorAttemptOpen_TranslatesCannotOpenMessage_WhenPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyDoorAttemptOpenTarget),
+                    nameof(DummyDoorAttemptOpenTarget.AttemptOpen),
+                    typeof(DummyGameObject),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(object)),
+                typeof(DoorAttemptOpenTranslationPatch));
+
+            var target = new DummyDoorAttemptOpenTarget
+            {
+                MessageToSend = "You cannot open the 扉.",
+            };
+
+            target.AttemptOpen();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("扉を開けられない"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    [TestCase("You are out of phase with the 扉.", "扉と位相がずれている")]
+    [TestCase("You cannot reach the 扉.", "扉に手が届かない")]
+    [TestCase("You can't unlock the 扉 from a distance.", "離れた位置から扉の鍵を開けることはできない")]
+    [TestCase("You can't unlock the 扉.", "扉の鍵を開けられない")]
+    [TestCase("You interface with the 扉 and unlock it.", "扉にインターフェースで接続して鍵を開けた")]
+    [TestCase("You lay your hand upon the 扉 and draw forth its passcode. You enter the code and the 扉 unlocks.", "扉に手を当ててパスコードを読み取った。コードを入力すると扉の鍵が開いた")]
+    public void DoorAttemptOpen_TranslatesStableDoorOwnerMessages_WhenPatched(string message, string expected)
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyDoorAttemptOpenTarget),
+                    nameof(DummyDoorAttemptOpenTarget.AttemptOpen),
+                    typeof(DummyGameObject),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(object)),
+                typeof(DoorAttemptOpenTranslationPatch));
+
+            var target = new DummyDoorAttemptOpenTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.AttemptOpen();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void GameObjectPerformThrow_TranslatesHitMessage_WhenPatched()
     {
         WritePatternDictionary(
