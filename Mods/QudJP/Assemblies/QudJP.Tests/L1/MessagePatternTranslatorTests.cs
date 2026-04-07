@@ -757,6 +757,8 @@ public sealed class MessagePatternTranslatorTests
             "Dictionaries",
             "messages.ja.json");
         var text = File.ReadAllText(patternFile);
+        UseRepositoryPatternDictionary();
+        var translated = MessagePatternTranslator.Translate("You harvest a 果実 from the 茂み.");
 
         Assert.Multiple(() =>
         {
@@ -764,6 +766,7 @@ public sealed class MessagePatternTranslatorTests
             Assert.That(text, Does.Not.Contain("^You harvest (.+?)\\.$"));
             Assert.That(text, Does.Not.Contain("^(.+?) harvests? (.+?) from (.+)\\.$"));
             Assert.That(text, Does.Not.Contain("^(.+?) harvests? (.+?)\\.$"));
+            Assert.That(translated, Is.EqualTo("茂みから果実を収穫した"));
         });
     }
 
