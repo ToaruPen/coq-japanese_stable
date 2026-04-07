@@ -12,12 +12,6 @@ public static class PopupPickOptionTranslationPatch
 {
     private const string Context = nameof(PopupPickOptionTranslationPatch);
     private const string TargetTypeName = "XRL.UI.Popup";
-    private const int TitleIndex = 0;
-    private const int IntroIndex = 1;
-    private const int SpacingTextIndex = 2;
-    private const int OptionsIndex = 4;
-    private const int ButtonsIndex = 7;
-
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
     {
@@ -78,21 +72,15 @@ public static class PopupPickOptionTranslationPatch
         return method;
     }
 
-    public static void Prefix(object[] __args)
+    public static void Prefix(ref string __0, ref string? __1, ref string __2, ref IReadOnlyList<string>? __4, object? __7)
     {
         try
         {
-            if (__args is null)
-            {
-                Trace.TraceError($"QudJP: {Context}.Prefix received null args.");
-                return;
-            }
-
-            TranslateStringArg(__args, TitleIndex);
-            TranslateStringArg(__args, IntroIndex);
-            TranslateStringArg(__args, SpacingTextIndex);
-            TranslateStringListArg(__args, OptionsIndex);
-            TranslatePopupMenuItemTextCollection(__args, ButtonsIndex);
+            __0 = TranslatePopupText(__0)!;
+            __1 = TranslatePopupText(__1);
+            __2 = TranslatePopupText(__2)!;
+            __4 = TranslateStringList(__4);
+            TranslatePopupMenuItemTextCollection(__7);
         }
         catch (Exception ex)
         {
@@ -100,64 +88,93 @@ public static class PopupPickOptionTranslationPatch
         }
     }
 
-    private static void TranslateStringArg(object[] args, int index)
+    private static string? TranslatePopupText(string? text)
     {
-        if (index < 0 || index >= args.Length || args[index] is not string text)
+        if (string.IsNullOrEmpty(text))
         {
-            return;
+            return text;
         }
 
-        args[index] = PopupTranslationPatch.TranslatePopupTextForProducerRoute(text, Context);
+        return PopupTranslationPatch.TranslatePopupTextForProducerRoute(text!, Context);
     }
 
-    private static void TranslateStringListArg(object[] args, int index)
+    private static IReadOnlyList<string>? TranslateStringList(IReadOnlyList<string>? source)
     {
-        if (index < 0 || index >= args.Length || args[index] is null || args[index] is string || args[index] is not IEnumerable enumerable)
+        if (source is null)
         {
-            return;
+            return null;
         }
 
-        var translated = new List<string>();
+        List<string>? translated = null;
         var anyChanged = false;
-        foreach (var item in enumerable)
+        for (var index = 0; index < source.Count; index++)
         {
-            if (item is null)
+            var originalText = source[index];
+            if (originalText is null)
             {
-                translated.Add(string.Empty);
+                Trace.TraceWarning("QudJP: {0} encountered null option text.", Context);
+                anyChanged = true;
+            }
+
+            var result = TranslateOrEmpty(originalText);
+            if (!anyChanged && !string.Equals(originalText, result, StringComparison.Ordinal))
+            {
+                anyChanged = true;
+            }
+
+            if (!anyChanged)
+            {
                 continue;
             }
 
-            if (item is not string text)
+            if (translated is null)
             {
-                return;
-            }
-
-            var result = PopupTranslationPatch.TranslatePopupTextForProducerRoute(text, Context);
-            if (!anyChanged && !string.Equals(text, result, StringComparison.Ordinal))
-            {
-                anyChanged = true;
+                translated = new List<string>(source.Count);
+                for (var previousIndex = 0; previousIndex < index; previousIndex++)
+                {
+                    translated.Add(TranslateOrEmpty(source[previousIndex]));
+                }
             }
 
             translated.Add(result);
         }
 
-        if (anyChanged)
-        {
-            args[index] = translated;
-        }
+        return anyChanged ? translated! : source;
     }
 
-    private static void TranslatePopupMenuItemTextCollection(object[] args, int index)
+    private static string TranslateOrEmpty(string? originalText)
     {
-        if (index < 0 || index >= args.Length || args[index] is null || args[index] is string || args[index] is not IList list)
+        string text;
+        if (originalText is null)
+        {
+            Trace.TraceWarning(
+                "QudJP: PopupPickOptionTranslationPatch.TranslateOrEmpty encountered null text. Context={0}",
+                Context);
+            text = string.Empty;
+        }
+        else
+        {
+            text = originalText;
+        }
+
+        return PopupTranslationPatch.TranslatePopupTextForProducerRoute(text, Context);
+    }
+
+    private static void TranslatePopupMenuItemTextCollection(object? maybeList)
+    {
+        if (maybeList is null || maybeList is string || maybeList is not IEnumerable items)
         {
             return;
         }
 
-        for (var itemIndex = 0; itemIndex < list.Count; itemIndex++)
+        foreach (var item in items)
         {
-            var item = list[itemIndex];
             if (item is null)
+            {
+                continue;
+            }
+
+            if (item.GetType().IsValueType)
             {
                 continue;
             }
@@ -181,7 +198,6 @@ public static class PopupPickOptionTranslationPatch
             }
 
             textField.SetValue(item, translated);
-            list[itemIndex] = item;
         }
     }
 }

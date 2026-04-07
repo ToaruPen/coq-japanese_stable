@@ -144,6 +144,13 @@ public sealed class TargetMethodResolutionTests
         "Genkit.Location2D",
         "System.String",
     })]
+    [TestCase(typeof(PopupGetPopupOptionTranslationPatch), "GetPopupOption", "XRL.UI.Popup", "Qud.UI.QudMenuItem", new[]
+    {
+        "System.Int32",
+        "System.Collections.Generic.IReadOnlyList`1[[System.String]]",
+        "System.Collections.Generic.IReadOnlyList`1[[System.Char]]",
+        "System.Collections.Generic.IReadOnlyList`1[[ConsoleLib.Console.IRenderable]]",
+    })]
     [TestCase(typeof(AbilityBarUpdateAbilitiesTextPatch), "UpdateAbilitiesText", "Qud.UI.AbilityBar", "System.Void", new string[0])]
     [TestCase(typeof(EffectDescriptionPatch), "GetDescription", "XRL.World.Effect", "System.String", new string[0])]
     [TestCase(typeof(EffectDetailsPatch), "GetDetails", "XRL.World.Effect", "System.String", new string[0])]

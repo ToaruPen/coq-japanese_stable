@@ -10,6 +10,8 @@ internal sealed class DummyPopupMessageTarget
 
     public static string LastContextTitle { get; private set; } = string.Empty;
 
+    public static string LastRenderedBodyText { get; private set; } = string.Empty;
+
     public static string? LastWantsSpecificPrompt { get; private set; }
 
     public static DummyPopupMessageItem[]? LastButtons { get; private set; }
@@ -21,6 +23,7 @@ internal sealed class DummyPopupMessageTarget
         LastMessage = string.Empty;
         LastTitle = string.Empty;
         LastContextTitle = string.Empty;
+        LastRenderedBodyText = string.Empty;
         LastWantsSpecificPrompt = null;
         LastButtons = null;
         LastItems = null;
@@ -69,6 +72,7 @@ internal sealed class DummyPopupMessageTarget
         LastMessage = message;
         LastTitle = title ?? string.Empty;
         LastContextTitle = contextTitle ?? string.Empty;
+        LastRenderedBodyText = "{{y|" + message + "}}";
         LastWantsSpecificPrompt = WantsSpecificPrompt;
         LastButtons = buttons?.ToArray();
         LastItems = items?.ToArray();

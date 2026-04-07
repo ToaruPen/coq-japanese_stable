@@ -32,6 +32,7 @@ public sealed class PopupAskNumberTranslationPatchTests
         SinkObservation.ResetForTests();
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         DummyPopupGenericTarget.Reset();
+        DummyAskNumberScreenTarget.Reset();
     }
 
     [TearDown]
@@ -70,6 +71,31 @@ public sealed class PopupAskNumberTranslationPatchTests
         _ = DummyPopupGenericTarget.AskNumberAsync("Select how many?").GetAwaiter().GetResult();
 
         Assert.That(DummyPopupGenericTarget.LastAskNumberMessage, Is.EqualTo("いくつ選びますか？"));
+    }
+
+    [Test]
+    public void Prefix_HandsOffTranslatedAskNumberAsyncPrompt_ToAskNumberScreenRoute()
+    {
+        WriteDictionary(("Select how many?", "いくつ選びますか？"));
+
+        using var patch = PatchMethod(nameof(DummyPopupGenericTarget.AskNumberAsyncGamepad));
+
+        _ = DummyPopupGenericTarget.AskNumberAsyncGamepad("Select how many?").GetAwaiter().GetResult();
+
+        var sinkText = DummyAskNumberScreenTarget.LastMessage;
+        UITextSkinTranslationPatch.Prefix(ref sinkText);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastAskNumberMessage, Is.EqualTo("いくつ選びますか？"));
+            Assert.That(DummyAskNumberScreenTarget.LastMessage, Is.EqualTo("いくつ選びますか？"));
+            Assert.That(sinkText, Is.EqualTo("いくつ選びますか？"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(PopupAskNumberTranslationPatch),
+                    "Popup.ProducerText.Exact"),
+                Is.GreaterThan(0));
+        });
     }
 
     [Test]

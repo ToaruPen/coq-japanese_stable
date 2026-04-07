@@ -85,6 +85,16 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_CoercesNullPickOptionEntriesToEmptyStrings()
+    {
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(Options: new string[] { null!, "Continue" });
+
+        Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { string.Empty, "Continue" }));
+    }
+
+    [Test]
     public void Prefix_TranslatesDynamicUntilTimeOfDayOption_FromCalendarLeafTranslation()
     {
         WriteDictionary(("Waxing Salt Sun", "塩の満ちる太陽"));
@@ -116,6 +126,20 @@ public sealed class PopupPickOptionTranslationPatchTests
         using var patch = PatchPickOption();
 
         DummyPopupGenericTarget.PickOption(Buttons: new[] { new DummyPopupMenuItem("{{W|Cancel}}") });
+
+        Assert.That(DummyPopupGenericTarget.LastPickOptionButtons, Is.Not.Null);
+        Assert.That(DummyPopupGenericTarget.LastPickOptionButtons![0].text, Is.EqualTo("{{W|キャンセル}}"));
+    }
+
+    [Test]
+    public void Prefix_TranslatesReadOnlyPickOptionButtons()
+    {
+        WriteDictionary(("Cancel", "キャンセル"));
+
+        using var patch = PatchPickOption();
+
+        var buttons = Array.AsReadOnly(new[] { new DummyPopupMenuItem("{{W|Cancel}}") });
+        DummyPopupGenericTarget.PickOption(Buttons: buttons);
 
         Assert.That(DummyPopupGenericTarget.LastPickOptionButtons, Is.Not.Null);
         Assert.That(DummyPopupGenericTarget.LastPickOptionButtons![0].text, Is.EqualTo("{{W|キャンセル}}"));

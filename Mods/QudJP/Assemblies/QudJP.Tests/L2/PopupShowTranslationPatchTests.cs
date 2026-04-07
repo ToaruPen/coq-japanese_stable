@@ -246,9 +246,9 @@ public sealed class PopupShowTranslationPatchTests
                 prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
 
             DummyPopupShow.ShowFail("You do not have a missile weapon equipped!");
-            new DummyPopupMessageTarget().ShowPopup($"{{{{y|{DummyPopupShow.LastShowMessage}}}}}", buttons);
+            new DummyPopupMessageTarget().ShowPopup(DummyPopupShow.LastShowMessage!, buttons);
 
-            var renderedMessage = DummyPopupMessageTarget.LastMessage;
+            var renderedMessage = DummyPopupMessageTarget.LastRenderedBodyText;
             var renderedButton = DummyPopupMessageTarget.LastButtons![0].text;
             UITextSkinTranslationPatch.Prefix(ref renderedMessage);
             UITextSkinTranslationPatch.Prefix(ref renderedButton);
@@ -256,7 +256,7 @@ public sealed class PopupShowTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("射撃武器を装備していない！"));
-                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("{{y|射撃武器を装備していない！}}"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("射撃武器を装備していない！"));
                 Assert.That(DummyPopupMessageTarget.LastButtons![0].text, Is.EqualTo("{{W|[Esc]}} {{y|キャンセル}}"));
                 Assert.That(renderedMessage, Is.EqualTo("{{y|射撃武器を装備していない！}}"));
                 Assert.That(renderedButton, Is.EqualTo("{{W|[Esc]}} {{y|キャンセル}}"));

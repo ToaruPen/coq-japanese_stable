@@ -145,6 +145,51 @@ internal static class DummyPopupTarget
         LastShowConversationOptions = Options is null ? null : new List<string>(Options);
         return 0;
     }
+
+    public static int ShowConversation(
+        string Title,
+        object? Icon,
+        string? Intro,
+        List<string>? Options,
+        bool AllowTrade,
+        bool AllowEscape,
+        bool AllowRenderMapBehind,
+        bool ForwardToPopupMessage)
+    {
+        var result = ShowConversation(Title, Icon, Intro, Options, AllowTrade, AllowEscape, AllowRenderMapBehind);
+        if (!ForwardToPopupMessage)
+        {
+            return result;
+        }
+
+        var buttons = new List<DummyPopupMessageItem>();
+        if (AllowEscape)
+        {
+            buttons.Add(new DummyPopupMessageItem("{{W|[Esc]}} {{y|Cancel}}", "Cancel", "Cancel"));
+        }
+
+        buttons.Insert(0, new DummyPopupMessageItem("{{W|[L]}} {{y|Look}}", "Look", "Look"));
+
+        var items = new List<DummyPopupMessageItem>();
+        if (Options is not null)
+        {
+            for (var index = 0; index < Options.Count; index++)
+            {
+                items.Add(new DummyPopupMessageItem(
+                    "{{w|[" + (index + 1) + "]}} " + Options[index] + "\n\n",
+                    "Alpha" + (index + 1),
+                    "option:" + index));
+            }
+        }
+
+        new DummyPopupMessageTarget().ShowPopup(
+            (Intro ?? string.Empty) + "\n\n",
+            buttons,
+            items: items,
+            title: Title);
+
+        return result;
+    }
 }
 
 internal sealed class DummyPopupMenuItem

@@ -71,16 +71,16 @@ public static class PopupAskStringTranslationPatch
         return targets;
     }
 
-    public static void Prefix(object[] __args)
+    public static void Prefix(ref string __0)
     {
         try
         {
-            if (__args.Length == 0 || __args[0] is not string message || string.IsNullOrEmpty(message))
+            if (string.IsNullOrEmpty(__0))
             {
                 return;
             }
 
-            __args[0] = PopupTranslationPatch.TranslatePopupTextForProducerRoute(message, Context);
+            __0 = PopupTranslationPatch.TranslatePopupTextForProducerRoute(__0, Context);
         }
         catch (Exception ex)
         {

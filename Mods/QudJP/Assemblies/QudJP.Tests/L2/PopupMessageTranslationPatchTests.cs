@@ -355,6 +355,34 @@ public sealed class PopupMessageTranslationPatchTests
         }
     }
 
+    [Test]
+    public void Prefix_RendersTranslatedBodyAtFinalOwner_WhenPatched()
+    {
+        WriteDictionary(("You do not have a missile weapon equipped!", "射撃武器を装備していない！"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            new DummyPopupMessageTarget().ShowPopup("You do not have a missile weapon equipped!");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("射撃武器を装備していない！"));
+                Assert.That(DummyPopupMessageTarget.LastRenderedBodyText, Is.EqualTo("{{y|射撃武器を装備していない！}}"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

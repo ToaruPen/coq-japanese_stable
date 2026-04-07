@@ -12,13 +12,6 @@ public static class PopupMessageTranslationPatch
     private const string Context = nameof(PopupMessageTranslationPatch);
     private const string TargetTypeName = "Qud.UI.PopupMessage";
 
-    // ShowPopup parameter indices for game version 2.0.4
-    private const int MessageIndex = 0;
-    private const int ButtonsIndex = 1;
-    private const int ItemsIndex = 3;
-    private const int TitleIndex = 5;
-    private const int ContextTitleIndex = 11;
-
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
     {
@@ -38,21 +31,15 @@ public static class PopupMessageTranslationPatch
         return method;
     }
 
-    public static void Prefix(object[] __args)
+    public static void Prefix(ref string __0, object? __1, object? __3, ref string? __5, ref string? __11)
     {
         try
         {
-            if (__args is null)
-            {
-                Trace.TraceError("QudJP: PopupMessageTranslationPatch.Prefix received null args.");
-                return;
-            }
-
-            TranslateStringArg(__args, MessageIndex, "PopupMessage.Message");
-            TranslateItemTextCollection(__args, ButtonsIndex, "PopupMessage.ButtonText");
-            TranslateItemTextCollection(__args, ItemsIndex, "PopupMessage.ItemText");
-            TranslateStringArg(__args, TitleIndex, "PopupMessage.Title");
-            TranslateStringArg(__args, ContextTitleIndex, "PopupMessage.ContextTitle");
+            __0 = TranslatePopupText(__0, "PopupMessage.Message")!;
+            TranslateItemTextCollection(__1, "PopupMessage.ButtonText");
+            TranslateItemTextCollection(__3, "PopupMessage.ItemText");
+            __5 = TranslatePopupText(__5, "PopupMessage.Title");
+            __11 = TranslatePopupText(__11, "PopupMessage.ContextTitle");
         }
         catch (Exception ex)
         {
@@ -60,19 +47,9 @@ public static class PopupMessageTranslationPatch
         }
     }
 
-    private static void TranslateStringArg(object[] args, int index, string family)
+    private static void TranslateItemTextCollection(object? maybeList, string family)
     {
-        if (index < 0 || index >= args.Length || args[index] is not string text)
-        {
-            return;
-        }
-
-        args[index] = TranslatePopupText(text, family);
-    }
-
-    private static void TranslateItemTextCollection(object[] args, int index, string family)
-    {
-        if (index < 0 || index >= args.Length || args[index] is null || args[index] is string || args[index] is not IList list)
+        if (maybeList is null || maybeList is string || maybeList is not IList list)
         {
             return;
         }
@@ -106,9 +83,14 @@ public static class PopupMessageTranslationPatch
         }
     }
 
-    private static string TranslatePopupText(string source, string family)
+    private static string? TranslatePopupText(string? source, string family)
     {
         _ = family;
-        return PopupTranslationPatch.TranslatePopupTextForProducerRoute(source, Context);
+        if (string.IsNullOrEmpty(source))
+        {
+            return source;
+        }
+
+        return PopupTranslationPatch.TranslatePopupTextForProducerRoute(source!, Context);
     }
 }

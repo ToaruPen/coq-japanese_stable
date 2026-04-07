@@ -184,6 +184,78 @@ public sealed class PopupRouteHandoffTranslationTests
     }
 
     [Test]
+    public void ShowConversationRoute_HandsOffTranslatedPayload_ThroughPopupMessageRebuild()
+    {
+        WriteDictionary(
+            ("Trade", "取引"),
+            ("Choose your response.", "返答を選択してください。"),
+            ("Ask about water", "水について尋ねる"),
+            ("Leave", "立ち去る"),
+            ("[L] Look", "[L] 調べる"),
+            ("[Esc] Cancel", "[Esc] キャンセル"));
+
+        using var conversationPatch = PatchMethod(
+            typeof(DummyPopupTarget),
+            nameof(DummyPopupTarget.ShowConversation),
+            new[]
+            {
+                typeof(string),
+                typeof(object),
+                typeof(string),
+                typeof(List<string>),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+            },
+            typeof(PopupTranslationPatch));
+        using var popupMessagePatch = PatchMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup), typeof(PopupMessageTranslationPatch));
+
+        DummyPopupTarget.ShowConversation(
+            Title: "Trade",
+            Icon: null,
+            Intro: "Choose your response.",
+            Options: new List<string> { "Ask about water", "{{G|Leave}}" },
+            AllowTrade: false,
+            AllowEscape: true,
+            AllowRenderMapBehind: false,
+            ForwardToPopupMessage: true);
+
+        var renderedMessage = WrapPopupBody(DummyPopupMessageTarget.LastMessage);
+        var renderedButton = DummyPopupMessageTarget.LastButtons![0].text;
+        var renderedItem = DummyPopupMessageTarget.LastItems![0].text;
+        UITextSkinTranslationPatch.Prefix(ref renderedMessage);
+        UITextSkinTranslationPatch.Prefix(ref renderedButton);
+        UITextSkinTranslationPatch.Prefix(ref renderedItem);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupTarget.LastShowConversationTitle, Is.EqualTo("取引"));
+            Assert.That(DummyPopupTarget.LastShowConversationIntro, Is.EqualTo("返答を選択してください。"));
+            Assert.That(DummyPopupTarget.LastShowConversationOptions, Is.EqualTo(new[] { "水について尋ねる", "{{G|立ち去る}}" }));
+            Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("返答を選択してください。\n\n"));
+            Assert.That(DummyPopupMessageTarget.LastTitle, Is.EqualTo("取引"));
+            Assert.That(DummyPopupMessageTarget.LastButtons![0].text, Is.EqualTo("{{W|[L]}} {{y|調べる}}"));
+            Assert.That(DummyPopupMessageTarget.LastButtons[1].text, Is.EqualTo("{{W|[Esc]}} {{y|キャンセル}}"));
+            Assert.That(DummyPopupMessageTarget.LastItems![0].text, Is.EqualTo("{{w|[1]}} 水について尋ねる\n\n"));
+            Assert.That(DummyPopupMessageTarget.LastItems[1].text, Is.EqualTo("{{w|[2]}} {{G|立ち去る}}\n\n"));
+            Assert.That(renderedMessage, Is.EqualTo("{{y|返答を選択してください。\n\n}}"));
+            Assert.That(renderedButton, Is.EqualTo("{{W|[L]}} {{y|調べる}}"));
+            Assert.That(renderedItem, Is.EqualTo("{{w|[1]}} 水について尋ねる\n\n"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(PopupTranslationPatch),
+                    "Popup.ProducerText.Exact"),
+                Is.GreaterThan(0));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(PopupMessageTranslationPatch),
+                    "Popup.ProducerText.Exact"),
+                Is.GreaterThan(0));
+        });
+    }
+
+    [Test]
     public void PopupMessageRoute_OwnsMixedQuitFlowFields_Directly()
     {
         WriteDictionary(
@@ -255,6 +327,16 @@ public sealed class PopupRouteHandoffTranslationTests
         return new HarmonyPatchScope(harmony, harmonyId);
     }
 
+    private static IDisposable PatchMethod(Type targetType, string methodName, Type[] parameterTypes, Type patchType)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        harmony.Patch(
+            original: RequireMethod(targetType, methodName, parameterTypes),
+            prefix: new HarmonyMethod(RequireMethod(patchType, "Prefix")));
+        return new HarmonyPatchScope(harmony, harmonyId);
+    }
+
     private static string WrapPopupBody(string text)
     {
         return "{{y|" + text + "}}";
@@ -289,6 +371,12 @@ public sealed class PopupRouteHandoffTranslationTests
     private static MethodInfo RequireMethod(Type type, string methodName)
     {
         return AccessTools.Method(type, methodName)
+            ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static MethodInfo RequireMethod(Type type, string methodName, Type[] parameterTypes)
+    {
+        return AccessTools.Method(type, methodName, parameterTypes)
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
     }
 

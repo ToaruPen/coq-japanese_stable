@@ -139,6 +139,38 @@ internal static class DummyPopupGenericTarget
         return Task.FromResult(Default);
     }
 
+    public static DummyPopupMenuItem GetPopupOption(
+        int Index,
+        IReadOnlyList<string> Options,
+        IReadOnlyList<char>? Hotkeys = null,
+        IReadOnlyList<object>? Icons = null)
+    {
+        _ = Icons;
+
+        var hasHotkeys = Hotkeys is { Count: > 0 };
+        var hotkey = hasHotkeys && Index < Hotkeys!.Count ? Hotkeys[Index] : '\0';
+        if (hotkey == ' ')
+        {
+            hotkey = '\0';
+        }
+
+        string text;
+        if (!hasHotkeys)
+        {
+            text = "{{y|" + Options[Index] + "}}";
+        }
+        else if (hotkey == '\0')
+        {
+            text = "    {{y|" + Options[Index] + "}}";
+        }
+        else
+        {
+            text = "{{W|[" + hotkey + "]}} {{y|" + Options[Index] + "}}";
+        }
+
+        return new DummyPopupMenuItem(text);
+    }
+
     public static int? AskNumber(
         string Message,
         string Sound = "Sounds/UI/ui_notification",
@@ -175,6 +207,22 @@ internal static class DummyPopupGenericTarget
         return Task.FromResult<int?>(Start);
     }
 
+    public static Task<int?> AskNumberAsyncGamepad(
+        string Message,
+        int Start = 0,
+        int Min = 0,
+        int Max = int.MaxValue,
+        string RestrictChars = "",
+        bool pushView = false)
+    {
+        _ = RestrictChars;
+        _ = pushView;
+
+        LastAskNumberMessage = Message;
+        _ = DummyAskNumberScreenTarget.Show(Message, Start, Min, Max);
+        return Task.FromResult<int?>(Start);
+    }
+
     public static void ShowSpace(
         string Message,
         string? Title = null,
@@ -192,5 +240,25 @@ internal static class DummyPopupGenericTarget
 
         LastShowSpaceMessage = Message;
         LastShowSpaceTitle = Title ?? string.Empty;
+    }
+}
+
+internal static class DummyAskNumberScreenTarget
+{
+    public static string LastMessage { get; private set; } = string.Empty;
+
+    public static void Reset()
+    {
+        LastMessage = string.Empty;
+    }
+
+    public static string Show(string Message, int Start = 0, int Min = 0, int Max = int.MaxValue)
+    {
+        _ = Start;
+        _ = Min;
+        _ = Max;
+
+        LastMessage = Message;
+        return Message;
     }
 }
