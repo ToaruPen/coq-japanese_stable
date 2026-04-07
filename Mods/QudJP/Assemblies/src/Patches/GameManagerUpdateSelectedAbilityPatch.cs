@@ -61,7 +61,7 @@ public static class GameManagerUpdateSelectedAbilityPatch
         }
 
         var route = ObservabilityHelpers.ComposeContext(Context, "field=selectedAbilityText");
-        if (!TryTranslateSelectedAbilityText(current!, route, out var translated)
+        if (!TryTranslateSelectedAbilityText(current!, out var translated)
             || string.Equals(current, translated, StringComparison.Ordinal))
         {
             return;
@@ -75,10 +75,13 @@ public static class GameManagerUpdateSelectedAbilityPatch
                 Context,
                 componentIdentifier,
                 translated);
+            return;
         }
+
+        DynamicTextObservability.RecordTransform(route, "GameManager.SelectedAbility", current, translated);
     }
 
-    private static bool TryTranslateSelectedAbilityText(string source, string route, out string translated)
+    private static bool TryTranslateSelectedAbilityText(string source, out string translated)
     {
         var noneMatch = NonePattern.Match(source);
         if (noneMatch.Success)
@@ -96,7 +99,6 @@ public static class GameManagerUpdateSelectedAbilityPatch
                 return false;
             }
 
-            DynamicTextObservability.RecordTransform(route, "GameManager.SelectedAbility", source, translated);
             return true;
         }
 
@@ -129,7 +131,6 @@ public static class GameManagerUpdateSelectedAbilityPatch
             return false;
         }
 
-        DynamicTextObservability.RecordTransform(route, "GameManager.SelectedAbility", source, translated);
         return true;
     }
 

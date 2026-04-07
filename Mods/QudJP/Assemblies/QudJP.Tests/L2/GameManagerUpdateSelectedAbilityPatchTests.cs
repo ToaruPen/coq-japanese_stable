@@ -115,6 +115,73 @@ public sealed class GameManagerUpdateSelectedAbilityPatchTests
     }
 
     [Test]
+    public void Postfix_SetCurrentTextFails_DoesNotRecordSelectedAbilityTransform()
+    {
+        WriteDictionary(("<none>", "<なし>"));
+
+        RunWithPostfixPatch(
+            typeof(ReadOnlyDummyGameManagerSelectedAbilityTarget),
+            nameof(ReadOnlyDummyGameManagerSelectedAbilityTarget.UpdateSelectedAbility),
+            () =>
+            {
+                const string source = "<color=#666666><sprite=0><sprite=1></color> <none>";
+                var target = new ReadOnlyDummyGameManagerSelectedAbilityTarget
+                {
+                    NextSelectedAbilityText = source,
+                };
+
+                target.UpdateSelectedAbility();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(target.selectedAbilityText.text, Is.EqualTo(source));
+                    Assert.That(
+                        DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                            nameof(QudJP.Patches.GameManagerUpdateSelectedAbilityPatch),
+                            "GameManager.SelectedAbility"),
+                        Is.EqualTo(0));
+                });
+            });
+    }
+
+    [Test]
+    public void Postfix_SetCurrentTextSucceeds_RecordsSelectedAbilityTransformAndUpdatesSelectedAbilityText()
+    {
+        WriteDictionary(
+            ("snapjaw", "スナップジョー"),
+            ("[{0} turns]", "[{0}ターン]"));
+
+        RunWithPostfixPatch(() =>
+        {
+            var target = new DummyGameManagerSelectedAbilityTarget
+            {
+                NextSelectedAbilityText =
+                    "<color=#666666><sprite=0><sprite=1></color> <color=#FFFFFF><color=#FFFF00><sprite=2></color> snapjaw [2 turns]</color>",
+            };
+
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(QudJP.Patches.GameManagerUpdateSelectedAbilityPatch),
+                    "GameManager.SelectedAbility"),
+                Is.EqualTo(0));
+
+            target.UpdateSelectedAbility();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    target.selectedAbilityText.text,
+                    Is.EqualTo("<color=#666666><sprite=0><sprite=1></color> <color=#FFFFFF><color=#FFFF00><sprite=2></color> スナップジョー [2ターン]</color>"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(QudJP.Patches.GameManagerUpdateSelectedAbilityPatch),
+                        "GameManager.SelectedAbility"),
+                    Is.GreaterThan(0));
+            });
+        });
+    }
+
+    [Test]
     public void Postfix_FallbackAndEdgeCases_IncludeEmptyMarkerAndAlreadyTranslatedInputs()
     {
         WriteDictionary(
@@ -203,13 +270,21 @@ public sealed class GameManagerUpdateSelectedAbilityPatchTests
 
     private static void RunWithPostfixPatch(Action assertion)
     {
+        RunWithPostfixPatch(
+            typeof(DummyGameManagerSelectedAbilityTarget),
+            nameof(DummyGameManagerSelectedAbilityTarget.UpdateSelectedAbility),
+            assertion);
+    }
+
+    private static void RunWithPostfixPatch(Type targetType, string methodName, Action assertion)
+    {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
         var harmony = new Harmony(harmonyId);
 
         try
         {
             harmony.Patch(
-                original: RequireMethod(typeof(DummyGameManagerSelectedAbilityTarget), nameof(DummyGameManagerSelectedAbilityTarget.UpdateSelectedAbility)),
+                original: RequireMethod(targetType, methodName),
                 postfix: new HarmonyMethod(RequirePatchMethod(
                     "QudJP.Patches.GameManagerUpdateSelectedAbilityPatch",
                     "Postfix",
@@ -280,5 +355,29 @@ public sealed class GameManagerUpdateSelectedAbilityPatchTests
             .Replace("\n", "\\n", StringComparison.Ordinal)
             .Replace("\r", "\\r", StringComparison.Ordinal)
             .Replace("\t", "\\t", StringComparison.Ordinal);
+    }
+
+    private sealed class ReadOnlyDummyGameManagerSelectedAbilityTarget
+    {
+        public ReadOnlyDummyGameManagerText selectedAbilityText = new ReadOnlyDummyGameManagerText();
+
+        public string NextSelectedAbilityText { get; set; } = string.Empty;
+
+        public void UpdateSelectedAbility()
+        {
+            selectedAbilityText.SetText(NextSelectedAbilityText);
+        }
+    }
+
+    private sealed class ReadOnlyDummyGameManagerText
+    {
+        private string currentText = string.Empty;
+
+        public string text => currentText;
+
+        public void SetText(string value)
+        {
+            currentText = value;
+        }
     }
 }
