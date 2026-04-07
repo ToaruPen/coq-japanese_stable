@@ -113,8 +113,8 @@ public static class GameManagerUpdateSelectedAbilityPatch
             abilityMatch.Groups["name"].Value,
             ObservabilityHelpers.ComposeContext(Context, "field=selectedAbilityText", "segment=name"));
 
-        var translatedCooldown = abilityMatch.Groups["cooldown"].Value;
         var cooldownGroup = abilityMatch.Groups["cooldown"];
+        var translatedCooldown = cooldownGroup.Value;
         if (cooldownGroup.Success)
         {
             translatedCooldown = " " + TranslateCooldownSuffix(abilityMatch.Groups["turns"].Value);
