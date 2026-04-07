@@ -35,43 +35,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="../src/ColorAwareTranslationComposer.cs" Link="Production/ColorAwareTranslationComposer.cs" />
-    <Compile Include="../src/ColorCodePreserver.cs" Link="Production/ColorCodePreserver.cs" />
-    <Compile Include="../src/ComparePopupTextFixer.cs" Link="Production/ComparePopupTextFixer.cs" />
-    <Compile Include="../src/CompareProbeRunner.cs" Link="Production/CompareProbeRunner.cs" />
-    <Compile Include="../src/DelayedInventoryLineRepairScheduler.cs" Link="Production/DelayedInventoryLineRepairScheduler.cs" />
-    <Compile Include="../src/DelayedSceneProbeScheduler.cs" Link="Production/DelayedSceneProbeScheduler.cs" />
-    <Compile Include="../src/DynamicTextObservability.cs" Link="Production/DynamicTextObservability.cs" />
-    <Compile Include="../src/EquipmentLineFontFixer.cs" Link="Production/EquipmentLineFontFixer.cs" />
-    <Compile Include="../src/EquipmentLineObservability.cs" Link="Production/EquipmentLineObservability.cs" />
-    <Compile Include="../src/FontManager.cs" Link="Production/FontManager.cs" />
     <Compile Include="../src/GameTypeResolver.cs" Link="Production/GameTypeResolver.cs" />
-    <Compile Include="../src/InventoryActionObservability.cs" Link="Production/InventoryActionObservability.cs" />
-    <Compile Include="../src/InventoryLineFontFixer.cs" Link="Production/InventoryLineFontFixer.cs" />
-    <Compile Include="../src/InventoryLineUpdateObservability.cs" Link="Production/InventoryLineUpdateObservability.cs" />
-    <Compile Include="../src/InventoryRenderObservability.cs" Link="Production/InventoryRenderObservability.cs" />
-    <Compile Include="../src/InventoryUiFieldObservability.cs" Link="Production/InventoryUiFieldObservability.cs" />
-    <Compile Include="../src/LocalizedSearchTextBuilder.cs" Link="Production/LocalizedSearchTextBuilder.cs" />
-    <Compile Include="../src/JournalPatternTranslator.cs" Link="Production/JournalPatternTranslator.cs" />
-    <Compile Include="../src/LocalizationAssetResolver.cs" Link="Production/LocalizationAssetResolver.cs" />
-    <Compile Include="../src/MessageFrameTranslator.cs" Link="Production/MessageFrameTranslator.cs" />
-    <Compile Include="../src/MessagePatternTranslator.cs" Link="Production/MessagePatternTranslator.cs" />
-    <Compile Include="../src/ObservabilityHelpers.cs" Link="Production/ObservabilityHelpers.cs" />
-    <Compile Include="../src/SinkObservation.cs" Link="Production/SinkObservation.cs" />
-    <Compile Include="../src/ScopedDictionaryLookup.cs" Link="Production/ScopedDictionaryLookup.cs" />
+    <Compile Include="../src/Observability/*.cs" Link="Production/Observability/%(Filename)%(Extension)" />
     <Compile Include="../src/Patches/*.cs" Link="Production/Patches/%(Filename)%(Extension)" />
     <Compile Include="../src/QudJPMod.cs" Link="Production/QudJPMod.cs" />
-    <Compile Include="../src/QudMenuBottomContextObservability.cs" Link="Production/QudMenuBottomContextObservability.cs" />
-    <Compile Include="../src/ScreenHierarchyObservability.cs" Link="Production/ScreenHierarchyObservability.cs" />
-    <Compile Include="../src/SceneTextObservability.cs" Link="Production/SceneTextObservability.cs" />
-    <Compile Include="../src/SelectableTextMenuItemObservability.cs" Link="Production/SelectableTextMenuItemObservability.cs" />
-    <Compile Include="../src/StatusLineTranslationHelpers.cs" Link="Production/StatusLineTranslationHelpers.cs" />
-    <Compile Include="../src/StringHelpers.cs" Link="Production/StringHelpers.cs" />
-    <Compile Include="../src/TextShellReplacementRenderer.cs" Link="Production/TextShellReplacementRenderer.cs" />
-    <Compile Include="../src/TmpTextRepairer.cs" Link="Production/TmpTextRepairer.cs" />
-    <Compile Include="../src/Translator.cs" Link="Production/Translator.cs" />
-    <Compile Include="../src/UITextSkinTemplateTranslator.cs" Link="Production/UITextSkinTemplateTranslator.cs" />
-    <Compile Include="../src/UiChildTextObservability.cs" Link="Production/UiChildTextObservability.cs" />
+    <Compile Include="../src/Translation/*.cs" Link="Production/Translation/%(Filename)%(Extension)" />
+    <Compile Include="../src/UI/*.cs" Link="Production/UI/%(Filename)%(Extension)" />
   </ItemGroup>
 
   <ItemGroup Condition="Exists('$(AssemblyCSharpPath)')">
