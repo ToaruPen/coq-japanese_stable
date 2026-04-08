@@ -194,6 +194,40 @@ public sealed class XDidYTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesXDidYToZWadeThroughLiquid()
+    {
+        WriteDictionary(tier3: new[] { ("wade", "through {0}", "{0}の中をかき分けて進んだ") });
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyXDidYTarget), nameof(DummyXDidYTarget.XDidYToZ)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(XDidYTranslationPatch), nameof(XDidYTranslationPatch.PrefixXDidYToZForTests))));
+
+            DummyXDidYTarget.XDidYToZ(
+                Actor: null,
+                Verb: "wade",
+                Preposition: "through",
+                Object: "塩気のある水たまり",
+                SubjectOverride: "あなた",
+                AlwaysVisible: true);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+                Assert.That(lastMessage, Is.EqualTo("\u0001あなたは塩気のある水たまりの中をかき分けて進んだ。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_TranslatesWDidXToYWithZWithTemplate()
     {
         WriteDictionary(tier3: new[] { ("strike", "{0} with {1} for {2} damage", "{1}で{0}に{2}ダメージを与えた") });

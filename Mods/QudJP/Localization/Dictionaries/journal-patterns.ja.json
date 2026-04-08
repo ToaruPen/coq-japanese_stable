@@ -62,6 +62,11 @@
       "route": "journal"
     },
     {
+      "pattern": "^On the (.+?) of (.+?), you were killed by a (.+?)\\.$",
+      "template": "{1}の{0}日、{2}に殺された。",
+      "route": "journal"
+    },
+    {
       "pattern": "^On the (.+?) of (.+?), you multiplied\\.$",
       "template": "{1}の{0}日、あなたは自己増殖した。",
       "route": "journal"

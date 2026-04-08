@@ -28,6 +28,7 @@ public sealed class TradeUiPopupTranslationPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
         MessagePatternTranslator.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
         DynamicTextObservability.ResetForTests();
@@ -39,6 +40,7 @@ public sealed class TradeUiPopupTranslationPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
         MessagePatternTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         DummyTradeUiPopupTarget.Reset();
@@ -121,6 +123,27 @@ public sealed class TradeUiPopupTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_UsesMessagePatternFallback_ForStartupJoppaIntro()
+    {
+        LocalizationAssetResolver.SetLocalizationRootForTests(GetLocalizationRoot());
+        MessagePatternTranslator.SetPatternFileForTests(null);
+
+        using var patch = PatchMethod(nameof(DummyTradeUiPopupTarget.Show));
+
+        DummyTradeUiPopupTarget.Show(
+            "On the 10th of Iyur Ut, you arrive at the oasis-hamlet of Joppa, along the far rim of Moghra'yi, the Great Salt Desert.\n\n"
+            + "All around you, moisture farmers tend to groves of viridian watervine. There are huts wrought from rock salt and brinestalk.\n\n"
+            + "On the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky.");
+
+        Assert.That(
+            DummyTradeUiPopupTarget.LastShowMessage,
+            Is.EqualTo(
+                "Iyur Utの10th日、あなたは大塩砂漠モグラヤイの遥かな縁にあるオアシス集落ジョッパに到着した。\n\n"
+                + "あたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n"
+                + "地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。"));
+    }
+
+    [Test]
     public void Prefix_PreservesColorTags_ForCustomTradeTemplate()
     {
         WriteDictionary(
@@ -149,6 +172,12 @@ public sealed class TradeUiPopupTranslationPatchTests
     {
         return AccessTools.Method(type, methodName)
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static string GetLocalizationRoot()
+    {
+        return Path.GetFullPath(
+            Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../../../Localization"));
     }
 
     // To-do: consolidate these JSON test helpers once the shared usage reaches 3+ files.

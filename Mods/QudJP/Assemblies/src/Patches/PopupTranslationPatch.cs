@@ -389,6 +389,19 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (TryTranslateSinglePlaceholderTemplate(
+                source,
+                route,
+                family + ".XRLCoreHPWarning",
+                XRLCoreHPWarningPattern,
+                "{{R|Your health has dropped below {{C|{0}%}}!}}",
+                Array.Empty<ColorSpan>(),
+                out var xrlCoreHpWarningTranslated))
+        {
+            translated = xrlCoreHpWarningTranslated;
+            return true;
+        }
+
         if (StringHelpers.TryGetTranslationExactOrLowerAscii(stripped, out var exact)
             && !string.Equals(exact, stripped, StringComparison.Ordinal))
         {
@@ -520,19 +533,6 @@ public static class PopupTranslationPatch
                 out var sifrahInsightTranslated))
         {
             translated = sifrahInsightTranslated;
-            return true;
-        }
-
-        if (TryTranslateSinglePlaceholderTemplate(
-                source,
-                route,
-                family + ".XRLCoreHPWarning",
-                XRLCoreHPWarningPattern,
-                "{{R|Your health has dropped below {{C|{0}%}}!}}",
-                Array.Empty<ColorSpan>(),
-                out var xrlCoreHpWarningTranslated))
-        {
-            translated = xrlCoreHpWarningTranslated;
             return true;
         }
 

@@ -449,6 +449,32 @@ public sealed class PopupTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_PrefersXRLCoreHPWarningTemplateOverStrippedExactTranslation()
+    {
+        WriteDictionary(
+            ("Your health has dropped below 40%!", "体力が40%を下回った！"),
+            ("{{R|Your health has dropped below {{C|{0}%}}!}}", "{{R|HPが{{C|{0}%}}を下回った！}}"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+
+            DummyPopupTarget.ShowBlock("{{R|Your health has dropped below {{C|40%}}!}}", "Warning");
+
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("{{R|HPが{{C|40%}}を下回った！}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_TranslatesXRLCoreFleeMessage_WhenPatched()
     {
         WriteDictionary(("You can't find a way to flee from {0}.", "{0}から逃げる経路が見つからない。"));

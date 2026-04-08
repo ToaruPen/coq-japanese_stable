@@ -260,6 +260,16 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_AppliesPossessiveCrackedPattern()
+    {
+        WritePatternDictionary(("^Your (.+?) was cracked\\.$", "{0}にひびが入った。"));
+
+        var translated = MessagePatternTranslator.Translate("Your 布のローブ was cracked.");
+
+        Assert.That(translated, Is.EqualTo("布のローブにひびが入った。"));
+    }
+
+    [Test]
     public void Translate_AppliesArmorPenetrationPatternWithoutWeaponRoll()
     {
         WritePatternDictionary(

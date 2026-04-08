@@ -2665,6 +2665,11 @@
       "text": "{0}に重要な器官を奪われた"
     },
     {
+      "verb": "wade",
+      "extra": "through {0}",
+      "text": "{subject}は{0}の中をかき分けて進んだ"
+    },
+    {
       "verb": "wince",
       "extra": "",
       "text": "{subject}はたじろいだ"

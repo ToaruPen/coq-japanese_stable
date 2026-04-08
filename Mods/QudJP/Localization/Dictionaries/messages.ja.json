@@ -2,6 +2,16 @@
   "entries": [],
   "patterns": [
     {"pattern": "^You eat the meal\\.$", "template": "食事をとった。", "route": "popup"},
+    {
+      "pattern": "^On the (.+?) of (.+?), you arrive at the oasis-hamlet of Joppa, along the far rim of Moghra'yi, the Great Salt Desert\\.\\n\\nAll around you, moisture farmers tend to groves of viridian watervine\\. There are huts wrought from rock salt and brinestalk\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",
+      "template": "{1}の{0}日、あなたは大塩砂漠モグラヤイの遥かな縁にあるオアシス集落ジョッパに到着した。\n\nあたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。",
+      "route": "popup"
+    },
+    {
+      "pattern": "^On the (.+?) of (.+?), you arrive at the village of (.+?)\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",
+      "template": "{1}の{0}日、あなたは{2}の村に到着した。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。",
+      "route": "popup"
+    },
     {"pattern": "^(.+?), ((?i:someone|somebody|a mysterious person|a child|a woman|a man|a baby|some group|some sect|some organization|some party|some cabal|some group of friends|some group of lovers|people|folk|communities|kindred|families|kin|kind|kinsfolk|tribe|clan)) ((?i:gather|come together|habitate together|cluster|assemble|live together)) in ((?i:reverence|awe|worship|adoration|devotion|piety|deification|love|honor)) of (.+?)\\.$", "template": "{0}、{t1}が{4}に{t3}して{t2}。", "route": "unclassified"},
     {"pattern": "^((?i:someone|somebody|a mysterious person|a child|a woman|a man|a baby|some group|some sect|some organization|some party|some cabal|some group of friends|some group of lovers|people|folk|communities|kindred|families|kin|kind|kinsfolk|tribe|clan)) ((?i:gather|come together|habitate together|cluster|assemble|live together)) (.+?) in ((?i:reverence|awe|worship|adoration|devotion|piety|deification|love|honor)) of (.+?)\\.$", "template": "{2}に{t0}が{4}に{t3}して{t1}。", "route": "unclassified"},
     {"pattern": "^(.+?), ((?i:someone|somebody|a mysterious person|a child|a woman|a man|a baby|some group|some sect|some organization|some party|some cabal|some group of friends|some group of lovers|people|folk|communities|kindred|families|kin|kind|kinsfolk|tribe|clan)) ((?i:gather|come together|habitate together|cluster|assemble|live together)) to ((?i:profane|mock|scorn|violate|blaspheme)) (.+?)\\.$", "template": "{0}、{t1}が{4}を{t3}ために{t2}。", "route": "unclassified"},
@@ -126,6 +136,11 @@
     {
       "pattern": "^You miss with your (.+?)[.!] \\[(.+?) vs (.+?)\\]$",
       "template": "{0}での攻撃は外れた。[{1} vs {2}]",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^Your (.+?) was cracked\\.$",
+      "template": "{0}にひびが入った。",
       "route": "emit-message"
     },
     {

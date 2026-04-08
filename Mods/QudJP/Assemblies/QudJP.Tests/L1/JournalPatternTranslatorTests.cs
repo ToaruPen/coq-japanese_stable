@@ -62,6 +62,16 @@ public sealed class JournalPatternTranslatorTests
     }
 
     [Test]
+    public void Translate_AppliesDeathEntryPattern()
+    {
+        WritePatternDictionary(("^On the (.+?) of (.+?), you were killed by a (.+?)\\.$", "{1}の{0}日、{2}に殺された。"));
+
+        var translated = JournalPatternTranslator.Translate("On the 10th of Iyur Ut, you were killed by a 血まみれのウォーターヴァイン農家.");
+
+        Assert.That(translated, Is.EqualTo("Iyur Utの10th日、血まみれのウォーターヴァイン農家に殺された。"));
+    }
+
+    [Test]
     public void Translate_SupportsTranslatedCaptures()
     {
         WriteDictionaryFile("dict-l1.ja.json", new[] { ("kyakukya", "キャクキャ") });
