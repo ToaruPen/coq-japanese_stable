@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Reflection.Emit;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -9,6 +11,10 @@ namespace QudJP.Patches;
 [HarmonyPatch]
 public static class QudMutationsModuleWindowTranslationPatch
 {
+    private static readonly MethodInfo TranslateFormattedDescriptionMethod =
+        AccessTools.Method(typeof(QudMutationsModuleWindowTranslationPatch), nameof(TranslateFormattedDescription))
+        ?? throw new InvalidOperationException("TranslateFormattedDescription method not found.");
+
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
     {
@@ -30,6 +36,31 @@ public static class QudMutationsModuleWindowTranslationPatch
         return method;
     }
 
+    public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    {
+        var rewritten = new List<CodeInstruction>();
+        var injectedTranslation = false;
+
+        foreach (var instruction in instructions)
+        {
+            rewritten.Add(instruction);
+
+            if (IsFormatNodeDescriptionCall(instruction))
+            {
+                rewritten.Add(new CodeInstruction(OpCodes.Call, TranslateFormattedDescriptionMethod));
+                injectedTranslation = true;
+            }
+        }
+
+        if (!injectedTranslation)
+        {
+            Trace.TraceWarning(
+                "QudJP: QudMutationsModuleWindowTranslationPatch.Transpiler could not find FormatNodeDescription call; leaving instructions unchanged.");
+        }
+
+        return rewritten;
+    }
+
     public static void Postfix(object? __instance)
     {
         try
@@ -44,6 +75,19 @@ public static class QudMutationsModuleWindowTranslationPatch
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: QudMutationsModuleWindowTranslationPatch.Postfix failed: {0}", ex);
+        }
+    }
+
+    public static string TranslateFormattedDescription(string source)
+    {
+        try
+        {
+            return ChargenStructuredTextTranslator.TranslateMutationMenuDescription(source);
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: QudMutationsModuleWindowTranslationPatch.TranslateFormattedDescription failed: {0}", ex);
+            return source;
         }
     }
 
@@ -102,6 +146,19 @@ public static class QudMutationsModuleWindowTranslationPatch
         {
             SetStringMemberValue(menuOption, "LongDescription", translatedLongDescription);
         }
+    }
+
+    private static bool IsFormatNodeDescriptionCall(CodeInstruction instruction)
+    {
+        if ((instruction.opcode != OpCodes.Call && instruction.opcode != OpCodes.Callvirt)
+            || instruction.operand is not MethodInfo method)
+        {
+            return false;
+        }
+
+        return string.Equals(method.Name, "FormatNodeDescription", StringComparison.Ordinal)
+               && method.ReturnType == typeof(string)
+               && method.GetParameters().Length == 2;
     }
 
     private static bool TryGetMemberValue(object instance, string memberName, out object? value)

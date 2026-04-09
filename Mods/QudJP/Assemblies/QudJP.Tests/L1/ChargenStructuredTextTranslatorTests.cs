@@ -128,6 +128,24 @@ public sealed class ChargenStructuredTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslateMutationLongDescription_UsesVariantMutationNameKey()
+    {
+        WriteDictionary(
+            ("mutation:Stinger (Confusing Venom)", "臀部の毒針を持つ。"),
+            ("mutation:Stinger (Confusing Venom):rank:1", "刺突では混乱毒を与える。"));
+
+        var translated = ChargenStructuredTextTranslator.TryTranslateMutationLongDescription(
+            "Stinger (Confusing Venom)",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("臀部の毒針を持つ。\n\n刺突では混乱毒を与える。"));
+        });
+    }
+
+    [Test]
     public void Translate_TranslatesPointsRemainingLine()
     {
         WriteDictionary(("Points Remaining:", "残りポイント:"));

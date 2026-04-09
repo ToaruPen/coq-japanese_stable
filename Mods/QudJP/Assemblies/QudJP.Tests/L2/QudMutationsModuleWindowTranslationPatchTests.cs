@@ -40,7 +40,7 @@ public sealed class QudMutationsModuleWindowTranslationPatchTests
     }
 
     [Test]
-    public void Postfix_TranslatesMutationMenuDescriptionAndLongDescription_WhenPatched()
+    public void Patch_TranslatesMutationMenuRowsBeforeShowAndUpdatesLongDescription()
     {
         WriteXmlFile(
             "Mutations.jp.xml",
@@ -66,8 +66,15 @@ public sealed class QudMutationsModuleWindowTranslationPatchTests
 
         try
         {
+            var transpiler = AccessTools.Method(
+                typeof(QudMutationsModuleWindowTranslationPatch),
+                "Transpiler",
+                [typeof(IEnumerable<CodeInstruction>)]);
+            Assert.That(transpiler, Is.Not.Null, "Transpiler method should be found");
+
             harmony.Patch(
                 original: RequireMethod(typeof(DummyQudMutationsModuleWindow), nameof(DummyQudMutationsModuleWindow.UpdateControls)),
+                transpiler: new HarmonyMethod(transpiler!),
                 postfix: new HarmonyMethod(RequireMethod(typeof(QudMutationsModuleWindowTranslationPatch), nameof(QudMutationsModuleWindowTranslationPatch.Postfix))));
 
             var window = new DummyQudMutationsModuleWindow();
@@ -79,6 +86,12 @@ public sealed class QudMutationsModuleWindowTranslationPatchTests
 
             Assert.Multiple(() =>
             {
+                Assert.That(window.prefabComponent.LastRenderedDescriptions, Is.EqualTo(new[]
+                {
+                    "エスパー",
+                    "アドレナリン制御",
+                    "毒針（混乱毒） [{{W|V}}]",
+                }));
                 Assert.That(esper.Description, Is.EqualTo("エスパー"));
                 Assert.That(esper.LongDescription, Is.EqualTo("精神突然変異しか発現しない。"));
                 Assert.That(adrenalControl.Description, Is.EqualTo("アドレナリン制御"));
@@ -91,6 +104,17 @@ public sealed class QudMutationsModuleWindowTranslationPatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    [Test]
+    public void TranslateFormattedDescription_ReturnsSource_ForMissingDictionaries()
+    {
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(tempRoot, "missing-dictionaries"));
+
+        var source = "Esper [{{W|V}}]";
+        var translated = QudMutationsModuleWindowTranslationPatch.TranslateFormattedDescription(source);
+
+        Assert.That(translated, Is.EqualTo(source));
     }
 
     private static MethodInfo RequireMethod(Type type, string methodName)
