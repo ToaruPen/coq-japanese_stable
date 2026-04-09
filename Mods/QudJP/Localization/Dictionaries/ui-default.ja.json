@@ -902,6 +902,42 @@
       "text": "移動"
     },
     {
+      "key": "Type: ",
+      "text": "種別: "
+    },
+    {
+      "key": "search",
+      "text": "検索"
+    },
+    {
+      "key": "sort: ",
+      "text": "並び替え: "
+    },
+    {
+      "key": "custom",
+      "text": "任意"
+    },
+    {
+      "key": "by class",
+      "text": "クラス別"
+    },
+    {
+      "key": "Activate Selected Ability",
+      "text": "選択中の能力を起動"
+    },
+    {
+      "key": "Move Up",
+      "text": "上へ移動"
+    },
+    {
+      "key": "Move Down",
+      "text": "下へ移動"
+    },
+    {
+      "key": "Bind Key",
+      "text": "キー割り当て"
+    },
+    {
       "key": "select",
       "text": "決定"
     },

@@ -796,6 +796,31 @@
       "text": "野営"
     },
     {
+      "key": "Sprint",
+      "context": "AbilityManager.Name",
+      "text": "スプリント"
+    },
+    {
+      "key": "Harvest Plants",
+      "context": "AbilityManager.Name",
+      "text": "収穫"
+    },
+    {
+      "key": "Power Devices",
+      "context": "AbilityManager.Name",
+      "text": "発電"
+    },
+    {
+      "key": "Dominate Creature",
+      "context": "AbilityManager.Name",
+      "text": "支配"
+    },
+    {
+      "key": "Maneuvers",
+      "context": "AbilityManager.Class",
+      "text": "戦技"
+    },
+    {
       "key": "Make Camp",
       "context": "TMP.Skill Name",
       "text": "野営"
