@@ -79,20 +79,22 @@ internal sealed class DummyChoiceWithColorIcon
 
 internal sealed class DummyCharGenSubtypeModuleTarget
 {
+    public string Description { get; set; } = """
+        {{c|ù}} +2 Agility
+        {{c|ù}} Short Blade
+        {{c|ù}} Tinkering
+          {{C|ù}} Scavenger
+        {{c|ù}} Acrobatics
+          {{C|ù}} Spry
+        {{c|ù}} Starts with random junk and artifacts
+        """;
+
     public IEnumerable<DummyChoiceWithColorIcon> GetSelections()
     {
         yield return new DummyChoiceWithColorIcon
         {
             Title = "Arconaut",
-            Description = """
-                {{c|ù}} +2 Agility
-                {{c|ù}} Short Blade
-                {{c|ù}} Tinkering
-                  {{C|ù}} Scavenger
-                {{c|ù}} Acrobatics
-                  {{C|ù}} Spry
-                {{c|ù}} Starts with random junk and artifacts
-                """,
+            Description = Description,
         };
     }
 }

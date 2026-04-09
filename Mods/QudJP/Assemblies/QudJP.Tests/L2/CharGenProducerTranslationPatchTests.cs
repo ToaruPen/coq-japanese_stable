@@ -182,24 +182,27 @@ public sealed class CharGenProducerTranslationPatchTests
     {
         WriteDictionary(("Short Blade", "短剣"));
 
-        Assert.Multiple(() =>
+        RunWithSubtypeSelectionPostfix(() =>
         {
-            Assert.That(
-                TranslateSubtypeSelectionDescription("{{c|ù}} Untranslated Description"),
-                Is.EqualTo("{{c|ù}} Untranslated Description"),
-                "Missing entries should fall back to English.");
-            Assert.That(
-                TranslateSubtypeSelectionDescription(string.Empty),
-                Is.EqualTo(string.Empty),
-                "Empty strings should pass through unchanged.");
-            Assert.That(
-                TranslateSubtypeSelectionDescription("{{c|ù}} Short Blade"),
-                Is.EqualTo("{{c|ù}} 短剣"),
-                "Color-tagged bullet lines should preserve tags while translating visible text.");
-            Assert.That(
-                TranslateSubtypeSelectionDescription("\u0001{{c|ù}} Short Blade"),
-                Is.EqualTo("\u0001{{c|ù}} Short Blade"),
-                "Marker-prefixed strings should pass through unchanged.");
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    TranslateSubtypeSelectionDescription("{{c|ù}} Untranslated Description"),
+                    Is.EqualTo("{{c|ù}} Untranslated Description"),
+                    "Missing entries should fall back to English.");
+                Assert.That(
+                    TranslateSubtypeSelectionDescription(string.Empty),
+                    Is.EqualTo(string.Empty),
+                    "Empty strings should pass through unchanged.");
+                Assert.That(
+                    TranslateSubtypeSelectionDescription("{{c|ù}} Short Blade"),
+                    Is.EqualTo("{{c|ù}} 短剣"),
+                    "Color-tagged bullet lines should preserve tags while translating visible text.");
+                Assert.That(
+                    TranslateSubtypeSelectionDescription("\u0001{{c|ù}} Short Blade"),
+                    Is.EqualTo("\u0001{{c|ù}} Short Blade"),
+                    "Marker-prefixed strings should pass through unchanged.");
+            });
         });
     }
 
@@ -513,10 +516,10 @@ public sealed class CharGenProducerTranslationPatchTests
 
     private static string? TranslateSubtypeSelectionDescription(string source)
     {
-        var translatedSelections = CharGenSubtypeSelectionTranslationPatch.Postfix(
-            new[] { new DummyChoiceWithColorIcon { Description = source } })
-            ?? throw new AssertionException("Subtype selection translation returned null.");
-        return translatedSelections.Cast<DummyChoiceWithColorIcon>().Single().Description;
+        var translatedSelections = new DummyCharGenSubtypeModuleTarget { Description = source }
+            .GetSelections()
+            .ToList();
+        return translatedSelections.Single().Description;
     }
 
     private static MethodInfo RequireMethod(Type type, string methodName)
