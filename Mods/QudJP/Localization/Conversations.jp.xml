@@ -4859,7 +4859,7 @@
     </node>
     <node ID="Bethesda">
       <text>
-        こんな感じ。ベテルのところに行ってこう言うの。「ねえ、密林のビーズの腕輪は全部どこ？ 水蔓湿原の腕輪はどこ？ スヴィ川のは？」
+        こんな感じ。ベテルのところに行ってこう言うの。「ねえ、密林のビーズの腕輪は全部どこ？ ウォーターヴァイン湿原の腕輪はどこ？ スヴィ川のは？」
         
         そうすると教えてくれるから、腕輪を取りに行くの。
       </text>
@@ -5147,7 +5147,7 @@
       <text>
         -ここか？ オアシスの集落だ。世界の棚の下。モグラヤイの大塩砂漠を、風が塩の息を百万と積んでは吐き出す。東には腐臭ただようクッドの密林がある。
 
-        その二つの裂け目で水蔓が育つ。私たちはそれを育てているのだよ、=player.formalAddressTerm=。
+        その二つの裂け目でウォーターヴァインが育つ。私たちはそれを育てているのだよ、=player.formalAddressTerm=。
       </text>
       <choice Target="Qud" Priority="1">クッドのことを教えてくれ。</choice>
     </node>
@@ -5167,7 +5167,7 @@
     </node>
     <node ID="Work" Inherits="Start">
       <text>
-        -んむ、仕事？ 農夫たちは洞窟の害獣に悩まされている。南の水蔓畑にいるメフメトと話してみなさい。
+        -んむ、仕事？ 農夫たちは洞窟の害獣に悩まされている。南のウォーターヴァイン畑にいるメフメトと話してみなさい。
 
         それからアージヴだ、=player.formalAddressTerm=。工匠さ。いつだって何か小物をつなぐ相手を探している。南西のブリキ小屋へ行くといい。
       </text>
@@ -5246,7 +5246,7 @@
     </node>
     <node ID="Apology">
       <text>
-        -んむ？ いや、=player.formalAddressTerm=! 君の報せは我らにとって大きな価値がある。私たちは貧しい農夫で、水蔓刈りの鎌を研ぐことくらいしかできない。だが、ほかの者なら？ きっと何とかしてくれるだろう。
+        -んむ？ いや、=player.formalAddressTerm=! 君の報せは我らにとって大きな価値がある。私たちは貧しい農夫で、ウォーターヴァイン刈りの鎌を研ぐことくらいしかできない。だが、ほかの者なら？ きっと何とかしてくれるだろう。
 
         感謝としてこの刺々しい恩寵を受け取りなさい。んむ、私はこの恩を忘れないよ、=name=. さあ、私に考える時間をくれ……
       </text>
@@ -5294,7 +5294,7 @@
       <text>
         生きて飲め、=name=。レッドロックから何か知らせは？
       </text>
-      <choice Priority="1" Target="BackFromRedrock" IfHaveActiveQuest="What's Eating the Watervine?" IfFinishedQuestStep="What's Eating the Watervine?~Travel to Red Rock" IfHaveItemDescendsFrom="Girshling Corpse">ああ。害獣と、齧られた水蔓の痕跡を見つけた。その死骸を持ってきた。</choice>
+      <choice Priority="1" Target="BackFromRedrock" IfHaveActiveQuest="What's Eating the Watervine?" IfFinishedQuestStep="What's Eating the Watervine?~Travel to Red Rock" IfHaveItemDescendsFrom="Girshling Corpse">ああ。害獣と、齧られたウォーターヴァインの痕跡を見つけた。その死骸を持ってきた。</choice>
       <choice Priority="1" Target="Aye" IfHaveActiveQuest="What's Eating the Watervine?">まだ何もない。</choice>
       <choice ID="MehmetIntroduce" Load="Remove" />
     </start>
@@ -5321,7 +5321,7 @@
     </node>
     <node ID="Village">
       <text>
-        沼地の膝で水蔓を育てている。水蔓ウェハをしゃぶったことはあるか？ あの草をここで世話しているんだ。
+        沼地の膝でウォーターヴァインを育てている。ウォーターヴァインウェハをしゃぶったことはあるか？ あの草をここで世話しているんだ。
       </text>
       <choice Target="VillageMore">……</choice>
     </node>
@@ -5336,7 +5336,7 @@
       <text>
         ああ？ それなら頼みがある。
 
-        何かが水蔓を食ってるんだ、ビートルムーンのあたりで。クルーンは蜘蛛みたいなやつが塩水に潜んでるのを見たと言ってる。でも洞窟蜘蛛がワーデンの足音近くまで来るはずがない。
+        何かがウォーターヴァインを食ってるんだ、ビートルムーンのあたりで。クルーンは蜘蛛みたいなやつが塩水に潜んでるのを見たと言ってる。でも洞窟蜘蛛がワーデンの足音近くまで来るはずがない。
 
         貯水池を舐めたら赤い粒があった。レッドロックの土で見かける頁岩さ……
       </text>

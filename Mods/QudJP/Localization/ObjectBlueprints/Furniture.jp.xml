@@ -3718,7 +3718,7 @@
 
   <object Name="Bed" Inherits="BaseBed" Replace="true">
     <part Name="Render" DisplayName="ベッド" ColorString="&amp;w" DetailColor="Y" Tile="Items/sw_bed.bmp" Occluding="false" RenderIfDark="true" />
-    <part Name="Description" Short="布地には水蔓の殻が詰められ、丘の民のスタイルで木の板の上に置かれました。" />
+    <part Name="Description" Short="布地にはウォーターヴァインの殻が詰められ、丘の民のスタイルで木の板の上に置かれました。" />
     <tag Name="Tier" Value="0" />
     <stag Name="Basic" />
   </object>
@@ -3901,7 +3901,7 @@
   <object Name="Floor Cushion" Inherits="BaseChair" Replace="true">
     <part Name="Render" DisplayName="フロアクッション" ColorString="&amp;w" DetailColor="y" RenderString="009" Tile="Items/sw_floor_cushion.png" />
     <builder Name="RandomTile" Tiles="Items/sw_cushion1.bmp,Items/sw_cushion2.bmp,Items/sw_cushion3.bmp,Items/sw_cushion4.bmp" />
-    <part Name="Description" Short="水蔓の殻とツチガラスの羽が詰められたこのボタン付きの枕は、人々が足を組んで休める。" />
+    <part Name="Description" Short="ウォーターヴァインの殻とツチガラスの羽が詰められたこのボタン付きの枕は、人々が足を組んで休める。" />
     <part Name="Physics" Weight="2" />
     <part Name="Commerce" Value="1" />
     <part Name="Chair" Level="-1" />
@@ -3951,7 +3951,7 @@
   <object Name="Canvas Folding Chair" Inherits="BasePortableChair" Replace="true">
     <part Name="Render" DisplayName="キャンバス製折りたたみ椅子" ColorString="&amp;w" DetailColor="y" Tile="Items/sw_chair_canvas.bmp" />
     <part Name="Physics" Weight="2" />
-    <part Name="Description" Short="木材と編んだ水蔓を組み合わせて、お尻のための可動式の波止場を作る。" />
+    <part Name="Description" Short="木材と編んだウォーターヴァインを組み合わせて、お尻のための可動式の波止場を作る。" />
     <tag Name="Tier" Value="0" />
     <stag Name="Contemporary" />
   </object>
@@ -4220,7 +4220,7 @@
   <object Name="Sofa" Inherits="BaseChair" Replace="true">
     <part Name="Render" DisplayName="ソファー" ColorString="&amp;g" DetailColor="W" Tile="Items/sw_sofa_l.bmp" />
     <part Name="Physics" Weight="100" />
-    <part Name="Description" Short="豊かな緑の房を高密度で柔らかい格子状に織り、水蔓の殻とツチクロウの羽を詰めて、角度のついた木製フレームに掛ける。" />
+    <part Name="Description" Short="豊かな緑の房を高密度で柔らかい格子状に織り、ウォーターヴァインの殻とツチクロウの羽を詰めて、角度のついた木製フレームに掛ける。" />
     <part Name="Chair" Level="3" />
     <stat Name="AV" Value="4" />
     <stat Name="Hitpoints" Value="200" />
