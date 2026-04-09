@@ -89,6 +89,11 @@ internal sealed class DummyAbilityManagerScreenTarget
 
     public void HandleHighlightLeft(DummyAbilityManagerScreenLineData element)
     {
+        if (element is null)
+        {
+            return;
+        }
+
         if (element.ability is not null)
         {
             rightSideHeaderText.SetText(element.ability.DisplayName);

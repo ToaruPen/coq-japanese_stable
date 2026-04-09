@@ -297,6 +297,41 @@ public sealed class AbilityManagerScreenTranslationPatchTests
         }
     }
 
+    [Test]
+    public void Postfix_TranslatesExistingDetailsPaneOnFirstPaint_WhenHighlightArgIsNull()
+    {
+        WriteDictionary(
+            ("Sprint", "スプリント"),
+            ("Type: ", "種別: "),
+            ("Mutations", "変異"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyAbilityManagerScreenTarget), nameof(DummyAbilityManagerScreenTarget.HandleHighlightLeft)),
+                postfix: new HarmonyMethod(RequirePatchPostfix()));
+
+            var screen = new DummyAbilityManagerScreenTarget();
+            screen.rightSideHeaderText.SetText("Sprint");
+            screen.rightSideDescriptionArea.SetText("{{y|Type: }}Mutations\n\n素早く移動する。");
+
+            screen.HandleHighlightLeft(null!);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(screen.rightSideHeaderText.text, Is.EqualTo("スプリント"));
+                Assert.That(screen.rightSideDescriptionArea.text, Is.EqualTo("{{y|種別: }}変異\n\n素早く移動する。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static MethodInfo RequireMethod(Type type, string methodName)
     {
         return AccessTools.Method(type, methodName)

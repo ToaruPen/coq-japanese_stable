@@ -22,6 +22,12 @@ public static class AbilityManagerScreenTranslationPatch
         "by class",
     };
 
+    private static readonly string[] TypeLinePrefixes =
+    {
+        "{{y|Type: }}",
+        "Type: ",
+    };
+
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
@@ -308,6 +314,8 @@ public static class AbilityManagerScreenTranslationPatch
     private static string TranslateRawFragments(string source)
     {
         var translated = source;
+        translated = TranslateTypeLineClassToken(translated);
+
         foreach (var key in RawFragmentKeys)
         {
             if (translated.IndexOf(key, StringComparison.Ordinal) < 0
@@ -325,6 +333,41 @@ public static class AbilityManagerScreenTranslationPatch
         }
 
         return translated;
+    }
+
+    private static string TranslateTypeLineClassToken(string source)
+    {
+        foreach (var prefix in TypeLinePrefixes)
+        {
+            var prefixIndex = source.IndexOf(prefix, StringComparison.Ordinal);
+            if (prefixIndex < 0)
+            {
+                continue;
+            }
+
+            var classStart = prefixIndex + prefix.Length;
+            var classEnd = source.IndexOf('\n', classStart);
+            if (classEnd < 0)
+            {
+                classEnd = source.Length;
+            }
+
+            if (classEnd <= classStart)
+            {
+                return source;
+            }
+
+            var classToken = source.Substring(classStart, classEnd - classStart);
+            if (!StringHelpers.TryGetTranslationExactOrLowerAscii(classToken, out var translatedClass)
+                || string.Equals(translatedClass, classToken, StringComparison.Ordinal))
+            {
+                return source;
+            }
+
+            return source.Substring(0, classStart) + translatedClass + source.Substring(classEnd);
+        }
+
+        return source;
     }
 
     private static string TranslateFragment(string source)
