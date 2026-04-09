@@ -70,10 +70,11 @@ public sealed class QudMutationsModuleWindowTranslationPatchTests
                 typeof(QudMutationsModuleWindowTranslationPatch),
                 "Transpiler",
                 [typeof(IEnumerable<CodeInstruction>)]);
+            Assert.That(transpiler, Is.Not.Null, "Transpiler method should be found");
 
             harmony.Patch(
                 original: RequireMethod(typeof(DummyQudMutationsModuleWindow), nameof(DummyQudMutationsModuleWindow.UpdateControls)),
-                transpiler: transpiler is null ? null : new HarmonyMethod(transpiler),
+                transpiler: new HarmonyMethod(transpiler!),
                 postfix: new HarmonyMethod(RequireMethod(typeof(QudMutationsModuleWindowTranslationPatch), nameof(QudMutationsModuleWindowTranslationPatch.Postfix))));
 
             var window = new DummyQudMutationsModuleWindow();
@@ -103,6 +104,16 @@ public sealed class QudMutationsModuleWindowTranslationPatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    [Test]
+    public void TranslateFormattedDescription_ReturnsSource_WhenTranslationThrows()
+    {
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(tempRoot, "missing-dictionaries"));
+
+        var translated = QudMutationsModuleWindowTranslationPatch.TranslateFormattedDescription("Esper");
+
+        Assert.That(translated, Is.EqualTo("Esper"));
     }
 
     private static MethodInfo RequireMethod(Type type, string methodName)

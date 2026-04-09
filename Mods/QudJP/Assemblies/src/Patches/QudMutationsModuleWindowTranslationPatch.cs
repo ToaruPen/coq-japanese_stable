@@ -80,7 +80,15 @@ public static class QudMutationsModuleWindowTranslationPatch
 
     public static string TranslateFormattedDescription(string source)
     {
-        return ChargenStructuredTextTranslator.TranslateMutationMenuDescription(source);
+        try
+        {
+            return ChargenStructuredTextTranslator.TranslateMutationMenuDescription(source);
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: QudMutationsModuleWindowTranslationPatch.TranslateFormattedDescription failed: {0}", ex);
+            return source;
+        }
     }
 
     private static void TranslateMenuOptions(object instance)
