@@ -52,6 +52,17 @@ public sealed class CharGenProducerTranslationPatchResolutionTests
     }
 
     [Test]
+    public void SubtypeSelectionPatch_TargetMethods_ResolveExpectedOverrides()
+    {
+        AssertTargetMethods(
+            "QudJP.Patches.CharGenSubtypeSelectionTranslationPatch",
+            new[]
+            {
+                "XRL.CharacterBuilds.Qud.QudSubtypeModule|GetSelections|",
+            });
+    }
+
+    [Test]
     public void ChromePatch_TargetMethods_ResolveFrameworkHooks()
     {
         AssertTargetMethods(
@@ -176,6 +187,22 @@ public sealed class CharGenProducerTranslationPatchResolutionTests
                 return;
 
             case "QudJP.Patches.CharGenMenuOptionTranslationPatch":
+                foreach (var methodInfo in resolvedMethods)
+                {
+                    var elementType = ResolveEnumerableElementType(methodInfo.ReturnType);
+                    Assert.That(
+                        elementType,
+                        Is.Not.Null,
+                        $"{patchTypeName} return type should expose an enumerable element type: {methodInfo.ReturnType.FullName}");
+                    AssertStringMemberExists(
+                        elementType!,
+                        "Description",
+                        $"{patchTypeName} enumerable element type for {methodInfo.DeclaringType!.FullName}.{methodInfo.Name}");
+                }
+
+                return;
+
+            case "QudJP.Patches.CharGenSubtypeSelectionTranslationPatch":
                 foreach (var methodInfo in resolvedMethods)
                 {
                     var elementType = ResolveEnumerableElementType(methodInfo.ReturnType);

@@ -8,6 +8,8 @@ namespace QudJP.Patches;
 
 internal static class CharGenProducerTranslationHelpers
 {
+    internal static readonly Func<string, string> TranslateStructuredText = ChargenStructuredTextTranslator.Translate;
+
     internal static string TranslateText(string source)
     {
         if (string.IsNullOrEmpty(source))
@@ -23,13 +25,18 @@ internal static class CharGenProducerTranslationHelpers
 
     internal static void TranslateStringMember(object target, string memberName, string context)
     {
+        TranslateStringMember(target, memberName, context, TranslateText);
+    }
+
+    internal static void TranslateStringMember(object target, string memberName, string context, Func<string, string> translateText)
+    {
         if (!TryGetStringMemberValue(target, memberName, out var current)
             || string.IsNullOrEmpty(current))
         {
             return;
         }
 
-        var translated = TranslateText(current!);
+        var translated = translateText(current!);
         if (!string.Equals(translated, current, StringComparison.Ordinal))
         {
             SetStringMemberValue(target, memberName, translated, context);
@@ -37,6 +44,15 @@ internal static class CharGenProducerTranslationHelpers
     }
 
     internal static IEnumerable MaterializeTranslatedEnumerable(IEnumerable values, string memberName, string context)
+    {
+        return MaterializeTranslatedEnumerable(values, memberName, context, TranslateText);
+    }
+
+    internal static IEnumerable MaterializeTranslatedEnumerable(
+        IEnumerable values,
+        string memberName,
+        string context,
+        Func<string, string> translateText)
     {
         var elementType = ResolveElementType(values.GetType());
         if (elementType is null)
@@ -67,7 +83,7 @@ internal static class CharGenProducerTranslationHelpers
         {
             if (item is not null)
             {
-                TranslateStringMember(item, memberName, context);
+                TranslateStringMember(item, memberName, context, translateText);
             }
 
             addMethod.Invoke(list, new[] { item });
