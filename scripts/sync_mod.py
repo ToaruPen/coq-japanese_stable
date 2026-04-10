@@ -27,6 +27,7 @@ _RSYNC_INCLUDES: tuple[str, ...] = (
 )
 
 _RSYNC_EXCLUDES: tuple[str, ...] = ("*",)
+_WINDOWS_DRIVE_PREFIX_LENGTH = 2
 
 _MACOS_MODS_SUFFIX = (
     Path("Library")
@@ -88,11 +89,11 @@ def _is_wsl(release: str | None = None) -> bool:
 
 
 def _translate_windows_path_for_wsl(raw_path: str) -> Path:
-    """Translate a Windows path like ``C:\\Users\\name`` to WSL style."""
+    r"""Translate a Windows path like ``C:\\Users\\name`` to WSL style."""
     normalized = raw_path.strip().replace("\\", "/")
-    if len(normalized) >= 2 and normalized[1] == ":":
+    if len(normalized) >= _WINDOWS_DRIVE_PREFIX_LENGTH and normalized[1] == ":":
         drive = normalized[0].lower()
-        remainder = normalized[2:].lstrip("/")
+        remainder = normalized[_WINDOWS_DRIVE_PREFIX_LENGTH :].lstrip("/")
         return Path("/mnt") / drive / remainder
     return Path(normalized)
 
@@ -186,16 +187,20 @@ def _iter_sync_files(source: Path, *, exclude_fonts: bool) -> list[Path]:
 
     localization_dir = source / "Localization"
     if localization_dir.is_dir():
-        for file_path in sorted(localization_dir.rglob("*")):
-            if file_path.is_file():
-                file_paths.append(file_path)
+        file_paths.extend(
+            file_path
+            for file_path in sorted(localization_dir.rglob("*"))
+            if file_path.is_file()
+        )
 
     if not exclude_fonts:
         fonts_dir = source / "Fonts"
         if fonts_dir.is_dir():
-            for file_path in sorted(fonts_dir.rglob("*")):
-                if file_path.is_file():
-                    file_paths.append(file_path)
+            file_paths.extend(
+                file_path
+                for file_path in sorted(fonts_dir.rglob("*"))
+                if file_path.is_file()
+            )
 
     return file_paths
 

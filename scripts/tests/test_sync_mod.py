@@ -223,7 +223,7 @@ class TestResolveDefaultDestination:
     """Tests for platform-specific default destination resolution."""
 
     def test_macos_uses_streaming_assets_mods(self, tmp_path: Path) -> None:
-        """macOS defaults to the Steam app bundle Mods directory."""
+        """MacOS defaults to the Steam app bundle Mods directory."""
         destination = resolve_default_destination(system="Darwin", home=tmp_path)
         assert destination == (
             tmp_path
