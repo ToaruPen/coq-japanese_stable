@@ -7,7 +7,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AnalysisLevel>latest-all</AnalysisLevel>
     <IsPackable>false</IsPackable>
-    <AssemblyCSharpPath>$(HOME)/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/Resources/Data/Managed/Assembly-CSharp.dll</AssemblyCSharpPath>
+    <GameDir Condition="'$(GameDir)' == ''">$(HOME)/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/Resources/Data</GameDir>
+    <AssemblyCSharpPath Condition="'$(AssemblyCSharpPath)' == ''">$(GameDir)/Managed/Assembly-CSharp.dll</AssemblyCSharpPath>
     <ManagedDir>$([System.IO.Path]::GetDirectoryName('$(AssemblyCSharpPath)'))</ManagedDir>
   </PropertyGroup>
 

@@ -167,9 +167,7 @@ python3.12 scripts/sync_mod.py --dry-run
 python3.12 scripts/sync_mod.py --exclude-fonts
 ```
 
-`scripts/sync_mod.py` deploys only game-essential files to:
-
-`~/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/Resources/Data/StreamingAssets/Mods/QudJP/`
+`scripts/sync_mod.py` deploys only game-essential files to the platform default mod directory. Use `--destination` if your install uses a non-standard path.
 
 Do not deploy arbitrary source files. The game will try to compile any `.cs` file it finds, and only `Bootstrap.cs` is meant to be game-compiled.
 
