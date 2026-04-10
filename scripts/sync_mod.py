@@ -217,7 +217,8 @@ def _run_python_sync(
     lines = ["Using Python copy fallback."]
 
     if dry_run:
-        lines.append(f"Would replace {destination}")
+        action = "replace" if destination.exists() else "create"
+        lines.append(f"Would {action} {destination}")
         lines.extend(
             f"Would copy {file_path.relative_to(source)}"
             for file_path in file_paths

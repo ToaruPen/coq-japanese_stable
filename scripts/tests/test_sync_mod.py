@@ -215,8 +215,24 @@ class TestRunSync:
             result = run_sync(source, destination, dry_run=True)
 
         assert result.returncode == 0
-        assert "Would replace" in result.stdout
+        assert "Would create" in result.stdout
         assert not destination.exists()
+
+    def test_python_fallback_dry_run_reports_replace_for_existing_destination(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        """Dry-run fallback reports replacement when destination already exists."""
+        source = tmp_path / "source"
+        destination = tmp_path / "dest"
+        source.mkdir()
+        destination.mkdir()
+
+        with patch("scripts.sync_mod.shutil.which", return_value=None):
+            result = run_sync(source, destination, dry_run=True)
+
+        assert result.returncode == 0
+        assert "Would replace" in result.stdout
 
 
 class TestResolveDefaultDestination:
