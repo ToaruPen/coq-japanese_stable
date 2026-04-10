@@ -66,7 +66,7 @@ dotnet build Mods/QudJP/Assemblies/QudJP.csproj \
   -p:GameDir="$HOME/.steam/steam/steamapps/common/Caves of Qud/CoQ_Data"
 ```
 
-> **既知の課題**: `Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj` の `<AssemblyCSharpPath>` は macOS パスをハードコードしており、MSBuild オーバーライドがまだ用意されていません。非 macOS 環境では `Exists()` チェックが false となり、L2G テストはエラーを出さずに自動的にスキップされます。非 macOS で L2G を走らせる場合、現状は csproj を一時的に書き換えるか、`~/Library/...` 配下にシンボリックリンクを張るなどの workaround が必要です。Issue として整理予定です。
+> `Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj` も `QudJP.csproj` と同様に `-p:GameDir=...` を受け付けます。`Managed/Assembly-CSharp.dll` を直接指したい場合は `-p:AssemblyCSharpPath=...` でも上書きできます。
 
 ### 3. ビルドを確認する
 
@@ -93,6 +93,14 @@ pytest scripts/tests/
 ```
 
 全テストがパスすれば環境構築完了です。
+
+非 macOS で L2G を走らせる場合は、ビルドと同じ `GameDir` を渡してください。例:
+
+```bash
+dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj \
+  --filter TestCategory=L2G \
+  -p:GameDir="/mnt/c/Program Files (x86)/Steam/steamapps/common/Caves of Qud/CoQ_Data"
+```
 
 ---
 
@@ -242,19 +250,13 @@ python3 -m json.tool \
 
 ゲーム内で実際に反映されることを確認するため、Mod をゲームの Mods ディレクトリにデプロイして L3 (手動プレイ) で最終検証してください。
 
-**macOS**: `python3.12 scripts/sync_mod.py` がそのまま使えます (デプロイ先が macOS Steam パスに固定されているため)。
+`python3.12 scripts/sync_mod.py` は macOS / Windows / WSL2 / Linux の既定パスを解決します。`rsync` が無い環境では Python コピー実装に自動フォールバックします。
 
-**Windows / WSL2 / Linux**: `sync_mod.py` は現状 macOS 専用です。手動で rsync もしくはファイルコピーしてください。例 (WSL2):
+非標準パスへ出したい場合は `--destination` (`--dest`) を使ってください。例:
 
 ```bash
-rsync -av --delete \
-  --include=manifest.json --include=Bootstrap.cs \
-  --include=Assemblies/ --include=Assemblies/QudJP.dll \
-  --include=Localization/ --include='Localization/**' \
-  --include=Fonts/ --include='Fonts/**' \
-  --exclude='*' \
-  Mods/QudJP/ \
-  "/mnt/c/Users/<name>/AppData/LocalLow/Freehold Games/CavesOfQud/Mods/QudJP/"
+python3.12 scripts/sync_mod.py \
+  --destination "/mnt/c/Users/<name>/AppData/LocalLow/Freehold Games/CavesOfQud/Mods/QudJP"
 ```
 
 ---

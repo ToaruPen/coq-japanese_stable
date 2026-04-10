@@ -151,9 +151,9 @@ python scripts/extract_base.py --game-base /path/to/StreamingAssets/Base
 
 ## sync_mod.py
 
-`Mods/QudJP/` の内容をゲームの Mods ディレクトリに rsync で同期します。L3 ゲームスモークテストの前に実行します。
+`Mods/QudJP/` の内容をゲームの Mods ディレクトリに同期します。L3 ゲームスモークテストの前に実行します。
 
-**前提**: Caves of Qud が macOS の Steam デフォルトパスにインストールされていること
+**対応環境**: macOS / Windows / WSL2 / Linux
 
 **使い方**:
 
@@ -164,9 +164,14 @@ python scripts/sync_mod.py
 # 同期先を明示的に指定
 python scripts/sync_mod.py --dest /path/to/Mods/QudJP
 
+# 非標準インストール先にデプロイ
+python scripts/sync_mod.py --destination /path/to/Mods/QudJP
+
 # ドライラン（実際にはコピーしない）
 python scripts/sync_mod.py --dry-run
 ```
+
+`rsync` が利用可能な環境では rsync を使い、無い環境では Python コピー実装に自動フォールバックします。
 
 **終了コード**: 0 = 正常終了、1 = エラー
 

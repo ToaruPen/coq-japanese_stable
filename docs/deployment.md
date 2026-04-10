@@ -6,7 +6,7 @@ How to deploy the QudJP mod to the Caves of Qud game directory.
 
 ## Prerequisites
 
-- Caves of Qud installed (Steam, macOS)
+- Caves of Qud installed (Steam, macOS / Windows / WSL2 / Linux)
 - `QudJP.dll` built via `dotnet build`
 
 ---
@@ -25,7 +25,7 @@ python3.12 scripts/sync_mod.py
 
 `sync_mod.py` requires Python `>=3.12` per `pyproject.toml`. `python3` may resolve to an older interpreter on macOS, so prefer `python3.12` unless your shell already points `python3` at Python 3.12+.
 
-`sync_mod.py` uses an rsync include-first strategy to deploy only game-essential files.
+`sync_mod.py` resolves a platform-appropriate default destination on macOS / Windows / WSL2 / Linux. It uses `rsync` when available and otherwise falls back to a pure-Python copy implementation.
 
 **Dry run** (preview without copying):
 
@@ -37,6 +37,12 @@ python3.12 scripts/sync_mod.py --dry-run
 
 ```bash
 python3.12 scripts/sync_mod.py --exclude-fonts
+```
+
+**Override the destination** (non-standard install paths):
+
+```bash
+python3.12 scripts/sync_mod.py --destination /path/to/Mods/QudJP
 ```
 
 ### Method 2: Manual Copy
@@ -86,12 +92,12 @@ The game requires exactly five types of files:
 
 ---
 
-## Deployment Target Path (macOS Steam)
+## Deployment Target Paths
 
-```
-~/Library/Application Support/Steam/steamapps/common/
-  Caves of Qud/CoQ.app/Contents/Resources/Data/StreamingAssets/Mods/QudJP/
-```
+- macOS Steam: `~/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/Resources/Data/StreamingAssets/Mods/QudJP/`
+- Windows: `%USERPROFILE%\AppData\LocalLow\Freehold Games\CavesOfQud\Mods\QudJP\`
+- WSL2: `/mnt/c/Users/<name>/AppData/LocalLow/Freehold Games/CavesOfQud/Mods/QudJP/`
+- Linux: `~/.config/unity3d/Freehold Games/CavesOfQud/Mods/QudJP/`
 
 ---
 

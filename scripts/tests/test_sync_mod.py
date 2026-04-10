@@ -1,5 +1,6 @@
 """Tests for the sync_mod module."""
 
+import subprocess
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -9,6 +10,8 @@ from scripts.sync_mod import (
     _RSYNC_EXCLUDES,
     _RSYNC_INCLUDES,
     build_rsync_command,
+    main,
+    resolve_default_destination,
     run_sync,
 )
 
@@ -128,10 +131,13 @@ class TestRunSync:
         source = tmp_path / "source"
         source.mkdir()
         mock_result = MagicMock(stdout="", stderr="", returncode=0)
-        with patch(
-            "scripts.sync_mod.subprocess.run",
-            return_value=mock_result,
-        ) as mock_run:
+        with (
+            patch("scripts.sync_mod.shutil.which", return_value="/usr/bin/rsync"),
+            patch(
+                "scripts.sync_mod.subprocess.run",
+                return_value=mock_result,
+            ) as mock_run,
+        ):
             run_sync(source, tmp_path / "dest")
             mock_run.assert_called_once()
             cmd = mock_run.call_args[0][0]
@@ -142,10 +148,169 @@ class TestRunSync:
         source = tmp_path / "source"
         source.mkdir()
         mock_result = MagicMock(stdout="", stderr="", returncode=0)
-        with patch(
-            "scripts.sync_mod.subprocess.run",
-            return_value=mock_result,
-        ) as mock_run:
+        with (
+            patch("scripts.sync_mod.shutil.which", return_value="/usr/bin/rsync"),
+            patch(
+                "scripts.sync_mod.subprocess.run",
+                return_value=mock_result,
+            ) as mock_run,
+        ):
             run_sync(source, tmp_path / "dest", dry_run=True)
             cmd = mock_run.call_args[0][0]
             assert "--dry-run" in cmd
+
+    def test_python_fallback_copies_expected_files(self, tmp_path: Path) -> None:
+        """Fallback mode copies only deployable files when rsync is unavailable."""
+        source = tmp_path / "source"
+        destination = tmp_path / "dest"
+        (source / "Assemblies").mkdir(parents=True)
+        (source / "Localization").mkdir()
+        (source / "Fonts").mkdir()
+        (source / "manifest.json").write_text("{}", encoding="utf-8")
+        (source / "Bootstrap.cs").write_text("// bootstrap", encoding="utf-8")
+        (source / "Assemblies" / "QudJP.dll").write_bytes(b"dll")
+        (source / "Localization" / "Creatures.jp.xml").write_text(
+            "<objects/>",
+            encoding="utf-8",
+        )
+        (source / "Fonts" / "Font.otf").write_bytes(b"font")
+        (source / "src.cs").write_text("// do not copy", encoding="utf-8")
+        destination.mkdir()
+        (destination / "stale.txt").write_text("stale", encoding="utf-8")
+
+        with patch("scripts.sync_mod.shutil.which", return_value=None):
+            result = run_sync(source, destination)
+
+        assert result.returncode == 0
+        assert (destination / "manifest.json").exists()
+        assert (destination / "Bootstrap.cs").exists()
+        assert (destination / "Assemblies" / "QudJP.dll").exists()
+        assert (destination / "Localization" / "Creatures.jp.xml").exists()
+        assert (destination / "Fonts" / "Font.otf").exists()
+        assert not (destination / "src.cs").exists()
+        assert not (destination / "stale.txt").exists()
+
+    def test_python_fallback_respects_exclude_fonts(self, tmp_path: Path) -> None:
+        """Fallback mode skips Fonts/ when exclude_fonts is requested."""
+        source = tmp_path / "source"
+        destination = tmp_path / "dest"
+        (source / "Fonts").mkdir(parents=True)
+        (source / "Fonts" / "Font.otf").write_bytes(b"font")
+
+        with patch("scripts.sync_mod.shutil.which", return_value=None):
+            run_sync(source, destination, exclude_fonts=True)
+
+        assert not (destination / "Fonts").exists()
+
+    def test_python_fallback_dry_run_does_not_modify_destination(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        """Dry-run fallback reports planned work without writing files."""
+        source = tmp_path / "source"
+        destination = tmp_path / "dest"
+        source.mkdir()
+
+        with patch("scripts.sync_mod.shutil.which", return_value=None):
+            result = run_sync(source, destination, dry_run=True)
+
+        assert result.returncode == 0
+        assert "Would replace" in result.stdout
+        assert not destination.exists()
+
+
+class TestResolveDefaultDestination:
+    """Tests for platform-specific default destination resolution."""
+
+    def test_macos_uses_streaming_assets_mods(self, tmp_path: Path) -> None:
+        """macOS defaults to the Steam app bundle Mods directory."""
+        destination = resolve_default_destination(system="Darwin", home=tmp_path)
+        assert destination == (
+            tmp_path
+            / "Library"
+            / "Application Support"
+            / "Steam"
+            / "steamapps"
+            / "common"
+            / "Caves of Qud"
+            / "CoQ.app"
+            / "Contents"
+            / "Resources"
+            / "Data"
+            / "StreamingAssets"
+            / "Mods"
+            / "QudJP"
+        )
+
+    def test_windows_uses_locallow_mods(self) -> None:
+        """Windows defaults to the LocalLow mods directory."""
+        destination = resolve_default_destination(
+            system="Windows",
+            env={"USERPROFILE": r"C:\Users\TestUser"},
+        )
+        assert str(destination).replace("\\", "/").endswith(
+            "C:/Users/TestUser/AppData/LocalLow/Freehold Games/CavesOfQud/Mods/QudJP",
+        )
+
+    def test_wsl_uses_translated_windows_profile(self) -> None:
+        """WSL defaults to the Windows LocalLow mods directory."""
+        destination = resolve_default_destination(
+            system="Linux",
+            env={"USERPROFILE": r"C:\Users\TestUser"},
+            release="5.15.167.4-microsoft-standard-WSL2",
+        )
+        assert destination == (
+            Path("/mnt/c/Users/TestUser")
+            / "AppData"
+            / "LocalLow"
+            / "Freehold Games"
+            / "CavesOfQud"
+            / "Mods"
+            / "QudJP"
+        )
+
+    def test_linux_uses_unity3d_mods(self, tmp_path: Path) -> None:
+        """Native Linux defaults to the Unity user-data Mods directory."""
+        destination = resolve_default_destination(
+            system="Linux",
+            home=tmp_path,
+            release="6.8.0-generic",
+        )
+        assert destination == (
+            tmp_path
+            / ".config"
+            / "unity3d"
+            / "Freehold Games"
+            / "CavesOfQud"
+            / "Mods"
+            / "QudJP"
+        )
+
+
+class TestMain:
+    """Tests for the sync_mod CLI entry point."""
+
+    def test_destination_override_is_forwarded(self, tmp_path: Path) -> None:
+        """--dest forwards the chosen path to run_sync."""
+        project_root = tmp_path / "repo"
+        source = project_root / "Mods" / "QudJP"
+        source.mkdir(parents=True)
+        destination = tmp_path / "custom-dest"
+
+        with (
+            patch("scripts.sync_mod._find_project_root", return_value=project_root),
+            patch(
+                "scripts.sync_mod.run_sync",
+                return_value=subprocess.CompletedProcess(
+                    args=["sync"],
+                    returncode=0,
+                    stdout="",
+                    stderr="",
+                ),
+            ) as mock_run,
+        ):
+            result = main(["--dest", str(destination)])
+
+        assert result == 0
+        assert mock_run.call_args.args[0] == source
+        assert mock_run.call_args.args[1] == destination
