@@ -150,10 +150,12 @@ def create_zip(
 
         # Compliance files
         for legal_file in legal_files or []:
-            if legal_file.exists():
-                arc_name = f"QudJP/{legal_file.name}"
-                zf.write(legal_file, arc_name)
-                members.append(arc_name)
+            if not legal_file.exists():
+                msg = f"Missing required compliance file: {legal_file}"
+                raise FileNotFoundError(msg)
+            arc_name = f"QudJP/{legal_file.name}"
+            zf.write(legal_file, arc_name)
+            members.append(arc_name)
 
         # DLL
         arc_dll = "QudJP/Assemblies/QudJP.dll"

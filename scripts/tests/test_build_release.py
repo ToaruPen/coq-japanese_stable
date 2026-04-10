@@ -300,6 +300,23 @@ class TestCreateZip:
         assert "QudJP/LICENSE" in members
         assert "QudJP/NOTICE.md" in members
 
+    def test_zip_raises_when_missing_compliance_files(self, tmp_path: Path) -> None:
+        """Missing compliance files raise FileNotFoundError when required."""
+        output, manifest, dll, loc_dir, loc_files, legal_files = self._make_inputs(
+            tmp_path,
+        )
+        legal_files[1].unlink()
+
+        with pytest.raises(FileNotFoundError, match="Missing required compliance file"):
+            create_zip(
+                output,
+                manifest,
+                dll,
+                loc_dir,
+                loc_files,
+                legal_files=legal_files,
+            )
+
 
 class TestBuildReleaseImport:
     """Smoke test: module imports without error."""
