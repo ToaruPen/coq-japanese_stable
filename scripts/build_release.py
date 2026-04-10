@@ -5,6 +5,8 @@ and produces ``dist/QudJP-v{version}.zip`` containing only the files the game
 needs:
 
 - ``QudJP/manifest.json``
+- ``QudJP/LICENSE``
+- ``QudJP/NOTICE.md``
 - ``QudJP/Bootstrap.cs``
 - ``QudJP/Assemblies/QudJP.dll``
 - ``QudJP/Localization/**/*.xml``
@@ -119,6 +121,8 @@ def create_zip(
     dll_path: Path,
     localization_dir: Path,
     localization_files: list[Path],
+    *,
+    legal_files: list[Path] | None = None,
 ) -> list[str]:
     """Create the release ZIP archive.
 
@@ -130,6 +134,7 @@ def create_zip(
         dll_path: Path to the built ``QudJP.dll``.
         localization_dir: Path to the ``Localization/`` directory.
         localization_files: List of localization files to include.
+        legal_files: Optional repository-level compliance files to include.
 
     Returns:
         List of archive member names added to the ZIP.
@@ -142,6 +147,15 @@ def create_zip(
         arc_manifest = "QudJP/manifest.json"
         zf.write(manifest_path, arc_manifest)
         members.append(arc_manifest)
+
+        # Compliance files
+        for legal_file in legal_files or []:
+            if not legal_file.exists():
+                msg = f"Missing required compliance file: {legal_file}"
+                raise FileNotFoundError(msg)
+            arc_name = f"QudJP/{legal_file.name}"
+            zf.write(legal_file, arc_name)
+            members.append(arc_name)
 
         # DLL
         arc_dll = "QudJP/Assemblies/QudJP.dll"
@@ -197,6 +211,7 @@ def build_release() -> None:
     localization_files = collect_localization_files(localization_dir)
     print(f"Localization files found: {len(localization_files)}")  # noqa: T201
 
+    legal_files = [project_root / "LICENSE", project_root / "NOTICE.md"]
     output_path = project_root / "dist" / f"QudJP-v{version}.zip"
     members = create_zip(
         output_path,
@@ -204,6 +219,7 @@ def build_release() -> None:
         dll_path,
         localization_dir,
         localization_files,
+        legal_files=legal_files,
     )
 
     print(f"\nCreated: {output_path}")  # noqa: T201

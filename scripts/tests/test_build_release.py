@@ -111,7 +111,10 @@ class TestCollectLocalizationFiles:
 class TestCreateZip:
     """Tests for create_zip."""
 
-    def _make_inputs(self, tmp_path: Path) -> tuple[Path, Path, Path, Path, list[Path]]:
+    def _make_inputs(
+        self,
+        tmp_path: Path,
+    ) -> tuple[Path, Path, Path, Path, list[Path], list[Path]]:
         """Create minimal file tree for create_zip tests."""
         manifest = tmp_path / "manifest.json"
         manifest.write_text(json.dumps({"Version": "0.1.0"}), encoding="utf-8")
@@ -126,33 +129,77 @@ class TestCreateZip:
         json_file = loc_dir / "ui.json"
         json_file.write_text("{}", encoding="utf-8")
 
+        license_file = tmp_path / "LICENSE"
+        license_file.write_text("MIT License", encoding="utf-8")
+        notice_file = tmp_path / "NOTICE.md"
+        notice_file.write_text("# NOTICE", encoding="utf-8")
+
         output = tmp_path / "dist" / "QudJP-v0.1.0.zip"
-        return output, manifest, dll, loc_dir, [xml_file, json_file]
+        return output, manifest, dll, loc_dir, [xml_file, json_file], [
+            license_file,
+            notice_file,
+        ]
 
     def test_creates_zip_file(self, tmp_path: Path) -> None:
         """A ZIP file is created at the specified output path."""
-        output, manifest, dll, loc_dir, loc_files = self._make_inputs(tmp_path)
-        create_zip(output, manifest, dll, loc_dir, loc_files)
+        output, manifest, dll, loc_dir, loc_files, legal_files = self._make_inputs(
+            tmp_path,
+        )
+        create_zip(
+            output,
+            manifest,
+            dll,
+            loc_dir,
+            loc_files,
+            legal_files=legal_files,
+        )
         assert output.exists()
 
     def test_zip_contains_manifest(self, tmp_path: Path) -> None:
         """ZIP contains QudJP/manifest.json."""
-        output, manifest, dll, loc_dir, loc_files = self._make_inputs(tmp_path)
-        create_zip(output, manifest, dll, loc_dir, loc_files)
+        output, manifest, dll, loc_dir, loc_files, legal_files = self._make_inputs(
+            tmp_path,
+        )
+        create_zip(
+            output,
+            manifest,
+            dll,
+            loc_dir,
+            loc_files,
+            legal_files=legal_files,
+        )
         with zipfile.ZipFile(output) as zf:
             assert "QudJP/manifest.json" in zf.namelist()
 
     def test_zip_contains_dll(self, tmp_path: Path) -> None:
         """ZIP contains QudJP/Assemblies/QudJP.dll."""
-        output, manifest, dll, loc_dir, loc_files = self._make_inputs(tmp_path)
-        create_zip(output, manifest, dll, loc_dir, loc_files)
+        output, manifest, dll, loc_dir, loc_files, legal_files = self._make_inputs(
+            tmp_path,
+        )
+        create_zip(
+            output,
+            manifest,
+            dll,
+            loc_dir,
+            loc_files,
+            legal_files=legal_files,
+        )
         with zipfile.ZipFile(output) as zf:
             assert "QudJP/Assemblies/QudJP.dll" in zf.namelist()
 
     def test_zip_contains_localization_files(self, tmp_path: Path) -> None:
         """ZIP contains localization XML and JSON under QudJP/Localization/."""
-        output, manifest, dll, loc_dir, loc_files = self._make_inputs(tmp_path)
-        create_zip(output, manifest, dll, loc_dir, loc_files)
+        output, manifest, dll, loc_dir, loc_files, legal_files = self._make_inputs(
+            tmp_path,
+        )
+        create_zip(
+            output,
+            manifest,
+            dll,
+            loc_dir,
+            loc_files,
+            legal_files=legal_files,
+        )
         with zipfile.ZipFile(output) as zf:
             names = zf.namelist()
         assert "QudJP/Localization/Creatures.jp.xml" in names
@@ -160,40 +207,115 @@ class TestCreateZip:
 
     def test_zip_root_is_qudjp(self, tmp_path: Path) -> None:
         """All ZIP entries start with QudJP/ prefix."""
-        output, manifest, dll, loc_dir, loc_files = self._make_inputs(tmp_path)
-        members = create_zip(output, manifest, dll, loc_dir, loc_files)
+        output, manifest, dll, loc_dir, loc_files, legal_files = self._make_inputs(
+            tmp_path,
+        )
+        members = create_zip(
+            output,
+            manifest,
+            dll,
+            loc_dir,
+            loc_files,
+            legal_files=legal_files,
+        )
         for member in members:
             assert member.startswith("QudJP/"), f"Bad prefix: {member}"
 
     def test_returns_member_list(self, tmp_path: Path) -> None:
         """create_zip returns the list of archive member names."""
-        output, manifest, dll, loc_dir, loc_files = self._make_inputs(tmp_path)
-        members = create_zip(output, manifest, dll, loc_dir, loc_files)
+        output, manifest, dll, loc_dir, loc_files, legal_files = self._make_inputs(
+            tmp_path,
+        )
+        members = create_zip(
+            output,
+            manifest,
+            dll,
+            loc_dir,
+            loc_files,
+            legal_files=legal_files,
+        )
         assert isinstance(members, list)
-        assert len(members) == 4
+        assert len(members) == 6
 
     def test_creates_parent_dirs(self, tmp_path: Path) -> None:
         """Output parent directories are created if they do not exist."""
-        _output, manifest, dll, loc_dir, loc_files = self._make_inputs(tmp_path)
+        _output, manifest, dll, loc_dir, loc_files, legal_files = self._make_inputs(
+            tmp_path,
+        )
         deep_output = tmp_path / "a" / "b" / "c" / "out.zip"
-        create_zip(deep_output, manifest, dll, loc_dir, loc_files)
+        create_zip(
+            deep_output,
+            manifest,
+            dll,
+            loc_dir,
+            loc_files,
+            legal_files=legal_files,
+        )
         assert deep_output.exists()
 
     def test_zip_contains_font_files(self, tmp_path: Path) -> None:
         """ZIP contains font files from the Fonts/ directory."""
-        output, manifest, dll, loc_dir, loc_files = self._make_inputs(tmp_path)
+        output, manifest, dll, loc_dir, loc_files, legal_files = self._make_inputs(
+            tmp_path,
+        )
         fonts_dir = manifest.parent / "Fonts"
         fonts_dir.mkdir()
         (fonts_dir / "TestFont.otf").write_bytes(b"\x00\x01\x02\x03")
         (fonts_dir / "OFL.txt").write_text("SIL Open Font License", encoding="utf-8")
 
-        members = create_zip(output, manifest, dll, loc_dir, loc_files)
+        members = create_zip(
+            output,
+            manifest,
+            dll,
+            loc_dir,
+            loc_files,
+            legal_files=legal_files,
+        )
         with zipfile.ZipFile(output) as zf:
             names = zf.namelist()
         assert "QudJP/Fonts/TestFont.otf" in names
         assert "QudJP/Fonts/OFL.txt" in names
         assert "QudJP/Fonts/TestFont.otf" in members
         assert "QudJP/Fonts/OFL.txt" in members
+
+    def test_zip_contains_compliance_files(self, tmp_path: Path) -> None:
+        """ZIP contains LICENSE and NOTICE.md at the archive root."""
+        output, manifest, dll, loc_dir, loc_files, legal_files = self._make_inputs(
+            tmp_path,
+        )
+
+        members = create_zip(
+            output,
+            manifest,
+            dll,
+            loc_dir,
+            loc_files,
+            legal_files=legal_files,
+        )
+        with zipfile.ZipFile(output) as zf:
+            names = zf.namelist()
+
+        assert "QudJP/LICENSE" in names
+        assert "QudJP/NOTICE.md" in names
+        assert "QudJP/LICENSE" in members
+        assert "QudJP/NOTICE.md" in members
+
+    def test_zip_raises_when_missing_compliance_files(self, tmp_path: Path) -> None:
+        """Missing compliance files raise FileNotFoundError when required."""
+        output, manifest, dll, loc_dir, loc_files, legal_files = self._make_inputs(
+            tmp_path,
+        )
+        legal_files[1].unlink()
+
+        with pytest.raises(FileNotFoundError, match="Missing required compliance file"):
+            create_zip(
+                output,
+                manifest,
+                dll,
+                loc_dir,
+                loc_files,
+                legal_files=legal_files,
+            )
 
 
 class TestBuildReleaseImport:
