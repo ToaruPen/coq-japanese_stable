@@ -43,7 +43,7 @@ public static class CherubimSpawnerReplaceDescriptionPatch
             }
 
             var displayName = GetDisplayName(__0);
-            if (displayName is null || displayName.Length == 0 || displayName.Contains(' '))
+            if (displayName is null || displayName.Length == 0 || displayName.Any(static c => c == ' '))
             {
                 return true;
             }
