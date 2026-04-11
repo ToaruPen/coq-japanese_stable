@@ -135,6 +135,7 @@ def test_validate_fixed_leaf_inventory_reports_broad_owner_routed_entries() -> N
     assert "[broad_entry]" in output
     assert "message-frame-site" in output
     assert "message_frame" in output
+    assert "ownership=producer-owned" in output
     assert "keep this route owner-routed" in output
 
 

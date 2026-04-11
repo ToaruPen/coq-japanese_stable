@@ -273,6 +273,8 @@ def _rejection_reason(site_type: SiteType, *, needs_runtime: bool) -> FixedLeafR
         return reasons[site_type]
     if needs_runtime:
         return FixedLeafRejectionReason.NEEDS_RUNTIME
+    if site_type is SiteType.LEAF:
+        return FixedLeafRejectionReason.NEEDS_REVIEW
     msg = f"No fixed-leaf rejection reason defined for {site_type.value}."
     raise ValueError(msg)
 

@@ -90,6 +90,7 @@ class FixedLeafRejectionReason(StrEnum):
     PROCEDURAL = "procedural"
     NARRATIVE_TEMPLATE = "narrative_template"
     UNRESOLVED = "unresolved"
+    NEEDS_REVIEW = "needs_review"
     NEEDS_RUNTIME = "needs_runtime"
 
 

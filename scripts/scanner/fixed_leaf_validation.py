@@ -42,6 +42,7 @@ class FixedLeafValidationIssue:
     actual_destination: DestinationDictionary | None = None
     expected_destination: DestinationDictionary | None = None
     rejection_reason: FixedLeafRejectionReason | None = None
+    failure_factors: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -92,6 +93,8 @@ def render_fixed_leaf_validation_report(report: FixedLeafValidationReport) -> st
             parts.append(f"route={issue.source_route}")
         if issue.rejection_reason is not None:
             parts.append(f"rejection={issue.rejection_reason.value}")
+        if issue.failure_factors:
+            parts.append(f"factors={', '.join(issue.failure_factors)}")
         if issue.actual_destination is not None:
             parts.append(f"actual={issue.actual_destination.value}")
         if issue.expected_destination is not None:
@@ -111,6 +114,7 @@ def _site_issue(site: InventorySite) -> FixedLeafValidationIssue | None:
             source_route=site.source_route,
             actual_destination=site.destination_dictionary,
             rejection_reason=site.rejection_reason,
+            failure_factors=_failure_factors(site),
             expected_rule=_BROAD_RULE,
         )
 
@@ -160,6 +164,18 @@ def _expected_destination(site: InventorySite) -> tuple[DestinationDictionary, s
     ):
         return DestinationDictionary.SCOPED, _SCOPED_RULE
     return DestinationDictionary.GLOBAL_FLAT, _GLOBAL_RULE
+
+
+def _failure_factors(site: InventorySite) -> tuple[str, ...]:
+    """Return concrete failure factors that explain why a route is too broad."""
+    factors: list[str] = []
+    if site.ownership_class is not None:
+        factors.append(f"ownership={site.ownership_class.value}")
+    if site.needs_review:
+        factors.append("needs_review")
+    if site.needs_runtime:
+        factors.append("needs_runtime")
+    return tuple(factors)
 
 
 def _issue_sort_key(issue: FixedLeafValidationIssue) -> tuple[str, tuple[str, ...], str]:

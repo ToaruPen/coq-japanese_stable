@@ -19,7 +19,7 @@ from scripts.scanner.inventory import (
     read_inventory_draft_json,
     write_raw_hits_jsonl,
 )
-from scripts.scanner.rule_classifier import classify_raw_hit, classify_raw_hits_file
+from scripts.scanner.rule_classifier import _rejection_reason, classify_raw_hit, classify_raw_hits_file
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -600,3 +600,8 @@ def test_classify_raw_hits_file_writes_inventory_draft_and_stats(tmp_path: Path)
         SiteType.VERB_COMPOSITION,
         SiteType.TEMPLATE,
     ]
+
+
+def test_rejection_reason_defensively_handles_non_proven_leaf_sites() -> None:
+    """Leaf sites that are not yet proven should produce a stable rejection reason instead of raising."""
+    assert _rejection_reason(SiteType.LEAF, needs_runtime=False) is FixedLeafRejectionReason.NEEDS_REVIEW
