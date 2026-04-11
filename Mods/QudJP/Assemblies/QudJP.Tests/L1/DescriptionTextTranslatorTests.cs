@@ -82,6 +82,36 @@ public sealed class DescriptionTextTranslatorTests
         Assert.That(translated, Is.EqualTo("{{C|the Mechanimists}}に敬愛されている。理由: 巡礼者に施しをしたため。"));
     }
 
+    [Test]
+    public void TranslateLongDescription_FallbackToEnglish_WhenNoTranslationMatches()
+    {
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            "Admired by {{C|the Mechanimists}} for an unknown deed.",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo("{{C|the Mechanimists}}に敬愛されている。理由: an unknown deed。"));
+    }
+
+    [Test]
+    public void TranslateLongDescription_EmptyInputReturnsEmpty()
+    {
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            string.Empty,
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo(string.Empty));
+    }
+
+    [Test]
+    public void TranslateLongDescription_PreservesDirectTranslationMarker()
+    {
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            "\u0001Already translated",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo("\u0001Already translated"));
+    }
+
     private void WritePatternDictionary(params (string pattern, string template)[] patterns)
     {
         var builder = new StringBuilder();
