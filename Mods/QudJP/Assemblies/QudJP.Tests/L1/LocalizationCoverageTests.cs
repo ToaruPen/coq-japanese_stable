@@ -218,21 +218,25 @@ public sealed class LocalizationCoverageTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(duplicateEntries["Randomize Selection"].Select(static entry => entry.Text).Distinct(StringComparer.Ordinal),
+            Assert.That(duplicateEntries.TryGetValue("Randomize Selection", out var randomizeSelectionEntries), Is.True);
+            Assert.That(randomizeSelectionEntries!.Select(static entry => entry.Text).Distinct(StringComparer.Ordinal),
                 Is.EquivalentTo(new[] { "ランダムに選択", "選択をランダムにする" }));
-            Assert.That(duplicateEntries["Randomize Selection"], Has.Length.EqualTo(3));
+            Assert.That(randomizeSelectionEntries, Has.Length.EqualTo(3));
 
-            Assert.That(duplicateEntries["Reset Selection"].Select(static entry => entry.Text).Distinct(StringComparer.Ordinal),
+            Assert.That(duplicateEntries.TryGetValue("Reset Selection", out var resetSelectionEntries), Is.True);
+            Assert.That(resetSelectionEntries!.Select(static entry => entry.Text).Distinct(StringComparer.Ordinal),
                 Is.EquivalentTo(new[] { "選択をリセット" }));
-            Assert.That(duplicateEntries["Reset Selection"], Has.Length.EqualTo(3));
+            Assert.That(resetSelectionEntries, Has.Length.EqualTo(3));
 
-            Assert.That(duplicateEntries["Sated"].Select(static entry => entry.Text).Distinct(StringComparer.Ordinal),
+            Assert.That(duplicateEntries.TryGetValue("Sated", out var satedEntries), Is.True);
+            Assert.That(satedEntries!.Select(static entry => entry.Text).Distinct(StringComparer.Ordinal),
                 Is.EquivalentTo(new[] { "満腹" }));
-            Assert.That(duplicateEntries["Sated"], Has.Length.EqualTo(2));
+            Assert.That(satedEntries, Has.Length.EqualTo(2));
 
-            Assert.That(duplicateEntries["Quenched"].Select(static entry => entry.Text).Distinct(StringComparer.Ordinal),
+            Assert.That(duplicateEntries.TryGetValue("Quenched", out var quenchedEntries), Is.True);
+            Assert.That(quenchedEntries!.Select(static entry => entry.Text).Distinct(StringComparer.Ordinal),
                 Is.EquivalentTo(new[] { "潤っている", "潤沢" }));
-            Assert.That(duplicateEntries["Quenched"], Has.Length.EqualTo(3));
+            Assert.That(quenchedEntries, Has.Length.EqualTo(3));
         });
     }
 
