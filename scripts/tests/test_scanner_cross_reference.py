@@ -42,7 +42,7 @@ def _draft(*sites: InventorySite) -> InventoryDraft:
             low_confidence=sum(site.confidence == Confidence.LOW for site in sites),
             needs_review=sum(site.needs_review for site in sites),
             needs_runtime=sum(site.needs_runtime for site in sites),
-            proven_fixed_leaf=sum(site.destination_dictionary is not None for site in sites),
+            proven_fixed_leaf=sum(site.is_proven_fixed_leaf for site in sites),
             rejected_fixed_leaf=sum(site.rejection_reason is not None for site in sites),
         ),
         sites=tuple(sites),
@@ -320,6 +320,20 @@ def test_cross_reference_marks_dictionary_xml_and_patch_matches(tmp_path: Path) 
     assert sites["template-review"].status is SiteStatus.NEEDS_REVIEW
     assert sites["excluded"].status is SiteStatus.EXCLUDED
     assert sites["unresolved"].status is SiteStatus.UNRESOLVED
+
+
+def test_draft_stats_use_inventory_site_proven_fixed_leaf_rules() -> None:
+    """Cross-reference test helpers should mirror the real proven fixed-leaf predicate."""
+    draft = _draft(
+        _site(
+            "needs-review-leaf",
+            key="review-me",
+            destination_dictionary=DestinationDictionary.GLOBAL_FLAT,
+            needs_review=True,
+        )
+    )
+
+    assert draft.stats.proven_fixed_leaf == 0
 
 
 def test_cross_reference_inventory_file_writes_candidate_inventory(tmp_path: Path) -> None:
