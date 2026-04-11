@@ -14,10 +14,48 @@ QudJP の翻訳ワークフローを支援する Python スクリプト群です
 | `validate_xml.py` | XML 構造検証 |
 | `diff_localization.py` | 翻訳カバレッジ比較 |
 | `extract_base.py` | ゲーム XML の抽出 |
+| `scan_text_producers.py` | source-first scanner, candidate inventory, fixed-leaf validation |
 | `sync_mod.py` | Mod ファイルの配備 |
 | `verify_inventory.py` | Rosetta 起動で既知セーブを開き、インベントリのスクリーンショットを取得 |
 
 ---
+
+## scan_text_producers.py
+
+decompiled source から候補を集めて `docs/candidate-inventory.json` を作る、source-first scanner の入口です。`docs/fixed-leaf-workflow.md` に、レビューから昇格までの手順をまとめています。
+
+この CLI は `~/dev/coq-decompiled_stable/` を既定の source root として読みます。`--validate-fixed-leaf` は同じ CLI の中にある検証フラグで、別の top-level validator はありません。
+
+**使い方**:
+
+```bash
+python scripts/scan_text_producers.py \
+  --source-root ~/dev/coq-decompiled_stable \
+  --cache-dir .scanner-cache \
+  --output docs/candidate-inventory.json \
+  --phase all \
+  --validate-fixed-leaf
+```
+
+**引数**:
+
+- `--source-root`: decompiled C# source root。既定は `~/dev/coq-decompiled_stable`
+- `--cache-dir`: Phase 1a / 1b の中間出力先。既定は `.scanner-cache`
+- `--output`: 最終 candidate inventory JSON の出力先。既定は `docs/candidate-inventory.json`
+- `--phase`: `1a`, `1b`, `1c`, `1d`, `all` のいずれか
+- `--diff`: 将来の freshness diff 用。現在は no-op
+- `--validate-fixed-leaf`: Phase 1d output の fixed-leaf candidate を検証する
+
+**出力**:
+
+- Phase 1a / 1b / 1d の要約を stdout に表示
+- `--validate-fixed-leaf` を付けた場合は fixed-leaf validation report を stdout に表示
+
+**補足**:
+
+- `--phase 1d` は、すでに cache があるときの再レビュー向けです
+- `--phase all` は、スキャンから検証までを通して回す happy path です
+- accepted fixed-leaf candidates are promoted incrementally, and this does not change current `Translator` runtime semantics.
 
 ## check_encoding.py
 
