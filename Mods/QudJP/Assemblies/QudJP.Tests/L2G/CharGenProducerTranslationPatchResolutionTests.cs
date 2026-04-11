@@ -46,6 +46,7 @@ public sealed class CharGenProducerTranslationPatchResolutionTests
                 "XRL.CharacterBuilds.Qud.UI.QudAttributesModuleWindow|GetKeyMenuBar|",
                 "XRL.CharacterBuilds.Qud.UI.QudBuildLibraryModuleWindow|GetKeyMenuBar|",
                 "XRL.CharacterBuilds.Qud.UI.QudBuildSummaryModuleWindow|GetKeyMenuBar|",
+                "XRL.CharacterBuilds.AbstractBuilderModuleWindowBase|GetKeyMenuBar|",
                 "XRL.CharacterBuilds.Qud.UI.QudGamemodeModuleWindow|GetKeyMenuBar|",
                 "XRL.CharacterBuilds.Qud.UI.QudMutationsModuleWindow|GetKeyMenuBar|",
             });
