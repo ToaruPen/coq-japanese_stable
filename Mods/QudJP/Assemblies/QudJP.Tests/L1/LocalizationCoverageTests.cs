@@ -57,6 +57,54 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void ScopedSkillNameDictionaries_StayOnTheirOwnSurfaceAndOutOfFlatFamilies()
+    {
+        var scopedFamilies = new[]
+        {
+            (flatFile: "ui-chargen.ja.json", scopedFile: Path.Combine("Scoped", "ui-chargen-skill-context.ja.json"), expectedContext: "Chargen.SkillName"),
+            (flatFile: "ui-skillsandpowers.ja.json", scopedFile: Path.Combine("Scoped", "ui-skillsandpowers-skill-names.ja.json"), expectedContext: "TMP.Skill Name"),
+        };
+
+        Assert.Multiple(() =>
+        {
+            foreach (var (flatFile, scopedFile, expectedContext) in scopedFamilies)
+            {
+                var flatKeys = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", flatFile))
+                    .Select(static entry => entry.Key)
+                    .ToHashSet(StringComparer.Ordinal);
+                var scopedEntries = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", scopedFile));
+
+                var wrongContextEntries = scopedEntries
+                    .Where(entry => !string.Equals(entry.Context, expectedContext, StringComparison.Ordinal))
+                    .Select(entry => $"{entry.Context}:{entry.Key}")
+                    .ToArray();
+                var leakedKeys = scopedEntries
+                    .Select(static entry => entry.Key)
+                    .Where(flatKeys.Contains)
+                    .ToArray();
+                var duplicateTexts = scopedEntries
+                    .GroupBy(static entry => entry.Text, StringComparer.Ordinal)
+                    .Where(static group => group.Count() > 1)
+                    .Select(static group => group.Key)
+                    .ToArray();
+
+                Assert.That(
+                    wrongContextEntries,
+                    Is.Empty,
+                    $"{scopedFile} should stay on the {expectedContext} ownership surface.");
+                Assert.That(
+                    leakedKeys,
+                    Is.Empty,
+                    $"{scopedFile} should stay in the scoped tier instead of duplicating flat-family keys.");
+                Assert.That(
+                    duplicateTexts,
+                    Is.Empty,
+                    $"{scopedFile} should not duplicate the same text on the same ownership surface.");
+            }
+        });
+    }
+
+    [Test]
     public void WorldFactionsDictionary_CoversAllFactionNames()
     {
         var factionsDocument = XDocument.Load(Path.Combine(localizationRoot, "Factions.jp.xml"));
