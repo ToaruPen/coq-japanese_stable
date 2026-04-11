@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
@@ -64,6 +65,7 @@ internal static class ScopedDictionaryLookup
     private static IReadOnlyDictionary<string, string> ReadDictionary(string path)
     {
         var entries = new Dictionary<string, string>(StringComparer.Ordinal);
+        var duplicateKeyCounts = new Dictionary<string, int>(StringComparer.Ordinal);
         if (!File.Exists(path))
         {
             return entries;
@@ -87,7 +89,30 @@ internal static class ScopedDictionaryLookup
 
             var key = entry.Key!;
             var text = entry.Text!;
+            if (entries.ContainsKey(key))
+            {
+                var duplicateCount = duplicateKeyCounts.TryGetValue(key, out var currentDuplicateCount)
+                    ? currentDuplicateCount + 1
+                    : 1;
+                duplicateKeyCounts[key] = duplicateCount;
+                if (duplicateCount == 1)
+                {
+                    Trace.TraceWarning(
+                        "QudJP: ScopedDictionaryLookup duplicate key '{0}' in '{1}'.",
+                        key,
+                        path);
+                }
+            }
+
             entries[key] = text;
+        }
+
+        if (duplicateKeyCounts.Count > 0)
+        {
+            Trace.TraceWarning(
+                "QudJP: ScopedDictionaryLookup duplicate key overrides in '{0}': {1}.",
+                path,
+                ObservabilityHelpers.BuildRankedCounterBody(duplicateKeyCounts, 10));
         }
 
         return entries;
