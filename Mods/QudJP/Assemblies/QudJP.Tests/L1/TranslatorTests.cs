@@ -43,6 +43,26 @@ public sealed class TranslatorTests
     }
 
     [Test]
+    public void Translate_UsesExactDictionaryKeys_WithoutRouteAwareness()
+    {
+        WriteDictionary(
+            "ui-test.ja.json",
+            ("Hello", "こんにちは"),
+            ("MessageFrame:Hello", "フレームこんにちは"));
+
+        using var _ = Translator.PushLogContext("MessageFrame");
+
+        var exactTranslation = Translator.Translate("Hello");
+        var routeStyleTranslation = Translator.Translate("MessageFrame:Hello");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(exactTranslation, Is.EqualTo("こんにちは"));
+            Assert.That(routeStyleTranslation, Is.EqualTo("フレームこんにちは"));
+        });
+    }
+
+    [Test]
     public void Translate_ReturnsOriginal_WhenKeyIsMissing()
     {
         WriteDictionary("ui-test.ja.json", "Hello", "こんにちは");
