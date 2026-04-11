@@ -6,7 +6,7 @@ namespace QudJP.Patches;
 internal static class DescriptionTextTranslator
 {
     private static readonly Regex FactionDispositionPattern =
-        new Regex("^(?<relation>Loved by|Hated by|Disliked by) (?<target>.+?)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        new Regex("^(?<relation>Loved by|Admired by|Hated by|Disliked by) (?<target>.+?)(?: for (?<reason>.+?))?\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex LabeledListPattern =
         new Regex("^(?<label>Physical features:|Equipped:) (?<items>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -66,6 +66,11 @@ internal static class DescriptionTextTranslator
 
     private static bool TryTranslateSegmentPreservingColors(string source, string route, out string translated)
     {
+        if (TryTranslateFactionDispositionLinePreservingColors(source, route, out translated))
+        {
+            return true;
+        }
+
         translated = ColorAwareTranslationComposer.TranslatePreservingColors(
             source,
             visible => TryTranslateVisibleSegment(visible, route, out var candidate)
@@ -76,11 +81,6 @@ internal static class DescriptionTextTranslator
 
     private static bool TryTranslateVisibleSegment(string source, string route, out string translated)
     {
-        if (TryTranslateFactionDispositionLine(source, route, out translated))
-        {
-            return true;
-        }
-
         if (TryTranslateLabeledList(source, route, out translated))
         {
             return true;
@@ -130,19 +130,20 @@ internal static class DescriptionTextTranslator
         return false;
     }
 
-    private static bool TryTranslateFactionDispositionLine(string source, string route, out string translated)
+    private static bool TryTranslateFactionDispositionLinePreservingColors(string source, string route, out string translated)
     {
-        var match = FactionDispositionPattern.Match(source);
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = FactionDispositionPattern.Match(stripped);
         if (!match.Success)
         {
             translated = source;
             return false;
         }
 
-        var target = match.Groups["target"].Value;
         var relation = match.Groups["relation"].Value switch
         {
             "Loved by" => "愛されている",
+            "Admired by" => "敬愛されている",
             "Hated by" => "憎まれている",
             "Disliked by" => "嫌われている",
             _ => string.Empty,
@@ -154,9 +155,37 @@ internal static class DescriptionTextTranslator
             return false;
         }
 
-        translated = target + "に" + relation + "。";
+        var target = ColorAwareTranslationComposer.RestoreCapture(match.Groups["target"].Value, spans, match.Groups["target"]);
+        var reasonGroup = match.Groups["reason"];
+        if (!reasonGroup.Success)
+        {
+            translated = target + "に" + relation + "。";
+            DynamicTextObservability.RecordTransform(route, "Description.FactionDisposition", source, translated);
+            return true;
+        }
+
+        var reason = TranslateDispositionReason(reasonGroup.Value, route);
+        reason = ColorAwareTranslationComposer.RestoreCapture(reason, spans, reasonGroup);
+        translated = target + "に" + relation + "。理由: " + reason + "。";
         DynamicTextObservability.RecordTransform(route, "Description.FactionDisposition", source, translated);
         return true;
+    }
+
+    private static string TranslateDispositionReason(string source, string route)
+    {
+        if (ShouldSkipExactLeafTranslation(source))
+        {
+            return source;
+        }
+
+        if (StringHelpers.TryGetTranslationExactOrLowerAscii(source, out var translated)
+            && !string.Equals(source, translated, StringComparison.Ordinal))
+        {
+            return translated;
+        }
+
+        translated = MessagePatternTranslator.Translate(source, route);
+        return translated;
     }
 
     private static bool TryTranslateLabeledList(string source, string route, out string translated)

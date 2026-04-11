@@ -243,6 +243,21 @@ public sealed class DescriptionLongDescriptionPatchTests
         });
     }
 
+    [Test]
+    public void Postfix_TranslatesReasonBearingDispositionLine_WithColoredFactionTarget_WhenPatched()
+    {
+        WriteDictionary(("giving alms to pilgrims", "巡礼者に施しをしたため"));
+
+        RunWithDescriptionPatch(() =>
+        {
+            var target = new DummyDescriptionTarget("Admired by {{C|the Mechanimists}} for giving alms to pilgrims.");
+            var builder = new StringBuilder();
+            target.GetLongDescription(builder);
+
+            Assert.That(builder.ToString(), Is.EqualTo("{{C|the Mechanimists}}に敬愛されている。理由: 巡礼者に施しをしたため。"));
+        });
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
