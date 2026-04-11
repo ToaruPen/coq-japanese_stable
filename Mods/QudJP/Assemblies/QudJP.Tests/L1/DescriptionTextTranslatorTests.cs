@@ -71,6 +71,26 @@ public sealed class DescriptionTextTranslatorTests
     }
 
     [Test]
+    public void TranslateLongDescription_PreservesWholeLineWrapper_InDispositionLine()
+    {
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            "{{W|Loved by {{C|the Barathrumites}}.}}",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo("{{W|{{C|the Barathrumites}}に愛されている。}}"));
+    }
+
+    [Test]
+    public void TranslateLongDescription_PreservesRelationWrapper_InDispositionLine()
+    {
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            "{{C|Loved by}} the Barathrumites.",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo("the Barathrumitesに{{C|愛されている}}。"));
+    }
+
+    [Test]
     public void TranslateLongDescription_TranslatesReasonBearingDispositionLine()
     {
         WriteExactDictionary(("giving alms to pilgrims", "巡礼者に施しをしたため"));
