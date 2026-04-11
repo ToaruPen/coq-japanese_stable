@@ -87,6 +87,48 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_UsesLowerAsciiFallbackWithoutMissingKeyNoise_ForProducerStringData()
+    {
+        WriteDictionary(
+            ("sated", "満腹"),
+            ("quenched", "潤沢"),
+            ("harvest dawn", "ハーヴェスト・ドーン"),
+            ("kisu ux", "キス・ウクス"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPlayerStatusBarTarget), nameof(DummyPlayerStatusBarTarget.BeginEndTurn)),
+                postfix: new HarmonyMethod(RequirePatchMethod("Postfix", typeof(object), typeof(MethodBase))));
+
+            var instance = new DummyPlayerStatusBarTarget
+            {
+                NextFoodWater = "Sated Quenched",
+                NextTime = "Harvest Dawn 16th of Kisu Ux",
+            };
+
+            instance.BeginEndTurn(core: null);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(instance.GetStringData("FoodWater"), Is.EqualTo("満腹 潤沢"));
+                Assert.That(instance.GetStringData("Time"), Is.EqualTo("ハーヴェスト・ドーン キス・ウクス16日"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("Sated"), Is.EqualTo(0));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("Quenched"), Is.EqualTo(0));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("Harvest Dawn"), Is.EqualTo(0));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("Kisu Ux"), Is.EqualTo(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Postfix_RecordsProducerStringDataOwnerRouteTransforms_WithoutUITextSkinSinkObservation()
     {
         WriteDictionary(

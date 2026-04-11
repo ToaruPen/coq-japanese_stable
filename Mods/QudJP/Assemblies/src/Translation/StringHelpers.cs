@@ -58,23 +58,24 @@ internal static class StringHelpers
 
     internal static string? TranslateExactOrLowerAscii(string source)
     {
-        var direct = Translator.Translate(source);
-        if (!string.Equals(direct, source, StringComparison.Ordinal))
+        if (Translator.TryGetTranslation(source, out var direct)
+            && !string.Equals(direct, source, StringComparison.Ordinal))
         {
             return direct;
         }
 
         var lowered = LowerAscii(source);
-        if (!string.Equals(lowered, source, StringComparison.Ordinal))
+        if (!string.Equals(lowered, source, StringComparison.Ordinal)
+            && Translator.TryGetTranslation(lowered, out var loweredTranslation)
+            && !string.Equals(loweredTranslation, lowered, StringComparison.Ordinal))
         {
-            var loweredTranslation = Translator.Translate(lowered);
-            if (!string.Equals(loweredTranslation, lowered, StringComparison.Ordinal))
-            {
-                return loweredTranslation;
-            }
+            return loweredTranslation;
         }
 
-        return null;
+        var translated = Translator.Translate(source);
+        return string.Equals(translated, source, StringComparison.Ordinal)
+            ? null
+            : translated;
     }
 
     internal static bool TryGetTranslationExactOrLowerAscii(string source, out string translated)

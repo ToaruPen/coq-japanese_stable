@@ -59,6 +59,20 @@ public sealed class StringHelpersTests
     }
 
     [Test]
+    public void TranslateExactOrLowerAscii_FallsBackToLowerAsciiKeyWithoutMissingKeyNoise()
+    {
+        WriteDictionary(("desecrate", "冒涜する"));
+
+        var translated = StringHelpers.TranslateExactOrLowerAscii("Desecrate");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("冒涜する"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("Desecrate"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public void TryGetTranslationExactOrLowerAscii_FallsBackToLowerAsciiKeyWithoutMissingKeyNoise()
     {
         WriteDictionary(("flower fields", "花畑"));

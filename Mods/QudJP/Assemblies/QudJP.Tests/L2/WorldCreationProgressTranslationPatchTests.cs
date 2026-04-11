@@ -187,6 +187,34 @@ public sealed class WorldCreationProgressTranslationPatchTests
         }
     }
 
+    [Test]
+    public void Prefix_UsesLowerAsciiFallbackWithoutMissingKeyNoise_WhenPatched()
+    {
+        WriteDictionary(("initializing protocols...", "プロトコルを初期化しています..."));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyWorldCreationProgressTarget), nameof(DummyWorldCreationProgressTarget.NextStep)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(WorldCreationProgressTranslationPatch), nameof(WorldCreationProgressTranslationPatch.Prefix))));
+
+            DummyWorldCreationProgressTarget.NextStep("Initializing protocols...", 1);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyWorldCreationProgressTarget.LastNextStepText, Is.EqualTo("プロトコルを初期化しています..."));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("Initializing protocols..."), Is.EqualTo(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
