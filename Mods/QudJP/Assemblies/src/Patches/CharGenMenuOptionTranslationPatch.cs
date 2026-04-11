@@ -17,13 +17,21 @@ public static class CharGenMenuOptionTranslationPatch
         "XRL.CharacterBuilds.Qud.UI.QudAttributesModuleWindow",
         "XRL.CharacterBuilds.Qud.UI.QudBuildLibraryModuleWindow",
         "XRL.CharacterBuilds.Qud.UI.QudBuildSummaryModuleWindow",
+        "XRL.CharacterBuilds.Qud.UI.QudChartypeModuleWindow",
+        "XRL.CharacterBuilds.Qud.UI.QudChooseStartingLocationModuleWindow",
+        "XRL.CharacterBuilds.Qud.UI.QudCustomizeCharacterModuleWindow",
+        "XRL.CharacterBuilds.Qud.UI.QudCyberneticsModuleWindow",
         "XRL.CharacterBuilds.Qud.UI.QudGamemodeModuleWindow",
+        "XRL.CharacterBuilds.Qud.UI.QudGenotypeModuleWindow",
         "XRL.CharacterBuilds.Qud.UI.QudMutationsModuleWindow",
+        "XRL.CharacterBuilds.Qud.UI.QudPregenModuleWindow",
+        "XRL.CharacterBuilds.Qud.UI.QudSubtypeModuleWindow",
     };
 
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
+        var seen = new HashSet<string>(StringComparer.Ordinal);
         foreach (var typeName in TargetTypeNames)
         {
             var type = AccessTools.TypeByName(typeName);
@@ -40,8 +48,20 @@ public static class CharGenMenuOptionTranslationPatch
                 continue;
             }
 
-            yield return method;
+            if (seen.Add(BuildMethodKey(method)))
+            {
+                yield return method;
+            }
         }
+    }
+
+    private static string BuildMethodKey(MethodBase method)
+    {
+        return (method.DeclaringType?.FullName ?? string.Empty)
+            + "|"
+            + method.Name
+            + "|"
+            + string.Join(",", Array.ConvertAll(method.GetParameters(), static parameter => parameter.ParameterType.FullName ?? string.Empty));
     }
 
     public static IEnumerable? Postfix(IEnumerable? values)
