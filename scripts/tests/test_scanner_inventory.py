@@ -136,3 +136,45 @@ class TestInventoryDraftJson:
         write_inventory_draft_json(output_path, draft)
 
         assert read_inventory_draft_json(output_path) == draft
+
+
+class TestInventorySite:
+    """Tests for InventorySite helpers."""
+
+    def test_is_proven_fixed_leaf_requires_route_and_ownership_provenance(self) -> None:
+        """A proven fixed-leaf candidate must keep both source-route and ownership provenance."""
+        base_fields = {
+            "id": "leaf-site",
+            "file": "Qud.UI/TestScreen.cs",
+            "line": 10,
+            "column": 5,
+            "sink": "Popup",
+            "type": SiteType.LEAF,
+            "confidence": Confidence.HIGH,
+            "pattern": 'Popup.Show("Leave")',
+            "key": "Leave",
+            "destination_dictionary": DestinationDictionary.SCOPED,
+            "rejection_reason": None,
+            "needs_review": False,
+            "needs_runtime": False,
+        }
+
+        missing_route = InventorySite(
+            **base_fields,
+            source_route=None,
+            ownership_class=OwnershipClass.MID_PIPELINE_OWNED,
+        )
+        missing_ownership = InventorySite(
+            **base_fields,
+            source_route="Popup",
+            ownership_class=None,
+        )
+        valid_site = InventorySite(
+            **base_fields,
+            source_route="Popup",
+            ownership_class=OwnershipClass.MID_PIPELINE_OWNED,
+        )
+
+        assert missing_route.is_proven_fixed_leaf is False
+        assert missing_ownership.is_proven_fixed_leaf is False
+        assert valid_site.is_proven_fixed_leaf is True

@@ -224,6 +224,8 @@ class InventorySite:
         return (
             self.type is SiteType.LEAF
             and self.confidence is Confidence.HIGH
+            and self.source_route is not None
+            and self.ownership_class is not None
             and not self.needs_review
             and not self.needs_runtime
             and self.destination_dictionary is not None
