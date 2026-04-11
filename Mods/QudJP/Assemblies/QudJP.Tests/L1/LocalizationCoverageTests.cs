@@ -194,6 +194,9 @@ public sealed class LocalizationCoverageTests
         var uiDefaultKeys = LoadEntries(Path.Combine(dictionariesRoot, "ui-default.ja.json"))
             .Select(static entry => entry.Key)
             .ToHashSet(StringComparer.Ordinal);
+        var worldEffectsStatusKeys = LoadEntries(Path.Combine(dictionariesRoot, "world-effects-status.ja.json"))
+            .Select(static entry => entry.Key)
+            .ToHashSet(StringComparer.Ordinal);
 
         Assert.Multiple(() =>
         {
@@ -201,6 +204,7 @@ public sealed class LocalizationCoverageTests
             Assert.That(skillsAndPowersKeys, Does.Contain("page {0} of {1}"));
             Assert.That(uiDefaultKeys, Does.Contain("Active Effects - {0}"));
             Assert.That(uiDefaultKeys, Does.Contain("No active effects."));
+            Assert.That(worldEffectsStatusKeys, Does.Contain("corrected vision"));
         });
     }
 

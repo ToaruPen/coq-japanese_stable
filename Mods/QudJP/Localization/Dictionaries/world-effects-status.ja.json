@@ -154,6 +154,11 @@
             "text": "支配された"
         },
         {
+            "key": "corrected vision",
+            "context": "XRL.World.Effects.Spectacles.Description",
+            "text": "矯正視界"
+        },
+        {
             "key": "Under someone else's control.",
             "context": "XRL.World.Effects.Dominated.Details",
             "text": "他者に操られている。"
