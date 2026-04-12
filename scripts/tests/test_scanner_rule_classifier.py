@@ -589,6 +589,12 @@ def test_classify_raw_hits_file_writes_inventory_draft_and_stats(tmp_path: Path)
     """File-level classification writes deterministic JSON and excludes filtered Does hits."""
     cases = [
         LEAF_CASES[0],
+        Case(
+            id="leaf-flight",
+            family="AddPlayerMessage",
+            matched_code='MessageQueue.AddPlayerMessage("You begin flying!")',
+            source_text=_source('MessageQueue.AddPlayerMessage("You begin flying!");'),
+        ),
         VERB_COMPOSITION_CASES[0],
         VERB_FALSE_POSITIVE_CASES[0],
         STRING_BUILDER_TEMPLATE_CASES[0],
@@ -607,15 +613,19 @@ def test_classify_raw_hits_file_writes_inventory_draft_and_stats(tmp_path: Path)
     assert output_path.exists()
     persisted = read_inventory_draft_json(output_path)
     assert persisted == draft
-    assert draft.stats.input_hits == 4
+    assert draft.stats.input_hits == 5
     assert draft.stats.filtered_hits == 1
     assert draft.stats.proven_fixed_leaf == 1
-    assert draft.stats.rejected_fixed_leaf == 2
+    assert draft.stats.rejected_fixed_leaf == 3
     assert [site.type for site in draft.sites] == [
+        SiteType.LEAF,
         SiteType.LEAF,
         SiteType.VERB_COMPOSITION,
         SiteType.TEMPLATE,
     ]
+    assert draft.sites[1].source_route == "AddPlayerMessage"
+    assert draft.sites[1].rejection_reason is FixedLeafRejectionReason.NEEDS_REVIEW
+    assert draft.sites[1].needs_review is True
 
 
 def test_rejection_reason_defensively_handles_non_proven_leaf_sites() -> None:
