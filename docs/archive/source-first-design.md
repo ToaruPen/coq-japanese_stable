@@ -718,21 +718,23 @@ When the game updates (e.g., 2.0.4 → 2.0.5):
 
 ### Tooling
 
-Add `--diff` flag to `scripts/legacies/scan_text_producers.py`:
+Keep a reserved `--diff` flag on `scripts/legacies/scan_text_producers.py` until
+incremental freshness handling is implemented:
 
 ```bash
 # Full scan (initial or rebuild)
 python scripts/legacies/scan_text_producers.py
 
-# Incremental scan after game update
-python scripts/legacies/scan_text_producers.py --diff ~/Dev/coq-decompiled-new/
+# Future-facing placeholder for incremental scan after game update
+python scripts/legacies/scan_text_producers.py --diff
 ```
 
 ### Current Status
 
 Game version is fixed at `2.0.4`. This strategy is designed but not implemented
-until an update ships. The scanner should be built diff-aware from the start so
-the `--diff` flag is a filter, not a separate code path.
+until an update ships. The current CLI keeps `--diff` as a documented no-op
+placeholder so the future freshness workflow can land without introducing a
+separate entry point.
 
 ## Resolved Design Decisions
 
