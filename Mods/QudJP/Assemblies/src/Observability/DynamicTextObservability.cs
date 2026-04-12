@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Globalization;
-using System.Text;
 
 namespace QudJP;
 
@@ -54,9 +53,10 @@ internal static class DynamicTextObservability
             "' family='" + family +
             "' hit=" + hitCount.ToString(CultureInfo.InvariantCulture) +
             " changed=" + (changed ? "true" : "false") +
-            " source='" + SanitizeForLog(sourceValue) +
-            "' translated='" + SanitizeForLog(translatedValue) +
-            "'." + Translator.GetCurrentLogContextSuffix());
+            " source='" + ObservabilityHelpers.SanitizeForLog(sourceValue, MaxValueLength) +
+            "' translated='" + ObservabilityHelpers.SanitizeForLog(translatedValue, MaxValueLength) +
+            "'." + Translator.GetCurrentLogContextSuffix()
+            + ObservabilityHelpers.BuildHelperStructuredSuffix(normalizedRoute, family, sourceValue));
     }
 
     private static string BuildCounterKey(string route, string family)
@@ -72,47 +72,5 @@ internal static class DynamicTextObservability
         }
 
         return counters.AddOrUpdate(OverflowKey, 1, ObservabilityHelpers.IncrementCounter);
-    }
-
-    private static string SanitizeForLog(string value)
-    {
-#if NET48
-        var sanitized = value.Length > MaxValueLength
-            ? value.Substring(0, MaxValueLength) + "..."
-            : value;
-#else
-        var sanitized = value.Length > MaxValueLength
-            ? string.Concat(value.AsSpan(0, MaxValueLength), "...")
-            : value;
-#endif
-
-        var builder = new StringBuilder(sanitized.Length);
-        for (var index = 0; index < sanitized.Length; index++)
-        {
-            var character = sanitized[index];
-            if (character == '\n')
-            {
-                builder.Append("\\n");
-            }
-            else if (character == '\r')
-            {
-                builder.Append("\\r");
-            }
-            else if (character == '\t')
-            {
-                builder.Append("\\t");
-            }
-            else if (char.IsControl(character))
-            {
-                builder.Append("\\u");
-                builder.Append(((int)character).ToString("X4", CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                builder.Append(character);
-            }
-        }
-
-        return builder.ToString();
     }
 }

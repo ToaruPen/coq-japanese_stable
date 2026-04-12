@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace QudJP;
@@ -9,6 +11,8 @@ internal static class ObservabilityHelpers
 {
     internal const string ContextSeparator = " > ";
     internal const string NoContextLabel = "<no-context>";
+    private const string MissingStructuredValue = "<missing>";
+    private const int HelperPayloadExcerptLimit = 512;
 
     internal static string ComposeContext(string? primaryContext, params string?[] details)
     {
@@ -137,5 +141,112 @@ internal static class ObservabilityHelpers
 
         var trimmedContext = context.Trim();
         return trimmedContext.Length == 0 ? NoContextLabel : trimmedContext;
+    }
+
+    internal static string SanitizeForLog(string value, int maxLength)
+    {
+        var boundedValue = maxLength > 0 && value.Length > maxLength
+            ? TrimForLog(value, maxLength) + "..."
+            : value;
+        return EscapeControlCharacters(boundedValue);
+    }
+
+    internal static string BuildHelperStructuredSuffix(string route, string family, string payload)
+    {
+        var sanitizedPayload = EscapeControlCharacters(payload);
+        var escapedRoute = EscapeStructuredValue(route);
+        var escapedFamily = EscapeStructuredValue(family);
+        if (sanitizedPayload.Length <= HelperPayloadExcerptLimit)
+        {
+            return "; route=" + escapedRoute
+                + "; family=" + escapedFamily
+                + "; template_id=" + MissingStructuredValue
+                + "; payload_mode=full"
+                + "; payload_excerpt=" + EscapeStructuredValue(sanitizedPayload)
+                + "; payload_sha256=" + MissingStructuredValue;
+        }
+
+        return "; route=" + escapedRoute
+            + "; family=" + escapedFamily
+            + "; template_id=" + MissingStructuredValue
+            + "; payload_mode=prefix_hash"
+            + "; payload_excerpt=" + EscapeStructuredValue(TrimForLog(sanitizedPayload, HelperPayloadExcerptLimit))
+            + "; payload_sha256=" + ComputeSha256Hex(sanitizedPayload);
+    }
+
+    internal static string EscapeStructuredValue(string value)
+    {
+        var builder = new StringBuilder(value.Length);
+        for (var index = 0; index < value.Length; index++)
+        {
+            var character = value[index];
+            if (character is '\\' or ';' or '=')
+            {
+                builder.Append('\\');
+            }
+
+            builder.Append(character);
+        }
+
+        return builder.ToString();
+    }
+
+    private static string EscapeControlCharacters(string value)
+    {
+        var builder = new StringBuilder(value.Length);
+        for (var index = 0; index < value.Length; index++)
+        {
+            var character = value[index];
+            if (character == '\n')
+            {
+                builder.Append("\\n");
+            }
+            else if (character == '\r')
+            {
+                builder.Append("\\r");
+            }
+            else if (character == '\t')
+            {
+                builder.Append("\\t");
+            }
+            else if (char.IsControl(character))
+            {
+                builder.Append("\\u");
+                builder.Append(((int)character).ToString("X4", CultureInfo.InvariantCulture));
+            }
+            else
+            {
+                builder.Append(character);
+            }
+        }
+
+        return builder.ToString();
+    }
+
+    private static string ComputeSha256Hex(string value)
+    {
+        var bytes = Encoding.UTF8.GetBytes(value);
+#if NET48
+        using var sha256 = SHA256.Create();
+        var hash = sha256.ComputeHash(bytes);
+#else
+        var hash = SHA256.HashData(bytes);
+#endif
+        var builder = new StringBuilder(hash.Length * 2);
+        for (var index = 0; index < hash.Length; index++)
+        {
+            builder.Append(hash[index].ToString("x2", CultureInfo.InvariantCulture));
+        }
+
+        return builder.ToString();
+    }
+
+    private static string TrimForLog(string value, int maxLength)
+    {
+#if NET48
+        return value.Substring(0, maxLength);
+#else
+        return new string(value.AsSpan(0, maxLength));
+#endif
     }
 }
