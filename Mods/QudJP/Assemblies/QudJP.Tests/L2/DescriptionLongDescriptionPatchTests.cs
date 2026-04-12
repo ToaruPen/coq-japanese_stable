@@ -200,6 +200,74 @@ public sealed class DescriptionLongDescriptionPatchTests
     }
 
     [Test]
+    public void Postfix_PreservesColorCodes_WhenLeadingArticleStripReordersColoredTarget()
+    {
+        WriteDictionary(("lighting a beacon fire to warn their enemies", "敵に警告するために狼煙を上げたため"));
+
+        RunWithDescriptionPatch(() =>
+        {
+            var target = new DummyDescriptionTarget("Hated by the {{C|盲道の徒}} for lighting a beacon fire to warn their enemies.");
+            var builder = new StringBuilder();
+            target.GetLongDescription(builder);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    builder.ToString(),
+                    Is.EqualTo("{{C|盲道の徒}}に憎まれている。理由: 敵に警告するために狼煙を上げたため。"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(DescriptionLongDescriptionPatch),
+                        "Description.FactionDisposition"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(DescriptionLongDescriptionPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        "Hated by the {{C|盲道の徒}} for lighting a beacon fire to warn their enemies.",
+                        "Hated by the {{C|盲道の徒}} for lighting a beacon fire to warn their enemies."),
+                    Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_PreservesColorCodes_WhenWholeVillagersTargetIsWrapped()
+    {
+        WriteDictionary(
+            ("The villagers of {0}", "{0}の村人たち"),
+            ("digging up the remains of their ancestors", "祖先の遺骸を掘り起こしたため"));
+
+        RunWithDescriptionPatch(() =>
+        {
+            var target = new DummyDescriptionTarget("Hated by {{C|the villagers of アラガシュル}} for digging up the remains of their ancestors.");
+            var builder = new StringBuilder();
+            target.GetLongDescription(builder);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    builder.ToString(),
+                    Is.EqualTo("{{C|アラガシュルの村人たち}}に憎まれている。理由: 祖先の遺骸を掘り起こしたため。"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(DescriptionLongDescriptionPatch),
+                        "Description.FactionDisposition"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(DescriptionLongDescriptionPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        "Hated by {{C|the villagers of アラガシュル}} for digging up the remains of their ancestors.",
+                        "Hated by {{C|the villagers of アラガシュル}} for digging up the remains of their ancestors."),
+                    Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
     public void Postfix_PassesThroughUnknownDescription_WhenPatched()
     {
         WriteDictionary(("Known text", "既知の文"));

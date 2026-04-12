@@ -168,8 +168,36 @@ internal static class DescriptionTextTranslator
         string target;
         if (!TryTranslateVillageDispositionTarget(targetGroup, spans, out target))
         {
-            target = TranslateDispositionTarget(target);
-            target = RestoreBalancedCapture(target, spans, targetGroup);
+            var strippedTarget = StringHelpers.StripLeadingEnglishArticle(
+                targetGroup.Value,
+                includeCapitalizedDefiniteArticle: true);
+            target = TranslateDispositionTarget(targetGroup.Value);
+
+            if (!string.Equals(strippedTarget, targetGroup.Value, StringComparison.Ordinal) && spans is not null && spans.Count > 0)
+            {
+                var articleLength = targetGroup.Value.Length - strippedTarget.Length;
+                var strippedStart = targetGroup.Index + articleLength;
+                var hasOpeningBeforeStrippedStart = false;
+                for (var index = 0; index < spans.Count; index++)
+                {
+                    var span = spans[index];
+                    if (span.Index < strippedStart
+                        && span.Index >= targetGroup.Index
+                        && ColorCodePreserver.IsOpeningBoundaryToken(span.Token))
+                    {
+                        hasOpeningBeforeStrippedStart = true;
+                        break;
+                    }
+                }
+
+                target = hasOpeningBeforeStrippedStart
+                    ? RestoreBalancedCapture(target, spans, targetGroup)
+                    : RestoreCaptureAtOffset(target, spans, strippedStart, strippedTarget.Length);
+            }
+            else
+            {
+                target = RestoreBalancedCapture(target, spans, targetGroup);
+            }
         }
         var reasonGroup = match.Groups["reason"];
         if (!reasonGroup.Success)
@@ -369,6 +397,35 @@ internal static class DescriptionTextTranslator
             targetGroup.Index + match.Groups["name"].Index,
             match.Groups["name"].Length);
         translated = translatedTemplate.Replace("{0}", translatedName);
+        if (spans is not null && spans.Count > 0)
+        {
+            var nameStart = targetGroup.Index + match.Groups["name"].Index;
+            var nameSpans = ColorCodePreserver.SliceSpans(spans, nameStart, match.Groups["name"].Length);
+            if (nameSpans.Any(static span => ColorCodePreserver.IsOpeningBoundaryToken(span.Token)))
+            {
+                return true;
+            }
+        }
+
+        var targetBoundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(
+            spans,
+            match,
+            targetGroup.Length,
+            translated.Length);
+        if (spans is not null && spans.Count > 0)
+        {
+            var targetEnd = targetGroup.Index + targetGroup.Length;
+            for (var index = 0; index < spans.Count; index++)
+            {
+                var span = spans[index];
+                if (span.Index == targetEnd && ColorCodePreserver.IsClosingBoundaryToken(span.Token))
+                {
+                    targetBoundarySpans.Add(new ColorSpan(translated.Length, span.Token));
+                }
+            }
+        }
+
+        translated = ColorAwareTranslationComposer.Restore(translated, targetBoundarySpans);
         return true;
     }
 
