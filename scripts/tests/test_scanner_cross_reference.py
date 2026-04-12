@@ -342,6 +342,29 @@ def test_draft_stats_use_inventory_site_proven_fixed_leaf_rules() -> None:
     assert draft.stats.proven_fixed_leaf == 0
 
 
+@pytest.mark.parametrize(
+    ("site_id", "key"),
+    [
+        ("empty-leaf", ""),
+        ("space-leaf", " "),
+        ("body-text-leaf", "BodyText"),
+        ("selected-mod-label-leaf", "SelectedModLabel"),
+    ],
+)
+def test_cross_reference_excludes_pseudo_leaf_noise_before_fixed_leaf_review(
+    site_id: str,
+    key: str,
+) -> None:
+    """Pseudo-leaf placeholders and widget/channel identifiers should not survive as fixed-leaf work."""
+    draft = _draft(_site(site_id, key=key))
+
+    candidate = cross_reference_inventory(draft, REPO_ROOT)
+
+    assert len(candidate.sites) == 1
+    assert candidate.sites[0].status is SiteStatus.EXCLUDED
+    assert candidate.sites[0].existing_dictionary is None
+
+
 def test_cross_reference_inventory_file_writes_candidate_inventory(tmp_path: Path) -> None:
     """Phase 1d can read an inventory draft file and persist candidate inventory JSON."""
     _write_source_file(

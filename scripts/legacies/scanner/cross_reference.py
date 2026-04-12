@@ -91,6 +91,7 @@ _DISPLAY_NAME_ROUTE_SIGNATURES = (
     "XRL.World.GetDisplayNameEvent:GetFor",
     "XRL.World.GetDisplayNameEvent:ProcessFor",
 )
+_PSEUDO_LEAF_IDENTIFIER_KEYS = frozenset({"BodyText", "SelectedModLabel"})
 
 
 @dataclass(frozen=True, slots=True)
@@ -210,6 +211,8 @@ def _patch_matches(
 
 def _default_status(site: InventorySite) -> SiteStatus:
     """Map a classified site to its default candidate-inventory status."""
+    if _is_pseudo_leaf_noise(site):
+        return SiteStatus.EXCLUDED
     if site.type is SiteType.PROCEDURAL_TEXT:
         return SiteStatus.EXCLUDED
     if site.type is SiteType.UNRESOLVED or site.needs_runtime:
@@ -219,6 +222,15 @@ def _default_status(site: InventorySite) -> SiteStatus:
     if site.is_proven_fixed_leaf:
         return SiteStatus.NEEDS_TRANSLATION
     return SiteStatus.NEEDS_REVIEW
+
+
+def _is_pseudo_leaf_noise(site: InventorySite) -> bool:
+    """Return whether a proven leaf is actually placeholder/widget scaffolding."""
+    if site.type is not SiteType.LEAF or site.key is None:
+        return False
+    if not site.key or site.key.isspace():
+        return True
+    return site.key in _PSEUDO_LEAF_IDENTIFIER_KEYS
 
 
 def _collect_dictionary_keys(dictionary_root: Path) -> dict[str, set[str]]:

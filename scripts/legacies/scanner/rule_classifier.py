@@ -26,6 +26,7 @@ from scripts.legacies.scanner.inventory import (
     RawHit,
     SiteType,
     default_destination_dictionary_for_route,
+    is_sink_observed_only_route,
     read_raw_hits_jsonl,
     write_inventory_draft_json,
 )
@@ -234,6 +235,15 @@ def _provenance_fields(
     needs_review = bool(fields.get("needs_review", False))
     needs_runtime = bool(fields.get("needs_runtime", False))
     source_route = raw_hit.family
+
+    if site_type is SiteType.LEAF and is_sink_observed_only_route(source_route):
+        return {
+            "source_route": source_route,
+            "ownership_class": OwnershipClass.SINK,
+            "destination_dictionary": None,
+            "rejection_reason": FixedLeafRejectionReason.NEEDS_REVIEW,
+            "needs_review": True,
+        }
 
     if site_type is SiteType.LEAF and confidence is Confidence.HIGH and not needs_review and not needs_runtime:
         return {

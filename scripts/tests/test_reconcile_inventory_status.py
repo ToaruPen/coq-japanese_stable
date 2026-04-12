@@ -171,6 +171,34 @@ def test_reconcile_inventory_promotes_sites_from_current_assets(tmp_path: Path) 
     assert summary.does_verb_promotions == 1
 
 
+def test_repo_candidate_inventory_reclassifies_existing_message_frame_families() -> None:
+    """Repo candidate inventory should not leave proven DidX message-frame families in needs_patch."""
+    inventory = read_candidate_inventory_json(REPO_ROOT / "docs" / "candidate-inventory.json")
+    expected_ids = {
+        "XRL.World.Effects/HolographicBleeding.cs::L37:C5",
+        "XRL.World.Effects/HolographicBleeding.cs::L41:C5",
+        "XRL.World.Effects/HolographicBleeding.cs::L46:C4",
+        "XRL.World.Effects/HolographicBleeding.cs::L50:C4",
+        "XRL.World.Effects/HolographicBleeding.cs::L62:C6",
+        "XRL.World.Effects/HolographicBleeding.cs::L66:C6",
+        "XRL.World.Effects/HolographicBleeding.cs::L71:C5",
+        "XRL.World.Effects/HolographicBleeding.cs::L75:C5",
+        "XRL.World.Effects/HolographicBleeding.cs::L80:C4",
+        "XRL.World.Effects/HolographicBleeding.cs::L84:C4",
+        "XRL.World.Effects/Prone.cs::L158:C5",
+        "XRL.World.Effects/Prone.cs::L162:C5",
+        "XRL.World.Effects/Prone.cs::L167:C4",
+        "XRL.World.Effects/Prone.cs::L273:C5",
+        "XRL.World.Effects/Prone.cs::L277:C5",
+        "XRL.World.Effects/Prone.cs::L282:C4",
+    }
+    sites = [site for site in inventory.sites if site.id in expected_ids]
+
+    assert {site.id for site in sites} == expected_ids
+    assert all(site.status is SiteStatus.TRANSLATED for site in sites)
+    assert all(site.existing_dictionary == "MessageFrames/verbs.ja.json" for site in sites)
+
+
 def test_main_rewrites_inventory_and_reports_summary(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """CLI rewrites the inventory file and reports the reconciliation summary."""
     draft = _draft(

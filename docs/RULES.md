@@ -99,6 +99,8 @@ A candidate is a proven fixed-leaf only when the source is stable, owner-safe, m
 
 Acceptance of a proven fixed-leaf candidate does not change current Translator runtime semantics. `Translator` stays a flat key-only exact lookup path, and validation must reject duplicate or overly broad additions upstream instead of tolerating them at runtime.
 
+The first executed fixed-leaf batch stayed prune-first: the entire 27-row pending queue was pseudo-leaf noise (`""`, `" "`, `BodyText`, `SelectedModLabel`), so the correct safe-survivor set was empty rather than force-promoted.
+
 ## Provenance requirements
 
 Every accepted candidate must record:
@@ -111,7 +113,17 @@ Every accepted candidate must record:
 
 ## Destination selection
 
-Use a global flat dictionary when the candidate is a proven fixed-leaf, exact, shared, and not route-specific. Use a scoped dictionary when the candidate belongs to one screen, family, or producer route and would be clearer with a narrower home. If a candidate can fit both, prefer the narrower-scoped home. If it is dynamic, procedural, `message-frame`, builder/display-name, unresolved, or `needs_runtime`, do not route it to a dictionary unless it is separately proven safe.
+Use a global flat dictionary when the candidate is a proven fixed-leaf, exact, shared, and not route-specific. Use a scoped dictionary when the candidate belongs to one screen, family, or producer route and would be clearer with a narrower home. If a candidate can fit both, prefer the narrower-scoped home. `Popup` exact leaves may use that narrower scoped home when they are separately proven safe. `AddPlayerMessage` remains sink-observed and is not itself a fixed-leaf owner or destination shortcut. If a candidate is dynamic, procedural, `message-frame`, builder/display-name, unresolved, sink-observed, or `needs_runtime`, do not route it to a dictionary unless it is separately proven safe.
+
+## Fixed-leaf batch guardrails
+
+- Exclude pseudo-leaf placeholder and widget/channel rows before promotion review, including empty strings, whitespace-only keys, `BodyText`, and `SelectedModLabel`.
+- The current fixed-leaf addition set excludes rows already marked `translated` or `excluded`; existing coverage is evidence for defer/reject decisions, not a fresh addition to validate.
+- Validator failures must stay deterministic:
+  - `duplicate_key` for competing exact additions in the active addition set
+  - `broad_entry` for non-proven, owner-routed, or sink-observed routes
+  - `wrong_destination` when a proven leaf bypasses its narrowest safe dictionary home
+- Stale bridge bookkeeping already covered on an existing seam (for example the audited `Prone` / `HolographicBleeding` `DidX` rows) belongs to reconcile/owner-audit work, not fixed-leaf promotion.
 
 ## Color-tag rules
 

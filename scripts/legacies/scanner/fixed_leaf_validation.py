@@ -10,12 +10,15 @@ from scripts.legacies.scanner.inventory import (
     FixedLeafRejectionReason,
     InventoryDraft,
     InventorySite,
+    SiteStatus,
     default_destination_dictionary_for_route,
+    is_sink_observed_only_route,
 )
 
 _MIN_DUPLICATE_SITE_COUNT = 2
 _DUPLICATE_RULE = "Use one exact fixed-leaf key per addition set; merge or reject duplicates before import."
 _BROAD_RULE = "Reject non-proven fixed-leaf routes and keep this route owner-routed."
+_SINK_OBSERVED_RULE = "AddPlayerMessage remains sink-observed and must not validate as a proven fixed-leaf destination."
 _SCOPED_RULE = (
     "Popup and message-log leaves should use a scoped dictionary when the route already defines a narrower owner."
 )
@@ -62,7 +65,7 @@ def validate_fixed_leaf_inventory(draft: InventoryDraft) -> FixedLeafValidationR
     """Validate proposed fixed-leaf additions in a candidate inventory."""
     candidate_sites = tuple(
         sorted(
-            (site for site in draft.sites if site.destination_dictionary is not None),
+            (site for site in draft.sites if _is_candidate_addition(site)),
             key=lambda site: (site.id, site.key or "", site.source_route or ""),
         )
     )
@@ -72,6 +75,14 @@ def validate_fixed_leaf_inventory(draft: InventoryDraft) -> FixedLeafValidationR
         candidate_count=len(candidate_sites),
         issues=tuple(sorted(filtered_issues, key=_issue_sort_key)),
     )
+
+
+def _is_candidate_addition(site: InventorySite) -> bool:
+    """Return whether a site still belongs to the current addition set."""
+    return site.destination_dictionary is not None and site.status not in {
+        SiteStatus.TRANSLATED,
+        SiteStatus.EXCLUDED,
+    }
 
 
 def render_fixed_leaf_validation_report(report: FixedLeafValidationReport) -> str:
@@ -106,6 +117,17 @@ def render_fixed_leaf_validation_report(report: FixedLeafValidationReport) -> st
 
 def _site_issue(site: InventorySite) -> FixedLeafValidationIssue | None:
     """Validate one candidate site in isolation."""
+    if is_sink_observed_only_route(site.source_route):
+        return FixedLeafValidationIssue(
+            failure_class=FixedLeafFailureClass.BROAD_ENTRY,
+            candidate_ids=(site.id,),
+            key=site.key,
+            source_route=site.source_route,
+            actual_destination=site.destination_dictionary,
+            rejection_reason=site.rejection_reason,
+            failure_factors=_failure_factors(site),
+            expected_rule=_SINK_OBSERVED_RULE,
+        )
     if not site.is_proven_fixed_leaf:
         return FixedLeafValidationIssue(
             failure_class=FixedLeafFailureClass.BROAD_ENTRY,

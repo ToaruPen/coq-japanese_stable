@@ -45,6 +45,54 @@ public sealed class DescriptionShortDescriptionPatchTests
     }
 
     [Test]
+    public void DescriptionShortDescriptionPatch_TranslatesMixedJapaneseDescriptionBlock_FromRuntimeShape_WhenPatched()
+    {
+        WriteDictionary(
+            ("The villagers of {0}", "{0}の村人たち"),
+            ("lighting a beacon fire to warn their enemies", "敵に警告するために狼煙を上げたため"),
+            ("selling a map of their vaults to adventurers", "冒険者に彼らの地下墓所の地図を売ったため"),
+            ("digging up the remains of their ancestors", "祖先の遺骸を掘り起こしたため"));
+
+        const string source = "温かな笑みが、時と無数の塩の欠片にそばかすのように点じられた老いた顔に広がる。猫背の体はわずかに揺れ、棘冠を戴いた短い尾が足元を払う。肩の落ちた背から第二の腕が持ち上がり、指を組んでもうひとつの顔を形作る――口はなく、砂漠の白で塗られた目だけが古代めいて空虚だ。\n-----\nLoved by the ジョッパの村人たち.\n\nHated by 馬類 for lighting a beacon fire to warn their enemies.\nDisliked by the 盲道の徒 for lighting a beacon fire to warn their enemies.\nDisliked by the イドの住民 for selling a map of their vaults to adventurers.\nHated by the villagers of アラガシュル for digging up the remains of their ancestors.";
+
+        const string expected = "温かな笑みが、時と無数の塩の欠片にそばかすのように点じられた老いた顔に広がる。猫背の体はわずかに揺れ、棘冠を戴いた短い尾が足元を払う。肩の落ちた背から第二の腕が持ち上がり、指を組んでもうひとつの顔を形作る――口はなく、砂漠の白で塗られた目だけが古代めいて空虚だ。\n-----\nジョッパの村人たちに愛されている。\n\n馬類に憎まれている。理由: 敵に警告するために狼煙を上げたため。\n盲道の徒に嫌われている。理由: 敵に警告するために狼煙を上げたため。\nイドの住民に嫌われている。理由: 冒険者に彼らの地下墓所の地図を売ったため。\nアラガシュルの村人たちに憎まれている。理由: 祖先の遺骸を掘り起こしたため。";
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyDescriptionShortDescriptionTarget), nameof(DummyDescriptionShortDescriptionTarget.GetShortDescription)),
+                postfix: new HarmonyMethod(RequirePostfix(typeof(DescriptionShortDescriptionPatch), nameof(DescriptionShortDescriptionPatch.Postfix))));
+
+            var target = new DummyDescriptionShortDescriptionTarget(source);
+            var result = target.GetShortDescription(useShort: true, useLong: false, prefix: string.Empty);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo(expected));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(DescriptionShortDescriptionPatch),
+                        "Description.FactionDisposition"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(DescriptionShortDescriptionPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        source),
+                    Is.EqualTo(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void DescriptionShortDescriptionPatch_TranslatesScopedWorldModsEntries_WhenPatched()
     {
         WriteScopedDictionary(

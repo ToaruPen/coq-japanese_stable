@@ -78,7 +78,8 @@ class DestinationDictionary(StrEnum):
     SCOPED = "scoped"
 
 
-SCOPED_DESTINATION_ROUTES = frozenset({"AddPlayerMessage", "Popup"})
+SCOPED_DESTINATION_ROUTES = frozenset({"Popup"})
+SINK_OBSERVED_ONLY_ROUTES: Final[frozenset[str]] = frozenset({"AddPlayerMessage"})
 
 FIRST_PR_STATIC_CONSUMER_BOUNDARY: Final[Mapping[str, tuple[str, ...]]] = MappingProxyType(
     {
@@ -134,6 +135,11 @@ def default_destination_dictionary_for_route(
     if source_route in SCOPED_DESTINATION_ROUTES or sink in SCOPED_DESTINATION_ROUTES:
         return DestinationDictionary.SCOPED
     return DestinationDictionary.GLOBAL_FLAT
+
+
+def is_sink_observed_only_route(source_route: str | None) -> bool:
+    """Return whether a route must stay sink-observed."""
+    return source_route in SINK_OBSERVED_ONLY_ROUTES
 
 
 @dataclass(frozen=True, slots=True)

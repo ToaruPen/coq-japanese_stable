@@ -13,11 +13,17 @@ internal static class DescriptionTextTranslator
     private static readonly Regex LabeledListPattern =
         new Regex("^(?<label>Physical features:|Equipped:) (?<items>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex VillageDispositionTargetPattern =
+        new Regex("^(?:the|The) villagers of (?<name>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex StatAbbreviationPattern =
         new Regex("^[A-Z]{2,4}$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex SignedStatAbbreviationPattern =
         new Regex("^[+-]\\d+\\s+[A-Z]{2,4}$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex JapaneseCharacterPattern =
+        new Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     // Keep TranslateShortDescription and TranslateLongDescription separate even though they
     // currently delegate to TranslateDescriptionText, so short/long description routes can
@@ -158,7 +164,66 @@ internal static class DescriptionTextTranslator
         }
 
         relation = RestoreBalancedCapture(relation, spans, match.Groups["relation"]);
-        var target = RestoreBalancedCapture(match.Groups["target"].Value, spans, match.Groups["target"]);
+        var targetGroup = match.Groups["target"];
+        var isVillageDispositionTarget = VillageDispositionTargetPattern.IsMatch(targetGroup.Value);
+        string target;
+        if (!TryTranslateVillageDispositionTarget(targetGroup, spans, out target))
+        {
+            if (isVillageDispositionTarget)
+            {
+                target = RestoreBalancedCapture(targetGroup.Value, spans, targetGroup);
+            }
+            else
+            {
+                var strippedTarget = StringHelpers.StripLeadingEnglishArticle(
+                    targetGroup.Value,
+                    includeCapitalizedDefiniteArticle: true);
+                target = TranslateDispositionTarget(targetGroup.Value);
+
+                if (!string.Equals(strippedTarget, targetGroup.Value, StringComparison.Ordinal) && spans is not null && spans.Count > 0)
+                {
+                    var articleLength = targetGroup.Value.Length - strippedTarget.Length;
+                    var strippedStart = targetGroup.Index + articleLength;
+                    var hasWrapperCrossingStrippedStart = false;
+                    var targetEnd = targetGroup.Index + targetGroup.Length;
+                    var openingStack = new Stack<int>();
+                    for (var index = 0; index < spans.Count; index++)
+                    {
+                        var span = spans[index];
+                        if (span.Index < targetGroup.Index || span.Index > targetEnd)
+                        {
+                            continue;
+                        }
+
+                        if (ColorCodePreserver.IsOpeningBoundaryToken(span.Token))
+                        {
+                            openingStack.Push(span.Index);
+                            continue;
+                        }
+
+                        if (!ColorCodePreserver.IsClosingBoundaryToken(span.Token) || openingStack.Count == 0)
+                        {
+                            continue;
+                        }
+
+                        var openingIndex = openingStack.Pop();
+                        if (openingIndex < strippedStart && span.Index > strippedStart)
+                        {
+                            hasWrapperCrossingStrippedStart = true;
+                            break;
+                        }
+                    }
+
+                    target = hasWrapperCrossingStrippedStart
+                        ? RestoreBalancedCapture(target, spans, targetGroup)
+                        : RestoreCaptureAtOffset(target, spans, strippedStart, strippedTarget.Length);
+                }
+                else
+                {
+                    target = RestoreBalancedCapture(target, spans, targetGroup);
+                }
+            }
+        }
         var reasonGroup = match.Groups["reason"];
         if (!reasonGroup.Success)
         {
@@ -308,6 +373,113 @@ internal static class DescriptionTextTranslator
 
         translated = MessagePatternTranslator.Translate(source, route);
         return translated;
+    }
+
+    private static string TranslateDispositionTarget(string source)
+    {
+        if (StringHelpers.TryGetTranslationExactOrLowerAscii(source, out var translated)
+            && !string.Equals(source, translated, StringComparison.Ordinal))
+        {
+            return translated;
+        }
+
+        var strippedArticle = StringHelpers.StripLeadingEnglishArticle(source, includeCapitalizedDefiniteArticle: true);
+        if (string.Equals(strippedArticle, source, StringComparison.Ordinal))
+        {
+            return source;
+        }
+
+        if (StringHelpers.TryGetTranslationExactOrLowerAscii(strippedArticle, out translated)
+            && !string.Equals(strippedArticle, translated, StringComparison.Ordinal))
+        {
+            return translated;
+        }
+
+        return ContainsJapaneseCharacters(strippedArticle)
+            ? strippedArticle
+            : source;
+    }
+
+    private static bool TryTranslateVillageDispositionTarget(Group targetGroup, IReadOnlyList<ColorSpan>? spans, out string translated)
+    {
+        var match = VillageDispositionTargetPattern.Match(targetGroup.Value);
+        if (!match.Success)
+        {
+            translated = targetGroup.Value;
+            return false;
+        }
+
+        var translatedTemplate = Translator.Translate("The villagers of {0}");
+        if (string.Equals(translatedTemplate, "The villagers of {0}", StringComparison.Ordinal))
+        {
+            translated = targetGroup.Value;
+            return false;
+        }
+
+        var translatedName = RestoreCaptureAtOffset(
+            match.Groups["name"].Value,
+            spans,
+            targetGroup.Index + match.Groups["name"].Index,
+            match.Groups["name"].Length);
+        translated = translatedTemplate.Replace("{0}", translatedName);
+
+        var targetSpans = spans is not null && spans.Count > 0
+            ? ColorCodePreserver.SliceSpans(spans, targetGroup.Index, targetGroup.Length)
+            : null;
+
+        var targetBoundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(
+            targetSpans,
+            match,
+            targetGroup.Length,
+            translated.Length);
+        if (targetSpans is not null && targetSpans.Count > 0)
+        {
+            var nameStart = match.Groups["name"].Index;
+            var openingStack = new Stack<ColorSpan>();
+            for (var index = 0; index < targetSpans.Count; index++)
+            {
+                var span = targetSpans[index];
+                if (ColorCodePreserver.IsOpeningBoundaryToken(span.Token))
+                {
+                    openingStack.Push(span);
+                    continue;
+                }
+
+                if (!ColorCodePreserver.IsClosingBoundaryToken(span.Token) || span.Index != targetGroup.Length || openingStack.Count == 0)
+                {
+                    continue;
+                }
+
+                var opening = openingStack.Pop();
+                if (opening.Index < nameStart)
+                {
+                    targetBoundarySpans.Add(new ColorSpan(translated.Length, span.Token));
+                }
+            }
+        }
+
+        translated = ColorAwareTranslationComposer.Restore(translated, targetBoundarySpans);
+        return true;
+    }
+
+    private static string RestoreCaptureAtOffset(string value, IReadOnlyList<ColorSpan>? spans, int startIndex, int length)
+    {
+        if (spans is null || spans.Count == 0 || length < 0)
+        {
+            return value;
+        }
+
+        var captureSpans = ColorCodePreserver.SliceSpans(spans, startIndex, length);
+        captureSpans.AddRange(ColorCodePreserver.SliceAdjacentCaptureBoundarySpans(spans, startIndex, length));
+        captureSpans = FilterBalancedBoundarySpans(captureSpans);
+        return captureSpans.Count == 0
+            ? value
+            : ColorAwareTranslationComposer.Restore(value, captureSpans);
+    }
+
+    private static bool ContainsJapaneseCharacters(string source)
+    {
+        return !string.IsNullOrEmpty(source) && JapaneseCharacterPattern.IsMatch(source);
     }
 
     private static bool TryTranslateLabeledList(string source, string route, out string translated)

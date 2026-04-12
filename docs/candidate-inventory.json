@@ -1,6 +1,6 @@
 {
   "game_version": "2.0.4",
-  "scan_date": "2026-04-11",
+  "scan_date": "2026-04-12",
   "sites": [
     {
       "column": 3,
@@ -11637,6 +11637,7 @@
       "column": 5,
       "confidence": "high",
       "destination_dictionary": null,
+      "existing_dictionary": "MessageFrames/verbs.ja.json",
       "extra": "base.DisplayNameStripped + \" from another wound\"",
       "file": "XRL.World.Effects/HolographicBleeding.cs",
       "frame": "DidX",
@@ -11650,7 +11651,7 @@
       "rejection_reason": "message_frame",
       "sink": "DidX",
       "source_route": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "begin"
     },
@@ -11658,6 +11659,7 @@
       "column": 5,
       "confidence": "high",
       "destination_dictionary": null,
+      "existing_dictionary": "MessageFrames/verbs.ja.json",
       "extra": "base.DisplayNameStripped",
       "file": "XRL.World.Effects/HolographicBleeding.cs",
       "frame": "DidX",
@@ -11671,7 +11673,7 @@
       "rejection_reason": "message_frame",
       "sink": "DidX",
       "source_route": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "begin"
     },
@@ -11679,6 +11681,7 @@
       "column": 4,
       "confidence": "high",
       "destination_dictionary": null,
+      "existing_dictionary": "MessageFrames/verbs.ja.json",
       "extra": "\"acting like \" + Object.itis + \" \" + base.DisplayNameStripped + \" from another wound\"",
       "file": "XRL.World.Effects/HolographicBleeding.cs",
       "frame": "DidX",
@@ -11692,7 +11695,7 @@
       "rejection_reason": "message_frame",
       "sink": "DidX",
       "source_route": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "begin"
     },
@@ -11700,6 +11703,7 @@
       "column": 4,
       "confidence": "high",
       "destination_dictionary": null,
+      "existing_dictionary": "MessageFrames/verbs.ja.json",
       "extra": "\"acting like \" + Object.itis + \" \" + base.DisplayNameStripped",
       "file": "XRL.World.Effects/HolographicBleeding.cs",
       "frame": "DidX",
@@ -11713,7 +11717,7 @@
       "rejection_reason": "message_frame",
       "sink": "DidX",
       "source_route": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "begin"
     },
@@ -11721,6 +11725,7 @@
       "column": 6,
       "confidence": "high",
       "destination_dictionary": null,
+      "existing_dictionary": "MessageFrames/verbs.ja.json",
       "extra": "one of your wounds is an illusion",
       "file": "XRL.World.Effects/HolographicBleeding.cs",
       "frame": "DidX",
@@ -11734,7 +11739,7 @@
       "rejection_reason": "message_frame",
       "sink": "DidX",
       "source_route": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "realize"
     },
@@ -11742,6 +11747,7 @@
       "column": 6,
       "confidence": "high",
       "destination_dictionary": null,
+      "existing_dictionary": "MessageFrames/verbs.ja.json",
       "extra": "your wound is an illusion",
       "file": "XRL.World.Effects/HolographicBleeding.cs",
       "frame": "DidX",
@@ -11755,7 +11761,7 @@
       "rejection_reason": "message_frame",
       "sink": "DidX",
       "source_route": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "realize"
     },
@@ -11763,6 +11769,7 @@
       "column": 5,
       "confidence": "high",
       "destination_dictionary": null,
+      "existing_dictionary": "MessageFrames/verbs.ja.json",
       "extra": "one of your wounds is an illusion, and the pain from it suddenly stops",
       "file": "XRL.World.Effects/HolographicBleeding.cs",
       "frame": "DidX",
@@ -11776,7 +11783,7 @@
       "rejection_reason": "message_frame",
       "sink": "DidX",
       "source_route": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "realize"
     },
@@ -11784,6 +11791,7 @@
       "column": 5,
       "confidence": "high",
       "destination_dictionary": null,
+      "existing_dictionary": "MessageFrames/verbs.ja.json",
       "extra": "your wound is an illusion, and the pain suddenly stops",
       "file": "XRL.World.Effects/HolographicBleeding.cs",
       "frame": "DidX",
@@ -11797,7 +11805,7 @@
       "rejection_reason": "message_frame",
       "sink": "DidX",
       "source_route": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "realize"
     },
@@ -11805,6 +11813,7 @@
       "column": 4,
       "confidence": "high",
       "destination_dictionary": null,
+      "existing_dictionary": "MessageFrames/verbs.ja.json",
       "extra": "\"acting like \" + Object.itis + \" \" + base.DisplayNameStripped + \" so much\"",
       "file": "XRL.World.Effects/HolographicBleeding.cs",
       "frame": "DidX",
@@ -11818,7 +11827,7 @@
       "rejection_reason": "message_frame",
       "sink": "DidX",
       "source_route": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "stop"
     },
@@ -11826,6 +11835,7 @@
       "column": 4,
       "confidence": "high",
       "destination_dictionary": null,
+      "existing_dictionary": "MessageFrames/verbs.ja.json",
       "extra": "\"acting like \" + Object.itis + \" \" + base.DisplayNameStripped",
       "file": "XRL.World.Effects/HolographicBleeding.cs",
       "frame": "DidX",
@@ -11839,7 +11849,7 @@
       "rejection_reason": "message_frame",
       "sink": "DidX",
       "source_route": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "stop"
     },
@@ -12161,6 +12171,7 @@
       "column": 5,
       "confidence": "high",
       "destination_dictionary": null,
+      "existing_dictionary": "MessageFrames/verbs.ja.json",
       "file": "XRL.World.Effects/Prone.cs",
       "frame": "DidXToY",
       "id": "XRL.World.Effects/Prone.cs::L158:C5",
@@ -12173,7 +12184,7 @@
       "rejection_reason": "message_frame",
       "sink": "DidX",
       "source_route": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "lie"
     },
@@ -12181,6 +12192,7 @@
       "column": 5,
       "confidence": "high",
       "destination_dictionary": null,
+      "existing_dictionary": "MessageFrames/verbs.ja.json",
       "extra": "down",
       "file": "XRL.World.Effects/Prone.cs",
       "frame": "DidX",
@@ -12194,7 +12206,7 @@
       "rejection_reason": "message_frame",
       "sink": "DidX",
       "source_route": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "lie"
     },
@@ -12202,6 +12214,7 @@
       "column": 4,
       "confidence": "high",
       "destination_dictionary": null,
+      "existing_dictionary": "MessageFrames/verbs.ja.json",
       "extra": "knocked prone",
       "file": "XRL.World.Effects/Prone.cs",
       "frame": "DidX",
@@ -12215,7 +12228,7 @@
       "rejection_reason": "message_frame",
       "sink": "DidX",
       "source_route": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "are"
     },
@@ -12223,6 +12236,7 @@
       "column": 5,
       "confidence": "high",
       "destination_dictionary": null,
+      "existing_dictionary": "MessageFrames/verbs.ja.json",
       "file": "XRL.World.Effects/Prone.cs",
       "frame": "DidXToY",
       "id": "XRL.World.Effects/Prone.cs::L273:C5",
@@ -12235,7 +12249,7 @@
       "rejection_reason": "message_frame",
       "sink": "DidX",
       "source_route": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "rise"
     },
@@ -12243,6 +12257,7 @@
       "column": 5,
       "confidence": "high",
       "destination_dictionary": null,
+      "existing_dictionary": "MessageFrames/verbs.ja.json",
       "file": "XRL.World.Effects/Prone.cs",
       "frame": "DidXToY",
       "id": "XRL.World.Effects/Prone.cs::L277:C5",
@@ -12255,7 +12270,7 @@
       "rejection_reason": "message_frame",
       "sink": "DidX",
       "source_route": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "stand"
     },
@@ -12263,6 +12278,7 @@
       "column": 4,
       "confidence": "high",
       "destination_dictionary": null,
+      "existing_dictionary": "MessageFrames/verbs.ja.json",
       "extra": "up",
       "file": "XRL.World.Effects/Prone.cs",
       "frame": "DidX",
@@ -12276,7 +12292,7 @@
       "rejection_reason": "message_frame",
       "sink": "DidX",
       "source_route": "DidX",
-      "status": "needs_patch",
+      "status": "translated",
       "type": "MessageFrame",
       "verb": "stand"
     },
@@ -64636,10 +64652,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "Date.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -64654,10 +64670,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "Date.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -64708,10 +64724,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "Date.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -65305,10 +65321,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "mutationsDetails.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -65455,10 +65471,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "description.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -65579,10 +65595,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "hotkeyText.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -65597,10 +65613,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "hotkeyText.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -66119,10 +66135,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "itemWeightText.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -66137,10 +66153,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "hotkeyText.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -66155,10 +66171,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "hotkeyText.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -66548,10 +66564,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "text.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -66897,10 +66913,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "TooltipTrigger.SetText(\"BodyText\", RTF.FormatToRTF(data.HelpText))",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -67299,10 +67315,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "Title.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -67804,10 +67820,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "requiredSkillsText.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -68504,10 +68520,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "check.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -68522,10 +68538,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "check.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -68894,10 +68910,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "progressTexts[i].SetText(\" \")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -68912,10 +68928,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "attributionText.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -68930,10 +68946,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "quoteText.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -68948,10 +68964,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "quoteText.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -68966,10 +68982,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "attributionText.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -69001,10 +69017,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "attributionText.SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -69142,10 +69158,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "TextSkins[1].SetText(\"\")",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -69211,10 +69227,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "rootObject.transform.Find(\"SelectedModLabel\").GetComponent<UITextSkin>().SetText(\"Managing - \" + info.ID)",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -69281,10 +69297,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "tooltip.SetText(\"BodyText\", Sidebar.FormatToRTF(data.BonusSource))",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -69543,10 +69559,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "tooltip.SetText(\"BodyText\", RTF.FormatToRTF(contents.ToString()))",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -69561,10 +69577,10 @@
       "needs_runtime": false,
       "ownership_class": "mid-pipeline-owned",
       "pattern": "trigger.SetText(\"BodyText\", Sidebar.FormatToRTF(await GameManager.Instance.gameQueue.executeAsync(() => GenerateTooltipContent(item))))",
-      "rejection_reason": null,
+      "rejection_reason": "unresolved",
       "sink": "SetText",
       "source_route": "SetText",
-      "status": "needs_translation",
+      "status": "excluded",
       "type": "Leaf"
     },
     {
@@ -84530,7 +84546,6 @@
       "type": "Unresolved"
     }
   ],
-  "snapshot_note": "Investigation-stage snapshot from 2026-04-11 triage. Known scanner limitations discovered after this snapshot was captured: (1) Phase 1b loses preposition/tail information for object-frame calls DidXToY / XDidYToZ / WDidXToYWithZ; of 114 such callsites in this inventory, 73 are stored with extra=None and lookup_tier=1 (the tail is fully discarded) and the remaining 41 have extra populated from an argument slot that may or may not correspond to the correct positional argument. (2) Running scripts/legacies/reconcile_inventory_status.py over this inventory promotes 296 MessageFrame and 276 VerbComposition sites to translated; some MessageFrame promotions are unsafe due to the object-frame shape-loss bug and all 276 VerbComposition promotions are under-evidenced because the reconciler rule only checks that the base verb is in the known index, not that the final runtime tail has a matching asset row. Treat this file as a view-only reference, not an authoritative source of truth. See issues #354 (bridge fix), #357 (Phase A-C SoT extractor), #358 (Phase F runtime route-proof validation). This key is informational only and will be dropped the next time the scanner regenerates the inventory.",
   "stats": {
     "filtered_hits": 18,
     "high_confidence": 1739,

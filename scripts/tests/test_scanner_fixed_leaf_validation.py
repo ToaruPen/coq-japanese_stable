@@ -17,6 +17,7 @@ from scripts.legacies.scanner.inventory import (
     InventorySite,
     InventoryStats,
     OwnershipClass,
+    SiteStatus,
     SiteType,
 )
 
@@ -108,6 +109,30 @@ def test_validate_fixed_leaf_inventory_reports_duplicate_keys() -> None:
     assert "one exact fixed-leaf key per addition set" in output
 
 
+def test_validate_fixed_leaf_inventory_ignores_already_translated_duplicate_families() -> None:
+    """Existing-coverage duplicates should not fail validation for new fixed-leaf additions."""
+    draft = _draft(
+        _site(
+            "translated-leaf-a",
+            key="already-covered",
+            status=SiteStatus.TRANSLATED,
+            existing_dictionary="Scoped/ui-popup.ja.json",
+        ),
+        _site(
+            "translated-leaf-b",
+            key="already-covered",
+            status=SiteStatus.TRANSLATED,
+            existing_dictionary="Scoped/ui-popup.ja.json",
+        ),
+    )
+
+    report = validate_fixed_leaf_inventory(draft)
+
+    assert report.is_valid is True
+    assert report.candidate_count == 0
+    assert report.issues == ()
+
+
 def test_validate_fixed_leaf_inventory_reports_broad_owner_routed_entries() -> None:
     """Validation fails when a rejected owner-routed site is forced into a dictionary tier."""
     draft = _draft(
@@ -137,6 +162,65 @@ def test_validate_fixed_leaf_inventory_reports_broad_owner_routed_entries() -> N
     assert "message_frame" in output
     assert "ownership=producer-owned" in output
     assert "keep this route owner-routed" in output
+
+
+def test_validate_fixed_leaf_inventory_reports_broad_sink_observed_add_player_message_entries() -> None:
+    """AddPlayerMessage should fail validation when treated as a fixed-leaf owner or sink-side fallback."""
+    draft = _draft(
+        _site(
+            "message-log-leaf",
+            sink="AddPlayerMessage",
+            source_route="AddPlayerMessage",
+            pattern='MessageQueue.AddPlayerMessage("You begin flying!")',
+            key="You begin flying!",
+            ownership_class=OwnershipClass.SINK,
+            destination_dictionary=DestinationDictionary.SCOPED,
+            rejection_reason=FixedLeafRejectionReason.NEEDS_REVIEW,
+        )
+    )
+
+    report = validate_fixed_leaf_inventory(draft)
+
+    assert report.is_valid is False
+    assert len(report.issues) == 1
+    issue = report.issues[0]
+    assert issue.failure_class is FixedLeafFailureClass.BROAD_ENTRY
+    assert issue.candidate_ids == ("message-log-leaf",)
+    output = render_fixed_leaf_validation_report(report)
+    assert "[broad_entry]" in output
+    assert "message-log-leaf" in output
+    assert "ownership=sink" in output
+    assert "needs_review" in output
+
+
+def test_validate_fixed_leaf_inventory_rejects_forged_add_player_message_fixed_leaf_metadata() -> None:
+    """Validator must reject AddPlayerMessage even when forged metadata makes it look proven."""
+    draft = _draft(
+        _site(
+            "forged-message-log-leaf",
+            sink="AddPlayerMessage",
+            source_route="AddPlayerMessage",
+            pattern='MessageQueue.AddPlayerMessage("You begin flying!")',
+            key="You begin flying!",
+            ownership_class=OwnershipClass.MID_PIPELINE_OWNED,
+            destination_dictionary=DestinationDictionary.GLOBAL_FLAT,
+            rejection_reason=None,
+            needs_review=False,
+            needs_runtime=False,
+        )
+    )
+
+    report = validate_fixed_leaf_inventory(draft)
+
+    assert report.is_valid is False
+    assert len(report.issues) == 1
+    issue = report.issues[0]
+    assert issue.failure_class is FixedLeafFailureClass.BROAD_ENTRY
+    assert issue.candidate_ids == ("forged-message-log-leaf",)
+    output = render_fixed_leaf_validation_report(report)
+    assert "[broad_entry]" in output
+    assert "forged-message-log-leaf" in output
+    assert "route=AddPlayerMessage" in output
 
 
 def test_validate_fixed_leaf_inventory_reports_wrong_destination_dictionary() -> None:

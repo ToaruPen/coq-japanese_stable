@@ -92,8 +92,8 @@ def test_main_runs_full_pipeline_on_fixture(tmp_path: Path, capsys: _Capsys) -> 
     assert len(override_hits) == 5
     assert draft.stats.input_hits == 39
     assert draft.stats.output_sites == 39
-    assert draft.stats.proven_fixed_leaf == 16
-    assert draft.stats.rejected_fixed_leaf == 23
+    assert draft.stats.proven_fixed_leaf == 14
+    assert draft.stats.rejected_fixed_leaf == 25
     assert len(candidate.sites) == 39
 
     type_counts = Counter(site.type for site in candidate.sites)
@@ -120,16 +120,17 @@ def test_main_runs_full_pipeline_on_fixture(tmp_path: Path, capsys: _Capsys) -> 
 
     destination_counts = Counter(site.destination_dictionary for site in candidate.sites)
     assert destination_counts == {
-        DestinationDictionary.SCOPED: 12,
+        DestinationDictionary.SCOPED: 10,
         DestinationDictionary.GLOBAL_FLAT: 4,
-        None: 23,
+        None: 25,
     }
 
     rejection_counts = Counter(site.rejection_reason for site in candidate.sites)
     assert rejection_counts == {
-        None: 16,
+        None: 14,
         FixedLeafRejectionReason.MESSAGE_FRAME: 9,
         FixedLeafRejectionReason.UNRESOLVED: 7,
+        FixedLeafRejectionReason.NEEDS_REVIEW: 2,
         FixedLeafRejectionReason.NARRATIVE_TEMPLATE: 3,
         FixedLeafRejectionReason.VERB_COMPOSITION: 1,
         FixedLeafRejectionReason.BUILDER_DISPLAY_NAME: 1,
@@ -202,7 +203,7 @@ def test_main_validate_fixed_leaf_passes_on_consistent_fixture(tmp_path: Path, c
 
     assert result == 0
     assert output_path.exists()
-    assert sum(site.destination_dictionary is DestinationDictionary.SCOPED for site in candidate.sites) == 12
+    assert sum(site.destination_dictionary is DestinationDictionary.SCOPED for site in candidate.sites) == 10
     assert "Fixed-leaf validation passed" in captured.out
     assert "0 issue(s)" in captured.out
     assert "Traceback" not in captured.out
