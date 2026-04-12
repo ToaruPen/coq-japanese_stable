@@ -183,6 +183,14 @@ public sealed class DescriptionLongDescriptionPatchTests
                     builder.ToString(),
                     Is.EqualTo("{{C|アラガシュル}}の村人たちに憎まれている。理由: 祖先の遺骸を掘り起こしたため。"));
                 Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(DescriptionLongDescriptionPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        "Hated by the villagers of {{C|アラガシュル}} for digging up the remains of their ancestors.",
+                        "Hated by the villagers of {{C|アラガシュル}} for digging up the remains of their ancestors."),
+                    Is.EqualTo(0));
+                Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(DescriptionLongDescriptionPatch),
                         "Description.FactionDisposition"),
