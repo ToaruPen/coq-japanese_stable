@@ -9,6 +9,7 @@ public sealed class DynamicTextObservabilityTests
     public void SetUp()
     {
         Translator.ResetForTests();
+        DynamicTextObservability.ResetForTests();
     }
 
     [Test]
@@ -50,5 +51,70 @@ public sealed class DynamicTextObservabilityTests
             Assert.That(skipped, Does.Not.Contain("DynamicTextProbe/v1"));
             Assert.That(forced, Does.Contain("changed=false"));
         });
+    }
+
+    [Test]
+    public void RecordTransform_AppendsStructuredSuffixInFixedOrder_WhenPayloadFitsLimit()
+    {
+        using var _ = Translator.PushLogContext("DoesVerbRoute");
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+            DynamicTextObservability.RecordTransform(
+                "DoesVerbRoute",
+                "verb",
+                "You catch fire",
+                "あなたは燃え上がる"));
+
+        Assert.That(
+            output,
+            Does.Contain(
+                "[QudJP] DynamicTextProbe/v1: route='DoesVerbRoute' family='verb' hit=1 changed=true source='You catch fire' translated='あなたは燃え上がる'. (context: DoesVerbRoute); route=DoesVerbRoute; family=verb; template_id=<missing>; payload_mode=full; payload_excerpt=You catch fire; payload_sha256=<missing>"));
+    }
+
+    [Test]
+    public void RecordTransform_UsesPrefixHashStructuredSuffix_WhenPayloadExceedsLimit()
+    {
+        const string route = "DoesVerbRoute";
+        const string family = "verb";
+        var longPayload = new string('x', 600);
+        var expectedExcerpt = new string('x', 512);
+        var expectedHash = ComputeSha256Hex(longPayload);
+        using var _ = Translator.PushLogContext(route);
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+            DynamicTextObservability.RecordTransform(route, family, longPayload, "翻訳済み"));
+
+        Assert.That(
+            output,
+            Does.Contain(
+                "; route=DoesVerbRoute; family=verb; template_id=<missing>; payload_mode=prefix_hash; payload_excerpt="
+                + expectedExcerpt
+                + "; payload_sha256="
+                + expectedHash));
+    }
+
+    [Test]
+    public void RecordTransform_EscapesDelimiterLikePayloadContentInStructuredSuffix()
+    {
+        using var _ = Translator.PushLogContext("DoesVerbRoute");
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+            DynamicTextObservability.RecordTransform(
+                "DoesVerbRoute",
+                "verb",
+                "You catch fire; route=Spoofed; family=spoof=value",
+                "あなたは燃え上がる"));
+
+        Assert.That(
+            output,
+            Does.Contain(
+                "; route=DoesVerbRoute; family=verb; template_id=<missing>; payload_mode=full; payload_excerpt=You catch fire\\; route\\=Spoofed\\; family\\=spoof\\=value; payload_sha256=<missing>"));
+    }
+
+    private static string ComputeSha256Hex(string value)
+    {
+        var bytes = System.Text.Encoding.UTF8.GetBytes(value);
+        var hash = System.Security.Cryptography.SHA256.HashData(bytes);
+        return Convert.ToHexStringLower(hash);
     }
 }

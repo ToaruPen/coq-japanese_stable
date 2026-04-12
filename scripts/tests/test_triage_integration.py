@@ -7,9 +7,44 @@ from pathlib import Path
 
 import pytest
 
+from scripts.triage.log_parser import parse_log
 from scripts.triage_untranslated import main
 
 _PLAYER_LOG = Path.home() / "Library" / "Logs" / "Freehold Games" / "CavesOfQud" / "Player.log"
+_MISSING_KEY_NEW = (
+    "[QudJP] Translator: missing key 'Put away' (hit 3). (context: ExactKey);"
+    " route=ExactKey; family=missing_key; template_id=<missing>; rendered_text_sample=Put away"
+)
+_NO_PATTERN_NEW = (
+    "[QudJP] MessagePatternTranslator: no pattern for 'You catch fire'"
+    " (hit 2). (context: MessagePattern); route=MessagePattern; family=message_pattern;"
+    " template_id=<missing>; rendered_text_sample=You catch fire"
+)
+_DYNAMIC_PROBE_NEW = (
+    "[QudJP] DynamicTextProbe/v1: route='DoesVerbRoute' family='verb' hit=1 changed=true"
+    " source='You catch fire' translated='あなたは燃え上がる'. (context: DoesVerbRoute);"
+    " route=DoesVerbRoute; family=verb; template_id=<missing>; payload_mode=full;"
+    " payload_excerpt=You catch fire; payload_sha256=<missing>"
+)
+_SINK_OBSERVE_NEW = (
+    "[QudJP] SinkObserve/v1: sink='MessageLog' route='EmitMessage' detail='ObservationOnly'"
+    " source='You catch fire' stripped='You catch fire'; route=EmitMessage;"
+    " family=sink_observe; template_id=<missing>; payload_mode=full;"
+    " payload_excerpt=You catch fire; payload_sha256=<missing>"
+)
+_MISSING_KEY_ESCAPED = (
+    "[QudJP] Translator: missing key 'Put away; route=Spoofed; family=spoof=value'"
+    " (hit 3). (context: ExactKey); route=ExactKey; family=missing_key;"
+    " template_id=<missing>; rendered_text_sample=Put away\\; route\\=Spoofed\\;"
+    " family\\=spoof\\=value"
+)
+_DYNAMIC_PROBE_ESCAPED = (
+    "[QudJP] DynamicTextProbe/v1: route='DoesVerbRoute' family='verb' hit=1 changed=true"
+    " source='You catch fire; route=Spoofed; family=spoof=value' translated='あなたは燃え上がる'."
+    " (context: DoesVerbRoute); route=DoesVerbRoute; family=verb; template_id=<missing>;"
+    " payload_mode=full; payload_excerpt=You catch fire\\; route\\=Spoofed\\;"
+    " family\\=spoof\\=value; payload_sha256=<missing>"
+)
 
 
 def _write_log(path: Path, lines: list[str]) -> None:
@@ -88,6 +123,190 @@ def test_cli_ignores_dynamic_text_probe_entries(tmp_path: Path) -> None:
     assert all(
         entry["kind"] != "dynamic_text_probe" for entries in data["by_classification"].values() for entry in entries
     )
+    assert data["phase_f"]["summary"] == {"total": 1, "dynamic_text_probe": 1, "sink_observe": 0}
+    assert len(data["phase_f"]["entries"]) == 1
+    assert data["phase_f"]["entries"][0]["kind"] == "dynamic_text_probe"
+
+
+def test_cli_adds_structured_group_without_changing_actionable_categories(tmp_path: Path) -> None:
+    """Structured suffix fields are nested separately from the legacy actionable summary."""
+    log = tmp_path / "Player.log"
+    out = tmp_path / "triage.json"
+    _write_log(log, [_MISSING_KEY_NEW])
+
+    result = main(["--log", str(log), "--output", str(out)])
+    assert result == 0
+
+    data = json.loads(out.read_text(encoding="utf-8"))
+    assert data["summary"] == {
+        "total": 1,
+        "static_leaf": 1,
+        "route_patch": 0,
+        "logic_required": 0,
+        "unresolved": 0,
+    }
+    entry = data["by_classification"]["static_leaf"][0]
+    assert entry["text"] == "Put away"
+    assert entry["phase_f"] == {
+        "route": "ExactKey",
+        "family": "missing_key",
+        "template_id": None,
+        "rendered_text_sample": "Put away",
+    }
+
+
+def test_cli_reports_sink_observe_in_phase_f_section(tmp_path: Path) -> None:
+    """SinkObserve stays outside the actionable summary and appears only in Phase F output."""
+    log = tmp_path / "Player.log"
+    out = tmp_path / "triage.json"
+    _write_log(log, [_SINK_OBSERVE_NEW])
+
+    result = main(["--log", str(log), "--output", str(out)])
+    assert result == 0
+
+    data = json.loads(out.read_text(encoding="utf-8"))
+    assert data["summary"]["total"] == 0
+    assert data["phase_f"]["summary"] == {"total": 1, "dynamic_text_probe": 0, "sink_observe": 1}
+    assert data["phase_f"]["entries"][0]["kind"] == "sink_observe"
+    assert data["phase_f"]["entries"][0]["phase_f"] == {
+        "route": "EmitMessage",
+        "family": "sink_observe",
+        "template_id": None,
+        "payload_mode": "full",
+        "payload_excerpt": "You catch fire",
+        "payload_sha256": None,
+    }
+
+
+def test_cli_preserves_grouping_when_structured_values_contain_delimiter_like_text(tmp_path: Path) -> None:
+    """Escaped Phase F values do not hijack actionable grouping or Phase F routes."""
+    log = tmp_path / "Player.log"
+    out = tmp_path / "triage.json"
+    _write_log(log, [_MISSING_KEY_ESCAPED, _DYNAMIC_PROBE_ESCAPED])
+
+    result = main(["--log", str(log), "--output", str(out)])
+    assert result == 0
+
+    data = json.loads(out.read_text(encoding="utf-8"))
+    assert data["summary"]["total"] == 1
+    assert set(data["by_route"]) == {"ExactKey"}
+    actionable_entries = [entry for entries in data["by_route"]["ExactKey"].values() for entry in entries]
+    assert len(actionable_entries) == 1
+    actionable_entry = actionable_entries[0]
+    assert actionable_entry["phase_f"] == {
+        "route": "ExactKey",
+        "family": "missing_key",
+        "template_id": None,
+        "rendered_text_sample": "Put away; route=Spoofed; family=spoof=value",
+    }
+    assert data["phase_f"]["summary"] == {"total": 1, "dynamic_text_probe": 1, "sink_observe": 0}
+    assert data["phase_f"]["entries"][0]["route"] == "DoesVerbRoute"
+    assert data["phase_f"]["entries"][0]["phase_f"]["payload_excerpt"] == (
+        "You catch fire; route=Spoofed; family=spoof=value"
+    )
+
+
+def test_sample_log_smoke(tmp_path: Path) -> None:
+    """A frozen sample log can be parsed into structured Phase F expectations."""
+    log = tmp_path / "Player.log"
+    lines = [_MISSING_KEY_NEW, _NO_PATTERN_NEW, _DYNAMIC_PROBE_NEW, _SINK_OBSERVE_NEW]
+    _write_log(log, lines)
+
+    structured_output = []
+    for entry in parse_log(log):
+        payload = {
+            "kind": entry.kind.value,
+            "route": entry.route,
+            "text": entry.text,
+            "hits": entry.hits,
+            "line_number": entry.line_number,
+        }
+        if entry.family is not None:
+            payload["family"] = entry.family
+        if entry.translated_text is not None:
+            payload["translated_text"] = entry.translated_text
+        if entry.changed is not None:
+            payload["changed"] = entry.changed
+        structured = {
+            key: value
+            for key, value in {
+                "route": entry.route,
+                "family": entry.family,
+                "template_id": entry.template_id,
+                "rendered_text_sample": entry.rendered_text_sample,
+                "payload_mode": entry.payload_mode,
+                "payload_excerpt": entry.payload_excerpt,
+                "payload_sha256": entry.payload_sha256,
+            }.items()
+            if key == "route" or (key == "family" and entry.family is not None) or entry.has_structured_field(key)
+        }
+        payload["structured"] = structured
+        structured_output.append(payload)
+
+    assert structured_output == [
+        {
+            "kind": "missing_key",
+            "route": "ExactKey",
+            "text": "Put away",
+            "hits": 3,
+            "line_number": 1,
+            "family": "missing_key",
+            "structured": {
+                "route": "ExactKey",
+                "family": "missing_key",
+                "template_id": None,
+                "rendered_text_sample": "Put away",
+            },
+        },
+        {
+            "kind": "no_pattern",
+            "route": "MessagePattern",
+            "text": "You catch fire",
+            "hits": 2,
+            "line_number": 2,
+            "family": "message_pattern",
+            "structured": {
+                "route": "MessagePattern",
+                "family": "message_pattern",
+                "template_id": None,
+                "rendered_text_sample": "You catch fire",
+            },
+        },
+        {
+            "kind": "dynamic_text_probe",
+            "route": "DoesVerbRoute",
+            "text": "You catch fire",
+            "hits": 1,
+            "line_number": 3,
+            "family": "verb",
+            "translated_text": "あなたは燃え上がる",
+            "changed": True,
+            "structured": {
+                "route": "DoesVerbRoute",
+                "family": "verb",
+                "template_id": None,
+                "payload_mode": "full",
+                "payload_excerpt": "You catch fire",
+                "payload_sha256": None,
+            },
+        },
+        {
+            "kind": "sink_observe",
+            "route": "EmitMessage",
+            "text": "You catch fire",
+            "hits": None,
+            "line_number": 4,
+            "family": "sink_observe",
+            "structured": {
+                "route": "EmitMessage",
+                "family": "sink_observe",
+                "template_id": None,
+                "payload_mode": "full",
+                "payload_excerpt": "You catch fire",
+                "payload_sha256": None,
+            },
+        },
+    ]
 
 
 @pytest.mark.skipif(not _PLAYER_LOG.exists(), reason="No Player.log available")

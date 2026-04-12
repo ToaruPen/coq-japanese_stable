@@ -12,6 +12,7 @@ class LogEntryKind(Enum):
     MISSING_KEY = "missing_key"
     NO_PATTERN = "no_pattern"
     DYNAMIC_TEXT_PROBE = "dynamic_text_probe"
+    SINK_OBSERVE = "sink_observe"
 
 
 class TriageClassification(Enum):
@@ -36,11 +37,25 @@ class LogEntry:
     kind: LogEntryKind
     route: str
     text: str
-    hits: int
+    hits: int | None
     line_number: int
     family: str | None = None
     translated_text: str | None = None
     changed: bool | None = None
+    template_id: str | None = None
+    rendered_text_sample: str | None = None
+    payload_mode: str | None = None
+    payload_excerpt: str | None = None
+    payload_sha256: str | None = None
+    structured_fields: frozenset[str] = field(default_factory=frozenset)
+
+    def has_structured_field(self, field_name: str) -> bool:
+        """Return whether the structured Phase F suffix explicitly carried ``field_name``."""
+        return field_name in self.structured_fields
+
+    def has_structured_phase_f_data(self) -> bool:
+        """Return whether the entry carried any structured Phase F suffix fields."""
+        return bool(self.structured_fields)
 
 
 @dataclass(frozen=True)

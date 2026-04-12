@@ -900,6 +900,22 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_NoPatternLog_AppendsStructuredPhaseFSuffixInExactOrder()
+    {
+        WritePatternDictionary(("^You equip (.+)[.!]?$", "{0}を装備した"));
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+            Assert.That(
+                MessagePatternTranslator.Translate("You catch fire", "MessagePattern"),
+                Is.EqualTo("You catch fire")));
+
+        Assert.That(
+            output,
+            Does.Contain(
+                "[QudJP] MessagePatternTranslator: no pattern for 'You catch fire' (hit 1). (context: MessagePattern); route=MessagePattern; family=message_pattern; template_id=<missing>; rendered_text_sample=You catch fire"));
+    }
+
+    [Test]
     public void Translate_ReturnsEmptyString_WhenInputIsNull()
     {
         WritePatternDictionary(("^You die![.!]?$", "あなたは死んだ！"));

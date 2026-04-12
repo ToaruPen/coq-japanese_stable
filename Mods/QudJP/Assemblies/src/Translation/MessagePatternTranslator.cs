@@ -221,7 +221,7 @@ internal static class MessagePatternTranslator
         {
             var sanitizedSource = SanitizeForLog(source);
             LogObservability(
-                $"[QudJP] MessagePatternTranslator: no pattern for '{sanitizedSource}' (hit {hitCount}).{Translator.GetCurrentLogContextSuffix()}");
+                $"[QudJP] MessagePatternTranslator: no pattern for '{sanitizedSource}' (hit {hitCount}).{Translator.GetCurrentLogContextSuffix()}{Translator.BuildTranslatorStructuredSuffix(Translator.ExtractCurrentRoute(), "message_pattern", sanitizedSource)}");
         }
 
         return spans is null || spans.Count == 0

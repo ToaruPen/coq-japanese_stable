@@ -1,6 +1,6 @@
 # QudJP Rules
 
-This document is the canonical workflow and decision guide for translation patches, localization assets, runtime evidence, and deployment. `AGENTS.md` and `CLAUDE.md` point here instead of duplicating the same operating rules.
+This document is the canonical workflow and decision guide for translation patches, localization assets, runtime evidence, Phase F proof obligations, and deployment. `AGENTS.md` and `CLAUDE.md` point here instead of duplicating the same operating rules.
 
 ## Evidence order
 
@@ -13,6 +13,32 @@ Use evidence in this order:
 5. Older notes in `docs/archive/` and past investigations
 
 If a stale note conflicts with tests or fresh runtime evidence, follow tests first.
+
+## Phase F boundary and shared defaults
+
+Phase F means runtime route-proof evidence. It is distinct from static coverage, and it does not replace the source-first scanner or fixed-leaf workflow.
+
+For the first PR in issue #358:
+
+- keep the scope on runtime observability and triage
+- keep SoT cross-reference deferred until the post-#357 integration follow-up
+- keep `DynamicTextProbe` and `SinkObserve` as runtime evidence records, not static coverage verdicts
+
+Shared defaults for this boundary are fixed in the parent roadmap and repeated here for convenience:
+
+- `template_id` is a transport-slot field in this PR, and runtime emitters use `<missing>` until the #357 follow-up owns the canonical static SoT side
+- `family` uses the parent-roadmap vocabulary and is not renamed here
+- `route` is emitted verbatim and is not normalized
+
+Required verification commands for this boundary:
+
+```bash
+dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L1
+pytest scripts/tests/test_triage_log_parser.py scripts/tests/test_triage_models.py scripts/tests/test_triage_classifier.py scripts/tests/test_triage_integration.py -q
+pytest scripts/tests/test_triage_integration.py -q -k sample_log_smoke
+```
+
+Use these commands when checking Phase F docs, runtime observability, or the first-PR boundary.
 
 ## Route ownership
 

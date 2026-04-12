@@ -125,3 +125,17 @@ def test_classify_dynamic_probe_is_logic_required() -> None:
     )
     assert result.classification == TriageClassification.LOGIC_REQUIRED
     assert result.slot_evidence == ["CharacterStatusFamily"]
+
+
+def test_classify_sink_observe_stays_non_actionable() -> None:
+    """SinkObserve observations are Phase F evidence, not actionable route/static verdicts."""
+    result = classify(
+        _mk(
+            "You catch fire",
+            route="EmitMessage",
+            kind=LogEntryKind.SINK_OBSERVE,
+            family="sink_observe",
+        ),
+    )
+    assert result.classification == TriageClassification.UNRESOLVED
+    assert "phase f" in result.reason.lower() or "non-actionable" in result.reason.lower()

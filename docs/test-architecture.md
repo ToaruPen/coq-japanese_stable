@@ -3,6 +3,8 @@
 QudJP のテストは **3 層構造** を維持しつつ、L2 を `game-DLL-assisted TDD` に拡張して運用します。
 目的は、`Assembly-CSharp.dll` の実シグネチャと実メソッド解決を自動検証に取り込みながら、Unity ランタイム依存の表示確認だけを L3 に残すことです。
 
+Phase F の runtime route-proof boundary は `docs/RULES.md` が定義します。このページは層の使い分けを説明する場所で、Phase F を static coverage に置き換える定義はしません。
+
 ---
 
 ## 層の概要
@@ -24,6 +26,7 @@ QudJP のテストは **3 層構造** を維持しつつ、L2 を `game-DLL-assi
 - `using HarmonyLib` を含めない
 - `using UnityEngine` を含めない
 - `Assembly-CSharp.dll` の型を参照しない
+- Phase F の runtime route-proof evidence は L1 の static coverage ではなく、`docs/RULES.md` の boundary と verification commands に従う
 
 **対象コード**:
 - `Translator`

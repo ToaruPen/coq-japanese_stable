@@ -11,6 +11,8 @@ namespace QudJP;
 
 public static class Translator
 {
+    private const string MissingTemplateIdValue = "<missing>";
+
     private static readonly object SyncRoot = new object();
     private static readonly ConcurrentDictionary<string, string> TranslationCache =
         new ConcurrentDictionary<string, string>(StringComparer.Ordinal);
@@ -171,7 +173,7 @@ public static class Translator
         if (!IsMissingKeyLoggingSuppressed() && ObservabilityHelpers.ShouldLogMissingHit(hitCount))
         {
             LogObservability(
-                $"[QudJP] Translator: missing key '{key}' (hit {hitCount}).{GetCurrentLogContextSuffix()}");
+                $"[QudJP] Translator: missing key '{key}' (hit {hitCount}).{GetCurrentLogContextSuffix()}{BuildTranslatorStructuredSuffix(ExtractCurrentRoute(), "missing_key", key)}");
         }
 
         return key;
@@ -335,6 +337,19 @@ public static class Translator
     private static void LogObservability(string message)
     {
         QudJPMod.LogToUnity(message);
+    }
+
+    internal static string BuildTranslatorStructuredSuffix(string route, string family, string renderedTextSample)
+    {
+        return "; route=" + ObservabilityHelpers.EscapeStructuredValue(route)
+            + "; family=" + ObservabilityHelpers.EscapeStructuredValue(family)
+            + "; template_id=" + MissingTemplateIdValue
+            + "; rendered_text_sample=" + ObservabilityHelpers.EscapeStructuredValue(renderedTextSample);
+    }
+
+    internal static string ExtractCurrentRoute()
+    {
+        return ObservabilityHelpers.ExtractPrimaryContext(GetCurrentLogContext());
     }
 
     [DataContract]

@@ -9,6 +9,7 @@ public sealed class SinkObservationTests
     public void SetUp()
     {
         Translator.ResetForTests();
+        SinkObservation.ResetForTests();
     }
 
     [Test]
@@ -70,7 +71,28 @@ public sealed class SinkObservationTests
         Assert.That(
             output,
             Does.Contain(
-                "[QudJP] SinkObserve/v1: sink='UITextSkinTranslationPatch' route='PopupTranslationPatch' detail='Translator' source='Line 1\\nLine 2' stripped='Line 1\\nLine 2'"));
+                "[QudJP] SinkObserve/v1: sink='UITextSkinTranslationPatch' route='PopupTranslationPatch' detail='Translator' source='Line 1\\nLine 2' stripped='Line 1\\nLine 2'; route=PopupTranslationPatch; family=sink_observe; template_id=<missing>; payload_mode=full; payload_excerpt=Line 1\\\\nLine 2; payload_sha256=<missing>"));
+    }
+
+    [Test]
+    public void LogUnclaimed_UsesPrefixHashStructuredSuffix_WhenPayloadExceedsLimit()
+    {
+        const string sink = "MessageLog";
+        const string route = "EmitMessage";
+        var longPayload = new string('z', 600);
+        var expectedExcerpt = new string('z', 512);
+        var expectedHash = ComputeSha256Hex(longPayload);
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+            SinkObservation.LogUnclaimed(sink, route, SinkObservation.ObservationOnlyDetail, longPayload, longPayload));
+
+        Assert.That(
+            output,
+            Does.Contain(
+                "; route=EmitMessage; family=sink_observe; template_id=<missing>; payload_mode=prefix_hash; payload_excerpt="
+                + expectedExcerpt
+                + "; payload_sha256="
+                + expectedHash));
     }
 
     [Test]
@@ -127,5 +149,12 @@ public sealed class SinkObservationTests
         }
 
         return count;
+    }
+
+    private static string ComputeSha256Hex(string value)
+    {
+        var bytes = System.Text.Encoding.UTF8.GetBytes(value);
+        var hash = System.Security.Cryptography.SHA256.HashData(bytes);
+        return Convert.ToHexStringLower(hash);
     }
 }

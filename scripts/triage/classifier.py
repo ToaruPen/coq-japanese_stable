@@ -50,6 +50,7 @@ def classify(entry: LogEntry) -> TriageResult:
     """Classify a single untranslated string observation."""
     classifiers: tuple[Callable[[LogEntry], TriageResult | None], ...] = (
         _classify_dynamic_probe,
+        _classify_sink_observe,
         _classify_fragment,
         _classify_japanese_text,
         _classify_no_pattern,
@@ -80,6 +81,17 @@ def _classify_dynamic_probe(entry: LogEntry) -> TriageResult | None:
         classification=TriageClassification.LOGIC_REQUIRED,
         reason=f"DynamicTextProbe reported family '{family}' — investigate upstream generator/template family",
         slot_evidence=[family],
+    )
+
+
+def _classify_sink_observe(entry: LogEntry) -> TriageResult | None:
+    """Classify SinkObserve observations as separate Phase F evidence."""
+    if entry.kind != LogEntryKind.SINK_OBSERVE:
+        return None
+    return TriageResult(
+        entry=entry,
+        classification=TriageClassification.UNRESOLVED,
+        reason="SinkObserve is Phase F route-proof evidence — keep it separate from actionable triage",
     )
 
 
