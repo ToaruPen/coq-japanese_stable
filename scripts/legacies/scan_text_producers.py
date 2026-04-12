@@ -1,4 +1,8 @@
-"""Main CLI orchestrator for the source-first scanner pipeline."""
+"""Main CLI orchestrator for the source-first scanner pipeline.
+
+Legacy candidate-inventory output remains a bridge/view-only artifact for
+current static consumers, not the source of truth.
+"""
 
 from __future__ import annotations
 
@@ -9,32 +13,32 @@ from collections import Counter
 from pathlib import Path
 
 if __package__ in {None, ""}:
-    _PROJECT_ROOT = Path(__file__).resolve().parents[1]
+    _PROJECT_ROOT = Path(__file__).resolve().parents[2]
     _PROJECT_ROOT_STR = str(_PROJECT_ROOT)
     if _PROJECT_ROOT_STR not in sys.path:
         sys.path.insert(0, _PROJECT_ROOT_STR)
 
-from scripts.scanner.ast_grep_runner import Phase1aScanResult, scan_source_tree
-from scripts.scanner.cross_reference import cross_reference_inventory_file
-from scripts.scanner.fixed_leaf_validation import (
+from scripts.legacies.scanner.ast_grep_runner import Phase1aScanResult, scan_source_tree
+from scripts.legacies.scanner.cross_reference import cross_reference_inventory_file
+from scripts.legacies.scanner.fixed_leaf_validation import (
     render_fixed_leaf_validation_report,
     validate_fixed_leaf_inventory,
 )
-from scripts.scanner.inventory import (
+from scripts.legacies.scanner.inventory import (
     InventoryDraft,
     RawHit,
     SiteStatus,
     read_raw_hits_jsonl,
     write_inventory_draft_json,
 )
-from scripts.scanner.rule_classifier import classify_raw_hits
+from scripts.legacies.scanner.rule_classifier import classify_raw_hits
 
 DEFAULT_SOURCE_ROOT = Path("~/dev/coq-decompiled_stable")
 DEFAULT_CACHE_DIR = Path(".scanner-cache")
 DEFAULT_OUTPUT_PATH = Path("docs/candidate-inventory.json")
 DEFAULT_INVENTORY_DRAFT_PATH = Path("inventory_draft.json")
 PHASE_CHOICES = ("1a", "1b", "1c", "1d", "all")
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 class FixedLeafValidationPhaseError(ValueError):
@@ -160,7 +164,13 @@ def _write_fixed_leaf_validation(candidate: InventoryDraft | None, phase: str) -
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     """Parse CLI arguments for the scanner orchestrator."""
-    parser = argparse.ArgumentParser(description="Run the source-first scanner pipeline.")
+    parser = argparse.ArgumentParser(
+        description=(
+            "Run the source-first scanner pipeline. "
+            "The resulting candidate inventory remains a legacy bridge/view-only artifact "
+            "for current static consumers and is not the source of truth."
+        )
+    )
     parser.add_argument(
         "--source-root",
         default=str(DEFAULT_SOURCE_ROOT),
@@ -174,7 +184,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--output",
         default=str(DEFAULT_OUTPUT_PATH),
-        help="Path to write the final candidate inventory JSON.",
+        help="Path to write the legacy bridge/view-only candidate inventory JSON for current static consumers.",
     )
     parser.add_argument(
         "--phase",

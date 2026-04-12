@@ -8,8 +8,8 @@ from typing import Protocol
 
 import pytest  # pyright: ignore[reportMissingImports]
 
-from scripts.scan_text_producers import main
-from scripts.scanner.inventory import (
+from scripts.legacies.scan_text_producers import main
+from scripts.legacies.scanner.inventory import (
     DestinationDictionary,
     FixedLeafRejectionReason,
     SiteStatus,
@@ -248,7 +248,18 @@ def test_main_reraises_unexpected_execute_phase_value_errors(monkeypatch: pytest
     def _raise_unexpected_error(*_args: object, **_kwargs: object) -> None:
         raise ValueError(msg)
 
-    monkeypatch.setattr("scripts.scan_text_producers._execute_phase", _raise_unexpected_error)
+    monkeypatch.setattr("scripts.legacies.scan_text_producers._execute_phase", _raise_unexpected_error)
 
     with pytest.raises(ValueError, match=msg):
         main([])
+
+
+def test_main_help_marks_legacy_candidate_inventory_as_bridge_view_only(capsys: _Capsys) -> None:
+    """CLI help should describe legacy scanner output as bridge/view-only rather than source of truth."""
+    with pytest.raises(SystemExit, match="0"):
+        main(["--help"])
+
+    captured = capsys.readouterr()
+
+    assert "bridge/view-only" in captured.out
+    assert "source of truth" in captured.out
