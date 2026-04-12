@@ -104,6 +104,40 @@ public sealed class TranslatorTests
     }
 
     [Test]
+    public void Translate_MissingKeyLog_AppendsStructuredPhaseFSuffixInExactOrder()
+    {
+        WriteDictionary("ui-test.ja.json", "Hello", "こんにちは");
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+        {
+            using var context = Translator.PushLogContext("ExactKey");
+            _ = Translator.Translate("Put away");
+        });
+
+        Assert.That(
+            output,
+            Does.Contain(
+                "[QudJP] Translator: missing key 'Put away' (hit 1). (context: ExactKey); route=ExactKey; family=missing_key; template_id=<missing>; rendered_text_sample=Put away"));
+    }
+
+    [Test]
+    public void Translate_MissingKeyLog_EscapesDelimiterLikeStructuredValueContent()
+    {
+        WriteDictionary("ui-test.ja.json", "Hello", "こんにちは");
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+        {
+            using var context = Translator.PushLogContext("ExactKey");
+            _ = Translator.Translate("Put away; route=Spoofed; family=spoof=value");
+        });
+
+        Assert.That(
+            output,
+            Does.Contain(
+                "[QudJP] Translator: missing key 'Put away; route=Spoofed; family=spoof=value' (hit 1). (context: ExactKey); route=ExactKey; family=missing_key; template_id=<missing>; rendered_text_sample=Put away\\; route\\=Spoofed\\; family\\=spoof\\=value"));
+    }
+
+    [Test]
     public void Translate_PushMissingKeyLoggingSuppression_PreservesCounters()
     {
         WriteDictionary("ui-test.ja.json", "Hello", "こんにちは");
