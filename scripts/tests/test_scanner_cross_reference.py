@@ -10,6 +10,7 @@ from typing import Any, cast
 import pytest  # pyright: ignore[reportMissingImports]
 
 from scripts.legacies.scanner.cross_reference import (
+    _parse_args,
     build_translation_index,
     cross_reference_inventory,
     cross_reference_inventory_file,
@@ -423,3 +424,10 @@ def test_direct_script_help_runs_without_module_bootstrap_errors() -> None:
     assert completed.returncode == 0, completed.stderr
     assert "Run Phase 1d translation cross-reference." in completed.stdout
     assert "bridge/view-only" in completed.stdout
+
+
+def test_parse_args_defaults_repo_root_to_repository_root() -> None:
+    """Default --repo-root should resolve to the repository root after the legacy move."""
+    args = _parse_args([])
+
+    assert Path(args.repo_root).resolve() == REPO_ROOT.resolve()

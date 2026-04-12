@@ -418,7 +418,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--repo-root",
-        default=str(Path(__file__).resolve().parents[2]),
+        default=str(Path(__file__).resolve().parents[3]),
         help="Repository root that contains Mods/QudJP/.",
     )
     parser.add_argument(

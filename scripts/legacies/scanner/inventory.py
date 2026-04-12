@@ -5,9 +5,11 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from enum import StrEnum
+from types import MappingProxyType
 from typing import TYPE_CHECKING, Any, Final
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
     from pathlib import Path
 
 
@@ -78,22 +80,27 @@ class DestinationDictionary(StrEnum):
 
 SCOPED_DESTINATION_ROUTES = frozenset({"AddPlayerMessage", "Popup"})
 
-FIRST_PR_STATIC_CONSUMER_BOUNDARY: Final[dict[str, tuple[str, ...]]] = {
-    "pilot-aware": (
-        "Roslyn pilot schema contract",
-        "Roslyn pilot verification/tests",
-    ),
-    "bridge-only": (
-        "scripts/legacies/scanner/inventory.py stable/queryable view surface",
-        "scripts/legacies/scanner/cross_reference.py legacy scanner candidate-inventory bridge/view-only consumer",
-        "scripts/legacies/reconcile_inventory_status.py legacy scanner candidate-inventory bridge/view-only consumer",
-    ),
-    "deferred": (
-        "runtime observability consumers",
-        "scripts/triage/*",
-        "Phase F and unresolved full static consumer migration",
-    ),
-}
+FIRST_PR_STATIC_CONSUMER_BOUNDARY: Final[Mapping[str, tuple[str, ...]]] = MappingProxyType(
+    {
+        "pilot-aware": (
+            "Roslyn pilot schema contract",
+            "Roslyn pilot verification/tests",
+        ),
+        "bridge-only": (
+            "scripts/legacies/scanner/inventory.py stable/queryable view surface",
+            "scripts/legacies/scanner/cross_reference.py legacy scanner candidate-inventory bridge/view-only consumer",
+            (
+                "scripts/legacies/reconcile_inventory_status.py "
+                "legacy scanner candidate-inventory bridge/view-only consumer"
+            ),
+        ),
+        "deferred": (
+            "runtime observability consumers",
+            "scripts/triage/*",
+            "Phase F and unresolved full static consumer migration",
+        ),
+    }
+)
 
 
 def describe_first_pr_static_consumer_boundary() -> str:
