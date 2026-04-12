@@ -13,11 +13,17 @@ internal static class DescriptionTextTranslator
     private static readonly Regex LabeledListPattern =
         new Regex("^(?<label>Physical features:|Equipped:) (?<items>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex VillageDispositionTargetPattern =
+        new Regex("^(?:the|The) villagers of (?<name>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex StatAbbreviationPattern =
         new Regex("^[A-Z]{2,4}$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex SignedStatAbbreviationPattern =
         new Regex("^[+-]\\d+\\s+[A-Z]{2,4}$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex JapaneseCharacterPattern =
+        new Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     // Keep TranslateShortDescription and TranslateLongDescription separate even though they
     // currently delegate to TranslateDescriptionText, so short/long description routes can
@@ -158,7 +164,8 @@ internal static class DescriptionTextTranslator
         }
 
         relation = RestoreBalancedCapture(relation, spans, match.Groups["relation"]);
-        var target = RestoreBalancedCapture(match.Groups["target"].Value, spans, match.Groups["target"]);
+        var target = TranslateDispositionTarget(match.Groups["target"].Value);
+        target = RestoreBalancedCapture(target, spans, match.Groups["target"]);
         var reasonGroup = match.Groups["reason"];
         if (!reasonGroup.Success)
         {
@@ -308,6 +315,61 @@ internal static class DescriptionTextTranslator
 
         translated = MessagePatternTranslator.Translate(source, route);
         return translated;
+    }
+
+    private static string TranslateDispositionTarget(string source)
+    {
+        if (StringHelpers.TryGetTranslationExactOrLowerAscii(source, out var translated)
+            && !string.Equals(source, translated, StringComparison.Ordinal))
+        {
+            return translated;
+        }
+
+        if (TryTranslateVillageDispositionTarget(source, out translated))
+        {
+            return translated;
+        }
+
+        var strippedArticle = StringHelpers.StripLeadingEnglishArticle(source, includeCapitalizedDefiniteArticle: true);
+        if (string.Equals(strippedArticle, source, StringComparison.Ordinal))
+        {
+            return source;
+        }
+
+        if (StringHelpers.TryGetTranslationExactOrLowerAscii(strippedArticle, out translated)
+            && !string.Equals(strippedArticle, translated, StringComparison.Ordinal))
+        {
+            return translated;
+        }
+
+        return ContainsJapaneseCharacters(strippedArticle)
+            ? strippedArticle
+            : source;
+    }
+
+    private static bool TryTranslateVillageDispositionTarget(string source, out string translated)
+    {
+        var match = VillageDispositionTargetPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var translatedTemplate = Translator.Translate("The villagers of {0}");
+        if (string.Equals(translatedTemplate, "The villagers of {0}", StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = translatedTemplate.Replace("{0}", match.Groups["name"].Value);
+        return true;
+    }
+
+    private static bool ContainsJapaneseCharacters(string source)
+    {
+        return !string.IsNullOrEmpty(source) && JapaneseCharacterPattern.IsMatch(source);
     }
 
     private static bool TryTranslateLabeledList(string source, string route, out string translated)
