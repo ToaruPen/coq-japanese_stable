@@ -224,7 +224,7 @@ Do not deploy arbitrary source files. The game will try to compile any `.cs` fil
 
 ## Decompiled game source
 
-Decompiled source is a tracing aid, not a shipped artifact.
+Decompiled source is a tracing aid, not a shipped artifact. issue-357 の Roslyn pilot はここを read-only external inputs として読みます。
 
 - location: `~/dev/coq-decompiled_stable/`
 - regenerate with `scripts/decompile_game_dll.sh`

@@ -1,13 +1,13 @@
 # Fixed-leaf Workflow
 
-この文書は、`scripts/scan_text_producers.py` を使って fixed-leaf candidate を集め、レビューし、検証し、昇格するための手順です。
+この文書は、issue-357 の Roslyn static SoT pilot で fixed-leaf candidate を集め、レビューし、検証し、昇格するための手順です。runtime proof や issue-358 の observability とは別です。
 
 ## 前提
 
 - `~/dev/coq-decompiled_stable/` がローカルに存在していること
-- それは tracing 用の decompiled source であり、shipped artifact ではないこと
-- `scripts/scan_text_producers.py` の `--validate-fixed-leaf` を使うこと。別の top-level validator はありません
-- レビュー対象は `docs/candidate-inventory.json` と stdout の validation report です
+- それは tracing 用の decompiled source であり、外部の read-only input で、shipped artifact ではないこと
+- `scripts/legacies/scan_text_producers.py` の `--validate-fixed-leaf` を使うこと。別の top-level validator はありません
+- レビュー対象は `docs/candidate-inventory.json` と stdout の validation report です。`docs/candidate-inventory.json` は current static consumers 向けの bridge/view-only artifact で、source of truth ではありません
 
 decompiled source は入力です。commit 対象ではありません。game binaries も同じ扱いです。
 
@@ -16,7 +16,7 @@ decompiled source は入力です。commit 対象ではありません。game bi
 ### Happy path, scan から validation まで一気に回す
 
 ```bash
-python scripts/scan_text_producers.py \
+python scripts/legacies/scan_text_producers.py \
   --source-root ~/dev/coq-decompiled_stable \
   --cache-dir .scanner-cache \
   --output docs/candidate-inventory.json \
@@ -27,12 +27,25 @@ python scripts/scan_text_producers.py \
 ### 既存 cache を使って Phase 1d だけ再実行する
 
 ```bash
-python scripts/scan_text_producers.py \
+python scripts/legacies/scan_text_producers.py \
   --source-root ~/dev/coq-decompiled_stable \
   --cache-dir .scanner-cache \
   --output docs/candidate-inventory.json \
   --phase 1d \
   --validate-fixed-leaf
+```
+
+## issue-357 first PR verification
+
+```bash
+dotnet build Mods/QudJP/Assemblies/QudJP.csproj
+dotnet test Mods/QudJP/Assemblies/QudJP.Analyzers.Tests/QudJP.Analyzers.Tests.csproj --filter StaticSotPilot
+pytest scripts/tests/test_scan_text_producers.py
+pytest scripts/tests/test_scanner_inventory.py
+pytest scripts/tests/test_scanner_ast_grep_runner.py
+pytest scripts/tests/test_scanner_rule_classifier.py
+pytest scripts/tests/test_scanner_cross_reference.py
+pytest scripts/tests/test_reconcile_inventory_status.py
 ```
 
 ## Review checklist

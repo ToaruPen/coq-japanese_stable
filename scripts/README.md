@@ -6,7 +6,7 @@ QudJP の翻訳ワークフローを支援する Python スクリプト群です
 
 ---
 
-## スクリプト一覧
+## 現役スクリプト一覧
 
 | スクリプト | 用途 |
 |-----------|------|
@@ -14,22 +14,32 @@ QudJP の翻訳ワークフローを支援する Python スクリプト群です
 | `validate_xml.py` | XML 構造検証 |
 | `diff_localization.py` | 翻訳カバレッジ比較 |
 | `extract_base.py` | ゲーム XML の抽出 |
-| `scan_text_producers.py` | source-first scanner, candidate inventory, fixed-leaf validation |
 | `sync_mod.py` | Mod ファイルの配備 |
 | `verify_inventory.py` | Rosetta 起動で既知セーブを開き、インベントリのスクリーンショットを取得 |
 
 ---
 
-## scan_text_producers.py
+## legacy / bridge-only scripts
 
-decompiled source から候補を集めて `docs/candidate-inventory.json` を作る、source-first scanner の入口です。`docs/fixed-leaf-workflow.md` に、レビューから昇格までの手順をまとめています。
+| スクリプト | 用途 |
+|-----------|------|
+| `legacies/scan_text_producers.py` | Roslyn static SoT pilot, bridge/view-only candidate inventory for current static consumers, fixed-leaf validation |
+| `legacies/reconcile_inventory_status.py` | legacy candidate inventory を現在の翻訳資産に照らして再評価する bridge CLI |
 
-この CLI は `~/dev/coq-decompiled_stable/` を既定の source root として読みます。`--validate-fixed-leaf` は同じ CLI の中にある検証フラグで、別の top-level validator はありません。
+`scripts/legacies/` は、現役の翻訳ワークフローから切り離した legacy bridge/view-only tooling を置く場所です。issue-357 の scanner 群はここに隔離し、通常の active CLI 群とは分けて扱います。
+
+---
+
+## legacies/scan_text_producers.py
+
+Roslyn static SoT pilot の入口です。decompiled source から候補を集めて `docs/candidate-inventory.json` を作ります。`docs/candidate-inventory.json` は現在の static consumer がまだ読む legacy bridge/view-only artifact であり、source of truth ではありません。`docs/fixed-leaf-workflow.md` に、レビューから昇格までの手順をまとめています。
+
+この CLI は `~/dev/coq-decompiled_stable/` を既定の source root として読みます。ここにある decompiled inputs は外部の read-only 入力で、commit 対象ではありません。`--validate-fixed-leaf` は同じ CLI の中にある検証フラグで、別の top-level validator はありません。
 
 **使い方**:
 
 ```bash
-python scripts/scan_text_producers.py \
+python scripts/legacies/scan_text_producers.py \
   --source-root ~/dev/coq-decompiled_stable \
   --cache-dir .scanner-cache \
   --output docs/candidate-inventory.json \
@@ -37,11 +47,24 @@ python scripts/scan_text_producers.py \
   --validate-fixed-leaf
 ```
 
+**issue-357 first PR verification**:
+
+```bash
+dotnet build Mods/QudJP/Assemblies/QudJP.csproj
+dotnet test Mods/QudJP/Assemblies/QudJP.Analyzers.Tests/QudJP.Analyzers.Tests.csproj --filter StaticSotPilot
+pytest scripts/tests/test_scan_text_producers.py
+pytest scripts/tests/test_scanner_inventory.py
+pytest scripts/tests/test_scanner_ast_grep_runner.py
+pytest scripts/tests/test_scanner_rule_classifier.py
+pytest scripts/tests/test_scanner_cross_reference.py
+pytest scripts/tests/test_reconcile_inventory_status.py
+```
+
 **引数**:
 
 - `--source-root`: decompiled C# source root。既定は `~/dev/coq-decompiled_stable`
 - `--cache-dir`: Phase 1a / 1b の中間出力先。既定は `.scanner-cache`
-- `--output`: 最終 candidate inventory JSON の出力先。既定は `docs/candidate-inventory.json`
+- `--output`: 現在の static consumer 向け bridge/view-only candidate inventory JSON の出力先。既定は `docs/candidate-inventory.json`
 - `--phase`: `1a`, `1b`, `1c`, `1d`, `all` のいずれか
 - `--diff`: 将来の freshness diff 用。現在は no-op
 - `--validate-fixed-leaf`: Phase 1d output の fixed-leaf candidate を検証する
@@ -53,7 +76,7 @@ python scripts/scan_text_producers.py \
 
 **補足**:
 
-- `--phase 1d` は、すでに cache があるときの再レビュー向けです
+- `--phase 1d` は、すでに cache があるときの再レビュー向けで、legacy bridge/view output を更新します
 - `--phase all` は、スキャンから検証までを通して回す happy path です
 - 受理した fixed-leaf candidate は段階的に昇格させるが、これによって現在の `Translator` のランタイム意味論は変わらない。
 

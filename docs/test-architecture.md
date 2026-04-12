@@ -4,6 +4,7 @@ QudJP のテストは **3 層構造** を維持しつつ、L2 を `game-DLL-assi
 目的は、`Assembly-CSharp.dll` の実シグネチャと実メソッド解決を自動検証に取り込みながら、Unity ランタイム依存の表示確認だけを L3 に残すことです。
 
 Phase F の runtime route-proof boundary は `docs/RULES.md` が定義します。このページは層の使い分けを説明する場所で、Phase F を static coverage に置き換える定義はしません。
+issue-357 の Roslyn pilot は静的 SoT 収集であり、この文書の runtime proof と L3 とは別です。legacy scanner output は current static consumers 向けの bridge/view 層で、source of truth ではありません。
 
 ---
 
