@@ -184,20 +184,37 @@ internal static class DescriptionTextTranslator
                 {
                     var articleLength = targetGroup.Value.Length - strippedTarget.Length;
                     var strippedStart = targetGroup.Index + articleLength;
-                    var hasOpeningBeforeStrippedStart = false;
+                    var hasWrapperCrossingStrippedStart = false;
+                    var targetEnd = targetGroup.Index + targetGroup.Length;
+                    var openingStack = new Stack<int>();
                     for (var index = 0; index < spans.Count; index++)
                     {
                         var span = spans[index];
-                        if (span.Index < strippedStart
-                            && span.Index >= targetGroup.Index
-                            && ColorCodePreserver.IsOpeningBoundaryToken(span.Token))
+                        if (span.Index < targetGroup.Index || span.Index > targetEnd)
                         {
-                            hasOpeningBeforeStrippedStart = true;
+                            continue;
+                        }
+
+                        if (ColorCodePreserver.IsOpeningBoundaryToken(span.Token))
+                        {
+                            openingStack.Push(span.Index);
+                            continue;
+                        }
+
+                        if (!ColorCodePreserver.IsClosingBoundaryToken(span.Token) || openingStack.Count == 0)
+                        {
+                            continue;
+                        }
+
+                        var openingIndex = openingStack.Pop();
+                        if (openingIndex < strippedStart && span.Index > strippedStart)
+                        {
+                            hasWrapperCrossingStrippedStart = true;
                             break;
                         }
                     }
 
-                    target = hasOpeningBeforeStrippedStart
+                    target = hasWrapperCrossingStrippedStart
                         ? RestoreBalancedCapture(target, spans, targetGroup)
                         : RestoreCaptureAtOffset(target, spans, strippedStart, strippedTarget.Length);
                 }

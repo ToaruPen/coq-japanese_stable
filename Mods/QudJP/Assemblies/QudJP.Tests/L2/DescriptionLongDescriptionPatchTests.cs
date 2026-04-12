@@ -233,6 +233,40 @@ public sealed class DescriptionLongDescriptionPatchTests
     }
 
     [Test]
+    public void Postfix_DoesNotReattachArticleOnlyColorWrapper_WhenLeadingArticleIsStripped()
+    {
+        WriteDictionary(("lighting a beacon fire to warn their enemies", "敵に警告するために狼煙を上げたため"));
+
+        RunWithDescriptionPatch(() =>
+        {
+            const string source = "Hated by {{C|the}} 盲道の徒 for lighting a beacon fire to warn their enemies.";
+            var target = new DummyDescriptionTarget(source);
+            var builder = new StringBuilder();
+            target.GetLongDescription(builder);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    builder.ToString(),
+                    Is.EqualTo("盲道の徒に憎まれている。理由: 敵に警告するために狼煙を上げたため。"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(DescriptionLongDescriptionPatch),
+                        "Description.FactionDisposition"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(DescriptionLongDescriptionPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        source),
+                    Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
     public void Postfix_PreservesOriginalVillageTarget_WhenVillageTemplateTranslationIsMissing()
     {
         WriteDictionary(("digging up the remains of their ancestors", "祖先の遺骸を掘り起こしたため"));
