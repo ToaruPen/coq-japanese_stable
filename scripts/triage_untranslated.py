@@ -20,6 +20,8 @@ from scripts.triage.log_parser import parse_log
 from scripts.triage.models import LogEntry, LogEntryKind, TriageClassification, TriageResult
 
 _DEFAULT_LOG = Path.home() / "Library" / "Logs" / "Freehold Games" / "CavesOfQud" / "Player.log"
+_ACTIONABLE_KINDS = frozenset({LogEntryKind.MISSING_KEY, LogEntryKind.NO_PATTERN})
+_PHASE_F_ONLY_KINDS = frozenset({LogEntryKind.DYNAMIC_TEXT_PROBE, LogEntryKind.SINK_OBSERVE})
 
 
 def _find_project_root() -> Path:
@@ -70,8 +72,9 @@ def main(argv: list[str] | None = None) -> int:
     try:
         _validate_log_path(args.log)
         entries = parse_log(args.log)
-        results = [classify(entry) for entry in _iter_actionable_entries(entries)]
-        report = _build_report(results)
+        actionable_results = [classify(entry) for entry in _iter_actionable_entries(entries)]
+        phase_f_results = [classify(entry) for entry in _iter_phase_f_entries(entries)]
+        report = _build_report(actionable_results, phase_f_results)
         report_json = json.dumps(report, ensure_ascii=False, indent=2)
     except (FileNotFoundError, ValueError) as exc:
         print(f"Error: {exc}", file=sys.stderr)  # noqa: T201
@@ -89,12 +92,20 @@ def main(argv: list[str] | None = None) -> int:
 
 def _iter_actionable_entries(entries: list[LogEntry]) -> list[LogEntry]:
     """Return only untranslated observations that should become triage items."""
-    return [entry for entry in entries if entry.kind != LogEntryKind.DYNAMIC_TEXT_PROBE]
+    return [entry for entry in entries if entry.kind in _ACTIONABLE_KINDS]
 
 
-def _build_report(results: list[TriageResult]) -> dict[str, Any]:
+def _iter_phase_f_entries(entries: list[LogEntry]) -> list[LogEntry]:
+    """Return Phase F-only observations that must stay separate from actionable triage."""
+    return [entry for entry in entries if entry.kind in _PHASE_F_ONLY_KINDS]
+
+
+def _build_report(
+    actionable_results: list[TriageResult],
+    phase_f_results: list[TriageResult],
+) -> dict[str, Any]:
     """Build a grouped JSON-serializable report from triage results."""
-    summary: dict[str, int] = {"total": len(results)}
+    summary: dict[str, int] = {"total": len(actionable_results)}
     by_classification: dict[str, list[dict[str, Any]]] = {
         classification.value: [] for classification in TriageClassification
     }
@@ -104,10 +115,10 @@ def _build_report(results: list[TriageResult]) -> dict[str, Any]:
 
     for classification in TriageClassification:
         summary[classification.value] = sum(
-            1 for result in results if result.classification == classification
+            1 for result in actionable_results if result.classification == classification
         )
 
-    for result in sorted(results, key=_result_sort_key):
+    for result in sorted(actionable_results, key=_result_sort_key):
         entry_data = _serialize_result(result)
         by_classification[result.classification.value].append(entry_data)
         by_route[result.entry.route][result.classification.value].append(entry_data)
@@ -116,7 +127,24 @@ def _build_report(results: list[TriageResult]) -> dict[str, Any]:
         "summary": summary,
         "by_classification": by_classification,
         "by_route": dict(sorted(by_route.items())),
+        "phase_f": _build_phase_f_report(phase_f_results),
     }
+
+
+def _build_phase_f_report(results: list[TriageResult]) -> dict[str, Any]:
+    """Build the separate Phase F report section for non-actionable runtime evidence."""
+    summary = {
+        "total": len(results),
+        LogEntryKind.DYNAMIC_TEXT_PROBE.value: sum(
+            1 for result in results if result.entry.kind == LogEntryKind.DYNAMIC_TEXT_PROBE
+        ),
+        LogEntryKind.SINK_OBSERVE.value: sum(1 for result in results if result.entry.kind == LogEntryKind.SINK_OBSERVE),
+    }
+    entries = [
+        _serialize_result(result, include_phase_f_runtime_fields=True)
+        for result in sorted(results, key=_result_sort_key)
+    ]
+    return {"summary": summary, "entries": entries}
 
 
 def _result_sort_key(result: TriageResult) -> tuple[str, int, str, str]:
@@ -129,17 +157,22 @@ def _result_sort_key(result: TriageResult) -> tuple[str, int, str, str]:
     )
 
 
-def _serialize_result(result: TriageResult) -> dict[str, Any]:
+def _serialize_result(
+    result: TriageResult,
+    *,
+    include_phase_f_runtime_fields: bool = False,
+) -> dict[str, Any]:
     """Serialize a single triage result into JSON-compatible data."""
     entry = result.entry
     payload: dict[str, Any] = {
         "text": entry.text,
         "route": entry.route,
         "kind": entry.kind.value,
-        "hits": entry.hits,
         "line_number": entry.line_number,
         "reason": result.reason,
     }
+    if entry.hits is not None:
+        payload["hits"] = entry.hits
     if entry.family is not None:
         payload["family"] = entry.family
     if entry.translated_text is not None:
@@ -148,6 +181,35 @@ def _serialize_result(result: TriageResult) -> dict[str, Any]:
         payload["changed"] = entry.changed
     if result.slot_evidence:
         payload["slot_evidence"] = result.slot_evidence
+    phase_f = _serialize_phase_f_fields(entry, include_runtime_fields=include_phase_f_runtime_fields)
+    if phase_f:
+        payload["phase_f"] = phase_f
+    return payload
+
+
+def _serialize_phase_f_fields(
+    entry: LogEntry,
+    *,
+    include_runtime_fields: bool,
+) -> dict[str, Any]:
+    """Serialize structured Phase F fields without mutating the legacy actionable shape."""
+    payload: dict[str, Any] = {}
+
+    if include_runtime_fields or entry.has_structured_phase_f_data():
+        payload["route"] = entry.route
+    if entry.family is not None and (include_runtime_fields or entry.has_structured_field("family")):
+        payload["family"] = entry.family
+
+    for field_name in (
+        "template_id",
+        "rendered_text_sample",
+        "payload_mode",
+        "payload_excerpt",
+        "payload_sha256",
+    ):
+        if entry.has_structured_field(field_name):
+            payload[field_name] = getattr(entry, field_name)
+
     return payload
 
 
