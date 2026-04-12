@@ -4,15 +4,17 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import Any, cast
 
-from scripts.reconcile_inventory_status import (
+import pytest  # pyright: ignore[reportMissingImports]
+
+from scripts.legacies.reconcile_inventory_status import (
     main,
     normalize_csharp_template,
     read_candidate_inventory_with_legacy_statuses,
     reconcile_inventory,
 )
-from scripts.scanner.inventory import (
+from scripts.legacies.scanner.inventory import (
     Confidence,
     InventoryDraft,
     InventorySite,
@@ -23,9 +25,6 @@ from scripts.scanner.inventory import (
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-
-if TYPE_CHECKING:
-    import pytest
 
 
 def _draft(*sites: InventorySite) -> InventoryDraft:
@@ -50,7 +49,7 @@ def _draft(*sites: InventorySite) -> InventoryDraft:
 
 def _site(site_id: str, **overrides: object) -> InventorySite:
     """Construct one InventorySite for test inputs."""
-    fields: dict[str, object] = {
+    fields: dict[str, Any] = {
         "id": site_id,
         "file": "XRL.World/Test.cs",
         "line": 1,
@@ -64,7 +63,7 @@ def _site(site_id: str, **overrides: object) -> InventorySite:
         "needs_runtime": False,
     }
     fields.update(overrides)
-    return InventorySite(**fields)
+    return InventorySite(**cast("dict[str, Any]", fields))
 
 
 def test_normalize_csharp_template_handles_literals_and_getverb() -> None:
@@ -220,3 +219,26 @@ def test_main_rewrites_inventory_and_reports_summary(tmp_path: Path, capsys: pyt
     assert "translated (+" not in captured.err
     assert "0 -> 1 translated (+1)" in captured.out
     assert "legacy exclude -> excluded: 1" in captured.out
+
+
+def test_main_help_marks_reconciliation_as_legacy_bridge_view(capsys: pytest.CaptureFixture[str]) -> None:
+    """CLI help should lock the task-4 first-PR static consumer boundary."""
+    with pytest.raises(SystemExit, match="0"):
+        main(["--help"])
+
+    captured = capsys.readouterr()
+
+    assert "pilot-aware" in captured.out
+    assert "bridge-only" in captured.out
+    assert "deferred" in captured.out
+    assert "Roslyn pilot schema contract" in captured.out
+    assert "Roslyn pilot verification/tests" in captured.out
+    assert (
+        "scripts/legacies/reconcile_inventory_status.py legacy scanner candidate-inventory bridge/view-only consumer"
+        in captured.out
+    )
+    assert "runtime observability consumers" in captured.out
+    assert "scripts/triage/*" in captured.out
+    assert "Phase F and unresolved full static consumer migration" in captured.out
+    assert "bridge/view-only" in captured.out
+    assert "source of truth" in captured.out

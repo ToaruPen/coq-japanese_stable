@@ -1,4 +1,11 @@
-"""Refresh candidate-inventory statuses against current translation assets."""
+"""Refresh candidate-inventory statuses against current translation assets.
+
+This reconciler keeps the legacy candidate inventory usable as a bridge/view-only
+surface for current static consumers, not the source of truth. The first-PR
+static consumer boundary stays explicit: Roslyn pilot surfaces are pilot-aware,
+scanner inventory consumers stay bridge-only, and runtime/triage work is
+deferred.
+"""
 
 from __future__ import annotations
 
@@ -11,21 +18,22 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 
 if __package__ in {None, ""}:
-    _PROJECT_ROOT = Path(__file__).resolve().parents[1]
+    _PROJECT_ROOT = Path(__file__).resolve().parents[2]
     _PROJECT_ROOT_STR = str(_PROJECT_ROOT)
     if _PROJECT_ROOT_STR not in sys.path:
         sys.path.insert(0, _PROJECT_ROOT_STR)
 
-from scripts.scanner.cross_reference import cross_reference_inventory
-from scripts.scanner.inventory import (
+from scripts.legacies.scanner.cross_reference import cross_reference_inventory
+from scripts.legacies.scanner.inventory import (
     InventoryDraft,
     InventorySite,
     SiteStatus,
     SiteType,
+    describe_first_pr_static_consumer_boundary,
     write_candidate_inventory_json,
 )
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_INVENTORY_PATH = Path("docs/candidate-inventory.json")
 DEFAULT_OUTPUT_PATH = DEFAULT_INVENTORY_PATH
 DEFAULT_SOURCE_ROOT = None
@@ -404,16 +412,27 @@ def _merge_csv_values(*values: str | None) -> str | None:
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     """Parse CLI arguments for the inventory reconciler."""
-    parser = argparse.ArgumentParser(description="Reconcile candidate inventory statuses against current assets.")
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=(
+            "Reconcile candidate inventory statuses against current assets. "
+            "The inventory remains a legacy bridge/view-only surface for current static consumers "
+            "and not the source of truth."
+        ),
+        epilog=describe_first_pr_static_consumer_boundary(),
+    )
     parser.add_argument(
         "--inventory",
         default=str(DEFAULT_INVENTORY_PATH),
-        help="Path to candidate-inventory.json.",
+        help=(
+            "Path to the bridge/view-only candidate-inventory.json used by current static consumers; "
+            "not the source of truth."
+        ),
     )
     parser.add_argument(
         "--output",
         default=str(DEFAULT_OUTPUT_PATH),
-        help="Path to write the reconciled inventory JSON.",
+        help="Path to write the reconciled bridge/view-only inventory JSON; not the source of truth.",
     )
     parser.add_argument(
         "--repo-root",
