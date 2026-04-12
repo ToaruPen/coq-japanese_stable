@@ -79,6 +79,9 @@ pytest scripts/tests/test_reconcile_inventory_status.py
 - `--phase 1d` は、すでに cache があるときの再レビュー向けで、legacy bridge/view output を更新します
 - `--phase all` は、スキャンから検証までを通して回す happy path です
 - 受理した fixed-leaf candidate は段階的に昇格させるが、これによって現在の `Translator` のランタイム意味論は変わらない。
+- 実証済み workflow は prune-first です。最初の safe batch は 27-row の pending queue が `""`, `" "`, `BodyText`, `SelectedModLabel` だけだったため、promotion 0 件で正解でした。
+- fixed-leaf validation の current addition set には `translated` / `excluded` rows を含めません。既に narrow home がある duplicate family は new import ではなく existing coverage として扱います。
+- `AddPlayerMessage` は sink-observed umbrella のままで、fixed-leaf owner や fallback destination にはしません。
 
 ## check_encoding.py
 

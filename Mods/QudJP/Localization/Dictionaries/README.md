@@ -37,9 +37,11 @@ Proven fixed-leaf は、source が stable で owner-safe, markup-preserving, か
 
 - **global flat dictionary**: repo-wide で共有できる exact leaf を置く場所です。1 つの平坦な key/value リストで持てるならここを選びます。
 - **scoped dictionary**: 1 つの screen, family, or producer route に閉じる exact leaf を置く場所です。route の所有権を明確にしたいときは、こちらを優先します。
-- **reject**: `message-frame`, builder/display-name, procedural text, unresolved sites, `needs_runtime` sites, あるいは markup を壊す候補は、別途安全性が証明されるまで却下します。
+- **reject**: `message-frame`, builder/display-name, procedural text, unresolved sites, `needs_runtime` sites, sink-observed `AddPlayerMessage`, pseudo-leaf placeholder / widget rows (`""`, `" "`, `BodyText`, `SelectedModLabel`)、あるいは markup を壊す候補は、別途安全性が証明されるまで却下します。
 
 候補を受け入れるときは、source route, ownership class, confidence, destination dictionary を明記し、却下するときは rejection reason を残してください。
+
+既に current assets で covered されている duplicate family は、新規 import ではなく existing coverage として defer します。検証対象の addition set には `translated` / `excluded` rows を混ぜません。
 
 ## マークアップ注意
 - 色タグは `{{R|...}}` などを保持。`{val}` プレースホルダは壊さない。

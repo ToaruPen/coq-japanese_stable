@@ -27,7 +27,9 @@ hexdump -C <file> | head -1
 
 - Use dictionary or XML assets only for true stable leaf strings, fixed labels, and atomic names.
 - Only accept a candidate when it satisfies the proven fixed-leaf policy in `docs/RULES.md`, and record source route, ownership class, confidence, destination dictionary, and rejection reason.
+- Prune pseudo-leaf placeholders and widget/channel identifiers such as `""`, `" "`, `BodyText`, and `SelectedModLabel` before any promotion review.
 - If a route is dynamic, procedural, observation-only at the sink, or `needs_runtime`, do not add a compensating asset entry there.
+- `AddPlayerMessage` remains sink-observed; do not treat it as a fixed-leaf owner or sink-side fallback.
 - Validation must fail on duplicate or broad additions rather than tolerate them at runtime.
 - Preserve markup and placeholders exactly, including `{{...}}`, `&X`, `^x`, `&&`, `^^`, and `=variable.name=`.
 - Verify target object and conversation IDs against game version `2.0.4`.
