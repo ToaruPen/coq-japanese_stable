@@ -241,6 +241,7 @@ def _provenance_fields(
             "ownership_class": OwnershipClass.SINK,
             "destination_dictionary": None,
             "rejection_reason": FixedLeafRejectionReason.NEEDS_REVIEW,
+            "needs_review": True,
         }
 
     if site_type is SiteType.LEAF and confidence is Confidence.HIGH and not needs_review and not needs_runtime:

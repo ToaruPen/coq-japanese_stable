@@ -400,6 +400,7 @@ def test_classifies_add_player_message_literal_as_sink_review_not_fixed_leaf(tmp
     assert site.ownership_class is OwnershipClass.SINK
     assert site.destination_dictionary is None
     assert site.rejection_reason is FixedLeafRejectionReason.NEEDS_REVIEW
+    assert site.needs_review is True
 
 
 @pytest.mark.parametrize("case", TEMPLATE_CASES, ids=lambda case: case.id)
