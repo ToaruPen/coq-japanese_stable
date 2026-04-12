@@ -40,7 +40,11 @@ _SINK_OBSERVE_NEW = (
 
 
 def _structured_suffix_items(line: str) -> list[tuple[str, str | None]]:
-    """Return ordered structured suffix fields with `<missing>` normalized to ``None``."""
+    r"""Return ordered structured suffix fields for unescaped fixture data only.
+
+    This helper intentionally does not handle escaped delimiters like ``\\;`` or ``\\=``;
+    those transport cases are covered by parser tests instead of this fixture splitter.
+    """
     _prefix, separator, suffix = line.partition("; ")
     if not separator:
         return []

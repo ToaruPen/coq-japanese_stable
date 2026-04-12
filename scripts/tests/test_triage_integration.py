@@ -53,19 +53,6 @@ def _write_log(path: Path, lines: list[str]) -> None:
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
-def _structured_suffix_dict(line: str) -> dict[str, str | None]:
-    """Normalize the fixed Phase F suffix into a structured mapping."""
-    _prefix, separator, suffix = line.partition("; ")
-    if not separator:
-        return {}
-
-    payload: dict[str, str | None] = {}
-    for token in suffix.split("; "):
-        key, value = token.split("=", maxsplit=1)
-        payload[key] = None if value == "<missing>" else value
-    return payload
-
-
 def test_cli_produces_json_report(tmp_path: Path) -> None:
     """CLI reads a log file and produces a grouped JSON report."""
     log = tmp_path / "Player.log"
