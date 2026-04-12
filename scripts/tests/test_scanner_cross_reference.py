@@ -2,15 +2,20 @@
 
 from __future__ import annotations
 
+import subprocess
+import sys
 from pathlib import Path
 from typing import Any, cast
 
-from scripts.scanner.cross_reference import (
+import pytest  # pyright: ignore[reportMissingImports]
+
+from scripts.legacies.scanner.cross_reference import (
     build_translation_index,
     cross_reference_inventory,
     cross_reference_inventory_file,
+    main,
 )
-from scripts.scanner.inventory import (
+from scripts.legacies.scanner.inventory import (
     Confidence,
     DestinationDictionary,
     FixedLeafRejectionReason,
@@ -380,3 +385,41 @@ def test_cross_reference_inventory_file_writes_candidate_inventory(tmp_path: Pat
     assert persisted.sites[0].status is SiteStatus.TRANSLATED
     expected_patch = "CharacterStatusScreenBindingPatch, CharacterStatusScreenTranslationPatch"
     assert persisted.sites[0].existing_patch == expected_patch
+
+
+def test_main_help_marks_phase_1d_as_legacy_bridge_view(capsys: pytest.CaptureFixture[str]) -> None:
+    """CLI help should lock the task-4 first-PR static consumer boundary."""
+    with pytest.raises(SystemExit, match="0"):
+        main(["--help"])
+
+    captured = capsys.readouterr()
+
+    assert "pilot-aware" in captured.out
+    assert "bridge-only" in captured.out
+    assert "deferred" in captured.out
+    assert "Roslyn pilot schema contract" in captured.out
+    assert "Roslyn pilot verification/tests" in captured.out
+    assert (
+        "scripts/legacies/scanner/cross_reference.py legacy scanner candidate-inventory bridge/view-only consumer"
+        in captured.out
+    )
+    assert "runtime observability consumers" in captured.out
+    assert "scripts/triage/*" in captured.out
+    assert "Phase F and unresolved full static consumer migration" in captured.out
+    assert "bridge/view-only" in captured.out
+    assert "source of truth" in captured.out
+
+
+def test_direct_script_help_runs_without_module_bootstrap_errors() -> None:
+    """Direct script execution should show the existing help text instead of import-path failures."""
+    completed = subprocess.run(  # noqa: S603 -- test invokes a repo-local fixed script path via the active interpreter.
+        [sys.executable, str(REPO_ROOT / "scripts" / "legacies" / "scanner" / "cross_reference.py"), "--help"],
+        capture_output=True,
+        text=True,
+        cwd=REPO_ROOT,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert "Run Phase 1d translation cross-reference." in completed.stdout
+    assert "bridge/view-only" in completed.stdout

@@ -1,4 +1,11 @@
-"""Phase 1d scanner: cross-reference classified sites with existing translations."""
+"""Phase 1d scanner bridge: cross-reference classified sites with existing translations.
+
+This legacy candidate-inventory step remains a bridge/view-only surface for
+current static consumers, not the source of truth. The first-PR static
+consumer boundary stays explicit: Roslyn pilot surfaces are pilot-aware,
+scanner inventory consumers stay bridge-only, and runtime/triage work is
+deferred.
+"""
 
 from __future__ import annotations
 
@@ -10,11 +17,18 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass, replace
 from pathlib import Path, PurePosixPath
 
-from scripts.scanner.inventory import (
+if __package__ in {None, ""}:
+    _PROJECT_ROOT = Path(__file__).resolve().parents[3]
+    _PROJECT_ROOT_STR = str(_PROJECT_ROOT)
+    if _PROJECT_ROOT_STR not in sys.path:
+        sys.path.insert(0, _PROJECT_ROOT_STR)
+
+from scripts.legacies.scanner.inventory import (
     InventoryDraft,
     InventorySite,
     SiteStatus,
     SiteType,
+    describe_first_pr_static_consumer_boundary,
     read_inventory_draft_json,
     write_candidate_inventory_json,
 )
@@ -388,7 +402,15 @@ def _join_xml_matches(site: InventorySite, matches: set[str]) -> str | None:
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     """Parse CLI arguments for Phase 1d cross-reference."""
-    parser = argparse.ArgumentParser(description="Run Phase 1d translation cross-reference.")
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=(
+            "Run Phase 1d translation cross-reference. "
+            "This legacy scanner step is a bridge/view-only surface for current static consumers "
+            "and not the source of truth."
+        ),
+        epilog=describe_first_pr_static_consumer_boundary(),
+    )
     parser.add_argument(
         "--inventory-draft",
         default=str(DEFAULT_INPUT_PATH),
@@ -407,7 +429,10 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--output",
         default=str(DEFAULT_OUTPUT_PATH),
-        help="Path to write candidate-inventory.json.",
+        help=(
+            "Path to write bridge/view-only candidate-inventory.json for current static consumers; "
+            "not the source of truth."
+        ),
     )
     return parser.parse_args(argv)
 
