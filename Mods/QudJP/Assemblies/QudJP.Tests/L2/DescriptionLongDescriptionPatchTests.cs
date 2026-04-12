@@ -268,6 +268,42 @@ public sealed class DescriptionLongDescriptionPatchTests
     }
 
     [Test]
+    public void Postfix_PreservesWholeLineWrapper_WhenVillagersTargetReorders()
+    {
+        WriteDictionary(
+            ("The villagers of {0}", "{0}の村人たち"),
+            ("digging up the remains of their ancestors", "祖先の遺骸を掘り起こしたため"));
+
+        RunWithDescriptionPatch(() =>
+        {
+            const string source = "{{W|Hated by the villagers of アラガシュル for digging up the remains of their ancestors.}}";
+            var target = new DummyDescriptionTarget(source);
+            var builder = new StringBuilder();
+            target.GetLongDescription(builder);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    builder.ToString(),
+                    Is.EqualTo("{{W|アラガシュルの村人たちに憎まれている。理由: 祖先の遺骸を掘り起こしたため。}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(DescriptionLongDescriptionPatch),
+                        "Description.FactionDisposition"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(DescriptionLongDescriptionPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        source),
+                    Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
     public void Postfix_PassesThroughUnknownDescription_WhenPatched()
     {
         WriteDictionary(("Known text", "既知の文"));

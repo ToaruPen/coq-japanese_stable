@@ -407,18 +407,21 @@ internal static class DescriptionTextTranslator
             }
         }
 
+        var targetSpans = spans is not null && spans.Count > 0
+            ? ColorCodePreserver.SliceSpans(spans, targetGroup.Index, targetGroup.Length)
+            : null;
+
         var targetBoundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(
-            spans,
+            targetSpans,
             match,
             targetGroup.Length,
             translated.Length);
-        if (spans is not null && spans.Count > 0)
+        if (targetSpans is not null && targetSpans.Count > 0)
         {
-            var targetEnd = targetGroup.Index + targetGroup.Length;
-            for (var index = 0; index < spans.Count; index++)
+            for (var index = 0; index < targetSpans.Count; index++)
             {
-                var span = spans[index];
-                if (span.Index == targetEnd && ColorCodePreserver.IsClosingBoundaryToken(span.Token))
+                var span = targetSpans[index];
+                if (span.Index == targetGroup.Length && ColorCodePreserver.IsClosingBoundaryToken(span.Token))
                 {
                     targetBoundarySpans.Add(new ColorSpan(translated.Length, span.Token));
                 }
