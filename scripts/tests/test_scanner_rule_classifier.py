@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import subprocess
+import sys
 from dataclasses import dataclass
+from pathlib import Path
 from textwrap import dedent
-from typing import TYPE_CHECKING
 
 import pytest  # pyright: ignore[reportMissingImports]
 
@@ -21,8 +23,7 @@ from scripts.legacies.scanner.inventory import (
 )
 from scripts.legacies.scanner.rule_classifier import _rejection_reason, classify_raw_hit, classify_raw_hits_file
 
-if TYPE_CHECKING:
-    from pathlib import Path
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 @dataclass(frozen=True, slots=True)
@@ -605,3 +606,17 @@ def test_classify_raw_hits_file_writes_inventory_draft_and_stats(tmp_path: Path)
 def test_rejection_reason_defensively_handles_non_proven_leaf_sites() -> None:
     """Leaf sites that are not yet proven should produce a stable rejection reason instead of raising."""
     assert _rejection_reason(SiteType.LEAF, needs_runtime=False) is FixedLeafRejectionReason.NEEDS_REVIEW
+
+
+def test_direct_script_help_runs_without_module_bootstrap_errors() -> None:
+    """Direct script execution should show help instead of import-path failures."""
+    completed = subprocess.run(  # noqa: S603 -- test invokes a repo-local fixed script path via the active interpreter.
+        [sys.executable, str(REPO_ROOT / "scripts" / "legacies" / "scanner" / "rule_classifier.py"), "--help"],
+        capture_output=True,
+        text=True,
+        cwd=REPO_ROOT,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert "Run Phase 1b rule-based source classification." in completed.stdout
