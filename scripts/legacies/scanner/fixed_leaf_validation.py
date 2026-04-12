@@ -12,6 +12,7 @@ from scripts.legacies.scanner.inventory import (
     InventorySite,
     SiteStatus,
     default_destination_dictionary_for_route,
+    is_sink_observed_only_route,
 )
 
 _MIN_DUPLICATE_SITE_COUNT = 2
@@ -116,7 +117,7 @@ def render_fixed_leaf_validation_report(report: FixedLeafValidationReport) -> st
 
 def _site_issue(site: InventorySite) -> FixedLeafValidationIssue | None:
     """Validate one candidate site in isolation."""
-    if site.source_route == "AddPlayerMessage":
+    if is_sink_observed_only_route(site.source_route):
         return FixedLeafValidationIssue(
             failure_class=FixedLeafFailureClass.BROAD_ENTRY,
             candidate_ids=(site.id,),
