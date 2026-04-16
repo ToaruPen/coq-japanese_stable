@@ -1289,6 +1289,11 @@
     },
     {
       "verb": "fall",
+      "extra": "to the ground",
+      "text": "{subject}は地面に倒れた{endmark}"
+    },
+    {
+      "verb": "fall",
       "extra": "{{C|asleep}}",
       "text": "{{C|眠りに落ちた}}"
     },
@@ -1981,6 +1986,11 @@
     },
     {
       "verb": "beat",
+      "extra": "with {0} {1}",
+      "text": "{0}の炎を{1}で叩いた"
+    },
+    {
+      "verb": "beat",
       "extra": "its wings, and the shattered voices of a trillion worlds ride the current of air and harmonize into one, revealing the following wisdom:\\n\\n(.+)",
       "text": "{subject}は翼を打ち鳴らし、砕けた無数の世界の声が気流に乗って一つに調和し、次の叡智を示した:\\n\\n{0}"
     },
@@ -2641,8 +2651,18 @@
     },
     {
       "verb": "try",
+      "extra": "to touch (?:the |a |an )?.+?, but (?:it|he|she|they) evade(?:s)? (?:you|them|him|her|it)",
+      "text": "{0}に触れようとしたが、かわされた"
+    },
+    {
+      "verb": "try",
       "extra": "to touch {0}, but {1}",
       "text": "{0}に触れようとしたが、{1}"
+    },
+    {
+      "verb": "try",
+      "extra": ", but evade {0}",
+      "text": "試みたが、{0}を回避した"
     },
     {
       "verb": "unlock",

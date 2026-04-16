@@ -240,6 +240,27 @@ public sealed class MessageFrameTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateXDidYToZ_RepositoryDictionary_TryTouchEvadesYou()
+    {
+        UseRepositoryDictionary();
+
+        var translated = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "あなた",
+            "try",
+            preposition: "to touch",
+            objectText: "帯電セル",
+            extra: ", but it evades you",
+            endMark: ".",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたは帯電セルに触れようとしたが、かわされた。"));
+        });
+    }
+
     // --- New Tier2 tests (Task 1: #82 DidX verb entries) ---
 
     [Test]
