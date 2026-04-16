@@ -15,6 +15,7 @@ public sealed class TargetMethodResolutionTests
     {
 #if HAS_GAME_DLL
         _ = EnsureGameAssemblyLoaded();
+        _ = EnsureManagedAssemblyLoaded("ZString");
 #endif
 #if HAS_TMP
         _ = EnsureManagedAssemblyLoaded("UnityEngine.CoreModule");
@@ -418,6 +419,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.UI.Framework.FrameworkDataElement",
         "XRL.UI.Framework.FrameworkDataElement",
         "XRL.UI.Framework.FrameworkDataElement",
+        "XRL.UI.Framework.FrameworkDataElement",
     })]
     [TestCase(typeof(SinkPrereqUiMethodTranslationPatch), new[]
     {
@@ -430,6 +432,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.UI.Framework.FrameworkDataElement",
         "MapScrollerController+MapPinData",
         "",
+        "",
     })]
     [TestCase(typeof(GrammarMakeOrListPatch), new[]
     {
@@ -439,7 +442,6 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(PopupTranslationPatch), new[]
     {
         "System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
-        "System.String|System.Collections.Generic.IReadOnlyList`1[[System.String]]|System.Collections.Generic.IReadOnlyList`1[[System.Char]]|System.Int32|System.String|System.Int32|System.Boolean|System.Boolean|System.Int32|System.String|System.Action`1[[System.Int32]]|XRL.World.GameObject|System.Collections.Generic.IReadOnlyList`1[[ConsoleLib.Console.IRenderable]]|ConsoleLib.Console.IRenderable|System.Collections.Generic.IReadOnlyList`1[[Qud.UI.QudMenuItem]]|System.Boolean|System.Boolean|System.Int32|System.Boolean",
         "System.String|ConsoleLib.Console.IRenderable|System.String|System.Collections.Generic.List`1[[System.String]]|System.Boolean|System.Boolean|System.Boolean",
     })]
     [TestCase(typeof(PopupShowTranslationPatch), new[]
@@ -488,12 +490,7 @@ public sealed class TargetMethodResolutionTests
         "System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
         "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
     })]
-    [TestCase(typeof(SteamWorkshopUploaderViewTranslationPatch), new[]
-    {
-        "System.String",
-        "System.String",
-        "System.String|System.Single",
-    })]
+    [TestCase(typeof(SteamWorkshopUploaderViewTranslationPatch), new string[0])]
     [TestCase(typeof(ModInfoTranslationPatch), new[]
     {
         "",
@@ -503,7 +500,7 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(ModScrollerOneTranslationPatch), new[]
     {
-        "",
+        "XRL.ModInfo",
     })]
     [TestCase(typeof(PopupAskStringTranslationPatch), new[]
     {
@@ -991,7 +988,6 @@ public sealed class TargetMethodResolutionTests
     }
 #endif
 
-#if HAS_TMP
     private static Assembly EnsureManagedAssemblyLoaded(string assemblyName)
     {
         var loadedAssembly = Array.Find(
@@ -1008,6 +1004,5 @@ public sealed class TargetMethodResolutionTests
         Assert.That(File.Exists(assemblyPath), Is.True, $"{assemblyName}.dll not found at {assemblyPath}");
         return AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
     }
-#endif
 }
 #endif

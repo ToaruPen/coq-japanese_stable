@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Text;
 using HarmonyLib;
 
@@ -15,6 +16,9 @@ internal static class GrammarPatchTarget
 
 internal static class GrammarPatchHelpers
 {
+    private static readonly Regex AssemblyQualificationPattern =
+        new Regex(@",\s*[^\[\],]+,\s*Version=[^\]]+", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     internal static void LogTransform(string family, string source, string translated, bool logWhenUnchanged = false)
     {
         DynamicTextObservability.RecordTransform("GrammarPatch", family, source, translated, logWhenUnchanged);
@@ -25,15 +29,101 @@ internal static class GrammarPatchHelpers
         return family + "/count=" + (count >= 3 ? "3+" : count.ToString(CultureInfo.InvariantCulture));
     }
 
-    internal static MethodBase? ResolveMethod(string methodName, Type[] parameterTypes, string signature)
+    private static Type? ResolveTargetType()
     {
-        var method = AccessTools.Method(GrammarPatchTarget.TypeName + ":" + methodName, parameterTypes);
+        var assemblyQualified = Type.GetType(GrammarPatchTarget.TypeName + ", Assembly-CSharp", throwOnError: false);
+        if (assemblyQualified is not null)
+        {
+            return assemblyQualified;
+        }
+
+        return GameTypeResolver.FindType(GrammarPatchTarget.TypeName, simpleTypeName: "Grammar");
+    }
+
+    private static string NormalizeTypeName(string? typeName)
+    {
+        if (typeName is null)
+        {
+            return string.Empty;
+        }
+
+        return AssemblyQualificationPattern.Replace(typeName, string.Empty);
+    }
+
+    private static bool ParametersMatch(ParameterInfo[] parameters, string[] expectedParameterTypeNames)
+    {
+        if (parameters.Length != expectedParameterTypeNames.Length)
+        {
+            return false;
+        }
+
+        for (var index = 0; index < parameters.Length; index++)
+        {
+            var actual = NormalizeTypeName(parameters[index].ParameterType.FullName);
+            if (!string.Equals(actual, expectedParameterTypeNames[index], StringComparison.Ordinal))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    internal static MethodBase? ResolveMethod(string methodName, string[] parameterTypeNames, string signature)
+    {
+        var targetType = ResolveTargetType();
+        if (targetType is null)
+        {
+            Trace.TraceError($"QudJP: Failed to resolve Grammar target type '{GrammarPatchTarget.TypeName}'. Patch will not apply.");
+            return null;
+        }
+
+        var methods = AccessTools.GetDeclaredMethods(targetType);
+        MethodBase? method = null;
+        for (var index = 0; index < methods.Count; index++)
+        {
+            if (!string.Equals(methods[index].Name, methodName, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            var parameters = methods[index].GetParameters();
+            if (!ParametersMatch(parameters, parameterTypeNames))
+            {
+                continue;
+            }
+
+            method = methods[index];
+            break;
+        }
+
         if (method is null)
         {
             Trace.TraceError($"QudJP: Failed to resolve Grammar.{signature}. Patch will not apply.");
         }
 
         return method;
+    }
+
+    internal static IEnumerable<MethodBase> ResolveMethods(string methodName, string[][] parameterTypeSets, string signature)
+    {
+        var any = false;
+        for (var index = 0; index < parameterTypeSets.Length; index++)
+        {
+            var method = ResolveMethod(methodName, parameterTypeSets[index], signature);
+            if (method is null)
+            {
+                continue;
+            }
+
+            any = true;
+            yield return method;
+        }
+
+        if (!any)
+        {
+            Trace.TraceError($"QudJP: Failed to resolve any Grammar.{signature} overload. Patch will not apply.");
+        }
     }
 
     internal static string BuildJapaneseList(List<string> items, string conjunction)
@@ -132,7 +222,7 @@ public static class GrammarAPatch
     {
         return GrammarPatchHelpers.ResolveMethod(
             methodName: "A",
-            parameterTypes: new[] { typeof(string), typeof(bool) },
+            parameterTypeNames: new[] { "System.String", "System.Boolean" },
             signature: "A(string, bool)");
     }
 
@@ -161,7 +251,7 @@ public static class GrammarPluralizePatch
     {
         return GrammarPatchHelpers.ResolveMethod(
             methodName: "Pluralize",
-            parameterTypes: new[] { typeof(string) },
+            parameterTypeNames: new[] { "System.String" },
             signature: "Pluralize(string)");
     }
 
@@ -189,7 +279,7 @@ public static class GrammarMakePossessivePatch
     {
         return GrammarPatchHelpers.ResolveMethod(
             methodName: "MakePossessive",
-            parameterTypes: new[] { typeof(string) },
+            parameterTypeNames: new[] { "System.String" },
             signature: "MakePossessive(string)");
     }
 
@@ -219,7 +309,7 @@ public static class GrammarMakeAndListPatch
         {
             return GrammarPatchHelpers.ResolveMethod(
                 methodName: "MakeAndList",
-                parameterTypes: new[] { typeof(IReadOnlyList<string>), typeof(bool) },
+                parameterTypeNames: new[] { "System.Collections.Generic.IReadOnlyList`1[[System.String]]", "System.Boolean" },
                 signature: "MakeAndList(IReadOnlyList<string>, bool)");
         }
         catch (Exception ex)
@@ -256,30 +346,14 @@ public static class GrammarMakeOrListPatch
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
-        var any = false;
-
-        MethodBase?[] candidates =
-        {
-            AccessTools.Method(GrammarPatchTarget.TypeName + ":MakeOrList", new[] { typeof(string[]), typeof(bool) }),
-            AccessTools.Method(GrammarPatchTarget.TypeName + ":MakeOrList", new[] { typeof(List<string>), typeof(bool) }),
-        };
-
-        for (var index = 0; index < candidates.Length; index++)
-        {
-            var method = candidates[index];
-            if (method is null)
+        return GrammarPatchHelpers.ResolveMethods(
+            methodName: "MakeOrList",
+            parameterTypeSets: new[]
             {
-                continue;
-            }
-
-            any = true;
-            yield return method;
-        }
-
-        if (!any)
-        {
-            Trace.TraceError("QudJP: Failed to resolve Grammar.MakeOrList(string[]/List<string>, bool). Patch will not apply.");
-        }
+                new[] { "System.String[]", "System.Boolean" },
+                new[] { "System.Collections.Generic.List`1[[System.String]]", "System.Boolean" },
+            },
+            signature: "MakeOrList(string[]/List<string>, bool)");
     }
 
     public static bool Prefix(IEnumerable<string> __0, bool __1, ref string __result)
@@ -336,7 +410,7 @@ public static class GrammarInitCapsPatch
         {
             return GrammarPatchHelpers.ResolveMethod(
                 methodName: "InitCap",
-                parameterTypes: new[] { typeof(string) },
+                parameterTypeNames: new[] { "System.String" },
                 signature: "InitCap(string)");
         }
         catch (Exception ex)
@@ -390,7 +464,7 @@ public static class GrammarCardinalNumberPatch
         {
             return GrammarPatchHelpers.ResolveMethod(
                 methodName: "Cardinal",
-                parameterTypes: new[] { typeof(int) },
+                parameterTypeNames: new[] { "System.Int32" },
                 signature: "Cardinal(int)");
         }
         catch (Exception ex)
