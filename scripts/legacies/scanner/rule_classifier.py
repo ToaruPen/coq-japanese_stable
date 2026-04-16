@@ -236,13 +236,14 @@ def _provenance_fields(
     needs_runtime = bool(fields.get("needs_runtime", False))
     source_route = raw_hit.family
 
-    if site_type is SiteType.LEAF and is_sink_observed_only_route(source_route):
+    if is_sink_observed_only_route(source_route):
         return {
             "source_route": source_route,
             "ownership_class": OwnershipClass.SINK,
             "destination_dictionary": None,
-            "rejection_reason": FixedLeafRejectionReason.NEEDS_REVIEW,
+            "rejection_reason": _rejection_reason(site_type, needs_runtime=needs_runtime),
             "needs_review": True,
+            "needs_runtime": needs_runtime,
         }
 
     if site_type is SiteType.LEAF and confidence is Confidence.HIGH and not needs_review and not needs_runtime:

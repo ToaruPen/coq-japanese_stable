@@ -403,6 +403,31 @@ def test_classifies_add_player_message_literal_as_sink_review_not_fixed_leaf(tmp
     assert site.needs_review is True
 
 
+def test_classifies_add_player_message_template_as_sink_review_not_owner_safe(tmp_path: Path) -> None:
+    """Generic AddPlayerMessage templates stay observation-only until a producer route is proven."""
+    source_root, raw_hit = _make_raw_hit(
+        tmp_path,
+        Case(
+            id="template-block",
+            family="AddPlayerMessage",
+            matched_code="IComponent<GameObject>.AddPlayerMessage($\"You block with {arg}! (+{part.AV} AV)\", 'g')",
+            source_text=_source(
+                "IComponent<GameObject>.AddPlayerMessage($\"You block with {arg}! (+{part.AV} AV)\", 'g');"
+            ),
+        ),
+    )
+
+    site = classify_raw_hit(raw_hit, source_root)
+
+    assert site is not None
+    assert site.type is SiteType.TEMPLATE
+    assert site.source_route == "AddPlayerMessage"
+    assert site.ownership_class is OwnershipClass.SINK
+    assert site.destination_dictionary is None
+    assert site.rejection_reason is FixedLeafRejectionReason.TEMPLATE
+    assert site.needs_review is True
+
+
 @pytest.mark.parametrize("case", TEMPLATE_CASES, ids=lambda case: case.id)
 def test_classifies_format_and_interpolation_as_high_confidence_templates(tmp_path: Path, case: Case) -> None:
     """string.Format and interpolation sinks become Template sites."""
@@ -413,7 +438,13 @@ def test_classifies_format_and_interpolation_as_high_confidence_templates(tmp_pa
     assert site is not None
     assert site.type is SiteType.TEMPLATE
     assert site.confidence is Confidence.HIGH
-    assert site.needs_review is False
+    if case.family == "AddPlayerMessage":
+        assert site.needs_review is True
+        assert site.ownership_class is OwnershipClass.SINK
+        assert site.destination_dictionary is None
+        assert site.rejection_reason is FixedLeafRejectionReason.TEMPLATE
+    else:
+        assert site.needs_review is False
 
 
 @pytest.mark.parametrize("case", BUILDER_CASES, ids=lambda case: case.id)
@@ -582,7 +613,11 @@ def test_leaves_non_string_builder_to_string_and_complex_calls_unresolved(tmp_pa
     assert site.confidence is Confidence.LOW
     assert site.needs_runtime is True
     assert site.ownership_class is OwnershipClass.SINK
-    assert site.rejection_reason is FixedLeafRejectionReason.UNRESOLVED
+    if case.family == "AddPlayerMessage":
+        assert site.needs_review is True
+        assert site.rejection_reason is FixedLeafRejectionReason.UNRESOLVED
+    else:
+        assert site.rejection_reason is FixedLeafRejectionReason.UNRESOLVED
 
 
 def test_classify_raw_hits_file_writes_inventory_draft_and_stats(tmp_path: Path) -> None:

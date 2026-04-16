@@ -75,6 +75,16 @@ def test_normalize_csharp_template_handles_literals_and_getverb() -> None:
         )
         == ", but {0} dodge"
     )
+    assert (
+        normalize_csharp_template(
+            '", but " + E.Item.does('
+            '"evade", int.MaxValue, null, null, null, AsIfKnown: false, Single: false, '
+            "NoConfusion: false, NoColor: false, Stripped: false, WithoutTitles: true, "
+            "Short: true, BaseOnly: false, WithIndefiniteArticle: false, null, "
+            'IndicateHidden: false, Pronoun: true) + " " + ParentObject.them'
+        )
+        == ", but evade {0}"
+    )
     assert normalize_csharp_template('"{{rules|" + result + "}} XP"') == "{{rules|{0}}} XP"
 
 
@@ -172,9 +182,15 @@ def test_reconcile_inventory_promotes_sites_from_current_assets(tmp_path: Path) 
 
 
 def test_repo_candidate_inventory_reclassifies_existing_message_frame_families() -> None:
-    """Repo candidate inventory should not leave proven DidX message-frame families in needs_patch."""
+    """Repo candidate inventory should not leave audited DidX message-frame families in needs_patch."""
     inventory = read_candidate_inventory_json(REPO_ROOT / "docs" / "candidate-inventory.json")
     expected_ids = {
+        "XRL.World.Capabilities/Firefighting.cs::L86:C4",
+        "XRL.World.Capabilities/Firefighting.cs::L103:C7",
+        "XRL.World.Capabilities/Firefighting.cs::L109:C6",
+        "XRL.World.Capabilities/Firefighting.cs::L121:C5",
+        "XRL.World.Capabilities/Firefighting.cs::L125:C5",
+        "XRL.World.Capabilities/Firefighting.cs::L181:C4",
         "XRL.World.Effects/HolographicBleeding.cs::L37:C5",
         "XRL.World.Effects/HolographicBleeding.cs::L41:C5",
         "XRL.World.Effects/HolographicBleeding.cs::L46:C4",
@@ -191,6 +207,15 @@ def test_repo_candidate_inventory_reclassifies_existing_message_frame_families()
         "XRL.World.Effects/Prone.cs::L273:C5",
         "XRL.World.Effects/Prone.cs::L277:C5",
         "XRL.World.Effects/Prone.cs::L282:C4",
+        "XRL.World.Parts.Mutation/ElectricalGeneration.cs::L164:C4",
+        "XRL.World.Parts.Mutation/ElectricalGeneration.cs::L168:C4",
+        "XRL.World.Parts.Mutation/ElectricalGeneration.cs::L384:C5",
+        "XRL.World.Parts.Mutation/ElectricalGeneration.cs::L396:C8",
+        "XRL.World.Parts.Mutation/ElectricalGeneration.cs::L400:C8",
+        "XRL.World.Parts.Mutation/ElectricalGeneration.cs::L405:C7",
+        "XRL.World.Parts.Mutation/ElectricalGeneration.cs::L414:C6",
+        "XRL.World.Parts.Mutation/ElectricalGeneration.cs::L458:C6",
+        "XRL.World.Parts.Mutation/ElectricalGeneration.cs::L462:C6",
     }
     sites = [site for site in inventory.sites if site.id in expected_ids]
 
