@@ -717,14 +717,17 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("You take 1 damage from bleeding.", "あなたは出血で1ダメージを受けた。")]
     [TestCase("The ワニ hits (x1) for 2 damage with his 噛みつき. [18]", "ワニの噛みつきで2ダメージを受けた。(x1) [18]")]
     [TestCase("You hit glowfish for 3 damage.", "glowfishに3ダメージを与えた")]
+    [TestCase("You miss with your レンチ! [10 vs 10]", "レンチでの攻撃は外れた。[10 vs 10]")]
     [TestCase("The タム fails to penetrate your armor [17]!", "タムはあなたの装甲を貫けなかった！ [17]")]
     [TestCase("The ワニ cannot reach the スナップジョー.", "ワニはスナップジョーに届かない")]
     [TestCase("Your attack passes through the ワニ!", "あなたの攻撃はワニをすり抜けた！")]
     [TestCase("One of タムの wounds stops bleeding.", "タムの傷のひとつの出血が止まった。")]
     [TestCase("The タム's nose begins to bleed.", "タムの鼻から血が流れ始めた")]
     [TestCase("The タム's brain begins to hemorrhage.", "タムの脳から出血が始まった")]
+    [TestCase("The ウォーターヴァイン農家 misses you with his 鉄の蔓刈り斧! [3 vs 7]", "ウォーターヴァイン農家の鉄の蔓刈り斧は外れた。[3 vs 7]")]
     [TestCase("You lose 3 HP.", "あなたは3HPを失った")]
     [TestCase("You recover 5 HP.", "あなたは5HP回復した")]
+    [TestCase("You take 14 damage from 監視官イラメの freezing effect!", "監視官イラメの凍結効果で14ダメージを受けた！")]
     [TestCase("You harvest a ヴァインウェハー from the ウォーターヴァイン.", "ウォーターヴァインからヴァインウェハーを収穫した")]
     public void MessagingEmitMessage_TranslatesStableRepositoryFamilies_WhenPatched(string message, string expected)
     {
