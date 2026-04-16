@@ -61,5 +61,25 @@ public sealed class MarkovCorpusGameDllTests
             Assert.That(sentences.Any(s => s.Contains("  ", StringComparison.Ordinal)), Is.False, "No generated sentence should contain double spaces.");
         });
     }
+
+    [Test]
+    public void GenerateSentence_NormalizesEmbeddedPeriodTerminator()
+    {
+        var chainData = MarkovCorpusTranslationPatch.BuildChainData("始まり あ.い", 1);
+
+        var sentence = MarkovCorpusTranslationPatch.GenerateSentence(chainData, "始まり").TrimEnd();
+
+        Assert.That(sentence, Does.EndWith("."), "Generated sentences should be normalized to end with '.'.");
+    }
+
+    [Test]
+    public void GenerateSentence_AvoidsFalseSentenceStartsWithoutJapanese()
+    {
+        var chainData = MarkovCorpusTranslationPatch.BuildChainData("出力 ファイル . Love . log .", 2);
+
+        var sentence = MarkovCorpusTranslationPatch.GenerateSentence(chainData).TrimEnd();
+
+        Assert.That(MarkovCorpusTranslationPatch.ContainsJapaneseCharacters(sentence), Is.True, "Generated sentences should retain Japanese content even when the corpus contains internal '.' tokens.");
+    }
 }
 #endif

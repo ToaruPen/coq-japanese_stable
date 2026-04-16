@@ -169,8 +169,49 @@ public static class MarkovCorpusTranslationPatch
             throw new MissingMethodException(markovChainType.FullName, "GenerateSentence");
         }
 
-        var result = generateSentenceMethod.Invoke(null, new object?[] { chainData, seed }) as string;
-        return result ?? throw new InvalidOperationException("QudJP: MarkovChain.GenerateSentence returned null.");
+        seed ??= FindJapaneseSeed(chainData);
+        var maxAttempts = string.IsNullOrEmpty(seed) ? 32 : 1;
+        string? normalized = null;
+        for (var attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            var result = generateSentenceMethod.Invoke(null, new object?[] { chainData, seed }) as string;
+            normalized = NormalizeSentence(result ?? throw new InvalidOperationException("QudJP: MarkovChain.GenerateSentence returned null."));
+            if (!string.IsNullOrEmpty(seed) || ContainsJapaneseCharacters(normalized))
+            {
+                return normalized;
+            }
+        }
+
+        return normalized ?? string.Empty;
+    }
+
+    private static string? FindJapaneseSeed(object chainData)
+    {
+        var openingWordsField = AccessTools.Field(chainData.GetType(), "OpeningWords");
+        if (openingWordsField?.GetValue(chainData) is IList openingWords)
+        {
+            foreach (var openingWord in openingWords)
+            {
+                if (openingWord is string candidate && ContainsJapaneseCharacters(candidate))
+                {
+                    return candidate;
+                }
+            }
+        }
+
+        var chainField = AccessTools.Field(chainData.GetType(), "Chain");
+        if (chainField?.GetValue(chainData) is IDictionary chain)
+        {
+            foreach (DictionaryEntry entry in chain)
+            {
+                if (entry.Key is string candidate && ContainsJapaneseCharacters(candidate))
+                {
+                    return candidate;
+                }
+            }
+        }
+
+        return null;
     }
 
     internal static int GetOpeningWordCount(object chainData)
