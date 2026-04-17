@@ -69,7 +69,12 @@ public sealed class MarkovCorpusGameDllTests
 
         var sentence = MarkovCorpusTranslationPatch.GenerateSentence(chainData, "始まり").TrimEnd();
 
-        Assert.That(sentence, Does.EndWith("."), "Generated sentences should be normalized to end with '.'.");
+        Assert.Multiple(() =>
+        {
+            Assert.That(sentence, Does.Contain("あ.い"), "Generated sentences should preserve embedded-period Japanese tokens.");
+            Assert.That(MarkovCorpusTranslationPatch.ContainsJapaneseCharacters(sentence), Is.True, "Generated sentences should retain Japanese characters.");
+            Assert.That(sentence, Does.EndWith("."), "Generated sentences should be normalized to end with '.'.");
+        });
     }
 
     [Test]

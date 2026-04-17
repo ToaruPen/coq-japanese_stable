@@ -169,14 +169,26 @@ public static class MarkovCorpusTranslationPatch
             throw new MissingMethodException(markovChainType.FullName, "GenerateSentence");
         }
 
-        seed ??= FindJapaneseSeed(chainData);
-        var maxAttempts = string.IsNullOrEmpty(seed) ? 32 : 1;
+        var effectiveSeed = seed;
+        if (effectiveSeed is null)
+        {
+            var discoveredSeed = FindJapaneseSeed(chainData);
+            if (discoveredSeed is null)
+            {
+                Trace.TraceWarning(
+                    $"QudJP: MarkovCorpusTranslationPatch.GenerateSentence could not find a Japanese seed for chain data type '{chainData.GetType().FullName}'. Falling back to retry loop.");
+            }
+
+            effectiveSeed = discoveredSeed;
+        }
+
+        var maxAttempts = string.IsNullOrEmpty(effectiveSeed) ? 32 : 1;
         string? normalized = null;
         for (var attempt = 0; attempt < maxAttempts; attempt++)
         {
-            var result = generateSentenceMethod.Invoke(null, new object?[] { chainData, seed }) as string;
+            var result = generateSentenceMethod.Invoke(null, new object?[] { chainData, effectiveSeed }) as string;
             normalized = NormalizeSentence(result ?? throw new InvalidOperationException("QudJP: MarkovChain.GenerateSentence returned null."));
-            if (!string.IsNullOrEmpty(seed) || ContainsJapaneseCharacters(normalized))
+            if (!string.IsNullOrEmpty(effectiveSeed) || ContainsJapaneseCharacters(normalized))
             {
                 return normalized;
             }
