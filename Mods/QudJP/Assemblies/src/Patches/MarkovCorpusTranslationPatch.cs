@@ -16,6 +16,7 @@ public static class MarkovCorpusTranslationPatch
     internal const string VanillaCorpusName = "LibraryCorpus.json";
 
     private const string JapaneseCorpusRelativePath = "Corpus/LibraryCorpus.ja.json";
+    private const int MaxSeedRetryAttempts = 32;
 
     private static readonly Regex WhitespacePattern = new(@"\s+", RegexOptions.Compiled);
     private static readonly Regex JapaneseCharacterPattern = new("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.Compiled);
@@ -169,8 +170,61 @@ public static class MarkovCorpusTranslationPatch
             throw new MissingMethodException(markovChainType.FullName, "GenerateSentence");
         }
 
-        var result = generateSentenceMethod.Invoke(null, new object?[] { chainData, seed }) as string;
-        return result ?? throw new InvalidOperationException("QudJP: MarkovChain.GenerateSentence returned null.");
+        var effectiveSeed = seed;
+        if (effectiveSeed is null)
+        {
+            var discoveredSeed = FindJapaneseSeed(chainData);
+            if (discoveredSeed is null)
+            {
+                Trace.TraceWarning(
+                    $"QudJP: MarkovCorpusTranslationPatch.GenerateSentence could not find a Japanese seed for chain data type '{chainData.GetType().FullName}'. Falling back to retry loop.");
+            }
+
+            effectiveSeed = discoveredSeed;
+        }
+
+        var maxAttempts = string.IsNullOrEmpty(effectiveSeed) ? MaxSeedRetryAttempts : 1;
+        string? normalized = null;
+        for (var attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            var result = generateSentenceMethod.Invoke(null, new object?[] { chainData, effectiveSeed }) as string;
+            normalized = NormalizeSentence(result ?? throw new InvalidOperationException("QudJP: MarkovChain.GenerateSentence returned null."));
+            if (!string.IsNullOrEmpty(effectiveSeed) || ContainsJapaneseCharacters(normalized))
+            {
+                return normalized;
+            }
+        }
+
+        return normalized ?? string.Empty;
+    }
+
+    private static string? FindJapaneseSeed(object chainData)
+    {
+        var openingWordsField = AccessTools.Field(chainData.GetType(), "OpeningWords");
+        if (openingWordsField?.GetValue(chainData) is IList openingWords)
+        {
+            foreach (var openingWord in openingWords)
+            {
+                if (openingWord is string candidate && ContainsJapaneseCharacters(candidate))
+                {
+                    return candidate;
+                }
+            }
+        }
+
+        var chainField = AccessTools.Field(chainData.GetType(), "Chain");
+        if (chainField?.GetValue(chainData) is IDictionary chain)
+        {
+            foreach (DictionaryEntry entry in chain)
+            {
+                if (entry.Key is string candidate && ContainsJapaneseCharacters(candidate))
+                {
+                    return candidate;
+                }
+            }
+        }
+
+        return null;
     }
 
     internal static int GetOpeningWordCount(object chainData)

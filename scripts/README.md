@@ -23,10 +23,23 @@ QudJP の翻訳ワークフローを支援する Python スクリプト群です
 
 | スクリプト | 用途 |
 |-----------|------|
+| `scripts.triage.cli` | bridge/triage workflow の directory-based triage classification 入口 |
 | `legacies/scan_text_producers.py` | Roslyn static SoT pilot, bridge/view-only candidate inventory for current static consumers, fixed-leaf validation |
 | `legacies/reconcile_inventory_status.py` | legacy candidate inventory を現在の翻訳資産に照らして再評価する bridge CLI |
 
 `scripts/legacies/` は、現役の翻訳ワークフローから切り離した legacy bridge/view-only tooling を置く場所です。issue-357 の scanner 群はここに隔離し、通常の active CLI 群とは分けて扱います。
+
+## scripts.triage.cli
+
+`scripts.triage.cli` は bridge/triage workflow 向けの package entrypoint です。`Player.log` などの証跡ディレクトリを再帰的に走査して分類し、JSON レポートを書き出します。これは active translation tooling ではなく、bridge 側の directory-based triage classification に使います。
+
+**使い方**:
+
+```bash
+python -m scripts.triage.cli classify --input-dir /path/to/evidence --output triage-report.json
+```
+
+`--input-dir` が存在しない場合は空の report を返すので、証跡なしの場面でも形式確認に使えます。
 
 ---
 

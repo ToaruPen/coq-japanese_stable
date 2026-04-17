@@ -135,6 +135,39 @@ public sealed class DescriptionLongDescriptionPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesScopedWorldModsExactEntry_WithoutUITextSkinSinkObservation_WhenPatched()
+    {
+        WriteScopedDictionary(
+            ("Airfoil: This item can be thrown at +4 throwing range.", "エアフォイル: この品は投擲射程が+4される。"));
+
+        RunWithDescriptionPatch(() =>
+        {
+            const string source = "Airfoil: This item can be thrown at +4 throwing range.";
+            var target = new DummyDescriptionTarget(source);
+            var builder = new StringBuilder();
+            target.GetLongDescription(builder);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(builder.ToString(), Is.EqualTo("エアフォイル: この品は投擲射程が+4される。"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(DescriptionLongDescriptionPatch),
+                        "Description.WorldMods"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(DescriptionLongDescriptionPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        source),
+                    Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
     public void Postfix_PreservesExistingPrefix_WhenPatched()
     {
         WriteDictionary(("It crackles with static.", "それは静電気を散らしている。"));
@@ -560,6 +593,15 @@ public sealed class DescriptionLongDescriptionPatchTests
         WriteDictionaryFile(builder.ToString());
     }
 
+    private void WriteScopedDictionary(params (string key, string text)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.Append("{\"entries\":[");
+        AppendEntries(builder, entries);
+        builder.AppendLine("]}");
+        WriteDictionaryFile(builder.ToString(), "world-mods.ja.json");
+    }
+
     private static string EscapeJson(string value)
     {
         return value
@@ -615,6 +657,12 @@ public sealed class DescriptionLongDescriptionPatchTests
     private void WriteDictionaryFile(string content)
     {
         var path = Path.Combine(tempDirectory, "description-long-l2.ja.json");
+        File.WriteAllText(path, content, Utf8WithoutBom);
+    }
+
+    private void WriteDictionaryFile(string content, string fileName)
+    {
+        var path = Path.Combine(tempDirectory, fileName);
         File.WriteAllText(path, content, Utf8WithoutBom);
     }
 

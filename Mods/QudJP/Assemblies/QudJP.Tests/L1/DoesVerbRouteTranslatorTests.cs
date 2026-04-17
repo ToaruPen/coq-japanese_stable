@@ -81,6 +81,47 @@ public sealed class DoesVerbRouteTranslatorTests
         });
     }
 
+    [TestCase("The 熊 is", "are", " stunned!", "熊は気絶した！")]
+    [TestCase("The 扉 is", "are", " open.", "扉は開いている")]
+    [TestCase("The 水筒 is", "are", " already full.", "水筒はすでに満タンだ")]
+    [TestCase("The 武器 is", "are", " already fully loaded.", "武器はすでに完全に装填されている")]
+    [TestCase("The 熊 falls", "fall", " to the ground.", "熊は地面に倒れた。")]
+    [TestCase("The 熊 returns", "return", " to the ground.", "熊は地上に戻った")]
+    [TestCase("The 水筒 has", "have", " no room for more water.", "水筒にはこれ以上の水を入れる余地がない。")]
+    [TestCase(
+        "The リコイラー is",
+        "are",
+        " encoded with an imprint of the Thin World that has no meaning in the Thick World.",
+        "リコイラーは薄界の刻印で符号化されているが、厚界では意味を成さない")]
+    [TestCase(
+        "The リコイラー is",
+        "are",
+        " encoded with an imprint that has no meaning in your present context.",
+        "リコイラーは現在の状況では意味を成さない刻印で符号化されている")]
+    [TestCase(
+        "The リコイラー is",
+        "are",
+        " encoded with the imprint of a remote pocket dimension, 秘境, that is inaccessible from your present context.",
+        "リコイラーは遠方のポケット次元秘境の刻印で符号化されているが、現在の状況ではアクセスできない")]
+    public void TryTranslateMarkedMessage_RepositoryDictionary_TranslatesVerifiedDoesFamilies(
+        string fragment,
+        string verb,
+        string tail,
+        string expected)
+    {
+        UseRepositoryDictionary();
+        var subjectLength = fragment.LastIndexOf(' ');
+        var marked = DoesVerbRouteTranslator.MarkDoesFragment(fragment, verb, subjectLength, null) + tail;
+
+        var ok = DoesVerbRouteTranslator.TryTranslateMarkedMessage(marked, out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo(expected));
+        });
+    }
+
     private void WriteDictionary(
         IEnumerable<(string verb, string text)>? tier1 = null,
         IEnumerable<(string verb, string extra, string text)>? tier2 = null,
@@ -168,5 +209,22 @@ public sealed class DoesVerbRouteTranslatorTests
         return value
             .Replace("\\", "\\\\", StringComparison.Ordinal)
             .Replace("\"", "\\\"", StringComparison.Ordinal);
+    }
+
+    private static void UseRepositoryDictionary()
+    {
+        var repositoryDictionaryPath = Path.GetFullPath(
+            Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "..",
+                "..",
+                "..",
+                "..",
+                "..",
+                "Localization",
+                "MessageFrames",
+                "verbs.ja.json"));
+
+        MessageFrameTranslator.SetDictionaryPathForTests(repositoryDictionaryPath);
     }
 }

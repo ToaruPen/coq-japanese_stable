@@ -68,6 +68,43 @@ public sealed class ActiveEffectsOwnerPatchTests
     }
 
     [Test]
+    public void EffectDescriptionAndDetailsPatches_TranslateColoredDescriptionAndTemplatedPluralDetails_WhenPatched()
+    {
+        WriteDictionary(
+            ("{{R|adrenaline flowing}}", "{{R|アドレナリン全開}}"),
+            ("+{0} Quickness\n+1 rank to physical mutations", "+{0} Quickness\n肉体変異 +1ランク"),
+            ("+{0} Quickness\n+{1} ranks to physical mutations", "+{0} Quickness\n肉体変異 +{1}ランク"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDescription)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDescriptionPatch), nameof(EffectDescriptionPatch.Postfix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDetails)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDetailsPatch), nameof(EffectDetailsPatch.Postfix))));
+
+            var effect = new DummyEffect
+            {
+                DescriptionText = "{{R|adrenaline flowing}}",
+                DetailsText = "+20 Quickness\n+2 ranks to physical mutations",
+            };
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(effect.GetDescription(), Is.EqualTo("{{R|アドレナリン全開}}"));
+                Assert.That(effect.GetDetails(), Is.EqualTo("+20 Quickness\n肉体変異 +2ランク"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void CharacterStatusScreenHighlightEffectPatch_TranslatesStatusPaneOwnerText_WhenPatched()
     {
         WriteDictionary(
@@ -95,6 +132,46 @@ public sealed class ActiveEffectsOwnerPatchTests
             });
 
             Assert.That(screen.mutationsDetails.Text, Is.EqualTo("濡れ\n\nスライムに覆われている。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void CharacterStatusScreenHighlightEffectPatch_TranslatesTemplatedMultilineEffectText_WhenPatched()
+    {
+        WriteDictionary(
+            ("{{R|adrenaline flowing}}", "{{R|アドレナリン全開}}"),
+            ("+{0} Quickness\n+1 rank to physical mutations", "+{0} Quickness\n肉体変異 +1ランク"),
+            ("+{0} Quickness\n+{1} ranks to physical mutations", "+{0} Quickness\n肉体変異 +{1}ランク"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDescription)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDescriptionPatch), nameof(EffectDescriptionPatch.Postfix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDetails)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDetailsPatch), nameof(EffectDetailsPatch.Postfix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyCharacterEffectStatusScreen), nameof(DummyCharacterEffectStatusScreen.HandleHighlightEffect)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(CharacterStatusScreenHighlightEffectPatch), nameof(CharacterStatusScreenHighlightEffectPatch.Postfix))));
+
+            var screen = new DummyCharacterEffectStatusScreen();
+            screen.HandleHighlightEffect(new DummyCharacterEffectLineData
+            {
+                effect = new DummyEffect
+                {
+                    DescriptionText = "{{R|adrenaline flowing}}",
+                    DetailsText = "+20 Quickness\n+1 rank to physical mutations",
+                },
+            });
+
+            Assert.That(screen.mutationsDetails.Text, Is.EqualTo("{{R|アドレナリン全開}}\n\n+20 Quickness\n肉体変異 +1ランク"));
         }
         finally
         {

@@ -240,6 +240,27 @@ public sealed class MessageFrameTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateXDidYToZ_RepositoryDictionary_TryTouchEvadesYou()
+    {
+        UseRepositoryDictionary();
+
+        var translated = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "あなた",
+            "try",
+            preposition: "to touch",
+            objectText: "帯電セル",
+            extra: ", but it evades you",
+            endMark: ".",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたは帯電セルに触れようとしたが、かわされた。"));
+        });
+    }
+
     // --- New Tier2 tests (Task 1: #82 DidX verb entries) ---
 
     [Test]
@@ -533,6 +554,22 @@ public sealed class MessageFrameTranslatorTests
         WriteDictionary(tier3: new[] {
             ("beat", "at the flames on {0} with {1}", "{0}の炎を{1}で叩いた")
         });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "戦士", "beat", "at the flames on", "クマ",
+            "with its fists", "!", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("戦士はクマの炎をits fistsで叩いた！"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidYToZ_RepositoryDictionary_BeatFlamesOnTarget()
+    {
+        UseRepositoryDictionary();
 
         var ok = MessageFrameTranslator.TryTranslateXDidYToZ(
             "戦士", "beat", "at the flames on", "クマ",

@@ -297,6 +297,11 @@ def normalize_csharp_template(expression: str | None) -> str:
             normalized.append(base_verb)
             continue
 
+        base_does_verb = _extract_does_verb_argument(part)
+        if base_does_verb is not None:
+            normalized.append(base_does_verb)
+            continue
+
         if part not in part_to_placeholder:
             part_to_placeholder[part] = next_placeholder_index
             next_placeholder_index += 1
@@ -394,6 +399,14 @@ def _extract_get_verb_argument(expression: str) -> str | None:
         return None
     prefix = " " if "PrependSpace: true" in expression or "PrependSpace:true" in expression else ""
     return prefix + match.group("verb")
+
+
+def _extract_does_verb_argument(expression: str) -> str | None:
+    r"""Extract the base verb from a `.does("...")` call."""
+    match = re.search(r'\.does\("(?P<verb>[^"]+)"', expression)
+    if match is None:
+        return None
+    return match.group("verb")
 
 
 def _merge_csv_values(*values: str | None) -> str | None:

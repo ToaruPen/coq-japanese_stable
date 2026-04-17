@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -10,6 +12,7 @@ import pytest
 from scripts.triage.log_parser import parse_log
 from scripts.triage_untranslated import main
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
 _PLAYER_LOG = Path.home() / "Library" / "Logs" / "Freehold Games" / "CavesOfQud" / "Player.log"
 _MISSING_KEY_NEW = (
     "[QudJP] Translator: missing key 'Put away' (hit 3). (context: ExactKey);"
@@ -176,6 +179,128 @@ def test_cli_reports_sink_observe_in_phase_f_section(tmp_path: Path) -> None:
         "payload_excerpt": "You catch fire",
         "payload_sha256": None,
     }
+
+
+def test_module_cli_classify_treats_missing_runtime_dir_as_empty_report(tmp_path: Path) -> None:
+    """The package CLI should support an empty runtime-evidence directory as a format check."""
+    input_dir = tmp_path / "runtime"
+    out = tmp_path / "triage.json"
+
+    completed = subprocess.run(  # noqa: S603 -- test invokes the repo-local package module via the active interpreter.
+        [
+            sys.executable,
+            "-m",
+            "scripts.triage.cli",
+            "classify",
+            "--input-dir",
+            str(input_dir),
+            "--output",
+            str(out),
+        ],
+        capture_output=True,
+        text=True,
+        cwd=REPO_ROOT,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    data = json.loads(out.read_text(encoding="utf-8"))
+    assert data == {
+        "summary": {
+            "total": 0,
+            "static_leaf": 0,
+            "route_patch": 0,
+            "logic_required": 0,
+            "unresolved": 0,
+        },
+        "by_classification": {
+            "static_leaf": [],
+            "route_patch": [],
+            "logic_required": [],
+            "unresolved": [],
+        },
+        "by_route": {},
+        "phase_f": {
+            "summary": {
+                "total": 0,
+                "dynamic_text_probe": 0,
+                "sink_observe": 0,
+            },
+            "entries": [],
+        },
+    }
+
+
+def test_module_cli_classify_keeps_no_context_split_explicit(tmp_path: Path) -> None:
+    """The package CLI should preserve the mixed <no-context> outcomes instead of collapsing them."""
+    input_dir = tmp_path / "runtime"
+    out = tmp_path / "triage.json"
+    _write_log(
+        input_dir / "Player.log",
+        [
+            "[QudJP] Translator: missing key 'Inventory' (hit 1).",
+            "[QudJP] Translator: missing key 'Level: 2' (hit 1).",
+            "[QudJP] Translator: missing key 'Nigashrowar' (hit 1).",
+        ],
+    )
+
+    completed = subprocess.run(  # noqa: S603 -- test invokes the repo-local package module via the active interpreter.
+        [
+            sys.executable,
+            "-m",
+            "scripts.triage.cli",
+            "classify",
+            "--input-dir",
+            str(input_dir),
+            "--output",
+            str(out),
+        ],
+        capture_output=True,
+        text=True,
+        cwd=REPO_ROOT,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    data = json.loads(out.read_text(encoding="utf-8"))
+    assert set(data["by_route"]) == {"<no-context>"}
+    assert [entry["text"] for entry in data["by_route"]["<no-context>"]["static_leaf"]] == ["Inventory"]
+    assert [entry["text"] for entry in data["by_route"]["<no-context>"]["logic_required"]] == ["Level: 2"]
+    assert [entry["text"] for entry in data["by_route"]["<no-context>"]["unresolved"]] == ["Nigashrowar"]
+    assert data["summary"] == {
+        "total": 3,
+        "static_leaf": 1,
+        "route_patch": 0,
+        "logic_required": 1,
+        "unresolved": 1,
+    }
+
+
+def test_module_cli_classify_returns_error_when_output_parent_cannot_be_created(tmp_path: Path) -> None:
+    """The package CLI should flatten output-path OSErrors into a single-line failure."""
+    input_dir = tmp_path / "runtime"
+    blocked_parent = tmp_path / "occupied"
+    blocked_parent.write_text("not a directory", encoding="utf-8")
+
+    result = subprocess.run(  # noqa: S603 -- test invokes the repo-local package module via the active interpreter.
+        [
+            sys.executable,
+            "-m",
+            "scripts.triage.cli",
+            "classify",
+            "--input-dir",
+            str(input_dir),
+            "--output",
+            str(blocked_parent / "triage.json"),
+        ],
+        capture_output=True,
+        text=True,
+        cwd=REPO_ROOT,
+        check=False,
+    )
+
+    assert result.returncode == 1
+    assert "Error:" in result.stderr
 
 
 def test_cli_preserves_grouping_when_structured_values_contain_delimiter_like_text(tmp_path: Path) -> None:

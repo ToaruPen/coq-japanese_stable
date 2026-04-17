@@ -17,23 +17,24 @@ public static class ModScrollerOneTranslationPatch
     private const string DisabledScriptsSuffixJa =
         " にはスクリプトが含まれていますが、オプションで永続的に無効化されています。\n{{K|(オプション->Mod->スクリプトModを許可)}}";
 
-    [HarmonyTargetMethod]
-    private static MethodBase? TargetMethod()
+    [HarmonyTargetMethods]
+    private static IEnumerable<MethodBase> TargetMethods()
     {
         var targetType = AccessTools.TypeByName(TargetTypeName);
         if (targetType is null)
         {
             Trace.TraceError("QudJP: {0} target type '{1}' not found.", Context, TargetTypeName);
-            return null;
+            yield break;
         }
 
         var method = AccessTools.Method(targetType, "OnActivate");
         if (method is null)
         {
             Trace.TraceError("QudJP: {0}.OnActivate(...) not found on '{1}'.", Context, TargetTypeName);
+            yield break;
         }
 
-        return method;
+        yield return method;
     }
 
     public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
