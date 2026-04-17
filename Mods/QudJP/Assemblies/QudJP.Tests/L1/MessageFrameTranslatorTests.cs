@@ -566,6 +566,22 @@ public sealed class MessageFrameTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateXDidYToZ_RepositoryDictionary_BeatFlamesOnTarget()
+    {
+        UseRepositoryDictionary();
+
+        var ok = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "戦士", "beat", "at the flames on", "クマ",
+            "with its fists", "!", out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("戦士はクマの炎をits fistsで叩いた！"));
+        });
+    }
+
     // --- Tier3 test for XDidY frame (objectSlotCount=0, same as DidX) ---
 
     [Test]

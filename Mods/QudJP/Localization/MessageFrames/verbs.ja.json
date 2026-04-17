@@ -1986,11 +1986,6 @@
     },
     {
       "verb": "beat",
-      "extra": "with {0} {1}",
-      "text": "{0}の炎を{1}で叩いた"
-    },
-    {
-      "verb": "beat",
       "extra": "its wings, and the shattered voices of a trillion worlds ride the current of air and harmonize into one, revealing the following wisdom:\\n\\n(.+)",
       "text": "{subject}は翼を打ち鳴らし、砕けた無数の世界の声が気流に乗って一つに調和し、次の叡智を示した:\\n\\n{0}"
     },
