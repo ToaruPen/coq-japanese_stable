@@ -107,7 +107,7 @@ internal static class GrammarPatchHelpers
 
     internal static IEnumerable<MethodBase> ResolveMethods(string methodName, string[][] parameterTypeSets, string signature)
     {
-        var any = false;
+        var resolvedMethods = new List<MethodBase>();
         for (var index = 0; index < parameterTypeSets.Length; index++)
         {
             var method = ResolveMethod(methodName, parameterTypeSets[index], signature);
@@ -116,14 +116,15 @@ internal static class GrammarPatchHelpers
                 continue;
             }
 
-            any = true;
-            yield return method;
+            resolvedMethods.Add(method);
         }
 
-        if (!any)
+        if (resolvedMethods.Count == 0)
         {
             Trace.TraceError($"QudJP: Failed to resolve any Grammar.{signature} overload. Patch will not apply.");
         }
+
+        return resolvedMethods;
     }
 
     internal static string BuildJapaneseList(List<string> items, string conjunction)
