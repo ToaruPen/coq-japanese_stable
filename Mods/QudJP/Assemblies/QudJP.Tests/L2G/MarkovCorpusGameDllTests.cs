@@ -116,6 +116,11 @@ public sealed class MarkovCorpusGameDllTests
     [Test]
     public void GenerateSentence_LogsWarningWhenJapaneseSeedCannotBeFound()
     {
+        // BuildChainData("alpha beta gamma", 1) plus the helper overrides below creates an English-only
+        // Markov chain: SetOpeningWords keeps OpeningWords non-Japanese, SetChainEntries keeps the Chain keys
+        // non-Japanese, and InvokeFindJapaneseSeed therefore returns null. In that state GenerateSentence is
+        // expected to emit the "could not find a Japanese seed" warning and then fail inside the upstream
+        // game Markov generator, so this test intentionally asserts both the warning log and the exception.
         var chainData = MarkovCorpusTranslationPatch.BuildChainData("alpha beta gamma", 1);
         SetOpeningWords(chainData, "alpha", "beta");
         SetChainEntries(chainData, ("alpha", GetReusableChainValue(chainData)));
