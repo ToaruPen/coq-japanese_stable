@@ -1,6 +1,6 @@
 # 2026-04-13 remaining localization baseline
 
-## Scanner baseline (`docs/candidate-inventory.json`)
+## Scanner baseline (current reconciled bridge inventory from `docs/candidate-inventory.json`)
 
 | Metric | Count | Source |
 | --- | ---: | --- |
@@ -9,20 +9,20 @@
 | Phase 1a sink hits | 3778 | `.sisyphus/evidence/task-2-baseline-refresh.txt` |
 | Phase 1a override hits | 874 | `.sisyphus/evidence/task-2-baseline-refresh.txt` |
 | total sites | 4634 | `.sisyphus/evidence/task-2-baseline-refresh.txt` |
-| translated | 2930 | current reconciled bridge inventory status tally in `docs/candidate-inventory.json` |
-| unresolved | 1199 | current reconciled bridge inventory status tally in `docs/candidate-inventory.json` |
-| needs_review | 200 | current reconciled bridge inventory status tally in `docs/candidate-inventory.json` |
-| needs_patch | 40 | current reconciled bridge inventory status tally in `docs/candidate-inventory.json` |
-| excluded | 265 | `docs/candidate-inventory.json` status tally |
+| bridge translated | 2930 | current reconciled bridge inventory status tally in `docs/candidate-inventory.json` |
+| bridge unresolved | 1199 | current reconciled bridge inventory status tally in `docs/candidate-inventory.json` |
+| bridge needs_review | 200 | current reconciled bridge inventory status tally in `docs/candidate-inventory.json` |
+| bridge needs_patch | 40 | current reconciled bridge inventory status tally in `docs/candidate-inventory.json` |
+| bridge excluded | 265 | current reconciled bridge inventory status tally in `docs/candidate-inventory.json` |
 | needs_translation | 0 | current scan; prior 27-row pseudo-leaf queue is now carried as `excluded` residue |
-| non-translated remainder | 1704 | `unresolved + needs_review + needs_patch + excluded` |
+| bridge non-translated remainder | 1704 | `bridge unresolved + bridge needs_review + bridge needs_patch + bridge excluded` |
 | fixed-leaf validation | `0` checked / `0` issues | `.sisyphus/evidence/task-2-baseline-refresh.txt` |
 
 ## Partition 1 — owner-safe backlog
 
 Backlog admission rule for this report: existing owner seam already evidenced in the issue-364 ledger and route-family notes; keep the queue tied to route family + current non-translated status, not sink visibility.
 
-| Route family | Type | Status mix in remainder | Count | Why it stays owner-safe |
+| Route family | Type | Route-held baseline status mix | Count | Why it stays owner-safe |
 | --- | --- | --- | ---: | --- |
 | `DidX` | `MessageFrame` | `needs_patch=338` | 338 | Existing `XDidYTranslationPatch` + `MessageFrameTranslator` + `verbs.ja.json`; follow-through stays on the current seam (`docs/reports/2026-04-11-didx-messageframe-batch-01.md:159-237`, `docs/reports/2026-04-12-issue-354-stale-bucket-reclassification-batch-01.md:12-45`) |
 | `Does` | `VerbComposition` | `needs_review=283` | 283 | Dedicated Does seam and tests already exist; next work is family decomposition on the current route (`docs/reports/2026-04-11-does-verbcomposition-batch-01.md:9-37,101-126`) |
@@ -55,7 +55,7 @@ Deferred rule for this report: do not let sink-observed / builder-display-name u
 
 Residue rule for this report: keep fixed-leaf bookkeeping separate from route backlog. The current scan no longer exposes a `needs_translation` queue; the only remaining non-translated leaf residue is the pseudo-leaf batch now carried as `excluded`.
 
-| Route family | Type | Status mix in remainder | Count | Reading |
+| Route family | Type | Route-held baseline status mix | Count | Reading |
 | --- | --- | --- | ---: | --- |
 | `SetText` | `Leaf` | `excluded=27` | 27 | This is the former 27-row pseudo-leaf queue (`""`, `" "`, `BodyText`, `SelectedModLabel`) now kept as residue instead of promotion work (`docs/reports/2026-04-11-fixed-leaf-owner-triage.md:52-97`, `docs/reports/2026-04-12-static-untranslated-quality-review.md:29-40`, `docs/reports/2026-04-12-issue-362-static-baseline-refresh.md:57-68`) |
 | **fixed-leaf residue total** |  |  | **27** | `fixed-leaf validation = 0 checked / 0 issues`; no actionable duplicate/addition queue remains in this baseline |
@@ -72,7 +72,7 @@ Reference counts inside the current leaf inventory:
 
 Non-goal rule for this report: keep template/procedural/pseudo-generic families and unaudited unresolved families out of the owner-safe backlog until a narrower route proof exists. These are baseline-held buckets, not implementation-ready work for the next owner-safe wave.
 
-| Route family | Type | Status mix in remainder | Count | Why it is a non-goal here |
+| Route family | Type | Route-held baseline status mix | Count | Why it is a non-goal here |
 | --- | --- | --- | ---: | --- |
 | `HistoricStringExpander` | `ProceduralText` | `excluded=238` | 238 | explicitly procedural; not a dictionary/owner-safe backlog target (`docs/reports/2026-04-11-fixed-leaf-owner-triage.md:109-128`) |
 | `JournalAPI` | `NarrativeTemplate` | `needs_review=115` | 115 | narrative-template bucket is outside the evidence-backed owner-safe set for this baseline (`docs/reports/2026-04-11-fixed-leaf-owner-triage.md:117-128`) |
@@ -95,7 +95,9 @@ Non-goal rule for this report: keep template/procedural/pseudo-generic families 
 | non-goals | 801 |
 | **partitioned baseline-held total** | **2278** |
 
-This closure check tracks the baseline-held route-family partitions that were grouped before the reconciled bridge inventory status rollup. It is broader than the current `non-translated remainder = 1704` summary above because the partition tables still carry route-held baseline buckets instead of the reconciled bridge-only status tally.
+This closure check tracks the baseline-held route-family partitions that were grouped before the reconciled bridge inventory status rollup. It is broader than the current `bridge non-translated remainder = 1704` summary above because the partition tables still carry route-held baseline buckets instead of the reconciled bridge-only status tally.
+
+The `2278 - 1704 = 574` difference is the set of sites that the reconciled bridge inventory now counts as translated while the partition tables still retain them inside route-held audit buckets (most visibly the `translated-only footprint = 2175` deferred bucket and other route-held baseline partitions). The bridge tally answers “which sites are still non-translated now?”, while the partition tables answer “which route-family buckets are still being tracked in the baseline audit?”.
 
 Current decision: no family in this partition is promoted to owner-safe backlog yet. `Popup*` and `GetDisplayName*` stay on hold until a fresh Rosetta `Player.log` closes the freshness gap, and `UITextSkinTranslationPatch` stays observation only.
 
