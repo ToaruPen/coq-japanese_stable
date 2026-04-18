@@ -146,6 +146,8 @@ def test_cli_adds_structured_group_without_changing_actionable_categories(tmp_pa
         "static_leaf": 1,
         "route_patch": 0,
         "logic_required": 0,
+        "preserved_english": 0,
+        "unexpected_translation_of_preserved_token": 0,
         "unresolved": 0,
     }
     entry = data["by_classification"]["static_leaf"][0]
@@ -211,12 +213,16 @@ def test_module_cli_classify_treats_missing_runtime_dir_as_empty_report(tmp_path
             "static_leaf": 0,
             "route_patch": 0,
             "logic_required": 0,
+            "preserved_english": 0,
+            "unexpected_translation_of_preserved_token": 0,
             "unresolved": 0,
         },
         "by_classification": {
             "static_leaf": [],
             "route_patch": [],
             "logic_required": [],
+            "preserved_english": [],
+            "unexpected_translation_of_preserved_token": [],
             "unresolved": [],
         },
         "by_route": {},
@@ -272,8 +278,31 @@ def test_module_cli_classify_keeps_no_context_split_explicit(tmp_path: Path) -> 
         "static_leaf": 1,
         "route_patch": 0,
         "logic_required": 1,
+        "preserved_english": 0,
+        "unexpected_translation_of_preserved_token": 0,
         "unresolved": 1,
     }
+
+
+def test_cli_classifies_preserved_english_separately(tmp_path: Path) -> None:
+    """Preserved English appears in its own actionable report bucket."""
+    log = tmp_path / "Player.log"
+    out = tmp_path / "triage.json"
+    _write_log(
+        log,
+        [
+            "[QudJP] Translator: missing key 'STR' (hit 1). (context: CharacterAttributeLineTranslationPatch)",
+            "[QudJP] Translator: missing key '123/200 lbs.' (hit 1). (context: UnknownWeightRoute)",
+        ],
+    )
+
+    result = main(["--log", str(log), "--output", str(out)])
+    assert result == 0
+
+    data = json.loads(out.read_text(encoding="utf-8"))
+    assert data["summary"]["preserved_english"] == 1
+    assert data["summary"]["logic_required"] == 1
+    assert [entry["text"] for entry in data["by_classification"]["preserved_english"]] == ["STR"]
 
 
 def test_module_cli_classify_returns_error_when_output_parent_cannot_be_created(tmp_path: Path) -> None:

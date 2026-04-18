@@ -27,6 +27,8 @@ class TriageClassification(Enum):
     STATIC_LEAF = "static_leaf"
     ROUTE_PATCH = "route_patch"
     LOGIC_REQUIRED = "logic_required"
+    PRESERVED_ENGLISH = "preserved_english"
+    UNEXPECTED_TRANSLATION_OF_PRESERVED_TOKEN = "unexpected_translation_of_preserved_token"  # noqa: S105
     UNRESOLVED = "unresolved"
 
 

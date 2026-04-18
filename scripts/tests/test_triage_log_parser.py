@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from scripts.triage.log_parser import parse_log
+from scripts.triage.log_parser import parse_log, parse_log_text
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -43,6 +43,14 @@ _SINK_OBSERVE_NEW = (
     " family=sink_observe; template_id=<missing>; payload_mode=full;"
     " payload_excerpt=You catch fire; payload_sha256=<missing>"
 )
+
+
+def test_parse_log_text_uses_same_parser_as_file_input() -> None:
+    """In-memory log slices can be parsed for stage-aware verification reports."""
+    entries = parse_log_text(_MISSING_KEY_OLD)
+    assert len(entries) == 1
+    assert entries[0].kind == LogEntryKind.MISSING_KEY
+    assert entries[0].text == "Put away"
 _MISSING_KEY_ESCAPED = (
     "[QudJP] Translator: missing key 'Put away; route=Spoofed; family=spoof=value'"
     " (hit 3). (context: ExactKey); route=ExactKey; family=missing_key;"

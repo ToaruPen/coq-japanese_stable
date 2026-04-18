@@ -8,13 +8,16 @@ import pytest
 from scripts.translation_checker import (
     _attack_sequences,
     _build_activate_application_script,
+    _build_final_smoke_character_screen_stages,
     _build_final_smoke_popup_stages,
     _build_final_smoke_stage_names,
     _build_focus_script,
     _build_hammerspoon_focus_lua,
     _build_launch_game_command,
     _build_system_events_key_code_script,
+    _build_verification_report,
     _combat_evidence_matches,
+    _death_evidence_matches,
     _escape_osascript_string,
     _find_matching_patterns,
     _flow_requires_load_ready,
@@ -32,6 +35,7 @@ from scripts.translation_checker import (
     _read_log_delta,
     _should_send_title_load_inputs,
     _stabilize_game_focus,
+    _StageCapture,
     _title_navigation_delay,
 )
 
@@ -40,6 +44,10 @@ class TestInputMappings:
     def test_maps_special_key_codes(self) -> None:
         assert _key_code_for("return") == 36
         assert _key_code_for("up") == 126
+        assert _key_code_for("end") == 119
+        assert _key_code_for("home") == 115
+        assert _key_code_for("pagedown") == 121
+        assert _key_code_for("pageup") == 116
         assert _key_code_for("numpad6") == 88
         assert _key_code_for("backslash") == 42
         assert _key_code_for("oem102") == 42
@@ -130,11 +138,24 @@ class TestFinalSmokeFlowHelpers:
     def test_final_smoke_stage_names_cover_user_requested_runtime_checks(self) -> None:
         stage_names = _build_final_smoke_stage_names()
         assert "after-load" in stage_names
-        assert "inventory-inventory" in stage_names
+        assert "inventory-tab-00-initial" in stage_names
+        assert "inventory-display-options" in stage_names
+        assert "inventory-item-00-actions" in stage_names
+        assert "inventory-item-scan-08" in stage_names
+        assert "inventory-tab-page-right-08" in stage_names
+        assert "abilities-screen" in stage_names
+        assert "active-effects-screen" in stage_names
         assert "popup-system-menu" in stage_names
         assert "npc-conversation" in stage_names
         assert "attack-or-confirmation" in stage_names
         assert "message-log-after-attack" in stage_names
+
+    def test_final_smoke_stage_names_respect_inventory_drilldown_counts(self) -> None:
+        stage_names = _build_final_smoke_stage_names(tab_page_rights=2, item_scan_count=1)
+        assert "inventory-tab-page-right-02" in stage_names
+        assert "inventory-tab-page-right-03" not in stage_names
+        assert "inventory-item-scan-01" in stage_names
+        assert "inventory-item-scan-02" not in stage_names
 
     def test_final_smoke_help_toggle_closes_with_same_key(self) -> None:
         popup_stages = {
@@ -142,6 +163,15 @@ class TestFinalSmokeFlowHelpers:
             for label, open_chord, close_chord in _build_final_smoke_popup_stages()
         }
         assert popup_stages["popup-help"] == ("p", "p")
+
+    def test_final_smoke_character_screen_stages_use_configured_keys(self) -> None:
+        args = _parse_args(["--abilities-chord", "shift+a", "--active-effects-chord", "x,e"])
+        character_stages = {
+            label: (open_sequence, close_sequence)
+            for label, open_sequence, close_sequence in _build_final_smoke_character_screen_stages(args)
+        }
+        assert character_stages["abilities-screen"] == (("shift+a",), ("escape",))
+        assert character_stages["active-effects-screen"] == (("x", "e"), ("escape", "escape"))
 
 
 class TestHammerspoonHelpers:
@@ -260,6 +290,49 @@ class TestReadLogDelta:
         assert _read_log_delta(log_path, 999) == "new\n"
 
 
+class TestVerificationReport:
+    def test_builds_stage_aware_translation_report(self, tmp_path: Path) -> None:
+        first_stage = (
+            "[QudJP] DynamicTextProbe/v1: route='MessagePatternTranslator' family='combat'"
+            " hit=1 changed=true source='{{W|You hit snapjaw.}}'"
+            " translated='あなたはsnapjawに命中した。'. (context: MessageLogPatch)\n"
+            "[QudJP] Translator: missing key 'STR' (hit 1). (context: CharacterAttributeLineTranslationPatch)\n"
+            "[QudJP] Translator: missing key 'Inventory' (hit 1). (context: UITextSkinTranslationPatch)\n"
+            "[QudJP] MessagePatternTranslator: no pattern for 'Game saved!' (hit 1). (context: MessageLogPatch)\n"
+            "[QudJP] SinkObserve/v1: sink='MessageLog' route='EmitMessage'"
+            " detail='ObservationOnly' source='You catch fire' stripped='You catch fire'"
+        )
+        second_stage = "[QudJP] Translator: missing key 'Equipment' (hit 1). (context: UITextSkinTranslationPatch)"
+        log_text = f"{first_stage}\n{second_stage}\n"
+        first_end = len((first_stage + "\n").encode())
+        log_path = tmp_path / "Player.log"
+        log_path.write_text(log_text, encoding="utf-8")
+        first_screenshot = str(tmp_path / "01-message-log.png")
+        second_screenshot = str(tmp_path / "02-equipment.png")
+
+        report = _build_verification_report(
+            [
+                _StageCapture("message-log-after-attack", first_screenshot, 0, first_end),
+                _StageCapture("inventory-equipment", second_screenshot, first_end, len(log_text.encode())),
+            ],
+            log_path,
+        )
+
+        first = report["stages"][0]
+        assert first["stage"] == "message-log-after-attack"
+        assert first["screenshot_path"] == first_screenshot
+        assert [entry["text"] for entry in first["translated_events"]] == ["{{W|You hit snapjaw.}}"]
+        assert [entry["text"] for entry in first["preserved_english"]] == ["STR"]
+        assert [entry["text"] for entry in first["missing_key_candidates"]] == ["Inventory"]
+        assert [entry["text"] for entry in first["message_pattern_gaps"]] == ["Game saved!"]
+        assert [entry["text"] for entry in first["sink_observed_untranslated_candidates"]] == ["You catch fire"]
+        assert first["markup_color_tag_issue_candidates"][0]["source_markup"] == ["{{W|", "}}"]
+        assert report["summary"]["stage_count"] == 2
+        assert report["summary"]["missing_key_candidates"] == 2
+        assert report["summary"]["markup_color_tag_issue_candidates"] == 1
+        assert report["summary"]["preserved_english"] == 1
+
+
 class TestLoadReadyMatches:
     def test_detects_bottom_context_probe(self) -> None:
         text = "[QudJP] QudMenuBottomContextProbe/RefreshButtonsAfter/v1: buttons=2"
@@ -333,6 +406,15 @@ class TestCombatEvidenceMatches:
         assert _combat_evidence_matches(text) == []
 
 
+class TestDeathEvidenceMatches:
+    def test_detects_english_death_message(self) -> None:
+        assert _death_evidence_matches("You died!") == ["You died"]
+
+    def test_detects_translated_death_message(self) -> None:
+        text = "[QudJP] DynamicTextProbe/v1: translated='あなたは倒れた。'"
+        assert _death_evidence_matches(text)
+
+
 class TestParseArgs:
     def test_defaults_match_observed_title_menu_flow(self) -> None:
         args = _parse_args([])
@@ -352,10 +434,19 @@ class TestParseArgs:
         assert args.attack_chord == "backslash,right"
         assert args.attack_sequence is None
         assert args.attack_confirm_key == ""
+        assert args.death_attack_count == 30
+        assert args.death_confirm_key == "space"
         assert args.require_combat_evidence is False
         assert args.load_ready_timeout == 45.0
         assert args.title_ready_wait == 12.0
         assert args.title_ready_post_wait == 1.0
+        assert args.flow_screenshot_wait == 3.0
+        assert args.inventory_tab_page_rights == 8
+        assert args.inventory_item_scan_count == 8
+        assert args.inventory_item_action_row_offset == 1
+        assert args.inventory_item_pane_chord == "right"
+        assert args.abilities_chord == "a"
+        assert args.active_effects_chord == "x,e"
 
     def test_manual_load_flag_is_parsed(self) -> None:
         args = _parse_args(["--manual-load", "--load-ready-timeout", "300"])

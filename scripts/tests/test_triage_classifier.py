@@ -56,6 +56,38 @@ def test_classify_embedded_number() -> None:
     assert "12" in result.slot_evidence
 
 
+def test_classify_preserved_stat_abbreviation() -> None:
+    """Route-owned stat abbreviations are preserved English, not static leaves."""
+    result = classify(_mk("STR", route="CharacterAttributeLineTranslationPatch"))
+    assert result.classification == TriageClassification.PRESERVED_ENGLISH
+    assert result.slot_evidence == ["STR"]
+
+
+def test_classify_unexpected_translation_of_preserved_stat_abbreviation() -> None:
+    """Dynamic probes flag protected tokens that were translated unexpectedly."""
+    entry = LogEntry(
+        kind=LogEntryKind.DYNAMIC_TEXT_PROBE,
+        route="DescriptionLongDescriptionPatch",
+        text="+1 STR",
+        hits=1,
+        line_number=1,
+        family="Description.LongDescription",
+        translated_text="+1 筋力",
+        changed=True,
+    )
+    result = classify(entry)
+    assert result.classification == TriageClassification.UNEXPECTED_TRANSLATION_OF_PRESERVED_TOKEN
+    assert result.slot_evidence == ["STR"]
+
+
+def test_classify_route_specific_lbs_is_not_global() -> None:
+    """Compact lbs. labels are allowed only on routes that explicitly preserve them."""
+    trade_result = classify(_mk("{{W|$50}} | {{K|123/200 lbs.}}", route="TradeScreenUpdateTotalsTranslationPatch"))
+    inventory_result = classify(_mk("123/200 lbs.", route="InventoryAndEquipmentStatusScreenTranslationPatch"))
+    assert trade_result.classification == TriageClassification.PRESERVED_ENGLISH
+    assert inventory_result.classification == TriageClassification.LOGIC_REQUIRED
+
+
 def test_classify_numeric_stat_line() -> None:
     """Weight or HP readouts are dynamic."""
     result = classify(_mk("56/240#"))

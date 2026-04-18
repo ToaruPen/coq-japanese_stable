@@ -157,11 +157,20 @@ def parse_log(log_path: Path) -> list[LogEntry]:
     if not log_path.exists():
         return []
 
+    return parse_log_text(log_path.read_text(encoding="utf-8", errors="replace"))
+
+
+def parse_log_text(text: str) -> list[LogEntry]:
+    """Parse Player.log text into deduplicated ``LogEntry`` records.
+
+    Args:
+        text: Log text to parse.
+
+    Returns:
+        Deduplicated entries sorted by line number, route, and text.
+    """
     seen: dict[tuple[str, str, str, str, str, str], LogEntry] = {}
-    for line_number, line in enumerate(
-        log_path.read_text(encoding="utf-8", errors="replace").splitlines(),
-        start=1,
-    ):
+    for line_number, line in enumerate(text.splitlines(), start=1):
         entry = _try_parse_line(line, line_number)
         if entry is None:
             continue

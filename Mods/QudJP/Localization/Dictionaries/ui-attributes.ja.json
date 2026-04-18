@@ -10,19 +10,9 @@
     },
     "entries": [
         {
-            "key": "STR",
-            "context": "Qud.UI.CharacterAttributeLine.AttributeLabel",
-            "text": "筋力"
-        },
-        {
             "key": "Strength",
             "context": "Qud.UI.CharacterAttributeLine.AttributeLabel",
             "text": "筋力"
-        },
-        {
-            "key": "AGI",
-            "context": "Qud.UI.CharacterAttributeLine.AttributeLabel",
-            "text": "敏捷"
         },
         {
             "key": "Agility",
@@ -30,19 +20,9 @@
             "text": "敏捷"
         },
         {
-            "key": "TOU",
-            "context": "Qud.UI.CharacterAttributeLine.AttributeLabel",
-            "text": "頑健"
-        },
-        {
             "key": "Toughness",
             "context": "Qud.UI.CharacterAttributeLine.AttributeLabel",
             "text": "頑健"
-        },
-        {
-            "key": "INT",
-            "context": "Qud.UI.CharacterAttributeLine.AttributeLabel",
-            "text": "知力"
         },
         {
             "key": "Intelligence",
@@ -50,19 +30,9 @@
             "text": "知力"
         },
         {
-            "key": "WIL",
-            "context": "Qud.UI.CharacterAttributeLine.AttributeLabel",
-            "text": "意志力"
-        },
-        {
             "key": "Willpower",
             "context": "Qud.UI.CharacterAttributeLine.AttributeLabel",
             "text": "意志力"
-        },
-        {
-            "key": "EGO",
-            "context": "Qud.UI.CharacterAttributeLine.AttributeLabel",
-            "text": "自我"
         },
         {
             "key": "Ego",
@@ -80,29 +50,9 @@
             "text": "俊敏"
         },
         {
-            "key": "MS",
-            "context": "Qud.UI.CharacterAttributeLine.AttributeLabel",
-            "text": "移動速度"
-        },
-        {
             "key": "MoveSpeed",
             "context": "Qud.UI.CharacterAttributeLine.AttributeLabel",
             "text": "移動速度"
-        },
-        {
-            "key": "AV",
-            "context": "Qud.UI.CharacterAttributeLine.AttributeLabel",
-            "text": "装甲値"
-        },
-        {
-            "key": "DV",
-            "context": "Qud.UI.CharacterAttributeLine.AttributeLabel",
-            "text": "回避値"
-        },
-        {
-            "key": "MA",
-            "context": "Qud.UI.CharacterAttributeLine.AttributeLabel",
-            "text": "精神装甲"
         },
         {
             "key": "CP",

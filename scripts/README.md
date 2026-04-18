@@ -291,13 +291,15 @@ python scripts/translation_checker.py \
   --skip-sync \
   --screenshot-path artifacts/translation_checker/verified-inventory.png
 
-# 最終 L3 smoke: セーブ読込、各画面、ポップアップ、NPC会話、攻撃/ログを連続確認
+# 最終 L3 smoke: セーブ読込、インベントリ起点の各タブ/項目、アビリティ、
+# active effects、ポップアップ、NPC会話、攻撃/ログを連続確認
 python scripts/translation_checker.py \
   --skip-sync \
   --flow final-smoke \
   --flow-screenshot-dir /tmp/qudjp-l3-final-smoke
 
-# 死亡確認まで進める場合（検証セーブは自動バックアップ後に復元）
+# 死亡確認を明示的に調整する場合（既定は最大30回、検証セーブは自動バックアップ後に復元）
+# 低HPなどの戦闘警告は既定で space を送って閉じます。
 python scripts/translation_checker.py \
   --skip-sync \
   --flow final-smoke \
@@ -323,19 +325,38 @@ python scripts/translation_checker.py \
 - JSON 形式で `screenshot_path`、`player_log_path`、`load_ready_matches`、一致した inventory probe、ログ抜粋を標準出力に表示
 - スクリーンショット自体の破棄は、この JSON を読んだ呼び出し側が行う想定
 
-`--flow final-smoke` では `screenshot_dir` と `screenshot_paths` を出力します。標準ステージは次の通りです。
+`--flow final-smoke` では `screenshot_dir`、`screenshot_paths`、`verification_report_path` を出力します。
+`verification_report.json` には各スクリーンショット stage に対応する Player.log 範囲、翻訳済み runtime evidence、
+missing key、message pattern gap、SinkObserve の未翻訳候補、markup/color tag 差分候補、preserved-English 分類が含まれます。
+各 flow screenshot は、画面を開いた後に `--flow-screenshot-wait` 秒だけ待ってから撮影します。既定は 3 秒です。
+標準ステージは次の通りです。
 
 - セーブ読込直後
-- インベントリ、装備、キャラクター、技能/パワー、クエスト、ティンカリング、ジャーナル
+- インベントリ画面起点: 初期タブ、表示オプション、先頭アイテムの選択/アクションメニュー、複数アイテム行、Page Right で到達するタブ群
+- アビリティ画面、active effects 画面
 - システムメニュー、注目地点、Look 方向選択、ヘルプ、射撃武器なしポップアップ
 - NPC 会話
 - Classic 攻撃または攻撃確認ポップアップ
 - 攻撃後のメッセージログ
-- `--death-attack-count` 指定時の死亡/戦闘終了画面
+- 死亡/戦闘終了画面
+- 死亡/戦闘終了後のメッセージログ
+
+インベントリ起点の走査量は `--inventory-tab-page-rights`、`--inventory-item-scan-count`、
+`--inventory-item-action-row-offset`、`--inventory-item-pane-chord` で調整できます。既定では、
+インベントリ一覧ペインへ移動して先頭アイテムのアクションメニューを開き、8 件分のアイテム行と
+Page Right 8 回分のタブ遷移を撮影します。
+
+アビリティ画面と active effects 画面を開くキーは `--abilities-chord` と
+`--active-effects-chord` で調整できます。active effects は既定で `x,e` とし、
+キャラクター画面を開いてからキャラクターシート内の「状態効果を表示」を選びます。
 
 NPC 会話の移動先や方向はテストセーブに依存します。既定値は実測したテストセーブ向けに
 `--npc-poi-key d`、`--npc-talk-direction right`、攻撃は `--attack-chord backslash,right` です。
 合わない場合はこれらの引数を変えて同じ検証フローを再利用します。
+戦闘は既定で初回攻撃後に最大30回まで同じ攻撃入力を繰り返し、死亡または戦闘終了画面と
+その後のメッセージログを撮影します。低HPなどの戦闘警告は `--death-confirm-key space` で閉じます。
+死亡確認を省略する場合は `--death-attack-count 0`、警告確認キーを送らない場合は
+`--death-confirm-key ""` を使います。
 
 `--manual-load` は Computer Use 用の導線です。スクリプトは必ず `scripts/launch_rosetta.sh`
 経由で起動し、タイトル/ロード画面への入力は送らず、ロード完了 probe だけを待ちます。
@@ -367,7 +388,7 @@ pytest scripts/tests/test_diff_localization.py
 pytest scripts/tests/test_translation_checker.py
 ```
 
-現在のテスト数: **290 件**
+現在のテスト数: **325 件**
 
 ---
 

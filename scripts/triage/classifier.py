@@ -6,6 +6,7 @@ import re
 from typing import TYPE_CHECKING
 
 from scripts.triage.models import LogEntry, LogEntryKind, TriageClassification, TriageResult
+from scripts.triage.preserved_policy import classify_preserved_english
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -49,6 +50,7 @@ _KNOWN_STATIC_LABELS = frozenset(
 def classify(entry: LogEntry) -> TriageResult:
     """Classify a single untranslated string observation."""
     classifiers: tuple[Callable[[LogEntry], TriageResult | None], ...] = (
+        classify_preserved_english,
         _classify_dynamic_probe,
         _classify_sink_observe,
         _classify_fragment,

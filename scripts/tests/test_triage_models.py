@@ -61,6 +61,11 @@ def test_classification_values() -> None:
     assert TriageClassification.STATIC_LEAF.value == "static_leaf"
     assert TriageClassification.ROUTE_PATCH.value == "route_patch"
     assert TriageClassification.LOGIC_REQUIRED.value == "logic_required"
+    assert TriageClassification.PRESERVED_ENGLISH.value == "preserved_english"
+    assert (
+        TriageClassification.UNEXPECTED_TRANSLATION_OF_PRESERVED_TOKEN.value
+        == "unexpected_translation_of_preserved_token"
+    )
     assert TriageClassification.UNRESOLVED.value == "unresolved"
 
 

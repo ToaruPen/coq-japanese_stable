@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "id": "character_attribute_line_short_labels",
+      "category": "must_remain_english",
+      "reason": "Character attribute short labels are kept in English to avoid layout shifts; route help text carries the Japanese expansion.",
+      "routes": [
+        "CharacterAttributeLineTranslationPatch",
+        "CharacterStatusScreenTranslationPatch",
+        "DescriptionLongDescriptionPatch",
+        "LookTooltipContentPatch",
+        "UITextSkinTranslationPatch"
+      ],
+      "texts": [
+        "STR",
+        "AGI",
+        "TOU",
+        "INT",
+        "WIL",
+        "EGO",
+        "MS",
+        "AV",
+        "DV",
+        "MA"
+      ],
+      "patterns": [
+        "^[+-]\\d+\\s+(?:STR|AGI|TOU|INT|WIL|EGO|MS|AV|DV|MA)$"
+      ],
+      "protected_tokens": [
+        "STR",
+        "AGI",
+        "TOU",
+        "INT",
+        "WIL",
+        "EGO",
+        "MS",
+        "AV",
+        "DV",
+        "MA"
+      ],
+      "dictionary_contexts": [
+        "Qud.UI.CharacterAttributeLine.AttributeLabel"
+      ]
+    },
+    {
+      "id": "key_labels_and_hotkeys",
+      "category": "allowed_english_token",
+      "reason": "Keyboard labels and hotkey-only segments are control tokens, not translation targets.",
+      "texts": [
+        "Tab",
+        "Esc",
+        "Enter",
+        "Space",
+        "Delete"
+      ],
+      "patterns": [
+        "^\\[(?:Tab|Esc|Enter|Space|Delete|[A-Z])\\]$"
+      ],
+      "protected_tokens": [
+        "Tab",
+        "Esc",
+        "Enter",
+        "Space",
+        "Delete"
+      ]
+    },
+    {
+      "id": "trade_totals_compact_weight_unit",
+      "category": "allowed_english_by_route",
+      "reason": "Trade total labels intentionally keep the compact lbs. unit while translating drams separately.",
+      "routes": [
+        "TradeScreenUpdateTotalsTranslationPatch"
+      ],
+      "patterns": [
+        "\\blbs\\.",
+        "\\blbs\\.\\}\\}"
+      ],
+      "protected_tokens": [
+        "lbs."
+      ]
+    },
+    {
+      "id": "numeric_or_glyph_only_text",
+      "category": "numeric_or_glyph_only_text",
+      "reason": "Numeric counters and glyph-only UI chrome do not carry translatable prose.",
+      "patterns": [
+        "^\\s*-?\\d+(?:[/:.]\\d+)*(?:#|%)?\\s*$",
+        "^[\\[\\]{}|<>\\-+*/:;.,!?$#%→←■□\\s]+$"
+      ]
+    },
+    {
+      "id": "product_and_mod_proper_nouns",
+      "category": "allowed_english_token",
+      "reason": "Product and mod-domain proper nouns are intentionally preserved in English.",
+      "texts": [
+        "Caves",
+        "Qud",
+        "of",
+        "Mod",
+        "Caves of Qud"
+      ],
+      "protected_tokens": [
+        "Caves",
+        "Qud",
+        "of",
+        "Mod"
+      ]
+    },
+    {
+      "id": "player_authored_free_text",
+      "category": "player_authored_text",
+      "reason": "Player-authored journal or note text should remain user-authored rather than machine translated.",
+      "routes": [
+        "PlayerAuthoredJournalText",
+        "JournalPlayerAuthoredText"
+      ],
+      "patterns": [
+        ".+"
+      ]
+    }
+  ]
+}

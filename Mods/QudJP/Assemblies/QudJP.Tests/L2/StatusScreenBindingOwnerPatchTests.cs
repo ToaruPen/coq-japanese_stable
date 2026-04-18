@@ -52,8 +52,19 @@ public sealed class StatusScreenBindingOwnerPatchTests
         }
     }
 
-    [Test]
-    public void CharacterAttributeLineTranslationPatch_KeepsAbbreviationInEnglish_WhenPatched()
+    [TestCase("Strength", "STR")]
+    [TestCase("Agility", "AGI")]
+    [TestCase("Toughness", "TOU")]
+    [TestCase("Intelligence", "INT")]
+    [TestCase("Willpower", "WIL")]
+    [TestCase("Ego", "EGO")]
+    [TestCase("MoveSpeed", "MS")]
+    [TestCase("Armor", "AV")]
+    [TestCase("Dodge", "DV")]
+    [TestCase("MentalArmor", "MA")]
+    public void CharacterAttributeLineTranslationPatch_KeepsAbbreviationInEnglish_WhenPatched(
+        string statName,
+        string shortDisplayName)
     {
         // Stat abbreviations (STR, AGI, MS, AV, DV, MA, etc.) are kept in English
         // to avoid layout shifts (see commit 63cc3ad).
@@ -68,12 +79,12 @@ public sealed class StatusScreenBindingOwnerPatchTests
             var target = new DummyCharacterAttributeLineTarget();
             target.setData(new DummyCharacterAttributeLineDataTarget
             {
-                stat = "Strength",
+                stat = statName,
                 go = new DummyStatusGameObject(),
                 data = new DummyStatusStatistic
                 {
-                    Name = "Strength",
-                    ShortDisplayName = "STR",
+                    Name = statName,
+                    ShortDisplayName = shortDisplayName,
                     Value = 18,
                     BaseValue = 18,
                     Modifier = 2,
@@ -82,7 +93,7 @@ public sealed class StatusScreenBindingOwnerPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(target.attributeText.Text, Is.EqualTo("STR"),
+                Assert.That(target.attributeText.Text, Is.EqualTo(shortDisplayName),
                     "Stat abbreviations must remain in English to avoid layout shifts");
                 Assert.That(target.valueText.Text, Is.Not.Null.And.Not.Empty,
                     "Value text should be populated by the prefix");

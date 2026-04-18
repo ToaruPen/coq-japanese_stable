@@ -17,6 +17,16 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
+if __package__ in {None, ""}:
+    _PROJECT_ROOT = Path(__file__).resolve().parents[1]
+    _PROJECT_ROOT_STR = str(_PROJECT_ROOT)
+    if _PROJECT_ROOT_STR not in sys.path:
+        sys.path.insert(0, _PROJECT_ROOT_STR)
+
+from scripts.triage.classifier import classify
+from scripts.triage.log_parser import parse_log_text
+from scripts.triage.models import LogEntry, LogEntryKind, TriageClassification, TriageResult
+
 _PLAYER_LOG = Path.home() / "Library" / "Logs" / "Freehold Games" / "CavesOfQud" / "Player.log"
 _BUILD_MARKER = "[QudJP] Build marker:"
 _TITLE_READY_PROBE = "MainMenuLocalizationPatch"
@@ -45,17 +55,43 @@ _DEFAULT_INVENTORY_PATTERNS: tuple[str, ...] = (
     "[QudJP] InventoryLineReplacementStateNextFrame/v1:",
     "[QudJP] EquipmentLineProbe/v1:",
 )
+_MESSAGE_LOG_ROUTES = frozenset({"MessageLog", "MessageLogPatch", "EmitMessage"})
+_ASCII_WORD_PATTERN = re.compile(r"[A-Za-z]{2,}")
+_MARKUP_TOKEN_PATTERN = re.compile(
+    r"\{\{[A-Za-z0-9#]+\||\}\}|&&|\^\^|&[A-Za-z]|\^[A-Za-z]|</?color(?:=[^>]+)?>|=[A-Za-z0-9_.]+=",
+)
+_DEFAULT_INVENTORY_TAB_PAGE_RIGHTS = 8
+_DEFAULT_INVENTORY_ITEM_SCAN_COUNT = 8
+_DEFAULT_INVENTORY_ITEM_ACTION_ROW_OFFSET = 1
+_DEFAULT_INVENTORY_ITEM_PANE_CHORD = "right"
+_DEFAULT_ABILITIES_CHORD = "a"
+_DEFAULT_ACTIVE_EFFECTS_CHORD = "x,e"
+_DEFAULT_DEATH_ATTACK_COUNT = 30
+_DEFAULT_DEATH_CONFIRM_KEY = "space"
+_DEATH_EVIDENCE_PATTERNS: tuple[str, ...] = (
+    "You died",
+    "You are dead",
+    "You were killed",
+    "You have died",
+)
+_DEATH_EVIDENCE_REGEXES: tuple[re.Pattern[str], ...] = (
+    re.compile(r"(?:source|translated)='[^']*(?:あなた|君|プレイヤー).*(?:死|倒れ)"),
+)
 _SPECIAL_KEY_CODES = {
     "backspace": 51,
     "backslash": 42,
     "delete": 51,
     "down": 125,
+    "end": 119,
     "enter": 76,
     "escape": 53,
+    "home": 115,
     "iso_section": 10,
     "jis_yen": 93,
     "left": 123,
     "oem102": 42,
+    "pagedown": 121,
+    "pageup": 116,
     "return": 36,
     "right": 124,
     "space": 49,
@@ -163,6 +199,17 @@ def _read_log_delta(path: Path, offset: int) -> str:
         return handle.read().decode("utf-8", errors="replace")
 
 
+def _read_log_range(path: Path, start_offset: int, end_offset: int) -> str:
+    if not path.exists():
+        return ""
+    size = path.stat().st_size
+    start = 0 if start_offset > size else max(start_offset, 0)
+    end = min(max(end_offset, start), size)
+    with path.open("rb") as handle:
+        handle.seek(start)
+        return handle.read(end - start).decode("utf-8", errors="replace")
+
+
 def _current_log_offset(path: Path) -> int:
     if not path.exists():
         return 0
@@ -228,6 +275,14 @@ def _load_ready_failure_matches(text: str) -> list[str]:
 def _combat_evidence_matches(text: str) -> list[str]:
     matches = _find_matching_patterns(text, _COMBAT_EVIDENCE_PATTERNS)
     for pattern in _COMBAT_EVIDENCE_REGEXES:
+        if pattern.search(text):
+            matches.append(pattern.pattern)
+    return matches
+
+
+def _death_evidence_matches(text: str) -> list[str]:
+    matches = _find_matching_patterns(text, _DEATH_EVIDENCE_PATTERNS)
+    for pattern in _DEATH_EVIDENCE_REGEXES:
         if pattern.search(text):
             matches.append(pattern.pattern)
     return matches
@@ -670,16 +725,19 @@ def _capture_flow_screenshot(output_dir: Path, index: int, label: str) -> Path:
     return path
 
 
-def _build_final_smoke_inventory_stages() -> tuple[tuple[str, str], ...]:
-    return (
-        ("inventory-inventory", "shift+i"),
-        ("inventory-equipment", "shift+e"),
-        ("inventory-character", "shift+x"),
-        ("inventory-skills-powers", "shift+p"),
-        ("inventory-quests", "shift+q"),
-        ("inventory-tinkering", "shift+k"),
-        ("inventory-journal", "shift+j"),
-    )
+def _build_final_smoke_inventory_drilldown_stage_names(
+    *,
+    tab_page_rights: int = _DEFAULT_INVENTORY_TAB_PAGE_RIGHTS,
+    item_scan_count: int = _DEFAULT_INVENTORY_ITEM_SCAN_COUNT,
+) -> list[str]:
+    return [
+        "inventory-tab-00-initial",
+        "inventory-display-options",
+        "inventory-item-00-selected",
+        "inventory-item-00-actions",
+        *[f"inventory-item-scan-{index:02d}" for index in range(1, item_scan_count + 1)],
+        *[f"inventory-tab-page-right-{index:02d}" for index in range(1, tab_page_rights + 1)],
+    ]
 
 
 def _build_final_smoke_popup_stages() -> tuple[tuple[str, str, str], ...]:
@@ -692,15 +750,34 @@ def _build_final_smoke_popup_stages() -> tuple[tuple[str, str, str], ...]:
     )
 
 
-def _build_final_smoke_stage_names() -> list[str]:
+def _build_final_smoke_character_screen_stages(
+    args: argparse.Namespace,
+) -> tuple[tuple[str, tuple[str, ...], tuple[str, ...]], ...]:
+    return (
+        ("abilities-screen", _parse_key_sequence(args.abilities_chord), ("escape",)),
+        ("active-effects-screen", _parse_key_sequence(args.active_effects_chord), ("escape", "escape")),
+    )
+
+
+def _build_final_smoke_stage_names(
+    *,
+    tab_page_rights: int = _DEFAULT_INVENTORY_TAB_PAGE_RIGHTS,
+    item_scan_count: int = _DEFAULT_INVENTORY_ITEM_SCAN_COUNT,
+) -> list[str]:
     return [
         "after-load",
-        *[label for label, _ in _build_final_smoke_inventory_stages()],
+        *_build_final_smoke_inventory_drilldown_stage_names(
+            tab_page_rights=tab_page_rights,
+            item_scan_count=item_scan_count,
+        ),
+        "abilities-screen",
+        "active-effects-screen",
         *[label for label, _, _ in _build_final_smoke_popup_stages()],
         "npc-conversation",
         "attack-or-confirmation",
         "message-log-after-attack",
         "death-or-combat-end",
+        "message-log-after-death",
     ]
 
 
@@ -834,7 +911,7 @@ def _stop_game(
     process.wait(timeout=5.0)
 
 
-def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:  # noqa: PLR0915 -- CLI options stay together.
     parser = argparse.ArgumentParser(
         description=(
             "Deploy QudJP, launch Caves of Qud via Rosetta, and capture translation verification screenshots."
@@ -876,6 +953,12 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         type=float,
         default=1.0,
         help="Seconds to wait after each final-smoke key action.",
+    )
+    parser.add_argument(
+        "--flow-screenshot-wait",
+        type=float,
+        default=3.0,
+        help="Seconds to wait immediately before each flow screenshot so TMP text can settle into translations.",
     )
     parser.add_argument(
         "--input-backend",
@@ -956,8 +1039,19 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--death-attack-count",
         type=int,
-        default=0,
-        help="Repeat the attack chord this many times after the first attack to drive a death/combat-end screenshot.",
+        default=_DEFAULT_DEATH_ATTACK_COUNT,
+        help=(
+            "Maximum repeated attack count after the first attack. "
+            "Use 0 to skip death/combat-end message-log evidence."
+        ),
+    )
+    parser.add_argument(
+        "--death-confirm-key",
+        default=_DEFAULT_DEATH_CONFIRM_KEY,
+        help=(
+            "Key sent after each repeated death attack to dismiss combat warning popups, "
+            "such as low-health warnings. Empty string skips the extra confirmation."
+        ),
     )
     parser.add_argument(
         "--require-combat-evidence",
@@ -1081,6 +1175,42 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Seconds to wait for inventory-related probe lines after opening inventory.",
     )
     parser.add_argument(
+        "--inventory-tab-page-rights",
+        type=int,
+        default=_DEFAULT_INVENTORY_TAB_PAGE_RIGHTS,
+        help="How many Page Right steps to capture after opening inventory in final-smoke.",
+    )
+    parser.add_argument(
+        "--inventory-item-scan-count",
+        type=int,
+        default=_DEFAULT_INVENTORY_ITEM_SCAN_COUNT,
+        help="How many selected inventory rows to capture after opening the first item action menu.",
+    )
+    parser.add_argument(
+        "--inventory-item-action-row-offset",
+        type=int,
+        default=_DEFAULT_INVENTORY_ITEM_ACTION_ROW_OFFSET,
+        help="How many Down presses to reach the first inventory item before opening its action menu.",
+    )
+    parser.add_argument(
+        "--inventory-item-pane-chord",
+        default=_DEFAULT_INVENTORY_ITEM_PANE_CHORD,
+        help="Key chord used to move focus to the inventory item list before item drilldown.",
+    )
+    parser.add_argument(
+        "--abilities-chord",
+        default=_DEFAULT_ABILITIES_CHORD,
+        help="Key chord used to open the Manage Abilities screen during final-smoke.",
+    )
+    parser.add_argument(
+        "--active-effects-chord",
+        default=_DEFAULT_ACTIVE_EFFECTS_CHORD,
+        help=(
+            "Comma-separated key chord sequence used to open active effects during final-smoke. "
+            "Defaults to opening attributes, then the status effects action."
+        ),
+    )
+    parser.add_argument(
         "--inventory-pattern",
         action="append",
         help=(
@@ -1173,11 +1303,21 @@ def _continue_from_title(process: subprocess.Popen[bytes], args: argparse.Namesp
 
 
 @dataclass
+class _StageCapture:
+    label: str
+    screenshot_path: str
+    log_start_offset: int
+    log_end_offset: int
+
+
+@dataclass
 class _FlowCapture:
     pid: int
     output_dir: Path
     screenshot_paths: list[str]
+    stage_captures: list[_StageCapture]
     wait: float
+    screenshot_wait: float
     input_backend: str
     index: int = 1
 
@@ -1187,10 +1327,26 @@ class _FlowCapture:
         _send_key_chord(self.pid, chord, self.input_backend)
         time.sleep(self.wait if wait is None else wait)
 
-    def screenshot(self, label: str) -> None:
+    def send_sequence(self, sequence: tuple[str, ...]) -> None:
+        for chord in sequence:
+            self.send(chord)
+
+    def screenshot(self, label: str, log_start_offset: int | None = None) -> None:
+        start_offset = _current_log_offset(_PLAYER_LOG) if log_start_offset is None else log_start_offset
+        if self.screenshot_wait > 0:
+            time.sleep(self.screenshot_wait)
         _stabilize_game_focus(self.pid)
         path = _capture_flow_screenshot(self.output_dir, self.index, label)
+        end_offset = _current_log_offset(_PLAYER_LOG)
         self.screenshot_paths.append(str(path))
+        self.stage_captures.append(
+            _StageCapture(
+                label=label,
+                screenshot_path=str(path),
+                log_start_offset=start_offset,
+                log_end_offset=end_offset,
+            ),
+        )
         self.index += 1
 
     def close_popup(self) -> None:
@@ -1198,14 +1354,268 @@ class _FlowCapture:
         time.sleep(self.wait)
 
     def inventory_stage(self, label: str, chord: str) -> None:
+        stage_start_offset = _current_log_offset(_PLAYER_LOG)
         self.send(chord)
-        self.screenshot(label)
+        self.screenshot(label, stage_start_offset)
         self.close_popup()
 
     def popup_stage(self, label: str, chord: str, close_chord: str) -> None:
+        stage_start_offset = _current_log_offset(_PLAYER_LOG)
         self.send(chord)
-        self.screenshot(label)
+        self.screenshot(label, stage_start_offset)
         self.send(close_chord)
+
+    def screen_stage(self, label: str, open_sequence: tuple[str, ...], close_sequence: tuple[str, ...]) -> None:
+        stage_start_offset = _current_log_offset(_PLAYER_LOG)
+        self.send_sequence(open_sequence)
+        self.screenshot(label, stage_start_offset)
+        self.send_sequence(close_sequence)
+
+
+def _run_inventory_drilldown(capture: _FlowCapture, args: argparse.Namespace) -> None:
+    stage_start_offset = _current_log_offset(_PLAYER_LOG)
+    capture.send(args.inventory_key)
+    capture.screenshot("inventory-tab-00-initial", stage_start_offset)
+
+    _capture_inventory_display_options(capture)
+    _capture_inventory_first_item_actions(
+        capture,
+        args.inventory_item_action_row_offset,
+        args.inventory_item_pane_chord,
+    )
+    _capture_inventory_item_scan(capture, args.inventory_item_scan_count)
+    _capture_inventory_tabs_by_page_right(capture, args.inventory_tab_page_rights)
+
+    capture.send("escape")
+
+
+def _capture_inventory_display_options(capture: _FlowCapture) -> None:
+    stage_start_offset = _current_log_offset(_PLAYER_LOG)
+    capture.send("tab")
+    capture.screenshot("inventory-display-options", stage_start_offset)
+    capture.send("escape")
+
+
+def _capture_inventory_first_item_actions(capture: _FlowCapture, row_offset: int, item_pane_chord: str) -> None:
+    stage_start_offset = _current_log_offset(_PLAYER_LOG)
+    capture.send(item_pane_chord)
+    for _ in range(row_offset):
+        capture.send("down")
+    capture.screenshot("inventory-item-00-selected", stage_start_offset)
+
+    action_stage_start_offset = _current_log_offset(_PLAYER_LOG)
+    capture.send("enter")
+    capture.screenshot("inventory-item-00-actions", action_stage_start_offset)
+    capture.send("escape")
+
+
+def _capture_inventory_item_scan(capture: _FlowCapture, item_scan_count: int) -> None:
+    for index in range(1, item_scan_count + 1):
+        stage_start_offset = _current_log_offset(_PLAYER_LOG)
+        capture.send("down")
+        capture.screenshot(f"inventory-item-scan-{index:02d}", stage_start_offset)
+
+
+def _capture_inventory_tabs_by_page_right(capture: _FlowCapture, tab_page_rights: int) -> None:
+    for index in range(1, tab_page_rights + 1):
+        stage_start_offset = _current_log_offset(_PLAYER_LOG)
+        capture.send("end")
+        capture.screenshot(f"inventory-tab-page-right-{index:02d}", stage_start_offset)
+
+
+def _build_verification_report(stage_captures: list[_StageCapture], log_path: Path) -> dict[str, object]:
+    stages = [_build_stage_verification(stage, log_path) for stage in stage_captures]
+    return {
+        "generated_at": datetime.now(UTC).isoformat(),
+        "player_log_path": str(log_path),
+        "summary": _build_verification_summary(stages),
+        "stages": stages,
+    }
+
+
+def _write_verification_report(report: dict[str, object], output_dir: Path) -> Path:
+    report_path = output_dir / "verification_report.json"
+    report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    return report_path
+
+
+def _build_stage_verification(stage: _StageCapture, log_path: Path) -> dict[str, object]:
+    log_text = _read_log_range(log_path, stage.log_start_offset, stage.log_end_offset)
+    entries = parse_log_text(log_text)
+    results = [classify(entry) for entry in entries]
+    markup_issues = _markup_issue_candidates(entries)
+    summary = _build_stage_summary(results)
+    summary["markup_color_tag_issue_candidates"] = len(markup_issues)
+    return {
+        "stage": stage.label,
+        "screenshot_path": stage.screenshot_path,
+        "log_start_offset": stage.log_start_offset,
+        "log_end_offset": stage.log_end_offset,
+        "summary": summary,
+        "translated_events": [_serialize_result(result) for result in _translated_results(results)],
+        "missing_key_candidates": [_serialize_result(result) for result in _missing_key_candidates(results)],
+        "message_pattern_gaps": [_serialize_result(result) for result in _message_pattern_gaps(results)],
+        "sink_observed_untranslated_candidates": [
+            _serialize_result(result) for result in _sink_observed_untranslated_candidates(results)
+        ],
+        "message_log_candidates": [_serialize_result(result) for result in _message_log_candidates(results)],
+        "markup_color_tag_issue_candidates": markup_issues,
+        "preserved_english": [_serialize_result(result) for result in _preserved_english_results(results)],
+    }
+
+
+def _build_stage_summary(results: list[TriageResult]) -> dict[str, object]:
+    counts = {
+        "translated_events": len(_translated_results(results)),
+        "missing_key_candidates": len(_missing_key_candidates(results)),
+        "message_pattern_gaps": len(_message_pattern_gaps(results)),
+        "sink_observed_untranslated_candidates": len(_sink_observed_untranslated_candidates(results)),
+        "message_log_candidates": len(_message_log_candidates(results)),
+        "preserved_english": len(_preserved_english_results(results)),
+    }
+    return {
+        **counts,
+        "by_route": _count_results_by_route(results),
+    }
+
+
+def _build_verification_summary(stages: list[dict[str, object]]) -> dict[str, object]:
+    totals: dict[str, int] = {
+        "stage_count": len(stages),
+        "translated_events": 0,
+        "missing_key_candidates": 0,
+        "message_pattern_gaps": 0,
+        "sink_observed_untranslated_candidates": 0,
+        "message_log_candidates": 0,
+        "markup_color_tag_issue_candidates": 0,
+        "preserved_english": 0,
+    }
+    by_stage: dict[str, dict[str, int]] = {}
+    by_route: dict[str, int] = {}
+    for stage in stages:
+        stage_name = str(stage["stage"])
+        stage_summary = stage["summary"]
+        if not isinstance(stage_summary, dict):
+            continue
+        by_stage[stage_name] = _int_counts(stage_summary)
+        for key in totals:
+            if key == "stage_count":
+                continue
+            totals[key] += int(stage_summary.get(key, 0))
+        stage_routes = stage_summary.get("by_route", {})
+        if isinstance(stage_routes, dict):
+            for route, count in stage_routes.items():
+                by_route[str(route)] = by_route.get(str(route), 0) + int(count)
+
+    return {**totals, "by_stage": by_stage, "by_route": dict(sorted(by_route.items()))}
+
+
+def _translated_results(results: list[TriageResult]) -> list[TriageResult]:
+    return [
+        result
+        for result in results
+        if result.entry.kind == LogEntryKind.DYNAMIC_TEXT_PROBE and result.entry.changed is True
+    ]
+
+
+def _missing_key_candidates(results: list[TriageResult]) -> list[TriageResult]:
+    return [
+        result
+        for result in results
+        if result.entry.kind == LogEntryKind.MISSING_KEY
+        and result.classification != TriageClassification.PRESERVED_ENGLISH
+    ]
+
+
+def _message_pattern_gaps(results: list[TriageResult]) -> list[TriageResult]:
+    return [result for result in results if result.entry.kind == LogEntryKind.NO_PATTERN]
+
+
+def _sink_observed_untranslated_candidates(results: list[TriageResult]) -> list[TriageResult]:
+    return [
+        result
+        for result in results
+        if result.entry.kind == LogEntryKind.SINK_OBSERVE
+        and result.classification != TriageClassification.PRESERVED_ENGLISH
+        and _has_ascii_word_candidate(result.entry.text)
+    ]
+
+
+def _message_log_candidates(results: list[TriageResult]) -> list[TriageResult]:
+    return [
+        result
+        for result in results
+        if result.entry.kind == LogEntryKind.NO_PATTERN or result.entry.route in _MESSAGE_LOG_ROUTES
+    ]
+
+
+def _preserved_english_results(results: list[TriageResult]) -> list[TriageResult]:
+    return [result for result in results if result.classification == TriageClassification.PRESERVED_ENGLISH]
+
+
+def _has_ascii_word_candidate(text: str) -> bool:
+    return _ASCII_WORD_PATTERN.search(text) is not None
+
+
+def _markup_issue_candidates(entries: list[LogEntry]) -> list[dict[str, object]]:
+    candidates: list[dict[str, object]] = []
+    for entry in entries:
+        if entry.kind != LogEntryKind.DYNAMIC_TEXT_PROBE or entry.translated_text is None:
+            continue
+        source_markup = _markup_signature(entry.text)
+        translated_markup = _markup_signature(entry.translated_text)
+        if source_markup == translated_markup:
+            continue
+        candidates.append(
+            {
+                "text": entry.text,
+                "translated_text": entry.translated_text,
+                "route": entry.route,
+                "kind": entry.kind.value,
+                "line_number": entry.line_number,
+                "source_markup": source_markup,
+                "translated_markup": translated_markup,
+            },
+        )
+    return candidates
+
+
+def _markup_signature(text: str) -> list[str]:
+    return _MARKUP_TOKEN_PATTERN.findall(text)
+
+
+def _count_results_by_route(results: list[TriageResult]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for result in results:
+        counts[result.entry.route] = counts.get(result.entry.route, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def _int_counts(summary: dict[object, object]) -> dict[str, int]:
+    return {str(key): int(value) for key, value in summary.items() if isinstance(value, int)}
+
+
+def _serialize_result(result: TriageResult) -> dict[str, object]:
+    entry = result.entry
+    payload: dict[str, object] = {
+        "text": entry.text,
+        "route": entry.route,
+        "kind": entry.kind.value,
+        "line_number": entry.line_number,
+        "classification": result.classification.value,
+        "reason": result.reason,
+    }
+    if entry.hits is not None:
+        payload["hits"] = entry.hits
+    if entry.family is not None:
+        payload["family"] = entry.family
+    if entry.translated_text is not None:
+        payload["translated_text"] = entry.translated_text
+    if entry.changed is not None:
+        payload["changed"] = entry.changed
+    if result.slot_evidence:
+        payload["slot_evidence"] = result.slot_evidence
+    return payload
 
 
 def _confirm_attack_if_requested(capture: _FlowCapture, confirm_key: str) -> None:
@@ -1215,44 +1625,71 @@ def _confirm_attack_if_requested(capture: _FlowCapture, confirm_key: str) -> Non
     time.sleep(capture.wait)
 
 
-def _capture_message_log_after_attack(capture: _FlowCapture, message_log_chord: str) -> None:
+def _capture_message_log(capture: _FlowCapture, message_log_chord: str, label: str) -> None:
+    stage_start_offset = _current_log_offset(_PLAYER_LOG)
     if message_log_chord:
         capture.send(message_log_chord)
-    capture.screenshot("message-log-after-attack")
+    capture.screenshot(label, stage_start_offset)
     if message_log_chord:
         capture.close_popup()
 
 
-def _send_attack_sequence(capture: _FlowCapture, sequence: tuple[str, ...], attempt_index: int | None = None) -> None:
+def _capture_message_log_after_attack(capture: _FlowCapture, message_log_chord: str) -> None:
+    _capture_message_log(capture, message_log_chord, "message-log-after-attack")
+
+
+def _capture_message_log_after_death(capture: _FlowCapture, message_log_chord: str) -> None:
+    _capture_message_log(capture, message_log_chord, "message-log-after-death")
+
+
+def _send_attack_sequence(
+    capture: _FlowCapture,
+    sequence: tuple[str, ...],
+    attempt_index: int | None = None,
+    *,
+    capture_steps: bool = True,
+) -> None:
     for chord_index, chord in enumerate(sequence):
+        stage_start_offset = _current_log_offset(_PLAYER_LOG)
         capture.send(chord)
         is_last_chord = chord_index + 1 == len(sequence)
-        if not is_last_chord:
+        if capture_steps and not is_last_chord:
             if attempt_index is None:
                 label = f"attack-sequence-step-{chord_index + 1}"
             else:
                 label = f"attack-attempt-{attempt_index}-step-{chord_index + 1}"
-            capture.screenshot(label)
+            capture.screenshot(label, stage_start_offset)
 
 
 def _repeat_death_attacks(
     capture: _FlowCapture,
     attack_sequence: tuple[str, ...],
     confirm_key: str,
+    death_confirm_key: str,
     count: int,
-) -> None:
+) -> tuple[list[str], str]:
+    pre_death_offset = _current_log_offset(_PLAYER_LOG)
+    death_evidence_matches: list[str] = []
     for _ in range(count):
-        _send_attack_sequence(capture, attack_sequence)
+        _send_attack_sequence(capture, attack_sequence, capture_steps=False)
         _confirm_attack_if_requested(capture, confirm_key)
+        _confirm_attack_if_requested(capture, death_confirm_key)
+        death_log_delta = _read_log_delta(_PLAYER_LOG, pre_death_offset)
+        death_evidence_matches = _death_evidence_matches(death_log_delta)
+        if death_evidence_matches:
+            break
 
     if count:
-        capture.screenshot("death-or-combat-end")
+        capture.screenshot("death-or-combat-end", pre_death_offset)
+
+    death_log_delta = _read_log_delta(_PLAYER_LOG, pre_death_offset)
+    return _death_evidence_matches(death_log_delta), death_log_delta
 
 
 def _perform_final_smoke_attack_check(
     capture: _FlowCapture,
     args: argparse.Namespace,
-) -> tuple[list[str], str, tuple[str, ...]]:
+) -> tuple[list[str], str, tuple[str, ...], list[str], str]:
     pre_attack_offset = _current_log_offset(_PLAYER_LOG)
     attack_sequences = _attack_sequences(args)
     successful_sequence = attack_sequences[-1]
@@ -1260,11 +1697,12 @@ def _perform_final_smoke_attack_check(
 
     for attempt_index, attack_sequence in enumerate(attack_sequences, start=1):
         successful_sequence = attack_sequence
+        stage_start_offset = _current_log_offset(_PLAYER_LOG)
         _send_attack_sequence(capture, attack_sequence, attempt_index if len(attack_sequences) > 1 else None)
         label = "attack-or-confirmation"
         if len(attack_sequences) > 1:
             label = f"attack-attempt-{attempt_index}-result"
-        capture.screenshot(label)
+        capture.screenshot(label, stage_start_offset)
         _confirm_attack_if_requested(capture, args.attack_confirm_key)
 
         combat_log_delta = _read_log_delta(_PLAYER_LOG, pre_attack_offset)
@@ -1272,11 +1710,28 @@ def _perform_final_smoke_attack_check(
         if combat_evidence_matches:
             break
 
-    _capture_message_log_after_attack(capture, args.message_log_chord)
-    _repeat_death_attacks(capture, successful_sequence, args.attack_confirm_key, args.death_attack_count)
+    if args.death_attack_count:
+        death_evidence_matches, death_log_delta = _repeat_death_attacks(
+            capture,
+            successful_sequence,
+            args.attack_confirm_key,
+            args.death_confirm_key,
+            args.death_attack_count,
+        )
+        _capture_message_log_after_death(capture, args.message_log_chord)
+    else:
+        _capture_message_log_after_attack(capture, args.message_log_chord)
+        death_evidence_matches = []
+        death_log_delta = ""
 
     combat_log_delta = _read_log_delta(_PLAYER_LOG, pre_attack_offset)
-    return _combat_evidence_matches(combat_log_delta), combat_log_delta, successful_sequence
+    return (
+        _combat_evidence_matches(combat_log_delta),
+        combat_log_delta,
+        successful_sequence,
+        death_evidence_matches,
+        death_log_delta,
+    )
 
 
 def _run_combat_smoke_flow(
@@ -1287,7 +1742,16 @@ def _run_combat_smoke_flow(
     output_dir = args.flow_screenshot_dir
     output_dir.mkdir(parents=True, exist_ok=True)
     screenshot_paths: list[str] = []
-    capture = _FlowCapture(process.pid, output_dir, screenshot_paths, args.flow_step_wait, args.input_backend)
+    stage_captures: list[_StageCapture] = []
+    capture = _FlowCapture(
+        process.pid,
+        output_dir,
+        screenshot_paths,
+        stage_captures,
+        args.flow_step_wait,
+        args.flow_screenshot_wait,
+        args.input_backend,
+    )
 
     capture.screenshot("after-load")
     if args.npc_poi_key:
@@ -1295,13 +1759,21 @@ def _run_combat_smoke_flow(
         capture.send(args.npc_poi_key, args.poi_travel_wait)
     capture.screenshot("before-combat")
 
-    combat_evidence_matches, combat_log_delta, successful_attack_sequence = _perform_final_smoke_attack_check(
+    (
+        combat_evidence_matches,
+        combat_log_delta,
+        successful_attack_sequence,
+        death_evidence_matches,
+        death_log_delta,
+    ) = _perform_final_smoke_attack_check(
         capture,
         args,
     )
     if not combat_evidence_matches:
         _raise_missing_combat_evidence(output_dir)
 
+    verification_report = _build_verification_report(stage_captures, _PLAYER_LOG)
+    verification_report_path = _write_verification_report(verification_report, output_dir)
     return {
         "build_marker_found": True,
         "load_ready_found": bool(load_ready_matches),
@@ -1310,11 +1782,18 @@ def _run_combat_smoke_flow(
         "flow": "combat-smoke",
         "screenshot_dir": str(output_dir),
         "screenshot_paths": screenshot_paths,
+        "verification_report_path": str(verification_report_path),
+        "verification_report": verification_report,
         "combat_evidence_found": True,
         "combat_evidence_matches": combat_evidence_matches,
+        "death_attack_count": args.death_attack_count,
+        "death_confirm_key": args.death_confirm_key,
+        "death_evidence_found": bool(death_evidence_matches),
+        "death_evidence_matches": death_evidence_matches,
         "attack_sequences": [list(sequence) for sequence in _attack_sequences(args)],
         "successful_attack_sequence": list(successful_attack_sequence),
         "combat_log_excerpt": combat_log_delta.splitlines()[-40:],
+        "death_log_excerpt": death_log_delta.splitlines()[-40:],
     }
 
 
@@ -1326,12 +1805,23 @@ def _run_final_smoke_flow(
     output_dir = args.flow_screenshot_dir
     output_dir.mkdir(parents=True, exist_ok=True)
     screenshot_paths: list[str] = []
-    capture = _FlowCapture(process.pid, output_dir, screenshot_paths, args.flow_step_wait, args.input_backend)
+    stage_captures: list[_StageCapture] = []
+    capture = _FlowCapture(
+        process.pid,
+        output_dir,
+        screenshot_paths,
+        stage_captures,
+        args.flow_step_wait,
+        args.flow_screenshot_wait,
+        args.input_backend,
+    )
 
     capture.screenshot("after-load")
 
-    for label, chord in _build_final_smoke_inventory_stages():
-        capture.inventory_stage(label, chord)
+    _run_inventory_drilldown(capture, args)
+
+    for label, open_sequence, close_sequence in _build_final_smoke_character_screen_stages(args):
+        capture.screen_stage(label, open_sequence, close_sequence)
 
     for label, chord, close_chord in _build_final_smoke_popup_stages():
         capture.popup_stage(label, chord, close_chord)
@@ -1340,38 +1830,61 @@ def _run_final_smoke_flow(
         capture.send("backspace")
         capture.send(args.npc_poi_key, args.poi_travel_wait)
 
+    npc_stage_start_offset = _current_log_offset(_PLAYER_LOG)
     capture.send(args.npc_talk_key)
     capture.send(args.npc_talk_direction)
-    capture.screenshot("npc-conversation")
+    capture.screenshot("npc-conversation", npc_stage_start_offset)
     capture.close_popup()
 
-    combat_evidence_matches, combat_log_delta, successful_attack_sequence = _perform_final_smoke_attack_check(
+    (
+        combat_evidence_matches,
+        combat_log_delta,
+        successful_attack_sequence,
+        death_evidence_matches,
+        death_log_delta,
+    ) = _perform_final_smoke_attack_check(
         capture,
         args,
     )
     if args.require_combat_evidence and not combat_evidence_matches:
         _raise_missing_combat_evidence(output_dir)
 
+    verification_report = _build_verification_report(stage_captures, _PLAYER_LOG)
+    verification_report_path = _write_verification_report(verification_report, output_dir)
     return {
         "build_marker_found": True,
         "load_ready_found": bool(load_ready_matches),
         "load_ready_matches": load_ready_matches,
         "player_log_path": str(_PLAYER_LOG),
         "flow": "final-smoke",
-        "flow_stage_names": _build_final_smoke_stage_names(),
+        "flow_stage_names": _build_final_smoke_stage_names(
+            tab_page_rights=args.inventory_tab_page_rights,
+            item_scan_count=args.inventory_item_scan_count,
+        ),
         "screenshot_dir": str(output_dir),
         "screenshot_paths": screenshot_paths,
+        "verification_report_path": str(verification_report_path),
+        "verification_report": verification_report,
         "death_attack_count": args.death_attack_count,
+        "death_confirm_key": args.death_confirm_key,
         "combat_evidence_found": bool(combat_evidence_matches),
         "combat_evidence_matches": combat_evidence_matches,
+        "death_evidence_found": bool(death_evidence_matches),
+        "death_evidence_matches": death_evidence_matches,
         "attack_sequences": [list(sequence) for sequence in _attack_sequences(args)],
         "successful_attack_sequence": list(successful_attack_sequence),
         "combat_log_excerpt": combat_log_delta.splitlines()[-40:],
+        "death_log_excerpt": death_log_delta.splitlines()[-40:],
     }
 
 
 def _raise_invalid_death_attack_count() -> None:
     msg = "--death-attack-count must be 0 or greater."
+    raise ValueError(msg)
+
+
+def _raise_invalid_nonnegative_option(option: str) -> None:
+    msg = f"--{option} must be 0 or greater."
     raise ValueError(msg)
 
 
@@ -1387,6 +1900,18 @@ def _raise_missing_combat_evidence(output_dir: Path) -> None:
 def _validate_runtime_args(args: argparse.Namespace) -> None:
     if args.death_attack_count < 0:
         _raise_invalid_death_attack_count()
+    if args.inventory_tab_page_rights < 0:
+        _raise_invalid_nonnegative_option("inventory-tab-page-rights")
+    if args.inventory_item_scan_count < 0:
+        _raise_invalid_nonnegative_option("inventory-item-scan-count")
+    if args.inventory_item_action_row_offset < 0:
+        _raise_invalid_nonnegative_option("inventory-item-action-row-offset")
+    if args.inventory_item_pane_chord:
+        _parse_key_chord(args.inventory_item_pane_chord)
+    if args.abilities_chord:
+        _parse_key_sequence(args.abilities_chord)
+    if args.active_effects_chord:
+        _parse_key_sequence(args.active_effects_chord)
     _attack_sequences(args)
 
 
