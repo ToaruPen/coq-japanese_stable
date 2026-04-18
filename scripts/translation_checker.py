@@ -1481,7 +1481,7 @@ def _main(argv: list[str] | None = None) -> int:
             time.sleep(args.load_wait)
 
         result = _run_loaded_flow(process, args, load_ready_matches, inventory_patterns)
-    except (FileNotFoundError, RuntimeError, subprocess.CalledProcessError, ValueError) as exc:
+    except (FileExistsError, FileNotFoundError, RuntimeError, subprocess.CalledProcessError, ValueError) as exc:
         print(f"Error: {exc}", file=sys.stderr)  # noqa: T201
         return 1
     finally:

@@ -23,6 +23,7 @@ from scripts.translation_checker import (
     _key_code_for,
     _load_ready_failure_matches,
     _load_ready_matches,
+    _main,
     _modifier_mask,
     _parse_args,
     _parse_hammerspoon_focus_output,
@@ -368,3 +369,34 @@ class TestParseArgs:
     def test_combat_smoke_flow_is_parsed(self) -> None:
         args = _parse_args(["--flow", "combat-smoke"])
         assert args.flow == "combat-smoke"
+
+
+class TestMainErrorHandling:
+    def test_reports_existing_save_backup_as_clean_error(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        log_path = tmp_path / "Player.log"
+        log_path.write_text("", encoding="utf-8")
+
+        def raise_existing_backup(_args: object) -> tuple[None, None, None]:
+            msg = "Save backup directory already exists: /tmp/qudjp/save-backup"
+            raise FileExistsError(msg)
+
+        def skip_sync_mod(*, skip_sync: bool) -> None:
+            _ = skip_sync
+
+        monkeypatch.setattr("scripts.translation_checker._PLAYER_LOG", log_path)
+        monkeypatch.setattr("scripts.translation_checker._ensure_supported_environment", lambda: None)
+        monkeypatch.setattr("scripts.translation_checker._ensure_unlocked_console", lambda: None)
+        monkeypatch.setattr("scripts.translation_checker._validate_runtime_args", lambda _args: None)
+        monkeypatch.setattr("scripts.translation_checker._sync_mod", skip_sync_mod)
+        monkeypatch.setattr("scripts.translation_checker._prepare_final_smoke_runtime", raise_existing_backup)
+
+        exit_code = _main(["--skip-sync", "--flow", "final-smoke"])
+
+        captured = capsys.readouterr()
+        assert exit_code == 1
+        assert "Error: Save backup directory already exists" in captured.err
