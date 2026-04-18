@@ -15,7 +15,7 @@ QudJP の翻訳ワークフローを支援する Python スクリプト群です
 | `diff_localization.py` | 翻訳カバレッジ比較 |
 | `extract_base.py` | ゲーム XML の抽出 |
 | `sync_mod.py` | Mod ファイルの配備 |
-| `verify_inventory.py` | Rosetta 起動で既知セーブを開き、インベントリのスクリーンショットを取得 |
+| `translation_checker.py` | Rosetta 起動で既知セーブを開き、翻訳確認用スクリーンショットを取得 |
 
 ---
 
@@ -241,10 +241,10 @@ python scripts/sync_mod.py --dry-run
 
 ---
 
-## verify_inventory.py
+## translation_checker.py
 
 Rosetta でゲームを起動し、既知セーブを読み込んでインベントリを開き、
-スクリーンショットを取得します。`Player.log` の `[QudJP]` probe を待つため、
+翻訳確認用スクリーンショットを取得します。`Player.log` の `[QudJP]` probe を待つため、
 手動観測の再現を自動化するための L3 補助スクリプトとして使えます。
 
 既定フローは、タイトル画面で `Continue` に 1 つ下移動してから `space` を 2 回送り、
@@ -262,26 +262,77 @@ Rosetta でゲームを起動し、既知セーブを読み込んでインベン
 
 ```bash
 # 同期込みで実行（スクショは /tmp 配下に保存）
-python scripts/verify_inventory.py
+python scripts/translation_checker.py
 
 # 既に配備済みなら同期をスキップ
-python scripts/verify_inventory.py --skip-sync
+python scripts/translation_checker.py --skip-sync
 
 # スクショ保存先や待機時間を調整
-python scripts/verify_inventory.py \
+python scripts/translation_checker.py \
   --screenshot-path /tmp/coq-inventory.png \
   --load-wait 20 \
   --inventory-timeout 20
 
 # 実運用向け: スクショを残す
-python scripts/verify_inventory.py \
+python scripts/translation_checker.py \
   --skip-sync \
-  --screenshot-path artifacts/verify_inventory/verified-inventory.png
+  --screenshot-path artifacts/translation_checker/verified-inventory.png
+
+# 最終 L3 smoke: セーブ読込、各画面、ポップアップ、NPC会話、攻撃/ログを連続確認
+python scripts/translation_checker.py \
+  --skip-sync \
+  --flow final-smoke \
+  --flow-screenshot-dir /tmp/qudjp-l3-final-smoke
+
+# 死亡確認まで進める場合（検証セーブは自動バックアップ後に復元）
+python scripts/translation_checker.py \
+  --skip-sync \
+  --flow final-smoke \
+  --flow-screenshot-dir /tmp/qudjp-l3-final-smoke-death \
+  --input-backend osascript \
+  --death-attack-count 30
+
+# Computer Use でロード操作を行う場合:
+# 1. このコマンドで Rosetta 起動し、スクリプトはロード完了 probe を待つ
+# 2. Computer Use で LOAD GAME を開き、テストセーブを選択する
+# 3. ロード完了後、スクリプトが final-smoke のスクショ収集を再開する
+# 4. macOS/Unity が Control 修飾を落とす場合に備え、入力は osascript 経由にする
+python scripts/translation_checker.py \
+  --skip-sync \
+  --flow final-smoke \
+  --manual-load \
+  --input-backend osascript \
+  --load-ready-timeout 300 \
+  --flow-screenshot-dir /tmp/qudjp-l3-final-smoke-computer-use
 ```
 
 **出力**:
 - JSON 形式で `screenshot_path`、`player_log_path`、`load_ready_matches`、一致した inventory probe、ログ抜粋を標準出力に表示
 - スクリーンショット自体の破棄は、この JSON を読んだ呼び出し側が行う想定
+
+`--flow final-smoke` では `screenshot_dir` と `screenshot_paths` を出力します。標準ステージは次の通りです。
+
+- セーブ読込直後
+- インベントリ、装備、キャラクター、技能/パワー、クエスト、ティンカリング、ジャーナル
+- システムメニュー、注目地点、Look 方向選択、ヘルプ、射撃武器なしポップアップ
+- NPC 会話
+- Classic 攻撃または攻撃確認ポップアップ
+- 攻撃後のメッセージログ
+- `--death-attack-count` 指定時の死亡/戦闘終了画面
+
+NPC 会話の移動先や方向はテストセーブに依存します。既定値は実測したテストセーブ向けに
+`--npc-poi-key d`、`--npc-talk-direction right`、攻撃は `--attack-chord backslash,right` です。
+合わない場合はこれらの引数を変えて同じ検証フローを再利用します。
+
+`--manual-load` は Computer Use 用の導線です。スクリプトは必ず `scripts/launch_rosetta.sh`
+経由で起動し、タイトル/ロード画面への入力は送らず、ロード完了 probe だけを待ちます。
+ロードが確認できない場合、`final-smoke` は後続スクリーンショットを作らず終了します。
+
+Computer Use で `Ctrl+Right` や `Ctrl+KP_6` が通常移動として扱われる場合は、
+`--input-backend osascript` を指定します。この経路は macOS の Accessibility 権限で
+`osascript` / 実行元アプリから `System Events` にキー送信できることが前提です。実測では
+`Ctrl+Right` と `Ctrl+numpad6` は自動実行では戦闘証拠にならないことがあり、ゲーム側の
+`Force attack in a direction` に対応する `backslash,right` が戦闘証拠として安定しています。
 
 **終了コード**: 0 = 実行完了、1 = 起動/権限/ログ待機エラー
 
@@ -300,10 +351,10 @@ pytest scripts/tests/ -v
 pytest scripts/tests/test_check_encoding.py
 pytest scripts/tests/test_validate_xml.py
 pytest scripts/tests/test_diff_localization.py
-pytest scripts/tests/test_verify_inventory.py
+pytest scripts/tests/test_translation_checker.py
 ```
 
-現在のテスト数: **53 件**
+現在のテスト数: **290 件**
 
 ---
 

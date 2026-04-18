@@ -81,7 +81,7 @@ For any route claiming display-path ownership, L2 tests must verify:
 
 - **Existing coverage**: `InventoryAndEquipmentStatusScreenTranslationPatchTests` has field value checks (lines 42-80) and owner route recording (lines 84-100).
 - **Gap**: Add explicit sink suppression assertion if missing.
-- **L3**: Document tab-navigation verification procedure using existing `verify_inventory.py`.
+- **L3**: Document tab-navigation verification procedure using existing `translation_checker.py`.
 
 ### 3. Popup ShowBlock (runtime-required)
 

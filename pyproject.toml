@@ -33,7 +33,7 @@ max-statements = 50
 [tool.ruff.lint.per-file-ignores]
 "scripts/tests/**" = ["S101", "PLR2004"]
 "scripts/tests/test_scanner_rule_classifier.py" = ["E501", "Q000"]
-"scripts/tests/test_verify_inventory.py" = ["D101", "D102", "D103"]
+"scripts/tests/test_translation_checker.py" = ["D101", "D102", "D103"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
