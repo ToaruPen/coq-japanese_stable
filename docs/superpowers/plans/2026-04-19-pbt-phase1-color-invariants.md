@@ -200,4 +200,5 @@ Do not add Python/Hypothesis work in this first execution slice.
 - The first generated failures showed that `&` / `^` color codes do not share the same restore invariant as Qud wrappers when mixed into one property family.
 - Phase 1b was therefore implemented as separate property groups for foreground/background color codes instead of widening the existing wrapper generator.
 - The next non-trivial candidate, `MessageLogProducerTranslationHelpers`, was added in the same PR as a deterministic PBT slice for the `control header -> direct marker -> nested wrapper` invariant.
-- The next follow-up after this PR should target `MessagePatternTranslator` directly, because it owns the reordered placeholder behavior that the producer helper now exercises only through a fixed route family.
+- `MessagePatternTranslator` was then added as the next deterministic slice for hit-with-roll and weapon-miss wrapper-preservation invariants using the repository pattern dictionary directly.
+- The next follow-up after this PR should move beyond combat message families and target another pure helper or constrained route owner with a stable generator surface.
