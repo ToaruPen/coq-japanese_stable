@@ -180,7 +180,9 @@ public static class AbilityBarAfterRenderTranslationPatch
 
         if (displayNameOwnsMarkup)
         {
-            translated = translatedLabel + " " + translatedName;
+            translated = RestoreCaptureWithoutWholeLineOpenings(translatedLabel, spans, match.Groups["label"], stripped.Length)
+                + " "
+                + translatedName;
             translated = RestoreWholeLineBoundaryWrappers(translated, spans, stripped.Length);
         }
         else
@@ -248,8 +250,39 @@ public static class AbilityBarAfterRenderTranslationPatch
             : ColorAwareTranslationComposer.Restore(translated, wholeLineSpans);
     }
 
+    private static string RestoreCaptureWithoutWholeLineOpenings(
+        string translated,
+        IReadOnlyList<ColorSpan>? spans,
+        Group group,
+        int sourceLength)
+    {
+        if (spans is null || spans.Count == 0 || !group.Success)
+        {
+            return translated;
+        }
+
+        var captureSpans = ColorCodePreserver.SliceSpans(spans, group.Index, group.Length);
+        captureSpans.AddRange(ColorCodePreserver.SliceAdjacentCaptureBoundarySpans(spans, group.Index, group.Length));
+
+        if (group.Index == 0 && group.Length < sourceLength)
+        {
+            var wholeLineOpeningTokens = SliceWholeLineBoundarySpans(spans, sourceLength, sourceLength)
+                .Where(static span => span.Index == 0)
+                .Select(static span => span.Token)
+                .ToHashSet(StringComparer.Ordinal);
+
+            captureSpans.RemoveAll(span => span.Index == 0 && wholeLineOpeningTokens.Contains(span.Token));
+        }
+
+        return ColorAwareTranslationComposer.Restore(translated, captureSpans);
+    }
+
     private static List<ColorSpan> SliceWholeLineBoundarySpans(IReadOnlyList<ColorSpan> spans, int sourceLength, int translatedLength)
     {
+        // Keep this stack walk local to the absolute Restore(...) path.
+        // MessagePatternTranslator.SliceWholeLineBoundaryWrappers mirrors the same matching logic,
+        // but it must emit relative spans for RestoreRelative(...), so a shared helper would still
+        // need two span-construction contracts.
         var wholeLinePairs = new List<(ColorSpan Opening, int OpeningOrder, ColorSpan Closing, int ClosingOrder)>();
         var openingStack = new Stack<(ColorSpan Span, int Order)>();
 
