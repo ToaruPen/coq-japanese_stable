@@ -83,4 +83,70 @@ public sealed class ClonelingVehicleFragmentTranslatorPropertyTests
 
         return true.ToProperty();
     }
+
+    [Test]
+    public void TryTranslatePopupMessage_LeavesEmptyInputUntouched()
+    {
+        var translated = ClonelingVehicleFragmentTranslator.TryTranslatePopupMessage(
+            string.Empty,
+            nameof(ClonelingVehicleFragmentTranslatorPropertyTests),
+            "WorldParts.Popup",
+            out var actual);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(actual, Is.EqualTo(string.Empty));
+        });
+    }
+
+    [Test]
+    public void TryTranslatePopupMessage_LeavesNonMatchingEnglishUntouched()
+    {
+        const string source = "You do not have 1 dram of nothing in particular?";
+        var translated = ClonelingVehicleFragmentTranslator.TryTranslatePopupMessage(
+            source,
+            nameof(ClonelingVehicleFragmentTranslatorPropertyTests),
+            "WorldParts.Popup",
+            out var actual);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(actual, Is.EqualTo(source));
+        });
+    }
+
+    [Test]
+    public void TryTranslateQueuedMessage_LeavesEmptyInputUntouched()
+    {
+        var translated = ClonelingVehicleFragmentTranslator.TryTranslateQueuedMessage(
+            string.Empty,
+            nameof(ClonelingVehicleFragmentTranslatorPropertyTests),
+            "WorldParts.Queue",
+            out var actual);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(actual, Is.EqualTo(string.Empty));
+        });
+    }
+
+    [Test]
+    public void TryTranslateQueuedMessage_LeavesNonMatchingEnglishUntouched()
+    {
+        const string source = "Your onboard systems are out of nothing in particular?";
+        var translated = ClonelingVehicleFragmentTranslator.TryTranslateQueuedMessage(
+            source,
+            nameof(ClonelingVehicleFragmentTranslatorPropertyTests),
+            "WorldParts.Queue",
+            out var actual);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(actual, Is.EqualTo(source));
+        });
+    }
 }

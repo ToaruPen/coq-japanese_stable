@@ -45,4 +45,31 @@ public sealed class MessageFrameTranslatorPropertyTests
 
         return true.ToProperty();
     }
+
+    [Test]
+    public void MarkDirectTranslation_EmptyInput_RoundTripsToEmpty()
+    {
+        var marked = MessageFrameTranslator.MarkDirectTranslation(string.Empty);
+        var stripped = MessageFrameTranslator.TryStripDirectTranslationMarker(marked, out var unmarked);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(marked, Is.EqualTo(MessageFrameTranslator.DirectTranslationMarker.ToString()));
+            Assert.That(stripped, Is.True);
+            Assert.That(unmarked, Is.EqualTo(string.Empty));
+        });
+    }
+
+    [Test]
+    public void TryStripDirectTranslationMarker_ByRef_MarkedInput_StripsAndMutates()
+    {
+        var message = $"{MessageFrameTranslator.DirectTranslationMarker}熊";
+        var stripped = MessageFrameTranslator.TryStripDirectTranslationMarker(ref message);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stripped, Is.True);
+            Assert.That(message, Is.EqualTo("熊"));
+        });
+    }
 }
