@@ -367,6 +367,28 @@ public sealed class MessageLogProducerTranslationHelpersTests
     }
 
     [Test]
+    public void TryPreparePatternMessage_StripsLeadingControlHeader_ForColorizedPlayerHitWithRoll()
+    {
+        UseRepositoryPatternDictionary();
+
+        var source = "\u0002hit\u001F7\u001F18\u001F\u0003{{g|You hit {{&w|(x1)}} for 1 damage with your {{w|青銅の短剣}}! [18]}}";
+
+        var translated = MessageLogProducerTranslationHelpers.TryPreparePatternMessage(
+            ref source,
+            nameof(GameObjectEmitMessageTranslationPatch),
+            "EmitMessage",
+            markJapaneseAsDirect: true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(
+                source,
+                Is.EqualTo("\u0001{{g|{{w|青銅の短剣}}で1ダメージを与えた。({{&w|x1}}) [18]}}"));
+        });
+    }
+
+    [Test]
     public void PrepareZoneBannerMessage_MarksAlreadyLocalizedBanner()
     {
         var result = MessageLogProducerTranslationHelpers.PrepareZoneBannerMessage(
@@ -465,6 +487,13 @@ public sealed class MessageLogProducerTranslationHelpersTests
         builder.AppendLine();
 
         File.WriteAllText(patternFilePath, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private void UseRepositoryPatternDictionary()
+    {
+        var root = TestProjectPaths.GetRepositoryRoot();
+        var repositoryPatternFile = Path.Combine(root, "Mods", "QudJP", "Localization", "Dictionaries", "messages.ja.json");
+        File.Copy(repositoryPatternFile, patternFilePath, overwrite: true);
     }
 
     private static string EscapeJson(string value)

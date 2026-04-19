@@ -440,6 +440,30 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_RepositoryDictionary_PreservesNestedColorWrappersForPlayerHitWithRoll()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("{{g|You hit {{&w|(x1)}} for 1 damage with your {{fiery|燃え盛る}} {{w|青銅の短剣}}! [9]}}");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{g|{{fiery|燃え盛る}} {{w|青銅の短剣}}で1ダメージを与えた。({{&w|x1}}) [9]}}"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_PreservesOuterWrapperForPlayerWeaponMiss()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("{{r|You miss with your {{fiery|燃え盛る}} {{w|青銅の短剣}}! [0 vs 0]}}");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{r|{{fiery|燃え盛る}} {{w|青銅の短剣}}での攻撃は外れた。[0 vs 0]}}"));
+    }
+
+    [Test]
     public void Translate_RepositoryDictionary_TranslatesPlayerAcidDamageMessage()
     {
         UseRepositoryPatternDictionary();

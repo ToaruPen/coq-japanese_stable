@@ -7,6 +7,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using QudJP.Patches;
@@ -585,6 +586,12 @@ internal static class MessagePatternTranslator
             return translated;
         }
 
+        if (HasInteriorBoundarySpans(spans, strippedSourceLength.Value)
+            && TryRestoreWholeLineBoundaryWrappers(translated, spans, strippedSourceLength.Value, out var wholeLineRestored))
+        {
+            return wholeLineRestored;
+        }
+
         if (translatedFirstCaptureStart < 0
             || translatedLastCaptureEnd < 0
             || translatedFirstCaptureStart > translatedLastCaptureEnd)
@@ -684,6 +691,68 @@ internal static class MessagePatternTranslator
 
         translated = builder.ToString();
         return true;
+    }
+
+    private static bool TryRestoreWholeLineBoundaryWrappers(
+        string translated,
+        IReadOnlyList<ColorSpan> spans,
+        int strippedSourceLength,
+        out string restored)
+    {
+        var wholeLineSpans = SliceWholeLineBoundaryWrappers(spans, strippedSourceLength);
+        if (wholeLineSpans.Count == 0)
+        {
+            restored = string.Empty;
+            return false;
+        }
+
+        restored = ColorAwareTranslationComposer.RestoreRelative(translated, wholeLineSpans, strippedSourceLength);
+        return true;
+    }
+
+    private static List<ColorSpan> SliceWholeLineBoundaryWrappers(IReadOnlyList<ColorSpan> spans, int sourceLength)
+    {
+        var wholeLinePairs = new List<(ColorSpan Opening, int OpeningOrder, ColorSpan Closing, int ClosingOrder)>();
+        var openingStack = new Stack<(ColorSpan Span, int Order)>();
+
+        for (var index = 0; index < spans.Count; index++)
+        {
+            var span = spans[index];
+            if (ColorCodePreserver.IsOpeningBoundaryToken(span.Token))
+            {
+                openingStack.Push((span, index));
+                continue;
+            }
+
+            if (!ColorCodePreserver.IsClosingBoundaryToken(span.Token) || openingStack.Count == 0)
+            {
+                continue;
+            }
+
+            var opening = openingStack.Pop();
+            if (opening.Span.Index == 0 && span.Index == sourceLength)
+            {
+                wholeLinePairs.Add((opening.Span, opening.Order, span, index));
+            }
+        }
+
+        if (wholeLinePairs.Count == 0)
+        {
+            return new List<ColorSpan>();
+        }
+
+        var restored = new List<ColorSpan>(wholeLinePairs.Count * 2);
+        foreach (var pair in wholeLinePairs.OrderBy(static pair => pair.OpeningOrder))
+        {
+            restored.Add(new ColorSpan(0, pair.Opening.Token, sourceLength, usesRelativeIndex: true));
+        }
+
+        foreach (var pair in wholeLinePairs.OrderBy(static pair => pair.ClosingOrder))
+        {
+            restored.Add(new ColorSpan(sourceLength, pair.Closing.Token, sourceLength, usesRelativeIndex: true));
+        }
+
+        return restored;
     }
 
     private static string RestoreLiteralSegment(
