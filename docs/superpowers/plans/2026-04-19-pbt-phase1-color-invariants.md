@@ -62,7 +62,7 @@ namespace QudJP.Tests.L1.Pbt;
 [Category("L1")]
 public sealed class ColorCodePreserverPropertyTests
 {
-    [Property(Arbitrary = new[] { typeof(ColorCodePreserverArbitraries) }, MaxTest = 200)]
+    [Property(Arbitrary = new[] { typeof(ColorCodePreserverArbitraries) }, MaxTest = 200, Replay = "123456789,97531")]
     public Property StripThenRestore_PreservesSupportedMarkup(ColorizedCase sample)
     {
         var (stripped, spans) = ColorCodePreserver.Strip(sample.Source);
@@ -99,9 +99,7 @@ public static class ColorCodePreserverArbitraries
 
         var wrappers = Gen.Elements(
             (Open: "{{W|", Close: "}}"),
-            (Open: "{{r|", Close: "}}"),
-            (Open: "&G", Close: "&y"),
-            (Open: "^r", Close: "^k"));
+            (Open: "{{r|", Close: "}}"));
 
         return (from rawVisible in visible
                 from rawTranslated in translated
@@ -117,11 +115,13 @@ public static class ColorCodePreserverArbitraries
 }
 ```
 
+Add separate `ForegroundColorCodeCases()` and `BackgroundColorCodeCases()` generators for `&...` / `^...` shapes, because those color-code families do not share the same restore invariant as Qud wrappers and should not be mixed into one property-family generator.
+
 - [ ] **Step 3: Run the new property test and make sure it passes deterministically**
 
 Run: `dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter FullyQualifiedName~ColorCodePreserverPropertyTests`
 
-Expected: PASS with a stable run count; no shrinking into unsupported brace/code syntax.
+Expected: PASS with a stable run count using Replay `123456789,97531`; no shrinking into unsupported brace/code syntax.
 
 ### Task 3: Add a second invariant that protects issue-376’s restore seam
 
@@ -133,7 +133,7 @@ Expected: PASS with a stable run count; no shrinking into unsupported brace/code
 Add a property that proves non-target text is not damaged by the strip/restore cycle:
 
 ```csharp
-[Property(Arbitrary = new[] { typeof(ColorCodePreserverArbitraries) }, MaxTest = 200)]
+[Property(Arbitrary = new[] { typeof(ColorCodePreserverArbitraries) }, MaxTest = 200, Replay = "123456789,97531")]
 public Property StripThenRestore_DoesNotChangeVisibleText(ColorizedCase sample)
 {
     var (stripped, spans) = ColorCodePreserver.Strip(sample.Source);
@@ -201,8 +201,8 @@ Do not add Python/Hypothesis work in this first execution slice.
 - Phase 1b was therefore implemented as separate property groups for foreground/background color codes instead of widening the existing wrapper generator.
 - The next non-trivial candidate, `MessageLogProducerTranslationHelpers`, was added in the same PR as a deterministic PBT slice for the `control header -> direct marker -> nested wrapper` invariant.
 - `MessagePatternTranslator` was then added as the next deterministic slice for hit-with-roll and weapon-miss wrapper-preservation invariants using the repository pattern dictionary directly.
-- `MessageFrameTranslator` was then added as a small deterministic helper slice for direct-marker idempotence and strip round-trips, keeping the scope outside combat grammar expansion.
-- `EnclosingFragmentTranslator` was added next as a constrained route-owner slice for `You extricate X from Y.` so subject/container color wrappers stay preserved while direct-marked inputs still pass through unchanged.
-- `ClonelingVehicleFragmentTranslator` was then added as the next world-part fragment slice, covering both popup and queued routes while preserving liquid wrappers and leaving direct-marked text untouched.
+- `MessageFrameTranslator` then became a small deterministic helper slice for direct-marker idempotence and strip round-trips, keeping the scope outside combat grammar expansion.
+- Next, `EnclosingFragmentTranslator` served as a constrained route-owner slice for `You extricate X from Y.` so subject/container color wrappers stay preserved while direct-marked inputs still pass through unchanged.
+- Following that, `ClonelingVehicleFragmentTranslator` covered both popup and queued world-part routes while preserving liquid wrappers and leaving direct-marked text untouched.
 - `LiquidVolumeFragmentTranslator` followed with a deliberately narrow generator surface that covers status wrappers, ownership questions, normalized targets, pour-into targets, and known passthrough inputs without over-generalizing the fragment grammar.
 - The next follow-up after this PR should likely move back to a smaller helper seam again before widening route grammar further.
