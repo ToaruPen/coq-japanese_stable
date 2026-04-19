@@ -203,4 +203,6 @@ Do not add Python/Hypothesis work in this first execution slice.
 - `MessagePatternTranslator` was then added as the next deterministic slice for hit-with-roll and weapon-miss wrapper-preservation invariants using the repository pattern dictionary directly.
 - `MessageFrameTranslator` was then added as a small deterministic helper slice for direct-marker idempotence and strip round-trips, keeping the scope outside combat grammar expansion.
 - `EnclosingFragmentTranslator` was added next as a constrained route-owner slice for `You extricate X from Y.` so subject/container color wrappers stay preserved while direct-marked inputs still pass through unchanged.
-- The next follow-up after this PR should prefer `ClonelingVehicleFragmentTranslator` before `LiquidVolumeFragmentTranslator`, because it has a smaller grammar surface while still exercising wrapper-preservation on world-part fragment routes.
+- `ClonelingVehicleFragmentTranslator` was then added as the next world-part fragment slice, covering both popup and queued routes while preserving liquid wrappers and leaving direct-marked text untouched.
+- `LiquidVolumeFragmentTranslator` followed with a deliberately narrow generator surface that covers status wrappers, ownership questions, normalized targets, pour-into targets, and known passthrough inputs without over-generalizing the fragment grammar.
+- The next follow-up after this PR should likely move back to a smaller helper seam again before widening route grammar further.
