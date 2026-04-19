@@ -6,6 +6,25 @@ namespace QudJP;
 
 internal static class ColorAwareTranslationComposer
 {
+    internal sealed class WholeBoundaryPair
+    {
+        internal WholeBoundaryPair(ColorSpan opening, int openingOrder, ColorSpan closing, int closingOrder)
+        {
+            Opening = opening;
+            OpeningOrder = openingOrder;
+            Closing = closing;
+            ClosingOrder = closingOrder;
+        }
+
+        internal ColorSpan Opening { get; }
+
+        internal int OpeningOrder { get; }
+
+        internal ColorSpan Closing { get; }
+
+        internal int ClosingOrder { get; }
+    }
+
     internal static (string stripped, List<ColorSpan> spans) Strip(string? source)
     {
         return ColorCodePreserver.Strip(source);
@@ -73,6 +92,103 @@ internal static class ColorAwareTranslationComposer
         var captureSpans = ColorCodePreserver.SliceSpans(spans, group.Index, group.Length);
         captureSpans.AddRange(ColorCodePreserver.SliceAdjacentCaptureBoundarySpans(spans, group.Index, group.Length));
         return Restore(value, captureSpans);
+    }
+
+    internal static List<WholeBoundaryPair> SliceWholeBoundaryPairs(
+        IReadOnlyList<ColorSpan>? spans,
+        int sourceStart,
+        int sourceLength)
+    {
+        var pairs = new List<WholeBoundaryPair>();
+        if (spans is null || spans.Count == 0)
+        {
+            return pairs;
+        }
+
+        var sourceEnd = sourceStart + sourceLength;
+        var openingCandidates = new List<(ColorSpan Span, int Order)>();
+        var closingCandidates = new List<(ColorSpan Span, int Order)>();
+
+        for (var index = 0; index < spans.Count; index++)
+        {
+            var span = spans[index];
+            if (span.Index == sourceStart && ColorCodePreserver.IsOpeningBoundaryToken(span.Token))
+            {
+                openingCandidates.Add((span, index));
+            }
+
+            if (span.Index == sourceEnd && ColorCodePreserver.IsClosingBoundaryToken(span.Token))
+            {
+                closingCandidates.Add((span, index));
+            }
+        }
+
+        var pairCount = Math.Min(openingCandidates.Count, closingCandidates.Count);
+        for (var index = 0; index < pairCount; index++)
+        {
+            pairs.Add(new WholeBoundaryPair(
+                openingCandidates[index].Span,
+                openingCandidates[index].Order,
+                closingCandidates[index].Span,
+                closingCandidates[index].Order));
+        }
+
+        return pairs;
+    }
+
+    internal static List<ColorSpan> ProjectWholeBoundaryPairsAbsolute(
+        IReadOnlyList<WholeBoundaryPair> pairs,
+        int translatedLength)
+    {
+        var projected = new List<ColorSpan>(pairs.Count * 2);
+        for (var index = 0; index < pairs.Count; index++)
+        {
+            projected.Add(new ColorSpan(0, pairs[index].Opening.Token));
+        }
+
+        for (var index = 0; index < pairs.Count; index++)
+        {
+            projected.Add(new ColorSpan(translatedLength, pairs[index].Closing.Token));
+        }
+
+        return projected;
+    }
+
+    internal static List<ColorSpan> ProjectWholeBoundaryPairsRelative(
+        IReadOnlyList<WholeBoundaryPair> pairs,
+        int sourceLength)
+    {
+        var projected = new List<ColorSpan>(pairs.Count * 2);
+        for (var index = 0; index < pairs.Count; index++)
+        {
+            projected.Add(new ColorSpan(0, pairs[index].Opening.Token, sourceLength, usesRelativeIndex: true));
+        }
+
+        for (var index = 0; index < pairs.Count; index++)
+        {
+            projected.Add(new ColorSpan(sourceLength, pairs[index].Closing.Token, sourceLength, usesRelativeIndex: true));
+        }
+
+        return projected;
+    }
+
+    internal static void RemoveWholeBoundaryOpenings(
+        List<ColorSpan> captureSpans,
+        IReadOnlyList<WholeBoundaryPair> pairs)
+    {
+        for (var pairIndex = 0; pairIndex < pairs.Count; pairIndex++)
+        {
+            var openingToken = pairs[pairIndex].Opening.Token;
+            for (var spanIndex = 0; spanIndex < captureSpans.Count; spanIndex++)
+            {
+                var span = captureSpans[spanIndex];
+                if (span.Index == 0 && string.Equals(span.Token, openingToken, StringComparison.Ordinal))
+                {
+                    captureSpans.RemoveAt(spanIndex);
+                    break;
+                }
+            }
+        }
     }
 
     internal static string RestoreSlice(string value, IReadOnlyList<ColorSpan>? spans, int startIndex, int length)

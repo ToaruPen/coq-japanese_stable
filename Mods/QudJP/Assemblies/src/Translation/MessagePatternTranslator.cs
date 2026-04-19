@@ -699,7 +699,8 @@ internal static class MessagePatternTranslator
         int strippedSourceLength,
         out string restored)
     {
-        var wholeLineSpans = SliceWholeLineBoundaryWrappers(spans, strippedSourceLength);
+        var wholeLinePairs = ColorAwareTranslationComposer.SliceWholeBoundaryPairs(spans, sourceStart: 0, strippedSourceLength);
+        var wholeLineSpans = ColorAwareTranslationComposer.ProjectWholeBoundaryPairsRelative(wholeLinePairs, strippedSourceLength);
         if (wholeLineSpans.Count == 0)
         {
             restored = string.Empty;
@@ -708,55 +709,6 @@ internal static class MessagePatternTranslator
 
         restored = ColorAwareTranslationComposer.RestoreRelative(translated, wholeLineSpans, strippedSourceLength);
         return true;
-    }
-
-    private static List<ColorSpan> SliceWholeLineBoundaryWrappers(IReadOnlyList<ColorSpan> spans, int sourceLength)
-    {
-        // Keep this stack walk local to the relative RestoreRelative(...) path.
-        // AbilityBarAfterRenderTranslationPatch uses the same boundary matching, but it emits
-        // absolute spans at translatedLength for Restore(...), so the duplication here is in the
-        // span anchoring contract rather than the wrapper matching itself.
-        var wholeLinePairs = new List<(ColorSpan Opening, int OpeningOrder, ColorSpan Closing, int ClosingOrder)>();
-        var openingStack = new Stack<(ColorSpan Span, int Order)>();
-
-        for (var index = 0; index < spans.Count; index++)
-        {
-            var span = spans[index];
-            if (ColorCodePreserver.IsOpeningBoundaryToken(span.Token))
-            {
-                openingStack.Push((span, index));
-                continue;
-            }
-
-            if (!ColorCodePreserver.IsClosingBoundaryToken(span.Token) || openingStack.Count == 0)
-            {
-                continue;
-            }
-
-            var opening = openingStack.Pop();
-            if (opening.Span.Index == 0 && span.Index == sourceLength)
-            {
-                wholeLinePairs.Add((opening.Span, opening.Order, span, index));
-            }
-        }
-
-        if (wholeLinePairs.Count == 0)
-        {
-            return new List<ColorSpan>();
-        }
-
-        var restored = new List<ColorSpan>(wholeLinePairs.Count * 2);
-        foreach (var pair in wholeLinePairs.OrderBy(static pair => pair.OpeningOrder))
-        {
-            restored.Add(new ColorSpan(0, pair.Opening.Token, sourceLength, usesRelativeIndex: true));
-        }
-
-        foreach (var pair in wholeLinePairs.OrderBy(static pair => pair.ClosingOrder))
-        {
-            restored.Add(new ColorSpan(sourceLength, pair.Closing.Token, sourceLength, usesRelativeIndex: true));
-        }
-
-        return restored;
     }
 
     private static string RestoreLiteralSegment(

@@ -444,7 +444,8 @@ internal static class DeathWrapperFamilyTranslator
         Group killerGroup)
     {
         var (visible, translatedOwnedSpans) = ColorAwareTranslationComposer.Strip(translatedKiller);
-        var preservedSourceWrappers = SliceWholeCaptureBoundarySpans(spans, killerGroup.Index, killerGroup.Length, visible.Length);
+        var wholeCapturePairs = ColorAwareTranslationComposer.SliceWholeBoundaryPairs(spans, killerGroup.Index, killerGroup.Length);
+        var preservedSourceWrappers = ColorAwareTranslationComposer.ProjectWholeBoundaryPairsAbsolute(wholeCapturePairs, visible.Length);
 
         if (preservedSourceWrappers.Count == 0)
         {
@@ -456,55 +457,5 @@ internal static class DeathWrapperFamilyTranslator
         mergedSpans.AddRange(translatedOwnedSpans);
         mergedSpans.AddRange(preservedSourceWrappers.Where(span => span.Index == visible.Length));
         return ColorAwareTranslationComposer.Restore(visible, mergedSpans);
-    }
-
-    private static List<ColorSpan> SliceWholeCaptureBoundarySpans(
-        IReadOnlyList<ColorSpan> spans,
-        int captureStart,
-        int captureLength,
-        int translatedLength)
-    {
-        var captureEnd = captureStart + captureLength;
-        var wholeCapturePairs = new List<(ColorSpan Opening, int OpeningOrder, ColorSpan Closing, int ClosingOrder)>();
-        var openingStack = new Stack<(ColorSpan Span, int Order)>();
-
-        for (var index = 0; index < spans.Count; index++)
-        {
-            var span = spans[index];
-            if (ColorCodePreserver.IsOpeningBoundaryToken(span.Token))
-            {
-                openingStack.Push((span, index));
-                continue;
-            }
-
-            if (!ColorCodePreserver.IsClosingBoundaryToken(span.Token) || openingStack.Count == 0)
-            {
-                continue;
-            }
-
-            var opening = openingStack.Pop();
-            if (opening.Span.Index == captureStart && span.Index == captureEnd)
-            {
-                wholeCapturePairs.Add((opening.Span, opening.Order, span, index));
-            }
-        }
-
-        if (wholeCapturePairs.Count == 0)
-        {
-            return new List<ColorSpan>();
-        }
-
-        var result = new List<ColorSpan>(wholeCapturePairs.Count * 2);
-        foreach (var pair in wholeCapturePairs.OrderBy(static pair => pair.OpeningOrder))
-        {
-            result.Add(new ColorSpan(0, pair.Opening.Token));
-        }
-
-        foreach (var pair in wholeCapturePairs.OrderBy(static pair => pair.ClosingOrder))
-        {
-            result.Add(new ColorSpan(translatedLength, pair.Closing.Token));
-        }
-
-        return result;
     }
 }

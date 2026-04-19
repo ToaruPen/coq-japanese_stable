@@ -139,6 +139,29 @@ public sealed class DeathWrapperFamilyTranslatorTests
     }
 
     [Test]
+    public void TryTranslateMessage_PreservesAmpersandWholeKillerWrapper_WhenTranslationInjectsMarkup()
+    {
+        WriteDictionary(
+            CommonEntries().Concat(
+            [
+                ("dromad merchant", "ドロマド商人"),
+                ("bloody", "{{r|血まみれの}}"),
+                ("[sitting]", "[座っている]"),
+            ]));
+
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(
+            "You were killed by &G{{r|bloody}} Tam, dromad merchant [sitting]&y.");
+
+        var translated = DeathWrapperFamilyTranslator.TryTranslateMessage(stripped, spans, out var messageTranslated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(messageTranslated, Is.EqualTo("&G{{r|血まみれの}}Tam、ドロマド商人 [座っている]&yに殺された。"));
+        });
+    }
+
+    [Test]
     public void TryTranslatePopup_PreservesTerminalEmptyWrapperInLocalizedKillerName()
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(

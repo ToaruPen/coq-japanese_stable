@@ -244,7 +244,8 @@ public static class AbilityBarAfterRenderTranslationPatch
             return translated;
         }
 
-        var wholeLineSpans = SliceWholeLineBoundarySpans(spans, sourceLength, translated.Length);
+        var wholeLinePairs = ColorAwareTranslationComposer.SliceWholeBoundaryPairs(spans, sourceStart: 0, sourceLength);
+        var wholeLineSpans = ColorAwareTranslationComposer.ProjectWholeBoundaryPairsAbsolute(wholeLinePairs, translated.Length);
         return wholeLineSpans.Count == 0
             ? translated
             : ColorAwareTranslationComposer.Restore(translated, wholeLineSpans);
@@ -266,64 +267,11 @@ public static class AbilityBarAfterRenderTranslationPatch
 
         if (group.Index == 0 && group.Length < sourceLength)
         {
-            var wholeLineOpeningTokens = SliceWholeLineBoundarySpans(spans, sourceLength, sourceLength)
-                .Where(static span => span.Index == 0)
-                .Select(static span => span.Token)
-                .ToHashSet(StringComparer.Ordinal);
-
-            captureSpans.RemoveAll(span => span.Index == 0 && wholeLineOpeningTokens.Contains(span.Token));
+            var wholeLinePairs = ColorAwareTranslationComposer.SliceWholeBoundaryPairs(spans, sourceStart: 0, sourceLength);
+            ColorAwareTranslationComposer.RemoveWholeBoundaryOpenings(captureSpans, wholeLinePairs);
         }
 
         return ColorAwareTranslationComposer.Restore(translated, captureSpans);
-    }
-
-    private static List<ColorSpan> SliceWholeLineBoundarySpans(IReadOnlyList<ColorSpan> spans, int sourceLength, int translatedLength)
-    {
-        // Keep this stack walk local to the absolute Restore(...) path.
-        // MessagePatternTranslator.SliceWholeLineBoundaryWrappers mirrors the same matching logic,
-        // but it must emit relative spans for RestoreRelative(...), so a shared helper would still
-        // need two span-construction contracts.
-        var wholeLinePairs = new List<(ColorSpan Opening, int OpeningOrder, ColorSpan Closing, int ClosingOrder)>();
-        var openingStack = new Stack<(ColorSpan Span, int Order)>();
-
-        for (var index = 0; index < spans.Count; index++)
-        {
-            var span = spans[index];
-            if (ColorCodePreserver.IsOpeningBoundaryToken(span.Token))
-            {
-                openingStack.Push((span, index));
-                continue;
-            }
-
-            if (!ColorCodePreserver.IsClosingBoundaryToken(span.Token) || openingStack.Count == 0)
-            {
-                continue;
-            }
-
-            var opening = openingStack.Pop();
-            if (opening.Span.Index == 0 && span.Index == sourceLength)
-            {
-                wholeLinePairs.Add((opening.Span, opening.Order, span, index));
-            }
-        }
-
-        if (wholeLinePairs.Count == 0)
-        {
-            return new List<ColorSpan>();
-        }
-
-        var result = new List<ColorSpan>(wholeLinePairs.Count * 2);
-        foreach (var pair in wholeLinePairs.OrderBy(static pair => pair.OpeningOrder))
-        {
-            result.Add(new ColorSpan(0, pair.Opening.Token));
-        }
-
-        foreach (var pair in wholeLinePairs.OrderBy(static pair => pair.ClosingOrder))
-        {
-            result.Add(new ColorSpan(translatedLength, pair.Closing.Token));
-        }
-
-        return result;
     }
 
     private delegate bool TryTranslateText(string source, string route, out string translated);

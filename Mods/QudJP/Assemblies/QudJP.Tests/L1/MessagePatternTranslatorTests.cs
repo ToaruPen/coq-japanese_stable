@@ -144,6 +144,16 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_PreservesAmpersandWholeLineColor_WhenInnerWrappersArePresent()
+    {
+        WritePatternDictionary(("^You hit (.+) for (\\d+) damage[.!]?$", "{0}に{1}ダメージを与えた"));
+
+        var translated = MessagePatternTranslator.Translate("&GYou hit {{R|snapjaw}} for 7 damage^k!");
+
+        Assert.That(translated, Is.EqualTo("&G{{R|snapjaw}}に7ダメージを与えた^k"));
+    }
+
+    [Test]
     public void Translate_PreservesCaptureLocalMarkupWhenReorderingPlaceholders()
     {
         WritePatternDictionary(("^You hit (.+) for (\\d+) damage[.!]?$", "{1}ダメージを{0}に与えた"));
