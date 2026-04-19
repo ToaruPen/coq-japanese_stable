@@ -201,4 +201,6 @@ Do not add Python/Hypothesis work in this first execution slice.
 - Phase 1b was therefore implemented as separate property groups for foreground/background color codes instead of widening the existing wrapper generator.
 - The next non-trivial candidate, `MessageLogProducerTranslationHelpers`, was added in the same PR as a deterministic PBT slice for the `control header -> direct marker -> nested wrapper` invariant.
 - `MessagePatternTranslator` was then added as the next deterministic slice for hit-with-roll and weapon-miss wrapper-preservation invariants using the repository pattern dictionary directly.
-- The next follow-up after this PR should move beyond combat message families and target another pure helper or constrained route owner with a stable generator surface.
+- `MessageFrameTranslator` was then added as a small deterministic helper slice for direct-marker idempotence and strip round-trips, keeping the scope outside combat grammar expansion.
+- `EnclosingFragmentTranslator` was added next as a constrained route-owner slice for `You extricate X from Y.` so subject/container color wrappers stay preserved while direct-marked inputs still pass through unchanged.
+- The next follow-up after this PR should prefer `ClonelingVehicleFragmentTranslator` before `LiquidVolumeFragmentTranslator`, because it has a smaller grammar surface while still exercising wrapper-preservation on world-part fragment routes.
