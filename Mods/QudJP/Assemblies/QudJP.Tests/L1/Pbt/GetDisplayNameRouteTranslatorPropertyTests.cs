@@ -115,6 +115,42 @@ public sealed class GetDisplayNameRouteTranslatorPropertyTests
         return true.ToProperty();
     }
 
+    [FsCheck.NUnit.Property(Arbitrary = new[] { typeof(GetDisplayNameRouteTranslatorArbitraries) }, MaxTest = 100, Replay = ReplaySeed)]
+    public FsCheckProperty TranslatePreservingColors_PreservesLeadingMarkupModifier(DisplayNameLeadingMarkupCase sample)
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            sample.Source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(sample.Expected));
+
+        return true.ToProperty();
+    }
+
+    [FsCheck.NUnit.Property(Arbitrary = new[] { typeof(GetDisplayNameRouteTranslatorArbitraries) }, MaxTest = 100, Replay = ReplaySeed)]
+    public FsCheckProperty TranslatePreservingColors_UsesMkTierSuffixLookup(DisplayNameMkTierCase sample)
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            sample.Source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(sample.Expected));
+
+        return true.ToProperty();
+    }
+
+    [FsCheck.NUnit.Property(Arbitrary = new[] { typeof(GetDisplayNameRouteTranslatorArbitraries) }, MaxTest = 100, Replay = ReplaySeed)]
+    public FsCheckProperty TranslatePreservingColors_UsesAngleCodeSuffixLookup(DisplayNameAngleCodeCase sample)
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            sample.Source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(sample.Expected));
+
+        return true.ToProperty();
+    }
+
     private void WriteCommonDictionaries()
     {
         WriteDictionaryFile(
@@ -123,7 +159,9 @@ public sealed class GetDisplayNameRouteTranslatorPropertyTests
             ("Water Containers", "水容器"),
             ("water flask", "水袋"),
             ("lead slug", "鉛の弾"),
-            ("frozen", "凍結"));
+            ("frozen", "凍結"),
+            ("dromad merchant", "ドロマド商人"),
+            ("rusted grenade", "錆びたグレネード"));
 
         WriteDictionaryFile(
             "ui-displayname-adjectives.ja.json",
