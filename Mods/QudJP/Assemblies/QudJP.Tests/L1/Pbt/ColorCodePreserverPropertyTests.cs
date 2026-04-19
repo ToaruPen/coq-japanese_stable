@@ -67,4 +67,30 @@ public sealed class ColorCodePreserverPropertyTests
 
         return true.ToProperty();
     }
+
+    [FsCheck.NUnit.Property(Arbitrary = new[] { typeof(ColorCodePreserverArbitraries) }, MaxTest = 200, Replay = ReplaySeed)]
+    public FsCheckProperty StripThenRestore_PreservesTmpColorTags(TmpColorTagCase sample)
+    {
+        var (stripped, spans) = ColorCodePreserver.Strip(sample.Source);
+        var restored = ColorCodePreserver.Restore(sample.TranslatedVisibleText, spans);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stripped, Is.EqualTo(sample.VisibleText));
+            Assert.That(restored, Is.EqualTo(sample.ExpectedRestored));
+        });
+
+        return true.ToProperty();
+    }
+
+    [FsCheck.NUnit.Property(Arbitrary = new[] { typeof(ColorCodePreserverArbitraries) }, MaxTest = 200, Replay = ReplaySeed)]
+    public FsCheckProperty StripThenRestore_DoesNotChangeVisibleText_ForTmpColorTags(TmpColorTagCase sample)
+    {
+        var (stripped, spans) = ColorCodePreserver.Strip(sample.Source);
+        var restored = ColorCodePreserver.Restore(stripped, spans);
+
+        Assert.That(restored, Is.EqualTo(sample.Source));
+
+        return true.ToProperty();
+    }
 }

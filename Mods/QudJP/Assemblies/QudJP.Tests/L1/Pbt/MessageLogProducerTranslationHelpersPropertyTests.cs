@@ -31,6 +31,7 @@ public sealed class MessageLogProducerTranslationHelpersPropertyTests
 
         var root = TestProjectPaths.GetRepositoryRoot();
         var repositoryPatternFile = Path.Combine(root, "Mods", "QudJP", "Localization", "Dictionaries", "messages.ja.json");
+        Assert.That(File.Exists(repositoryPatternFile), Is.True, $"Repository pattern dictionary not found: {repositoryPatternFile}");
         File.Copy(repositoryPatternFile, patternFilePath, overwrite: true);
     }
 
