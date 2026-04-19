@@ -85,7 +85,7 @@ public sealed class LiquidVolumeFragmentTranslatorPropertyTests
     }
 
     [FsCheck.NUnit.Property(Arbitrary = new[] { typeof(LiquidVolumeFragmentTranslatorArbitraries) }, MaxTest = 100, Replay = ReplaySeed)]
-    public FsCheckProperty TryTranslatePopupMessage_LeavesDirectMarkedTextUntouched(LiquidPassthroughCase sample)
+    public FsCheckProperty TryTranslatePopupMessage_LeavesUnmatchedTextUntouched(LiquidPassthroughCase sample)
     {
         var translated = LiquidVolumeFragmentTranslator.TryTranslatePopupMessage(
             sample.Source,
