@@ -91,13 +91,39 @@ public sealed class GetDisplayNameRouteTranslatorPropertyTests
         return true.ToProperty();
     }
 
+    [FsCheck.NUnit.Property(Arbitrary = new[] { typeof(GetDisplayNameRouteTranslatorArbitraries) }, MaxTest = 100, Replay = ReplaySeed)]
+    public FsCheckProperty TranslatePreservingColors_UsesQuantitySuffixLookup(DisplayNameQuantityCase sample)
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            sample.Source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(sample.Expected));
+
+        return true.ToProperty();
+    }
+
+    [FsCheck.NUnit.Property(Arbitrary = new[] { typeof(GetDisplayNameRouteTranslatorArbitraries) }, MaxTest = 100, Replay = ReplaySeed)]
+    public FsCheckProperty TranslatePreservingColors_UsesParenthesizedStateFallback(DisplayNameParenthesizedStateCase sample)
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            sample.Source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(sample.Expected));
+
+        return true.ToProperty();
+    }
+
     private void WriteCommonDictionaries()
     {
         WriteDictionaryFile(
             "ui-displayname-route.ja.json",
             ("worn bronze sword", "使い込まれた青銅の剣"),
             ("Water Containers", "水容器"),
-            ("water flask", "水袋"));
+            ("water flask", "水袋"),
+            ("lead slug", "鉛の弾"),
+            ("frozen", "凍結"));
 
         WriteDictionaryFile(
             "ui-displayname-adjectives.ja.json",
