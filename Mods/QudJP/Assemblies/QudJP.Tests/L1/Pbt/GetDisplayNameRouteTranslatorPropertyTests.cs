@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 
 using FsCheck.Fluent;
@@ -151,6 +152,30 @@ public sealed class GetDisplayNameRouteTranslatorPropertyTests
         return true.ToProperty();
     }
 
+    [FsCheck.NUnit.Property(Arbitrary = new[] { typeof(GetDisplayNameRouteTranslatorArbitraries) }, MaxTest = 100, Replay = ReplaySeed)]
+    public FsCheckProperty TranslatePreservingColors_LeavesEmptyStringUntouched(DisplayNameEmptyStringCase sample)
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            sample.Source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(sample.Expected));
+
+        return true.ToProperty();
+    }
+
+    [FsCheck.NUnit.Property(Arbitrary = new[] { typeof(GetDisplayNameRouteTranslatorArbitraries) }, MaxTest = 100, Replay = ReplaySeed)]
+    public FsCheckProperty TranslatePreservingColors_UsesExactLookupForControlCharacterInput(DisplayNameControlCharacterCase sample)
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            sample.Source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(sample.Expected));
+
+        return true.ToProperty();
+    }
+
     private void WriteCommonDictionaries()
     {
         WriteDictionaryFile(
@@ -161,7 +186,8 @@ public sealed class GetDisplayNameRouteTranslatorPropertyTests
             ("lead slug", "鉛の弾"),
             ("frozen", "凍結"),
             ("dromad merchant", "ドロマド商人"),
-            ("rusted grenade", "錆びたグレネード"));
+            ("rusted grenade", "錆びたグレネード"),
+            ("item \u0001 name", "制御マーカー付き品名"));
 
         WriteDictionaryFile(
             "ui-displayname-adjectives.ja.json",
@@ -211,10 +237,47 @@ public sealed class GetDisplayNameRouteTranslatorPropertyTests
 
     private static string EscapeJson(string value)
     {
-        return value
-            .Replace("\\", "\\\\", StringComparison.Ordinal)
-            .Replace("\r", "\\r", StringComparison.Ordinal)
-            .Replace("\n", "\\n", StringComparison.Ordinal)
-            .Replace("\"", "\\\"", StringComparison.Ordinal);
+        var builder = new StringBuilder(value.Length + 8);
+        foreach (var ch in value)
+        {
+            switch (ch)
+            {
+                case '\\':
+                    builder.Append("\\\\");
+                    break;
+                case '"':
+                    builder.Append("\\\"");
+                    break;
+                case '\b':
+                    builder.Append("\\b");
+                    break;
+                case '\f':
+                    builder.Append("\\f");
+                    break;
+                case '\n':
+                    builder.Append("\\n");
+                    break;
+                case '\r':
+                    builder.Append("\\r");
+                    break;
+                case '\t':
+                    builder.Append("\\t");
+                    break;
+                default:
+                    if (ch < 0x20)
+                    {
+                        builder.Append("\\u");
+                        builder.Append(((int)ch).ToString("x4", CultureInfo.InvariantCulture));
+                    }
+                    else
+                    {
+                        builder.Append(ch);
+                    }
+
+                    break;
+            }
+        }
+
+        return builder.ToString();
     }
 }

@@ -21,6 +21,10 @@ public sealed record DisplayNameMkTierCase(string Source, string Expected);
 
 public sealed record DisplayNameAngleCodeCase(string Source, string Expected);
 
+public sealed record DisplayNameEmptyStringCase(string Source, string Expected);
+
+public sealed record DisplayNameControlCharacterCase(string Source, string Expected);
+
 public static class GetDisplayNameRouteTranslatorArbitraries
 {
     public static Arbitrary<DisplayNameExactCase> ExactCases()
@@ -96,6 +100,19 @@ public static class GetDisplayNameRouteTranslatorArbitraries
         return Gen.Elements(
                 new DisplayNameAngleCodeCase("worn bronze sword <BD1>", "使い込まれた青銅の剣 <BD1>"),
                 new DisplayNameAngleCodeCase("worn bronze sword <Z9>", "使い込まれた青銅の剣 <Z9>"))
+            .ToArbitrary();
+    }
+
+    public static Arbitrary<DisplayNameEmptyStringCase> EmptyStringCases()
+    {
+        return Gen.Constant(new DisplayNameEmptyStringCase(string.Empty, string.Empty))
+            .ToArbitrary();
+    }
+
+    public static Arbitrary<DisplayNameControlCharacterCase> ControlCharacterCases()
+    {
+        return Gen.Elements(
+                new DisplayNameControlCharacterCase("item \u0001 name", "制御マーカー付き品名"))
             .ToArbitrary();
     }
 }
