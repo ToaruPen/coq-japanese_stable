@@ -170,6 +170,38 @@ public sealed class ColorCodePreserverTests
     }
 
     [Test]
+    public void SliceSpans_DoesNotTreatAdjacentColorCodeOpenersAsCaptureClosers()
+    {
+        var input = "{{R|lead}}^rslug^k";
+        var (stripped, spans) = ColorCodePreserver.Strip(input);
+
+        var first = ColorCodePreserver.Restore("鉛", ColorCodePreserver.SliceSpans(spans, 0, 4));
+        var second = ColorCodePreserver.Restore("弾", ColorCodePreserver.SliceSpans(spans, 4, 4));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stripped, Is.EqualTo("leadslug"));
+            Assert.That(first, Is.EqualTo("{{R|鉛}}"));
+            Assert.That(second, Does.StartWith("^r"));
+            Assert.That(second, Does.Not.Contain("{{R|"));
+        });
+    }
+
+    [Test]
+    public void RestoreCapture_PreservesEmptyWrapperAtCaptureEnd()
+    {
+        var input = "{{C|TARGET: タム、ドロマド商団 [座っている]{{B|}}}}";
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(input);
+        var match = Regex.Match(stripped, "^(?<label>TARGET:) (?<name>.+)$");
+
+        Assert.That(match.Success, Is.True);
+
+        var restored = ColorAwareTranslationComposer.RestoreCapture("タム、ドロマド商団 [座っている]", spans, match.Groups["name"]);
+
+        Assert.That(restored, Is.EqualTo("タム、ドロマド商団 [座っている]{{B|}}}}"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_PreservesTerminalSingleCharacterWrapper()
     {
         var translated = ColorAwareTranslationComposer.TranslatePreservingColors(

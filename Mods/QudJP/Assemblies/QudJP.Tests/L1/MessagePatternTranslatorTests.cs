@@ -144,6 +144,16 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_PreservesAmpersandWholeLineColor_WhenInnerWrappersArePresent()
+    {
+        WritePatternDictionary(("^You hit (.+) for (\\d+) damage[.!]?$", "{0}に{1}ダメージを与えた"));
+
+        var translated = MessagePatternTranslator.Translate("&GYou hit {{R|snapjaw}} for 7 damage^k!");
+
+        Assert.That(translated, Is.EqualTo("&G{{R|snapjaw}}に7ダメージを与えた^k"));
+    }
+
+    [Test]
     public void Translate_PreservesCaptureLocalMarkupWhenReorderingPlaceholders()
     {
         WritePatternDictionary(("^You hit (.+) for (\\d+) damage[.!]?$", "{1}ダメージを{0}に与えた"));
@@ -437,6 +447,30 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate("You hit (x1) for 1 damage with your レンチ! [18]");
 
         Assert.That(translated, Is.EqualTo("レンチで1ダメージを与えた。(x1) [18]"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_PreservesNestedColorWrappersForPlayerHitWithRoll()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("{{g|You hit {{&w|(x1)}} for 1 damage with your {{fiery|燃え盛る}} {{w|青銅の短剣}}! [9]}}");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{g|{{fiery|燃え盛る}} {{w|青銅の短剣}}で1ダメージを与えた。({{&w|x1}}) [9]}}"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_PreservesOuterWrapperForPlayerWeaponMiss()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("{{r|You miss with your {{fiery|燃え盛る}} {{w|青銅の短剣}}! [0 vs 0]}}");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{r|{{fiery|燃え盛る}} {{w|青銅の短剣}}での攻撃は外れた。[0 vs 0]}}"));
     }
 
     [Test]

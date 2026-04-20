@@ -175,10 +175,23 @@ public static class AbilityBarAfterRenderTranslationPatch
                 ObservabilityHelpers.ComposeContext(Context, "field=targetText", "segment=name"));
         }
 
-        translated =
-            ColorAwareTranslationComposer.RestoreCapture(translatedLabel, spans, match.Groups["label"])
-            + " "
-            + ColorAwareTranslationComposer.RestoreCapture(translatedName, spans, match.Groups["name"]);
+        var displayNameOwnsMarkup = HasColorMarkup(translatedName);
+
+        if (displayNameOwnsMarkup)
+        {
+            translated = RestoreCaptureWithoutWholeLineOpenings(translatedLabel, spans, match.Groups["label"], stripped.Length)
+                + " "
+                + translatedName;
+            translated = RestoreWholeLineBoundaryWrappers(translated, spans, stripped.Length);
+        }
+        else
+        {
+            translated =
+                ColorAwareTranslationComposer.RestoreCapture(translatedLabel, spans, match.Groups["label"])
+                + " "
+                + ColorAwareTranslationComposer.RestoreCapture(translatedName, spans, match.Groups["name"]);
+        }
+
         if (string.Equals(translated, source, StringComparison.Ordinal))
         {
             return false;
@@ -216,6 +229,49 @@ public static class AbilityBarAfterRenderTranslationPatch
 
         DynamicTextObservability.RecordTransform(route, "AbilityBar.TargetHealth.Exact", source, translated);
         return true;
+    }
+
+    private static bool HasColorMarkup(string source)
+    {
+        var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
+        return !string.Equals(stripped, source, StringComparison.Ordinal);
+    }
+
+    private static string RestoreWholeLineBoundaryWrappers(string translated, IReadOnlyList<ColorSpan>? spans, int sourceLength)
+    {
+        if (spans is null || spans.Count == 0)
+        {
+            return translated;
+        }
+
+        var wholeLinePairs = ColorAwareTranslationComposer.SliceWholeBoundaryPairs(spans, sourceStart: 0, sourceLength);
+        var wholeLineSpans = ColorAwareTranslationComposer.ProjectWholeBoundaryPairsAbsolute(wholeLinePairs, translated.Length);
+        return wholeLineSpans.Count == 0
+            ? translated
+            : ColorAwareTranslationComposer.Restore(translated, wholeLineSpans);
+    }
+
+    private static string RestoreCaptureWithoutWholeLineOpenings(
+        string translated,
+        IReadOnlyList<ColorSpan>? spans,
+        Group group,
+        int sourceLength)
+    {
+        if (spans is null || spans.Count == 0 || !group.Success)
+        {
+            return translated;
+        }
+
+        var captureSpans = ColorCodePreserver.SliceSpans(spans, group.Index, group.Length);
+        captureSpans.AddRange(ColorCodePreserver.SliceAdjacentCaptureBoundarySpans(spans, group.Index, group.Length));
+
+        if (group.Index == 0 && group.Length < sourceLength)
+        {
+            var wholeLinePairs = ColorAwareTranslationComposer.SliceWholeBoundaryPairs(spans, sourceStart: 0, sourceLength);
+            ColorAwareTranslationComposer.RemoveWholeBoundaryOpenings(captureSpans, wholeLinePairs);
+        }
+
+        return ColorAwareTranslationComposer.Restore(translated, captureSpans);
     }
 
     private delegate bool TryTranslateText(string source, string route, out string translated);

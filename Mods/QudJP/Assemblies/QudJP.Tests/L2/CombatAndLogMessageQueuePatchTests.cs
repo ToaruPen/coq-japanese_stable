@@ -679,6 +679,82 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void MessagingEmitMessage_PreservesNestedColorWrappersForPlayerHitWithRoll_WhenPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyMessagingEmitMessageTarget),
+                    nameof(DummyMessagingEmitMessageTarget.EmitMessage),
+                    typeof(DummyGameObject),
+                    typeof(string),
+                    typeof(char),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject)),
+                typeof(GameObjectEmitMessageTranslationPatch));
+
+            DummyMessagingEmitMessageTarget.MessageToSend = "{{g|You hit {{&w|(x1)}} for 1 damage with your {{fiery|燃え盛る}} {{w|青銅の短剣}}! [9]}}";
+            DummyMessagingEmitMessageTarget.EmitMessage(new DummyGameObject(), "unused", 'W', false, false, false);
+
+            Assert.That(
+                DummyMessageQueue.LastMessage,
+                Is.EqualTo("{{g|{{fiery|燃え盛る}} {{w|青銅の短剣}}で1ダメージを与えた。({{&w|x1}}) [9]}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void MessagingEmitMessage_PreservesNestedColorWrappersForPlayerHitWithRoll_WithControlHeader_WhenPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyMessagingEmitMessageTarget),
+                    nameof(DummyMessagingEmitMessageTarget.EmitMessage),
+                    typeof(DummyGameObject),
+                    typeof(string),
+                    typeof(char),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject)),
+                typeof(GameObjectEmitMessageTranslationPatch));
+
+            DummyMessagingEmitMessageTarget.MessageToSend = "\u0002hit\u001F7\u001F18\u001F\u0003{{g|You hit {{&w|(x1)}} for 1 damage with your {{w|青銅の短剣}}! [18]}}";
+            DummyMessagingEmitMessageTarget.EmitMessage(new DummyGameObject(), "unused", 'W', false, false, false);
+
+            Assert.That(
+                DummyMessageQueue.LastMessage,
+                Is.EqualTo("{{g|{{w|青銅の短剣}}で1ダメージを与えた。({{&w|x1}}) [18]}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void MessagingEmitMessage_TranslatesThirdPersonAcidDamageMessage_WhenPatched()
     {
         UseRepositoryPatternDictionary();

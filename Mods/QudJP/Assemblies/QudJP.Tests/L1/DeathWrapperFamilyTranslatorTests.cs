@@ -92,6 +92,96 @@ public sealed class DeathWrapperFamilyTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateMessage_PreservesMarkupWrappedEnglishModifierInKillerName()
+    {
+        WriteDictionary(
+            CommonEntries().Concat(
+            [
+                ("dromad merchant", "ドロマド商人"),
+                ("bloody", "{{r|血まみれの}}"),
+                ("[sitting]", "[座っている]"),
+            ]));
+
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(
+            "You were killed by {{r|bloody}} Tam, dromad merchant [sitting].");
+
+        var translated = DeathWrapperFamilyTranslator.TryTranslateMessage(stripped, spans, out var messageTranslated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(messageTranslated, Is.EqualTo("{{r|血まみれの}}Tam、ドロマド商人 [座っている]に殺された。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateMessage_PreservesOuterKillerWrapper_WhenTranslationInjectsMarkup()
+    {
+        WriteDictionary(
+            CommonEntries().Concat(
+            [
+                ("dromad merchant", "ドロマド商人"),
+                ("bloody", "{{r|血まみれの}}"),
+                ("[sitting]", "[座っている]"),
+            ]));
+
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(
+            "You were killed by {{C|{{r|bloody}} Tam, dromad merchant [sitting]}}.");
+
+        var translated = DeathWrapperFamilyTranslator.TryTranslateMessage(stripped, spans, out var messageTranslated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(messageTranslated, Is.EqualTo("{{C|{{r|血まみれの}}Tam、ドロマド商人 [座っている]}}に殺された。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateMessage_PreservesAmpersandWholeKillerWrapper_WhenTranslationInjectsMarkup()
+    {
+        WriteDictionary(
+            CommonEntries().Concat(
+            [
+                ("dromad merchant", "ドロマド商人"),
+                ("bloody", "{{r|血まみれの}}"),
+                ("[sitting]", "[座っている]"),
+            ]));
+
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(
+            "You were killed by &G{{r|bloody}} Tam, dromad merchant [sitting]&y.");
+
+        var translated = DeathWrapperFamilyTranslator.TryTranslateMessage(stripped, spans, out var messageTranslated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(messageTranslated, Is.EqualTo("&G{{r|血まみれの}}Tam、ドロマド商人 [座っている]&yに殺された。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslatePopup_PreservesTerminalEmptyWrapperInLocalizedKillerName()
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(
+            "You died.\n\nYou were killed by タム、ドロマド商団 [座っている]{{B|}}.");
+
+        var translated = DeathWrapperFamilyTranslator.TryTranslatePopup(
+            stripped,
+            spans,
+            nameof(PopupShowSpaceTranslationPatch),
+            out var popupTranslated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(
+                popupTranslated,
+                Is.EqualTo("あなたは死んだ。\n\nタム、ドロマド商団 [座っている]{{B|}}に殺された。"));
+        });
+    }
+
     [TestCase("You were killed by a snapjaw.", "スナップジョーに殺された。")]
     [TestCase("You were killed by an amoeba.", "アメーバに殺された。")]
     [TestCase("You were killed by the snapjaw.", "スナップジョーに殺された。")]

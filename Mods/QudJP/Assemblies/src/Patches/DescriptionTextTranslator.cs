@@ -303,59 +303,11 @@ internal static class DescriptionTextTranslator
             return translated;
         }
 
-        var wholeLineSpans = SliceWholeLineBoundarySpans(spans, sourceLength, translated.Length);
+        var wholeLinePairs = ColorAwareTranslationComposer.SliceWholeBoundaryPairs(spans, sourceStart: 0, sourceLength);
+        var wholeLineSpans = ColorAwareTranslationComposer.ProjectWholeBoundaryPairsAbsolute(wholeLinePairs, translated.Length);
         return wholeLineSpans.Count == 0
             ? translated
             : ColorAwareTranslationComposer.Restore(translated, wholeLineSpans);
-    }
-
-    private static List<ColorSpan> SliceWholeLineBoundarySpans(IReadOnlyList<ColorSpan> spans, int sourceLength, int translatedLength)
-    {
-        var wholeLinePairs = new List<(ColorSpan Opening, int OpeningOrder, ColorSpan Closing, int ClosingOrder)>();
-        var openingStack = new Stack<(ColorSpan Span, int Order)>();
-
-        for (var index = 0; index < spans.Count; index++)
-        {
-            var span = spans[index];
-            if (ColorCodePreserver.IsOpeningBoundaryToken(span.Token))
-            {
-                openingStack.Push((span, index));
-                continue;
-            }
-
-            if (!ColorCodePreserver.IsClosingBoundaryToken(span.Token) || openingStack.Count == 0)
-            {
-                continue;
-            }
-
-            var opening = openingStack.Pop();
-            if (opening.Span.Index == 0 && span.Index == sourceLength)
-            {
-                wholeLinePairs.Add((opening.Span, opening.Order, span, index));
-            }
-        }
-
-        if (wholeLinePairs.Count == 0)
-        {
-            return new List<ColorSpan>();
-        }
-
-        var result = new List<ColorSpan>(wholeLinePairs.Count * 2);
-        var openingOrderedPairs = wholeLinePairs.OrderBy(static pair => pair.OpeningOrder).ToArray();
-        for (var index = 0; index < openingOrderedPairs.Length; index++)
-        {
-            var pair = openingOrderedPairs[index];
-            result.Add(new ColorSpan(0, pair.Opening.Token));
-        }
-
-        var closingOrderedPairs = wholeLinePairs.OrderBy(static pair => pair.ClosingOrder).ToArray();
-        for (var index = 0; index < closingOrderedPairs.Length; index++)
-        {
-            var pair = closingOrderedPairs[index];
-            result.Add(new ColorSpan(translatedLength, pair.Closing.Token));
-        }
-
-        return result;
     }
 
     private static string TranslateDispositionReason(string source, string route)

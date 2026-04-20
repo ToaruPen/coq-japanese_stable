@@ -585,6 +585,12 @@ internal static class MessagePatternTranslator
             return translated;
         }
 
+        if (HasInteriorBoundarySpans(spans, strippedSourceLength.Value)
+            && TryRestoreWholeLineBoundaryWrappers(translated, spans, strippedSourceLength.Value, out var wholeLineRestored))
+        {
+            return wholeLineRestored;
+        }
+
         if (translatedFirstCaptureStart < 0
             || translatedLastCaptureEnd < 0
             || translatedFirstCaptureStart > translatedLastCaptureEnd)
@@ -683,6 +689,24 @@ internal static class MessagePatternTranslator
         }
 
         translated = builder.ToString();
+        return true;
+    }
+
+    private static bool TryRestoreWholeLineBoundaryWrappers(
+        string translated,
+        IReadOnlyList<ColorSpan> spans,
+        int strippedSourceLength,
+        out string restored)
+    {
+        var wholeLinePairs = ColorAwareTranslationComposer.SliceWholeBoundaryPairs(spans, sourceStart: 0, strippedSourceLength);
+        var wholeLineSpans = ColorAwareTranslationComposer.ProjectWholeBoundaryPairsRelative(wholeLinePairs, strippedSourceLength);
+        if (wholeLineSpans.Count == 0)
+        {
+            restored = string.Empty;
+            return false;
+        }
+
+        restored = ColorAwareTranslationComposer.RestoreRelative(translated, wholeLineSpans, strippedSourceLength);
         return true;
     }
 

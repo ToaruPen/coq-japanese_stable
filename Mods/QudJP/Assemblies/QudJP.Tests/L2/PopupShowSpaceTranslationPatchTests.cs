@@ -152,6 +152,22 @@ public sealed class PopupShowSpaceTranslationPatchTests
         });
     }
 
+    [Test]
+    public void Prefix_TranslatesDeathPopupWithLocalizedKiller_AndPreservesLeadingColor()
+    {
+        WriteDictionary(
+            ("QudJP.DeathWrapper.Generic.Wrapped", "あなたは死んだ。\n\n{body}"),
+            ("QudJP.DeathWrapper.KilledBy.Bare", "{killer}に殺された。"));
+
+        using var patch = PatchShowSpace();
+
+        DummyPopupGenericTarget.ShowSpace("&yYou died.\n\nYou were killed by タム、ドロマド商団 [座っている].");
+
+        Assert.That(
+            DummyPopupGenericTarget.LastShowSpaceMessage,
+            Is.EqualTo("&yあなたは死んだ。\n\nタム、ドロマド商団 [座っている]に殺された。"));
+    }
+
     private static IDisposable PatchShowSpace()
     {
         var harmonyId = CreateHarmonyId();

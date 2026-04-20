@@ -190,6 +190,22 @@ public sealed class GetDisplayNameRouteTranslatorTests
         Assert.That(translated, Is.EqualTo("{{r|血まみれの}}Naruur"));
     }
 
+    [Test]
+    public void TranslatePreservingColors_PreservesMarkupWrappedEnglishModifierWithoutNestedColorCorruption()
+    {
+        WriteDictionary(("dromad merchant", "ドロマド商人"));
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("bloody", "{{r|血まみれの}}"),
+            ("[sitting]", "[座っている]"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{r|bloody}} Tam, dromad merchant [sitting]",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{r|血まみれの}}Tam、ドロマド商人 [座っている]"));
+    }
+
     private void WriteDictionary(params (string key, string text)[] entries)
     {
         WriteDictionaryFile("ui-displayname-route.ja.json", entries);

@@ -101,7 +101,9 @@ public static class ColorCodePreserver
                 continue;
             }
 
-            if (span.Index == endIndex && !IsCaptureClosingToken(span.Token))
+            if (span.Index == endIndex
+                && !IsCaptureClosingToken(span.Token)
+                && !HasClosingBoundaryTokenAtSameIndex(spans, index + 1, endIndex))
             {
                 continue;
             }
@@ -168,6 +170,30 @@ public static class ColorCodePreserver
         }
 
         return hasOpening && hasClosing;
+    }
+
+    private static bool HasClosingBoundaryTokenAtSameIndex(IReadOnlyList<ColorSpan> spans, int startSearchIndex, int targetIndex)
+    {
+        for (var index = startSearchIndex; index < spans.Count; index++)
+        {
+            var span = spans[index];
+            if (span.Index != targetIndex)
+            {
+                if (span.Index > targetIndex)
+                {
+                    break;
+                }
+
+                continue;
+            }
+
+            if (IsCaptureClosingToken(span.Token))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static int ResolveIndex(ColorSpan span, int textLength)

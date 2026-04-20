@@ -320,8 +320,9 @@ internal static class GetDisplayNameRouteTranslator
             return false;
         }
 
-        var rest = TranslateDisplayNameFragment(match.Groups["rest"].Value, route);
-        translated = translatedModifier + " " + rest;
+        var restSource = match.Groups["rest"].Value;
+        var rest = TranslateDisplayNameFragment(restSource, route);
+        translated = translatedModifier + (ShouldElideModifierSpace(restSource) ? string.Empty : " ") + rest;
         DynamicTextObservability.RecordTransform(route, "DisplayName.MarkupLeadingModifier", source, translated);
         return true;
     }
@@ -535,6 +536,16 @@ internal static class GetDisplayNameRouteTranslator
         var direct = ScopedDictionaryLookup.TranslateExactOrLowerAscii(bracketed, DisplayNameDictionaryFiles);
         if (direct is null)
         {
+            using var _ = Translator.PushMissingKeyLoggingSuppression(true);
+            var global = Translator.Translate(bracketed);
+            if (!string.Equals(global, bracketed, StringComparison.Ordinal))
+            {
+                direct = global;
+            }
+        }
+
+        if (direct is null)
+        {
             translated = source;
             return false;
         }
@@ -714,6 +725,23 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         return hasUppercase;
+    }
+
+    private static bool ShouldElideModifierSpace(string source)
+    {
+        if (LooksLikeGeneratedProperName(source))
+        {
+            return true;
+        }
+
+        var bracketedMatch = BracketedDisplayNameSuffixPattern.Match(source);
+        if (bracketedMatch.Success && LooksLikeGeneratedProperName(bracketedMatch.Groups["base"].Value))
+        {
+            return true;
+        }
+
+        var parenthesizedMatch = ParenthesizedDisplayNameSuffixPattern.Match(source);
+        return parenthesizedMatch.Success && LooksLikeGeneratedProperName(parenthesizedMatch.Groups["base"].Value);
     }
 
     private static string? TranslateAsciiTokenWithCaseFallback(string source)
