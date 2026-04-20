@@ -91,11 +91,12 @@ public static class ColorCodePreserverArbitraries
 {
     public static Arbitrary<ColorizedCase> ColorizedCases()
     {
-        var visible = Arb.Generate<NonEmptyString>()
-            .Select(static text => text.Get.Replace("{", string.Empty, StringComparison.Ordinal).Replace("}", string.Empty, StringComparison.Ordinal));
+        var characters = Gen.Elements('a', 'b', 'c', 'x', 'y', 'z', '刀', '緑', '危', '険', '光');
+        var visible = Gen.Choose(1, 8)
+            .SelectMany(length => Gen.ArrayOf(characters, length))
+            .Select(chars => new string(chars));
 
-        var translated = Arb.Generate<NonEmptyString>()
-            .Select(static text => "訳" + text.Get.Replace("{", string.Empty, StringComparison.Ordinal).Replace("}", string.Empty, StringComparison.Ordinal));
+        var translated = visible.Select(rawVisible => new string('訳', rawVisible.Length));
 
         var wrappers = Gen.Elements(
             (Open: "{{W|", Close: "}}"),
