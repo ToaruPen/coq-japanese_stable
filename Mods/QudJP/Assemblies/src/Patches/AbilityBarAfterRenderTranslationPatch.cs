@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using HarmonyLib;
@@ -192,6 +191,7 @@ public static class AbilityBarAfterRenderTranslationPatch
                 + " "
                 + ColorAwareTranslationComposer.RestoreCapture(translatedName, spans, match.Groups["name"]);
         }
+
         if (string.Equals(translated, source, StringComparison.Ordinal))
         {
             return false;
