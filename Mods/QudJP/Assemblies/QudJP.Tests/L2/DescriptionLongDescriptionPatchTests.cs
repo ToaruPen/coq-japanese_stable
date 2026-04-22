@@ -486,6 +486,10 @@ public sealed class DescriptionLongDescriptionPatchTests
             ("Bonus Cap:", "ボーナス上限:"),
             ("Weapon Class:", "武器カテゴリ:"),
             ("Long Blades (increased penetration on critical hit)", "長剣（クリティカル時に貫通力上昇）"),
+            ("Cudgel (dazes on critical hit)", "棍棒（クリティカル時に朦朧付与）"),
+            ("Requires:", "要件："),
+            ("Weight:", "重量："),
+            ("Tinker I", "ティンカーI"),
             ("no limit", "なし"));
 
         RunWithDescriptionPatch(() =>
@@ -503,11 +507,27 @@ public sealed class DescriptionLongDescriptionPatchTests
             var weaponClassBuilder = new StringBuilder();
             weaponClassTarget.GetLongDescription(weaponClassBuilder);
 
+            var cudgelTarget =
+                new DummyDescriptionTarget("{{rules|Weapon Class: Cudgel (dazes on critical hit)}}");
+            var cudgelBuilder = new StringBuilder();
+            cudgelTarget.GetLongDescription(cudgelBuilder);
+
+            var requiresTarget = new DummyDescriptionTarget("Requires: Tinker I");
+            var requiresBuilder = new StringBuilder();
+            requiresTarget.GetLongDescription(requiresBuilder);
+
+            var weightTarget = new DummyDescriptionTarget("Weight: 1 lbs.");
+            var weightBuilder = new StringBuilder();
+            weightTarget.GetLongDescription(weightBuilder);
+
             Assert.Multiple(() =>
             {
                 Assert.That(capBuilder.ToString(), Is.EqualTo("筋力ボーナス上限: なし"));
                 Assert.That(egoCapBuilder.ToString(), Is.EqualTo("Ego ボーナス上限: 2"));
                 Assert.That(weaponClassBuilder.ToString(), Is.EqualTo("武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
+                Assert.That(cudgelBuilder.ToString(), Is.EqualTo("{{rules|武器カテゴリ: 棍棒（クリティカル時に朦朧付与）}}"));
+                Assert.That(requiresBuilder.ToString(), Is.EqualTo("要件： ティンカーI"));
+                Assert.That(weightBuilder.ToString(), Is.EqualTo("重量： 1 lbs."));
             });
         });
     }

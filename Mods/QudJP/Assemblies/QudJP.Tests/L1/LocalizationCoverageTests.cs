@@ -150,6 +150,51 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void CallingSubtypeExtraInfoOverrides_RemoveBaseEnglishExtraInfo()
+    {
+        var subtypesDocument = XDocument.Load(Path.Combine(localizationRoot, "Subtypes.jp.xml"));
+        var expectedRemovedExtraInfo = new Dictionary<string, string[]>(StringComparer.Ordinal)
+        {
+            ["Arconaut"] = new[] { "Starts with random junk and artifacts" },
+            ["Nomad"] = new[] { "Starts with a {{B|recycling suit}}" },
+            ["Tinker"] = new[] { "Begins with a number of random artifacts and scrap" },
+            ["Water Merchant"] = new[]
+            {
+                "Allowed entrance to many settlements for purposes of trade",
+                "Starts with trade goods",
+            },
+            ["Watervine Farmer"] = new[] { "Starts with random cooking ingredients" },
+        };
+
+        var missing = expectedRemovedExtraInfo
+            .SelectMany(pair =>
+            {
+                var subtype = subtypesDocument.Root!
+                    .Descendants("subtype")
+                    .FirstOrDefault(element => string.Equals(element.Attribute("Name")?.Value, pair.Key, StringComparison.Ordinal));
+
+                if (subtype is null)
+                {
+                    return pair.Value.Select(value => $"{pair.Key}:{value} (subtype missing)");
+                }
+
+                var removedValues = subtype.Elements("removeextrainfo")
+                    .Select(element => element.Value)
+                    .ToHashSet(StringComparer.Ordinal);
+
+                return pair.Value
+                    .Where(value => !removedValues.Contains(value))
+                    .Select(value => $"{pair.Key}:{value}");
+            })
+            .ToArray();
+
+        Assert.That(
+            missing,
+            Is.Empty,
+            "Localized calling subtype extrainfo overrides must remove the base English extrainfo first.");
+    }
+
+    [Test]
     public void ChargenStructuredTextTranslator_CoversAllMutationOptionNamesFromAssets()
     {
         var mutationNames = LoadMutationNamesWithDisplayName(Path.Combine(localizationRoot, "Mutations.jp.xml"))

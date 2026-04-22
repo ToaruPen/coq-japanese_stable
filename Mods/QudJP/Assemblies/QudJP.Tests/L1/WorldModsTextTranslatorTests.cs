@@ -262,6 +262,56 @@ public sealed class WorldModsTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslateCompareStatusLine_TranslatesScopedWeaponClassValue()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("Weapon Class:", "武器カテゴリ:"),
+            ("Cudgel (dazes on critical hit)", "棍棒（クリティカル時に朦朧付与）"));
+
+        var ok = StatusLineTranslationHelpers.TryTranslateCompareStatusLine(
+            "Weapon Class: Cudgel (dazes on critical hit)",
+            "DescriptionShortDescriptionPatch",
+            "Description.CompareStatus",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("武器カテゴリ: 棍棒（クリティカル時に朦朧付与）"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateCompareStatusLine_TranslatesRequiresAndWeightPrefixes()
+    {
+        WriteDictionary(
+            "ui-default.ja.json",
+            ("Requires:", "要件："),
+            ("Weight:", "重量："),
+            ("Tinker I", "ティンカーI"));
+
+        var requiresOk = StatusLineTranslationHelpers.TryTranslateCompareStatusLine(
+            "Requires: Tinker I",
+            "DescriptionShortDescriptionPatch",
+            "Description.CompareStatus",
+            out var requiresTranslated);
+        var weightOk = StatusLineTranslationHelpers.TryTranslateCompareStatusLine(
+            "Weight: 1 lbs.",
+            "DescriptionShortDescriptionPatch",
+            "Description.CompareStatus",
+            out var weightTranslated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(requiresOk, Is.True);
+            Assert.That(requiresTranslated, Is.EqualTo("要件： ティンカーI"));
+            Assert.That(weightOk, Is.True);
+            Assert.That(weightTranslated, Is.EqualTo("重量： 1 lbs."));
+        });
+    }
+
+    [Test]
     public void TryTranslateActiveEffectsLine_PartiallyTranslatesKnownEffectsAndKeepsMissingEffectsVisible()
     {
         WriteDictionary(

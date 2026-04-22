@@ -84,6 +84,39 @@ def test_strict_mode_treats_warning_as_error(tmp_path: Path, capsys: pytest.Capt
     assert "WARNING" in captured.out
 
 
+def test_strict_mode_allows_baselined_warning(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """Strict mode ignores warnings that are present in a warning baseline."""
+    xml_path = tmp_path / "strict.xml"
+    baseline_path = tmp_path / "baseline.json"
+    _write_xml(xml_path, "<root><text>{{G|strict mode</text></root>")
+
+    write_result = main([str(xml_path), "--write-warning-baseline", str(baseline_path)])
+    _ = capsys.readouterr()
+    strict_result = main(["--strict", "--warning-baseline", str(baseline_path), str(xml_path)])
+    captured = capsys.readouterr()
+
+    assert write_result == 0
+    assert strict_result == 0
+    assert "NEW WARNING" not in captured.err
+
+
+def test_strict_mode_fails_on_warning_not_in_baseline(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """Strict mode still fails when a warning is not present in the baseline."""
+    baseline_xml = tmp_path / "baseline.xml"
+    changed_xml = tmp_path / "changed.xml"
+    baseline_path = tmp_path / "baseline.json"
+    _write_xml(baseline_xml, "<root><text>{{G|baseline</text></root>")
+    _write_xml(changed_xml, '<root><item ID="A"/><item ID="A"/></root>')
+
+    assert main([str(baseline_xml), "--write-warning-baseline", str(baseline_path)]) == 0
+    _ = capsys.readouterr()
+    result = main(["--strict", "--warning-baseline", str(baseline_path), str(changed_xml)])
+    captured = capsys.readouterr()
+
+    assert result == 1
+    assert "NEW WARNING" in captured.err
+
+
 def test_directory_scanning_finds_nested_xml_files(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """Directory input recursively scans nested XML files."""
     root_dir = tmp_path / "Localization"

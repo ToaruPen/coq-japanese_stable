@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts.check_encoding import check_directory, check_file, main
+from scripts.check_encoding import check_directory, check_file, check_paths, main
 
 
 class TestCheckFile:
@@ -108,6 +108,33 @@ class TestCheckDirectory:
         assert len(issues) == 1
         assert issues[0].kind == "BOM"
 
+    def test_recursive_scan_skips_python_bytecode_cache(self, tmp_path: Path) -> None:
+        """Bytecode caches are ignored during recursive scans."""
+        cache = tmp_path / "__pycache__"
+        cache.mkdir()
+        (cache / "module.cpython-312.pyc").write_bytes(b"\x80\r\n")
+
+        assert check_directory(tmp_path) == []
+
+    def test_python_files_skip_mojibake_check(self, tmp_path: Path) -> None:
+        """Python fixtures may contain mojibake sentinels without failing the scan."""
+        script = tmp_path / "fixture.py"
+        script.write_text('_MOJIBAKE_CHARS = "繧縺驕蜒"\n', encoding="utf-8")
+
+        assert check_file(script) == []
+
+    def test_multiple_paths_are_scanned(self, tmp_path: Path) -> None:
+        """File and directory inputs can be checked in one invocation."""
+        clean_dir = tmp_path / "clean"
+        clean_dir.mkdir()
+        (clean_dir / "ok.txt").write_text("ok\n", encoding="utf-8")
+        bad_file = tmp_path / "bad.txt"
+        bad_file.write_bytes(b"\xef\xbb\xbfbad\n")
+
+        issues = check_paths([clean_dir, bad_file])
+
+        assert [issue.kind for issue in issues] == ["BOM"]
+
     def test_nonexistent_directory_raises(self) -> None:
         """Scanning a nonexistent directory raises FileNotFoundError."""
         with pytest.raises(FileNotFoundError):
@@ -128,6 +155,17 @@ class TestMain:
         """Clean directory results in exit code 0."""
         (tmp_path / "file.txt").write_bytes(b"clean\n")
         assert main([str(tmp_path)]) == 0
+
+    def test_multiple_clean_paths_return_zero(self, tmp_path: Path) -> None:
+        """Multiple path arguments are accepted."""
+        first = tmp_path / "first"
+        second = tmp_path / "second"
+        first.mkdir()
+        second.mkdir()
+        (first / "a.txt").write_bytes(b"clean\n")
+        (second / "b.txt").write_bytes(b"also clean\n")
+
+        assert main([str(first), str(second)]) == 0
 
     def test_issues_return_one(self, tmp_path: Path) -> None:
         """Directory with issues results in exit code 1."""

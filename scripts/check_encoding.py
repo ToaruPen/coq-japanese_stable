@@ -6,7 +6,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 _BOM = b"\xef\xbb\xbf"
-_MOJIBAKE_CHARS = "繧縺驕蜒"
+_MOJIBAKE_PATTERNS = ("繧", "縺", "蜒", "驕ｿ")
+_SKIPPED_DIR_NAMES = frozenset({"__pycache__"})
+_SKIPPED_SUFFIXES = frozenset({".pyc", ".pyo"})
+_MOJIBAKE_SKIP_SUFFIXES = frozenset({".md", ".py"})
 
 
 @dataclass(frozen=True)
@@ -29,8 +32,8 @@ def check_file(path: Path) -> list[EncodingIssue]:
 
     Inspects for UTF-8 BOM, CRLF line endings, mojibake characters,
     and invalid UTF-8 encoding. Mojibake detection is skipped for
-    Markdown (``.md``) files, which may contain mojibake examples as
-    documentation.
+    Markdown (``.md``) and Python (``.py``) files, which may contain
+    intentional mojibake examples as documentation or test fixtures.
 
     Args:
         path: Path to the file to check.
@@ -63,15 +66,45 @@ def check_file(path: Path) -> list[EncodingIssue]:
         issues.append(EncodingIssue(path, "DECODE", "File is not valid UTF-8"))
         return issues
 
-    if path.suffix.lower() != ".md":
-        for char in _MOJIBAKE_CHARS:
-            if char in text:
+    if path.suffix.lower() not in _MOJIBAKE_SKIP_SUFFIXES:
+        for pattern in _MOJIBAKE_PATTERNS:
+            if pattern in text:
                 issues.append(
-                    EncodingIssue(path, "MOJIBAKE", f"Suspected mojibake character: {char}"),
+                    EncodingIssue(path, "MOJIBAKE", f"Suspected mojibake pattern: {pattern}"),
                 )
                 break
 
     return issues
+
+
+def _is_checkable_file(path: Path) -> bool:
+    """Return whether a recursive scan should inspect ``path``."""
+    if any(part in _SKIPPED_DIR_NAMES for part in path.parts):
+        return False
+    return path.suffix.lower() not in _SKIPPED_SUFFIXES
+
+
+def _iter_checkable_files(paths: list[Path]) -> list[Path]:
+    """Collect files that should be scanned from file and directory inputs."""
+    files: set[Path] = set()
+    for input_path in paths:
+        if not input_path.exists():
+            msg = f"Path not found: {input_path}"
+            raise FileNotFoundError(msg)
+
+        if input_path.is_file():
+            if _is_checkable_file(input_path):
+                files.add(input_path)
+            continue
+
+        if input_path.is_dir():
+            files.update(path for path in input_path.rglob("*") if path.is_file() and _is_checkable_file(path))
+            continue
+
+        msg = f"Path is not a regular file or directory: {input_path}"
+        raise ValueError(msg)
+
+    return sorted(files, key=str)
 
 
 def check_directory(directory: Path) -> list[EncodingIssue]:
@@ -94,10 +127,14 @@ def check_directory(directory: Path) -> list[EncodingIssue]:
         msg = f"Not a directory: {directory}"
         raise NotADirectoryError(msg)
 
+    return check_paths([directory])
+
+
+def check_paths(paths: list[Path]) -> list[EncodingIssue]:
+    """Check all scan-eligible files under the given paths."""
     all_issues: list[EncodingIssue] = []
-    for file_path in sorted(directory.rglob("*")):
-        if file_path.is_file():
-            all_issues.extend(check_file(file_path))
+    for file_path in _iter_checkable_files(paths):
+        all_issues.extend(check_file(file_path))
     return all_issues
 
 
@@ -127,18 +164,20 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Validate UTF-8 encoding, BOM absence, and LF line endings.",
     )
-    parser.add_argument("directory", type=Path, help="Directory to scan recursively")
+    parser.add_argument("paths", nargs="+", type=Path, help="Files or directories to scan recursively")
     args = parser.parse_args(argv)
 
-    directory: Path = args.directory
+    paths: list[Path] = args.paths
     try:
-        issues = check_directory(directory)
-    except (FileNotFoundError, NotADirectoryError) as exc:
+        files = _iter_checkable_files(paths)
+        issues = []
+        for file_path in files:
+            issues.extend(check_file(file_path))
+    except (FileNotFoundError, NotADirectoryError, ValueError) as exc:
         print(f"Error: {exc}", file=sys.stderr)  # noqa: T201
         return 1
 
-    total_files = sum(1 for p in directory.rglob("*") if p.is_file())
-    _print_report(issues, total_files)
+    _print_report(issues, len(files))
     return 1 if issues else 0
 
 

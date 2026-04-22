@@ -217,6 +217,52 @@ def test_books_parse_error_falls_back_to_regex(tmp_path: Path, capsys: pytest.Ca
     assert "WARNING" in captured.err
 
 
+def test_object_blueprints_parse_error_falls_back_to_regex(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """ObjectBlueprints XML parse errors recover object Name attributes."""
+    base_dir = tmp_path / "Base"
+    mod_dir = tmp_path / "Localization"
+
+    _write_bytes(
+        base_dir / "ObjectBlueprints" / "Items.xml",
+        b'<objects><object Name="A"><part Value="bad\x08text"/></object><object Name="B"/></objects>',
+    )
+    _write_text(
+        mod_dir / "ObjectBlueprints" / "Items.jp.xml",
+        '<objects><object Name="A"/></objects>',
+    )
+
+    result = main(["--summary", "--base-dir", str(base_dir), "--mod-dir", str(mod_dir)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert "ObjectBlueprints" in captured.out
+    assert "50.0%" in captured.out
+    assert "recovered 2 object Name entries" in captured.err
+
+
+def test_generic_parse_error_falls_back_to_id_or_name_regex(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Generic XML parse errors recover ID/Name attributes instead of skipping the file."""
+    base_dir = tmp_path / "Base"
+    mod_dir = tmp_path / "Localization"
+
+    _write_bytes(base_dir / "Skills.xml", b'<skills><skill Name="A">bad\x08text</skill><skill Name="B"/></skills>')
+    _write_text(mod_dir / "Skills.jp.xml", '<skills><skill Name="A"/></skills>')
+
+    result = main(["--summary", "--base-dir", str(base_dir), "--mod-dir", str(mod_dir)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert "Skills" in captured.out
+    assert "50.0%" in captured.out
+    assert "recovered 2 ID/Name entries" in captured.err
+
+
 def test_generic_entries_returns_empty_set_on_no_id_or_name(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
