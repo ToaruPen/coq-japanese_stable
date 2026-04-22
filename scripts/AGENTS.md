@@ -20,8 +20,10 @@ This area contains the Python and shell tooling used for validation, extraction,
 ```bash
 ruff check scripts/
 ruff format scripts/
-pytest scripts/tests/
-pytest scripts/tests/ -k <pattern>
+uv run pytest scripts/tests/
+uv run pytest scripts/tests/ -k <pattern>
+python3.12 scripts/check_encoding.py Mods/QudJP/Localization scripts
+python3.12 scripts/validate_xml.py Mods/QudJP/Localization --strict --warning-baseline scripts/validate_xml_warning_baseline.json
 scripts/decompile_game_dll.sh
 scripts/decompile_game_dll.sh --list
 scripts/decompile_game_dll.sh --all

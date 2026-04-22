@@ -26,7 +26,9 @@ dotnet build Mods/QudJP/Assemblies/QudJP.csproj
 dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L1
 dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L2
 ruff check scripts/
-pytest scripts/tests/
+uv run pytest scripts/tests/
+python3.12 scripts/check_encoding.py Mods/QudJP/Localization scripts
+python3.12 scripts/validate_xml.py Mods/QudJP/Localization --strict --warning-baseline scripts/validate_xml_warning_baseline.json
 python3.12 scripts/sync_mod.py
 ```
 

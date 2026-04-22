@@ -1,8 +1,10 @@
 """Validate translation XML files for structure and common content issues."""
 
 import argparse
+import json
 import sys
 import xml.etree.ElementTree as ET
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -41,6 +43,49 @@ def _collect_xml_files(paths: list[Path]) -> list[Path]:
         raise ValueError(msg)
 
     return sorted(xml_files, key=str)
+
+
+def _warning_path(path: Path, *, root: Path) -> str:
+    resolved = path.resolve()
+    try:
+        return resolved.relative_to(root.resolve()).as_posix()
+    except ValueError:
+        return resolved.as_posix()
+
+
+def _warning_key(path: Path, warning: str, *, root: Path) -> tuple[str, str]:
+    return (_warning_path(path, root=root), warning)
+
+
+def _load_warning_baseline(path: Path, *, root: Path) -> set[tuple[str, str]]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    warnings = payload.get("warnings")
+    if not isinstance(warnings, list):
+        msg = f"Warning baseline must contain a 'warnings' list: {path}"
+        raise TypeError(msg)
+
+    baseline: set[tuple[str, str]] = set()
+    for item in warnings:
+        if (
+            not isinstance(item, dict)
+            or not isinstance(item.get("path"), str)
+            or not isinstance(item.get("warning"), str)
+        ):
+            msg = f"Invalid warning baseline entry in {path}: {item!r}"
+            raise TypeError(msg)
+        baseline.add((_warning_path(root / item["path"], root=root), item["warning"]))
+    return baseline
+
+
+def _write_warning_baseline(path: Path, results: Iterable[ValidationResult], *, root: Path) -> None:
+    warnings = [
+        {"path": _warning_path(result.path, root=root), "warning": warning}
+        for result in results
+        for warning in result.warnings
+    ]
+    payload = {"version": 1, "warnings": sorted(warnings, key=lambda item: (item["path"], item["warning"]))}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def _find_unbalanced_color_line(text: str) -> int | None:
@@ -169,12 +214,20 @@ def _print_result(result: ValidationResult) -> None:
     print(f"Checking {result.path}... OK")  # noqa: T201
 
 
-def run_validation(paths: list[Path], *, strict: bool) -> int:
+def run_validation(
+    paths: list[Path],
+    *,
+    strict: bool,
+    warning_baseline: Path | None = None,
+    write_warning_baseline: Path | None = None,
+) -> int:
     """Run validation for input paths.
 
     Args:
         paths: File or directory paths to validate.
-        strict: Treat warnings as failures.
+        strict: Treat non-baselined warnings as failures.
+        warning_baseline: Existing warning baseline to subtract from strict failures.
+        write_warning_baseline: Optional path to write current warnings as a baseline.
 
     Returns:
         Exit code (0 on success, 1 on failure).
@@ -189,17 +242,36 @@ def run_validation(paths: list[Path], *, strict: bool) -> int:
         print("Error: No XML files found in the provided paths.", file=sys.stderr)  # noqa: T201
         return 1
 
-    total_errors = 0
-    total_warnings = 0
+    root = Path.cwd()
+    try:
+        baseline = set() if warning_baseline is None else _load_warning_baseline(warning_baseline, root=root)
+    except (OSError, TypeError, json.JSONDecodeError) as exc:
+        print(f"Error: failed to read warning baseline: {exc}", file=sys.stderr)  # noqa: T201
+        return 1
+
+    results: list[ValidationResult] = []
     for file_path in xml_files:
         result = validate_xml_file(file_path)
+        results.append(result)
         _print_result(result)
-        total_errors += len(result.errors)
-        total_warnings += len(result.warnings)
+
+    if write_warning_baseline is not None:
+        _write_warning_baseline(write_warning_baseline, results, root=root)
+        print(f"Warning baseline written to {write_warning_baseline}", file=sys.stderr)  # noqa: T201
+
+    total_errors = sum(len(result.errors) for result in results)
+    unbaselined_warnings = [
+        _warning_key(result.path, warning, root=root)
+        for result in results
+        for warning in result.warnings
+        if _warning_key(result.path, warning, root=root) not in baseline
+    ]
 
     if total_errors > 0:
         return 1
-    if strict and total_warnings > 0:
+    if strict and unbaselined_warnings:
+        for path, warning in unbaselined_warnings:
+            print(f"  NEW WARNING: {path}: {warning}", file=sys.stderr)  # noqa: T201
         return 1
     return 0
 
@@ -225,11 +297,26 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--strict",
         action="store_true",
-        help="Treat warnings as errors (exit code 1).",
+        help="Treat warnings as errors unless they are present in --warning-baseline.",
+    )
+    parser.add_argument(
+        "--warning-baseline",
+        type=Path,
+        help="JSON baseline of known warnings to allow in strict mode.",
+    )
+    parser.add_argument(
+        "--write-warning-baseline",
+        type=Path,
+        help="Write current warnings to a JSON baseline file.",
     )
 
     args = parser.parse_args(argv)
-    return run_validation(args.paths, strict=args.strict)
+    return run_validation(
+        args.paths,
+        strict=args.strict,
+        warning_baseline=args.warning_baseline,
+        write_warning_baseline=args.write_warning_baseline,
+    )
 
 
 if __name__ == "__main__":

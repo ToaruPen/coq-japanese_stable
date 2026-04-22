@@ -196,6 +196,7 @@
         <skill Name="Acrobatics" />
         <skill Name="Acrobatics_Dodge" />
       </skills>
+      <removeextrainfo>Starts with random junk and artifacts</removeextrainfo>
       <extrainfo>Starts with random junk and artifacts</extrainfo>
     </subtype>
 
@@ -255,6 +256,7 @@
       <reputations>
         <reputation With="Issachari" Value="200" />
       </reputations>
+      <removeextrainfo>Starts with a {{B|recycling suit}}</removeextrainfo>
       <extrainfo>開始装備: {{B|リサイクルスーツ}}</extrainfo>
     </subtype>
 
@@ -282,6 +284,7 @@
       <reputations>
         <reputation With="Barathrumites" Value="100" />
       </reputations>
+      <removeextrainfo>Begins with a number of random artifacts and scrap</removeextrainfo>
       <extrainfo>ランダムなアーティファクトとスクラップを所持して開始</extrainfo>
     </subtype>
 
@@ -308,6 +311,8 @@
       <reputations>
         <reputation With="Water" Value="200" />
       </reputations>
+      <removeextrainfo>Allowed entrance to many settlements for purposes of trade</removeextrainfo>
+      <removeextrainfo>Starts with trade goods</removeextrainfo>
       <extrainfo>交易目的で多くの集落への入場を許可される</extrainfo>
       <extrainfo>交易品を所持して開始</extrainfo>
     </subtype>
@@ -324,6 +329,7 @@
         <reputation With="Joppa" Value="100" />
 				<reputation With="Farmers" Value="200" />
 			</reputations>
+      <removeextrainfo>Starts with random cooking ingredients</removeextrainfo>
       <extrainfo>ランダムな料理素材を所持して開始</extrainfo>
     </subtype>
 

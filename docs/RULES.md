@@ -34,8 +34,8 @@ Required verification commands for this boundary:
 
 ```bash
 dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L1
-pytest scripts/tests/test_triage_log_parser.py scripts/tests/test_triage_models.py scripts/tests/test_triage_classifier.py scripts/tests/test_triage_integration.py -q
-pytest scripts/tests/test_triage_integration.py -q -k sample_log_smoke
+uv run pytest scripts/tests/test_triage_log_parser.py scripts/tests/test_triage_models.py scripts/tests/test_triage_classifier.py scripts/tests/test_triage_integration.py -q
+uv run pytest scripts/tests/test_triage_integration.py -q -k sample_log_smoke
 ```
 
 Use these commands when checking Phase F docs, runtime observability, or the first-PR boundary.

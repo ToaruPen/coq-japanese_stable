@@ -15,6 +15,10 @@ internal static class StatusLineTranslationHelpers
         new Regex("^(?<stat>.+?) Bonus Cap:\\s*(?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex WeaponClassPattern =
         new Regex("^Weapon Class:\\s*(?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex RequiresPattern =
+        new Regex("^Requires:\\s*(?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex WeightPattern =
+        new Regex("^Weight:\\s*(?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     internal static bool TryTranslateCompareStatusLine(string source, string route, string family, out string translated)
     {
@@ -47,24 +51,68 @@ internal static class StatusLineTranslationHelpers
         }
 
         var weaponClassMatch = WeaponClassPattern.Match(source);
-        if (weaponClassMatch.Success)
+        if (weaponClassMatch.Success
+            && TryTranslateLabeledValueLine(weaponClassMatch, "Weapon Class:", out translated))
         {
-            var translatedPrefix = StringHelpers.TranslateExactOrLowerAscii("Weapon Class:");
-            if (translatedPrefix is not null)
-            {
-                var translatedValue = weaponClassMatch.Groups["value"].Value;
-                if (StringHelpers.TryGetTranslationExactOrLowerAscii(weaponClassMatch.Groups["value"].Value, out var valueTranslation))
-                {
-                    translatedValue = valueTranslation;
-                }
+            DynamicTextObservability.RecordTransform(route, family, source, translated);
+            return true;
+        }
 
-                translated = translatedPrefix + " " + translatedValue;
-                DynamicTextObservability.RecordTransform(route, family, source, translated);
-                return true;
-            }
+        var requiresMatch = RequiresPattern.Match(source);
+        if (requiresMatch.Success
+            && TryTranslateLabeledValueLine(requiresMatch, "Requires:", out translated))
+        {
+            DynamicTextObservability.RecordTransform(route, family, source, translated);
+            return true;
+        }
+
+        var weightMatch = WeightPattern.Match(source);
+        if (weightMatch.Success
+            && TryTranslateLabeledValueLine(weightMatch, "Weight:", out translated, translateValue: false))
+        {
+            DynamicTextObservability.RecordTransform(route, family, source, translated);
+            return true;
         }
 
         translated = source;
+        return false;
+    }
+
+    private static bool TryTranslateLabeledValueLine(Match match, string label, out string translated, bool translateValue = true)
+    {
+        var translatedLabel = StringHelpers.TranslateExactOrLowerAscii(label);
+        if (translatedLabel is null)
+        {
+            translated = match.Value;
+            return false;
+        }
+
+        var value = match.Groups["value"].Value;
+        var translatedValue = value;
+        if (translateValue && TryTranslateCompareStatusValue(value, out var valueTranslation))
+        {
+            translatedValue = valueTranslation;
+        }
+
+        translated = translatedLabel + " " + translatedValue;
+        return true;
+    }
+
+    private static bool TryTranslateCompareStatusValue(string value, out string translated)
+    {
+        var scoped = ScopedDictionaryLookup.TranslateExactOrLowerAscii(value, "world-mods.ja.json");
+        if (!string.IsNullOrEmpty(scoped) && !string.Equals(scoped, value, StringComparison.Ordinal))
+        {
+            translated = scoped!;
+            return true;
+        }
+
+        if (StringHelpers.TryGetTranslationExactOrLowerAscii(value, out translated))
+        {
+            return true;
+        }
+
+        translated = value;
         return false;
     }
 

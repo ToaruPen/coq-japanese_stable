@@ -24,6 +24,9 @@ _DEFAULT_GAME_BASE_DIR = (
     / "Base"
 )
 _BOOK_ID_PATTERN = re.compile(rb"<book\b[^>]*\bID=[\"']([^\"']+)[\"']")
+_OBJECT_NAME_PATTERN = re.compile(rb"<object\b[^>]*\bName=[\"']([^\"']+)[\"']")
+_CONVERSATION_ID_PATTERN = re.compile(rb"<conversation\b[^>]*\bID=[\"']([^\"']+)[\"']")
+_GENERIC_ID_OR_NAME_PATTERN = re.compile(rb"\b(?:ID|Name)=[\"']([^\"']+)[\"']")
 
 
 @dataclass(frozen=True)
@@ -159,17 +162,50 @@ def _extract_books_entries(path: Path) -> set[str]:
 
 
 def _extract_books_entries_regex(path: Path) -> set[str]:
+    return _extract_regex_entries(path, _BOOK_ID_PATTERN, label="book ID")
+
+
+def _extract_regex_entries(path: Path, pattern: re.Pattern[bytes], *, label: str) -> set[str]:
     raw = path.read_bytes()
     result: set[str] = set()
-    for match in _BOOK_ID_PATTERN.findall(raw):
+    for match in pattern.findall(raw):
         if not match:
             continue
         try:
             result.add(match.decode("utf-8"))
         except UnicodeDecodeError as exc:
-            msg = f"Non-UTF-8 book ID in {path}: {exc}"
+            msg = f"Non-UTF-8 {label} in {path}: {exc}"
             raise ValueError(msg) from exc
     return result
+
+
+def _extract_entries_regex_fallback(path: Path, *, category: str, reason: ET.ParseError) -> set[str]:
+    if category == "ObjectBlueprints":
+        pattern = _OBJECT_NAME_PATTERN
+        label = "object Name"
+    elif category == "Conversations":
+        pattern = _CONVERSATION_ID_PATTERN
+        label = "conversation ID"
+    elif category == "Books":
+        pattern = _BOOK_ID_PATTERN
+        label = "book ID"
+    else:
+        pattern = _GENERIC_ID_OR_NAME_PATTERN
+        label = "ID/Name"
+
+    entries = _extract_regex_entries(path, pattern, label=label)
+    if entries:
+        print(  # noqa: T201
+            f"WARNING: Failed to parse XML: {path} ({reason}), recovered {len(entries)} {label} entries by regex.",
+            file=sys.stderr,
+        )
+        return entries
+
+    print(  # noqa: T201
+        f"WARNING: Failed to parse XML: {path} ({reason}), and regex fallback found no {label} entries.",
+        file=sys.stderr,
+    )
+    return set()
 
 
 def _extract_entries(path: Path, *, category: str) -> set[str]:
@@ -188,11 +224,7 @@ def _extract_entries(path: Path, *, category: str) -> set[str]:
     except ET.ParseError as exc:
         if _is_blank_xml(path):
             return set()
-        print(  # noqa: T201
-            f"WARNING: Failed to parse XML: {path} ({exc}), skipping.",
-            file=sys.stderr,
-        )
-        return set()
+        return _extract_entries_regex_fallback(path, category=category, reason=exc)
 
 
 def build_report(base_dir: Path, mod_dir: Path) -> DiffReport:

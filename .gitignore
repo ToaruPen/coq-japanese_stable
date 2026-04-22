@@ -50,6 +50,7 @@ packages/
 docs/ilspy-raw/
 
 # Local tool installations
+node_modules/
 .sisyphus/tools/
 .omx/
 
