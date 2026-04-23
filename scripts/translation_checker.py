@@ -58,7 +58,7 @@ _DEFAULT_INVENTORY_PATTERNS: tuple[str, ...] = (
 _MESSAGE_LOG_ROUTES = frozenset({"MessageLog", "MessageLogPatch", "EmitMessage"})
 _ASCII_WORD_PATTERN = re.compile(r"[A-Za-z]{2,}")
 _MARKUP_TOKEN_PATTERN = re.compile(
-    r"\{\{[A-Za-z0-9#]+\||\}\}|&&|\^\^|&[A-Za-z]|\^[A-Za-z]|</?color(?:=[^>]+)?>|=[A-Za-z0-9_.]+=",
+    r"\{\{[^|}]+\||\}\}|&&|\^\^|&[A-Za-z]|\^[A-Za-z]|<color=[^>]+>|</color>|=[A-Za-z0-9_.]+=",
 )
 _FINAL_OUTPUT_OBSERVATION_FIELDS = (
     "sink",
@@ -71,10 +71,16 @@ _FINAL_OUTPUT_OBSERVATION_FIELDS = (
     "stripped_text_sample",
     "translated_text_sample",
     "final_text_sample",
+    "source_markup_spans",
+    "final_markup_spans",
+    "markup_span_status",
+    "source_visible_sha256",
+    "final_visible_sha256",
     "payload_mode",
     "payload_excerpt",
     "payload_sha256",
 )
+_NON_ISSUE_MARKUP_SPAN_STATUSES = frozenset({None, "matched", "no_markup"})
 _DEFAULT_INVENTORY_TAB_PAGE_RIGHTS = 8
 _DEFAULT_INVENTORY_ITEM_SCAN_COUNT = 8
 _DEFAULT_INVENTORY_ITEM_ACTION_ROW_OFFSET = 1
@@ -1604,7 +1610,9 @@ def _markup_issue_candidates(entries: list[LogEntry]) -> list[dict[str, object]]
             final_text = entry.final_text_sample or ""
             source_markup = _markup_signature(source_text)
             final_markup = _markup_signature(final_text)
-            if source_markup == final_markup:
+            token_signatures_match = source_markup == final_markup
+            span_status_is_issue = entry.markup_span_status not in _NON_ISSUE_MARKUP_SPAN_STATUSES
+            if token_signatures_match and not span_status_is_issue:
                 continue
             candidates.append(
                 {
@@ -1615,9 +1623,12 @@ def _markup_issue_candidates(entries: list[LogEntry]) -> list[dict[str, object]]
                     "line_number": entry.line_number,
                     "translation_status": entry.translation_status,
                     "markup_status": entry.markup_status,
+                    "markup_span_status": entry.markup_span_status,
                     "direct_marker_status": entry.direct_marker_status,
                     "source_markup": source_markup,
                     "final_markup": final_markup,
+                    "source_markup_spans": entry.source_markup_spans,
+                    "final_markup_spans": entry.final_markup_spans,
                 },
             )
     return candidates

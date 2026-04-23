@@ -76,6 +76,11 @@ def _dedupe_key(entry: LogEntry) -> tuple[str, ...]:
             entry.stripped_text_sample or "",
             entry.translated_text_sample or "",
             entry.final_text_sample or "",
+            entry.source_markup_spans or "",
+            entry.final_markup_spans or "",
+            entry.markup_span_status or "",
+            entry.source_visible_sha256 or "",
+            entry.final_visible_sha256 or "",
             entry.translation_status or "",
             entry.markup_status or "",
             entry.direct_marker_status or "",
@@ -182,6 +187,11 @@ def _entry_with_structured_fields(
         stripped_text_sample=structured("stripped_text_sample", entry.stripped_text_sample),
         translated_text_sample=structured("translated_text_sample", entry.translated_text_sample),
         final_text_sample=structured("final_text_sample", entry.final_text_sample),
+        source_markup_spans=structured("source_markup_spans", entry.source_markup_spans),
+        final_markup_spans=structured("final_markup_spans", entry.final_markup_spans),
+        markup_span_status=structured("markup_span_status", entry.markup_span_status),
+        source_visible_sha256=structured("source_visible_sha256", entry.source_visible_sha256),
+        final_visible_sha256=structured("final_visible_sha256", entry.final_visible_sha256),
         structured_fields=present_fields,
     )
 

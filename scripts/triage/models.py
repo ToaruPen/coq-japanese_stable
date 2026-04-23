@@ -60,6 +60,11 @@ class LogEntry:
     stripped_text_sample: str | None = None
     translated_text_sample: str | None = None
     final_text_sample: str | None = None
+    source_markup_spans: str | None = None
+    final_markup_spans: str | None = None
+    markup_span_status: str | None = None
+    source_visible_sha256: str | None = None
+    final_visible_sha256: str | None = None
     structured_fields: frozenset[str] = field(default_factory=frozenset)
 
     def has_structured_field(self, field_name: str) -> bool:
