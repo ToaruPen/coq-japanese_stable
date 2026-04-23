@@ -61,6 +61,12 @@ def _final_output_probe_line(**overrides: str | int) -> str:
         "translated": "",
         "final": "You catch fire",
     }
+    unknown = set(overrides) - set(fields)
+    if unknown:
+        unknown_fields = ", ".join(sorted(unknown))
+        message = f"Unknown FinalOutputProbe fixture override(s): {unknown_fields}"
+        raise ValueError(message)
+
     fields.update(overrides)
     prefix = {key: _probe_prefix_value(value) for key, value in fields.items()}
     structured = {key: _structured_suffix_value(value) for key, value in fields.items()}
@@ -628,6 +634,12 @@ def test_parse_final_output_probe_fixture_escapes_structured_delimiters(tmp_path
     assert entries[0].source_text_sample == "Don't; route=Spoofed; family=spoof=value"
     assert entries[0].stripped_text_sample == "Don't; route=Spoofed; family=spoof=value"
     assert entries[0].final_text_sample == "Don't; route=Spoofed; family=spoof=value"
+
+
+def test_final_output_probe_fixture_rejects_unknown_overrides() -> None:
+    """Fixture override typos fail before they produce misleading log lines."""
+    with pytest.raises(ValueError, match="Unknown FinalOutputProbe fixture override\\(s\\): typo"):
+        _final_output_probe_line(typo="ignored")
 
 
 @pytest.mark.parametrize(
