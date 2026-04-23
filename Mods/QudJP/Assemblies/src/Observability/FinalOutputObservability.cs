@@ -20,15 +20,23 @@ internal static class FinalOutputObservability
     private static readonly ConcurrentDictionary<string, int> HitCounts =
         new ConcurrentDictionary<string, int>(StringComparer.Ordinal);
 
+    private static readonly object HitCountsSync = new object();
+
     internal static void ResetForTests()
     {
-        HitCounts.Clear();
+        lock (HitCountsSync)
+        {
+            HitCounts.Clear();
+        }
     }
 
     internal static int GetHitCountForTests(FinalOutputObservation observation)
     {
         var normalized = Normalize(observation);
-        return ObservabilityHelpers.GetCounterValue(HitCounts, BuildCounterKey(normalized));
+        lock (HitCountsSync)
+        {
+            return ObservabilityHelpers.GetCounterValue(HitCounts, BuildCounterKey(normalized));
+        }
     }
 
     internal static void Record(FinalOutputObservation observation)
@@ -115,12 +123,15 @@ internal static class FinalOutputObservability
 
     private static int AddOrUpdateCapped(ConcurrentDictionary<string, int> counters, string key, int maxKeys)
     {
-        if (counters.ContainsKey(key) || counters.Count < maxKeys)
+        lock (HitCountsSync)
         {
-            return counters.AddOrUpdate(key, 1, ObservabilityHelpers.IncrementCounter);
-        }
+            if (counters.ContainsKey(key) || counters.Count < maxKeys)
+            {
+                return counters.AddOrUpdate(key, 1, ObservabilityHelpers.IncrementCounter);
+            }
 
-        return counters.AddOrUpdate(OverflowKey, 1, ObservabilityHelpers.IncrementCounter);
+            return counters.AddOrUpdate(OverflowKey, 1, ObservabilityHelpers.IncrementCounter);
+        }
     }
 
     private readonly struct NormalizedObservation

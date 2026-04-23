@@ -43,17 +43,43 @@ _SINK_OBSERVE_NEW = (
     " family=sink_observe; template_id=<missing>; payload_mode=full;"
     " payload_excerpt=You catch fire; payload_sha256=<missing>"
 )
-_FINAL_OUTPUT_PROBE_NEW = (
-    "[QudJP] FinalOutputProbe/v1: sink='MessageLog' route='EmitMessage' detail='ObservationOnly'"
-    " phase='before_sink' translation_status='sink_unclaimed' markup_status='not_evaluated'"
-    " direct_marker_status='not_evaluated' hit=1 source='You catch fire'"
-    " stripped='You catch fire' translated='' final='You catch fire'; route=EmitMessage;"
-    " family=final_output; template_id=<missing>; payload_mode=full; payload_excerpt=You catch fire;"
-    " payload_sha256=<missing>; sink=MessageLog; detail=ObservationOnly; phase=before_sink;"
-    " translation_status=sink_unclaimed; markup_status=not_evaluated;"
-    " direct_marker_status=not_evaluated; source_text_sample=You catch fire;"
-    " stripped_text_sample=You catch fire; translated_text_sample=; final_text_sample=You catch fire"
-)
+
+
+def _final_output_probe_line(**overrides: str | int) -> str:
+    """Build a FinalOutputProbe fixture with matching prefix and structured fields."""
+    fields: dict[str, str | int] = {
+        "sink": "MessageLog",
+        "route": "EmitMessage",
+        "detail": "ObservationOnly",
+        "phase": "before_sink",
+        "translation_status": "sink_unclaimed",
+        "markup_status": "not_evaluated",
+        "direct_marker_status": "not_evaluated",
+        "hit": 1,
+        "source": "You catch fire",
+        "stripped": "You catch fire",
+        "translated": "",
+        "final": "You catch fire",
+    }
+    fields.update(overrides)
+    return (
+        f"[QudJP] FinalOutputProbe/v1: sink='{fields['sink']}' route='{fields['route']}'"
+        f" detail='{fields['detail']}' phase='{fields['phase']}'"
+        f" translation_status='{fields['translation_status']}' markup_status='{fields['markup_status']}'"
+        f" direct_marker_status='{fields['direct_marker_status']}' hit={fields['hit']}"
+        f" source='{fields['source']}' stripped='{fields['stripped']}'"
+        f" translated='{fields['translated']}' final='{fields['final']}'; route={fields['route']};"
+        f" family=final_output; template_id=<missing>; payload_mode=full;"
+        f" payload_excerpt={fields['final']}; payload_sha256=<missing>; sink={fields['sink']};"
+        f" detail={fields['detail']}; phase={fields['phase']};"
+        f" translation_status={fields['translation_status']}; markup_status={fields['markup_status']};"
+        f" direct_marker_status={fields['direct_marker_status']}; source_text_sample={fields['source']};"
+        f" stripped_text_sample={fields['stripped']}; translated_text_sample={fields['translated']};"
+        f" final_text_sample={fields['final']}"
+    )
+
+
+_FINAL_OUTPUT_PROBE_NEW = _final_output_probe_line()
 
 
 def test_parse_log_text_uses_same_parser_as_file_input() -> None:
@@ -511,10 +537,7 @@ def test_parse_final_output_probe_keeps_phase_and_sink_distinct(tmp_path: Path) 
         log,
         [
             _FINAL_OUTPUT_PROBE_NEW,
-            _FINAL_OUTPUT_PROBE_NEW.replace("sink='MessageLog'", "sink='Popup'", 1)
-            .replace("; sink=MessageLog;", "; sink=Popup;")
-            .replace("phase='before_sink'", "phase='after_sink'", 1)
-            .replace("; phase=before_sink;", "; phase=after_sink;"),
+            _final_output_probe_line(sink="Popup", phase="after_sink"),
         ],
     )
 
@@ -532,10 +555,7 @@ def test_parse_final_output_probe_keeps_stripped_and_translated_distinct(tmp_pat
         log,
         [
             _FINAL_OUTPUT_PROBE_NEW,
-            _FINAL_OUTPUT_PROBE_NEW.replace("stripped='You catch fire'", "stripped='You catch flames'", 1)
-            .replace("translated=''", "translated='あなたは燃える'", 1)
-            .replace("; stripped_text_sample=You catch fire;", "; stripped_text_sample=You catch flames;")
-            .replace("; translated_text_sample=;", "; translated_text_sample=あなたは燃える;"),
+            _final_output_probe_line(stripped="You catch flames", translated="あなたは燃える"),
         ],
     )
 
