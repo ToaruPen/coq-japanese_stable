@@ -310,7 +310,8 @@ class TestVerificationReport:
             " payload_sha256=<missing>; sink=MessageLog; detail=ObservationOnly; phase=before_sink;"
             " translation_status=sink_unclaimed; markup_status=matched;"
             " direct_marker_status=not_evaluated; source_text_sample=You catch fire;"
-            " stripped_text_sample=You catch fire; translated_text_sample=; final_text_sample=You catch fire"
+            " stripped_text_sample=You catch fire; translated_text_sample=; final_text_sample=You catch fire;"
+            " source_visible_sha256=source-hash-catch-fire; final_visible_sha256=final-hash-catch-fire"
             "\n[QudJP] FinalOutputProbe/v1: sink='MessageLog' route='EmitMessage' detail='DirectMarker'"
             " phase='before_sink' translation_status='direct_marker' markup_status='source_only'"
             " direct_marker_status='present' hit=1 source='{{R|You hit snapjaw.}}'"
@@ -322,7 +323,23 @@ class TestVerificationReport:
             " translation_status=direct_marker; markup_status=source_only;"
             " direct_marker_status=present; source_text_sample={{R|You hit snapjaw.}};"
             " stripped_text_sample=You hit snapjaw.; translated_text_sample=あなたはsnapjawに命中した。;"
-            " final_text_sample=あなたはsnapjawに命中した。"
+            " final_text_sample=あなたはsnapjawに命中した。;"
+            " source_visible_sha256=source-hash-hit; final_visible_sha256=final-hash-hit"
+            "\n[QudJP] FinalOutputProbe/v1: sink='MessageLog' route='EmitMessage' detail='DirectMarker'"
+            " phase='before_sink' translation_status='direct_marker' markup_status='matched'"
+            " direct_marker_status='present' hit=1 source='{{phase-harmonic|snapjaw brute}}'"
+            " stripped='snapjaw brute' translated='{{phase-harmonic|snapjaw}} brute'"
+            " final='{{phase-harmonic|snapjaw}} brute'; route=EmitMessage;"
+            " family=final_output; template_id=<missing>; payload_mode=full;"
+            " payload_excerpt={{phase-harmonic|snapjaw}} brute; payload_sha256=<missing>;"
+            " sink=MessageLog; detail=DirectMarker; phase=before_sink;"
+            " translation_status=direct_marker; markup_status=matched;"
+            " direct_marker_status=present; source_text_sample={{phase-harmonic|snapjaw brute}};"
+            " stripped_text_sample=snapjaw brute; translated_text_sample={{phase-harmonic|snapjaw}} brute;"
+            " final_text_sample={{phase-harmonic|snapjaw}} brute;"
+            " source_markup_spans=qud:phase-harmonic@0-13;"
+            " final_markup_spans=qud:phase-harmonic@0-7; markup_span_status=span_mismatch;"
+            " source_visible_sha256=source-visible-hash; final_visible_sha256=final-visible-hash"
         )
         second_stage = "[QudJP] Translator: missing key 'Equipment' (hit 1). (context: UITextSkinTranslationPatch)"
         log_text = f"{first_stage}\n{second_stage}\n"
@@ -355,19 +372,34 @@ class TestVerificationReport:
         assert [entry["text"] for entry in final_output_observations] == [
             "You catch fire",
             "{{R|You hit snapjaw.}}",
+            "{{phase-harmonic|snapjaw brute}}",
         ]
         assert final_output_observations[0]["sink"] == "MessageLog"
         assert final_output_observations[0]["phase"] == "before_sink"
         assert final_output_observations[0]["translation_status"] == "sink_unclaimed"
         assert final_output_observations[0]["final_text_sample"] == "You catch fire"
-        assert first_summary["final_output_observations"] == 2
+        assert final_output_observations[0]["source_visible_sha256"] == "source-hash-catch-fire"
+        assert final_output_observations[0]["final_visible_sha256"] == "final-hash-catch-fire"
+        assert final_output_observations[1]["source_visible_sha256"] == "source-hash-hit"
+        assert final_output_observations[1]["final_visible_sha256"] == "final-hash-hit"
+        assert final_output_observations[2]["source_visible_sha256"] == "source-visible-hash"
+        assert final_output_observations[2]["final_visible_sha256"] == "final-visible-hash"
+        assert all("source_visible_sha256" in entry for entry in final_output_observations)
+        assert all("final_visible_sha256" in entry for entry in final_output_observations)
+        assert first_summary["final_output_observations"] == 3
+        assert final_output_observations[2]["markup_span_status"] == "span_mismatch"
+        assert final_output_observations[2]["source_markup_spans"] == "qud:phase-harmonic@0-13"
+        assert final_output_observations[2]["final_markup_spans"] == "qud:phase-harmonic@0-7"
         assert first["markup_color_tag_issue_candidates"][0]["source_markup"] == ["{{W|", "}}"]
         assert first["markup_color_tag_issue_candidates"][1]["kind"] == "final_output_probe"
         assert first["markup_color_tag_issue_candidates"][1]["markup_status"] == "source_only"
+        assert first["markup_color_tag_issue_candidates"][2]["markup_span_status"] == "span_mismatch"
+        assert first["markup_color_tag_issue_candidates"][2]["source_markup_spans"] == "qud:phase-harmonic@0-13"
+        assert first["markup_color_tag_issue_candidates"][2]["final_markup_spans"] == "qud:phase-harmonic@0-7"
         assert report_summary["stage_count"] == 2
         assert report_summary["missing_key_candidates"] == 2
-        assert report_summary["final_output_observations"] == 2
-        assert report_summary["markup_color_tag_issue_candidates"] == 2
+        assert report_summary["final_output_observations"] == 3
+        assert report_summary["markup_color_tag_issue_candidates"] == 3
         assert report_summary["preserved_english"] == 1
 
 

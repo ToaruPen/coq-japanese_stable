@@ -60,6 +60,11 @@ def _final_output_probe_line(**overrides: str | int) -> str:
         "stripped": "You catch fire",
         "translated": "",
         "final": "You catch fire",
+        "source_markup_spans": "",
+        "final_markup_spans": "",
+        "markup_span_status": "no_markup",
+        "source_visible_sha256": "source-hash",
+        "final_visible_sha256": "final-hash",
     }
     unknown = set(overrides) - set(fields)
     if unknown:
@@ -84,7 +89,12 @@ def _final_output_probe_line(**overrides: str | int) -> str:
         f" direct_marker_status={structured['direct_marker_status']};"
         f" source_text_sample={structured['source']};"
         f" stripped_text_sample={structured['stripped']}; translated_text_sample={structured['translated']};"
-        f" final_text_sample={structured['final']}"
+        f" final_text_sample={structured['final']};"
+        f" source_markup_spans={structured['source_markup_spans']};"
+        f" final_markup_spans={structured['final_markup_spans']};"
+        f" markup_span_status={structured['markup_span_status']};"
+        f" source_visible_sha256={structured['source_visible_sha256']};"
+        f" final_visible_sha256={structured['final_visible_sha256']}"
     )
 
 
@@ -548,6 +558,11 @@ def test_parse_final_output_probe(tmp_path: Path) -> None:
     assert entry.stripped_text_sample == "You catch fire"
     assert entry.translated_text_sample == ""
     assert entry.final_text_sample == "You catch fire"
+    assert entry.source_markup_spans == ""
+    assert entry.final_markup_spans == ""
+    assert entry.markup_span_status == "no_markup"
+    assert entry.source_visible_sha256 == "source-hash"
+    assert entry.final_visible_sha256 == "final-hash"
 
 
 def test_parse_final_output_probe_keeps_phase_and_sink_distinct(tmp_path: Path) -> None:

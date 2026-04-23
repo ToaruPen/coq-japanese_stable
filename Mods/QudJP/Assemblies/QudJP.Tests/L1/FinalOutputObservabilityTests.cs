@@ -39,6 +39,8 @@ public sealed class FinalOutputObservabilityTests
     [Test]
     public void Record_UsesExpectedFormatAndFinalTextPayloadIdentity()
     {
+        var expectedVisibleHash = ComputeSha256Hex("Unknown text");
+
         var output = TestTraceHelper.CaptureTrace(() =>
             FinalOutputObservability.Record(
                 CreateObservation(
@@ -51,6 +53,9 @@ public sealed class FinalOutputObservabilityTests
             output,
             Does.Contain(
                 "[QudJP] FinalOutputProbe/v1: sink='UITextSkinTranslationPatch' route='PopupTranslationPatch' detail='ObservationOnly' phase='before_sink' translation_status='sink_unclaimed' markup_status='not_evaluated' direct_marker_status='not_evaluated' hit=1 source='{{R|Unknown text}}' stripped='Unknown text' translated='' final='{{R|Unknown text}}'; route=PopupTranslationPatch; family=final_output; template_id=<missing>; payload_mode=full; payload_excerpt={{R|Unknown text}}; payload_sha256=<missing>; sink=UITextSkinTranslationPatch; detail=ObservationOnly; phase=before_sink; translation_status=sink_unclaimed; markup_status=not_evaluated; direct_marker_status=not_evaluated; source_text_sample={{R|Unknown text}}; stripped_text_sample=Unknown text; translated_text_sample=; final_text_sample={{R|Unknown text}}"));
+        Assert.That(output, Does.Contain("; source_markup_spans=qud:R@0-12; final_markup_spans=qud:R@0-12; markup_span_status=matched;"));
+        Assert.That(output, Does.Contain("; source_visible_sha256=" + expectedVisibleHash));
+        Assert.That(output, Does.Contain("; final_visible_sha256=" + expectedVisibleHash));
     }
 
     [Test]
@@ -159,6 +164,55 @@ public sealed class FinalOutputObservabilityTests
         Assert.That(output, Does.Contain("direct_marker_status='present'"));
         Assert.That(output, Does.Contain("markup_status='matched'"));
         Assert.That(output, Does.Contain("translated='{{G|あなたは命中した。}}' final='{{G|あなたは命中した。}}'"));
+    }
+
+    [Test]
+    public void ComputeMarkupSpanStatusForTests_DetectsBoundaryDriftWithMatchingTokenSequence()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                FinalOutputObservability.ComputeMarkupStatusForTests(
+                    "{{phase-harmonic|血まみれの}}タム",
+                    "{{phase-harmonic|血ま}}みれのタム"),
+                Is.EqualTo("matched"));
+            Assert.That(
+                FinalOutputObservability.ComputeMarkupSpanStatusForTests(
+                    "{{phase-harmonic|血まみれの}}タム",
+                    "{{phase-harmonic|血ま}}みれのタム"),
+                Is.EqualTo("span_mismatch"));
+            Assert.That(
+                FinalOutputObservability.BuildMarkupSpanSignatureForTests("{{phase-harmonic|血まみれの}}タム"),
+                Is.EqualTo("qud:phase-harmonic@0-5"));
+            Assert.That(
+                FinalOutputObservability.BuildMarkupSpanSignatureForTests("{{phase-harmonic|血ま}}みれのタム"),
+                Is.EqualTo("qud:phase-harmonic@0-2"));
+        });
+    }
+
+    [Test]
+    public void ComputeMarkupSpanStatusForTests_ClassifiesTokenMismatchBeforeSpanComparison()
+    {
+        Assert.That(
+            FinalOutputObservability.ComputeMarkupSpanStatusForTests("{{R|source}}", "{{G|source}}"),
+            Is.EqualTo("token_mismatch"));
+    }
+
+    [Test]
+    public void BuildMarkupSpanSignatureForTests_RecordsTmpColorRangesAndInlineTokenPositions()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                FinalOutputObservability.BuildMarkupSpanSignatureForTests("<color=#AA0000>HP</color> &Gready"),
+                Is.EqualTo("tmp:#AA0000@0-2|fg:G@3"));
+            Assert.That(
+                FinalOutputObservability.BuildMarkupSpanSignatureForTests("{{R|a&&b^^c}}"),
+                Is.EqualTo("escape:&@1|escape:^@3|qud:R@0-5"));
+            Assert.That(
+                FinalOutputObservability.BuildMarkupSpanSignatureForTests("{{w-W-Y sequence|Paingouin}}"),
+                Is.EqualTo("qud:w-W-Y sequence@0-9"));
+        });
     }
 
     [TestCase("plain", "plain", "no_markup")]

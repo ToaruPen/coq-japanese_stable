@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.Text;
@@ -19,6 +20,8 @@ internal static class FinalOutputObservability
     internal const string MarkupStatusMismatch = "mismatch";
     internal const string MarkupStatusNoMarkup = "no_markup";
     internal const string MarkupStatusSourceOnly = "source_only";
+    internal const string MarkupSpanStatusSpanMismatch = "span_mismatch";
+    internal const string MarkupSpanStatusTokenMismatch = "token_mismatch";
     internal const string NotEvaluatedStatus = "not_evaluated";
     internal const string PhaseBeforeSink = "before_sink";
     internal const string TranslationStatusAlreadyLocalized = "already_localized";
@@ -36,7 +39,7 @@ internal static class FinalOutputObservability
 
     private static readonly object HitCountsSync = new object();
     private static readonly Regex MarkupTokenPattern =
-        new Regex(@"\{\{[A-Za-z0-9#]+\||\}\}|&&|\^\^|&[A-Za-z]|\^[A-Za-z]|</?color(?:=[^>]+)?>|=[A-Za-z0-9_.]+=", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        new Regex(@"\{\{[^|}]+\||\}\}|&&|\^\^|&[A-Za-z]|\^[A-Za-z]|<color=[^>]+>|</color>|=[A-Za-z0-9_.]+=", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     internal static void ResetForTests()
     {
@@ -58,6 +61,16 @@ internal static class FinalOutputObservability
     internal static string ComputeMarkupStatusForTests(string? sourceText, string? finalText)
     {
         return ComputeMarkupStatus(sourceText, finalText);
+    }
+
+    internal static string ComputeMarkupSpanStatusForTests(string? sourceText, string? finalText)
+    {
+        return ComputeMarkupSpanStatus(sourceText, finalText);
+    }
+
+    internal static string BuildMarkupSpanSignatureForTests(string? text)
+    {
+        return BuildMarkupSpanSignature(text);
     }
 
     internal static void RecordSinkUnclaimed(
@@ -148,6 +161,16 @@ internal static class FinalOutputObservability
             return;
         }
 
+        var sourceMarkupSpans = BuildMarkupSpanSignature(normalized.SourceText);
+        var finalMarkupSpans = BuildMarkupSpanSignature(normalized.FinalText);
+        var markupSpanStatus = ComputeMarkupSpanStatus(
+            normalized.SourceText,
+            normalized.FinalText,
+            sourceMarkupSpans,
+            finalMarkupSpans);
+        var sourceVisibleSha256 = ObservabilityHelpers.ComputeSha256Hex(BuildVisibleText(normalized.SourceText));
+        var finalVisibleSha256 = ObservabilityHelpers.ComputeSha256Hex(BuildVisibleText(normalized.FinalText));
+
         QudJPMod.LogToUnity(
             "[QudJP] FinalOutputProbe/" + ProbeVersion +
             ": sink='" + SanitizeQuotedValue(normalized.Sink) +
@@ -173,7 +196,12 @@ internal static class FinalOutputObservability
                 normalized.SourceText,
                 normalized.StrippedText,
                 normalized.TranslatedText,
-                normalized.FinalText));
+                normalized.FinalText,
+                sourceMarkupSpans,
+                finalMarkupSpans,
+                markupSpanStatus,
+                sourceVisibleSha256,
+                finalVisibleSha256));
     }
 
     private static string SanitizeQuotedValue(string value)
@@ -238,6 +266,340 @@ internal static class FinalOutputObservability
         }
 
         return MarkupStatusMatched;
+    }
+
+    private static string ComputeMarkupSpanStatus(string? sourceText, string? finalText)
+    {
+        return ComputeMarkupSpanStatus(
+            sourceText,
+            finalText,
+            BuildMarkupSpanSignature(sourceText),
+            BuildMarkupSpanSignature(finalText));
+    }
+
+    private static string ComputeMarkupSpanStatus(
+        string? sourceText,
+        string? finalText,
+        string sourceMarkupSpans,
+        string finalMarkupSpans)
+    {
+        var tokenStatus = ComputeMarkupStatus(sourceText, finalText);
+        if (string.Equals(tokenStatus, MarkupStatusNoMarkup, StringComparison.Ordinal)
+            || string.Equals(tokenStatus, MarkupStatusSourceOnly, StringComparison.Ordinal)
+            || string.Equals(tokenStatus, MarkupStatusFinalOnly, StringComparison.Ordinal))
+        {
+            return tokenStatus;
+        }
+
+        if (!string.Equals(tokenStatus, MarkupStatusMatched, StringComparison.Ordinal))
+        {
+            return MarkupSpanStatusTokenMismatch;
+        }
+
+        return string.Equals(sourceMarkupSpans, finalMarkupSpans, StringComparison.Ordinal)
+            ? MarkupStatusMatched
+            : MarkupSpanStatusSpanMismatch;
+    }
+
+    private static string BuildMarkupSpanSignature(string? text)
+    {
+        var value = text ?? string.Empty;
+        if (value.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        var spans = new List<string>();
+        var stack = new Stack<MarkupScope>();
+        var visibleIndex = 0;
+        var index = 0;
+        while (index < value.Length)
+        {
+            if (TryReadQudOpen(value, index, out var qudShader, out var qudLength))
+            {
+                stack.Push(new MarkupScope("qud", qudShader, visibleIndex));
+                index += qudLength;
+                continue;
+            }
+
+            if (StartsWithOrdinal(value, index, "}}"))
+            {
+                if (TryPopScope(stack, "qud", out var scope))
+                {
+                    spans.Add(FormatSpan(scope, visibleIndex));
+                }
+                else
+                {
+                    spans.Add("qud-close@" + visibleIndex.ToString(CultureInfo.InvariantCulture));
+                }
+
+                index += 2;
+                continue;
+            }
+
+            if (TryReadTmpColorOpen(value, index, out var tmpColor, out var tmpOpenLength))
+            {
+                stack.Push(new MarkupScope("tmp", tmpColor, visibleIndex));
+                index += tmpOpenLength;
+                continue;
+            }
+
+            if (StartsWithOrdinal(value, index, "</color>"))
+            {
+                if (TryPopScope(stack, "tmp", out var scope))
+                {
+                    spans.Add(FormatSpan(scope, visibleIndex));
+                }
+                else
+                {
+                    spans.Add("tmp-close@" + visibleIndex.ToString(CultureInfo.InvariantCulture));
+                }
+
+                index += "</color>".Length;
+                continue;
+            }
+
+            if (StartsWithOrdinal(value, index, "&&"))
+            {
+                spans.Add("escape:&@" + visibleIndex.ToString(CultureInfo.InvariantCulture));
+                visibleIndex++;
+                index += 2;
+                continue;
+            }
+
+            if (StartsWithOrdinal(value, index, "^^"))
+            {
+                spans.Add("escape:^@" + visibleIndex.ToString(CultureInfo.InvariantCulture));
+                visibleIndex++;
+                index += 2;
+                continue;
+            }
+
+            if ((value[index] == '&' || value[index] == '^') && index + 1 < value.Length && IsAsciiLetter(value[index + 1]))
+            {
+                spans.Add((value[index] == '&' ? "fg:" : "bg:")
+                    + value[index + 1]
+                    + "@"
+                    + visibleIndex.ToString(CultureInfo.InvariantCulture));
+                index += 2;
+                continue;
+            }
+
+            if (TryReadPlaceholder(value, index, out var placeholder, out var placeholderLength))
+            {
+                spans.Add("placeholder:" + placeholder + "@" + visibleIndex.ToString(CultureInfo.InvariantCulture));
+                index += placeholderLength;
+                continue;
+            }
+
+            visibleIndex++;
+            index++;
+        }
+
+        while (stack.Count > 0)
+        {
+            var scope = stack.Pop();
+            spans.Add(FormatSpan(scope, visibleIndex));
+        }
+
+        return string.Join("|", spans);
+    }
+
+    private static string BuildVisibleText(string text)
+    {
+        var builder = new StringBuilder(text.Length);
+        var index = 0;
+        while (index < text.Length)
+        {
+            if (TryReadQudOpen(text, index, out _, out var qudLength))
+            {
+                index += qudLength;
+                continue;
+            }
+
+            if (StartsWithOrdinal(text, index, "}}"))
+            {
+                index += 2;
+                continue;
+            }
+
+            if (TryReadTmpColorOpen(text, index, out _, out var tmpOpenLength))
+            {
+                index += tmpOpenLength;
+                continue;
+            }
+
+            if (StartsWithOrdinal(text, index, "</color>"))
+            {
+                index += "</color>".Length;
+                continue;
+            }
+
+            if (StartsWithOrdinal(text, index, "&&"))
+            {
+                builder.Append('&');
+                index += 2;
+                continue;
+            }
+
+            if (StartsWithOrdinal(text, index, "^^"))
+            {
+                builder.Append('^');
+                index += 2;
+                continue;
+            }
+
+            if ((text[index] == '&' || text[index] == '^') && index + 1 < text.Length && IsAsciiLetter(text[index + 1]))
+            {
+                index += 2;
+                continue;
+            }
+
+            if (TryReadPlaceholder(text, index, out _, out var placeholderLength))
+            {
+                index += placeholderLength;
+                continue;
+            }
+
+            builder.Append(text[index]);
+            index++;
+        }
+
+        return builder.ToString();
+    }
+
+    private static bool TryReadQudOpen(string value, int index, out string shader, out int length)
+    {
+        shader = string.Empty;
+        length = 0;
+        if (!StartsWithOrdinal(value, index, "{{"))
+        {
+            return false;
+        }
+
+        var separatorIndex = -1;
+        for (var scanIndex = index + 2; scanIndex < value.Length; scanIndex++)
+        {
+            if (scanIndex + 1 < value.Length && value[scanIndex] == '}' && value[scanIndex + 1] == '}')
+            {
+                return false;
+            }
+
+            if (value[scanIndex] == '|')
+            {
+                separatorIndex = scanIndex;
+                break;
+            }
+        }
+
+        if (separatorIndex < 0)
+        {
+            return false;
+        }
+
+        var candidate = value.Substring(index + 2, separatorIndex - index - 2);
+        if (candidate.Length == 0)
+        {
+            return false;
+        }
+
+        shader = candidate;
+        length = separatorIndex - index + 1;
+        return true;
+    }
+
+    private static bool TryReadTmpColorOpen(string value, int index, out string color, out int length)
+    {
+        color = string.Empty;
+        length = 0;
+        if (!StartsWithOrdinal(value, index, "<color="))
+        {
+            return false;
+        }
+
+        var endIndex = value.IndexOf('>', index + "<color=".Length);
+        if (endIndex < 0)
+        {
+            return false;
+        }
+
+        color = value.Substring(index + "<color=".Length, endIndex - index - "<color=".Length);
+        length = endIndex - index + 1;
+        return true;
+    }
+
+    private static bool TryReadPlaceholder(string value, int index, out string placeholder, out int length)
+    {
+        placeholder = string.Empty;
+        length = 0;
+        if (value[index] != '=')
+        {
+            return false;
+        }
+
+        var endIndex = value.IndexOf('=', index + 1);
+        if (endIndex < 0)
+        {
+            return false;
+        }
+
+        var candidate = value.Substring(index + 1, endIndex - index - 1);
+        if (candidate.Length == 0)
+        {
+            return false;
+        }
+
+        for (var candidateIndex = 0; candidateIndex < candidate.Length; candidateIndex++)
+        {
+            var character = candidate[candidateIndex];
+            if (!IsAsciiLetterOrDigit(character) && character != '_' && character != '.')
+            {
+                return false;
+            }
+        }
+
+        placeholder = candidate;
+        length = endIndex - index + 1;
+        return true;
+    }
+
+    private static bool TryPopScope(Stack<MarkupScope> stack, string kind, out MarkupScope scope)
+    {
+        if (stack.Count > 0 && string.Equals(stack.Peek().Kind, kind, StringComparison.Ordinal))
+        {
+            scope = stack.Pop();
+            return true;
+        }
+
+        scope = default;
+        return false;
+    }
+
+    private static string FormatSpan(MarkupScope scope, int endVisibleIndex)
+    {
+        return scope.Kind
+            + ":"
+            + scope.Value
+            + "@"
+            + scope.StartVisibleIndex.ToString(CultureInfo.InvariantCulture)
+            + "-"
+            + endVisibleIndex.ToString(CultureInfo.InvariantCulture);
+    }
+
+    private static bool StartsWithOrdinal(string value, int index, string prefix)
+    {
+        return index <= value.Length - prefix.Length
+            && string.CompareOrdinal(value, index, prefix, 0, prefix.Length) == 0;
+    }
+
+    private static bool IsAsciiLetter(char character)
+    {
+        return (character >= 'A' && character <= 'Z') || (character >= 'a' && character <= 'z');
+    }
+
+    private static bool IsAsciiLetterOrDigit(char character)
+    {
+        return IsAsciiLetter(character) || (character >= '0' && character <= '9');
     }
 
     private static NormalizedObservation Normalize(FinalOutputObservation observation)
@@ -342,5 +704,21 @@ internal static class FinalOutputObservability
         internal string TranslatedText { get; }
 
         internal string FinalText { get; }
+    }
+
+    private readonly struct MarkupScope
+    {
+        internal MarkupScope(string kind, string value, int startVisibleIndex)
+        {
+            Kind = kind;
+            Value = value;
+            StartVisibleIndex = startVisibleIndex;
+        }
+
+        internal string Kind { get; }
+
+        internal string Value { get; }
+
+        internal int StartVisibleIndex { get; }
     }
 }

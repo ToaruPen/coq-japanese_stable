@@ -186,7 +186,12 @@ internal static class ObservabilityHelpers
         string sourceText,
         string strippedText,
         string translatedText,
-        string finalText)
+        string finalText,
+        string sourceMarkupSpans,
+        string finalMarkupSpans,
+        string markupSpanStatus,
+        string sourceVisibleSha256,
+        string finalVisibleSha256)
     {
         return BuildHelperStructuredSuffix(route, FinalOutputObservability.Family, finalText)
             + "; sink=" + EscapeStructuredValue(sink)
@@ -198,7 +203,12 @@ internal static class ObservabilityHelpers
             + "; source_text_sample=" + EscapeStructuredSample(sourceText)
             + "; stripped_text_sample=" + EscapeStructuredSample(strippedText)
             + "; translated_text_sample=" + EscapeStructuredSample(translatedText)
-            + "; final_text_sample=" + EscapeStructuredSample(finalText);
+            + "; final_text_sample=" + EscapeStructuredSample(finalText)
+            + "; source_markup_spans=" + EscapeStructuredValue(sourceMarkupSpans)
+            + "; final_markup_spans=" + EscapeStructuredValue(finalMarkupSpans)
+            + "; markup_span_status=" + EscapeStructuredValue(markupSpanStatus)
+            + "; source_visible_sha256=" + EscapeStructuredValue(sourceVisibleSha256)
+            + "; final_visible_sha256=" + EscapeStructuredValue(finalVisibleSha256);
     }
 
     internal static string EscapeStructuredValue(string value)
@@ -255,7 +265,7 @@ internal static class ObservabilityHelpers
         return builder.ToString();
     }
 
-    private static string ComputeSha256Hex(string value)
+    internal static string ComputeSha256Hex(string value)
     {
         var bytes = Encoding.UTF8.GetBytes(value);
 #if NET48
