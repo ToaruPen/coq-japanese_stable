@@ -74,9 +74,11 @@ public sealed class UITextSkinTranslationPatchTests
     {
         var text = "\u0001{{W|熊は防いだ。}}";
 
-        UITextSkinTranslationPatch.Prefix(ref text);
+        var output = TestTraceHelper.CaptureTrace(() => UITextSkinTranslationPatch.Prefix(ref text));
 
         Assert.That(text, Is.EqualTo("{{W|熊は防いだ。}}"));
+        Assert.That(output, Does.Contain("translation_status='direct_marker'"));
+        Assert.That(output, Does.Contain("direct_marker_status='present'"));
     }
 
     [TestCaseSource(typeof(QudJP.Tests.L1.ColorRouteInvariantCases), nameof(QudJP.Tests.L1.ColorRouteInvariantCases.UiTextSkinCases))]
@@ -101,12 +103,13 @@ public sealed class UITextSkinTranslationPatchTests
         WriteDictionary(("quit", "終了"), ("[Esc]", "[Esc-JP]"));
 
         var original = text;
-        UITextSkinTranslationPatch.Prefix(ref text);
+        var output = TestTraceHelper.CaptureTrace(() => UITextSkinTranslationPatch.Prefix(ref text));
 
         Assert.Multiple(() =>
         {
             Assert.That(text, Is.EqualTo(original));
             Assert.That(Translator.GetMissingKeyHitCountForTests(original), Is.EqualTo(0));
+            Assert.That(output, Does.Contain("translation_status='skipped'"));
         });
     }
 
@@ -119,13 +122,29 @@ public sealed class UITextSkinTranslationPatchTests
     {
         WriteDictionary(("クラシック", "CLASSIC-JP"));
 
-        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(text, nameof(UITextSkinTranslationPatch));
+        var output = TestTraceHelper.CaptureTrace(() =>
+            Assert.That(
+                UITextSkinTranslationPatch.TranslatePreservingColors(text, nameof(UITextSkinTranslationPatch)),
+                Is.EqualTo(text)));
 
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Is.EqualTo(text));
             Assert.That(Translator.GetMissingKeyHitCountForTests(text), Is.EqualTo(0));
+            Assert.That(output, Does.Contain("translation_status='skipped'"));
         });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_RecordsAlreadyLocalizedDirectRouteText()
+    {
+        var text = "新しいゲーム";
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+            Assert.That(
+                UITextSkinTranslationPatch.TranslatePreservingColors(text, nameof(MainMenuLocalizationPatch)),
+                Is.EqualTo(text)));
+
+        Assert.That(output, Does.Contain("translation_status='already_localized'"));
     }
 
     [Test]

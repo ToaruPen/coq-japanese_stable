@@ -1583,23 +1583,43 @@ def _has_ascii_word_candidate(text: str) -> bool:
 def _markup_issue_candidates(entries: list[LogEntry]) -> list[dict[str, object]]:
     candidates: list[dict[str, object]] = []
     for entry in entries:
-        if entry.kind != LogEntryKind.DYNAMIC_TEXT_PROBE or entry.translated_text is None:
-            continue
-        source_markup = _markup_signature(entry.text)
-        translated_markup = _markup_signature(entry.translated_text)
-        if source_markup == translated_markup:
-            continue
-        candidates.append(
-            {
-                "text": entry.text,
-                "translated_text": entry.translated_text,
-                "route": entry.route,
-                "kind": entry.kind.value,
-                "line_number": entry.line_number,
-                "source_markup": source_markup,
-                "translated_markup": translated_markup,
-            },
-        )
+        if entry.kind == LogEntryKind.DYNAMIC_TEXT_PROBE and entry.translated_text is not None:
+            source_markup = _markup_signature(entry.text)
+            translated_markup = _markup_signature(entry.translated_text)
+            if source_markup == translated_markup:
+                continue
+            candidates.append(
+                {
+                    "text": entry.text,
+                    "translated_text": entry.translated_text,
+                    "route": entry.route,
+                    "kind": entry.kind.value,
+                    "line_number": entry.line_number,
+                    "source_markup": source_markup,
+                    "translated_markup": translated_markup,
+                },
+            )
+        elif entry.kind == LogEntryKind.FINAL_OUTPUT_PROBE:
+            source_text = entry.source_text_sample or entry.text
+            final_text = entry.final_text_sample or ""
+            source_markup = _markup_signature(source_text)
+            final_markup = _markup_signature(final_text)
+            if source_markup == final_markup:
+                continue
+            candidates.append(
+                {
+                    "text": entry.text,
+                    "final_text": final_text,
+                    "route": entry.route,
+                    "kind": entry.kind.value,
+                    "line_number": entry.line_number,
+                    "translation_status": entry.translation_status,
+                    "markup_status": entry.markup_status,
+                    "direct_marker_status": entry.direct_marker_status,
+                    "source_markup": source_markup,
+                    "final_markup": final_markup,
+                },
+            )
     return candidates
 
 

@@ -29,8 +29,15 @@ public static class MessageLogPatch
             _ = Color;
             _ = Capitalize;
 
-            if (MessageFrameTranslator.TryStripDirectTranslationMarker(ref Message))
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(Message, out var markedText))
             {
+                FinalOutputObservability.RecordDirectMarker(
+                    nameof(MessageLogPatch),
+                    nameof(MessageLogPatch),
+                    FinalOutputObservability.DetailDirectMarker,
+                    Message,
+                    markedText);
+                Message = markedText;
                 return true;
             }
 
