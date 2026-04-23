@@ -62,21 +62,32 @@ def _final_output_probe_line(**overrides: str | int) -> str:
         "final": "You catch fire",
     }
     fields.update(overrides)
+    prefix = {key: _probe_prefix_value(value) for key, value in fields.items()}
+    structured = {key: _structured_suffix_value(value) for key, value in fields.items()}
     return (
-        f"[QudJP] FinalOutputProbe/v1: sink='{fields['sink']}' route='{fields['route']}'"
-        f" detail='{fields['detail']}' phase='{fields['phase']}'"
-        f" translation_status='{fields['translation_status']}' markup_status='{fields['markup_status']}'"
-        f" direct_marker_status='{fields['direct_marker_status']}' hit={fields['hit']}"
-        f" source='{fields['source']}' stripped='{fields['stripped']}'"
-        f" translated='{fields['translated']}' final='{fields['final']}'; route={fields['route']};"
+        f"[QudJP] FinalOutputProbe/v1: sink='{prefix['sink']}' route='{prefix['route']}'"
+        f" detail='{prefix['detail']}' phase='{prefix['phase']}'"
+        f" translation_status='{prefix['translation_status']}' markup_status='{prefix['markup_status']}'"
+        f" direct_marker_status='{prefix['direct_marker_status']}' hit={fields['hit']}"
+        f" source='{prefix['source']}' stripped='{prefix['stripped']}'"
+        f" translated='{prefix['translated']}' final='{prefix['final']}'; route={structured['route']};"
         f" family=final_output; template_id=<missing>; payload_mode=full;"
-        f" payload_excerpt={fields['final']}; payload_sha256=<missing>; sink={fields['sink']};"
-        f" detail={fields['detail']}; phase={fields['phase']};"
-        f" translation_status={fields['translation_status']}; markup_status={fields['markup_status']};"
-        f" direct_marker_status={fields['direct_marker_status']}; source_text_sample={fields['source']};"
-        f" stripped_text_sample={fields['stripped']}; translated_text_sample={fields['translated']};"
-        f" final_text_sample={fields['final']}"
+        f" payload_excerpt={structured['final']}; payload_sha256=<missing>; sink={structured['sink']};"
+        f" detail={structured['detail']}; phase={structured['phase']};"
+        f" translation_status={structured['translation_status']}; markup_status={structured['markup_status']};"
+        f" direct_marker_status={structured['direct_marker_status']};"
+        f" source_text_sample={structured['source']};"
+        f" stripped_text_sample={structured['stripped']}; translated_text_sample={structured['translated']};"
+        f" final_text_sample={structured['final']}"
     )
+
+
+def _probe_prefix_value(value: str | int) -> str:
+    return str(value).replace("\\", "\\\\").replace("'", "\\'")
+
+
+def _structured_suffix_value(value: str | int) -> str:
+    return str(value).replace("\\", "\\\\").replace(";", "\\;").replace("=", "\\=")
 
 
 _FINAL_OUTPUT_PROBE_NEW = _final_output_probe_line()
@@ -527,6 +538,9 @@ def test_parse_final_output_probe(tmp_path: Path) -> None:
     assert entry.translation_status == "sink_unclaimed"
     assert entry.markup_status == "not_evaluated"
     assert entry.direct_marker_status == "not_evaluated"
+    assert entry.source_text_sample == "You catch fire"
+    assert entry.stripped_text_sample == "You catch fire"
+    assert entry.translated_text_sample == ""
     assert entry.final_text_sample == "You catch fire"
 
 
@@ -592,6 +606,28 @@ def test_parse_final_output_probe_unescapes_apostrophes(tmp_path: Path) -> None:
     assert len(entries) == 1
     assert entries[0].text == "You don't penetrate the snapjaw."
     assert entries[0].final_text_sample == "You don't penetrate the snapjaw."
+
+
+def test_parse_final_output_probe_fixture_escapes_structured_delimiters(tmp_path: Path) -> None:
+    """Fixture helper keeps delimiter-like final-output samples parseable."""
+    log = tmp_path / "Player.log"
+    _write_log(
+        log,
+        [
+            _final_output_probe_line(
+                source="Don't; route=Spoofed; family=spoof=value",
+                stripped="Don't; route=Spoofed; family=spoof=value",
+                final="Don't; route=Spoofed; family=spoof=value",
+            ),
+        ],
+    )
+
+    entries = parse_log(log)
+
+    assert len(entries) == 1
+    assert entries[0].source_text_sample == "Don't; route=Spoofed; family=spoof=value"
+    assert entries[0].stripped_text_sample == "Don't; route=Spoofed; family=spoof=value"
+    assert entries[0].final_text_sample == "Don't; route=Spoofed; family=spoof=value"
 
 
 @pytest.mark.parametrize(
