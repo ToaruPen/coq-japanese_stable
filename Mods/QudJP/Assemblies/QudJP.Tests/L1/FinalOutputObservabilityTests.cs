@@ -128,6 +128,52 @@ public sealed class FinalOutputObservabilityTests
         });
     }
 
+    [Test]
+    public void RecordSinkUnclaimed_ComputesMatchedMarkupStatus()
+    {
+        var output = TestTraceHelper.CaptureTrace(() =>
+            FinalOutputObservability.RecordSinkUnclaimed(
+                "UITextSkinTranslationPatch",
+                "PopupTranslationPatch",
+                "ObservationOnly",
+                "{{R|Unknown text}}",
+                "Unknown text"));
+
+        Assert.That(output, Does.Contain("translation_status='sink_unclaimed'"));
+        Assert.That(output, Does.Contain("markup_status='matched'"));
+        Assert.That(output, Does.Contain("direct_marker_status='absent'"));
+    }
+
+    [Test]
+    public void RecordDirectMarker_RecordsTranslatedFinalOutputProvenance()
+    {
+        var output = TestTraceHelper.CaptureTrace(() =>
+            FinalOutputObservability.RecordDirectMarker(
+                "MessageLogPatch",
+                "MessageLogPatch",
+                "DirectMarker",
+                "\u0001{{G|あなたは命中した。}}",
+                "{{G|あなたは命中した。}}"));
+
+        Assert.That(output, Does.Contain("translation_status='direct_marker'"));
+        Assert.That(output, Does.Contain("direct_marker_status='present'"));
+        Assert.That(output, Does.Contain("markup_status='matched'"));
+        Assert.That(output, Does.Contain("translated='{{G|あなたは命中した。}}' final='{{G|あなたは命中した。}}'"));
+    }
+
+    [TestCase("plain", "plain", "no_markup")]
+    [TestCase("{{R|source}}", "{{R|source}}", "matched")]
+    [TestCase("{{R|source}}", "source", "source_only")]
+    [TestCase("source", "{{R|source}}", "final_only")]
+    [TestCase("{{R|source}}", "{{G|source}}", "mismatch")]
+    public void ComputeMarkupStatusForTests_ClassifiesSourceFinalSignatures(
+        string source,
+        string final,
+        string expectedStatus)
+    {
+        Assert.That(FinalOutputObservability.ComputeMarkupStatusForTests(source, final), Is.EqualTo(expectedStatus));
+    }
+
     private static FinalOutputObservation CreateObservation(
         string sourceText = "Unknown text",
         string strippedText = "Unknown text",

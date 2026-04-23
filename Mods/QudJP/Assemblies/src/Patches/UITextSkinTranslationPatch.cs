@@ -88,6 +88,12 @@ public static class UITextSkinTranslationPatch
 
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
+            FinalOutputObservability.RecordDirectMarker(
+                nameof(UITextSkinTranslationPatch),
+                context ?? string.Empty,
+                FinalOutputObservability.DetailDirectMarker,
+                source,
+                markedText);
             return markedText;
         }
 
@@ -101,11 +107,35 @@ public static class UITextSkinTranslationPatch
 
         if (IsIgnoredDirectRouteToken(stripped, effectiveContext))
         {
+            FinalOutputObservability.RecordSkipped(
+                nameof(UITextSkinTranslationPatch),
+                effectiveContext ?? string.Empty,
+                "IgnoredDirectRouteToken",
+                source!,
+                stripped);
             return source!;
         }
 
-        if (!IsAlreadyLocalizedDirectRouteText(stripped, effectiveContext)
-            && !ShouldSkipTranslation(stripped, effectiveContext))
+        var alreadyLocalized = IsAlreadyLocalizedDirectRouteText(stripped, effectiveContext);
+        var shouldSkipTranslation = ShouldSkipTranslation(stripped, effectiveContext);
+        if (alreadyLocalized)
+        {
+            FinalOutputObservability.RecordAlreadyLocalized(
+                nameof(UITextSkinTranslationPatch),
+                effectiveContext ?? string.Empty,
+                source!,
+                stripped);
+        }
+        else if (shouldSkipTranslation)
+        {
+            FinalOutputObservability.RecordSkipped(
+                nameof(UITextSkinTranslationPatch),
+                effectiveContext ?? string.Empty,
+                FinalOutputObservability.DetailSkipped,
+                source!,
+                stripped);
+        }
+        else
         {
             SinkObservation.LogUnclaimed(
                 nameof(UITextSkinTranslationPatch),

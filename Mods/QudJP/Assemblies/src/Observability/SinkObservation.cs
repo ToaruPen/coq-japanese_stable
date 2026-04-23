@@ -70,19 +70,12 @@ internal static class SinkObservation
         var sourceValue = source ?? string.Empty;
         var strippedValue = stripped ?? string.Empty;
 
-        FinalOutputObservability.Record(
-            new FinalOutputObservation(
-                normalizedSink,
-                normalizedRoute,
-                normalizedDetail,
-                FinalOutputObservability.PhaseBeforeSink,
-                FinalOutputObservability.TranslationStatusSinkUnclaimed,
-                FinalOutputObservability.NotEvaluatedStatus,
-                FinalOutputObservability.NotEvaluatedStatus,
-                sourceValue,
-                strippedValue,
-                string.Empty,
-                sourceValue));
+        FinalOutputObservability.RecordSinkUnclaimed(
+            normalizedSink,
+            normalizedRoute,
+            normalizedDetail,
+            sourceValue,
+            strippedValue);
 
         var hitCount = AddOrUpdateCapped(
             HitCounts,

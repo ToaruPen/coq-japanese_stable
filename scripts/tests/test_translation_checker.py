@@ -303,14 +303,26 @@ class TestVerificationReport:
             "[QudJP] SinkObserve/v1: sink='MessageLog' route='EmitMessage'"
             " detail='ObservationOnly' source='You catch fire' stripped='You catch fire'\n"
             "[QudJP] FinalOutputProbe/v1: sink='MessageLog' route='EmitMessage' detail='ObservationOnly'"
-            " phase='before_sink' translation_status='sink_unclaimed' markup_status='not_evaluated'"
+            " phase='before_sink' translation_status='sink_unclaimed' markup_status='matched'"
             " direct_marker_status='not_evaluated' hit=1 source='You catch fire'"
             " stripped='You catch fire' translated='' final='You catch fire'; route=EmitMessage;"
             " family=final_output; template_id=<missing>; payload_mode=full; payload_excerpt=You catch fire;"
             " payload_sha256=<missing>; sink=MessageLog; detail=ObservationOnly; phase=before_sink;"
-            " translation_status=sink_unclaimed; markup_status=not_evaluated;"
+            " translation_status=sink_unclaimed; markup_status=matched;"
             " direct_marker_status=not_evaluated; source_text_sample=You catch fire;"
             " stripped_text_sample=You catch fire; translated_text_sample=; final_text_sample=You catch fire"
+            "\n[QudJP] FinalOutputProbe/v1: sink='MessageLog' route='EmitMessage' detail='DirectMarker'"
+            " phase='before_sink' translation_status='direct_marker' markup_status='source_only'"
+            " direct_marker_status='present' hit=1 source='{{R|You hit snapjaw.}}'"
+            " stripped='You hit snapjaw.' translated='あなたはsnapjawに命中した。'"
+            " final='あなたはsnapjawに命中した。'; route=EmitMessage;"
+            " family=final_output; template_id=<missing>; payload_mode=full;"
+            " payload_excerpt=あなたはsnapjawに命中した。; payload_sha256=<missing>;"
+            " sink=MessageLog; detail=DirectMarker; phase=before_sink;"
+            " translation_status=direct_marker; markup_status=source_only;"
+            " direct_marker_status=present; source_text_sample={{R|You hit snapjaw.}};"
+            " stripped_text_sample=You hit snapjaw.; translated_text_sample=あなたはsnapjawに命中した。;"
+            " final_text_sample=あなたはsnapjawに命中した。"
         )
         second_stage = "[QudJP] Translator: missing key 'Equipment' (hit 1). (context: UITextSkinTranslationPatch)"
         log_text = f"{first_stage}\n{second_stage}\n"
@@ -340,17 +352,22 @@ class TestVerificationReport:
         assert [entry["text"] for entry in first["missing_key_candidates"]] == ["Inventory"]
         assert [entry["text"] for entry in first["message_pattern_gaps"]] == ["Game saved!"]
         assert [entry["text"] for entry in first["sink_observed_untranslated_candidates"]] == ["You catch fire"]
-        assert [entry["text"] for entry in final_output_observations] == ["You catch fire"]
+        assert [entry["text"] for entry in final_output_observations] == [
+            "You catch fire",
+            "{{R|You hit snapjaw.}}",
+        ]
         assert final_output_observations[0]["sink"] == "MessageLog"
         assert final_output_observations[0]["phase"] == "before_sink"
         assert final_output_observations[0]["translation_status"] == "sink_unclaimed"
         assert final_output_observations[0]["final_text_sample"] == "You catch fire"
-        assert first_summary["final_output_observations"] == 1
+        assert first_summary["final_output_observations"] == 2
         assert first["markup_color_tag_issue_candidates"][0]["source_markup"] == ["{{W|", "}}"]
+        assert first["markup_color_tag_issue_candidates"][1]["kind"] == "final_output_probe"
+        assert first["markup_color_tag_issue_candidates"][1]["markup_status"] == "source_only"
         assert report_summary["stage_count"] == 2
         assert report_summary["missing_key_candidates"] == 2
-        assert report_summary["final_output_observations"] == 1
-        assert report_summary["markup_color_tag_issue_candidates"] == 1
+        assert report_summary["final_output_observations"] == 2
+        assert report_summary["markup_color_tag_issue_candidates"] == 2
         assert report_summary["preserved_english"] == 1
 
 
