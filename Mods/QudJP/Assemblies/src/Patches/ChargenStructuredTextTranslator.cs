@@ -17,6 +17,8 @@ internal static class ChargenStructuredTextTranslator
         new Regex(@"^(?<indent>\s*)(?<bullet>(?:\{\{[^{}]+\}\}|[\u00F9])\s*)?(?<content>.*)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex StatBonusPattern =
         new Regex(@"^(?<value>[+-]\d+)\s+(?<stat>Strength|Toughness|Willpower|Agility|Ego|Intelligence)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex StatValuePattern =
+        new Regex(@"^(?<stat>Strength|Toughness|Willpower|Agility|Ego|Intelligence):\s*(?<value>-?\d+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex ResistanceBonusPattern =
         new Regex(@"^(?<value>[+-]\d+)\s+(?<kind>heat|cold)\s+resistance$", RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase);
     private static readonly Regex ReputationPattern =
@@ -247,6 +249,11 @@ internal static class ChargenStructuredTextTranslator
             return translated;
         }
 
+        if (TryTranslateStatValue(content, out translated))
+        {
+            return translated;
+        }
+
         if (TryTranslateResistanceBonus(content, out translated))
         {
             return translated;
@@ -418,6 +425,26 @@ internal static class ChargenStructuredTextTranslator
         }
 
         translated = string.Concat(translatedStat, " ", match.Groups["value"].Value);
+        return true;
+    }
+
+    private static bool TryTranslateStatValue(string source, out string translated)
+    {
+        var match = StatValuePattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var statName = match.Groups["stat"].Value;
+        if (!StatNames.TryGetValue(statName, out var translatedStat))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = string.Concat(translatedStat, ": ", match.Groups["value"].Value);
         return true;
     }
 
