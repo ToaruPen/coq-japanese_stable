@@ -474,6 +474,27 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_RepositoryDictionary_PreservesOuterWrapperForPlayerWeaponMiss_WhenRollIsOutsideWrapper()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("{{r|You miss with your {{w|青銅の短剣}}!}} [7 vs 12]");
+
+        Assert.That(translated, Is.EqualTo("{{r|{{w|青銅の短剣}}での攻撃は外れた。[7 vs 12]}}"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_RemovesPossessivePronounFromIncomingArmorPenetrationWeapon()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "The ウォーターヴァイン農家 doesn't penetrate your armor with his 鉄の蔓刈り斧! [7]");
+
+        Assert.That(translated, Is.EqualTo("ウォーターヴァイン農家は鉄の蔓刈り斧であなたの防具を貫通できなかった！ [7]"));
+    }
+
+    [Test]
     public void Translate_RepositoryDictionary_TranslatesPlayerAcidDamageMessage()
     {
         UseRepositoryPatternDictionary();

@@ -25,6 +25,36 @@
       "text": "プレイ方式を選択"
     },
     {
+      "key": "Game Modes",
+      "context": "Chargen.WindowName.GameModes",
+      "text": "ゲームモード"
+    },
+    {
+      "key": "CharTypes",
+      "context": "Chargen.WindowName.CharTypes",
+      "text": "キャラクター種別"
+    },
+    {
+      "key": "Genotypes",
+      "context": "Chargen.WindowName.Genotypes",
+      "text": "ジェノタイプ"
+    },
+    {
+      "key": "Subtypes",
+      "context": "Chargen.WindowName.Subtypes",
+      "text": "サブタイプ"
+    },
+    {
+      "key": "Subtypes with Category",
+      "context": "Chargen.WindowName.SubtypesWithCategory",
+      "text": "カテゴリ別サブタイプ"
+    },
+    {
+      "key": "Starting Location",
+      "context": "Chargen.WindowName.StartingLocation",
+      "text": "開始場所"
+    },
+    {
       "key": "Tutorial",
       "context": "Chargen.Chartype.Option",
       "text": "チュートリアル"

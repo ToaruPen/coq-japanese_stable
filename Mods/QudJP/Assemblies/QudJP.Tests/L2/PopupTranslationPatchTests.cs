@@ -1493,6 +1493,34 @@ public sealed class PopupTranslationPatchTests
         Assert.That(result, Is.EqualTo("Already translated text"));
     }
 
+    [Test]
+    public void TranslatePopupTextForProducerRoute_ExactStrippedLookup_DoesNotProjectInlineSourceColors()
+    {
+        WriteDictionary((
+            "You need a dram of either blood or putrescence to desecrate a shrine.",
+            "祠を冒涜するには血液か腐敗液のどちらか1ドラムが必要だ。"));
+
+        var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+            "You need a dram of either {{r|blood}} or {{putrid|putrescence}} to desecrate a shrine.",
+            nameof(PopupTranslationPatch));
+
+        Assert.That(translated, Is.EqualTo("祠を冒涜するには血液か腐敗液のどちらか1ドラムが必要だ。"));
+    }
+
+    [Test]
+    public void TranslatePopupTextForProducerRoute_ExactStrippedLookup_DoesNotLeaveEmptySourceWrapper()
+    {
+        WriteDictionary((
+            "You note this piece of information in the Sultan Histories > Resheph section of your journal.",
+            "この情報をジャーナルの「スルタン史 > レシェフ」欄に記録した。"));
+
+        var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+            "You note this piece of information in the {{W|Sultan Histories > Resheph}} section of your journal.",
+            nameof(PopupTranslationPatch));
+
+        Assert.That(translated, Is.EqualTo("この情報をジャーナルの「スルタン史 > レシェフ」欄に記録した。"));
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
