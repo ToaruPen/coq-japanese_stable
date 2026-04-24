@@ -169,6 +169,12 @@ internal static class GetDisplayNameRouteTranslator
             return true;
         }
 
+        if (TryTranslateLocalizedPrefixAsciiTailDisplayName(transformed, route, out var localizedPrefixTailTranslated))
+        {
+            translated = localizedPrefixTailTranslated;
+            return true;
+        }
+
         if (TryTranslateGeneratedProperNameModifier(transformed, route, out var properNameModifierTranslated))
         {
             translated = properNameModifierTranslated;
@@ -395,6 +401,57 @@ internal static class GetDisplayNameRouteTranslator
         translated = translatedTail + "の" + head;
         DynamicTextObservability.RecordTransform(route, "DisplayName.LiquidPreposition", source, translated);
         return true;
+    }
+
+    private static bool TryTranslateLocalizedPrefixAsciiTailDisplayName(string source, string route, out string translated)
+    {
+        translated = source;
+        if (string.IsNullOrEmpty(source) || !JapaneseCharacterPattern.IsMatch(source))
+        {
+            return false;
+        }
+
+        var separatorIndex = FindLocalizedPrefixAsciiTailSeparator(source);
+        if (separatorIndex <= 0 || separatorIndex >= source.Length - 1)
+        {
+            return false;
+        }
+
+        var prefix = source.Substring(0, separatorIndex);
+        var tail = source.Substring(separatorIndex + 1);
+        if (!LooksLikeAsciiPhrase(tail))
+        {
+            return false;
+        }
+
+        var translatedTail = TranslateAsciiPhrase(tail);
+        if (translatedTail is null)
+        {
+            return false;
+        }
+
+        translated = prefix + translatedTail;
+        DynamicTextObservability.RecordTransform(route, "DisplayName.LocalizedPrefixAsciiTail", source, translated);
+        return true;
+    }
+
+    private static int FindLocalizedPrefixAsciiTailSeparator(string source)
+    {
+        for (var index = 0; index < source.Length - 1; index++)
+        {
+            if (source[index] != ' ')
+            {
+                continue;
+            }
+
+            var next = source[index + 1];
+            if ((next >= 'A' && next <= 'Z') || (next >= 'a' && next <= 'z'))
+            {
+                return index;
+            }
+        }
+
+        return -1;
     }
 
     private static bool TryTranslateGeneratedProperNameModifier(string source, string route, out string translated)

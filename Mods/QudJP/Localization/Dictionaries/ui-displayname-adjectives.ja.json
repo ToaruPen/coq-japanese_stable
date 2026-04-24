@@ -1390,6 +1390,11 @@
       "text": "{{K|滲み出ている}}"
     },
     {
+      "key": "spiced",
+      "context": "GetDisplayName.Adjective",
+      "text": "香辛料入りの"
+    },
+    {
       "key": "tarred",
       "context": "GetDisplayName.Adjective",
       "text": "{{K|タールまみれの}}"
@@ -1708,6 +1713,21 @@
       "key": "sludgy",
       "context": "GetDisplayName.Adjective",
       "text": "{{w|泥状の}}"
+    },
+    {
+      "key": "tetrasludge",
+      "context": "GetDisplayName.BaseName",
+      "text": "テトラスラッジ"
+    },
+    {
+      "key": "jewel-encrusted",
+      "context": "GetDisplayName.Adjective",
+      "text": "宝石をちりばめた"
+    },
+    {
+      "key": "VISAGE",
+      "context": "GetDisplayName.Identity",
+      "text": "VISAGE"
     },
     {
       "key": "sticky",

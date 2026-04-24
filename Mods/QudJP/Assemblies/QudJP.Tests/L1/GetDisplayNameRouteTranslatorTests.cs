@@ -206,6 +206,55 @@ public sealed class GetDisplayNameRouteTranslatorTests
         Assert.That(translated, Is.EqualTo("{{r|血まみれの}}Tam、ドロマド商人 [座っている]"));
     }
 
+    [Test]
+    public void TranslatePreservingColors_TranslatesLocalizedPrefixWithAsciiTailStructurally()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("neutronic", "{{neutronic|中性子質の}}"),
+            ("oozing", "{{K|滲み出ている}}"),
+            ("spiced", "香辛料入りの"),
+            ("tetrasludge", "テトラスラッジ"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "伝説の芳醇な neutronic oozing spiced tetrasludge",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("伝説の芳醇な{{neutronic|中性子質の}}{{K|滲み出ている}}香辛料入りのテトラスラッジ"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesMarkupOnlyAdjective()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("jewel-encrusted", "宝石をちりばめた"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{m-G-R-W-c-y-B-m-r-W-r-W-c-R-b sequence|jewel-encrusted}}",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{m-G-R-W-c-y-B-m-r-W-r-W-c-R-b sequence|宝石をちりばめた}}"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_SuppressesIdentityVisageMissingKeyNoise()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("VISAGE", "VISAGE"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{visage|VISAGE}}",
+            nameof(GetDisplayNamePatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("{{visage|VISAGE}}"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("VISAGE"), Is.EqualTo(0));
+        });
+    }
+
     private void WriteDictionary(params (string key, string text)[] entries)
     {
         WriteDictionaryFile("ui-displayname-route.ja.json", entries);
