@@ -467,7 +467,7 @@ internal static class MessagePatternTranslator
             && HasInteriorBoundarySpans(spans, strippedSourceLength.Value)
             && TryApplySegmentedColorAwareTemplate(template, match, strippedSourceLength.Value, spans, out var segmented))
         {
-            return segmented;
+            return BalanceQudBoundaryMarkup(segmented);
         }
 
         var builder = new StringBuilder(template.Length);
@@ -588,7 +588,7 @@ internal static class MessagePatternTranslator
         if (HasInteriorBoundarySpans(spans, strippedSourceLength.Value)
             && TryRestoreWholeLineBoundaryWrappers(translated, spans, strippedSourceLength.Value, out var wholeLineRestored))
         {
-            return wholeLineRestored;
+            return BalanceQudBoundaryMarkup(wholeLineRestored);
         }
 
         if (translatedFirstCaptureStart < 0
@@ -596,17 +596,18 @@ internal static class MessagePatternTranslator
             || translatedFirstCaptureStart > translatedLastCaptureEnd)
         {
             var boundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(spans, match, strippedSourceLength.Value, translated.Length);
-            return ColorAwareTranslationComposer.Restore(translated, boundarySpans);
+            return BalanceQudBoundaryMarkup(ColorAwareTranslationComposer.Restore(translated, boundarySpans));
         }
 
-        return ColorAwareTranslationComposer.RestoreMatchBoundaries(
-            translated,
-            spans,
-            match,
-            strippedSourceLength.Value,
-            translatedFirstCaptureStart,
-            translatedLastCaptureEnd,
-            lastCaptureConsumesAdjacentClosingBoundary);
+        return BalanceQudBoundaryMarkup(
+            ColorAwareTranslationComposer.RestoreMatchBoundaries(
+                translated,
+                spans,
+                match,
+                strippedSourceLength.Value,
+                translatedFirstCaptureStart,
+                translatedLastCaptureEnd,
+                lastCaptureConsumesAdjacentClosingBoundary));
     }
 
     private static bool TryApplySegmentedColorAwareTemplate(
@@ -825,6 +826,71 @@ internal static class MessagePatternTranslator
                 && ColorCodePreserver.IsOpeningBoundaryToken(span.Token))
             {
                 return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static string BalanceQudBoundaryMarkup(string source)
+    {
+        if (source.IndexOf("{{", StringComparison.Ordinal) < 0)
+        {
+            return source;
+        }
+
+        var openCount = 0;
+        for (var index = 0; index < source.Length - 1; index++)
+        {
+            if (source[index] == '{'
+                && source[index + 1] == '{'
+                && TryReadQudOpeningToken(source, index, out var nextIndex))
+            {
+                openCount++;
+                index = nextIndex - 1;
+                continue;
+            }
+
+            if (source[index] == '}' && source[index + 1] == '}')
+            {
+                if (openCount > 0)
+                {
+                    openCount--;
+                }
+
+                index++;
+            }
+        }
+
+        if (openCount <= 0)
+        {
+            return source;
+        }
+
+        var builder = new StringBuilder(source.Length + (openCount * 2));
+        builder.Append(source);
+        for (var index = 0; index < openCount; index++)
+        {
+            builder.Append("}}");
+        }
+
+        return builder.ToString();
+    }
+
+    private static bool TryReadQudOpeningToken(string source, int startIndex, out int nextIndex)
+    {
+        nextIndex = startIndex;
+        for (var index = startIndex + 2; index < source.Length; index++)
+        {
+            if (source[index] == '|')
+            {
+                nextIndex = index + 1;
+                return true;
+            }
+
+            if (index < source.Length - 1 && source[index] == '}' && source[index + 1] == '}')
+            {
+                return false;
             }
         }
 

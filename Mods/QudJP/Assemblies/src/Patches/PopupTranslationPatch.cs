@@ -337,6 +337,46 @@ public static class PopupTranslationPatch
         return translated.Replace("{{hotkey|}}", string.Empty);
     }
 
+    private static bool HasEmptyQudWrapper(string translated)
+    {
+        for (var index = 0; index < translated.Length; index++)
+        {
+            if (translated[index] != '{'
+                || index + 3 >= translated.Length
+                || translated[index + 1] != '{')
+            {
+                continue;
+            }
+
+            var pipeIndex = translated.IndexOf('|', index + 2);
+            if (pipeIndex < 0 || pipeIndex + 2 >= translated.Length)
+            {
+                continue;
+            }
+
+            if (translated[pipeIndex + 1] == '}'
+                && translated[pipeIndex + 2] == '}'
+                && !IsHotkeyWrapper(translated, index, pipeIndex))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsHotkeyWrapper(string translated, int openIndex, int pipeIndex)
+    {
+        return pipeIndex - openIndex == "{{hotkey".Length
+            && string.Compare(
+                translated,
+                openIndex,
+                "{{hotkey",
+                0,
+                "{{hotkey".Length,
+                StringComparison.Ordinal) == 0;
+    }
+
     private static bool TryTranslatePopupProducerText(string source, string route, string family, out string translated)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
@@ -406,6 +446,11 @@ public static class PopupTranslationPatch
             && !string.Equals(exact, stripped, StringComparison.Ordinal))
         {
             translated = spans.Count == 0 ? exact : ColorAwareTranslationComposer.Restore(exact, spans);
+            if (HasEmptyQudWrapper(translated))
+            {
+                translated = exact;
+            }
+
             DynamicTextObservability.RecordTransform(route, family + ".Exact", source, translated);
             return true;
         }

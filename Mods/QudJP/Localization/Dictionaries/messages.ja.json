@@ -1039,7 +1039,7 @@
       "route": "popup"
     },
     {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) penetrate your armor with (.+?)! \\[(.+?)\\]$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) penetrate your armor with (?:(?:his|her|its|their) )?(.+?)! \\[(.+?)\\]$",
       "template": "{0}は{1}であなたの防具を貫通できなかった！ [{2}]",
       "route": "emit-message"
     },
