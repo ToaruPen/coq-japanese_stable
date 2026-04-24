@@ -36,6 +36,8 @@ internal sealed class DummyPlayerStatusBarTarget
         { DummyStringDataType.FoodWater, string.Empty },
     };
 
+    private bool playerStringsDirty;
+
     public DummyPlayerStatusBarProgressBar XPBar = new DummyPlayerStatusBarProgressBar();
 
     public string? NextFoodWater { get; set; }
@@ -59,6 +61,13 @@ internal sealed class DummyPlayerStatusBarTarget
     public int Experience { get; set; }
 
     public int NextLevelExperience { get; set; } = 220;
+
+    public bool PlayerStringsDirtyForTests => playerStringsDirty;
+
+    public void MarkPlayerStringsFlushedForTests()
+    {
+        playerStringsDirty = false;
+    }
 
     public void BeginEndTurn(object? core)
     {
@@ -91,6 +100,28 @@ internal sealed class DummyPlayerStatusBarTarget
         if (value is not null)
         {
             playerStringData[type] = value;
+            playerStringsDirty = true;
         }
+    }
+}
+
+internal sealed class DummyPlayerStatusBarTargetWithoutDirtyFlag
+{
+    private enum DummyStringDataType
+    {
+        Zone
+    }
+
+    private readonly Dictionary<DummyStringDataType, string> playerStringData = new Dictionary<DummyStringDataType, string>
+    {
+        { DummyStringDataType.Zone, "World Map" },
+    };
+
+    public string? GetStringData(string name)
+    {
+        return Enum.TryParse<DummyStringDataType>(name, ignoreCase: false, out var key)
+            && playerStringData.TryGetValue(key, out var value)
+            ? value
+            : null;
     }
 }
