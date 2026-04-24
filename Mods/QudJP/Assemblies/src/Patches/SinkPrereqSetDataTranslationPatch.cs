@@ -81,6 +81,12 @@ public static class SinkPrereqSetDataTranslationPatch
     {
         try
         {
+            if (IsSummaryBlockControl(__instance))
+            {
+                TranslateSummaryBlock(__instance);
+                return;
+            }
+
             for (var index = 0; index < TextSkinFieldNames.Length; index++)
             {
                 SinkPrereqTextFieldTranslator.TranslateField(
@@ -93,6 +99,41 @@ public static class SinkPrereqSetDataTranslationPatch
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: {0}.Postfix failed: {1}", Context, ex);
+        }
+    }
+
+    private static bool IsSummaryBlockControl(object instance)
+    {
+        return instance.GetType().Name.EndsWith("SummaryBlockControl", StringComparison.Ordinal);
+    }
+
+    private static void TranslateSummaryBlock(object instance)
+    {
+        TranslateSummaryBlockField(instance, "text");
+        TranslateSummaryBlockField(instance, "title");
+    }
+
+    private static void TranslateSummaryBlockField(object instance, string fieldName)
+    {
+        var field = AccessTools.Field(instance.GetType(), fieldName);
+        var textSkin = field?.GetValue(instance);
+        var current = UITextSkinReflectionAccessor.GetCurrentText(textSkin, Context);
+        if (string.IsNullOrEmpty(current))
+        {
+            return;
+        }
+
+        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
+            current!,
+            static visible => ChargenStructuredTextTranslator.Translate(visible));
+        if (string.Equals(current, translated, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        if (UITextSkinReflectionAccessor.SetCurrentText(textSkin, translated, Context))
+        {
+            DynamicTextObservability.RecordTransform(Context, "Chargen.SummaryBlock", current!, translated);
         }
     }
 }

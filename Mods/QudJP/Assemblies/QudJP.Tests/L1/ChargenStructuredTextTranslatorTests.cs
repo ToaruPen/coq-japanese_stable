@@ -258,6 +258,32 @@ public sealed class ChargenStructuredTextTranslatorTests
     }
 
     [Test]
+    public void Translate_TranslatesSummaryAttributeValueBlock()
+    {
+        var source = """
+            Strength: 22
+            Agility: 18
+            Toughness: 18
+            Intelligence: 14
+            Willpower: 16
+            Ego: 16
+            """;
+
+        var translated = ChargenStructuredTextTranslator.Translate(source);
+
+        var expected = """
+            筋力: 22
+            敏捷: 18
+            頑健: 18
+            知力: 14
+            意志力: 16
+            自我: 16
+            """;
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
+    [Test]
     public void Translate_PrefersChargenScopedSkillDictionaryOverGlobalCollision()
     {
         WriteDictionaryFile(

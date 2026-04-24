@@ -100,9 +100,11 @@ public sealed class SinkPrereqTranslationPatchTests
     }
 
     [Test]
-    public void SetDataPatch_ObservationOnly_LeavesSummaryBlockBothFieldsUnchanged()
+    public void SetDataPatch_TranslatesSummaryBlockTextAndTitle()
     {
-        WriteDictionary(("Summary Description", "概要説明"), ("Summary Title", "概要タイトル"));
+        WriteDictionary(
+            ("Attributes", "能力値"),
+            ("Summary Title", "概要タイトル"));
         Translator.SetDictionaryDirectoryForTests(tempDir);
 
         harmony.Patch(
@@ -113,22 +115,18 @@ public sealed class SinkPrereqTranslationPatchTests
         var instance = new DummySummaryBlockControl();
         instance.setData(new DummyFrameworkDataElement
         {
-            Description = "Summary Description",
-            Title = "Summary Title"
+            Description = "Strength: 22\nAgility: 18",
+            Title = "Attributes"
         });
 
         Assert.Multiple(() =>
         {
-            Assert.That(instance.text.text, Is.EqualTo("Summary Description"));
-            Assert.That(instance.title.text, Is.EqualTo("Summary Title").Or.Contains("Summary Title"),
-                "Observation-only sink prerequisite patch should leave source text unchanged.");
+            Assert.That(instance.text.text, Is.EqualTo("筋力: 22\n敏捷: 18"));
+            Assert.That(instance.title.text, Is.EqualTo("{{W|能力値}}"));
             Assert.That(
-                SinkObservation.GetHitCountForTests(
-                    nameof(UITextSkinTranslationPatch),
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     nameof(SinkPrereqSetDataTranslationPatch),
-                    SinkObservation.ObservationOnlyDetail,
-                    "Summary Description",
-                    "Summary Description"),
+                    "Chargen.SummaryBlock"),
                 Is.GreaterThan(0));
         });
     }
