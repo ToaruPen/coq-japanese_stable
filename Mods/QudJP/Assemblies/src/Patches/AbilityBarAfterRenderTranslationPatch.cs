@@ -13,7 +13,7 @@ public static class AbilityBarAfterRenderTranslationPatch
     private const string Context = nameof(AbilityBarAfterRenderTranslationPatch);
 
     private static readonly Regex ActiveEffectsPattern =
-        new Regex("^(?<label>ACTIVE EFFECTS:)(?: (?<tail>.+))?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        new Regex("^(?<label>ACTIVE EFFECTS:)(?<separator>\\s*)(?<tail>.*)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex TargetTextPattern =
         new Regex("^(?<label>TARGET:)\\s+(?<name>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -107,10 +107,12 @@ public static class AbilityBarAfterRenderTranslationPatch
         }
 
         translated = ColorAwareTranslationComposer.RestoreCapture(translatedLabel, spans, match.Groups["label"]);
+        translated += ColorAwareTranslationComposer.RestoreCapture(match.Groups["separator"].Value, spans, match.Groups["separator"]);
+
         var tailGroup = match.Groups["tail"];
-        if (tailGroup.Success)
+        if (tailGroup.Success && tailGroup.Length > 0)
         {
-            translated += " " + TranslateActiveEffectTailParts(tailGroup.Value, spans, tailGroup.Index);
+            translated += TranslateActiveEffectTailParts(tailGroup.Value, spans, tailGroup.Index);
         }
 
         if (string.Equals(translated, source, StringComparison.Ordinal))

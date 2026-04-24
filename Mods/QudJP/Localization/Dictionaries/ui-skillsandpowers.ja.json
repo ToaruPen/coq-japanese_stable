@@ -801,6 +801,21 @@
       "text": "スプリント"
     },
     {
+      "key": "Freezing Ray",
+      "context": "AbilityBar.ButtonText",
+      "text": "凍結線"
+    },
+    {
+      "key": "Butcher Corpses",
+      "context": "AbilityBar.ButtonText",
+      "text": "死体を解体"
+    },
+    {
+      "key": "Teleport",
+      "context": "AbilityBar.ButtonText",
+      "text": "テレポート"
+    },
+    {
       "key": "Harvest Plants",
       "context": "AbilityManager.Name",
       "text": "収穫"
