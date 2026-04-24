@@ -154,6 +154,7 @@ public sealed class TargetMethodResolutionTests
         "System.Collections.Generic.IReadOnlyList`1[[ConsoleLib.Console.IRenderable]]",
     })]
     [TestCase(typeof(AbilityBarUpdateAbilitiesTextPatch), "UpdateAbilitiesText", "Qud.UI.AbilityBar", "System.Void", new string[0])]
+    [TestCase(typeof(AbilityBarButtonTextTranslationPatch), "Update", "Qud.UI.AbilityBar", "System.Void", new string[0])]
     [TestCase(typeof(EffectDescriptionPatch), "GetDescription", "XRL.World.Effect", "System.String", new string[0])]
     [TestCase(typeof(EffectDetailsPatch), "GetDetails", "XRL.World.Effect", "System.String", new string[0])]
     [TestCase(typeof(CherubimSpawnerReplaceDescriptionPatch), "ReplaceDescription", "XRL.World.Parts.CherubimSpawner", "System.Void", new[] { "XRL.World.GameObject", "System.String", "System.String" })]

@@ -13,8 +13,10 @@ public static class PlayerStatusBarProducerTranslationPatch
 {
     private const string Context = nameof(PlayerStatusBarProducerTranslationPatch);
     private static FieldInfo? playerStringDataField;
+    private static FieldInfo? playerStringsDirtyField;
     private static FieldInfo? xpBarField;
     private static FieldInfo? xpBarTextField;
+    private static bool playerStringsDirtyMissingWarningLogged;
 
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
@@ -92,6 +94,7 @@ public static class PlayerStatusBarProducerTranslationPatch
             keys.Add(key);
         }
 
+        var changed = false;
         for (var index = 0; index < keys.Count; index++)
         {
             var key = keys[index];
@@ -113,8 +116,51 @@ public static class PlayerStatusBarProducerTranslationPatch
             if (!string.Equals(translated, source, StringComparison.Ordinal))
             {
                 dictionary[key] = translated;
+                changed = true;
             }
         }
+
+        if (changed)
+        {
+            MarkPlayerStringsDirty(instance);
+        }
+    }
+
+    private static void MarkPlayerStringsDirty(object instance)
+    {
+        var field = playerStringsDirtyField;
+        if (field is null || field.DeclaringType != instance.GetType())
+        {
+            field = AccessTools.Field(instance.GetType(), "playerStringsDirty");
+            playerStringsDirtyField = field;
+        }
+
+        if (field is null)
+        {
+            if (!playerStringsDirtyMissingWarningLogged)
+            {
+                playerStringsDirtyMissingWarningLogged = true;
+                WriteWarning(
+                    "QudJP: {0} could not find playerStringsDirty on {1}. Translated playerStringData may not refresh immediately.",
+                    Context,
+                    instance.GetType().FullName);
+            }
+
+            return;
+        }
+
+        field.SetValue(instance, true);
+    }
+
+    private static void WriteWarning(string format, params object?[] args)
+    {
+        var message = string.Format(System.Globalization.CultureInfo.InvariantCulture, format, args);
+        foreach (TraceListener listener in Trace.Listeners)
+        {
+            listener.TraceEvent(null, "QudJP", TraceEventType.Warning, 0, message);
+        }
+
+        Trace.Flush();
     }
 
     private static void TranslateXpBar(object instance)

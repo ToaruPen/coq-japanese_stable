@@ -159,6 +159,36 @@ public sealed class AbilityBarAfterRenderTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesLabelOnlyActiveEffectsAndFlushesToTextField()
+    {
+        WriteDictionary(("ACTIVE EFFECTS:", "発動中の効果:"));
+
+        RunWithPostfixPatch(() =>
+        {
+            var target = new DummyAbilityBarAfterRenderTarget
+            {
+                NextEffectText = "<color=#FFFFFFFF><color=#508d75>ACTIVE EFFECTS:</color></color><color=#B1C9C3FF> </color>",
+            };
+
+            target.AfterRender(core: null, sb: null);
+            target.Update();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    target.GetEffectText(),
+                    Is.EqualTo("<color=#FFFFFFFF><color=#508d75>発動中の効果:</color></color><color=#B1C9C3FF> </color>"));
+                Assert.That(target.EffectText.text, Is.EqualTo(target.GetEffectText()));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(AbilityBarAfterRenderTranslationPatch),
+                        "AbilityBar.ActiveEffects"),
+                    Is.GreaterThan(0));
+            });
+        });
+    }
+
+    [Test]
     public void Postfix_PreservesMarkupWrappedEnglishModifierInTargetDisplayName()
     {
         WriteDictionary(

@@ -131,6 +131,11 @@ internal static class JournalTextTranslator
             return true;
         }
 
+        if (MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(source, route, out translated))
+        {
+            return true;
+        }
+
         translated = JournalPatternTranslator.Translate(source, route);
         if (!string.Equals(source, translated, StringComparison.Ordinal))
         {

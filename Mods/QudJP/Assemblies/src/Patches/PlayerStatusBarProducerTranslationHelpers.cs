@@ -45,13 +45,56 @@ internal static class PlayerStatusBarProducerTranslationHelpers
 
     private static string TranslateFoodWater(string source, string route)
     {
-        return StatusLineTranslationHelpers.TryTranslateCompareStatusSequence(
+        if (StatusLineTranslationHelpers.TryTranslateCompareStatusSequence(
             source,
             route,
             "PlayerStatusBar.FoodWater",
-            out var translated)
-            ? translated
-            : source;
+            out var translated))
+        {
+            return translated;
+        }
+
+        var parts = source.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length < 2)
+        {
+            return source;
+        }
+
+        var translatedParts = new string[parts.Length];
+        for (var index = 0; index < parts.Length; index++)
+        {
+            if (!TryTranslateFoodWaterPart(parts[index], out translatedParts[index]))
+            {
+                return source;
+            }
+        }
+
+        translated = string.Join(" ", translatedParts);
+        if (!string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            DynamicTextObservability.RecordTransform(route, "PlayerStatusBar.FoodWater", source, translated);
+            return translated;
+        }
+
+        return source;
+    }
+
+    private static bool TryTranslateFoodWaterPart(string source, out string translated)
+    {
+        var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
+        var visibleTranslation = StringHelpers.TranslateExactOrLowerAscii(stripped);
+        if (visibleTranslation is null)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            visible => string.Equals(visible, stripped, StringComparison.Ordinal)
+                ? visibleTranslation
+                : visible);
+        return true;
     }
 
     private static string TranslateHpBar(string source, string route)

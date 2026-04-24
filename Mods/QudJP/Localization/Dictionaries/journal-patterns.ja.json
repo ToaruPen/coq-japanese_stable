@@ -312,6 +312,8 @@
     {"pattern": "^(.+?) burned a leader of (.+?) in effigy\\.$", "template": "{t0}は{t1}の指導者の藁人形を燃やした。", "route": "journal"},
     {"pattern": "^(.+?) gave (.+?) unfavorable horoscope readings\\.$", "template": "{t0}は{t1}に不吉な星占いの結果を告げた。", "route": "journal"},
     {"pattern": "^(.+?) questioned the origins of the moon, insulting the beliefs of (.+?)\\.$", "template": "{t0}は月の起源に疑問を呈し、{t1}の信仰を侮辱した。", "route": "journal"},
+    {"pattern": "^The lost Mark of Death from the late sultanate was (.+?)\\.$", "template": "亡きスルタンの死の刻印は{0}だった。", "route": "journal"},
+    {"pattern": "^You recover the Mark of Death from (.+?)\\.$", "template": "{0}から死の刻印を回収した。", "route": "journal"},
     {"pattern": "^(.+?) praised a highly entropic being, insulting (.+?)\\.$", "template": "{t0}は高度にエントロピー的な存在を称賛し、{t1}を侮辱した。", "route": "journal"}
   ]
 }

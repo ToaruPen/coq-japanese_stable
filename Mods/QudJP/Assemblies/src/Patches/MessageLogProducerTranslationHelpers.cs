@@ -14,6 +14,9 @@ internal static class MessageLogProducerTranslationHelpers
         ["kitchen"] = "の厨房",
         ["distillery"] = "の蒸留所",
         ["organ market"] = "の臓器市場",
+        ["village lair"] = "の村落の巣",
+        ["cradle"] = "の揺籃",
+        ["chuppah"] = "のフッパー",
     };
 
     private static readonly string[] BiomeAdjectivesOrdered =
@@ -84,7 +87,7 @@ internal static class MessageLogProducerTranslationHelpers
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     private static readonly Regex LairPattern = new Regex(
-        @"^the (?<kind>lair|workshop|scriptorium|kitchen|distillery|organ market) of (?<name>.+)$",
+        @"^the (?<kind>village lair|lair|workshop|scriptorium|kitchen|distillery|organ market|cradle|chuppah) of (?<name>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     private static readonly Regex StrataPattern = new Regex(
@@ -651,6 +654,11 @@ internal static class MessageLogProducerTranslationHelpers
         if (source.StartsWith("a ", StringComparison.OrdinalIgnoreCase))
         {
             return source.Substring(2);
+        }
+
+        if (source.StartsWith("some ", StringComparison.OrdinalIgnoreCase))
+        {
+            return source.Substring(5);
         }
 
         return source;
