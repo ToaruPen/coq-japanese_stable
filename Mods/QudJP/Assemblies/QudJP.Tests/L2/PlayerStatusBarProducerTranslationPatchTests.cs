@@ -87,6 +87,38 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_MarksPlayerStringsDirty_WhenTranslatedAfterUiFlush()
+    {
+        WriteDictionary(
+            ("Sated", "満腹"),
+            ("Wet", "濡れ"),
+            ("Harvest Dawn", "ハーヴェスト・ドーン"),
+            ("Tuum Ut", "トゥーム・ウト"));
+
+        var translateMethod = RequirePatchMethod("TranslatePlayerStringData", typeof(object));
+        var instance = new DummyPlayerStatusBarTarget
+        {
+            NextFoodWater = "{{g|Sated}} {{b|Wet}}",
+            NextTime = "Harvest Dawn 30th of Tuum Ut",
+        };
+
+        instance.BeginEndTurn(core: null);
+        instance.MarkPlayerStringsFlushedForTests();
+
+        translateMethod.Invoke(null, new object?[] { instance });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(instance.GetStringData("FoodWater"), Is.EqualTo("{{g|満腹}} {{b|濡れ}}"));
+            Assert.That(instance.GetStringData("Time"), Is.EqualTo("ハーヴェスト・ドーン トゥーム・ウト30日"));
+            Assert.That(
+                instance.PlayerStringsDirtyForTests,
+                Is.True,
+                "Translated playerStringData must force PlayerStatusBar.Update to flush the new Japanese values.");
+        });
+    }
+
+    [Test]
     public void Postfix_UsesLowerAsciiFallbackWithoutMissingKeyNoise_ForProducerStringData()
     {
         WriteDictionary(

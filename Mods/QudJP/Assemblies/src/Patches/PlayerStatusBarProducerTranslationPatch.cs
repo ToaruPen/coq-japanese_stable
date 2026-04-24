@@ -13,6 +13,7 @@ public static class PlayerStatusBarProducerTranslationPatch
 {
     private const string Context = nameof(PlayerStatusBarProducerTranslationPatch);
     private static FieldInfo? playerStringDataField;
+    private static FieldInfo? playerStringsDirtyField;
     private static FieldInfo? xpBarField;
     private static FieldInfo? xpBarTextField;
 
@@ -92,6 +93,7 @@ public static class PlayerStatusBarProducerTranslationPatch
             keys.Add(key);
         }
 
+        var changed = false;
         for (var index = 0; index < keys.Count; index++)
         {
             var key = keys[index];
@@ -113,8 +115,26 @@ public static class PlayerStatusBarProducerTranslationPatch
             if (!string.Equals(translated, source, StringComparison.Ordinal))
             {
                 dictionary[key] = translated;
+                changed = true;
             }
         }
+
+        if (changed)
+        {
+            MarkPlayerStringsDirty(instance);
+        }
+    }
+
+    private static void MarkPlayerStringsDirty(object instance)
+    {
+        var field = playerStringsDirtyField;
+        if (field is null || field.DeclaringType != instance.GetType())
+        {
+            field = AccessTools.Field(instance.GetType(), "playerStringsDirty");
+            playerStringsDirtyField = field;
+        }
+
+        field?.SetValue(instance, true);
     }
 
     private static void TranslateXpBar(object instance)
