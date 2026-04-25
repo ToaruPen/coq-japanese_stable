@@ -74,7 +74,7 @@ Assertions:
 2. Collect every `<part Name="Preacher" ...>`.
 3. The `Book` set is exactly `{Preacher1, Preacher2, Preacher3, Preacher4, HighSermon}` (catches a future Preacher5 surfacing without a translation).
 4. Every `Prefix` ends with `{{W|'` and contains at least one non-ASCII character.
-5. Every `Postfix` equals `'}}` exactly (i.e. `Postfix="'}}"` in XML).
+5. Every `Postfix` equals `"'}}"` exactly (i.e. `Postfix="'}}"` in XML).
 6. Every `Frozen` contains at least one non-ASCII character.
 7. `validate_xml.validate_xml_file(creatures_path)` produces zero `Unbalanced color code` warnings.
 
