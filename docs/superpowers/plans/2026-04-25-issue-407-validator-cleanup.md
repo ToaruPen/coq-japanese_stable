@@ -4,7 +4,7 @@
 
 **Goal:** Replace the generic Name/ID duplicate detection in `scripts/validate_xml.py` with a schema-aware allowlist, restrict empty-text detection to the `<text>` tag only, delete the byte-equal `TombExteriorWall_SW` duplicate in `Widgets.jp.xml`, and regenerate the warning baseline so it shrinks from 242 false-positive-heavy entries to 2 actionable real warnings.
 
-**Architecture:** Two narrow refactors of pure functions inside `scripts/validate_xml.py` plus one data deletion. `_find_duplicate_siblings` becomes a tuple-driven allowlist matcher (parent_tag → child_tag → key_attribute). `_find_empty_text_elements` adds an early `if element.tag != "text": continue` guard. The unused helper `_collect_duplicate_values` and the now-redundant `_format_element_descriptor` ID branch are removed for cleanliness. Tests follow Red→Green TDD.
+**Architecture:** Two narrow refactors of pure functions inside `scripts/validate_xml.py` plus one data deletion. `_find_duplicate_siblings` becomes a tuple-driven allowlist matcher (parent_tag → child_tag → key_attribute). `_find_empty_text_elements` adds an early `if element.tag != "text": continue` guard. The unused helper `_collect_duplicate_values` is removed for cleanliness. The `_format_element_descriptor` ID branch is retained as-is (removing it was out of scope for this cleanup). Tests follow Red→Green TDD.
 
 **Tech Stack:** Python 3.12, `xml.etree.ElementTree`, pytest, ruff. Production code: `scripts/validate_xml.py`. Test code: `scripts/tests/test_validate_xml.py`. Data: `Mods/QudJP/Localization/ObjectBlueprints/Widgets.jp.xml`, `scripts/validate_xml_warning_baseline.json`.
 
@@ -259,7 +259,7 @@ def test_empty_object_stub_not_flagged(
 
 Run: `uv run pytest scripts/tests/test_validate_xml.py -v`
 
-Expected: at least 7 failures.
+Expected: exactly 6 failures.
 - `test_generic_duplicate_id_no_longer_reported` — fails because the validator currently *does* report duplicate IDs.
 - `test_byte_equal_object_siblings_flagged` — passes currently (generic Name detector catches it) but will need to keep passing after the refactor.
 - `test_duplicate_siblings_with_distinguishing_attribute_not_flagged`, `test_duplicate_conditional_nodes_not_flagged`, `test_repeated_naming_entries_not_flagged` — all fail because generic Name/ID detection currently flags them.
