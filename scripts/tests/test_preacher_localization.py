@@ -34,11 +34,11 @@ def test_preacher_book_set_is_exact(preacher_parts: list[ET.Element]) -> None:
         "A duplicate or extra Preacher entry may have surfaced in the data."
     )
     assert set(book_list) == EXPECTED_BOOKS, (
-        f"Expected Preacher books {EXPECTED_BOOKS}, got {set(book_list)}. "
+        f"Expected Preacher books {sorted(EXPECTED_BOOKS)}, got {sorted(set(book_list))}. "
         "A new Preacher entry surfaced in the data; review and translate before merging."
     )
     assert "" not in set(book_list), (
-        f'One or more <part Name="Preacher"> entries is missing a Book attribute: {book_list}.'
+        f'One or more <part Name="Preacher"> entries is missing a Book attribute: {sorted(book_list)}.'
     )
 
 
