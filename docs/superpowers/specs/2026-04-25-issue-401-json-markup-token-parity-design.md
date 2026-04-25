@@ -81,7 +81,7 @@ All must pass.
 
 ## Out of scope
 
-- **`{{phase-conjugate}}` bare entry at `ui-displayname-adjectives.ja.json:58`** — the no-pipe form is not a runtime template. The real form `{{K|phase-conjugate|...}}` is already correctly translated at line 443. The bare entry is stale data; cleaning it requires a separate review of whether the entry should be removed entirely or remapped. File a follow-up issue.
+- **`{{phase-conjugate}}` bare entry at `ui-displayname-adjectives.ja.json:58`** — the no-pipe form is not a runtime template. The real form `{{K|phase-conjugate}}` is already correctly translated at line 443. The bare entry is stale data; cleaning it requires a separate review of whether the entry should be removed entirely or remapped. File a follow-up issue.
 - **`ui-messagelog-world.ja.json:993`** — the key is extraction-time truncated to `{{G|You prepare·` and the text contains additional markup. This is not parity loss; it is a dynamic-message extraction problem. Defer to #409 with a baseline reason.
 - **Translation tone polish** — improving Japanese fluency on entries that already preserve markup. Not blocker.
 - **CI workflow plumbing** — landing the new test in CI workflow files is part of #409.
