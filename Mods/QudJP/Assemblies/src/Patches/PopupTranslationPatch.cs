@@ -958,7 +958,7 @@ public static class PopupTranslationPatch
             return false;
         }
 
-        var poison = match.Groups["poison"].Value;
+        var poison = TranslateCampfirePoisonToken(match.Groups["poison"].Value);
         var target = match.Groups["target"].Value;
         var ingredient = match.Groups["ingredient"].Value;
         if (spans.Count > 0)
@@ -1183,5 +1183,14 @@ public static class PopupTranslationPatch
             field.SetValue(item, translated);
             list[index] = item;
         }
+    }
+
+    private static string TranslateCampfirePoisonToken(string capture)
+    {
+        return capture switch
+        {
+            "poison" or "poisons" => "毒",
+            _ => capture,
+        };
     }
 }
