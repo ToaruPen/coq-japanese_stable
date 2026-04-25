@@ -186,9 +186,7 @@ def test_duplicate_siblings_with_distinguishing_attribute_not_flagged(
     assert "Duplicate sibling" not in captured.out
 
 
-def test_byte_equal_object_siblings_flagged(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
+def test_byte_equal_object_siblings_flagged(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """``<objects>`` parent with same-Name ``<object>`` siblings is flagged.
 
     This is the regression case for the TombExteriorWall_SW byte-equal
@@ -199,7 +197,7 @@ def test_byte_equal_object_siblings_flagged(
     _write_xml(
         xml_path,
         (
-            '<objects>'
+            "<objects>"
             '<object Name="TombExteriorWall_SW" Inherits="Widget" Replace="true"/>'
             '<object Name="TombExteriorWall_SW" Inherits="Widget" Replace="true"/>'
             "</objects>"
@@ -213,9 +211,7 @@ def test_byte_equal_object_siblings_flagged(
     assert 'Duplicate sibling Name="TombExteriorWall_SW"' in captured.out
 
 
-def test_duplicate_conditional_nodes_not_flagged(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
+def test_duplicate_conditional_nodes_not_flagged(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """Conditional ``<node>`` siblings sharing an ID are not flagged.
 
     Conversations.jp.xml uses the same ID with different ``IfHaveState``
@@ -239,9 +235,7 @@ def test_duplicate_conditional_nodes_not_flagged(
     assert "Duplicate sibling" not in captured.out
 
 
-def test_repeated_naming_entries_not_flagged(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
+def test_repeated_naming_entries_not_flagged(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """Naming.jp.xml weight-style repetition is not flagged.
 
     ``<prefix Name="ニ"/>`` may legitimately appear multiple times to
@@ -250,12 +244,7 @@ def test_repeated_naming_entries_not_flagged(
     xml_path = tmp_path / "naming.xml"
     _write_xml(
         xml_path,
-        (
-            '<naming><prefixes>'
-            '<prefix Name="ニ"/>'
-            '<prefix Name="ニ"/>'
-            "</prefixes></naming>"
-        ),
+        ('<naming><prefixes><prefix Name="ニ"/><prefix Name="ニ"/></prefixes></naming>'),
     )
 
     result = main([str(xml_path)])
@@ -265,12 +254,10 @@ def test_repeated_naming_entries_not_flagged(
     assert "Duplicate sibling" not in captured.out
 
 
-def test_empty_text_only_flagged_for_text_tag(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
-    """Whitespace-only body on non-``<text>`` tags is not flagged.
+def test_empty_text_only_flagged_for_text_tag(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    r"""Whitespace-only body on non-``<text>`` tags is not flagged.
 
-    Inheritance/stub objects like ``<object Inherits="X" Replace="true">\\n  </object>``
+    Inheritance/stub objects like ``<object Inherits="X" Replace="true">\n  </object>``
     legitimately have whitespace-only bodies. Only ``<text>`` should be
     checked for emptiness.
     """
@@ -287,9 +274,7 @@ def test_empty_text_only_flagged_for_text_tag(
     assert "Empty text" not in captured.out
 
 
-def test_empty_text_self_closing_flagged(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
+def test_empty_text_self_closing_flagged(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """Self-closing ``<text/>`` is still flagged as empty.
 
     Behavior parity with the old detector for the genuine empty-translation
@@ -305,9 +290,7 @@ def test_empty_text_self_closing_flagged(
     assert "Empty text in element 'text'" in captured.out
 
 
-def test_empty_object_stub_not_flagged(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
+def test_empty_object_stub_not_flagged(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """Empty inheritance-only ``<object>`` is not flagged."""
     xml_path = tmp_path / "objstub.xml"
     _write_xml(
