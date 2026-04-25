@@ -56,17 +56,17 @@
     {
       "key": "{0} will not trade with you until you pay {1} the {2} you owe {3}.",
       "context": "TradeUiPopupTranslationPatch",
-      "text": "{0}は、あなたが{1}に借りている{2}を支払うまで取引してくれない。"
+      "text": "{0}は、あなたが{3}に借りている{2}を{1}に支払うまで取引してくれない。"
     },
     {
       "key": "{0} will not trade with you until you pay {1} the {2} you owe {3}. Do you want to give {4} your {5} now?",
       "context": "TradeUiPopupTranslationPatch",
-      "text": "{0}は、あなたが{1}に借りている{2}を支払うまで取引してくれない。今すぐあなたの{5}を{4}に渡しますか？"
+      "text": "{0}は、あなたが{3}に借りている{2}を{1}に支払うまで取引してくれない。今すぐあなたの{5}を{4}に渡しますか？"
     },
     {
       "key": "{0} will not trade with you until you pay {1} the {2} you owe {3}. Do you want to give it to {4} now?",
       "context": "TradeUiPopupTranslationPatch",
-      "text": "{0}は、あなたが{1}に借りている{2}を支払うまで取引してくれない。今すぐそれを{4}に渡しますか？"
+      "text": "{0}は、あなたが{3}に借りている{2}を{1}に支払うまで取引してくれない。今すぐそれを{4}に渡しますか？"
     },
     {
       "key": "You can't understand {0} explanation.",
