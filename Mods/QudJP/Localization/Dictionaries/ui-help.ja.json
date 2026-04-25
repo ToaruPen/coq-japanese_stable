@@ -14,7 +14,7 @@
     { "key": "navigate", "context": "Qud.UI.HelpScreen", "text": "移動" },
     { "key": "Accept", "context": "Qud.UI.HelpScreen", "text": "決定" },
     { "key": "Select", "context": "Qud.UI.HelpScreen", "text": "選択" },
-    { "key": "Keyboard && Mouse", "context": "Qud.UI.HelpScreen", "text": "キーボード＆マウス" },
+    { "key": "Keyboard && Mouse", "context": "Qud.UI.HelpScreen", "text": "キーボード && マウス" },
     { "key": "Gamepad", "context": "Qud.UI.HelpScreen", "text": "ゲームパッド" },
 
     { "key": "{{W|Alt}}", "context": "Qud.UI.HelpRow", "text": "{{W|Alt}}" },

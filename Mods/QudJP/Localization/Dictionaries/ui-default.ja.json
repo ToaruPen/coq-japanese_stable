@@ -23,7 +23,7 @@
     },
     {
       "key": "ATTRIBUTES && POWERS",
-      "text": "能力値と能力"
+      "text": "能力値 && 能力"
     },
     {
       "key": "EQUIPMENT",
@@ -957,7 +957,7 @@
     {
       "key": "Bows && Rifles",
       "context": "Look.TooltipValue",
-      "text": "弓・ライフル"
+      "text": "弓 && ライフル"
     },
     {
       "key": "Heavy Weapon",

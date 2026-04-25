@@ -362,22 +362,22 @@
     {
       "key": "{{G|salt marsh}}\nvillage",
       "context": "Chargen.StartingLocation.SaltMarshVillage.Name",
-      "text": "塩性湿地の村"
+      "text": "{{G|塩性湿地}}の村"
     },
     {
       "key": "{{Y|salt dunes}}\nvillage",
       "context": "Chargen.StartingLocation.SaltDuneVillage.Name",
-      "text": "塩砂丘の村"
+      "text": "{{Y|塩砂丘}}の村"
     },
     {
       "key": "{{W|desert canyon}}\nvillage",
       "context": "Chargen.StartingLocation.DesertCanyonsVillage.Name",
-      "text": "砂漠峡谷の村"
+      "text": "{{W|砂漠峡谷}}の村"
     },
     {
       "key": "{{Y|hill}}\nvillage",
       "context": "Chargen.StartingLocation.HillsVillage.Name",
-      "text": "丘の村"
+      "text": "{{Y|丘}}の村"
     },
     {
       "key": "Recommended for new players.",

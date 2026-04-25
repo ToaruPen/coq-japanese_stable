@@ -10,7 +10,7 @@
   },
   "entries": [
     { "key": "Keybinds", "context": "Qud.UI.KeybindsScreen", "text": "キー設定" },
-    { "key": "Keyboard && Mouse", "context": "Qud.UI.KeybindsScreen", "text": "キーボード＆マウス" },
+    { "key": "Keyboard && Mouse", "context": "Qud.UI.KeybindsScreen", "text": "キーボード && マウス" },
     { "key": "Gamepad", "context": "Qud.UI.KeybindsScreen", "text": "ゲームパッド" },
     { "key": "restore defaults", "context": "Qud.UI.KeybindsScreen", "text": "初期設定に戻す" },
     { "key": "remove keybind", "context": "Qud.UI.KeybindsScreen", "text": "キー設定を削除" },

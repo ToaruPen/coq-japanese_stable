@@ -972,7 +972,7 @@
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Weapon Class: Bows && Rifles",
-      "text": "武器カテゴリ: 弓・ライフル"
+      "text": "武器カテゴリ: 弓 && ライフル"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
@@ -1012,7 +1012,7 @@
     {
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
       "key": "Weapon Class: Bows && Rifles",
-      "text": "武器カテゴリ: 弓・ライフル"
+      "text": "武器カテゴリ: 弓 && ライフル"
     },
     {
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",

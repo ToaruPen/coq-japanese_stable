@@ -107,7 +107,7 @@
     {
       "key": "Keyboard && Mouse",
       "context": "Qud.UI.KeybindsScreen.ControlTypeDisplayName.Keyboard",
-      "text": "キーボード＆マウス"
+      "text": "キーボード && マウス"
     },
     {
       "key": "Gamepad",
@@ -127,7 +127,7 @@
     {
       "key": "{{C|Configuring Controller:}} {{c|Keyboard && Mouse}}",
       "context": "Qud.UI.KeybindsScreen.ConfiguringController.Keyboard",
-      "text": "{{C|設定中の入力デバイス:}} {{c|キーボード＆マウス}}"
+      "text": "{{C|設定中の入力デバイス:}} {{c|キーボード && マウス}}"
     },
     {
       "key": "{{C|Configuring Controller:}} {{c|<no controller detected>}}",
