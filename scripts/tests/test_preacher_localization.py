@@ -22,6 +22,13 @@ def preacher_parts() -> list[ET.Element]:
     return [part for part in root.iter("part") if part.attrib.get("Name") == "Preacher"]
 
 
+def _preacher_parts_for_book(book: str, preacher_parts: list[ET.Element]) -> list[ET.Element]:
+    """Return all Preacher parts for one Book and fail with actionable context if missing."""
+    parts = [p for p in preacher_parts if p.attrib.get("Book") == book]
+    assert parts, f'No <part Name="Preacher"> found for Book {book!r}; got entries: {parts!r}'
+    return parts
+
+
 def _has_non_ascii(value: str) -> bool:
     return any(ord(ch) > 127 for ch in value)
 
@@ -45,8 +52,7 @@ def test_preacher_book_set_is_exact(preacher_parts: list[ET.Element]) -> None:
 @pytest.mark.parametrize("book", sorted(EXPECTED_BOOKS))
 def test_preacher_prefix_is_japanese_and_ends_with_w_quote(book: str, preacher_parts: list[ET.Element]) -> None:
     """Prefix translated to Japanese, still ends with `{{W|'` so the C# Postfix can close the span."""
-    parts = [p for p in preacher_parts if p.attrib.get("Book") == book]
-    assert parts, f"Preacher Book={book!r} not found"
+    parts = _preacher_parts_for_book(book, preacher_parts)
     for part in parts:
         prefix = part.attrib.get("Prefix", "")
         assert prefix.endswith("{{W|'"), f"Prefix for Book={book!r} must end with {{{{W|'. Got: {prefix!r}"
@@ -56,8 +62,7 @@ def test_preacher_prefix_is_japanese_and_ends_with_w_quote(book: str, preacher_p
 @pytest.mark.parametrize("book", sorted(EXPECTED_BOOKS))
 def test_preacher_postfix_is_explicit(book: str, preacher_parts: list[ET.Element]) -> None:
     """Postfix='}}' is declared explicitly so validate_xml's balance check passes without baseline help."""
-    parts = [p for p in preacher_parts if p.attrib.get("Book") == book]
-    assert parts, f'No <part Name="Preacher"> found for Book {book!r}; got entries: {parts!r}'
+    parts = _preacher_parts_for_book(book, preacher_parts)
     for part in parts:
         postfix = part.attrib.get("Postfix")
         assert postfix == "'}}", f"Postfix for Book={book!r} must be exactly '}}}}. Got: {postfix!r}"
@@ -66,8 +71,7 @@ def test_preacher_postfix_is_explicit(book: str, preacher_parts: list[ET.Element
 @pytest.mark.parametrize("book", sorted(EXPECTED_BOOKS))
 def test_preacher_frozen_is_japanese(book: str, preacher_parts: list[ET.Element]) -> None:
     """Frozen attribute must contain Japanese."""
-    parts = [p for p in preacher_parts if p.attrib.get("Book") == book]
-    assert parts, f'No <part Name="Preacher"> found for Book {book!r}; got entries: {parts!r}'
+    parts = _preacher_parts_for_book(book, preacher_parts)
     for part in parts:
         frozen = part.attrib.get("Frozen", "")
         assert _has_non_ascii(frozen), f"Frozen for Book={book!r} must contain Japanese. Got: {frozen!r}"
