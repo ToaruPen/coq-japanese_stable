@@ -157,15 +157,11 @@ def _find_empty_text_elements(root: ET.Element) -> list[str]:
     warnings: list[str] = []
 
     for element in root.iter():
+        if element.tag != "text":
+            continue
         if len(element) > 0:
             continue
-
-        if element.text is None:
-            if element.tag == "text":
-                warnings.append(f"Empty text in element {_format_element_descriptor(element)}")
-            continue
-
-        if element.text.strip() == "":
+        if element.text is None or element.text.strip() == "":
             warnings.append(f"Empty text in element {_format_element_descriptor(element)}")
 
     return warnings
