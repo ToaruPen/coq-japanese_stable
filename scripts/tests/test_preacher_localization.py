@@ -28,10 +28,17 @@ def _has_non_ascii(value: str) -> bool:
 
 def test_preacher_book_set_is_exact(preacher_parts: list[ET.Element]) -> None:
     """Issue #404: every Preacher part is one of the five known books."""
-    books = {part.attrib.get("Book", "") for part in preacher_parts}
-    assert books == EXPECTED_BOOKS, (
-        f"Expected Preacher books {EXPECTED_BOOKS}, got {books}. "
+    book_list = [part.attrib.get("Book", "") for part in preacher_parts]
+    assert len(book_list) == len(EXPECTED_BOOKS), (
+        f"Expected {len(EXPECTED_BOOKS)} Preacher entries, got {len(book_list)}: {book_list}. "
+        "A duplicate or extra Preacher entry may have surfaced in the data."
+    )
+    assert set(book_list) == EXPECTED_BOOKS, (
+        f"Expected Preacher books {EXPECTED_BOOKS}, got {set(book_list)}. "
         "A new Preacher entry surfaced in the data; review and translate before merging."
+    )
+    assert "" not in set(book_list), (
+        f'One or more <part Name="Preacher"> entries is missing a Book attribute: {book_list}.'
     )
 
 
@@ -50,7 +57,7 @@ def test_preacher_prefix_is_japanese_and_ends_with_w_quote(book: str, preacher_p
 def test_preacher_postfix_is_explicit(book: str, preacher_parts: list[ET.Element]) -> None:
     """Postfix='}}' is declared explicitly so validate_xml's balance check passes without baseline help."""
     parts = [p for p in preacher_parts if p.attrib.get("Book") == book]
-    assert parts
+    assert parts, f'No <part Name="Preacher"> found for Book {book!r}; got entries: {parts!r}'
     for part in parts:
         postfix = part.attrib.get("Postfix")
         assert postfix == "'}}", f"Postfix for Book={book!r} must be exactly '}}}}. Got: {postfix!r}"
@@ -60,7 +67,7 @@ def test_preacher_postfix_is_explicit(book: str, preacher_parts: list[ET.Element
 def test_preacher_frozen_is_japanese(book: str, preacher_parts: list[ET.Element]) -> None:
     """Frozen attribute must contain Japanese."""
     parts = [p for p in preacher_parts if p.attrib.get("Book") == book]
-    assert parts
+    assert parts, f'No <part Name="Preacher"> found for Book {book!r}; got entries: {parts!r}'
     for part in parts:
         frozen = part.attrib.get("Frozen", "")
         assert _has_non_ascii(frozen), f"Frozen for Book={book!r} must contain Japanese. Got: {frozen!r}"

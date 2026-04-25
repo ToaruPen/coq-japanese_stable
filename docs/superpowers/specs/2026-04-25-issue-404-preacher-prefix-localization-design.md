@@ -29,7 +29,7 @@ No other `<part Name="Preacher" ...>` exists under `Mods/QudJP/Localization/`.
 
 For all five entries, the `Prefix` and `Postfix` are uniform:
 
-```
+```text
 Prefix="説教者は言う、{{W|'" Postfix="'}}"
 ```
 
