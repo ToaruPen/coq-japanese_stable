@@ -21,7 +21,7 @@ def _placeholder_multiset(value: str) -> Counter[str]:
 
 
 def _all_dictionary_files() -> list[Path]:
-    return sorted(DICTIONARIES_ROOT.rglob("*.json"))
+    return sorted(DICTIONARIES_ROOT.rglob("*.ja.json"))
 
 
 def _entries_with_placeholder_keys(path: Path) -> list[tuple[str, str]]:

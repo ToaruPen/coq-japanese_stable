@@ -4,7 +4,7 @@
 
 **Goal:** Restore `{N}` numeric-placeholder parity in four shipped dictionary entries (one in `ui-popup.ja.json`, three in `ui-trade.ja.json`) and lock the invariant dict-wide via a new pytest contract.
 
-**Architecture:** Pure data fix in JSON dictionaries plus a single pytest scanner that owns the dict-wide multiset-equality contract. No production C# / Python changes.
+**Architecture:** JSON dictionary fixes plus a pytest scanner enforcing dict-wide multiset-equality plus a minimal production C# correction in `PopupTranslationPatch.cs` (added `TranslateCampfirePoisonToken`). No production Python changes.
 
 **Tech Stack:** Python 3.12 + pytest, `re` for the placeholder regex, `json` for parsing.
 
