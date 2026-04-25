@@ -367,7 +367,7 @@
     {
       "key": "{{Y|lege{{W|n}}dary}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{Y|伝説的}}"
+      "text": "{{Y|伝説{{W|的}}}}"
     },
     {
       "key": "legendary",
@@ -407,7 +407,7 @@
     {
       "key": "{{Y|mi{{R|c}}roserra{{R|t}}ed}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{Y|微鋸歯}}"
+      "text": "{{Y|{{R|微}}鋸{{R|歯}}}}"
     },
     {
       "key": "{{m|morphogenetic}}",
@@ -472,7 +472,7 @@
     {
       "key": "{{Y|serra{{R|t}}ed}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{Y|鋸歯状の}}"
+      "text": "{{Y|鋸歯{{R|状}}の}}"
     },
     {
       "key": "sharp",
@@ -587,7 +587,7 @@
     {
       "key": "{{C|convalessence}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "コンバレセンスで染みた"
+      "text": "{{C|コンバレセンス}}で染みた"
     },
     {
       "key": "{{C|luminous}}",
@@ -612,7 +612,7 @@
     {
       "key": "{{G|acid}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "酸で染みた"
+      "text": "{{G|酸}}で染みた"
     },
     {
       "key": "{{G|gooey}}",
@@ -627,7 +627,7 @@
     {
       "key": "{{G|goo}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "どろどろに染みた"
+      "text": "{{G|どろどろ}}に染みた"
     },
     {
       "key": "{{K|inky}}",
@@ -642,7 +642,7 @@
     {
       "key": "{{K|ink}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "インクで染みた"
+      "text": "{{K|インク}}で染みた"
     },
     {
       "key": "{{K|oily}}",
@@ -657,7 +657,7 @@
     {
       "key": "{{K|oil}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "油で染みた"
+      "text": "{{K|油}}で染みた"
     },
     {
       "key": "{{K|ooze}}",
@@ -667,7 +667,7 @@
     {
       "key": "{{K|ooze}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "軟泥で汚れた"
+      "text": "{{K|軟泥}}で汚れた"
     },
     {
       "key": "{{K|oozing}}",
@@ -692,7 +692,7 @@
     {
       "key": "{{K|tar}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "タールで染みた"
+      "text": "{{K|タール}}で染みた"
     },
     {
       "key": "{{W|sappy}}",
@@ -707,7 +707,7 @@
     {
       "key": "{{W|sap}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "樹液で染みた"
+      "text": "{{W|樹液}}で染みた"
     },
     {
       "key": "{{Y|dilute}}",
@@ -727,7 +727,7 @@
     {
       "key": "{{Y|gel}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "ゲルで染みた"
+      "text": "{{Y|ゲル}}で染みた"
     },
     {
       "key": "{{Y|salt-encrusted}}",
@@ -747,7 +747,7 @@
     {
       "key": "{{Y|salt}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "塩で染みた"
+      "text": "{{Y|塩}}で染みた"
     },
     {
       "key": "{{Y|unctuous}}",
@@ -762,7 +762,7 @@
     {
       "key": "{{Y|warm static}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "ウォームスタティックで染みた"
+      "text": "{{Y|ウォームスタティック}}で染みた"
     },
     {
       "key": "{{Y|waxy}}",
@@ -777,7 +777,7 @@
     {
       "key": "{{Y|wax}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "蝋で汚れた"
+      "text": "{{Y|蝋}}で汚れた"
     },
     {
       "key": "{{brainbrine|brain-brine}}",
@@ -787,7 +787,7 @@
     {
       "key": "{{brainbrine|brain-brine}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "脳髄汁で染みた"
+      "text": "{{brainbrine|脳髄汁}}で染みた"
     },
     {
       "key": "{{cider|cider}}",
@@ -797,7 +797,7 @@
     {
       "key": "{{cider|cider}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "サイダーで染みた"
+      "text": "{{cider|サイダー}}で染みた"
     },
     {
       "key": "{{cider|fragrant}}",
@@ -812,7 +812,7 @@
     {
       "key": "{{cloning|cloning-draught}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "クローン薬液で染みた"
+      "text": "{{cloning|クローン薬液}}で染みた"
     },
     {
       "key": "{{cloning|homogenized}}",
@@ -832,7 +832,7 @@
     {
       "key": "{{c|soup}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "スープで染みた"
+      "text": "{{c|スープ}}で染みた"
     },
     {
       "key": "{{g|algae-covered}}",
@@ -842,7 +842,7 @@
     {
       "key": "{{g|algae}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "藻で染まった"
+      "text": "{{g|藻}}で染まった"
     },
     {
       "key": "{{g|algal}}",
@@ -857,7 +857,7 @@
     {
       "key": "{{g|slime}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "スライムでぬめった"
+      "text": "{{g|スライム}}でぬめった"
     },
     {
       "key": "{{lava|lava-covered}}",
@@ -867,7 +867,7 @@
     {
       "key": "{{lava|lava}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "溶岩で汚れた"
+      "text": "{{lava|溶岩}}で汚れた"
     },
     {
       "key": "{{lava|magmatic}}",
@@ -887,7 +887,7 @@
     {
       "key": "{{m|wine}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "ワインで染みた"
+      "text": "{{m|ワイン}}で染みた"
     },
     {
       "key": "{{nervous|nervous}}",
@@ -902,7 +902,7 @@
     {
       "key": "{{neutronic|flux}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "中性子フラックスで染みた"
+      "text": "{{neutronic|中性子フラックス}}で染みた"
     },
     {
       "key": "{{neutronic|neutral}}",
@@ -922,7 +922,7 @@
     {
       "key": "{{putrid|putrescence}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "腐敗液で染みた"
+      "text": "{{putrid|腐敗液}}で染みた"
     },
     {
       "key": "{{putrid|putrid}}",
@@ -942,12 +942,12 @@
     {
       "key": "{{r|bloody}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "血まみれになった"
+      "text": "{{r|血まみれ}}になった"
     },
     {
       "key": "{{r|blood}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "血に染まった"
+      "text": "{{r|血}}に染まった"
     },
     {
       "key": "{{slimy|slimy}}",
@@ -962,7 +962,7 @@
     {
       "key": "{{sunslag|sunslag}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "サンスラグで染みた"
+      "text": "{{sunslag|サンスラグ}}で染みた"
     },
     {
       "key": "{{w|honey}}",
@@ -972,7 +972,7 @@
     {
       "key": "{{w|honey}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "はちみつで染みた"
+      "text": "{{w|はちみつ}}で染みた"
     },
     {
       "key": "{{w|sludge}}",
@@ -982,7 +982,7 @@
     {
       "key": "{{w|sludge}}-stained",
       "context": "GetDisplayName.Adjective",
-      "text": "汚泥で汚れた"
+      "text": "{{w|汚泥}}で汚れた"
     },
     {
       "key": "{{w|sludgy}}",
@@ -1157,7 +1157,7 @@
     {
       "key": "lege{{W|ndary}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{Y|伝説的}}"
+      "text": "伝説{{W|的}}"
     },
     {
       "key": "massively overloaded",
@@ -1182,7 +1182,7 @@
     {
       "key": "mi{{R|croserrated}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{Y|微鋸歯}}"
+      "text": "微{{R|鋸歯}}"
     },
     {
       "key": "morphogenetic",
@@ -1237,7 +1237,7 @@
     {
       "key": "serra{{R|ted}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{Y|鋸歯状の}}"
+      "text": "鋸歯{{R|状の}}"
     },
     {
       "key": "six-fingered",

@@ -1896,7 +1896,7 @@
 
 
   <object Name="Chiliad Creature Baetyls" Inherits="BaseRobot" Replace="true">
-    <part Name="Render" DisplayName="=creatureRegionAdjective= のベイトル" Tile="Creatures/chiliad-baetyl.png" />
+    <part Name="Render" DisplayName="=creatureRegionAdjective= のベテル" Tile="Creatures/chiliad-baetyl.png" />
     <part Name="Body" Anatomy="HoverRobot" />
     <part Name="Brain" Factions="Baetyls-100" />
     <part Name="Description" Short="苔をまとった結晶球が、熟練の祈り人のようにしゃがみ込んでいる。" />
