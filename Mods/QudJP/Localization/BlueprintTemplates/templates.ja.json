@@ -18,7 +18,7 @@
     },
     {
       "key": "{{g|You touch =subject.the==subject.name= and recall =pronouns.possessive= passcode. =pronouns.Subjective= =verb:beep:afterpronoun= warmly.}}",
-      "text": "{{g|あなたは=subject.name=に触れ、パスコードを思い出した。=subject.name=が温かくビープ音を鳴らした。}}"
+      "text": "{{g|あなたは=subject.name=に触れ、=subject.name=のパスコードを思い出した。=subject.name=が温かくビープ音を鳴らした。}}"
     },
     {
       "key": "{{r|A loud buzz is emitted. The unauthorized glyph flashes on the display.}}",
@@ -26,7 +26,7 @@
     },
     {
       "key": "You touch =subject.t= and recall =pronouns.possessive= passcode. =pronouns.Subjective= =verb:beep:afterpronoun= warmly.",
-      "text": "あなたは=subject.name=に触れ、パスコードを思い出した。=subject.name=が温かくビープ音を鳴らした。"
+      "text": "あなたは=subject.name=に触れ、=subject.name=のパスコードを思い出した。=subject.name=が温かくビープ音を鳴らした。"
     },
     {
       "key": "A loud buzz is emitted. The unauthorized glyph flashes on the display.",
@@ -34,7 +34,7 @@
     },
     {
       "key": "{{R|=subject.T= =verb:consume= =object.an==object.directionIfAny=!}}",
-      "text": "{{R|=subject.name=が=object.name=を消費した！}}"
+      "text": "{{R|=subject.name=が=object.name==object.directionIfAny=を消費した！}}"
     },
     {
       "key": "=subject.T= =verb:fizzle= for several seconds.",
@@ -46,7 +46,7 @@
     },
     {
       "key": "=object.T= =object.verb:react= strangely with =subject.t= and =object.verb:convert= =pronouns.objective= to =newLiquid=.",
-      "text": "=object.name=が=subject.name=と奇妙な反応を起こし、=newLiquid=に変換された。"
+      "text": "=object.name=が=subject.name=と奇妙な反応を起こし、=subject.name=を=newLiquid=に変換した。"
     },
     {
       "key": "=subject.T= =verb:float= off.",
@@ -86,7 +86,7 @@
     },
     {
       "key": "=object.Does:are= much too old and rusted to enter.",
-      "text": "古すぎて錆びついており、中に入ることはできない。"
+      "text": "=object.name=は古すぎて錆びついており、中に入ることはできない。"
     },
     {
       "key": "=subject.Name's= =object.name= =object.verb:burst= outward, destroying =objpronouns.reflexive= to prevent potentially lethal damage.",
@@ -102,7 +102,7 @@
     },
     {
       "key": "=subject.T= =verb:extrude= through the mirror of =pronouns.possessive= crystalline rind!",
-      "text": "=subject.name=が結晶の外殻の鏡面を通り抜けた！"
+      "text": "=subject.name=が=subject.name=の結晶の外殻の鏡面を通り抜けた！"
     },
     {
       "key": "=subject.T= =verb:stumble= into =object.t=!",

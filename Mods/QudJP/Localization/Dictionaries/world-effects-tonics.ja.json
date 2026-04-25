@@ -81,7 +81,7 @@
         {
             "key": "under the effects of {{rubbergum|rubbergum}} tonic",
             "context": "XRL.World.Effects.Rubbergum_Tonic.StateDescription",
-            "text": "ラバーガムトニックの効果を受けている"
+            "text": "{{rubbergum|ラバーガム}}トニックの効果を受けている"
         },
         {
             "key": "+100 electric resistance\n+50 cold resistance\n-1 AV\n+5 to saves vs. being restrained\n-5 to saves vs. bleeding\nOnly suffers 25% damage from bludgeoning attacks.\nOnly suffers 25% damage from falling.\nCan't be grabbed.",
@@ -111,7 +111,7 @@
         {
             "key": "under the effects of {{Y|salve}} tonic",
             "context": "XRL.World.Effects.Salve_Tonic.StateDescription",
-            "text": "サルヴトニックの効果を受けている"
+            "text": "{{Y|サルヴ}}トニックの効果を受けている"
         },
         {
             "key": "Recovers 0.9 hit points per level (minimum 5) each turn.",

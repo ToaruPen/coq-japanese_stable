@@ -86,9 +86,19 @@ public sealed class BlueprintTemplateTranslationPatchTests
     [TestCase("=subject.The==subject.name= =verb:recognize= your =object.name=.",
         "=subject.name=があなたの=object.name=を認識した。")]
     [TestCase("You touch =subject.t= and recall =pronouns.possessive= passcode. =pronouns.Subjective= =verb:beep:afterpronoun= warmly.",
-        "あなたは=subject.name=に触れ、パスコードを思い出した。=subject.name=が温かくビープ音を鳴らした。")]
+        "あなたは=subject.name=に触れ、=subject.name=のパスコードを思い出した。=subject.name=が温かくビープ音を鳴らした。")]
     [TestCase("A loud buzz is emitted. The unauthorized glyph flashes on the display.",
         "大きなブザー音が鳴った。認証されていないグリフがディスプレイに点滅した。")]
+    [TestCase("{{g|You touch =subject.the==subject.name= and recall =pronouns.possessive= passcode. =pronouns.Subjective= =verb:beep:afterpronoun= warmly.}}",
+        "{{g|あなたは=subject.name=に触れ、=subject.name=のパスコードを思い出した。=subject.name=が温かくビープ音を鳴らした。}}")]
+    [TestCase("{{R|=subject.T= =verb:consume= =object.an==object.directionIfAny=!}}",
+        "{{R|=subject.name=が=object.name==object.directionIfAny=を消費した！}}")]
+    [TestCase("=object.T= =object.verb:react= strangely with =subject.t= and =object.verb:convert= =pronouns.objective= to =newLiquid=.",
+        "=object.name=が=subject.name=と奇妙な反応を起こし、=subject.name=を=newLiquid=に変換した。")]
+    [TestCase("=object.Does:are= much too old and rusted to enter.",
+        "=object.name=は古すぎて錆びついており、中に入ることはできない。")]
+    [TestCase("=subject.T= =verb:extrude= through the mirror of =pronouns.possessive= crystalline rind!",
+        "=subject.name=が=subject.name=の結晶の外殻の鏡面を通り抜けた！")]
     public void LoadTranslations_ContainsExpectedMapping(string englishKey, string expectedJapanese)
     {
         var translations = BlueprintTemplateTranslationPatch.LoadTranslations();
@@ -276,7 +286,7 @@ public sealed class BlueprintTemplateTranslationPatchTests
                 Is.EqualTo("=subject.name=があなたの=object.name=を認識した。"));
             Assert.That(
                 GetDummyPartSetter(part, "PsychometryAccessMessage").OriginalValue,
-                Is.EqualTo("あなたは=subject.name=に触れ、パスコードを思い出した。=subject.name=が温かくビープ音を鳴らした。"));
+                Is.EqualTo("あなたは=subject.name=に触れ、=subject.name=のパスコードを思い出した。=subject.name=が温かくビープ音を鳴らした。"));
             Assert.That(
                 GetDummyPartSetter(part, "AccessFailureMessage").OriginalValue,
                 Is.EqualTo("大きなブザー音が鳴った。認証されていないグリフがディスプレイに点滅した。"));
