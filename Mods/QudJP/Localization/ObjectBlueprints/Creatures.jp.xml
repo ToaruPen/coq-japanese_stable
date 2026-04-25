@@ -5571,25 +5571,25 @@
 <object Name="Mechanimist Preacher 1" Inherits="Mechanimist Priest 1" Replace="true">
     <part Name="Render" DisplayName="メカニマス教徒の説教者" ColorString="&amp;c" RenderString="m" Tile="creatures/sw_preacher2.bmp" DetailColor="W" />
     <part Name="Brain" Hostile="false" Wanders="false" />
-    <part Name="Preacher" Book="Preacher1" Prefix="The preacher says, {{W|'" Frozen="The preacher mumbles inaudibly, encased in ice." inOrder="true" ChatWait="200" />
+    <part Name="Preacher" Book="Preacher1" Prefix="説教者は言う、{{W|'" Postfix="'}}" Frozen="説教者は氷に閉じ込められ、聞き取れない声でぶつぶつ言っている。" inOrder="true" ChatWait="200" />
   </object>
 
 <object Name="Mechanimist Preacher 2" Inherits="Mechanimist Priest 1" Replace="true">
     <part Name="Render" ColorString="&amp;c" RenderString="m" DisplayName="メカニマス教徒の説教者" Tile="creatures/sw_preacher2.bmp" DetailColor="W" />
     <part Name="Brain" Hostile="false" Wanders="false" />
-    <part Name="Preacher" Book="Preacher2" Prefix="The preacher says, {{W|'" Frozen="The preacher mumbles inaudibly, encased in ice." inOrder="true" ChatWait="200" />
+    <part Name="Preacher" Book="Preacher2" Prefix="説教者は言う、{{W|'" Postfix="'}}" Frozen="説教者は氷に閉じ込められ、聞き取れない声でぶつぶつ言っている。" inOrder="true" ChatWait="200" />
   </object>
 
 <object Name="Mechanimist Preacher 3" Inherits="Mechanimist Priest 1" Replace="true">
     <part Name="Render" ColorString="&amp;c" RenderString="m" DisplayName="メカニマス教徒の説教者" Tile="creatures/sw_preacher2.bmp" DetailColor="W" />
     <part Name="Brain" Hostile="false" Wanders="false" />
-    <part Name="Preacher" Book="Preacher3" Prefix="The preacher says, {{W|'" Frozen="The preacher mumbles inaudibly, encased in ice." inOrder="true" ChatWait="200" />
+    <part Name="Preacher" Book="Preacher3" Prefix="説教者は言う、{{W|'" Postfix="'}}" Frozen="説教者は氷に閉じ込められ、聞き取れない声でぶつぶつ言っている。" inOrder="true" ChatWait="200" />
   </object>
 
 <object Name="Mechanimist Preacher 4" Inherits="Mechanimist Priest 1" Replace="true">
     <part Name="Render" ColorString="&amp;c" RenderString="m" DisplayName="メカニマス教徒の説教者" Tile="creatures/sw_preacher2.bmp" DetailColor="W" />
     <part Name="Brain" Hostile="false" Wanders="false" />
-    <part Name="Preacher" Book="Preacher4" Prefix="The preacher says, {{W|'" Frozen="The preacher mumbles inaudibly, encased in ice." inOrder="true" ChatWait="200" />
+    <part Name="Preacher" Book="Preacher4" Prefix="説教者は言う、{{W|'" Postfix="'}}" Frozen="説教者は氷に閉じ込められ、聞き取れない声でぶつぶつ言っている。" inOrder="true" ChatWait="200" />
   </object>
 
 <object Name="Mechanimist Temple Paladin" Inherits="Mechanimist" Replace="true">
@@ -11780,7 +11780,7 @@
     <mutation Name="Pyrokinesis" Level="10" />
     <part Name="GivesRep" />
     <tag Name="ExcludeFromDynamicEncounters" Value="*noinherit" />
-    <part Name="Preacher" Book="HighSermon" Prefix="The preacher says, {{W|'" Frozen="Eschelstadt II, High Priest of the Stilt mumbles inaudibly, encased in ice." inOrder="true" ChatWait="75" />
+    <part Name="Preacher" Book="HighSermon" Prefix="説教者は言う、{{W|'" Postfix="'}}" Frozen="スティルトの大司祭エッシェルシュタット II は氷に閉じ込められ、聞き取れない声でぶつぶつ言っている。" inOrder="true" ChatWait="75" />
     <tag Name="Gender" Value="male" />
     <tag Name="RandomPronounSetChance" Value="0" />
     <xtagGrammar Proper="true" />

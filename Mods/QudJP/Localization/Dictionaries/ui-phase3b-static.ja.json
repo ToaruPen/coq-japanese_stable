@@ -29,7 +29,7 @@
     { "key": "Ammo", "text": "弾薬" },
     { "key": "Armor", "text": "防具" },
     { "key": "Shields", "text": "盾" },
-    { "key": "Grenades", "text": "手榴弾" },
+    { "key": "Grenades", "text": "グレネード" },
     { "key": "Creatures", "text": "生物" },
     { "key": "Applicators", "text": "塗布具" },
     { "key": "Energy Cells", "text": "エネルギーセル" },

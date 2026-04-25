@@ -4,10 +4,6 @@
     {
       "path": "Mods/QudJP/Localization/Conversations.jp.xml",
       "warning": "Empty text in element 'text'"
-    },
-    {
-      "path": "Mods/QudJP/Localization/ObjectBlueprints/Creatures.jp.xml",
-      "warning": "Unbalanced color code at line 5574"
     }
   ]
 }

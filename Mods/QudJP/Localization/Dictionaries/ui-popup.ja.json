@@ -2580,7 +2580,7 @@
         },
         {
             "key": "You cure the {0} coursing through {1} with a balm made from {2}.",
-            "text": "{2}で作った塗り薬で{1}を蝕む毒を治した。"
+            "text": "{2}で作った塗り薬で{1}を蝕む{0}を治した。"
         },
         {
             "key": "You create a new recipe for {{|{0}}}!",

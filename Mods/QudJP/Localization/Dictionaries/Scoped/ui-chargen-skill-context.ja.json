@@ -9,17 +9,17 @@
     "protectHtmlEntities": true
   },
   "entries": [
-    { "key": "Bow and Rifle", "context": "Chargen.SkillName", "text": "弓・ライフル" },
-    { "key": "Customs and Folklore", "context": "Chargen.SkillName", "text": "風習と民間伝承" },
-    { "key": "Lionheart", "context": "Chargen.SkillName", "text": "獅子心" },
-    { "key": "Multiweapon Fighting", "context": "Chargen.SkillName", "text": "多刀流" },
-    { "key": "Persuasion", "context": "Chargen.SkillName", "text": "説得術" },
-    { "key": "Pistol", "context": "Chargen.SkillName", "text": "ピストル" },
-    { "key": "Poison Tolerance", "context": "Chargen.SkillName", "text": "毒耐性" },
-    { "key": "Self-discipline", "context": "Chargen.SkillName", "text": "自己鍛錬" },
-    { "key": "Shield", "context": "Chargen.SkillName", "text": "盾" },
-    { "key": "Short Blade", "context": "Chargen.SkillName", "text": "短剣" },
-    { "key": "Spry", "context": "Chargen.SkillName", "text": "軽業" },
-    { "key": "Wayfaring", "context": "Chargen.SkillName", "text": "サバイバル" }
+    { "key": "Bow and Rifle", "context": "Chargen.SkillName", "text": "弓とライフル" },
+    { "key": "Customs and Folklore", "context": "Chargen.SkillName", "text": "慣習と伝承" },
+    { "key": "Lionheart", "context": "Chargen.SkillName", "text": "ライオンハート" },
+    { "key": "Multiweapon Fighting", "context": "Chargen.SkillName", "text": "多肢格闘" },
+    { "key": "Persuasion", "context": "Chargen.SkillName", "text": "説得" },
+    { "key": "Pistol", "context": "Chargen.SkillName", "text": "拳銃術" },
+    { "key": "Poison Tolerance", "context": "Chargen.SkillName", "text": "耐毒" },
+    { "key": "Self-discipline", "context": "Chargen.SkillName", "text": "自律" },
+    { "key": "Shield", "context": "Chargen.SkillName", "text": "盾術" },
+    { "key": "Short Blade", "context": "Chargen.SkillName", "text": "短剣術" },
+    { "key": "Spry", "context": "Chargen.SkillName", "text": "身軽" },
+    { "key": "Wayfaring", "context": "Chargen.SkillName", "text": "辺境行" }
   ]
 }

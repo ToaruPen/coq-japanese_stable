@@ -1073,7 +1073,7 @@
     {
       "key": "Starts with a {{B|recycling suit}}",
       "context": "TMP.Description",
-      "text": "リサイクルスーツを所持して開始"
+      "text": "{{B|リサイクルスーツ}}を所持して開始"
     },
     {
       "key": "Staunch Wounds",
@@ -1963,7 +1963,7 @@
     {
       "key": "{{c|?}} Starts with a {{B|recycling suit}}",
       "context": "TMP.Description",
-      "text": "{{c|?}} リサイクルスーツを所持して開始"
+      "text": "{{c|?}} {{B|リサイクルスーツ}}を所持して開始"
     },
     {
       "key": "{{c|?}} Tactics",

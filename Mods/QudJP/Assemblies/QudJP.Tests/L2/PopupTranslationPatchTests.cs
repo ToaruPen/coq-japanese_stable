@@ -1,6 +1,5 @@
 using System.Reflection;
 using System.Text;
-using System.Collections.Generic;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
@@ -689,15 +688,16 @@ public sealed class PopupTranslationPatchTests
         Assert.That(translated, Is.EqualTo(expected));
     }
 
-    [Test]
-    public void TranslatePopupTextForProducerRoute_TranslatesCampfireCurePoisonPattern()
+    [TestCase("poisons")]
+    [TestCase("poison")]
+    public void TranslatePopupTextForProducerRoute_TranslatesCampfireCurePoisonPattern(string poisonToken)
     {
         WriteDictionary((
             "You cure the {0} coursing through {1} with a balm made from {2}.",
-            "{2}で作った塗り薬で{1}を蝕む毒を治した。"));
+            "{2}で作った塗り薬で{1}を蝕む{0}を治した。"));
 
-        const string source =
-            "You cure the poisons coursing through {{G|snapjaw scavenger}} with a balm made from {{Y|witchwood bark}}.";
+        var source =
+            $"You cure the {poisonToken} coursing through {{{{G|snapjaw scavenger}}}} with a balm made from {{{{Y|witchwood bark}}}}.";
 
         var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(source, nameof(PopupTranslationPatch));
 

@@ -197,7 +197,7 @@
         <skill Name="Acrobatics_Dodge" />
       </skills>
       <removeextrainfo>Starts with random junk and artifacts</removeextrainfo>
-      <extrainfo>Starts with random junk and artifacts</extrainfo>
+      <extrainfo>ランダムなガラクタとアーティファクトを所持して開始</extrainfo>
     </subtype>
 
     <subtype Name="Greybeard" DisplayName="老練兵" Gear="StartingGear_Greybeard" Tile="creatures/caste_15.bmp" DetailColor="w">
