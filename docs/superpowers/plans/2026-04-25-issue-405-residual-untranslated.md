@@ -110,7 +110,7 @@ PY
 | 42 | `Title="HighSermon"` | `Title="{{W\|シェキーナの大説教}}"` |
 | 135 | `Title="Klanq"` | `Title="{{W\|クランク！}}"` |
 | 153 | `Title="Preacher1"` | `Title="{{W\|銀の父祖への賛美}}"` |
-| 180 | `Title="Preacher2"` | `Title="{{W\|腐蝕したベイトルへの戒め}}"` |
+| 180 | `Title="Preacher2"` | `Title="{{W\|腐蝕したベテルへの戒め}}"` |
 | 216 | `Title="Preacher3"` | `Title="{{W\|聖なる結合}}"` |
 | 249 | `Title="Preacher4"` | `Title="{{W\|啓発の儀}}"` |
 | 279 | `Title="TemplarDomesticant"` | `Title="{{W\|ニューファーザーへの呼び声}}"` |
