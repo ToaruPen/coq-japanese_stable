@@ -48,8 +48,12 @@ def test_unbalanced_color_code_reports_warning(tmp_path: Path, capsys: pytest.Ca
     assert "Unbalanced color code" in captured.out
 
 
-def test_duplicate_id_in_same_parent_reports_warning(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    """Duplicate sibling IDs are reported as warning."""
+def test_generic_duplicate_id_no_longer_reported(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """Duplicate sibling IDs under arbitrary parents are not flagged.
+
+    Only schema-allowlisted (parent_tag, child_tag, key_attribute) triples
+    in DUPLICATE_DETECTION_RULES trigger duplicate detection.
+    """
     xml_path = tmp_path / "duplicate_id.xml"
     _write_xml(xml_path, '<root><item ID="A"/><item ID="A"/></root>')
 
@@ -57,7 +61,7 @@ def test_duplicate_id_in_same_parent_reports_warning(tmp_path: Path, capsys: pyt
     captured = capsys.readouterr()
 
     assert result == 0
-    assert 'Duplicate sibling ID="A"' in captured.out
+    assert "Duplicate sibling" not in captured.out
 
 
 def test_empty_text_element_reports_warning(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
@@ -106,7 +110,7 @@ def test_strict_mode_fails_on_warning_not_in_baseline(tmp_path: Path, capsys: py
     changed_xml = tmp_path / "changed.xml"
     baseline_path = tmp_path / "baseline.json"
     _write_xml(baseline_xml, "<root><text>{{G|baseline</text></root>")
-    _write_xml(changed_xml, '<root><item ID="A"/><item ID="A"/></root>')
+    _write_xml(changed_xml, "<root><text></text></root>")
 
     assert main([str(baseline_xml), "--write-warning-baseline", str(baseline_path)]) == 0
     _ = capsys.readouterr()
@@ -152,3 +156,145 @@ def test_invalid_utf8_reports_error_in_color_scan(tmp_path: Path) -> None:
 
     assert len(result.errors) >= 1
     assert any("not valid UTF-8" in e for e in result.errors)
+
+
+def test_duplicate_siblings_with_distinguishing_attribute_not_flagged(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Same Name on siblings under non-allowlisted parents is not flagged.
+
+    Worlds.jp.xml uses ``<zone Name="..." Level="..." x="..." y="..."/>`` where
+    the Name repeats but the (Level, x, y) tuple differentiates entries. The
+    new schema-aware validator must not flag these.
+    """
+    xml_path = tmp_path / "worlds.xml"
+    _write_xml(
+        xml_path,
+        (
+            '<worlds><world Name="JoppaWorld">'
+            '<zone Name="Lair" Level="10" x="0" y="0"/>'
+            '<zone Name="Lair" Level="11" x="0" y="0"/>'
+            "</world></worlds>"
+        ),
+    )
+
+    result = main([str(xml_path)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert "Duplicate sibling" not in captured.out
+
+
+def test_byte_equal_object_siblings_flagged(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """``<objects>`` parent with same-Name ``<object>`` siblings is flagged.
+
+    This is the regression case for the TombExteriorWall_SW byte-equal
+    duplicate that prompted the validator overhaul. Real ObjectBlueprints
+    files use root tag ``<objects>`` so ``parent.tag == "objects"`` matches.
+    """
+    xml_path = tmp_path / "blueprints.xml"
+    _write_xml(
+        xml_path,
+        (
+            "<objects>"
+            '<object Name="TombExteriorWall_SW" Inherits="Widget" Replace="true"/>'
+            '<object Name="TombExteriorWall_SW" Inherits="Widget" Replace="true"/>'
+            "</objects>"
+        ),
+    )
+
+    result = main([str(xml_path)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert 'Duplicate sibling Name="TombExteriorWall_SW"' in captured.out
+
+
+def test_duplicate_conditional_nodes_not_flagged(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """Conditional ``<node>`` siblings sharing an ID are not flagged.
+
+    Conversations.jp.xml uses the same ID with different ``IfHaveState``
+    branches to express conditional dialogue paths. These must remain silent.
+    """
+    xml_path = tmp_path / "conversations.xml"
+    _write_xml(
+        xml_path,
+        (
+            '<conversations><conversation ID="X">'
+            '<node ID="Greet" IfHaveState="A"/>'
+            '<node ID="Greet" IfHaveState="B"/>'
+            "</conversation></conversations>"
+        ),
+    )
+
+    result = main([str(xml_path)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert "Duplicate sibling" not in captured.out
+
+
+def test_repeated_naming_entries_not_flagged(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """Naming.jp.xml weight-style repetition is not flagged.
+
+    ``<prefix Name="ニ"/>`` may legitimately appear multiple times to
+    weight that candidate higher in random selection.
+    """
+    xml_path = tmp_path / "naming.xml"
+    _write_xml(
+        xml_path,
+        ('<naming><prefixes><prefix Name="ニ"/><prefix Name="ニ"/></prefixes></naming>'),
+    )
+
+    result = main([str(xml_path)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert "Duplicate sibling" not in captured.out
+
+
+def test_empty_text_only_flagged_for_text_tag(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    r"""Whitespace-only body on non-``<text>`` tags is not flagged.
+
+    Inheritance/stub objects like ``<object Inherits="X" Replace="true">\n  </object>``
+    legitimately have whitespace-only bodies. Only ``<text>`` should be
+    checked for emptiness.
+    """
+    xml_path = tmp_path / "stub.xml"
+    _write_xml(
+        xml_path,
+        '<root><object Name="X" Inherits="Widget" Replace="true">\n  </object></root>',
+    )
+
+    result = main([str(xml_path)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert "Empty text" not in captured.out
+
+
+def test_empty_text_self_closing_flagged(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """Self-closing ``<text/>`` is flagged as empty."""
+    xml_path = tmp_path / "selfclose.xml"
+    _write_xml(xml_path, "<root><text/></root>")
+
+    result = main([str(xml_path)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert "Empty text in element 'text'" in captured.out
+
+
+def test_empty_object_stub_not_flagged(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """Empty inheritance-only ``<object>`` is not flagged."""
+    xml_path = tmp_path / "objstub.xml"
+    _write_xml(
+        xml_path,
+        '<root><object Inherits="X" Replace="true"></object></root>',
+    )
+
+    result = main([str(xml_path)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert "Empty text" not in captured.out

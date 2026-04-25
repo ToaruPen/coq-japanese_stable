@@ -668,9 +668,6 @@
   <object Name="TombExteriorWall_ESE" Inherits="Widget" Replace="true">
     <part Name="MapChunkPlacement" Map="preset_tile_chunks/TombExteriorWall_ESE.rpm" Width="9" Height="25" />
   </object>
-  <object Name="TombExteriorWall_SW" Inherits="Widget" Replace="true">
-    <part Name="MapChunkPlacement" Map="preset_tile_chunks/TombExteriorWall_SW.rpm" Width="9" Height="6" />
-  </object>
 
   <object Name="CrematoryStairsDown" Inherits="Widget" Replace="true">
     <part Name="MapChunkPlacement" Map="preset_tile_chunks/CrematoryStairsDown.rpm" Width="5" Height="5" />

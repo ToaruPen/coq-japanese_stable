@@ -24,6 +24,16 @@ class ValidationResult:
     warnings: list[str]
 
 
+DUPLICATE_DETECTION_RULES: tuple[tuple[str, str, str], ...] = (("objects", "object", "Name"),)
+"""Schema-aware duplicate-sibling rules: (parent_tag, child_tag, key_attribute).
+
+Only sibling pairs whose parent tag, child tag, and key attribute all match
+one of these tuples are reported as duplicates. This avoids false positives
+on schema-legitimate repetition (Naming weights, Conversations conditional
+branches, Worlds zone differentiation, etc.).
+"""
+
+
 def _collect_xml_files(paths: list[Path]) -> list[Path]:
     xml_files: set[Path] = set()
     for input_path in paths:
@@ -126,40 +136,32 @@ def _format_element_descriptor(element: ET.Element) -> str:
 def _find_duplicate_siblings(root: ET.Element) -> list[str]:
     warnings: list[str] = []
     for parent in root.iter():
-        duplicate_ids = _collect_duplicate_values(parent, attribute="ID")
-        duplicate_names = _collect_duplicate_values(parent, attribute="Name")
-
-        warnings.extend(
-            f"Duplicate sibling ID=\"{duplicate_id}\" under parent '{parent.tag}'" for duplicate_id in duplicate_ids
-        )
-        warnings.extend(
-            f"Duplicate sibling Name=\"{duplicate_name}\" under parent '{parent.tag}'"
-            for duplicate_name in duplicate_names
-        )
+        for parent_tag, child_tag, key_attribute in DUPLICATE_DETECTION_RULES:
+            if parent.tag != parent_tag:
+                continue
+            counts: dict[str, int] = {}
+            for child in parent:
+                if child.tag != child_tag:
+                    continue
+                if value := child.attrib.get(key_attribute):
+                    counts[value] = counts.get(value, 0) + 1
+            warnings.extend(
+                f"Duplicate sibling {key_attribute}=\"{value}\" under parent '{parent_tag}'"
+                for value, count in sorted(counts.items())
+                if count > 1
+            )
     return warnings
-
-
-def _collect_duplicate_values(parent: ET.Element, *, attribute: str) -> list[str]:
-    counts: dict[str, int] = {}
-    for child in parent:
-        if value := child.attrib.get(attribute):
-            counts[value] = counts.get(value, 0) + 1
-    return sorted(value for value, count in counts.items() if count > 1)
 
 
 def _find_empty_text_elements(root: ET.Element) -> list[str]:
     warnings: list[str] = []
 
     for element in root.iter():
+        if element.tag != "text":
+            continue
         if len(element) > 0:
             continue
-
-        if element.text is None:
-            if element.tag == "text":
-                warnings.append(f"Empty text in element {_format_element_descriptor(element)}")
-            continue
-
-        if element.text.strip() == "":
+        if element.text is None or element.text.strip() == "":
             warnings.append(f"Empty text in element {_format_element_descriptor(element)}")
 
     return warnings
