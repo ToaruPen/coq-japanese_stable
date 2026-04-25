@@ -546,10 +546,6 @@
       "warning": "Duplicate sibling Name=\"Robot\" under parent 'object'"
     },
     {
-      "path": "Mods/QudJP/Localization/ObjectBlueprints/Creatures.jp.xml",
-      "warning": "Unbalanced color code at line 5574"
-    },
-    {
       "path": "Mods/QudJP/Localization/ObjectBlueprints/Foods.jp.xml",
       "warning": "Duplicate sibling Name=\"Food\" under parent 'object'"
     },
