@@ -29,7 +29,11 @@ def _entries_with_placeholder_keys(path: Path) -> list[tuple[str, str]]:
     data = json.loads(path.read_text(encoding="utf-8"))
     raw_entries = data.get("entries", []) if isinstance(data, dict) else data
     if not isinstance(raw_entries, list):
-        return []
+        msg = (
+            f"Malformed dictionary structure in {path}: expected 'entries' to be a list, "
+            f"got {type(raw_entries).__name__}. data={data!r}, raw_entries={raw_entries!r}"
+        )
+        raise TypeError(msg)
     pairs: list[tuple[str, str]] = []
     for entry in raw_entries:
         if not isinstance(entry, dict):
