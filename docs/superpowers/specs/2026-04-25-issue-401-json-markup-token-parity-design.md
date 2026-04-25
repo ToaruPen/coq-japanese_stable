@@ -32,7 +32,7 @@ Forty-nine entries change. `key` stays as-is; only the `text` value is updated. 
 The complete per-line fix list lives in [the implementation plan](../plans/2026-04-25-issue-401-json-markup-token-parity.md). Each fix follows one of three patterns:
 
 1. **Restore wrapper around the substance / item name**, e.g. `{{G|acid}}-stained` → currently `酸で染みた` → fixed to `{{G|酸}}で染みた`.
-2. **Restore literal `&&`** (and `^^` if it occurred), e.g. `Bows && Rifles` → currently `弓・ライフル` or `弓＆ライフル` → fixed to `弓 && ライフル`.
+2. **Reinsert literal `&&`** (and `^^` if it occurred), e.g. `Bows && Rifles` → currently `弓・ライフル` or `弓＆ライフル` → fixed to `弓 && ライフル`.
 3. **Restore nested color spans** in adjectives like `lege{{W|n}}dary`, mapping the highlighted English character to a semantically equivalent highlighted Japanese character (e.g. one-char emphasis on `的`).
 
 The chargen biome village entries (`{{G|salt marsh}}\nvillage` etc.) drop the source `\n` to render inline as `{{G|塩性湿地}}の村`. The two-line layout makes sense in English where the biome adjective leads; in Japanese the genitive `の村` reads naturally inline. Codex confirms this is acceptable.
