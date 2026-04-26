@@ -491,13 +491,13 @@ No new L2G tests in PR1. Existing `HistoricNarrativePatchPresenceTests.cs` alrea
 
 ### 5.6 CI integration
 
-Existing `.github/workflows/ci.yml` already runs (verified at HEAD `883dd13`):
+Existing `.github/workflows/ci.yml` already runs:
 
 - `dotnet build` (Release) for `QudJP.csproj` and `QudJP.Tests.csproj`
 - `dotnet test` for `QudJP.Tests.csproj` (`--no-build`)
 - `actions/setup-python@v6` with Python 3.12, plus `ruff check scripts/` and `pytest scripts/tests/` (each gated on file existence)
 - `npm install -g @ast-grep/cli`
-- dotnet matrix: `8.0.x` and `10.0.x` (no `global.json`; runtime resolves the highest)
+- `actions/setup-dotnet@v5` installs both `8.0.x` and `10.0.x` SDKs (no `global.json`; the highest available is selected at build time)
 
 **PR1 additions to CI** (only these two):
 
