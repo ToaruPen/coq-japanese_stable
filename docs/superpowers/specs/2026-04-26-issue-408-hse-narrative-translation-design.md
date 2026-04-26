@@ -143,17 +143,23 @@ foreach (var key in EntityPropertyAllowlist) {
 }
 foreach (var key in EntityListPropertyAllowlist) {
     if (!snapshot.HasListProperty(key)) continue;
-    if (key == "Gospels") {
-        entity.MutateListPropertyAtCurrentYear(key, raw => TranslateGospelEntry(raw, translator, route));
-    } else {
-        entity.MutateListPropertyAtCurrentYear(key, raw => translator.Translate(raw, route));
+    var current = snapshot.GetList(key);
+    Func<string, string> mutate = key == "Gospels"
+        ? (raw => TranslateGospelEntry(raw, translator, route))
+        : (raw => translator.Translate(raw, route));
+    // 全要素を先行翻訳 → 1 つでも変化があった場合のみ mutation event を作る
+    // (MutateListPropertyAtCurrentYear は内部で常に新規 event を adds、空 mutation でも履歴ノイズになる)
+    var translated = current.Select(mutate).ToList();
+    if (!translated.SequenceEqual(current)) {
+        entity.MutateListPropertyAtCurrentYear(key, mutate);
     }
 }
 ```
 
 設計上の注意:
-- Idempotency: 翻訳済み判定は不要。`translator.Translate` が pass-through (no change) なら `if (translated != current)` でガードして余計な mutation event を作らない
-- `MutateListPropertyAtCurrentYear` は内部で snapshot を一度取る ([HistoricEntity.cs:269-272])。本 PR の翻訳 1 回呼出しで `MutateListProperty` event が allowlist の数だけ追加される (数回程度、無視可)
+- Idempotency for entity properties: `if (translated != current)` ガードで余計な `SetEntityProperty` event を作らない
+- Idempotency for entity list properties: `MutateListPropertyAtCurrentYear` は内部で常に `MutateListProperty` event を追加し、`Generate()` は無条件に `ChangeListProperty(...)` を emit する ([MutateListProperty.cs:26])。passthrough を保証するには **walker 側で先行翻訳して sequence equality を比較し、変化があった場合のみ API を呼ぶ** 必要がある。これで二重実行や全要素 passthrough のとき event 履歴を汚さない
+- 本 PR の翻訳 1 回呼出しで `MutateListProperty` event が「変化があった list の数」だけ追加される (allowlist 全部不変なら 0 個)
 - L1 unit test 対象 (`HistoricEvent` / `HistoricEntity` は dummy で代用、game DLL 非依存)
 - L1 では `TranslateGospelEntry` の split/translate/rejoin は単独でテスト可
 
@@ -190,7 +196,8 @@ foreach (var key in EntityListPropertyAllowlist) {
   - `TranslateEventProperties`: dummy event の `eventProperties` dict を直接 mutation、allowlist 外キーは不変
   - `TranslateEntity`: dummy entity の現在値を読み、`SetEntityPropertyAtCurrentYear` / `MutateListPropertyAtCurrentYear` 呼出を verify (call recorder で確認)
   - `TranslateEntity`: list translation で各要素が個別に translator を通ること、index 順序が保たれること
-  - 同一 entity に対する二重実行で entity の event list に余計な重複 mutation event を作らない (passthrough なら `if (translated != current)` ガードで no-op)
+  - 同一 entity に対する二重実行で event list に余計な重複 event を作らない: entity property は `if (translated != current)` ガード、list property は先行翻訳 + `SequenceEqual` 比較で変化があった list だけ `MutateListPropertyAtCurrentYear` を呼ぶ
+  - 全要素 passthrough の list (例: 翻訳辞書未整備) に対して `MutateListProperty` event が追加されないことを assert
   - null / 空 entity の no-op
   - allowlist にないが似た名前のキー (`gospelText`, `tombInscriptionCategory`, `worships_creature_id` 等) は触らない
 
@@ -312,3 +319,4 @@ village-era history は数百 events + 数十 entities 規模。translator regex
 - Codex 諮問 2 (Gospels write site + JournalPatternTranslator coverage): 12+ write sites 確認、entity prose 拡張識別、PostProcessEvent + Coda 別経路発見
 - Codex 諮問 3 (B-full アーキテクチャ): Approach C-modified (Postfix on `GenerateVillageEraHistory` + Prefix on `AddVillageGospels(HistoricEntity)`) 確定、3 クラス分離、L1/L2/L2G test 構成
 - Codex 諮問 4 (spec review): snapshot mutation バグ発見 (entity 用 mutation API 経由に修正)、dialog allowlist 分類修正 (entity property → entity list property)、pet origin-story answer 別 issue 化、API 不整合修正 (`StringHelpers.TryGetTranslationExactOrLowerAscii` の marker 制御不可 → 単純化)、markup invariant 拡張 (任意 wrapper letter `{{X|...}}` + TMP `<color=...></color>`)
+- Codex 諮問 5 (spec re-review): list mutation API の always-emit 挙動と idempotency 主張の矛盾発見 (`MutateListPropertyAtCurrentYear` は無条件 event を追加するため、walker 側で先行翻訳 + sequence equality 比較してから呼ぶ設計に修正)
