@@ -167,6 +167,7 @@ The build-time pipeline runs on a developer host, not in CI. An operator running
   - Single-literal value: `SetEventProperty("gospel", "<spice...> ...")`
   - `+` concatenation of literals and local-variable references whose initializer is a literal in the same `Generate()` method (e.g. `string text = "..."; ... value = text + "..." + property;`)
   - Local variable references where the initializer is a literal, an `entity.GetProperty(...)` call, or a year-like `int Random(...)` call. Unresolved/non-literal initializers → `needs_manual`.
+  - HSE marker expansion: `LiteralPercent + identifier + LiteralPercent` triples (e.g. `"In %" + year + "%, ..."`) are rewritten to mirror `HistoricStringExpander`'s runtime substitution before the regex is anchored. Slot type changes from the default `unresolved-local` to `hse-expansion`. Issue #423 ships a single-entry HSE table (`year` → ` AR`, matching `QudHistoryHelpers.ConvertYearToSultanateCalendarEra`'s `+ 1 + " AR"` formatter); other HSE variables are deferred to PR2+ if they appear in the remaining 30 Annals files.
   - Resheph 16 files are dominated by these shapes (Codex review confirmed: mostly fixed-literal compositions with a `year` and one `newRegion`).
 - **PR1 AST out of scope (degrade to `needs_manual`):**
   - `switch`/`case` decomposition (none of the Resheph 16 files use this; deferred to #422 PR2+)
