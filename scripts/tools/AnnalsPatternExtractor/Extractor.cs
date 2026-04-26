@@ -213,6 +213,8 @@ internal sealed class Extractor
             return new ResolutionResult { Resolved = false, Reason = unsupportedReason };
         }
 
+        ApplyHseExpansion(pieces, slots);
+
         var sample = string.Concat(pieces);
         return new ResolutionResult
         {
@@ -220,6 +222,48 @@ internal sealed class Extractor
             SampleSource = sample,
             Slots = slots,
         };
+    }
+
+    // HistoricStringExpander rewrites %name% in the runtime value before the regex matches.
+    // The extractor mirrors that rewrite so the emitted regex matches the post-HSE gospel string.
+    private static readonly IReadOnlyDictionary<string, string> HseExpansionSuffix =
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["year"] = " AR",
+        };
+
+    private static void ApplyHseExpansion(List<string> pieces, List<SlotEntry> slots)
+    {
+        for (var i = 0; i + 2 < pieces.Count; i++)
+        {
+            var left = pieces[i];
+            var middle = pieces[i + 1];
+            var right = pieces[i + 2];
+            if (!left.EndsWith("%", StringComparison.Ordinal)) continue;
+            if (!right.StartsWith("%", StringComparison.Ordinal)) continue;
+            if (!TryGetSlotIndex(middle, out var slotIndex)) continue;
+            if (slotIndex >= slots.Count) continue;
+            var slot = slots[slotIndex];
+            if (!HseExpansionSuffix.TryGetValue(slot.Raw, out var suffix)) continue;
+
+            pieces[i] = left[..^1];
+            pieces[i + 2] = suffix + right[1..];
+            slot.Type = "hse-expansion";
+        }
+    }
+
+    private static bool TryGetSlotIndex(string piece, out int index)
+    {
+        index = -1;
+        if (piece.Length < 3) return false;
+        if (piece[0] != '{' || piece[^1] != '}') return false;
+        var inner = piece[1..^1];
+        if (inner.Length == 0) return false;
+        foreach (var ch in inner)
+        {
+            if (!char.IsDigit(ch)) return false;
+        }
+        return int.TryParse(inner, out index);
     }
 
     private static bool FlattenConcat(

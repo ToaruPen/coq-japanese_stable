@@ -2,9 +2,9 @@
   "schema_version": "1",
   "candidates": [
     {
-      "id": "concat_initialized_local#gospel",
-      "source_file": "concat_initialized_local.cs",
-      "annal_class": "concat_initialized_local",
+      "id": "hse_marker_year#gospel",
+      "source_file": "hse_marker_year.cs",
+      "annal_class": "hse_marker_year",
       "switch_case": "default",
       "event_property": "gospel",
       "sample_source": "In {0} AR, an event happened, and Resheph rejoiced.",
