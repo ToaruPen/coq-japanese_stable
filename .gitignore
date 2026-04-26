@@ -62,3 +62,6 @@ node_modules/
 
 # Claude session handoff files (contain local paths and session IDs)
 .claude/handoff.md
+
+# Claude scheduled-task runtime lock
+.claude/scheduled_tasks.lock
