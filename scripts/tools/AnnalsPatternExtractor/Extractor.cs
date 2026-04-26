@@ -10,8 +10,21 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace QudJP.Tools.AnnalsPatternExtractor;
 
+internal static class CandidateIdSuffix
+{
+    public const string Case = "#case:";
+    public const string Arm = "#arm:";
+    public const string Opt = "#opt:";
+    public const string If = "#if:";
+}
+
 internal sealed class Extractor
 {
+    private static readonly HashSet<string> KnownHelperReceivers =
+        new(StringComparer.Ordinal) { "Grammar", "QudHistoryHelpers", "Faction", "NameMaker" };
+
+    private static readonly char[] FormatAlignmentSeparators = { ',', ':' };
+
     private readonly List<CandidateEntry> candidates = new();
     private readonly List<string> diagnostics = new();
 
@@ -58,22 +71,22 @@ internal sealed class Extractor
             var switchLabel = switchSection is null ? "default" : (ExtractSwitchLabel(switchSection) ?? "default");
             var idPrefix = switchSection is null
                 ? $"{className}#{eventProperty}"
-                : $"{className}#{eventProperty}#case:{switchLabel}";
+                : $"{className}#{eventProperty}{CandidateIdSuffix.Case}{switchLabel}";
             var ifBranchSuffix = ResolveIfBranchSuffix(invocation, setterCalls, eventProperty);
-            if (ifBranchSuffix is not null) idPrefix += $"#if:{ifBranchSuffix}";
+            if (ifBranchSuffix is not null) idPrefix += CandidateIdSuffix.If + ifBranchSuffix;
 
             var setterLocals = BuildSetterScopedLocals(invocation, localInitializers);
+            var setterScopedAppends = FilterAppendsBeforeSetter(appendsByLocal, invocation);
             var armings = ExpandSwitchExpressionArms(valueExpr, setterLocals);
             foreach (var (armLabel, armLocals) in armings)
             {
                 var armSwitchCase = armLabel is null ? switchLabel : armLabel;
-                var armId = armLabel is null ? idPrefix : $"{idPrefix}#arm:{armLabel}";
+                var armId = armLabel is null ? idPrefix : idPrefix + CandidateIdSuffix.Arm + armLabel;
 
-                var setterScopedAppends = FilterAppendsBeforeSetter(appendsByLocal, invocation);
                 var optExpansions = ExpandOptionalAppends(valueExpr, armLocals, FilterAppendsToLocals(armLocals, setterScopedAppends));
                 foreach (var (optLabel, optLocals) in optExpansions)
                 {
-                    var optId = optLabel is null ? armId : $"{armId}#opt:{optLabel}";
+                    var optId = optLabel is null ? armId : armId + CandidateIdSuffix.Opt + optLabel;
                     var resolution = ResolveValueExpression(valueExpr, optLocals);
                     if (!resolution.Resolved)
                     {
@@ -640,15 +653,6 @@ internal sealed class Extractor
         return (raw, isAssignment);
     }
 
-    private static bool IsHistoryKitAssignmentToken(string token)
-    {
-        // Form: `<$name=...>` — the first character after `<` is `$` and the body contains `=`.
-        if (token.Length < 4 || token[0] != '<' || token[^1] != '>') return false;
-        if (token[1] != '$') return false;
-        // Search only inside the angle brackets.
-        return token.AsSpan(2, token.Length - 3).IndexOf('=') >= 0;
-    }
-
     // HistoricStringExpander rewrites %name% in the runtime value before the regex matches.
     private const string HseExpansionType = "hse-expansion";
 
@@ -830,7 +834,7 @@ internal sealed class Extractor
                     return false;
                 }
                 var holderBody = format.Substring(i + 1, close - i - 1);
-                var sepIdx = holderBody.IndexOfAny(new[] { ',', ':' });
+                var sepIdx = holderBody.IndexOfAny(FormatAlignmentSeparators);
                 var indexStr = sepIdx < 0 ? holderBody : holderBody[..sepIdx];
                 if (!int.TryParse(indexStr, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var argIdx))
                 {
@@ -923,13 +927,11 @@ internal sealed class Extractor
         // Helper-call slot type for invocations from the known game-helper namespaces, format-arg
         // for everything else (literals already resolved by FlattenConcat, so this hits unknown
         // identifiers or expressions).
-        if (expr is InvocationExpressionSyntax invoc)
+        if (expr is InvocationExpressionSyntax invoc
+            && invoc.Expression is MemberAccessExpressionSyntax m
+            && KnownHelperReceivers.Contains(m.Expression.ToString()))
         {
-            if (invoc.Expression is MemberAccessExpressionSyntax m)
-            {
-                var receiver = m.Expression.ToString();
-                if (receiver is "Grammar" or "QudHistoryHelpers" or "Faction" or "NameMaker") return "helper-call";
-            }
+            return "helper-call";
         }
         return "format-arg";
     }
@@ -1007,17 +1009,12 @@ internal sealed class Extractor
     // the inner pattern (e.g. `Grammar.InitCap(string.Format(...))`).
     private static bool IsPatternPreservingWrapper(InvocationExpressionSyntax invoc)
     {
+        if (IsExpandStringWrapper(invoc)) return true;
         if (invoc.ArgumentList.Arguments.Count < 1) return false;
-        if (invoc.Expression is IdentifierNameSyntax bareId && bareId.Identifier.ValueText == "ExpandString") return true;
-        if (invoc.Expression is MemberAccessExpressionSyntax m)
+        if (invoc.Expression is MemberAccessExpressionSyntax m
+            && m.Expression.ToString() == "Grammar")
         {
-            var receiver = m.Expression.ToString();
-            var name = m.Name.Identifier.ValueText;
-            if (name == "ExpandString") return true;
-            if (receiver == "Grammar")
-            {
-                return name is "InitCap" or "InitialCap" or "MakeTitleCase" or "MakeTitleCaseWithArticle";
-            }
+            return m.Name.Identifier.ValueText is "InitCap" or "InitialCap" or "MakeTitleCase" or "MakeTitleCaseWithArticle";
         }
         return false;
     }
