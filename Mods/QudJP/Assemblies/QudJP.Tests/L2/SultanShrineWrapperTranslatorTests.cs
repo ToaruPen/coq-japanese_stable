@@ -56,6 +56,28 @@ public sealed class SultanShrineWrapperTranslatorTests
         });
     }
 
+    [Test]
+    public void Translate_TranslatesPrefixGospelAndQuality_ForPopupRoute()
+    {
+        // Tooltip/popup route: SultanShrine surfaces the full composite (with quality suffix)
+        // through the popup path, so MessagePatternTranslator must translate it identically
+        // regardless of which Patch route called it. Locking this here pins popup regressions.
+        const string source =
+            "The shrine depicts a significant event from the life of the ancient sultan Resheph:"
+            + "\n\nIn 3 AR, Resheph cleansed the marshlands of the plagues of the Gyre and taught Abram to sow watervine along its fertile tracks."
+            + "\n\n{{Y|Perfect}}";
+
+        var translated = MessagePatternTranslator.Translate(source, nameof(PopupMessageTranslationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.StartWith("この祠は古のスルタン"), "wrapper prefix should be Japanese on popup route");
+            Assert.That(translated, Does.Contain("3年、レシェフは"), "annals gospel should be translated on popup route");
+            Assert.That(translated, Does.EndWith("{{Y|完璧}}"), "quality rating should be Japanese inside its color wrapper on popup route");
+            Assert.That(translated, Does.Not.Contain("The shrine depicts"), "no English wrapper should remain on popup route");
+        });
+    }
+
     [TestCase("Perfect", "完璧")]
     [TestCase("Fine", "良好")]
     [TestCase("Lightly Damaged", "軽微な損傷")]
@@ -89,7 +111,7 @@ public sealed class SultanShrineWrapperTranslatorTests
     }
 
     [Test]
-    public void Translate_TranslatesResheph_ViaTranslatorLeaf()
+    public void Translate_TranslatesReshephNameInsideShrineWrapper()
     {
         const string source =
             "The shrine depicts a significant event from the life of the ancient sultan Resheph:"
@@ -235,6 +257,8 @@ public sealed class SultanShrineWrapperTranslatorTests
         {
             Assert.That(translated, Does.StartWith("この祠は古のスルタン"),
                 "wrapper prefix should still translate around the unknown marker-prefixed quality");
+            Assert.That(translated, Does.Contain("{{Y|\x01Perfect}}"),
+                "marker-bearing quality token must remain wrapped in its original color tag");
             Assert.That(translated, Does.Contain("\x01Perfect"),
                 "marker-bearing quality token must pass through unchanged when not in QualityKeys");
             Assert.That(translated, Does.Not.Contain("{{Y|}}"),
