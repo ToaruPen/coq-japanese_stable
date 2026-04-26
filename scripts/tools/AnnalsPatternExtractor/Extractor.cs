@@ -53,20 +53,11 @@ internal sealed class Extractor
 
             // Include event_property in the id so a single Generate() that sets both
             // "gospel" and "tombInscription" produces distinct ids (no downstream collision).
-            var candidateId = $"{className}#{eventProperty}";
-            // PR1 does not handle switch/case; if the call is inside a SwitchSectionSyntax, mark needs_manual.
             var switchSection = invocation.Ancestors().OfType<SwitchSectionSyntax>().FirstOrDefault();
-            if (switchSection is not null)
-            {
-                candidates.Add(NeedsManual(
-                    id: $"{className}#{eventProperty}#switch{i}",
-                    sourceFile: fileName,
-                    annalClass: className,
-                    switchCase: ExtractSwitchLabel(switchSection),
-                    eventProperty: eventProperty,
-                    reason: "switch/case decomposition is out of scope for PR1 (deferred to #422)"));
-                continue;
-            }
+            var switchLabel = switchSection is null ? "default" : (ExtractSwitchLabel(switchSection) ?? "default");
+            var candidateId = switchSection is null
+                ? $"{className}#{eventProperty}"
+                : $"{className}#{eventProperty}#case:{switchLabel}";
 
             var resolution = ResolveValueExpression(valueExpr, localInitializers);
             if (!resolution.Resolved)
@@ -75,7 +66,7 @@ internal sealed class Extractor
                     id: candidateId,
                     sourceFile: fileName,
                     annalClass: className,
-                    switchCase: "default",
+                    switchCase: switchLabel,
                     eventProperty: eventProperty,
                     reason: resolution.Reason));
                 continue;
@@ -85,7 +76,7 @@ internal sealed class Extractor
                 id: candidateId,
                 sourceFile: fileName,
                 annalClass: className,
-                switchCase: "default",
+                switchCase: switchLabel,
                 eventProperty: eventProperty,
                 resolved: resolution);
 
