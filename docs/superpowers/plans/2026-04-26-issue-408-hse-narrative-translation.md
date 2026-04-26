@@ -26,10 +26,12 @@
     - `internal static void TranslateEntity(HistoricEntity entity, string? context = null)` — uses entity mutation APIs
     - `internal static string TranslateGospelEntry(string raw, string? context = null)` — `prose|eventId` split helper
 
-- `Patches/HistoricNarrativeTranslationPatches.cs` — 2 Harmony patch classes, ~60 LOC
-  - `[HarmonyPatch(typeof(QudHistoryFactory), nameof(QudHistoryFactory.GenerateVillageEraHistory))]` Postfix
-  - `[HarmonyPatch(typeof(JournalAPI), nameof(JournalAPI.AddVillageGospels), typeof(HistoricEntity))]` Prefix
-  - Each Postfix/Prefix body is short: try/catch + walker call
+- `Patches/GenerateVillageEraHistoryTranslationPatch.cs` — Postfix patch
+  - `[HarmonyPatch(typeof(QudHistoryFactory), nameof(QudHistoryFactory.GenerateVillageEraHistory))]`
+  - Body: try/catch + walker call
+- `Patches/AddVillageGospelsTranslationPatch.cs` — Prefix patch
+  - `[HarmonyPatch(typeof(JournalAPI), nameof(JournalAPI.AddVillageGospels), typeof(HistoricEntity))]`
+  - Body: try/catch + walker call
 
 **New test files**:
 

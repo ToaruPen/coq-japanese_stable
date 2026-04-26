@@ -39,6 +39,10 @@ public sealed class HistoricNarrativeTranslationPatchesResolutionTests
             .GetType("QudJP.Patches.AddVillageGospelsTranslationPatch", throwOnError: false);
         Assert.That(patchType, Is.Not.Null, "AddVillageGospelsTranslationPatch type not found.");
 
+        var attribute = patchType!.GetCustomAttribute<HarmonyPatch>();
+        Assert.That(attribute, Is.Not.Null,
+            "AddVillageGospelsTranslationPatch is missing the [HarmonyPatch] attribute.");
+
         var method = AccessTools.DeclaredMethod(typeof(JournalAPI), nameof(JournalAPI.AddVillageGospels), new[] { typeof(HistoricEntity) });
         Assert.That(method, Is.Not.Null, "JournalAPI.AddVillageGospels(HistoricEntity) not found.");
         Assert.That(method!.GetParameters().Length, Is.EqualTo(1));
