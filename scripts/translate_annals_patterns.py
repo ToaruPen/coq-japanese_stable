@@ -16,6 +16,7 @@ from typing import Any
 CHUNK_SIZE_DEFAULT = 8
 MAX_RETRIES = 3
 PLACEHOLDER_RE = re.compile(r"\{(t?)(\d+)\}")
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 def _canonical_json(payload: Any) -> str:
@@ -181,7 +182,7 @@ def save_progress(path: Path, doc: dict[str, Any]) -> None:
 
 def load_glossary_from_existing_pipeline() -> str:
     """Reuse the existing translation_glossary.txt loader from translate_corpus_batch.py."""
-    glossary_path = Path("scripts/translation_glossary.txt")
+    glossary_path = REPO_ROOT / "scripts" / "translation_glossary.txt"
     if not glossary_path.is_file():
         return ""
     return glossary_path.read_text(encoding="utf-8").strip()
