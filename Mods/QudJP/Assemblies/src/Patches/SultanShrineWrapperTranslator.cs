@@ -60,36 +60,22 @@ internal static class SultanShrineWrapperTranslator
 
         var sultan = TranslateSultanName(match.Groups["sultan"].Value);
         var gospel = TranslateGospel(match.Groups["gospel"].Value, route);
+        var quality = hasQuality ? TranslateQuality(qualityGroup.Value) : null;
 
-        string composed;
-        int qualityStart;
-        int qualityLength;
-        if (hasQuality)
+        if (!TryCompose(template, sultan, gospel, quality, out var composed, out var qualityStart))
         {
-            var quality = TranslateQuality(qualityGroup.Value);
-            if (!TryComposeWithQuality(template, sultan, gospel, quality, out composed, out qualityStart))
-            {
-                translated = source;
-                return false;
-            }
-
-            qualityLength = quality.Length;
-        }
-        else
-        {
-            if (!TryComposeWithoutQuality(template, sultan, gospel, out composed))
-            {
-                translated = source;
-                return false;
-            }
-
-            qualityStart = -1;
-            qualityLength = 0;
+            translated = source;
+            return false;
         }
 
-        if (hasQuality && spans is not null && spans.Count > 0 && qualityStart >= 0)
+        if (hasQuality && quality is not null && spans is not null && spans.Count > 0 && qualityStart >= 0)
         {
-            composed = WrapTranslatedQualityWithSourceColors(composed, qualityStart, qualityLength, spans, qualityGroup);
+            var prefix = composed.Substring(0, qualityStart);
+            var middle = composed.Substring(qualityStart, quality.Length);
+            var suffix = composed.Substring(qualityStart + quality.Length);
+            composed = prefix
+                + ColorAwareTranslationComposer.RestoreCapture(middle, spans, qualityGroup)
+                + suffix;
         }
 
         DynamicTextObservability.RecordTransform(
@@ -144,14 +130,11 @@ internal static class SultanShrineWrapperTranslator
         return translation;
     }
 
-    // Computes the substituted output AND the absolute index where {quality} ends up after
-    // {sultan} and {gospel} have been replaced. Defensive: requires the template to contain
-    // each placeholder exactly once and {quality} to follow {sultan}/{gospel} in template order.
-    private static bool TryComposeWithQuality(
+    private static bool TryCompose(
         string template,
         string sultan,
         string gospel,
-        string quality,
+        string? quality,
         out string composed,
         out int qualityStart)
     {
@@ -161,9 +144,24 @@ internal static class SultanShrineWrapperTranslator
 
         var sultanIndex = template.IndexOf(sultanPlaceholder, StringComparison.Ordinal);
         var gospelIndex = template.IndexOf(gospelPlaceholder, StringComparison.Ordinal);
+        if (sultanIndex < 0 || gospelIndex < 0 || sultanIndex >= gospelIndex)
+        {
+            composed = string.Empty;
+            qualityStart = -1;
+            return false;
+        }
+
+        if (quality is null)
+        {
+            composed = template
+                .Replace(sultanPlaceholder, sultan)
+                .Replace(gospelPlaceholder, gospel);
+            qualityStart = -1;
+            return true;
+        }
+
         var qualityIndex = template.IndexOf(qualityPlaceholder, StringComparison.Ordinal);
-        if (sultanIndex < 0 || gospelIndex < 0 || qualityIndex < 0
-            || sultanIndex >= gospelIndex || gospelIndex >= qualityIndex)
+        if (qualityIndex < 0 || gospelIndex >= qualityIndex)
         {
             composed = string.Empty;
             qualityStart = -1;
@@ -179,49 +177,5 @@ internal static class SultanShrineWrapperTranslator
         var gospelDelta = gospel.Length - gospelPlaceholder.Length;
         qualityStart = qualityIndex + sultanDelta + gospelDelta;
         return true;
-    }
-
-    private static bool TryComposeWithoutQuality(
-        string template,
-        string sultan,
-        string gospel,
-        out string composed)
-    {
-        const string sultanPlaceholder = "{sultan}";
-        const string gospelPlaceholder = "{gospel}";
-
-        var sultanIndex = template.IndexOf(sultanPlaceholder, StringComparison.Ordinal);
-        var gospelIndex = template.IndexOf(gospelPlaceholder, StringComparison.Ordinal);
-        if (sultanIndex < 0 || gospelIndex < 0 || sultanIndex >= gospelIndex)
-        {
-            composed = string.Empty;
-            return false;
-        }
-
-        composed = template
-            .Replace(sultanPlaceholder, sultan)
-            .Replace(gospelPlaceholder, gospel);
-        return true;
-    }
-
-    private static string WrapTranslatedQualityWithSourceColors(
-        string composed,
-        int qualityStart,
-        int qualityLength,
-        IReadOnlyList<ColorSpan> spans,
-        Group qualityGroup)
-    {
-        var qualityCaptureSpans = ColorCodePreserver.SliceSpans(spans, qualityGroup.Index, qualityGroup.Length);
-        qualityCaptureSpans.AddRange(ColorCodePreserver.SliceAdjacentCaptureBoundarySpans(spans, qualityGroup.Index, qualityGroup.Length));
-        if (qualityCaptureSpans.Count == 0)
-        {
-            return composed;
-        }
-
-        var prefix = composed.Substring(0, qualityStart);
-        var middle = composed.Substring(qualityStart, qualityLength);
-        var suffix = composed.Substring(qualityStart + qualityLength);
-        var restoredMiddle = ColorAwareTranslationComposer.Restore(middle, qualityCaptureSpans);
-        return prefix + restoredMiddle + suffix;
     }
 }
