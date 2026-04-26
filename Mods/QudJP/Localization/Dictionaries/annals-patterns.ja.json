@@ -38,7 +38,7 @@
     },
     {
       "pattern": "^After\\ conferring\\ with\\ mysterious\\ strangers,\\ Resheph\\ convinced\\ them\\ to\\ help\\ him\\ found\\ a\\ harborage\\ for\\ the\\ purpose\\ of\\ receiving\\ visitors\\ from\\ across\\ the\\ clustered\\ cosmos\\.\\ They\\ named\\ it\\ Starfarer's\\ Quay\\.$",
-      "template": "謎めいた異邦人らと協議したのち、レシェフは群集せる宇宙の彼方より訪う者を迎えるための泊地を築く助力を彼らに約させた。彼らはそれを星渡りの波止場と名づけた。",
+      "template": "謎めいた異邦人らと協議したのち、レシェフは群集せる宇宙の彼方より訪う者を迎えるための泊地を築く助力を彼らに約させた。彼らはそれを星渡りの埠頭と名づけた。",
       "route": "annals"
     },
     {
@@ -48,17 +48,17 @@
     },
     {
       "pattern": "^In\\ %(.+?)%,\\ the\\ Gyre\\ widened,\\ and\\ the\\ first\\ triad\\ of\\ plagues\\ afflicted\\ the\\ land\\.\\ The\\ water\\ was\\ poisoned\\ with\\ salt,\\ girshlings\\ ravaged\\ the\\ fruit\\ and\\ wheat,\\ and\\ tongues\\ rotted\\ away\\ in\\ the\\ mouths\\ of\\ kith\\ and\\ kin\\.\\ Resheph\\ walked\\ below\\ the\\ chrome\\ arches\\ and\\ healed\\ the\\ sick\\.$",
-      "template": "{0}、ジャイアは広がり、第一の三つの災厄が地を苦しめた。水は塩に毒され、ギルシュリングどもは果実と小麦を荒らし、親しき者らの口の中で舌が腐り落ちた。レシェフはクロームのアーチの下を歩み、病める者を癒やした。",
+      "template": "{0}年、ジャイアは広がり、第一の三つの災厄が地を苦しめた。水は塩に毒され、ギルシュリングどもは果実と小麦を荒らし、親しき者らの口の中で舌が腐り落ちた。レシェフはクロームのアーチの下を歩み、病める者を癒やした。",
       "route": "annals"
     },
     {
       "pattern": "^In\\ %(.+?)%,\\ the\\ Gyre\\ widened,\\ and\\ the\\ second\\ triad\\ of\\ plagues\\ afflicted\\ the\\ land\\.\\ The\\ legs\\ of\\ kith\\ and\\ kin\\ annealed\\ to\\ iron,\\ darkness\\ bloomed\\ from\\ the\\ earth,\\ and\\ the\\ svardym\\ blackened\\ the\\ sky\\.\\ Resheph\\ walked\\ below\\ the\\ chrome\\ arches\\ and\\ healed\\ the\\ sick\\.$",
-      "template": "{0}、ジャイアは広がり、第二の三つの災厄が地を苦しめた。親しき者らの脚は鉄へと焼き固まり、闇は大地より咲き、スヴァルディムは空を黒く染めた。レシェフはクロームのアーチの下を歩み、病める者を癒やした。",
+      "template": "{0}年、ジャイアは広がり、第二の三つの災厄が地を苦しめた。親しき者らの脚は鉄へと焼き固まり、闇は大地より咲き、スヴァルディムは空を黒く染めた。レシェフはクロームのアーチの下を歩み、病める者を癒やした。",
       "route": "annals"
     },
     {
       "pattern": "^One\\ starry\\ evening,\\ a\\ babe\\ was\\ found\\ swaddled\\ with\\ its\\ mouth\\ full\\ of\\ circuits\\ by\\ a\\ group\\ of\\ baetyls\\ in\\ Red\\ Rock\\.\\ They\\ took\\ him\\ into\\ their\\ fold\\ and\\ fostered\\ him,\\ and\\ he\\ became\\ known\\ as\\ Resheph,\\ the\\ Coiled\\ Lamb\\ of\\ Baetyls\\.$",
-      "template": "星降るある宵、赤岩にて、回路で口を満たした嬰児が産着に包まれ、ベテルの一団に見いだされた。彼らはその子を己らの群れに迎えて育み、やがて彼はレシェフ、ベテルの巻かれし仔羊として知られるようになった。",
+      "template": "星降るある宵、赤岩にて、回路で口を満たした嬰児が産着に包まれ、ベテルの一団に見いだされた。彼らはその子を己らの群れに迎えて育み、やがて彼はレシェフ、ベテルのとぐろ巻く仔羊として知られるようになった。",
       "route": "annals"
     },
     {
@@ -73,7 +73,7 @@
     },
     {
       "pattern": "^In\\ %(.+?)%,\\ the\\ Gyre\\ widened,\\ and\\ the\\ final\\ plague\\ afflicted\\ the\\ land\\.\\ The\\ Girsh\\ Nephilim\\ rose\\ from\\ their\\ cradles\\ on\\ the\\ Moon\\ Stair\\ and\\ slouched\\ toward\\ Qud\\ to\\ eat\\ its\\ young\\.\\ Resheph\\ rose\\ to\\ meet\\ them\\ in\\ battle\\ and\\ cast\\ them\\ back\\.$",
-      "template": "{0}、ジャイアは広がり、最後の災厄が地を苦しめた。ギルシュ・ネフィリムは月の階にある揺り籠より起き上がり、クッドの幼き者を喰らわんと身を屈めて進み来た。レシェフは立ち上がって戦いに迎え撃ち、彼らを退けた。",
+      "template": "{0}年、ジャイアは広がり、最後の災厄が地を苦しめた。ギルシュ・ネフィリムは月の階にある揺り籠より起き上がり、クッドの幼き者を喰らわんと身を屈めて進み来た。レシェフは立ち上がって戦いに迎え撃ち、彼らを退けた。",
       "route": "annals"
     },
     {
