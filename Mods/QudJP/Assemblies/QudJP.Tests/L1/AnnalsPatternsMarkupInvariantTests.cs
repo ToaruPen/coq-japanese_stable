@@ -111,10 +111,10 @@ public sealed class AnnalsPatternsMarkupInvariantTests
     [TestCaseSource(nameof(AllPatterns))]
     public void ColorTags_BalancedAcrossPatternAndTemplate(string pattern, string template)
     {
-        var patternOpens = ColorOpenRe.Matches(pattern).Count;
-        var templateOpens = ColorOpenRe.Matches(template).Count;
-        var patternCloses = ColorCloseRe.Matches(pattern).Count;
-        var templateCloses = ColorCloseRe.Matches(template).Count;
+        var patternOpens = ColorOpenRe.Count(pattern);
+        var templateOpens = ColorOpenRe.Count(template);
+        var patternCloses = ColorCloseRe.Count(pattern);
+        var templateCloses = ColorCloseRe.Count(template);
         Assert.That(patternOpens, Is.EqualTo(templateOpens),
             $"<color=...> open-count differs: pattern={patternOpens} template={templateOpens}");
         Assert.That(patternCloses, Is.EqualTo(templateCloses),
