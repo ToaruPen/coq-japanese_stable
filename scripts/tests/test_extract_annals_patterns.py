@@ -48,6 +48,7 @@ def _run_extractor(include: str, output: Path) -> subprocess.CompletedProcess[st
         "concat_initialized_local",
         "cyclic_locals",
         "partial_rollback",
+        "hse_marker_year",
     ],
 )
 def test_extractor_matches_golden(fixture: str, tmp_path: Path) -> None:
@@ -79,6 +80,7 @@ def test_extractor_matches_golden(fixture: str, tmp_path: Path) -> None:
         "concat_initialized_local",
         "cyclic_locals",
         "partial_rollback",
+        "hse_marker_year",
     ],
 )
 def test_csharp_and_python_hashes_match(fixture: str) -> None:

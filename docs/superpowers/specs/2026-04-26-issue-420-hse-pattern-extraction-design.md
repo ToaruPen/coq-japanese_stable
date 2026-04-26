@@ -167,6 +167,7 @@ The build-time pipeline runs on a developer host, not in CI. An operator running
   - Single-literal value: `SetEventProperty("gospel", "<spice...> ...")`
   - `+` concatenation of literals and local-variable references whose initializer is a literal in the same `Generate()` method (e.g. `string text = "..."; ... value = text + "..." + property;`)
   - Local variable references where the initializer is a literal, an `entity.GetProperty(...)` call, or a year-like `int Random(...)` call. Unresolved/non-literal initializers → `needs_manual`.
+  - HSE marker expansion: `LiteralPercent + identifier + LiteralPercent` triples mirror `HistoricStringExpander` runtime substitution; the `year` slot emits `(.+?)\ (?:BR|AR)` and is typed `hse-expansion`. Other HSE variables deferred to PR2+.
   - Resheph 16 files are dominated by these shapes (Codex review confirmed: mostly fixed-literal compositions with a `year` and one `newRegion`).
 - **PR1 AST out of scope (degrade to `needs_manual`):**
   - `switch`/`case` decomposition (none of the Resheph 16 files use this; deferred to #422 PR2+)

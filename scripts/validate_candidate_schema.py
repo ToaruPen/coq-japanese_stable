@@ -29,7 +29,14 @@ REQUIRED_CANDIDATE_KEYS = {
 }
 ALLOWED_CANDIDATE_KEYS = REQUIRED_CANDIDATE_KEYS | {"review_notes"}
 VALID_STATUSES = {"pending", "accepted", "needs_manual", "skip"}
-VALID_SLOT_TYPES = {"spice", "entity-property", "grammar-helper", "string-format-arg", "unresolved-local"}
+VALID_SLOT_TYPES = {
+    "spice",
+    "entity-property",
+    "grammar-helper",
+    "string-format-arg",
+    "unresolved-local",
+    "hse-expansion",
+}
 VALID_EVENT_PROPERTIES = {"gospel", "tombInscription"}
 PLACEHOLDER_RE = re.compile(r"\{(t?)(\d+)\}")
 

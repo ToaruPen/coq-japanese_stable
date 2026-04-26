@@ -13,7 +13,7 @@
         {
           "index": 0,
           "type": "unresolved-local",
-          "raw": "year",
+          "raw": "val",
           "default": "{t0}"
         }
       ],
@@ -22,7 +22,7 @@
       "ja_template": "",
       "review_notes": "",
       "route": "annals",
-      "en_template_hash": "sha256:a6b9464c32df0072ae42c59f9eff69d752cfb64086df24d6c5ae74003d2cc282"
+      "en_template_hash": "sha256:3f8977f7d894e8c208d3998caaa3592c6cbacc7d75c0d3a76574799ffaa9dfff"
     }
   ]
 }

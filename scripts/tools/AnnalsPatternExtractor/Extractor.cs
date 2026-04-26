@@ -213,6 +213,8 @@ internal sealed class Extractor
             return new ResolutionResult { Resolved = false, Reason = unsupportedReason };
         }
 
+        ApplyHseExpansion(pieces, slots);
+
         var sample = string.Concat(pieces);
         return new ResolutionResult
         {
@@ -220,6 +222,45 @@ internal sealed class Extractor
             SampleSource = sample,
             Slots = slots,
         };
+    }
+
+    // HistoricStringExpander rewrites %name% in the runtime value before the regex matches.
+    private const string HseExpansionType = "hse-expansion";
+
+    private sealed record HseExpansion(string SampleSuffix, string RegexSuffix);
+
+    private static readonly IReadOnlyDictionary<string, HseExpansion> HseExpansions =
+        new Dictionary<string, HseExpansion>(StringComparer.Ordinal)
+        {
+            ["year"] = new HseExpansion(SampleSuffix: " AR", RegexSuffix: "\\ (?:BR|AR)"),
+        };
+
+    private static void ApplyHseExpansion(List<string> pieces, List<SlotEntry> slots)
+    {
+        for (var i = 0; i + 2 < pieces.Count; i++)
+        {
+            var left = pieces[i];
+            var middle = pieces[i + 1];
+            var right = pieces[i + 2];
+            if (!left.EndsWith("%", StringComparison.Ordinal)) continue;
+            if (!right.StartsWith("%", StringComparison.Ordinal)) continue;
+            if (!TryGetSlotIndex(middle, out var slotIndex)) continue;
+            if ((uint)slotIndex >= (uint)slots.Count) continue;
+            var slot = slots[slotIndex];
+            if (!HseExpansions.TryGetValue(slot.Raw, out var expansion)) continue;
+
+            pieces[i] = left[..^1];
+            pieces[i + 2] = expansion.SampleSuffix + right[1..];
+            slot.Type = HseExpansionType;
+        }
+    }
+
+    private static bool TryGetSlotIndex(ReadOnlySpan<char> piece, out int index)
+    {
+        index = -1;
+        if (piece.Length < 3) return false;
+        if (piece[0] != '{' || piece[^1] != '}') return false;
+        return int.TryParse(piece[1..^1], System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out index);
     }
 
     private static bool FlattenConcat(
@@ -366,23 +407,26 @@ internal sealed class Extractor
 
     private static string BuildAnchoredRegex(string sample, List<SlotEntry> slots)
     {
-        // Replace each "{N}" placeholder in the sample with a non-greedy capture group, escape literals.
         var sb = new StringBuilder("^");
         var i = 0;
         while (i < sample.Length)
         {
-            if (sample[i] == '{' && i + 2 < sample.Length && char.IsDigit(sample[i + 1]))
+            if (sample[i] == '{')
             {
                 var close = sample.IndexOf('}', i);
-                if (close > i)
+                if (close > i && TryGetSlotIndex(sample.AsSpan(i, close - i + 1), out var slotIndex))
                 {
-                    var inner = sample[(i + 1)..close];
-                    if (inner.Length > 0 && inner.All(char.IsDigit))
+                    sb.Append("(.+?)");
+                    i = close + 1;
+                    if ((uint)slotIndex < (uint)slots.Count
+                        && slots[slotIndex].Type == HseExpansionType
+                        && HseExpansions.TryGetValue(slots[slotIndex].Raw, out var expansion)
+                        && sample.AsSpan(i).StartsWith(expansion.SampleSuffix))
                     {
-                        sb.Append("(.+?)");
-                        i = close + 1;
-                        continue;
+                        sb.Append(expansion.RegexSuffix);
+                        i += expansion.SampleSuffix.Length;
                     }
+                    continue;
                 }
             }
             sb.Append(Regex.Escape(sample[i].ToString()));

@@ -133,3 +133,12 @@ def test_validate_passes_with_review_notes_allowlisted(tmp_path: Path) -> None:
     c = _candidate(review_notes="reviewed by foo on 2026-04-26")
     result = _run(tmp_path, _doc(c))
     assert result.returncode == 0
+
+
+def test_validate_accepts_hse_expansion_slot_type(tmp_path: Path) -> None:
+    # The AnnalsPatternExtractor emits "hse-expansion" for %year%-style HSE markers (issue #423).
+    c = _candidate(
+        slots=[{"index": 0, "type": "hse-expansion", "raw": "year", "default": "{t0}"}],
+    )
+    result = _run(tmp_path, _doc(c))
+    assert result.returncode == 0, result.stderr
