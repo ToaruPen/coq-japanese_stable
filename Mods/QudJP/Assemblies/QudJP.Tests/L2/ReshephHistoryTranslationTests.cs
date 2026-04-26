@@ -116,6 +116,7 @@ public sealed class ReshephHistoryTranslationTests
         {
             Assert.Fail(
                 $"sample {sample.CandidateId}: expected_japanese_contains に空文字または空白要素は設定できません。");
+            return;
         }
         foreach (var needle in sample.ExpectedJapaneseContains)
         {
