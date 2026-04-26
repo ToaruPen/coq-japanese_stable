@@ -226,10 +226,15 @@ internal sealed class Extractor
 
     // HistoricStringExpander rewrites %name% in the runtime value before the regex matches.
     // The extractor mirrors that rewrite so the emitted regex matches the post-HSE gospel string.
-    private static readonly IReadOnlyDictionary<string, string> HseExpansionSuffix =
-        new Dictionary<string, string>(StringComparer.Ordinal)
+    // SampleSuffix is the human-readable form embedded in sample_source; RegexSuffix is the
+    // unescaped regex fragment emitted in extracted_pattern (year expands to either era per
+    // QudHistoryHelpers.ConvertYearToSultanateCalendarEra).
+    private sealed record HseExpansion(string SampleSuffix, string RegexSuffix);
+
+    private static readonly IReadOnlyDictionary<string, HseExpansion> HseExpansions =
+        new Dictionary<string, HseExpansion>(StringComparer.Ordinal)
         {
-            ["year"] = " AR",
+            ["year"] = new HseExpansion(SampleSuffix: " AR", RegexSuffix: "\\ (?:BR|AR)"),
         };
 
     private static void ApplyHseExpansion(List<string> pieces, List<SlotEntry> slots)
@@ -244,10 +249,10 @@ internal sealed class Extractor
             if (!TryGetSlotIndex(middle, out var slotIndex)) continue;
             if (slotIndex >= slots.Count) continue;
             var slot = slots[slotIndex];
-            if (!HseExpansionSuffix.TryGetValue(slot.Raw, out var suffix)) continue;
+            if (!HseExpansions.TryGetValue(slot.Raw, out var expansion)) continue;
 
             pieces[i] = left[..^1];
-            pieces[i + 2] = suffix + right[1..];
+            pieces[i + 2] = expansion.SampleSuffix + right[1..];
             slot.Type = "hse-expansion";
         }
     }
@@ -411,6 +416,8 @@ internal sealed class Extractor
     private static string BuildAnchoredRegex(string sample, List<SlotEntry> slots)
     {
         // Replace each "{N}" placeholder in the sample with a non-greedy capture group, escape literals.
+        // For hse-expansion slots, also consume the slot's SampleSuffix and emit the matching
+        // RegexSuffix unescaped (so e.g. " AR" in sample becomes "\ (?:BR|AR)" in the regex).
         var sb = new StringBuilder("^");
         var i = 0;
         while (i < sample.Length)
@@ -421,10 +428,19 @@ internal sealed class Extractor
                 if (close > i)
                 {
                     var inner = sample[(i + 1)..close];
-                    if (inner.Length > 0 && inner.All(char.IsDigit))
+                    if (inner.Length > 0 && inner.All(char.IsDigit) && int.TryParse(inner, out var slotIndex))
                     {
                         sb.Append("(.+?)");
                         i = close + 1;
+                        if (slotIndex < slots.Count
+                            && slots[slotIndex].Type == "hse-expansion"
+                            && HseExpansions.TryGetValue(slots[slotIndex].Raw, out var expansion)
+                            && i + expansion.SampleSuffix.Length <= sample.Length
+                            && sample.AsSpan(i, expansion.SampleSuffix.Length).SequenceEqual(expansion.SampleSuffix))
+                        {
+                            sb.Append(expansion.RegexSuffix);
+                            i += expansion.SampleSuffix.Length;
+                        }
                         continue;
                     }
                 }

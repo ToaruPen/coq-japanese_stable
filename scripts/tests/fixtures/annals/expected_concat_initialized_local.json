@@ -8,7 +8,7 @@
       "switch_case": "default",
       "event_property": "gospel",
       "sample_source": "In {0} AR, an event happened, and Resheph rejoiced.",
-      "extracted_pattern": "^In\\ (.+?)\\ AR,\\ an\\ event\\ happened,\\ and\\ Resheph\\ rejoiced\\.$",
+      "extracted_pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ an\\ event\\ happened,\\ and\\ Resheph\\ rejoiced\\.$",
       "slots": [
         {
           "index": 0,
@@ -22,7 +22,7 @@
       "ja_template": "",
       "review_notes": "",
       "route": "annals",
-      "en_template_hash": "sha256:045775619487e6ab6dd6a33bf7516a74a03181ff8d724794ec4d2520726d8cdd"
+      "en_template_hash": "sha256:d7e78b005ee9ce5994a494fbe326043efc0a9b915929b4898c534e10f006f975"
     }
   ]
 }
