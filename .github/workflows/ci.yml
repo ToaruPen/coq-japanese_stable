@@ -27,6 +27,10 @@ jobs:
         if: hashFiles('Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj') != ''
         run: dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release
 
+      - name: Build AnnalsPatternExtractor
+        if: hashFiles('scripts/tools/AnnalsPatternExtractor/AnnalsPatternExtractor.csproj') != ''
+        run: dotnet build scripts/tools/AnnalsPatternExtractor/AnnalsPatternExtractor.csproj --configuration Release
+
       - name: Test QudJP
         if: hashFiles('Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj') != ''
         run: dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-build

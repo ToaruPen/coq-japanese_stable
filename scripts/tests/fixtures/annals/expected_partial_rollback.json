@@ -1,0 +1,28 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "partial_rollback#gospel",
+      "source_file": "partial_rollback.cs",
+      "annal_class": "partial_rollback",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "{0} world",
+      "extracted_pattern": "^(.+?)\\ world$",
+      "slots": [
+        {
+          "index": 0,
+          "type": "unresolved-local",
+          "raw": "a",
+          "default": "{t0}"
+        }
+      ],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:15308c4902af61d7a4e8ac5dccb5ad9d311f3ae8664436bd2d73d3e0ca53d0c2"
+    }
+  ]
+}

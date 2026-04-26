@@ -1,0 +1,21 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "string_format#tombInscription",
+      "source_file": "string_format.cs",
+      "annal_class": "string_format",
+      "switch_case": "default",
+      "event_property": "tombInscription",
+      "sample_source": "",
+      "extracted_pattern": "",
+      "slots": [],
+      "status": "needs_manual",
+      "reason": "string.Format(...) extraction is out of scope for PR1 (deferred to #422)",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:f163bd2cf1e8b7b059f545e317a003b6fea6306504901f13aac5c913a175ed18"
+    }
+  ]
+}

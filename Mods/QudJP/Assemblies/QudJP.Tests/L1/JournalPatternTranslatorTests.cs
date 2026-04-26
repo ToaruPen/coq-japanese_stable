@@ -133,6 +133,36 @@ public sealed class JournalPatternTranslatorTests
     }
 
     [Test]
+    public void Translate_ThrowsFileNotFoundException_WhenDefaultPrimaryFileMissing_InProductionMode()
+    {
+        // Arrange: set a localization root with no journal-patterns.ja.json → production mode
+        // will resolve the primary default path to a non-existent file.
+        var emptyLocalizationRoot = Path.Combine(Path.GetTempPath(), "qudjp-prod-mode-test", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(emptyLocalizationRoot);
+        try
+        {
+            LocalizationAssetResolver.SetLocalizationRootForTests(emptyLocalizationRoot);
+            // ResetForTests() internally clears patternFileOverrides → production mode.
+            JournalPatternTranslator.ResetForTests();
+
+            // Act & Assert: primary file missing in production must throw, not silently skip.
+            Assert.Throws<FileNotFoundException>(() => JournalPatternTranslator.Translate("anything"));
+        }
+        finally
+        {
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+            if (Directory.Exists(emptyLocalizationRoot))
+            {
+                Directory.Delete(emptyLocalizationRoot, recursive: true);
+            }
+
+            // Restore test-mode override so TearDown does not fail.
+            JournalPatternTranslator.ResetForTests();
+            JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
+        }
+    }
+
+    [Test]
     public void Translate_AppliesZeroCapturePattern()
     {
         WritePatternDictionary(("^A \"SATED\" baetyl$", "「満足した」ベテル"));

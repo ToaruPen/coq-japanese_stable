@@ -27,8 +27,14 @@ internal static class JournalPatternTranslator
         new ConcurrentDictionary<string, int>(StringComparer.Ordinal);
 
     private static List<JournalPatternDefinition>? loadedPatterns;
-    private static string? patternFileOverride;
+    private static string[]? patternFileOverrides;
     private static string patternLoadSummary = "JournalPatternTranslator: pattern load summary unavailable.";
+
+    internal static readonly string[] DefaultPatternAssetPaths =
+    {
+        "Dictionaries/journal-patterns.ja.json",
+        "Dictionaries/annals-patterns.ja.json",
+    };
     private static int loadInvocationCount;
     private const int MaxLogSourceLength = 200;
     internal const int MaxUniquePatterns = 10_000;
@@ -70,11 +76,12 @@ internal static class JournalPatternTranslator
         return TranslateStripped(stripped, spans);
     }
 
-    internal static void SetPatternFileForTests(string? filePath)
+    internal static void SetPatternFilesForTests(params string[]? filePaths)
     {
         lock (SyncRoot)
         {
-            patternFileOverride = filePath;
+            // Null OR empty array resets to defaults; non-empty array overrides.
+            patternFileOverrides = (filePaths is null || filePaths.Length == 0) ? null : filePaths;
             loadedPatterns = null;
             RegexCache.Clear();
             MissingPatternCounts.Clear();
@@ -84,9 +91,14 @@ internal static class JournalPatternTranslator
         }
     }
 
+    internal static void SetPatternFileForTests(string? filePath)
+    {
+        SetPatternFilesForTests(filePath is null ? null : new[] { filePath });
+    }
+
     internal static void ResetForTests()
     {
-        SetPatternFileForTests(null);
+        SetPatternFilesForTests((string[]?)null);
     }
 
     private static string TranslateStripped(string source, IReadOnlyList<ColorSpan>? spans = null)
@@ -147,67 +159,121 @@ internal static class JournalPatternTranslator
     {
         Interlocked.Increment(ref loadInvocationCount);
 
-        var patternFilePath = ResolvePatternFilePath();
-        if (!File.Exists(patternFilePath))
-        {
-            throw new FileNotFoundException(
-                $"QudJP: journal pattern dictionary file not found: {patternFilePath}",
-                patternFilePath);
-        }
+        var paths = ResolvePatternFilePaths();
+        var allDefinitions = new List<JournalPatternDefinition>();
+        var summaries = new List<string>(paths.Count);
+        var totalDuplicates = 0;
+        var distinctDuplicates = new Dictionary<string, int>(StringComparer.Ordinal);
+        var seenPatternsAcrossFiles = new HashSet<string>(StringComparer.Ordinal);
 
-        using var stream = File.OpenRead(patternFilePath);
-        var serializer = new DataContractJsonSerializer(typeof(JournalPatternDocument));
-        var document = serializer.ReadObject(stream) as JournalPatternDocument;
-        if (document?.Patterns is null)
+        for (var fileIndex = 0; fileIndex < paths.Count; fileIndex++)
         {
-            throw new InvalidDataException($"QudJP: journal pattern file has no patterns array: {patternFilePath}");
-        }
+            var patternFilePath = paths[fileIndex];
+            if (!File.Exists(patternFilePath))
+            {
+                // For test overrides, any missing file is always a hard fail.
+                // In production (patternFileOverrides is null):
+                //   - fileIndex == 0 is the primary file (journal-patterns.ja.json) and must exist.
+                //   - Later defaults (e.g. annals-patterns.ja.json) may be absent during
+                //     incremental rollout; log and skip them.
+                if (patternFileOverrides is not null)
+                {
+                    throw new FileNotFoundException(
+                        $"QudJP: journal pattern dictionary file not found: {patternFilePath}",
+                        patternFilePath);
+                }
 
-        var definitions = new List<JournalPatternDefinition>(document.Patterns.Count);
-        var seenPatterns = new Dictionary<string, int>(StringComparer.Ordinal);
-        var duplicatePatternCounts = new Dictionary<string, int>(StringComparer.Ordinal);
-        var duplicatePatternCount = 0;
-        for (var index = 0; index < document.Patterns.Count; index++)
-        {
-            var patternEntry = document.Patterns[index];
-            var pattern = patternEntry?.Pattern;
-            var template = patternEntry?.Template;
-            if (pattern is null || pattern.Length == 0 || template is null)
+                if (fileIndex == 0)
+                {
+                    throw new FileNotFoundException(
+                        $"QudJP: primary journal pattern dictionary file not found: {patternFilePath}",
+                        patternFilePath);
+                }
+
+                LogObservability($"[QudJP] JournalPatternTranslator: default pattern file not present, skipping: {patternFilePath}");
+                continue;
+            }
+
+            JournalPatternDocument? document;
+            try
+            {
+                using var stream = File.OpenRead(patternFilePath);
+                var serializer = new DataContractJsonSerializer(typeof(JournalPatternDocument));
+                document = serializer.ReadObject(stream) as JournalPatternDocument;
+            }
+            catch (System.Runtime.Serialization.SerializationException ex)
             {
                 throw new InvalidDataException(
-                    $"QudJP: malformed journal pattern entry at index {index} in '{patternFilePath}'.");
+                    $"QudJP: malformed JSON in pattern file '{patternFilePath}': {ex.Message}", ex);
             }
 
-            _ = GetCompiledRegex(pattern);
-            if (seenPatterns.TryGetValue(pattern, out _))
+            if (document?.Patterns is null)
             {
-                duplicatePatternCount++;
-                duplicatePatternCounts[pattern] = duplicatePatternCounts.TryGetValue(pattern, out var duplicateCount)
-                    ? duplicateCount + 1
-                    : 1;
+                throw new InvalidDataException(
+                    $"QudJP: journal pattern file has no patterns array: {patternFilePath}");
             }
 
-            seenPatterns[pattern] = index;
-            definitions.Add(new JournalPatternDefinition(pattern, template));
+            var fileDuplicateCount = 0;
+            for (var index = 0; index < document.Patterns.Count; index++)
+            {
+                var patternEntry = document.Patterns[index];
+                var pattern = patternEntry?.Pattern;
+                var template = patternEntry?.Template;
+                if (pattern is null || template is null
+                    || string.IsNullOrWhiteSpace(pattern)
+                    || string.IsNullOrWhiteSpace(template))
+                {
+                    throw new InvalidDataException(
+                        $"QudJP: malformed journal pattern entry at index {index} in '{patternFilePath}'.");
+                }
+
+                _ = GetCompiledRegex(pattern);
+                if (seenPatternsAcrossFiles.Contains(pattern))
+                {
+                    fileDuplicateCount++;
+                    totalDuplicates++;
+                    distinctDuplicates[pattern] = distinctDuplicates.TryGetValue(pattern, out var dc) ? dc + 1 : 1;
+                    // First-match-wins: skip adding the duplicate; the earlier definition prevails.
+                    continue;
+                }
+
+                seenPatternsAcrossFiles.Add(pattern);
+                allDefinitions.Add(new JournalPatternDefinition(pattern, template));
+            }
+
+            summaries.Add($"{document.Patterns.Count} pattern(s) from '{patternFilePath}' ({fileDuplicateCount} duplicate(s) shadowed)");
         }
 
         patternLoadSummary =
-            $"JournalPatternTranslator: loaded {definitions.Count} pattern(s) from '{patternFilePath}' " +
-            $"({seenPatterns.Count} unique, {duplicatePatternCount} duplicate pattern(s) across {duplicatePatternCounts.Count} distinct pattern(s)).";
+            $"JournalPatternTranslator: loaded {allDefinitions.Count} unique pattern(s) across {paths.Count} file(s); " +
+            $"{totalDuplicates} duplicate(s) across {distinctDuplicates.Count} distinct pattern(s) shadowed by earlier files. " +
+            string.Join("; ", summaries);
         LogObservability($"[QudJP] {patternLoadSummary}");
-        LogDuplicatePatternSummary(duplicatePatternCounts);
+        LogDuplicatePatternSummary(distinctDuplicates);
 
-        return definitions;
+        return allDefinitions;
     }
 
-    private static string ResolvePatternFilePath()
+    // Must be called while holding SyncRoot (only call site is LoadPatterns).
+    private static IReadOnlyList<string> ResolvePatternFilePaths()
     {
-        if (!string.IsNullOrWhiteSpace(patternFileOverride))
+        var overrides = patternFileOverrides;
+        if (overrides is { Length: > 0 })
         {
-            return Path.GetFullPath(patternFileOverride);
+            var resolved = new string[overrides.Length];
+            for (var i = 0; i < overrides.Length; i++)
+            {
+                resolved[i] = Path.GetFullPath(overrides[i]);
+            }
+            return resolved;
         }
 
-        return LocalizationAssetResolver.GetLocalizationPath("Dictionaries/journal-patterns.ja.json");
+        var defaults = new string[DefaultPatternAssetPaths.Length];
+        for (var i = 0; i < DefaultPatternAssetPaths.Length; i++)
+        {
+            defaults[i] = LocalizationAssetResolver.GetLocalizationPath(DefaultPatternAssetPaths[i]);
+        }
+        return defaults;
     }
 
     private static Regex GetCompiledRegex(string pattern)

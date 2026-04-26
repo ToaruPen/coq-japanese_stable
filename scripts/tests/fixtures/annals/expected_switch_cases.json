@@ -1,0 +1,53 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "switch_cases#gospel#switch0",
+      "source_file": "switch_cases.cs",
+      "annal_class": "switch_cases",
+      "switch_case": "0",
+      "event_property": "gospel",
+      "sample_source": "",
+      "extracted_pattern": "",
+      "slots": [],
+      "status": "needs_manual",
+      "reason": "switch/case decomposition is out of scope for PR1 (deferred to #422)",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:90ccde0f68d4fb151d2f01fb75df3213e78cbaa0f439bf5186dbfc91f8552552"
+    },
+    {
+      "id": "switch_cases#gospel#switch1",
+      "source_file": "switch_cases.cs",
+      "annal_class": "switch_cases",
+      "switch_case": "1",
+      "event_property": "gospel",
+      "sample_source": "",
+      "extracted_pattern": "",
+      "slots": [],
+      "status": "needs_manual",
+      "reason": "switch/case decomposition is out of scope for PR1 (deferred to #422)",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:1ff7f4d9badfccd400cde406951066cb33d61f0d74d98fd7a34d7122300f99af"
+    },
+    {
+      "id": "switch_cases#gospel#switch2",
+      "source_file": "switch_cases.cs",
+      "annal_class": "switch_cases",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "",
+      "extracted_pattern": "",
+      "slots": [],
+      "status": "needs_manual",
+      "reason": "switch/case decomposition is out of scope for PR1 (deferred to #422)",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:4af8b073c3946dbda6f29fa0b8cab26f5b11015ccdc56bafc8839c9b756bfac7"
+    }
+  ]
+}

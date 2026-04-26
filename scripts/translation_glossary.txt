@@ -15,3 +15,6 @@ Sultans = スルタン
 The Six Day Stilt = 六日のスティルト
 The Spindle = スピンドル
 Tomb of the Eaters = 喰らう者の墓所
+Gyre = ジャイア
+Omonporch = オモンポーチ
+Rebekah = レベカ

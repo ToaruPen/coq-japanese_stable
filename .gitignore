@@ -65,3 +65,6 @@ node_modules/
 
 # Claude scheduled-task runtime lock
 .claude/scheduled_tasks.lock
+
+# Issue #420 build-time pipeline artifacts (candidate JSON, conflict reports, .bak files)
+scripts/_artifacts/annals/

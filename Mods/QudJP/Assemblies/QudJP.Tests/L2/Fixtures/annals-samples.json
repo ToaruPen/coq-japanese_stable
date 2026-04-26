@@ -1,0 +1,149 @@
+{
+  "schema_version": "1",
+  "samples": [
+    {
+      "candidate_id": "ReshephAbsolvesRebekah#gospel",
+      "event_property": "gospel",
+      "input_source": "In 1234 AR, Rebekah died of glotrot, and on her deathbed Resheph forgave her and absolved her of sin. He allowed her to be buried in the village of Ezra, outside the gate to the Tomb of the Eaters and beneath the shadow of the Spindle.",
+      "expected_japanese_contains": [
+        "レシェフ",
+        "年、レベカはグロットロッ"
+      ]
+    },
+    {
+      "candidate_id": "ReshephAppointsRebekah#gospel",
+      "event_property": "gospel",
+      "input_source": "In 1234 AR, Resheph appointed Rebekah administrator of TestPlace1. She tendered alms for the sick in his name.",
+      "expected_japanese_contains": [
+        "レシェフ",
+        "の施政官に任じた。彼女は"
+      ]
+    },
+    {
+      "candidate_id": "ReshephBecomesSultan#gospel",
+      "event_property": "gospel",
+      "input_source": "Acting against a prohibition on the practice of worshipping the stars, Resheph led an army to the gates of Omonporch. There he defeated his brothers in battle and liberated its citizens, and they crowned him the sultan of Qud.",
+      "expected_japanese_contains": [
+        "レシェフ",
+        "星々を崇める営みへの禁令"
+      ]
+    },
+    {
+      "candidate_id": "ReshephBetrayed#gospel",
+      "event_property": "gospel",
+      "input_source": "In 1234 AR, Rebekah betrayed Resheph by stealing the Mark of Death from the gate to the Tomb of the Eaters. In punishment, Resheph excommunicated her from the sultanate.",
+      "expected_japanese_contains": [
+        "レシェフ",
+        "年、レベカは喰らう者の墓"
+      ]
+    },
+    {
+      "candidate_id": "ReshephCleansesGyre#gospel",
+      "event_property": "gospel",
+      "input_source": "In 1234 AR, Resheph cleansed the marshlands of the plagues of the Gyre and taught Abram to sow watervine along its fertile tracks.",
+      "expected_japanese_contains": [
+        "レシェフ",
+        "年、レシェフは湿地帯より"
+      ]
+    },
+    {
+      "candidate_id": "ReshephClosesTomb#gospel",
+      "event_property": "gospel",
+      "input_source": "In 1234 AR, Resheph closed the gates to the Tomb of the Eaters, abdicated the throne, and dissolved the sultanate in order to lift the curse of the Gyre.",
+      "expected_japanese_contains": [
+        "レシェフ",
+        "年、レシェフはジャイアの"
+      ]
+    },
+    {
+      "candidate_id": "ReshephDies#gospel",
+      "event_property": "gospel",
+      "input_source": "In 1234 AR, Resheph, the Above, Ghost-in-Cerulean, the Coiled Lamb of Baetyls, died of natural causes. He was 216 years old.",
+      "expected_japanese_contains": [
+        "レシェフ",
+        "年、レシェフ、天上なる者"
+      ]
+    },
+    {
+      "candidate_id": "ReshephFoundsHarborage#gospel",
+      "event_property": "gospel",
+      "input_source": "After conferring with mysterious strangers, Resheph convinced them to help him found a harborage for the purpose of receiving visitors from across the clustered cosmos. They named it Starfarer's Quay.",
+      "expected_japanese_contains": [
+        "レシェフ",
+        "謎めいた異邦人らと協議し"
+      ]
+    },
+    {
+      "candidate_id": "ReshephHasStarExperience#gospel",
+      "event_property": "gospel",
+      "input_source": "While traveling alone through the Rust Wells, Resheph came across a trove of gleaming stars in a bottle. From that day forth, he always kept some stardust on his person.",
+      "expected_japanese_contains": [
+        "レシェフ",
+        "錆の井戸を独り旅せし折"
+      ]
+    },
+    {
+      "candidate_id": "ReshephHealsGyre1#gospel",
+      "event_property": "gospel",
+      "input_source": "In 1234 AR, the Gyre widened, and the first triad of plagues afflicted the land. The water was poisoned with salt, girshlings ravaged the fruit and wheat, and tongues rotted away in the mouths of kith and kin. Resheph walked below the chrome arches and healed the sick.",
+      "expected_japanese_contains": [
+        "レシェフ",
+        "年、ジャイアは広がり、第"
+      ]
+    },
+    {
+      "candidate_id": "ReshephHealsGyre2#gospel",
+      "event_property": "gospel",
+      "input_source": "In 1234 AR, the Gyre widened, and the second triad of plagues afflicted the land. The legs of kith and kin annealed to iron, darkness bloomed from the earth, and the svardym blackened the sky. Resheph walked below the chrome arches and healed the sick.",
+      "expected_japanese_contains": [
+        "レシェフ",
+        "年、ジャイアは広がり、第"
+      ]
+    },
+    {
+      "candidate_id": "ReshephIsBorn#gospel",
+      "event_property": "gospel",
+      "input_source": "One starry evening, a babe was found swaddled with its mouth full of circuits by a group of baetyls in Red Rock. They took him into their fold and fostered him, and he became known as Resheph, the Coiled Lamb of Baetyls.",
+      "expected_japanese_contains": [
+        "レシェフ",
+        "星降るある宵、赤岩にて"
+      ]
+    },
+    {
+      "candidate_id": "ReshephLearnsCurse#gospel",
+      "event_property": "gospel",
+      "input_source": "At Starfarer's Quay, Resheph consulted with mysterious strangers and learned the secret of the Gyre. By cause of the misdeeds of the elder saads and sultans, star beings had levied a curse on Qud. Resheph vowed to make right from this wrong and redeem our doomed world.",
+      "expected_japanese_contains": [
+        "レシェフ",
+        "星渡りの埠頭にて、レシェ"
+      ]
+    },
+    {
+      "candidate_id": "ReshephMeetsRebekah#gospel",
+      "event_property": "gospel",
+      "input_source": "While traveling near Bethesda Susa, Resheph lost control of his chariot and drove it off a cliff. Luckily, a local physician named Rebekah came to his rescue. Moved by her kindness, Resheph enrolled at a nearby hospice as her apprentice.",
+      "expected_japanese_contains": [
+        "レシェフ",
+        "ベセスダ・スーサ近くを旅"
+      ]
+    },
+    {
+      "candidate_id": "ReshephRebuffsCurse#gospel",
+      "event_property": "gospel",
+      "input_source": "In 1234 AR, the Gyre widened, and the final plague afflicted the land. The Girsh Nephilim rose from their cradles on the Moon Stair and slouched toward Qud to eat its young. Resheph rose to meet them in battle and cast them back.",
+      "expected_japanese_contains": [
+        "レシェフ",
+        "年、ジャイアは広がり、最"
+      ]
+    },
+    {
+      "candidate_id": "ReshephWeirdSky#gospel",
+      "event_property": "gospel",
+      "input_source": "At twilight in the shadow of the Spindle, the people of Omonporch saw an image on the horizon that looked like a ghost bathed in cerulean. It was Resheph, and after he came and left Omonporch, the people built a monument to him, and thenceforth called him Ghost-in-Cerulean.",
+      "expected_japanese_contains": [
+        "レシェフ",
+        "薄暮、スピンドルの影にて"
+      ]
+    }
+  ]
+}

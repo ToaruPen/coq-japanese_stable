@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- Sultan Resheph history translation in `Mods/QudJP/Localization/Dictionaries/annals-patterns.ja.json` (#420 PR1).
+- Build-time pipeline at `scripts/{extract,validate,translate,merge}_annals_patterns.py` and `scripts/tools/AnnalsPatternExtractor/` for extracting and translating regex/template pairs from `XRL.Annals/*.cs` (#420 PR1).
+- `JournalPatternTranslator` now supports ordered multi-file pattern dictionary load (`SetPatternFilesForTests(params string[])`).
+
+---
+
 ## [0.1.0] — 2026-03-11
 
 ### Added
