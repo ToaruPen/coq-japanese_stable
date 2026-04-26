@@ -44,6 +44,8 @@ def _run_extractor(include: str, output: Path) -> subprocess.CompletedProcess[st
         "string_format",
         "switch_cases",
         "unresolved_variable",
+        "concat_initialized_local",
+        "cyclic_locals",
     ],
 )
 def test_extractor_matches_golden(fixture: str, tmp_path: Path) -> None:
@@ -73,6 +75,8 @@ def test_extractor_matches_golden(fixture: str, tmp_path: Path) -> None:
         "string_format",
         "switch_cases",
         "unresolved_variable",
+        "concat_initialized_local",
+        "cyclic_locals",
     ],
 )
 def test_csharp_and_python_hashes_match(fixture: str) -> None:

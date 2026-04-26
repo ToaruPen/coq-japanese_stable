@@ -35,8 +35,8 @@ internal sealed class Extractor
             return;
         }
 
-        // Build local-variable initializer table (literal-only resolution within Generate())
-        var localInitializers = CollectLiteralLocals(generateMethod);
+        // Build local-variable initializer table (expression-level resolution within Generate())
+        var localInitializers = CollectResolvableLocals(generateMethod);
 
         // Find SetEventProperty calls
         var setterCalls = generateMethod.DescendantNodes()
@@ -145,16 +145,46 @@ internal sealed class Extractor
         };
     }
 
-    private static Dictionary<string, string> CollectLiteralLocals(MethodDeclarationSyntax method)
+    /// <summary>
+    /// Collect locals that are safe to inline: exactly one declarator in the method,
+    /// non-null initializer, and never reassigned after declaration.
+    /// Returns a map from local name → initializer expression (not pre-resolved).
+    /// </summary>
+    private static IReadOnlyDictionary<string, ExpressionSyntax> CollectResolvableLocals(MethodDeclarationSyntax method)
     {
-        var dict = new Dictionary<string, string>(StringComparer.Ordinal);
+        // Count declarators per name — skip multi-declarator names (e.g. `string a, b = "x"`)
+        var declaratorsByName = new Dictionary<string, List<VariableDeclaratorSyntax>>(StringComparer.Ordinal);
         foreach (var declarator in method.DescendantNodes().OfType<VariableDeclaratorSyntax>())
         {
-            if (declarator.Initializer?.Value is LiteralExpressionSyntax lit
-                && lit.IsKind(SyntaxKind.StringLiteralExpression))
+            var name = declarator.Identifier.ValueText;
+            if (!declaratorsByName.TryGetValue(name, out var list))
             {
-                dict[declarator.Identifier.ValueText] = lit.Token.ValueText;
+                list = new List<VariableDeclaratorSyntax>();
+                declaratorsByName[name] = list;
             }
+            list.Add(declarator);
+        }
+
+        // Collect names that are reassigned anywhere (simple assignment: `name = ...`)
+        var reassigned = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var assignment in method.DescendantNodes().OfType<AssignmentExpressionSyntax>())
+        {
+            if (assignment.IsKind(SyntaxKind.SimpleAssignmentExpression)
+                && assignment.Left is IdentifierNameSyntax lhs)
+            {
+                reassigned.Add(lhs.Identifier.ValueText);
+            }
+        }
+
+        var dict = new Dictionary<string, ExpressionSyntax>(StringComparer.Ordinal);
+        foreach (var (name, declarators) in declaratorsByName)
+        {
+            // Must have exactly one declarator and must not be reassigned
+            if (declarators.Count != 1) continue;
+            if (reassigned.Contains(name)) continue;
+            var initValue = declarators[0].Initializer?.Value;
+            if (initValue is null) continue;
+            dict[name] = initValue;
         }
         return dict;
     }
@@ -169,15 +199,16 @@ internal sealed class Extractor
 
     private static ResolutionResult ResolveValueExpression(
         ExpressionSyntax valueExpr,
-        IReadOnlyDictionary<string, string> localInitializers)
+        IReadOnlyDictionary<string, ExpressionSyntax> localInitializers)
     {
         // Required PR1 shapes:
         //   a) single string literal
-        //   b) BinaryExpression (+ concat) of string literals and identifier references whose initializer is a literal
+        //   b) BinaryExpression (+ concat) of string literals and identifier references whose initializer is a literal or concat
         var pieces = new List<string>();
         var slots = new List<SlotEntry>();
+        var visited = new HashSet<string>(StringComparer.Ordinal);
 
-        if (!FlattenConcat(valueExpr, localInitializers, pieces, slots, out var unsupportedReason))
+        if (!FlattenConcat(valueExpr, localInitializers, pieces, slots, visited, out var unsupportedReason))
         {
             return new ResolutionResult { Resolved = false, Reason = unsupportedReason };
         }
@@ -193,9 +224,10 @@ internal sealed class Extractor
 
     private static bool FlattenConcat(
         ExpressionSyntax expr,
-        IReadOnlyDictionary<string, string> locals,
+        IReadOnlyDictionary<string, ExpressionSyntax> locals,
         List<string> pieces,
         List<SlotEntry> slots,
+        HashSet<string> visited,
         out string unsupportedReason)
     {
         unsupportedReason = "";
@@ -206,21 +238,39 @@ internal sealed class Extractor
                 return true;
 
             case IdentifierNameSyntax id:
-                if (locals.TryGetValue(id.Identifier.ValueText, out var literalValue))
+            {
+                var name = id.Identifier.ValueText;
+                if (locals.TryGetValue(name, out var initExpr) && !visited.Contains(name))
                 {
-                    pieces.Add(literalValue);
-                    return true;
+                    // Recurse into the initializer expression with cycle protection
+                    visited.Add(name);
+                    try
+                    {
+                        if (FlattenConcat(initExpr, locals, pieces, slots, visited, out var innerReason))
+                        {
+                            return true;
+                        }
+                        // Recursion failed (unsupported AST shape): degrade to a slot
+                        // rather than propagating the failure upward.
+                        AddSlot(slots, name, type: "unresolved-local");
+                        pieces.Add($"{{{slots.Count - 1}}}");
+                        // Clear the reason — we've handled this gracefully
+                        return true;
+                    }
+                    finally
+                    {
+                        visited.Remove(name);
+                    }
                 }
-                // Degrade to a slot rather than failing: the identifier resolves to something we
-                // cannot statically inline (e.g. method-call result), so surface it for the human
-                // reviewer in the candidate JSON instead of dropping the whole pattern.
-                AddSlot(slots, id.Identifier.ValueText, type: "unresolved-local");
+                // Not in resolvable locals, or would cycle: degrade to a slot
+                AddSlot(slots, name, type: "unresolved-local");
                 pieces.Add($"{{{slots.Count - 1}}}");
                 return true;
+            }
 
             case BinaryExpressionSyntax bin when bin.IsKind(SyntaxKind.AddExpression):
-                if (!FlattenConcat(bin.Left, locals, pieces, slots, out unsupportedReason)) return false;
-                if (!FlattenConcat(bin.Right, locals, pieces, slots, out unsupportedReason)) return false;
+                if (!FlattenConcat(bin.Left, locals, pieces, slots, visited, out unsupportedReason)) return false;
+                if (!FlattenConcat(bin.Right, locals, pieces, slots, visited, out unsupportedReason)) return false;
                 return true;
 
             case InvocationExpressionSyntax invoc when IsEntityGetProperty(invoc):

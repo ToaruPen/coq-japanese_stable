@@ -1,0 +1,28 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "cyclic_locals#gospel",
+      "source_file": "cyclic_locals.cs",
+      "annal_class": "cyclic_locals",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "prefix X{0}Y mid",
+      "extracted_pattern": "^prefix\\ X(.+?)Y\\ mid$",
+      "slots": [
+        {
+          "index": 0,
+          "type": "unresolved-local",
+          "raw": "a",
+          "default": "{t0}"
+        }
+      ],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:1c48a7fc86cdc501f5f575ce3c797ef4bd9aaa6d0967daa474b21469db65845b"
+    }
+  ]
+}
