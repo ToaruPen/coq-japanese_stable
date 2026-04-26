@@ -56,6 +56,7 @@ _FIXTURES = [
     "append_after_setter",
     "branch_assign_after_setter",
     "latest_assignment_wins",
+    "latest_assignment_inside_block",
     "string_format_via_local_fmt",
     "if_dedupe_preserves_arm_suffix",
 ]

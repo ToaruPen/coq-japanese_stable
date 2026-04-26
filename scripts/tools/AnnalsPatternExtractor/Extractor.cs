@@ -277,7 +277,12 @@ internal sealed class Extractor
                 // that lexically follow the setter (e.g. inside the same if-branch), which must
                 // not influence the setter's value resolution.
                 if (stmt.Span.Contains(setter.Span)) continue;
-                foreach (var assign in stmt.DescendantNodesAndSelf().OfType<AssignmentExpressionSyntax>())
+                // Iterate descendants in reverse source order too, so multiple assignments to
+                // the same local *within a single sibling stmt* (e.g. `if (cond) { x="a"; x="b"; }`)
+                // also yield first-seen-wins = source-last-wins.
+                foreach (var assign in stmt.DescendantNodesAndSelf()
+                    .OfType<AssignmentExpressionSyntax>()
+                    .OrderByDescending(a => a.SpanStart))
                 {
                     if (!assign.IsKind(SyntaxKind.SimpleAssignmentExpression)) continue;
                     if (assign.Left is not IdentifierNameSyntax lhs) continue;
