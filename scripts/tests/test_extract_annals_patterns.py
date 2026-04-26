@@ -50,6 +50,7 @@ _FIXTURES = [
     "string_format_local",
     "string_format_with_helpers",
     "switch_branch_candidates",
+    "switch_expression_local",
 ]
 
 

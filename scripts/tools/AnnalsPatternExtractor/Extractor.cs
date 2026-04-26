@@ -55,32 +55,37 @@ internal sealed class Extractor
             // "gospel" and "tombInscription" produces distinct ids (no downstream collision).
             var switchSection = invocation.Ancestors().OfType<SwitchSectionSyntax>().FirstOrDefault();
             var switchLabel = switchSection is null ? "default" : (ExtractSwitchLabel(switchSection) ?? "default");
-            var candidateId = switchSection is null
+            var idPrefix = switchSection is null
                 ? $"{className}#{eventProperty}"
                 : $"{className}#{eventProperty}#case:{switchLabel}";
 
-            var resolution = ResolveValueExpression(valueExpr, localInitializers);
-            if (!resolution.Resolved)
+            var armings = ExpandSwitchExpressionArms(valueExpr, localInitializers);
+            foreach (var (armLabel, armLocals) in armings)
             {
-                candidates.Add(NeedsManual(
-                    id: candidateId,
+                var armSwitchCase = armLabel is null ? switchLabel : armLabel;
+                var armId = armLabel is null ? idPrefix : $"{idPrefix}#arm:{armLabel}";
+
+                var resolution = ResolveValueExpression(valueExpr, armLocals);
+                if (!resolution.Resolved)
+                {
+                    candidates.Add(NeedsManual(
+                        id: armId,
+                        sourceFile: fileName,
+                        annalClass: className,
+                        switchCase: armSwitchCase,
+                        eventProperty: eventProperty,
+                        reason: resolution.Reason));
+                    continue;
+                }
+
+                candidates.Add(BuildCandidate(
+                    id: armId,
                     sourceFile: fileName,
                     annalClass: className,
-                    switchCase: switchLabel,
+                    switchCase: armSwitchCase,
                     eventProperty: eventProperty,
-                    reason: resolution.Reason));
-                continue;
+                    resolved: resolution));
             }
-
-            var candidate = BuildCandidate(
-                id: candidateId,
-                sourceFile: fileName,
-                annalClass: className,
-                switchCase: switchLabel,
-                eventProperty: eventProperty,
-                resolved: resolution);
-
-            candidates.Add(candidate);
         }
     }
 
@@ -165,6 +170,65 @@ internal sealed class Extractor
             dict[name] = initValue;
         }
         return dict;
+    }
+
+    /// <summary>
+    /// If the value expression depends on a local whose initializer is a SwitchExpressionSyntax,
+    /// fan out one entry per arm (the local is overridden with the arm's expression). Otherwise
+    /// returns a single (label=null, original-locals) pair so callers can use a single code path.
+    /// Only the first switch-expression local found is expanded; nested cross-products are not
+    /// emitted by design (PR2a target files use one switch expression at a time).
+    /// </summary>
+    private static List<(string? armLabel, IReadOnlyDictionary<string, ExpressionSyntax> locals)>
+        ExpandSwitchExpressionArms(
+            ExpressionSyntax valueExpr,
+            IReadOnlyDictionary<string, ExpressionSyntax> locals)
+    {
+        var result = new List<(string?, IReadOnlyDictionary<string, ExpressionSyntax>)>();
+        var (switchLocalName, switchExpr) = FindSwitchExpressionLocal(valueExpr, locals, new HashSet<string>(StringComparer.Ordinal));
+        if (switchLocalName is null || switchExpr is null)
+        {
+            result.Add((null, locals));
+            return result;
+        }
+        foreach (var arm in switchExpr.Arms)
+        {
+            var label = SwitchExpressionArmLabel(arm);
+            var overrideLocals = new Dictionary<string, ExpressionSyntax>(locals, StringComparer.Ordinal)
+            {
+                [switchLocalName] = arm.Expression,
+            };
+            result.Add((label, overrideLocals));
+        }
+        return result;
+    }
+
+    private static (string? name, SwitchExpressionSyntax? expr) FindSwitchExpressionLocal(
+        ExpressionSyntax expr,
+        IReadOnlyDictionary<string, ExpressionSyntax> locals,
+        HashSet<string> visited)
+    {
+        foreach (var id in expr.DescendantNodesAndSelf().OfType<IdentifierNameSyntax>())
+        {
+            var name = id.Identifier.ValueText;
+            if (visited.Contains(name)) continue;
+            if (!locals.TryGetValue(name, out var init)) continue;
+            if (init is SwitchExpressionSyntax sw) return (name, sw);
+            visited.Add(name);
+            var nested = FindSwitchExpressionLocal(init, locals, visited);
+            if (nested.name is not null) return nested;
+        }
+        return (null, null);
+    }
+
+    private static string SwitchExpressionArmLabel(SwitchExpressionArmSyntax arm)
+    {
+        return arm.Pattern switch
+        {
+            ConstantPatternSyntax c => c.Expression.ToString(),
+            DiscardPatternSyntax => "_",
+            _ => arm.Pattern.ToString(),
+        };
     }
 
     private sealed class ResolutionResult
