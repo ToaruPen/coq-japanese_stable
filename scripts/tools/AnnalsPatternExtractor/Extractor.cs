@@ -213,6 +213,7 @@ internal sealed class Extractor
             return new ResolutionResult { Resolved = false, Reason = unsupportedReason };
         }
 
+        ApplyHistoryKitTokenLexer(pieces, slots);
         ApplyHseExpansion(pieces, slots);
 
         var sample = string.Concat(pieces);
@@ -222,6 +223,83 @@ internal sealed class Extractor
             SampleSource = sample,
             Slots = slots,
         };
+    }
+
+    // HistoryKit `<...>` tokens are expanded by HistoricStringExpander.ExpandString to arbitrary
+    // text (or empty for assignment-form `<$var=...>`). We slot them so the runtime regex matches
+    // the post-expansion stored value, not the pre-expansion source literal.
+    private const string HistoryKitTokenType = "historykit-token";
+
+    private static void ApplyHistoryKitTokenLexer(List<string> pieces, List<SlotEntry> slots)
+    {
+        // Renumbering is required because we splice new slots into the middle of the slot list.
+        // Strategy: rebuild pieces+slots from scratch, scanning every existing piece. Existing
+        // slot references (e.g. `{0}` already produced by FlattenConcat) are remapped to the new
+        // index space.
+        var oldSlots = new List<SlotEntry>(slots);
+        var oldPieces = new List<string>(pieces);
+        slots.Clear();
+        pieces.Clear();
+
+        foreach (var piece in oldPieces)
+        {
+            if (piece.Length >= 3 && piece[0] == '{' && piece[^1] == '}'
+                && int.TryParse(piece.AsSpan(1, piece.Length - 2), System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var oldIndex)
+                && (uint)oldIndex < (uint)oldSlots.Count)
+            {
+                var slot = oldSlots[oldIndex];
+                slot.Index = slots.Count;
+                slot.Default = $"{{t{slots.Count}}}";
+                slots.Add(slot);
+                pieces.Add($"{{{slot.Index}}}");
+                continue;
+            }
+
+            // Literal piece: scan for `<...>` tokens.
+            var i = 0;
+            var sb = new StringBuilder();
+            while (i < piece.Length)
+            {
+                if (piece[i] != '<')
+                {
+                    sb.Append(piece[i]);
+                    i++;
+                    continue;
+                }
+                var close = piece.IndexOf('>', i + 1);
+                if (close < 0)
+                {
+                    sb.Append(piece[i]);
+                    i++;
+                    continue;
+                }
+                var token = piece.Substring(i, close - i + 1);
+                if (IsHistoryKitAssignmentToken(token))
+                {
+                    // Zero-width: assignment-form tokens (`<$var=...>`) emit "" at runtime.
+                    i = close + 1;
+                    continue;
+                }
+                if (sb.Length > 0)
+                {
+                    pieces.Add(sb.ToString());
+                    sb.Clear();
+                }
+                AddSlot(slots, token, type: HistoryKitTokenType);
+                pieces.Add($"{{{slots.Count - 1}}}");
+                i = close + 1;
+            }
+            if (sb.Length > 0) pieces.Add(sb.ToString());
+        }
+    }
+
+    private static bool IsHistoryKitAssignmentToken(string token)
+    {
+        // Form: `<$name=...>` — the first character after `<` is `$` and the body contains `=`.
+        if (token.Length < 4 || token[0] != '<' || token[^1] != '>') return false;
+        if (token[1] != '$') return false;
+        // Search only inside the angle brackets.
+        return token.AsSpan(2, token.Length - 3).IndexOf('=') >= 0;
     }
 
     // HistoricStringExpander rewrites %name% in the runtime value before the regex matches.

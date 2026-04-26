@@ -37,20 +37,21 @@ def _run_extractor(include: str, output: Path) -> subprocess.CompletedProcess[st
     )
 
 
+_FIXTURES = [
+    "simple_concat",
+    "string_format",
+    "switch_cases",
+    "unresolved_variable",
+    "concat_initialized_local",
+    "cyclic_locals",
+    "partial_rollback",
+    "hse_marker_year",
+    "historykit_tokens",
+]
+
+
 @pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
-@pytest.mark.parametrize(
-    "fixture",
-    [
-        "simple_concat",
-        "string_format",
-        "switch_cases",
-        "unresolved_variable",
-        "concat_initialized_local",
-        "cyclic_locals",
-        "partial_rollback",
-        "hse_marker_year",
-    ],
-)
+@pytest.mark.parametrize("fixture", _FIXTURES)
 def test_extractor_matches_golden(fixture: str, tmp_path: Path) -> None:
     """Extractor output for each fixture must match the committed golden JSON exactly."""
     output = tmp_path / f"{fixture}.json"
@@ -70,19 +71,7 @@ def test_extractor_matches_golden(fixture: str, tmp_path: Path) -> None:
     assert actual == expected, f"extractor output diverged from golden for {fixture}"
 
 
-@pytest.mark.parametrize(
-    "fixture",
-    [
-        "simple_concat",
-        "string_format",
-        "switch_cases",
-        "unresolved_variable",
-        "concat_initialized_local",
-        "cyclic_locals",
-        "partial_rollback",
-        "hse_marker_year",
-    ],
-)
+@pytest.mark.parametrize("fixture", _FIXTURES)
 def test_csharp_and_python_hashes_match(fixture: str) -> None:
     """The C# extractor and Python translator must compute the same en_template_hash."""
     import importlib.util  # noqa: PLC0415
