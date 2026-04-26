@@ -130,8 +130,9 @@ def test_validate_chunk_response_accepts_valid() -> None:
     assert valid, errors
 
 
+@patch("translate_annals_patterns.shutil.which", return_value="/usr/local/bin/codex")
 @patch("subprocess.run")
-def test_invoke_codex_returns_json_array_on_success(mock_run: MagicMock, tmp_path: Path) -> None:  # noqa: ARG001
+def test_invoke_codex_returns_json_array_on_success(mock_run: MagicMock, mock_which: MagicMock, tmp_path: Path) -> None:  # noqa: ARG001
     payload = json.dumps([{"id": "A", "ja_template": "{t0}OK"}])
     mock_run.return_value.returncode = 0
     mock_run.return_value.stdout = payload
@@ -139,10 +140,12 @@ def test_invoke_codex_returns_json_array_on_success(mock_run: MagicMock, tmp_pat
 
     result = tap.invoke_codex_translation([_candidate(id="A")], glossary="dummy")
     assert result == [{"id": "A", "ja_template": "{t0}OK"}]
+    assert mock_which.called
 
 
+@patch("translate_annals_patterns.shutil.which", return_value="/usr/local/bin/codex")
 @patch("subprocess.run")
-def test_invoke_codex_returns_none_on_unparseable(mock_run: MagicMock) -> None:
+def test_invoke_codex_returns_none_on_unparseable(mock_run: MagicMock, mock_which: MagicMock) -> None:  # noqa: ARG001
     mock_run.return_value.returncode = 0
     mock_run.return_value.stdout = "not json"
     mock_run.return_value.stderr = ""
@@ -150,8 +153,9 @@ def test_invoke_codex_returns_none_on_unparseable(mock_run: MagicMock) -> None:
     assert result is None
 
 
+@patch("translate_annals_patterns.shutil.which", return_value="/usr/local/bin/codex")
 @patch("subprocess.run")
-def test_invoke_codex_returns_none_on_nonzero_exit(mock_run: MagicMock) -> None:
+def test_invoke_codex_returns_none_on_nonzero_exit(mock_run: MagicMock, mock_which: MagicMock) -> None:  # noqa: ARG001
     mock_run.return_value.returncode = 1
     mock_run.return_value.stdout = ""
     mock_run.return_value.stderr = "auth error"
