@@ -69,7 +69,8 @@ internal sealed class Extractor
                 var armSwitchCase = armLabel is null ? switchLabel : armLabel;
                 var armId = armLabel is null ? idPrefix : $"{idPrefix}#arm:{armLabel}";
 
-                var optExpansions = ExpandOptionalAppends(valueExpr, armLocals, FilterAppendsToLocals(armLocals, appendsByLocal));
+                var setterScopedAppends = FilterAppendsBeforeSetter(appendsByLocal, invocation);
+                var optExpansions = ExpandOptionalAppends(valueExpr, armLocals, FilterAppendsToLocals(armLocals, setterScopedAppends));
                 foreach (var (optLabel, optLocals) in optExpansions)
                 {
                     var optId = optLabel is null ? armId : $"{armId}#opt:{optLabel}";
@@ -252,6 +253,11 @@ internal sealed class Extractor
             foreach (var stmt in statements)
             {
                 if (stmt.SpanStart >= setter.SpanStart) break;
+                // Skip stmts that *contain* the setter — they're an ancestor of the setter and
+                // are handled at deeper cursor levels. Their descendants include assignments
+                // that lexically follow the setter (e.g. inside the same if-branch), which must
+                // not influence the setter's value resolution.
+                if (stmt.Span.Contains(setter.Span)) continue;
                 foreach (var assign in stmt.DescendantNodesAndSelf().OfType<AssignmentExpressionSyntax>())
                 {
                     if (!assign.IsKind(SyntaxKind.SimpleAssignmentExpression)) continue;
@@ -265,6 +271,31 @@ internal sealed class Extractor
             }
         }
         return overrides;
+    }
+
+    /// <summary>
+    /// Drop compound-append rhs entries whose owning append statement starts at or after the
+    /// setter's span. Appends that execute after the setter never influence the value the runtime
+    /// stores, so they must not be fanned out as `#opt:withN` candidates.
+    /// </summary>
+    private static IReadOnlyDictionary<string, List<ExpressionSyntax>> FilterAppendsBeforeSetter(
+        IReadOnlyDictionary<string, List<ExpressionSyntax>> appendsByLocal,
+        InvocationExpressionSyntax setter)
+    {
+        var dict = new Dictionary<string, List<ExpressionSyntax>>(StringComparer.Ordinal);
+        foreach (var (name, appends) in appendsByLocal)
+        {
+            var kept = new List<ExpressionSyntax>();
+            foreach (var rhs in appends)
+            {
+                // The rhs is the right-hand side of `local += rhs`; walk up to the owning
+                // assignment expression (its parent) and use its span as the append's span.
+                var assignSpanStart = rhs.Parent?.SpanStart ?? rhs.SpanStart;
+                if (assignSpanStart < setter.SpanStart) kept.Add(rhs);
+            }
+            if (kept.Count > 0) dict[name] = kept;
+        }
+        return dict;
     }
 
     private static IReadOnlyDictionary<string, List<ExpressionSyntax>> FilterAppendsToLocals(

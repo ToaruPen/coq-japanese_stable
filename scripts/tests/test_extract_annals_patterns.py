@@ -53,6 +53,8 @@ _FIXTURES = [
     "switch_expression_local",
     "if_optional_append",
     "duplicate_event_property_dedupe",
+    "append_after_setter",
+    "branch_assign_after_setter",
 ]
 
 
