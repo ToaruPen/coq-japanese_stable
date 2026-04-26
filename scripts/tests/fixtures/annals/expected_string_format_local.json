@@ -1,0 +1,21 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "string_format_local#gospel",
+      "source_file": "string_format_local.cs",
+      "annal_class": "string_format_local",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "In the salt marsh, a healthy child was born at Joppa.",
+      "extracted_pattern": "^In\\ the\\ salt\\ marsh,\\ a\\ healthy\\ child\\ was\\ born\\ at\\ Joppa\\.$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:75b1df3e8d0c6974b0bb3b2878f4dacd0a86df72b5b459b5eb17a8aea23c3f3c"
+    }
+  ]
+}

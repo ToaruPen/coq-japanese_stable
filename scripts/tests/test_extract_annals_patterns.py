@@ -47,6 +47,7 @@ _FIXTURES = [
     "partial_rollback",
     "hse_marker_year",
     "historykit_tokens",
+    "string_format_local",
 ]
 
 

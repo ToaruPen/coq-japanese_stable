@@ -7,15 +7,15 @@
       "annal_class": "string_format",
       "switch_case": "default",
       "event_property": "tombInscription",
-      "sample_source": "",
-      "extracted_pattern": "",
+      "sample_source": "In the year, Resheph vanquished an enemy.",
+      "extracted_pattern": "^In\\ the\\ year,\\ Resheph\\ vanquished\\ an\\ enemy\\.$",
       "slots": [],
-      "status": "needs_manual",
-      "reason": "string.Format(...) extraction is out of scope for PR1 (deferred to #422)",
+      "status": "pending",
+      "reason": "",
       "ja_template": "",
       "review_notes": "",
       "route": "annals",
-      "en_template_hash": "sha256:f163bd2cf1e8b7b059f545e317a003b6fea6306504901f13aac5c913a175ed18"
+      "en_template_hash": "sha256:046f78c0c39a9c3cf61517dc164dbc63e58b8d50be2b256325076fc36fdfc1c7"
     }
   ]
 }

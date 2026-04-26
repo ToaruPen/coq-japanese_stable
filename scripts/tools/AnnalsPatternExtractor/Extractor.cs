@@ -68,19 +68,6 @@ internal sealed class Extractor
                 continue;
             }
 
-            // Other unsupported shapes also degrade.
-            if (IsStringFormatCall(valueExpr))
-            {
-                candidates.Add(NeedsManual(
-                    id: candidateId,
-                    sourceFile: fileName,
-                    annalClass: className,
-                    switchCase: "default",
-                    eventProperty: eventProperty,
-                    reason: "string.Format(...) extraction is out of scope for PR1 (deferred to #422)"));
-                continue;
-            }
-
             var resolution = ResolveValueExpression(valueExpr, localInitializers);
             if (!resolution.Resolved)
             {
@@ -398,6 +385,9 @@ internal sealed class Extractor
                 if (!FlattenConcat(bin.Right, locals, pieces, slots, visited, out unsupportedReason)) return false;
                 return true;
 
+            case InvocationExpressionSyntax invoc when IsStringFormatCall(invoc):
+                return FlattenStringFormat(invoc, locals, pieces, slots, visited, out unsupportedReason);
+
             case InvocationExpressionSyntax invoc when IsEntityGetProperty(invoc):
                 AddSlot(slots, $"entity.GetProperty({GetFirstStringArg(invoc)})", type: "entity-property");
                 pieces.Add($"{{{slots.Count - 1}}}");
@@ -413,6 +403,131 @@ internal sealed class Extractor
                     $"unsupported expression for PR1 AST subset: {expr.Kind()} '{expr.ToString()}'";
                 return false;
         }
+    }
+
+    private static bool FlattenStringFormat(
+        InvocationExpressionSyntax invoc,
+        IReadOnlyDictionary<string, ExpressionSyntax> locals,
+        List<string> pieces,
+        List<SlotEntry> slots,
+        HashSet<string> visited,
+        out string unsupportedReason)
+    {
+        unsupportedReason = "";
+        var args = invoc.ArgumentList.Arguments;
+        if (args.Count < 1)
+        {
+            unsupportedReason = "string.Format with no arguments";
+            return false;
+        }
+        var fmtExpr = args[0].Expression;
+        if (fmtExpr is not LiteralExpressionSyntax fmtLit || !fmtLit.IsKind(SyntaxKind.StringLiteralExpression))
+        {
+            unsupportedReason = $"string.Format format string is not a literal: {fmtExpr.Kind()}";
+            return false;
+        }
+        var format = fmtLit.Token.ValueText;
+
+        // Walk the format string. Each `{N}` (with optional `,W` or `:fmt`) substitutes args[N+1].
+        var i = 0;
+        var literalSb = new StringBuilder();
+        while (i < format.Length)
+        {
+            var c = format[i];
+            if (c == '{' && i + 1 < format.Length && format[i + 1] == '{')
+            {
+                literalSb.Append('{');
+                i += 2;
+                continue;
+            }
+            if (c == '}' && i + 1 < format.Length && format[i + 1] == '}')
+            {
+                literalSb.Append('}');
+                i += 2;
+                continue;
+            }
+            if (c == '{')
+            {
+                var close = format.IndexOf('}', i);
+                if (close < 0)
+                {
+                    unsupportedReason = $"string.Format format string has unclosed '{{': {format}";
+                    return false;
+                }
+                var holderBody = format.Substring(i + 1, close - i - 1);
+                var sepIdx = holderBody.IndexOfAny(new[] { ',', ':' });
+                var indexStr = sepIdx < 0 ? holderBody : holderBody[..sepIdx];
+                if (!int.TryParse(indexStr, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var argIdx))
+                {
+                    unsupportedReason = $"string.Format placeholder index is not an integer: {{{holderBody}}}";
+                    return false;
+                }
+                if (argIdx + 1 >= args.Count)
+                {
+                    unsupportedReason = $"string.Format placeholder {{{argIdx}}} has no matching argument";
+                    return false;
+                }
+                if (literalSb.Length > 0)
+                {
+                    pieces.Add(literalSb.ToString());
+                    literalSb.Clear();
+                }
+                if (!FlattenFormatArgument(args[argIdx + 1].Expression, locals, pieces, slots, visited))
+                {
+                    return false;
+                }
+                i = close + 1;
+                continue;
+            }
+            literalSb.Append(c);
+            i++;
+        }
+        if (literalSb.Length > 0) pieces.Add(literalSb.ToString());
+        return true;
+    }
+
+    private static bool FlattenFormatArgument(
+        ExpressionSyntax argExpr,
+        IReadOnlyDictionary<string, ExpressionSyntax> locals,
+        List<string> pieces,
+        List<SlotEntry> slots,
+        HashSet<string> visited)
+    {
+        // Try the structural concat/literal/local resolver first; if it fails, fall back to a
+        // single helper-call slot so the format isn't aborted by one un-resolvable argument.
+        var piecesSnapshot = pieces.Count;
+        var slotsSnapshot = slots.Count;
+        if (FlattenConcat(argExpr, locals, pieces, slots, visited, out _))
+        {
+            return true;
+        }
+        pieces.RemoveRange(piecesSnapshot, pieces.Count - piecesSnapshot);
+        slots.RemoveRange(slotsSnapshot, slots.Count - slotsSnapshot);
+        AddSlot(slots, ClassifyHelperCallRaw(argExpr), type: ClassifyHelperCallSlotType(argExpr));
+        pieces.Add($"{{{slots.Count - 1}}}");
+        return true;
+    }
+
+    private static string ClassifyHelperCallRaw(ExpressionSyntax expr)
+    {
+        // Strip whitespace/newlines so multi-line helper invocations produce stable raw strings.
+        return string.Join(" ", expr.ToString().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()));
+    }
+
+    private static string ClassifyHelperCallSlotType(ExpressionSyntax expr)
+    {
+        // Helper-call slot type for invocations from the known game-helper namespaces, format-arg
+        // for everything else (literals already resolved by FlattenConcat, so this hits unknown
+        // identifiers or expressions).
+        if (expr is InvocationExpressionSyntax invoc)
+        {
+            if (invoc.Expression is MemberAccessExpressionSyntax m)
+            {
+                var receiver = m.Expression.ToString();
+                if (receiver is "Grammar" or "QudHistoryHelpers" or "Faction" or "NameMaker") return "helper-call";
+            }
+        }
+        return "format-arg";
     }
 
     // NOTE: Receiver type is intentionally not validated here. PR1's Resheph 16
