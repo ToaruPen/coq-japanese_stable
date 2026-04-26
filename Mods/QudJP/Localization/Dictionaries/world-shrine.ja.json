@@ -1,0 +1,48 @@
+{
+    "entries": [
+        {
+            "key": "QudJP.ShrineWrapper.AncientSultan",
+            "text": "この祠は古のスルタン{sultan}の生涯における重要な出来事を描いている：\n\n{gospel}\n\n{quality}"
+        },
+        {
+            "key": "QudJP.ShrineWrapper.AncientSultan.NoQuality",
+            "text": "この祠は古のスルタン{sultan}の生涯における重要な出来事を描いている：\n\n{gospel}"
+        },
+        {
+            "key": "QudJP.ShrineWrapper.Quality.Perfect",
+            "text": "完璧"
+        },
+        {
+            "key": "QudJP.ShrineWrapper.Quality.Fine",
+            "text": "良好"
+        },
+        {
+            "key": "QudJP.ShrineWrapper.Quality.LightlyDamaged",
+            "text": "軽微な損傷"
+        },
+        {
+            "key": "QudJP.ShrineWrapper.Quality.Damaged",
+            "text": "損傷"
+        },
+        {
+            "key": "QudJP.ShrineWrapper.Quality.BadlyDamaged",
+            "text": "重度の損傷"
+        },
+        {
+            "key": "QudJP.ShrineWrapper.Quality.Undamaged",
+            "text": "無傷"
+        },
+        {
+            "key": "QudJP.ShrineWrapper.Quality.BadlyWounded",
+            "text": "重傷"
+        },
+        {
+            "key": "QudJP.ShrineWrapper.Quality.Wounded",
+            "text": "負傷"
+        },
+        {
+            "key": "QudJP.ShrineWrapper.Quality.Injured",
+            "text": "軽傷"
+        }
+    ]
+}

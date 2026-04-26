@@ -184,6 +184,20 @@ internal static class MessagePatternTranslator
             return deathTranslated;
         }
 
+        // Backstop for callers that pass un-stripped colored input straight to
+        // MessagePatternTranslator (e.g. unit tests, MessageLogProducer paths). The primary
+        // production interception lives in DescriptionTextTranslator, which strips colors
+        // BEFORE MessagePatternTranslator is reached for shrine descriptions.
+        var currentLogContext = Translator.GetCurrentLogContext();
+        var shrineRoute = string.IsNullOrEmpty(currentLogContext)
+            ? nameof(MessagePatternTranslator)
+            : currentLogContext!;
+
+        if (SultanShrineWrapperTranslator.TryTranslateMessage(source, spans, shrineRoute, out var shrineTranslated))
+        {
+            return shrineTranslated;
+        }
+
         if (TryGetLeafTranslation(source, out var exactTranslation))
         {
             DynamicTextObservability.RecordTransform(

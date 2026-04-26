@@ -79,12 +79,29 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        if (TryTranslateSultanShrineWrapperPreservingColors(source, route, out translated))
+        {
+            return true;
+        }
+
         translated = ColorAwareTranslationComposer.TranslatePreservingColors(
             source,
             visible => TryTranslateVisibleSegment(visible, route, out var candidate)
                 ? candidate
                 : visible);
         return !string.Equals(translated, source, StringComparison.Ordinal);
+    }
+
+    private static bool TryTranslateSultanShrineWrapperPreservingColors(string source, string route, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (SultanShrineWrapperTranslator.TryTranslateMessage(stripped, spans, route, out translated))
+        {
+            return true;
+        }
+
+        translated = source;
+        return false;
     }
 
     private static bool TryTranslateVisibleSegment(string source, string route, out string translated)
