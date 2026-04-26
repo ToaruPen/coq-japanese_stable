@@ -18,20 +18,20 @@
 - `gospel`
 - `tombInscription`
 
-**Entity property** (HistoricEntitySnapshot に保存):
+**Entity property** (`SetEntityProperty` で書かれる、村 entity の `properties` dict に格納):
 - `proverb`
 - `defaultSacredThing`
 - `defaultProfaneThing`
-- `immigrant_dialogWhy_Q`
-- `immigrant_dialogWhy_A`
-- `pet_dialogWhy_Q`
 
-**Entity list property**:
+**Entity list property** (`AddEntityListItem` で書かれる、村 entity の `listProperties` dict に格納):
 - `Gospels` (各要素は `prose|eventId` 形式 → 第 1 要素のみ翻訳、`|eventId` は保持)
 - `sacredThings`
 - `profaneThings`
+- `immigrant_dialogWhy_Q` (`PopulationInflux.cs:107` で `AddEntityListItem`)
+- `immigrant_dialogWhy_A` (`PopulationInflux.cs:108` で `AddEntityListItem`)
+- `pet_dialogWhy_Q` (`PopulationInflux.cs:156` で `AddEntityListItem`)
 
-それ以外の `SetEventProperty` / `SetEntityProperty` / `AddEntityListItem` 値 (`region`, `location`, `revealsRegion`, `revealsItem*`, `tombInscriptionCategory`, `gyreplagues`, `JoppaShrine`, `rebekah`, `rebekahWasHealer`, `name`, `cultName`, `cognomen`, `signatureDishName`, `signatureHistoricObjectName`, `palette`, `colors`, `elements`, `parameters`, `locations`, `signatureLiquids`, `signatureDishIngredients`, `sharedMutations`, `sharedDiseases`, `sharedTransformations`, faction lists, etc.) は **絶対に mutate しない**。
+それ以外の `SetEventProperty` / `SetEntityProperty` / `AddEntityListItem` 値 (`region`, `location`, `revealsRegion`, `revealsItem*`, `tombInscriptionCategory`, `gyreplagues`, `JoppaShrine`, `rebekah`, `rebekahWasHealer`, `name`, `cultName`, `cognomen`, `signatureDishName`, `signatureHistoricObjectName`, `palette`, `colors`, `elements`, `parameters`, `locations`, `signatureLiquids`, `signatureDishIngredients`, `sharedMutations`, `sharedDiseases`, `sharedTransformations`, `worships_creature_id`, `despises_creature_id`, faction lists, etc.) は **絶対に mutate しない**。
 
 ### Harmony hook (2 つだけ)
 
@@ -43,20 +43,33 @@
 
 #### Hook 2: `Qud.API.JournalAPI.AddVillageGospels(HistoricEntity)` Prefix
 
-対象: village entity snapshot の上記 entity property + entity list property
+対象: village entity の上記 entity property + entity list property
 
-理由 + 重要事項:
+**重要 — snapshot は read-only view、書き戻しは entity mutation API 経由**:
 
-- **Prefix にする**: `AddVillageGospels(HistoricEntity)` → `AddVillageGospels(HistoricEntitySnapshot)` の overload chain。Snapshot overload 本体が `Snapshot.GetList("Gospels")` を即消費するため、Postfix では遅すぎる
-- **HistoricEntity overload を hook**: HistoricEntitySnapshot overload は書き戻し先がない (snapshot は immutable view)。HistoricEntity を hook すれば snapshot mutation を経由して反映される
-- **初期世界 + Coda の両方を網羅**:
-  - 初期世界: `JoppaWorldBuilder.AddVillages()` → `Worships/Despises.PostProcessEvent` (`*Worships.LegendaryCreature.DisplayName*` 等の placeholder substitution) → `JournalAPI.InitializeVillageEntries()` → 各村に対し `AddVillageGospels(HistoricEntity)` ← **ここで Prefix 発火**
-  - Coda 終盤: `VillageCoda.GenerateVillageEntity()` (post-process 済み entity を返す) → `EndGame.ApplyVillage()` → `AddVillageGospels(HistoricEntity)` ← **同じ Prefix で発火**
+`HistoricEntity.GetCurrentSnapshot()` は呼ばれるたびに `events` を replay して fresh snapshot を構築する ([HistoricEntity.cs:303-323](https://github.com/freeholdgames/cavesofqud))。snapshot を直接 mutate しても entity の永続状態には反映されない。
+
+正しい書き戻し API:
+- Entity property: `entity.SetEntityPropertyAtCurrentYear(name, translatedValue)` — 内部で `ApplyEvent(new SetEntityProperty(name, value))` を呼び、entity の event list に新規 event を追加 ([HistoricEntity.cs:264-267](https://github.com/freeholdgames/cavesofqud))
+- Entity list property: `entity.MutateListPropertyAtCurrentYear(name, mutation: Func<string, string>)` — 内部で `ApplyEvent(new MutateListProperty(name, mutation, snapshot))` を呼ぶ。`mutation` には translator の翻訳関数を直接渡せる ([HistoricEntity.cs:269-272](https://github.com/freeholdgames/cavesofqud))
+
+walker は `__0` パラメータ (`HistoricEntity village`) に対し: 現在の snapshot を一度取得 → 各 allowlist プロパティについて translator で翻訳 → 上記 mutation API で書き戻し → 次に `AddVillageGospels` 内で呼ばれる `Village.GetCurrentSnapshot()` は新規 event を含めて replay するため翻訳済み値が返る。
+
+**Prefix 採用理由**:
+- `AddVillageGospels(HistoricEntity)` → `AddVillageGospels(HistoricEntitySnapshot)` の overload chain。後者が `Snapshot.GetList("Gospels")` を即消費するため、Postfix では遅すぎる
+- HistoricEntity overload を hook することで、entity 単位の mutation API が使える
+
+**初期世界 + Coda の両方を網羅**:
+- 初期世界: `JoppaWorldBuilder.AddVillages()` → `Worships/Despises.PostProcessEvent` (`*Worships.LegendaryCreature.DisplayName*` 等の placeholder substitution) → `JournalAPI.InitializeVillageEntries()` → 各村に対し `AddVillageGospels(HistoricEntity)` ← **ここで Prefix 発火**
+- Coda 終盤: `VillageCoda.GenerateVillageEntity()` (post-process 済み entity を返す) → `EndGame.ApplyVillage()` → `AddVillageGospels(HistoricEntity)` ← **同じ Prefix で発火**
 
 ### Markup invariants (翻訳器が壊さず保持)
 
+`docs/RULES.md:130` の markup preservation rules + `Mods/QudJP/Assemblies/src/Translation/ColorCodePreserver.cs` の現行カバレッジに従う。
+
 - Color/style: `&X` / `^x` (`&&` / `^^` リテラル escape を含む)
-- Span: `{{Y|...}}`
+- Qud color span (任意 wrapper letter): `{{X|...}}`, `{{W|...}}`, `{{NAME|...}}` 等 — `{{Y|...}}` だけでなく一般形すべて
+- TMP color span: `<color=#xxxxxx>...</color>` (TextMeshPro マークアップ)
 - Grammar marker (residual when value starts with `=`): `=name=`, `=year=`, `=pluralize=`, `=article=`, `=Article=`, `=capitalize=`, 一般化 `=alphanumeric=`
 - Residual template (失敗時に残る `<spice...>` / `<entity...>`):
   - `<undefined entity property ...>`
@@ -83,22 +96,66 @@
 - 純粋 helper、game DLL / Harmony 非依存
 - API: `string Translate(string? source, string route)`
 - 内部:
-  - exact lookup 前段: `StringHelpers.TryGetTranslationExactOrLowerAscii(source, out result, useDirectMarker: false)` (marker なし)
-  - pattern 後段: `JournalPatternTranslator.Translate(source, route)` (lock + ConcurrentDictionary、安全)
+  - 単一バックエンド: `JournalPatternTranslator.Translate(source, route)` (lock + ConcurrentDictionary、安全) を呼ぶだけ
+  - 未マッチ入力は原文 passthrough (これは `JournalPatternTranslator` の既存挙動)
+  - exact lookup 統合は本 PR スコープ外 — 将来必要なら別 helper として後付け (現 `StringHelpers.TryGetTranslationExactOrLowerAscii` の API は marker 制御不可、本 PR では使わない)
   - **`JournalTextTranslator.TryTranslate*ForStorage()` は使わない** (`` direct marker を付けるが `Gospels` は `VillageStoryReveal` 等 journal 以外でも直接表示される)
   - Markup invariant のうち `*...*` のような未知 token は pattern translator が literal として扱う既存挙動に依存 (新規パーサ不要)
 - L1 unit test 対象
 
 #### `Mods/QudJP/Assemblies/src/Translation/HistoricNarrativeDictionaryWalker.cs` (新規)
 
-- `IDictionary<string, string> properties` と `IDictionary<string, List<string>> listProperties` を allowlist に従って走査
-- API:
-  - `void TranslateEventProperties(IDictionary<string, string> properties, HistoricNarrativeTextTranslator translator, string route)`
-  - `void TranslateEntitySnapshot(HistoricEntitySnapshot snapshot, HistoricNarrativeTextTranslator translator, string route)` (内部で properties + listProperties を走査)
-  - `string TranslateGospelEntry(string raw, HistoricNarrativeTextTranslator translator, string route)` ← `prose|eventId` を split → prose のみ翻訳 → 再結合
-- 各 allowlist キーは module-level `static readonly HashSet<string>` で定数化
-- Idempotency: 翻訳済み判定は不要 (`Translate` が pass-through なら no-op)
-- L1 unit test 対象 (game DLL 非依存にするため `IDictionary` shape で受け取る)
+allowlist に従い、event 用 (直接 dict mutation) と entity 用 (mutation API 経由) の 2 経路を分離する。
+
+API:
+
+```csharp
+public sealed class HistoricNarrativeDictionaryWalker
+{
+    private static readonly HashSet<string> EventPropertyAllowlist = new() { "gospel", "tombInscription" };
+    private static readonly HashSet<string> EntityPropertyAllowlist = new() { "proverb", "defaultSacredThing", "defaultProfaneThing" };
+    private static readonly HashSet<string> EntityListPropertyAllowlist = new() {
+        "Gospels", "sacredThings", "profaneThings",
+        "immigrant_dialogWhy_Q", "immigrant_dialogWhy_A", "pet_dialogWhy_Q",
+    };
+
+    // Event 経路: history.events[i].eventProperties は直接 mutation 可。
+    // SetEventProperty は dict.Set を呼ぶだけ ([HistoricEvent.cs])。
+    public void TranslateEventProperties(HistoricEvent ev, HistoricNarrativeTextTranslator translator, string route);
+
+    // Entity 経路: GetCurrentSnapshot() で現在値読み取り → mutation API で書き戻し。
+    public void TranslateEntity(HistoricEntity entity, HistoricNarrativeTextTranslator translator, string route);
+
+    // Gospels split helper (testable in isolation)
+    public string TranslateGospelEntry(string raw, HistoricNarrativeTextTranslator translator, string route);
+}
+```
+
+`TranslateEntity` の擬似コード:
+
+```csharp
+var snapshot = entity.GetCurrentSnapshot();
+foreach (var key in EntityPropertyAllowlist) {
+    var current = snapshot.GetProperty(key);
+    if (string.IsNullOrEmpty(current)) continue;
+    var translated = translator.Translate(current, route);
+    if (translated != current) entity.SetEntityPropertyAtCurrentYear(key, translated);
+}
+foreach (var key in EntityListPropertyAllowlist) {
+    if (!snapshot.HasListProperty(key)) continue;
+    if (key == "Gospels") {
+        entity.MutateListPropertyAtCurrentYear(key, raw => TranslateGospelEntry(raw, translator, route));
+    } else {
+        entity.MutateListPropertyAtCurrentYear(key, raw => translator.Translate(raw, route));
+    }
+}
+```
+
+設計上の注意:
+- Idempotency: 翻訳済み判定は不要。`translator.Translate` が pass-through (no change) なら `if (translated != current)` でガードして余計な mutation event を作らない
+- `MutateListPropertyAtCurrentYear` は内部で snapshot を一度取る ([HistoricEntity.cs:269-272])。本 PR の翻訳 1 回呼出しで `MutateListProperty` event が allowlist の数だけ追加される (数回程度、無視可)
+- L1 unit test 対象 (`HistoricEvent` / `HistoricEntity` は dummy で代用、game DLL 非依存)
+- L1 では `TranslateGospelEntry` の split/translate/rejoin は単独でテスト可
 
 #### `Mods/QudJP/Assemblies/src/Patches/HistoricNarrativeTranslationPatches.cs` (新規)
 
@@ -115,16 +172,27 @@
 新規:
 - `HistoricNarrativeTextTranslatorTests.cs`:
   - passthrough: 未マッチ入力は原文返す
-  - exact translation: dictionary hit
-  - pattern translation: regex/template hit
-  - markup invariant preservation: `&X`, `^x`, `&&`, `^^`, `{{Y|...}}`, `\n`, `=name=`, `=year=`, `=pluralize=`, `=article=`, `=Article=`, `=capitalize=`, `<spice...>`, `<entity...>`, `<undefined entity property ...>`, `<empty entity list ...>`, `<unknown entity>`, `<unknown format ...>`, `*Worships.LegendaryCreature.DisplayName*`
+  - pattern translation: `JournalPatternTranslator` 経由の regex/template hit
+  - markup invariant preservation:
+    - Color/style: `&X`, `^x`, `&&`, `^^`
+    - Qud color span (任意 wrapper letter): `{{X|...}}`, `{{W|...}}`, `{{NAME|...}}`
+    - TMP color span: `<color=#xxxxxx>...</color>`
+    - Layout: `\n`
+    - Grammar markers: `=name=`, `=year=`, `=pluralize=`, `=article=`, `=Article=`, `=capitalize=`
+    - Residual templates: `<spice.X.!random>`, `<entity.name>`
+    - Diagnostic residuals: `<undefined entity property ...>`, `<empty entity list ...>`, `<unknown entity>`, `<unknown format ...>`
+    - PostProcessEvent placeholder: `*Worships.LegendaryCreature.DisplayName*`
   - direct marker (``) を付けないこと
 - `HistoricNarrativeDictionaryWalkerTests.cs`:
-  - allowlist 内のキーだけ翻訳、それ以外不変
-  - `Gospels` の `prose|eventId` split + 再結合の往復
-  - 二重実行 (idempotency)
-  - null / 空 dictionary の no-op
-  - allowlist にないが似た名前のキー (`gospelText` 等) は触らない
+  - `TranslateGospelEntry`: `prose|eventId` split + 翻訳 + 再結合 (eventId は不変)
+  - `TranslateGospelEntry`: `eventId` 部分が空 (例: `prose|`) でも壊れない
+  - `TranslateGospelEntry`: `|` を含まない raw でも壊れない (eventId なし扱い)
+  - `TranslateEventProperties`: dummy event の `eventProperties` dict を直接 mutation、allowlist 外キーは不変
+  - `TranslateEntity`: dummy entity の現在値を読み、`SetEntityPropertyAtCurrentYear` / `MutateListPropertyAtCurrentYear` 呼出を verify (call recorder で確認)
+  - `TranslateEntity`: list translation で各要素が個別に translator を通ること、index 順序が保たれること
+  - 同一 entity に対する二重実行で entity の event list に余計な重複 mutation event を作らない (passthrough なら `if (translated != current)` ガードで no-op)
+  - null / 空 entity の no-op
+  - allowlist にないが似た名前のキー (`gospelText`, `tombInscriptionCategory`, `worships_creature_id` 等) は触らない
 
 #### L2 (dummy seam test): `Mods/QudJP/Assemblies/QudJP.Tests/L2/`
 
@@ -140,8 +208,9 @@
 - `Mods/QudJP/Assemblies/QudJP.Tests/DummyTargets/DummyHistoricNarrativeTargets.cs`:
   - `class DummyHistoricEvent { Dictionary<string, string> eventProperties; }`
   - `class DummyHistoricEntitySnapshot { Dictionary<string, string> properties; Dictionary<string, List<string>> listProperties; }`
+  - `class DummyHistoricEntity` — `events` の list を持ち、`GetCurrentSnapshot()` を呼ぶたびに events を replay して新規 snapshot を返す (本物の振る舞いを再現)。`SetEntityPropertyAtCurrentYear(name, value)` と `MutateListPropertyAtCurrentYear(name, mutation)` は events に新 event を追加 + 必要なら `lastSnapshot` を invalidate。これにより walker の write-back が原 entity に反映されることを赤にできるテストを構成可能
   - `class DummyHistory { List<DummyHistoricEvent> events; }`
-  - 既存 `DummyJournalApiTargets.cs` の style precedent に倣う
+  - 既存 `DummyJournalApiTargets.cs` の style precedent に倣う (game DLL 非依存)
 
 #### L2G (signature verification): `Mods/QudJP/Assemblies/QudJP.Tests/L2G/`
 
@@ -233,6 +302,7 @@ village-era history は数百 events + 数十 entities 規模。translator regex
 - **`journal-patterns.ja.json` への HSE prose pattern 追加** — 別 issue
 - **`HistorySpice.json` template manifest の翻訳パイプライン整備** — issue 本文の Suggested Task 6、別 issue
 - **C# コード以外の追加** — 不要 (本 PR は翻訳経路のみ、辞書追加は無し)
+- **Pet origin-story answer (`<spice.villages.pet.originStory.!random>` 経由の回答文)** — `pet_dialogWhy_A` は entity property/list に保存されず、zone build 時に `Village.cs:1665,1687` (Coda 側 `VillageCoda.cs:1934`) で `HistoricStringExpander.ExpandString` 直接呼出により都度生成。本 PR の 2 hook では捕捉不可。Village zone-builder hook が必要なため別 issue で追跡。`pet_dialogWhy_Q` (質問側) は本 PR スコープ内、`pet_dialogWhy_A` の回答文だけが英語のまま残る
 - **Coda 以外の runtime mutation 経路** — 現時点で確認された経路は initial-world + Coda の 2 つのみ。それ以外が後で発見されれば別 hook を追加 (新 issue)
 
 ## References
@@ -241,3 +311,4 @@ village-era history は数百 events + 数十 entities 規模。translator regex
 - Codex 諮問 1 (HSE postfix vs mid-pipeline 設計): allowlist 方式採用
 - Codex 諮問 2 (Gospels write site + JournalPatternTranslator coverage): 12+ write sites 確認、entity prose 拡張識別、PostProcessEvent + Coda 別経路発見
 - Codex 諮問 3 (B-full アーキテクチャ): Approach C-modified (Postfix on `GenerateVillageEraHistory` + Prefix on `AddVillageGospels(HistoricEntity)`) 確定、3 クラス分離、L1/L2/L2G test 構成
+- Codex 諮問 4 (spec review): snapshot mutation バグ発見 (entity 用 mutation API 経由に修正)、dialog allowlist 分類修正 (entity property → entity list property)、pet origin-story answer 別 issue 化、API 不整合修正 (`StringHelpers.TryGetTranslationExactOrLowerAscii` の marker 制御不可 → 単純化)、markup invariant 拡張 (任意 wrapper letter `{{X|...}}` + TMP `<color=...></color>`)
