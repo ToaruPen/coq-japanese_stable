@@ -107,6 +107,10 @@ public sealed class ReshephHistoryTranslationTests
             Assert.That(actual, Is.EqualTo(sample.ExpectedJapaneseExact),
                 $"sample {sample.CandidateId}: exact match failed. actual='{actual}'");
         }
+        if (sample.ExpectedJapaneseContains is null)
+        {
+            return;
+        }
         foreach (var needle in sample.ExpectedJapaneseContains)
         {
             Assert.That(actual, Does.Contain(needle),
