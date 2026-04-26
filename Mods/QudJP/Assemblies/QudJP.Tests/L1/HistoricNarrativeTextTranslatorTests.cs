@@ -103,8 +103,10 @@ public sealed class HistoricNarrativeTextTranslatorTests
         var translated = HistoricNarrativeTextTranslator.Translate("Plain English.");
 
         // U+0001 is the direct-marker control character used by JournalTextTranslator.TryTranslate*ForStorage.
+        // Use char-based Contains so that .NET's culture-sensitive string IndexOf doesn't treat
+        // U+0001 as an ignorable code point and report a spurious match.
         Assert.That(translated, Is.EqualTo("日本語"));
-        Assert.That(translated, Does.Not.Contain(""));
+        Assert.That(translated.Contains(''), Is.False);
     }
 
     // Markup invariant preservation. Each test uses a passthrough source containing
