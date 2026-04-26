@@ -104,9 +104,12 @@ public sealed class ReshephHistoryTranslationTests
         {
             Assert.That(actual, Is.EqualTo(sample.ExpectedJapaneseExact),
                 $"sample {sample.CandidateId}: exact match failed. actual='{actual}'");
+            return;
         }
-        if (sample.ExpectedJapaneseContains is null)
+        if (sample.ExpectedJapaneseContains is null || sample.ExpectedJapaneseContains.Count == 0)
         {
+            Assert.Fail(
+                $"sample {sample.CandidateId}: 期待値が未設定です。expected_unchanged / expected_japanese_exact / expected_japanese_contains のいずれかを設定してください。");
             return;
         }
         foreach (var needle in sample.ExpectedJapaneseContains)
