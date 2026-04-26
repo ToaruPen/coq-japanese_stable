@@ -94,6 +94,21 @@ public sealed class ReshephHistoryTranslationTests
         HistoricNarrativeDictionaryWalker.TranslateEventPropertiesDict(dict);
 
         var actual = dict[sample.EventProperty];
+
+        var hasContains = sample.ExpectedJapaneseContains is { Count: > 0 };
+        if (sample.ExpectedUnchanged && (sample.ExpectedJapaneseExact is not null || hasContains))
+        {
+            Assert.Fail(
+                $"sample {sample.CandidateId}: expected_unchanged は expected_japanese_exact / expected_japanese_contains と同時に設定できません。");
+            return;
+        }
+        if (!sample.ExpectedUnchanged && sample.ExpectedJapaneseExact is not null && hasContains)
+        {
+            Assert.Fail(
+                $"sample {sample.CandidateId}: expected_japanese_exact と expected_japanese_contains の同時設定は不可です。どちらか一方を設定してください。");
+            return;
+        }
+
         if (sample.ExpectedUnchanged)
         {
             Assert.That(actual, Is.EqualTo(sample.InputSource),
