@@ -13,6 +13,7 @@
     <!-- macOS default. Override with -p:GameDir=... for Windows -->
     <GameDir Condition="'$(GameDir)' == ''">$(HOME)/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/Resources/Data</GameDir>
     <ManagedDir>$(GameDir)/Managed</ManagedDir>
+    <AssemblyCSharpPath>$(ManagedDir)/Assembly-CSharp.dll</AssemblyCSharpPath>
     <OutputPath>$(MSBuildProjectDirectory)/</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
@@ -47,6 +48,17 @@
   </ItemGroup>
 
   <!-- Game DLL references - only resolve when building locally with game installed -->
+
+  <PropertyGroup Condition="Exists('$(AssemblyCSharpPath)')">
+    <DefineConstants>$(DefineConstants);HAS_GAME_DLL</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="Exists('$(AssemblyCSharpPath)')">
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(AssemblyCSharpPath)</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
 
   <PropertyGroup Condition="Exists('$(ManagedDir)/Unity.TextMeshPro.dll')">
     <DefineConstants>$(DefineConstants);HAS_TMP</DefineConstants>
