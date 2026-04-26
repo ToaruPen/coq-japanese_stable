@@ -17,6 +17,10 @@ public sealed class ReshephSampleEntry
     public string InputSource { get; set; } = "";
     [DataMember(Name = "expected_japanese_contains")]
     public List<string> ExpectedJapaneseContains { get; set; } = new();
+    [DataMember(Name = "expected_japanese_exact")]
+    public string? ExpectedJapaneseExact { get; set; }
+    [DataMember(Name = "expected_unchanged")]
+    public bool ExpectedUnchanged { get; set; }
 }
 
 [DataContract]
@@ -90,6 +94,45 @@ public sealed class ReshephHistoryTranslationTests
         HistoricNarrativeDictionaryWalker.TranslateEventPropertiesDict(dict);
 
         var actual = dict[sample.EventProperty];
+
+        var hasContains = sample.ExpectedJapaneseContains is { Count: > 0 };
+        if (sample.ExpectedUnchanged && (sample.ExpectedJapaneseExact is not null || hasContains))
+        {
+            Assert.Fail(
+                $"sample {sample.CandidateId}: expected_unchanged は expected_japanese_exact / expected_japanese_contains と同時に設定できません。");
+            return;
+        }
+        if (!sample.ExpectedUnchanged && sample.ExpectedJapaneseExact is not null && hasContains)
+        {
+            Assert.Fail(
+                $"sample {sample.CandidateId}: expected_japanese_exact と expected_japanese_contains の同時設定は不可です。どちらか一方を設定してください。");
+            return;
+        }
+
+        if (sample.ExpectedUnchanged)
+        {
+            Assert.That(actual, Is.EqualTo(sample.InputSource),
+                $"sample {sample.CandidateId}: expected unchanged passthrough but got '{actual}'");
+            return;
+        }
+        if (sample.ExpectedJapaneseExact is not null)
+        {
+            Assert.That(actual, Is.EqualTo(sample.ExpectedJapaneseExact),
+                $"sample {sample.CandidateId}: exact match failed. actual='{actual}'");
+            return;
+        }
+        if (sample.ExpectedJapaneseContains is null || sample.ExpectedJapaneseContains.Count == 0)
+        {
+            Assert.Fail(
+                $"sample {sample.CandidateId}: 期待値が未設定です。expected_unchanged / expected_japanese_exact / expected_japanese_contains のいずれかを設定してください。");
+            return;
+        }
+        if (sample.ExpectedJapaneseContains.Exists(static needle => string.IsNullOrWhiteSpace(needle)))
+        {
+            Assert.Fail(
+                $"sample {sample.CandidateId}: expected_japanese_contains に空文字または空白要素は設定できません。");
+            return;
+        }
         foreach (var needle in sample.ExpectedJapaneseContains)
         {
             Assert.That(actual, Does.Contain(needle),

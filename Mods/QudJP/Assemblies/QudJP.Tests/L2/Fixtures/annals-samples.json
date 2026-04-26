@@ -41,10 +41,7 @@
       "candidate_id": "ReshephCleansesGyre#gospel",
       "event_property": "gospel",
       "input_source": "In 1234 AR, Resheph cleansed the marshlands of the plagues of the Gyre and taught Abram to sow watervine along its fertile tracks.",
-      "expected_japanese_contains": [
-        "レシェフ",
-        "年、レシェフは湿地帯より"
-      ]
+      "expected_japanese_exact": "1234年、レシェフは湿地帯よりジャイアの災厄を祓い、その肥沃なる道筋に沿ってワターヴァインを蒔く術をアブラムに授けた。"
     },
     {
       "candidate_id": "ReshephClosesTomb#gospel",
@@ -153,6 +150,30 @@
         "レシェフ",
         "年、レベカはグロットロッ"
       ]
+    },
+    {
+      "candidate_id": "edge_empty_gospel",
+      "event_property": "gospel",
+      "input_source": "",
+      "expected_unchanged": true
+    },
+    {
+      "candidate_id": "edge_color_tagged_year",
+      "event_property": "gospel",
+      "input_source": "In {{R|3}} AR, Resheph cleansed the marshlands of the plagues of the Gyre and taught Abram to sow watervine along its fertile tracks.",
+      "expected_japanese_exact": "{{R|3}}年、レシェフは湿地帯よりジャイアの災厄を祓い、その肥沃なる道筋に沿ってワターヴァインを蒔く術をアブラムに授けた。"
+    },
+    {
+      "candidate_id": "edge_x01_literal_prefix",
+      "event_property": "gospel",
+      "input_source": "\u0001In 1234 AR, Resheph cleansed the marshlands of the plagues of the Gyre and taught Abram to sow watervine along its fertile tracks.",
+      "expected_unchanged": true
+    },
+    {
+      "candidate_id": "edge_english_fallback",
+      "event_property": "gospel",
+      "input_source": "Resheph wrote 5 books in 99 AR but no entry exists for that.",
+      "expected_unchanged": true
     }
   ]
 }
