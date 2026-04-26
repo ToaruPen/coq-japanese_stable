@@ -52,6 +52,7 @@ _FIXTURES = [
     "switch_branch_candidates",
     "switch_expression_local",
     "if_optional_append",
+    "duplicate_event_property_dedupe",
 ]
 
 

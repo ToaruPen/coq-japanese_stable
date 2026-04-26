@@ -65,10 +65,27 @@ foreach (var diag in extractor.Diagnostics)
     Console.Error.WriteLine($"[warn] {diag}");
 }
 
+var deduped = new List<CandidateEntry>();
+var seenById = new Dictionary<string, CandidateEntry>(StringComparer.Ordinal);
+foreach (var candidate in extractor.Candidates)
+{
+    if (seenById.TryGetValue(candidate.Id, out var prior))
+    {
+        if (prior.EnTemplateHash == candidate.EnTemplateHash) continue;
+        Console.Error.WriteLine(
+            $"[error] duplicate candidate id with divergent shape: {candidate.Id} "
+            + $"(prior={prior.EnTemplateHash}, new={candidate.EnTemplateHash}). "
+            + "Resolve via branch/path id suffixes (`#case:`, `#arm:`, `#opt:`).");
+        return 1;
+    }
+    seenById[candidate.Id] = candidate;
+    deduped.Add(candidate);
+}
+
 var doc = new CandidateDocument
 {
     SchemaVersion = "1",
-    Candidates = extractor.Candidates.OrderBy(c => c.Id, StringComparer.Ordinal).ToList(),
+    Candidates = deduped.OrderBy(c => c.Id, StringComparer.Ordinal).ToList(),
 };
 CandidateWriter.WriteToFile(output, doc);
 
