@@ -1137,7 +1137,11 @@ internal sealed class Extractor
                 if (pieces.Count > savedPieceCount)
                 {
                     var first = pieces[savedPieceCount];
-                    if (first.Length > 0 && first[0] != '{')
+                    // Match runtime `Grammar.InitCap`: only ASCII a-z is uppercased. Non-ASCII
+                    // letters / accented chars / digits / `{N}` placeholders pass through
+                    // unchanged so the extractor stays aligned with the runtime when those
+                    // chars eventually appear at the start of a literal piece.
+                    if (first.Length > 0 && first[0] is >= 'a' and <= 'z')
                     {
                         pieces[savedPieceCount] = char.ToUpperInvariant(first[0]) + first[1..];
                     }
