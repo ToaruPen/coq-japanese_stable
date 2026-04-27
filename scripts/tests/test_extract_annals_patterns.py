@@ -44,16 +44,31 @@ def _discover_fixtures() -> list[str]:
     Sorted to keep test-run order deterministic. Fails loud at import time if the fixture
     directory is empty — pytest 8.x silently `skip`s an empty `parametrize` list, which
     would let CI go green even with no extractor coverage.
+
+    Also fails loud on orphans in either direction: every `expected_*.json` must have a
+    sibling `<name>.cs`, and every `<name>.cs` (excluding the canonical `expected_*.json`
+    pairing) must have a sibling `expected_<name>.json`. CR R8: silently dropping
+    orphans lets a fixture go untested or an expected golden go unbacked.
     """
-    fixtures: list[str] = []
-    for expected in FIXTURES.glob("expected_*.json"):
-        name = expected.name.removeprefix("expected_").removesuffix(".json")
-        if (FIXTURES / f"{name}.cs").exists():
-            fixtures.append(name)
+    expected_names = {p.name.removeprefix("expected_").removesuffix(".json") for p in FIXTURES.glob("expected_*.json")}
+    source_names = {p.stem for p in FIXTURES.glob("*.cs")}
+
+    missing_source = expected_names - source_names
+    missing_expected = source_names - expected_names
+    if missing_source or missing_expected:
+        details: list[str] = []
+        if missing_source:
+            details.append("expected_*.json without sibling .cs: " + ", ".join(sorted(missing_source)))
+        if missing_expected:
+            details.append(".cs without sibling expected_*.json: " + ", ".join(sorted(missing_expected)))
+        msg = f"orphaned annals extractor fixtures under {FIXTURES}: " + "; ".join(details)
+        raise RuntimeError(msg)
+
+    fixtures = sorted(expected_names & source_names)
     if not fixtures:
         msg = f"no annals extractor fixtures discovered under {FIXTURES}"
         raise RuntimeError(msg)
-    return sorted(fixtures)
+    return fixtures
 
 
 _FIXTURES = _discover_fixtures()
