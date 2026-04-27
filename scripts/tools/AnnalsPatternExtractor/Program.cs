@@ -74,7 +74,12 @@ foreach (var diag in extractor.Diagnostics)
 var groups = new Dictionary<string, List<CandidateEntry>>(StringComparer.Ordinal);
 foreach (var candidate in extractor.Candidates)
 {
-    var key = StripBranchSuffixes(candidate.Id);
+    // Bucket key keeps each branch-suffix MARKER (e.g. `#if:`, `#bl:`) but replaces the
+    // label with `*` so independent fanout families (setter-chain vs branched-local) bucket
+    // separately. Generators that emit BOTH families with overlapping downstream suffixes
+    // (e.g. ChallengeSultan `#bl:caseN#arm:M` alongside `#if:then#arm:M`/`#if:else#arm:M`)
+    // collapse identical-`#bl:` siblings without being held back by divergent `#if:` siblings.
+    var key = MakeBucketKey(candidate.Id);
     if (!groups.TryGetValue(key, out var bucket))
     {
         bucket = new List<CandidateEntry>();
@@ -136,6 +141,32 @@ foreach (var candidate in collapsed)
     }
     seenById[candidate.Id] = candidate;
     deduped.Add(candidate);
+}
+
+static string MakeBucketKey(string id)
+{
+    // Replace each `#if:<label>` and `#bl:<label>` segment with `#if:*` / `#bl:*` so siblings
+    // within ONE family bucket together (different labels collapse), but `#if:` and `#bl:`
+    // themselves stay separate (different markers don't bucket together).
+    string[] markers = { CandidateIdSuffix.If, CandidateIdSuffix.BranchedLocal };
+    var result = id;
+    foreach (var marker in markers)
+    {
+        // Advance `searchFrom` past each replacement so the loop terminates: after writing `*`
+        // the marker text is still present, and re-searching from 0 would re-find it forever.
+        var searchFrom = 0;
+        while (true)
+        {
+            var idx = result.IndexOf(marker, searchFrom, StringComparison.Ordinal);
+            if (idx < 0) break;
+            var labelStart = idx + marker.Length;
+            var nextHash = result.IndexOf('#', labelStart);
+            var labelEnd = nextHash < 0 ? result.Length : nextHash;
+            result = result[..labelStart] + "*" + result[labelEnd..];
+            searchFrom = labelStart + 1;
+        }
+    }
+    return result;
 }
 
 static string StripBranchSuffixes(string id)
