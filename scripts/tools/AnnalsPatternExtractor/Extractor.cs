@@ -1134,17 +1134,22 @@ internal sealed class Extractor
                 // character. Skip if the inner emitted nothing, an empty piece, or a slot
                 // placeholder (`{N}`): in those cases the runtime-capitalized character is
                 // captured by the slot's `(.+?)` group and the regex still matches.
-                if (pieces.Count > savedPieceCount)
+                // Walk forward from `savedPieceCount` skipping empty pieces (FlattenStringFormat
+                // can emit `""` between back-to-back slots) until we find the first non-empty
+                // piece. If that piece is a `{N}` slot placeholder, the runtime-capitalized
+                // character is already captured by the slot's `(.+?)` group and there is
+                // nothing to rewrite. Otherwise apply the runtime `Grammar.InitCap` rule:
+                // only ASCII a-z is uppercased; other chars pass through unchanged.
+                for (var i = savedPieceCount; i < pieces.Count; i++)
                 {
-                    var first = pieces[savedPieceCount];
-                    // Match runtime `Grammar.InitCap`: only ASCII a-z is uppercased. Non-ASCII
-                    // letters / accented chars / digits / `{N}` placeholders pass through
-                    // unchanged so the extractor stays aligned with the runtime when those
-                    // chars eventually appear at the start of a literal piece.
-                    if (first.Length > 0 && first[0] is >= 'a' and <= 'z')
+                    var piece = pieces[i];
+                    if (piece.Length == 0) continue;
+                    if (piece[0] == '{') break;
+                    if (piece[0] is >= 'a' and <= 'z')
                     {
-                        pieces[savedPieceCount] = char.ToUpperInvariant(first[0]) + first[1..];
+                        pieces[i] = char.ToUpperInvariant(piece[0]) + piece[1..];
                     }
+                    break;
                 }
                 return true;
             }

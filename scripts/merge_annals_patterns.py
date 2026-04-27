@@ -152,8 +152,11 @@ def load_inputs(
     if annals_output.exists():
         try:
             existing_annals = json.loads(annals_output.read_text(encoding="utf-8"))
-        except json.JSONDecodeError as exc:
-            print(f"error: existing annals-patterns is malformed JSON: {exc}", file=sys.stderr)
+        except (OSError, json.JSONDecodeError) as exc:
+            print(
+                f"error: cannot read existing annals-patterns from {annals_output}: {exc}",
+                file=sys.stderr,
+            )
             return 1
         if "patterns" not in existing_annals:
             print("error: existing annals-patterns.ja.json missing 'patterns' field", file=sys.stderr)
