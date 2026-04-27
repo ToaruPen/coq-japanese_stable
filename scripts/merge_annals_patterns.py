@@ -155,6 +155,36 @@ def run_merge(
     # whose literal text is fully covered by the FoundAsBabe template's `(.+?)` slots.
     # Within equal pattern length, sort by id for deterministic output.
     accepted_sorted = sorted(accepted, key=lambda c: (-len(c["extracted_pattern"]), c["id"]))
+
+    # Deduplicate: multiple candidate ids may share an extracted_pattern (e.g. one local
+    # feeding two SetEventProperty calls, or branch arms differing only in slot raw).
+    # Runtime keeps only the first match per pattern, so divergent translations for the
+    # same pattern would silently lose all but the first. Group by pattern; within a
+    # group, all ja_templates must agree — otherwise fail loudly.
+    by_pattern: dict[str, list[dict[str, Any]]] = {}
+    for candidate in accepted_sorted:
+        by_pattern.setdefault(candidate["extracted_pattern"], []).append(candidate)
+    duplicate_errors: list[str] = []
+    deduped: list[dict[str, Any]] = []
+    for pattern, members in by_pattern.items():
+        if len(members) == 1:
+            deduped.append(members[0])
+            continue
+        templates = {m["ja_template"] for m in members}
+        if len(templates) > 1:
+            ids_and_templates = "; ".join(f"{m['id']!r}={m['ja_template']!r}" for m in members)
+            duplicate_errors.append(
+                f"pattern {pattern!r} has divergent ja_templates across ids: {ids_and_templates}. "
+                "Reconcile to a single canonical translation or split the pattern."
+            )
+            continue
+        # Identical translations — keep the first (sort-canonical) entry, drop the rest.
+        deduped.append(members[0])
+    if duplicate_errors:
+        for err in duplicate_errors:
+            print(f"error: {err}", file=sys.stderr)
+        return 1
+    accepted_sorted = deduped
     annals_doc = {
         "entries": [],
         "patterns": [
