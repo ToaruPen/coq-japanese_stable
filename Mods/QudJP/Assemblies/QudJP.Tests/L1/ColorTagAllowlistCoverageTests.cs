@@ -15,6 +15,9 @@ namespace QudJP.Tests.L1;
 [Category("L1")]
 public sealed class ColorTagAllowlistCoverageTests
 {
+    // Common prefix `"issue-376 — production code pending"` is shared with the L2
+    // counterpart (ColorTagStaticAnalysisTests.SkipReason) so a single grep
+    // surfaces every scaffold the production PR must address.
     private const string SkipReason = "issue-376 — production code pending; catalog allowlist not yet defined";
 
     // Catalog-1: every Patches/*.cs that calls ColorAwareTranslationComposer.Strip
@@ -29,6 +32,9 @@ public sealed class ColorTagAllowlistCoverageTests
         //   for each *.cs under Mods/QudJP/Assemblies/src/Patches:
         //     count(Strip)   ==  count(Restore | RestoreCapture | TranslatePreservingColors)
         //   exemptions live in an explicit allowlist (path -> reason) that this test reads.
+        // Implementation hint: extend `ColorRouteCatalog.RouteSymbols` with
+        // `"ColorAwareTranslationComposer.Strip("` and `"ColorAwareTranslationComposer.RestoreCapture("`,
+        // then reuse `ColorRouteCatalogTests.ScanSymbolOccurrences` rather than rolling a parallel scan.
         Assert.Pass("Scaffold; replace with real catalog scan when production lands.");
     }
 
@@ -45,6 +51,10 @@ public sealed class ColorTagAllowlistCoverageTests
         //   the set of files calling GetDisplayNameRouteTranslator.TranslatePreservingColors
         //   must be a subset of OwnerRouteAllowlist (defined in this test file or a
         //   shared catalog).
+        // Implementation hint: `ColorRouteCatalog.ExpectedSymbolOccurrences` already
+        // tracks per-file counts of `GetDisplayNameRouteTranslator.TranslatePreservingColors(`
+        // — the allowlist is just the keys of that map filtered by owner-vs-observation
+        // classification.
         Assert.Pass("Scaffold; pair with ColorRouteCatalog OwnerRouteAllowlist when production lands.");
     }
 

@@ -21,11 +21,19 @@ namespace QudJP.Tests.L2;
 // expected post-fix behavior. Implementation hooks are deliberately sketched
 // (commented out) — wiring them up is the responsibility of the future production PR.
 
+// `[NonParallelizable]` because the un-ignored production tests will mutate the
+// shared MessagePatternTranslator / Translator / DynamicTextObservability /
+// SinkObservation static state (see PopupPickOptionTranslationPatchTests for the
+// full reset surface). The scaffold itself is read-only, but flipping any
+// `[Ignore]` should not require remembering to add the attribute.
 [TestFixture]
 [Category("L2")]
 [NonParallelizable]
 public sealed class ColorTagStaticAnalysisTests
 {
+    // Common prefix `"issue-376 — production code pending"` is shared with the L1
+    // counterpart (ColorTagAllowlistCoverageTests.SkipReason) so a single grep
+    // surfaces every scaffold the production PR must address.
     private const string SkipReason = "issue-376 — production code pending; static analysis layer not yet implemented";
 
     // Scenario 1: triple-nested {{r|...}} accumulation reproduced in Player.log
@@ -107,6 +115,9 @@ public sealed class ColorTagStaticAnalysisTests
         {
             Assert.That(translated, Is.True);
             // No stray "}}" inside the Japanese display name body.
+            // NOTE: this regex assumes `Tam` survives un-translated. The production PR
+            // must update the right-hand anchor to whatever the actual dictionary entry
+            // emits (e.g. `タム`) — otherwise this assertion becomes vacuously true.
             Assert.That(
                 messageTranslated,
                 Does.Not.Match("血まみれの.*}}.*Tam"),
@@ -140,7 +151,8 @@ public sealed class ColorTagStaticAnalysisTests
     [Ignore(SkipReason)]
     public void MessagePattern_CaptureRestoration_DoesNotDoubleWrapMarkupCarryingCapture()
     {
-        // Production PR prerequisites (replace this body):
+        // Production PR prerequisites (replace this body — model on
+        // `PopupPickOptionTranslationPatchTests` SetUp/TearDown):
         //   1. Use `MessagePatternTranslator.SetPatternFileForTests(path)` to load a fixture
         //      pattern whose template wraps a capture (e.g. `{{r|{0}}}`).
         //   2. Pick a `source` whose Strip+pattern-match path actually fires that template,
@@ -149,7 +161,9 @@ public sealed class ColorTagStaticAnalysisTests
         //      `Does.Not.Contain("{{r|{{r|")`. The exact-output assertion catches the case
         //      where the translator silently passes through and the negative assertion
         //      becomes vacuously true.
-        // Reset state in `[TearDown]` via `MessagePatternTranslator.ResetForTests()`.
+        // Reset state in `[TearDown]` via `MessagePatternTranslator.ResetForTests()`,
+        // `Translator.ResetForTests()`, `DynamicTextObservability.ResetForTests()`,
+        // `SinkObservation.ResetForTests()`.
         Assert.Pass("Scaffold; production PR replaces with pattern-fixture-driven exact-output test.");
     }
 
