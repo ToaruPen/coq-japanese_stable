@@ -155,7 +155,19 @@ internal sealed class Extractor
         {
             // `string` keyword parses as PredefinedTypeSyntax in Roslyn, not IdentifierNameSyntax.
             if (m.Expression is PredefinedTypeSyntax pt && pt.Keyword.ValueText == "string") return true;
-            if (m.Expression is IdentifierNameSyntax id && id.Identifier.ValueText == "string") return true;
+            if (m.Expression is IdentifierNameSyntax id
+                && (id.Identifier.ValueText == "string" || id.Identifier.ValueText == "String"))
+            {
+                return true;
+            }
+            // Fully-qualified `System.String.Format(...)`.
+            if (m.Expression is MemberAccessExpressionSyntax inner
+                && inner.Name.Identifier.ValueText == "String"
+                && inner.Expression is IdentifierNameSyntax sys
+                && sys.Identifier.ValueText == "System")
+            {
+                return true;
+            }
         }
         return false;
     }
