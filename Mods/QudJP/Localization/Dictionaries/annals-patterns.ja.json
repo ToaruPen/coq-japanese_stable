@@ -17,6 +17,11 @@
       "route": "annals"
     },
     {
+      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ won\\ a\\ decisive\\ victory\\ against\\ the\\ combined\\ forces\\ of\\ (.+?)\\ at\\ the\\ bloody\\ Battle\\ of\\ (.+?),\\ though\\ (.+?)\\ lost\\ (.+?)\\ prized\\ (.+?)\\ during\\ the\\ course\\ of\\ the\\ conflict\\.\\ As\\ a\\ result\\ of\\ the\\ battle,\\ (.+?)\\ was\\ so\\ (.+?)\\ that\\ it\\ was\\ renamed\\ (.+?)\\.$",
+      "template": "{0}年、{t1}は血塗られし{t3}の戦いにて、{t2}の連合軍に決定的勝利を収めた。されどその争いのさなか、{t4}は大切な{t5}{t6}を失った。この戦いの結果、{t7}はあまりに{t8}となり、{t9}と改め名づけられた。",
+      "route": "annals"
+    },
+    {
       "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ the\\ Gyre\\ widened,\\ and\\ the\\ second\\ triad\\ of\\ plagues\\ afflicted\\ the\\ land\\.\\ The\\ legs\\ of\\ kith\\ and\\ kin\\ annealed\\ to\\ iron,\\ darkness\\ bloomed\\ from\\ the\\ earth,\\ and\\ the\\ svardym\\ blackened\\ the\\ sky\\.\\ Resheph\\ walked\\ below\\ the\\ chrome\\ arches\\ and\\ healed\\ the\\ sick\\.$",
       "template": "{0}年、ジャイアは広がり、第二の三つの災厄が地を苦しめた。親しき者らの脚は鉄へと焼き固まり、闇は大地より咲き、スヴァルディムは空を黒く染めた。レシェフはクロームのアーチの下を歩み、病める者を癒やした。",
       "route": "annals"
@@ -54,6 +59,11 @@
     {
       "pattern": "^After\\ conferring\\ with\\ mysterious\\ strangers,\\ Resheph\\ convinced\\ them\\ to\\ help\\ him\\ found\\ a\\ harborage\\ for\\ the\\ purpose\\ of\\ receiving\\ visitors\\ from\\ across\\ the\\ clustered\\ cosmos\\.\\ They\\ named\\ it\\ Starfarer's\\ Quay\\.$",
       "template": "謎めいた異邦人らと協議したのち、レシェフは群集せる宇宙の彼方より訪う者を迎えるための泊地を築く助力を彼らに約させた。彼らはそれを星渡りの埠頭と名づけた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ won\\ a\\ decisive\\ victory\\ against\\ the\\ combined\\ forces\\ of\\ (.+?)\\ at\\ the\\ bloody\\ Battle\\ of\\ (.+?)\\.\\ As\\ a\\ result\\ of\\ the\\ battle,\\ (.+?)\\ was\\ so\\ (.+?)\\ that\\ it\\ was\\ renamed\\ (.+?)\\.$",
+      "template": "{0}年、{t1}は血塗られし{t3}の戦いにて、{t2}の連合軍に決定的勝利を収めた。この戦いの結果、{t4}はあまりに{t5}となり、{t6}と改め名づけられた。",
       "route": "annals"
     },
     {
@@ -97,8 +107,28 @@
       "route": "annals"
     },
     {
+      "pattern": "^In\\ the\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ (.+?),\\ who\\ (.+?)\\.\\ Let\\ the\\ (.+?)\\ of\\ (.+?)\\ serve\\ as\\ testament\\ to\\ the\\ (.+?)\\ of\\ (.+?)\\ and\\ a\\ (.+?)\\ to\\ those\\ who\\ would\\ (.+?)\\ (.+?)\\.$",
+      "template": "{t0}において、{t1}は{t4}ところの{t3}を{t2}。{t6}の{t5}をして、{t8}の{t7}の証となし、また{t11}に{t10}せんとする者どもへの{t9}となさしめよ。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^At\\ the\\ Battle\\ of\\ (.+?),\\ (.+?)\\ fought\\ as\\ a\\ mercenary\\ (.+?)to\\ subjugate\\ (.+?)\\.\\ (.+?)\\ wielded\\ (.+?)\\ (.+?)\\ with\\ such\\ (.+?)\\ that\\ it\\ became\\ forever\\ known\\ as\\ (.+?)\\.$",
+      "template": "{t0}の戦いにおいて、{t1}は傭兵として{t2}{t3}を征服せんと戦った。{t4}は{t5}{t6}を{t7}なる妙技をもって振るい、それは永く{t8}として知られることとなった。",
+      "route": "annals"
+    },
+    {
       "pattern": "^Let\\ us\\ (.+?)\\ the\\ (.+?),\\ when,\\ deep\\ in\\ (.+?),\\ (.+?)\\ (.+?)\\ (.+?)\\ and\\ (.+?)\\ the\\ (.+?)\\ (.+?)\\ who\\ lived\\ there\\.\\ To\\ (.+?)\\ (.+?)\\ (.+?)\\ to\\ them,\\ (.+?)\\ (.+?)\\.$",
       "template": "われら{t1}を{t0}ん。その時、{t2}の深きところにて、{t3}は{t5}を{t4}、そこに住まいし{t7}{t8}を{t6}たり。彼らに{t10}{t11}を{t9}さんとして、{t12}は{t13}。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^At\\ the\\ Battle\\ of\\ (.+?),\\ (.+?)\\ fought\\ to\\ subjugate\\ (.+?)\\.\\ (.+?)\\ wielded\\ (.+?)\\ (.+?)\\ with\\ such\\ (.+?)\\ that\\ it\\ became\\ forever\\ known\\ as\\ (.+?)\\.$",
+      "template": "{t0}の戦いにおいて、{t1}は{t2}を征服せんと戦った。{t3}は{t4}{t5}を{t6}なる妙技をもって振るい、それは永く{t7}として知られることとなった。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^For\\ the\\ sake\\ of\\ (.+?),\\ (.+?)\\ (.+?)\\ at\\ (.+?)\\ in\\ (.+?)\\ to\\ (.+?)\\ among\\ the\\ (.+?)\\ and\\ (.+?)\\.\\ After\\ (.+?)\\ (.+?)\\ years,\\ (.+?)\\ (.+?)\\ at\\ (.+?)\\.$",
+      "template": "{t0}のため、{t1}は{t4}の{t3}にて{t2}、{t6}と{t7}の間に{t5}せんとした。{t8}年もの{t9}年月ののち、{t10}は{t12}にて{t11}。",
       "route": "annals"
     },
     {
@@ -112,8 +142,23 @@
       "route": "annals"
     },
     {
+      "pattern": "^Near\\ the\\ location\\ of\\ (.+?),\\ (.+?)\\ was\\ captured\\ by\\ bandits\\.\\ (.+?)\\ languished\\ in\\ captivity\\ for\\ (.+?)\\ years,\\ eventually\\ escaping\\ to\\ (.+?)\\.$",
+      "template": "{t0}の地の近くで、{t1}は盗賊に捕らえられた。{t2}は捕囚のうちに{t3}年を苦しみ、ついには{t4}へ逃れ出た。",
+      "route": "annals"
+    },
+    {
       "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ Resheph,\\ the\\ Above,\\ Ghost-in-Cerulean,\\ the\\ Coiled\\ Lamb\\ of\\ Baetyls,\\ died\\ of\\ natural\\ causes\\.\\ He\\ was\\ 216\\ years\\ old\\.$",
       "template": "{0}年、レシェフ、天上なる者、瑠璃の幽鬼、ベテルのとぐろ巻く仔羊は、自然の理により身罷った。享年216歳であった。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^Near\\ the\\ location\\ of\\ (.+?),\\ (.+?)\\ was\\ captured\\ by\\ bandits\\.\\ (.+?)\\ murdered\\ their\\ leader\\ (.+?),\\ and\\ was\\ thenceforth\\ known\\ as\\ (.+?)\\.$",
+      "template": "{t0}の地の近くで、{t1}は盗賊に捕らえられた。{t2}はその頭目を{t3}し、以後{t4}として知られるようになった。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?),\\ (.+?)!\\ In\\ the\\ (.+?),\\ a\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\ (.+?)\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ the\\ (.+?)\\ put\\ upon\\ them\\ by\\ (.+?),\\ (.+?)!$",
+      "template": "{t0}、{t1}よ！ {t2}の御世に、{t4}と{t5}の{t3}は{t7}への信を{t6}、{t8}。{t11}により彼らへ下されし{t10}を{t9}、{t12}よ！",
       "route": "annals"
     },
     {
@@ -124,6 +169,11 @@
     {
       "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ Resheph\\ appointed\\ Rebekah\\ administrator\\ of\\ (.+?)\\.\\ She\\ tendered\\ alms\\ for\\ the\\ sick\\ in\\ his\\ name\\.$",
       "template": "{0}年、レシェフはレベカを{t1}の施政官に任じた。彼女は彼の名において病める者へ施しを捧げた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
+      "template": "{t0}{1}年、{t2}は{t4}全土を{t3}、{t6}と{t7}に{t5}をもたらした。{t8}は{t9}として知られるようになった。",
       "route": "annals"
     },
     {
