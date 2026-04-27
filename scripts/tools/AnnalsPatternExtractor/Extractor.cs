@@ -306,35 +306,54 @@ internal sealed class Extractor
     }
 
     /// <summary>
-    /// Drop compound-append rhs entries whose owning append statement starts at or after the
-    /// setter's span. Appends that execute after the setter never influence the value the runtime
-    /// stores, so they must not be fanned out as `#opt:withN` candidates.
+    /// One `local += rhs` statement, tagged with whether its execution is gated by an enclosing
+    /// `if`. Required (Optional=false) appends always run on the runtime path that reaches the
+    /// setter, so they fold into the local's resolved value. Optional (Optional=true) appends
+    /// drive `#opt:withN` fanout — one variant per optional, in source order, with all required
+    /// appends still folded in.
     /// </summary>
-    private static IReadOnlyDictionary<string, List<ExpressionSyntax>> FilterAppendsBeforeSetter(
-        IReadOnlyDictionary<string, List<ExpressionSyntax>> appendsByLocal,
+    private readonly struct AppendEntry
+    {
+        public AppendEntry(ExpressionSyntax right, bool optional)
+        {
+            Right = right;
+            Optional = optional;
+        }
+
+        public ExpressionSyntax Right { get; }
+        public bool Optional { get; }
+    }
+
+    /// <summary>
+    /// Drop compound-append entries whose owning append statement starts at or after the setter's
+    /// span. Appends that execute after the setter never influence the value the runtime stores,
+    /// so they must neither fold into the resolved value nor fan out as `#opt:withN` candidates.
+    /// </summary>
+    private static IReadOnlyDictionary<string, List<AppendEntry>> FilterAppendsBeforeSetter(
+        IReadOnlyDictionary<string, List<AppendEntry>> appendsByLocal,
         InvocationExpressionSyntax setter)
     {
-        var dict = new Dictionary<string, List<ExpressionSyntax>>(StringComparer.Ordinal);
+        var dict = new Dictionary<string, List<AppendEntry>>(StringComparer.Ordinal);
         foreach (var (name, appends) in appendsByLocal)
         {
-            var kept = new List<ExpressionSyntax>();
-            foreach (var rhs in appends)
+            var kept = new List<AppendEntry>();
+            foreach (var entry in appends)
             {
                 // The rhs is the right-hand side of `local += rhs`; walk up to the owning
                 // assignment expression (its parent) and use its span as the append's span.
-                var assignSpanStart = rhs.Parent?.SpanStart ?? rhs.SpanStart;
-                if (assignSpanStart < setter.SpanStart) kept.Add(rhs);
+                var assignSpanStart = entry.Right.Parent?.SpanStart ?? entry.Right.SpanStart;
+                if (assignSpanStart < setter.SpanStart) kept.Add(entry);
             }
             if (kept.Count > 0) dict[name] = kept;
         }
         return dict;
     }
 
-    private static IReadOnlyDictionary<string, List<ExpressionSyntax>> FilterAppendsToLocals(
+    private static IReadOnlyDictionary<string, List<AppendEntry>> FilterAppendsToLocals(
         IReadOnlyDictionary<string, ExpressionSyntax> activeLocals,
-        IReadOnlyDictionary<string, List<ExpressionSyntax>> appendsByLocal)
+        IReadOnlyDictionary<string, List<AppendEntry>> appendsByLocal)
     {
-        var dict = new Dictionary<string, List<ExpressionSyntax>>(StringComparer.Ordinal);
+        var dict = new Dictionary<string, List<AppendEntry>>(StringComparer.Ordinal);
         foreach (var (name, appends) in appendsByLocal)
         {
             if (activeLocals.ContainsKey(name)) dict[name] = appends;
@@ -343,55 +362,60 @@ internal sealed class Extractor
     }
 
     /// <summary>
-    /// Collect compound `+=` reassignments (`local += expr`) per local. These typically come from
-    /// `if (flag) local += suffix;` blocks and represent optional-append branches we want to fan
-    /// out as additional candidates.
+    /// Collect compound `+=` reassignments (`local += expr`) per local, tagging each entry with
+    /// whether it is conditionally executed (Optional = wrapped in an `IfStatementSyntax`).
     /// </summary>
     /// <remarks>
-    /// Only `+=` statements with an enclosing `IfStatementSyntax` are collected. A `+=` inside a
-    /// switch-case body but not inside an `if` is unconditional within that case's runtime path
-    /// (case selection itself is already modelled by the `#case:N` id suffix), so fanning out a
-    /// `#opt:base` variant that omits it would emit a candidate for a runtime state that never
-    /// occurs. Filtering them here means an unconditional `+=` becomes invisible to the resolved
-    /// local's value (BuildSetterScopedLocals only follows simple assignments), but trading
-    /// "false candidate" for "less-detailed candidate with a slot" is preferred — translation
-    /// review can fill the gap, while a phantom variant cannot be reasoned about post-hoc.
+    /// Required (`Optional=false`) appends are folded into the resolved local value so the
+    /// extracted candidate matches the runtime string. Optional (`Optional=true`) appends drive
+    /// `#opt:base` / `#opt:withN` fanout. Switch-case ancestry is intentionally not treated as
+    /// optional — case selection is already modelled by the `#case:N` id suffix.
     /// </remarks>
-    private static IReadOnlyDictionary<string, List<ExpressionSyntax>> CollectCompoundAppends(MethodDeclarationSyntax method)
+    private static IReadOnlyDictionary<string, List<AppendEntry>> CollectCompoundAppends(MethodDeclarationSyntax method)
     {
-        var dict = new Dictionary<string, List<ExpressionSyntax>>(StringComparer.Ordinal);
+        var dict = new Dictionary<string, List<AppendEntry>>(StringComparer.Ordinal);
+        // `DescendantNodes` yields nodes in document order, so the resulting per-local list is
+        // already in source order — needed by `ExpandOptionalAppends` to interleave optional and
+        // required appends correctly when synthesising the per-variant value chain.
         foreach (var assignment in method.DescendantNodes().OfType<AssignmentExpressionSyntax>())
         {
             if (!assignment.IsKind(SyntaxKind.AddAssignmentExpression)) continue;
             if (assignment.Left is not IdentifierNameSyntax lhs) continue;
-            // Skip unconditional appends — only `+=` wrapped in an `if` represents a fanout.
-            if (!assignment.Ancestors().OfType<IfStatementSyntax>().Any())
-            {
-                continue;
-            }
+            var optional = assignment.Ancestors().OfType<IfStatementSyntax>().Any();
             var name = lhs.Identifier.ValueText;
             if (!dict.TryGetValue(name, out var list))
             {
-                list = new List<ExpressionSyntax>();
+                list = new List<AppendEntry>();
                 dict[name] = list;
             }
-            list.Add(assignment.Right);
+            list.Add(new AppendEntry(assignment.Right, optional));
         }
         return dict;
     }
 
     /// <summary>
-    /// If the value expression depends on a local that has compound `+=` appends, fan out one
-    /// (label="base", initializer-only) entry plus one (label="withN", initializer + N-th append)
-    /// entry per append. Otherwise returns a single (label=null, original-locals) pair.
-    /// Only the first such local found is expanded; nested cross-products are not emitted (target
-    /// files have at most one optionally-appended local in the value-expression tree).
+    /// Resolve a local that has compound `+=` appends into one or more variants:
+    /// <list type="bullet">
+    ///   <item>Required appends always fold into the local's resolved value.</item>
+    ///   <item>If the local also has optional appends, emit a `#opt:base` variant (required-only)
+    ///   plus one `#opt:withN` variant per optional. Within each `withN`, the optional is
+    ///   inserted at its source position relative to the required appends so the synthesised
+    ///   chain matches the runtime concatenation order.</item>
+    ///   <item>If the local has only required appends (no optionals), emit a single (label=null,
+    ///   locals) pair where the local's override value carries all required appends folded in —
+    ///   no fanout, but the resolved value still matches the runtime string.</item>
+    ///   <item>If the value expression has no append-bearing local, emit a single (label=null,
+    ///   original-locals) pair.</item>
+    /// </list>
+    /// Only the first append-bearing local found is expanded; nested cross-products are not
+    /// emitted (target files have at most one optionally-appended local in the value-expression
+    /// tree).
     /// </summary>
     private static List<(string? optLabel, IReadOnlyDictionary<string, ExpressionSyntax> locals)>
         ExpandOptionalAppends(
             ExpressionSyntax valueExpr,
             IReadOnlyDictionary<string, ExpressionSyntax> locals,
-            IReadOnlyDictionary<string, List<ExpressionSyntax>> appendsByLocal)
+            IReadOnlyDictionary<string, List<AppendEntry>> appendsByLocal)
     {
         var result = new List<(string?, IReadOnlyDictionary<string, ExpressionSyntax>)>();
         if (appendsByLocal.Count == 0)
@@ -411,14 +435,56 @@ internal sealed class Extractor
             return result;
         }
 
-        result.Add(("base", BuildAppendOverride(locals, appendLocalName, baseInit)));
+        // Indices (within `appends`, in source order) of the optional entries.
+        var optionalIndices = new List<int>();
         for (var i = 0; i < appends.Count; i++)
         {
-            var combined = Microsoft.CodeAnalysis.CSharp.SyntaxFactory.BinaryExpression(
-                SyntaxKind.AddExpression, baseInit, appends[i]);
-            result.Add(($"with{i + 1}", BuildAppendOverride(locals, appendLocalName, combined)));
+            if (appends[i].Optional) optionalIndices.Add(i);
+        }
+
+        if (optionalIndices.Count == 0)
+        {
+            // Required-only: fold every append into the resolved value, no fanout.
+            var folded = ChainAppends(baseInit, appends, includeIndex: -1);
+            result.Add((null, BuildAppendOverride(locals, appendLocalName, folded)));
+            return result;
+        }
+
+        // `#opt:base` = initializer + all required appends (in source order); optionals omitted.
+        var baseChain = ChainAppends(baseInit, appends, includeIndex: -1);
+        result.Add(("base", BuildAppendOverride(locals, appendLocalName, baseChain)));
+
+        // `#opt:withK` = initializer + all required + the K-th optional, in source order.
+        for (var k = 0; k < optionalIndices.Count; k++)
+        {
+            var withChain = ChainAppends(baseInit, appends, includeIndex: optionalIndices[k]);
+            result.Add(($"with{k + 1}", BuildAppendOverride(locals, appendLocalName, withChain)));
         }
         return result;
+    }
+
+    /// <summary>
+    /// Build a left-leaning `+`-concat chain `init + a_i1 + a_i2 + ...` from the source-ordered
+    /// `appends`, including every required entry plus the entry at <paramref name="includeIndex"/>
+    /// (when non-negative). The result is a synthetic <see cref="BinaryExpressionSyntax"/> tree
+    /// that <see cref="ResolveValueExpression"/> / <see cref="FlattenConcat"/> can flatten as if
+    /// the local were declared with that concat as its initializer.
+    /// </summary>
+    private static ExpressionSyntax ChainAppends(
+        ExpressionSyntax init,
+        List<AppendEntry> appends,
+        int includeIndex)
+    {
+        var chain = init;
+        for (var i = 0; i < appends.Count; i++)
+        {
+            var entry = appends[i];
+            // Required entries always fold in. Optional entries fold in only when this is the
+            // specific optional being expanded (`includeIndex == i`).
+            if (entry.Optional && i != includeIndex) continue;
+            chain = SyntaxFactory.BinaryExpression(SyntaxKind.AddExpression, chain, entry.Right);
+        }
+        return chain;
     }
 
     private static IReadOnlyDictionary<string, ExpressionSyntax> BuildAppendOverride(
@@ -433,10 +499,10 @@ internal sealed class Extractor
         return copy;
     }
 
-    private static (string? name, List<ExpressionSyntax>? appends) FindAppendableLocal(
+    private static (string? name, List<AppendEntry>? appends) FindAppendableLocal(
         ExpressionSyntax expr,
         IReadOnlyDictionary<string, ExpressionSyntax> locals,
-        IReadOnlyDictionary<string, List<ExpressionSyntax>> appendsByLocal,
+        IReadOnlyDictionary<string, List<AppendEntry>> appendsByLocal,
         HashSet<string> visited)
     {
         foreach (var id in expr.DescendantNodesAndSelf().OfType<IdentifierNameSyntax>())

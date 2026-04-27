@@ -7,15 +7,15 @@
       "annal_class": "unconditional_append_no_fanout",
       "switch_case": "default",
       "event_property": "gospel",
-      "sample_source": "Hello",
-      "extracted_pattern": "^Hello$",
+      "sample_source": "Hello, world.",
+      "extracted_pattern": "^Hello,\\ world\\.$",
       "slots": [],
       "status": "pending",
       "reason": "",
       "ja_template": "",
       "review_notes": "",
       "route": "annals",
-      "en_template_hash": "sha256:d1113a4e6ceb378b6dd09c48172cc6098ee1838a78a7fd0fb92f3105cdce52d1"
+      "en_template_hash": "sha256:6b23d8e11800ba9d0cf4662709fc264c271cf1a6a1e6ae9237b2e85c43144cca"
     }
   ]
 }
