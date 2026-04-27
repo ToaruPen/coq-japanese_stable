@@ -1324,18 +1324,24 @@ internal sealed class Extractor
         IReadOnlyDictionary<string, ExpressionSyntax> locals,
         HashSet<string> visited)
     {
-        return expr switch
+        // `visited` must be cleaned up via try/finally; an earlier expression-switch added the
+        // name as a side-effect of the `when` clause and never removed it, so `a + a` (same
+        // local on both sides) flipped the right-hand recursion to `false` even when the
+        // initializer was literal-only.
+        switch (expr)
         {
-            LiteralExpressionSyntax lit when lit.IsKind(SyntaxKind.StringLiteralExpression) => true,
-            BinaryExpressionSyntax bin when bin.IsKind(SyntaxKind.AddExpression)
-                => IsLiteralOnlyConcat(bin.Left, locals, visited)
-                    && IsLiteralOnlyConcat(bin.Right, locals, visited),
-            IdentifierNameSyntax id
-                when locals.TryGetValue(id.Identifier.ValueText, out var init)
-                && visited.Add(id.Identifier.ValueText)
-                => IsLiteralOnlyConcat(init, locals, visited),
-            _ => false,
-        };
+            case LiteralExpressionSyntax lit when lit.IsKind(SyntaxKind.StringLiteralExpression):
+                return true;
+            case BinaryExpressionSyntax bin when bin.IsKind(SyntaxKind.AddExpression):
+                return IsLiteralOnlyConcat(bin.Left, locals, visited)
+                    && IsLiteralOnlyConcat(bin.Right, locals, visited);
+            case IdentifierNameSyntax id when locals.TryGetValue(id.Identifier.ValueText, out var init):
+                if (!visited.Add(id.Identifier.ValueText)) return false;
+                try { return IsLiteralOnlyConcat(init, locals, visited); }
+                finally { visited.Remove(id.Identifier.ValueText); }
+            default:
+                return false;
+        }
     }
 
     private static string ClassifyHelperCallSlotType(ExpressionSyntax expr)
