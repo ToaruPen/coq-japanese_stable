@@ -127,6 +127,11 @@
       "route": "annals"
     },
     {
+      "pattern": "^While\\ traveling\\ near\\ (.+?)\\ in\\ (.+?),\\ (.+?)\\ was\\ captured\\ by\\ bandits\\.\\ (.+?)\\ languished\\ in\\ captivity\\ for\\ (.+?)\\ years,\\ eventually\\ escaping\\ to\\ (.+?)\\.$",
+      "template": "{t1}の{t0}付近を旅する途上、{t2}は盗賊に捕らえられた。{t3}は捕囚のうちに{t4}年を苦しみ、ついには{t5}へ逃れ出た。",
+      "route": "annals"
+    },
+    {
       "pattern": "^At\\ the\\ Battle\\ of\\ (.+?),\\ (.+?)\\ fought\\ to\\ subjugate\\ (.+?)\\.\\ (.+?)\\ wielded\\ (.+?)\\ (.+?)\\ with\\ such\\ (.+?)\\ that\\ it\\ became\\ forever\\ known\\ as\\ (.+?)\\.$",
       "template": "{t0}の戦いにおいて、{t1}は{t2}を征服せんと戦った。{t3}は{t4}{t5}を{t6}なる妙技をもって振るい、それは永く{t7}として知られることとなった。",
       "route": "annals"
@@ -147,13 +152,28 @@
       "route": "annals"
     },
     {
+      "pattern": "^While\\ traveling\\ near\\ (.+?)\\ in\\ (.+?),\\ (.+?)\\ was\\ captured\\ by\\ bandits\\.\\ (.+?)\\ murdered\\ their\\ leader\\ (.+?),\\ and\\ was\\ thenceforth\\ known\\ as\\ (.+?)\\.$",
+      "template": "{t1}の{t0}付近を旅する途上、{t2}は盗賊に捕らえられた。{t3}はその頭目を{t4}殺害し、以後{t5}として知られるようになった。",
+      "route": "annals"
+    },
+    {
       "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ Resheph\\ cleansed\\ the\\ marshlands\\ of\\ the\\ plagues\\ of\\ the\\ Gyre\\ and\\ taught\\ Abram\\ to\\ sow\\ watervine\\ along\\ its\\ fertile\\ tracks\\.$",
       "template": "{0}年、レシェフは湿地帯よりジャイアの災厄を祓い、その肥沃なる道筋に沿ってワターヴァインを蒔く術をアブラムに授けた。",
       "route": "annals"
     },
     {
+      "pattern": "^On\\ an\\ expedition\\ around\\ (.+?),\\ (.+?)\\ was\\ captured\\ by\\ bandits\\.\\ (.+?)\\ languished\\ in\\ captivity\\ for\\ (.+?)\\ years,\\ eventually\\ escaping\\ to\\ (.+?)\\.$",
+      "template": "{t0}を巡る遠征の途上、{t1}は盗賊に捕らえられた。{t2}は捕囚のうちに{t3}年を苦しみ、ついには{t4}へ逃れ出た。",
+      "route": "annals"
+    },
+    {
       "pattern": "^Near\\ the\\ location\\ of\\ (.+?),\\ (.+?)\\ was\\ captured\\ by\\ bandits\\.\\ (.+?)\\ languished\\ in\\ captivity\\ for\\ (.+?)\\ years,\\ eventually\\ escaping\\ to\\ (.+?)\\.$",
       "template": "{t0}の地の近くで、{t1}は盗賊に捕らえられた。{t2}は捕囚のうちに{t3}年を苦しみ、ついには{t4}へ逃れ出た。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^On\\ an\\ expedition\\ around\\ (.+?),\\ (.+?)\\ was\\ captured\\ by\\ bandits\\.\\ (.+?)\\ murdered\\ their\\ leader\\ (.+?),\\ and\\ was\\ thenceforth\\ known\\ as\\ (.+?)\\.$",
+      "template": "{t0}を巡る遠征の途上、{t1}は盗賊に捕らえられた。{t2}はその頭目を{t3}殺害し、以後{t4}として知られるようになった。",
       "route": "annals"
     },
     {
