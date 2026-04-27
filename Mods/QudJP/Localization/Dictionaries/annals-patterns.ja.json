@@ -92,13 +92,13 @@
       "route": "annals"
     },
     {
-      "pattern": "^Let\\ us\\ (.+?)\\ the\\ (.+?),\\ when,\\ while\\ wandering\\ around\\ (.+?),\\ (.+?)\\ (.+?)\\ (.+?)\\ and\\ (.+?)\\ the\\ (.+?)\\ (.+?)\\ who\\ lived\\ there\\.\\ To\\ (.+?)\\ (.+?)\\ (.+?)\\ to\\ them,\\ (.+?)\\ (.+?)\\.$",
-      "template": "われら{t1}を{t0}ん。その時、{t2}をさまよううち、{t3}は{t5}を{t4}、そこに住まいし{t7}{t8}を{t6}たり。彼らに{t10}{t11}を{t9}さんとして、{t12}は{t13}。",
+      "pattern": "^Let\\ us\\ (.+?)\\ the\\ (.+?),\\ when,\\ deep\\ in\\ the\\ wilds\\ of\\ (.+?),\\ (.+?)\\ (.+?)\\ (.+?)\\ and\\ (.+?)\\ the\\ (.+?)\\ (.+?)\\ who\\ lived\\ there\\.\\ To\\ (.+?)\\ (.+?)\\ (.+?)\\ to\\ them,\\ (.+?)\\ (.+?)\\.$",
+      "template": "われら{t1}を{t0}ん。その時、{t2}の荒野深くにて、{t3}は{t5}を{t4}、そこに住まいし{t7}{t8}を{t6}たり。彼らに{t10}{t11}を{t9}さんとして、{t12}は{t13}。",
       "route": "annals"
     },
     {
-      "pattern": "^Let\\ us\\ (.+?)\\ the\\ (.+?),\\ when,\\ deep\\ in\\ the\\ wilds\\ of\\ (.+?),\\ (.+?)\\ (.+?)\\ (.+?)\\ and\\ (.+?)\\ the\\ (.+?)\\ (.+?)\\ who\\ lived\\ there\\.\\ To\\ (.+?)\\ (.+?)\\ (.+?)\\ to\\ them,\\ (.+?)\\ (.+?)\\.$",
-      "template": "われら{t1}を{t0}ん。その時、{t2}の荒野深くにて、{t3}は{t5}を{t4}、そこに住まいし{t7}{t8}を{t6}たり。彼らに{t10}{t11}を{t9}さんとして、{t12}は{t13}。",
+      "pattern": "^Let\\ us\\ (.+?)\\ the\\ (.+?),\\ when,\\ while\\ wandering\\ around\\ (.+?),\\ (.+?)\\ (.+?)\\ (.+?)\\ and\\ (.+?)\\ the\\ (.+?)\\ (.+?)\\ who\\ lived\\ there\\.\\ To\\ (.+?)\\ (.+?)\\ (.+?)\\ to\\ them,\\ (.+?)\\ (.+?)\\.$",
+      "template": "われら{t1}を{t0}ん。その時、{t2}をさまよううち、{t3}は{t5}を{t4}、そこに住まいし{t7}{t8}を{t6}たり。彼らに{t10}{t11}を{t9}さんとして、{t12}は{t13}。",
       "route": "annals"
     },
     {
@@ -112,13 +112,23 @@
       "route": "annals"
     },
     {
-      "pattern": "^At\\ the\\ Battle\\ of\\ (.+?),\\ (.+?)\\ fought\\ as\\ a\\ mercenary\\ (.+?)to\\ subjugate\\ (.+?)\\.\\ (.+?)\\ wielded\\ (.+?)\\ (.+?)\\ with\\ such\\ (.+?)\\ that\\ it\\ became\\ forever\\ known\\ as\\ (.+?)\\.$",
+      "pattern": "^At\\ the\\ Battle\\ of\\ (.+?),\\ (.+?)\\ fought\\ as\\ a\\ mercenary\\ (.*?)to\\ subjugate\\ (.+?)\\.\\ (.+?)\\ wielded\\ (.+?)\\ (.+?)\\ with\\ such\\ (.+?)\\ that\\ it\\ became\\ forever\\ known\\ as\\ (.+?)\\.$",
       "template": "{t0}の戦いにおいて、{t1}は傭兵として{t2}{t3}を征服せんと戦った。{t4}は{t5}{t6}を{t7}なる妙技をもって振るい、それは永く{t8}として知られることとなった。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^At\\ the\\ Battle\\ of\\ (.+?),\\ (.+?)\\ fought\\ as\\ a\\ mercenary\\ (.*?)to\\ liberate\\ (.+?)\\.\\ (.+?)\\ wielded\\ (.+?)\\ (.+?)\\ with\\ such\\ (.+?)\\ that\\ it\\ became\\ forever\\ known\\ as\\ (.+?)\\.$",
+      "template": "{t0}の戦いにおいて、{t1}は傭兵として{t2}{t3}を解放せんと戦った。{t4}は{t5}{t6}を{t7}なる妙技をもって振るい、それは永く{t8}として知られることとなった。",
       "route": "annals"
     },
     {
       "pattern": "^Let\\ us\\ (.+?)\\ the\\ (.+?),\\ when,\\ deep\\ in\\ (.+?),\\ (.+?)\\ (.+?)\\ (.+?)\\ and\\ (.+?)\\ the\\ (.+?)\\ (.+?)\\ who\\ lived\\ there\\.\\ To\\ (.+?)\\ (.+?)\\ (.+?)\\ to\\ them,\\ (.+?)\\ (.+?)\\.$",
       "template": "われら{t1}を{t0}ん。その時、{t2}の深きところにて、{t3}は{t5}を{t4}、そこに住まいし{t7}{t8}を{t6}たり。彼らに{t10}{t11}を{t9}さんとして、{t12}は{t13}。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?),\\ (.+?)\\ cemented\\ (.+?)\\ friendship\\ with\\ (.+?)\\ by\\ marrying\\ (.+?)\\.\\ (.+?),\\ the\\ (.+?)\\ bestowed\\ upon\\ (.+?)\\ a\\ wedding\\ gift\\ they\\ called\\ (.+?)\\.$",
+      "template": "{t0}、{t1}は{t4}と婚姻を結ぶことにより、{t3}との{t2}友誼を固めた。{t5}、{t6}は{t7}に、彼らが{t8}と呼ぶ婚礼の贈り物を授けた。",
       "route": "annals"
     },
     {
@@ -132,8 +142,8 @@
       "route": "annals"
     },
     {
-      "pattern": "^(.+?),\\ (.+?)\\ cemented\\ (.+?)\\ friendship\\ with\\ (.+?)\\ by\\ marrying\\ (.+?)\\.\\ (.+?),\\ the\\ (.+?)\\ bestowed\\ upon\\ (.+?)\\ a\\ wedding\\ gift\\ they\\ called\\ (.+?)\\.$",
-      "template": "{t0}、{t1}は{t4}と婚姻を結ぶことにより、{t3}との{t2}友誼を固めた。{t5}、{t6}は{t7}に、彼らが{t8}と呼ぶ婚礼の贈り物を授けた。",
+      "pattern": "^At\\ the\\ Battle\\ of\\ (.+?),\\ (.+?)\\ fought\\ to\\ liberate\\ (.+?)\\.\\ (.+?)\\ wielded\\ (.+?)\\ (.+?)\\ with\\ such\\ (.+?)\\ that\\ it\\ became\\ forever\\ known\\ as\\ (.+?)\\.$",
+      "template": "{t0}の戦いにおいて、{t1}は{t2}を解放せんと戦った。{t3}は{t4}{t5}を{t6}なる妙技をもって振るい、それは永く{t7}として知られることとなった。",
       "route": "annals"
     },
     {
@@ -172,18 +182,18 @@
       "route": "annals"
     },
     {
-      "pattern": "^(.+?)\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
+      "pattern": "^(.+?)\\ (\\d+)\\ (?:BR|AR),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
       "template": "{t0}{1}年、{t2}は{t4}全土を{t3}、{t6}と{t7}に{t5}をもたらした。{t8}は{t9}として知られるようになった。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^While\\ wandering\\ around\\ (.+?),\\ (.+?)\\ discovered\\ (.+?)\\.\\ There\\ (.+?)\\ befriended\\ (.+?)\\ and\\ (.+?)\\.$",
-      "template": "{t0}の辺りをさまよううち、{t1}は{t2}を見いだした。そこで{t3}は{t4}と親交を結び、{t5}。",
       "route": "annals"
     },
     {
       "pattern": "^Deep\\ in\\ the\\ wilds\\ of\\ (.+?),\\ (.+?)\\ discovered\\ (.+?)\\.\\ There\\ (.+?)\\ befriended\\ (.+?)\\ and\\ (.+?)\\.$",
       "template": "{t0}の荒野の奥深くにて、{t1}は{t2}を見いだした。そこで{t3}は{t4}と親交を結び、{t5}。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^While\\ wandering\\ around\\ (.+?),\\ (.+?)\\ discovered\\ (.+?)\\.\\ There\\ (.+?)\\ befriended\\ (.+?)\\ and\\ (.+?)\\.$",
+      "template": "{t0}の辺りをさまよううち、{t1}は{t2}を見いだした。そこで{t3}は{t4}と親交を結び、{t5}。",
       "route": "annals"
     },
     {
