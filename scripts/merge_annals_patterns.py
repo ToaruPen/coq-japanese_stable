@@ -148,7 +148,13 @@ def run_merge(
     if conflicts_output.exists():
         conflicts_output.unlink()
 
-    accepted_sorted = sorted(accepted, key=lambda c: c["id"])
+    # Sort by pattern length descending so concrete (longer) patterns match before
+    # general (shorter, more `(.+?)` captures) patterns at runtime. The runtime regex
+    # iterates patterns in file order and uses the first match — without this ordering,
+    # a generic FoundAsBabe pattern from PR2a would swallow specific Resheph patterns
+    # whose literal text is fully covered by the FoundAsBabe template's `(.+?)` slots.
+    # Within equal pattern length, sort by id for deterministic output.
+    accepted_sorted = sorted(accepted, key=lambda c: (-len(c["extracted_pattern"]), c["id"]))
     annals_doc = {
         "entries": [],
         "patterns": [
