@@ -1083,7 +1083,7 @@ internal sealed class Extractor
 
             case InvocationExpressionSyntax invoc when IsExpandStringWrapper(invoc) && IsTokenShapedExpression(invoc.ArgumentList.Arguments[0].Expression, locals):
             {
-                AddSlot(slots, RenderTokenRaw(invoc.ArgumentList.Arguments[0].Expression), type: HistoryKitTokenType);
+                AddSlot(slots, RenderTokenRaw(invoc.ArgumentList.Arguments[0].Expression, locals), type: HistoryKitTokenType);
                 pieces.Add($"{{{slots.Count - 1}}}");
                 return true;
             }
@@ -1229,14 +1229,29 @@ internal sealed class Extractor
     /// (unquoted) and any non-literal sub-expressions wrapped in `{...}` placeholders. This keeps
     /// the raw stable across re-runs and avoids embedding C# string literal quotes.
     /// </summary>
-    private static string RenderTokenRaw(ExpressionSyntax expr)
+    /// <remarks>
+    /// CR R8: when the expression is a local whose initializer is itself a literal-only
+    /// concat that yields a token-shaped string (e.g. `var tok = "&lt;entity.name&gt;";
+    /// ExpandString(tok)`), follow the local through `locals` so the slot raw matches what the
+    /// runtime expands — not the C# identifier name. The follow-through is intentionally
+    /// limited to literal-only initializers: locals whose RHS is a method call or another
+    /// non-literal expression keep the prior `{name}` placeholder rendering, so PR2a outputs
+    /// where helper-derived locals appear inside cross-piece tokens (e.g. `text3 = ExpandString
+    /// (...)` in MeetFaction) remain byte-identical. Visited-set guard mirrors
+    /// `LeftmostLiteral`/`RightmostLiteral` to prevent infinite recursion on cyclic locals.
+    /// </remarks>
+    private static string RenderTokenRaw(ExpressionSyntax expr, IReadOnlyDictionary<string, ExpressionSyntax> locals)
     {
         var sb = new StringBuilder();
-        AppendTokenRaw(expr, sb);
+        AppendTokenRaw(expr, locals, new HashSet<string>(StringComparer.Ordinal), sb);
         return sb.ToString();
     }
 
-    private static void AppendTokenRaw(ExpressionSyntax expr, StringBuilder sb)
+    private static void AppendTokenRaw(
+        ExpressionSyntax expr,
+        IReadOnlyDictionary<string, ExpressionSyntax> locals,
+        HashSet<string> visited,
+        StringBuilder sb)
     {
         switch (expr)
         {
@@ -1244,13 +1259,51 @@ internal sealed class Extractor
                 sb.Append(lit.Token.ValueText);
                 break;
             case BinaryExpressionSyntax bin when bin.IsKind(SyntaxKind.AddExpression):
-                AppendTokenRaw(bin.Left, sb);
-                AppendTokenRaw(bin.Right, sb);
+                AppendTokenRaw(bin.Left, locals, visited, sb);
+                AppendTokenRaw(bin.Right, locals, visited, sb);
+                break;
+            case IdentifierNameSyntax id
+                when locals.TryGetValue(id.Identifier.ValueText, out var init)
+                && IsLiteralOnlyConcat(init, locals, new HashSet<string>(StringComparer.Ordinal))
+                && visited.Add(id.Identifier.ValueText):
+                try
+                {
+                    AppendTokenRaw(init, locals, visited, sb);
+                }
+                finally
+                {
+                    visited.Remove(id.Identifier.ValueText);
+                }
                 break;
             default:
                 sb.Append('{').Append(ClassifyHelperCallRaw(expr)).Append('}');
                 break;
         }
+    }
+
+    /// <summary>
+    /// True when <paramref name="expr"/> is a string literal, a `+`-concat of literal-only
+    /// sub-expressions, or an identifier that resolves through `locals` to a literal-only
+    /// expression. Used by `AppendTokenRaw` to decide whether following an identifier through
+    /// the locals table is safe (i.e., yields a stable string with no embedded helper calls).
+    /// </summary>
+    private static bool IsLiteralOnlyConcat(
+        ExpressionSyntax expr,
+        IReadOnlyDictionary<string, ExpressionSyntax> locals,
+        HashSet<string> visited)
+    {
+        return expr switch
+        {
+            LiteralExpressionSyntax lit when lit.IsKind(SyntaxKind.StringLiteralExpression) => true,
+            BinaryExpressionSyntax bin when bin.IsKind(SyntaxKind.AddExpression)
+                => IsLiteralOnlyConcat(bin.Left, locals, visited)
+                    && IsLiteralOnlyConcat(bin.Right, locals, visited),
+            IdentifierNameSyntax id
+                when locals.TryGetValue(id.Identifier.ValueText, out var init)
+                && visited.Add(id.Identifier.ValueText)
+                => IsLiteralOnlyConcat(init, locals, visited),
+            _ => false,
+        };
     }
 
     private static string ClassifyHelperCallSlotType(ExpressionSyntax expr)
