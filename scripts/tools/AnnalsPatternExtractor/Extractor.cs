@@ -83,38 +83,50 @@ internal sealed class Extractor
             var ifBranchSuffix = ResolveIfBranchSuffix(invocation, setterCalls, eventProperty);
             if (ifBranchSuffix is not null) idPrefix += CandidateIdSuffix.If + ifBranchSuffix;
 
-            var setterLocals = BuildSetterScopedLocals(invocation, localInitializers);
+            // BuildSetterScopedLocals returns one entry when the local resolves unconditionally
+            // (IfBranchLabel = null) and two entries (`then`/`else`) when a setter-scope local
+            // has branch-distinct SimpleAssignments in a pre-setter `if/else` sibling. The
+            // branch-fanout case is mutually exclusive with `ResolveIfBranchSuffix` (setter
+            // INSIDE an if-branch with a sibling setter for the same property in the other
+            // branch); when that fires, we suppress branch-fanout to avoid `#if:then#if:else`
+            // double-suffixing.
+            var suppressBranchFanout = ifBranchSuffix is not null;
+            var setterLocalsBranches = BuildSetterScopedLocals(invocation, localInitializers, generateMethod, suppressBranchFanout);
             var setterScopedAppends = FilterAppendsBeforeSetter(appendsByLocal, invocation);
-            var armings = ExpandSwitchExpressionArms(valueExpr, setterLocals);
-            foreach (var (armLabel, armLocals) in armings)
+            foreach (var (branchLabel, setterLocals) in setterLocalsBranches)
             {
-                var armSwitchCase = armLabel is null ? switchLabel : armLabel;
-                var armId = armLabel is null ? idPrefix : idPrefix + CandidateIdSuffix.Arm + armLabel;
-
-                var optExpansions = ExpandOptionalAppends(valueExpr, armLocals, FilterAppendsToLocals(armLocals, setterScopedAppends));
-                foreach (var (optLabel, optLocals) in optExpansions)
+                var branchedIdPrefix = branchLabel is null ? idPrefix : idPrefix + CandidateIdSuffix.If + branchLabel;
+                var armings = ExpandSwitchExpressionArms(valueExpr, setterLocals);
+                foreach (var (armLabel, armLocals) in armings)
                 {
-                    var optId = optLabel is null ? armId : armId + CandidateIdSuffix.Opt + optLabel;
-                    var resolution = ResolveValueExpression(valueExpr, optLocals);
-                    if (!resolution.Resolved)
+                    var armSwitchCase = armLabel is null ? switchLabel : armLabel;
+                    var armId = armLabel is null ? branchedIdPrefix : branchedIdPrefix + CandidateIdSuffix.Arm + armLabel;
+
+                    var optExpansions = ExpandOptionalAppends(valueExpr, armLocals, FilterAppendsToLocals(armLocals, setterScopedAppends));
+                    foreach (var (optLabel, optLocals) in optExpansions)
                     {
-                        candidates.Add(NeedsManual(
+                        var optId = optLabel is null ? armId : armId + CandidateIdSuffix.Opt + optLabel;
+                        var resolution = ResolveValueExpression(valueExpr, optLocals);
+                        if (!resolution.Resolved)
+                        {
+                            candidates.Add(NeedsManual(
+                                id: optId,
+                                sourceFile: fileName,
+                                annalClass: className,
+                                switchCase: armSwitchCase,
+                                eventProperty: eventProperty,
+                                reason: resolution.Reason));
+                            continue;
+                        }
+
+                        candidates.Add(BuildCandidate(
                             id: optId,
                             sourceFile: fileName,
                             annalClass: className,
                             switchCase: armSwitchCase,
                             eventProperty: eventProperty,
-                            reason: resolution.Reason));
-                        continue;
+                            resolved: resolution));
                     }
-
-                    candidates.Add(BuildCandidate(
-                        id: optId,
-                        sourceFile: fileName,
-                        annalClass: className,
-                        switchCase: armSwitchCase,
-                        eventProperty: eventProperty,
-                        resolved: resolution));
                 }
             }
         }
@@ -251,12 +263,53 @@ internal sealed class Extractor
     /// nearest enclosing block, e.g. a switch case body or an if branch). This recovers `value`
     /// in patterns like `string value; if (cond) { value = ...; SetEventProperty(_, value); }`.
     /// </summary>
-    private static IReadOnlyDictionary<string, ExpressionSyntax> BuildSetterScopedLocals(
-        InvocationExpressionSyntax setter,
-        IReadOnlyDictionary<string, ExpressionSyntax> methodLocals)
+    /// <remarks>
+    /// Returns one entry (label = null) for the unconditional case. When a pre-setter
+    /// `IfStatementSyntax` sibling holds branch-distinct SimpleAssignments to a single live
+    /// local, returns two entries (`then` / `else`) so the caller emits one candidate per
+    /// branch. Decisions:
+    /// <list type="bullet">
+    ///   <item>
+    ///     <b>Cross-product policy (PR2a)</b>: at most ONE branched local drives fanout. When
+    ///     multiple if-stmt siblings or multiple locals would qualify, only the FIRST encountered
+    ///     branched name (in reverse-sibling-then-DFS order) fans out; other locals fold into
+    ///     the unconditional source-latest override.
+    ///   </item>
+    ///   <item>
+    ///     <b>Single-branch-assign</b>: when only ONE branch assigns the local, the other branch
+    ///     keeps the local's prior state — runtime-faithfully a distinct value. We still emit
+    ///     two candidates; the unassigned branch resolves the local from the declared
+    ///     initializer (when present) or falls back to the unconditional `overrides[name]`
+    ///     (which today degrades to an `unresolved-local` slot).
+    ///   </item>
+    ///   <item>
+    ///     <b>Identical-rhs in both branches</b>: not branch-distinct — folds unconditionally
+    ///     via the existing source-latest reverse-iter rule.
+    ///   </item>
+    ///   <item>
+    ///     <b>Mutual exclusion with `ResolveIfBranchSuffix`</b>: when the setter is INSIDE an
+    ///     if-branch and a sibling setter exists in the other branch (driving an `#if:then` /
+    ///     `#if:else` suffix), branch-fanout is suppressed by the caller via
+    ///     <paramref name="suppressBranchFanout"/> so the id never carries two `#if:` segments.
+    ///   </item>
+    /// </list>
+    /// </remarks>
+    private static IReadOnlyList<(string? IfBranchLabel, IReadOnlyDictionary<string, ExpressionSyntax> Overrides)>
+        BuildSetterScopedLocals(
+            InvocationExpressionSyntax setter,
+            IReadOnlyDictionary<string, ExpressionSyntax> methodLocals,
+            MethodDeclarationSyntax method,
+            bool suppressBranchFanout)
     {
         var overrides = new Dictionary<string, ExpressionSyntax>(methodLocals, StringComparer.Ordinal);
         var alreadyOverridden = new HashSet<string>(StringComparer.Ordinal);
+
+        // First branched local found (innermost sibling, reverse source order). Once non-null,
+        // further branched candidates are ignored — the spec limits fanout to a single local.
+        string? branchedName = null;
+        ExpressionSyntax? branchedThen = null;
+        ExpressionSyntax? branchedElse = null;
+
         // Walk enclosing statement-containers (BlockSyntax or SwitchSectionSyntax) from innermost
         // to outermost; within each container, scan preceding sibling statements for simple
         // assignments to names that aren't already in the method-scope locals table.
@@ -285,6 +338,25 @@ internal sealed class Extractor
                 // that lexically follow the setter (e.g. inside the same if-branch), which must
                 // not influence the setter's value resolution.
                 if (stmt.Span.Contains(setter.Span)) continue;
+
+                // Branched-local detection — only fires for top-level if-stmt siblings (not
+                // nested ifs inside other stmts) and only for the FIRST qualifying name. A
+                // `value = "post-if"` assignment closer to the setter shadows the if-stmt via
+                // `alreadyOverridden`, matching today's source-latest-wins semantic.
+                if (!suppressBranchFanout && branchedName is null && stmt is IfStatementSyntax ifStmt)
+                {
+                    var detected = TryDetectBranchedLocal(ifStmt, methodLocals, alreadyOverridden);
+                    if (detected.Name is not null)
+                    {
+                        branchedName = detected.Name;
+                        branchedThen = detected.ThenRhs;
+                        branchedElse = detected.ElseRhs;
+                        // Shield the branched name from the unconditional fold below: its
+                        // value is owned by the per-branch override dicts.
+                        alreadyOverridden.Add(detected.Name);
+                    }
+                }
+
                 // Iterate descendants in reverse source order too, so multiple assignments to
                 // the same local *within a single sibling stmt* (e.g. `if (cond) { x="a"; x="b"; }`)
                 // also yield first-seen-wins = source-last-wins.
@@ -302,7 +374,118 @@ internal sealed class Extractor
                 }
             }
         }
-        return overrides;
+
+        if (branchedName is null)
+        {
+            return new[] { ((string?)null, (IReadOnlyDictionary<string, ExpressionSyntax>)overrides) };
+        }
+
+        // Resolve missing branches via the local's declared initializer. When neither branch
+        // assigns AND no initializer exists, fall back to the unconditional override (whatever
+        // outer-scope assignment happened to land in `overrides[name]` — typically nothing,
+        // leaving the name to degrade to an `unresolved-local` slot at FlattenConcat time).
+        var initializerFallback = LookupDeclaredInitializer(branchedName, method);
+        var thenValue = branchedThen ?? initializerFallback;
+        var elseValue = branchedElse ?? initializerFallback;
+
+        var thenOverrides = new Dictionary<string, ExpressionSyntax>(overrides, StringComparer.Ordinal);
+        if (thenValue is not null) thenOverrides[branchedName] = thenValue;
+        var elseOverrides = new Dictionary<string, ExpressionSyntax>(overrides, StringComparer.Ordinal);
+        if (elseValue is not null) elseOverrides[branchedName] = elseValue;
+
+        return new[]
+        {
+            ((string?)"then", (IReadOnlyDictionary<string, ExpressionSyntax>)thenOverrides),
+            ((string?)"else", (IReadOnlyDictionary<string, ExpressionSyntax>)elseOverrides),
+        };
+    }
+
+    /// <summary>
+    /// Inspect the THEN/ELSE branches of <paramref name="ifStmt"/> for SimpleAssignments to live
+    /// locals (names not in <paramref name="methodLocals"/> and not already overridden by a
+    /// closer-to-setter assignment) and return the first qualifying branched local. Returns
+    /// (null, null, null) when no branch-distinct local is present.
+    /// </summary>
+    /// <remarks>
+    /// Per-branch picks the SOURCE-LATEST assignment (mirrors the within-branch reverse-iter
+    /// rule). A name qualifies as "branched" when:
+    /// <list type="bullet">
+    ///   <item>Both branches assign it with DIFFERENT rhs nodes; or</item>
+    ///   <item>Only ONE branch assigns it — the other branch retains the local's prior state,
+    ///   which is runtime-faithfully a distinct value worth a separate candidate.</item>
+    /// </list>
+    /// Search order is the if-stmt's source-DFS assignment order so the FIRST qualifying name
+    /// wins deterministically.
+    /// </remarks>
+    private static (string? Name, ExpressionSyntax? ThenRhs, ExpressionSyntax? ElseRhs) TryDetectBranchedLocal(
+        IfStatementSyntax ifStmt,
+        IReadOnlyDictionary<string, ExpressionSyntax> methodLocals,
+        HashSet<string> alreadyOverridden)
+    {
+        // ELSE may be null (`if (cond) { ... }`). An empty else map drives the single-branch
+        // case: any THEN-branch assignment qualifies as branched (else-branch keeps prior state).
+        var thenAssigns = CollectBranchAssignments(ifStmt.Statement);
+        var elseAssigns = ifStmt.Else is null
+            ? new Dictionary<string, ExpressionSyntax>(StringComparer.Ordinal)
+            : CollectBranchAssignments(ifStmt.Else.Statement);
+
+        // Walk if-stmt-internal SimpleAssignments in source order; first qualifying name wins.
+        // Skip post-setter assigns? Not applicable — caller filters via stmt.Span checks.
+        foreach (var assign in ifStmt.DescendantNodes().OfType<AssignmentExpressionSyntax>())
+        {
+            if (!assign.IsKind(SyntaxKind.SimpleAssignmentExpression)) continue;
+            if (assign.Left is not IdentifierNameSyntax lhs) continue;
+            var name = lhs.Identifier.ValueText;
+            if (methodLocals.ContainsKey(name)) continue;
+            if (alreadyOverridden.Contains(name)) continue;
+
+            thenAssigns.TryGetValue(name, out var t);
+            elseAssigns.TryGetValue(name, out var e);
+            if (t is null && e is null) continue;
+            // Both branches assigning IDENTICAL rhs → fold unconditionally (existing reverse-
+            // iter logic handles it). Only branch-distinct rhs OR single-branch-assign qualifies.
+            if (t is not null && e is not null && SyntaxFactory.AreEquivalent(t, e)) continue;
+            return (name, t, e);
+        }
+        return (null, null, null);
+    }
+
+    /// <summary>
+    /// Build a name → source-latest-rhs map for SimpleAssignments inside one branch's
+    /// statement subtree. When the same local is assigned multiple times within the branch
+    /// (e.g. `value = "first"; value = "second";`), the LATER assignment wins, matching the
+    /// runtime semantic of "the last write before the branch ends is the observed value".
+    /// </summary>
+    private static Dictionary<string, ExpressionSyntax> CollectBranchAssignments(StatementSyntax branch)
+    {
+        var map = new Dictionary<string, ExpressionSyntax>(StringComparer.Ordinal);
+        foreach (var assign in branch.DescendantNodesAndSelf().OfType<AssignmentExpressionSyntax>())
+        {
+            if (!assign.IsKind(SyntaxKind.SimpleAssignmentExpression)) continue;
+            if (assign.Left is not IdentifierNameSyntax lhs) continue;
+            // DescendantNodesAndSelf yields source-document order, so a later assignment
+            // overwrites an earlier one — exactly the source-latest-wins semantic we want.
+            map[lhs.Identifier.ValueText] = assign.Right;
+        }
+        return map;
+    }
+
+    /// <summary>
+    /// Look up the declared initializer for <paramref name="name"/> when the local has exactly
+    /// one declarator with a non-null initializer in <paramref name="method"/>. Used to recover
+    /// the "no-assign branch keeps prior state" value during branch fanout when only one branch
+    /// assigns the local. Returns null when no usable initializer is found.
+    /// </summary>
+    private static ExpressionSyntax? LookupDeclaredInitializer(string name, MethodDeclarationSyntax method)
+    {
+        VariableDeclaratorSyntax? sole = null;
+        foreach (var declarator in method.DescendantNodes().OfType<VariableDeclaratorSyntax>())
+        {
+            if (declarator.Identifier.ValueText != name) continue;
+            if (sole is not null) return null;  // multi-declarator — ambiguous
+            sole = declarator;
+        }
+        return sole?.Initializer?.Value;
     }
 
     /// <summary>

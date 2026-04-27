@@ -2,16 +2,17 @@ using System;
 
 namespace XRL.Annals;
 
-// Regression test for the inner-loop reverse fix (CR R2 #1): given multiple
-// SimpleAssignments to the same local within a single sibling stmt, the
-// extractor must pick the source-LATEST assignment, not the first.
+// Regression test for the inner-loop reverse fix (CR R2 #1) AND the branch-
+// fanout extension (CR R3): given multiple SimpleAssignments to the same local
+// within a single sibling stmt, the extractor picks the source-LATEST per
+// branch, then emits ONE candidate per branch of the enclosing if/else.
 //
-// The expected pattern resolves to "alt" — the source-last assignment among
-// the if/else descendants. Per-branch fanout (which would yield two
-// candidates "second" and "alt", one per branch) is intentionally NOT asserted
-// here: that architectural extension is out of scope for #430. None of the 5
-// PR2a target files exhibit this shape (setter outside if/else with branch-
-// distinct SimpleAssignments inside).
+// Runtime values: "second" (then-branch, source-latest of `value="first"; value="second"`)
+// OR "alt" (else-branch). Both are reachable, so the extractor emits two
+// candidates (`#if:then` → `^second$`, `#if:else` → `^alt$`). None of the 5
+// PR2a target files exhibit this shape, but Resheph 16 byte-identicality is
+// preserved because no Resheph file has setter-outside-if with branch-distinct
+// SimpleAssignments either.
 [Serializable]
 public class LatestAssignmentInsideBlockFixture : HistoricEvent
 {
