@@ -1,0 +1,21 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "append_invalidated_by_reassignment#gospel",
+      "source_file": "append_invalidated_by_reassignment.cs",
+      "annal_class": "append_invalidated_by_reassignment",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "override",
+      "extracted_pattern": "^override$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:b51f01d7aba645251e6de6a248c39d6c5ea582eb8e7db2931ef76f3530c5b2b7"
+    }
+  ]
+}

@@ -570,21 +570,34 @@ internal sealed class Extractor
     /// Drop compound-append entries whose owning append statement starts at or after the setter's
     /// span. Appends that execute after the setter never influence the value the runtime stores,
     /// so they must neither fold into the resolved value nor fan out as `#opt:withN` candidates.
+    /// Also drop appends that are wiped by an intervening simple assignment to the same local —
+    /// `text += " mid"; text = "override"; setter` runs `text="override"` at the setter, not
+    /// `"override mid"`, so the stale `+=` must not chain onto the resolved value.
     /// </summary>
     private static IReadOnlyDictionary<string, List<AppendEntry>> FilterAppendsBeforeSetter(
         IReadOnlyDictionary<string, List<AppendEntry>> appendsByLocal,
         InvocationExpressionSyntax setter)
     {
         var dict = new Dictionary<string, List<AppendEntry>>(StringComparer.Ordinal);
+        var method = setter.FirstAncestorOrSelf<MethodDeclarationSyntax>();
         foreach (var (name, appends) in appendsByLocal)
         {
+            var resetSpans = method?.DescendantNodes()
+                .OfType<AssignmentExpressionSyntax>()
+                .Where(a => a.IsKind(SyntaxKind.SimpleAssignmentExpression)
+                    && a.Left is IdentifierNameSyntax lhs
+                    && lhs.Identifier.ValueText == name)
+                .Select(a => a.SpanStart)
+                .ToList() ?? new List<int>();
             var kept = new List<AppendEntry>();
             foreach (var entry in appends)
             {
                 // The rhs is the right-hand side of `local += rhs`; walk up to the owning
                 // assignment expression (its parent) and use its span as the append's span.
                 var assignSpanStart = entry.Right.Parent?.SpanStart ?? entry.Right.SpanStart;
-                if (assignSpanStart < setter.SpanStart) kept.Add(entry);
+                if (assignSpanStart >= setter.SpanStart) continue;
+                if (resetSpans.Any(r => r > assignSpanStart && r < setter.SpanStart)) continue;
+                kept.Add(entry);
             }
             if (kept.Count > 0) dict[name] = kept;
         }
