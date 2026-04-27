@@ -95,8 +95,10 @@ code pending")]` which has the same "discoverable but not run" semantics.
 1. L1 catalog test: every `Strip` has a matching `Restore*` (with allowlist).
 2. L1 catalog test: every `RestoreCapture` on a name-like group has a
    markup guard in the same file (allowlist exempts pre-rendered sinks).
-3. L2 DummyTarget tests for the four representative drop scenarios captured
-   in `ColorTagStaticAnalysisTests.cs`.
+3. L2 DummyTarget tests for the six representative drop scenarios captured in
+   `ColorTagStaticAnalysisTests.cs` (four canonical drops from the issue body
+   plus two adjacent-translator contract tests for `MessagePatternTranslator`
+   and `DescriptionTextTranslator`).
 
 ### Phase C — regression guard wiring
 
@@ -124,7 +126,7 @@ code pending")]` which has the same "discoverable but not run" semantics.
 
 ## Acceptance criteria
 
-- The four representative drop scenarios in `ColorTagStaticAnalysisTests.cs`
+- The six representative drop scenarios in `ColorTagStaticAnalysisTests.cs`
   flip from skipped to passing under one production PR (no skips remain
   cited to issue-376 outside of intentional, allowlisted exemptions).
 - The L1 catalog asserts non-empty coverage and rejects new `Strip`

@@ -140,15 +140,18 @@ public sealed class ColorTagStaticAnalysisTests
     [Ignore(SkipReason)]
     public void MessagePattern_CaptureRestoration_DoesNotDoubleWrapMarkupCarryingCapture()
     {
-        var (stripped, spans) = ColorAwareTranslationComposer.Strip(
-            "{{Y|You hit {{r|bloody Tam}} for {{R|10}} damage.}}");
+        const string source = "{{Y|You hit {{r|bloody Tam}} for {{R|10}} damage.}}";
 
-        // Scaffold: route through MessagePatternTranslator once a pattern is loaded.
-        // The expected behavior under issue-376 is "no nested {{r|{{r|...}}}}".
-        // Production wiring lands later; this assertion locks the contract.
-        var (firstPass, _) = ColorAwareTranslationComposer.Strip(stripped);
-        Assert.That(spans, Is.Not.Null);
-        Assert.That(firstPass, Does.Not.Contain("{{r|{{r|"));
+        var translated = MessagePatternTranslator.Translate(
+            source,
+            context: nameof(ColorTagStaticAnalysisTests));
+
+        // Contract: pass-through (no pattern) and pattern-match paths must both leave the
+        // inner `{{r|...}}` capture singly wrapped — never `{{r|{{r|...}}}}`.
+        Assert.That(
+            translated,
+            Does.Not.Contain("{{r|{{r|"),
+            "MessagePatternTranslator double-wrapped a capture that already carried its own markup.");
     }
 
     // Scenario 6: sentence-specific owner route (DescriptionTextTranslator) must
@@ -159,15 +162,17 @@ public sealed class ColorTagStaticAnalysisTests
     {
         // Two-sentence English description with the color span fully enclosing the
         // first sentence only.
-        var (stripped, spans) = ColorAwareTranslationComposer.Strip(
-            "{{W|This is a Tam.}} It is bloody.");
+        const string source = "{{W|This is a Tam.}} It is bloody.";
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(spans, Is.Not.Null);
-            Assert.That(stripped, Does.Not.Contain("{{W|"));
-            // Production hook: post-DescriptionTextTranslator output must keep the
-            // {{W|...}} span confined to sentence 1 with no leak into sentence 2.
-        });
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            source,
+            route: nameof(ColorTagStaticAnalysisTests));
+
+        // Contract: the {{W|...}} span must stay confined to sentence 1. A regression
+        // would let the opening `{{W|` survive into sentence 2 (e.g. as `{{W|...It is`).
+        Assert.That(
+            translated,
+            Does.Not.Match(@"\{\{W\|[^}]*It is bloody"),
+            "DescriptionTextTranslator spliced the {{W|...}} span across the sentence boundary.");
     }
 }
