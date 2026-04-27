@@ -604,7 +604,7 @@
       ],
       "status": "accepted",
       "reason": "",
-      "ja_template": "{t0}の地の近くで、{t1}は盗賊に捕らえられた。{t2}はその頭目を{t3}し、以後{t4}として知られるようになった。",
+      "ja_template": "{t0}の地の近くで、{t1}は盗賊に捕らえられた。{t2}はその頭目を{t3}殺害し、以後{t4}として知られるようになった。",
       "review_notes": "",
       "route": "annals",
       "en_template_hash": "sha256:d7a427046bef2d57a17cd123a903cc744a6d321df1c7c740ce82f6788546abf1"
@@ -651,7 +651,7 @@
       ],
       "status": "accepted",
       "reason": "",
-      "ja_template": "{t0}の地の近くで、{t1}は盗賊に捕らえられた。{t2}はその頭目を{t3}殺害し、以後{t4}として知られるようになった。",
+      "ja_template": "{t0}の地の近くで、{t1}は盗賊に捕らえられた。{t2}は捕囚のうちに{t3}年を苦しみ、ついには{t4}へ逃れ出た。",
       "review_notes": "",
       "route": "annals",
       "en_template_hash": "sha256:d69116f841491486ea177797db97fa58dc1109fed9b9fcc0badbbb0e764be619"
