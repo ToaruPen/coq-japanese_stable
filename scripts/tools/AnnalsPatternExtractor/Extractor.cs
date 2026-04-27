@@ -1438,6 +1438,14 @@ internal sealed class Extractor
     // Wrappers whose return value matches their first argument modulo capitalization /
     // HSE expansion — both invisible to a runtime regex match. Unwrapping lets us see
     // the inner pattern (e.g. `Grammar.InitCap(string.Format(...))`).
+    //
+    // Receiver matching is intentionally syntax-only (`m.Expression.ToString() == "Grammar"`),
+    // mirroring `KnownHelperReceivers` and the rest of the extractor — no Compilation /
+    // SemanticModel is built. Fully-qualified usages (`XRL.Core.Grammar.InitCap`) would slip
+    // through this check, but the decompiled `XRL.Annals/*.cs` corpus only emits the bare-
+    // identifier form. Migrating to SemanticModel-based symbol resolution would require
+    // building a Compilation with the full game's MetadataReferences and converting every
+    // string-match site for consistency, which is out of scope for #430. CR R9 noted; deferred.
     private static bool IsPatternPreservingWrapper(InvocationExpressionSyntax invoc)
     {
         if (IsExpandStringWrapper(invoc)) return true;
