@@ -1,0 +1,21 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "latest_assignment_wins#gospel",
+      "source_file": "latest_assignment_wins.cs",
+      "annal_class": "latest_assignment_wins",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "second",
+      "extracted_pattern": "^second$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:b445b0f2cdcb454472ae96ce0fa08703d74c7bdcbd6302dad3215b8549cd0b5d"
+    }
+  ]
+}

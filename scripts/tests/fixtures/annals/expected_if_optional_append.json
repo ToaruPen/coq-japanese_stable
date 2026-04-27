@@ -1,0 +1,37 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "if_optional_append#gospel#opt:base",
+      "source_file": "if_optional_append.cs",
+      "annal_class": "if_optional_append",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "Resheph married Rebekah.",
+      "extracted_pattern": "^Resheph\\ married\\ Rebekah\\.$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:c0fbaf7898f4024c5a5955bffecda6792a39ef1be52423bab147d089e7baea92"
+    },
+    {
+      "id": "if_optional_append#gospel#opt:with1",
+      "source_file": "if_optional_append.cs",
+      "annal_class": "if_optional_append",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "Resheph married Rebekah. They received a gift.",
+      "extracted_pattern": "^Resheph\\ married\\ Rebekah\\.\\ They\\ received\\ a\\ gift\\.$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:41b5a39a65097a6f9309f97d83bc599504463257f1c6bd250979122b1d4e4f63"
+    }
+  ]
+}

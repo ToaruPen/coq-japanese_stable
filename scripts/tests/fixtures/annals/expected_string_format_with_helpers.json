@@ -1,0 +1,40 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "string_format_with_helpers#gospel",
+      "source_file": "string_format_with_helpers.cs",
+      "annal_class": "string_format_with_helpers",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "Resheph cemented {0} friendship with {1} by marrying {2}.",
+      "extracted_pattern": "^Resheph\\ cemented\\ (.+?)\\ friendship\\ with\\ (.+?)\\ by\\ marrying\\ (.+?)\\.$",
+      "slots": [
+        {
+          "index": 0,
+          "type": "helper-call",
+          "raw": "Grammar.PossessivePronoun(\"he\")",
+          "default": "{t0}"
+        },
+        {
+          "index": 1,
+          "type": "helper-call",
+          "raw": "Faction.GetFormattedName(\"highly entropic beings\")",
+          "default": "{t1}"
+        },
+        {
+          "index": 2,
+          "type": "helper-call",
+          "raw": "NameMaker.MakeName(null, null, null, null, \"Qudish\")",
+          "default": "{t2}"
+        }
+      ],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:8fe9379242f37e12e83df8d5e41b2f3a1d97fe6579d920692dc2c00c9f6265f2"
+    }
+  ]
+}

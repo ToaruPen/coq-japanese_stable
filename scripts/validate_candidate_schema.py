@@ -36,6 +36,10 @@ VALID_SLOT_TYPES = {
     "string-format-arg",
     "unresolved-local",
     "hse-expansion",
+    "historykit-token",
+    "helper-call",
+    "format-arg",
+    "switch-branch",
 }
 VALID_EVENT_PROPERTIES = {"gospel", "tombInscription"}
 PLACEHOLDER_RE = re.compile(r"\{(t?)(\d+)\}")

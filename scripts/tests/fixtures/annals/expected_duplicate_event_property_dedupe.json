@@ -1,0 +1,21 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "duplicate_event_property_dedupe#gospel",
+      "source_file": "duplicate_event_property_dedupe.cs",
+      "annal_class": "duplicate_event_property_dedupe",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "Resheph triumphed.",
+      "extracted_pattern": "^Resheph\\ triumphed\\.$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:be2e56f0a988944532e02decca69ef2b004cab0ff26657a98b6b0cf7ddc42d6c"
+    }
+  ]
+}

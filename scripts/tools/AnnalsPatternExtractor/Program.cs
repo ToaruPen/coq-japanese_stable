@@ -65,10 +65,97 @@ foreach (var diag in extractor.Diagnostics)
     Console.Error.WriteLine($"[warn] {diag}");
 }
 
+// Pre-pass: collapse if-branch siblings whose patterns turned out structurally identical so the
+// `#if:then`/`#if:else` suffix only survives when the branches *differ*. We pair them by the
+// "id with the if-suffix stripped" — if all members of the group share one hash, replace their
+// ids with the stripped form and keep one. This realises Option A (dedupe identical shapes) for
+// if-branches without losing distinctness in the divergent-shape case.
+var groups = new Dictionary<string, List<CandidateEntry>>(StringComparer.Ordinal);
+foreach (var candidate in extractor.Candidates)
+{
+    var key = StripIfBranchSuffix(candidate.Id);
+    if (!groups.TryGetValue(key, out var bucket))
+    {
+        bucket = new List<CandidateEntry>();
+        groups[key] = bucket;
+    }
+    bucket.Add(candidate);
+}
+
+var collapsed = new List<CandidateEntry>();
+foreach (var bucket in groups.Values)
+{
+    if (bucket.Count == 1)
+    {
+        collapsed.Add(bucket[0]);
+        continue;
+    }
+    var firstHash = bucket[0].EnTemplateHash;
+    var allSameShape = bucket.All(c => c.EnTemplateHash == firstHash);
+    // Only collapse buckets where every member is `pending`. EnTemplateHash does not
+    // include status/reason, so a bucket of `needs_manual` candidates with identical
+    // empty patterns but DIFFERENT failure reasons would otherwise collapse to one,
+    // losing the per-branch reason.
+    var allPending = bucket.All(c => c.Status == "pending");
+    if (allPending && allSameShape)
+    {
+        var first = bucket[0];
+        first.Id = StripIfBranchSuffix(first.Id);
+        first.EnTemplateHash = HashHelper.ComputeEnTemplateHash(first);
+        collapsed.Add(first);
+    }
+    else
+    {
+        collapsed.AddRange(bucket);
+    }
+}
+
+var deduped = new List<CandidateEntry>();
+var seenById = new Dictionary<string, CandidateEntry>(StringComparer.Ordinal);
+foreach (var candidate in collapsed)
+{
+    if (seenById.TryGetValue(candidate.Id, out var prior))
+    {
+        // Hash equality alone is not enough to silently dedupe: EnTemplateHash does not
+        // include Status/Reason, so two `needs_manual` candidates with identical empty
+        // shapes but DIFFERENT failure reasons would otherwise merge and lose one reason.
+        var sameShape = prior.EnTemplateHash == candidate.EnTemplateHash;
+        var sameOutcome =
+            string.Equals(prior.Status, candidate.Status, StringComparison.Ordinal)
+            && string.Equals(prior.Reason, candidate.Reason, StringComparison.Ordinal);
+        if (sameShape && sameOutcome) continue;
+
+        Console.Error.WriteLine(
+            $"[error] duplicate candidate id with divergent outcome: {candidate.Id} "
+            + $"(priorHash={prior.EnTemplateHash}, newHash={candidate.EnTemplateHash}, "
+            + $"priorStatus={prior.Status}, newStatus={candidate.Status}, "
+            + $"priorReason={prior.Reason}, newReason={candidate.Reason}). "
+            + "Resolve via branch/path id suffixes (`#case:`, `#arm:`, `#opt:`) or preserve both reasons.");
+        return 1;
+    }
+    seenById[candidate.Id] = candidate;
+    deduped.Add(candidate);
+}
+
+static string StripIfBranchSuffix(string id)
+{
+    // Remove ONLY the `#if:<label>` segment(s), preserving downstream suffixes like
+    // `#arm:` or `#opt:`. Otherwise `foo#if:then#arm:0` and `foo#if:else#opt:with1`
+    // would both collapse to `foo` and either falsely merge or false-collide.
+    // Loop until no `#if:` remains so any future nested-if extraction stays in sync.
+    while (true)
+    {
+        var idx = id.IndexOf(CandidateIdSuffix.If, StringComparison.Ordinal);
+        if (idx < 0) return id;
+        var nextSuffix = id.IndexOf('#', idx + CandidateIdSuffix.If.Length);
+        id = nextSuffix < 0 ? id[..idx] : id[..idx] + id[nextSuffix..];
+    }
+}
+
 var doc = new CandidateDocument
 {
     SchemaVersion = "1",
-    Candidates = extractor.Candidates.OrderBy(c => c.Id, StringComparer.Ordinal).ToList(),
+    Candidates = deduped.OrderBy(c => c.Id, StringComparer.Ordinal).ToList(),
 };
 CandidateWriter.WriteToFile(output, doc);
 

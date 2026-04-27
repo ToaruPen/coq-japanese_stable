@@ -1,0 +1,21 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "escaped_braces_in_format#gospel",
+      "source_file": "escaped_braces_in_format.cs",
+      "annal_class": "escaped_braces_in_format",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "{0} struck Hero.",
+      "extracted_pattern": "^\\{0}\\ struck\\ Hero\\.$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:aff1c39482f49a99ec9048d190c1222811489ea904a8adf038236c8f0efb1dd0"
+    }
+  ]
+}

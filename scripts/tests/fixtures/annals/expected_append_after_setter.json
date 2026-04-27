@@ -1,0 +1,21 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "append_after_setter#gospel",
+      "source_file": "append_after_setter.cs",
+      "annal_class": "append_after_setter",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "base",
+      "extracted_pattern": "^base$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:2824ba410734b560aa064cc2128072c51621625bc6bb25d53188fc3e1f7291d5"
+    }
+  ]
+}

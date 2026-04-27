@@ -12,8 +12,8 @@
       "slots": [
         {
           "index": 0,
-          "type": "unresolved-local",
-          "raw": "mystery",
+          "type": "format-arg",
+          "raw": "SomeHelper.Compute()",
           "default": "{t0}"
         }
       ],
@@ -22,7 +22,7 @@
       "ja_template": "",
       "review_notes": "",
       "route": "annals",
-      "en_template_hash": "sha256:e732b3a280b10565a34fee9cba3c58a0ffa7266325af3d6d2848561b39016fd0"
+      "en_template_hash": "sha256:73b725f3ef1306874eaabccf55b20d26358f9000cc6340ceb3fa0fe12373b2fa"
     }
   ]
 }

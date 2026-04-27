@@ -1,0 +1,40 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "historykit_tokens#gospel",
+      "source_file": "historykit_tokens.cs",
+      "annal_class": "historykit_tokens",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "{0} was adopted by {1} who love {2}.",
+      "extracted_pattern": "^(.+?)\\ was\\ adopted\\ by\\ (.+?)\\ who\\ love\\ (.+?)\\.$",
+      "slots": [
+        {
+          "index": 0,
+          "type": "historykit-token",
+          "raw": "<entity.name>",
+          "default": "{t0}"
+        },
+        {
+          "index": 1,
+          "type": "historykit-token",
+          "raw": "<$chosenSpice.professions.!random>",
+          "default": "{t1}"
+        },
+        {
+          "index": 2,
+          "type": "historykit-token",
+          "raw": "<$chosenSpice.practices.!random>",
+          "default": "{t2}"
+        }
+      ],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:2e19049f5919fa0b80215755cf4f95bddf48fa6f8922296f3e61833cbf075c67"
+    }
+  ]
+}

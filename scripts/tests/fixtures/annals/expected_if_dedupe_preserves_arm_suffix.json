@@ -1,0 +1,37 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "if_dedupe_preserves_arm_suffix#gospel#arm:0",
+      "source_file": "if_dedupe_preserves_arm_suffix.cs",
+      "annal_class": "if_dedupe_preserves_arm_suffix",
+      "switch_case": "0",
+      "event_property": "gospel",
+      "sample_source": "base alpha",
+      "extracted_pattern": "^base\\ alpha$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:7e89309514fc2e36e7cbc548b0fc90b95edb35389beffbbac8cffe1890346bf0"
+    },
+    {
+      "id": "if_dedupe_preserves_arm_suffix#gospel#arm:_",
+      "source_file": "if_dedupe_preserves_arm_suffix.cs",
+      "annal_class": "if_dedupe_preserves_arm_suffix",
+      "switch_case": "_",
+      "event_property": "gospel",
+      "sample_source": "base beta",
+      "extracted_pattern": "^base\\ beta$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:1c5f87f8999320546df2a07d80bde5ccc2b33575713f884b81c19f072d8f5a97"
+    }
+  ]
+}

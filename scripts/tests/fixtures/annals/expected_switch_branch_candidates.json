@@ -2,9 +2,9 @@
   "schema_version": "1",
   "candidates": [
     {
-      "id": "switch_cases#gospel#case:0",
-      "source_file": "switch_cases.cs",
-      "annal_class": "switch_cases",
+      "id": "switch_branch_candidates#gospel#case:0",
+      "source_file": "switch_branch_candidates.cs",
+      "annal_class": "switch_branch_candidates",
       "switch_case": "0",
       "event_property": "gospel",
       "sample_source": "case zero gospel.",
@@ -18,9 +18,9 @@
       "en_template_hash": "sha256:4462bd69db58726a1731f053a8479943dbbc1cccb74aec68978f192d98cd5cc5"
     },
     {
-      "id": "switch_cases#gospel#case:1",
-      "source_file": "switch_cases.cs",
-      "annal_class": "switch_cases",
+      "id": "switch_branch_candidates#gospel#case:1",
+      "source_file": "switch_branch_candidates.cs",
+      "annal_class": "switch_branch_candidates",
       "switch_case": "1",
       "event_property": "gospel",
       "sample_source": "case one gospel.",
@@ -34,9 +34,9 @@
       "en_template_hash": "sha256:0e3610d9e7d85a17f459ba03b48183ceb2f2ba36afaaedcabb1143c623a0c093"
     },
     {
-      "id": "switch_cases#gospel#case:default",
-      "source_file": "switch_cases.cs",
-      "annal_class": "switch_cases",
+      "id": "switch_branch_candidates#gospel#case:default",
+      "source_file": "switch_branch_candidates.cs",
+      "annal_class": "switch_branch_candidates",
       "switch_case": "default",
       "event_property": "gospel",
       "sample_source": "default gospel.",

@@ -1,0 +1,37 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "mixed_required_and_optional_append#gospel#opt:base",
+      "source_file": "mixed_required_and_optional_append.cs",
+      "annal_class": "mixed_required_and_optional_append",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "base always",
+      "extracted_pattern": "^base\\ always$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:2140c6de0c7bac64f8de67c9408a51179eed89ec0be6814dea048df35992a308"
+    },
+    {
+      "id": "mixed_required_and_optional_append#gospel#opt:with1",
+      "source_file": "mixed_required_and_optional_append.cs",
+      "annal_class": "mixed_required_and_optional_append",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "base maybe always",
+      "extracted_pattern": "^base\\ maybe\\ always$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:117b8ae281abdc1e7de07e333ad9dee4964c47e91baf615927f1c80adaa289a5"
+    }
+  ]
+}

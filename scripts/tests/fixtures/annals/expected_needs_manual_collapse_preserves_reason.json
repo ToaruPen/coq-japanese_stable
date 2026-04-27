@@ -1,0 +1,37 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "needs_manual_collapse_preserves_reason#gospel#if:else",
+      "source_file": "needs_manual_collapse_preserves_reason.cs",
+      "annal_class": "needs_manual_collapse_preserves_reason",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "",
+      "extracted_pattern": "",
+      "slots": [],
+      "status": "needs_manual",
+      "reason": "unsupported expression for PR1 AST subset: ElementAccessExpression 'new[] { \"x\" }[0]'",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:4af8b073c3946dbda6f29fa0b8cab26f5b11015ccdc56bafc8839c9b756bfac7"
+    },
+    {
+      "id": "needs_manual_collapse_preserves_reason#gospel#if:then",
+      "source_file": "needs_manual_collapse_preserves_reason.cs",
+      "annal_class": "needs_manual_collapse_preserves_reason",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "",
+      "extracted_pattern": "",
+      "slots": [],
+      "status": "needs_manual",
+      "reason": "unsupported expression for PR1 AST subset: ConditionalExpression 'true ? \"x\" : \"y\"'",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:4af8b073c3946dbda6f29fa0b8cab26f5b11015ccdc56bafc8839c9b756bfac7"
+    }
+  ]
+}

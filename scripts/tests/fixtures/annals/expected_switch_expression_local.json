@@ -1,0 +1,53 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "switch_expression_local#gospel#arm:0",
+      "source_file": "switch_expression_local.cs",
+      "annal_class": "switch_expression_local",
+      "switch_case": "0",
+      "event_property": "gospel",
+      "sample_source": "deep in the marsh, Resheph discovered Joppa.",
+      "extracted_pattern": "^deep\\ in\\ the\\ marsh,\\ Resheph\\ discovered\\ Joppa\\.$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:b162bff05d18f4b530497e19df21e7f13c0a73d1cc273bc2e71ab4a53457eb24"
+    },
+    {
+      "id": "switch_expression_local#gospel#arm:1",
+      "source_file": "switch_expression_local.cs",
+      "annal_class": "switch_expression_local",
+      "switch_case": "1",
+      "event_property": "gospel",
+      "sample_source": "while wandering, Resheph discovered Joppa.",
+      "extracted_pattern": "^while\\ wandering,\\ Resheph\\ discovered\\ Joppa\\.$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:a01e5b4d93dffa726878342ab27d0c07149974f78a653cbad8eacec7cb46f4d5"
+    },
+    {
+      "id": "switch_expression_local#gospel#arm:_",
+      "source_file": "switch_expression_local.cs",
+      "annal_class": "switch_expression_local",
+      "switch_case": "_",
+      "event_property": "gospel",
+      "sample_source": "deep in the wilds, Resheph discovered Joppa.",
+      "extracted_pattern": "^deep\\ in\\ the\\ wilds,\\ Resheph\\ discovered\\ Joppa\\.$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:d8e3daf585e78c7c10c8e248a1d2db796e3e91f1d594af9cf22ce3b28a5333d3"
+    }
+  ]
+}

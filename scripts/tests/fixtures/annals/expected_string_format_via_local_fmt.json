@@ -1,0 +1,21 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "string_format_via_local_fmt#gospel",
+      "source_file": "string_format_via_local_fmt.cs",
+      "annal_class": "string_format_via_local_fmt",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "Alice struck Bob.",
+      "extracted_pattern": "^Alice\\ struck\\ Bob\\.$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:1beaf842bafeb12146c98e2047477336e2cfb76310faa83eddf65ae945d21ccf"
+    }
+  ]
+}

@@ -37,20 +37,45 @@ def _run_extractor(include: str, output: Path) -> subprocess.CompletedProcess[st
     )
 
 
+def _discover_fixtures() -> list[str]:
+    """Discover fixture names from `expected_*.json` files paired with a sibling `.cs` file.
+
+    Auto-discovery prevents the parametrize list from rotting when new fixtures are added.
+    Sorted to keep test-run order deterministic. Fails loud at import time if the fixture
+    directory is empty — pytest 8.x silently `skip`s an empty `parametrize` list, which
+    would let CI go green even with no extractor coverage.
+
+    Also fails loud on orphans in either direction: every `expected_*.json` must have a
+    sibling `<name>.cs`, and every `<name>.cs` (excluding the canonical `expected_*.json`
+    pairing) must have a sibling `expected_<name>.json`. CR R8: silently dropping
+    orphans lets a fixture go untested or an expected golden go unbacked.
+    """
+    expected_names = {p.name.removeprefix("expected_").removesuffix(".json") for p in FIXTURES.glob("expected_*.json")}
+    source_names = {p.stem for p in FIXTURES.glob("*.cs")}
+
+    missing_source = expected_names - source_names
+    missing_expected = source_names - expected_names
+    if missing_source or missing_expected:
+        details: list[str] = []
+        if missing_source:
+            details.append("expected_*.json without sibling .cs: " + ", ".join(sorted(missing_source)))
+        if missing_expected:
+            details.append(".cs without sibling expected_*.json: " + ", ".join(sorted(missing_expected)))
+        msg = f"orphaned annals extractor fixtures under {FIXTURES}: " + "; ".join(details)
+        raise RuntimeError(msg)
+
+    fixtures = sorted(expected_names & source_names)
+    if not fixtures:
+        msg = f"no annals extractor fixtures discovered under {FIXTURES}"
+        raise RuntimeError(msg)
+    return fixtures
+
+
+_FIXTURES = _discover_fixtures()
+
+
 @pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
-@pytest.mark.parametrize(
-    "fixture",
-    [
-        "simple_concat",
-        "string_format",
-        "switch_cases",
-        "unresolved_variable",
-        "concat_initialized_local",
-        "cyclic_locals",
-        "partial_rollback",
-        "hse_marker_year",
-    ],
-)
+@pytest.mark.parametrize("fixture", _FIXTURES)
 def test_extractor_matches_golden(fixture: str, tmp_path: Path) -> None:
     """Extractor output for each fixture must match the committed golden JSON exactly."""
     output = tmp_path / f"{fixture}.json"
@@ -70,19 +95,7 @@ def test_extractor_matches_golden(fixture: str, tmp_path: Path) -> None:
     assert actual == expected, f"extractor output diverged from golden for {fixture}"
 
 
-@pytest.mark.parametrize(
-    "fixture",
-    [
-        "simple_concat",
-        "string_format",
-        "switch_cases",
-        "unresolved_variable",
-        "concat_initialized_local",
-        "cyclic_locals",
-        "partial_rollback",
-        "hse_marker_year",
-    ],
-)
+@pytest.mark.parametrize("fixture", _FIXTURES)
 def test_csharp_and_python_hashes_match(fixture: str) -> None:
     """The C# extractor and Python translator must compute the same en_template_hash."""
     import importlib.util  # noqa: PLC0415
