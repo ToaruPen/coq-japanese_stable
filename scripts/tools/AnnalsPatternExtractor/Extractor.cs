@@ -1120,6 +1120,31 @@ internal sealed class Extractor
                 return true;
             }
 
+            case InvocationExpressionSyntax invoc when IsCapitalizingFirstCharWrapper(invoc):
+            {
+                if (invoc.ArgumentList.Arguments.Count < 1)
+                {
+                    unsupportedReason = "InitCap/InitialCap with no arguments";
+                    return false;
+                }
+                var savedPieceCount = pieces.Count;
+                if (!FlattenConcat(invoc.ArgumentList.Arguments[0].Expression, locals, pieces, slots, visited, out unsupportedReason)) return false;
+                // Capitalize the first character of the first piece emitted by the wrapped
+                // expression — runtime `Grammar.InitCap` / `InitialCap` only touches the first
+                // character. Skip if the inner emitted nothing, an empty piece, or a slot
+                // placeholder (`{N}`): in those cases the runtime-capitalized character is
+                // captured by the slot's `(.+?)` group and the regex still matches.
+                if (pieces.Count > savedPieceCount)
+                {
+                    var first = pieces[savedPieceCount];
+                    if (first.Length > 0 && first[0] != '{')
+                    {
+                        pieces[savedPieceCount] = char.ToUpperInvariant(first[0]) + first[1..];
+                    }
+                }
+                return true;
+            }
+
             case InvocationExpressionSyntax invoc when IsPatternPreservingWrapper(invoc):
                 return FlattenConcat(invoc.ArgumentList.Arguments[0].Expression, locals, pieces, slots, visited, out unsupportedReason);
 
@@ -1454,9 +1479,13 @@ internal sealed class Extractor
         };
     }
 
-    // Wrappers whose return value matches their first argument modulo capitalization /
-    // HSE expansion — both invisible to a runtime regex match. Unwrapping lets us see
-    // the inner pattern (e.g. `Grammar.InitCap(string.Format(...))`).
+    // Wrappers whose return value matches their first argument modulo HSE expansion (and
+    // word-level title-casing for `MakeTitleCase` / `MakeTitleCaseWithArticle`, which currently
+    // wrap slot-bound identifiers only — the slot's `(.+?)` group captures whatever case the
+    // runtime emits). `Grammar.InitCap` / `InitialCap` are NOT included here: they capitalize
+    // the first character of the result, which IS visible to a case-sensitive regex when the
+    // pattern starts with a literal. Those go through a dedicated branch in FlattenConcat that
+    // uppercases the first emitted literal piece.
     //
     // Receiver matching is intentionally syntax-only (`m.Expression.ToString() == "Grammar"`),
     // mirroring `KnownHelperReceivers` and the rest of the extractor — no Compilation /
@@ -1464,7 +1493,7 @@ internal sealed class Extractor
     // through this check, but the decompiled `XRL.Annals/*.cs` corpus only emits the bare-
     // identifier form. Migrating to SemanticModel-based symbol resolution would require
     // building a Compilation with the full game's MetadataReferences and converting every
-    // string-match site for consistency, which is out of scope for #430. CR R9 noted; deferred.
+    // string-match site for consistency, which is out of scope. CR R9 noted; deferred.
     private static bool IsPatternPreservingWrapper(InvocationExpressionSyntax invoc)
     {
         if (IsExpandStringWrapper(invoc)) return true;
@@ -1472,9 +1501,21 @@ internal sealed class Extractor
         if (invoc.Expression is MemberAccessExpressionSyntax m
             && m.Expression.ToString() == "Grammar")
         {
-            return m.Name.Identifier.ValueText is "InitCap" or "InitialCap" or "MakeTitleCase" or "MakeTitleCaseWithArticle";
+            return m.Name.Identifier.ValueText is "MakeTitleCase" or "MakeTitleCaseWithArticle";
         }
         return false;
+    }
+
+    // `Grammar.InitCap(s)` / `Grammar.InitialCap(s)` uppercase only the first character of `s`
+    // at runtime. When the wrapped expression flattens to a pattern starting with a literal
+    // (e.g. MeetFaction's `"deep in ..."`), the case-sensitive runtime regex needs the literal's
+    // first char uppercased — `^deep` would not match the runtime-emitted `Deep`.
+    private static bool IsCapitalizingFirstCharWrapper(InvocationExpressionSyntax invoc)
+    {
+        if (invoc.ArgumentList.Arguments.Count < 1) return false;
+        if (invoc.Expression is not MemberAccessExpressionSyntax m) return false;
+        if (m.Expression.ToString() != "Grammar") return false;
+        return m.Name.Identifier.ValueText is "InitCap" or "InitialCap";
     }
 
     private static string GetFirstStringArg(InvocationExpressionSyntax invoc)

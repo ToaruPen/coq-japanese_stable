@@ -1,0 +1,28 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "initcap_capitalizes_first_literal#gospel",
+      "source_file": "initcap_capitalizes_first_literal.cs",
+      "annal_class": "initcap_capitalizes_first_literal",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "Deep in the wilds, {0} wandered.",
+      "extracted_pattern": "^Deep\\ in\\ the\\ wilds,\\ (.+?)\\ wandered\\.$",
+      "slots": [
+        {
+          "index": 0,
+          "type": "historykit-token",
+          "raw": "<entity.name>",
+          "default": "{t0}"
+        }
+      ],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:6ea5a7e5d6a97728788245478766e254dd9540fa3abc7f413dab0607bbc95f54"
+    }
+  ]
+}
