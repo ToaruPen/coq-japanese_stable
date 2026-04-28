@@ -456,7 +456,7 @@ def _find_source_markup_token_drift(
     source_relative_path: Path,
 ) -> list[str]:
     if not source_path.exists():
-        return [f"Source XML not found for {path.name}: {source_path}"]
+        return [f"Source XML not found for {path.name}: {source_relative_path.as_posix()}"]
 
     try:
         source_root = ET.parse(source_path).getroot()  # noqa: S314 -- local repository XML validation tool

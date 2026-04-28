@@ -359,6 +359,29 @@ def test_source_root_maps_nested_jp_xml_to_base_xml(
     assert "'&y': 1" in captured.out
 
 
+def test_source_root_missing_source_warning_uses_relative_path(tmp_path: Path) -> None:
+    """Missing source XML warning is stable across source-root spelling."""
+    localization = tmp_path / "Localization"
+    source_root = tmp_path / "Base"
+    localized_xml = localization / "ObjectBlueprints" / "Creatures.jp.xml"
+    _write_xml(localized_xml, '<objects><object Name="Glowfish"/></objects>')
+
+    absolute_result = validate_xml_file(
+        localized_xml,
+        source_root=source_root,
+        validation_roots=[localization],
+    )
+    relative_result = validate_xml_file(
+        localized_xml,
+        source_root=Path("Base"),
+        validation_roots=[localization],
+    )
+
+    expected_warning = "Source XML not found for Creatures.jp.xml: ObjectBlueprints/Creatures.xml"
+    assert absolute_result.warnings == [expected_warning]
+    assert relative_result.warnings == [expected_warning]
+
+
 def test_source_root_comparison_is_opt_in(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """Source-vs-localized markup comparison is not run without ``--source-root``."""
     localized_xml = tmp_path / "Conversations.jp.xml"
