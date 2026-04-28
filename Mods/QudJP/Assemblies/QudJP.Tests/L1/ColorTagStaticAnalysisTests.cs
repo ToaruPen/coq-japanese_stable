@@ -91,7 +91,9 @@ public sealed class ColorTagStaticAnalysisTests
         Assert.Multiple(() =>
         {
             Assert.That(translated, Is.True);
-            Assert.That(messageTranslated, Does.Contain("血まみれの").And.Contain("殺された"));
+            Assert.That(
+                messageTranslated,
+                Is.EqualTo("&r{{r|血まみれの}}タム、ドロマド商団 [座っている]&yに殺された。"));
             Assert.That(messageTranslated, Does.Not.Match("\\[座ってい&[a-zA-Z]る\\]"));
         });
     }
