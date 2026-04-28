@@ -1,3 +1,4 @@
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import pytest
@@ -298,3 +299,362 @@ def test_empty_object_stub_not_flagged(tmp_path: Path, capsys: pytest.CaptureFix
 
     assert result == 0
     assert "Empty text" not in captured.out
+
+
+def test_source_root_reports_markup_drift_in_element_text_and_attributes(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """``--source-root`` compares source and localized XML markup tokens."""
+    localization = tmp_path / "Localization"
+    source_root = tmp_path / "Base"
+    localized_xml = localization / "Conversations.jp.xml"
+    source_xml = source_root / "Conversations.xml"
+    _write_xml(
+        source_xml,
+        (
+            '<conversations><node ID="Greet" Name="{{Y|Joppa}}">'
+            "<text>{{R|Alert}} &amp;W =player.name=</text></node></conversations>"
+        ),
+    )
+    _write_xml(
+        localized_xml,
+        '<conversations><node ID="Greet" Name="Joppa"><text>{{R|警告}} =player.name=</text></node></conversations>',
+    )
+
+    result = main(["--source-root", str(source_root), str(localized_xml)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert "Markup token drift" in captured.out
+    assert "@Name" in captured.out
+    assert "text()" in captured.out
+    assert "'&W': 1" in captured.out
+    assert "'{{Y|': 1" in captured.out
+
+
+def test_source_root_maps_nested_jp_xml_to_base_xml(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Nested ``ObjectBlueprints/Foo.jp.xml`` maps to ``ObjectBlueprints/Foo.xml``."""
+    localization = tmp_path / "Localization"
+    source_root = tmp_path / "Base"
+    localized_xml = localization / "ObjectBlueprints" / "Creatures.jp.xml"
+    source_xml = source_root / "ObjectBlueprints" / "Creatures.xml"
+    _write_xml(
+        source_xml,
+        '<objects><object Name="Glowfish" Description="A &amp;Cglowing&amp;y fish."/></objects>',
+    )
+    _write_xml(
+        localized_xml,
+        '<objects><object Name="Glowfish" Description="光る魚。"/></objects>',
+    )
+
+    result = main(["--source-root", str(source_root), str(localization)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert "Creatures.jp.xml" in captured.out
+    assert "ObjectBlueprints/Creatures.xml" in captured.out
+    assert "@Description" in captured.out
+    assert "'&C': 1" in captured.out
+    assert "'&y': 1" in captured.out
+
+
+def test_source_root_missing_source_warning_uses_relative_path(tmp_path: Path) -> None:
+    """Missing source XML warning is stable across source-root spelling."""
+    localization = tmp_path / "Localization"
+    source_root = tmp_path / "Base"
+    localized_xml = localization / "ObjectBlueprints" / "Creatures.jp.xml"
+    _write_xml(localized_xml, '<objects><object Name="Glowfish"/></objects>')
+
+    absolute_result = validate_xml_file(
+        localized_xml,
+        source_root=source_root,
+        validation_roots=[localization],
+    )
+    relative_result = validate_xml_file(
+        localized_xml,
+        source_root=Path("Base"),
+        validation_roots=[localization],
+    )
+
+    expected_warning = "Source XML not found for Creatures.jp.xml: ObjectBlueprints/Creatures.xml"
+    assert absolute_result.warnings == [expected_warning]
+    assert relative_result.warnings == [expected_warning]
+
+
+def test_source_root_comparison_is_opt_in(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """Source-vs-localized markup comparison is not run without ``--source-root``."""
+    localized_xml = tmp_path / "Conversations.jp.xml"
+    _write_xml(localized_xml, "<conversations><text>警告</text></conversations>")
+
+    result = main([str(localized_xml)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert "Markup token drift" not in captured.out
+
+
+def test_source_root_does_not_report_source_only_overlay_values(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Source-only values are inherited by merge overlays, so they are not drift."""
+    localization = tmp_path / "Localization"
+    source_root = tmp_path / "Base"
+    localized_xml = localization / "Skills.jp.xml"
+    source_xml = source_root / "Skills.xml"
+    _write_xml(
+        source_xml,
+        '<skills><skill Name="Acrobatics" Description="{{G|Jump}}"/></skills>',
+    )
+    _write_xml(localized_xml, '<skills><skill Name="Acrobatics"/></skills>')
+
+    result = main(["--source-root", str(source_root), str(localized_xml)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert "Markup token drift" not in captured.out
+
+
+def test_source_root_matches_keyed_elements_when_sibling_order_differs(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Element matching prefers stable IDs over sibling position."""
+    localization = tmp_path / "Localization"
+    source_root = tmp_path / "Base"
+    localized_xml = localization / "Conversations.jp.xml"
+    source_xml = source_root / "Conversations.xml"
+    _write_xml(
+        source_xml,
+        (
+            '<conversations><conversation ID="A"><node ID="Start"><text>{{R|Alert}}</text></node></conversation>'
+            '<conversation ID="B"><node ID="Start"><text>{{G|Safe}}</text></node></conversation></conversations>'
+        ),
+    )
+    _write_xml(
+        localized_xml,
+        (
+            '<conversations><conversation ID="B"><node ID="Start"><text>{{G|安全}}</text></node></conversation>'
+            '<conversation ID="A"><node ID="Start"><text>警告</text></node></conversation></conversations>'
+        ),
+    )
+
+    result = main(["--source-root", str(source_root), str(localized_xml)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert captured.out.count("Markup token drift") == 1
+    assert "conversation[@ID='A'][1]" in captured.out
+    assert "'{{R|': 1" in captured.out
+    assert "'{{G|': 1" not in captured.out
+
+
+def test_source_root_matches_duplicate_keyed_conditionals_when_sibling_order_differs(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Duplicate keyed conditional siblings use stable attributes before position."""
+    localization = tmp_path / "Localization"
+    source_root = tmp_path / "Base"
+    localized_xml = localization / "Conversations.jp.xml"
+    source_xml = source_root / "Conversations.xml"
+    _write_xml(
+        source_xml,
+        (
+            '<conversations><conversation ID="Village">'
+            '<node ID="Ask" IfHaveState="met"><text>{{G|Met}}</text></node>'
+            '<node ID="Ask" IfHaveState="new"><text>{{R|New}}</text></node>'
+            "</conversation></conversations>"
+        ),
+    )
+    _write_xml(
+        localized_xml,
+        (
+            '<conversations><conversation ID="Village">'
+            '<node ID="Ask" IfHaveState="new"><text>{{R|新規}}</text></node>'
+            '<node ID="Ask" IfHaveState="met"><text>{{G|既知}}</text></node>'
+            "</conversation></conversations>"
+        ),
+    )
+
+    result = main(["--source-root", str(source_root), str(localized_xml)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert "Markup token drift" not in captured.out
+
+
+def test_source_root_reports_name_attribute_drift_when_name_is_translated(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """ID-less elements still compare ``@Name`` when the name itself is translated."""
+    localization = tmp_path / "Localization"
+    source_root = tmp_path / "Base"
+    localized_xml = localization / "ObjectBlueprints.jp.xml"
+    source_xml = source_root / "ObjectBlueprints.xml"
+    _write_xml(source_xml, '<objects><object Name="{{R|Alert}}"/></objects>')
+    _write_xml(localized_xml, '<objects><object Name="警告"/></objects>')
+
+    result = main(["--source-root", str(source_root), str(localized_xml)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert "Markup token drift" in captured.out
+    assert "@Name" in captured.out
+    assert "'{{R|': 1" in captured.out
+
+
+def test_source_root_uses_translated_name_fallback_for_description_without_false_positive(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Translated ID-less ``@Name`` still maps sibling attributes to the source element."""
+    localization = tmp_path / "Localization"
+    source_root = tmp_path / "Base"
+    localized_xml = localization / "ObjectBlueprints.jp.xml"
+    source_xml = source_root / "ObjectBlueprints.xml"
+    _write_xml(
+        source_xml,
+        '<objects><object Name="{{R|Alert}}" Description="{{G|Important}}"/></objects>',
+    )
+    _write_xml(
+        localized_xml,
+        '<objects><object Name="警告" Description="{{G|重要}}"/></objects>',
+    )
+
+    result = main(["--source-root", str(source_root), str(localized_xml)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert "Markup token drift" in captured.out
+    assert "@Name" in captured.out
+    assert "@Description" not in captured.out
+
+
+def test_source_root_reports_description_drift_when_name_is_translated(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Translated ID-less ``@Name`` fallback applies to all units on that element."""
+    localization = tmp_path / "Localization"
+    source_root = tmp_path / "Base"
+    localized_xml = localization / "ObjectBlueprints.jp.xml"
+    source_xml = source_root / "ObjectBlueprints.xml"
+    _write_xml(
+        source_xml,
+        '<objects><object Name="{{R|Alert}}" Description="{{G|Important}}"/></objects>',
+    )
+    _write_xml(localized_xml, '<objects><object Name="警告" Description="重要"/></objects>')
+
+    result = main(["--source-root", str(source_root), str(localized_xml)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert captured.out.count("Markup token drift") == 2
+    assert "@Name" in captured.out
+    assert "@Description" in captured.out
+    assert "'{{R|': 1" in captured.out
+    assert "'{{G|': 1" in captured.out
+
+
+def test_source_root_rematches_translated_name_siblings_by_stable_attributes(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Translated ID-less ``@Name`` siblings rematch by stable attrs before position."""
+    localization = tmp_path / "Localization"
+    source_root = tmp_path / "Base"
+    localized_xml = localization / "Worlds.jp.xml"
+    source_xml = source_root / "Worlds.xml"
+    _write_xml(
+        source_xml,
+        (
+            '<worlds><world Name="JoppaWorld">'
+            '<zone Name="North" Level="10" x="0" y="0" Description="{{G|Safe}}"/>'
+            '<zone Name="South" Level="11" x="0" y="0" Description="{{R|Danger}}"/>'
+            "</world></worlds>"
+        ),
+    )
+    _write_xml(
+        localized_xml,
+        (
+            '<worlds><world Name="JoppaWorld">'
+            '<zone Name="南" Level="11" x="0" y="0" Description="危険"/>'
+            '<zone Name="北" Level="10" x="0" y="0" Description="{{G|安全}}"/>'
+            "</world></worlds>"
+        ),
+    )
+
+    result = main(["--source-root", str(source_root), str(localized_xml)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert captured.out.count("Markup token drift") == 1
+    assert "zone[@Name='South'][1] @Description" in captured.out
+    assert "'{{R|': 1" in captured.out
+    assert "'{{G|': 1" not in captured.out
+
+
+def test_source_root_maps_reordered_keyed_children_under_positional_parent(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Children inherit a positionally matched translated parent source path."""
+    localization = tmp_path / "Localization"
+    source_root = tmp_path / "Base"
+    localized_xml = localization / "Conversations.jp.xml"
+    source_xml = source_root / "Conversations.xml"
+    _write_xml(
+        source_xml,
+        (
+            '<conversations><conversation Name="Village">'
+            '<node ID="Keep"><text>{{G|Keep}}</text></node>'
+            '<node ID="Drop"><text>{{R|Drop}}</text></node>'
+            "</conversation></conversations>"
+        ),
+    )
+    _write_xml(
+        localized_xml,
+        (
+            '<conversations><conversation Name="村">'
+            '<node ID="Drop"><text>削除</text></node>'
+            '<node ID="Keep"><text>{{G|維持}}</text></node>'
+            "</conversation></conversations>"
+        ),
+    )
+
+    result = main(["--source-root", str(source_root), str(localized_xml)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert captured.out.count("Markup token drift") == 1
+    assert "conversation[@Name='Village'][1]/node[@ID='Drop'][1]/text[1] text()" in captured.out
+    assert "'{{R|': 1" in captured.out
+    assert "'{{G|': 1" not in captured.out
+
+
+def test_source_root_parse_os_error_reports_deterministic_warning(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Source XML read failures report a stable source-relative warning."""
+    localization = tmp_path / "Localization"
+    source_root = tmp_path / "Base"
+    localized_xml = localization / "ObjectBlueprints" / "Creatures.jp.xml"
+    source_xml = source_root / "ObjectBlueprints" / "Creatures.xml"
+    _write_xml(localized_xml, '<objects><object Name="Glowfish"/></objects>')
+    _write_xml(source_xml, '<objects><object Name="Glowfish"/></objects>')
+
+    original_parse = ET.parse
+
+    def fail_source_parse(path: Path) -> "ET.ElementTree[ET.Element]":
+        if Path(path) == source_xml:
+            message = "permission denied"
+            raise OSError(message)
+        return original_parse(path)
+
+    monkeypatch.setattr(ET, "parse", fail_source_parse)
+
+    result = validate_xml_file(
+        localized_xml,
+        source_root=source_root,
+        validation_roots=[localization],
+    )
+
+    assert result.warnings == [
+        "Source XML read failed for ObjectBlueprints/Creatures.xml: permission denied",
+    ]
