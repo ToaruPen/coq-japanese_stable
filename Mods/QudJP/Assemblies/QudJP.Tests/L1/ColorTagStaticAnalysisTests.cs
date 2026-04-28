@@ -120,14 +120,12 @@ public sealed class ColorTagStaticAnalysisTests
     [Test]
     public void Translator_IsIdempotent_OnAlreadyLocalizedColoredDisplayName()
     {
-        const string preLocalized = "{{r|血まみれの}}タム、ドロマド商人 [座っている]";
-
-        var first = ColorAwareTranslationComposer.TranslatePreservingColors(preLocalized);
+        var first = ColorAwareTranslationComposer.TranslatePreservingColors(ColorTaggedDisplayNameText);
         var second = ColorAwareTranslationComposer.TranslatePreservingColors(first);
 
         Assert.Multiple(() =>
         {
-            Assert.That(first, Is.EqualTo(preLocalized));
+            Assert.That(first, Is.EqualTo(ColorTaggedDisplayNameText));
             Assert.That(second, Is.EqualTo(first));
         });
     }
