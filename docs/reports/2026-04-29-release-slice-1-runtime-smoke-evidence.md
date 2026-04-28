@@ -35,7 +35,7 @@ Key files and results:
 - `sync-mod-dry-run.txt` — `python3.12 scripts/sync_mod.py --dry-run`
 - `sync-mod-real.txt` — `python3.12 scripts/sync_mod.py`
 - `translation-checker-final-smoke.txt` and `.exit.txt` — blocked checker run, exit `1`
-- `direct-rosetta-launch-summary.txt` — boot-only fallback launched through Rosetta, terminated after 45 seconds, exit `143`
+- `direct-rosetta-launch-summary.txt` — boot-only fallback launched through Rosetta, terminated with SIGTERM after 45 seconds, exit `143`
 - `direct-rosetta-after.txt` — fresh `Player.log` mtime `Apr 29 00:12:50 2026`
 - `runtime-logs-after-direct/Player.log` — copied fresh runtime log
 - `player-log-marker-counts-after-direct.txt` — QudJP marker summary
@@ -49,7 +49,7 @@ Key files and results:
 | Worktree | correct worktree path and branch; no main checkout touched |
 | Rosetta | `arch -x86_64 /usr/bin/true` exit `0` |
 | Tool paths | `dotnet`, `uv`, `python3.12`, `osascript`, `screencapture`, `arch`, and `ioreg` found |
-| Game binary | `/Users/toarupen/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/MacOS/CoQ` present |
+| Game binary | `$HOME/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/MacOS/CoQ` present |
 | Console session | blocked: `IOConsoleLocked=True` |
 | Mod settings | `~/Library/Application Support/Freehold Games/CavesOfQud/Local/ModSettings.json` was not present; fresh boot log still reported QudJP enabled |
 
@@ -84,16 +84,20 @@ python3.12 scripts/translation_checker.py \
 Result:
 
 - exit: `1`
-- screenshots: none; `final-smoke/` is empty
+- screenshots: none; empty or absent `final-smoke/` is expected for this failure mode
 - blocker: locked macOS console session
 
-Because the checker stopped before launch/input, `combat-smoke` was not useful
-in the same locked state.
+The console lock stopped the checker before launch/input, so
+screenshot generation for `--flow-screenshot-dir` was not reached. The
+resulting `screenshots: none` and empty or absent `final-smoke/` directory are
+expected for this specific failure mode. `combat-smoke` was not useful in the
+same locked state.
 
 ## Boot-Only Rosetta Fallback
 
 To preserve some runtime signal, `scripts/launch_rosetta.sh` ran for 45 seconds
-and was then terminated. This is not a substitute for final smoke.
+and was then terminated with SIGTERM. The resulting exit `143` reflects that
+45-second termination window. This is not a substitute for final smoke.
 
 Fresh `Player.log` evidence after that fallback:
 
