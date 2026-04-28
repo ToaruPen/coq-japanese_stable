@@ -81,35 +81,39 @@ python3.12 scripts/translation_checker.py \
   2>&1
 ```
 
+After the checker returned, its shell exit status was saved separately:
+
+```bash
+checker_exit=$?
+printf '%s\n' "$checker_exit" \
+  > .sisyphus/evidence/release-slice-1-runtime-smoke-20260428T150935Z/translation-checker-final-smoke.exit.txt
+```
+
 Result:
 
 - exit: `1`
-- screenshots: none; empty or absent `final-smoke/` is expected for this failure mode
 - blocker: locked macOS console session
+- screenshots: none; the locked console stopped the checker before launch/input,
+  so screenshot generation for `--flow-screenshot-dir` was not reached and an
+  empty or absent `final-smoke/` directory is expected for this failure mode
 
-The console lock stopped the checker before launch/input, so
-screenshot generation for `--flow-screenshot-dir` was not reached. The
-resulting `screenshots: none` and empty or absent `final-smoke/` directory are
-expected for this specific failure mode. `combat-smoke` was not useful in the
-same locked state.
+`combat-smoke` was not useful in the same locked state.
 
 ## Boot-Only Rosetta Fallback
 
 To preserve some runtime signal, `scripts/launch_rosetta.sh` ran for 45 seconds
-and was then terminated with SIGTERM. The resulting exit `143` reflects that
-45-second termination window. This is not a substitute for final smoke.
+and was then terminated with SIGTERM. `direct-rosetta-launch-summary.txt`
+records the launch summary and exit `143`, which reflects that 45-second
+termination window. This is not a substitute for final smoke.
 
 Fresh `Player.log` evidence after that fallback:
 
 - log mtime: `Apr 29 00:12:50 2026`
-- `[QudJP] Build marker`: `1`
-- `Enabled mods`: `1`, with `Caves of Qud 日本語化`
-- `DynamicTextProbe`: `18`
-- `SinkObserve`: `2`
-- `FinalOutputProbe`: `11`
-- `mprotect`: `0`
-- `ERROR`: `0`
-- `LLMOfQud`: `0`
+  (`runtime-logs-after-direct/Player.log`, `direct-rosetta-after.txt`)
+- marker counts: `[QudJP] Build marker` `1`, `Enabled mods` `1` with
+  `Caves of Qud 日本語化`, `DynamicTextProbe` `18`, `SinkObserve` `2`,
+  `FinalOutputProbe` `11`, `mprotect` `0`, `ERROR` `0`, `LLMOfQud` `0`
+  (`player-log-marker-counts-after-direct.txt`)
 
 Fresh boot-only triage:
 
@@ -140,7 +144,7 @@ Fresh boot-only triage:
 The only warning was the known baseline warning in `Conversations.jp.xml`:
 `Empty text in element 'text'`.
 
-## Next Required Run
+## Next Required Steps
 
 1. Unlock the macOS console session.
 2. Re-run the same `translation_checker.py --flow final-smoke` command from
