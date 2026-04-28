@@ -1,0 +1,21 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "branched_local_collapse_identical#gospel",
+      "source_file": "branched_local_collapse_identical.cs",
+      "annal_class": "branched_local_collapse_identical",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "same",
+      "extracted_pattern": "^same$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:f2ae8d412095df175ddd00a56d5cf393b34b8c399bd0f35e92f88c503d935cab"
+    }
+  ]
+}

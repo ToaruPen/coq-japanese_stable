@@ -9,7 +9,7 @@ namespace XRL.Annals;
 //
 // Runtime values: "second" (then-branch, source-latest of `value="first"; value="second"`)
 // OR "alt" (else-branch). Both are reachable, so the extractor emits two
-// candidates (`#if:then` → `^second$`, `#if:else` → `^alt$`). None of the 5
+// candidates (`#bl:then` → `^second$`, `#bl:else` → `^alt$`). None of the 5
 // PR2a target files exhibit this shape, but Resheph 16 byte-identicality is
 // preserved because no Resheph file has setter-outside-if with branch-distinct
 // SimpleAssignments either.

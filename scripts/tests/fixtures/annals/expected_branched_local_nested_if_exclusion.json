@@ -1,0 +1,21 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "branched_local_nested_if_exclusion#gospel",
+      "source_file": "branched_local_nested_if_exclusion.cs",
+      "annal_class": "branched_local_nested_if_exclusion",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "y",
+      "extracted_pattern": "^y$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:deb2b05aa725273b01bf859a3cb704eab6bfa42f9b0a525ca1c846f234836dd5"
+    }
+  ]
+}
