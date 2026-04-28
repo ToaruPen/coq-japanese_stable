@@ -242,7 +242,7 @@
     {
       "key": "mutation:Metamorphosis",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "触れた生物の姿をコピーして変身できる。\n\n自分より高レベルの生物には変身できず、装備は元のまま維持される。"
+      "text": "触れたあらゆるクリーチャーの姿をとる。"
     },
     {
       "key": "mutation:Multiple Arms",
@@ -282,7 +282,7 @@
     {
       "key": "mutation:Photosynthetic Skin",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "たくましい緑の皮膚で日光を吸収し、そこから養分を得る。\n\n食事の代わりに日光浴して{{rules|1日}}のあいだ特別な代謝効果を得られる: 自然回復速度が{{rules|+30%}}、俊敏が{{rules|+15}}。\n日光の下にいるとデンプンとリグニンを蓄え、調理にそれぞれ{{rules|1}}食分まで使える。\n植生と同じマスにいるあいだはDVに{{rules|+1}}の迷彩ボーナス。\n{{w|根}}、{{w|木々}}、{{w|蔦}}、{{w|フィタ・コンソーシアム（植物連合）}}との評判+200。"
+      "text": "たくましい緑の皮膚で日光を吸収し、そこから養分を得る。\n\n食事の代わりに日光浴して{{rules|1日}}のあいだ特別な代謝効果を得られる: 自然回復率が{{rules|+30%}}、迅速さが{{rules|+15}}。\n日光の下にいるとデンプンとリグニンを蓄え、調理にそれぞれ{{rules|1}}食分まで使える。\n植生と同じマスにいるあいだはDVに{{rules|+1}}の迷彩ボーナス。\n{{w|根}}、{{w|木々}}、{{w|蔦}}、{{w|フィタ連合}}との評判+200。"
     },
     {
       "key": "mutation:Plasma Emission",
@@ -642,7 +642,7 @@
     {
       "key": "mutation:Blinking Tic",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "ときおり無意識に瞬間移動する。\n\n戦闘中の行動で低確率に発動する。"
+      "text": "制御できずにあちこちへ瞬間移動する。\n\n戦闘中、毎ラウンド低確率で近くの場所へランダムに瞬間移動する。"
     },
     {
       "key": "mutation:Dystechnia",

@@ -33,6 +33,7 @@ public sealed class LookTooltipContentPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
 
@@ -69,6 +70,27 @@ public sealed class LookTooltipContentPatchTests
                         source),
                     Is.EqualTo(0));
             });
+        });
+    }
+
+    [Test]
+    public void TranslateTooltipContent_UsesPopupFixedLeafDictionary_ForPlayerLookPopup()
+    {
+        var localizationRoot = GetLocalizationRoot();
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
+
+        const string source = "It's you.";
+        var result = LookTooltipContentPatch.TranslateTooltipContent(source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo("あなた自身だ。"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(LookTooltipContentPatch),
+                    "Description.ExactLeaf"),
+                Is.GreaterThan(0));
         });
     }
 
@@ -152,6 +174,11 @@ public sealed class LookTooltipContentPatchTests
     {
         return AccessTools.Method(type, methodName)
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static string GetLocalizationRoot()
+    {
+        return Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../../../Localization"));
     }
 
     private void WriteDictionary(params (string key, string text)[] entries)

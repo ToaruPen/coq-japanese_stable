@@ -105,36 +105,44 @@ internal sealed class Extractor
             foreach (var (branchLabel, setterLocals) in setterLocalsBranches)
             {
                 var branchedIdPrefix = branchLabel is null ? idPrefix : idPrefix + CandidateIdSuffix.BranchedLocal + branchLabel;
-                var armings = ExpandSwitchExpressionArms(valueExpr, setterLocals);
-                foreach (var (armLabel, armLocals) in armings)
+                var conditionalArmings = ExpandConditionalExpressionArms(valueExpr, setterLocals);
+                foreach (var (conditionalArmLabel, conditionalArmLocals) in conditionalArmings)
                 {
-                    var armSwitchCase = armLabel is null ? switchLabel : armLabel;
-                    var armId = armLabel is null ? branchedIdPrefix : branchedIdPrefix + CandidateIdSuffix.Arm + armLabel;
+                    var conditionalId = conditionalArmLabel is null
+                        ? branchedIdPrefix
+                        : branchedIdPrefix + CandidateIdSuffix.If + conditionalArmLabel;
 
-                    var optExpansions = ExpandOptionalAppends(valueExpr, armLocals, FilterAppendsToLocals(armLocals, setterScopedAppends));
-                    foreach (var (optLabel, optLocals) in optExpansions)
+                    var armings = ExpandSwitchExpressionArms(valueExpr, conditionalArmLocals);
+                    foreach (var (armLabel, armLocals) in armings)
                     {
-                        var optId = optLabel is null ? armId : armId + CandidateIdSuffix.Opt + optLabel;
-                        var resolution = ResolveValueExpression(valueExpr, optLocals);
-                        if (!resolution.Resolved)
+                        var armSwitchCase = armLabel is null ? switchLabel : armLabel;
+                        var armId = armLabel is null ? conditionalId : conditionalId + CandidateIdSuffix.Arm + armLabel;
+
+                        var optExpansions = ExpandOptionalAppends(valueExpr, armLocals, FilterAppendsToLocals(armLocals, setterScopedAppends));
+                        foreach (var (optLabel, optLocals) in optExpansions)
                         {
-                            candidates.Add(NeedsManual(
+                            var optId = optLabel is null ? armId : armId + CandidateIdSuffix.Opt + optLabel;
+                            var resolution = ResolveValueExpression(valueExpr, optLocals);
+                            if (!resolution.Resolved)
+                            {
+                                candidates.Add(NeedsManual(
+                                    id: optId,
+                                    sourceFile: fileName,
+                                    annalClass: className,
+                                    switchCase: armSwitchCase,
+                                    eventProperty: eventProperty,
+                                    reason: resolution.Reason));
+                                continue;
+                            }
+
+                            candidates.Add(BuildCandidate(
                                 id: optId,
                                 sourceFile: fileName,
                                 annalClass: className,
                                 switchCase: armSwitchCase,
                                 eventProperty: eventProperty,
-                                reason: resolution.Reason));
-                            continue;
+                                resolved: resolution));
                         }
-
-                        candidates.Add(BuildCandidate(
-                            id: optId,
-                            sourceFile: fileName,
-                            annalClass: className,
-                            switchCase: armSwitchCase,
-                            eventProperty: eventProperty,
-                            resolved: resolution));
                     }
                 }
             }
@@ -989,6 +997,69 @@ internal sealed class Extractor
             if (nested.name is not null) return nested;
         }
         return (null, null);
+    }
+
+    /// <summary>
+    /// If the value expression depends on a local whose initializer is a ternary expression,
+    /// fan out the local into `then` and `else` overrides. This covers decompiled annal shapes
+    /// like `var value = cond ? string.Format(...) : string.Format(...); SetEventProperty(...,
+    /// value);` without requiring control-flow analysis.
+    /// </summary>
+    private static List<(string? armLabel, IReadOnlyDictionary<string, ExpressionSyntax> locals)>
+        ExpandConditionalExpressionArms(
+            ExpressionSyntax valueExpr,
+            IReadOnlyDictionary<string, ExpressionSyntax> locals)
+    {
+        var result = new List<(string?, IReadOnlyDictionary<string, ExpressionSyntax>)>();
+        var (conditionalLocalName, conditionalExpr) =
+            FindConditionalExpressionLocal(valueExpr, locals, new HashSet<string>(StringComparer.Ordinal));
+        if (conditionalLocalName is null || conditionalExpr is null)
+        {
+            result.Add((null, locals));
+            return result;
+        }
+
+        var thenLocals = new Dictionary<string, ExpressionSyntax>(locals, StringComparer.Ordinal)
+        {
+            [conditionalLocalName] = conditionalExpr.WhenTrue,
+        };
+        result.Add(("then", thenLocals));
+
+        var elseLocals = new Dictionary<string, ExpressionSyntax>(locals, StringComparer.Ordinal)
+        {
+            [conditionalLocalName] = conditionalExpr.WhenFalse,
+        };
+        result.Add(("else", elseLocals));
+
+        return result;
+    }
+
+    private static (string? name, ConditionalExpressionSyntax? expr) FindConditionalExpressionLocal(
+        ExpressionSyntax expr,
+        IReadOnlyDictionary<string, ExpressionSyntax> locals,
+        HashSet<string> visited)
+    {
+        foreach (var id in expr.DescendantNodesAndSelf().OfType<IdentifierNameSyntax>())
+        {
+            var name = id.Identifier.ValueText;
+            if (visited.Contains(name)) continue;
+            if (!locals.TryGetValue(name, out var init)) continue;
+            init = UnwrapParentheses(init);
+            if (init is ConditionalExpressionSyntax conditional) return (name, conditional);
+            visited.Add(name);
+            var nested = FindConditionalExpressionLocal(init, locals, visited);
+            if (nested.name is not null) return nested;
+        }
+        return (null, null);
+    }
+
+    private static ExpressionSyntax UnwrapParentheses(ExpressionSyntax expr)
+    {
+        while (expr is ParenthesizedExpressionSyntax parenthesized)
+        {
+            expr = parenthesized.Expression;
+        }
+        return expr;
     }
 
     private static string SwitchExpressionArmLabel(SwitchExpressionArmSyntax arm)

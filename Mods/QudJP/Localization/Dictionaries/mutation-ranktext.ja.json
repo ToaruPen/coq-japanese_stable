@@ -2308,52 +2308,52 @@
         {
             "key": "mutation:Photosynthetic Skin:rank:1",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|1日}}の代謝効果を得られる: 自然治癒率+{{rules|30%}}、俊敏+{{rules|15}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|1食}}）。\n植生と同じマスにいるあいだDV+{{rules|1}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|1日}}の代謝効果を得られる: 自然回復率+{{rules|30%}}、迅速さ+{{rules|15}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|1食}}）。\n植生と同じマスにいるあいだDV+{{rules|1}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Photosynthetic Skin:rank:2",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|1日}}の代謝効果を得られる: 自然治癒率+{{rules|40%}}、俊敏+{{rules|17}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|1食}}）。\n植生と同じマスにいるあいだDV+{{rules|1}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|1日}}の代謝効果を得られる: 自然回復率+{{rules|40%}}、迅速さ+{{rules|17}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|1食}}）。\n植生と同じマスにいるあいだDV+{{rules|1}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Photosynthetic Skin:rank:3",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|1日}}の代謝効果を得られる: 自然治癒率+{{rules|50%}}、俊敏+{{rules|19}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|1食}}）。\n植生と同じマスにいるあいだDV+{{rules|1}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|1日}}の代謝効果を得られる: 自然回復率+{{rules|50%}}、迅速さ+{{rules|19}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|1食}}）。\n植生と同じマスにいるあいだDV+{{rules|1}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Photosynthetic Skin:rank:4",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|1日}}の代謝効果を得られる: 自然治癒率+{{rules|60%}}、俊敏+{{rules|21}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|1食}}）。\n植生と同じマスにいるあいだDV+{{rules|1}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|1日}}の代謝効果を得られる: 自然回復率+{{rules|60%}}、迅速さ+{{rules|21}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|1食}}）。\n植生と同じマスにいるあいだDV+{{rules|1}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Photosynthetic Skin:rank:5",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|2日}}の代謝効果を得られる: 自然治癒率+{{rules|70%}}、俊敏+{{rules|23}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|2食}}）。\n植生と同じマスにいるあいだDV+{{rules|2}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|2日}}の代謝効果を得られる: 自然回復率+{{rules|70%}}、迅速さ+{{rules|23}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|2食}}）。\n植生と同じマスにいるあいだDV+{{rules|2}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Photosynthetic Skin:rank:6",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|2日}}の代謝効果を得られる: 自然治癒率+{{rules|80%}}、俊敏+{{rules|25}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|2食}}）。\n植生と同じマスにいるあいだDV+{{rules|2}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|2日}}の代謝効果を得られる: 自然回復率+{{rules|80%}}、迅速さ+{{rules|25}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|2食}}）。\n植生と同じマスにいるあいだDV+{{rules|2}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Photosynthetic Skin:rank:7",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|2日}}の代謝効果を得られる: 自然治癒率+{{rules|90%}}、俊敏+{{rules|27}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|2食}}）。\n植生と同じマスにいるあいだDV+{{rules|2}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|2日}}の代謝効果を得られる: 自然回復率+{{rules|90%}}、迅速さ+{{rules|27}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|2食}}）。\n植生と同じマスにいるあいだDV+{{rules|2}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Photosynthetic Skin:rank:8",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|2日}}の代謝効果を得られる: 自然治癒率+{{rules|100%}}、俊敏+{{rules|29}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|2食}}）。\n植生と同じマスにいるあいだDV+{{rules|2}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|2日}}の代謝効果を得られる: 自然回復率+{{rules|100%}}、迅速さ+{{rules|29}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|2食}}）。\n植生と同じマスにいるあいだDV+{{rules|2}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Photosynthetic Skin:rank:9",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|3日}}の代謝効果を得られる: 自然治癒率+{{rules|110%}}、俊敏+{{rules|31}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|3食}}）。\n植生と同じマスにいるあいだDV+{{rules|3}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|3日}}の代謝効果を得られる: 自然回復率+{{rules|110%}}、迅速さ+{{rules|31}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|3食}}）。\n植生と同じマスにいるあいだDV+{{rules|3}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Photosynthetic Skin:rank:10",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|3日}}の代謝効果を得られる: 自然治癒率+{{rules|120%}}、俊敏+{{rules|33}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|3食}}）。\n植生と同じマスにいるあいだDV+{{rules|3}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|3日}}の代謝効果を得られる: 自然回復率+{{rules|120%}}、迅速さ+{{rules|33}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|3食}}）。\n植生と同じマスにいるあいだDV+{{rules|3}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Regeneration:rank:1",

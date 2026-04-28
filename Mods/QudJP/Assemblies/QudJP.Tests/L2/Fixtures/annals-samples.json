@@ -152,6 +152,30 @@
       ]
     },
     {
+      "candidate_id": "FoundGuild#gospel",
+      "event_property": "gospel",
+      "input_source": "After treating with the Farmers' Guild, Nuntu convinced them to help him found a workshop in Hinnom for the purpose of studying glass. They named it the Glass Workshop.",
+      "expected_japanese_exact": "農夫ギルドとtreatingしたのち、NuntuはhimがHinnomにa workshopを創設する助力をするよう彼らを説得した。その目的はガラスのをstudyingことだった。彼らはそれをthe Glass Workshopと名づけた。"
+    },
+    {
+      "candidate_id": "CorruptAdministrator#gospel#case:0#if:then",
+      "event_property": "gospel",
+      "input_source": "In 1234 AR, a corrupt administrator was appointed minister of Salt Dunes. She outlawed the practice of glass-making, and Nuntu was forced to flee.",
+      "expected_japanese_exact": "1234年、腐敗した施政官がSalt Dunesの大臣に任じられた。その者はglass-makingの営みを禁じ、Nuntuは逃亡を余儀なくされた。"
+    },
+    {
+      "candidate_id": "CorruptAdministrator#gospel#case:1#if:then",
+      "event_property": "gospel",
+      "input_source": "In 1234 AR, a corrupt administrator was appointed minister of Salt Dunes. She outlawed association with the Farmers' Guild, and Nuntu was forced to flee.",
+      "expected_japanese_exact": "1234年、腐敗した施政官がSalt Dunesの大臣に任じられた。その者は農夫ギルドとの交わりを禁じ、Nuntuは逃亡を余儀なくされた。"
+    },
+    {
+      "candidate_id": "SecretRitual#gospel#if:then#arm:1",
+      "event_property": "gospel",
+      "input_source": "While wandering around Salt Dunes, Nuntu stumbled upon a clan of the Farmers' Guild performing a secret ritual. Because of his chromatic aura, they accepted him into their fold and taught him their secrets.",
+      "expected_japanese_exact": "Salt Dunesの辺りをさまよううち、Nuntuは秘密の儀式を行う農夫ギルドの一族に出くわした。his chromatic auraゆえ、彼らはhimを仲間に迎え入れ、himに彼らの秘密を授けた。"
+    },
+    {
       "candidate_id": "edge_empty_gospel",
       "event_property": "gospel",
       "input_source": "",

@@ -15,7 +15,7 @@
   </ability>
   <ability Command="CommandSwoopAttack">
 		<description>
-			<p>地上の目標へ急降下して攻撃し、1ターンで上空へ戻る。</p>
+			<p>地上の目標へ急降下し、1ターンかけて攻撃し、もう1ターンで上空へ戻る。</p>
 			<br />
 			<p><stat Name="SwoopCrashChance" />%の確率で地面に墜落する（攻撃が盾で防がれた場合は確率が倍増）。</p>
 		</description>
@@ -1731,4 +1731,3 @@
 	</ability>
 
 </activatedabilities>
-

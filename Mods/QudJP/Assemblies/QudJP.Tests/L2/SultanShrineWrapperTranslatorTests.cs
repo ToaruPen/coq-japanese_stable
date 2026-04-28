@@ -142,6 +142,24 @@ public sealed class SultanShrineWrapperTranslatorTests
     }
 
     [Test]
+    public void Translate_TranslatesDiscoveredLocationAnnalsGospel()
+    {
+        const string source =
+            "The shrine depicts a significant event from the life of the ancient sultan Yla Haj:"
+            + "\n\ndiscovered Rust Wells"
+            + "\n\n{{Y|Perfect}}";
+
+        var translated = MessagePatternTranslator.Translate(source, nameof(DescriptionLongDescriptionPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("Rust Wellsを発見した"));
+            Assert.That(translated, Does.Not.Contain("discovered Rust Wells"));
+            Assert.That(translated, Does.EndWith("{{Y|完璧}}"));
+        });
+    }
+
+    [Test]
     public void Translate_TranslatesTwoParagraphShape_WhenQualitySuffixAbsent()
     {
         // Shape produced directly by SultanShrine.ShrineInitialize (Description.Short).

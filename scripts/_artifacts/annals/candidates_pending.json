@@ -188,12 +188,12 @@
           "default": "{t0}"
         }
       ],
-      "status": "needs_manual",
-      "reason": "unresolved-local in ternary string.Format on local declaration; extractor cannot expose two arms — defer until extractor handles ternary RHS in local decls",
+      "status": "skip",
+      "reason": "Issue #422 superseded: current BattleItem-only extraction emits stable tombInscription arm candidates (#bl:else#if:else/#bl:else#if:then/#bl:then#if:else/#bl:then#if:then); keep this former broad unresolved-local fallback out of promotion",
       "ja_template": "",
       "review_notes": "",
       "route": "annals",
-      "en_template_hash": ""
+      "en_template_hash": "sha256:a94bc9cb95913a5ea1caeb8bdf90a3aaf943bed46dc85446da9c69b1506057b6"
     },
     {
       "id": "BloodyBattle#gospel#if:else",
@@ -3036,6 +3036,253 @@
       "review_notes": "override: outer prefix branch (text from outer switch) deferred from extractor; PR2b CR R7",
       "route": "annals",
       "en_template_hash": "sha256:1e7042be4a20e83e3c43bc78e8b9065f9cb065dd479c238ea9849572f6964017"
+    },
+    {
+      "id": "DiscoveredLocation#gospel",
+      "source_file": "DiscoveredLocation.cs",
+      "annal_class": "DiscoveredLocation",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "discovered {0}",
+      "extracted_pattern": "^discovered\\ (.+?)$",
+      "slots": [
+        {
+          "index": 0,
+          "type": "entity-property",
+          "raw": "entity.GetProperty(\"name\")",
+          "default": "{t0}"
+        }
+      ],
+      "status": "accepted",
+      "reason": "",
+      "ja_template": "{t0}を発見した",
+      "review_notes": "PR2d civic micro-slice: exact DiscoveredLocation gospel fragment",
+      "route": "annals",
+      "en_template_hash": "sha256:acc9bbd7ae5451e68b81fea9aa22fed8d883183999d91de02fd76b70c90bad1b"
+    },
+    {
+      "id": "FoundGuild#gospel",
+      "source_file": "FoundGuild.cs",
+      "annal_class": "FoundGuild",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "After {0} with {1}, {2} convinced them to help {3} found {4} in {5} for the purpose of {6} {7}. They named it {8}.",
+      "extracted_pattern": "^After\\ (.+?)\\ with\\ (.+?),\\ (.+?)\\ convinced\\ them\\ to\\ help\\ (.+?)\\ found\\ (.+?)\\ in\\ (.+?)\\ for\\ the\\ purpose\\ of\\ (.+?)\\ (.+?)\\.\\ They\\ named\\ it\\ (.+?)\\.$",
+      "slots": [
+        {
+          "index": 0,
+          "type": "historykit-token",
+          "raw": "<spice.commonPhrases.treating.!random>",
+          "default": "{t0}"
+        },
+        {
+          "index": 1,
+          "type": "helper-call",
+          "raw": "Faction.GetFormattedName(newFaction)",
+          "default": "{t1}"
+        },
+        {
+          "index": 2,
+          "type": "historykit-token",
+          "raw": "<entity.name>",
+          "default": "{t2}"
+        },
+        {
+          "index": 3,
+          "type": "historykit-token",
+          "raw": "<entity.objectPronoun>",
+          "default": "{t3}"
+        },
+        {
+          "index": 4,
+          "type": "historykit-token",
+          "raw": "<spice.professions.{text}.guildhall.article>",
+          "default": "{t4}"
+        },
+        {
+          "index": 5,
+          "type": "helper-call",
+          "raw": "QudHistoryHelpers.GetNewRegion(history, property)",
+          "default": "{t5}"
+        },
+        {
+          "index": 6,
+          "type": "historykit-token",
+          "raw": "<spice.professions.{text}.studying>",
+          "default": "{t6}"
+        },
+        {
+          "index": 7,
+          "type": "historykit-token",
+          "raw": "<spice.elements.{randomElement}.nounsPlural.!random>",
+          "default": "{t7}"
+        },
+        {
+          "index": 8,
+          "type": "unresolved-local",
+          "raw": "text3",
+          "default": "{t8}"
+        }
+      ],
+      "status": "accepted",
+      "reason": "",
+      "ja_template": "{t1}と{t0}したのち、{t2}は{t3}が{t5}に{t4}を創設する助力をするよう彼らを説得した。その目的は{t7}を{t6}ことだった。彼らはそれを{t8}と名づけた。",
+      "review_notes": "PR2d civic micro-slice: extractor-proven FoundGuild gospel",
+      "route": "annals",
+      "en_template_hash": "sha256:6f02a0325f361abd0140c8817fb101306688f01f3f0433a8e4e4fd2a9a5f8c94"
+    },
+    {
+      "id": "CorruptAdministrator#gospel#case:0#if:then",
+      "source_file": "CorruptAdministrator.cs",
+      "annal_class": "CorruptAdministrator",
+      "switch_case": "0",
+      "event_property": "gospel",
+      "sample_source": "In {0} AR, a corrupt administrator was appointed minister of {1}. {2} outlawed the practice of {3}, and {4} was forced to flee.",
+      "extracted_pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ a\\ corrupt\\ administrator\\ was\\ appointed\\ minister\\ of\\ (.+?)\\.\\ (.+?)\\ outlawed\\ the\\ practice\\ of\\ (.+?),\\ and\\ (.+?)\\ was\\ forced\\ to\\ flee\\.$",
+      "slots": [
+        {
+          "index": 0,
+          "type": "hse-expansion",
+          "raw": "year",
+          "default": "{t0}"
+        },
+        {
+          "index": 1,
+          "type": "unresolved-local",
+          "raw": "regionToReveal",
+          "default": "{t1}"
+        },
+        {
+          "index": 2,
+          "type": "helper-call",
+          "raw": "Grammar.RandomShePronoun()",
+          "default": "{t2}"
+        },
+        {
+          "index": 3,
+          "type": "historykit-token",
+          "raw": "<spice.elements.entity$elements[random].practices.!random>",
+          "default": "{t3}"
+        },
+        {
+          "index": 4,
+          "type": "historykit-token",
+          "raw": "<entity.name>",
+          "default": "{t4}"
+        }
+      ],
+      "status": "accepted",
+      "reason": "",
+      "ja_template": "{0}年、腐敗した施政官が{t1}の大臣に任じられた。その者は{t3}の営みを禁じ、{t4}は逃亡を余儀なくされた。",
+      "review_notes": "Issue #422 annals micro-slice: extractor-proven CorruptAdministrator non-sultan practice-ban gospel",
+      "route": "annals",
+      "en_template_hash": "sha256:b148ec177f3e77c9d2521d4ec9786385a302537f5326096ef9533fe19d9a0993"
+    },
+    {
+      "id": "CorruptAdministrator#gospel#case:1#if:then",
+      "source_file": "CorruptAdministrator.cs",
+      "annal_class": "CorruptAdministrator",
+      "switch_case": "1",
+      "event_property": "gospel",
+      "sample_source": "In {0} AR, a corrupt administrator was appointed minister of {1}. {2} outlawed association with {3}, and {4} was forced to flee.",
+      "extracted_pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ a\\ corrupt\\ administrator\\ was\\ appointed\\ minister\\ of\\ (.+?)\\.\\ (.+?)\\ outlawed\\ association\\ with\\ (.+?),\\ and\\ (.+?)\\ was\\ forced\\ to\\ flee\\.$",
+      "slots": [
+        {
+          "index": 0,
+          "type": "hse-expansion",
+          "raw": "year",
+          "default": "{t0}"
+        },
+        {
+          "index": 1,
+          "type": "unresolved-local",
+          "raw": "regionToReveal",
+          "default": "{t1}"
+        },
+        {
+          "index": 2,
+          "type": "helper-call",
+          "raw": "Grammar.RandomShePronoun()",
+          "default": "{t2}"
+        },
+        {
+          "index": 3,
+          "type": "helper-call",
+          "raw": "Faction.GetFormattedName(list[Random(0, list.Count - 1)])",
+          "default": "{t3}"
+        },
+        {
+          "index": 4,
+          "type": "historykit-token",
+          "raw": "<entity.name>",
+          "default": "{t4}"
+        }
+      ],
+      "status": "accepted",
+      "reason": "",
+      "ja_template": "{0}年、腐敗した施政官が{t1}の大臣に任じられた。その者は{t3}との交わりを禁じ、{t4}は逃亡を余儀なくされた。",
+      "review_notes": "Issue #422 annals micro-slice: extractor-proven CorruptAdministrator non-sultan association-ban gospel",
+      "route": "annals",
+      "en_template_hash": "sha256:bf84e1522b05936adc18747e2afea5045f2828cf6694f2649541e97dcc34d4a4"
+    },
+    {
+      "id": "SecretRitual#gospel#if:then#arm:1",
+      "source_file": "SecretRitual.cs",
+      "annal_class": "SecretRitual",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "While wandering around {0}, {1} stumbled upon a clan of {2} performing a secret ritual. Because of {3} {4}, they accepted {5} into their fold and taught {6} their secrets.",
+      "extracted_pattern": "^While\\ wandering\\ around\\ (.+?),\\ (.+?)\\ stumbled\\ upon\\ a\\ clan\\ of\\ (.+?)\\ performing\\ a\\ secret\\ ritual\\.\\ Because\\ of\\ (.+?)\\ (.+?),\\ they\\ accepted\\ (.+?)\\ into\\ their\\ fold\\ and\\ taught\\ (.+?)\\ their\\ secrets\\.$",
+      "slots": [
+        {
+          "index": 0,
+          "type": "unresolved-local",
+          "raw": "regionToReveal",
+          "default": "{t0}"
+        },
+        {
+          "index": 1,
+          "type": "historykit-token",
+          "raw": "<entity.name>",
+          "default": "{t1}"
+        },
+        {
+          "index": 2,
+          "type": "helper-call",
+          "raw": "Faction.GetFormattedName(newFaction)",
+          "default": "{t2}"
+        },
+        {
+          "index": 3,
+          "type": "historykit-token",
+          "raw": "<entity.possessivePronoun>",
+          "default": "{t3}"
+        },
+        {
+          "index": 4,
+          "type": "historykit-token",
+          "raw": "<spice.elements.entity$elements[random].quality.!random>",
+          "default": "{t4}"
+        },
+        {
+          "index": 5,
+          "type": "historykit-token",
+          "raw": "<entity.objectPronoun>",
+          "default": "{t5}"
+        },
+        {
+          "index": 6,
+          "type": "historykit-token",
+          "raw": "<entity.objectPronoun>",
+          "default": "{t6}"
+        }
+      ],
+      "status": "accepted",
+      "reason": "",
+      "ja_template": "{t0}の辺りをさまよううち、{t1}は秘密の儀式を行う{t2}の一族に出くわした。{t3} {t4}ゆえ、彼らは{t5}を仲間に迎え入れ、{t6}に彼らの秘密を授けた。",
+      "review_notes": "Issue #422 annals micro-slice: extractor-proven SecretRitual accepted-gospel wandering arm",
+      "route": "annals",
+      "en_template_hash": "sha256:0eac0d08795b50b51649b0a693ad9b9da72a41c961f0d0b73cf5ad2e41e85a7f"
     }
   ]
 }

@@ -227,6 +227,55 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void MutationAndAbilityStaticText_BatchA_DoesNotRegressKnownEnglishResidueOrMechanics()
+    {
+        var descriptions = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "mutation-descriptions.ja.json"))
+            .ToDictionary(static entry => entry.Key, static entry => entry.Text, StringComparer.Ordinal);
+        var rankTexts = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "mutation-ranktext.ja.json"))
+            .ToDictionary(static entry => entry.Key, static entry => entry.Text, StringComparer.Ordinal);
+        var abilitiesDocument = XDocument.Load(Path.Combine(localizationRoot, "ActivatedAbilities.jp.xml"));
+        var swoopDescription = abilitiesDocument.Root!
+            .Elements("ability")
+            .Single(element => string.Equals(element.Attribute("Command")?.Value, "CommandSwoopAttack", StringComparison.Ordinal))
+            .Element("description")!
+            .Value;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                swoopDescription,
+                Does.Contain("1ターンかけて攻撃し、もう1ターンで上空へ戻る"),
+                "CommandSwoopAttack must preserve the source meaning: one turn to attack, one turn to return.");
+
+            Assert.That(
+                descriptions["mutation:Metamorphosis"],
+                Is.EqualTo("触れたあらゆるクリーチャーの姿をとる。"),
+                "Metamorphosis long description should not add unsupported equipment or self-level claims.");
+            Assert.That(
+                descriptions["mutation:Blinking Tic"],
+                Does.Contain("戦闘中、毎ラウンド低確率で近くの場所へランダムに瞬間移動する。"),
+                "Blinking Tic must preserve the combat-per-round random nearby teleport behavior.");
+
+            Assert.That(descriptions["mutation:Photosynthetic Skin"], Does.Not.Contain("{{rules|1 day}}"));
+            Assert.That(descriptions["mutation:Photosynthetic Skin"], Does.Not.Contain("Consortium of Phyta"));
+
+            for (var rank = 1; rank <= 10; rank++)
+            {
+                var burrowingText = rankTexts[$"mutation:Burrowing Claws:rank:{rank}"];
+                Assert.That(burrowingText, Does.Not.Contain("penetrating hits"));
+                Assert.That(burrowingText, Does.Not.Contain("base damage to non-walls"));
+                Assert.That(burrowingText, Does.Contain("爪で4回貫通すると壁を破壊する。"));
+
+                var electricalText = rankTexts[$"mutation:Electrical Generation:rank:{rank}"];
+                Assert.That(electricalText, Does.Contain("1000チャージごとに1d4ダメージ"));
+                Assert.That(electricalText, Does.Contain("1000チャージごとに最大1体へ連鎖する。"));
+                Assert.That(electricalText, Does.Not.Contain("チャージ1点ごとに4d1000"));
+                Assert.That(electricalText, Does.Not.Contain("最大1チャージあたり1000体"));
+            }
+        });
+    }
+
+    [Test]
     public void WorldPartsDictionary_DoesNotReuseCookingOwnerKeys()
     {
         var dictionariesRoot = Path.Combine(localizationRoot, "Dictionaries");

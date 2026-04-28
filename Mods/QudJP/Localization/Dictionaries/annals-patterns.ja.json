@@ -72,6 +72,11 @@
       "route": "annals"
     },
     {
+      "pattern": "^While\\ wandering\\ around\\ (.+?),\\ (.+?)\\ stumbled\\ upon\\ a\\ clan\\ of\\ (.+?)\\ performing\\ a\\ secret\\ ritual\\.\\ Because\\ of\\ (.+?)\\ (.+?),\\ they\\ accepted\\ (.+?)\\ into\\ their\\ fold\\ and\\ taught\\ (.+?)\\ their\\ secrets\\.$",
+      "template": "{t0}の辺りをさまよううち、{t1}は秘密の儀式を行う{t2}の一族に出くわした。{t3} {t4}ゆえ、彼らは{t5}を仲間に迎え入れ、{t6}に彼らの秘密を授けた。",
+      "route": "annals"
+    },
+    {
       "pattern": "^(.+?),\\ a\\ babe\\ was\\ found\\ swaddled\\ (.+?)\\ by\\ a\\ group\\ of\\ (.+?)\\ in\\ (.+?)\\.\\ They\\ took\\ (.+?)\\ into\\ their\\ fold\\ and\\ fostered\\ (.+?),\\ and\\ (.+?)\\ became\\ known\\ as\\ (.+?),\\ the\\ (.+?)\\ (.+?)\\ of\\ (.+?)\\.$",
       "template": "{t0}、ひとりの嬰児が{t3}にて、{t2}の一団により{t1}に包まれて見いだされた。彼らは{t4}を仲間に迎えて{t5}を育み、{t6}は{t7}、{t10}の{t8}{t9}として知られるようになった。",
       "route": "annals"
@@ -127,6 +132,16 @@
       "route": "annals"
     },
     {
+      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ a\\ corrupt\\ administrator\\ was\\ appointed\\ minister\\ of\\ (.+?)\\.\\ (.+?)\\ outlawed\\ the\\ practice\\ of\\ (.+?),\\ and\\ (.+?)\\ was\\ forced\\ to\\ flee\\.$",
+      "template": "{0}年、腐敗した施政官が{t1}の大臣に任じられた。その者は{t3}の営みを禁じ、{t4}は逃亡を余儀なくされた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ a\\ corrupt\\ administrator\\ was\\ appointed\\ minister\\ of\\ (.+?)\\.\\ (.+?)\\ outlawed\\ association\\ with\\ (.+?),\\ and\\ (.+?)\\ was\\ forced\\ to\\ flee\\.$",
+      "template": "{0}年、腐敗した施政官が{t1}の大臣に任じられた。その者は{t3}との交わりを禁じ、{t4}は逃亡を余儀なくされた。",
+      "route": "annals"
+    },
+    {
       "pattern": "^While\\ traveling\\ near\\ (.+?)\\ in\\ (.+?),\\ (.+?)\\ was\\ captured\\ by\\ bandits\\.\\ (.+?)\\ languished\\ in\\ captivity\\ for\\ (.+?)\\ years,\\ eventually\\ escaping\\ to\\ (.+?)\\.$",
       "template": "{t1}の{t0}付近を旅する途上、{t2}は盗賊に捕らえられた。{t3}は捕囚のうちに{t4}年を苦しみ、ついには{t5}へ逃れ出た。",
       "route": "annals"
@@ -174,6 +189,11 @@
     {
       "pattern": "^Near\\ the\\ location\\ of\\ (.+?),\\ (.+?)\\ was\\ captured\\ by\\ bandits\\.\\ (.+?)\\ languished\\ in\\ captivity\\ for\\ (.+?)\\ years,\\ eventually\\ escaping\\ to\\ (.+?)\\.$",
       "template": "{t0}の地の近くで、{t1}は盗賊に捕らえられた。{t2}は捕囚のうちに{t3}年を苦しみ、ついには{t4}へ逃れ出た。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^After\\ (.+?)\\ with\\ (.+?),\\ (.+?)\\ convinced\\ them\\ to\\ help\\ (.+?)\\ found\\ (.+?)\\ in\\ (.+?)\\ for\\ the\\ purpose\\ of\\ (.+?)\\ (.+?)\\.\\ They\\ named\\ it\\ (.+?)\\.$",
+      "template": "{t1}と{t0}したのち、{t2}は{t3}が{t5}に{t4}を創設する助力をするよう彼らを説得した。その目的は{t7}を{t6}ことだった。彼らはそれを{t8}と名づけた。",
       "route": "annals"
     },
     {
@@ -239,6 +259,11 @@
     {
       "pattern": "^(.+?)\\ was\\ adopted\\ by\\ (.+?)\\ who\\ love\\ (.+?)\\.$",
       "template": "{t0}は、{t2}を愛する{t1}に養子として迎えられた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^discovered\\ (.+?)$",
+      "template": "{t0}を発見した",
       "route": "annals"
     }
   ]

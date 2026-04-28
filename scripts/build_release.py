@@ -18,10 +18,13 @@ directory.
 """
 
 import json
+import re
 import subprocess
 import sys
 import zipfile
 from pathlib import Path
+
+RELEASE_VERSION = "0.2.0"
 
 
 def _find_project_root() -> Path:
@@ -53,17 +56,25 @@ def read_version(manifest_path: Path) -> str:
 
     Raises:
         FileNotFoundError: If manifest.json does not exist.
-        KeyError: If the ``Version`` key is missing.
-        ValueError: If the version string is empty.
+        ValueError: If the ``Version`` key is missing, empty, or not simple semver.
     """
     if not manifest_path.exists():
         msg = f"manifest.json not found: {manifest_path}"
         raise FileNotFoundError(msg)
 
     data: dict[str, object] = json.loads(manifest_path.read_text(encoding="utf-8"))
-    version = str(data["Version"])
+    if "Version" not in data:
+        msg = f"Version field is missing in manifest.json: {manifest_path}"
+        raise ValueError(msg)
+    version = str(data["Version"]).strip()
     if not version:
-        msg = "Version field is empty in manifest.json"
+        msg = f"Version field is empty in manifest.json: {manifest_path}"
+        raise ValueError(msg)
+    if re.fullmatch(r"\d+\.\d+\.\d+", version) is None:
+        msg = (
+            "Version field must be simple semver X.Y.Z in manifest.json: "
+            f"{manifest_path} (got {version!r})"
+        )
         raise ValueError(msg)
     return version
 

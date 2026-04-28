@@ -40,6 +40,11 @@
             "text": "調べる"
         },
         {
+            "key": "It's you.",
+            "context": "XRL.UI.Look.GenerateTooltipContent.PlayerSelf",
+            "text": "あなた自身だ。"
+        },
+        {
             "key": "{{W|[space]}} {{y|Continue}}",
             "context": "Qud.UI.PopupMessage.Button.Continue.Hotkey",
             "text": "{{W|[Space]}} {{y|続ける}}"

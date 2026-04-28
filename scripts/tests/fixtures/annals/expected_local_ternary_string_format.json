@@ -1,0 +1,37 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "local_ternary_string_format#tombInscription#if:else",
+      "source_file": "local_ternary_string_format.cs",
+      "annal_class": "local_ternary_string_format",
+      "switch_case": "default",
+      "event_property": "tombInscription",
+      "sample_source": "Remember the Battle of Bethesda Susa in woe.",
+      "extracted_pattern": "^Remember\\ the\\ Battle\\ of\\ Bethesda\\ Susa\\ in\\ woe\\.$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:2d37b10a9b1d40c645e1ec92d9e7066dec38ec458f4f7dea34887a0388e12ba3"
+    },
+    {
+      "id": "local_ternary_string_format#tombInscription#if:then",
+      "source_file": "local_ternary_string_format.cs",
+      "annal_class": "local_ternary_string_format",
+      "switch_case": "default",
+      "event_property": "tombInscription",
+      "sample_source": "Remember the Battle of Bethesda Susa in celebration.",
+      "extracted_pattern": "^Remember\\ the\\ Battle\\ of\\ Bethesda\\ Susa\\ in\\ celebration\\.$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:367c4ed724a0dca25fdbccec8971d45b7ededa19f4a87bce9c494337205fac24"
+    }
+  ]
+}
