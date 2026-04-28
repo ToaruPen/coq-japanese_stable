@@ -603,6 +603,24 @@ internal sealed class Extractor
         var labels = new string[effectiveCount];
         for (var i = 0; i < effectiveCount; i++) labels[i] = BuildArmLabel(i, effectiveCount);
 
+        // Names assigned inside any nested `if` of any arm must NOT seed branched-local
+        // selection: their per-arm rhs map (built via CollectBranchAssignments which prunes
+        // nested-if subtrees) under-counts their writes, so the resulting fanout would drop
+        // the inner-if execution path. Mirrors the prune in CollectBranchAssignments.
+        var nestedIfNames = new HashSet<string>(StringComparer.Ordinal);
+        for (var armIdx = 0; armIdx < totalArms; armIdx++)
+        {
+            foreach (var nestedIf in arms[armIdx].DescendantNodes().OfType<IfStatementSyntax>())
+            {
+                foreach (var nestedAssign in nestedIf.DescendantNodes().OfType<AssignmentExpressionSyntax>())
+                {
+                    if (!nestedAssign.IsKind(SyntaxKind.SimpleAssignmentExpression)) continue;
+                    if (nestedAssign.Left is IdentifierNameSyntax nestedLhs)
+                        nestedIfNames.Add(nestedLhs.Identifier.ValueText);
+                }
+            }
+        }
+
         // Walk chain-internal SimpleAssignments in source order; first qualifying name wins.
         // Skip post-setter assigns? Not applicable — caller filters via stmt.Span checks.
         foreach (var assign in root.DescendantNodes().OfType<AssignmentExpressionSyntax>())
@@ -612,6 +630,7 @@ internal sealed class Extractor
             var name = lhs.Identifier.ValueText;
             if (methodLocals.ContainsKey(name)) continue;
             if (alreadyOverridden.Contains(name)) continue;
+            if (nestedIfNames.Contains(name)) continue;
 
             var rhsPerArm = new ExpressionSyntax?[effectiveCount];
             var anyAssign = false;
