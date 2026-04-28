@@ -2,7 +2,7 @@
   "schema_version": "1",
   "candidates": [
     {
-      "id": "branch_fanout_with_setter_outside_if#gospel#if:else",
+      "id": "branch_fanout_with_setter_outside_if#gospel#bl:else",
       "source_file": "branch_fanout_with_setter_outside_if.cs",
       "annal_class": "branch_fanout_with_setter_outside_if",
       "switch_case": "default",
@@ -18,7 +18,7 @@
       "en_template_hash": "sha256:b5b8777804b4f33ed2c71542a0c9fdc76867d2bf55c2ae4b674dfd5f7bf82589"
     },
     {
-      "id": "branch_fanout_with_setter_outside_if#gospel#if:then",
+      "id": "branch_fanout_with_setter_outside_if#gospel#bl:then",
       "source_file": "branch_fanout_with_setter_outside_if.cs",
       "annal_class": "branch_fanout_with_setter_outside_if",
       "switch_case": "default",

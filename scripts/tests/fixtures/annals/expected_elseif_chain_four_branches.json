@@ -1,0 +1,69 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "elseif_chain_four_branches#gospel#bl:case0",
+      "source_file": "elseif_chain_four_branches.cs",
+      "annal_class": "elseif_chain_four_branches",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "alpha",
+      "extracted_pattern": "^alpha$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:2f1468e07e4991989d45d46aa27143ab687d3e5f1528a6a729180f0c98254898"
+    },
+    {
+      "id": "elseif_chain_four_branches#gospel#bl:case1",
+      "source_file": "elseif_chain_four_branches.cs",
+      "annal_class": "elseif_chain_four_branches",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "beta",
+      "extracted_pattern": "^beta$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:0f034a5574913678e47c4c46abd3fdf0cae12e7c61c74f12e66ab22e79fcb2d6"
+    },
+    {
+      "id": "elseif_chain_four_branches#gospel#bl:case2",
+      "source_file": "elseif_chain_four_branches.cs",
+      "annal_class": "elseif_chain_four_branches",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "gamma",
+      "extracted_pattern": "^gamma$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:456748a58793132a8385e660108cc78f7a95e00bf4cef51f491ffdc88f41b061"
+    },
+    {
+      "id": "elseif_chain_four_branches#gospel#bl:case3",
+      "source_file": "elseif_chain_four_branches.cs",
+      "annal_class": "elseif_chain_four_branches",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "delta",
+      "extracted_pattern": "^delta$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:b74fa30bb929982b4f9f1dfd13548a888ac4ef34345bceaab07f0dd40e0f8ae3"
+    }
+  ]
+}

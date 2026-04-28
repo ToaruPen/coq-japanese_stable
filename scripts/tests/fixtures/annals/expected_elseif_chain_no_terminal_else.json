@@ -1,0 +1,53 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "elseif_chain_no_terminal_else#gospel#bl:case0",
+      "source_file": "elseif_chain_no_terminal_else.cs",
+      "annal_class": "elseif_chain_no_terminal_else",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "alpha",
+      "extracted_pattern": "^alpha$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:2f1468e07e4991989d45d46aa27143ab687d3e5f1528a6a729180f0c98254898"
+    },
+    {
+      "id": "elseif_chain_no_terminal_else#gospel#bl:case1",
+      "source_file": "elseif_chain_no_terminal_else.cs",
+      "annal_class": "elseif_chain_no_terminal_else",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "beta",
+      "extracted_pattern": "^beta$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:0f034a5574913678e47c4c46abd3fdf0cae12e7c61c74f12e66ab22e79fcb2d6"
+    },
+    {
+      "id": "elseif_chain_no_terminal_else#gospel#bl:case2",
+      "source_file": "elseif_chain_no_terminal_else.cs",
+      "annal_class": "elseif_chain_no_terminal_else",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "default",
+      "extracted_pattern": "^default$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:b5b8777804b4f33ed2c71542a0c9fdc76867d2bf55c2ae4b674dfd5f7bf82589"
+    }
+  ]
+}

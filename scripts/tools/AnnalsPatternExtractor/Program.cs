@@ -65,15 +65,21 @@ foreach (var diag in extractor.Diagnostics)
     Console.Error.WriteLine($"[warn] {diag}");
 }
 
-// Pre-pass: collapse if-branch siblings whose patterns turned out structurally identical so the
-// `#if:then`/`#if:else` suffix only survives when the branches *differ*. We pair them by the
-// "id with the if-suffix stripped" — if all members of the group share one hash, replace their
-// ids with the stripped form and keep one. This realises Option A (dedupe identical shapes) for
-// if-branches without losing distinctness in the divergent-shape case.
+// Pre-pass: collapse branch siblings whose patterns turned out structurally identical so the
+// `#if:then`/`#if:else` and `#bl:then`/`#bl:else` (etc.) suffixes only survive when the
+// branches *differ*. We pair them by the "id with all branch-suffixes stripped" — if all
+// members of the group share one hash, replace their ids with the stripped form and keep one.
+// This realises Option A (dedupe identical shapes) for both setter-chain (#if:) and
+// branched-local fanout (#bl:) without losing distinctness in the divergent-shape case.
 var groups = new Dictionary<string, List<CandidateEntry>>(StringComparer.Ordinal);
 foreach (var candidate in extractor.Candidates)
 {
-    var key = StripIfBranchSuffix(candidate.Id);
+    // Bucket key keeps each branch-suffix MARKER (e.g. `#if:`, `#bl:`) but replaces the
+    // label with `*` so independent fanout families (setter-chain vs branched-local) bucket
+    // separately. Generators that emit BOTH families with overlapping downstream suffixes
+    // (e.g. ChallengeSultan `#bl:caseN#arm:M` alongside `#if:then#arm:M`/`#if:else#arm:M`)
+    // collapse identical-`#bl:` siblings without being held back by divergent `#if:` siblings.
+    var key = MakeBucketKey(candidate.Id);
     if (!groups.TryGetValue(key, out var bucket))
     {
         bucket = new List<CandidateEntry>();
@@ -100,7 +106,7 @@ foreach (var bucket in groups.Values)
     if (allPending && allSameShape)
     {
         var first = bucket[0];
-        first.Id = StripIfBranchSuffix(first.Id);
+        first.Id = StripBranchSuffixes(first.Id);
         first.EnTemplateHash = HashHelper.ComputeEnTemplateHash(first);
         collapsed.Add(first);
     }
@@ -130,26 +136,50 @@ foreach (var candidate in collapsed)
             + $"(priorHash={prior.EnTemplateHash}, newHash={candidate.EnTemplateHash}, "
             + $"priorStatus={prior.Status}, newStatus={candidate.Status}, "
             + $"priorReason={prior.Reason}, newReason={candidate.Reason}). "
-            + "Resolve via branch/path id suffixes (`#case:`, `#arm:`, `#opt:`) or preserve both reasons.");
+            + "Resolve via branch/path id suffixes (`#if:`, `#bl:`, `#case:`, `#arm:`, `#opt:`) or preserve both reasons.");
         return 1;
     }
     seenById[candidate.Id] = candidate;
     deduped.Add(candidate);
 }
 
-static string StripIfBranchSuffix(string id)
+// `MakeBucketKey` keeps each `#if:`/`#bl:` marker but normalizes its label to `*`, so siblings
+// within ONE family bucket together while different markers stay in separate buckets.
+// `StripBranchSuffixes` removes the entire `#marker:label` segment, preserving downstream
+// suffixes like `#arm:`/`#opt:` so collapse pairs siblings across both families.
+static string MakeBucketKey(string id) => RewriteBranchSegments(id, labelReplacement: "*");
+static string StripBranchSuffixes(string id) => RewriteBranchSegments(id, labelReplacement: null);
+
+static string RewriteBranchSegments(string id, string? labelReplacement)
 {
-    // Remove ONLY the `#if:<label>` segment(s), preserving downstream suffixes like
-    // `#arm:` or `#opt:`. Otherwise `foo#if:then#arm:0` and `foo#if:else#opt:with1`
-    // would both collapse to `foo` and either falsely merge or false-collide.
-    // Loop until no `#if:` remains so any future nested-if extraction stays in sync.
-    while (true)
+    string[] markers = { CandidateIdSuffix.If, CandidateIdSuffix.BranchedLocal };
+    var result = id;
+    foreach (var marker in markers)
     {
-        var idx = id.IndexOf(CandidateIdSuffix.If, StringComparison.Ordinal);
-        if (idx < 0) return id;
-        var nextSuffix = id.IndexOf('#', idx + CandidateIdSuffix.If.Length);
-        id = nextSuffix < 0 ? id[..idx] : id[..idx] + id[nextSuffix..];
+        var searchFrom = 0;
+        while (true)
+        {
+            var idx = result.IndexOf(marker, searchFrom, StringComparison.Ordinal);
+            if (idx < 0) break;
+            var labelStart = idx + marker.Length;
+            var nextHash = result.IndexOf('#', labelStart);
+            var labelEnd = nextHash < 0 ? result.Length : nextHash;
+            if (labelReplacement is null)
+            {
+                // Strip the whole `#marker:label` segment.
+                result = result[..idx] + result[labelEnd..];
+                searchFrom = idx;
+            }
+            else
+            {
+                // Keep marker, replace just the label. Advance past the replacement so the loop
+                // terminates: the marker text remains and re-searching from 0 would re-find it.
+                result = result[..labelStart] + labelReplacement + result[labelEnd..];
+                searchFrom = labelStart + labelReplacement.Length;
+            }
+        }
     }
+    return result;
 }
 
 var doc = new CandidateDocument

@@ -16,6 +16,13 @@ internal static class CandidateIdSuffix
     public const string Arm = "#arm:";
     public const string Opt = "#opt:";
     public const string If = "#if:";
+    /// <summary>
+    /// Suffix for branched-local fanout (a setter consumes a local that is assigned with
+    /// distinct rhs across the arms of a sibling if/else-if chain). Distinct from
+    /// <see cref="If"/> (setter-INSIDE-if-chain fanout) so independent 3+-arm chains in the
+    /// same generator don't collide on `#if:caseN` ids.
+    /// </summary>
+    public const string BranchedLocal = "#bl:";
 }
 
 internal sealed class Extractor
@@ -88,14 +95,16 @@ internal sealed class Extractor
             // has branch-distinct SimpleAssignments in a pre-setter `if/else` sibling. The
             // branch-fanout case is mutually exclusive with `ResolveIfBranchSuffix` (setter
             // INSIDE an if-branch with a sibling setter for the same property in the other
-            // branch); when that fires, we suppress branch-fanout to avoid `#if:then#if:else`
-            // double-suffixing.
+            // branch); when that fires, we suppress branch-fanout to avoid combining
+            // `#if:caseN` (setter-chain) with `#bl:caseM` (branched-local) on a single id.
+            // Branched-local fanout uses the dedicated `#bl:` suffix so independent 3+-arm
+            // chains in the same generator don't collide on `#if:caseN` ids.
             var suppressBranchFanout = ifBranchSuffix is not null;
             var setterLocalsBranches = BuildSetterScopedLocals(invocation, localInitializers, generateMethod, suppressBranchFanout);
             var setterScopedAppends = FilterAppendsBeforeSetter(appendsByLocal, invocation);
             foreach (var (branchLabel, setterLocals) in setterLocalsBranches)
             {
-                var branchedIdPrefix = branchLabel is null ? idPrefix : idPrefix + CandidateIdSuffix.If + branchLabel;
+                var branchedIdPrefix = branchLabel is null ? idPrefix : idPrefix + CandidateIdSuffix.BranchedLocal + branchLabel;
                 var armings = ExpandSwitchExpressionArms(valueExpr, setterLocals);
                 foreach (var (armLabel, armLocals) in armings)
                 {
@@ -229,7 +238,7 @@ internal sealed class Extractor
 
     /// <summary>
     /// When two SetEventProperty calls for the same event property appear in distinct branches of
-    /// the same `if/else` statement, return a `then`/`else`/`elseN` suffix so the extractor can
+    /// the same `if/else` statement, return a `then`/`else`/`caseN` suffix so the extractor can
     /// emit one candidate per branch (each with its own shape). If only one setter for the event
     /// exists in this if (i.e., a `tombInscription` fallback like `If.Chance(80) tomb=long; else
     /// tomb=short;`), still suffix to keep the runtime variants distinct.
@@ -242,37 +251,69 @@ internal sealed class Extractor
     /// the same chain stop matching, and no `#if:` suffix is emitted, leading to id collision
     /// at dedupe time. We normalize the resolved if to the OUTERMOST `IfStatementSyntax` in the
     /// chain (walking up `Parent.Parent` through `ElseClauseSyntax` → `IfStatementSyntax` links)
-    /// for both the sibling check and the then/else branch test.
+    /// via the shared <see cref="ResolveChainArm"/> helper for both the sibling check and the
+    /// branch-label decision.
     ///
-    /// Limitation: 3+ branch chains (e.g. `if A else if B else C`) collapse the trailing `else`
-    /// into the outermost-if's else and would label B as `else` (because B lives in the
-    /// outer-else span) and C also as `else`, causing collision. PR1/PR2a target files do not
-    /// contain 3+ branch chains, so the normalize-to-outermost approach is sufficient for the
-    /// current scope; a richer per-arm labelling is deferred.
+    /// Per-arm labelling: 2-arm chains (`if A` or `if A else B` or `if A else if B`) keep the
+    /// historical `then`/`else` labels for byte-identical PR1 output. 3+-arm chains
+    /// (`if A else if B else C`, longer) emit `case0`..`caseN-1` so each arm gets a distinct id
+    /// and the dedupe pass does not collapse divergent arms (issue #430 follow-up; ChallengeSultan
+    /// regression).
     /// </remarks>
     private static string? ResolveIfBranchSuffix(
         InvocationExpressionSyntax setter,
         List<InvocationExpressionSyntax> allSetters,
         string eventProperty)
     {
-        var nearestIf = setter.Ancestors().OfType<IfStatementSyntax>().FirstOrDefault();
-        if (nearestIf is null) return null;
-        var ifStmt = NormalizeToChainRoot(nearestIf);
+        var arm = ResolveChainArm(setter);
+        if (arm is null) return null;
+        var (root, armIndex, totalArms) = arm.Value;
         // Only suffix when at least one other setter for this same event property exists in a
         // distinct branch of the *same* if-chain (using the chain root for both sides).
-        var siblingsInSameIf = allSetters.Where(other =>
+        var hasSibling = allSetters.Any(other =>
         {
             if (other == setter) return false;
             if (ParseSetterArgs(other).property != eventProperty) return false;
-            var otherNearest = other.Ancestors().OfType<IfStatementSyntax>().FirstOrDefault();
-            if (otherNearest is null) return false;
-            return NormalizeToChainRoot(otherNearest) == ifStmt;
-        }).ToList();
-        if (siblingsInSameIf.Count == 0) return null;
+            var otherArm = ResolveChainArm(other);
+            // Same arm of same chain is a setter chain, not a branched pair: keep them
+            // distinguished by setter-chain logic (`#if:then`/`#if:else` or downstream
+            // `#bl:` suffixes), not by labelling both with the SAME arm label here.
+            return otherArm is not null
+                && otherArm.Value.Root == root
+                && otherArm.Value.ArmIndex != armIndex;
+        });
+        if (!hasSibling) return null;
+        return BuildArmLabel(armIndex, totalArms);
+    }
 
-        // Determine which branch this setter lives in (relative to the chain root).
-        if (IsInThenBranch(setter, ifStmt)) return "then";
-        if (IsInElseBranch(setter, ifStmt)) return "else";
+    /// <summary>
+    /// Locate <paramref name="node"/> within an `if` chain and return (chainRoot, armIndex,
+    /// totalArms). Returns null when the node is not inside any `if`. Shared by
+    /// <see cref="ResolveIfBranchSuffix"/> and <see cref="TryDetectBranchedLocal"/> so both paths
+    /// agree on what counts as one chain and how arms are numbered.
+    /// </summary>
+    private static (IfStatementSyntax Root, int ArmIndex, int TotalArms)? ResolveChainArm(SyntaxNode node)
+    {
+        // Walk inner-to-outer and pick the FIRST containing chain that actually has
+        // multiple arms — a single-arm `if (cond) { ... }` doesn't differentiate the
+        // setter from any sibling, so we need to keep walking up until we find a
+        // chain with an else branch. This rule keeps two cases right:
+        //   1. `if (outer) { if (inner) SET1; } else { SET2; }` — inner has 1 arm,
+        //      so we skip past it and resolve SET1 to outer's arm 0 (matching SET2 at
+        //      outer's arm 1 for sibling detection).
+        //   2. `if (outer) { if (inner) { SET1 } else { SET2 } } else { SET3 }` —
+        //      inner has 2 arms and IS the branching chain for SET1/SET2, so we
+        //      resolve them to inner; SET3 belongs to outer.
+        foreach (var ancestor in node.Ancestors().OfType<IfStatementSyntax>())
+        {
+            var root = NormalizeToChainRoot(ancestor);
+            var arms = EnumerateChainArms(root);
+            if (arms.Count < 2) continue;
+            for (var i = 0; i < arms.Count; i++)
+            {
+                if (arms[i].Span.Contains(node.Span)) return (root, i, arms.Count);
+            }
+        }
         return null;
     }
 
@@ -292,14 +333,72 @@ internal sealed class Extractor
         return current;
     }
 
-    private static bool IsInThenBranch(SyntaxNode node, IfStatementSyntax ifStmt)
+    /// <summary>
+    /// Walk DOWN an `if/else if/else` chain from <paramref name="root"/> and return one
+    /// statement per arm in source order. For `if A else if B else C` this yields
+    /// [A_body, B_body, C_body]; for `if A else if B` it yields [A_body, B_body]; for `if A`
+    /// alone it yields [A_body]. The arm bodies do NOT overlap — each is the literal
+    /// `Statement` of the corresponding if-link (or the trailing `Else.Statement` when the
+    /// chain ends with a non-`if` else).
+    /// </summary>
+    /// <remarks>
+    /// Defers nested-if handling: an `if A else if B` BODY (i.e., A's block) that internally
+    /// contains its own unrelated `if X else Y` is NOT exploded — only the chain rooted at
+    /// <paramref name="root"/> is enumerated. The shared <see cref="ResolveChainArm"/> caller
+    /// is what determines arm membership for descendants, and it uses each arm body's Span,
+    /// so a node inside a nested-but-unrelated if still resolves to the OUTER chain's arm.
+    /// </remarks>
+    private static IReadOnlyList<StatementSyntax> EnumerateChainArms(IfStatementSyntax root)
     {
-        return ifStmt.Statement.Span.Contains(node.Span);
+        var arms = new List<StatementSyntax>();
+        var current = root;
+        while (true)
+        {
+            arms.Add(current.Statement);
+            if (current.Else is null) break;
+            if (current.Else.Statement is IfStatementSyntax inner)
+            {
+                current = inner;
+                continue;
+            }
+            arms.Add(current.Else.Statement);
+            break;
+        }
+        return arms;
     }
 
-    private static bool IsInElseBranch(SyntaxNode node, IfStatementSyntax ifStmt)
+    /// <summary>
+    /// True iff the chain ends in a non-`if` `else` clause. `if A`, `if A else if B`, and
+    /// `if A else if B else if C` all return false; `if A else B`, `if A else if B else C`
+    /// return true. Used by branched-local detection to decide whether to add an implicit
+    /// no-op arm for the runtime path where every condition is false.
+    /// </summary>
+    private static bool HasTerminalElse(IfStatementSyntax root)
     {
-        return ifStmt.Else is not null && ifStmt.Else.Statement.Span.Contains(node.Span);
+        var current = root;
+        while (current.Else is not null)
+        {
+            if (current.Else.Statement is IfStatementSyntax inner)
+            {
+                current = inner;
+                continue;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Map an arm index to a stable id-suffix label. 2-arm chains use `then`/`else`;
+    /// 3+-arm chains use `case{i}`.
+    /// </summary>
+    private static string BuildArmLabel(int armIndex, int totalArms)
+    {
+        if (totalArms <= 2)
+        {
+            return armIndex == 0 ? "then" : "else";
+        }
+        return $"case{armIndex}";
     }
 
     /// <summary>
@@ -336,7 +435,7 @@ internal sealed class Extractor
     ///     <b>Mutual exclusion with `ResolveIfBranchSuffix`</b>: when the setter is INSIDE an
     ///     if-branch and a sibling setter exists in the other branch (driving an `#if:then` /
     ///     `#if:else` suffix), branch-fanout is suppressed by the caller via
-    ///     <paramref name="suppressBranchFanout"/> so the id never carries two `#if:` segments.
+    ///     <paramref name="suppressBranchFanout"/> so the id never combines `#if:` with `#bl:`.
     ///   </item>
     /// </list>
     /// </remarks>
@@ -352,9 +451,12 @@ internal sealed class Extractor
 
         // First branched local found (innermost sibling, reverse source order). Once non-null,
         // further branched candidates are ignored — the spec limits fanout to a single local.
+        // ArmRhs[i] = rhs that arm i assigns to the local (null = arm has no assignment, falls
+        // back to the declared initializer). For 2-arm chains ArmLabels = ["then", "else"]; for
+        // 3+-arm chains ArmLabels = ["case0", "case1", ...] so divergent arms keep distinct ids.
         string? branchedName = null;
-        ExpressionSyntax? branchedThen = null;
-        ExpressionSyntax? branchedElse = null;
+        IReadOnlyList<ExpressionSyntax?>? branchedArmRhs = null;
+        IReadOnlyList<string>? branchedArmLabels = null;
 
         // Walk enclosing statement-containers (BlockSyntax or SwitchSectionSyntax) from innermost
         // to outermost; within each container, scan preceding sibling statements for simple
@@ -395,8 +497,8 @@ internal sealed class Extractor
                     if (detected.Name is not null)
                     {
                         branchedName = detected.Name;
-                        branchedThen = detected.ThenRhs;
-                        branchedElse = detected.ElseRhs;
+                        branchedArmRhs = detected.ArmRhs;
+                        branchedArmLabels = detected.ArmLabels;
                         // Shield the branched name from the unconditional fold below: its
                         // value is owned by the per-branch override dicts.
                         alreadyOverridden.Add(detected.Name);
@@ -439,86 +541,141 @@ internal sealed class Extractor
             return new[] { ((string?)null, (IReadOnlyDictionary<string, ExpressionSyntax>)overrides) };
         }
 
-        // Resolve missing branches via the local's declared initializer. When neither branch
-        // assigns AND no initializer exists, fall back to the unconditional override (whatever
-        // outer-scope assignment happened to land in `overrides[name]` — typically nothing,
-        // leaving the name to degrade to an `unresolved-local` slot at FlattenConcat time).
+        // Resolve missing arms via the local's declared initializer. When the arm doesn't assign
+        // AND no initializer exists, fall back to the unconditional override (whatever outer-
+        // scope assignment happened to land in `overrides[name]` — typically nothing, leaving
+        // the name to degrade to an `unresolved-local` slot at FlattenConcat time).
         var initializerFallback = LookupDeclaredInitializer(branchedName, method);
-        var thenValue = branchedThen ?? initializerFallback;
-        var elseValue = branchedElse ?? initializerFallback;
-
-        var thenOverrides = new Dictionary<string, ExpressionSyntax>(overrides, StringComparer.Ordinal);
-        if (thenValue is not null) thenOverrides[branchedName] = thenValue;
-        var elseOverrides = new Dictionary<string, ExpressionSyntax>(overrides, StringComparer.Ordinal);
-        if (elseValue is not null) elseOverrides[branchedName] = elseValue;
-
-        return new[]
+        var armRhs = branchedArmRhs!;
+        var armLabels = branchedArmLabels!;
+        var result = new List<(string? IfBranchLabel, IReadOnlyDictionary<string, ExpressionSyntax> Overrides)>(armLabels.Count);
+        for (var i = 0; i < armLabels.Count; i++)
         {
-            ((string?)"then", (IReadOnlyDictionary<string, ExpressionSyntax>)thenOverrides),
-            ((string?)"else", (IReadOnlyDictionary<string, ExpressionSyntax>)elseOverrides),
-        };
+            var rhs = armRhs[i] ?? initializerFallback;
+            var armOverrides = new Dictionary<string, ExpressionSyntax>(overrides, StringComparer.Ordinal);
+            if (rhs is not null) armOverrides[branchedName] = rhs;
+            result.Add(((string?)armLabels[i], (IReadOnlyDictionary<string, ExpressionSyntax>)armOverrides));
+        }
+        return result;
     }
 
     /// <summary>
-    /// Inspect the THEN/ELSE branches of <paramref name="ifStmt"/> for SimpleAssignments to live
+    /// Inspect each arm of <paramref name="ifStmt"/>'s chain for SimpleAssignments to live
     /// locals (names not in <paramref name="methodLocals"/> and not already overridden by a
-    /// closer-to-setter assignment) and return the first qualifying branched local. Returns
-    /// (null, null, null) when no branch-distinct local is present.
+    /// closer-to-setter assignment) and return the first qualifying branched local along with
+    /// per-arm rhs and per-arm labels. Returns Name=null when no arm-distinct local is present.
     /// </summary>
     /// <remarks>
-    /// Per-branch picks the SOURCE-LATEST assignment (mirrors the within-branch reverse-iter
-    /// rule). A name qualifies as "branched" when:
+    /// Per-arm picks the SOURCE-LATEST assignment within the arm body (mirrors the within-branch
+    /// reverse-iter rule). A name qualifies as "branched" when:
     /// <list type="bullet">
-    ///   <item>Both branches assign it with DIFFERENT rhs nodes; or</item>
-    ///   <item>Only ONE branch assigns it — the other branch retains the local's prior state,
+    ///   <item>At least two arms assign it with DIFFERENT rhs nodes; or</item>
+    ///   <item>Only SOME arms assign it — the unassigned arms retain the local's prior state,
     ///   which is runtime-faithfully a distinct value worth a separate candidate.</item>
     /// </list>
-    /// Search order is the if-stmt's source-DFS assignment order so the FIRST qualifying name
-    /// wins deterministically.
+    /// Search order is the chain's source-DFS assignment order so the FIRST qualifying name
+    /// wins deterministically. Labels are `then`/`else` for 2-arm chains and
+    /// `case0`..`caseN-1` for 3+-arm chains.
     /// </remarks>
-    private static (string? Name, ExpressionSyntax? ThenRhs, ExpressionSyntax? ElseRhs) TryDetectBranchedLocal(
+    private static (string? Name, IReadOnlyList<ExpressionSyntax?> ArmRhs, IReadOnlyList<string> ArmLabels) TryDetectBranchedLocal(
         IfStatementSyntax ifStmt,
         IReadOnlyDictionary<string, ExpressionSyntax> methodLocals,
         HashSet<string> alreadyOverridden)
     {
-        // ELSE may be null (`if (cond) { ... }`). An empty else map drives the single-branch
-        // case: any THEN-branch assignment qualifies as branched (else-branch keeps prior state).
-        var thenAssigns = CollectBranchAssignments(ifStmt.Statement);
-        var elseAssigns = ifStmt.Else is null
-            ? new Dictionary<string, ExpressionSyntax>(StringComparer.Ordinal)
-            : CollectBranchAssignments(ifStmt.Else.Statement);
+        // Normalize to the chain root so an inner-if passed in here resolves the same arms
+        // ResolveIfBranchSuffix would; otherwise the two paths can disagree on arm membership.
+        var root = NormalizeToChainRoot(ifStmt);
+        var arms = EnumerateChainArms(root);
+        var totalArms = arms.Count;
+        // Whenever the chain has no terminal `else`, append an implicit no-op arm to stand
+        // in for the runtime path where every condition is false (the local keeps its
+        // initializer). This covers `if A`, `if A else if B`, `if A else if B else if C`,
+        // etc. — only chains that already end in a non-`if` else skip the implicit arm.
+        var hasTerminalElse = HasTerminalElse(root);
+        var effectiveCount = hasTerminalElse ? totalArms : totalArms + 1;
+        var armAssigns = new Dictionary<string, ExpressionSyntax>[effectiveCount];
+        for (var i = 0; i < effectiveCount; i++)
+        {
+            armAssigns[i] = i < totalArms
+                ? CollectBranchAssignments(arms[i])
+                : new Dictionary<string, ExpressionSyntax>(StringComparer.Ordinal);
+        }
+        var labels = new string[effectiveCount];
+        for (var i = 0; i < effectiveCount; i++) labels[i] = BuildArmLabel(i, effectiveCount);
 
-        // Walk if-stmt-internal SimpleAssignments in source order; first qualifying name wins.
+        // Names assigned inside any nested `if` of any arm must NOT seed branched-local
+        // selection: their per-arm rhs map (built via CollectBranchAssignments which prunes
+        // nested-if subtrees) under-counts their writes, so the resulting fanout would drop
+        // the inner-if execution path. Mirrors the prune in CollectBranchAssignments.
+        var nestedIfNames = new HashSet<string>(StringComparer.Ordinal);
+        for (var armIdx = 0; armIdx < totalArms; armIdx++)
+        {
+            foreach (var nestedIf in arms[armIdx].DescendantNodes().OfType<IfStatementSyntax>())
+            {
+                foreach (var nestedAssign in nestedIf.DescendantNodes().OfType<AssignmentExpressionSyntax>())
+                {
+                    if (!nestedAssign.IsKind(SyntaxKind.SimpleAssignmentExpression)) continue;
+                    if (nestedAssign.Left is IdentifierNameSyntax nestedLhs)
+                        nestedIfNames.Add(nestedLhs.Identifier.ValueText);
+                }
+            }
+        }
+
+        // Walk chain-internal SimpleAssignments in source order; first qualifying name wins.
         // Skip post-setter assigns? Not applicable — caller filters via stmt.Span checks.
-        foreach (var assign in ifStmt.DescendantNodes().OfType<AssignmentExpressionSyntax>())
+        foreach (var assign in root.DescendantNodes().OfType<AssignmentExpressionSyntax>())
         {
             if (!assign.IsKind(SyntaxKind.SimpleAssignmentExpression)) continue;
             if (assign.Left is not IdentifierNameSyntax lhs) continue;
             var name = lhs.Identifier.ValueText;
             if (methodLocals.ContainsKey(name)) continue;
             if (alreadyOverridden.Contains(name)) continue;
+            if (nestedIfNames.Contains(name)) continue;
 
-            thenAssigns.TryGetValue(name, out var t);
-            elseAssigns.TryGetValue(name, out var e);
-            if (t is null && e is null) continue;
-            // Both branches assigning IDENTICAL rhs → fold unconditionally (existing reverse-
-            // iter logic handles it). Only branch-distinct rhs OR single-branch-assign qualifies.
-            if (t is not null && e is not null && SyntaxFactory.AreEquivalent(t, e)) continue;
-            return (name, t, e);
+            var rhsPerArm = new ExpressionSyntax?[effectiveCount];
+            var anyAssign = false;
+            for (var i = 0; i < effectiveCount; i++)
+            {
+                if (armAssigns[i].TryGetValue(name, out var v))
+                {
+                    rhsPerArm[i] = v;
+                    anyAssign = true;
+                }
+            }
+            if (!anyAssign) continue;
+            // All assigning arms agree on the SAME rhs AND every arm assigns it → fold
+            // unconditionally (existing reverse-iter logic handles it). Only divergent rhs
+            // OR partial-arm-assign qualifies as branched.
+            var allEqual = true;
+            ExpressionSyntax? firstRhs = null;
+            var allAssigned = true;
+            for (var i = 0; i < effectiveCount; i++)
+            {
+                if (rhsPerArm[i] is null) { allAssigned = false; continue; }
+                if (firstRhs is null) firstRhs = rhsPerArm[i];
+                else if (!SyntaxFactory.AreEquivalent(firstRhs, rhsPerArm[i])) { allEqual = false; break; }
+            }
+            if (allAssigned && allEqual) continue;
+
+            return (name, rhsPerArm, labels);
         }
-        return (null, null, null);
+        return (null, Array.Empty<ExpressionSyntax?>(), Array.Empty<string>());
     }
 
     /// <summary>
     /// Build a name → source-latest-rhs map for SimpleAssignments inside one branch's
-    /// statement subtree. When the same local is assigned multiple times within the branch
-    /// (e.g. `value = "first"; value = "second";`), the LATER assignment wins, matching the
-    /// runtime semantic of "the last write before the branch ends is the observed value".
+    /// statement subtree, EXCLUDING assignments inside nested `if` statements. When the
+    /// same local is assigned multiple times within the branch
+    /// (e.g. `value = "first"; value = "second";`), the LATER assignment wins, matching
+    /// the runtime semantic of "the last write before the branch ends is the observed
+    /// value". Nested-if assigns are skipped because they only happen on a sub-condition
+    /// — folding them as the arm's confirmed value would over-attribute conditional
+    /// writes to the unconditional arm path.
     /// </summary>
     private static Dictionary<string, ExpressionSyntax> CollectBranchAssignments(StatementSyntax branch)
     {
         var map = new Dictionary<string, ExpressionSyntax>(StringComparer.Ordinal);
-        foreach (var assign in branch.DescendantNodesAndSelf().OfType<AssignmentExpressionSyntax>())
+        foreach (var assign in branch.DescendantNodesAndSelf(node => !(node is IfStatementSyntax)).OfType<AssignmentExpressionSyntax>())
         {
             if (!assign.IsKind(SyntaxKind.SimpleAssignmentExpression)) continue;
             if (assign.Left is not IdentifierNameSyntax lhs) continue;

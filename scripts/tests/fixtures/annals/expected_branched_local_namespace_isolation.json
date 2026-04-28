@@ -1,0 +1,53 @@
+{
+  "schema_version": "1",
+  "candidates": [
+    {
+      "id": "branched_local_namespace_isolation#gospel",
+      "source_file": "branched_local_namespace_isolation.cs",
+      "annal_class": "branched_local_namespace_isolation",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "same",
+      "extracted_pattern": "^same$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:f2ae8d412095df175ddd00a56d5cf393b34b8c399bd0f35e92f88c503d935cab"
+    },
+    {
+      "id": "branched_local_namespace_isolation#gospel#if:else",
+      "source_file": "branched_local_namespace_isolation.cs",
+      "annal_class": "branched_local_namespace_isolation",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "y",
+      "extracted_pattern": "^y$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:deb2b05aa725273b01bf859a3cb704eab6bfa42f9b0a525ca1c846f234836dd5"
+    },
+    {
+      "id": "branched_local_namespace_isolation#gospel#if:then",
+      "source_file": "branched_local_namespace_isolation.cs",
+      "annal_class": "branched_local_namespace_isolation",
+      "switch_case": "default",
+      "event_property": "gospel",
+      "sample_source": "x",
+      "extracted_pattern": "^x$",
+      "slots": [],
+      "status": "pending",
+      "reason": "",
+      "ja_template": "",
+      "review_notes": "",
+      "route": "annals",
+      "en_template_hash": "sha256:dcf294ccca4056a78abcf16f18fc00f31d396898429b866b82e4e20da9969b10"
+    }
+  ]
+}

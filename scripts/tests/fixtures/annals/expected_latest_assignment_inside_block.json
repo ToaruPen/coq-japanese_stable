@@ -2,7 +2,7 @@
   "schema_version": "1",
   "candidates": [
     {
-      "id": "latest_assignment_inside_block#gospel#if:else",
+      "id": "latest_assignment_inside_block#gospel#bl:else",
       "source_file": "latest_assignment_inside_block.cs",
       "annal_class": "latest_assignment_inside_block",
       "switch_case": "default",
@@ -18,7 +18,7 @@
       "en_template_hash": "sha256:9d704dd815c313ad68422b0d346edc065f219e26211e8b8b851f394cc1b8fd33"
     },
     {
-      "id": "latest_assignment_inside_block#gospel#if:then",
+      "id": "latest_assignment_inside_block#gospel#bl:then",
       "source_file": "latest_assignment_inside_block.cs",
       "annal_class": "latest_assignment_inside_block",
       "switch_case": "default",
