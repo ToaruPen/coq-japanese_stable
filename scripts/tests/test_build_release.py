@@ -14,10 +14,12 @@ from scripts.build_release import (
     collect_localization_files,
     create_zip,
     main,
+    read_preview_image_path,
     read_version,
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+LOCALIZATION_DOC_NAMES = ("AGENTS.md", "CLAUDE.md", "README.md")
 
 
 class TestReadVersion:
@@ -80,12 +82,52 @@ class TestProjectManifest:
         manifest = PROJECT_ROOT / "Mods" / "QudJP" / "manifest.json"
         assert read_version(manifest) == RELEASE_VERSION
 
-    def test_preview_image_can_remain_pending(self) -> None:
-        """Release setup does not require a preview image asset yet."""
+    def test_preview_image_points_to_checked_in_asset(self) -> None:
+        """Checked-in manifest points at the committed Workshop preview asset."""
         manifest = PROJECT_ROOT / "Mods" / "QudJP" / "manifest.json"
         data = json.loads(manifest.read_text(encoding="utf-8"))
-        assert "PreviewImage" in data
-        assert data["PreviewImage"] == ""
+        assert data["PreviewImage"] == "preview.png"
+        assert read_preview_image_path(manifest) == PROJECT_ROOT / "Mods" / "QudJP" / "preview.png"
+
+
+class TestReadPreviewImagePath:
+    """Tests for manifest PreviewImage handling."""
+
+    def test_empty_preview_image_returns_none(self, tmp_path: Path) -> None:
+        """Unset PreviewImage remains optional for test fixtures."""
+        manifest = tmp_path / "manifest.json"
+        manifest.write_text(json.dumps({"PreviewImage": ""}), encoding="utf-8")
+        assert read_preview_image_path(manifest) is None
+
+    def test_reads_existing_preview_image(self, tmp_path: Path) -> None:
+        """A relative mod-local PreviewImage resolves to an existing file."""
+        manifest = tmp_path / "manifest.json"
+        preview = tmp_path / "preview.png"
+        preview.write_bytes(b"png")
+        manifest.write_text(json.dumps({"PreviewImage": "preview.png"}), encoding="utf-8")
+        assert read_preview_image_path(manifest) == preview
+
+    def test_rejects_escaping_preview_image_path(self, tmp_path: Path) -> None:
+        """PreviewImage cannot escape the mod directory."""
+        manifest = tmp_path / "manifest.json"
+        manifest.write_text(json.dumps({"PreviewImage": "../preview.png"}), encoding="utf-8")
+        with pytest.raises(ValueError, match="relative mod-local path"):
+            read_preview_image_path(manifest)
+
+    def test_rejects_absolute_preview_image_path(self, tmp_path: Path) -> None:
+        """PreviewImage must be relative to the mod directory."""
+        manifest = tmp_path / "manifest.json"
+        preview = tmp_path / "preview.png"
+        manifest.write_text(json.dumps({"PreviewImage": str(preview)}), encoding="utf-8")
+        with pytest.raises(ValueError, match="relative mod-local path"):
+            read_preview_image_path(manifest)
+
+    def test_missing_preview_image_raises(self, tmp_path: Path) -> None:
+        """A non-empty PreviewImage must point at a real file."""
+        manifest = tmp_path / "manifest.json"
+        manifest.write_text(json.dumps({"PreviewImage": "preview.png"}), encoding="utf-8")
+        with pytest.raises(FileNotFoundError, match="PreviewImage file not found"):
+            read_preview_image_path(manifest)
 
 
 class TestCollectLocalizationFiles:
@@ -116,16 +158,34 @@ class TestCollectLocalizationFiles:
         names = {f.name for f in files}
         assert "ui.json" in names
 
-    def test_excludes_non_xml_json(self, tmp_path: Path) -> None:
-        """Non-XML/JSON files are not collected."""
+    def test_collects_txt_files(self, tmp_path: Path) -> None:
+        """TXT localization assets are collected recursively."""
+        loc = tmp_path / "Localization"
+        corpus = loc / "Corpus"
+        corpus.mkdir(parents=True)
+        (loc / "Text.jp.txt").write_text("main text", encoding="utf-8")
+        (corpus / "Thought-Forms-excerpt.jp.txt").write_text(
+            "corpus text",
+            encoding="utf-8",
+        )
+
+        files = collect_localization_files(loc)
+        names = {f.name for f in files}
+        assert "Text.jp.txt" in names
+        assert "Thought-Forms-excerpt.jp.txt" in names
+
+    def test_excludes_docs_and_unrecognized_files(self, tmp_path: Path) -> None:
+        """LLM-facing docs and unrecognized files are not collected."""
         loc = tmp_path / "Localization"
         loc.mkdir()
-        (loc / "readme.txt").write_text("ignore me", encoding="utf-8")
+        for doc_name in LOCALIZATION_DOC_NAMES:
+            (loc / doc_name).write_text("# docs", encoding="utf-8")
         (loc / "data.csv").write_text("a,b", encoding="utf-8")
 
         files = collect_localization_files(loc)
         names = {f.name for f in files}
-        assert "readme.txt" not in names
+        for doc_name in LOCALIZATION_DOC_NAMES:
+            assert doc_name not in names
         assert "data.csv" not in names
 
     def test_missing_directory_raises(self, tmp_path: Path) -> None:
@@ -241,6 +301,34 @@ class TestCreateZip:
         assert "QudJP/Localization/Creatures.jp.xml" in names
         assert "QudJP/Localization/ui.json" in names
 
+    def test_zip_contains_collected_txt_localization_files_without_docs(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        """ZIP uses collected TXT localization assets without LLM-facing docs."""
+        output, manifest, dll, loc_dir, _loc_files, legal_files = self._make_inputs(
+            tmp_path,
+        )
+        (loc_dir / "Text.jp.txt").write_text("main text", encoding="utf-8")
+        for doc_name in LOCALIZATION_DOC_NAMES:
+            (loc_dir / doc_name).write_text("# docs", encoding="utf-8")
+        loc_files = collect_localization_files(loc_dir)
+
+        create_zip(
+            output,
+            manifest,
+            dll,
+            loc_dir,
+            loc_files,
+            legal_files=legal_files,
+        )
+        with zipfile.ZipFile(output) as zf:
+            names = zf.namelist()
+
+        assert "QudJP/Localization/Text.jp.txt" in names
+        for doc_name in LOCALIZATION_DOC_NAMES:
+            assert f"QudJP/Localization/{doc_name}" not in names
+
     def test_zip_root_is_qudjp(self, tmp_path: Path) -> None:
         """All ZIP entries start with QudJP/ prefix."""
         output, manifest, dll, loc_dir, loc_files, legal_files = self._make_inputs(
@@ -272,6 +360,29 @@ class TestCreateZip:
         )
         assert isinstance(members, list)
         assert len(members) == 6
+
+    def test_zip_contains_preview_image_when_manifest_references_it(self, tmp_path: Path) -> None:
+        """ZIP contains the Workshop preview image referenced by manifest.json."""
+        output, manifest, dll, loc_dir, loc_files, legal_files = self._make_inputs(
+            tmp_path,
+        )
+        preview = manifest.parent / "preview.png"
+        preview.write_bytes(b"png")
+        manifest.write_text(json.dumps({"Version": "0.1.0", "PreviewImage": "preview.png"}), encoding="utf-8")
+
+        members = create_zip(
+            output,
+            manifest,
+            dll,
+            loc_dir,
+            loc_files,
+            legal_files=legal_files,
+        )
+        with zipfile.ZipFile(output) as zf:
+            names = zf.namelist()
+
+        assert "QudJP/preview.png" in names
+        assert "QudJP/preview.png" in members
 
     def test_creates_parent_dirs(self, tmp_path: Path) -> None:
         """Output parent directories are created if they do not exist."""

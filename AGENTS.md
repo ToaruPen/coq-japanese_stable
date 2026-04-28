@@ -15,6 +15,7 @@ QudJP is the Japanese localization mod for Caves of Qud `2.0.4`. The repo contai
   - layer boundaries: `docs/test-architecture.md`
   - workflow rules and operating constraints: `docs/RULES.md`
   - runtime evidence: fresh logs under `~/Library/Logs/Freehold Games/CavesOfQud/`
+  - Steam Workshop release procedure: `docs/release.md`
 
 ## How
 

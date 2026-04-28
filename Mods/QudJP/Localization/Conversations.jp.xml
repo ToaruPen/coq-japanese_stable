@@ -258,6 +258,7 @@
       <choice GotoID="End">生きて飲め。</choice>
     </start>
     <node ID="Welcome">
+      <!-- Upstream Conversations.xml 2.0.4 keeps Tzedech/Welcome text empty; choices provide the visible content. -->
       <text />
       <choice GotoID="Name">私は =name=。君は？</choice>
       <choice GotoID="Upset">何かあったのか？</choice>

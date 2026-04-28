@@ -116,6 +116,18 @@ class TestCheckDirectory:
 
         assert check_directory(tmp_path) == []
 
+    def test_recursive_scan_skips_generated_build_directories(self, tmp_path: Path) -> None:
+        """Generated build outputs are ignored during recursive scans."""
+        extractor = tmp_path / "scripts" / "tools" / "AnnalsPatternExtractor"
+        bin_dir = extractor / "bin" / "Debug" / "net10.0"
+        obj_dir = extractor / "obj" / "Debug" / "net10.0"
+        bin_dir.mkdir(parents=True)
+        obj_dir.mkdir(parents=True)
+        (bin_dir / "AnnalsPatternExtractor.dll").write_bytes(b"\x80\r\n")
+        (obj_dir / "AnnalsPatternExtractor.assets.cache").write_bytes(b"\x81\r\n")
+
+        assert check_directory(tmp_path) == []
+
     def test_python_files_skip_mojibake_check(self, tmp_path: Path) -> None:
         """Python fixtures may contain mojibake sentinels without failing the scan."""
         script = tmp_path / "fixture.py"

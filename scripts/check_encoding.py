@@ -7,7 +7,7 @@ from pathlib import Path
 
 _BOM = b"\xef\xbb\xbf"
 _MOJIBAKE_PATTERNS = ("繧", "縺", "蜒", "驕ｿ")
-_SKIPPED_DIR_NAMES = frozenset({"__pycache__"})
+_SKIPPED_DIR_NAMES = frozenset({"__pycache__", "bin", "obj"})
 _SKIPPED_SUFFIXES = frozenset({".pyc", ".pyo"})
 _MOJIBAKE_SKIP_SUFFIXES = frozenset({".md", ".py"})
 

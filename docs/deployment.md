@@ -2,6 +2,8 @@
 
 How to deploy the QudJP mod to the Caves of Qud game directory.
 
+For Steam Workshop publishing, use `docs/release.md` after local deployment and validation pass.
+
 ---
 
 ## Prerequisites
@@ -56,23 +58,37 @@ rm -rf "$GAME_MODS/QudJP"
 # Copy only required files
 mkdir -p "$GAME_MODS/QudJP/Assemblies"
 cp Mods/QudJP/manifest.json "$GAME_MODS/QudJP/"
+cp Mods/QudJP/preview.png "$GAME_MODS/QudJP/"
 cp Mods/QudJP/Bootstrap.cs "$GAME_MODS/QudJP/"
 cp Mods/QudJP/Assemblies/QudJP.dll "$GAME_MODS/QudJP/Assemblies/"
-cp -r Mods/QudJP/Localization "$GAME_MODS/QudJP/"
+mkdir -p "$GAME_MODS/QudJP/Localization"
+rsync -a --prune-empty-dirs \
+  --include='*/' \
+  --include='*.xml' \
+  --include='*.json' \
+  --include='*.txt' \
+  --exclude='*' \
+  Mods/QudJP/Localization/ "$GAME_MODS/QudJP/Localization/"
 ```
+
+The filtered `rsync` step copies only shipped localization assets and skips
+development-only markdown such as `AGENTS.md` and `README.md`. If `rsync` is not
+available, use `python3.12 scripts/sync_mod.py` instead; it applies the same
+deployment filtering.
 
 ---
 
 ## Deployed Files
 
-The game requires exactly five types of files:
+The game requires these deployed files:
 
 | File | Purpose |
 |------|---------|
 | `manifest.json` | Mod metadata (ID, title, version) |
+| `preview.png` | Workshop/mod-manager preview image referenced by `manifest.json` |
 | `Bootstrap.cs` | Game-compiled loader shim — discovers and initializes QudJP.dll |
 | `Assemblies/QudJP.dll` | Pre-compiled Harmony patch DLL |
-| `Localization/` | XML translation files + JSON dictionaries |
+| `Localization/` | XML translation files, JSON dictionaries, and text corpus assets |
 | `Fonts/` | CJK font for TextMeshPro rendering + SIL OFL license |
 
 ### Files That Must NOT Be Deployed

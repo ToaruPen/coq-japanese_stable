@@ -9,7 +9,10 @@ This area contains the shipped XML merge files and JSON dictionaries that provid
 - Main paths:
   - `*.jp.xml` for XML merge overlays
   - `Dictionaries/*.ja.json` for dictionary assets
+  - `Text.jp.txt` for root text localization
+  - `Corpus/*.jp.txt` for shipped text corpus excerpts
   - `Dictionaries/README.md` for local asset notes
+  - markdown files, including `AGENTS.md` and `README.md`, are development-only documentation and must not be treated as shipped localization assets
 - Source of truth:
   - tests and fresh runtime evidence decide whether a route should use localization assets at all
   - layer boundaries live in `docs/test-architecture.md`

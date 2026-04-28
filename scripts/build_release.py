@@ -5,12 +5,14 @@ and produces ``dist/QudJP-v{version}.zip`` containing only the files the game
 needs:
 
 - ``QudJP/manifest.json``
+- ``QudJP/preview.png`` when referenced by ``manifest.json`` ``PreviewImage``
 - ``QudJP/LICENSE``
 - ``QudJP/NOTICE.md``
 - ``QudJP/Bootstrap.cs``
 - ``QudJP/Assemblies/QudJP.dll``
 - ``QudJP/Localization/**/*.xml``
 - ``QudJP/Localization/**/*.json``
+- ``QudJP/Localization/**/*.txt``
 - ``QudJP/Fonts/*`` (CJK font and license)
 
 The ZIP root is ``QudJP/`` so users can extract it directly into their Mods
@@ -25,6 +27,7 @@ import zipfile
 from pathlib import Path
 
 RELEASE_VERSION = "0.2.0"
+_LOCALIZATION_ASSET_SUFFIXES = {".json", ".txt", ".xml"}
 
 
 def _find_project_root() -> Path:
@@ -79,6 +82,36 @@ def read_version(manifest_path: Path) -> str:
     return version
 
 
+def read_preview_image_path(manifest_path: Path) -> Path | None:
+    """Read and validate the optional PreviewImage asset path.
+
+    Args:
+        manifest_path: Path to ``manifest.json``.
+
+    Returns:
+        Absolute path to the preview image, or ``None`` when unset.
+
+    Raises:
+        FileNotFoundError: If the referenced preview image does not exist.
+        ValueError: If PreviewImage is absolute or escapes the mod directory.
+    """
+    data: dict[str, object] = json.loads(manifest_path.read_text(encoding="utf-8"))
+    preview = data.get("PreviewImage")
+    if not isinstance(preview, str) or not preview.strip():
+        return None
+
+    relative_path = Path(preview.strip())
+    if relative_path.is_absolute() or ".." in relative_path.parts:
+        msg = f"PreviewImage must be a relative mod-local path: {manifest_path} (got {preview!r})"
+        raise ValueError(msg)
+
+    preview_path = manifest_path.parent / relative_path
+    if not preview_path.is_file():
+        msg = f"PreviewImage file not found: {preview_path}"
+        raise FileNotFoundError(msg)
+    return preview_path
+
+
 def build_dll(project_root: Path) -> Path:
     """Run ``dotnet build -c Release`` and return the output DLL path.
 
@@ -105,13 +138,13 @@ def build_dll(project_root: Path) -> Path:
 
 
 def collect_localization_files(localization_dir: Path) -> list[Path]:
-    """Collect all XML and JSON files under the Localization directory.
+    """Collect all game-loaded localization assets under the Localization directory.
 
     Args:
         localization_dir: Path to ``Mods/QudJP/Localization/``.
 
     Returns:
-        Sorted list of absolute paths to ``.xml`` and ``.json`` files.
+        Sorted list of absolute paths to ``.xml``, ``.json``, and ``.txt`` files.
 
     Raises:
         FileNotFoundError: If the localization directory does not exist.
@@ -120,10 +153,13 @@ def collect_localization_files(localization_dir: Path) -> list[Path]:
         msg = f"Localization directory not found: {localization_dir}"
         raise FileNotFoundError(msg)
 
-    files: list[Path] = []
-    for pattern in ("**/*.xml", "**/*.json"):
-        files.extend(localization_dir.rglob(pattern[3:]))  # strip "**/"
-    return sorted(set(files))
+    return sorted(
+        {
+            file_path
+            for file_path in localization_dir.rglob("*")
+            if file_path.suffix in _LOCALIZATION_ASSET_SUFFIXES
+        },
+    )
 
 
 def create_zip(
@@ -158,6 +194,14 @@ def create_zip(
         arc_manifest = "QudJP/manifest.json"
         zf.write(manifest_path, arc_manifest)
         members.append(arc_manifest)
+
+        # Optional Workshop/mod-manager preview image referenced by manifest.json
+        preview_path = read_preview_image_path(manifest_path)
+        if preview_path is not None:
+            relative = preview_path.relative_to(manifest_path.parent)
+            arc_preview = f"QudJP/{relative}"
+            zf.write(preview_path, arc_preview)
+            members.append(arc_preview)
 
         # Compliance files
         for legal_file in legal_files or []:
