@@ -57,7 +57,32 @@ _MARKUP_TOKEN_PATTERNS = (
 )
 
 type _MarkupUnitKey = tuple[str, str]
-type _ElementPathRecord = tuple[str, str, ET.Element, bool]
+
+
+@dataclass(frozen=True)
+class _ElementPathRecord:
+    keyed_path: str
+    positional_path: str
+    element: ET.Element
+    uses_idless_name_fallback: bool
+    parent_keyed_path: str | None
+    sibling_tag_index: int
+
+
+type _SourceChildrenByParent = tuple[
+    dict[str, _ElementPathRecord],
+    defaultdict[str, list[_ElementPathRecord]],
+    dict[tuple[str, str, int], _ElementPathRecord],
+]
+
+
+@dataclass(frozen=True)
+class _PathWalkState:
+    keyed_path: str
+    positional_path: str
+    uses_idless_name_fallback: bool
+    parent_keyed_path: str | None
+    sibling_tag_index: int
 
 _MARKUP_COMPARISON_ATTRIBUTES = frozenset(
     {
@@ -99,6 +124,7 @@ _PREFERRED_PATH_DISCRIMINATOR_ATTRIBUTES = (
     "Speaker",
     "GotoID",
 )
+_PREFERRED_STABLE_REMATCH_ATTRIBUTES = ("ID", "Level", "x", "y")
 
 
 def _collect_xml_files(paths: list[Path]) -> list[Path]:
@@ -350,17 +376,20 @@ def _element_path_base(element: ET.Element, discriminator_attributes: Iterable[s
 def _element_path_records(root: ET.Element) -> list[_ElementPathRecord]:
     records: list[_ElementPathRecord] = []
 
-    def walk(
-        element: ET.Element,
-        keyed_path: str,
-        positional_path: str,
-        *,
-        uses_idless_name_fallback: bool,
-    ) -> None:
-        uses_idless_name_fallback = uses_idless_name_fallback or (
+    def walk(element: ET.Element, state: _PathWalkState) -> None:
+        uses_idless_name_fallback = state.uses_idless_name_fallback or (
             "ID" not in element.attrib and "Name" in element.attrib
         )
-        records.append((keyed_path, positional_path, element, uses_idless_name_fallback))
+        records.append(
+            _ElementPathRecord(
+                keyed_path=state.keyed_path,
+                positional_path=state.positional_path,
+                element=element,
+                uses_idless_name_fallback=uses_idless_name_fallback,
+                parent_keyed_path=state.parent_keyed_path,
+                sibling_tag_index=state.sibling_tag_index,
+            )
+        )
         keyed_groups: defaultdict[str, list[ET.Element]] = defaultdict(list)
         for child in element:
             keyed_groups[_element_path_key_base(child)].append(child)
@@ -378,19 +407,33 @@ def _element_path_records(root: ET.Element) -> list[_ElementPathRecord]:
             tag_counts[child.tag] += 1
             walk(
                 child,
-                f"{keyed_path}/{path_base}[{sibling_counts[path_base]}]",
-                f"{positional_path}/{child.tag}[{tag_counts[child.tag]}]",
-                uses_idless_name_fallback=uses_idless_name_fallback,
+                _PathWalkState(
+                    keyed_path=f"{state.keyed_path}/{path_base}[{sibling_counts[path_base]}]",
+                    positional_path=f"{state.positional_path}/{child.tag}[{tag_counts[child.tag]}]",
+                    uses_idless_name_fallback=uses_idless_name_fallback,
+                    parent_keyed_path=state.keyed_path,
+                    sibling_tag_index=tag_counts[child.tag],
+                ),
             )
 
-    walk(root, f"/{root.tag}[1]", f"/{root.tag}[1]", uses_idless_name_fallback=False)
+    walk(
+        root,
+        _PathWalkState(
+            keyed_path=f"/{root.tag}[1]",
+            positional_path=f"/{root.tag}[1]",
+            uses_idless_name_fallback=False,
+            parent_keyed_path=None,
+            sibling_tag_index=1,
+        ),
+    )
     return records
 
 
 def _markup_unit_values(root: ET.Element, *, use_positional_paths: bool = False) -> dict[_MarkupUnitKey, str]:
     values: dict[_MarkupUnitKey, str] = {}
-    for keyed_path, positional_path, element, _uses_idless_name_fallback in _element_path_records(root):
-        element_path = positional_path if use_positional_paths else keyed_path
+    for record in _element_path_records(root):
+        element = record.element
+        element_path = record.positional_path if use_positional_paths else record.keyed_path
         values[(element_path, "text()")] = element.text or ""
         for attribute_name, attribute_value in element.attrib.items():
             if attribute_name not in _MARKUP_COMPARISON_ATTRIBUTES:
@@ -401,10 +444,139 @@ def _markup_unit_values(root: ET.Element, *, use_positional_paths: bool = False)
 
 def _idless_name_element_fallback_paths(root: ET.Element) -> dict[str, str]:
     return {
-        keyed_path: positional_path
-        for keyed_path, positional_path, _element, uses_idless_name_fallback in _element_path_records(root)
-        if uses_idless_name_fallback
+        record.keyed_path: record.positional_path
+        for record in _element_path_records(root)
+        if record.uses_idless_name_fallback
     }
+
+
+def _stable_source_rematch(
+    localized_record: _ElementPathRecord,
+    source_candidates: list[_ElementPathRecord],
+) -> _ElementPathRecord | None:
+    element = localized_record.element
+    candidate_attribute_names = [
+        attribute_name
+        for attribute_name in _PREFERRED_STABLE_REMATCH_ATTRIBUTES
+        if element.attrib.get(attribute_name)
+    ]
+    candidate_attribute_names.extend(
+        sorted(
+            {
+                attribute_name
+                for attribute_name, attribute_value in element.attrib.items()
+                if attribute_value
+                and attribute_name not in candidate_attribute_names
+                and attribute_name != "Name"
+                and attribute_name not in _MARKUP_COMPARISON_ATTRIBUTES
+            }
+        )
+    )
+
+    selected_attribute_names: list[str] = []
+    for attribute_name in candidate_attribute_names:
+        selected_attribute_names.append(attribute_name)
+        matching_candidates = [
+            candidate
+            for candidate in source_candidates
+            if all(
+                candidate.element.attrib.get(selected_name) == element.attrib[selected_name]
+                for selected_name in selected_attribute_names
+            )
+        ]
+        if len(matching_candidates) == 1:
+            return matching_candidates[0]
+    return None
+
+
+def _source_children_by_parent(
+    source_records: list[_ElementPathRecord],
+) -> _SourceChildrenByParent:
+    source_record_by_keyed_path = {record.keyed_path: record for record in source_records}
+    source_children: defaultdict[str, list[_ElementPathRecord]] = defaultdict(list)
+    source_child_by_relative_position: dict[tuple[str, str, int], _ElementPathRecord] = {}
+    for record in source_records:
+        if record.parent_keyed_path is None:
+            continue
+        source_children[record.parent_keyed_path].append(record)
+        source_child_by_relative_position[
+            (record.parent_keyed_path, record.element.tag, record.sibling_tag_index)
+        ] = record
+    return source_record_by_keyed_path, source_children, source_child_by_relative_position
+
+
+def _is_translated_idless_name_record(record: _ElementPathRecord) -> bool:
+    return "ID" not in record.element.attrib and "Name" in record.element.attrib
+
+
+def _source_record_for_localized_record(
+    localized_record: _ElementPathRecord,
+    *,
+    source_parent_path: str,
+    rematch_paths: dict[str, str],
+    source_record_by_keyed_path: dict[str, _ElementPathRecord],
+    source_children_by_parent: defaultdict[str, list[_ElementPathRecord]],
+    source_child_by_relative_position: dict[tuple[str, str, int], _ElementPathRecord],
+) -> _ElementPathRecord | None:
+    if source_parent_path == localized_record.parent_keyed_path:
+        source_record = source_record_by_keyed_path.get(localized_record.keyed_path)
+        if source_record is not None:
+            return source_record
+
+    if _is_translated_idless_name_record(localized_record):
+        source_record = _stable_source_rematch(
+            localized_record,
+            [
+                candidate
+                for candidate in source_children_by_parent[source_parent_path]
+                if candidate.element.tag == localized_record.element.tag
+            ],
+        )
+        if source_record is not None:
+            return source_record
+
+    if localized_record.parent_keyed_path in rematch_paths:
+        return source_child_by_relative_position.get(
+            (source_parent_path, localized_record.element.tag, localized_record.sibling_tag_index)
+        )
+    return None
+
+
+def _source_stable_rematch_paths(localized_root: ET.Element, source_root: ET.Element) -> dict[str, str]:
+    localized_records = _element_path_records(localized_root)
+    source_records = _element_path_records(source_root)
+    if not localized_records or not source_records or localized_records[0].element.tag != source_records[0].element.tag:
+        return {}
+
+    source_record_by_keyed_path, source_children_by_parent, source_child_by_relative_position = (
+        _source_children_by_parent(source_records)
+    )
+
+    localized_to_source_paths = {localized_records[0].keyed_path: source_records[0].keyed_path}
+    rematch_paths: dict[str, str] = {}
+    for localized_record in localized_records[1:]:
+        if localized_record.parent_keyed_path is None:
+            continue
+        source_parent_path = localized_to_source_paths.get(localized_record.parent_keyed_path)
+        if source_parent_path is None:
+            continue
+
+        source_record = _source_record_for_localized_record(
+            localized_record,
+            source_parent_path=source_parent_path,
+            rematch_paths=rematch_paths,
+            source_record_by_keyed_path=source_record_by_keyed_path,
+            source_children_by_parent=source_children_by_parent,
+            source_child_by_relative_position=source_child_by_relative_position,
+        )
+
+        if source_record is None:
+            continue
+
+        localized_to_source_paths[localized_record.keyed_path] = source_record.keyed_path
+        if source_record.keyed_path != localized_record.keyed_path:
+            rematch_paths[localized_record.keyed_path] = source_record.keyed_path
+    return rematch_paths
 
 
 def _find_markup_token_drift(
@@ -417,11 +589,16 @@ def _find_markup_token_drift(
     localized_values = _markup_unit_values(localized_root)
     source_values = _markup_unit_values(source_root)
     localized_fallback_paths = _idless_name_element_fallback_paths(localized_root)
+    localized_rematch_paths = _source_stable_rematch_paths(localized_root, source_root)
     source_positional_values = _markup_unit_values(source_root, use_positional_paths=True)
     for unit_key, localized_value in sorted(localized_values.items()):
         element_path, unit_name = unit_key
         source_value = source_values.get(unit_key)
         warning_key = unit_key
+        if source_value is None and (rematch_path := localized_rematch_paths.get(element_path)) is not None:
+            rematch_key = (rematch_path, unit_name)
+            source_value = source_values.get(rematch_key, "")
+            warning_key = rematch_key
         if source_value is None and (fallback_path := localized_fallback_paths.get(element_path)) is not None:
             fallback_key = (fallback_path, unit_name)
             source_value = source_positional_values.get(fallback_key, "")
@@ -460,6 +637,8 @@ def _find_source_markup_token_drift(
 
     try:
         source_root = ET.parse(source_path).getroot()  # noqa: S314 -- local repository XML validation tool
+    except OSError as exc:
+        return [f"Source XML read failed for {source_relative_path.as_posix()}: {exc}"]
     except ET.ParseError as exc:
         return [f"Source XML parse failed for {source_relative_path.as_posix()}: {exc}"]
 

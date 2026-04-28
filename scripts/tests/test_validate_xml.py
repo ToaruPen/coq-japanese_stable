@@ -1,3 +1,4 @@
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import pytest
@@ -551,3 +552,72 @@ def test_source_root_reports_description_drift_when_name_is_translated(
     assert "@Description" in captured.out
     assert "'{{R|': 1" in captured.out
     assert "'{{G|': 1" in captured.out
+
+
+def test_source_root_rematches_translated_name_siblings_by_stable_attributes(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Translated ID-less ``@Name`` siblings rematch by stable attrs before position."""
+    localization = tmp_path / "Localization"
+    source_root = tmp_path / "Base"
+    localized_xml = localization / "Worlds.jp.xml"
+    source_xml = source_root / "Worlds.xml"
+    _write_xml(
+        source_xml,
+        (
+            '<worlds><world Name="JoppaWorld">'
+            '<zone Name="North" Level="10" x="0" y="0" Description="{{G|Safe}}"/>'
+            '<zone Name="South" Level="11" x="0" y="0" Description="{{R|Danger}}"/>'
+            "</world></worlds>"
+        ),
+    )
+    _write_xml(
+        localized_xml,
+        (
+            '<worlds><world Name="JoppaWorld">'
+            '<zone Name="南" Level="11" x="0" y="0" Description="危険"/>'
+            '<zone Name="北" Level="10" x="0" y="0" Description="{{G|安全}}"/>'
+            "</world></worlds>"
+        ),
+    )
+
+    result = main(["--source-root", str(source_root), str(localized_xml)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert captured.out.count("Markup token drift") == 1
+    assert "zone[@Name='South'][1] @Description" in captured.out
+    assert "'{{R|': 1" in captured.out
+    assert "'{{G|': 1" not in captured.out
+
+
+def test_source_root_parse_os_error_reports_deterministic_warning(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Source XML read failures report a stable source-relative warning."""
+    localization = tmp_path / "Localization"
+    source_root = tmp_path / "Base"
+    localized_xml = localization / "ObjectBlueprints" / "Creatures.jp.xml"
+    source_xml = source_root / "ObjectBlueprints" / "Creatures.xml"
+    _write_xml(localized_xml, '<objects><object Name="Glowfish"/></objects>')
+    _write_xml(source_xml, '<objects><object Name="Glowfish"/></objects>')
+
+    original_parse = ET.parse
+
+    def fail_source_parse(path: Path) -> "ET.ElementTree[ET.Element[str]]":
+        if Path(path) == source_xml:
+            message = "permission denied"
+            raise OSError(message)
+        return original_parse(path)
+
+    monkeypatch.setattr(ET, "parse", fail_source_parse)
+
+    result = validate_xml_file(
+        localized_xml,
+        source_root=source_root,
+        validation_roots=[localization],
+    )
+
+    assert result.warnings == [
+        "Source XML read failed for ObjectBlueprints/Creatures.xml: permission denied",
+    ]
