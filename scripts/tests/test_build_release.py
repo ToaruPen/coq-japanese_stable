@@ -64,6 +64,13 @@ class TestReadVersion:
         with pytest.raises(ValueError, match="Version field is empty"):
             read_version(manifest)
 
+    def test_whitespace_only_version_raises(self, tmp_path: Path) -> None:
+        """Whitespace-only Version is treated as empty."""
+        manifest = tmp_path / "manifest.json"
+        manifest.write_text(json.dumps({"Version": "   "}), encoding="utf-8")
+        with pytest.raises(ValueError, match="Version field is empty"):
+            read_version(manifest)
+
 
 class TestProjectManifest:
     """Tests for the checked-in release manifest."""
