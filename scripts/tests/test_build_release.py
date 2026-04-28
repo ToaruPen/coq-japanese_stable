@@ -114,6 +114,14 @@ class TestReadPreviewImagePath:
         with pytest.raises(ValueError, match="relative mod-local path"):
             read_preview_image_path(manifest)
 
+    def test_rejects_absolute_preview_image_path(self, tmp_path: Path) -> None:
+        """PreviewImage must be relative to the mod directory."""
+        manifest = tmp_path / "manifest.json"
+        preview = tmp_path / "preview.png"
+        manifest.write_text(json.dumps({"PreviewImage": str(preview)}), encoding="utf-8")
+        with pytest.raises(ValueError, match="relative mod-local path"):
+            read_preview_image_path(manifest)
+
     def test_missing_preview_image_raises(self, tmp_path: Path) -> None:
         """A non-empty PreviewImage must point at a real file."""
         manifest = tmp_path / "manifest.json"
