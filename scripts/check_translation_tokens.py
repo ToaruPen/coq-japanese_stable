@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 _DEFAULT_DUPLICATE_BASELINE = Path(__file__).with_name("translation_token_duplicate_baseline.json")
+_DUPLICATE_BASELINE_VERSION = 2
 _MIN_CONFLICTING_TRANSLATIONS = 2
 
 _BARE_QUD_SPAN = re.compile(r"\{\{[^|{}]+\}\}")
@@ -100,13 +101,16 @@ def collect_translation_json_files(paths: list[Path]) -> list[Path]:
             msg = f"Path not found: {input_path}"
             raise FileNotFoundError(msg)
 
-        if input_path.is_file():
-            if _is_target_translation_file(input_path):
-                files.add(input_path)
+        resolved_input_path = input_path.resolve()
+        if resolved_input_path.is_file():
+            if _is_target_translation_file(resolved_input_path):
+                files.add(resolved_input_path)
             continue
 
-        if input_path.is_dir():
-            files.update(path for path in input_path.rglob("*.ja.json") if _is_target_translation_file(path))
+        if resolved_input_path.is_dir():
+            files.update(
+                path.resolve() for path in resolved_input_path.rglob("*.ja.json") if _is_target_translation_file(path)
+            )
             continue
 
         msg = f"Path is not a regular file or directory: {input_path}"
@@ -156,6 +160,7 @@ def iter_translation_entries(path: Path) -> list[TranslationEntry]:
 
 def _translation_token_multiset(value: str) -> Counter[str]:
     tokens: Counter[str] = Counter()
+    tokens.update(match.group(0) for match in _BARE_QUD_SPAN.finditer(value))
     bare_span_stripped = _BARE_QUD_SPAN.sub("", value)
     for pattern in (
         _QUD_OPENER,
@@ -218,7 +223,20 @@ def _load_duplicate_baseline(path: Path | None) -> dict[tuple[str, str], Duplica
     if path is None or not path.exists():
         return {}
     payload = _load_json(path)
-    conflicts = payload.get("duplicate_conflicts") if isinstance(payload, dict) else None
+    if not isinstance(payload, dict):
+        msg = f"Duplicate conflict baseline must be a JSON object: {path}"
+        raise TypeError(msg)
+    version = payload.get("version")
+    if version is None:
+        msg = f"Duplicate conflict baseline must contain version {_DUPLICATE_BASELINE_VERSION}: {path}"
+        raise TypeError(msg)
+    if version != _DUPLICATE_BASELINE_VERSION:
+        msg = (
+            "Duplicate conflict baseline expected "
+            f"version {_DUPLICATE_BASELINE_VERSION} but found {version!r}: {path}"
+        )
+        raise TypeError(msg)
+    conflicts = payload.get("duplicate_conflicts")
     if not isinstance(conflicts, list):
         msg = f"Duplicate conflict baseline must contain a 'duplicate_conflicts' list: {path}"
         raise TypeError(msg)

@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from scripts import check_translation_tokens
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     import pytest
 
 
@@ -36,6 +35,15 @@ def _write_duplicate_baseline(path: Path, *, texts: list[str], entry_count: int 
     )
 
 
+def _run_with_duplicate_baseline(tmp_path: Path, payload: object) -> int:
+    localization = tmp_path / "Localization"
+    _write_entries(localization / "Dictionaries" / "demo.ja.json", [{"key": "Source", "text": "訳"}])
+    baseline = tmp_path / "baseline.json"
+    baseline.write_text(json.dumps(payload), encoding="utf-8")
+
+    return check_translation_tokens.main([str(localization), "--duplicate-conflict-baseline", str(baseline)])
+
+
 def test_cli_reports_missing_source_tokens_for_dictionary_json(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
@@ -59,6 +67,29 @@ def test_cli_reports_missing_source_tokens_for_dictionary_json(
     assert "Dictionaries/demo.ja.json" in captured.out
     assert "missing translation tokens" in captured.out
     assert "placeholder multiset mismatch" in captured.out
+
+
+def test_cli_reports_missing_bare_qud_span_token(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Bare Qud spans such as `{{R}}` are source tokens, not disposable text."""
+    localization = tmp_path / "Localization"
+    _write_entries(
+        localization / "Dictionaries" / "demo.ja.json",
+        [
+            {
+                "key": "{{R}}",
+                "text": "",
+            },
+        ],
+    )
+
+    exit_code = check_translation_tokens.main([str(localization)])
+
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "missing translation tokens: '{{R}}': 1" in captured.out
 
 
 def test_cli_passes_when_source_tokens_are_preserved_and_translation_adds_decoration(
@@ -164,6 +195,55 @@ def test_duplicate_baseline_path_is_stable_for_localization_relative_cli_shapes(
 
     monkeypatch.chdir(localization / "Dictionaries")
     assert check_translation_tokens.main(["demo.ja.json", "--duplicate-conflict-baseline", str(baseline)]) == 0
+
+
+def test_collect_translation_json_files_deduplicates_relative_and_absolute_inputs(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Collector canonicalizes inputs so relative and absolute shapes do not duplicate scans."""
+    localization = tmp_path / "Localization"
+    target = localization / "Dictionaries" / "demo.ja.json"
+    _write_entries(target, [{"key": "Source", "text": "訳"}])
+
+    monkeypatch.chdir(localization)
+
+    files = check_translation_tokens.collect_translation_json_files([Path(), target])
+
+    assert files == [target.resolve()]
+
+
+def test_duplicate_baseline_rejects_missing_version(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Duplicate baseline files must declare the expected schema version."""
+    assert _run_with_duplicate_baseline(tmp_path, {"duplicate_conflicts": []}) == 1
+
+    captured = capsys.readouterr()
+    assert "must contain version 2" in captured.err
+
+
+def test_duplicate_baseline_rejects_version_mismatch(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Duplicate baseline files fail fast when their schema version is unexpected."""
+    assert _run_with_duplicate_baseline(tmp_path, {"version": 1, "duplicate_conflicts": []}) == 1
+
+    captured = capsys.readouterr()
+    assert "expected version 2" in captured.err
+
+
+def test_duplicate_baseline_rejects_non_object_payload(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Duplicate baseline files must be JSON objects before fields are read."""
+    assert _run_with_duplicate_baseline(tmp_path, []) == 1
+
+    captured = capsys.readouterr()
+    assert "must be a JSON object" in captured.err
 
 
 def test_blueprint_templates_first_slice_entries_are_scanned_for_token_loss(
