@@ -162,6 +162,53 @@ public sealed class DeathWrapperFamilyTranslatorTests
     }
 
     [Test]
+    public void TryTranslateMessage_DoesNotReapplySourceKillerMarkup_WhenTranslatedKillerOwnsMarkup()
+    {
+        WriteDictionary(
+            CommonEntries().Concat(
+            [
+                ("bloody Tam, dromad merchant [sitting]", "{{r|血まみれの}}Tam、ドロマド商人 [座っている]"),
+            ]));
+
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(
+            "You were killed by {{r|bloody}} Tam, dromad merchant [sitting].");
+
+        var translated = DeathWrapperFamilyTranslator.TryTranslateMessage(stripped, spans, out var messageTranslated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(
+                messageTranslated,
+                Is.EqualTo("{{r|血まみれの}}Tam、ドロマド商人 [座っている]に殺された。"));
+            Assert.That(messageTranslated, Does.Not.Contain("{{r|{{r|"));
+            Assert.That(messageTranslated, Does.Not.Match("血ま.*}}.*みれ"));
+            Assert.That(messageTranslated, Does.Not.Match("\\[座ってい}}る\\]"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateMessage_PreservesSourceWholeKillerWrapper_WhenTranslatedKillerOwnsMarkup()
+    {
+        WriteDictionary(
+            CommonEntries().Concat(
+            [
+                ("bloody Tam", "{{r|血まみれの}}Tam"),
+            ]));
+
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(
+            "You were killed by {{C|bloody Tam}}.");
+
+        var translated = DeathWrapperFamilyTranslator.TryTranslateMessage(stripped, spans, out var messageTranslated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(messageTranslated, Is.EqualTo("{{C|{{r|血まみれの}}Tam}}に殺された。"));
+        });
+    }
+
+    [Test]
     public void TryTranslatePopup_PreservesTerminalEmptyWrapperInLocalizedKillerName()
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(

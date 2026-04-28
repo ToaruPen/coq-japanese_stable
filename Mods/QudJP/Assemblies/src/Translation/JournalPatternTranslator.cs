@@ -514,7 +514,7 @@ internal static class JournalPatternTranslator
 
             if (spans is not null && spans.Count > 0)
             {
-                value = ColorAwareTranslationComposer.RestoreCapture(value, spans, group);
+                value = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(value, spans, group);
             }
 
             if (captureIndex + 1 == firstCaptureGroupIndex && translatedFirstCaptureStart < 0)
