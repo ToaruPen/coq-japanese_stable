@@ -1,0 +1,149 @@
+{
+  "version": 2,
+  "duplicate_conflicts": [
+    {
+      "path": "Dictionaries/ui-default.ja.json",
+      "key": "If you quit without saving, you will lose all your progress and your character will be lost. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\n Type 'QUIT' to confirm.",
+      "entry_count": 2,
+      "texts": [
+        "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。",
+        "保存せずに終了すると進捗とキャラクターがすべて消えてしまいます。本当に終了してしまってよろしいですか？\\n\\n「QUIT」と入力すると確認します。"
+      ]
+    },
+    {
+      "path": "Dictionaries/ui-default.ja.json",
+      "key": "If you quit without saving, you will lose all your progress and your character will be lost. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\nType 'QUIT' to confirm.",
+      "entry_count": 2,
+      "texts": [
+        "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。",
+        "保存せずに終了すると進捗とキャラクターがすべて消えてしまいます。本当に終了してしまってよろしいですか？\\n\\n「QUIT」と入力すると確認します。"
+      ]
+    },
+    {
+      "path": "Dictionaries/ui-default.ja.json",
+      "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\n Type 'QUIT' to confirm.",
+      "entry_count": 2,
+      "texts": [
+        "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。",
+        "保存せずに終了すると保存していない進捗をすべて失います。本当に終了してしまってよろしいですか？\\n\\n「QUIT」と入力すると確認します。"
+      ]
+    },
+    {
+      "path": "Dictionaries/ui-default.ja.json",
+      "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\nType 'QUIT' to confirm.",
+      "entry_count": 2,
+      "texts": [
+        "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。",
+        "保存せずに終了すると保存していない進捗をすべて失います。本当に終了してしまってよろしいですか？\\n\\n「QUIT」と入力すると確認します。"
+      ]
+    },
+    {
+      "path": "Dictionaries/ui-messagelog-world.ja.json",
+      "key": "You can't figure out how to safely reach the stairs from here.",
+      "entry_count": 2,
+      "texts": [
+        "ここから安全に階段へたどり着く方法が分からない。",
+        "ここから階段へ安全に辿る経路が見つからない。"
+      ]
+    },
+    {
+      "path": "Dictionaries/ui-messagelog-world.ja.json",
+      "key": "You have mastered psychic combat at this level of difficulty. Do you want to guide the process in detail anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically receive the results of strong but unexceptional performance.",
+      "entry_count": 2,
+      "texts": [
+        "この難度での精神戦は熟達済みだ。より高い成功率を狙って詳細に指揮しますか？「いいえ」を選ぶと標準的な成功の結果を自動で受け取ります。",
+        "この難度での精神戦は熟達済みだ。より高い成功率を狙って詳細に指揮する？「いいえ」を選ぶと標準的な成功の結果を自動で受け取る。"
+      ]
+    },
+    {
+      "path": "Dictionaries/ui-options.ja.json",
+      "key": "Change Value",
+      "entry_count": 2,
+      "texts": [
+        "値を変更",
+        "値を変更（カーソル）"
+      ]
+    },
+    {
+      "path": "Dictionaries/ui-skillsandpowers.ja.json",
+      "key": "Weathered",
+      "entry_count": 2,
+      "texts": [
+        "風雨に耐えた",
+        "風雪錬成"
+      ]
+    },
+    {
+      "path": "Dictionaries/ui-skillsandpowers.ja.json",
+      "key": "Wilderness Lore: Canyons",
+      "entry_count": 2,
+      "texts": [
+        "荒地巡り：峡谷",
+        "荒野の伝承: 渓谷"
+      ]
+    },
+    {
+      "path": "Dictionaries/ui-skillsandpowers.ja.json",
+      "key": "Wilderness Lore: Flower Fields",
+      "entry_count": 2,
+      "texts": [
+        "荒地巡り：花畑",
+        "荒野の伝承: 花畑"
+      ]
+    },
+    {
+      "path": "Dictionaries/ui-skillsandpowers.ja.json",
+      "key": "Wilderness Lore: Hills and Mountains",
+      "entry_count": 2,
+      "texts": [
+        "荒地巡り：丘陵と山",
+        "荒野の伝承: 丘と山岳"
+      ]
+    },
+    {
+      "path": "Dictionaries/ui-skillsandpowers.ja.json",
+      "key": "Wilderness Lore: Jungles",
+      "entry_count": 2,
+      "texts": [
+        "荒地巡り：ジャングル",
+        "荒野の伝承: ジャングル"
+      ]
+    },
+    {
+      "path": "Dictionaries/ui-skillsandpowers.ja.json",
+      "key": "Wilderness Lore: Marshes",
+      "entry_count": 2,
+      "texts": [
+        "荒地巡り：湿地",
+        "荒野の伝承: 沼地"
+      ]
+    },
+    {
+      "path": "Dictionaries/ui-skillsandpowers.ja.json",
+      "key": "Wilderness Lore: Rivers and Lakes",
+      "entry_count": 2,
+      "texts": [
+        "荒地巡り：河川",
+        "荒野の伝承: 河川と湖"
+      ]
+    },
+    {
+      "path": "Dictionaries/ui-skillsandpowers.ja.json",
+      "key": "Wilderness Lore: Ruins",
+      "entry_count": 2,
+      "texts": [
+        "荒地巡り：廃墟",
+        "荒野の伝承: 遺跡"
+      ]
+    },
+    {
+      "path": "Dictionaries/ui-skillsandpowers.ja.json",
+      "key": "Wilderness Lore: Salt Dunes",
+      "entry_count": 2,
+      "texts": [
+        "荒地巡り：塩砂漠",
+        "荒野の伝承: 塩砂丘"
+      ]
+    }
+  ]
+}
