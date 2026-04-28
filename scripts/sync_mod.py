@@ -17,11 +17,16 @@ from pathlib import Path
 # everything else.
 _RSYNC_INCLUDES: tuple[str, ...] = (
     "manifest.json",
+    "preview.png",
     "Bootstrap.cs",
     "Assemblies/",
     "Assemblies/QudJP.dll",
     "Localization/",
-    "Localization/**",
+    "Localization/**/",
+    "Localization/*.xml",
+    "Localization/*.json",
+    "Localization/**/*.xml",
+    "Localization/**/*.json",
     "Fonts/",
     "Fonts/**",
 )
@@ -178,6 +183,7 @@ def _iter_sync_files(source: Path, *, exclude_fonts: bool) -> list[Path]:
 
     for relative in (
         Path("manifest.json"),
+        Path("preview.png"),
         Path("Bootstrap.cs"),
         Path("Assemblies") / "QudJP.dll",
     ):
@@ -190,7 +196,7 @@ def _iter_sync_files(source: Path, *, exclude_fonts: bool) -> list[Path]:
         file_paths.extend(
             file_path
             for file_path in sorted(localization_dir.rglob("*"))
-            if file_path.is_file()
+            if file_path.is_file() and file_path.suffix in {".xml", ".json"}
         )
 
     if not exclude_fonts:

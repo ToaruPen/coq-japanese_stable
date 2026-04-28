@@ -84,11 +84,18 @@ class TestBuildRsyncCommand:
         assert "--exclude=*" in cmd
 
     def test_essential_files_included(self) -> None:
-        """manifest.json, Assemblies/QudJP.dll, and Localization/** are included."""
+        """Core files and explicit localization asset patterns are included."""
         cmd = build_rsync_command(Path("/src"), Path("/dst"))
         assert "--include=manifest.json" in cmd
+        assert "--include=preview.png" in cmd
         assert "--include=Assemblies/QudJP.dll" in cmd
-        assert "--include=Localization/**" in cmd
+        assert "--include=Localization/" in cmd
+        assert "--include=Localization/**/" in cmd
+        assert "--include=Localization/*.xml" in cmd
+        assert "--include=Localization/*.json" in cmd
+        assert "--include=Localization/**/*.xml" in cmd
+        assert "--include=Localization/**/*.json" in cmd
+        assert "--include=Localization/**" not in cmd
 
     def test_exclude_fonts_before_wildcard_exclude(self) -> None:
         """--exclude=Fonts/ appears before --exclude=* when exclude_fonts is set."""
@@ -167,10 +174,27 @@ class TestRunSync:
         (source / "Localization").mkdir()
         (source / "Fonts").mkdir()
         (source / "manifest.json").write_text("{}", encoding="utf-8")
+        (source / "preview.png").write_bytes(b"preview")
         (source / "Bootstrap.cs").write_text("// bootstrap", encoding="utf-8")
         (source / "Assemblies" / "QudJP.dll").write_bytes(b"dll")
         (source / "Localization" / "Creatures.jp.xml").write_text(
             "<objects/>",
+            encoding="utf-8",
+        )
+        (source / "Localization" / "ui.ja.json").write_text(
+            "{}",
+            encoding="utf-8",
+        )
+        (source / "Localization" / "AGENTS.md").write_text(
+            "# agent notes",
+            encoding="utf-8",
+        )
+        (source / "Localization" / "CLAUDE.md").write_text(
+            "# claude notes",
+            encoding="utf-8",
+        )
+        (source / "Localization" / "README.md").write_text(
+            "# docs",
             encoding="utf-8",
         )
         (source / "Fonts" / "Font.otf").write_bytes(b"font")
@@ -183,9 +207,14 @@ class TestRunSync:
 
         assert result.returncode == 0
         assert (destination / "manifest.json").exists()
+        assert (destination / "preview.png").exists()
         assert (destination / "Bootstrap.cs").exists()
         assert (destination / "Assemblies" / "QudJP.dll").exists()
         assert (destination / "Localization" / "Creatures.jp.xml").exists()
+        assert (destination / "Localization" / "ui.ja.json").exists()
+        assert not (destination / "Localization" / "AGENTS.md").exists()
+        assert not (destination / "Localization" / "CLAUDE.md").exists()
+        assert not (destination / "Localization" / "README.md").exists()
         assert (destination / "Fonts" / "Font.otf").exists()
         assert not (destination / "src.cs").exists()
         assert not (destination / "stale.txt").exists()

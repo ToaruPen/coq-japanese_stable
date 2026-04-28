@@ -14,6 +14,7 @@ from scripts.build_release import (
     collect_localization_files,
     create_zip,
     main,
+    read_preview_image_path,
     read_version,
 )
 
@@ -80,12 +81,44 @@ class TestProjectManifest:
         manifest = PROJECT_ROOT / "Mods" / "QudJP" / "manifest.json"
         assert read_version(manifest) == RELEASE_VERSION
 
-    def test_preview_image_can_remain_pending(self) -> None:
-        """Release setup does not require a preview image asset yet."""
+    def test_preview_image_points_to_checked_in_asset(self) -> None:
+        """Checked-in manifest points at the committed Workshop preview asset."""
         manifest = PROJECT_ROOT / "Mods" / "QudJP" / "manifest.json"
         data = json.loads(manifest.read_text(encoding="utf-8"))
-        assert "PreviewImage" in data
-        assert data["PreviewImage"] == ""
+        assert data["PreviewImage"] == "preview.png"
+        assert read_preview_image_path(manifest) == PROJECT_ROOT / "Mods" / "QudJP" / "preview.png"
+
+
+class TestReadPreviewImagePath:
+    """Tests for manifest PreviewImage handling."""
+
+    def test_empty_preview_image_returns_none(self, tmp_path: Path) -> None:
+        """Unset PreviewImage remains optional for test fixtures."""
+        manifest = tmp_path / "manifest.json"
+        manifest.write_text(json.dumps({"PreviewImage": ""}), encoding="utf-8")
+        assert read_preview_image_path(manifest) is None
+
+    def test_reads_existing_preview_image(self, tmp_path: Path) -> None:
+        """A relative mod-local PreviewImage resolves to an existing file."""
+        manifest = tmp_path / "manifest.json"
+        preview = tmp_path / "preview.png"
+        preview.write_bytes(b"png")
+        manifest.write_text(json.dumps({"PreviewImage": "preview.png"}), encoding="utf-8")
+        assert read_preview_image_path(manifest) == preview
+
+    def test_rejects_escaping_preview_image_path(self, tmp_path: Path) -> None:
+        """PreviewImage cannot escape the mod directory."""
+        manifest = tmp_path / "manifest.json"
+        manifest.write_text(json.dumps({"PreviewImage": "../preview.png"}), encoding="utf-8")
+        with pytest.raises(ValueError, match="relative mod-local path"):
+            read_preview_image_path(manifest)
+
+    def test_missing_preview_image_raises(self, tmp_path: Path) -> None:
+        """A non-empty PreviewImage must point at a real file."""
+        manifest = tmp_path / "manifest.json"
+        manifest.write_text(json.dumps({"PreviewImage": "preview.png"}), encoding="utf-8")
+        with pytest.raises(FileNotFoundError, match="PreviewImage file not found"):
+            read_preview_image_path(manifest)
 
 
 class TestCollectLocalizationFiles:
@@ -272,6 +305,29 @@ class TestCreateZip:
         )
         assert isinstance(members, list)
         assert len(members) == 6
+
+    def test_zip_contains_preview_image_when_manifest_references_it(self, tmp_path: Path) -> None:
+        """ZIP contains the Workshop preview image referenced by manifest.json."""
+        output, manifest, dll, loc_dir, loc_files, legal_files = self._make_inputs(
+            tmp_path,
+        )
+        preview = manifest.parent / "preview.png"
+        preview.write_bytes(b"png")
+        manifest.write_text(json.dumps({"Version": "0.1.0", "PreviewImage": "preview.png"}), encoding="utf-8")
+
+        members = create_zip(
+            output,
+            manifest,
+            dll,
+            loc_dir,
+            loc_files,
+            legal_files=legal_files,
+        )
+        with zipfile.ZipFile(output) as zf:
+            names = zf.namelist()
+
+        assert "QudJP/preview.png" in names
+        assert "QudJP/preview.png" in members
 
     def test_creates_parent_dirs(self, tmp_path: Path) -> None:
         """Output parent directories are created if they do not exist."""

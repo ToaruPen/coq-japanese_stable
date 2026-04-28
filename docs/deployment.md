@@ -2,6 +2,8 @@
 
 How to deploy the QudJP mod to the Caves of Qud game directory.
 
+For Steam Workshop publishing, use `docs/release.md` after local deployment and validation pass.
+
 ---
 
 ## Prerequisites
@@ -70,6 +72,7 @@ The game requires exactly five types of files:
 | File | Purpose |
 |------|---------|
 | `manifest.json` | Mod metadata (ID, title, version) |
+| `preview.png` | Workshop/mod-manager preview image referenced by `manifest.json` |
 | `Bootstrap.cs` | Game-compiled loader shim — discovers and initializes QudJP.dll |
 | `Assemblies/QudJP.dll` | Pre-compiled Harmony patch DLL |
 | `Localization/` | XML translation files + JSON dictionaries |

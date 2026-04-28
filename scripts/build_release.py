@@ -5,6 +5,7 @@ and produces ``dist/QudJP-v{version}.zip`` containing only the files the game
 needs:
 
 - ``QudJP/manifest.json``
+- ``QudJP/preview.png`` when referenced by ``manifest.json`` ``PreviewImage``
 - ``QudJP/LICENSE``
 - ``QudJP/NOTICE.md``
 - ``QudJP/Bootstrap.cs``
@@ -77,6 +78,36 @@ def read_version(manifest_path: Path) -> str:
         )
         raise ValueError(msg)
     return version
+
+
+def read_preview_image_path(manifest_path: Path) -> Path | None:
+    """Read and validate the optional PreviewImage asset path.
+
+    Args:
+        manifest_path: Path to ``manifest.json``.
+
+    Returns:
+        Absolute path to the preview image, or ``None`` when unset.
+
+    Raises:
+        FileNotFoundError: If the referenced preview image does not exist.
+        ValueError: If PreviewImage is absolute or escapes the mod directory.
+    """
+    data: dict[str, object] = json.loads(manifest_path.read_text(encoding="utf-8"))
+    preview = data.get("PreviewImage")
+    if not isinstance(preview, str) or not preview.strip():
+        return None
+
+    relative_path = Path(preview.strip())
+    if relative_path.is_absolute() or ".." in relative_path.parts:
+        msg = f"PreviewImage must be a relative mod-local path: {manifest_path} (got {preview!r})"
+        raise ValueError(msg)
+
+    preview_path = manifest_path.parent / relative_path
+    if not preview_path.is_file():
+        msg = f"PreviewImage file not found: {preview_path}"
+        raise FileNotFoundError(msg)
+    return preview_path
 
 
 def build_dll(project_root: Path) -> Path:
@@ -158,6 +189,14 @@ def create_zip(
         arc_manifest = "QudJP/manifest.json"
         zf.write(manifest_path, arc_manifest)
         members.append(arc_manifest)
+
+        # Optional Workshop/mod-manager preview image referenced by manifest.json
+        preview_path = read_preview_image_path(manifest_path)
+        if preview_path is not None:
+            relative = preview_path.relative_to(manifest_path.parent)
+            arc_preview = f"QudJP/{relative}"
+            zf.write(preview_path, arc_preview)
+            members.append(arc_preview)
 
         # Compliance files
         for legal_file in legal_files or []:
