@@ -94,6 +94,66 @@ internal static class ColorAwareTranslationComposer
         return Restore(value, captureSpans);
     }
 
+    internal static string MarkupAwareRestoreCapture(string value, IReadOnlyList<ColorSpan>? spans, Group group)
+    {
+        if (spans is null || spans.Count == 0 || !group.Success)
+        {
+            return value;
+        }
+
+        return HasColorMarkup(value)
+            ? RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(value, spans, group)
+            : RestoreCapture(value, spans, group);
+    }
+
+    internal static bool HasColorMarkup(string source)
+    {
+        var (stripped, _) = Strip(source);
+        return !string.Equals(stripped, source, StringComparison.Ordinal);
+    }
+
+    internal static string RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
+        string translatedValue,
+        IReadOnlyList<ColorSpan>? spans,
+        Group group)
+    {
+        if (spans is null || spans.Count == 0 || !group.Success)
+        {
+            return translatedValue;
+        }
+
+        var (visible, translatedOwnedSpans) = Strip(translatedValue);
+        var wholeCapturePairs = SliceWholeBoundaryPairs(spans, group.Index, group.Length);
+        var preservedSourceWrappers = ProjectWholeBoundaryPairsAbsolute(wholeCapturePairs, visible.Length);
+        if (preservedSourceWrappers.Count == 0)
+        {
+            return translatedValue;
+        }
+
+        var mergedSpans = new List<ColorSpan>(translatedOwnedSpans.Count + preservedSourceWrappers.Count);
+        for (var index = 0; index < preservedSourceWrappers.Count; index++)
+        {
+            var span = preservedSourceWrappers[index];
+            if (span.Index == 0)
+            {
+                mergedSpans.Add(span);
+            }
+        }
+
+        mergedSpans.AddRange(translatedOwnedSpans);
+
+        for (var index = 0; index < preservedSourceWrappers.Count; index++)
+        {
+            var span = preservedSourceWrappers[index];
+            if (span.Index == visible.Length)
+            {
+                mergedSpans.Add(span);
+            }
+        }
+
+        return Restore(visible, mergedSpans);
+    }
+
     internal static List<WholeBoundaryPair> SliceWholeBoundaryPairs(
         IReadOnlyList<ColorSpan>? spans,
         int sourceStart,

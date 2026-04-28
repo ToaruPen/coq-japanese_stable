@@ -572,7 +572,7 @@ internal static class MessagePatternTranslator
 
             if (spans is not null && spans.Count > 0)
             {
-                value = ColorAwareTranslationComposer.RestoreCapture(value, spans, group);
+                value = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(value, spans, group);
             }
 
             if (captureIndex + 1 == firstCaptureGroupIndex && translatedFirstCaptureStart < 0)
@@ -693,7 +693,7 @@ internal static class MessagePatternTranslator
             }
 
             var value = part.TranslateCapture ? TranslateTemplateCapture(group.Value) : group.Value;
-            builder.Append(ColorAwareTranslationComposer.RestoreSlice(value, spans, group.Index, group.Length));
+            builder.Append(ColorAwareTranslationComposer.MarkupAwareRestoreCapture(value, spans, group));
             nextSourceStart = group.Index + group.Length;
         }
 

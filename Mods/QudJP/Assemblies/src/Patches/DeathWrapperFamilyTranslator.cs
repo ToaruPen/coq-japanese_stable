@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace QudJP.Patches;
@@ -323,9 +322,7 @@ internal static class DeathWrapperFamilyTranslator
         var killer = TranslateEntityReference(match.Groups["killer"].Value, translationContext);
         if (spans is not null && spans.Count > 0)
         {
-            killer = HasColorMarkup(killer)
-                ? RestoreKillerMarkupPreservingTranslatedOwnership(killer, spans, match.Groups["killer"])
-                : ColorAwareTranslationComposer.RestoreCapture(killer, spans, match.Groups["killer"]);
+            killer = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(killer, spans, match.Groups["killer"]);
         }
 
         return TryComposeTranslation(
@@ -432,30 +429,4 @@ internal static class DeathWrapperFamilyTranslator
             : "QudJP.DeathWrapper.Suicide.Bare";
     }
 
-    private static bool HasColorMarkup(string source)
-    {
-        var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
-        return !string.Equals(stripped, source, StringComparison.Ordinal);
-    }
-
-    private static string RestoreKillerMarkupPreservingTranslatedOwnership(
-        string translatedKiller,
-        IReadOnlyList<ColorSpan> spans,
-        Group killerGroup)
-    {
-        var (visible, translatedOwnedSpans) = ColorAwareTranslationComposer.Strip(translatedKiller);
-        var wholeCapturePairs = ColorAwareTranslationComposer.SliceWholeBoundaryPairs(spans, killerGroup.Index, killerGroup.Length);
-        var preservedSourceWrappers = ColorAwareTranslationComposer.ProjectWholeBoundaryPairsAbsolute(wholeCapturePairs, visible.Length);
-
-        if (preservedSourceWrappers.Count == 0)
-        {
-            return translatedKiller;
-        }
-
-        var mergedSpans = new List<ColorSpan>(translatedOwnedSpans.Count + preservedSourceWrappers.Count);
-        mergedSpans.AddRange(preservedSourceWrappers.Where(static span => span.Index == 0));
-        mergedSpans.AddRange(translatedOwnedSpans);
-        mergedSpans.AddRange(preservedSourceWrappers.Where(span => span.Index == visible.Length));
-        return ColorAwareTranslationComposer.Restore(visible, mergedSpans);
-    }
 }

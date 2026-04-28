@@ -177,6 +177,38 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_DoesNotReapplySourceCaptureMarkup_WhenTranslatedCaptureOwnsMarkup()
+    {
+        WritePatternDictionary(("^You were killed by (.+?)[.!]?$", "{t0}に殺された。"));
+        WriteExactDictionary(
+            ("bloody Tam, dromad merchant [sitting]", "{{r|血まみれの}}Tam、ドロマド商人 [座っている]"));
+
+        var translated = MessagePatternTranslator.Translate(
+            "You were killed by {{r|bloody}} Tam, dromad merchant [sitting].");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                translated,
+                Is.EqualTo("{{r|血まみれの}}Tam、ドロマド商人 [座っている]に殺された。"));
+            Assert.That(translated, Does.Not.Contain("{{r|{{r|"));
+            Assert.That(translated, Does.Not.Match("血ま.*}}.*みれ"));
+            Assert.That(translated, Does.Not.Match("\\[座ってい}}る\\]"));
+        });
+    }
+
+    [Test]
+    public void Translate_PreservesSourceWholeCaptureWrapper_WhenTranslatedCaptureOwnsMarkup()
+    {
+        WritePatternDictionary(("^You see (.+?)[.!]?$", "{t0}が見える。"));
+        WriteExactDictionary(("bloody Tam", "{{r|血まみれの}}Tam"));
+
+        var translated = MessagePatternTranslator.Translate("You see {{C|bloody Tam}}.");
+
+        Assert.That(translated, Is.EqualTo("{{C|{{r|血まみれの}}Tam}}が見える。"));
+    }
+
+    [Test]
     public void Translate_AppliesJournalNotesPattern()
     {
         WritePatternDictionary(("^Notes: (.+)$", "備考: {0}"));
@@ -184,6 +216,22 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate("Notes: Damur");
 
         Assert.That(translated, Is.EqualTo("備考: Damur"));
+    }
+
+    [Test]
+    public void Translate_DoesNotReapplyPartialSourceMarkupInSegmentedTranslatedCapture()
+    {
+        WritePatternDictionary(("^Notes: (.+)$", "備考: {t0}"));
+        WriteExactDictionary(("bloody Tam", "{{r|血まみれの}}Tam"));
+
+        var translated = MessagePatternTranslator.Translate("Notes: {{r|bloody}} Tam");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("備考: {{r|血まみれの}}Tam"));
+            Assert.That(translated, Does.Not.Contain("{{r|{{r|"));
+            Assert.That(translated, Does.Not.Match("血ま.*}}.*みれ"));
+        });
     }
 
     [Test]

@@ -196,6 +196,55 @@ public sealed class JournalPatternTranslatorTests
     }
 
     [Test]
+    public void Translate_DoesNotReapplySourceCaptureMarkup_WhenTranslatedCaptureOwnsMarkup()
+    {
+        WriteDictionaryFile(
+            "dict-l1.ja.json",
+            new[] { ("bloody Tam, dromad merchant [sitting]", "{{r|血まみれの}}Tam、ドロマド商人 [座っている]") });
+        WritePatternDictionary(("^You were killed by (.+?)\\.$", "{t0}に殺された。"));
+
+        var translated = JournalPatternTranslator.Translate(
+            "You were killed by {{r|bloody}} Tam, dromad merchant [sitting].");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                translated,
+                Is.EqualTo("{{r|血まみれの}}Tam、ドロマド商人 [座っている]に殺された。"));
+            Assert.That(translated, Does.Not.Contain("{{r|{{r|"));
+            Assert.That(translated, Does.Not.Match("血ま.*}}.*みれ"));
+            Assert.That(translated, Does.Not.Match("\\[座ってい}}る\\]"));
+        });
+    }
+
+    [Test]
+    public void Translate_PreservesSourceWholeCaptureWrapper_WhenTranslatedCaptureOwnsMarkup()
+    {
+        WriteDictionaryFile("dict-l1.ja.json", new[] { ("bloody Tam", "{{r|血まみれの}}Tam") });
+        WritePatternDictionary(("^You journeyed to (.+?)\\.$", "{t0}に旅した。"));
+
+        var translated = JournalPatternTranslator.Translate("You journeyed to {{C|bloody Tam}}.");
+
+        Assert.That(translated, Is.EqualTo("{{C|{{r|血まみれの}}Tam}}に旅した。"));
+    }
+
+    [Test]
+    public void Translate_DoesNotReapplyPartialSourceMarkupInSegmentedTranslatedCapture()
+    {
+        WriteDictionaryFile("dict-l1.ja.json", new[] { ("bloody Tam", "{{r|血まみれの}}Tam") });
+        WritePatternDictionary(("^Notes: (.+)$", "備考: {t0}"));
+
+        var translated = JournalPatternTranslator.Translate("Notes: {{r|bloody}} Tam");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("備考: {{r|血まみれの}}Tam"));
+            Assert.That(translated, Does.Not.Contain("{{r|{{r|"));
+            Assert.That(translated, Does.Not.Match("血ま.*}}.*みれ"));
+        });
+    }
+
+    [Test]
     public void Translate_AppliesWakingDreamGospelPattern()
     {
         WritePatternDictionary(
