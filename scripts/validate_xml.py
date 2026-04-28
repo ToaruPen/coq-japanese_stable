@@ -246,6 +246,9 @@ def _markup_token_multiset(value: str) -> Counter[str]:
     tokens: Counter[str] = Counter()
     tokens.update(match.group(0) for match in _BARE_QUD_SPAN.finditer(value))
     bare_span_stripped = _BARE_QUD_SPAN.sub("", value)
+    # _MARKUP_TOKEN_PATTERNS intentionally scan the original value, while
+    # _QUD_CLOSER scans bare_span_stripped so closers inside _BARE_QUD_SPAN do
+    # not get double-counted.
     for pattern in _MARKUP_TOKEN_PATTERNS:
         tokens.update(match.group(0) for match in pattern.finditer(value))
     tokens.update(match.group(0) for match in _QUD_CLOSER.finditer(bare_span_stripped))
