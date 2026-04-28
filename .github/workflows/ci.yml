@@ -50,6 +50,10 @@ jobs:
         if: hashFiles('scripts/**/*.py') != ''
         run: ruff check scripts/
 
+      - name: Check translation tokens
+        if: hashFiles('Mods/QudJP/Localization/**/*.ja.json') != ''
+        run: python scripts/check_translation_tokens.py Mods/QudJP/Localization
+
       - name: Install pytest
         if: hashFiles('scripts/tests/**/*.py') != ''
         run: pip install pytest

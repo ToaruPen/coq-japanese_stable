@@ -57,7 +57,7 @@
     {
       "key": "{{phase-conjugate}}",
       "context": "GetDisplayName.Adjective",
-      "text": "位相共役"
+      "text": "{{phase-conjugate|位相共役}}"
     },
     {
       "key": "chromed",
