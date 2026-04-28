@@ -11,8 +11,12 @@ if TYPE_CHECKING:
 
 
 def _write_entries(path: Path, entries: list[dict[str, str]]) -> None:
+    _write_payload(path, {"entries": entries})
+
+
+def _write_payload(path: Path, payload: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps({"entries": entries}, ensure_ascii=False), encoding="utf-8")
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
 
 
 def _write_duplicate_baseline(path: Path, *, texts: list[str], entry_count: int = 2) -> None:
@@ -92,6 +96,29 @@ def test_cli_reports_missing_bare_qud_span_token(
     assert "missing translation tokens: '{{R}}': 1" in captured.out
 
 
+def test_cli_scans_pure_formatter_source_key_token_loss(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Pure formatter source keys are translation leaves and must not be pruned."""
+    localization = tmp_path / "Localization"
+    _write_entries(
+        localization / "Dictionaries" / "demo.ja.json",
+        [
+            {
+                "key": "{{phase-conjugate}}",
+                "text": "位相共役",
+            },
+        ],
+    )
+
+    exit_code = check_translation_tokens.main([str(localization)])
+
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "missing translation tokens: '{{phase-conjugate}}': 1" in captured.out
+
+
 def test_cli_passes_when_source_tokens_are_preserved_and_translation_adds_decoration(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
@@ -113,6 +140,88 @@ def test_cli_passes_when_source_tokens_are_preserved_and_translation_adds_decora
     captured = capsys.readouterr()
     assert exit_code == 0
     assert "0 issue(s)" in captured.out
+
+
+def test_cli_rejects_payload_without_entries_list(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Malformed translation payloads fail fast instead of being treated as empty."""
+    localization = tmp_path / "Localization"
+    _write_payload(localization / "Dictionaries" / "demo.ja.json", {})
+
+    exit_code = check_translation_tokens.main([str(localization)])
+
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "Translation payload must contain an 'entries' list" in captured.err
+    assert "Dictionaries/demo.ja.json" in captured.err
+
+
+def test_cli_rejects_non_object_translation_payload(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Top-level translation payloads must be JSON objects."""
+    localization = tmp_path / "Localization"
+    _write_payload(localization / "Dictionaries" / "demo.ja.json", [])
+
+    exit_code = check_translation_tokens.main([str(localization)])
+
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "Translation payload must be a JSON object with an 'entries' list" in captured.err
+    assert "Dictionaries/demo.ja.json" in captured.err
+
+
+def test_cli_rejects_non_list_entries_payload(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The top-level `entries` member must be a list."""
+    localization = tmp_path / "Localization"
+    _write_payload(localization / "Dictionaries" / "demo.ja.json", {"entries": {}})
+
+    exit_code = check_translation_tokens.main([str(localization)])
+
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "Translation payload must contain an 'entries' list" in captured.err
+    assert "Dictionaries/demo.ja.json" in captured.err
+
+
+def test_cli_rejects_malformed_translation_entry_with_index(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Malformed entries report path context and the one-based entry index."""
+    localization = tmp_path / "Localization"
+    _write_payload(localization / "Dictionaries" / "demo.ja.json", {"entries": ["not an object"]})
+
+    exit_code = check_translation_tokens.main([str(localization)])
+
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "Translation entry must be a JSON object" in captured.err
+    assert "Dictionaries/demo.ja.json" in captured.err
+    assert "entry_index=1" in captured.err
+
+
+def test_cli_rejects_entry_without_string_key_and_text(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Entry shape validation covers missing and non-string key/text fields."""
+    localization = tmp_path / "Localization"
+    _write_payload(localization / "Dictionaries" / "demo.ja.json", {"entries": [{"key": "Source"}]})
+
+    exit_code = check_translation_tokens.main([str(localization)])
+
+    captured = capsys.readouterr()
+    assert exit_code == 1
+    assert "Translation entry must contain string 'key' and 'text'" in captured.err
+    assert "Dictionaries/demo.ja.json" in captured.err
+    assert "entry_index=1" in captured.err
 
 
 def test_duplicate_source_key_conflict_fails_unless_baselined(

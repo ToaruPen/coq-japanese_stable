@@ -124,9 +124,16 @@ def _load_json(path: Path) -> object:
     return payload
 
 
-def _entries_from_payload(payload: object) -> list[object]:
-    entries = payload.get("entries", []) if isinstance(payload, dict) else payload
-    return entries if isinstance(entries, list) else []
+def _entries_from_payload(payload: object, *, path_context: str) -> list[object]:
+    if not isinstance(payload, dict):
+        msg = f"Translation payload must be a JSON object with an 'entries' list: {path_context}"
+        raise TypeError(msg)
+
+    entries = payload.get("entries")
+    if not isinstance(entries, list):
+        msg = f"Translation payload must contain an 'entries' list: {path_context}"
+        raise TypeError(msg)
+    return entries
 
 
 def iter_translation_entries(path: Path) -> list[TranslationEntry]:
@@ -140,21 +147,26 @@ def iter_translation_entries(path: Path) -> list[TranslationEntry]:
     payload = _load_json(path)
     entries: list[TranslationEntry] = []
     relative_path = _relative_asset_path(path)
-    for index, item in enumerate(_entries_from_payload(payload), start=1):
+    for index, item in enumerate(_entries_from_payload(payload, path_context=relative_path), start=1):
         if not isinstance(item, dict):
-            continue
+            msg = f"Translation entry must be a JSON object: {relative_path} entry_index={index}"
+            raise TypeError(msg)
         key = item.get("key")
         text = item.get("text")
-        if isinstance(key, str) and isinstance(text, str):
-            entries.append(
-                TranslationEntry(
-                    path=path,
-                    relative_path=relative_path,
-                    index=index,
-                    key=key,
-                    text=text,
-                ),
+        if not isinstance(key, str) or not isinstance(text, str):
+            msg = f"Translation entry must contain string 'key' and 'text': {relative_path} entry_index={index}"
+            raise TypeError(msg)
+        if not key.strip():
+            continue
+        entries.append(
+            TranslationEntry(
+                path=path,
+                relative_path=relative_path,
+                index=index,
+                key=key,
+                text=text,
             )
+        )
     return entries
 
 
