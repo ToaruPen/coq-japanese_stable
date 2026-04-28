@@ -591,6 +591,43 @@ def test_source_root_rematches_translated_name_siblings_by_stable_attributes(
     assert "'{{G|': 1" not in captured.out
 
 
+def test_source_root_maps_reordered_keyed_children_under_positional_parent(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Children inherit a positionally matched translated parent source path."""
+    localization = tmp_path / "Localization"
+    source_root = tmp_path / "Base"
+    localized_xml = localization / "Conversations.jp.xml"
+    source_xml = source_root / "Conversations.xml"
+    _write_xml(
+        source_xml,
+        (
+            '<conversations><conversation Name="Village">'
+            '<node ID="Keep"><text>{{G|Keep}}</text></node>'
+            '<node ID="Drop"><text>{{R|Drop}}</text></node>'
+            "</conversation></conversations>"
+        ),
+    )
+    _write_xml(
+        localized_xml,
+        (
+            '<conversations><conversation Name="村">'
+            '<node ID="Drop"><text>削除</text></node>'
+            '<node ID="Keep"><text>{{G|維持}}</text></node>'
+            "</conversation></conversations>"
+        ),
+    )
+
+    result = main(["--source-root", str(source_root), str(localized_xml)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert captured.out.count("Markup token drift") == 1
+    assert "conversation[@Name='Village'][1]/node[@ID='Drop'][1]/text[1] text()" in captured.out
+    assert "'{{R|': 1" in captured.out
+    assert "'{{G|': 1" not in captured.out
+
+
 def test_source_root_parse_os_error_reports_deterministic_warning(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

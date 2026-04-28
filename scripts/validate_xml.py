@@ -509,11 +509,30 @@ def _is_translated_idless_name_record(record: _ElementPathRecord) -> bool:
     return "ID" not in record.element.attrib and "Name" in record.element.attrib
 
 
+def _relative_keyed_path(record: _ElementPathRecord) -> str:
+    if record.parent_keyed_path is None:
+        return record.keyed_path
+    return record.keyed_path.removeprefix(f"{record.parent_keyed_path}/")
+
+
+def _source_child_by_relative_keyed_path(
+    localized_record: _ElementPathRecord,
+    source_candidates: list[_ElementPathRecord],
+) -> _ElementPathRecord | None:
+    localized_relative_path = _relative_keyed_path(localized_record)
+    for candidate in source_candidates:
+        if (
+            candidate.element.tag == localized_record.element.tag
+            and _relative_keyed_path(candidate) == localized_relative_path
+        ):
+            return candidate
+    return None
+
+
 def _source_record_for_localized_record(
     localized_record: _ElementPathRecord,
     *,
     source_parent_path: str,
-    rematch_paths: dict[str, str],
     source_record_by_keyed_path: dict[str, _ElementPathRecord],
     source_children_by_parent: defaultdict[str, list[_ElementPathRecord]],
     source_child_by_relative_position: dict[tuple[str, str, int], _ElementPathRecord],
@@ -523,29 +542,39 @@ def _source_record_for_localized_record(
         if source_record is not None:
             return source_record
 
+    source_candidates = source_children_by_parent[source_parent_path]
+    source_record = _source_child_by_relative_keyed_path(localized_record, source_candidates)
+    if source_record is not None:
+        return source_record
+
     if _is_translated_idless_name_record(localized_record):
         source_record = _stable_source_rematch(
             localized_record,
             [
                 candidate
-                for candidate in source_children_by_parent[source_parent_path]
+                for candidate in source_candidates
                 if candidate.element.tag == localized_record.element.tag
             ],
         )
         if source_record is not None:
             return source_record
 
-    if localized_record.parent_keyed_path in rematch_paths:
-        return source_child_by_relative_position.get(
-            (source_parent_path, localized_record.element.tag, localized_record.sibling_tag_index)
-        )
-    return None
+    return source_child_by_relative_position.get(
+        (source_parent_path, localized_record.element.tag, localized_record.sibling_tag_index)
+    )
 
 
-def _source_stable_rematch_paths(localized_root: ET.Element, source_root: ET.Element) -> dict[str, str]:
+def _source_stable_rematch_paths(
+    localized_root: ET.Element,
+    source_root: ET.Element,
+) -> dict[str, str]:
     localized_records = _element_path_records(localized_root)
     source_records = _element_path_records(source_root)
-    if not localized_records or not source_records or localized_records[0].element.tag != source_records[0].element.tag:
+    if (
+        not localized_records
+        or not source_records
+        or localized_records[0].element.tag != source_records[0].element.tag
+    ):
         return {}
 
     source_record_by_keyed_path, source_children_by_parent, source_child_by_relative_position = (
@@ -553,7 +582,6 @@ def _source_stable_rematch_paths(localized_root: ET.Element, source_root: ET.Ele
     )
 
     localized_to_source_paths = {localized_records[0].keyed_path: source_records[0].keyed_path}
-    rematch_paths: dict[str, str] = {}
     for localized_record in localized_records[1:]:
         if localized_record.parent_keyed_path is None:
             continue
@@ -564,7 +592,6 @@ def _source_stable_rematch_paths(localized_root: ET.Element, source_root: ET.Ele
         source_record = _source_record_for_localized_record(
             localized_record,
             source_parent_path=source_parent_path,
-            rematch_paths=rematch_paths,
             source_record_by_keyed_path=source_record_by_keyed_path,
             source_children_by_parent=source_children_by_parent,
             source_child_by_relative_position=source_child_by_relative_position,
@@ -574,9 +601,7 @@ def _source_stable_rematch_paths(localized_root: ET.Element, source_root: ET.Ele
             continue
 
         localized_to_source_paths[localized_record.keyed_path] = source_record.keyed_path
-        if source_record.keyed_path != localized_record.keyed_path:
-            rematch_paths[localized_record.keyed_path] = source_record.keyed_path
-    return rematch_paths
+    return localized_to_source_paths
 
 
 def _find_markup_token_drift(
@@ -589,16 +614,16 @@ def _find_markup_token_drift(
     localized_values = _markup_unit_values(localized_root)
     source_values = _markup_unit_values(source_root)
     localized_fallback_paths = _idless_name_element_fallback_paths(localized_root)
-    localized_rematch_paths = _source_stable_rematch_paths(localized_root, source_root)
+    source_paths = _source_stable_rematch_paths(localized_root, source_root)
     source_positional_values = _markup_unit_values(source_root, use_positional_paths=True)
     for unit_key, localized_value in sorted(localized_values.items()):
         element_path, unit_name = unit_key
         source_value = source_values.get(unit_key)
         warning_key = unit_key
-        if source_value is None and (rematch_path := localized_rematch_paths.get(element_path)) is not None:
-            rematch_key = (rematch_path, unit_name)
-            source_value = source_values.get(rematch_key, "")
-            warning_key = rematch_key
+        if source_value is None and (source_path := source_paths.get(element_path)) is not None:
+            source_key = (source_path, unit_name)
+            source_value = source_values.get(source_key, "")
+            warning_key = source_key
         if source_value is None and (fallback_path := localized_fallback_paths.get(element_path)) is not None:
             fallback_key = (fallback_path, unit_name)
             source_value = source_positional_values.get(fallback_key, "")
