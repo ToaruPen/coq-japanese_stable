@@ -152,6 +152,7 @@ class _BaselineOccurrence:
 def load_glossary_terms(path: Path) -> list[GlossaryTerm]:
     """Load confirmed/approved glossary terms that have Japanese equivalents."""
     terms: list[GlossaryTerm] = []
+    first_active_english_by_normalized: dict[str, str] = {}
     with path.open(encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
         for row in reader:
@@ -160,6 +161,15 @@ def load_glossary_terms(path: Path) -> list[GlossaryTerm]:
             japanese = row.get("Japanese", "").strip()
             if status not in _ACTIVE_STATUSES or not english or not japanese or english == japanese:
                 continue
+            normalized_english = english.casefold()
+            first_english = first_active_english_by_normalized.get(normalized_english)
+            if first_english is not None:
+                msg = (
+                    f"Duplicate active glossary English term '{english}' in {path} "
+                    f"(first active term: '{first_english}')"
+                )
+                raise ValueError(msg)
+            first_active_english_by_normalized[normalized_english] = english
             terms.append(
                 GlossaryTerm(
                     english=english,

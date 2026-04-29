@@ -11,17 +11,21 @@ if TYPE_CHECKING:
 from scripts import check_glossary_consistency
 
 
-def _write_glossary(path: Path) -> None:
+def _write_glossary_rows(path: Path, *rows: str) -> None:
     _ = path.write_text(
-        (
-            "English,Japanese,Short,Notes,Status\n"
-            "Golgotha,ゴルゴタ,,approved term,approved\n"
-            "Kyakukya,キャクキャ,,confirmed term,confirmed\n"
-            "Baetyls,ベテル,,confirmed term,confirmed\n"
-            "DraftOnly,下書き,,not authoritative,draft\n"
-            "Barathrumites,バラサラム派,,placeholder term,approved\n"
-        ),
+        "English,Japanese,Short,Notes,Status\n" + "\n".join(rows) + "\n",
         encoding="utf-8",
+    )
+
+
+def _write_glossary(path: Path) -> None:
+    _write_glossary_rows(
+        path,
+        "Golgotha,ゴルゴタ,,approved term,approved",
+        "Kyakukya,キャクキャ,,confirmed term,confirmed",
+        "Baetyls,ベテル,,confirmed term,confirmed",
+        "DraftOnly,下書き,,not authoritative,draft",
+        "Barathrumites,バラサラム派,,placeholder term,approved",
     )
 
 
@@ -68,6 +72,37 @@ def test_loads_only_confirmed_and_approved_rows_with_japanese_terms(tmp_path: Pa
     terms = check_glossary_consistency.load_glossary_terms(glossary_path)
 
     assert [term.english for term in terms] == ["Golgotha", "Kyakukya", "Baetyls", "Barathrumites"]
+
+
+def test_duplicate_active_glossary_english_terms_are_rejected(tmp_path: Path) -> None:
+    """Authoritative English terms must be unique after trim/casefold normalization."""
+    glossary_path = tmp_path / "glossary.csv"
+    _write_glossary_rows(
+        glossary_path,
+        "Golgotha,ゴルゴタ,,approved term,approved",
+        " golgotha ,別訳,,confirmed duplicate,confirmed",
+    )
+
+    with pytest.raises(ValueError, match="Duplicate active glossary English term 'golgotha'") as exc_info:
+        _ = check_glossary_consistency.load_glossary_terms(glossary_path)
+
+    message = str(exc_info.value)
+    assert "Duplicate active glossary English term 'golgotha'" in message
+    assert str(glossary_path) in message
+
+
+def test_draft_duplicate_glossary_english_term_does_not_block(tmp_path: Path) -> None:
+    """Draft duplicate rows do not block a single authoritative term."""
+    glossary_path = tmp_path / "glossary.csv"
+    _write_glossary_rows(
+        glossary_path,
+        "Golgotha,ゴルゴタ,,approved term,approved",
+        " golgotha ,別訳,,draft duplicate,draft",
+    )
+
+    terms = check_glossary_consistency.load_glossary_terms(glossary_path)
+
+    assert [term.english for term in terms] == ["Golgotha"]
 
 
 def test_json_scans_translated_text_values_not_source_keys(tmp_path: Path) -> None:
