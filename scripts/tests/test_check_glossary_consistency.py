@@ -124,6 +124,27 @@ def test_json_scans_translated_text_values_not_source_keys(tmp_path: Path) -> No
     assert result.issues[0].term == "Golgotha"
 
 
+def test_json_locations_are_one_based_for_first_and_second_entries(tmp_path: Path) -> None:
+    """JSON entry locations follow the translation-token checker's 1-based indexing."""
+    glossary_path = tmp_path / "glossary.csv"
+    localization = tmp_path / "Localization"
+    _write_glossary(glossary_path)
+    _write_entries(
+        localization / "Dictionaries" / "demo.ja.json",
+        [
+            {"key": "First source", "text": "Golgotha remains untranslated."},
+            {"key": "Second source", "text": "Kyakukya remains untranslated."},
+        ],
+    )
+
+    result = check_glossary_consistency.check_paths([localization], glossary_path=glossary_path, baseline_path=None)
+
+    assert [(issue.term, issue.location) for issue in result.issues] == [
+        ("Golgotha", "entry[1].text"),
+        ("Kyakukya", "entry[2].text"),
+    ]
+
+
 def test_draft_glossary_rows_do_not_block_residue(tmp_path: Path) -> None:
     """Draft glossary rows remain review material, not gate inputs."""
     glossary_path = tmp_path / "glossary.csv"
@@ -238,6 +259,44 @@ def test_baseline_suppresses_current_occurrence_and_reports_stale_entries(tmp_pa
     assert [(issue.kind, issue.term, issue.location) for issue in result.issues] == [
         ("BASELINE", "Kyakukya", "entry[2].text"),
     ]
+
+
+def test_baseline_matches_one_based_json_entry_locations(tmp_path: Path) -> None:
+    """Baseline rows suppress JSON entries using 1-based entry[N].text locations."""
+    glossary_path = tmp_path / "glossary.csv"
+    localization = tmp_path / "Localization"
+    baseline_path = tmp_path / "baseline.json"
+    _write_glossary(glossary_path)
+    _write_entries(
+        localization / "Dictionaries" / "demo.ja.json",
+        [
+            {"key": "First source", "text": "Golgotha remains for now."},
+            {"key": "Second source", "text": "Kyakukya remains for now."},
+        ],
+    )
+    _write_baseline(
+        baseline_path,
+        {
+            "term": "Golgotha",
+            "path": "Dictionaries/demo.ja.json",
+            "location": "entry[1].text",
+            "text": "Golgotha remains for now.",
+        },
+        {
+            "term": "Kyakukya",
+            "path": "Dictionaries/demo.ja.json",
+            "location": "entry[2].text",
+            "text": "Kyakukya remains for now.",
+        },
+    )
+
+    result = check_glossary_consistency.check_paths(
+        [localization],
+        glossary_path=glossary_path,
+        baseline_path=baseline_path,
+    )
+
+    assert result.issues == []
 
 
 def test_full_localization_scan_reports_deleted_file_baseline_entries(tmp_path: Path) -> None:
