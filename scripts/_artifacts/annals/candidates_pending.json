@@ -3444,7 +3444,7 @@
       "switch_case": "default",
       "event_property": "tombInscription",
       "sample_source": "{0}! {1} {2}, who in the {3} {4} death and {5} from the {6}.",
-      "extracted_pattern": "^(.+?)!\\ (.+?)\\ (.+?),\\ who\\ in\\ the\\ (.+)\\ (.+?)\\ death\\ and\\ (.+?)\\ from\\ the\\ (.+?)\\.$",
+      "extracted_pattern": "^(.+?)!\\ (.+?)\\ (.+?),\\ who\\ in\\ the\\ (.+?)\\ (defied|flouted|mocked|spurned|thwarted|scorned|eluded)\\ death\\ and\\ (.+?)\\ from\\ the\\ (.+?)\\.$",
       "slots": [
         {
           "index": 0,

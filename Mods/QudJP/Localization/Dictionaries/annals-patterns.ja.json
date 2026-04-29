@@ -232,6 +232,11 @@
       "route": "annals"
     },
     {
+      "pattern": "^(.+?)!\\ (.+?)\\ (.+?),\\ who\\ in\\ the\\ (.+?)\\ (defied|flouted|mocked|spurned|thwarted|scorned|eluded)\\ death\\ and\\ (.+?)\\ from\\ the\\ (.+?)\\.$",
+      "template": "見よ、驚嘆せよ！ {t2}は{t3}に死を退け、{t6}より現れた。",
+      "route": "annals"
+    },
+    {
       "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ Resheph\\ appointed\\ Rebekah\\ administrator\\ of\\ (.+?)\\.\\ She\\ tendered\\ alms\\ for\\ the\\ sick\\ in\\ his\\ name\\.$",
       "template": "{0}年、レシェフはレベカを{t1}の施政官に任じた。彼女は彼の名において病める者へ施しを捧げた。",
       "route": "annals"
@@ -259,11 +264,6 @@
     {
       "pattern": "^Deep\\ in\\ (.+?),\\ (.+?)\\ discovered\\ (.+?)\\.\\ There\\ (.+?)\\ befriended\\ (.+?)\\ and\\ (.+?)\\.$",
       "template": "{t0}の奥深くにて、{t1}は{t2}を見いだした。そこで{t3}は{t4}と親交を結び、{t5}。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^(.+?)!\\ (.+?)\\ (.+?),\\ who\\ in\\ the\\ (.+)\\ (.+?)\\ death\\ and\\ (.+?)\\ from\\ the\\ (.+?)\\.$",
-      "template": "見よ、驚嘆せよ！ {t2}は{t3}に死を退け、{t6}より現れた。",
       "route": "annals"
     },
     {
