@@ -182,6 +182,11 @@
       "route": "annals"
     },
     {
+      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ that\\ (.+?)\\.\\ Despite\\ reports\\ to\\ the\\ contrary,\\ (.+?)\\ was\\ alive\\ and\\ well\\.\\ (.+?)\\ was\\ known\\ thenceforth\\ as\\ (.+?)\\.$",
+      "template": "{0}年、{t2}との事実が明らかになった。相反する報告にもかかわらず、{t3}は健在だった。{t3}は以後{t5}として知られるようになった。",
+      "route": "annals"
+    },
+    {
       "pattern": "^(?:In|Throughout(?:\\ the\\ entirety\\ of)?)\\ (\\d+)\\ (?:BR|AR),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
       "template": "{0}年、{t1}は{t3}全土を{t2}、{t5}と{t6}に{t4}をもたらした。{t7}は{t8}として知られるようになった。",
       "route": "annals"
@@ -222,8 +227,18 @@
       "route": "annals"
     },
     {
+      "pattern": "^In\\ the\\ (.+?),\\ ([^,]+?)((?:,\\ [^,]+)*),?\\ laid\\ (.+?)\\ body\\ to\\ rest\\ and\\ crossed\\ into\\ Brightsheol\\.\\ (.+?)\\ was\\ (.+?)\\ years\\ old\\.$",
+      "template": "{t0}、{t1}{t2}はその身を休め、ブライトシェオルへ渡った。享年{t5}歳であった。",
+      "route": "annals"
+    },
+    {
       "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ Resheph\\ appointed\\ Rebekah\\ administrator\\ of\\ (.+?)\\.\\ She\\ tendered\\ alms\\ for\\ the\\ sick\\ in\\ his\\ name\\.$",
       "template": "{0}年、レシェフはレベカを{t1}の施政官に任じた。彼女は彼の名において病める者へ施しを捧げた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ ([^,]+?)((?:,\\ [^,]+)*),?\\ died\\ of\\ natural\\ causes\\.\\ (.+?)\\ was\\ (.+?)\\ years\\ old\\.$",
+      "template": "{0}年、{t1}{t2}は自然の理により身罷った。享年{t4}歳であった。",
       "route": "annals"
     },
     {
@@ -244,6 +259,11 @@
     {
       "pattern": "^Deep\\ in\\ (.+?),\\ (.+?)\\ discovered\\ (.+?)\\.\\ There\\ (.+?)\\ befriended\\ (.+?)\\ and\\ (.+?)\\.$",
       "template": "{t0}の奥深くにて、{t1}は{t2}を見いだした。そこで{t3}は{t4}と親交を結び、{t5}。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)!\\ (.+?)\\ (.+?),\\ who\\ in\\ the\\ (.+)\\ (.+?)\\ death\\ and\\ (.+?)\\ from\\ the\\ (.+?)\\.$",
+      "template": "見よ、驚嘆せよ！ {t2}は{t3}に死を退け、{t6}より現れた。",
       "route": "annals"
     },
     {

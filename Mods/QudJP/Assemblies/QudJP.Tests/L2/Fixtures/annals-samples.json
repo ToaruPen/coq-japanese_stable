@@ -176,6 +176,30 @@
       "expected_japanese_exact": "Salt Dunesの辺りをさまよううち、Nuntuは秘密の儀式を行う農夫ギルドの一族に出くわした。his chromatic auraゆえ、彼らはhimを仲間に迎え入れ、himに彼らの秘密を授けた。"
     },
     {
+      "candidate_id": "GenericDeath#gospel",
+      "event_property": "gospel",
+      "input_source": "In 5597 BR, Yarad, Hammer-in-Turquoise, the Ilep Sorrow, died of natural causes. He was 216 years old.",
+      "expected_japanese_exact": "5597年、Yarad, Hammer-in-Turquoise, the Ilep Sorrowは自然の理により身罷った。享年216歳であった。"
+    },
+    {
+      "candidate_id": "GenericDeath#tombInscription",
+      "event_property": "tombInscription",
+      "input_source": "In the High Salt Sun, Yarad, Hammer-in-Turquoise, the Ilep Sorrow laid his body to rest and crossed into Brightsheol. He was 216 years old.",
+      "expected_japanese_exact": "ハイ・ソルト・サン、Yarad, Hammer-in-Turquoise, the Ilep Sorrowはその身を休め、ブライトシェオルへ渡った。享年216歳であった。"
+    },
+    {
+      "candidate_id": "FakedDeath#gospel",
+      "event_property": "gospel",
+      "input_source": "In 5597 BR, it was discovered that Yarad II's death had been faked. Despite reports to the contrary, Yarad II was alive and well. She was known thenceforth as the Gleaming Ghost of Barracks District Temrir.",
+      "expected_japanese_exact": "5597年、Yarad II's death had been fakedとの事実が明らかになった。相反する報告にもかかわらず、Yarad IIは健在だった。Yarad IIは以後the Gleaming Ghost of Barracks District Temrirとして知られるようになった。"
+    },
+    {
+      "candidate_id": "FakedDeath#tombInscription",
+      "event_property": "tombInscription",
+      "input_source": "Look! Behold the Gleaming Ghost of Barracks District Temrir, who in the High Salt Sun defied death and emerged from the glassy ruins.",
+      "expected_japanese_exact": "見よ、驚嘆せよ！ the Gleaming Ghost of Barracks District Temrirはハイ・ソルト・サンに死を退け、glassy ruinsより現れた。"
+    },
+    {
       "candidate_id": "edge_empty_gospel",
       "event_property": "gospel",
       "input_source": "",
