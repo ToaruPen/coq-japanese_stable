@@ -28,6 +28,7 @@ dotnet build Mods/QudJP/Assemblies/QudJP.csproj
 ruff check scripts/
 uv run pytest scripts/tests/test_build_release.py scripts/tests/test_sync_mod.py scripts/tests/test_tokenize_corpus.py -q
 python3.12 scripts/check_encoding.py Mods/QudJP/Localization scripts
+python3.12 scripts/check_glossary_consistency.py Mods/QudJP/Localization
 python3.12 scripts/validate_xml.py Mods/QudJP/Localization --strict --warning-baseline scripts/validate_xml_warning_baseline.json
 python3.12 scripts/build_release.py
 python3.12 scripts/sync_mod.py

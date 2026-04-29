@@ -54,6 +54,10 @@ jobs:
         if: hashFiles('Mods/QudJP/Localization/**/*.ja.json') != ''
         run: python scripts/check_translation_tokens.py Mods/QudJP/Localization
 
+      - name: Check glossary consistency
+        if: hashFiles('Mods/QudJP/Localization/**/*') != ''
+        run: python scripts/check_glossary_consistency.py Mods/QudJP/Localization
+
       - name: Install pytest
         if: hashFiles('scripts/tests/**/*.py') != ''
         run: pip install pytest

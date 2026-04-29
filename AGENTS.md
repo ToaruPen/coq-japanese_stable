@@ -29,6 +29,7 @@ dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCa
 ruff check scripts/
 uv run pytest scripts/tests/
 python3.12 scripts/check_encoding.py Mods/QudJP/Localization scripts
+python3.12 scripts/check_glossary_consistency.py Mods/QudJP/Localization
 python3.12 scripts/validate_xml.py Mods/QudJP/Localization --strict --warning-baseline scripts/validate_xml_warning_baseline.json
 python3.12 scripts/sync_mod.py
 ```

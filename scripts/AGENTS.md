@@ -23,6 +23,7 @@ ruff format scripts/
 uv run pytest scripts/tests/
 uv run pytest scripts/tests/ -k <pattern>
 python3.12 scripts/check_encoding.py Mods/QudJP/Localization scripts
+python3.12 scripts/check_glossary_consistency.py Mods/QudJP/Localization
 python3.12 scripts/check_translation_tokens.py Mods/QudJP/Localization
 python3.12 scripts/validate_xml.py Mods/QudJP/Localization --strict --warning-baseline scripts/validate_xml_warning_baseline.json
 scripts/decompile_game_dll.sh

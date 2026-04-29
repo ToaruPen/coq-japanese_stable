@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "allowed_occurrences": [
+    {
+      "term": "Tinker",
+      "path": "Books.jp.xml",
+      "location": "/books[1]/book[13]/page[1]/text()",
+      "text": "\"こめかみにこれを巻け。ぺちゃくちゃ言うな、問題ない。\n何が起こるっていうんだ？\"\n[[-Argyve, Tinker]]"
+    },
+    {
+      "term": "Barathrum",
+      "path": "Books.jp.xml",
+      "location": "/books[1]/book[13]/page[23]/text()",
+      "text": "\"私は地を穿つシュグ＝ルイスの百九の眼を見つめた。\"\n[[-Barathrum the Old]]"
+    },
+    {
+      "term": "Pax Klanq",
+      "path": "Books.jp.xml",
+      "location": "/books[1]/book[13]/page[29]/text()",
+      "text": "\"クランク、ぷーっとおまえに息を吹く。\"\n[[-Pax Klanq]]"
+    },
+    {
+      "term": "Moghra'yi",
+      "path": "Books.jp.xml",
+      "location": "/books[1]/book[30]/page[1]/text()",
+      "text": "Across Moghra'yi――大塩砂漠の彼方にある奇妙な文明の最上の目録（バッカタ・ユーヤーク著）、第1巻：サンダリーズ\n\n[[{{C|序文}}]]\n当然ながら、これら遠国に関する一次資料は存在しない。本書は、ドロマド商団の背に乗ってモグラヤイを渡った菌類たちの報告に大きく依拠している。\n\n慣例として、私はあらゆる出来事を本巻の刊行という歴史的事件からの時間距離で記す。ゆえに括弧内の日付は「刊行以前（prior publication）」を意味する。"
+    },
+    {
+      "term": "Omonporch",
+      "path": "ObjectBlueprints/Creatures.jp.xml",
+      "location": "/objects[1]/object[1045]/part[2]/@Primary",
+      "text": "Earl of Omonporch"
+    },
+    {
+      "term": "Sultan",
+      "path": "ObjectBlueprints/Furniture.jp.xml",
+      "location": "/objects[1]/object[47]/part[2]/@Primary",
+      "text": ", the Last Sultan"
+    },
+    {
+      "term": "Kyakukya",
+      "path": "ObjectBlueprints/Furniture.jp.xml",
+      "location": "/objects[1]/object[61]/part[2]/@Text",
+      "text": "このオブジェクトは、{{M|Kyakukya}} の歴史のシーンの記念碑だ。&#10;&#10;ビートルムーンの下、人々はエイプ・サード・オボロコルへの通過物資を集めるためにここに定住し、キャクキャが設立された。"
+    },
+    {
+      "term": "Kyakukya",
+      "path": "ObjectBlueprints/Furniture.jp.xml",
+      "location": "/objects[1]/object[62]/part[2]/@Text",
+      "text": "このオブジェクトは、{{M|Kyakukya}} の歴史のシーンの記念碑だ。&#10;&#10;979 年、伝説のアルビノ猿であるヌントゥは、物を撲殺することに飽きて、スヴィ川の根で絞められた場所へ旅しました。そこで彼はキャクキャとその住民に出会った。キャクキャの村人たちはヌントゥに行政官としての才能を発揮して村を率いるよう頼んだ。"
+    }
+  ]
+}
