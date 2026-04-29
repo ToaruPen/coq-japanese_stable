@@ -200,6 +200,42 @@
       "expected_japanese_exact": "見よ、驚嘆せよ！ the Gleaming Ghost of Barracks District Temrirはハイ・ソルト・サンに死を退け、glassy ruinsより現れた。"
     },
     {
+      "candidate_id": "FoundAsBabe#gospel#case:0",
+      "event_property": "gospel",
+      "input_source": "One moonless night, a babe was found swaddled beneath the glass arch with jade eyes. That babe came to be known as Nuntu.",
+      "expected_japanese_exact": "One moonless night、ひとりの嬰児（with jade eyes）がbeneath the glass archにて産着に包まれて見いだされた。その嬰児はのちにNuntuとして知られるようになった。"
+    },
+    {
+      "candidate_id": "FoundAsBabe#gospel#case:1",
+      "event_property": "gospel",
+      "input_source": "One dawn, a glassblower found a babe with silver hair outside her workshop. She and her fellow glassblowers adopted the babe and named him Nuntu.",
+      "expected_japanese_exact": "One dawn、ひとりのglassblowerが、her 工房の外でひとりの嬰児（with silver hair）を見いだした。Sheとherの同業のglassblowersはその嬰児を養子に迎え、himをNuntuと名づけた。"
+    },
+    {
+      "candidate_id": "FoundAsBabe#gospel#case:default#opt:base",
+      "event_property": "gospel",
+      "input_source": "One starless night, a babe was found swaddled with amber eyes by a group of Farmers' Guild in Salt Dunes. They took her into their fold and fostered her, and she became known as Mamon, Gleaming Scion of Farmers' Guild.",
+      "expected_japanese_exact": "One starless night、ひとりの嬰児（with amber eyes）がSalt Dunesにて、農夫ギルドの一団により産着に包まれた姿で見いだされた。彼らはherを仲間に迎えてherを育み、sheはマモン、農夫ギルドのGleamingなるScionとして知られるようになった。"
+    },
+    {
+      "candidate_id": "FoundAsBabe#gospel#case:default#opt:with1",
+      "event_property": "gospel",
+      "input_source": "One starless night, a babe was found swaddled with amber eyes by a group of Farmers' Guild in Salt Dunes. They took her into their fold and fostered her, and she became known as Mamon, the Opal Lamb of Farmers' Guild.",
+      "expected_japanese_exact": "One starless night、ひとりの嬰児（with amber eyes）がSalt Dunesにて、農夫ギルドの一団により産着に包まれた姿で見いだされた。彼らはherを仲間に迎えてherを育み、sheはマモン、農夫ギルドのOpalなるLambとして知られるようになった。"
+    },
+    {
+      "candidate_id": "FoundAsBabe#tombInscription#opt:base",
+      "event_property": "tombInscription",
+      "input_source": "One rainy evening, a babe was found swaddled with quartz skin by a group of Mechanimists in Red Rock. They took him into their fold and fostered him, and he became known as Yarad, Chrome Child of Mechanimists.",
+      "expected_japanese_exact": "One rainy evening、ひとりの嬰児（with quartz skin）がレッドロックにて、メカニマス教団の一団により産着に包まれた姿で見いだされた。彼らはhimを仲間に迎えてhimを育み、heはYarad、メカニマス教団のクロームなる子として知られるようになった。"
+    },
+    {
+      "candidate_id": "FoundAsBabe#tombInscription#opt:with1",
+      "event_property": "tombInscription",
+      "input_source": "One rainy evening, a babe was found swaddled with quartz skin by a group of Mechanimists in Red Rock. They took him into their fold and fostered him, and he became known as Yarad, the Argent Heir of Mechanimists.",
+      "expected_japanese_exact": "One rainy evening、ひとりの嬰児（with quartz skin）がレッドロックにて、メカニマス教団の一団により産着に包まれた姿で見いだされた。彼らはhimを仲間に迎えてhimを育み、heはYarad、メカニマス教団のArgentなるHeirとして知られるようになった。"
+    },
+    {
       "candidate_id": "edge_empty_gospel",
       "event_property": "gospel",
       "input_source": "",
