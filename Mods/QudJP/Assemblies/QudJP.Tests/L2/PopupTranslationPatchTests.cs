@@ -1520,6 +1520,18 @@ public sealed class PopupTranslationPatchTests
     }
 
     [Test]
+    public void TranslatePopupTextForProducerRoute_ExactStrippedLookup_DoesNotDuplicateTranslatedOwnedSameWrapper()
+    {
+        WriteDictionary(("No", "{{y|いいえ}}"));
+
+        var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+            "{{y|No}}",
+            nameof(PopupTranslationPatch));
+
+        Assert.That(translated, Is.EqualTo("{{y|いいえ}}"));
+    }
+
+    [Test]
     public void TranslatePopupTextForProducerRoute_ExactStrippedLookup_RestoresOnlyOuterNestedSourceWrapper()
     {
         WriteDictionary(("No", "いいえ"));

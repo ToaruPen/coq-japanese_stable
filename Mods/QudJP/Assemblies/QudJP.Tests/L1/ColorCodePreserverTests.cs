@@ -365,6 +365,19 @@ public sealed class ColorCodePreserverTests
     }
 
     [Test]
+    public void RestoreSourceBoundaryWrappersByVisibleTextPreservingTranslatedOwnership_DoesNotDuplicateTranslatedOwnedSameWrapper()
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip("{{y|No}}");
+
+        var restored = ColorAwareTranslationComposer.RestoreSourceBoundaryWrappersByVisibleTextPreservingTranslatedOwnership(
+            "{{y|いいえ}}",
+            spans,
+            stripped);
+
+        Assert.That(restored, Is.EqualTo("{{y|いいえ}}"));
+    }
+
+    [Test]
     public void RestoreSourceBoundaryWrappersByVisibleTextPreservingTranslatedOwnership_PreservesNestedMixedFamilyCloseOrder()
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip("{{W|<color=#44ff88>No</color>}}");

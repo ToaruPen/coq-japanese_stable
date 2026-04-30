@@ -158,6 +158,10 @@ internal static class ColorAwareTranslationComposer
         }
 
         var (visible, translatedOwnedSpans) = Strip(translatedValue);
+        var translatedBoundaryPairs = ExtractTrueBoundaryPairs(
+            translatedOwnedSpans,
+            sourceStart: 0,
+            visible.Length);
         var mappedPairs = new List<MappedBoundaryPair>();
         for (var pairIndex = 0; pairIndex < sourceOwnedBoundaryPairs.Count; pairIndex++)
         {
@@ -169,6 +173,16 @@ internal static class ColorAwareTranslationComposer
                     pair.Closing.Index,
                     out var translatedStart,
                     out var translatedEnd))
+            {
+                continue;
+            }
+
+            if (HasSameTranslatedBoundaryPair(
+                    translatedBoundaryPairs,
+                    translatedStart,
+                    translatedEnd,
+                    pair.Opening.Token,
+                    pair.Closing.Token))
             {
                 continue;
             }
@@ -308,6 +322,28 @@ internal static class ColorAwareTranslationComposer
             translatedStart = 0;
             translatedEnd = translatedVisible.Length - sourceSuffix.Length;
             return translatedStart <= translatedEnd;
+        }
+
+        return false;
+    }
+
+    private static bool HasSameTranslatedBoundaryPair(
+        IReadOnlyList<WholeBoundaryPair> translatedBoundaryPairs,
+        int translatedStart,
+        int translatedEnd,
+        string openingToken,
+        string closingToken)
+    {
+        for (var pairIndex = 0; pairIndex < translatedBoundaryPairs.Count; pairIndex++)
+        {
+            var pair = translatedBoundaryPairs[pairIndex];
+            if (pair.Opening.Index == translatedStart
+                && pair.Closing.Index == translatedEnd
+                && string.Equals(pair.Opening.Token, openingToken, StringComparison.Ordinal)
+                && string.Equals(pair.Closing.Token, closingToken, StringComparison.Ordinal))
+            {
+                return true;
+            }
         }
 
         return false;
