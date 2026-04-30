@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Protocol
 
-from scripts.scan_activated_ability_names import main
+from scripts.scan_activated_ability_names import main, scan_source_root
 
 FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "activated_abilities"
 
@@ -97,3 +97,29 @@ def test_missing_source_root_exits_1_with_explicit_stderr(tmp_path: Path, capsys
     assert str(missing_root) in captured.err
     assert captured.out == ""
     assert not output_path.exists()
+
+
+def test_scanner_skips_interpolated_verbatim_string_literals(tmp_path: Path) -> None:
+    """Interpolated verbatim literals may contain call-like text that is not source code."""
+    source_path = tmp_path / "Demo.cs"
+    source_path.write_text(
+        """
+namespace Demo
+{
+    public sealed class Case
+    {
+        public void Run()
+        {
+            string ignored = @$"AddActivatedAbility(""Ignored"", ""CommandIgnored"")";
+            AddActivatedAbility("Real", "CommandReal");
+        }
+    }
+}
+""",
+        encoding="utf-8",
+    )
+
+    items = scan_source_root(tmp_path)
+
+    assert len(items) == 1
+    assert items[0].name == "Real"

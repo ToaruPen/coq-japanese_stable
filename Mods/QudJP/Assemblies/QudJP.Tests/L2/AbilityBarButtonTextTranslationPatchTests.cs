@@ -127,6 +127,47 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
         }
     }
 
+    [Test]
+    public void Postfix_LeavesDynamicAbilityButtonTextEnglish_WhenBaseLeafIsMissing()
+    {
+        WriteDictionary(("Joppa", "ジョッパ"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyAbilityBarButtonTextTarget), nameof(DummyAbilityBarButtonTextTarget.Update)),
+                postfix: new HarmonyMethod(RequirePatchMethod("Postfix", typeof(object))));
+
+            var target = new DummyAbilityBarButtonTextTarget();
+            var discharge = new DummyAbilityBarButton("&CDischarge [3 charge]");
+            var lase = new DummyAbilityBarButton("&CLase (4 charges)");
+            var recoilToJoppa = new DummyAbilityBarButton("Recoil to Joppa");
+            target.AbilityButtons.Add(discharge);
+            target.AbilityButtons.Add(lase);
+            target.AbilityButtons.Add(recoilToJoppa);
+
+            target.Update();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(discharge.Text.text, Is.EqualTo("&CDischarge [3 charge]"));
+                Assert.That(lase.Text.text, Is.EqualTo("&CLase (4 charges)"));
+                Assert.That(recoilToJoppa.Text.text, Is.EqualTo("Recoil to Joppa"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(AbilityBarButtonTextTranslationPatch),
+                        "AbilityBar.ButtonText"),
+                    Is.EqualTo(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static MethodInfo RequireMethod(Type type, string methodName)
     {
         var method = AccessTools.Method(type, methodName);

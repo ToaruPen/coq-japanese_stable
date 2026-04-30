@@ -25,7 +25,7 @@ Search: grep -rn "catch\s*{" src/
 Result: 0 matches — PASS
 
 ### Archived code-marker scan
-Search pattern used in the archived audit: line comments containing deferred-work markers under `src/`.
+Search: rg -n --hidden -g '*.cs' -e '//\s*(TODO|FIXME|XXX|HACK)' src/
 Result: 0 matches — PASS
 
 ### NotImplementedException

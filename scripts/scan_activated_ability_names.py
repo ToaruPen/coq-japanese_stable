@@ -566,7 +566,7 @@ def _skip_csharp_literal(text: str, index: int) -> int | None:
     elif text.startswith('$@"', index):
         literal_end = _consume_verbatim_string_end(text, index + 1)
     elif text.startswith('@$"', index):
-        literal_end = _consume_verbatim_string_body_end(text, index + 2)
+        literal_end = _consume_verbatim_string_body_end(text, index + 3)
     elif text.startswith('"""', index) or text.startswith('$"""', index):
         literal_end = _consume_raw_string_end(text, index)
     elif text.startswith('$"', index):
