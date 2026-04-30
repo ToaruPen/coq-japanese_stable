@@ -158,6 +158,36 @@ public sealed class TradeUiPopupTranslationPatchTests
             Is.EqualTo("{{R|それらを修理するには{{C|8}}ドラムの清水が必要だ。}}"));
     }
 
+    [Test]
+    public void Prefix_StripsRuntimeControlHeader_ForHasNothingToTrade()
+    {
+        WriteDictionary(
+            ("{0} has nothing to trade.", "{0}には取引するものがない"));
+
+        using var patch = PatchMethod(nameof(DummyTradeUiPopupTarget.Show));
+
+        DummyTradeUiPopupTarget.Show("\u0002have\u001F16\u001F20\u001F\u0003The 濡れた グロウフィッシュ has nothing to trade.");
+
+        Assert.That(
+            DummyTradeUiPopupTarget.LastShowMessage,
+            Is.EqualTo("濡れた グロウフィッシュには取引するものがない"));
+    }
+
+    [Test]
+    public void Prefix_PreservesOuterColorAndStripsRuntimeControlHeader_ForHasNothingToTrade()
+    {
+        WriteDictionary(
+            ("{0} has nothing to trade.", "{0}には取引するものがない"));
+
+        using var patch = PatchMethod(nameof(DummyTradeUiPopupTarget.Show));
+
+        DummyTradeUiPopupTarget.Show("{{y|\u0002have\u001F16\u001F20\u001F\u0003The 巨大トンボ has nothing to trade.}}");
+
+        Assert.That(
+            DummyTradeUiPopupTarget.LastShowMessage,
+            Is.EqualTo("{{y|巨大トンボには取引するものがない}}"));
+    }
+
     private static IDisposable PatchMethod(string methodName)
     {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";

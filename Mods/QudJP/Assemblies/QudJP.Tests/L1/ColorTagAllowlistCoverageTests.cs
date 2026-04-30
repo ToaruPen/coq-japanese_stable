@@ -120,7 +120,7 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:245:TranslatePopupTextForRoute"] = "Strips only for direct-marker and already-localized detection before producer routes own restoration.",
             ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:291:TranslatePopupMenuItemTextForRoute"] = "Strips only for direct-marker and already-localized detection before producer routes own restoration.",
             ["Mods/QudJP/Assemblies/src/Patches/SkillsAndPowersLineTranslationPatch.cs:229:TranslateSkillRightText"] = "Strips only for skill right-text detection before a non-colored exact replacement.",
-            ["Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs:239:TryTranslateTradeUiPopupText"] = "Delegates capture restoration to branch-specific RestoreCapture helpers.",
+            ["Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs:243:TryTranslateTradeUiPopupText"] = "Delegates capture restoration to branch-specific RestoreCapture helpers.",
             ["Mods/QudJP/Assemblies/src/Patches/UITextSkinTranslationPatch.cs:100:TranslatePreservingColors"] = "Sink fallback uses stripped text only for already-localized/direct-route checks.",
             ["Mods/QudJP/Assemblies/src/Patches/WorldModsTextTranslator.cs:490:TryTranslateCoProcessorTemplate"] = "Delegates restoration to the template helper.",
             ["Mods/QudJP/Assemblies/src/Patches/WorldModsTextTranslator.cs:526:TryTranslateCounterweightedTemplate"] = "Delegates restoration to the template helper.",

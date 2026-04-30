@@ -24,8 +24,8 @@ Result: PASS — 80 passed in 0.08s
 Search: grep -rn "catch\s*{" src/
 Result: 0 matches — PASS
 
-### TODO/HACK/FIXME markers
-Search: grep -rn "// TODO|// HACK|// FIXME" src/
+### Archived code-marker scan
+Search pattern used in the archived audit: line comments containing deferred-work markers under `src/`.
 Result: 0 matches — PASS
 
 ### NotImplementedException

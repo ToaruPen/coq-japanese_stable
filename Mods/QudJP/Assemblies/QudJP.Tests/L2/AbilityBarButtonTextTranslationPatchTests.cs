@@ -48,6 +48,10 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             ("Freezing Ray", "凍結線"),
             ("Toggle", "切替"),
             ("Sense", "感知"),
+            ("Discharge", "放電"),
+            ("Lase", "レーザー照射"),
+            ("Recoil", "帰還"),
+            ("Joppa", "ジョッパ"),
             ("[disabled]", "[無効]"),
             ("on", "オン"),
             ("off", "オフ"));
@@ -65,6 +69,11 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             var freezingRay = new DummyAbilityBarButton("&CFreezing Ray {{C|[5]}} {{K|[{{g|on}}]}}");
             var toggle = new DummyAbilityBarButton("&CToggle {{K|[{{r|off}}]}} {{K|[offhand]}}");
             var sense = new DummyAbilityBarButton("&CSense {{K|[condition]}} {{K|[{{g|on}}]}}");
+            var discharge = new DummyAbilityBarButton("&CDischarge [3 charge]");
+            var lase = new DummyAbilityBarButton("&CLase (4 charges)");
+            var recoil = new DummyAbilityBarButton("Recoil");
+            var recoilToJoppa = new DummyAbilityBarButton("Recoil to Joppa");
+            var coloredRecoilToJoppa = new DummyAbilityBarButton("&CRecoil to Joppa {{K|[disabled]}}");
             var englishFallback = new DummyAbilityBarButton("UnregisteredText");
             var empty = new DummyAbilityBarButton(string.Empty);
             var marker = new DummyAbilityBarButton("\u0001SomeText");
@@ -72,6 +81,11 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             target.AbilityButtons.Add(freezingRay);
             target.AbilityButtons.Add(toggle);
             target.AbilityButtons.Add(sense);
+            target.AbilityButtons.Add(discharge);
+            target.AbilityButtons.Add(lase);
+            target.AbilityButtons.Add(recoil);
+            target.AbilityButtons.Add(recoilToJoppa);
+            target.AbilityButtons.Add(coloredRecoilToJoppa);
             target.AbilityButtons.Add(englishFallback);
             target.AbilityButtons.Add(empty);
             target.AbilityButtons.Add(marker);
@@ -84,6 +98,11 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
                 Assert.That(freezingRay.Text.text, Is.EqualTo("&C凍結線 {{C|[5]}} {{K|[{{g|オン}}]}}"));
                 Assert.That(toggle.Text.text, Is.EqualTo("&C切替 {{K|[{{r|オフ}}]}} {{K|[offhand]}}"));
                 Assert.That(sense.Text.text, Is.EqualTo("&C感知 {{K|[condition]}} {{K|[{{g|オン}}]}}"));
+                Assert.That(discharge.Text.text, Is.EqualTo("&C放電 [3チャージ]"));
+                Assert.That(lase.Text.text, Is.EqualTo("&Cレーザー照射 (4チャージ)"));
+                Assert.That(recoil.Text.text, Is.EqualTo("帰還"));
+                Assert.That(recoilToJoppa.Text.text, Is.EqualTo("ジョッパへ帰還"));
+                Assert.That(coloredRecoilToJoppa.Text.text, Is.EqualTo("&Cジョッパへ帰還 {{K|[無効]}}"));
                 Assert.That(englishFallback.Text.text, Is.EqualTo("UnregisteredText"));
                 Assert.That(empty.Text.text, Is.EqualTo(string.Empty));
                 Assert.That(marker.Text.text, Is.EqualTo("\u0001SomeText"));
@@ -91,7 +110,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(AbilityBarButtonTextTranslationPatch),
                         "AbilityBar.ButtonText"),
-                    Is.EqualTo(4));
+                    Is.EqualTo(9));
                 Assert.That(
                     SinkObservation.GetHitCountForTests(
                         nameof(UITextSkinTranslationPatch),

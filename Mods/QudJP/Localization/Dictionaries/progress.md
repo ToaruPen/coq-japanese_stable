@@ -20,11 +20,11 @@
 | 自動抽出 UI | ILSpy 抽出経由 | `ui-auto-generated.ja.json` | 翻訳済 | 自動生成テキスト。 |
 | 置換文字列 | `GameText.VariableReplace` / `XRL.World.Text.*` / `HistoricStringExpander.ExpandString` | `ui-messagelog.ja.json` | 翻訳済 | `=...=` / `<spice.*>` 系。 |
 | Name 生成 | `NameStyles.Generate` / `NameStyle.Generate` / `Naming.xml` | `Naming.jp.xml` + Harmony(NameStylePatch) | 対応中 | TwoName や Hyphenation を Harmony で制御。 |
-| Conversation Pronoun | `ConversationScript.PronounExchangeDescription` (`Speaker.t()`/`Speaker.its`) | Harmony | 要対応 | 代名詞交換の文面をパッチ予定。 |
+| Conversation Pronoun | `ConversationScript.PronounExchangeDescription` (`Speaker.t()`/`Speaker.its`) | Harmony | 翻訳済 | `ConversationPronounExchangeTranslationPatch.cs` で代名詞交換の文面を差し替え。 |
 
 ## メモ
 - NameStyle/NameStyles: TwoName のスペース／ハイフン出力を Harmony で調整。`Naming.jp.xml` では HyphenationChance=0 で運用。
-- Conversation Pronoun: `"you and ... exchange pronouns"` の文面を Harmony で差し替え予定。
+- Conversation Pronoun: `"you and ... exchange pronouns"` の文面は `ConversationPronounExchangeTranslationPatch.cs` で差し替え済み。
 
 ## ガイド
 - 翻訳方針・パイプラインは `Docs/pipelines/<target>.md` を必ず参照。
@@ -32,13 +32,13 @@
 - Player.log の `[JP][TR][MISS]` をチェックし、`tmp/out-*.json` と突合。
 
 ## 最近の更新
+- 2026-03-20: `ui-displayname-adjectives.ja.json` に display name adjective と Mod 接頭辞（painted/engraved/nulling/recycling/radio-powered/phase-conjugate など）を反映済み。
+- 2025-11-26: HistorySpice 主要プレースホルダを `world-gospels.ja.json` に反映（digits 系は key=text のまま）。
 - 2025-11-25: ExtraMessagingPatches に XDidYToZ 汎用の verb/prep 和訳テーブルを追加（firefighting / bandage / dismiss / convince / intercept / space-time vortex）。`ui-messagelog-world.ja.json` の関連テンプレートも更新。
 - 2025-11-24: `Some / some` の記事や `GetDisplayName.StackCount`（`x{n}`）を調整。`ui-displayname-adjectives.ja.json` に `Some` を追加。
-- 2025-11-23: `MessageQueueWorldLocalizer` に explode/disappear/submerge/cohere/appear/stasis field/focus/are sucked into を追加。`ui-messagelog-world.ja.json` を反映。
-- 2025-11-26: HistorySpice 主要プレースホルダを `world-gospels.ja.json` に反映（digits 系は key=text のまま）。
 - 2025-11-24: `scripts/verify_regex.py` で CombatLog/Messaging/ExtraMessaging の正規化・パターンテストを追加し、全ケース PASS を確認。
+- 2025-11-23: `MessageQueueWorldLocalizer` に explode/disappear/submerge/cohere/appear/stasis field/focus/are sucked into を追加。`ui-messagelog-world.ja.json` を反映。
 
 ## TODO
-- GetDisplayName: StackCount / adjective を `ui-displayname-adjectives.ja.json` に追記（`Docs/backlog/displayname_adjectives.csv` を参照）。
-- Mod 接頭辞: painted/engraved/nulling/recycling/radio-powered/phase-conjugate などを Player.log の MISS から補完。
-- XDidYToZ 汎用で新しい verb/prep が見付かったら訳テーブルに追記（Player.log の `[JP][MISS]` を確認）。 
+- Runtime miss 追跡: display name adjective / Mod 接頭辞は既存の補完済み項目を前提に、Player.log の `[JP][MISS]` で未収録の新規語だけを確認する。
+- XDidYToZ 汎用で新しい verb/prep が見付かったら訳テーブルに追記（Player.log の `[JP][MISS]` を確認）。

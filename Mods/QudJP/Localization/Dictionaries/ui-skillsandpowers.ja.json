@@ -2029,6 +2029,361 @@
       "key": "{{c|ù}} Endurance",
       "context": "TMP.Description",
       "text": "{{c|ù}} 耐久"
+    },
+    {
+      "key": "Sunder Mind",
+      "context": "AbilityBar.ButtonText",
+      "text": "精神断裂"
+    },
+    {
+      "key": "Lay Mine",
+      "context": "AbilityBar.ButtonText",
+      "text": "地雷設置"
+    },
+    {
+      "key": "Set Bomb",
+      "context": "AbilityBar.ButtonText",
+      "text": "爆弾設置"
+    },
+    {
+      "key": "Recharge",
+      "context": "AbilityBar.ButtonText",
+      "text": "充電"
+    },
+    {
+      "key": "Spit Slime",
+      "context": "AbilityBar.ButtonText",
+      "text": "粘液吐き"
+    },
+    {
+      "key": "Discharge",
+      "context": "AbilityBar.ButtonText",
+      "text": "放電"
+    },
+    {
+      "key": "Lase",
+      "context": "AbilityBar.ButtonText",
+      "text": "レーザー照射"
+    },
+    {
+      "key": "Recoil",
+      "context": "AbilityBar.ButtonText",
+      "text": "帰還"
+    },
+    {
+      "key": "Precognition - Start vision",
+      "context": "AbilityBar.ButtonText",
+      "text": "予知 - 予知視開始"
+    },
+    {
+      "key": "Precognition - End vision",
+      "context": "AbilityBar.ButtonText",
+      "text": "予知 - 予知視終了"
+    },
+    {
+      "key": "Force Wall",
+      "context": "AbilityBar.ButtonText",
+      "text": "力場壁"
+    },
+    {
+      "key": "Burgeoning",
+      "context": "AbilityBar.ButtonText",
+      "text": "繁茂"
+    },
+    {
+      "key": "Disintegration",
+      "context": "AbilityBar.ButtonText",
+      "text": "分解"
+    },
+    {
+      "key": "Fear Aura",
+      "context": "AbilityBar.ButtonText",
+      "text": "恐怖のオーラ"
+    },
+    {
+      "key": "Flaming Ray",
+      "context": "AbilityBar.ButtonText",
+      "text": "炎線"
+    },
+    {
+      "key": "Force Bubble",
+      "context": "AbilityBar.ButtonText",
+      "text": "力場泡"
+    },
+    {
+      "key": "Freezing Ultraray",
+      "context": "AbilityBar.ButtonText",
+      "text": "凍結超光線"
+    },
+    {
+      "key": "Infiltrate",
+      "context": "AbilityBar.ButtonText",
+      "text": "潜入"
+    },
+    {
+      "key": "Irisdual Beam",
+      "context": "AbilityBar.ButtonText",
+      "text": "アイリスデュアル光線"
+    },
+    {
+      "key": "Kindle",
+      "context": "AbilityBar.ButtonText",
+      "text": "着火"
+    },
+    {
+      "key": "Magnetic Pulse",
+      "context": "AbilityBar.ButtonText",
+      "text": "磁気パルス"
+    },
+    {
+      "key": "Mental Mirror",
+      "context": "AbilityBar.ButtonText",
+      "text": "精神鏡"
+    },
+    {
+      "key": "Metamorphosis",
+      "context": "AbilityBar.ButtonText",
+      "text": "変容"
+    },
+    {
+      "key": "Psychometry",
+      "context": "AbilityBar.ButtonText",
+      "text": "サイコメトリー"
+    },
+    {
+      "key": "Spacetime Vortex",
+      "context": "AbilityBar.ButtonText",
+      "text": "時空渦"
+    },
+    {
+      "key": "Stunning Force",
+      "context": "AbilityBar.ButtonText",
+      "text": "衝撃念力"
+    },
+    {
+      "key": "Syphon Vim",
+      "context": "AbilityBar.ButtonText",
+      "text": "活力吸収"
+    },
+    {
+      "key": "Telepathy",
+      "context": "AbilityBar.ButtonText",
+      "text": "テレパシー"
+    },
+    {
+      "key": "Teleport Other",
+      "context": "AbilityBar.ButtonText",
+      "text": "他者転送"
+    },
+    {
+      "key": "Time Dilation",
+      "context": "AbilityBar.ButtonText",
+      "text": "時間延伸"
+    },
+    {
+      "key": "Blow Aji Conch",
+      "context": "AbilityBar.ButtonText",
+      "text": "アジ族の法螺貝を吹く"
+    },
+    {
+      "key": "Recomposite",
+      "context": "AbilityBar.ButtonText",
+      "text": "再構築"
+    },
+    {
+      "key": "Inflate Axons",
+      "context": "AbilityBar.ButtonText",
+      "text": "軸索膨張"
+    },
+    {
+      "key": "Emergency Recomposite",
+      "context": "AbilityBar.ButtonText",
+      "text": "緊急再構築"
+    },
+    {
+      "key": "Imprint with current location",
+      "context": "AbilityBar.ButtonText",
+      "text": "現在位置を刻印"
+    },
+    {
+      "key": "Project Stasis Field",
+      "context": "AbilityBar.ButtonText",
+      "text": "静止場を展開"
+    },
+    {
+      "key": "Eject",
+      "context": "AbilityBar.ButtonText",
+      "text": "射出"
+    },
+    {
+      "key": "Quicken Mind",
+      "context": "AbilityBar.ButtonText",
+      "text": "クイックマインド"
+    },
+    {
+      "key": "Spit Acid",
+      "context": "AbilityBar.ButtonText",
+      "text": "酸吐き"
+    },
+    {
+      "key": "Beguile Creature",
+      "context": "AbilityBar.ButtonText",
+      "text": "クリーチャーを魅了"
+    },
+    {
+      "key": "Burrow",
+      "context": "AbilityBar.ButtonText",
+      "text": "穴掘り"
+    },
+    {
+      "key": "Excavate up",
+      "context": "AbilityBar.ButtonText",
+      "text": "上階へ掘削"
+    },
+    {
+      "key": "Excavate down",
+      "context": "AbilityBar.ButtonText",
+      "text": "下階へ掘削"
+    },
+    {
+      "key": "Clairvoyance",
+      "context": "AbilityBar.ButtonText",
+      "text": "千里眼"
+    },
+    {
+      "key": "Confusion",
+      "context": "AbilityBar.ButtonText",
+      "text": "混乱"
+    },
+    {
+      "key": "Chill",
+      "context": "AbilityBar.ButtonText",
+      "text": "冷却"
+    },
+    {
+      "key": "Decarbonize",
+      "context": "AbilityBar.ButtonText",
+      "text": "脱炭素化"
+    },
+    {
+      "key": "Emit Pulse",
+      "context": "AbilityBar.ButtonText",
+      "text": "パルス放出"
+    },
+    {
+      "key": "Knit Frosty Webs",
+      "context": "AbilityBar.ButtonText",
+      "text": "氷結糸を編む"
+    },
+    {
+      "key": "Ley Shift",
+      "context": "AbilityBar.ButtonText",
+      "text": "レイシフト"
+    },
+    {
+      "key": "Ambient Light",
+      "context": "AbilityBar.ButtonText",
+      "text": "環境光"
+    },
+    {
+      "key": "Spit Liquid",
+      "context": "AbilityBar.ButtonText",
+      "text": "液体吐き"
+    },
+    {
+      "key": "End Metamorphosis",
+      "context": "AbilityBar.ButtonText",
+      "text": "変容を終える"
+    },
+    {
+      "key": "Bask",
+      "context": "AbilityBar.ButtonText",
+      "text": "日光浴"
+    },
+    {
+      "key": "Sting",
+      "context": "AbilityBar.ButtonText",
+      "text": "刺突"
+    },
+    {
+      "key": "Spew",
+      "context": "AbilityBar.ButtonText",
+      "text": "吐き出す"
+    },
+    {
+      "key": "Scintillate",
+      "context": "AbilityBar.ButtonText",
+      "text": "きらめく"
+    },
+    {
+      "key": "Phase",
+      "context": "AbilityBar.ButtonText",
+      "text": "フェイズ化"
+    },
+    {
+      "key": "Boost Agility",
+      "context": "AbilityBar.ButtonText",
+      "text": "敏捷強化"
+    },
+    {
+      "key": "Boost Strength",
+      "context": "AbilityBar.ButtonText",
+      "text": "筋力強化"
+    },
+    {
+      "key": "Boost Toughness",
+      "context": "AbilityBar.ButtonText",
+      "text": "頑健強化"
+    },
+    {
+      "key": "Release Adrenaline",
+      "context": "AbilityBar.ButtonText",
+      "text": "アドレナリン放出"
+    },
+    {
+      "key": "Spin Webs",
+      "context": "AbilityBar.ButtonText",
+      "text": "網を張る"
+    },
+    {
+      "key": "Tap the Mass Mind",
+      "context": "AbilityBar.ButtonText",
+      "text": "集合精神に接続"
+    },
+    {
+      "key": "Telekinesis",
+      "context": "AbilityBar.ButtonText",
+      "text": "念動力"
+    },
+    {
+      "key": "Telekinetic Throwing",
+      "context": "AbilityBar.ButtonText",
+      "text": "念動投擲"
+    },
+    {
+      "key": "Toast",
+      "context": "AbilityBar.ButtonText",
+      "text": "加熱"
+    },
+    {
+      "key": "Tongue",
+      "context": "AbilityBar.ButtonText",
+      "text": "粘着舌"
+    },
+    {
+      "key": "Waveform Dash",
+      "context": "AbilityBar.ButtonText",
+      "text": "ウェーブフォーム・ダッシュ"
+    },
+    {
+      "key": "Serenity",
+      "context": "AbilityBar.ButtonText",
+      "text": "安らぎ"
+    },
+    {
+      "key": "Wrecking Charge",
+      "context": "AbilityBar.ButtonText",
+      "text": "破壊的な突進"
     }
   ]
 }

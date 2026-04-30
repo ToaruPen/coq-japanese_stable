@@ -26,6 +26,10 @@ public static class TradeUiPopupTranslationPatch
         "^(?<subject>.+?) on fire and.+? too busy to trade with you\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex HasNothingToTradePattern = new(
+        "^(?:\u0002have\u001F\\d+\u001F\\d+\u001F\u0003)?(?<subject>.+?) has nothing to trade\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex WaterDebtPattern = new(
         "^(?<subject>.+?) will not trade with you until you pay (?<them1>.+?) the (?<amount>\\d+) drams? of fresh water you owe (?<them2>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -244,6 +248,22 @@ public static class TradeUiPopupTranslationPatch
                 CannotCarryPattern,
                 "{0} cannot carry things.",
                 "TradeUiPopup.CannotCarry",
+                match => new object[]
+                {
+                    NormalizeSubject(match.Groups["subject"].Value),
+                },
+                out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateTemplate(
+                source,
+                stripped,
+                spans,
+                HasNothingToTradePattern,
+                "{0} has nothing to trade.",
+                "TradeUiPopup.HasNothingToTrade",
                 match => new object[]
                 {
                     NormalizeSubject(match.Groups["subject"].Value),

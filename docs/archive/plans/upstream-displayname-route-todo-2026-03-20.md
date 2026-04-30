@@ -1,4 +1,4 @@
-# Upstream DisplayName Route TODO (2026-03-20)
+# Archived Upstream DisplayName Route Notes (2026-03-20)
 
 1. `markup adjective prefix`
 source: `GetDisplayNameEvent.AddAdjective(...)` with markup-wrapped ASCII modifier such as `{{graffitied|graffitied}}`

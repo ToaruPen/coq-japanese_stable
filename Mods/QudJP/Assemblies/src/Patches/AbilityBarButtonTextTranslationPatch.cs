@@ -18,6 +18,15 @@ public static class AbilityBarButtonTextTranslationPatch
     private static readonly Dictionary<Type, FieldInfo?> TextFields = new Dictionary<Type, FieldInfo?>();
     private static readonly Dictionary<Type, MethodInfo?> GetComponentByTypeMethods = new Dictionary<Type, MethodInfo?>();
     private static readonly Dictionary<Type, MethodInfo?> GetComponentGenericMethods = new Dictionary<Type, MethodInfo?>();
+    private static readonly Regex DischargeChargePattern = new Regex(
+        "^Discharge \\[(?<count>\\d+) charge\\]$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex LaseChargesPattern = new Regex(
+        "^Lase \\((?<count>\\d+) charges\\)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex RecoilToZonePattern = new Regex(
+        "^Recoil to (?<zone>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static bool abilityBarButtonComponentTypeResolved;
     private static Type? abilityBarButtonComponentType;
 
@@ -194,19 +203,94 @@ public static class AbilityBarButtonTextTranslationPatch
     private static string TranslateNameSegment(string source, string route, out bool changed)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
-        var translated = StringHelpers.TranslateExactOrLowerAscii(stripped);
-        if (translated is null)
+        string? translated;
+        if (TryTranslateDynamicAbilityBarName(stripped, route, out var dynamicTranslated))
         {
-            translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
-                source,
-                ObservabilityHelpers.ComposeContext(route, "segment=name"));
-            changed = !string.Equals(translated, source, StringComparison.Ordinal);
-            return translated;
+            translated = dynamicTranslated;
+        }
+        else
+        {
+            translated = StringHelpers.TranslateExactOrLowerAscii(stripped);
+            if (translated is null)
+            {
+                translated = TranslateDisplayNameRoutePreservingColors(
+                    source,
+                    ObservabilityHelpers.ComposeContext(route, "segment=name"));
+                changed = !string.Equals(translated, source, StringComparison.Ordinal);
+                return translated;
+            }
         }
 
         var restored = spans.Count == 0 ? translated : ColorAwareTranslationComposer.Restore(translated, spans);
         changed = !string.Equals(restored, source, StringComparison.Ordinal);
         return restored;
+    }
+
+    private static bool TryTranslateDynamicAbilityBarName(string source, string route, out string translated)
+    {
+        var dischargeMatch = DischargeChargePattern.Match(source);
+        if (dischargeMatch.Success && TryTranslateAbilityBarBaseLeaf("Discharge", out var discharge))
+        {
+            translated = discharge + " [" + dischargeMatch.Groups["count"].Value + "チャージ]";
+            return true;
+        }
+
+        var laseMatch = LaseChargesPattern.Match(source);
+        if (laseMatch.Success && TryTranslateAbilityBarBaseLeaf("Lase", out var lase))
+        {
+            translated = lase + " (" + laseMatch.Groups["count"].Value + "チャージ)";
+            return true;
+        }
+
+        var recoilMatch = RecoilToZonePattern.Match(source);
+        if (recoilMatch.Success && TryTranslateAbilityBarBaseLeaf("Recoil", out var recoil))
+        {
+            var zone = TranslateRecoilZone(recoilMatch.Groups["zone"].Value, route);
+            translated = zone + "へ" + recoil;
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryTranslateAbilityBarBaseLeaf(string source, out string translated)
+    {
+        var maybeTranslated = StringHelpers.TranslateExactOrLowerAscii(source);
+        if (maybeTranslated is null)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = maybeTranslated;
+        return true;
+    }
+
+    private static string TranslateRecoilZone(string zone, string route)
+    {
+        if (GetDisplayNameRouteTranslator.IsAlreadyLocalizedDisplayNameStateText(zone))
+        {
+            return zone;
+        }
+
+        var exact = StringHelpers.TranslateExactOrLowerAscii(zone);
+        if (exact is not null)
+        {
+            return exact;
+        }
+
+        var translated = TranslateDisplayNameRoutePreservingColors(
+            zone,
+            ObservabilityHelpers.ComposeContext(route, "segment=recoil-zone"));
+        return string.Equals(translated, zone, StringComparison.Ordinal)
+            ? zone
+            : translated;
+    }
+
+    private static string TranslateDisplayNameRoutePreservingColors(string source, string route)
+    {
+        return GetDisplayNameRouteTranslator.TranslatePreservingColors(source, route);
     }
 
     private static string TranslateSuffix(string source, out bool changed)

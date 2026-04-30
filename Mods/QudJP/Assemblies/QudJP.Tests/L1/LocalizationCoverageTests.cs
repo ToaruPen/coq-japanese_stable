@@ -351,6 +351,97 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void SkillsAndPowersDictionary_ContainsStaticAbilityBarBaseLeaves()
+    {
+        var entries = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "ui-skillsandpowers.ja.json"));
+        var expectedEntries = new[]
+        {
+            new DictionaryEntry("Sunder Mind", "AbilityBar.ButtonText", "精神断裂"),
+            new DictionaryEntry("Lay Mine", "AbilityBar.ButtonText", "地雷設置"),
+            new DictionaryEntry("Set Bomb", "AbilityBar.ButtonText", "爆弾設置"),
+            new DictionaryEntry("Recharge", "AbilityBar.ButtonText", "充電"),
+            new DictionaryEntry("Spit Slime", "AbilityBar.ButtonText", "粘液吐き"),
+            new DictionaryEntry("Discharge", "AbilityBar.ButtonText", "放電"),
+            new DictionaryEntry("Lase", "AbilityBar.ButtonText", "レーザー照射"),
+            new DictionaryEntry("Recoil", "AbilityBar.ButtonText", "帰還"),
+            new DictionaryEntry("Precognition - Start vision", "AbilityBar.ButtonText", "予知 - 予知視開始"),
+            new DictionaryEntry("Precognition - End vision", "AbilityBar.ButtonText", "予知 - 予知視終了"),
+            new DictionaryEntry("Force Wall", "AbilityBar.ButtonText", "力場壁"),
+            new DictionaryEntry("Burgeoning", "AbilityBar.ButtonText", "繁茂"),
+            new DictionaryEntry("Disintegration", "AbilityBar.ButtonText", "分解"),
+            new DictionaryEntry("Fear Aura", "AbilityBar.ButtonText", "恐怖のオーラ"),
+            new DictionaryEntry("Flaming Ray", "AbilityBar.ButtonText", "炎線"),
+            new DictionaryEntry("Force Bubble", "AbilityBar.ButtonText", "力場泡"),
+            new DictionaryEntry("Freezing Ultraray", "AbilityBar.ButtonText", "凍結超光線"),
+            new DictionaryEntry("Infiltrate", "AbilityBar.ButtonText", "潜入"),
+            new DictionaryEntry("Irisdual Beam", "AbilityBar.ButtonText", "アイリスデュアル光線"),
+            new DictionaryEntry("Kindle", "AbilityBar.ButtonText", "着火"),
+            new DictionaryEntry("Magnetic Pulse", "AbilityBar.ButtonText", "磁気パルス"),
+            new DictionaryEntry("Mental Mirror", "AbilityBar.ButtonText", "精神鏡"),
+            new DictionaryEntry("Metamorphosis", "AbilityBar.ButtonText", "変容"),
+            new DictionaryEntry("Psychometry", "AbilityBar.ButtonText", "サイコメトリー"),
+            new DictionaryEntry("Spacetime Vortex", "AbilityBar.ButtonText", "時空渦"),
+            new DictionaryEntry("Stunning Force", "AbilityBar.ButtonText", "衝撃念力"),
+            new DictionaryEntry("Syphon Vim", "AbilityBar.ButtonText", "活力吸収"),
+            new DictionaryEntry("Telepathy", "AbilityBar.ButtonText", "テレパシー"),
+            new DictionaryEntry("Teleport Other", "AbilityBar.ButtonText", "他者転送"),
+            new DictionaryEntry("Time Dilation", "AbilityBar.ButtonText", "時間延伸"),
+            new DictionaryEntry("Blow Aji Conch", "AbilityBar.ButtonText", "アジ族の法螺貝を吹く"),
+            new DictionaryEntry("Recomposite", "AbilityBar.ButtonText", "再構築"),
+            new DictionaryEntry("Inflate Axons", "AbilityBar.ButtonText", "軸索膨張"),
+            new DictionaryEntry("Emergency Recomposite", "AbilityBar.ButtonText", "緊急再構築"),
+            new DictionaryEntry("Imprint with current location", "AbilityBar.ButtonText", "現在位置を刻印"),
+            new DictionaryEntry("Project Stasis Field", "AbilityBar.ButtonText", "静止場を展開"),
+            new DictionaryEntry("Eject", "AbilityBar.ButtonText", "射出"),
+            new DictionaryEntry("Quicken Mind", "AbilityBar.ButtonText", "クイックマインド"),
+            new DictionaryEntry("Spit Acid", "AbilityBar.ButtonText", "酸吐き"),
+            new DictionaryEntry("Beguile Creature", "AbilityBar.ButtonText", "クリーチャーを魅了"),
+            new DictionaryEntry("Burrow", "AbilityBar.ButtonText", "穴掘り"),
+            new DictionaryEntry("Excavate up", "AbilityBar.ButtonText", "上階へ掘削"),
+            new DictionaryEntry("Excavate down", "AbilityBar.ButtonText", "下階へ掘削"),
+            new DictionaryEntry("Clairvoyance", "AbilityBar.ButtonText", "千里眼"),
+            new DictionaryEntry("Confusion", "AbilityBar.ButtonText", "混乱"),
+            new DictionaryEntry("Chill", "AbilityBar.ButtonText", "冷却"),
+            new DictionaryEntry("Decarbonize", "AbilityBar.ButtonText", "脱炭素化"),
+            new DictionaryEntry("Emit Pulse", "AbilityBar.ButtonText", "パルス放出"),
+            new DictionaryEntry("Knit Frosty Webs", "AbilityBar.ButtonText", "氷結糸を編む"),
+            new DictionaryEntry("Ley Shift", "AbilityBar.ButtonText", "レイシフト"),
+            new DictionaryEntry("Ambient Light", "AbilityBar.ButtonText", "環境光"),
+            new DictionaryEntry("Spit Liquid", "AbilityBar.ButtonText", "液体吐き"),
+            new DictionaryEntry("End Metamorphosis", "AbilityBar.ButtonText", "変容を終える"),
+            new DictionaryEntry("Bask", "AbilityBar.ButtonText", "日光浴"),
+            new DictionaryEntry("Sting", "AbilityBar.ButtonText", "刺突"),
+            new DictionaryEntry("Spew", "AbilityBar.ButtonText", "吐き出す"),
+            new DictionaryEntry("Scintillate", "AbilityBar.ButtonText", "きらめく"),
+            new DictionaryEntry("Phase", "AbilityBar.ButtonText", "フェイズ化"),
+            new DictionaryEntry("Boost Agility", "AbilityBar.ButtonText", "敏捷強化"),
+            new DictionaryEntry("Boost Strength", "AbilityBar.ButtonText", "筋力強化"),
+            new DictionaryEntry("Boost Toughness", "AbilityBar.ButtonText", "頑健強化"),
+            new DictionaryEntry("Release Adrenaline", "AbilityBar.ButtonText", "アドレナリン放出"),
+            new DictionaryEntry("Spin Webs", "AbilityBar.ButtonText", "網を張る"),
+            new DictionaryEntry("Tap the Mass Mind", "AbilityBar.ButtonText", "集合精神に接続"),
+            new DictionaryEntry("Telekinesis", "AbilityBar.ButtonText", "念動力"),
+            new DictionaryEntry("Telekinetic Throwing", "AbilityBar.ButtonText", "念動投擲"),
+            new DictionaryEntry("Toast", "AbilityBar.ButtonText", "加熱"),
+            new DictionaryEntry("Tongue", "AbilityBar.ButtonText", "粘着舌"),
+            new DictionaryEntry("Waveform Dash", "AbilityBar.ButtonText", "ウェーブフォーム・ダッシュ"),
+            new DictionaryEntry("Serenity", "AbilityBar.ButtonText", "安らぎ"),
+            new DictionaryEntry("Wrecking Charge", "AbilityBar.ButtonText", "破壊的な突進"),
+        };
+
+        Assert.Multiple(() =>
+        {
+            foreach (var expectedEntry in expectedEntries)
+            {
+                Assert.That(
+                    entries,
+                    Does.Contain(expectedEntry),
+                    $"Fresh Player.log static_leaf evidence requires an exact AbilityBar.ButtonText base leaf for {expectedEntry.Key}.");
+            }
+        });
+    }
+
+    [Test]
     public void KnownRuntimeNoisyDuplicateKeys_AreExplicitlyAudited()
     {
         var dictionariesRoot = Path.Combine(localizationRoot, "Dictionaries");

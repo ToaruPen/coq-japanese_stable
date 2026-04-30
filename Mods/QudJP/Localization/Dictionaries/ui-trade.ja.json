@@ -54,6 +54,11 @@
       "text": "{0}は燃えていて、あなたと取引している暇がない。"
     },
     {
+      "key": "{0} has nothing to trade.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "{0}には取引するものがない"
+    },
+    {
       "key": "{0} will not trade with you until you pay {1} the {2} you owe {3}.",
       "context": "TradeUiPopupTranslationPatch",
       "text": "{0}は、あなたが{3}に借りている{2}を{1}に支払うまで取引してくれない。"
