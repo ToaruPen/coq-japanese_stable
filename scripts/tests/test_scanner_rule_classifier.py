@@ -94,6 +94,36 @@ LEAF_CASES = [
         matched_code='Popup.ShowFail("You are frozen solid!")',
         source_text=_source('Popup.ShowFail("You are frozen solid!");'),
     ),
+    Case(
+        id="leaf-popup-show-block-prompt",
+        family="Popup",
+        matched_code='Popup.ShowBlockPrompt("Press space to continue.", "[press space]")',
+        source_text=_source('Popup.ShowBlockPrompt("Press space to continue.", "[press space]");'),
+    ),
+    Case(
+        id="leaf-popup-ask-number",
+        family="Popup",
+        matched_code='Popup.AskNumber("Select how many?")',
+        source_text=_source('Popup.AskNumber("Select how many?");'),
+    ),
+    Case(
+        id="leaf-popup-show-space",
+        family="Popup",
+        matched_code='Popup.ShowSpace("Game saved!")',
+        source_text=_source('Popup.ShowSpace("Game saved!");'),
+    ),
+    Case(
+        id="leaf-popup-new-popup-message",
+        family="Popup",
+        matched_code='Popup.NewPopupMessageAsync("Build code copied to clipboard.")',
+        source_text=_source('Popup.NewPopupMessageAsync("Build code copied to clipboard.");'),
+    ),
+    Case(
+        id="leaf-popup-pick-game-object",
+        family="Popup",
+        matched_code='Popup.PickGameObject("Choose a follower", objects)',
+        source_text=_source('Popup.PickGameObject("Choose a follower", objects);'),
+    ),
 ]
 
 TEMPLATE_CASES = [
@@ -350,10 +380,51 @@ UNRESOLVED_CASES = [
         source_text=_source("Popup.Show(list2[num].ToString());"),
     ),
     Case(
+        id="unresolved-show-block-with-copy-composed",
+        family="Popup",
+        matched_code='Popup.ShowBlockWithCopy("\\n" + state + " mode", "[copy]", "title", "copy")',
+        source_text=_source('Popup.ShowBlockWithCopy("\\n" + state + " mode", "[copy]", "title", "copy");'),
+    ),
+    Case(
+        id="unresolved-render-block-composed",
+        family="Popup",
+        matched_code='Popup.RenderBlock("Press control to map " + DisplayText, "")',
+        source_text=_source('Popup.RenderBlock("Press control to map " + DisplayText, "");'),
+    ),
+    Case(
+        id="unresolved-new-popup-message-composed",
+        family="Popup",
+        matched_code='Popup.NewPopupMessageAsync("Manage Build: " + build.Name)',
+        source_text=_source('Popup.NewPopupMessageAsync("Manage Build: " + build.Name);'),
+    ),
+    Case(
         id="unresolved-int-game-state",
         family="AddPlayerMessage",
         matched_code='MessageQueue.AddPlayerMessage(The.Game.GetIntGameState("zoomnodes").ToString())',
         source_text=_source('MessageQueue.AddPlayerMessage(The.Game.GetIntGameState("zoomnodes").ToString());'),
+    ),
+]
+
+TUTORIAL_MANAGER_LEAF_CASES = [
+    Case(
+        id="tutorial-cell-popup-leaf",
+        family="TutorialManagerPopup",
+        matched_code='TutorialManager.ShowCellPopup(cell, "tutorial cell")',
+        source_text=_source('TutorialManager.ShowCellPopup(cell, "tutorial cell");'),
+    ),
+    Case(
+        id="tutorial-cid-popup-leaf",
+        family="TutorialManagerPopup",
+        matched_code='TutorialManager.ShowCIDPopupAsync("PopupMessage", "tutorial cid", "ne", "[~Accept] Continue")',
+        source_text=_source(
+            'TutorialManager.ShowCIDPopupAsync("PopupMessage", "tutorial cid", "ne", "[~Accept] Continue");'
+        ),
+    ),
+    Case(
+        id="tutorial-intermission-popup-leaf",
+        family="TutorialManagerPopup",
+        matched_code='TutorialManager.ShowIntermissionPopupAsync("tutorial intermission")',
+        source_text=_source('TutorialManager.ShowIntermissionPopupAsync("tutorial intermission");'),
     ),
 ]
 
@@ -426,6 +497,61 @@ def test_classifies_add_player_message_template_as_sink_review_not_owner_safe(tm
     assert site.destination_dictionary is None
     assert site.rejection_reason is FixedLeafRejectionReason.TEMPLATE
     assert site.needs_review is True
+
+
+@pytest.mark.parametrize(
+    ("case", "key"),
+    [
+        (TUTORIAL_MANAGER_LEAF_CASES[0], "tutorial cell"),
+        (TUTORIAL_MANAGER_LEAF_CASES[1], "tutorial cid"),
+        (TUTORIAL_MANAGER_LEAF_CASES[2], "tutorial intermission"),
+    ],
+    ids=lambda row: row.id if isinstance(row, Case) else str(row),
+)
+def test_classifies_tutorial_manager_popup_display_text_as_review_leaf(
+    tmp_path: Path,
+    case: Case,
+    key: str,
+) -> None:
+    """TutorialManager popup text args are leaves, but stay under review until ownership is proven."""
+    source_root, raw_hit = _make_raw_hit(tmp_path, case)
+
+    site = classify_raw_hit(raw_hit, source_root)
+
+    assert site is not None
+    assert site.type is SiteType.LEAF
+    assert site.confidence is Confidence.HIGH
+    assert site.key == key
+    assert site.source_route == "TutorialManagerPopup"
+    assert site.ownership_class is OwnershipClass.MID_PIPELINE_OWNED
+    assert site.destination_dictionary is None
+    assert site.rejection_reason is FixedLeafRejectionReason.NEEDS_REVIEW
+    assert site.needs_review is True
+
+
+def test_classifies_tutorial_manager_popup_composed_text_as_review_unresolved(tmp_path: Path) -> None:
+    """Composed TutorialManager popup text keeps the correct argument route and requires review/runtime proof."""
+    source_root, raw_hit = _make_raw_hit(
+        tmp_path,
+        Case(
+            id="tutorial-cid-popup-composed",
+            family="TutorialManagerPopup",
+            matched_code='TutorialManager.ShowCIDPopupAsync("PopupMessage", "Tutorial " + step.Name)',
+            source_text=_source('TutorialManager.ShowCIDPopupAsync("PopupMessage", "Tutorial " + step.Name);'),
+        ),
+    )
+
+    site = classify_raw_hit(raw_hit, source_root)
+
+    assert site is not None
+    assert site.type is SiteType.UNRESOLVED
+    assert site.confidence is Confidence.LOW
+    assert site.source_route == "TutorialManagerPopup"
+    assert site.ownership_class is OwnershipClass.SINK
+    assert site.destination_dictionary is None
+    assert site.rejection_reason is FixedLeafRejectionReason.UNRESOLVED
+    assert site.needs_review is True
+    assert site.needs_runtime is True
 
 
 @pytest.mark.parametrize("case", TEMPLATE_CASES, ids=lambda case: case.id)

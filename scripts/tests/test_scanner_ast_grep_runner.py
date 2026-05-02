@@ -48,16 +48,39 @@ class TestScanSourceTree:
 
     def test_configuration_matches_design_doc(self) -> None:
         """The configured scanner surface matches the design spec for Phase 1a."""
-        assert len(SINK_FAMILY_SPECS) == 11
-        assert sum(len(spec.patterns) for spec in SINK_FAMILY_SPECS) == 33
+        assert len(SINK_FAMILY_SPECS) == 12
+        assert sum(len(spec.patterns) for spec in SINK_FAMILY_SPECS) == 53
         assert len(OVERRIDE_PRODUCER_SPECS) == 5
+
+        popup_patterns = next(spec.patterns for spec in SINK_FAMILY_SPECS if spec.family == "Popup")
+        tutorial_popup_patterns = next(
+            spec.patterns for spec in SINK_FAMILY_SPECS if spec.family == "TutorialManagerPopup"
+        )
+        assert {
+            "Popup.ShowBlockPrompt($$$)",
+            "Popup.ShowBlockWithCopy($$$)",
+            "Popup.AskNumber($$$)",
+            "Popup.AskNumberAsync($$$)",
+            "Popup.ShowSpace($$$)",
+            "Popup.NewPopupMessageAsync($$$)",
+            "Popup.WaitNewPopupMessage($$$)",
+            "Popup.PickOptionAsync($$$)",
+            "Popup.PickGameObject($$$)",
+            "Popup.ShowColorPicker($$$)",
+            "Popup.RenderBlock($$$)",
+        }.issubset(popup_patterns)
+        assert tutorial_popup_patterns == (
+            "TutorialManager.ShowCellPopup($$$)",
+            "TutorialManager.ShowCIDPopupAsync($$$)",
+            "TutorialManager.ShowIntermissionPopupAsync($$$)",
+        )
 
     def test_scan_source_tree_extracts_sink_hits_and_override_hits(self, tmp_path: Path) -> None:
         """The scanner finds sink families, deduplicates source files, and writes JSONL cache files."""
         result = scan_source_tree(FIXTURE_ROOT, cache_dir=tmp_path)
 
         assert result.source_inventory.included_file_count == 5
-        assert len(result.raw_hits) == 34
+        assert len(result.raw_hits) == 54
         assert len(result.override_hits) == 5
 
         sink_counts = Counter(hit.family for hit in result.raw_hits)
@@ -70,9 +93,10 @@ class TestScanSourceTree:
             "GetShort/LongDescription": 2,
             "HistoricStringExpander": 1,
             "JournalAPI": 3,
-            "Popup": 10,
+            "Popup": 27,
             "ReplaceBuilder": 1,
             "SetText": 1,
+            "TutorialManagerPopup": 3,
         }
 
         override_counts = Counter(hit.family for hit in result.override_hits)

@@ -130,9 +130,40 @@ def classify_raw_hit(raw_hit: RawHit, source_root: Path) -> InventorySite | None
         )
     elif raw_hit.family == "GetDisplayName":
         site = _build_site(raw_hit, SiteType.BUILDER, Confidence.HIGH)
+    elif raw_hit.family == "TutorialManagerPopup":
+        site = _classify_tutorial_manager_popup(raw_hit)
     else:
         site = _classify_generic_sink(raw_hit, source_root)
     return site
+
+
+def _classify_tutorial_manager_popup(raw_hit: RawHit) -> InventorySite:
+    """Classify TutorialManager popup calls whose displayed text is not always arg 0."""
+    method_name = _invocation_method_name(raw_hit.matched_code)
+    arguments = _top_level_arguments(raw_hit.matched_code)
+    text_index_by_method = {
+        "ShowCellPopup": 1,
+        "ShowCIDPopupAsync": 1,
+        "ShowIntermissionPopupAsync": 0,
+    }
+    text_index = text_index_by_method.get(method_name)
+    if text_index is None or len(arguments) <= text_index:
+        return _unresolved_review_site(raw_hit)
+
+    text_argument = arguments[text_index]
+    review_fields = {"needs_review": True}
+    if _is_string_literal(text_argument):
+        return _build_site(
+            raw_hit,
+            SiteType.LEAF,
+            Confidence.HIGH,
+            {**review_fields, "key": _unquote_string(text_argument)},
+        )
+    if _contains_template_syntax(text_argument):
+        return _build_site(raw_hit, SiteType.TEMPLATE, Confidence.HIGH, review_fields)
+    if ".GetDisplayName(" in text_argument:
+        return _build_site(raw_hit, SiteType.BUILDER, Confidence.HIGH, review_fields)
+    return _unresolved_review_site(raw_hit)
 
 
 def _classify_generic_sink(raw_hit: RawHit, source_root: Path) -> InventorySite:
@@ -306,6 +337,16 @@ def _unresolved_site(raw_hit: RawHit) -> InventorySite:
     )
 
 
+def _unresolved_review_site(raw_hit: RawHit) -> InventorySite:
+    """Build an unresolved site for routes that need manual review even before runtime proof."""
+    return _build_site(
+        raw_hit,
+        SiteType.UNRESOLVED,
+        Confidence.LOW,
+        {"needs_review": True, "needs_runtime": True},
+    )
+
+
 def _first_argument(code: str) -> str | None:
     """Extract the first top-level call argument from a matched call site."""
     arguments = _top_level_arguments(code)
@@ -358,6 +399,15 @@ def _split_top_level(text: str) -> list[str]:  # noqa: C901
     if tail:
         arguments.append(tail)
     return arguments
+
+
+def _invocation_method_name(code: str) -> str:
+    """Extract the terminal method name from a simple invocation expression."""
+    open_paren = code.find("(")
+    if open_paren < 0:
+        return ""
+    target = code[:open_paren].rstrip()
+    return target.rsplit(".", maxsplit=1)[-1]
 
 
 def _matching_paren_index(code: str, open_paren: int) -> int:

@@ -18,6 +18,7 @@ from scripts.legacies.scanner.inventory import (
     SiteStatus,
     SiteType,
     SourceFileInventory,
+    default_destination_dictionary_for_route,
     read_inventory_draft_json,
     read_raw_hits_jsonl,
     write_inventory_draft_json,
@@ -171,6 +172,21 @@ class TestInventoryDraftJson:
 class TestInventorySite:
     """Tests for InventorySite helpers."""
 
+    def test_default_destination_keeps_popup_route_scoped(self) -> None:
+        """Popup routes use a scoped dictionary even when only sink provenance is known."""
+        assert (
+            default_destination_dictionary_for_route(source_route="Popup")
+            is DestinationDictionary.SCOPED
+        )
+        assert (
+            default_destination_dictionary_for_route(source_route=None, sink="Popup")
+            is DestinationDictionary.SCOPED
+        )
+        assert (
+            default_destination_dictionary_for_route(source_route="SetText", sink="SetText")
+            is DestinationDictionary.GLOBAL_FLAT
+        )
+
     def test_is_proven_fixed_leaf_requires_route_and_ownership_provenance(self) -> None:
         """A proven fixed-leaf candidate must keep both source-route and ownership provenance."""
         base_fields = {
@@ -208,3 +224,33 @@ class TestInventorySite:
         assert missing_route.is_proven_fixed_leaf is False
         assert missing_ownership.is_proven_fixed_leaf is False
         assert valid_site.is_proven_fixed_leaf is True
+
+    def test_popup_scoped_destination_can_hold_owner_proof_review(self) -> None:
+        """Popup can keep scoped destination metadata while owner proof remains on hold."""
+        site = InventorySite(
+            id="popup-hold",
+            file="Qud.UI/TestScreen.cs",
+            line=10,
+            column=5,
+            sink="Popup",
+            source_route="Popup",
+            type=SiteType.LEAF,
+            confidence=Confidence.HIGH,
+            pattern='Popup.Show("Leave")',
+            key="Leave",
+            ownership_class=None,
+            destination_dictionary=DestinationDictionary.SCOPED,
+            rejection_reason=FixedLeafRejectionReason.NEEDS_REVIEW,
+            needs_review=True,
+            status=SiteStatus.NEEDS_REVIEW,
+        )
+
+        payload = site.to_dict()
+
+        assert site.is_proven_fixed_leaf is False
+        assert payload["source_route"] == "Popup"
+        assert payload["destination_dictionary"] == "scoped"
+        assert payload["ownership_class"] is None
+        assert payload["rejection_reason"] == "needs_review"
+        assert payload["needs_review"] is True
+        assert InventorySite.from_dict(payload) == site

@@ -15,12 +15,33 @@ namespace Demo
             Popup.Show("popup-show");
             Popup.ShowFail("popup-show-fail");
             Popup.ShowBlock("popup-show-block");
+            Popup.ShowBlockPrompt("popup-show-block-prompt", "[press space]");
+            Popup.ShowBlockWithCopy("popup-show-block-copy", "[copy]", "title", "copy");
             Popup.ShowYesNo("popup-yes-no");
+            Popup.ShowYesNoAsync("popup-yes-no-async");
             Popup.ShowYesNoCancel("popup-yes-no-cancel");
+            Popup.ShowYesNoCancelAsync("popup-yes-no-cancel-async");
             Popup.PickOption("popup-pick-option");
+            Popup.PickOptionAsync("popup-pick-option-async");
+            Popup.PickSeveral("popup-pick-several");
+            Popup.PickGameObject("popup-pick-game-object");
             Popup.AskString("popup-ask-string");
+            Popup.AskStringAsync("popup-ask-string-async");
+            Popup.AskNumber("popup-ask-number");
+            Popup.AskNumberAsync("popup-ask-number-async");
+            Popup.RenderBlock("popup-render-block", "[press space]");
+            Popup.ShowSpace("popup-show-space");
+            Popup.ShowColorPicker("popup-show-color-picker");
             Popup.ShowAsync("popup-show-async");
+            Popup.NewPopupMessageAsync("popup-new-popup-message-async");
+            Popup.WaitNewPopupMessage("popup-wait-new-popup-message");
             Popup.WarnYesNo("popup-warn-yes-no");
+            Popup.WarnYesNoCancel("popup-warn-yes-no-cancel");
+            Popup.ShowConversation("popup-show-conversation");
+
+            TutorialManager.ShowCellPopup(null, "tutorial-cell-popup");
+            TutorialManager.ShowCIDPopupAsync("PopupMessage", "tutorial-cid-popup", "ne", "[~Accept] Continue");
+            TutorialManager.ShowIntermissionPopupAsync("tutorial-intermission-popup");
 
             obj.DidX("didx-qualified");
             DidX("didx-unqualified");
@@ -93,7 +114,19 @@ namespace Demo
         {
         }
 
+        public static void ShowBlockPrompt(string value, string prompt)
+        {
+        }
+
+        public static void ShowBlockWithCopy(string value, string prompt, string title, string copy)
+        {
+        }
+
         public static void ShowYesNo(string value)
+        {
+        }
+
+        public static void ShowYesNoAsync(string value)
         {
         }
 
@@ -101,7 +134,23 @@ namespace Demo
         {
         }
 
+        public static void ShowYesNoCancelAsync(string value)
+        {
+        }
+
         public static void PickOption(string value)
+        {
+        }
+
+        public static void PickOptionAsync(string value)
+        {
+        }
+
+        public static void PickSeveral(string value)
+        {
+        }
+
+        public static void PickGameObject(string value)
         {
         }
 
@@ -109,11 +158,66 @@ namespace Demo
         {
         }
 
+        public static void AskStringAsync(string value)
+        {
+        }
+
+        public static void AskNumber(string value)
+        {
+        }
+
+        public static void AskNumberAsync(string value)
+        {
+        }
+
+        public static void RenderBlock(string value, string prompt)
+        {
+        }
+
+        public static void ShowSpace(string value)
+        {
+        }
+
+        public static void ShowColorPicker(string value)
+        {
+        }
+
         public static void ShowAsync(string value)
         {
         }
 
+        public static void NewPopupMessageAsync(string value)
+        {
+        }
+
+        public static void WaitNewPopupMessage(string value)
+        {
+        }
+
         public static void WarnYesNo(string value)
+        {
+        }
+
+        public static void WarnYesNoCancel(string value)
+        {
+        }
+
+        public static void ShowConversation(string value)
+        {
+        }
+    }
+
+    public static class TutorialManager
+    {
+        public static void ShowCellPopup(object cell, string value)
+        {
+        }
+
+        public static void ShowCIDPopupAsync(string cid, string value, string directionHint, string buttonText)
+        {
+        }
+
+        public static void ShowIntermissionPopupAsync(string value)
         {
         }
     }
