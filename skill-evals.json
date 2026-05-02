@@ -1,0 +1,85 @@
+{
+  "$schema": "dotfiles.skill-evals.v1",
+  "skills": {
+    "ast-grep-practice": {
+      "skill_path": "home/.codex/skills/ast-grep-practice",
+      "scenarios": [
+        {
+          "id": "median-qudjp-structural-guardrail",
+          "type": "median",
+          "prompt": "A QudJP task repeatedly catches reviewers adding sink-wide dictionary fixes for dynamic text. Propose a deterministic ast-grep guardrail workflow for catching a narrow source-code shape before it becomes prompt-only policy.",
+          "critical": [
+            "The response starts with a failing ast-grep rule test before proposing the rule.",
+            "The response keeps the rule narrow and tied to a structural source-code pattern."
+          ],
+          "expected": [
+            "The response names `sgconfig.yml`, `rules/`, and `rule-tests/` as the project layout.",
+            "The response includes `ast-grep test --skip-snapshot-tests` and a real-project scan command.",
+            "The response leaves standard compiler, Ruff, and XML validators in their existing roles."
+          ],
+          "forbidden": [
+            "Do not replace existing C#, Python, or localization validators with ast-grep.",
+            "Do not add a broad policy-only AGENTS rule when a structural rule can enforce the lesson."
+          ]
+        },
+        {
+          "id": "edge-not-structural",
+          "type": "edge",
+          "prompt": "The user asks to use ast-grep for a QudJP translation quality rule that depends on natural-language nuance in Japanese text, not code structure. Decide how to route the guardrail.",
+          "critical": [
+            "The response declines to force ast-grep onto a non-structural language-quality rule.",
+            "The response proposes a better deterministic target such as an existing script, validator, or test."
+          ],
+          "expected": [
+            "The response explains what evidence would make ast-grep appropriate later.",
+            "The response still offers a bounded next verification step."
+          ],
+          "forbidden": [
+            "Do not create a fake AST rule for prose semantics.",
+            "Do not leave the user with only a prompt reminder."
+          ]
+        }
+      ]
+    },
+    "retrospective-codify": {
+      "skill_path": "home/.codex/skills/retrospective-codify",
+      "scenarios": [
+        {
+          "id": "median-qudjp-repeated-route-mistake",
+          "type": "median",
+          "prompt": "After a QudJP task, the same mistake appeared again: a sink-visible untranslated string was fixed by adding a dictionary entry before tracing owner route evidence. Produce a retrospective and codification proposal.",
+          "critical": [
+            "The response captures initial failure, final solution, and bridging insight.",
+            "The response deduplicates against existing QudJP rules before proposing a new codification target."
+          ],
+          "expected": [
+            "The response prefers deterministic codification when possible.",
+            "The response classifies whether the lesson belongs in validator, script, ast-grep, skill, AGENTS, docs, or test.",
+            "The response does not apply changes without approval unless the user directly requested implementation."
+          ],
+          "forbidden": [
+            "Do not codify a one-off task detail as global policy.",
+            "Do not skip evidence references when claiming the lesson is already covered."
+          ]
+        },
+        {
+          "id": "edge-already-covered",
+          "type": "edge",
+          "prompt": "A contributor proposes adding a new global skill for 'trace producer ownership first' after a QudJP review. Existing docs may already cover the route ownership rule. Evaluate whether to codify anything new.",
+          "critical": [
+            "The response searches or names the existing overlap before proposing adoption.",
+            "The response says no new codification is needed if the lesson is fully covered."
+          ],
+          "expected": [
+            "The response may keep a retrospective record even when no new rule is adopted.",
+            "The response identifies a narrower follow-up if existing coverage is incomplete."
+          ],
+          "forbidden": [
+            "Do not create duplicate skill guidance.",
+            "Do not treat every review finding as a reusable lesson."
+          ]
+        }
+      ]
+    }
+  }
+}

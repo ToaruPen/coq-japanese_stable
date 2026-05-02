@@ -20,6 +20,11 @@ QudJP is the Japanese localization mod for Caves of Qud `2.0.4`. The repo contai
 ## How
 
 - If a stale note conflicts with tests or fresh runtime evidence, follow tests first.
+- For decompiled C# exploration, use structural search with `ast-grep` before
+  or alongside `rg` when call shape, argument structure, producer/sink routes,
+  wrappers, assignments, or attributes matter. Prefer `just sg-cs
+  'Popup.Show($$$ARGS)'` for common C# searches; plain `rg` is still fine for
+  literal text, symbol names, and file discovery.
 - Core commands:
 
 ```bash

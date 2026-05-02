@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "dotfiles.skill-eval-result.v1",
+  "title": "Skill Eval Result",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "run_id",
+    "date",
+    "skill",
+    "scenario",
+    "scenario_type",
+    "model",
+    "status",
+    "requirements",
+    "unclear_points",
+    "discretionary_assumptions",
+    "retries",
+    "proposed_skill_changes"
+  ],
+  "properties": {
+    "run_id": { "type": "string", "minLength": 1 },
+    "date": { "type": "string", "minLength": 1 },
+    "skill": { "type": "string", "minLength": 1 },
+    "scenario": { "type": "string", "minLength": 1 },
+    "scenario_type": { "enum": ["median", "edge", "holdout"] },
+    "model": { "type": "string", "minLength": 1 },
+    "executor": { "type": "string" },
+    "status": { "enum": ["pass", "partial", "fail"] },
+    "duration_seconds": { "type": "number", "minimum": 0 },
+    "tool_count": { "type": "integer", "minimum": 0 },
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "status", "evidence"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["pass", "partial", "fail"] },
+          "evidence": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": true
+      }
+    },
+    "unclear_points": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "discretionary_assumptions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "retries": { "type": "integer", "minimum": 0 },
+    "proposed_skill_changes": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}
