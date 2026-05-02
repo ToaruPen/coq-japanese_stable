@@ -561,6 +561,76 @@ public sealed class TargetMethodResolutionTests
         Assert.That(actualSignatures, Is.EquivalentTo(expectedSignatures));
     }
 
+    [TestCase(typeof(PopupTranslationPatch), new[]
+    {
+        "XRL.UI.Popup|ShowBlock|ConsoleLib.Console.Keys|System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
+        "XRL.UI.Popup|ShowConversation|System.Int32|System.String|ConsoleLib.Console.IRenderable|System.String|System.Collections.Generic.List`1[[System.String]]|System.Boolean|System.Boolean|System.Boolean",
+    })]
+    [TestCase(typeof(PopupShowTranslationPatch), new[]
+    {
+        "XRL.UI.Popup|Show|System.Void|System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
+        "XRL.UI.Popup|ShowFail|System.Void|System.String|System.Boolean|System.Boolean|System.Boolean",
+        "XRL.UI.Popup|ShowYesNo|XRL.UI.DialogResult|System.String|System.String|System.Boolean|XRL.UI.DialogResult",
+        "XRL.UI.Popup|ShowYesNoAsync|System.Threading.Tasks.Task`1[[XRL.UI.DialogResult]]|System.String",
+        "XRL.UI.Popup|ShowYesNoCancel|XRL.UI.DialogResult|System.String|System.String|System.Boolean|XRL.UI.DialogResult",
+        "XRL.UI.Popup|ShowYesNoCancelAsync|System.Threading.Tasks.Task`1[[XRL.UI.DialogResult]]|System.String",
+    })]
+    [TestCase(typeof(TradeUiPopupTranslationPatch), new[]
+    {
+        "XRL.UI.Popup|Show|System.Void|System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
+        "XRL.UI.Popup|ShowYesNo|XRL.UI.DialogResult|System.String|System.String|System.Boolean|XRL.UI.DialogResult",
+    })]
+    [TestCase(typeof(PopupAskStringTranslationPatch), new[]
+    {
+        "XRL.UI.Popup|AskString|System.String|System.String|System.String|System.String|System.String|System.String|System.Int32|System.Int32|System.Boolean|System.Boolean|System.Nullable`1[[System.Boolean]]",
+        "XRL.UI.Popup|AskStringAsync|System.Threading.Tasks.Task`1[[System.String]]|System.String|System.String|System.Int32|System.Int32|System.String|System.Boolean|System.Boolean|System.Nullable`1[[System.Boolean]]|System.Boolean|System.String",
+    })]
+    [TestCase(typeof(PopupAskNumberTranslationPatch), new[]
+    {
+        "XRL.UI.Popup|AskNumber|System.Nullable`1[[System.Int32]]|System.String|System.String|System.String|System.Int32|System.Int32|System.Int32",
+        "XRL.UI.Popup|AskNumberAsync|System.Threading.Tasks.Task`1[[System.Nullable`1[[System.Int32]]]]|System.String|System.Int32|System.Int32|System.Int32|System.String|System.Boolean",
+    })]
+    public void PopupTargetMethods_ResolveExpectedNamedNonObsoleteOverloads(Type patchType, string[] expectedSignatures)
+    {
+        var targetMethodsMethod = patchType.GetMethod("TargetMethods", BindingFlags.NonPublic | BindingFlags.Static);
+        Assert.That(targetMethodsMethod, Is.Not.Null, $"TargetMethods not found for {patchType.FullName}");
+
+        var result = targetMethodsMethod!.Invoke(null, null) as System.Collections.IEnumerable;
+        Assert.That(result, Is.Not.Null, $"TargetMethods returned null for {patchType.FullName}");
+
+        var actualSignatures = new List<string>();
+        foreach (var item in result!)
+        {
+            if (item is not MethodInfo methodInfo)
+            {
+                continue;
+            }
+
+            Assert.That(
+                methodInfo.GetCustomAttribute<ObsoleteAttribute>(),
+                Is.Null,
+                $"{patchType.FullName} resolved obsolete popup method {methodInfo.DeclaringType?.FullName}.{methodInfo.Name}.");
+
+            actualSignatures.Add(FullMethodSignature(methodInfo));
+        }
+
+        Assert.That(actualSignatures, Is.EquivalentTo(expectedSignatures));
+    }
+
+    private static string FullMethodSignature(MethodInfo methodInfo)
+    {
+        return string.Join(
+            "|",
+            new[]
+            {
+                methodInfo.DeclaringType?.FullName ?? string.Empty,
+                methodInfo.Name,
+                NormalizeTypeName(methodInfo.ReturnType.FullName),
+            }.Concat(Array.ConvertAll(
+                methodInfo.GetParameters(),
+                static parameter => NormalizeTypeName(parameter.ParameterType.FullName))));
+    }
+
     [Test]
     public void ConversationDisplayTextPatch_TargetMethods_ResolveBaseAndChoice()
     {
