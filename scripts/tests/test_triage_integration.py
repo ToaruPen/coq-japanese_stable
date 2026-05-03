@@ -347,9 +347,12 @@ def test_cli_classifies_preserved_english_separately(tmp_path: Path) -> None:
     assert result == 0
 
     data = json.loads(out.read_text(encoding="utf-8"))
-    assert data["summary"]["preserved_english"] == 1
-    assert data["summary"]["logic_required"] == 1
-    assert [entry["text"] for entry in data["by_classification"]["preserved_english"]] == ["STR"]
+    assert data["summary"]["preserved_english"] == 2
+    assert data["summary"]["logic_required"] == 0
+    assert [entry["text"] for entry in data["by_classification"]["preserved_english"]] == [
+        "STR",
+        "123/200 lbs.",
+    ]
 
 
 def test_module_cli_classify_returns_error_when_output_parent_cannot_be_created(tmp_path: Path) -> None:
