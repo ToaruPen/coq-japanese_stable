@@ -59,6 +59,8 @@ public static class CookingEffectTranslationPatch
             ("XRL.World.Effects.CookingDomainHP_IncreaseHP_ProceduralCookingTriggeredAction", "GetDescription"),
             ("XRL.World.Effects.CookingDomainHP_IncreaseHP_ProceduralCookingTriggeredAction", "GetTemplatedDescription"),
             ("XRL.World.Effects.CookingDomainHP_IncreaseHP_ProceduralCookingTriggeredActionEffect", "GetDetails"),
+            ("XRL.World.Effects.CookingDomainHP_UnitHP", "GetDescription"),
+            ("XRL.World.Effects.CookingDomainHP_UnitHP", "GetTemplatedDescription"),
         })
         {
             var type = AccessTools.TypeByName(target.typeName);

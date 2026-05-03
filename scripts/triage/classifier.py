@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 _TRAILING_WHITESPACE = re.compile(r"\s+$")
 _LEADING_WHITESPACE = re.compile(r"^\s+(?!\s*\{\{)")
 _JAPANESE_CHARS = re.compile(r"[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]")
+_ASCII_LETTERS = re.compile(r"[A-Za-z]")
 _EMBEDDED_NUMBER = re.compile(r"(?<!\.)\b-?\d+\b(?!\.)")
 _STAT_LINE = re.compile(r"\d+/\d+")
 _DRAM_PATTERN = re.compile(r"\d+\s+drams?\s+of\s+", re.IGNORECASE)
@@ -55,6 +56,7 @@ def classify(entry: LogEntry) -> TriageResult:
         _classify_sink_observe,
         _classify_final_output_probe,
         _classify_fragment,
+        _classify_lbs_only_english_text,
         _classify_japanese_text,
         _classify_no_pattern,
         _classify_slot_text,
@@ -125,6 +127,23 @@ def _classify_fragment(entry: LogEntry) -> TriageResult | None:
             reason="Fragment: leading whitespace indicates string concatenation suffix",
         )
     return None
+
+
+def _classify_lbs_only_english_text(entry: LogEntry) -> TriageResult | None:
+    """Keep the compact lbs. unit when it is the only remaining English token."""
+    if "lbs." not in entry.text:
+        return None
+
+    without_lbs = entry.text.replace("lbs.", "")
+    if _ASCII_LETTERS.search(without_lbs):
+        return None
+
+    return TriageResult(
+        entry=entry,
+        classification=TriageClassification.PRESERVED_ENGLISH,
+        reason="Compact weight unit 'lbs.' is intentionally preserved in English",
+        slot_evidence=["lbs."],
+    )
 
 
 def _classify_japanese_text(entry: LogEntry) -> TriageResult | None:

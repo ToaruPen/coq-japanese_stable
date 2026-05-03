@@ -77,10 +77,11 @@ public sealed partial class Issue201StatusScreensBatch2Tests
             {
                 Assert.That(categoryTarget.categoryLabel.Text, Is.EqualTo("武器"));
                 Assert.That(categoryTarget.categoryWeightText.Text, Does.Contain("3 個"));
-                Assert.That(categoryTarget.categoryWeightText.Text, Does.Contain("17 ポンド"));
+                Assert.That(categoryTarget.categoryWeightText.Text, Does.Contain("17 lbs."));
                 Assert.That(categoryTarget.categoryExpandLabel.Text, Is.EqualTo("[-]"));
                 Assert.That(itemTarget.text.Text, Is.EqualTo("レーザーライフル"));
-                Assert.That(itemTarget.itemWeightText.Text, Is.EqualTo("[7 ポンド]"));
+                Assert.That(itemTarget.itemWeightText.Text, Is.EqualTo("[7 lbs.]"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("lbs."), Is.EqualTo(0));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(InventoryLineTranslationPatch),

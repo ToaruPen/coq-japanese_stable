@@ -111,6 +111,24 @@ public sealed class DynamicTextObservabilityTests
                 "; route=DoesVerbRoute; family=verb; template_id=<missing>; payload_mode=full; payload_excerpt=You catch fire\\; route\\=Spoofed\\; family\\=spoof\\=value; payload_sha256=<missing>"));
     }
 
+    [Test]
+    public void RecordTransform_ExposesTranslatedMarkupSemanticDrift()
+    {
+        var output = TestTraceHelper.CaptureTrace(() =>
+            DynamicTextObservability.RecordTransform(
+                "JournalPatternTranslator",
+                "journal-pattern",
+                "You note the location of a lair.",
+                "ジャーナルの「場所 > 棲み処}}」欄に記録した。"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(output, Does.Contain("DynamicTextProbe/v1"));
+            Assert.That(output, Does.Contain("; markup_semantic_status=drift;"));
+            Assert.That(output, Does.Contain("; markup_semantic_flags=unmatched_qud_close"));
+        });
+    }
+
     private static string ComputeSha256Hex(string value)
     {
         var bytes = System.Text.Encoding.UTF8.GetBytes(value);

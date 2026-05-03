@@ -128,6 +128,90 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_RegistersRuntimeCompletedLabelsToSuppressFlatTranslatorMisses()
+    {
+        WriteDictionary(
+            ("Sprint", "スプリント"),
+            ("Make Camp", "野営"),
+            ("[disabled]", "[無効]"),
+            ("on", "オン"),
+            ("off", "オフ"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyAbilityBarButtonTextTarget), nameof(DummyAbilityBarButtonTextTarget.Update)),
+                postfix: new HarmonyMethod(RequirePatchMethod("Postfix", typeof(object))));
+
+            var target = new DummyAbilityBarButtonTextTarget();
+            var sprint = new DummyAbilityBarButton("Sprint [off] <1>");
+            var camp = new DummyAbilityBarButton("Make Camp <2>");
+            target.AbilityButtons.Add(sprint);
+            target.AbilityButtons.Add(camp);
+
+            target.Update();
+
+            var rawSprint = Translator.Translate("Sprint [off] <1>");
+            var translatedSprint = Translator.Translate("スプリント [オフ] <1>");
+            var rawCamp = Translator.Translate("Make Camp <2>");
+            var translatedCamp = Translator.Translate("野営 <2>");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(sprint.Text.text, Is.EqualTo("スプリント [オフ] <1>"));
+                Assert.That(camp.Text.text, Is.EqualTo("野営 <2>"));
+                Assert.That(rawSprint, Is.EqualTo("スプリント [オフ] <1>"));
+                Assert.That(translatedSprint, Is.EqualTo("スプリント [オフ] <1>"));
+                Assert.That(rawCamp, Is.EqualTo("野営 <2>"));
+                Assert.That(translatedCamp, Is.EqualTo("野営 <2>"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("Sprint [off] <1>"), Is.EqualTo(0));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("スプリント [オフ] <1>"), Is.EqualTo(0));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("Make Camp <2>"), Is.EqualTo(0));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("野営 <2>"), Is.EqualTo(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_DoesNotLogMissingKeysForUnregisteredSuffixTokens()
+    {
+        WriteDictionary(("Sprint", "スプリント"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyAbilityBarButtonTextTarget), nameof(DummyAbilityBarButtonTextTarget.Update)),
+                postfix: new HarmonyMethod(RequirePatchMethod("Postfix", typeof(object))));
+
+            var target = new DummyAbilityBarButtonTextTarget();
+            var sprint = new DummyAbilityBarButton("Sprint [off] <1>");
+            target.AbilityButtons.Add(sprint);
+
+            target.Update();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(sprint.Text.text, Is.EqualTo("スプリント [off] <1>"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("[disabled]"), Is.EqualTo(0));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("on"), Is.EqualTo(0));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("off"), Is.EqualTo(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Postfix_LeavesDynamicAbilityButtonTextEnglish_WhenBaseLeafIsMissing()
     {
         WriteDictionary(("Joppa", "ジョッパ"));

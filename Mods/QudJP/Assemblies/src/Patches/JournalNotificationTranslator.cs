@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace QudJP.Patches;
 
@@ -32,7 +33,7 @@ internal static class JournalNotificationTranslator
             return false;
         }
 
-        translated = journalTranslated;
+        translated = RemoveUnmatchedSectionPathCloseIfNeeded(stripped, journalTranslated);
         DynamicTextObservability.RecordTransform(route, family, source, translated);
         return true;
     }
@@ -99,6 +100,51 @@ internal static class JournalNotificationTranslator
             sourceSectionStart,
             stripped.Length - sourceSectionStart - JournalSectionSuffix.Length);
         return sourceSectionPath.Length > 0;
+    }
+
+    private static bool TryGetNoteLocationSectionPath(string stripped, out string sourceSectionPath)
+    {
+        sourceSectionPath = string.Empty;
+        if (!stripped.StartsWith(NoteLocationPrefix, StringComparison.Ordinal)
+            || !stripped.EndsWith(JournalSectionSuffix, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        var sectionEnd = stripped.Length - JournalSectionSuffix.Length;
+        var separator = " in the ";
+        var separatorIndex = stripped.LastIndexOf(separator, sectionEnd - 1, sectionEnd, StringComparison.Ordinal);
+        if (separatorIndex < 0)
+        {
+            return false;
+        }
+
+        var sectionStart = separatorIndex + separator.Length;
+        sourceSectionPath = stripped.Substring(sectionStart, sectionEnd - sectionStart);
+        return sourceSectionPath.Length > 0;
+    }
+
+    private static string RemoveUnmatchedSectionPathCloseIfNeeded(string stripped, string translated)
+    {
+        if (!TryGetNoteLocationSectionPath(stripped, out var sourceSectionPath))
+        {
+            return translated;
+        }
+
+        var translatedSectionPath = TranslateJournalSectionPath(sourceSectionPath);
+        if (translatedSectionPath.Length == 0)
+        {
+            return translated;
+        }
+
+        var extraClose = translatedSectionPath + "}}";
+        var index = translated.IndexOf(extraClose, StringComparison.Ordinal);
+        if (index < 0 || translated.IndexOf(extraClose, index + extraClose.Length, StringComparison.Ordinal) >= 0)
+        {
+            return translated;
+        }
+
+        return translated.Remove(index + translatedSectionPath.Length, 2);
     }
 
     private static string RestoreSectionPathBoundaryWrappers(
@@ -187,6 +233,19 @@ internal static class JournalNotificationTranslator
         if (string.Equals(source, SultanHistoriesSource, StringComparison.Ordinal))
         {
             return SultanHistoriesTranslated;
+        }
+
+        try
+        {
+            if (StringHelpers.TryGetTranslationExactOrLowerAscii(source, out var translated)
+                && !string.Equals(source, translated, StringComparison.Ordinal))
+            {
+                return translated;
+            }
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceWarning("QudJP: JournalNotificationTranslator could not translate journal path segment '{0}': {1}", source, ex.Message);
         }
 
         return source;

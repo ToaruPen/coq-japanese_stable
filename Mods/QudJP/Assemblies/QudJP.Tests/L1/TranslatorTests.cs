@@ -227,6 +227,26 @@ public sealed class TranslatorTests
     }
 
     [Test]
+    public void Translate_UsesRuntimeRegisteredTranslation_WithoutMissingKeyNoise()
+    {
+        WriteDictionary("ui-test.ja.json", "Hello", "こんにちは");
+
+        Translator.RegisterRuntimeTranslationForOwnerRoute("Sprint [off] <1>", "スプリント [オフ] <1>");
+        Translator.RegisterRuntimeTranslationForOwnerRoute("スプリント [オフ] <1>", "スプリント [オフ] <1>");
+
+        var rawTranslated = Translator.Translate("Sprint [off] <1>");
+        var alreadyTranslated = Translator.Translate("スプリント [オフ] <1>");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(rawTranslated, Is.EqualTo("スプリント [オフ] <1>"));
+            Assert.That(alreadyTranslated, Is.EqualTo("スプリント [オフ] <1>"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("Sprint [off] <1>"), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("スプリント [オフ] <1>"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public void Translate_MissingKeyLogging_IsThrottledToPowerOfTwoHits()
     {
         WriteDictionary("ui-test.ja.json", "Hello", "こんにちは");

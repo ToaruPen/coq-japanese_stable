@@ -541,6 +541,8 @@ public sealed class TargetMethodResolutionTests
         "",
         "",
         "",
+        "",
+        "",
     })]
     public void TargetMethods_ResolveExpectedOverloads(Type patchType, string[] expectedSignatures)
     {

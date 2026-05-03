@@ -93,6 +93,8 @@ public static class AbilityBarButtonTextTranslationPatch
 
             if (UITextSkinReflectionAccessor.SetCurrentText(textObject, translated, Context))
             {
+                Translator.RegisterRuntimeTranslationForOwnerRoute(current!, translated);
+                Translator.RegisterRuntimeTranslationForOwnerRoute(translated, translated);
                 DynamicTextObservability.RecordTransform(route, "AbilityBar.ButtonText", current!, translated);
             }
         }
@@ -210,8 +212,7 @@ public static class AbilityBarButtonTextTranslationPatch
         }
         else
         {
-            translated = StringHelpers.TranslateExactOrLowerAscii(stripped);
-            if (translated is null)
+            if (!StringHelpers.TryGetTranslationExactOrLowerAscii(stripped, out translated))
             {
                 translated = TranslateDisplayNameRoutePreservingColors(
                     source,
@@ -256,14 +257,12 @@ public static class AbilityBarButtonTextTranslationPatch
 
     private static bool TryTranslateAbilityBarBaseLeaf(string source, out string translated)
     {
-        var maybeTranslated = StringHelpers.TranslateExactOrLowerAscii(source);
-        if (maybeTranslated is null)
+        if (!StringHelpers.TryGetTranslationExactOrLowerAscii(source, out translated))
         {
             translated = source;
             return false;
         }
 
-        translated = maybeTranslated;
         return true;
     }
 
@@ -274,8 +273,7 @@ public static class AbilityBarButtonTextTranslationPatch
             return zone;
         }
 
-        var exact = StringHelpers.TranslateExactOrLowerAscii(zone);
-        if (exact is not null)
+        if (StringHelpers.TryGetTranslationExactOrLowerAscii(zone, out var exact))
         {
             return exact;
         }
@@ -305,8 +303,7 @@ public static class AbilityBarButtonTextTranslationPatch
 
     private static string ReplaceExactToken(string source, string token)
     {
-        var translated = StringHelpers.TranslateExactOrLowerAscii(token);
-        if (translated is null)
+        if (!StringHelpers.TryGetTranslationExactOrLowerAscii(token, out var translated))
         {
             return source;
         }

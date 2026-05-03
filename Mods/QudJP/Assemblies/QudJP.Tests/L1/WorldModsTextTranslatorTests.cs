@@ -131,6 +131,9 @@ public sealed class WorldModsTextTranslatorTests
     [TestCase(
         "Snail-Encrusted: This item is crawling with tiny snails and grants the wearer +250 reputation with mollusks.",
         "巻貝まみれ: 小さなカタツムリが這っており、装着者に軟体動物との評判+250を与える。")]
+    [TestCase(
+        "Offhand Attack Chance: 15%",
+        "オフハンド命中率: 15%")]
     public void TryTranslate_TranslatesDynamicWorldModsTemplates(string source, string expected)
     {
         WriteDynamicWorldModsDictionary();
@@ -354,6 +357,7 @@ public sealed class WorldModsTextTranslatorTests
             ("Freezing: When powered, this weapon deals additional cold damage on hit.", "冷却: 通電中、この武器は命中時に追加の冷気ダメージを与える。"),
             ("Freezing: When powered, this weapon deals an additional {0} cold damage on hit.", "冷却: 通電中、この武器は命中時に追加で{0}の冷気ダメージを与える。"),
             ("Feathered: This item grants the wearer {0} reputation with birds.", "羽飾り: 装着者に鳥類との評判{0}を与える。"),
+            ("Offhand Attack Chance: {0}%", "オフハンド命中率: {0}%"),
             ("Scaled: This item grants the wearer {0} reputation with unshelled reptiles.", "鱗状の: 装着者に甲無し爬虫類との評判{0}を与える。"),
             ("Snail-Encrusted: This item is crawling with tiny snails and grants the wearer {0} reputation with mollusks.", "巻貝まみれ: 小さなカタツムリが這っており、装着者に軟体動物との評判{0}を与える。"),
             ("Intelligence", "知力"));

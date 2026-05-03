@@ -10,6 +10,8 @@ namespace QudJP.Patches;
 [HarmonyPatch]
 public static class InventoryAndEquipmentStatusScreenTranslationPatch
 {
+    private const string WeightUnit = "lbs.";
+
     private static readonly Regex HotkeyTogglePattern =
         new Regex(@"^(?<hotkey>\{\{hotkey\|\[[^\]]+\]\}\})\s+(?<label>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -121,13 +123,12 @@ public static class InventoryAndEquipmentStatusScreenTranslationPatch
             return source;
         }
 
-        var translatedUnit = Translator.Translate("lbs.");
         var translated = string.Format(
             CultureInfo.InvariantCulture,
             "{{{{C|{0}{{{{K|/{1}}}}} {2} }}}}",
             match.Groups["current"].Value,
             match.Groups["max"].Value,
-            translatedUnit);
+            WeightUnit);
         if (!string.Equals(translated, source, StringComparison.Ordinal))
         {
             DynamicTextObservability.RecordTransform(route, "InventoryAndEquipment.WeightText", source, translated);

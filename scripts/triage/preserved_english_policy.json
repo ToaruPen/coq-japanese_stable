@@ -66,6 +66,17 @@
       ]
     },
     {
+      "id": "compact_weight_unit_lbs",
+      "category": "allowed_english_token",
+      "reason": "The compact weight unit lbs. is intentionally kept in English across UI and description routes.",
+      "texts": [
+        "lbs."
+      ],
+      "protected_tokens": [
+        "lbs."
+      ]
+    },
+    {
       "id": "trade_totals_compact_weight_unit",
       "category": "allowed_english_by_route",
       "reason": "Trade total labels intentionally keep the compact lbs. unit while translating drams separately.",

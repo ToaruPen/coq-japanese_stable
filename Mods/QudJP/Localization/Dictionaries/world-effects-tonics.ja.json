@@ -9,6 +9,11 @@
     },
     "entries": [
         {
+            "key": "This item is a tonic. Applying one tonic while under the effects of another may produce undesired results.",
+            "context": "XRL.World.Parts.TonicApplicator.Description",
+            "text": "このアイテムはトニックです。別のトニックの効果中にトニックを使用すると、望ましくない結果を招くことがあります。"
+        },
+        {
             "key": "{{blaze|blaze}} tonic",
             "context": "XRL.World.Effects.Blaze_Tonic.Description",
             "text": "{{blaze|ブレイズ}}トニック"

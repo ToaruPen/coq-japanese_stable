@@ -18,6 +18,8 @@ public sealed class CookingEffectFragmentTranslatorTests
     [TestCase("@they get +31% max HP for 1 hour.", "@they は1時間のあいだ最大HP+31%を得る。")]
     [TestCase("@they get +30-40% max HP for 1 hour.", "@they は1時間のあいだ最大HP+30-40%を得る。")]
     [TestCase("@they get +<color=yellow>31</color>% max HP for 1 hour.", "@they は1時間のあいだ最大HP+<color=yellow>31</color>%を得る。")]
+    [TestCase("+12% max HP", "最大HP+12%")]
+    [TestCase("+10-15% max HP", "最大HP+10-15%")]
     [TestCase("+<color=yellow>31</color>% max HP", "最大HP+<color=yellow>31</color>%")]
     [TestCase("+31% max HP", "最大HP+31%")]
     public void TryTranslate_TranslatesConfiguredFragments(string input, string expected)

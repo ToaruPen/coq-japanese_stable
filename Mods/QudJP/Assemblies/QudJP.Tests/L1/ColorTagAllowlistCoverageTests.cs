@@ -98,7 +98,7 @@ public sealed class ColorTagAllowlistCoverageTests
     private static readonly SortedDictionary<string, string> StripWithoutLocalRestoreAllowlist =
         new(StringComparer.Ordinal)
         {
-            ["Mods/QudJP/Assemblies/src/Observability/FinalOutputObservability.cs:116:RecordDirectMarker"] = "Observation-only final sink marker check.",
+            ["Mods/QudJP/Assemblies/src/Observability/FinalOutputObservability.cs:109:RecordDirectMarker"] = "Observation-only final sink marker check.",
             ["Mods/QudJP/Assemblies/src/Patches/AbilityBarAfterRenderTranslationPatch.cs:238:HasColorMarkup"] = "Predicate only; it compares stripped and original text.",
             ["Mods/QudJP/Assemblies/src/Patches/ActiveEffectTextTranslator.cs:69:TryTranslateTemplate"] = "Delegates restoration to the template helper selected by the matched rule.",
             ["Mods/QudJP/Assemblies/src/Patches/BedChairFragmentTranslator.cs:120:TryTranslate"] = "Delegates capture restoration to rule builders through RestoreVisible.",
@@ -114,7 +114,7 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Patches/FactionsLineTranslationPatch.cs:84:TranslateTextField"] = "Strips only to detect whether the already-localized field contains visible text.",
             ["Mods/QudJP/Assemblies/src/Patches/FactionsStatusScreenTranslationPatch.cs:895:AddLocalizedSearchFragment"] = "Strips only to add searchable plain text beside the colored display text.",
             ["Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs:880:TranslateDisplayNameModifier"] = "Strips only to classify display-name modifier text before composing a translated modifier.",
-            ["Mods/QudJP/Assemblies/src/Patches/JournalNotificationTranslator.cs:19:TryTranslate"] = "Strips source colors so journal notification patterns can replace the full system sentence.",
+            ["Mods/QudJP/Assemblies/src/Patches/JournalNotificationTranslator.cs:20:TryTranslate"] = "Strips source colors so journal notification patterns can replace the full system sentence.",
             ["Mods/QudJP/Assemblies/src/Patches/LiquidVolumeFragmentTranslator.cs:118:TryTranslate"] = "Delegates capture restoration to helper calls in the matched branch.",
             ["Mods/QudJP/Assemblies/src/Patches/MainMenuLocalizationPatch.cs:174:TranslateProducerText"] = "Strips only for already-localized/direct-route checks before TranslatePreservingColors owns restoration.",
             ["Mods/QudJP/Assemblies/src/Patches/MessageLogPatch.cs:77:Prefix"] = "Observation-only direct marker check before MessagePatternTranslator owns restoration.",
@@ -129,10 +129,10 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Patches/SkillsAndPowersLineTranslationPatch.cs:229:TranslateSkillRightText"] = "Strips only for skill right-text detection before a non-colored exact replacement.",
             ["Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs:261:TryTranslateTradeUiPopupText"] = "Delegates capture restoration to branch-specific RestoreCapture helpers.",
             ["Mods/QudJP/Assemblies/src/Patches/UITextSkinTranslationPatch.cs:100:TranslatePreservingColors"] = "Sink fallback uses stripped text only for already-localized/direct-route checks.",
-            ["Mods/QudJP/Assemblies/src/Patches/WorldModsTextTranslator.cs:490:TryTranslateCoProcessorTemplate"] = "Delegates restoration to the template helper.",
-            ["Mods/QudJP/Assemblies/src/Patches/WorldModsTextTranslator.cs:526:TryTranslateCounterweightedTemplate"] = "Delegates restoration to the template helper.",
-            ["Mods/QudJP/Assemblies/src/Patches/WorldModsTextTranslator.cs:560:TryTranslateElementalDamageTemplate"] = "Delegates restoration to the template helper.",
-            ["Mods/QudJP/Assemblies/src/Patches/WorldModsTextTranslator.cs:593:TryTranslateTemplate"] = "Delegates restoration to the template helper.",
+            ["Mods/QudJP/Assemblies/src/Patches/WorldModsTextTranslator.cs:505:TryTranslateCoProcessorTemplate"] = "Delegates restoration to the template helper.",
+            ["Mods/QudJP/Assemblies/src/Patches/WorldModsTextTranslator.cs:541:TryTranslateCounterweightedTemplate"] = "Delegates restoration to the template helper.",
+            ["Mods/QudJP/Assemblies/src/Patches/WorldModsTextTranslator.cs:575:TryTranslateElementalDamageTemplate"] = "Delegates restoration to the template helper.",
+            ["Mods/QudJP/Assemblies/src/Patches/WorldModsTextTranslator.cs:608:TryTranslateTemplate"] = "Delegates restoration to the template helper.",
             ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:30:Strip"] = "Wrapper method exposes the Strip API; callers are checked where they consume the returned spans.",
             ["Mods/QudJP/Assemblies/src/Translation/JournalPatternTranslator.cs:70:Translate"] = "Passes stripped text and spans to TranslateStripped, where template application restores colors.",
             ["Mods/QudJP/Assemblies/src/Translation/MessagePatternTranslator.cs:79:Translate"] = "Passes stripped text and spans to TranslateStripped, where template application restores colors.",

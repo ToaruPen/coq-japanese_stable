@@ -1026,6 +1026,43 @@ public sealed class PopupTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_JournalNotification_DoesNotLeaveUnmatchedCloseAfterColoredSectionPath()
+    {
+        WriteJournalPatternDictionary((
+            "^You note the location of (.+?) in the Locations > (.+?) section of your journal\\.[.!]?$",
+            "ジャーナルの「場所 > {t1}」欄に{0}の場所を記録した。"));
+        WriteDictionary(
+            ("Locations", "場所"),
+            ("Lairs", "棲み処"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+
+            DummyPopupTarget.ShowBlock(
+                "You note the location of {{M|コゲルゲルセプルムの巣, 伝説の光葉}} in the {{W|Locations > Lairs}} section of your journal.",
+                "Warning");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    DummyPopupTarget.LastShowBlockMessage,
+                    Is.EqualTo("ジャーナルの「場所 > 棲み処」欄に{{M|コゲルゲルセプルムの巣, 伝説の光葉}}の場所を記録した。"));
+                Assert.That(DummyPopupTarget.LastShowBlockMessage, Does.Not.Contain("棲み処}}"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_JournalNotification_FallsBackToEnglish_WhenPatternMissing()
     {
         WriteJournalPatternDictionary((

@@ -63,6 +63,9 @@ internal static class WorldModsTextTranslator
     private static readonly Regex FactionSlayerPattern = new Regex(
         "^(?<chance>\\d+)% chance to behead (?<target>.+) on hit\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex OffhandAttackChancePattern = new Regex(
+        "^Offhand Attack Chance: (?<chance>\\d+)%$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex BlinkEscapePattern = new Regex(
         "^Whenever you're about to take avoidable damage, there's (?:a|an) (?<chance>\\d+)% chance you blink away instead\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -154,6 +157,18 @@ internal static class WorldModsTextTranslator
             DataDiskItemModificationPattern,
             "Adds item modification: {0}",
             (match, spans) => new[] { GetTranslatedCapture(match, spans, "description", TranslateNestedWorldModDescription) },
+            out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateTemplate(
+            source,
+            route,
+            family,
+            OffhandAttackChancePattern,
+            "Offhand Attack Chance: {0}%",
+            (match, spans) => new[] { GetTranslatedCapture(match, spans, "chance") },
             out translated))
         {
             return true;

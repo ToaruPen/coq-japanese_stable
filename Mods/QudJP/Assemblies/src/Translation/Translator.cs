@@ -127,6 +127,16 @@ public static class Translator
         return routeSummary + Environment.NewLine + keySummary;
     }
 
+    internal static void RegisterRuntimeTranslationForOwnerRoute(string source, string translated)
+    {
+        if (string.IsNullOrEmpty(source) || string.IsNullOrEmpty(translated))
+        {
+            return;
+        }
+
+        _ = TranslationCache.TryAdd(source, translated);
+    }
+
     internal static IDisposable PushLogContext(string? context)
     {
         if (string.IsNullOrWhiteSpace(context))

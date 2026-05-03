@@ -202,7 +202,8 @@ public sealed class InventoryAndEquipmentStatusScreenTranslationPatchTests
                 Assert.That(screen.QUICK_EAT.Description, Is.EqualTo("素早く食べる"));
                 Assert.That(screen.QUICK_DRINK.Description, Is.EqualTo("素早く飲む"));
                 Assert.That(screen.QUICK_APPLY.Description, Is.EqualTo("素早く適用"));
-                Assert.That(screen.weightText.Text, Does.Contain("ポンド"));
+                Assert.That(screen.weightText.Text, Does.Contain("lbs."));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("lbs."), Is.EqualTo(0));
                 Assert.That(screen.cyberneticsHotkeySkin.Text, Does.Contain("サイバネティクス表示"));
             });
         }

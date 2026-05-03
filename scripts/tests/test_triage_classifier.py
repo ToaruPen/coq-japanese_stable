@@ -80,12 +80,16 @@ def test_classify_unexpected_translation_of_preserved_stat_abbreviation() -> Non
     assert result.slot_evidence == ["STR"]
 
 
-def test_classify_route_specific_lbs_is_not_global() -> None:
-    """Compact lbs. labels are allowed only on routes that explicitly preserve them."""
+def test_classify_lbs_is_globally_preserved_compact_weight_unit() -> None:
+    """Compact lbs. labels are intentionally preserved across routes."""
     trade_result = classify(_mk("{{W|$50}} | {{K|123/200 lbs.}}", route="TradeScreenUpdateTotalsTranslationPatch"))
-    inventory_result = classify(_mk("123/200 lbs.", route="InventoryAndEquipmentStatusScreenTranslationPatch"))
+    japanese_weight_result = classify(_mk("\u91cd\u91cf\uff1a 1 lbs.", route="DescriptionLongDescriptionPatch"))
+    english_weight_result = classify(_mk("Weight: 1 lbs.", route="DescriptionShortDescriptionPatch"))
+    exact_result = classify(_mk("lbs.", route="<no-context>"))
     assert trade_result.classification == TriageClassification.PRESERVED_ENGLISH
-    assert inventory_result.classification == TriageClassification.LOGIC_REQUIRED
+    assert japanese_weight_result.classification == TriageClassification.PRESERVED_ENGLISH
+    assert english_weight_result.classification == TriageClassification.LOGIC_REQUIRED
+    assert exact_result.classification == TriageClassification.PRESERVED_ENGLISH
 
 
 def test_classify_numeric_stat_line() -> None:
