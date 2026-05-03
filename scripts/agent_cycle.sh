@@ -140,6 +140,7 @@ render_skill_evals() {
 summarize_skill_evals() {
   local results=${1:-skill-eval-results.jsonl}
   require_dotfiles_root
+  results=$(expand_search_path "$results")
   if [[ "$results" != /* ]]; then
     results="$ROOT_DIR/$results"
   fi
