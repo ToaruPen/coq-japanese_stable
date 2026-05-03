@@ -71,3 +71,6 @@ node_modules/
 scripts/_artifacts/annals/*.bak
 scripts/_artifacts/annals/*.bak-*
 scripts/_artifacts/annals/merge_conflicts.json
+
+# Agent-loop generated prompts and summaries
+scripts/_artifacts/agent-loop/
