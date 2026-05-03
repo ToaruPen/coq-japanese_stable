@@ -34,6 +34,7 @@ dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCa
   - use `just --list` to discover repo recipes when command routing is unclear
   - use `just sg-cs '<pattern>' Mods/QudJP/Assemblies/src` to compare repo-owned call shapes
   - use `just sg-cs '<pattern>'` with the default decompiled-source target when tracing upstream game producers
+- Optional examples: try patterns such as `DynamicTextObservability.RecordTransform($$$ARGS)`, `Popup.Show($$$ARGS)`, or the method/class name you are changing.
 - If structural search is intentionally skipped for C# route work, state the reason in the work note or PR summary.
 - Constraints:
   - one patch class per file in `src/Patches/`

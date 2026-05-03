@@ -259,7 +259,6 @@ public static class AbilityBarButtonTextTranslationPatch
     {
         if (!StringHelpers.TryGetTranslationExactOrLowerAscii(source, out translated))
         {
-            translated = source;
             return false;
         }
 
