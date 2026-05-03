@@ -34,6 +34,7 @@ _RSYNC_INCLUDES: tuple[str, ...] = (
 )
 
 _RSYNC_EXCLUDES: tuple[str, ...] = ("*",)
+_LOCAL_ONLY_FILES: tuple[Path, ...] = (Path("workshop.json"),)
 _LOCALIZATION_ASSET_SUFFIXES = {".json", ".txt", ".xml"}
 _WINDOWS_DRIVE_PREFIX_LENGTH = 2
 
@@ -260,6 +261,27 @@ def _run_python_sync(
     )
 
 
+def _capture_local_only_files(destination: Path) -> dict[Path, bytes]:
+    """Read destination-only files that must survive deployment refreshes."""
+    preserved: dict[Path, bytes] = {}
+    for relative_path in _LOCAL_ONLY_FILES:
+        target_path = destination / relative_path
+        if target_path.is_file():
+            preserved[relative_path] = target_path.read_bytes()
+    return preserved
+
+
+def _restore_local_only_files(
+    destination: Path,
+    preserved: Mapping[Path, bytes],
+) -> None:
+    """Restore destination-only files removed by rsync/delete refreshes."""
+    for relative_path, contents in preserved.items():
+        target_path = destination / relative_path
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        target_path.write_bytes(contents)
+
+
 def build_rsync_command(
     source: Path,
     destination: Path,
@@ -278,7 +300,7 @@ def build_rsync_command(
     Returns:
         List of command arguments for subprocess.run.
     """
-    cmd = ["rsync", "-av", "--delete"]
+    cmd = ["rsync", "-av", "--delete", "--delete-excluded"]
     if dry_run:
         cmd.append("--dry-run")
     if exclude_fonts:
@@ -315,21 +337,26 @@ def run_sync(
         msg = f"Source directory not found: {source}"
         raise FileNotFoundError(msg)
 
-    if shutil.which("rsync") is None:
-        return _run_python_sync(
+    preserved = {} if dry_run else _capture_local_only_files(destination)
+    try:
+        if shutil.which("rsync") is None:
+            return _run_python_sync(
+                source,
+                destination,
+                dry_run=dry_run,
+                exclude_fonts=exclude_fonts,
+            )
+
+        cmd = build_rsync_command(
             source,
             destination,
             dry_run=dry_run,
             exclude_fonts=exclude_fonts,
         )
-
-    cmd = build_rsync_command(
-        source,
-        destination,
-        dry_run=dry_run,
-        exclude_fonts=exclude_fonts,
-    )
-    return subprocess.run(cmd, capture_output=True, text=True, check=True)  # noqa: S603 -- trusted rsync call
+        return subprocess.run(cmd, capture_output=True, text=True, check=True)  # noqa: S603 -- trusted rsync call
+    finally:
+        if preserved:
+            _restore_local_only_files(destination, preserved)
 
 
 def main(argv: list[str] | None = None) -> int:

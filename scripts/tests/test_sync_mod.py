@@ -22,13 +22,20 @@ class TestBuildRsyncCommand:
     """Tests for build_rsync_command."""
 
     def test_basic_command_structure(self) -> None:
-        """Basic command includes rsync, -av, --delete, and trailing-slash paths."""
+        """Basic command includes rsync, delete flags, and trailing-slash paths."""
         cmd = build_rsync_command(Path("/src"), Path("/dst"))
         assert cmd[0] == "rsync"
         assert "-av" in cmd
         assert "--delete" in cmd
+        assert "--delete-excluded" in cmd
         assert "/src/" in cmd
         assert "/dst/" in cmd
+
+    def test_delete_excluded_removes_development_only_files(self) -> None:
+        """Excluded files must be deleted from stale deployment directories."""
+        cmd = build_rsync_command(Path("/src"), Path("/dst"))
+
+        assert "--delete-excluded" in cmd
 
     def test_dry_run_flag(self) -> None:
         """Dry-run adds --dry-run to the command."""
@@ -170,6 +177,36 @@ class TestRunSync:
             cmd = mock_run.call_args[0][0]
             assert "--dry-run" in cmd
 
+    def test_rsync_preserves_local_workshop_json(self, tmp_path: Path) -> None:
+        """Rsync mode restores local Workshop metadata after delete refreshes."""
+        source = tmp_path / "source"
+        destination = tmp_path / "dest"
+        source.mkdir()
+        destination.mkdir()
+        (destination / "workshop.json").write_text(
+            '{"WorkshopId":3718988020}',
+            encoding="utf-8",
+        )
+
+        def fake_rsync(*_args: object, **_kwargs: object) -> subprocess.CompletedProcess[str]:
+            (destination / "workshop.json").unlink()
+            return subprocess.CompletedProcess(
+                args=["rsync"],
+                returncode=0,
+                stdout="",
+                stderr="",
+            )
+
+        with (
+            patch("scripts.sync_mod.shutil.which", return_value="/usr/bin/rsync"),
+            patch("scripts.sync_mod.subprocess.run", side_effect=fake_rsync),
+        ):
+            run_sync(source, destination)
+
+        assert (destination / "workshop.json").read_text(encoding="utf-8") == (
+            '{"WorkshopId":3718988020}'
+        )
+
     def test_python_fallback_copies_expected_files(self, tmp_path: Path) -> None:
         """Fallback mode copies only deployable files when rsync is unavailable."""
         source = tmp_path / "source"
@@ -225,6 +262,29 @@ class TestRunSync:
         assert (destination / "Fonts" / "Font.otf").exists()
         assert not (destination / "src.cs").exists()
         assert not (destination / "stale.txt").exists()
+
+    def test_python_fallback_preserves_local_workshop_json(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        """Fallback mode preserves local Workshop uploader metadata."""
+        source = tmp_path / "source"
+        destination = tmp_path / "dest"
+        source.mkdir()
+        destination.mkdir()
+        (source / "manifest.json").write_text("{}", encoding="utf-8")
+        (destination / "workshop.json").write_text(
+            '{"WorkshopId":3718988020}',
+            encoding="utf-8",
+        )
+
+        with patch("scripts.sync_mod.shutil.which", return_value=None):
+            run_sync(source, destination)
+
+        assert (destination / "manifest.json").exists()
+        assert (destination / "workshop.json").read_text(encoding="utf-8") == (
+            '{"WorkshopId":3718988020}'
+        )
 
     def test_python_fallback_respects_exclude_fonts(self, tmp_path: Path) -> None:
         """Fallback mode skips Fonts/ when exclude_fonts is requested."""
