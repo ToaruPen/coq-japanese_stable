@@ -138,6 +138,7 @@ public sealed class DoesVerbFamilyTests
     [TestCase("The 熊 falls to the ground.", "熊は地面に倒れた。")]
     [TestCase("You fall to the ground.", "あなたは地面に倒れた。")]
     [TestCase("The スナップジョー falls asleep.", "スナップジョーは眠りに落ちた。")]
+    [TestCase("You fall asleep.", "あなたは眠りに落ちた。")]
     // Color-wrapped (ConsequentialColor)
     [TestCase("{{g|The 熊 falls to the ground.}}", "{{g|熊は地面に倒れた。}}")]
     public void Translate_MotionDirectionFamily(string input, string expected)

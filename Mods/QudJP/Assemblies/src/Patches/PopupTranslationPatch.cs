@@ -39,6 +39,16 @@ public static class PopupTranslationPatch
         new Regex("^You have gained insight into (?<value>.+)\\. In a future Sifrah task of this kind, you can use this insight to determine which of your game options are not correct for any requirement\\. This will expend your insight, unless there are no such options\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex XRLCoreHPWarningPattern =
         new Regex("^\\{\\{R\\|Your health has dropped below \\{\\{C\\|(?<value>\\d+)%\\}\\}!\\}\\}$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex XRLCoreOutOfRangePattern =
+        new Regex("^That is out of range! \\((?<value>\\d+) squares?\\)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex XRLCoreTargetOutOfRangePattern =
+        new Regex("^That target is out of range! \\((?<value>\\d+) squares?\\)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex DiscoverLocationPattern =
+        new Regex("^You discover (?<value>.+)!$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex DiscoveredLocationPattern =
+        new Regex("^You discovered (?<value>.+)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex DiscoverHiddenExaminerPattern =
+        new Regex("^You discover something about (?<value>.+?) that was hidden!$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex XRLCoreFleePattern =
         new Regex("^You can't find a way to flee from (?<value>.+)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex XRLCoreReachPattern =
@@ -399,6 +409,71 @@ public static class PopupTranslationPatch
                 out var xrlCoreHpWarningTranslated))
         {
             translated = xrlCoreHpWarningTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".XRLCoreOutOfRange",
+                XRLCoreOutOfRangePattern,
+                "That is out of range! ({0} squares)",
+                spans,
+                out var xrlCoreOutOfRangeTranslated))
+        {
+            translated = xrlCoreOutOfRangeTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".XRLCoreTargetOutOfRange",
+                XRLCoreTargetOutOfRangePattern,
+                "That target is out of range! ({0} squares)",
+                spans,
+                out var xrlCoreTargetOutOfRangeTranslated))
+        {
+            translated = xrlCoreTargetOutOfRangeTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".DiscoverLocation",
+                DiscoverLocationPattern,
+                "You discover {0}!",
+                spans,
+                out var discoverLocationTranslated))
+        {
+            translated = discoverLocationTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".DiscoveredLocation",
+                DiscoveredLocationPattern,
+                "You discovered {0}.",
+                spans,
+                out var discoveredLocationTranslated))
+        {
+            translated = discoveredLocationTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".DiscoverHiddenExaminer",
+                DiscoverHiddenExaminerPattern,
+                "You discover something about {0} that was hidden!",
+                spans,
+                out var discoverHiddenExaminerTranslated))
+        {
+            translated = discoverHiddenExaminerTranslated;
             return true;
         }
 
@@ -805,6 +880,16 @@ public static class PopupTranslationPatch
                 out var waterRitualLowReputationTranslated))
         {
             translated = waterRitualLowReputationTranslated;
+            return true;
+        }
+
+        if (JournalNotificationTranslator.TryTranslate(
+                source,
+                route,
+                family + ".JournalNotification",
+                out var journalNotificationTranslated))
+        {
+            translated = journalNotificationTranslated;
             return true;
         }
 

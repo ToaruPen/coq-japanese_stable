@@ -41,6 +41,39 @@ public static class MessageLogPatch
                 return true;
             }
 
+            var patternMessage = Message;
+            if (HasLeadingControlHeader(patternMessage)
+                && MessageLogProducerTranslationHelpers.TryPreparePatternMessage(
+                        ref patternMessage,
+                        nameof(MessageLogPatch),
+                        "MarkedControlHeader",
+                        markJapaneseAsDirect: true))
+            {
+                _ = MessageFrameTranslator.TryStripDirectTranslationMarker(patternMessage, out Message);
+                return true;
+            }
+
+            if (DoesVerbRouteTranslator.TryTranslateMarkedMessage(Message, out var doesVerbTranslated))
+            {
+                DynamicTextObservability.RecordTransform(
+                    nameof(DoesFragmentMarkingPatch),
+                    "DoesVerb.MarkedMessage",
+                    Message,
+                    doesVerbTranslated);
+                Message = doesVerbTranslated;
+                return true;
+            }
+
+            if (JournalNotificationTranslator.TryTranslate(
+                    Message,
+                    nameof(MessageLogPatch),
+                    "MessageLog.JournalNotification",
+                    out var journalNotificationTranslated))
+            {
+                Message = journalNotificationTranslated;
+                return true;
+            }
+
             var (stripped, _) = ColorAwareTranslationComposer.Strip(Message);
             SinkObservation.LogUnclaimed(
                 nameof(MessageLogPatch),
@@ -56,5 +89,10 @@ public static class MessageLogPatch
             Trace.TraceError("QudJP: MessageLogPatch.Prefix failed: {0}", ex);
             return true;
         }
+    }
+
+    private static bool HasLeadingControlHeader(string? message)
+    {
+        return !string.IsNullOrEmpty(message) && message![0] == '\u0002';
     }
 }

@@ -913,6 +913,12 @@ internal static class MessagePatternTranslator
 
     private static string TranslateTemplateCapture(string source)
     {
+        if (string.Equals(source, "You", StringComparison.Ordinal)
+            || string.Equals(source, "you", StringComparison.Ordinal))
+        {
+            return "あなた";
+        }
+
         using var _ = Translator.PushMissingKeyLoggingSuppression(true);
         var direct = Translator.Translate(source);
         if (!string.Equals(direct, source, StringComparison.Ordinal))

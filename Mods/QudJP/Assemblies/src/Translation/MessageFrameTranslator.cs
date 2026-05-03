@@ -84,10 +84,21 @@ internal static class MessageFrameTranslator
 
     internal static bool TryStripDirectTranslationMarker(string? source, out string stripped)
     {
-        if (source is not null && source.Length > 0 && source[0] == DirectTranslationMarker)
+        if (source is not null && source.Length > 0)
         {
-            stripped = source.Substring(startIndex: 1);
-            return true;
+            var markerIndex = 0;
+            while (markerIndex < source.Length && char.IsWhiteSpace(source[markerIndex]))
+            {
+                markerIndex++;
+            }
+
+            if (markerIndex < source.Length && source[markerIndex] == DirectTranslationMarker)
+            {
+                stripped = markerIndex == 0
+                    ? source.Substring(startIndex: 1)
+                    : source.Substring(0, markerIndex) + source.Substring(markerIndex + 1);
+                return true;
+            }
         }
 
         stripped = source ?? string.Empty;

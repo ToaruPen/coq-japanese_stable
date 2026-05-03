@@ -21,8 +21,8 @@ internal static class PlayerStatusBarProducerTranslationHelpers
         return fieldName switch
         {
             "FoodWater" => TranslateFoodWater(source, route),
-            "Zone" => TranslateExact(source, route, "PlayerStatusBar.Zone"),
-            "ZoneOnly" => TranslateExact(source, route, "PlayerStatusBar.ZoneOnly"),
+            "Zone" => TranslateZone(source, route, "PlayerStatusBar.Zone"),
+            "ZoneOnly" => TranslateZone(source, route, "PlayerStatusBar.ZoneOnly"),
             "HPBar" => TranslateHpBar(source, route),
             "PlayerName" => TranslateExact(source, route, "PlayerStatusBar.PlayerName"),
             "Time" => TranslateCalendarStatus(source, route),
@@ -30,6 +30,23 @@ internal static class PlayerStatusBarProducerTranslationHelpers
             "Weight" => TranslateExact(source, route, "PlayerStatusBar.Weight"),
             _ => source,
         };
+    }
+
+    private static string TranslateZone(string source, string route, string family)
+    {
+        if (ShouldTryCompositeZoneDisplayName(source)
+            && MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(source, route, out var zoneTranslated))
+        {
+            return zoneTranslated;
+        }
+
+        return TranslateExact(source, route, family);
+    }
+
+    private static bool ShouldTryCompositeZoneDisplayName(string source)
+    {
+        return StringHelpers.ContainsOrdinal(source, ", ")
+            || StringHelpers.ContainsOrdinal(source, " strata ");
     }
 
     internal static string TranslateXpBarText(string source, string route)

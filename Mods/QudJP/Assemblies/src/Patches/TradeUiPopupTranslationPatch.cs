@@ -181,6 +181,24 @@ public static class TradeUiPopupTranslationPatch
             methods,
             AccessTools.Method(
                 popupType,
+                "ShowBlock",
+                new[]
+                {
+                    typeof(string),
+                    typeof(string),
+                    typeof(string),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    location2DType,
+                }),
+            "Popup.ShowBlock");
+
+        AddTarget(
+            methods,
+            AccessTools.Method(
+                popupType,
                 "ShowYesNo",
                 new[]
                 {

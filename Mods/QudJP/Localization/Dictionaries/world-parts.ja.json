@@ -2540,14 +2540,9 @@
             "text": " について理解した。"
         },
         {
-            "key": "You discover something about ",
+            "key": "You discover something about {0} that was hidden!",
             "context": "XRL.World.Parts.XRL.World.Parts.Examiner",
-            "text": " について何かを発見した。"
-        },
-        {
-            "key": " that was hidden!",
-            "context": "XRL.World.Parts.XRL.World.Parts.Examiner",
-            "text": " 隠されていた！"
+            "text": "{0}について隠されていたことを発見した！"
         },
         {
             "key": "You make some progress understanding ",
@@ -2935,14 +2930,14 @@
             "text": "刻印できない: "
         },
         {
-            "key": "You discover ",
+            "key": "You discover {0}!",
             "context": "XRL.World.Parts.XRL.World.Parts.LocationFinder",
-            "text": " を発見した！"
+            "text": "{0}を発見した！"
         },
         {
-            "key": "You discovered ",
+            "key": "You discovered {0}.",
             "context": "XRL.World.Parts.XRL.World.Parts.LocationFinder",
-            "text": " を発見した。"
+            "text": "{0}を発見した。"
         },
         {
             "key": "You traveled to ",
