@@ -1255,7 +1255,7 @@
     <part Name="Render" DisplayName="{{skulk|スカルク}} インジェクター" />
     <part Name="Skulk_Tonic_Applicator" />
     <part Name="AITonicUse" />
-    <part Name="RulesDescription" Text="Duration: 1001-1200 rounds Your movement speed is increased by 25% at night and underground but reduced by 20% in the daylight. +3 Agility at night and underground -3 Agility in the daylight You can see in the dark (radius 8). You grow burrowing claws. You suffer double damage from light-based attacks." AltForGenotype="True Kin" GenotypeAlt="Duration: 1001-1200 rounds Your movement speed is increased by 40% at night and underground but reduced by 20% in the daylight. +4 Agility at night and underground -3 Agility in the daylight You can see in the dark (radius 8). You suffer double damage from light-based attacks." />
+    <part Name="RulesDescription" Text="持続：1001-1200ラウンド　夜間と地下では移動速度 +25%、日中は移動速度 -20%。夜間と地下では敏捷 +3、日中は敏捷 -3。暗闇を見通せる（半径8）。穴掘り爪が生える。光由来の攻撃から受けるダメージが2倍になる。" AltForGenotype="True Kin" GenotypeAlt="持続：1001-1200ラウンド　夜間と地下では移動速度 +40%、日中は移動速度 -20%。夜間と地下では敏捷 +4、日中は敏捷 -3。暗闇を見通せる（半径8）。光由来の攻撃から受けるダメージが2倍になる。" />
     <part Name="TinkerItem" Bits="01" Ingredient="Black Puma Haunch" />
     <part Name="PreservableItem" Result="Congealed Skulk" Number="5" />
     <tag Name="Gift" Value="*noinherit" />

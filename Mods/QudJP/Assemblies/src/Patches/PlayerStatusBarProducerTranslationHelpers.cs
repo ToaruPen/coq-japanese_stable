@@ -26,8 +26,8 @@ internal static class PlayerStatusBarProducerTranslationHelpers
             "HPBar" => TranslateHpBar(source, route),
             "PlayerName" => TranslateExact(source, route, "PlayerStatusBar.PlayerName"),
             "Time" => TranslateCalendarStatus(source, route),
-            "Temp" => TranslateExact(source, route, "PlayerStatusBar.Temp"),
-            "Weight" => TranslateExact(source, route, "PlayerStatusBar.Weight"),
+            "Temp" => PreserveReadout(source, route, "PlayerStatusBar.Temp.PreservedReadout"),
+            "Weight" => PreserveReadout(source, route, "PlayerStatusBar.Weight.PreservedReadout"),
             _ => source,
         };
     }
@@ -80,7 +80,7 @@ internal static class PlayerStatusBarProducerTranslationHelpers
         var translatedParts = new string[parts.Length];
         for (var index = 0; index < parts.Length; index++)
         {
-            if (!TryTranslateFoodWaterPart(parts[index], out translatedParts[index]))
+            if (!TryTranslateFoodWaterPart(parts[index], route, out translatedParts[index]))
             {
                 return source;
             }
@@ -96,10 +96,10 @@ internal static class PlayerStatusBarProducerTranslationHelpers
         return source;
     }
 
-    private static bool TryTranslateFoodWaterPart(string source, out string translated)
+    private static bool TryTranslateFoodWaterPart(string source, string route, out string translated)
     {
         var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
-        var visibleTranslation = StringHelpers.TranslateExactOrLowerAscii(stripped);
+        var visibleTranslation = StringHelpers.TranslateExactOrLowerAscii(stripped, route);
         if (visibleTranslation is null)
         {
             translated = source;
@@ -140,7 +140,7 @@ internal static class PlayerStatusBarProducerTranslationHelpers
 
     private static string TranslateExact(string source, string route, string family)
     {
-        var translated = StringHelpers.TranslateExactOrLowerAscii(source);
+        var translated = StringHelpers.TranslateExactOrLowerAscii(source, route);
         if (translated is null || string.Equals(translated, source, StringComparison.Ordinal))
         {
             return source;
@@ -148,6 +148,12 @@ internal static class PlayerStatusBarProducerTranslationHelpers
 
         DynamicTextObservability.RecordTransform(route, family, source, translated);
         return translated;
+    }
+
+    private static string PreserveReadout(string source, string route, string family)
+    {
+        DynamicTextObservability.RecordTransform(route, family, source, source, logWhenUnchanged: true);
+        return source;
     }
 
     private static string TranslateCalendarStatus(string source, string route)

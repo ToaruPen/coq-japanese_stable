@@ -183,6 +183,46 @@ public sealed class PlayerStatusBarProducerTranslationHelpersTests
     }
 
     [Test]
+    public void TranslateStringDataValue_PreservesTempReadoutWithoutMissingKeyNoise()
+    {
+        var translated = InvokeHelperStringMethod(
+            "TranslateStringDataValue",
+            "Temp",
+            "T:25ø",
+            "PlayerStatusBarProducerTranslationPatch.Temp");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("T:25ø"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("T:25ø"), Is.EqualTo(0));
+            Assert.That(DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                "PlayerStatusBarProducerTranslationPatch.Temp",
+                "PlayerStatusBar.Temp.PreservedReadout"), Is.EqualTo(1));
+            Assert.That(Translator.GetMissingRouteHitCountForTests("<no-context>"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TranslateStringDataValue_PreservesWeightReadoutWithoutMissingKeyNoise()
+    {
+        var translated = InvokeHelperStringMethod(
+            "TranslateStringDataValue",
+            "Weight",
+            "62/270# {{blue|32$}}",
+            "PlayerStatusBarProducerTranslationPatch.Weight");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("62/270# {{blue|32$}}"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("62/270# {{blue|32$}}"), Is.EqualTo(0));
+            Assert.That(DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                "PlayerStatusBarProducerTranslationPatch.Weight",
+                "PlayerStatusBar.Weight.PreservedReadout"), Is.EqualTo(1));
+            Assert.That(Translator.GetMissingRouteHitCountForTests("<no-context>"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public void TranslateXpBarText_TranslatesLevelExpLine()
     {
         WriteDictionary(("LVL", "Lv"));

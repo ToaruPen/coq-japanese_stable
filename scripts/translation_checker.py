@@ -31,6 +31,12 @@ _PLAYER_LOG = Path.home() / "Library" / "Logs" / "Freehold Games" / "CavesOfQud"
 _BUILD_MARKER = "[QudJP] Build marker:"
 _TITLE_READY_PROBE = "MainMenuLocalizationPatch"
 _LOAD_READY_PROBE = "[QudJP] QudMenuBottomContextProbe/RefreshButtonsAfter/v1:"
+_NON_ACTIONABLE_CLASSIFICATIONS = frozenset(
+    {
+        TriageClassification.PRESERVED_ENGLISH,
+        TriageClassification.RUNTIME_NOISE,
+    },
+)
 _LOAD_READY_FAILURE_PATTERNS: tuple[str, ...] = (
     "ChargenStructuredTextTranslator",
     "Choose Game Mode",
@@ -1549,7 +1555,7 @@ def _missing_key_candidates(results: list[TriageResult]) -> list[TriageResult]:
         result
         for result in results
         if result.entry.kind == LogEntryKind.MISSING_KEY
-        and result.classification != TriageClassification.PRESERVED_ENGLISH
+        and result.classification not in _NON_ACTIONABLE_CLASSIFICATIONS
     ]
 
 
@@ -1562,7 +1568,7 @@ def _sink_observed_untranslated_candidates(results: list[TriageResult]) -> list[
         result
         for result in results
         if result.entry.kind == LogEntryKind.SINK_OBSERVE
-        and result.classification != TriageClassification.PRESERVED_ENGLISH
+        and result.classification not in _NON_ACTIONABLE_CLASSIFICATIONS
         and _has_ascii_word_candidate(result.entry.text)
     ]
 

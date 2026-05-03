@@ -144,6 +144,20 @@ public sealed class TradeUiPopupTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_UsesPopupProducerFallback_ForQuestReceivedPopup()
+    {
+        WriteDictionary(("You have received a new quest, {0}!", "新しいクエスト「{0}」を受けた！"));
+
+        using var patch = PatchMethod(nameof(DummyTradeUiPopupTarget.Show));
+
+        DummyTradeUiPopupTarget.Show("You have received a new quest, {{W|O Glorious Shekhinah!}}!");
+
+        Assert.That(
+            DummyTradeUiPopupTarget.LastShowMessage,
+            Is.EqualTo("新しいクエスト「{{W|O Glorious Shekhinah!}}」を受けた！"));
+    }
+
+    [Test]
     public void Prefix_PreservesColorTags_ForCustomTradeTemplate()
     {
         WriteDictionary(
@@ -186,6 +200,21 @@ public sealed class TradeUiPopupTranslationPatchTests
         Assert.That(
             DummyTradeUiPopupTarget.LastShowMessage,
             Is.EqualTo("{{y|巨大トンボには取引するものがない}}"));
+    }
+
+    [Test]
+    public void Prefix_StripsRuntimeControlHeader_ForSnapjawWarlordHasNothingToTrade()
+    {
+        WriteDictionary(
+            ("{0} has nothing to trade.", "{0}には取引するものがない"));
+
+        using var patch = PatchMethod(nameof(DummyTradeUiPopupTarget.Show));
+
+        DummyTradeUiPopupTarget.Show("\u0002have\u001F14\u001F18\u001F\u0003The スナップジョーの軍主 has nothing to trade.");
+
+        Assert.That(
+            DummyTradeUiPopupTarget.LastShowMessage,
+            Is.EqualTo("スナップジョーの軍主には取引するものがない"));
     }
 
     private static IDisposable PatchMethod(string methodName)

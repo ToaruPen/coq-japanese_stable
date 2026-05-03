@@ -73,6 +73,22 @@ public sealed class StringHelpersTests
     }
 
     [Test]
+    public void TranslateExactOrLowerAscii_RecordsFallbackMissAgainstProvidedContext()
+    {
+        WriteDictionary(("Hello", "こんにちは"));
+
+        var translated = StringHelpers.TranslateExactOrLowerAscii("T:25ø", "PlayerStatusBarProducerTranslationPatch.Temp");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.Null);
+            Assert.That(Translator.GetMissingKeyHitCountForTests("T:25ø"), Is.EqualTo(1));
+            Assert.That(Translator.GetMissingRouteHitCountForTests("PlayerStatusBarProducerTranslationPatch.Temp"), Is.EqualTo(1));
+            Assert.That(Translator.GetMissingRouteHitCountForTests("<no-context>"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public void TryGetTranslationExactOrLowerAscii_FallsBackToLowerAsciiKeyWithoutMissingKeyNoise()
     {
         WriteDictionary(("flower fields", "花畑"));

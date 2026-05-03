@@ -341,6 +341,7 @@ class TestVerificationReport:
             " translated='あなたはsnapjawに命中した。'. (context: MessageLogPatch)\n"
             "[QudJP] Translator: missing key 'STR' (hit 1). (context: CharacterAttributeLineTranslationPatch)\n"
             "[QudJP] Translator: missing key 'Inventory' (hit 1). (context: UITextSkinTranslationPatch)\n"
+            "[QudJP] Translator: missing key '重量\uff1a' (hit 1).\n"
             "[QudJP] MessagePatternTranslator: no pattern for 'Game saved!' (hit 1). (context: MessageLogPatch)\n"
             "[QudJP] SinkObserve/v1: sink='MessageLog' route='EmitMessage'"
             " detail='ObservationOnly' source='You catch fire' stripped='You catch fire'\n"

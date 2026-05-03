@@ -49,6 +49,8 @@ public static class PopupTranslationPatch
         new Regex("^You discovered (?<value>.+)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex DiscoverHiddenExaminerPattern =
         new Regex("^You discover something about (?<value>.+?) that was hidden!$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex QuestReceivedPattern =
+        new Regex("^You have received a new quest, (?<value>.+)!$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex XRLCoreFleePattern =
         new Regex("^You can't find a way to flee from (?<value>.+)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex XRLCoreReachPattern =
@@ -474,6 +476,17 @@ public static class PopupTranslationPatch
                 out var discoverHiddenExaminerTranslated))
         {
             translated = discoverHiddenExaminerTranslated;
+            return true;
+        }
+
+        if (TryTranslateQuestReceived(
+                stripped,
+                route,
+                family + ".QuestReceived",
+                spans,
+                out var questReceivedTranslated))
+        {
+            translated = questReceivedTranslated;
             return true;
         }
 
@@ -971,6 +984,45 @@ public static class PopupTranslationPatch
         }
 
         translated = translatedTemplate.Replace("{0}", value);
+        if (spans.Count > 0)
+        {
+            var boundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(spans, match, source.Length, translated.Length);
+            translated = ColorAwareTranslationComposer.Restore(translated, boundarySpans);
+        }
+
+        DynamicTextObservability.RecordTransform(route, family, source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateQuestReceived(
+        string source,
+        string route,
+        string family,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated)
+    {
+        var match = QuestReceivedPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        const string templateKey = "You have received a new quest, {0}!";
+        var translatedTemplate = Translator.Translate(templateKey);
+        if (string.Equals(translatedTemplate, templateKey, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var quest = match.Groups["value"].Value;
+        if (spans.Count > 0)
+        {
+            quest = ColorAwareTranslationComposer.RestoreCapture(quest, spans, match.Groups["value"]);
+        }
+
+        translated = translatedTemplate.Replace("{0}", quest);
         if (spans.Count > 0)
         {
             var boundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(spans, match, source.Length, translated.Length);

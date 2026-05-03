@@ -13,6 +13,9 @@ internal static class DescriptionTextTranslator
     private static readonly Regex LabeledListPattern =
         new Regex("^(?<label>Physical features:|Equipped:) (?<items>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex BrainDispositionLinePattern =
+        new Regex("^(?<label>Base demeanor:|Engagement style:) (?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex VillageDispositionTargetPattern =
         new Regex("^(?:the|The) villagers of (?<name>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -297,6 +300,11 @@ internal static class DescriptionTextTranslator
 
     private static bool TryTranslateSegmentPreservingColors(string source, string route, out string translated)
     {
+        if (TryTranslateBrainDispositionLinePreservingColors(source, route, out translated))
+        {
+            return true;
+        }
+
         if (TryTranslateFactionDispositionLinePreservingColors(source, route, out translated))
         {
             return true;
@@ -382,6 +390,42 @@ internal static class DescriptionTextTranslator
 
         translated = source;
         return false;
+    }
+
+    private static bool TryTranslateBrainDispositionLinePreservingColors(string source, string route, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = BrainDispositionLinePattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var label = match.Groups["label"].Value switch
+        {
+            "Base demeanor:" => "基本態度:",
+            "Engagement style:" => "交戦スタイル:",
+            _ => string.Empty,
+        };
+        var value = match.Groups["value"].Value switch
+        {
+            "aggressive" => "攻撃的",
+            "defensive" => "防御的",
+            "docile" => "温和",
+            _ => string.Empty,
+        };
+        if (string.IsNullOrEmpty(label) || string.IsNullOrEmpty(value))
+        {
+            translated = source;
+            return false;
+        }
+
+        value = RestoreBalancedCapture(value, spans, match.Groups["value"]);
+        translated = label + " " + value;
+        translated = RestoreWholeLineBoundaryWrappers(translated, spans, stripped.Length);
+        DynamicTextObservability.RecordTransform(route, "Description.BrainDispositionLine", source, translated);
+        return true;
     }
 
     private static bool TryTranslateFactionDispositionLinePreservingColors(string source, string route, out string translated)

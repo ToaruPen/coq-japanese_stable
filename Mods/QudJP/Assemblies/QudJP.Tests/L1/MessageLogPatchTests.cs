@@ -73,6 +73,21 @@ public sealed class MessageLogPatchTests
     }
 
     [Test]
+    public void Prefix_ControlHeaderHasNothingToTrade_UsesRepositoryPatternAndStripsHeader()
+    {
+        UseRepositoryDictionary();
+        var message = "\u0002have\u001F14\u001F18\u001F\u0003The スナップジョーの軍主 has nothing to trade.";
+
+        var result = MessageLogPatch.Prefix(ref message);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(message, Is.EqualTo("スナップジョーの軍主には取引するものがない"));
+            Assert.That(result, Is.True);
+        });
+    }
+
+    [Test]
     public void Prefix_JournalNotification_TranslatesAndPreservesSourceColors()
     {
         UseSultanHistoryJournalPattern();

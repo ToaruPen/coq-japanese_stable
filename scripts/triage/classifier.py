@@ -16,6 +16,15 @@ _LEADING_WHITESPACE = re.compile(r"^\s+(?!\s*\{\{)")
 _JAPANESE_CHARS = re.compile(r"[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]")
 _ASCII_LETTERS = re.compile(r"[A-Za-z]")
 _EMBEDDED_NUMBER = re.compile(r"(?<!\.)\b-?\d+\b(?!\.)")
+_NO_CONTEXT_TRANSLATOR_REENTRY_TOKENS = frozenset({"items", "off", "on"})
+_PLAYER_STATUS_BAR_READOUT_ROUTES = frozenset(
+    {
+        "PlayerStatusBarProducerTranslationPatch.Temp",
+        "PlayerStatusBarProducerTranslationPatch.Weight",
+    },
+)
+_TEMP_READOUT = re.compile(r"^T:-?\d+(?:[°ø])?$")
+_WEIGHT_READOUT = re.compile(r"^\d+/\d+#(?:\s+\{\{[A-Za-z]+\|\d+\$\}\})?$")
 _STAT_LINE = re.compile(r"\d+/\d+")
 _DRAM_PATTERN = re.compile(r"\d+\s+drams?\s+of\s+", re.IGNORECASE)
 _LEVEL_PATTERN = re.compile(r"(?:Level|LVL|Lv):\s*-?\d+", re.IGNORECASE)
@@ -55,9 +64,12 @@ def classify(entry: LogEntry) -> TriageResult:
         _classify_dynamic_probe,
         _classify_sink_observe,
         _classify_final_output_probe,
+        _classify_blank_runtime_noise,
+        _classify_player_status_bar_readout,
         _classify_fragment,
         _classify_lbs_only_english_text,
         _classify_japanese_text,
+        _classify_no_context_reentry_token,
         _classify_no_pattern,
         _classify_slot_text,
         _classify_version,
@@ -112,6 +124,36 @@ def _classify_final_output_probe(entry: LogEntry) -> TriageResult | None:
     )
 
 
+def _classify_blank_runtime_noise(entry: LogEntry) -> TriageResult | None:
+    """Classify pure whitespace observations as runtime noise."""
+    if entry.text.strip():
+        return None
+    return TriageResult(
+        entry=entry,
+        classification=TriageClassification.RUNTIME_NOISE,
+        reason="Pure whitespace observation — runtime formatting noise, not untranslated text",
+    )
+
+
+def _classify_player_status_bar_readout(entry: LogEntry) -> TriageResult | None:
+    """Classify route-owned status bar numeric readouts as preserved runtime values."""
+    if entry.route not in _PLAYER_STATUS_BAR_READOUT_ROUTES:
+        return None
+    if entry.route.endswith(".Temp") and _TEMP_READOUT.fullmatch(entry.text):
+        return TriageResult(
+            entry=entry,
+            classification=TriageClassification.RUNTIME_NOISE,
+            reason="Player status temperature readout is preserved runtime data",
+        )
+    if entry.route.endswith(".Weight") and _WEIGHT_READOUT.fullmatch(entry.text):
+        return TriageResult(
+            entry=entry,
+            classification=TriageClassification.RUNTIME_NOISE,
+            reason="Player status weight readout is preserved runtime data",
+        )
+    return None
+
+
 def _classify_fragment(entry: LogEntry) -> TriageResult | None:
     """Classify string-fragment observations based on whitespace cues."""
     if _TRAILING_WHITESPACE.search(entry.text):
@@ -152,8 +194,19 @@ def _classify_japanese_text(entry: LogEntry) -> TriageResult | None:
         return None
     return TriageResult(
         entry=entry,
-        classification=TriageClassification.UNRESOLVED,
-        reason="Contains Japanese characters — likely a display-name composition artifact",
+        classification=TriageClassification.RUNTIME_NOISE,
+        reason="Already contains Japanese characters — treat as runtime re-entry noise, not untranslated work",
+    )
+
+
+def _classify_no_context_reentry_token(entry: LogEntry) -> TriageResult | None:
+    """Classify known flat Translator re-entry tokens that lack route context."""
+    if entry.route != "<no-context>" or entry.text not in _NO_CONTEXT_TRANSLATOR_REENTRY_TOKENS:
+        return None
+    return TriageResult(
+        entry=entry,
+        classification=TriageClassification.RUNTIME_NOISE,
+        reason="Known <no-context> Translator re-entry token — needs owner tracing, not dictionary action",
     )
 
 

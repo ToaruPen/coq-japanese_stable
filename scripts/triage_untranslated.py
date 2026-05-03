@@ -44,6 +44,13 @@ _PHASE_F_STRUCTURED_FIELDS = (
     "stripped_text_sample",
     "translated_text_sample",
     "final_text_sample",
+    "source_markup_spans",
+    "final_markup_spans",
+    "markup_span_status",
+    "markup_semantic_status",
+    "markup_semantic_flags",
+    "source_visible_sha256",
+    "final_visible_sha256",
 )
 
 
@@ -165,6 +172,7 @@ def _build_phase_f_report(results: list[TriageResult]) -> dict[str, Any]:
         LogEntryKind.FINAL_OUTPUT_PROBE.value: sum(
             1 for result in results if result.entry.kind == LogEntryKind.FINAL_OUTPUT_PROBE
         ),
+        "markup_semantic_drift": sum(1 for result in results if result.entry.markup_semantic_status == "drift"),
     }
     entries = [
         _serialize_result(result, include_phase_f_runtime_fields=True)

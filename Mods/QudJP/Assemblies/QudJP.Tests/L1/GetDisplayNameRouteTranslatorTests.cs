@@ -275,6 +275,45 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_TranslatesGeneratedBookEditionSuffix()
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{W|Codex of Leaves, 2nd Edition}}",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{W|Codex of Leaves、第2版}}"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesImplantedMarkupAdjective()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("implanted", "{{implanted|埋め込み済み}}"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{implanted|implanted}} サイバネティック主体",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{implanted|埋め込み済み}} サイバネティック主体"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesSlimyAdjectiveWithoutNumeNumeWording()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("{{slimy|slimy}}", "{{slimy|粘液質の}}"),
+            ("slime", "{{g|スライム}}"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{slimy|slimy}} slime",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{slimy|粘液質の}} {{g|スライム}}"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_SuppressesIdentityVisageMissingKeyNoise()
     {
         WriteDictionaryFile(

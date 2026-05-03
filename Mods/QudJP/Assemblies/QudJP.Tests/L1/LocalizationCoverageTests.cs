@@ -276,6 +276,30 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void SkulkTonicRulesDescription_DoesNotRegressToEnglishRulesText()
+    {
+        var itemsDocument = XDocument.Load(Path.Combine(localizationRoot, "ObjectBlueprints", "Items.jp.xml"));
+        var rulesDescription = itemsDocument.Root!
+            .Elements("object")
+            .Single(element => string.Equals(element.Attribute("Name")?.Value, "SkulkTonic", StringComparison.Ordinal))
+            .Elements("part")
+            .Single(element => string.Equals(element.Attribute("Name")?.Value, "RulesDescription", StringComparison.Ordinal));
+
+        var text = rulesDescription.Attribute("Text")?.Value ?? string.Empty;
+        var genotypeAlt = rulesDescription.Attribute("GenotypeAlt")?.Value ?? string.Empty;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(text, Does.Contain("持続：1001-1200ラウンド"));
+            Assert.That(genotypeAlt, Does.Contain("持続：1001-1200ラウンド"));
+            Assert.That(text, Does.Not.Contain("Duration:"));
+            Assert.That(genotypeAlt, Does.Not.Contain("Duration:"));
+            Assert.That(text, Does.Not.Contain("Your movement speed"));
+            Assert.That(genotypeAlt, Does.Not.Contain("Your movement speed"));
+        });
+    }
+
+    [Test]
     public void WorldPartsDictionary_DoesNotReuseCookingOwnerKeys()
     {
         var dictionariesRoot = Path.Combine(localizationRoot, "Dictionaries");

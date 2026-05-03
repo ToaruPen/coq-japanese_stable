@@ -65,6 +65,11 @@
             "text": "村のひとつを焼き払った"
         },
         {
+            "key": "defending their village",
+            "context": "XRL.World.ZoneBuilders.Village.staticFaction1",
+            "text": "彼らの村を守っているため"
+        },
+        {
             "key": "repeatedly beating them at dice",
             "context": "XRL.World.Parts.XRL.World.Parts.GenerateFriendOrFoe",
             "text": "賽の目勝負で何度も打ち負かした"

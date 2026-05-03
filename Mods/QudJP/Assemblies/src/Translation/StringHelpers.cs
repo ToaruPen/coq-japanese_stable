@@ -78,6 +78,12 @@ internal static class StringHelpers
             : translated;
     }
 
+    internal static string? TranslateExactOrLowerAscii(string source, string? context)
+    {
+        using var _ = Translator.PushLogContext(context);
+        return TranslateExactOrLowerAscii(source);
+    }
+
     internal static bool TryGetTranslationExactOrLowerAscii(string source, out string translated)
     {
         if (Translator.TryGetTranslation(source, out translated)

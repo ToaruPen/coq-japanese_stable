@@ -22,6 +22,7 @@ class TriageClassification(Enum):
     Maps to the project's canonical two-category distinction:
     - static_leaf and route_patch → asset-solvable
     - logic_required → logic-required
+    - preserved_english and runtime_noise → non-actionable runtime evidence
     - unresolved → needs investigation before any action
     """
 
@@ -30,6 +31,7 @@ class TriageClassification(Enum):
     LOGIC_REQUIRED = "logic_required"
     PRESERVED_ENGLISH = "preserved_english"
     UNEXPECTED_TRANSLATION_OF_PRESERVED_TOKEN = "unexpected_translation_of_preserved_token"  # noqa: S105
+    RUNTIME_NOISE = "runtime_noise"
     UNRESOLVED = "unresolved"
 
 

@@ -103,6 +103,30 @@ public sealed class DescriptionTextTranslatorTests
     }
 
     [Test]
+    public void TranslateLongDescription_TranslatesVillageDispositionReasonLeaf()
+    {
+        WriteExactDictionary(
+            ("The villagers of {0}", "{0}の村人たち"),
+            ("defending their village", "彼らの村を守っているため"));
+
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            "Admired by {{C|the villagers of テルヴァマス}} for defending their village.",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo("{{C|テルヴァマスの村人たち}}に敬愛されている。理由: 彼らの村を守っているため。"));
+    }
+
+    [Test]
+    public void TranslateLongDescription_TranslatesBrainDispositionLinesPreservingValueColor()
+    {
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            "Base demeanor: {{g|docile}}\nEngagement style: {{r|aggressive}}",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo("基本態度: {{g|温和}}\n交戦スタイル: {{r|攻撃的}}"));
+    }
+
+    [Test]
     public void TranslateLongDescription_DoesNotReportNoPattern_ForAlreadyLocalizedDispositionReason()
     {
         const string reason = "巡礼者に施しをしたため";

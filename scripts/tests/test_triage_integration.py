@@ -142,6 +142,7 @@ def test_cli_ignores_dynamic_text_probe_entries(tmp_path: Path) -> None:
         "dynamic_text_probe": 1,
         "sink_observe": 0,
         "final_output_probe": 0,
+        "markup_semantic_drift": 0,
     }
     assert len(data["phase_f"]["entries"]) == 1
     assert data["phase_f"]["entries"][0]["kind"] == "dynamic_text_probe"
@@ -164,6 +165,7 @@ def test_cli_adds_structured_group_without_changing_actionable_categories(tmp_pa
         "logic_required": 0,
         "preserved_english": 0,
         "unexpected_translation_of_preserved_token": 0,
+        "runtime_noise": 0,
         "unresolved": 0,
     }
     entry = data["by_classification"]["static_leaf"][0]
@@ -192,6 +194,7 @@ def test_cli_reports_sink_observe_in_phase_f_section(tmp_path: Path) -> None:
         "dynamic_text_probe": 0,
         "sink_observe": 1,
         "final_output_probe": 0,
+        "markup_semantic_drift": 0,
     }
     assert data["phase_f"]["entries"][0]["kind"] == "sink_observe"
     assert data["phase_f"]["entries"][0]["phase_f"] == {
@@ -220,6 +223,7 @@ def test_cli_reports_final_output_probe_in_phase_f_section(tmp_path: Path) -> No
         "dynamic_text_probe": 0,
         "sink_observe": 0,
         "final_output_probe": 1,
+        "markup_semantic_drift": 0,
     }
     entry = data["phase_f"]["entries"][0]
     assert entry["kind"] == "final_output_probe"
@@ -227,6 +231,29 @@ def test_cli_reports_final_output_probe_in_phase_f_section(tmp_path: Path) -> No
     assert entry["phase_f"]["phase"] == "before_sink"
     assert entry["phase_f"]["translation_status"] == "sink_unclaimed"
     assert entry["phase_f"]["final_text_sample"] == "You catch fire"
+
+
+def test_cli_counts_final_output_markup_semantic_drift(tmp_path: Path) -> None:
+    """FinalOutputProbe semantic drift is reportable as its own Phase F bucket."""
+    log = tmp_path / "Player.log"
+    out = tmp_path / "triage.json"
+    _write_log(
+        log,
+        [
+            _FINAL_OUTPUT_PROBE_NEW
+            + "; markup_semantic_status=drift; markup_semantic_flags=bracket_close_inside_nested_qud_scope",
+        ],
+    )
+
+    result = main(["--log", str(log), "--output", str(out)])
+    assert result == 0
+
+    data = json.loads(out.read_text(encoding="utf-8"))
+    assert data["phase_f"]["summary"]["final_output_probe"] == 1
+    assert data["phase_f"]["summary"]["markup_semantic_drift"] == 1
+    entry = data["phase_f"]["entries"][0]
+    assert entry["phase_f"]["markup_semantic_status"] == "drift"
+    assert entry["phase_f"]["markup_semantic_flags"] == "bracket_close_inside_nested_qud_scope"
 
 
 def test_module_cli_classify_treats_missing_runtime_dir_as_empty_report(tmp_path: Path) -> None:
@@ -261,6 +288,7 @@ def test_module_cli_classify_treats_missing_runtime_dir_as_empty_report(tmp_path
             "logic_required": 0,
             "preserved_english": 0,
             "unexpected_translation_of_preserved_token": 0,
+            "runtime_noise": 0,
             "unresolved": 0,
         },
         "by_classification": {
@@ -269,6 +297,7 @@ def test_module_cli_classify_treats_missing_runtime_dir_as_empty_report(tmp_path
             "logic_required": [],
             "preserved_english": [],
             "unexpected_translation_of_preserved_token": [],
+            "runtime_noise": [],
             "unresolved": [],
         },
         "by_route": {},
@@ -278,6 +307,7 @@ def test_module_cli_classify_treats_missing_runtime_dir_as_empty_report(tmp_path
                 "dynamic_text_probe": 0,
                 "sink_observe": 0,
                 "final_output_probe": 0,
+                "markup_semantic_drift": 0,
             },
             "entries": [],
         },
@@ -293,6 +323,8 @@ def test_module_cli_classify_keeps_no_context_split_explicit(tmp_path: Path) -> 
         [
             "[QudJP] Translator: missing key 'Inventory' (hit 1).",
             "[QudJP] Translator: missing key 'Level: 2' (hit 1).",
+            "[QudJP] Translator: missing key '重量\uff1a' (hit 1).",
+            "[QudJP] Translator: missing key 'on' (hit 1).",
             "[QudJP] Translator: missing key 'Nigashrowar' (hit 1).",
         ],
     )
@@ -319,14 +351,16 @@ def test_module_cli_classify_keeps_no_context_split_explicit(tmp_path: Path) -> 
     assert set(data["by_route"]) == {"<no-context>"}
     assert [entry["text"] for entry in data["by_route"]["<no-context>"]["static_leaf"]] == ["Inventory"]
     assert [entry["text"] for entry in data["by_route"]["<no-context>"]["logic_required"]] == ["Level: 2"]
+    assert [entry["text"] for entry in data["by_route"]["<no-context>"]["runtime_noise"]] == ["重量\uff1a", "on"]
     assert [entry["text"] for entry in data["by_route"]["<no-context>"]["unresolved"]] == ["Nigashrowar"]
     assert data["summary"] == {
-        "total": 3,
+        "total": 5,
         "static_leaf": 1,
         "route_patch": 0,
         "logic_required": 1,
         "preserved_english": 0,
         "unexpected_translation_of_preserved_token": 0,
+        "runtime_noise": 2,
         "unresolved": 1,
     }
 
@@ -408,6 +442,7 @@ def test_cli_preserves_grouping_when_structured_values_contain_delimiter_like_te
         "dynamic_text_probe": 1,
         "sink_observe": 0,
         "final_output_probe": 0,
+        "markup_semantic_drift": 0,
     }
     assert data["phase_f"]["entries"][0]["route"] == "DoesVerbRoute"
     assert data["phase_f"]["entries"][0]["phase_f"]["payload_excerpt"] == (

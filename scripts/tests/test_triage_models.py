@@ -66,6 +66,7 @@ def test_classification_values() -> None:
         TriageClassification.UNEXPECTED_TRANSLATION_OF_PRESERVED_TOKEN.value
         == "unexpected_translation_of_preserved_token"
     )
+    assert TriageClassification.RUNTIME_NOISE.value == "runtime_noise"
     assert TriageClassification.UNRESOLVED.value == "unresolved"
 
 

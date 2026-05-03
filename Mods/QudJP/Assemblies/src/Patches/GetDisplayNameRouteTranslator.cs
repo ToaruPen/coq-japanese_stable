@@ -23,6 +23,8 @@ internal static class GetDisplayNameRouteTranslator
         new Regex("^(?<base>.+?)\\s+\\((?<state>[A-Za-z][A-Za-z\\s-]*)\\)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex QuantityDisplayNameSuffixPattern =
         new Regex("^(?<base>.+?)\\s+x(?<count>\\d+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex EditionTitleSuffixPattern =
+        new Regex("^(?<number>\\d+)(?:st|nd|rd|th) Edition$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex MkTierDisplayNameSuffixPattern =
         new Regex(
             "^(?<base>.+?)\\s+mk\\s+(?<tier>[IVXLC]+)(?:\\s+<(?<code>[^>]+)>)?$",
@@ -499,7 +501,10 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         var suffix = source.Substring(separatorIndex + 2);
-        var translatedSuffix = Translator.Translate(suffix);
+        var editionMatch = EditionTitleSuffixPattern.Match(suffix);
+        var translatedSuffix = editionMatch.Success
+            ? "第" + editionMatch.Groups["number"].Value + "版"
+            : Translator.Translate(suffix);
         if (string.Equals(translatedSuffix, suffix, StringComparison.Ordinal))
         {
             return false;

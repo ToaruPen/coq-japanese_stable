@@ -40,6 +40,11 @@
       "text": "{{engraved|彫り刻まれた}}"
     },
     {
+      "key": "implanted",
+      "context": "GetDisplayName.Adjective",
+      "text": "{{implanted|埋め込み済み}}"
+    },
+    {
       "key": "{{K|nulling}}",
       "context": "GetDisplayName.Adjective",
       "text": "{{K|無効化}}"
@@ -952,7 +957,7 @@
     {
       "key": "{{slimy|slimy}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{slimy|ぬめった}}"
+      "text": "{{slimy|粘液質の}}"
     },
     {
       "key": "{{sunslag|sunslag}}",
@@ -1677,7 +1682,7 @@
     {
       "key": "slimy",
       "context": "GetDisplayName.Adjective",
-      "text": "{{slimy|ぬめった}}"
+      "text": "{{slimy|粘液質の}}"
     },
     {
       "key": "sunslag",

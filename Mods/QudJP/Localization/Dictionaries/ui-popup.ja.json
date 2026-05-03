@@ -762,6 +762,11 @@
             "text": "<クエストデバッグ>"
         },
         {
+            "key": "You have received a new quest, {0}!",
+            "context": "Popup.ProducerText.QuestReceived",
+            "text": "新しいクエスト「{0}」を受けた！"
+        },
+        {
             "key": "Amputate which limb?",
             "context": "XRL.UI.Popup.PickOption.Title",
             "text": "どの手足を切断するか？"

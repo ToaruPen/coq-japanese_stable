@@ -144,6 +144,30 @@ public sealed class PopupShowTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesQuestReceivedPopupWithQuestTitleExclamation()
+    {
+        WriteDictionary(("You have received a new quest, {0}!", "新しいクエスト「{0}」を受けた！"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+
+            DummyPopupShow.Show("You have received a new quest, {{W|O Glorious Shekhinah!}}!");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("新しいクエスト「{{W|O Glorious Shekhinah!}}」を受けた！"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_LeavesUnknownPopupShowMessageUnchanged()
     {
         var harmonyId = CreateHarmonyId();

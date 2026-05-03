@@ -17,6 +17,10 @@
     { "key": "Damaged", "text": "損傷" },
     { "key": "Lightly Damaged", "text": "軽微な損傷" },
 
+    { "key": "Friendly", "text": "友好" },
+    { "key": "Hostile", "text": "敵対" },
+    { "key": "Neutral", "text": "中立" },
+
     { "key": "Impossible", "text": "不可能" },
     { "key": "Very Tough", "text": "非常に困難" },
     { "key": "Tough", "text": "困難" },

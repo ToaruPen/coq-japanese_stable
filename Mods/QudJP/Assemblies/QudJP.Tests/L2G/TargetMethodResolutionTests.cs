@@ -480,6 +480,12 @@ public sealed class TargetMethodResolutionTests
         "System.Boolean",
         "System.Boolean",
     })]
+    [TestCase(typeof(DescriptionInspectStatusPatch), new[]
+    {
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+    })]
     [TestCase(typeof(TradeScreenUiTranslationPatch), new[]
     {
         "",
