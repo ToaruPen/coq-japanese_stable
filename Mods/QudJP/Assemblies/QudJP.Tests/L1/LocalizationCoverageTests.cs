@@ -327,6 +327,51 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void DynamicProducerRoutes_DoNotKeepKnownConcreteExactKeys()
+    {
+        var dictionariesRoot = Path.Combine(localizationRoot, "Dictionaries");
+        var popupConcreteKeys = LoadEntries(Path.Combine(dictionariesRoot, "ui-popup.ja.json"))
+            .Where(static entry =>
+                IsConcreteOutOfRange(entry.Key)
+                || IsConcreteTargetOutOfRange(entry.Key)
+                || IsConcreteSultanHistoryJournalNotification(entry.Key))
+            .Select(static entry => entry.Key)
+            .ToArray();
+        var cookingConcreteKeys = LoadEntries(Path.Combine(dictionariesRoot, "world-effects-cooking.ja.json"))
+            .Where(static entry => IsConcreteHpIncreaseDescription(entry.Key) || IsConcreteHpIncreaseDetails(entry.Key))
+            .Select(static entry => entry.Key)
+            .ToArray();
+        var messageLogConcreteKeys = LoadEntries(Path.Combine(dictionariesRoot, "ui-messagelog-leaf.ja.json"))
+            .Where(static entry => IsConcreteFallToGround(entry.Key) || IsConcreteFallAsleep(entry.Key))
+            .Select(static entry => entry.Key)
+            .ToArray();
+        var worldPartsDynamicFragments = LoadEntries(Path.Combine(dictionariesRoot, "world-parts.ja.json"))
+            .Where(static entry => IsWorldPartsDynamicFragment(entry.Key))
+            .Select(static entry => entry.Key)
+            .ToArray();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                popupConcreteKeys,
+                Is.Empty,
+                "Known dynamic popup strings should be translated by popup or journal producer routes, not concrete exact keys.");
+            Assert.That(
+                cookingConcreteKeys,
+                Is.Empty,
+                "Known dynamic cooking HP strings should be translated by CookingEffectTranslationPatch, not concrete exact keys.");
+            Assert.That(
+                messageLogConcreteKeys,
+                Is.Empty,
+                "Known dynamic fall/asleep messages should be translated by message patterns, not concrete leaf exact keys.");
+            Assert.That(
+                worldPartsDynamicFragments,
+                Is.Empty,
+                "Known dynamic world-parts discovery messages should be translated by popup or journal producer routes, not prefix/suffix exact fragments.");
+        });
+    }
+
+    [Test]
     public void ConfirmedOwnerRouteDictionaries_ContainCurrentAbilityAndActiveEffectKeys()
     {
         var dictionariesRoot = Path.Combine(localizationRoot, "Dictionaries");
@@ -583,6 +628,117 @@ public sealed class LocalizationCoverageTests
             .Where(entry => entry.Context.Contains(contextFragment, StringComparison.Ordinal))
             .Select(entry => entry.Key)
             .ToHashSet(StringComparer.Ordinal);
+    }
+
+    private static bool IsConcreteOutOfRange(string key)
+    {
+        const string prefix = "That is out of range! (";
+        return TryGetOutOfRangeDistance(key, prefix, out _);
+    }
+
+    private static bool IsConcreteTargetOutOfRange(string key)
+    {
+        const string prefix = "That target is out of range! (";
+        return TryGetOutOfRangeDistance(key, prefix, out _);
+    }
+
+    private static bool IsConcreteSultanHistoryJournalNotification(string key)
+    {
+        const string prefix = "You note this piece of information in the Sultan Histories > ";
+        const string suffix = " section of your journal.";
+        if (!key.StartsWith(prefix, StringComparison.Ordinal)
+            || !key.EndsWith(suffix, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        var section = key.Substring(prefix.Length, key.Length - prefix.Length - suffix.Length);
+        return section.Length > 0 && !section.Contains('{', StringComparison.Ordinal);
+    }
+
+    private static bool TryGetOutOfRangeDistance(string key, string prefix, out string distance)
+    {
+        distance = string.Empty;
+        const string singularSuffix = " square)";
+        const string pluralSuffix = " squares)";
+        if (!key.StartsWith(prefix, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        var suffix = string.Empty;
+        if (key.EndsWith(pluralSuffix, StringComparison.Ordinal))
+        {
+            suffix = pluralSuffix;
+        }
+        else if (key.EndsWith(singularSuffix, StringComparison.Ordinal))
+        {
+            suffix = singularSuffix;
+        }
+        if (suffix.Length == 0)
+        {
+            return false;
+        }
+
+        distance = key.Substring(prefix.Length, key.Length - prefix.Length - suffix.Length);
+        return IsAsciiDigits(distance);
+    }
+
+    private static bool IsConcreteHpIncreaseDescription(string key)
+    {
+        const string prefix = "@they get +";
+        const string suffix = "% max HP for 1 hour.";
+        return key.StartsWith(prefix, StringComparison.Ordinal)
+               && key.EndsWith(suffix, StringComparison.Ordinal)
+               && IsAsciiDigits(key.Substring(prefix.Length, key.Length - prefix.Length - suffix.Length));
+    }
+
+    private static bool IsConcreteHpIncreaseDetails(string key)
+    {
+        const string prefix = "+";
+        const string suffix = "% max HP";
+        return key.StartsWith(prefix, StringComparison.Ordinal)
+               && key.EndsWith(suffix, StringComparison.Ordinal)
+               && IsAsciiDigits(key.Substring(prefix.Length, key.Length - prefix.Length - suffix.Length));
+    }
+
+    private static bool IsConcreteFallToGround(string key)
+    {
+        return key is "You fall to the ground!"
+            or "You falls to the ground!"
+            or "You fell to the ground!"
+            or "You fall to the ground."
+            or "You falls to the ground."
+            or "You fell to the ground."
+            or "You fall to the ground"
+            or "You falls to the ground"
+            or "You fell to the ground";
+    }
+
+    private static bool IsConcreteFallAsleep(string key)
+    {
+        return key is "You fall asleep!"
+            or "You falls asleep!"
+            or "You fell asleep!"
+            or "You fall asleep."
+            or "You falls asleep."
+            or "You fell asleep."
+            or "You fall asleep"
+            or "You falls asleep"
+            or "You fell asleep";
+    }
+
+    private static bool IsWorldPartsDynamicFragment(string key)
+    {
+        return key is "You discover "
+            or "You discovered "
+            or "You discover something about "
+            or " that was hidden!";
+    }
+
+    private static bool IsAsciiDigits(string value)
+    {
+        return value.Length > 0 && value.All(static ch => ch is >= '0' and <= '9');
     }
 
     [Test]

@@ -59,6 +59,26 @@ internal static class CookingEffectFragmentTranslator
                 "@they が次の",
                 RestoreVisible(match.Groups["times"], spans),
                 "回ダメージを受けたとき、そのダメージを100%反射する。")),
+        new(
+            "HpIncreaseDescription",
+            new Regex(
+                "^@they get \\+(?<percent>\\d+(?:-\\d+)?)% max HP for (?<hours>\\d+) hours?\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                "@they は",
+                RestoreVisible(match.Groups["hours"], spans),
+                "時間のあいだ最大HP+",
+                RestoreVisible(match.Groups["percent"], spans),
+                "%を得る。")),
+        new(
+            "HpIncreaseDetails",
+            new Regex(
+                "^\\+(?<percent>\\d+(?:-\\d+)?)% max HP$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                "最大HP+",
+                RestoreVisible(match.Groups["percent"], spans),
+                "%")),
     ];
 
     internal static bool TryTranslate(string source, string route, string family, out string translated)

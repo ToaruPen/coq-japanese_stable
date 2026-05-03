@@ -72,4 +72,18 @@ public sealed class MessageFrameTranslatorPropertyTests
             Assert.That(message, Is.EqualTo("熊"));
         });
     }
+
+    [Test]
+    public void TryStripDirectTranslationMarker_PreservesLeadingWhitespaceBeforeMarker()
+    {
+        var message = $" {MessageFrameTranslator.DirectTranslationMarker}ジョッパ";
+
+        var stripped = MessageFrameTranslator.TryStripDirectTranslationMarker(ref message);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stripped, Is.True);
+            Assert.That(message, Is.EqualTo(" ジョッパ"));
+        });
+    }
 }

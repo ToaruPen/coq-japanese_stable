@@ -240,32 +240,32 @@
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) to the ground!$",
-      "template": "{0}は地面に倒れた！",
+      "template": "{t0}は地面に倒れた！",
       "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) to the ground\\.$",
-      "template": "{0}は地面に倒れた。",
+      "template": "{t0}は地面に倒れた。",
       "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) to the ground$",
-      "template": "{0}は地面に倒れた",
+      "template": "{t0}は地面に倒れた",
       "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) asleep!$",
-      "template": "{0}は眠りに落ちた！",
+      "template": "{t0}は眠りに落ちた！",
       "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) asleep\\.$",
-      "template": "{0}は眠りに落ちた。",
+      "template": "{t0}は眠りに落ちた。",
       "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:falls?|fell) asleep$",
-      "template": "{0}は眠りに落ちた",
+      "template": "{t0}は眠りに落ちた",
       "route": "emit-message"
     },
     {

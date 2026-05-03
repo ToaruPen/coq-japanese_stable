@@ -243,10 +243,6 @@
             "text": "祠を冒涜するには血液か腐敗液のどちらか1ドラムが必要だ。"
         },
         {
-            "key": "You note this piece of information in the Sultan Histories > Resheph section of your journal.",
-            "text": "この情報をジャーナルの「スルタン史 > レシェフ」欄に記録した。"
-        },
-        {
             "key": "{{W|[y]}} {{y|Yes}}",
             "context": "Qud.UI.PopupMessage.Button.Yes.Hotkey",
             "text": "{{W|[y]}} {{y|はい}}"
@@ -1405,19 +1401,9 @@
             "text": "まず取引を成立させ、それから値切れ。"
         },
         {
-            "key": "That is out of range! (10 squares)",
+            "key": "That is out of range! ({0} squares)",
             "context": "XRL.UI.Popup.ShowFail.Message",
-            "text": "射程外だ！(10マス)"
-        },
-        {
-            "key": "That is out of range! (12 squares)",
-            "context": "XRL.UI.Popup.ShowFail.Message",
-            "text": "射程外だ！(12マス)"
-        },
-        {
-            "key": "That is out of range! (8 squares)",
-            "context": "XRL.UI.Popup.ShowFail.Message",
-            "text": "射程外だ！(8マス)"
+            "text": "射程外だ！({0}マス)"
         },
         {
             "key": "That isn't an energy cell and does not have a rechargeable capacitor.",
@@ -1430,9 +1416,9 @@
             "text": "その対象はすでに精神戦闘でロックされている！"
         },
         {
-            "key": "That target is out of range! (5 squares)",
+            "key": "That target is out of range! ({0} squares)",
             "context": "XRL.UI.Popup.ShowFail.Message",
-            "text": "その対象は射程外だ！(5マス)"
+            "text": "その対象は射程外だ！({0}マス)"
         },
         {
             "key": "The gates are sealed for eternity.",

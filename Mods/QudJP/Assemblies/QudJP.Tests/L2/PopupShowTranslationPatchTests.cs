@@ -72,6 +72,78 @@ public sealed class PopupShowTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesDiscoverLocationTemplate()
+    {
+        WriteDictionary(("You discover {0}!", "{0}を発見した！"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+
+            DummyPopupShow.Show("You discover Rust Wells!");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("Rust Wellsを発見した！"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_TranslatesDiscoverLocationTemplateWithColorWrappedTarget()
+    {
+        WriteDictionary(("You discover {0}!", "{0}を発見した！"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+
+            DummyPopupShow.Show("You discover {{Y|Rust Wells}}!");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{Y|Rust Wells}}を発見した！"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_TranslatesExaminerHiddenDiscoveryTemplate()
+    {
+        WriteDictionary(("You discover something about {0} that was hidden!", "{0}について隠されていたことを発見した！"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+
+            DummyPopupShow.Show("You discover something about phase cannon that was hidden!");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("phase cannonについて隠されていたことを発見した！"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_LeavesUnknownPopupShowMessageUnchanged()
     {
         var harmonyId = CreateHarmonyId();

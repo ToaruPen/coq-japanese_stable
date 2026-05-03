@@ -25,6 +25,7 @@ public sealed class PopupTranslationPatchTests
     private string tempDirectory = null!;
     private string dictionaryDirectory = null!;
     private string patternFilePath = null!;
+    private string journalPatternFilePath = null!;
 
     [SetUp]
     public void SetUp()
@@ -34,12 +35,16 @@ public sealed class PopupTranslationPatchTests
         dictionaryDirectory = Path.Combine(tempDirectory, "dict");
         Directory.CreateDirectory(dictionaryDirectory);
         patternFilePath = Path.Combine(tempDirectory, "messages.ja.json");
+        journalPatternFilePath = Path.Combine(tempDirectory, "journal-patterns.ja.json");
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
         MessagePatternTranslator.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        JournalPatternTranslator.ResetForTests();
+        JournalPatternTranslator.SetPatternFileForTests(journalPatternFilePath);
+        File.WriteAllText(journalPatternFilePath, "{\"patterns\":[]}\n", new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
         DummyPopupTarget.Reset();
@@ -50,6 +55,7 @@ public sealed class PopupTranslationPatchTests
     {
         Translator.ResetForTests();
         MessagePatternTranslator.ResetForTests();
+        JournalPatternTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
 
@@ -466,6 +472,54 @@ public sealed class PopupTranslationPatchTests
             DummyPopupTarget.ShowBlock("{{R|Your health has dropped below {{C|40%}}!}}", "Warning");
 
             Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("{{R|HPが{{C|40%}}を下回った！}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_TranslatesOutOfRangePopupFromTemplate_WhenPatched()
+    {
+        WriteDictionary(("That is out of range! ({0} squares)", "射程外だ！({0}マス)"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+
+            DummyPopupTarget.ShowBlock("That is out of range! (9 squares)", "Warning");
+
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("射程外だ！(9マス)"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_TranslatesTargetOutOfRangePopupFromTemplate_WhenPatched()
+    {
+        WriteDictionary(("That target is out of range! ({0} squares)", "その対象は射程外だ！({0}マス)"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+
+            DummyPopupTarget.ShowBlock("That target is out of range! (7 squares)", "Warning");
+
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("その対象は射程外だ！(7マス)"));
         }
         finally
         {
@@ -943,9 +997,9 @@ public sealed class PopupTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_ObservationOnly_JournalLocationPopupReturnsSourceUnchanged()
+    public void Prefix_JournalNotification_UsesJournalPatternRegardlessOfPopupRoute()
     {
-        WriteMessagePatternDictionary((
+        WriteJournalPatternDictionary((
             "^You note the location of (.+?) in the Locations > (.+?) section of your journal\\.[.!]?$",
             "ジャーナルの「場所 > {t1}」欄に{0}の場所を記録した。"));
         WriteDictionary(("Historic Sites", "史跡"));
@@ -963,7 +1017,84 @@ public sealed class PopupTranslationPatchTests
                 "You note the location of Shagganip in the Locations > Historic Sites section of your journal.",
                 "Warning");
 
-            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("You note the location of Shagganip in the Locations > Historic Sites section of your journal."));
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("ジャーナルの「場所 > 史跡」欄にShagganipの場所を記録した。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_JournalNotification_FallsBackToEnglish_WhenPatternMissing()
+    {
+        WriteJournalPatternDictionary((
+            "^You note the location of (.+?) in the Locations > (.+?) section of your journal\\.[.!]?$",
+            "ジャーナルの「場所 > {t1}」欄に{0}の場所を記録した。"));
+        var source = "You note this piece of information in the Unregistered Lore > Missing section of your journal.";
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+
+            DummyPopupTarget.ShowBlock(source, "Warning");
+
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo(source));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_JournalNotification_EmptyInput_ReturnsEmpty()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+
+            DummyPopupTarget.ShowBlock(string.Empty, "Warning");
+
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo(string.Empty));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_JournalNotification_DirectMarker_StripsMarkerAndSkipsTranslation()
+    {
+        WriteJournalPatternDictionary((
+            "^You note this piece of information in the Sultan Histories > (.+?) section of your journal\\.[.!]?$",
+            "この情報をジャーナルの「スルタン史 > {0}」欄に記録した。"));
+
+        const string source =
+            "You note this piece of information in the Sultan Histories > Resheph section of your journal.";
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+
+            DummyPopupTarget.ShowBlock("\u0001" + source, "Warning");
+
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo(source));
         }
         finally
         {
@@ -1619,6 +1750,34 @@ public sealed class PopupTranslationPatchTests
         Assert.That(translated, Is.EqualTo("この情報をジャーナルの「スルタン史 > レシェフ」欄に記録した。"));
     }
 
+    [Test]
+    public void TranslatePopupTextForProducerRoute_JournalNotification_TranslatesDynamicSultanHistorySection()
+    {
+        WriteJournalPatternDictionary((
+            "^You note this piece of information in the Sultan Histories > (.+?) section of your journal\\.[.!]?$",
+            "この情報をジャーナルの「スルタン史 > {0}」欄に記録した。"));
+
+        var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+            "You note this piece of information in the {{W|Sultan Histories > クホマスプ II}} section of your journal.",
+            nameof(PopupShowTranslationPatch));
+
+        Assert.That(translated, Is.EqualTo("この情報をジャーナルの「{{W|スルタン史 > クホマスプ II}}」欄に記録した。"));
+    }
+
+    [Test]
+    public void TranslatePopupTextForProducerRoute_JournalNotification_PreservesLegacyColorsAroundDynamicSultanHistorySection()
+    {
+        WriteJournalPatternDictionary((
+            "^You note this piece of information in the Sultan Histories > (.+?) section of your journal\\.[.!]?$",
+            "この情報をジャーナルの「スルタン史 > {0}」欄に記録した。"));
+
+        var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+            "&yYou note this piece of information in the &WSultan Histories > クホマスプ II&y section of your journal.",
+            nameof(PopupShowTranslationPatch));
+
+        Assert.That(translated, Is.EqualTo("&yこの情報をジャーナルの「&Wスルタン史 > クホマスプ II&y」欄に記録した。"));
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
@@ -1664,7 +1823,7 @@ public sealed class PopupTranslationPatchTests
         File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 
-    private void WriteMessagePatternDictionary(params (string pattern, string template)[] patterns)
+    private void WriteJournalPatternDictionary(params (string pattern, string template)[] patterns)
     {
         var builder = new StringBuilder();
         builder.Append('{');
@@ -1687,7 +1846,9 @@ public sealed class PopupTranslationPatchTests
         builder.Append("]}");
         builder.AppendLine();
 
-        File.WriteAllText(patternFilePath, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        File.WriteAllText(journalPatternFilePath, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        JournalPatternTranslator.ResetForTests();
+        JournalPatternTranslator.SetPatternFileForTests(journalPatternFilePath);
     }
 
     private static string EscapeJson(string value)

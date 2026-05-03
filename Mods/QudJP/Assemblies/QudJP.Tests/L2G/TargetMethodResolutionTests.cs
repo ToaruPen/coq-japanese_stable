@@ -489,6 +489,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(TradeUiPopupTranslationPatch), new[]
     {
         "System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
+        "System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
         "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
     })]
     [TestCase(typeof(SteamWorkshopUploaderViewTranslationPatch), new string[0])]
@@ -528,6 +529,9 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(CookingEffectTranslationPatch), new[]
     {
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -578,6 +582,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(TradeUiPopupTranslationPatch), new[]
     {
         "XRL.UI.Popup|Show|System.Void|System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
+        "XRL.UI.Popup|ShowBlock|ConsoleLib.Console.Keys|System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
         "XRL.UI.Popup|ShowYesNo|XRL.UI.DialogResult|System.String|System.String|System.Boolean|XRL.UI.DialogResult",
     })]
     [TestCase(typeof(PopupAskStringTranslationPatch), new[]

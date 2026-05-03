@@ -62,6 +62,81 @@ public sealed class PlayerStatusBarProducerTranslationHelpersTests
     }
 
     [Test]
+    public void TranslateStringDataValue_TranslatesCompositeZoneDisplayName()
+    {
+        WriteDictionary(
+            ("Salt Marsh", "塩の湿地"),
+            ("Joppa", "ジョッパ"),
+            ("{0} strata deep", "地下{0}層"));
+
+        var translated = InvokeHelperStringMethod(
+            "TranslateStringDataValue",
+            "Zone",
+            "Salt Marsh, Joppa, 42 strata deep",
+            "PlayerStatusBarProducerTranslationPatch.Zone");
+
+        Assert.That(translated, Is.EqualTo("塩の湿地, ジョッパ, 地下42層"));
+    }
+
+    [TestCase("Zone")]
+    [TestCase("ZoneOnly")]
+    public void TranslateStringDataValue_ZoneRoutes_FallbackToEnglish_WhenUntranslated(string fieldName)
+    {
+        var translated = InvokeHelperStringMethod(
+            "TranslateStringDataValue",
+            fieldName,
+            "Salt Marsh, Unknown Place",
+            "PlayerStatusBarProducerTranslationPatch.Zone");
+
+        Assert.That(translated, Is.EqualTo("Salt Marsh, Unknown Place"));
+    }
+
+    [TestCase("Zone")]
+    [TestCase("ZoneOnly")]
+    public void TranslateStringDataValue_ZoneRoutes_StripDirectMarkerInput(string fieldName)
+    {
+        WriteDictionary(("Salt Marsh", "塩の湿地"));
+
+        var translated = InvokeHelperStringMethod(
+            "TranslateStringDataValue",
+            fieldName,
+            "\u0001Salt Marsh, Joppa",
+            "PlayerStatusBarProducerTranslationPatch.Zone");
+
+        Assert.That(translated, Is.EqualTo("Salt Marsh, Joppa"));
+    }
+
+    [TestCase("Zone")]
+    [TestCase("ZoneOnly")]
+    public void TranslateStringDataValue_ZoneRoutes_PreserveColorTagsInCompositeNames(string fieldName)
+    {
+        WriteDictionary(
+            ("Salt Marsh", "塩の湿地"),
+            ("Joppa", "ジョッパ"));
+
+        var translated = InvokeHelperStringMethod(
+            "TranslateStringDataValue",
+            fieldName,
+            "{{Y|Salt Marsh}}, {{C|Joppa}}",
+            "PlayerStatusBarProducerTranslationPatch.Zone");
+
+        Assert.That(translated, Is.EqualTo("{{Y|塩の湿地}}, {{C|ジョッパ}}"));
+    }
+
+    [TestCase("Zone")]
+    [TestCase("ZoneOnly")]
+    public void TranslateStringDataValue_ZoneRoutes_ReturnEmptyInput(string fieldName)
+    {
+        var translated = InvokeHelperStringMethod(
+            "TranslateStringDataValue",
+            fieldName,
+            string.Empty,
+            "PlayerStatusBarProducerTranslationPatch.Zone");
+
+        Assert.That(translated, Is.EqualTo(string.Empty));
+    }
+
+    [Test]
     public void TranslateStringDataValue_TranslatesCalendarStatus()
     {
         WriteDictionary(

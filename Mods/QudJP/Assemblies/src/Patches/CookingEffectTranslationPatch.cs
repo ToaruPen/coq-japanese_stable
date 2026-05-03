@@ -56,6 +56,9 @@ public static class CookingEffectTranslationPatch
             ("XRL.World.Effects.CookingDomainArmor_OnPenetration", "GetTriggerDescription"),
             ("XRL.World.Effects.CookingDomainArmor_OnPenetration", "GetTemplatedTriggerDescription"),
             ("XRL.World.Effects.CookingDomainReflect_Reflect100_ProceduralCookingTriggeredAction_Effect", "GetDetails"),
+            ("XRL.World.Effects.CookingDomainHP_IncreaseHP_ProceduralCookingTriggeredAction", "GetDescription"),
+            ("XRL.World.Effects.CookingDomainHP_IncreaseHP_ProceduralCookingTriggeredAction", "GetTemplatedDescription"),
+            ("XRL.World.Effects.CookingDomainHP_IncreaseHP_ProceduralCookingTriggeredActionEffect", "GetDetails"),
         })
         {
             var type = AccessTools.TypeByName(target.typeName);
