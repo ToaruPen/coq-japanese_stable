@@ -25,6 +25,9 @@ internal static class DescriptionTextTranslator
     private static readonly Regex JapaneseCharacterPattern =
         new Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex AsciiLetterPattern =
+        new Regex("[A-Za-z]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     // Keep TranslateShortDescription and TranslateLongDescription separate even though they
     // currently delegate to TranslateDescriptionText, so short/long description routes can
     // diverge later without changing their patch call sites.
@@ -361,6 +364,12 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        if (ShouldSkipMessagePatternTranslation(source))
+        {
+            translated = source;
+            return false;
+        }
+
         translated = MessagePatternTranslator.Translate(source, route);
         if (!string.Equals(source, translated, StringComparison.Ordinal))
         {
@@ -666,6 +675,17 @@ internal static class DescriptionTextTranslator
     private static bool ContainsJapaneseCharacters(string source)
     {
         return !string.IsNullOrEmpty(source) && JapaneseCharacterPattern.IsMatch(source);
+    }
+
+    private static bool ShouldSkipMessagePatternTranslation(string source)
+    {
+        if (!ContainsJapaneseCharacters(source))
+        {
+            return false;
+        }
+
+        var withoutPreservedWeightUnit = source.Replace("lbs.", string.Empty);
+        return !AsciiLetterPattern.IsMatch(withoutPreservedWeightUnit);
     }
 
     private static bool TryTranslateLabeledList(string source, string route, out string translated)

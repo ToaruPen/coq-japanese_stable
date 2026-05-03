@@ -214,6 +214,27 @@ public sealed class DescriptionTextTranslatorTests
                 "武器カテゴリ: 斧（クリティカル時に装甲破砕）</color>"));
     }
 
+    [Test]
+    public void TranslateLongDescription_DoesNotReportNoPattern_ForAlreadyLocalizedDescriptionFragments()
+    {
+        const string localizedLine =
+            "小さなコルクの芽が湿気でふくらむ。灼け付く週のあいだ、百里の風から一粒の雫をすすって育てた。";
+        const string localizedWeight = "重量： 1 lbs.";
+        var source = localizedLine + "\n\n" + localizedWeight;
+
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            source,
+            "DescriptionTextTranslatorTests");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(source), Is.EqualTo(0));
+            Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(localizedLine), Is.EqualTo(0));
+            Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(localizedWeight), Is.EqualTo(0));
+        });
+    }
+
     private void WritePatternDictionary(params (string pattern, string template)[] patterns)
     {
         var builder = new StringBuilder();
