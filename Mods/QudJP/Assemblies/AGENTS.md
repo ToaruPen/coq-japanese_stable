@@ -30,6 +30,11 @@ dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCa
 
 - Prefer producer-owned or stable mid-pipeline fixes. Many sink and near-sink routes are intentionally observation-only.
 - Use `~/dev/coq-decompiled_stable/` to trace upstream producers, verify signatures, and investigate unclaimed routes.
+- For C# patch, translator, observability, or target-method changes, use structural search before editing or before finalizing the patch:
+  - use `just --list` to discover repo recipes when command routing is unclear
+  - use `just sg-cs '<pattern>' Mods/QudJP/Assemblies/src` to compare repo-owned call shapes
+  - use `just sg-cs '<pattern>'` with the default decompiled-source target when tracing upstream game producers
+- If structural search is intentionally skipped for C# route work, state the reason in the work note or PR summary.
 - Constraints:
   - one patch class per file in `src/Patches/`
   - do not instantiate real game types in tests; use dummy targets with matching signatures
