@@ -103,6 +103,23 @@ public sealed class DescriptionTextTranslatorTests
     }
 
     [Test]
+    public void TranslateLongDescription_DoesNotReportNoPattern_ForAlreadyLocalizedDispositionReason()
+    {
+        const string reason = "巡礼者に施しをしたため";
+        var source = "Admired by {{C|the Mechanimists}} for " + reason + ".";
+
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            source,
+            "DescriptionTextTranslatorTests");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("{{C|the Mechanimists}}に敬愛されている。理由: " + reason + "。"));
+            Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(reason), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public void TranslateLongDescription_FallbackToEnglish_WhenNoTranslationMatches()
     {
         var translated = DescriptionTextTranslator.TranslateLongDescription(
@@ -231,6 +248,22 @@ public sealed class DescriptionTextTranslatorTests
             Assert.That(translated, Is.EqualTo(source));
             Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(source), Is.EqualTo(0));
             Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(localizedLine), Is.EqualTo(0));
+            Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(localizedWeight), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TranslateLongDescription_DoesNotReportNoPattern_ForAlreadyLocalizedDotLbsDescriptionFragment()
+    {
+        const string localizedWeight = "重量： 1 .lbs";
+
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            localizedWeight,
+            "DescriptionTextTranslatorTests");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(localizedWeight));
             Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(localizedWeight), Is.EqualTo(0));
         });
     }

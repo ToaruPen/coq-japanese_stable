@@ -28,6 +28,9 @@ internal static class DescriptionTextTranslator
     private static readonly Regex AsciiLetterPattern =
         new Regex("[A-Za-z]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex PreservedWeightUnitPattern =
+        new Regex("(?:\\.lbs|lbs\\.)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     // Keep TranslateShortDescription and TranslateLongDescription separate even though they
     // currently delegate to TranslateDescriptionText, so short/long description routes can
     // diverge later without changing their patch call sites.
@@ -566,6 +569,11 @@ internal static class DescriptionTextTranslator
             return translated;
         }
 
+        if (ShouldSkipMessagePatternTranslation(source))
+        {
+            return source;
+        }
+
         translated = MessagePatternTranslator.Translate(source, route);
         return translated;
     }
@@ -684,7 +692,7 @@ internal static class DescriptionTextTranslator
             return false;
         }
 
-        var withoutPreservedWeightUnit = source.Replace("lbs.", string.Empty);
+        var withoutPreservedWeightUnit = PreservedWeightUnitPattern.Replace(source, string.Empty);
         return !AsciiLetterPattern.IsMatch(withoutPreservedWeightUnit);
     }
 
