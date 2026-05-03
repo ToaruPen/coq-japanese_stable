@@ -197,10 +197,12 @@ public static class InventoryLineTranslationPatch
         var translated = showItemCount
             ? $"|{amount.ToString(CultureInfo.InvariantCulture)} {translatedItems}|{weight.ToString(CultureInfo.InvariantCulture)} {WeightUnit}|"
             : $"|{weight.ToString(CultureInfo.InvariantCulture)} {WeightUnit}|";
-        if (!string.Equals(translated, source, StringComparison.Ordinal))
-        {
-            DynamicTextObservability.RecordTransform(route, "InventoryLine.WeightSummary", source, translated);
-        }
+        DynamicTextObservability.RecordTransform(
+            route,
+            "InventoryLine.WeightSummary",
+            source,
+            translated,
+            logWhenUnchanged: true);
 
         return translated;
     }
@@ -208,10 +210,12 @@ public static class InventoryLineTranslationPatch
     private static string TranslateItemWeightText(string source, int weight, string route)
     {
         var translated = $"[{weight.ToString(CultureInfo.InvariantCulture)} {WeightUnit}]";
-        if (!string.Equals(translated, source, StringComparison.Ordinal))
-        {
-            DynamicTextObservability.RecordTransform(route, "InventoryLine.WeightLabel", source, translated);
-        }
+        DynamicTextObservability.RecordTransform(
+            route,
+            "InventoryLine.WeightLabel",
+            source,
+            translated,
+            logWhenUnchanged: true);
 
         return translated;
     }
