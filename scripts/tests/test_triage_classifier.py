@@ -49,6 +49,12 @@ def test_classify_unknown_no_pattern_route_is_unresolved() -> None:
     assert result.classification == TriageClassification.UNRESOLVED
 
 
+def test_classify_no_pattern_with_japanese_text_stays_route_patch() -> None:
+    """No-pattern evidence is actionable even when the observed text includes Japanese."""
+    result = classify(_mk("ジョッパで Game saved!", kind=LogEntryKind.NO_PATTERN, route="MessageLogPatch"))
+    assert result.classification == TriageClassification.ROUTE_PATCH
+
+
 def test_classify_embedded_number() -> None:
     """Embedded numbers indicate a dynamic counter."""
     result = classify(_mk("Points Remaining: 12"))

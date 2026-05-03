@@ -34,15 +34,15 @@ internal static class StatusLineTranslationHelpers
             if (translatedSuffix is not null)
             {
                 var translatedValue = bonusCapMatch.Groups["value"].Value;
-                if (StringHelpers.TryGetTranslationExactOrLowerAscii(bonusCapMatch.Groups["value"].Value, out var valueTranslation))
+                if (TryTranslateCompareStatusValue(translatedValue, route, out var valueTranslation))
                 {
                     translatedValue = valueTranslation;
                 }
 
                 var rawStat = bonusCapMatch.Groups["stat"].Value;
-                var statTranslated = StringHelpers.TryGetTranslationExactOrLowerAscii(rawStat, out var translatedStat);
-                var statName = statTranslated ? translatedStat : rawStat;
-                var separator = statTranslated ? "" : " ";
+                var translatedStat = StringHelpers.TranslateExactOrLowerAscii(rawStat, route);
+                var statName = translatedStat ?? rawStat;
+                var separator = translatedStat is not null ? "" : " ";
 
                 translated = statName + separator + translatedSuffix + " " + translatedValue;
                 DynamicTextObservability.RecordTransform(route, family, source, translated);
@@ -94,7 +94,7 @@ internal static class StatusLineTranslationHelpers
 
         var value = match.Groups["value"].Value;
         var translatedValue = value;
-        if (translateValue && TryTranslateCompareStatusValue(value, out var valueTranslation))
+        if (translateValue && TryTranslateCompareStatusValue(value, route, out var valueTranslation))
         {
             translatedValue = valueTranslation;
         }
@@ -103,17 +103,19 @@ internal static class StatusLineTranslationHelpers
         return true;
     }
 
-    private static bool TryTranslateCompareStatusValue(string value, out string translated)
+    private static bool TryTranslateCompareStatusValue(string value, string route, out string translated)
     {
+        var contextual = StringHelpers.TranslateExactOrLowerAscii(value, route);
+        if (contextual is not null)
+        {
+            translated = contextual;
+            return true;
+        }
+
         var scoped = ScopedDictionaryLookup.TranslateExactOrLowerAscii(value, "world-mods.ja.json");
         if (!string.IsNullOrEmpty(scoped) && !string.Equals(scoped, value, StringComparison.Ordinal))
         {
             translated = scoped!;
-            return true;
-        }
-
-        if (StringHelpers.TryGetTranslationExactOrLowerAscii(value, out translated))
-        {
             return true;
         }
 

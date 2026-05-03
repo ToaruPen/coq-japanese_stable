@@ -127,6 +127,16 @@ public sealed class DescriptionTextTranslatorTests
     }
 
     [Test]
+    public void TranslateLongDescription_BrainDispositionFallbackKeepsEnglishValue()
+    {
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            "Base demeanor: {{g|unknown}}",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo("基本態度: {{g|unknown}}"));
+    }
+
+    [Test]
     public void TranslateLongDescription_DoesNotReportNoPattern_ForAlreadyLocalizedDispositionReason()
     {
         const string reason = "巡礼者に施しをしたため";

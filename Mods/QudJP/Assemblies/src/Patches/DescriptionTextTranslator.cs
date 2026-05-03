@@ -408,14 +408,15 @@ internal static class DescriptionTextTranslator
             "Engagement style:" => "交戦スタイル:",
             _ => string.Empty,
         };
-        var value = match.Groups["value"].Value switch
+        var rawValue = match.Groups["value"].Value;
+        var value = rawValue switch
         {
             "aggressive" => "攻撃的",
             "defensive" => "防御的",
             "docile" => "温和",
-            _ => string.Empty,
+            _ => rawValue,
         };
-        if (string.IsNullOrEmpty(label) || string.IsNullOrEmpty(value))
+        if (string.IsNullOrEmpty(label))
         {
             translated = source;
             return false;

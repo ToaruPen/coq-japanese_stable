@@ -100,6 +100,11 @@ public static class DescriptionInspectStatusPatch
 
     private static string TranslateInspectStatusText(string source, string context)
     {
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            return MessageFrameTranslator.MarkDirectTranslation(TranslateInspectStatusText(markedText, context));
+        }
+
         using var _ = Translator.PushLogContext(context);
         var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
             source,

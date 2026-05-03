@@ -79,6 +79,144 @@ public sealed class TradeLineTranslationPatchTests
         }
     }
 
+    [Test]
+    public void Postfix_FallbackKeepsEnglishCategoryAndItemText()
+    {
+        WriteDictionary(("Armor", "防具"));
+
+        WithPatchedTradeLine(target =>
+        {
+            target.setData(new DummyFrameworkDataElement
+            {
+                Title = "Weapons",
+                Description = "iron sword",
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.categoryText.text, Is.EqualTo("[+] Weapons"));
+                Assert.That(target.text.text, Is.EqualTo("iron sword"));
+                Assert.That(target.check.text, Is.EqualTo("{{W|1}}"));
+                Assert.That(target.rightFloatText.text, Is.EqualTo("[$1.00]"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TradeLineTranslationPatch), "TradeLine.CategoryText"),
+                    Is.EqualTo(0));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TradeLineTranslationPatch), "DisplayName.ExactLookup"),
+                    Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_EmptyInputLeavesTradeLineFieldsStable()
+    {
+        WriteDictionary(("Weapons", "武器"), ("iron sword", "鉄の剣"));
+
+        WithPatchedTradeLine(target =>
+        {
+            target.setData(new DummyFrameworkDataElement
+            {
+                Title = string.Empty,
+                Description = string.Empty,
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.categoryText.text, Is.EqualTo("[+] "));
+                Assert.That(target.text.text, Is.EqualTo(string.Empty));
+                Assert.That(target.check.text, Is.EqualTo("{{W|1}}"));
+                Assert.That(target.rightFloatText.text, Is.EqualTo("[$1.00]"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TradeLineTranslationPatch), "TradeLine.CategoryText"),
+                    Is.EqualTo(0));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TradeLineTranslationPatch), "DisplayName.ExactLookup"),
+                    Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_PreservesColorTagsAroundTranslatedCategoryAndItemText()
+    {
+        WriteDictionary(
+            ("Weapons", "武器"),
+            ("iron sword", "鉄の剣"));
+
+        WithPatchedTradeLine(target =>
+        {
+            target.setData(new DummyFrameworkDataElement
+            {
+                Title = "{{W|Weapons}}",
+                Description = "{{G|iron sword}}",
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.categoryText.text, Is.EqualTo("[+] {{W|武器}}"));
+                Assert.That(target.text.text, Is.EqualTo("{{G|鉄の剣}}"));
+                Assert.That(target.check.text, Is.EqualTo("{{W|1}}"));
+                Assert.That(target.rightFloatText.text, Is.EqualTo("[$1.00]"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TradeLineTranslationPatch), "TradeLine.CategoryText"),
+                    Is.EqualTo(1));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TradeLineTranslationPatch), "DisplayName.ExactLookup"),
+                    Is.EqualTo(1));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_PreservesDirectTranslationMarkerWithoutReapplyingTradeLineTranslations()
+    {
+        WriteDictionary(
+            ("Weapons", "武器"),
+            ("iron sword", "鉄の剣"));
+
+        WithPatchedTradeLine(target =>
+        {
+            target.setData(new DummyFrameworkDataElement
+            {
+                Title = "\x01Weapons",
+                Description = "\x01iron sword",
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.categoryText.text, Is.EqualTo("[+] \x01Weapons"));
+                Assert.That(target.text.text, Is.EqualTo("\x01iron sword"));
+                Assert.That(target.check.text, Is.EqualTo("{{W|1}}"));
+                Assert.That(target.rightFloatText.text, Is.EqualTo("[$1.00]"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TradeLineTranslationPatch), "TradeLine.CategoryText"),
+                    Is.EqualTo(0));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TradeLineTranslationPatch), "DisplayName.ExactLookup"),
+                    Is.EqualTo(0));
+            });
+        });
+    }
+
+    private static void WithPatchedTradeLine(Action<DummyTradeLine> action)
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyTradeLine), nameof(DummyTradeLine.setData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(TradeLineTranslationPatch), nameof(TradeLineTranslationPatch.Postfix))));
+
+            action(new DummyTradeLine());
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static MethodInfo RequireMethod(Type type, string methodName)
     {
         return AccessTools.Method(type, methodName)

@@ -315,6 +315,29 @@ public sealed class WorldModsTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslateCompareStatusLine_RecordsValueMissAgainstProvidedRoute()
+    {
+        WriteDictionary(
+            "ui-default.ja.json",
+            ("Weapon Class:", "武器カテゴリ:"));
+
+        var ok = StatusLineTranslationHelpers.TryTranslateCompareStatusLine(
+            "Weapon Class: Unknown Weapon Family",
+            "DescriptionShortDescriptionPatch",
+            "Description.CompareStatus",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("武器カテゴリ: Unknown Weapon Family"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("Unknown Weapon Family"), Is.EqualTo(1));
+            Assert.That(Translator.GetMissingRouteHitCountForTests("DescriptionShortDescriptionPatch"), Is.EqualTo(1));
+            Assert.That(Translator.GetMissingRouteHitCountForTests("<no-context>"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public void TryTranslateActiveEffectsLine_PartiallyTranslatesKnownEffectsAndKeepsMissingEffectsVisible()
     {
         WriteDictionary(

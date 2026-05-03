@@ -73,6 +73,31 @@ public sealed class DescriptionInspectStatusPatchTests
     }
 
     [Test]
+    public void TranslateInspectStatusText_EmptyInputReturnsEmptyWithoutMissingKeyNoise()
+    {
+        var translated = DescriptionInspectStatusPatch.TranslateInspectStatusTextForTests(string.Empty);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(string.Empty));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(string.Empty), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TranslateInspectStatusText_PreservesDirectTranslationMarkerAndTranslatesVisibleStatus()
+    {
+        var translated = DescriptionInspectStatusPatch.TranslateInspectStatusTextForTests("\x01{{G|Friendly}}");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("\x01{{G|友好}}"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("\x01{{G|Friendly}}"), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("\x01Friendly"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public void TranslateInspectStatusText_LeavesUnknownTextUnchangedWithoutMissingKeyNoise()
     {
         var translated = DescriptionInspectStatusPatch.TranslateInspectStatusTextForTests("Unknown Status");
