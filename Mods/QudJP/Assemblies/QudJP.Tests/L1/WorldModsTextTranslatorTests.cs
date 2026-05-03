@@ -338,6 +338,55 @@ public sealed class WorldModsTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslateCompareStatusLine_TranslatesValueWithoutMissingRouteNoise()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("Weapon Class:", "武器カテゴリ:"),
+            ("Bows && Rifles", "弓・ライフル"));
+
+        var ok = StatusLineTranslationHelpers.TryTranslateCompareStatusLine(
+            "Weapon Class: Bows && Rifles",
+            "DescriptionShortDescriptionPatch",
+            "Description.CompareStatus",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("武器カテゴリ: 弓・ライフル"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("Bows && Rifles"), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingRouteHitCountForTests("DescriptionShortDescriptionPatch"), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingRouteHitCountForTests("<no-context>"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TryTranslateCompareStatusSequence_TranslatesAllPartsWithoutMissingRouteNoise()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("Friendly", "友好"),
+            ("Neutral", "中立"));
+
+        var ok = StatusLineTranslationHelpers.TryTranslateCompareStatusSequence(
+            "Friendly, Neutral",
+            "DescriptionShortDescriptionPatch",
+            "Description.CompareStatusSequence",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("友好、中立"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("Friendly"), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("Neutral"), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingRouteHitCountForTests("DescriptionShortDescriptionPatch"), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingRouteHitCountForTests("<no-context>"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public void TryTranslateActiveEffectsLine_PartiallyTranslatesKnownEffectsAndKeepsMissingEffectsVisible()
     {
         WriteDictionary(
@@ -359,6 +408,77 @@ public sealed class WorldModsTextTranslatorTests
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests("TestRoute", "Description.ActiveEffects"),
                 Is.GreaterThan(0));
+        });
+    }
+
+    [Test]
+    public void TryTranslateActiveEffectsLine_TranslatesKnownEffectsWithoutMissingRouteNoise()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("ACTIVE EFFECTS:", "発動中の効果:"),
+            ("wet", "濡れている"));
+
+        var ok = StatusLineTranslationHelpers.TryTranslateActiveEffectsLine(
+            "ACTIVE EFFECTS: wet",
+            "DescriptionShortDescriptionPatch",
+            "Description.ActiveEffects",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("発動中の効果: 濡れている"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("ACTIVE EFFECTS:"), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("wet"), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingRouteHitCountForTests("DescriptionShortDescriptionPatch"), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingRouteHitCountForTests("<no-context>"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TryTranslateLevelExpLine_TranslatesLevelLabelWithoutMissingRouteNoise()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("LVL", "LV"));
+
+        var ok = StatusLineTranslationHelpers.TryTranslateLevelExpLine(
+            "LVL: 12 Exp: 345 / 678",
+            "DescriptionShortDescriptionPatch",
+            "Description.LevelExp",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("LV: 12 Exp: 345 / 678"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("LVL"), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingRouteHitCountForTests("DescriptionShortDescriptionPatch"), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingRouteHitCountForTests("<no-context>"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TryTranslateHpStatusLine_TranslatesStatusWithoutMissingRouteNoise()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("Wounded", "負傷"));
+
+        var ok = StatusLineTranslationHelpers.TryTranslateHpStatusLine(
+            "HP: Wounded",
+            "DescriptionShortDescriptionPatch",
+            "Description.HpStatus",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("HP: 負傷"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("Wounded"), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingRouteHitCountForTests("DescriptionShortDescriptionPatch"), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingRouteHitCountForTests("<no-context>"), Is.EqualTo(0));
         });
     }
 
