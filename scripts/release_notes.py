@@ -220,8 +220,8 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     """Run the release-notes CLI."""
     parser = build_parser()
-    args = parser.parse_args(argv)
     try:
+        args = parser.parse_args(argv)
         if args.command == "check-fragment":
             changed_files = args.changed_file or git_changed_files(args.base_ref, args.head_ref)
             check_fragment_requirement(changed_files, fragments_dir=args.fragments_dir)

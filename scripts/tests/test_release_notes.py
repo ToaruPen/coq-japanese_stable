@@ -14,6 +14,7 @@ from scripts.release_notes import (
     check_fragment_requirement,
     collect_fragments,
     git_changed_files,
+    main,
     render_changelog_entry,
     render_workshop_changenote,
 )
@@ -166,3 +167,12 @@ def test_git_changed_files_wraps_git_diff_errors(monkeypatch: pytest.MonkeyPatch
 
     with pytest.raises(ReleaseNoteError, match="git diff failed for bad\\.\\.\\.HEAD"):
         git_changed_files("bad", "HEAD")
+
+
+def test_main_reports_parse_errors_without_traceback(capsys: pytest.CaptureFixture[str]) -> None:
+    """CLI argument errors are normalized into the release-note error format."""
+    assert main(["render"]) == 1
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "error: the following arguments are required" in captured.err
