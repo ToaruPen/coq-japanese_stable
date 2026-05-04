@@ -15,6 +15,7 @@ QudJP の翻訳ワークフローを支援する Python スクリプト群です
 | `diff_localization.py` | 翻訳カバレッジ比較 |
 | `extract_base.py` | ゲーム XML の抽出 |
 | `sync_mod.py` | Mod ファイルの配備 |
+| `build_workshop_upload.py` | Steam Workshop 用 staging / steamcmd VDF 生成 |
 | `translation_checker.py` | Rosetta 起動で既知セーブを開き、翻訳確認用スクリーンショットを取得 |
 
 ---
@@ -252,6 +253,47 @@ python scripts/sync_mod.py --dry-run
 ```
 
 `rsync` が利用可能な環境では rsync を使い、無い環境では Python コピー実装に自動フォールバックします。
+
+**終了コード**: 0 = 正常終了、1 = エラー
+
+---
+
+## build_workshop_upload.py
+
+`scripts/build_workshop_upload.py` は `scripts/build_release.py` が作成した
+`dist/QudJP-v*.zip` から Steam Workshop 用の staging directory と
+`steamcmd` 用 VDF を生成します。Workshop item ID や title などの公開
+metadata は `steam/workshop_metadata.json`、Workshop description は
+`steam/workshop_description.ja.txt` を source of truth にします。Workshop
+changenote は `steam/changenote_template.txt` を一時ファイルにコピーし、
+`git log --oneline <previous-tag>..HEAD` と
+`git rev-parse --short=12 HEAD` を見て埋めます。
+
+**使い方**:
+
+```bash
+# 最新の dist/QudJP-v*.zip から dist/workshop/ を生成
+python3.12 scripts/build_workshop_upload.py \
+  --changenote-file /tmp/qudjp-workshop-changenote.txt
+
+# 特定の release ZIP を指定
+python3.12 scripts/build_workshop_upload.py \
+  --release-zip dist/QudJP-v0.2.0.zip \
+  --changenote-file /tmp/qudjp-workshop-changenote.txt
+```
+
+**出力**:
+
+- `dist/workshop/QudJP/`: Steam Workshop にアップロードする content folder
+- `dist/workshop/workshop_item.vdf`: `steamcmd workshop_build_item` に渡す VDF
+
+**アップロード例**:
+
+```bash
+steamcmd +login "$STEAM_USER" +workshop_build_item dist/workshop/workshop_item.vdf +quit
+```
+
+Steam credentials、2FA material、login script は repo に置かないでください。
 
 **終了コード**: 0 = 正常終了、1 = エラー
 
