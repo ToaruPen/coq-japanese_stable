@@ -12,7 +12,6 @@ from typing import Self
 
 FRAGMENTS_DIR = Path("docs/release-notes/unreleased")
 LOCALIZATION_PREFIX = "Mods/QudJP/Localization/"
-FRAGMENT_PREFIX = "docs/release-notes/unreleased/"
 SECTION_ORDER = ("Added", "Changed", "Fixed", "Removed", "Deprecated", "Security")
 
 
@@ -31,18 +30,26 @@ class ReleaseNoteFragments:
         return any(self.sections.values())
 
 
-def _is_fragment_path(path: str) -> bool:
-    return path.startswith(FRAGMENT_PREFIX) and path.endswith(".md") and not path.endswith("/README.md")
+def _fragment_prefix(fragments_dir: Path) -> str:
+    """Return the changed-file prefix for a fragment directory."""
+    return f"{fragments_dir.as_posix().rstrip('/')}/"
+
+
+def _is_fragment_path(path: str, *, fragment_prefix: str) -> bool:
+    """Return whether a changed file path is an unreleased fragment."""
+    return path.startswith(fragment_prefix) and path.endswith(".md") and not path.endswith("/README.md")
 
 
 def _is_localization_path(path: str) -> bool:
+    """Return whether a changed file path is a localization asset."""
     return path.startswith(LOCALIZATION_PREFIX)
 
 
 def check_fragment_requirement(changed_files: list[str], *, fragments_dir: Path = FRAGMENTS_DIR) -> None:
     """Require an unreleased fragment when localization assets change."""
     has_localization_change = any(_is_localization_path(path) for path in changed_files)
-    has_fragment_change = any(_is_fragment_path(path) for path in changed_files)
+    fragment_prefix = _fragment_prefix(fragments_dir)
+    has_fragment_change = any(_is_fragment_path(path, fragment_prefix=fragment_prefix) for path in changed_files)
     if not has_localization_change:
         return
     if not has_fragment_change:
@@ -142,21 +149,28 @@ def git_changed_files(base_ref: str, head_ref: str) -> list[str]:
     if git is None:
         msg = "git executable not found"
         raise ReleaseNoteError(msg)
-    result = subprocess.run(  # noqa: S603
-        [git, "diff", "--name-only", f"{base_ref}...{head_ref}"],
-        check=True,
-        stdout=subprocess.PIPE,
-        text=True,
-    )
+    try:
+        result = subprocess.run(  # noqa: S603
+            [git, "diff", "--name-only", f"{base_ref}...{head_ref}"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        detail = (exc.stderr or "").strip() or str(exc)
+        msg = f"git diff failed for {base_ref}...{head_ref}: {detail}"
+        raise ReleaseNoteError(msg) from exc
     return [line for line in result.stdout.splitlines() if line]
 
 
 def _write_output(path: Path, text: str) -> None:
+    """Write rendered release-note output to a UTF-8 file."""
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
 
 
 def _require_fragments(fragments_dir: Path) -> ReleaseNoteFragments:
+    """Collect fragments and fail if no release-note entries exist."""
     fragments = collect_fragments(fragments_dir)
     if not fragments.has_entries():
         msg = f"No release-note fragments found under {fragments_dir}"

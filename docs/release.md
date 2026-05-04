@@ -153,14 +153,12 @@ PY
 
 ## Generate Workshop Upload Files
 
-Draft the Workshop changenote from the template. Put the short git hash next to
-the version, and summarize the accumulated commits as user-visible changes:
+Use the rendered Workshop changenote draft from the Release Notes step as the
+baseline. If needed, enrich it with commit-range context before upload:
 
 ```bash
 git describe --tags --abbrev=0
 git log --oneline <previous-tag>..HEAD
-git rev-parse --short=12 HEAD
-cp steam/changenote_template.txt /tmp/qudjp-workshop-changenote.txt
 $EDITOR /tmp/qudjp-workshop-changenote.txt
 ```
 

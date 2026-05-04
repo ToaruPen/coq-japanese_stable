@@ -2,20 +2,24 @@
 
 from __future__ import annotations
 
+import subprocess
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
 
+from scripts import release_notes
 from scripts.release_notes import (
     ReleaseNoteError,
     check_fragment_requirement,
     collect_fragments,
+    git_changed_files,
     render_changelog_entry,
     render_workshop_changenote,
 )
 
 if TYPE_CHECKING:
-    from pathlib import Path
+    from collections.abc import Sequence
 
 
 def test_collect_fragments_groups_keep_a_changelog_sections(tmp_path: Path) -> None:
@@ -105,27 +109,35 @@ def test_check_fragment_requirement_requires_fragment_for_localization_change() 
         check_fragment_requirement(changed_files)
 
 
-def test_check_fragment_requirement_passes_when_fragment_changes(tmp_path: Path) -> None:
+def test_check_fragment_requirement_passes_when_fragment_changes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Localization updates are accepted when an unreleased fragment is present."""
-    fragments_dir = tmp_path / "docs" / "release-notes" / "unreleased"
+    monkeypatch.chdir(tmp_path)
+    fragments_dir = Path("custom-release-notes")
     fragments_dir.mkdir(parents=True)
     (fragments_dir / "ui-popup.md").write_text("### Fixed\n\n- Fix popup translation coverage.\n", encoding="utf-8")
     changed_files = [
         "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
-        "docs/release-notes/unreleased/ui-popup.md",
+        "custom-release-notes/ui-popup.md",
     ]
 
     check_fragment_requirement(changed_files, fragments_dir=fragments_dir)
 
 
-def test_check_fragment_requirement_rejects_malformed_fragment(tmp_path: Path) -> None:
+def test_check_fragment_requirement_rejects_malformed_fragment(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Localization PRs must include a parseable release-note fragment."""
-    fragments_dir = tmp_path / "docs" / "release-notes" / "unreleased"
+    monkeypatch.chdir(tmp_path)
+    fragments_dir = Path("custom-release-notes")
     fragments_dir.mkdir(parents=True)
     (fragments_dir / "ui-popup.md").write_text("### Unknown\n\n- Fix popup translation coverage.\n", encoding="utf-8")
     changed_files = [
         "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
-        "docs/release-notes/unreleased/ui-popup.md",
+        "custom-release-notes/ui-popup.md",
     ]
 
     with pytest.raises(ReleaseNoteError, match="unsupported release-note section"):
@@ -135,3 +147,22 @@ def test_check_fragment_requirement_rejects_malformed_fragment(tmp_path: Path) -
 def test_check_fragment_requirement_ignores_non_localization_changes() -> None:
     """Non-localization PRs do not need release-note fragments."""
     check_fragment_requirement(["scripts/release_notes.py"])
+
+
+def test_git_changed_files_wraps_git_diff_errors(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Git diff failures are reported as release-note CLI errors."""
+
+    def fake_run(
+        _args: Sequence[str],
+        **_kwargs: object,
+    ) -> subprocess.CompletedProcess[str]:
+        raise subprocess.CalledProcessError(
+            returncode=128,
+            cmd="git diff --name-only bad...HEAD",
+            stderr="fatal: bad revision 'bad...HEAD'",
+        )
+
+    monkeypatch.setattr(release_notes.subprocess, "run", fake_run)
+
+    with pytest.raises(ReleaseNoteError, match="git diff failed for bad\\.\\.\\.HEAD"):
+        git_changed_files("bad", "HEAD")

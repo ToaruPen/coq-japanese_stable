@@ -1,6 +1,6 @@
 # Unreleased Release Notes
 
-Add one markdown fragment here when a PR changes user-visible localization.
+Add at least one markdown fragment here when a PR changes user-visible localization.
 
 Fragments use Keep a Changelog section headings:
 
