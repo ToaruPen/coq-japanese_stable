@@ -69,16 +69,7 @@ public static class MainMenuRowTranslationPatch
 
     private static string TranslateProducerText(string source)
     {
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
-        {
-            return markedText;
-        }
-
-        return ColorAwareTranslationComposer.TranslatePreservingColors(
-            source,
-            static visible => StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var translated)
-                ? translated
-                : visible);
+        return MainMenuLocalizationPatch.TranslateProducerText(source);
     }
 
     private static string? GetStringMemberValue(object instance, string memberName)

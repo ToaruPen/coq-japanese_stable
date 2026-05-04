@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text;
 using HarmonyLib;
+using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
 
 namespace QudJP.Tests.L2;
@@ -22,6 +23,8 @@ public sealed class GameManagerUpdateSelectedAbilityPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        LocalizationAssetResolver.SetLocalizationRootForTests(tempDirectory);
+        ChargenStructuredTextTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
     }
@@ -30,6 +33,8 @@ public sealed class GameManagerUpdateSelectedAbilityPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        ChargenStructuredTextTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
 
@@ -109,6 +114,36 @@ public sealed class GameManagerUpdateSelectedAbilityPatchTests
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(QudJP.Patches.GameManagerUpdateSelectedAbilityPatch),
                         "GameManager.SelectedAbility"),
+                    Is.GreaterThan(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesGeneratedReleaseGasAbilityName_FromMutationDisplayName()
+    {
+        WriteDictionary(("[{0} turns]", "[{0}ターン]"));
+        WriteMutationsXml(("Corrosive Gas Generation", "腐食性ガス生成"));
+
+        RunWithPostfixPatch(() =>
+        {
+            var target = new DummyGameManagerSelectedAbilityTarget
+            {
+                NextSelectedAbilityText =
+                    "<color=#666666><sprite=0><sprite=1></color> <color=#FFFFFF><color=#FFFF00><sprite=2></color> Release Corrosive Gas [3 turns]</color>",
+            };
+
+            target.UpdateSelectedAbility();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    target.selectedAbilityText.text,
+                    Is.EqualTo("<color=#666666><sprite=0><sprite=1></color> <color=#FFFFFF><color=#FFFF00><sprite=2></color> 腐食性ガス放出 [3ターン]</color>"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(QudJP.Patches.GameManagerUpdateSelectedAbilityPatch),
+                        "GameManager.SelectedAbilityName"),
                     Is.GreaterThan(0));
             });
         });
@@ -347,6 +382,23 @@ public sealed class GameManagerUpdateSelectedAbilityPatchTests
         writer.WriteLine("]}");
     }
 
+    private void WriteMutationsXml(params (string name, string displayName)[] entries)
+    {
+        var path = Path.Combine(tempDirectory, "Mutations.jp.xml");
+        using var writer = new StreamWriter(path, append: false, Utf8WithoutBom);
+        writer.WriteLine("<mutations>");
+        foreach (var entry in entries)
+        {
+            writer.Write("  <mutation Name=\"");
+            writer.Write(EscapeXml(entry.name));
+            writer.Write("\" DisplayName=\"");
+            writer.Write(EscapeXml(entry.displayName));
+            writer.WriteLine("\" />");
+        }
+
+        writer.WriteLine("</mutations>");
+    }
+
     private static string EscapeJson(string value)
     {
         return value
@@ -355,6 +407,15 @@ public sealed class GameManagerUpdateSelectedAbilityPatchTests
             .Replace("\n", "\\n", StringComparison.Ordinal)
             .Replace("\r", "\\r", StringComparison.Ordinal)
             .Replace("\t", "\\t", StringComparison.Ordinal);
+    }
+
+    private static string EscapeXml(string value)
+    {
+        return value
+            .Replace("&", "&amp;", StringComparison.Ordinal)
+            .Replace("\"", "&quot;", StringComparison.Ordinal)
+            .Replace("<", "&lt;", StringComparison.Ordinal)
+            .Replace(">", "&gt;", StringComparison.Ordinal);
     }
 
     private sealed class ReadOnlyDummyGameManagerSelectedAbilityTarget

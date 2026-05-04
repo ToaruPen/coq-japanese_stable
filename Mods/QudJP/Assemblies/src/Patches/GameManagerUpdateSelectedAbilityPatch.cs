@@ -121,9 +121,16 @@ public static class GameManagerUpdateSelectedAbilityPatch
             return false;
         }
 
-        var translatedName = GetDisplayNameRouteTranslator.TranslatePreservingColors(
-            abilityMatch.Groups["name"].Value,
-            ObservabilityHelpers.ComposeContext(Context, "field=selectedAbilityText", "segment=name"));
+        var nameRoute = ObservabilityHelpers.ComposeContext(Context, "field=selectedAbilityText", "segment=name");
+        var sourceName = abilityMatch.Groups["name"].Value;
+        var translatedName = ActivatedAbilityNameTranslator.TranslatePreservingColors(
+            sourceName,
+            nameRoute,
+            "GameManager.SelectedAbilityName");
+        if (string.Equals(translatedName, sourceName, StringComparison.Ordinal))
+        {
+            translatedName = GetDisplayNameRouteTranslator.TranslatePreservingColors(sourceName, nameRoute);
+        }
 
         var cooldownGroup = abilityMatch.Groups["cooldown"];
         var translatedCooldown = cooldownGroup.Value;

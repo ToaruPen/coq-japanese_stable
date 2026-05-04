@@ -70,6 +70,7 @@
   </object>
 
   <object Name="SaltyWaterPuddle" Inherits="Water" Replace="true">
+    <part Name="Render" DisplayName="塩水の水たまり" Tile="Liquids/Water/puddle_1.png" RenderString="~" ColorString="&amp;b" RenderLayer="2" RenderIfDark="true" />
     <part Name="LiquidVolume" MaxVolume="-1" Volume="500" InitialLiquid="water-600,salt-400" />
   </object>
   <object Name="SaltyWaterDeepPool" Inherits="Water" Replace="true">

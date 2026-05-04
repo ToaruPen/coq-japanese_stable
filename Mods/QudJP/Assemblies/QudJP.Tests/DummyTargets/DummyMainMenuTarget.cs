@@ -96,10 +96,13 @@ internal sealed class DummyFrameworkScroller
 {
     public List<DummyNavMenuOption> choices = new List<DummyNavMenuOption>();
 
+    public List<string> renderedDescriptions = new List<string>();
+
     public void BeforeShow(object? descriptor, IEnumerable<DummyNavMenuOption>? selections = null)
     {
         _ = descriptor;
         choices = selections?.ToList() ?? new List<DummyNavMenuOption>();
+        renderedDescriptions = choices.Select(static choice => choice.Description).ToList();
     }
 }
 
@@ -115,4 +118,28 @@ internal sealed class DummyNavMenuOption
     public string? KeyDescription;
 
     public string? InputCommand;
+}
+
+internal sealed class DummyCreditsTarget
+{
+    public DummyFrameworkScroller hotkeyBar = new DummyFrameworkScroller();
+
+    public static List<DummyNavMenuOption> LastHotkeyChoices { get; private set; } = new List<DummyNavMenuOption>();
+
+    public static void ResetDefaults()
+    {
+        LastHotkeyChoices = new List<DummyNavMenuOption>();
+    }
+
+    public void UpdateMenuBars()
+    {
+        var list = new List<DummyNavMenuOption>
+        {
+            new DummyNavMenuOption("navigate") { InputCommand = "NavigationXYAxis" },
+            new DummyNavMenuOption("select") { KeyDescription = "space" },
+        };
+
+        hotkeyBar.BeforeShow(null, list);
+        LastHotkeyChoices = hotkeyBar.choices;
+    }
 }

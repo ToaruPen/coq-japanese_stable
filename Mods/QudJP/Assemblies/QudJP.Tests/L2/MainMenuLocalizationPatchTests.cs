@@ -97,6 +97,34 @@ public sealed class MainMenuLocalizationPatchTests
     }
 
     [Test]
+    public void Postfix_DoesNotRetranslateModMenuLabel_WhenMainMenuRefreshes()
+    {
+        WriteDictionary(
+            ("Mods", "Mod"),
+            ("Mod", "改造"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMainMenuTarget), nameof(DummyMainMenuTarget.Show)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(MainMenuLocalizationPatch), nameof(MainMenuLocalizationPatch.Postfix))));
+
+            var target = new DummyMainMenuTarget();
+            target.Show();
+            target.Show();
+
+            Assert.That(DummyMainMenuTarget.LeftOptions[1].Text, Is.EqualTo("Mod"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Postfix_TranslatesHotkeyBarDescriptions_WhenUpdateMenuBarsRuns()
     {
         WriteDictionary(
@@ -121,6 +149,7 @@ public sealed class MainMenuLocalizationPatchTests
                 Assert.That(DummyMainMenuTarget.LastHotkeyChoices[0].Description, Is.EqualTo("移動"));
                 Assert.That(DummyMainMenuTarget.LastHotkeyChoices[1].Description, Is.EqualTo("選択"));
                 Assert.That(DummyMainMenuTarget.LastHotkeyChoices[2].Description, Is.EqualTo("終了"));
+                Assert.That(target.hotkeyBar.renderedDescriptions, Is.EqualTo(new[] { "移動", "選択", "終了" }));
             });
         }
         finally

@@ -111,60 +111,93 @@ public static class MainMenuLocalizationPatch
             return;
         }
 
-        TranslateCollectionField(
-            AccessTools.Field(hotkeyBar.GetType(), "choices")?.GetValue(hotkeyBar),
+        var choices = AccessTools.Field(hotkeyBar.GetType(), "choices")?.GetValue(hotkeyBar);
+        if (TranslateCollectionField(
+            choices,
             "Description",
-            "MainMenu.HotkeyBar");
+            "MainMenu.HotkeyBar")
+            && choices is IEnumerable hotkeyChoices)
+        {
+            InvokeBeforeShow(hotkeyBar, hotkeyChoices);
+        }
     }
 
-    private static void TranslateCollectionField(object? maybeCollection, string fieldName, string family)
+    private static bool TranslateCollectionField(object? maybeCollection, string fieldName, string family)
     {
         if (maybeCollection is null || string.IsNullOrEmpty(fieldName) || maybeCollection is string)
         {
-            return;
+            return false;
         }
 
         if (maybeCollection is not IEnumerable collection)
         {
-            return;
+            return false;
         }
 
+        var changed = false;
         foreach (var item in collection)
         {
-            TranslateField(item, fieldName, family);
+            changed |= TranslateField(item, fieldName, family);
         }
+
+        return changed;
     }
 
-    private static void TranslateField(object? item, string fieldName, string family)
+    private static bool TranslateField(object? item, string fieldName, string family)
     {
         if (item is null)
         {
-            return;
+            return false;
         }
 
         var field = AccessTools.Field(item.GetType(), fieldName);
         if (field is null || field.FieldType != typeof(string))
         {
-            return;
+            return false;
         }
 
         var current = field.GetValue(item) as string;
         if (string.IsNullOrEmpty(current))
         {
-            return;
+            return false;
         }
 
         var translated = TranslateProducerText(current!);
         if (string.Equals(translated, current, StringComparison.Ordinal))
         {
-            return;
+            return false;
         }
 
         DynamicTextObservability.RecordTransform(Context, family, current, translated);
         field.SetValue(item, translated);
+        return true;
     }
 
-    private static string TranslateProducerText(string source)
+    private static void InvokeBeforeShow(object hotkeyBar, IEnumerable choices)
+    {
+        var beforeShow = AccessTools.Method(hotkeyBar.GetType(), "BeforeShow");
+        if (beforeShow is null)
+        {
+            return;
+        }
+
+        var parameterCount = beforeShow.GetParameters().Length;
+        if (parameterCount == 0)
+        {
+            _ = beforeShow.Invoke(hotkeyBar, null);
+            return;
+        }
+
+        if (parameterCount == 1)
+        {
+            _ = beforeShow.Invoke(hotkeyBar, new object?[] { choices });
+            return;
+        }
+
+        _ = beforeShow.Invoke(hotkeyBar, new object?[] { null, choices });
+    }
+
+    internal static string TranslateProducerText(string source)
     {
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
@@ -180,8 +213,19 @@ public static class MainMenuLocalizationPatch
 
         return ColorAwareTranslationComposer.TranslatePreservingColors(
             source,
-            static visible => StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var translated)
+            static visible => TryTranslateVisibleText(visible, out var translated)
                 ? translated
                 : visible);
+    }
+
+    private static bool TryTranslateVisibleText(string visible, out string translated)
+    {
+        if (string.Equals(visible, "Mod", StringComparison.Ordinal))
+        {
+            translated = visible;
+            return true;
+        }
+
+        return StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out translated);
     }
 }

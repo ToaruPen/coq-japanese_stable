@@ -1748,6 +1748,11 @@
       "key": "serrated",
       "context": "GetDisplayName.Adjective",
       "text": "{{Y|鋸歯状の}}"
+    },
+    {
+      "key": "bronze",
+      "context": "GetDisplayName.Adjective",
+      "text": "青銅"
     }
   ]
 }

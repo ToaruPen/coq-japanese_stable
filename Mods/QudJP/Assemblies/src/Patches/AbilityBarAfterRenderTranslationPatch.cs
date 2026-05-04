@@ -145,10 +145,11 @@ public static class AbilityBarAfterRenderTranslationPatch
                 break;
             }
 
+            translatedParts.Add(ColorAwareTranslationComposer.RestoreSlice("、", spans, startIndex + separatorIndex, 2));
             partStart = separatorIndex + 2;
         }
 
-        return string.Join("、", translatedParts);
+        return string.Concat(translatedParts);
     }
 
     private static bool TryTranslateTargetText(string source, string route, out string translated)

@@ -11583,7 +11583,8 @@
     <part Name="Brain" Wanders="True" Calm="True" Factions="Joppa-100" />
     <part Name="Description" Short="星の帯がかかったある夜、レイキャットが湿った沃土を横切ってジョッパへ迷い込んだ。小さな少女の歓声に起こされたウォーターヴァイン農家たちは集まり、吉兆を寿ぎ、ビートルムーンの寛大さを称えた。それ以来、クテシフスは塩茎の小屋の陰で体を丸め、土の道をのんびりと歩いて過ごしている。慎重に近づきさえすれば、友にも見知らぬ者にも撫でさせてくれる。  &amp;mphosphorescent&amp;y" />
     <part Name="Raycat" />
-    <part Name="Pettable" PettableIfPositiveFeeling="True" UseFactionForFeelingFloor="Joppa" PetResponse="=subject.T=がにゃあと鳴く。" />
+    <part Name="Pettable" PettableIfPositiveFeeling="True" UseFactionForFeelingFloor="Joppa" />
+    <tag Name="PetResponse" Value="=subject.T=がにゃあと鳴く。" />
     <tag Name="ExcludeFromDynamicEncounters" Value="*noinherit" />
     <part Name="AISelfPreservation" Threshold="40" />
     <part Name="Interesting" />

@@ -105,6 +105,167 @@ public sealed class ActiveEffectsOwnerPatchTests
     }
 
     [Test]
+    public void EffectDescriptionAndDetailsPatches_TranslateOverrideOwnerText_WhenPatched()
+    {
+        WriteDictionary(
+            ("{{B|wet}}", "{{B|濡れている}}"),
+            ("salty water", "塩水"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyLiquidCoveredEffectTarget), nameof(DummyLiquidCoveredEffectTarget.GetDescription)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDescriptionPatch), nameof(EffectDescriptionPatch.Postfix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyLiquidCoveredEffectTarget), nameof(DummyLiquidCoveredEffectTarget.GetDetails)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDetailsPatch), nameof(EffectDetailsPatch.Postfix))));
+
+            var effect = new DummyLiquidCoveredEffectTarget();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(effect.GetDescription(), Is.EqualTo("{{B|濡れている}}"));
+                Assert.That(effect.GetDetails(), Is.EqualTo("塩水を30ドラム浴びている。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void EffectDescriptionPatch_TranslatesGeneratedDescriptionTemplates_WhenPatched()
+    {
+        WriteDictionary(
+            ("dominated ({0} turns remaining)", "支配された（残り{0}ターン）"),
+            ("time-dilated ({{C|-{0}}} Quickness)", "時間遅延 ({{C|-{0}}} Quickness)"),
+            ("lying on {0}", "{0}に横たわっている"),
+            ("engulfed by {0}", "{0}に呑み込まれている"),
+            ("piloting {0}", "{0}を操縦中"),
+            ("marked by {0}", "{0}にマークされている"),
+            ("cleaved ({{C|-{0} AV}})", "裂かれた（{{C|-{0} AV}}）"),
+            ("psionically cleaved (-{0} MA)", "精神的に裂かれた（-{0} MA）"),
+            ("a chair", "椅子"),
+            ("a starapple tree", "スターアップルの木"),
+            ("a hovercraft", "ホバークラフト"),
+            ("a snapjaw hunter", "スナップジョーの狩人"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDescription)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDescriptionPatch), nameof(EffectDescriptionPatch.Postfix))));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(new DummyEffect { DescriptionText = "dominated (3 turns remaining)" }.GetDescription(), Is.EqualTo("支配された（残り3ターン）"));
+                Assert.That(new DummyEffect { DescriptionText = "time-dilated ({{C|-40}} Quickness)" }.GetDescription(), Is.EqualTo("時間遅延 ({{C|-40}} Quickness)"));
+                Assert.That(new DummyEffect { DescriptionText = "{{C|lying on a chair}}" }.GetDescription(), Is.EqualTo("{{C|椅子に横たわっている}}"));
+                Assert.That(new DummyEffect { DescriptionText = "{{B|engulfed by a starapple tree}}" }.GetDescription(), Is.EqualTo("{{B|スターアップルの木に呑み込まれている}}"));
+                Assert.That(new DummyEffect { DescriptionText = "{{C|piloting a hovercraft}}" }.GetDescription(), Is.EqualTo("{{C|ホバークラフトを操縦中}}"));
+                Assert.That(new DummyEffect { DescriptionText = "{{R|marked by a snapjaw hunter}}" }.GetDescription(), Is.EqualTo("{{R|スナップジョーの狩人にマークされている}}"));
+                Assert.That(new DummyEffect { DescriptionText = "{{r|cleaved ({{C|-3 AV}})}}" }.GetDescription(), Is.EqualTo("{{r|裂かれた（{{C|-3 AV}}）}}"));
+                Assert.That(new DummyEffect { DescriptionText = "{{psionic|psionically cleaved (-2 MA)}}" }.GetDescription(), Is.EqualTo("{{psionic|精神的に裂かれた（-2 MA）}}"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void EffectOwnerTargetResolver_IncludesBaseAndNonCookingOverrideDescriptionMethods()
+    {
+        WriteDictionary(
+            ("base effect", "基本効果"),
+            ("{{B|wet}}", "{{B|濡れている}}"));
+
+        var targets = ActiveEffectOwnerTargetResolver.ResolveTargetMethods(
+                typeof(DummyEffectBaseTarget),
+                nameof(DummyEffectBaseTarget.GetDescription))
+            .ToArray();
+
+        Assert.That(
+            targets.Select(static method => method.DeclaringType?.Name + "." + method.Name),
+            Is.EquivalentTo(new[]
+            {
+                "DummyEffectBaseTarget.GetDescription",
+                "DummyLiquidCoveredEffectTarget.GetDescription",
+            }));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            for (var index = 0; index < targets.Length; index++)
+            {
+                harmony.Patch(
+                    original: targets[index],
+                    postfix: new HarmonyMethod(RequireMethod(typeof(EffectDescriptionPatch), nameof(EffectDescriptionPatch.Postfix))));
+            }
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(new DummyEffectBaseTarget().GetDescription(), Is.EqualTo("基本効果"));
+                Assert.That(new DummyLiquidCoveredEffectTarget().GetDescription(), Is.EqualTo("{{B|濡れている}}"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void EffectOwnerTargetResolver_IncludesBaseAndNonCookingOverrideDetailsMethods()
+    {
+        WriteDictionary(
+            ("base details", "基本詳細"),
+            ("salty water", "塩水"));
+
+        var targets = ActiveEffectOwnerTargetResolver.ResolveTargetMethods(
+                typeof(DummyEffectBaseTarget),
+                nameof(DummyEffectBaseTarget.GetDetails))
+            .ToArray();
+
+        Assert.That(
+            targets.Select(static method => method.DeclaringType?.Name + "." + method.Name),
+            Is.EquivalentTo(new[]
+            {
+                "DummyEffectBaseTarget.GetDetails",
+                "DummyLiquidCoveredEffectTarget.GetDetails",
+            }));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            for (var index = 0; index < targets.Length; index++)
+            {
+                harmony.Patch(
+                    original: targets[index],
+                    postfix: new HarmonyMethod(RequireMethod(typeof(EffectDetailsPatch), nameof(EffectDetailsPatch.Postfix))));
+            }
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(new DummyEffectBaseTarget().GetDetails(), Is.EqualTo("基本詳細"));
+                Assert.That(new DummyLiquidCoveredEffectTarget().GetDetails(), Is.EqualTo("塩水を30ドラム浴びている。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void CharacterStatusScreenHighlightEffectPatch_TranslatesStatusPaneOwnerText_WhenPatched()
     {
         WriteDictionary(
@@ -132,6 +293,84 @@ public sealed class ActiveEffectsOwnerPatchTests
             });
 
             Assert.That(screen.mutationsDetails.Text, Is.EqualTo("濡れ\n\nスライムに覆われている。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void EffectDescriptionAndDetailsPatches_DoNotCorruptNestedLiquidColorMarkup_WhenPatched()
+    {
+        WriteDictionary(
+            ("wet", "{{B|濡れた}}"),
+            ("salty water", "塩水"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDescription)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDescriptionPatch), nameof(EffectDescriptionPatch.Postfix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDetails)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDetailsPatch), nameof(EffectDetailsPatch.Postfix))));
+
+            var effect = new DummyEffect
+            {
+                DescriptionText = "{{B|{{B|wet}}}}",
+                DetailsText = "Covered in 43 dram of {{Y|salty}} {{B|water}}.",
+            };
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(effect.GetDescription(), Is.EqualTo("{{B|濡れた}}"));
+                Assert.That(effect.GetDetails(), Is.EqualTo("塩水を43ドラム浴びている。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void CharacterStatusScreenHighlightEffectPatch_TranslatesRuntimeLiquidAndMovementDetails_WhenPatched()
+    {
+        WriteDictionary(
+            ("{{B|wet}}", "{{B|濡れている}}"),
+            ("wading", "浅瀬を進んでいる"),
+            ("salty water", "塩水"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDescription)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDescriptionPatch), nameof(EffectDescriptionPatch.Postfix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDetails)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDetailsPatch), nameof(EffectDetailsPatch.Postfix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyCharacterEffectStatusScreen), nameof(DummyCharacterEffectStatusScreen.HandleHighlightEffect)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(CharacterStatusScreenHighlightEffectPatch), nameof(CharacterStatusScreenHighlightEffectPatch.Postfix))));
+
+            var screen = new DummyCharacterEffectStatusScreen();
+            screen.HandleHighlightEffect(new DummyCharacterEffectLineData
+            {
+                effect = new DummyEffect
+                {
+                    DescriptionText = "{{B|wet}}",
+                    DetailsText = "Covered in 30 dram of salty water.\n\nwading\n-20 move speed.",
+                },
+            });
+
+            Assert.That(
+                screen.mutationsDetails.Text,
+                Is.EqualTo("{{B|濡れている}}\n\n塩水を30ドラム浴びている。\n\n浅瀬を進んでいる\n移動速度 -20。"));
         }
         finally
         {

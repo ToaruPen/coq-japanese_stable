@@ -48,7 +48,7 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
             ("Sated", "満腹"),
             ("Quenched", "潤沢"),
             ("World Map", "ワールドマップ"),
-            ("Harvest Dawn", "ハーヴェスト・ドーン"),
+            ("Harvest Dawn", "収穫の夜明け"),
             ("Kisu Ux", "キス・ウクス"),
             ("Seriously Wounded", "重傷"));
 
@@ -75,7 +75,7 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(instance.GetStringData("FoodWater"), Is.EqualTo("満腹 潤沢"));
-                Assert.That(instance.GetStringData("Time"), Is.EqualTo("ハーヴェスト・ドーン キス・ウクス16日"));
+                Assert.That(instance.GetStringData("Time"), Is.EqualTo("収穫の夜明け キス・ウクス16日"));
                 Assert.That(instance.GetStringData("Zone"), Is.EqualTo("ワールドマップ"));
                 Assert.That(instance.GetStringData("ZoneOnly"), Is.EqualTo("ワールドマップ"));
                 Assert.That(instance.GetStringData("HPBar"), Is.EqualTo("{{Y|HP: {{R|重傷}}}}"));
@@ -93,7 +93,7 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
         WriteDictionary(
             ("Sated", "満腹"),
             ("Wet", "濡れ"),
-            ("Harvest Dawn", "ハーヴェスト・ドーン"),
+            ("Harvest Dawn", "収穫の夜明け"),
             ("Tuum Ut", "トゥーム・ウト"));
 
         var translateMethod = RequirePatchMethod("TranslatePlayerStringData", typeof(object));
@@ -115,7 +115,7 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(instance.GetStringData("FoodWater"), Is.EqualTo("{{g|満腹}} {{b|濡れ}}"));
-            Assert.That(instance.GetStringData("Time"), Is.EqualTo("ハーヴェスト・ドーン トゥーム・ウト30日"));
+            Assert.That(instance.GetStringData("Time"), Is.EqualTo("収穫の夜明け トゥーム・ウト30日"));
             Assert.That(
                 instance.PlayerStringsDirtyForTests,
                 Is.True,
@@ -168,7 +168,7 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
         WriteDictionary(
             ("sated", "満腹"),
             ("quenched", "潤沢"),
-            ("harvest dawn", "ハーヴェスト・ドーン"),
+            ("harvest dawn", "収穫の夜明け"),
             ("kisu ux", "キス・ウクス"));
 
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
@@ -191,7 +191,7 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(instance.GetStringData("FoodWater"), Is.EqualTo("満腹 潤沢"));
-                Assert.That(instance.GetStringData("Time"), Is.EqualTo("ハーヴェスト・ドーン キス・ウクス16日"));
+                Assert.That(instance.GetStringData("Time"), Is.EqualTo("収穫の夜明け キス・ウクス16日"));
                 Assert.That(Translator.GetMissingKeyHitCountForTests("Sated"), Is.EqualTo(0));
                 Assert.That(Translator.GetMissingKeyHitCountForTests("Quenched"), Is.EqualTo(0));
                 Assert.That(Translator.GetMissingKeyHitCountForTests("Harvest Dawn"), Is.EqualTo(0));
@@ -211,7 +211,7 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
             ("Sated", "満腹"),
             ("Quenched", "潤沢"),
             ("World Map", "ワールドマップ"),
-            ("Harvest Dawn", "ハーヴェスト・ドーン"),
+            ("Harvest Dawn", "収穫の夜明け"),
             ("Kisu Ux", "キス・ウクス"),
             ("Seriously Wounded", "重傷"));
 
@@ -238,7 +238,7 @@ public sealed class PlayerStatusBarProducerTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(instance.GetStringData("FoodWater"), Is.EqualTo("満腹 潤沢"));
-                Assert.That(instance.GetStringData("Time"), Is.EqualTo("ハーヴェスト・ドーン キス・ウクス16日"));
+                Assert.That(instance.GetStringData("Time"), Is.EqualTo("収穫の夜明け キス・ウクス16日"));
                 Assert.That(instance.GetStringData("Zone"), Is.EqualTo("ワールドマップ"));
                 Assert.That(instance.GetStringData("ZoneOnly"), Is.EqualTo("ワールドマップ"));
                 Assert.That(instance.GetStringData("HPBar"), Is.EqualTo("HP: 重傷"));

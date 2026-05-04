@@ -327,47 +327,59 @@ public sealed class MessageFrameTranslatorTests
         });
     }
 
-    // --- New Tier3 tests: possessive pronoun capture (DidX, objectSlotCount=0) ---
+    // --- Tier3 tests: possessive pronoun phrases (DidX, objectSlotCount=0) ---
 
     [Test]
     public void TryTranslateXDidY_Tier3_TightenCarapace()
     {
-        WriteDictionary(tier3: new[] { ("tighten", "{0} carapace", "{0}の甲殻を締めつけた") });
+        WriteDictionary(tier3: new[]
+        {
+            ("tighten", "{0} carapace", "{0}の甲殻を締めつけた"),
+            ("tighten", "(?:your|his|her|its|their) carapace", "甲殻を締めつけた")
+        });
 
         var ok = MessageFrameTranslator.TryTranslateXDidY("カニ", "tighten", "its carapace", ".", out var sentence);
 
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(sentence, Is.EqualTo("カニはitsの甲殻を締めつけた。"));
+            Assert.That(sentence, Is.EqualTo("カニは甲殻を締めつけた。"));
         });
     }
 
     [Test]
     public void TryTranslateXDidY_Tier3_ActivateReflectiveShield()
     {
-        WriteDictionary(tier3: new[] { ("activate", "{0} reflective shield", "{0}の反射シールドを起動した") });
+        WriteDictionary(tier3: new[]
+        {
+            ("activate", "{0} reflective shield", "{0}の反射シールドを起動した"),
+            ("activate", "(?:your|his|her|its|their) reflective shield", "反射シールドを起動した")
+        });
 
         var ok = MessageFrameTranslator.TryTranslateXDidY("ロボット", "activate", "its reflective shield", ".", out var sentence);
 
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(sentence, Is.EqualTo("ロボットはitsの反射シールドを起動した。"));
+            Assert.That(sentence, Is.EqualTo("ロボットは反射シールドを起動した。"));
         });
     }
 
     [Test]
     public void TryTranslateXDidY_Tier3_SpinMolecularCannon()
     {
-        WriteDictionary(tier3: new[] { ("spin", "up {0} molecular cannon", "{0}の分子砲を回転させた") });
+        WriteDictionary(tier3: new[]
+        {
+            ("spin", "up {0} molecular cannon", "{0}の分子砲を回転させた"),
+            ("spin", "up (?:your|his|her|its|their) molecular cannon", "分子砲を回転させた")
+        });
 
         var ok = MessageFrameTranslator.TryTranslateXDidY("変異体", "spin", "up its molecular cannon", "!", out var sentence);
 
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(sentence, Is.EqualTo("変異体はitsの分子砲を回転させた！"));
+            Assert.That(sentence, Is.EqualTo("変異体は分子砲を回転させた！"));
         });
     }
 
@@ -488,7 +500,8 @@ public sealed class MessageFrameTranslatorTests
     {
         WriteDictionary(tier3: new[] {
             ("fling", "{0} {1} everywhere", "{0}の{1}をあたりに飛ばした"),
-            ("fling", "{0} {1}", "{0}の{1}を飛ばした")
+            ("fling", "{0} {1}", "{0}の{1}を飛ばした"),
+            ("fling", "(?:your|his|her|its|their) quills everywhere", "棘をあたりに飛ばした")
         });
 
         var ok = MessageFrameTranslator.TryTranslateXDidY("ヤマアラシ", "fling", "its quills everywhere", "!", out var sentence);
@@ -496,7 +509,7 @@ public sealed class MessageFrameTranslatorTests
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(sentence, Is.EqualTo("ヤマアラシはitsのquillsをあたりに飛ばした！"));
+            Assert.That(sentence, Is.EqualTo("ヤマアラシは棘をあたりに飛ばした！"));
         });
     }
 
@@ -505,7 +518,8 @@ public sealed class MessageFrameTranslatorTests
     {
         WriteDictionary(tier3: new[] {
             ("fling", "{0} {1} everywhere", "{0}の{1}をあたりに飛ばした"),
-            ("fling", "{0} {1}", "{0}の{1}を飛ばした")
+            ("fling", "{0} {1}", "{0}の{1}を飛ばした"),
+            ("fling", "(?:your|his|her|its|their) quills", "棘を飛ばした")
         });
 
         var ok = MessageFrameTranslator.TryTranslateXDidY("ヤマアラシ", "fling", "its quills", "!", out var sentence);
@@ -513,7 +527,7 @@ public sealed class MessageFrameTranslatorTests
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(sentence, Is.EqualTo("ヤマアラシはitsのquillsを飛ばした！"));
+            Assert.That(sentence, Is.EqualTo("ヤマアラシは棘を飛ばした！"));
         });
     }
 
@@ -536,10 +550,14 @@ public sealed class MessageFrameTranslatorTests
     [Test]
     public void TryTranslateXDidYToZ_Tier3_TryBeatFlames()
     {
-        WriteDictionary(tier3: new[] {
-            ("try", "to beat at the flames on {0}, but {1} dodges", "{0}の炎を叩こうとしたが、{1}はかわした"),
-            ("try", "to beat at the flames on {0}, but {1}", "{0}の炎を叩こうとしたが、{1}")
-        });
+        WriteDictionary(
+            tier2: new[] {
+                ("try", "to beat at the flames on {0}, but it dodges", "{0}の炎を叩こうとしたが、かわされた")
+            },
+            tier3: new[] {
+                ("try", "to beat at the flames on {0}, but {1} dodges", "{0}の炎を叩こうとしたが、{1}はかわした"),
+                ("try", "to beat at the flames on {0}, but {1}", "{0}の炎を叩こうとしたが、{1}")
+            });
 
         var ok = MessageFrameTranslator.TryTranslateXDidYToZ(
             "戦士", "try", "to beat at the flames on", "ゴブリン",
@@ -548,16 +566,20 @@ public sealed class MessageFrameTranslatorTests
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(sentence, Is.EqualTo("戦士はゴブリンの炎を叩こうとしたが、itはかわした！"));
+            Assert.That(sentence, Is.EqualTo("戦士はゴブリンの炎を叩こうとしたが、かわされた！"));
         });
     }
 
     [Test]
     public void TryTranslateXDidYToZ_Tier3_AttemptConk()
     {
-        WriteDictionary(tier3: new[] {
-            ("attempt", "to conk {0} on {1}", "{0}の{1}を強打しようとした")
-        });
+        WriteDictionary(
+            tier2: new[] {
+                ("attempt", "to conk {0} on the head", "{0}の頭を強打しようとした")
+            },
+            tier3: new[] {
+                ("attempt", "to conk {0} on {1}", "{0}の{1}を強打しようとした")
+            });
 
         var ok = MessageFrameTranslator.TryTranslateXDidYToZ(
             "戦士", "attempt", "to conk", "クマ",
@@ -566,16 +588,20 @@ public sealed class MessageFrameTranslatorTests
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(sentence, Is.EqualTo("戦士はクマのthe headを強打しようとした。"));
+            Assert.That(sentence, Is.EqualTo("戦士はクマの頭を強打しようとした。"));
         });
     }
 
     [Test]
     public void TryTranslateXDidYToZ_Tier3_BeatFlamesOnTarget()
     {
-        WriteDictionary(tier3: new[] {
-            ("beat", "at the flames on {0} with {1}", "{0}の炎を{1}で叩いた")
-        });
+        WriteDictionary(
+            tier2: new[] {
+                ("beat", "at the flames on {0} with its fists", "{0}の炎を拳で叩いた")
+            },
+            tier3: new[] {
+                ("beat", "at the flames on {0} with {1}", "{0}の炎を{1}で叩いた")
+            });
 
         var ok = MessageFrameTranslator.TryTranslateXDidYToZ(
             "戦士", "beat", "at the flames on", "クマ",
@@ -584,7 +610,7 @@ public sealed class MessageFrameTranslatorTests
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(sentence, Is.EqualTo("戦士はクマの炎をits fistsで叩いた！"));
+            Assert.That(sentence, Is.EqualTo("戦士はクマの炎を拳で叩いた！"));
         });
     }
 
@@ -600,7 +626,8 @@ public sealed class MessageFrameTranslatorTests
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(sentence, Is.EqualTo("戦士はクマの炎をits fistsで叩いた！"));
+            Assert.That(sentence, Is.EqualTo("戦士はクマの炎を拳で叩いた！"));
+            Assert.That(sentence, Does.Not.Contain("its"));
         });
     }
 
@@ -609,16 +636,20 @@ public sealed class MessageFrameTranslatorTests
     [Test]
     public void TryTranslateXDidY_Tier3_SensePsychicPresence()
     {
-        WriteDictionary(tier3: new[] {
-            ("sense", "{0} foreign to this place and time", "この地と時に馴染まぬ{0}を感じ取った")
-        });
+        WriteDictionary(
+            tier2: new[] {
+                ("sense", "a psychic presence foreign to this place and time", "この地と時に馴染まぬサイキックな気配を感じ取った")
+            },
+            tier3: new[] {
+                ("sense", "{0} foreign to this place and time", "この地と時に馴染まぬ{0}を感じ取った")
+            });
 
         var ok = MessageFrameTranslator.TryTranslateXDidY("あなた", "sense", "a psychic presence foreign to this place and time", ".", out var sentence);
 
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(sentence, Is.EqualTo("あなたはこの地と時に馴染まぬa psychic presenceを感じ取った。"));
+            Assert.That(sentence, Is.EqualTo("あなたはこの地と時に馴染まぬサイキックな気配を感じ取った。"));
         });
     }
 
@@ -669,43 +700,86 @@ public sealed class MessageFrameTranslatorTests
     [Test]
     public void TryTranslateXDidY_Tier3_BeginBleedingFromAnotherWound()
     {
-        WriteDictionary(tier3: new[] { ("begin", "{0} from another wound", "別の傷から{0}") });
+        WriteDictionary(
+            tier2: new[] { ("begin", "bleeding from another wound", "別の傷から出血し始めた") },
+            tier3: new[] { ("begin", "{0} from another wound", "別の傷から{0}") });
 
         var ok = MessageFrameTranslator.TryTranslateXDidY("あなた", "begin", "bleeding from another wound", "!", out var sentence);
 
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(sentence, Is.EqualTo("あなたは別の傷からbleeding！"));
+            Assert.That(sentence, Is.EqualTo("あなたは別の傷から出血し始めた！"));
         });
     }
 
     [Test]
     public void TryTranslateXDidY_Tier3_SpitPuddleOf()
     {
-        WriteDictionary(tier3: new[] { ("spit", "a puddle of {0}", "{0}の水溜まりを吐き出した") });
+        WriteDictionary(
+            tier2: new[] { ("spit", "a puddle of acid", "酸の水溜まりを吐き出した") },
+            tier3: new[] { ("spit", "a puddle of {0}", "{0}の水溜まりを吐き出した") });
 
         var ok = MessageFrameTranslator.TryTranslateXDidY("変異体", "spit", "a puddle of acid", "!", out var sentence);
 
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(sentence, Is.EqualTo("変異体はacidの水溜まりを吐き出した！"));
+            Assert.That(sentence, Is.EqualTo("変異体は酸の水溜まりを吐き出した！"));
         });
     }
 
     [Test]
     public void TryTranslateXDidY_Tier3_VibrateCoreImprint()
     {
-        WriteDictionary(tier3: new[] { ("vibrate", "as the current location is imprinted in {0} geospatial core", "現在地が{0}の地理空間コアに刻み込まれ、振動した") });
+        WriteDictionary(tier3: new[]
+        {
+            ("vibrate", "as the current location is imprinted in {0} geospatial core", "現在地が{0}の地理空間コアに刻み込まれ、振動した"),
+            ("vibrate", "as the current location is imprinted in (?:your|his|her|its|their) geospatial core", "現在地を地理空間コアに刻み込み、振動した")
+        });
 
         var ok = MessageFrameTranslator.TryTranslateXDidY("リコイラー", "vibrate", "as the current location is imprinted in its geospatial core", ".", out var sentence);
 
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(sentence, Is.EqualTo("リコイラーは現在地がitsの地理空間コアに刻み込まれ、振動した。"));
+            Assert.That(sentence, Is.EqualTo("リコイラーは現在地を地理空間コアに刻み込み、振動した。"));
         });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_RepositoryDictionary_PossessiveMutationMessages_DoNotLeakEnglishPronouns()
+    {
+        UseRepositoryDictionary();
+
+        var cases = new[]
+        {
+            ("カニ", "tighten", "your carapace", ".", "カニは甲殻を締めつけた。"),
+            ("カニ", "tighten", "his carapace", ".", "カニは甲殻を締めつけた。"),
+            ("カニ", "tighten", "her carapace", ".", "カニは甲殻を締めつけた。"),
+            ("カニ", "tighten", "its carapace", ".", "カニは甲殻を締めつけた。"),
+            ("カニ", "tighten", "their carapace", ".", "カニは甲殻を締めつけた。"),
+            ("ロボット", "activate", "its reflective shield", ".", "ロボットは反射シールドを起動した。"),
+            ("変異体", "spin", "up its molecular cannon", "!", "変異体は分子砲を回転させた！"),
+            ("ヤマアラシ", "fling", "its quills everywhere", "!", "ヤマアラシは棘をあたりに飛ばした！"),
+            ("リコイラー", "vibrate", "as the current location is imprinted in its geospatial core", ".", "リコイラーは現在地を地理空間コアに刻み込み、振動した。")
+        };
+
+        foreach (var (subject, verb, extra, endMark, expected) in cases)
+        {
+            var ok = MessageFrameTranslator.TryTranslateXDidY(subject, verb, extra, endMark, out var sentence);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(ok, Is.True, $"{verb} {extra}");
+                Assert.That(sentence, Is.EqualTo(expected));
+                Assert.That(sentence, Does.Not.Contain("your"));
+                Assert.That(sentence, Does.Not.Contain("his"));
+                Assert.That(sentence, Does.Not.Contain("her"));
+                Assert.That(sentence, Does.Not.Contain("its"));
+                Assert.That(sentence, Does.Not.Contain("their"));
+            });
+        }
     }
 
     [Test]

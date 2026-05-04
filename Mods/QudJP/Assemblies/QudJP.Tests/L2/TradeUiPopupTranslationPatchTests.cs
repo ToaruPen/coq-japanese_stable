@@ -127,6 +127,7 @@ public sealed class TradeUiPopupTranslationPatchTests
     {
         LocalizationAssetResolver.SetLocalizationRootForTests(GetLocalizationRoot());
         MessagePatternTranslator.SetPatternFileForTests(null);
+        WriteDictionary(("10th", "第10"), ("Iyur Ut", "イユル・ウト"));
 
         using var patch = PatchMethod(nameof(DummyTradeUiPopupTarget.Show));
 
@@ -138,7 +139,7 @@ public sealed class TradeUiPopupTranslationPatchTests
         Assert.That(
             DummyTradeUiPopupTarget.LastShowMessage,
             Is.EqualTo(
-                "Iyur Utの10th日、あなたは大塩砂漠モグラヤイの遥かな縁にあるオアシス集落ジョッパに到着した。\n\n"
+                "イユル・ウトの第10日、あなたは大塩砂漠モグラヤイの遥かな縁にあるオアシス集落ジョッパに到着した。\n\n"
                 + "あたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n"
                 + "地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。"));
     }

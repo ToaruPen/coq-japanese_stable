@@ -1,5 +1,6 @@
 using System.Runtime.Serialization;
 using System.Text;
+using QudJP.Patches;
 
 namespace QudJP.Tests.L1;
 
@@ -36,6 +37,7 @@ public sealed class MessagePatternTranslatorTests
     {
         Translator.ResetForTests();
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        ChargenStructuredTextTranslator.ResetForTests();
         MessagePatternTranslator.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
@@ -75,6 +77,20 @@ public sealed class MessagePatternTranslatorTests
 
         Assert.That(translated, Is.EqualTo("glowfishに12ダメージを与えた"));
     }
+
+    [Test]
+    public void Translate_TranslatesGeneratedActivatedAbilityCapture_FromMutationDisplayName()
+    {
+        LocalizationAssetResolver.SetLocalizationRootForTests(tempDirectory);
+        ChargenStructuredTextTranslator.ResetForTests();
+        WriteMutationsXml(("Corrosive Gas Generation", "腐食性ガス生成"));
+        WritePatternDictionary(("^You toggle (.+?) on\\.$", "{t0}をオンにした。"));
+
+        var translated = MessagePatternTranslator.Translate("You toggle {{c|Release Corrosive Gas}} on.");
+
+        Assert.That(translated, Is.EqualTo("{{c|腐食性ガス放出}}をオンにした。"));
+    }
+
 
     [Test]
     public void Translate_SupportsPlaceholderReordering()
@@ -250,14 +266,18 @@ public sealed class MessagePatternTranslatorTests
         WritePatternDictionary(
             (
                 "^On the (.+?) of (.+?), you arrive at the village of (.+?)\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",
-                "{1}の{0}日、あなたは{2}の村に到着した。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。"));
+                "{t1}の{t0}日、あなたは{t2}の村に到着した。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。"));
+        WriteExactDictionary(
+            ("5th", "第5"),
+            ("Ut yara Ux", "ウト・ヤラ・ウクス"),
+            ("Damur and fungus patch", "ダムールと菌類地帯"));
 
         var source = "On the 5th of Ut yara Ux, you arrive at the village of Damur and fungus patch.\n\n" +
             "On the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky.";
 
         var translated = MessagePatternTranslator.Translate(source);
 
-        var expected = "Ut yara Uxの5th日、あなたはDamur and fungus patchの村に到着した。\n\n" +
+        var expected = "ウト・ヤラ・ウクスの第5日、あなたはダムールと菌類地帯の村に到着した。\n\n" +
             "地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。";
 
         Assert.That(translated, Is.EqualTo(expected));
@@ -453,6 +473,26 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate("You take 14 damage from 監視官イラメの freezing effect!");
 
         Assert.That(translated, Is.EqualTo("監視官イラメの凍結効果で14ダメージを受けた！"));
+    }
+
+    [Test]
+    public void Translate_AppliesThornsDamagePattern()
+    {
+        WritePatternDictionary(("^You take (\\d+) damage from (?:the )?(.+?)の thorns\\.[.!]?$", "{1}の棘で{0}ダメージを受けた。"));
+
+        var translated = MessagePatternTranslator.Translate("You take 1 damage from the フラクタスの thorns.");
+
+        Assert.That(translated, Is.EqualTo("フラクタスの棘で1ダメージを受けた。"));
+    }
+
+    [Test]
+    public void Translate_AppliesCannotFindPathToTargetPattern()
+    {
+        WritePatternDictionary(("^You cannot find a path to (?:the )?(.+?)\\.[.!]?$", "{0}への経路が見つからない。"));
+
+        var translated = MessagePatternTranslator.Translate("You cannot find a path to the イッサカリの銃兵.");
+
+        Assert.That(translated, Is.EqualTo("イッサカリの銃兵への経路が見つからない。"));
     }
 
     [Test]
@@ -673,6 +713,16 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_AppliesVillageHistoriesJournalPattern()
+    {
+        WritePatternDictionary(("^You note this piece of information in the Village Histories > (.+?) section of your journal\\.[.!]?$", "この情報をジャーナルの「村の歴史 > {0}」欄に記録した。"));
+
+        var translated = MessagePatternTranslator.Translate("You note this piece of information in the Village Histories > テッガトゥム section of your journal.");
+
+        Assert.That(translated, Is.EqualTo("この情報をジャーナルの「村の歴史 > テッガトゥム」欄に記録した。"));
+    }
+
+    [Test]
     public void Translate_AppliesJournalLocationFamily_WithTranslatedSectionCapture()
     {
         WritePatternDictionary((
@@ -711,11 +761,12 @@ public sealed class MessagePatternTranslatorTests
     [Test]
     public void Translate_AppliesJournalMapNoteLastVisitedPattern()
     {
-        WritePatternDictionary(("^Last visited on the (.+?) of (.+?)$", "{1}の{0}日に最後に訪れた。"));
+        WriteExactDictionary(("5th", "第5"), ("Ut yara Ux", "ウト・ヤラ・ウクス"));
+        WritePatternDictionary(("^Last visited on the (.+?) of (.+?)$", "{t1}の{t0}日に最後に訪れた。"));
 
         var translated = MessagePatternTranslator.Translate("Last visited on the 5th of Ut yara Ux");
 
-        Assert.That(translated, Is.EqualTo("Ut yara Uxの5th日に最後に訪れた。"));
+        Assert.That(translated, Is.EqualTo("ウト・ヤラ・ウクスの第5日に最後に訪れた。"));
     }
 
     [Test]
@@ -771,9 +822,10 @@ public sealed class MessagePatternTranslatorTests
     [Test]
     public void Translate_AppliesJoppaArrivalPattern()
     {
+        WriteExactDictionary(("27th", "第27"), ("Uru Ux", "ウル・ウクス"));
         WritePatternDictionary((
             "^On the (.+?) of (.+?), you arrive at the oasis-hamlet of Joppa, along the far rim of Moghra'yi, the Great Salt Desert\\.\\n\\nAll around you, moisture farmers tend to groves of viridian watervine\\. There are huts wrought from rock salt and brinestalk\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",
-            "{1}の{0}日、あなたは大塩砂漠モグライィの遥かな縁にあるオアシス集落ジョッパに到着した。\n\nあたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。"));
+            "{t1}の{t0}日、あなたは大塩砂漠モグライィの遥かな縁にあるオアシス集落ジョッパに到着した。\n\nあたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。"));
 
         var source = "On the 27th of Uru Ux, you arrive at the oasis-hamlet of Joppa, along the far rim of Moghra'yi, the Great Salt Desert.\n\n" +
             "All around you, moisture farmers tend to groves of viridian watervine. There are huts wrought from rock salt and brinestalk.\n\n" +
@@ -781,7 +833,7 @@ public sealed class MessagePatternTranslatorTests
 
         var translated = MessagePatternTranslator.Translate(source);
 
-        var expected = "Uru Uxの27th日、あなたは大塩砂漠モグライィの遥かな縁にあるオアシス集落ジョッパに到着した。\n\n" +
+        var expected = "ウル・ウクスの第27日、あなたは大塩砂漠モグライィの遥かな縁にあるオアシス集落ジョッパに到着した。\n\n" +
             "あたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n" +
             "地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。";
 
@@ -851,11 +903,42 @@ public sealed class MessagePatternTranslatorTests
     [Test]
     public void Translate_AppliesHarvestPattern()
     {
-        WritePatternDictionary(("^The (.+?) harvests a (.+?)[.!]?$", "{0}は{1}を収穫した。"));
+        WritePatternDictionary(("^(?:The |the )?(.+?) harvests a (.+?)[.!]?$", "{0}は{1}を収穫した。"));
+
+        var translated = MessagePatternTranslator.Translate("ウォーターヴァイン農家 harvests a ヴァインウェハー.");
+
+        Assert.That(translated, Is.EqualTo("ウォーターヴァイン農家はヴァインウェハーを収穫した。"));
+    }
+
+    [Test]
+    public void Translate_AppliesHarvestPatternWithArticle()
+    {
+        WritePatternDictionary(("^(?:The |the )?(.+?) harvests a (.+?)[.!]?$", "{0}は{1}を収穫した。"));
 
         var translated = MessagePatternTranslator.Translate("The ウォーターヴァイン農家 harvests a ヴァインウェハー.");
 
         Assert.That(translated, Is.EqualTo("ウォーターヴァイン農家はヴァインウェハーを収穫した。"));
+    }
+
+    [Test]
+    public void Translate_DoesNotTreatNonDishPhraseWithDishWordAsHistoricSpiceGeneratedName()
+    {
+        WriteExactDictionary(("ancient", "古代"), ("bread", "パン"), ("farm", "農場"));
+        WritePatternDictionary(("^You inspect (.+?)[.!]?$", "{t0}を調べた。"));
+
+        var translated = MessagePatternTranslator.Translate("You inspect Ancient Bread Farm.");
+
+        Assert.That(translated, Is.EqualTo("Ancient Bread Farmを調べた。"));
+    }
+
+    [Test]
+    public void Translate_AppliesBeginFlyingPatternWithoutArticle()
+    {
+        WritePatternDictionary(("^(?:The |the )?(.+?) begins flying[.!]?$", "{0}が飛翔し始めた。"));
+
+        var translated = MessagePatternTranslator.Translate("カロク begins flying.");
+
+        Assert.That(translated, Is.EqualTo("カロクが飛翔し始めた。"));
     }
 
     [Test]
@@ -1254,6 +1337,23 @@ public sealed class MessagePatternTranslatorTests
         File.WriteAllText(patternFilePath, content, Utf8WithoutBom);
     }
 
+    private void WriteMutationsXml(params (string name, string displayName)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine("<mutations>");
+        foreach (var entry in entries)
+        {
+            builder.Append("  <mutation Name=\"");
+            builder.Append(EscapeXml(entry.name));
+            builder.Append("\" DisplayName=\"");
+            builder.Append(EscapeXml(entry.displayName));
+            builder.AppendLine("\" />");
+        }
+
+        builder.AppendLine("</mutations>");
+        File.WriteAllText(Path.Combine(tempDirectory, "Mutations.jp.xml"), builder.ToString(), Utf8WithoutBom);
+    }
+
     private static string EscapeJson(string value)
     {
         return value
@@ -1261,6 +1361,15 @@ public sealed class MessagePatternTranslatorTests
             .Replace("\r", "\\r", StringComparison.Ordinal)
             .Replace("\n", "\\n", StringComparison.Ordinal)
             .Replace("\"", "\\\"", StringComparison.Ordinal);
+    }
+
+    private static string EscapeXml(string value)
+    {
+        return value
+            .Replace("&", "&amp;", StringComparison.Ordinal)
+            .Replace("\"", "&quot;", StringComparison.Ordinal)
+            .Replace("<", "&lt;", StringComparison.Ordinal)
+            .Replace(">", "&gt;", StringComparison.Ordinal);
     }
 
     [Test]

@@ -775,6 +775,11 @@ internal static class JournalPatternTranslator
             return articlelessCapture;
         }
 
+        if (HistoricSpiceGeneratedNameTranslator.TryTranslateCapture(source, out var historicGeneratedCapture))
+        {
+            return historicGeneratedCapture;
+        }
+
         return source;
     }
 

@@ -9,36 +9,6 @@
     },
     "entries": [
         {
-            "key": "+10% hit points",
-            "context": "XRL.World.Effects.BasicCookingEffect_Hitpoints.GetDetails",
-            "text": "HP+10%"
-        },
-        {
-            "key": "+1 MA",
-            "context": "XRL.World.Effects.BasicCookingEffect_MA.GetDetails",
-            "text": "MA+1"
-        },
-        {
-            "key": "+6% Move Speed",
-            "context": "XRL.World.Effects.BasicCookingEffect_MS.GetDetails",
-            "text": "移動速度+6%"
-        },
-        {
-            "key": "+3% Quickness",
-            "context": "XRL.World.Effects.BasicCookingEffect_Quickness.GetDetails",
-            "text": "クイックネス+3%"
-        },
-        {
-            "key": "+1 to hit",
-            "context": "XRL.World.Effects.BasicCookingEffect_ToHit.GetDetails",
-            "text": "命中+1"
-        },
-        {
-            "key": "+5% XP gained",
-            "context": "XRL.World.Effects.BasicCookingEffect_XP.GetDetails",
-            "text": "獲得XP+5%"
-        },
-        {
             "key": "{{w|metabolized effect}}",
             "context": "XRL.World.Effects.BasicTriggeredCookingEffect.GetDescription",
             "text": "{{w|代謝中の効果}}"
@@ -539,11 +509,6 @@
             "text": "電気耐性+10～15"
         },
         {
-            "key": "Can use Electromagnetic Pulse at level 2-3. If @they already have Electromagnetic Pulse, it's enhanced by 3-4 levels.",
-            "context": "XRL.World.Effects.CookingDomainElectric_EMPUnit.GetTemplatedDescription",
-            "text": "〈電磁パルス〉をレベル2～3で使用できる。既に持つ場合、さらにレベル3～4強化される。"
-        },
-        {
             "key": "+10-15% max HP",
             "context": "XRL.World.Effects.CookingDomainHP_UnitHP.GetTemplatedDescription",
             "text": "最大HP+10～15%"
@@ -582,21 +547,6 @@
             "key": "@thisCreature only get@s Ill for 1/10th the usual length of time.",
             "context": "XRL.World.Effects.CookingDomainMedicinal_IllResistUnit.GetDescription",
             "text": "@thisCreature の体調不良の持続時間が通常の1/10になる。"
-        },
-        {
-            "key": "Can use Will Force at level 4-5. If @they already have Will Force, it's enhanced by 4-5 levels.",
-            "context": "XRL.World.Effects.CookingDomainEgo_UnitEgoProjection.GetTemplatedDescription",
-            "text": "〈意志の力〉をレベル4～5で使用できる。既に持つ場合、さらにレベル4～5強化される。"
-        },
-        {
-            "key": "Can use Burrowing Claws at level 5-6. If @they already have Burrowing Claws, it's enhanced by 3-4 levels.",
-            "context": "XRL.World.Effects.CookingDomainBurrowing_UnitBurrowingClaws.GetTemplatedDescription",
-            "text": "〈掘爪〉をレベル5～6で使用できる。既に持つ場合、さらにレベル3～4強化される。"
-        },
-        {
-            "key": "Can use Psychometry at level 1-2. If @they already have Psychometry, it's enhanced by 3-4 levels.",
-            "context": "XRL.World.Effects.CookingDomainArtifact_UnitPsychometry.GetTemplatedDescription",
-            "text": "〈サイコメトリー〉をレベル1～2で使用できる。既に持つ場合、さらにレベル3～4強化される。"
         },
         {
             "key": "@they heal 40-50 HP.",
@@ -734,16 +684,6 @@
             "text": "周囲に植物が芽吹く！"
         },
         {
-            "key": "Can use Burgeoning at level 7-8. If @they already have Burgeoning, it's enhanced by 5-6 levels.",
-            "context": "XRL.World.Effects.CookingDomainPlant_UnitBurgeoningHighTier.GetTemplatedDescription",
-            "text": "〈バージョニング〉をレベル7～8で使用できる。既に持つ場合、さらにレベル5～6強化される。"
-        },
-        {
-            "key": "Can use Burgeoning at level 1-2. If @they already have Burgeoning, it's enhanced by 2-3 levels.",
-            "context": "XRL.World.Effects.CookingDomainPlant_UnitBurgeoningLowTier.GetTemplatedDescription",
-            "text": "〈バージョニング〉をレベル1～2で使用できる。既に持つ場合、さらにレベル2～3強化される。"
-        },
-        {
             "key": "+200 reputation with flowers, roots, succulents, trees, vines, and the Consortium of Phyta",
             "context": "XRL.World.Effects.CookingDomainPlant_UnitPlantReputationHighTier.GetDescription",
             "text": "花・根・多肉植物・木・ツタ・ファイタ協会との評判+200"
@@ -757,11 +697,6 @@
             "key": "+4-5 Quickness",
             "context": "XRL.World.Effects.CookingDomainQuickness_UnitQuickness.GetTemplatedDescription",
             "text": "クイックネス+4～5"
-        },
-        {
-            "key": "Can use Quills at level 5-6. If @they already have Quills, it's enhanced by 3-4 levels.",
-            "context": "XRL.World.Effects.CookingDomainReflect_UnitQuills.GetTemplatedDescription",
-            "text": "〈棘〉をレベル5～6で使用できる。既に持つ場合、さらにレベル3～4強化される。"
         },
         {
             "key": "@they jump@s three times in a row, each time at +2 range.",
@@ -869,11 +804,6 @@
             "text": "@they は粘着舌を3本繰り出す。"
         },
         {
-            "key": "Can use Sticky Tongue at level 4-5. If @they already have Sticky Tongue, it's enhanced by 4-5 levels.",
-            "context": "XRL.World.Effects.CookingDomainTongue_UnitStickyTongue.GetTemplatedDescription",
-            "text": "〈粘着舌〉をレベル4～5で使用できる。既に持つ場合、さらにレベル4～5強化される。"
-        },
-        {
             "key": "+4 Willpower",
             "context": "XRL.World.Effects.CookingDomainWillpower_UnitWillpower.GetTemplatedDescription",
             "text": "意志力+4"
@@ -902,16 +832,6 @@
             "key": "+30-40% max HP",
             "context": "XRL.World.Effects.CookingDomainHP_IncreaseHP_ProceduralCookingTriggeredActionEffect.GetDetails",
             "text": "最大HP+30～40%"
-        },
-        {
-            "key": "Can use Intimidate.",
-            "context": "XRL.World.Effects.CookingDomainFear_UnitIntimidate.GetDescription",
-            "text": "〈威圧〉を使用できる。"
-        },
-        {
-            "key": "+{0} bonus on Ego roll when using Intimidate.",
-            "context": "XRL.World.Effects.CookingDomainFear_UnitIntimidate.GetDescription",
-            "text": "〈威圧〉使用時の意志判定に+{0}のボーナス。"
         },
         {
             "key": "@they feel less afflicted.",
@@ -1014,29 +934,9 @@
             "text": "{{W|代謝中}}"
         },
         {
-            "key": "Can use {MutationDisplayName} at level {0}.",
-            "context": "XRL.World.Effects.ProceduralCookingEffectUnitMutation.GetDescription",
-            "text": "〈{MutationDisplayName}〉をレベル{0}で使用できる。"
-        },
-        {
-            "key": "+{0} level to {MutationDisplayName}.",
-            "context": "XRL.World.Effects.ProceduralCookingEffectUnitMutation.GetDescription",
-            "text": "〈{MutationDisplayName}〉が+{0}レベル上昇する。"
-        },
-        {
-            "key": "+{0} levels to {MutationDisplayName}.",
-            "context": "XRL.World.Effects.ProceduralCookingEffectUnitMutation.GetDescription",
-            "text": "〈{MutationDisplayName}〉が+{0}レベル上昇する。"
-        },
-        {
             "key": "No effect.",
             "context": "XRL.World.Effects.ProceduralCookingEffectUnitMutation.GetDescription",
             "text": "効果なし。"
-        },
-        {
-            "key": "Can use {MutationDisplayName} at level {0}-{1}. If @they already have {MutationDisplayName}, it's enhanced by {2}-{3} levels.",
-            "context": "XRL.World.Effects.ProceduralCookingEffectUnitMutation.GetTemplatedDescription",
-            "text": "〈{MutationDisplayName}〉をレベル{0}～{1}で使用できる。既に持つ場合は{2}～{3}レベル強化される。"
         },
         {
             "key": "+{0}% to natural healing rate",
@@ -1064,16 +964,6 @@
             "text": "今後{1}時間、筋力+{0}。"
         },
         {
-            "key": "+2 bonus on Ego roll when using Intimidate.",
-            "context": "XRL.World.Effects.CookingDomainFear_UnitIntimidate.GetDescription",
-            "text": "〈威圧〉使用時の意志判定に+2のボーナス。"
-        },
-        {
-            "key": "Can use Intimidate. If @they already have Intimidate, gain a +2 bonus on the Ego roll when using Intimidate.",
-            "context": "XRL.World.Effects.CookingDomainFear_UnitIntimidate.GetTemplatedDescription",
-            "text": "〈威圧〉を使用できる。既に習得している場合は〈威圧〉使用時の意志判定に+2のボーナス。"
-        },
-        {
             "key": "Falling damage @thisCreature take@s is reduced by 90%.",
             "context": "XRL.World.Effects.CookingDomainRubber_ExtraReducedFallDamage.GetDescription",
             "text": "@thisCreature が受ける落下ダメージが90%軽減される。"
@@ -1099,36 +989,6 @@
             "text": "@thisCreature が真水を飲むたび、25%の確率で"
         },
         {
-            "key": "@they get +",
-            "context": "XRL.World.Effects.CookingDomainHP_IncreaseHP_ProceduralCookingTriggeredAction.GetDescription",
-            "text": "@they は最大HPが増加する。"
-        },
-        {
-            "key": "@they expel quills per the Quills mutation at level",
-            "context": "XRL.World.Effects.CookingDomainReflect_QuillBurst_ProceduralCookingTriggeredAction.GetDescription",
-            "text": "@they は棘の変異レベルに応じて棘を放つ。"
-        },
-        {
-            "key": "Reflect",
-            "context": "XRL.World.Effects.CookingDomainReflect_UnitReflectDamage.GetDescription",
-            "text": "受けたダメージの"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a",
-            "context": "XRL.World.Effects.CookingDomainRegenLowtier_OnDamaged.GetTriggerDescription",
-            "text": "@thisCreature がダメージを受けるたび、"
-        },
-        {
-            "key": "Whenever @thisCreature take@s avoidable damage, there's a",
-            "context": "XRL.World.Effects.CookingDomainTeleport_UnitBlink.GetDescription",
-            "text": "@thisCreature が回避可能なダメージを受けると、"
-        },
-        {
-            "key": "Can use",
-            "context": "XRL.World.Effects.ProceduralCookingEffectUnitMutation.GetDescription",
-            "text": "使用できる。"
-        },
-        {
             "key": "+10% to natural healing rate",
             "context": "XRL.World.Effects.ProceduralCookingEffectUnit_10Regeneration.GetDescription",
             "text": "自然治癒速度+10%"
@@ -1142,31 +1002,6 @@
             "key": "+3 Str for the next three hours",
             "context": "XRL.World.Effects.Str3_ProceduralCookingTriggeredAction.GetDescription",
             "text": "今後3時間、筋力+3。"
-        },
-        {
-            "key": "@they expel quills per the Quills mutation at level ",
-            "context": "XRL.World.Effects.CookingDomainReflect_QuillBurst_ProceduralCookingTriggeredAction.GetDescription",
-            "text": "@they は棘の変異レベルに応じて棘を放つ。"
-        },
-        {
-            "key": "Reflect ",
-            "context": "XRL.World.Effects.CookingDomainReflect_UnitReflectDamage.GetDescription",
-            "text": "受けたダメージの"
-        },
-        {
-            "key": "whenever @thisCreature take@s damage, there's a ",
-            "context": "XRL.World.Effects.CookingDomainRegenLowtier_OnDamaged.GetTriggerDescription",
-            "text": "@thisCreature がダメージを受けるたび、"
-        },
-        {
-            "key": "Whenever @thisCreature take@s avoidable damage, there's a ",
-            "context": "XRL.World.Effects.CookingDomainTeleport_UnitBlink.GetDescription",
-            "text": "@thisCreature が回避可能なダメージを受けると、"
-        },
-        {
-            "key": "Can use ",
-            "context": "XRL.World.Effects.ProceduralCookingEffectUnitMutation.GetDescription",
-            "text": "使用できる。"
         }
     ]
 }

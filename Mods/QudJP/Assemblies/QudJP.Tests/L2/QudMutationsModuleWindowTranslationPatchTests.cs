@@ -59,7 +59,9 @@ public sealed class QudMutationsModuleWindowTranslationPatchTests
         WriteDictionary(
             ("mutation:Esper", "精神突然変異しか発現しない。"),
             ("mutation:Adrenal Control", "アドレナリン分泌を制御できる。"),
-            ("mutation:Adrenal Control:rank:1", "クールダウン: 200ターン"));
+            ("mutation:Adrenal Control:rank:1", "クールダウン: 200ターン"),
+            ("mutation:Stinger (Confusing Venom)", "臀部の毒針を持つ。"),
+            ("mutation:Stinger (Confusing Venom):Stinger Confusion:rank:1", "混乱毒を与える針攻撃。"));
 
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
         var harmony = new Harmony(harmonyId);
@@ -97,7 +99,8 @@ public sealed class QudMutationsModuleWindowTranslationPatchTests
                 Assert.That(adrenalControl.Description, Is.EqualTo("アドレナリン制御"));
                 Assert.That(adrenalControl.LongDescription, Is.EqualTo("アドレナリン分泌を制御できる。\n\nクールダウン: 200ターン"));
                 Assert.That(stinger.Description, Is.EqualTo("毒針（混乱毒） [{{W|V}}]"));
-                Assert.That(stinger.LongDescription, Is.EqualTo("Sting things."));
+                Assert.That(stinger.LongDescription, Is.EqualTo("臀部の毒針を持つ。\n\n混乱毒を与える針攻撃。"));
+                Assert.That(window.prefabComponent.LastRenderedLongDescriptions[2], Is.EqualTo("臀部の毒針を持つ。\n\n混乱毒を与える針攻撃。"));
             });
         }
         finally

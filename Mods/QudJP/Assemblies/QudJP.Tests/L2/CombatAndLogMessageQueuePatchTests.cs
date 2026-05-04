@@ -805,6 +805,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("You recover 5 HP.", "あなたは5HP回復した")]
     [TestCase("You take 14 damage from 監視官イラメの freezing effect!", "監視官イラメの凍結効果で14ダメージを受けた！")]
     [TestCase("You harvest a ヴァインウェハー from the ウォーターヴァイン.", "ウォーターヴァインからヴァインウェハーを収穫した")]
+    [TestCase("カロク begins flying.", "カロクが飛翔し始めた。")]
+    [TestCase("シュウラシュウォレム harvests a スターアップル.", "シュウラシュウォレムはスターアップルを収穫した。")]
     public void MessagingEmitMessage_TranslatesStableRepositoryFamilies_WhenPatched(string message, string expected)
     {
         UseRepositoryPatternDictionary();

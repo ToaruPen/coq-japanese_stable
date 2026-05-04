@@ -54,21 +54,34 @@ public sealed class JournalPatternTranslatorTests
     [Test]
     public void Translate_AppliesMultipleCapturePattern()
     {
-        WritePatternDictionary(("^On the (.+?) of (.+?), you abandoned all hope\\.$", "{1}の{0}日、あなたはすべての希望を捨てた。"));
+        WriteDictionaryFile("date-l1.ja.json", new[] { ("5th", "第5"), ("Ut yara Ux", "ウト・ヤラ・ウクス") });
+        WritePatternDictionary(("^On the (.+?) of (.+?), you abandoned all hope\\.$", "{t1}の{t0}日、あなたはすべての希望を捨てた。"));
 
         var translated = JournalPatternTranslator.Translate("On the 5th of Ut yara Ux, you abandoned all hope.");
 
-        Assert.That(translated, Is.EqualTo("Ut yara Uxの5th日、あなたはすべての希望を捨てた。"));
+        Assert.That(translated, Is.EqualTo("ウト・ヤラ・ウクスの第5日、あなたはすべての希望を捨てた。"));
     }
 
     [Test]
     public void Translate_AppliesDeathEntryPattern()
     {
-        WritePatternDictionary(("^On the (.+?) of (.+?), you were killed by a (.+?)\\.$", "{1}の{0}日、{2}に殺された。"));
+        WriteDictionaryFile("date-l1.ja.json", new[] { ("10th", "第10"), ("Iyur Ut", "イユル・ウト") });
+        WritePatternDictionary(("^On the (.+?) of (.+?), you were killed by a (.+?)\\.$", "{t1}の{t0}日、{2}に殺された。"));
 
         var translated = JournalPatternTranslator.Translate("On the 10th of Iyur Ut, you were killed by a 血まみれのウォーターヴァイン農家.");
 
-        Assert.That(translated, Is.EqualTo("Iyur Utの10th日、血まみれのウォーターヴァイン農家に殺された。"));
+        Assert.That(translated, Is.EqualTo("イユル・ウトの第10日、血まみれのウォーターヴァイン農家に殺された。"));
+    }
+
+    [Test]
+    public void Translate_AppliesVillageHistoriesNotificationPattern()
+    {
+        WritePatternDictionary(("^You note this piece of information in the Village Histories > (.+?) section of your journal\\.[.!]?$", "この情報をジャーナルの「村の歴史 > {0}」欄に記録した。"));
+
+        var translated = JournalPatternTranslator.Translate(
+            "You note this piece of information in the Village Histories > テッガトゥム section of your journal.");
+
+        Assert.That(translated, Is.EqualTo("この情報をジャーナルの「村の歴史 > テッガトゥム」欄に記録した。"));
     }
 
     [Test]

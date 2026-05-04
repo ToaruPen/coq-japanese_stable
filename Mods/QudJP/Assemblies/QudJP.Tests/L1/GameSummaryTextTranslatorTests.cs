@@ -99,6 +99,16 @@ public sealed class GameSummaryTextTranslatorTests
     }
 
     [Test]
+    public void TranslateDetails_TranslatesNegativeScoreLine()
+    {
+        WriteDictionary(("You scored {0} points.", "{0}点を獲得した。"));
+
+        var translated = GameSummaryTextTranslator.TranslateDetails("You scored {{C|-352}} points.");
+
+        Assert.That(translated, Is.EqualTo("{{C|-352}}点を獲得した。"));
+    }
+
+    [Test]
     public void TranslateDetails_PreservesTemplateLine_WhenDictionaryEntryIsMissing()
     {
         WriteDictionary(("Game summary for {0}", "{0}のゲームサマリー"));

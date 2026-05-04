@@ -146,6 +146,50 @@ public sealed class ChargenStructuredTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslateMutationLongDescription_UsesStingerVariantRankKey()
+    {
+        WriteDictionary(
+            ("mutation:Stinger (Confusing Venom)", "臀部の毒針を持つ。"),
+            ("mutation:Stinger (Confusing Venom):Stinger Confusion:rank:1", "混乱毒を与える針攻撃。"));
+
+        var translated = ChargenStructuredTextTranslator.TryTranslateMutationLongDescription(
+            "Stinger (Confusing Venom)",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("臀部の毒針を持つ。\n\n混乱毒を与える針攻撃。"));
+        });
+    }
+
+    [Test]
+    public void Translate_UsesMutationDictionaryForRawBeakDescription()
+    {
+        WriteDictionary(("mutation:Beak", "顔に立派なくちばしが生えている。\n\n{{rules|+1}} 意力。時おり敵をついばむ。"));
+
+        var source = "Your face bears a sightly beak.\n\n+1 Ego\nYou occasionally peck at your opponents.\n+200 reputation with {{w|birds}}";
+        var translated = ChargenStructuredTextTranslator.Translate(source);
+
+        Assert.That(translated, Is.EqualTo("顔に立派なくちばしが生えている。\n\n{{rules|+1}} 意力。時おり敵をついばむ。"));
+    }
+
+    [Test]
+    public void Translate_UsesMutationDictionaryForRawStingerDescription()
+    {
+        WriteDictionary(
+            ("mutation:Stinger (Paralyzing Venom)", "臀部の麻痺毒針を持つ。"),
+            ("mutation:Stinger (Paralyzing Venom):Stinger Paralysis:rank:1", "麻痺毒を与える針攻撃。"));
+
+        var source = "You bear a tail with a stinger that delivers paralyzing venom to your enemies.\n\n" +
+            "20% chance on melee attack to sting your opponent ({{c|\u001a}}{{rules|7}} {{r|\u0003}}{{rules|1d6}})\n" +
+            "Stinger is a long blade and can only penetrate once.";
+        var translated = ChargenStructuredTextTranslator.Translate(source);
+
+        Assert.That(translated, Is.EqualTo("臀部の麻痺毒針を持つ。\n\n麻痺毒を与える針攻撃。"));
+    }
+
+    [Test]
     public void Translate_TranslatesPointsRemainingLine()
     {
         WriteDictionary(("Points Remaining:", "残りポイント:"));

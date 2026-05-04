@@ -70,7 +70,10 @@ public static class QudMutationsModuleWindowTranslationPatch
                 return;
             }
 
-            TranslateMenuOptions(__instance);
+            if (TranslateMenuOptions(__instance))
+            {
+                RefreshMenuOptions(__instance);
+            }
         }
         catch (Exception ex)
         {
@@ -91,14 +94,15 @@ public static class QudMutationsModuleWindowTranslationPatch
         }
     }
 
-    private static void TranslateMenuOptions(object instance)
+    private static bool TranslateMenuOptions(object instance)
     {
         var categoryMenusField = AccessTools.Field(instance.GetType(), "categoryMenus");
         if (categoryMenusField?.GetValue(instance) is not IEnumerable categoryMenus)
         {
-            return;
+            return false;
         }
 
+        var changed = false;
         foreach (var categoryMenu in categoryMenus)
         {
             if (categoryMenu is null)
@@ -119,19 +123,22 @@ public static class QudMutationsModuleWindowTranslationPatch
                     continue;
                 }
 
-                TranslateMenuOption(menuOption);
+                changed |= TranslateMenuOption(menuOption);
             }
         }
+
+        return changed;
     }
 
-    private static void TranslateMenuOption(object menuOption)
+    private static bool TranslateMenuOption(object menuOption)
     {
         if (!TryGetStringMemberValue(menuOption, "Id", out var mutationName)
             || string.IsNullOrWhiteSpace(mutationName))
         {
-            return;
+            return false;
         }
 
+        var changed = false;
         if (TryGetStringMemberValue(menuOption, "Description", out var description)
             && !string.IsNullOrEmpty(description))
         {
@@ -139,13 +146,52 @@ public static class QudMutationsModuleWindowTranslationPatch
             if (!string.Equals(description, translatedDescription, StringComparison.Ordinal))
             {
                 SetStringMemberValue(menuOption, "Description", translatedDescription);
+                changed = true;
             }
         }
 
-        if (ChargenStructuredTextTranslator.TryTranslateMutationLongDescription(mutationName!, out var translatedLongDescription))
+        if (ChargenStructuredTextTranslator.TryTranslateMutationLongDescription(mutationName!, out var translatedLongDescription)
+            && (!TryGetStringMemberValue(menuOption, "LongDescription", out var longDescription)
+                || !string.Equals(longDescription, translatedLongDescription, StringComparison.Ordinal)))
         {
             SetStringMemberValue(menuOption, "LongDescription", translatedLongDescription);
+            changed = true;
         }
+
+        return changed;
+    }
+
+    private static void RefreshMenuOptions(object instance)
+    {
+        var type = instance.GetType();
+        var prefabComponent = AccessTools.Field(type, "prefabComponent")?.GetValue(instance);
+        var categoryMenus = AccessTools.Field(type, "categoryMenus")?.GetValue(instance);
+        if (prefabComponent is null || categoryMenus is null)
+        {
+            return;
+        }
+
+        var beforeShow = AccessTools.Method(prefabComponent.GetType(), "BeforeShow");
+        if (beforeShow is null)
+        {
+            return;
+        }
+
+        var windowDescriptor = AccessTools.Field(type, "windowDescriptor")?.GetValue(instance);
+        var parameterCount = beforeShow.GetParameters().Length;
+        if (parameterCount == 0)
+        {
+            _ = beforeShow.Invoke(prefabComponent, null);
+            return;
+        }
+
+        if (parameterCount == 1)
+        {
+            _ = beforeShow.Invoke(prefabComponent, new[] { categoryMenus });
+            return;
+        }
+
+        _ = beforeShow.Invoke(prefabComponent, new[] { windowDescriptor, categoryMenus });
     }
 
     private static bool IsFormatNodeDescriptionCall(CodeInstruction instruction)

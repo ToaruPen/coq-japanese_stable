@@ -140,7 +140,7 @@ public sealed class PlayerStatusBarProducerTranslationHelpersTests
     public void TranslateStringDataValue_TranslatesCalendarStatus()
     {
         WriteDictionary(
-            ("Harvest Dawn", "ハーヴェスト・ドーン"),
+            ("Harvest Dawn", "収穫の夜明け"),
             ("Kisu Ux", "キス・ウクス"));
 
         var translated = InvokeHelperStringMethod(
@@ -149,14 +149,14 @@ public sealed class PlayerStatusBarProducerTranslationHelpersTests
             "Harvest Dawn 16th of Kisu Ux",
             "PlayerStatusBarProducerTranslationPatch.BeginEndTurn");
 
-        Assert.That(translated, Is.EqualTo("ハーヴェスト・ドーン キス・ウクス16日"));
+        Assert.That(translated, Is.EqualTo("収穫の夜明け キス・ウクス16日"));
     }
 
     [Test]
     public void TranslateStringDataValue_TranslatesCalendarIdesToFifteenthDay()
     {
         WriteDictionary(
-            ("Beetle Moon Zenith", "ビートルムーン・ゼニス"),
+            ("Beetle Moon Zenith", "甲虫月の天頂"),
             ("Nivvun Ut", "ニヴン・ウト"));
 
         var translated = InvokeHelperStringMethod(
@@ -165,7 +165,7 @@ public sealed class PlayerStatusBarProducerTranslationHelpersTests
             "Beetle Moon Zenith Ides of Nivvun Ut",
             "PlayerStatusBarProducerTranslationPatch.BeginEndTurn");
 
-        Assert.That(translated, Is.EqualTo("ビートルムーン・ゼニス ニヴン・ウト15日"));
+        Assert.That(translated, Is.EqualTo("甲虫月の天頂 ニヴン・ウト15日"));
     }
 
     [Test]

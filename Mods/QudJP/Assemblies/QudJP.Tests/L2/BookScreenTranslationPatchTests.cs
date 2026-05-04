@@ -21,6 +21,8 @@ public sealed partial class Issue201OtherUiBindingPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        LocalizationAssetResolver.SetLocalizationRootForTests(tempDirectory);
+        ChargenStructuredTextTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
 
@@ -36,6 +38,8 @@ public sealed partial class Issue201OtherUiBindingPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        ChargenStructuredTextTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
         DummyBookScreenTarget.ResetStaticMenuOptions();
@@ -158,10 +162,39 @@ public sealed partial class Issue201OtherUiBindingPatchTests
         File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 
+    private void WriteMutationsXml(params (string name, string displayName)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine("<mutations>");
+        foreach (var entry in entries)
+        {
+            builder.Append("  <mutation Name=\"");
+            builder.Append(EscapeXml(entry.name));
+            builder.Append("\" DisplayName=\"");
+            builder.Append(EscapeXml(entry.displayName));
+            builder.AppendLine("\" />");
+        }
+
+        builder.AppendLine("</mutations>");
+        File.WriteAllText(
+            Path.Combine(tempDirectory, "Mutations.jp.xml"),
+            builder.ToString(),
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
     private static string EscapeJson(string value)
     {
         return value
             .Replace("\\", "\\\\", StringComparison.Ordinal)
             .Replace("\"", "\\\"", StringComparison.Ordinal);
+    }
+
+    private static string EscapeXml(string value)
+    {
+        return value
+            .Replace("&", "&amp;", StringComparison.Ordinal)
+            .Replace("\"", "&quot;", StringComparison.Ordinal)
+            .Replace("<", "&lt;", StringComparison.Ordinal)
+            .Replace(">", "&gt;", StringComparison.Ordinal);
     }
 }

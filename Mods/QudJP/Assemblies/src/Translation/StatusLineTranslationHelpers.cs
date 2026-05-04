@@ -148,8 +148,7 @@ internal static class StatusLineTranslationHelpers
         var translatedParts = new string[parts.Length];
         for (var index = 0; index < parts.Length; index++)
         {
-            var translatedPart = StringHelpers.TranslateExactOrLowerAscii(parts[index], route);
-            if (translatedPart is null)
+            if (!StringHelpers.TryGetTranslationExactOrLowerAscii(parts[index], out var translatedPart))
             {
                 return false;
             }

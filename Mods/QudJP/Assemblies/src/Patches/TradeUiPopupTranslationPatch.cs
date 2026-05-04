@@ -134,6 +134,18 @@ public static class TradeUiPopupTranslationPatch
         "^As a result, the trade goes from being worth (?<before>\\d+) drams? to being worth (?<after>\\d+)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex JapaneseCharacterPattern = new(
+        "[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex AsciiLetterPattern = new(
+        "[A-Za-z]",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex AllowedLocalizedEnglishTokenPattern = new(
+        "(?<![A-Za-z])(?:Qud)(?![A-Za-z])",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
@@ -245,6 +257,11 @@ public static class TradeUiPopupTranslationPatch
         if (!string.Equals(popupTranslated, source, StringComparison.Ordinal))
         {
             return popupTranslated;
+        }
+
+        if (ShouldSkipMessagePatternTranslation(source))
+        {
+            return source;
         }
 
         return MessagePatternTranslator.Translate(source, Context);
@@ -963,6 +980,18 @@ public static class TradeUiPopupTranslationPatch
         return value.EndsWith(suffix, StringComparison.Ordinal)
             ? value.Substring(0, value.Length - suffix.Length)
             : value;
+    }
+
+    private static bool ShouldSkipMessagePatternTranslation(string source)
+    {
+        var (visibleText, _) = ColorAwareTranslationComposer.Strip(source);
+        if (!JapaneseCharacterPattern.IsMatch(visibleText))
+        {
+            return false;
+        }
+
+        var normalized = AllowedLocalizedEnglishTokenPattern.Replace(visibleText, string.Empty);
+        return !AsciiLetterPattern.IsMatch(normalized);
     }
 
     private static void AddTarget(List<MethodBase> targets, MethodBase method, string description)
