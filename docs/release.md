@@ -81,6 +81,38 @@ python3.12 scripts/validate_xml.py Mods/QudJP/Localization --strict --warning-ba
 python3.12 scripts/build_release.py
 ```
 
+## Release Notes
+
+Localization PRs that change `Mods/QudJP/Localization/` must include at least
+one release-note fragment under `docs/release-notes/unreleased/*.md`. CI checks
+this on pull requests.
+
+Fragments use Keep a Changelog section headings and user-facing bullets:
+
+```markdown
+### Changed
+
+- Improve Japanese text in the trade and conversation UI.
+```
+
+Before release, render the fragments into drafts for `CHANGELOG.md` and the
+Steam Workshop changenote:
+
+```bash
+git rev-parse --short=12 HEAD
+python3.12 scripts/release_notes.py render \
+  --version 0.1.0 \
+  --git-hash <short-git-hash> \
+  --date YYYY-MM-DD \
+  --changelog-output /tmp/qudjp-changelog-entry.md \
+  --workshop-output /tmp/qudjp-workshop-changenote.txt
+```
+
+Review `/tmp/qudjp-changelog-entry.md`, copy it into `CHANGELOG.md`, and use
+`/tmp/qudjp-workshop-changenote.txt` as the `build_workshop_upload.py`
+`--changenote-file`. Do not publish to Steam until the upload gate below is
+explicitly confirmed.
+
 Spot-check the release ZIP:
 
 ```bash
@@ -121,14 +153,12 @@ PY
 
 ## Generate Workshop Upload Files
 
-Draft the Workshop changenote from the template. Put the short git hash next to
-the version, and summarize the accumulated commits as user-visible changes:
+Use the rendered Workshop changenote draft from the Release Notes step as the
+baseline. If needed, enrich it with commit-range context before upload:
 
 ```bash
 git describe --tags --abbrev=0
 git log --oneline <previous-tag>..HEAD
-git rev-parse --short=12 HEAD
-cp steam/changenote_template.txt /tmp/qudjp-workshop-changenote.txt
 $EDITOR /tmp/qudjp-workshop-changenote.txt
 ```
 

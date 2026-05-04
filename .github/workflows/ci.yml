@@ -12,6 +12,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
@@ -39,6 +41,13 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
+
+      - name: Check release-note fragment
+        if: github.event_name == 'pull_request'
+        run: >
+          python scripts/release_notes.py check-fragment
+          --base-ref "${{ github.event.pull_request.base.sha }}"
+          --head-ref "${{ github.event.pull_request.head.sha }}"
 
       - name: Install ast-grep
         run: npm install -g @ast-grep/cli

@@ -265,9 +265,10 @@ python scripts/sync_mod.py --dry-run
 `steamcmd` 用 VDF を生成します。Workshop item ID や title などの公開
 metadata は `steam/workshop_metadata.json`、Workshop description は
 `steam/workshop_description.ja.txt` を source of truth にします。Workshop
-changenote は `steam/changenote_template.txt` を一時ファイルにコピーし、
+changenote は `scripts/release_notes.py render` で
+`docs/release-notes/unreleased/*.md` から下書きを生成し、必要に応じて
 `git log --oneline <previous-tag>..HEAD` と
-`git rev-parse --short=12 HEAD` を見て埋めます。
+`git rev-parse --short=12 HEAD` で補足します。
 
 **使い方**:
 
@@ -294,6 +295,47 @@ steamcmd +login "$STEAM_USER" +workshop_build_item dist/workshop/workshop_item.v
 ```
 
 Steam credentials、2FA material、login script は repo に置かないでください。
+
+**終了コード**: 0 = 正常終了、1 = エラー
+
+---
+
+## release_notes.py
+
+`scripts/release_notes.py` は release-note fragment を検証し、release 時の
+`CHANGELOG.md` 用 entry と Steam Workshop changenote の下書きを生成します。
+`Mods/QudJP/Localization/` を変更する PR では
+`docs/release-notes/unreleased/*.md` の fragment が必要です。
+
+**fragment 例**:
+
+```markdown
+### Changed
+
+- Improve Japanese text in the trade and conversation UI.
+```
+
+**使い方**:
+
+```bash
+# Localization 差分に release-note fragment が含まれるか確認
+python3.12 scripts/release_notes.py check-fragment \
+  --base-ref origin/main \
+  --head-ref HEAD
+
+# CHANGELOG / Workshop changenote の下書きを生成
+python3.12 scripts/release_notes.py render \
+  --version 0.1.0 \
+  --git-hash "$(git rev-parse --short=12 HEAD)" \
+  --date YYYY-MM-DD \
+  --changelog-output /tmp/qudjp-changelog-entry.md \
+  --workshop-output /tmp/qudjp-workshop-changenote.txt
+```
+
+**出力**:
+
+- `/tmp/qudjp-changelog-entry.md`: `CHANGELOG.md` にコピーする release entry
+- `/tmp/qudjp-workshop-changenote.txt`: `build_workshop_upload.py --changenote-file` に渡す changenote
 
 **終了コード**: 0 = 正常終了、1 = エラー
 

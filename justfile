@@ -37,6 +37,14 @@ localization-check:
 translation-token-check:
   python3.12 scripts/check_translation_tokens.py Mods/QudJP/Localization
 
+# Require release-note fragments for localization changes.
+release-note-check base_ref="origin/main" head_ref="HEAD":
+  python3.12 scripts/release_notes.py check-fragment --base-ref "{{base_ref}}" --head-ref "{{head_ref}}"
+
+# Render release and Workshop changenote drafts from unreleased fragments.
+render-release-notes version git_hash date:
+  python3.12 scripts/release_notes.py render --version "{{version}}" --git-hash "{{git_hash}}" --date "{{date}}" --changelog-output /tmp/qudjp-changelog-entry.md --workshop-output /tmp/qudjp-workshop-changenote.txt
+
 # Sync the built mod into the local game install.
 sync-mod:
   python3.12 scripts/sync_mod.py
