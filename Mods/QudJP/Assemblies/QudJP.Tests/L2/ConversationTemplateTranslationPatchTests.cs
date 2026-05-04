@@ -46,7 +46,7 @@ public sealed class ConversationTemplateTranslationPatchTests
         const string translated =
             "修理や鑑定が必要なガジェットはあるかい？ それとも君自身が工匠なら、設計図を見ていくかい？";
 
-        WriteDictionary((source, translated), ("Live and drink, tinker.", "生きて飲め、工匠。"));
+        WriteDictionary((source, translated + " =player.formalAddressTerm= =player.reflexive="), ("Live and drink, tinker.", "生きて飲め、工匠。"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -98,7 +98,7 @@ public sealed class ConversationTemplateTranslationPatchTests
     public void Prefix_TranslatesQuestionOverloadFields_WhenPatched()
     {
         WriteDictionary(
-            ("Hello, =player.formalAddressTerm=.", "こんにちは。"),
+            ("Hello, =player.formalAddressTerm=.", "こんにちは。 =player.formalAddressTerm="),
             ("Live and drink.", "生きて飲め。"),
             ("Why?", "なぜ？"),
             ("Because.", "そういうものだ。"));

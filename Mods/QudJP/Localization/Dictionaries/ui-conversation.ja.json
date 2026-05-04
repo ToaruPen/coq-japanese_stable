@@ -12,7 +12,7 @@
     {
       "key": "Need a gadget repaired or identified, =player.formalAddressTerm=? Or if you're a tinker =player.reflexive=, perhaps you'd like to peruse my schematics?",
       "context": "ConversationTemplate.GeneratedVillageTinker.Body",
-      "text": "修理や鑑定が必要なガジェットはあるかい？ それとも君自身が工匠なら、設計図を見ていくかい？"
+      "text": "修理や鑑定が必要なガジェットはあるかい？ それとも君自身が工匠なら、設計図を見ていくかい？ =player.formalAddressTerm= =player.reflexive="
     },
     {
       "key": "Live and drink, tinker.",
@@ -32,22 +32,22 @@
     {
       "key": "Welcome, =player.species=. What do you desire?",
       "context": "ConversationTemplate.VillageMerchant.Body.Welcome",
-      "text": "ようこそ。何を望む？"
+      "text": "ようこそ。何を望む？ =player.species="
     },
     {
       "key": "Come. Browse my wares, =player.formalAddressTerm=.",
       "context": "ConversationTemplate.VillageMerchant.Body.Browse",
-      "text": "さあ、品物を見ていくといい。"
+      "text": "さあ、品物を見ていくといい。 =player.formalAddressTerm="
     },
     {
       "key": "Live and drink, =pronouns.formalAddressTerm=.",
       "context": "ConversationTemplate.VillageMerchant.Choice.End",
-      "text": "生きて飲め。"
+      "text": "生きて飲め。 =pronouns.formalAddressTerm="
     },
     {
       "key": "Moon and Sun. Wisdom and will.~May the earth yield for us this season.~Peace, =player.formalAddressTerm=.",
       "context": "ConversationTemplate.Villager.Body.Default",
-      "text": "月と太陽。知恵と意志。~この季節、地が我らに実りをもたらさんことを。~平安あれ。"
+      "text": "月と太陽。知恵と意志。~この季節、地が我らに実りをもたらさんことを。~平安あれ。 =player.formalAddressTerm="
     },
     {
       "key": "I know a lot about the town!",
@@ -62,7 +62,7 @@
     {
       "key": "I've the cure for what ails you.~You don't look so good. You need more yuckwheat and honey in your diet.~Cook your meals with yuckwheat if you feel sick. Catch a disease early enough and you can kill it.~\"Ease the pain, addle the brain.\" Be careful when you chew witchwood bark.~In the market for a tonic, =player.formalAddressTerm=? Spend water now or blood later, your choice.~Prickly-boons and yuckwheat for trade.~If you came for the humble pie, you had best not have led any mind-hunters here.~Have you got enough tonics?",
       "context": "ConversationTemplate.VillageApothecary.Body.Extended",
-      "text": "あんたの不調に効く薬がある。~顔色がよくないな。食事にヤックウィートと蜂蜜をもっと入れるといい。~具合が悪いならヤックウィートを使って料理しな。病は早いうちなら潰せる。~「痛みを和らげ、頭を鈍らせる」。ウィッチウッドの樹皮を噛むときは気をつけな。~強壮剤を探しているのか？ 今水を払うか、後で血を流すか、選ぶのはあんただ。~プリックリーブーンとヤックウィートを売っている。~ハンブルパイ目当てなら、精神狩人をここまで連れてきていないだろうな。~強壮剤は足りているか？"
+      "text": "あんたの不調に効く薬がある。~顔色がよくないな。食事にヤックウィートと蜂蜜をもっと入れるといい。~具合が悪いならヤックウィートを使って料理しな。病は早いうちなら潰せる。~「痛みを和らげ、頭を鈍らせる」。ウィッチウッドの樹皮を噛むときは気をつけな。~強壮剤を探しているのか？ 今水を払うか、後で血を流すか、選ぶのはあんただ。~プリックリーブーンとヤックウィートを売っている。~ハンブルパイ目当てなら、精神狩人をここまで連れてきていないだろうな。~強壮剤は足りているか？ =player.formalAddressTerm="
     }
   ]
 }
