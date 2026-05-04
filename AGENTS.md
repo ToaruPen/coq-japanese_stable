@@ -16,6 +16,7 @@ QudJP is the Japanese localization mod for Caves of Qud `2.0.4`. The repo contai
   - workflow rules and operating constraints: `docs/RULES.md`
   - runtime evidence: fresh logs under `~/Library/Logs/Freehold Games/CavesOfQud/`
   - Steam Workshop release procedure: `docs/release.md`
+    - Codex local workflow shortcut: `~/.codex/skills/ship-steam-workshop/SKILL.md`
 
 ## How
 
@@ -25,18 +26,20 @@ QudJP is the Japanese localization mod for Caves of Qud `2.0.4`. The repo contai
   wrappers, assignments, or attributes matter. Prefer `just sg-cs
   'Popup.Show($$$ARGS)'` for common C# searches; plain `rg` is still fine for
   literal text, symbol names, and file discovery.
+- Prefer `just` recipes for routine validation so local runs match the repo task runner.
+  Raw commands below document what the recipes execute.
 - Core commands:
 
 ```bash
-dotnet build Mods/QudJP/Assemblies/QudJP.csproj
-dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L1
-dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L2
-ruff check scripts/
-uv run pytest scripts/tests/
-python3.12 scripts/check_encoding.py Mods/QudJP/Localization scripts
-python3.12 scripts/check_glossary_consistency.py Mods/QudJP/Localization
-python3.12 scripts/validate_xml.py Mods/QudJP/Localization --strict --warning-baseline scripts/validate_xml_warning_baseline.json
-python3.12 scripts/sync_mod.py
+just build
+just test-l1
+just test-l2
+just test-l2g
+just python-check
+just python-test
+just localization-check
+just translation-token-check
+just sync-mod
 ```
 
 - Decompiled game source lives in `~/dev/coq-decompiled_stable/` and must never be committed.

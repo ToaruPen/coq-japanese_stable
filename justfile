@@ -15,6 +15,10 @@ test-l1:
 test-l2:
   dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L2
 
+# Run C# L2 tests that require the game DLL reference.
+test-l2g:
+  dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L2G
+
 # Run Python static checks.
 python-check:
   ruff check scripts/
@@ -29,8 +33,16 @@ localization-check:
   python3.12 scripts/check_glossary_consistency.py Mods/QudJP/Localization
   python3.12 scripts/validate_xml.py Mods/QudJP/Localization --strict --warning-baseline scripts/validate_xml_warning_baseline.json
 
+# Check placeholder and markup-token parity in JSON localization assets.
+translation-token-check:
+  python3.12 scripts/check_translation_tokens.py Mods/QudJP/Localization
+
+# Sync the built mod into the local game install.
+sync-mod:
+  python3.12 scripts/sync_mod.py
+
 # Run the broad local verification gate.
-check: build test-l1 test-l2 python-check python-test localization-check
+check: build test-l1 test-l2 test-l2g python-check python-test localization-check translation-token-check
 
 # Verify agent-loop tools and dotfiles script availability.
 tool-check:
