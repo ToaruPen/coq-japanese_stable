@@ -101,6 +101,11 @@ git log --oneline <previous-tag>..HEAD
 git rev-parse --short=12 HEAD
 ```
 
+Record `<previous-tag>` or the explicit previous release range before creating
+the new release tag. After `vX.Y.Z` exists, `git describe --tags --abbrev=0`
+returns the current release tag from `HEAD`, so it is no longer a valid way to
+discover the previous release.
+
 After release notes, changelog, manifest, and other release files are final and
 committed, create the release tag:
 
@@ -136,9 +141,11 @@ Run this from the repository root before generating the Workshop upload VDF:
 just workshop-preflight X.Y.Z
 ```
 
-The preflight recipe verifies `vX.Y.Z` points at `HEAD`, then runs build,
-Python lint/tests, localization checks, translation-token checks, and
-`scripts/build_release.py`.
+The preflight recipe requires a clean worktree, verifies `vX.Y.Z` points at
+`HEAD`, then runs build, Python lint/tests, localization checks,
+translation-token checks, and `scripts/build_release.py`. Do not build release
+artifacts from a dirty worktree; uncommitted files can make the ZIP differ from
+the tagged source.
 
 ## Release Notes
 
@@ -185,10 +192,13 @@ Use the rendered Workshop changenote draft from the Release Notes step as the
 baseline. If needed, enrich it with commit-range context before upload:
 
 ```bash
-git describe --tags --abbrev=0 --match 'v[0-9]*'
-git log --oneline <previous-tag>..HEAD
+git log --oneline <recorded-previous-release-ref>..vX.Y.Z
 $EDITOR /tmp/qudjp-workshop-changenote.txt
 ```
+
+Use the previous release ref recorded before tag creation or documented in the
+release evidence report. Do not recompute it with `git describe` after the new
+release tag exists.
 
 Build the generated content folder and steamcmd VDF from the latest
 `dist/QudJP-v*.zip`:

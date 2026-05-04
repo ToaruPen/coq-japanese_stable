@@ -91,14 +91,32 @@ release-zip-check release_zip="":
   missing_prefixes = sorted(
       prefix for prefix in required_prefixes if not any(name.startswith(prefix) for name in names)
   )
-  if missing or missing_prefixes:
-      raise SystemExit(f"{zip_path}: missing files={missing}, missing dirs={missing_prefixes}")
+  allowed_exact = {
+      *required,
+      "QudJP/",
+      "QudJP/Assemblies/",
+      "QudJP/Localization/",
+      "QudJP/Fonts/",
+  }
+  extra = sorted(
+      name for name in names if name not in allowed_exact and not any(name.startswith(prefix) for prefix in required_prefixes)
+  )
+  if missing or missing_prefixes or extra:
+      raise SystemExit(
+          f"{zip_path}: missing files={missing}, missing dirs={missing_prefixes}, extra files={extra}"
+      )
   print(f"{zip_path}: required release files present")
   PY
 
 # Run the Workshop shipping preflight for an already-tagged release.
 workshop-preflight version:
+  #!/usr/bin/env bash
+  set -euo pipefail
   git status --short --branch
+  if [ -n "$(git status --porcelain --untracked-files=all)" ]; then \
+    echo "workshop-preflight requires a clean worktree before building release artifacts" >&2; \
+    exit 1; \
+  fi
   test "$(git rev-list -n1 v{{version}})" = "$(git rev-parse HEAD)"
   just build
   just python-check
