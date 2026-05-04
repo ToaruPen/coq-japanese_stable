@@ -116,7 +116,7 @@ def load_metadata(metadata_path: Path) -> WorkshopMetadata:
 def vdf_escape(value: str) -> str:
     """Escape a string for a quoted steamcmd VDF value."""
     normalized = value.replace("\r\n", "\n").replace("\r", "\n")
-    return normalized.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+    return normalized.replace("\\", "\\\\").replace('"', '\\"')
 
 
 def render_vdf(

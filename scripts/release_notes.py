@@ -137,11 +137,10 @@ def render_changelog_entry(
 def render_workshop_changenote(
     *,
     version: str,
-    git_hash: str,
     fragments: ReleaseNoteFragments,
 ) -> str:
     """Render a Steam Workshop changenote from collected fragments."""
-    lines = [f"v{version} / {git_hash}", "", "更新内容:"]
+    lines = [f"v{version} 更新", "", "更新内容:"]
     for section in SECTION_ORDER:
         lines.extend(f"- {bullet}" for bullet in fragments.sections.get(section, []))
     lines.append("")
@@ -225,7 +224,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Render changelog and Workshop changenote drafts from unreleased fragments.",
     )
     render_parser.add_argument("--version", required=True)
-    render_parser.add_argument("--git-hash", required=True)
+    render_parser.add_argument(
+        "--git-hash",
+        help="Deprecated: retained for compatibility and ignored by render.",
+    )
     render_parser.add_argument("--date", required=True)
     render_parser.add_argument("--fragments-dir", type=Path, default=FRAGMENTS_DIR)
     render_parser.add_argument("--changelog-output", type=Path)
@@ -246,7 +248,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "render":
             fragments = _require_fragments(args.fragments_dir)
             changelog = render_changelog_entry(version=args.version, release_date=args.date, fragments=fragments)
-            workshop = render_workshop_changenote(version=args.version, git_hash=args.git_hash, fragments=fragments)
+            workshop = render_workshop_changenote(version=args.version, fragments=fragments)
             if args.changelog_output is None and args.workshop_output is None:
                 print(changelog)  # noqa: T201
                 print("---")  # noqa: T201

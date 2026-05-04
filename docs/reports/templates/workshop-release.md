@@ -5,6 +5,9 @@
 - Version:
 - Git commit:
 - Git tag:
+- Previous release tag/range:
+- Version source:
+- GitHub Release URL, if created:
 - Workshop item: https://steamcommunity.com/sharedfiles/filedetails/?id=3718988020
 - Steam app ID: `333640`
 - Published file ID: `3718988020`
@@ -37,16 +40,13 @@ vX.Y.Z / <short-git-hash>
 
 ## Preflight
 
-- [ ] `dotnet build Mods/QudJP/Assemblies/QudJP.csproj`
-- [ ] `ruff check scripts/`
-- [ ] `uv run pytest scripts/tests/test_build_release.py scripts/tests/test_build_workshop_upload.py scripts/tests/test_sync_mod.py scripts/tests/test_tokenize_corpus.py -q`
-- [ ] `python3.12 scripts/check_encoding.py Mods/QudJP/Localization scripts`
-- [ ] `python3.12 scripts/check_glossary_consistency.py Mods/QudJP/Localization`
-- [ ] `python3.12 scripts/check_translation_tokens.py Mods/QudJP/Localization`
-- [ ] `python3.12 scripts/validate_xml.py Mods/QudJP/Localization --strict --warning-baseline scripts/validate_xml_warning_baseline.json`
-- [ ] `python3.12 scripts/build_release.py`
-- [ ] Release ZIP spot-check
-- [ ] `python3.12 scripts/build_workshop_upload.py --release-zip dist/QudJP-vX.Y.Z.zip --changenote-file /tmp/qudjp-workshop-changenote.txt`
+- [ ] `git status --short --branch`
+- [ ] Release range established from previous tag, release report, changelog/GitHub release, or explicit user range
+- [ ] `Mods/QudJP/manifest.json` version, `vX.Y.Z` tag, release ZIP name, changenote first line, and report version match
+- [ ] `git rev-list -n1 vX.Y.Z` matches `git rev-parse HEAD`
+- [ ] `just workshop-preflight X.Y.Z`
+- [ ] `just release-zip-check dist/QudJP-vX.Y.Z.zip`
+- [ ] `just build-workshop-upload dist/QudJP-vX.Y.Z.zip /tmp/qudjp-workshop-changenote.txt`
 
 ## Upload
 

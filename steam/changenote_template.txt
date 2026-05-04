@@ -1,4 +1,4 @@
-vX.Y.Z / <short-git-hash>
+vX.Y.Z 更新
 
 更新内容:
 - 
