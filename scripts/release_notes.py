@@ -224,7 +224,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Render changelog and Workshop changenote drafts from unreleased fragments.",
     )
     render_parser.add_argument("--version", required=True)
-    render_parser.add_argument("--git-hash")
+    render_parser.add_argument(
+        "--git-hash",
+        help="Deprecated: retained for compatibility and ignored by render.",
+    )
     render_parser.add_argument("--date", required=True)
     render_parser.add_argument("--fragments-dir", type=Path, default=FRAGMENTS_DIR)
     render_parser.add_argument("--changelog-output", type=Path)
