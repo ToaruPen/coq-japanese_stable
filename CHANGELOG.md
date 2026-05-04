@@ -10,6 +10,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.2.1] - 2026-05-05
+
+### Fixed
+
+- Improve Japanese coverage for generated ability names, active effects,
+  cooking effects, message log text, and village history descriptions.
+- Improve Japanese translation coverage for multiline item descriptions, popup
+  messages, and slimy/statue messages.
+
+---
+
 ## [0.2.0] - 2026-05-04
 
 ### Added
@@ -119,5 +130,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+[0.2.1]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.1
 [0.2.0]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.0
 [0.1.0]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.1.0
