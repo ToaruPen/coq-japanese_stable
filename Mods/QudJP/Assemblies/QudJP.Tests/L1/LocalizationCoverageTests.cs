@@ -566,6 +566,36 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void SkillsAndPowersDictionary_AbilityBarDuplicateLeavesShareAbilityManagerTranslations()
+    {
+        var entries = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "ui-skillsandpowers.ja.json"));
+        var sharedAbilityBarLeaves = new[]
+        {
+            new DictionaryEntry("Dominate Creature", "AbilityManager.Name", "支配"),
+            new DictionaryEntry("Power Devices", "AbilityManager.Name", "発電"),
+        };
+
+        Assert.Multiple(() =>
+        {
+            foreach (var sharedLeaf in sharedAbilityBarLeaves)
+            {
+                var matchingEntries = entries
+                    .Where(entry => string.Equals(entry.Key, sharedLeaf.Key, StringComparison.Ordinal))
+                    .ToArray();
+
+                Assert.That(
+                    matchingEntries,
+                    Does.Contain(sharedLeaf),
+                    $"{sharedLeaf.Key} should keep using the existing AbilityManager.Name translation.");
+                Assert.That(
+                    matchingEntries.Where(static entry => string.Equals(entry.Context, "AbilityBar.ButtonText", StringComparison.Ordinal)),
+                    Is.Empty,
+                    $"{sharedLeaf.Key} intentionally avoids a duplicate AbilityBar.ButtonText entry while runtime lookup remains flat by key.");
+            }
+        });
+    }
+
+    [Test]
     public void KnownRuntimeNoisyDuplicateKeys_AreExplicitlyAudited()
     {
         var dictionariesRoot = Path.Combine(localizationRoot, "Dictionaries");

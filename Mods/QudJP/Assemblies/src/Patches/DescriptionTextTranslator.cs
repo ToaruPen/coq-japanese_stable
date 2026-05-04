@@ -54,7 +54,11 @@ internal static class DescriptionTextTranslator
             return source;
         }
 
-        if (TryTranslateSegmentPreservingColors(source, route, out var wholeTranslated))
+        if (TryTranslateSegmentPreservingColors(
+            source,
+            route,
+            allowMessagePatternTranslation: source.IndexOf('\n') < 0,
+            out var wholeTranslated))
         {
             return wholeTranslated;
         }
@@ -113,7 +117,11 @@ internal static class DescriptionTextTranslator
         }
 
         var sourceForTranslation = syntheticPrefix + source + syntheticSuffix;
-        if (!TryTranslateSegmentPreservingColors(sourceForTranslation, route, out var translatedWithSyntheticBoundaries))
+        if (!TryTranslateSegmentPreservingColors(
+            sourceForTranslation,
+            route,
+            allowMessagePatternTranslation: true,
+            out var translatedWithSyntheticBoundaries))
         {
             if (lineClosesActiveBoundary)
             {
@@ -298,7 +306,11 @@ internal static class DescriptionTextTranslator
         return token.Length == 2 && (token[0] == '&' || token[0] == '^');
     }
 
-    private static bool TryTranslateSegmentPreservingColors(string source, string route, out string translated)
+    private static bool TryTranslateSegmentPreservingColors(
+        string source,
+        string route,
+        bool allowMessagePatternTranslation,
+        out string translated)
     {
         if (TryTranslateBrainDispositionLinePreservingColors(source, route, out translated))
         {
@@ -317,7 +329,7 @@ internal static class DescriptionTextTranslator
 
         translated = ColorAwareTranslationComposer.TranslatePreservingColors(
             source,
-            visible => TryTranslateVisibleSegment(visible, route, out var candidate)
+            visible => TryTranslateVisibleSegment(visible, route, allowMessagePatternTranslation, out var candidate)
                 ? candidate
                 : visible);
         return !string.Equals(translated, source, StringComparison.Ordinal);
@@ -335,7 +347,11 @@ internal static class DescriptionTextTranslator
         return false;
     }
 
-    private static bool TryTranslateVisibleSegment(string source, string route, out string translated)
+    private static bool TryTranslateVisibleSegment(
+        string source,
+        string route,
+        bool allowMessagePatternTranslation,
+        out string translated)
     {
         if (TryTranslateLabeledList(source, route, out translated))
         {
@@ -375,7 +391,7 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
-        if (ShouldSkipMessagePatternTranslation(source))
+        if (!allowMessagePatternTranslation || ShouldSkipMessagePatternTranslation(source))
         {
             translated = source;
             return false;

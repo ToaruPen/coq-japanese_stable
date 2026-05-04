@@ -1273,6 +1273,27 @@ public sealed class MessagePatternTranslatorTests
         Assert.That(translated, Is.EqualTo("レシェフの神殿を本当に攻撃しますか？"));
     }
 
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesStatuePrayerMessage()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "You voice a short prayer beneath the marble statue of オボロコル.");
+
+        Assert.That(translated, Is.EqualTo("あなたはオボロコルの大理石の像の下で短い祈りを唱えた。"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesSlimyMessage()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("It's disgustingly slimy!");
+
+        Assert.That(translated, Is.EqualTo("吐き気を催すほどぬめっている！"));
+    }
+
     private static void UseRepositoryPatternDictionary()
     {
         var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");

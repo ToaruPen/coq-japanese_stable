@@ -5,12 +5,19 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
 
 from scripts.triage.log_parser import parse_log, parse_log_text
 
 if TYPE_CHECKING:
     from pathlib import Path
 from scripts.triage.models import LogEntryKind
+
+_LINE_SAFE_TEXT = st.text(
+    alphabet=st.characters(blacklist_characters="\n\r\v\f\x1c\x1d\x1e\x85\u2028\u2029", blacklist_categories=("Cs",)),
+    max_size=80,
+)
 
 _MISSING_KEY_OLD = "[QudJP] Translator: missing key 'Put away' (hit 3). (context: ExactKey)"
 _MISSING_KEY_NEW = (
@@ -705,6 +712,25 @@ def test_parse_structured_suffix_unescapes_delimiter_like_values(
     assert entries[0].route == expected_route
     assert entries[0].family == expected_family
     assert getattr(entries[0], expected_field) == expected_value
+
+
+@given(rendered_text_sample=_LINE_SAFE_TEXT)
+def test_parse_structured_suffix_rendered_text_sample_round_trips(rendered_text_sample: str) -> None:
+    """Escaped line-bounded structured values round-trip through public parsing."""
+    line = (
+        "[QudJP] Translator: missing key 'Put away' (hit 3). (context: ExactKey);"
+        " route=ExactKey; family=missing_key; template_id=<missing>;"
+        f" rendered_text_sample={_structured_suffix_value(rendered_text_sample)}"
+    )
+
+    entries = parse_log_text(line)
+
+    assert len(entries) == 1
+    assert entries[0].kind == LogEntryKind.MISSING_KEY
+    assert entries[0].route == "ExactKey"
+    assert entries[0].family == "missing_key"
+    assert entries[0].template_id is None
+    assert entries[0].rendered_text_sample == rendered_text_sample
 
 
 def test_parse_structured_suffix_preserves_literal_missing_in_text_fields(tmp_path: Path) -> None:

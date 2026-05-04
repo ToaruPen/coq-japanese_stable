@@ -179,6 +179,48 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_UsesSharedAbilityManagerLeavesForDuplicateAbilityBarNames()
+    {
+        WriteDictionary(
+            ("Dominate Creature", "支配"),
+            ("Power Devices", "発電"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyAbilityBarButtonTextTarget), nameof(DummyAbilityBarButtonTextTarget.Update)),
+                postfix: new HarmonyMethod(RequirePatchMethod("Postfix", typeof(object))));
+
+            var target = new DummyAbilityBarButtonTextTarget();
+            var dominate = new DummyAbilityBarButton("Dominate Creature");
+            var powerDevices = new DummyAbilityBarButton("Power Devices");
+            target.AbilityButtons.Add(dominate);
+            target.AbilityButtons.Add(powerDevices);
+
+            target.Update();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(dominate.Text.text, Is.EqualTo("支配"));
+                Assert.That(powerDevices.Text.text, Is.EqualTo("発電"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("Dominate Creature"), Is.EqualTo(0));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("Power Devices"), Is.EqualTo(0));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(AbilityBarButtonTextTranslationPatch),
+                        "AbilityBar.ButtonText"),
+                    Is.EqualTo(2));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Postfix_DoesNotLogMissingKeysForUnregisteredSuffixTokens()
     {
         WriteDictionary(("Sprint", "スプリント"));

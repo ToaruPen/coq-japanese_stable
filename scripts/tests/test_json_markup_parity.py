@@ -20,15 +20,16 @@ translation, so it is not compared.
 
 from __future__ import annotations
 
-import json
 import re
 from collections import Counter
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-DICTIONARIES_ROOT = REPO_ROOT / "Mods" / "QudJP" / "Localization" / "Dictionaries"
+from scripts.tests._common import DICTIONARIES_ROOT, REPO_ROOT, iter_dictionary_entries
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 OPENER = re.compile(r"\{\{(?P<name>[^|}]+)\|")
 LITERALS: tuple[str, ...] = ("&&", "^^")
@@ -57,19 +58,8 @@ def _all_dictionary_files() -> list[Path]:
 
 def _entries(path: Path) -> list[tuple[int, str, str]]:
     """Return [(index, key, text), ...] for every entry in a dictionary file."""
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
-        rel = path.relative_to(REPO_ROOT)
-        msg = f"Failed to read/parse {rel}: {exc}"
-        raise ValueError(msg) from exc
-    raw_entries = data.get("entries", []) if isinstance(data, dict) else data
-    if not isinstance(raw_entries, list):
-        return []
     pairs: list[tuple[int, str, str]] = []
-    for index, entry in enumerate(raw_entries, start=1):
-        if not isinstance(entry, dict):
-            continue
+    for index, entry in iter_dictionary_entries(path):
         key = entry.get("key", "")
         text = entry.get("text", "")
         if isinstance(key, str) and isinstance(text, str):

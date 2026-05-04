@@ -335,6 +335,48 @@ public sealed class DescriptionTextTranslatorTests
         });
     }
 
+    [Test]
+    public void TranslateLongDescription_DoesNotReportNoPattern_ForMultilineDescriptionStatusBlock()
+    {
+        WriteDictionary(
+            "ui-default.ja.json",
+            ("Strength", "筋力"),
+            ("Bonus Cap:", "ボーナス上限:"),
+            ("Weapon Class:", "武器カテゴリ:"),
+            ("Weight:", "重量："));
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("Offhand Attack Chance: {0}%", "オフハンド命中率: {0}%"),
+            ("Cudgel (dazes on critical hit)", "棍棒（クリティカル時に朦朧付与）"));
+        const string source =
+            "拳大の巻貝が柔らかな螺旋にとぐろを巻き、煤で黒く燻され、硫黄の臭気を放つ。\n\n" +
+            "Strength Bonus Cap: 3\n" +
+            "Weapon Class: Cudgel (dazes on critical hit)\n" +
+            "Offhand Attack Chance: 15%\n\n" +
+            "Weight: 2 lbs.";
+
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            source,
+            "DescriptionTextTranslatorTests");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                translated,
+                Is.EqualTo(
+                    "拳大の巻貝が柔らかな螺旋にとぐろを巻き、煤で黒く燻され、硫黄の臭気を放つ。\n\n" +
+                    "筋力ボーナス上限: 3\n" +
+                    "武器カテゴリ: 棍棒（クリティカル時に朦朧付与）\n" +
+                    "オフハンド命中率: 15%\n\n" +
+                    "重量： 2 lbs."));
+            Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(source), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("筋力ボーナス上限:"), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("武器カテゴリ:"), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("オフハンド命中率:"), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("重量："), Is.EqualTo(0));
+        });
+    }
+
     private void WritePatternDictionary(params (string pattern, string template)[] patterns)
     {
         var builder = new StringBuilder();

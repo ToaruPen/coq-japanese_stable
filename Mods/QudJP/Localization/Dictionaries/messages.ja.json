@@ -334,6 +334,11 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^It's disgustingly slimy!$",
+      "template": "吐き気を催すほどぬめっている！",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^You feel (.+?)[.!]?$",
       "template": "あなたは{0}を感じた",
       "route": "emit-message"
@@ -951,6 +956,11 @@
     {
       "pattern": "^You crossed into (.+?)\\.$",
       "template": "{t0}へ足を踏み入れた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You voice a short prayer beneath the marble statue of (.+?)\\.$",
+      "template": "あなたは{0}の大理石の像の下で短い祈りを唱えた。",
       "route": "emit-message"
     },
     {

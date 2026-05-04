@@ -2,13 +2,8 @@
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
-
+from scripts.tests._common import DICTIONARIES_ROOT, iter_dictionary_entries
 from scripts.triage.preserved_policy import load_preserved_english_policy
-
-REPO_ROOT = Path(__file__).resolve().parents[2]
-DICTIONARY_DIR = REPO_ROOT / "Mods" / "QudJP" / "Localization" / "Dictionaries"
 
 
 def test_policy_loads_route_aware_rules() -> None:
@@ -32,9 +27,8 @@ def test_policy_protected_dictionary_entries_are_not_registered() -> None:
     }
     offenders: list[tuple[str, str, str]] = []
 
-    for dictionary_path in sorted(DICTIONARY_DIR.glob("*.ja.json")):
-        payload = json.loads(dictionary_path.read_text(encoding="utf-8"))
-        for entry in payload.get("entries", ()):
+    for dictionary_path in sorted(DICTIONARIES_ROOT.glob("*.ja.json")):
+        for _, entry in iter_dictionary_entries(dictionary_path):
             key = entry.get("key")
             context = entry.get("context")
             if (context, key) in protected_entries:
