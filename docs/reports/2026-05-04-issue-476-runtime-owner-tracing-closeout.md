@@ -4,7 +4,7 @@
 
 Runtime log inspected:
 
-- `/Users/toarupen/Library/Logs/Freehold Games/CavesOfQud/Player.log`
+- `$HOME/Library/Logs/Freehold Games/CavesOfQud/Player.log`
 - mtime: `2026-05-04 00:55:36 JST`
 
 Command:
@@ -35,8 +35,9 @@ Current triage of the latest local `Player.log` reports:
 | unresolved | 10 |
 
 `<no-context>` no longer contains actionable unresolved entries. The only
-remaining `<no-context>` actionable-section rows are `20` `runtime_noise`
-entries:
+remaining `<no-context>` rows in the report's actionable section are `20`
+`runtime_noise` entries, which are retained there for auditability but have
+non-actionable dispositions:
 
 | class | count | disposition |
 | --- | ---: | --- |
@@ -87,7 +88,7 @@ sample drift set contains:
 
 ## Closeout
 
-#476's original blocker was that `<no-context>` mixed true untranslated text,
+Issue #476's original blocker was that `<no-context>` mixed true untranslated text,
 already-localized Japanese fragments, preserved tokens, display-name artifacts,
 and flat Translator re-entry noise into one manual bucket. Current triage no
 longer collapses those cases:
