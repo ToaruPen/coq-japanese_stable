@@ -8,11 +8,45 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+---
+
+## [0.2.0] - 2026-05-04
+
 ### Added
 
+- Broad runtime translation coverage for ability bars, status screens, trade,
+  tinkering, quests, journals, mod management, world map, save/load, death,
+  score, achievement, popup, and conversation UI routes.
+- Japanese procedural text coverage for Markov corpus text, procedural names,
+  titles, body-part variants, world parts, world mods, cooking/status effects,
+  death reasons, historical narratives, and Sultan Resheph annals.
+- CJK font packaging and runtime fallback setup for Workshop/mod-manager use.
+- Release, Steam Workshop, translation-token, glossary-consistency, XML source
+  markup, runtime smoke, and agent workflow validation tooling.
 - Sultan Resheph history translation in `Mods/QudJP/Localization/Dictionaries/annals-patterns.ja.json` (#420 PR1).
 - Build-time pipeline at `scripts/{extract,validate,translate,merge}_annals_patterns.py` and `scripts/tools/AnnalsPatternExtractor/` for extracting and translating regex/template pairs from `XRL.Annals/*.cs` (#420 PR1).
 - `JournalPatternTranslator` now supports ordered multi-file pattern dictionary load (`SetPatternFilesForTests(params string[])`).
+
+### Changed
+
+- Moved many dynamic translation routes from sink-side fallback toward
+  producer/owner-side translation so rendered text keeps markup and route
+  context more reliably.
+- Normalized terminology and glossary usage across item names, factions,
+  mutations, books, cooking text, UI labels, and static XML/JSON dictionaries.
+- Expanded C# L1/L2/L2G and Python test coverage for runtime routes,
+  placeholder parity, markup preservation, scanner output, release packaging,
+  and Workshop staging.
+
+### Fixed
+
+- Preserved color markup, placeholder tokens, literal escape markers, and
+  information-bearing variables across translated XML and JSON assets.
+- Repaired remaining untranslated or unstable UI routes found through runtime
+  log audits, including popup handoffs, player status bar refresh, chargen
+  summaries, display-name tails, journal/lair text, and ability HUD text.
+- Cleaned XML validation false positives and stale generated-artifact scanning
+  behavior.
 
 ---
 
@@ -85,4 +119,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+[0.2.0]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.0
 [0.1.0]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.1.0

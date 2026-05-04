@@ -1,5 +1,7 @@
 # QudJP task runner
 
+python := "uv run python"
+
 default:
   just --list
 
@@ -29,25 +31,94 @@ python-test:
 
 # Run localization asset checks.
 localization-check:
-  python3.12 scripts/check_encoding.py Mods/QudJP/Localization scripts
-  python3.12 scripts/check_glossary_consistency.py Mods/QudJP/Localization
-  python3.12 scripts/validate_xml.py Mods/QudJP/Localization --strict --warning-baseline scripts/validate_xml_warning_baseline.json
+  {{python}} scripts/check_encoding.py Mods/QudJP/Localization scripts
+  {{python}} scripts/check_glossary_consistency.py Mods/QudJP/Localization
+  {{python}} scripts/validate_xml.py Mods/QudJP/Localization --strict --warning-baseline scripts/validate_xml_warning_baseline.json
 
 # Check placeholder and markup-token parity in JSON localization assets.
 translation-token-check:
-  python3.12 scripts/check_translation_tokens.py Mods/QudJP/Localization
+  {{python}} scripts/check_translation_tokens.py Mods/QudJP/Localization
 
 # Require release-note fragments for localization changes.
 release-note-check base_ref="origin/main" head_ref="HEAD":
-  python3.12 scripts/release_notes.py check-fragment --base-ref "{{base_ref}}" --head-ref "{{head_ref}}"
+  {{python}} scripts/release_notes.py check-fragment --base-ref "{{base_ref}}" --head-ref "{{head_ref}}"
 
 # Render release and Workshop changenote drafts from unreleased fragments.
 render-release-notes version git_hash date:
-  python3.12 scripts/release_notes.py render --version "{{version}}" --git-hash "{{git_hash}}" --date "{{date}}" --changelog-output /tmp/qudjp-changelog-entry.md --workshop-output /tmp/qudjp-workshop-changenote.txt
+  {{python}} scripts/release_notes.py render --version "{{version}}" --git-hash "{{git_hash}}" --date "{{date}}" --changelog-output /tmp/qudjp-changelog-entry.md --workshop-output /tmp/qudjp-workshop-changenote.txt
+
+# Build the release ZIP under dist/.
+build-release:
+  {{python}} scripts/build_release.py
+
+# Spot-check required files in a release ZIP.
+release-zip-check release_zip="":
+  #!/usr/bin/env bash
+  set -euo pipefail
+  export QUDJP_RELEASE_ZIP="{{release_zip}}"
+  {{python}} - <<'PY'
+  import os
+  import zipfile
+  from pathlib import Path
+
+  requested = os.environ.get("QUDJP_RELEASE_ZIP", "")
+  if requested:
+      zip_path = Path(requested)
+  else:
+      release_archives = sorted(
+          Path("dist").glob("QudJP-v*.zip"),
+          key=lambda path: (path.stat().st_mtime, path.name),
+      )
+      if not release_archives:
+          raise SystemExit("dist/: no QudJP-v*.zip release archive found")
+      zip_path = release_archives[-1]
+
+  required = {
+      "QudJP/manifest.json",
+      "QudJP/preview.png",
+      "QudJP/LICENSE",
+      "QudJP/NOTICE.md",
+      "QudJP/Bootstrap.cs",
+      "QudJP/Assemblies/QudJP.dll",
+  }
+  required_prefixes = {
+      "QudJP/Localization/",
+      "QudJP/Fonts/",
+  }
+  with zipfile.ZipFile(zip_path) as zf:
+      names = set(zf.namelist())
+  missing = sorted(required - names)
+  missing_prefixes = sorted(
+      prefix for prefix in required_prefixes if not any(name.startswith(prefix) for name in names)
+  )
+  if missing or missing_prefixes:
+      raise SystemExit(f"{zip_path}: missing files={missing}, missing dirs={missing_prefixes}")
+  print(f"{zip_path}: required release files present")
+  PY
+
+# Run the Workshop shipping preflight for an already-tagged release.
+workshop-preflight version:
+  git status --short --branch
+  test "$(git rev-list -n1 v{{version}})" = "$(git rev-parse HEAD)"
+  just build
+  just python-check
+  uv run pytest scripts/tests/test_build_release.py scripts/tests/test_build_workshop_upload.py scripts/tests/test_sync_mod.py scripts/tests/test_tokenize_corpus.py -q
+  just localization-check
+  just translation-token-check
+  just build-release
+  just release-zip-check dist/QudJP-v{{version}}.zip
+
+# Build Steam Workshop staging and the steamcmd VDF.
+build-workshop-upload release_zip="" changenote_file="/tmp/qudjp-workshop-changenote.txt":
+  if [ -n "{{release_zip}}" ]; then \
+    {{python}} scripts/build_workshop_upload.py --release-zip "{{release_zip}}" --changenote-file "{{changenote_file}}"; \
+  else \
+    {{python}} scripts/build_workshop_upload.py --changenote-file "{{changenote_file}}"; \
+  fi
 
 # Sync the built mod into the local game install.
 sync-mod:
-  python3.12 scripts/sync_mod.py
+  {{python}} scripts/sync_mod.py
 
 # Run the broad local verification gate.
 check: build test-l1 test-l2 test-l2g python-check python-test localization-check translation-token-check
