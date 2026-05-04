@@ -127,6 +127,45 @@ internal sealed class DummyEffect
     }
 }
 
+internal class DummyEffectBaseTarget
+{
+    public virtual string GetDescription()
+    {
+        return "base effect";
+    }
+
+    public virtual string GetDetails()
+    {
+        return "base details";
+    }
+}
+
+internal sealed class DummyLiquidCoveredEffectTarget : DummyEffectBaseTarget
+{
+    public override string GetDescription()
+    {
+        return "{{B|wet}}";
+    }
+
+    public override string GetDetails()
+    {
+        return "Covered in 30 dram of salty water.";
+    }
+}
+
+internal sealed class DummyCookingDomainEffectTarget : DummyEffectBaseTarget
+{
+    public override string GetDescription()
+    {
+        return "+4 Ego";
+    }
+
+    public override string GetDetails()
+    {
+        return "+10% hit points";
+    }
+}
+
 internal sealed class DummyCharacterEffectLineData
 {
     public DummyEffect? effect { get; set; }

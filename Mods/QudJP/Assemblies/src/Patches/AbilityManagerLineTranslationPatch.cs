@@ -276,7 +276,19 @@ public static class AbilityManagerLineTranslationPatch
         }
     }
 
-    private static string TranslateVisibleText(string source, string route, string family) => UiBindingTranslationHelpers.TranslateVisibleText(source, route, family);
+    private static string TranslateVisibleText(string source, string route, string family)
+    {
+        if (string.Equals(family, "AbilityManagerLine.AbilityText", StringComparison.Ordinal))
+        {
+            var activatedAbilityName = ActivatedAbilityNameTranslator.TranslatePreservingColors(source, route, family);
+            if (!string.Equals(activatedAbilityName, source, StringComparison.Ordinal))
+            {
+                return activatedAbilityName;
+            }
+        }
+
+        return UiBindingTranslationHelpers.TranslateVisibleText(source, route, family);
+    }
 
     private static string GetRequiredStringMemberValue(object instance, string memberName)
     {

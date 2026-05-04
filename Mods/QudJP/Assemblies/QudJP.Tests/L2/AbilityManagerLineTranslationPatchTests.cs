@@ -74,6 +74,52 @@ public sealed partial class Issue201OtherUiBindingPatchTests
     }
 
     [Test]
+    public void AbilityManagerLinePrefix_TranslatesGeneratedReleaseGasAbilityName_FromMutationDisplayName()
+    {
+        WriteDictionary(
+            ("turn cooldown", "ターンのクールダウン"),
+            ("Toggled on", "オン"));
+        WriteMutationsXml(("Corrosive Gas Generation", "腐食性ガス生成"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyAbilityManagerLineTarget), nameof(DummyAbilityManagerLineTarget.setData)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(AbilityManagerLineTranslationPatch), nameof(AbilityManagerLineTranslationPatch.Prefix))));
+
+            var abilityTarget = new DummyAbilityManagerLineTarget();
+            abilityTarget.setData(new DummyAbilityManagerLineDataTarget
+            {
+                ability = new DummyAbilityEntryTarget
+                {
+                    DisplayName = "Release Corrosive Gas",
+                    Cooldown = 3,
+                    CooldownRounds = 3,
+                    Toggleable = true,
+                    ToggleState = true,
+                },
+                hotkeyDescription = "G",
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(abilityTarget.text.Text, Does.Contain("腐食性ガス放出"));
+                Assert.That(abilityTarget.text.Text, Does.Not.Contain("Release Corrosive Gas"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(AbilityManagerLineTranslationPatch), "AbilityManagerLine.AbilityText"),
+                    Is.GreaterThan(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+
+    [Test]
     public void AbilityManagerLinePrefix_FallsBackToOriginal_OnUnsupportedInput()
     {
         var harmonyId = CreateHarmonyId();

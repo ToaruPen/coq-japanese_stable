@@ -20,7 +20,7 @@ internal static class GameSummaryTextTranslator
         RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
     private static readonly Regex ScorePattern = new Regex(
-        @"^You scored \{\{C\|(?<score>\d+)\}\} points?\.$",
+        @"^You scored \{\{C\|(?<score>-?\d+)\}\} points?\.$",
         RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
     private static readonly Regex TurnsPattern = new Regex(

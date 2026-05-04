@@ -159,6 +159,28 @@ public sealed class AbilityBarAfterRenderTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_PreservesSeparatorTmpSegment_WhenCommaBelongsToPreviousEffectColor()
+    {
+        WriteDictionary(("ACTIVE EFFECTS:", "アクティブ効果:"));
+
+        RunWithPostfixPatch(() =>
+        {
+            var target = new DummyAbilityBarAfterRenderTarget
+            {
+                NextEffectText =
+                    "<color=#FFFFFFFF><color=#508d75>ACTIVE EFFECTS:</color></color><color=#B1C9C3FF> </color><color=#0096FFFF>浅瀬を進んで</color><color=#B1C9C3FF>いる, </color><color=#0096FFFF>濡れた</color>",
+            };
+
+            target.AfterRender(core: null, sb: null);
+
+            Assert.That(
+                target.GetEffectText(),
+                Is.EqualTo(
+                    "<color=#FFFFFFFF><color=#508d75>アクティブ効果:</color></color><color=#B1C9C3FF> </color><color=#0096FFFF>浅瀬を進んで</color><color=#B1C9C3FF>いる、</color><color=#0096FFFF>濡れた</color>"));
+        });
+    }
+
+    [Test]
     public void Postfix_TranslatesLabelOnlyActiveEffectsAndFlushesToTextField()
     {
         WriteDictionary(("ACTIVE EFFECTS:", "発動中の効果:"));

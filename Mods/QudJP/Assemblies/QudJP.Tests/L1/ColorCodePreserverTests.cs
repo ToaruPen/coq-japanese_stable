@@ -222,6 +222,46 @@ public sealed class ColorCodePreserverTests
     }
 
     [Test]
+    public void TranslatePreservingColors_DoesNotDuplicateTranslatedOwnedWholeWrapper()
+    {
+        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
+            "{{B|{{B|wet}}}}",
+            _ => "{{B|濡れた}}");
+
+        Assert.That(translated, Is.EqualTo("{{B|濡れた}}"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_PreservesDifferentWholeSourceWrapperAroundTranslatedOwnedMarkup()
+    {
+        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
+            "{{R|No}}",
+            _ => "{{y|いいえ}}");
+
+        Assert.That(translated, Is.EqualTo("{{R|{{y|いいえ}}}}"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_RestoresInlineSourceWrapperByVisibleText_WhenTranslatedOwnsOtherMarkup()
+    {
+        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
+            "{{W|[n]}} {{y|No}}",
+            _ => "{{c|[n]}} いいえ");
+
+        Assert.That(translated, Is.EqualTo("{{W|{{c|[n]}}}} {{y|いいえ}}"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_RestoresPartialSourceWrapperAfterWholeSourceWrapper_WhenTranslatedOwnsMarkup()
+    {
+        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
+            "{{B|left {{R|target}} right}}",
+            _ => "{{Y|left target right}}");
+
+        Assert.That(translated, Is.EqualTo("{{B|{{Y|left {{R|target}} right}}}}"));
+    }
+
+    [Test]
     public void RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership_RestoresWholeSourceWrapper()
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip("{{y|No}}");

@@ -150,6 +150,29 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void ChargenAttributeHelpText_CoversRuntimeObservedTrueKinEgoDescription()
+    {
+        const string trueKinEgoDescription =
+            "Your {{W|Ego}} score determines the potency of your ability to haggle with merchants, and your ability to dominate the wills of other living creatures.";
+
+        var chargenDictionaryPath = Path.Combine(localizationRoot, "Dictionaries", "ui-chargen.ja.json");
+        var matchingEntries = LoadEntries(chargenDictionaryPath)
+            .Where(static entry => entry.Key == trueKinEgoDescription)
+            .ToArray();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(matchingEntries, Has.Length.EqualTo(1), "Missing runtime True Kin Ego help text in ui-chargen.");
+            Assert.That(
+                matchingEntries.Select(static entry => entry.Context),
+                Is.EquivalentTo(new[] { "Chargen.Attributes.HelpText" }));
+            Assert.That(
+                matchingEntries.Select(static entry => entry.Text),
+                Is.EquivalentTo(new[] { "あなたの{{W|自我}}は、商人との値引き交渉力、および他の生物の意志を支配する能力を決定します。" }));
+        });
+    }
+
+    [Test]
     public void CallingSubtypeExtraInfoOverrides_RemoveBaseEnglishExtraInfo()
     {
         var subtypesDocument = XDocument.Load(Path.Combine(localizationRoot, "Subtypes.jp.xml"));
@@ -335,6 +358,32 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void HulkHoneyTonicRulesDescription_DoesNotRegressToEnglishRulesText()
+    {
+        var itemsDocument = XDocument.Load(Path.Combine(localizationRoot, "ObjectBlueprints", "Items.jp.xml"));
+        var rulesDescription = itemsDocument.Root!
+            .Elements("object")
+            .Single(element => string.Equals(element.Attribute("Name")?.Value, "HulkHoneyTonic", StringComparison.Ordinal))
+            .Elements("part")
+            .Single(element => string.Equals(element.Attribute("Name")?.Value, "RulesDescription", StringComparison.Ordinal));
+
+        var text = rulesDescription.Attribute("Text")?.Value ?? string.Empty;
+        var genotypeAlt = rulesDescription.Attribute("GenotypeAlt")?.Value ?? string.Empty;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(text, Does.Contain("持続：41-50ラウンド"));
+            Assert.That(genotypeAlt, Does.Contain("持続：41-50ラウンド"));
+            Assert.That(text, Does.Contain("筋力 +6"));
+            Assert.That(genotypeAlt, Does.Contain("筋力 +9"));
+            Assert.That(text, Does.Not.Contain("Duration:"));
+            Assert.That(genotypeAlt, Does.Not.Contain("Duration:"));
+            Assert.That(text, Does.Not.Contain("Strength"));
+            Assert.That(genotypeAlt, Does.Not.Contain("Strength"));
+        });
+    }
+
+    [Test]
     public void CtesiphusPetResponse_DoesNotRegressToEnglishMeow()
     {
         var creaturesDocument = XDocument.Load(Path.Combine(localizationRoot, "ObjectBlueprints", "Creatures.jp.xml"));
@@ -343,11 +392,17 @@ public sealed class LocalizationCoverageTests
             .Single(element => string.Equals(element.Attribute("Name")?.Value, "Ctesiphus", StringComparison.Ordinal))
             .Elements("part")
             .Single(element => string.Equals(element.Attribute("Name")?.Value, "Pettable", StringComparison.Ordinal));
+        var petResponseTag = creaturesDocument.Root!
+            .Elements("object")
+            .Single(element => string.Equals(element.Attribute("Name")?.Value, "Ctesiphus", StringComparison.Ordinal))
+            .Elements("tag")
+            .Single(element => string.Equals(element.Attribute("Name")?.Value, "PetResponse", StringComparison.Ordinal));
 
-        var petResponse = pettable.Attribute("PetResponse")?.Value ?? string.Empty;
+        var petResponse = petResponseTag.Attribute("Value")?.Value ?? string.Empty;
 
         Assert.Multiple(() =>
         {
+            Assert.That(pettable.Attribute("PetResponse"), Is.Null);
             Assert.That(petResponse, Is.EqualTo("=subject.T=がにゃあと鳴く。"));
             Assert.That(petResponse, Does.Not.Contain("meow"));
             Assert.That(petResponse, Does.Not.Contain("meows"));
@@ -420,6 +475,13 @@ public sealed class LocalizationCoverageTests
             .Where(static entry => IsConcreteHpIncreaseDescription(entry.Key) || IsConcreteHpIncreaseDetails(entry.Key))
             .Select(static entry => entry.Key)
             .ToArray();
+        var cookingDynamicPrefixKeys = LoadEntries(Path.Combine(dictionariesRoot, "world-effects-cooking.ja.json"))
+            .Where(static entry =>
+                IsCookingDynamicPrefixFragment(entry.Key)
+                || IsCookingMutationDynamicFragment(entry.Key)
+                || IsBasicCookingEffectDetailsFragment(entry.Key))
+            .Select(static entry => entry.Key)
+            .ToArray();
         var messageLogConcreteKeys = LoadEntries(Path.Combine(dictionariesRoot, "ui-messagelog-leaf.ja.json"))
             .Where(static entry => IsConcreteFallToGround(entry.Key) || IsConcreteFallAsleep(entry.Key))
             .Select(static entry => entry.Key)
@@ -439,6 +501,10 @@ public sealed class LocalizationCoverageTests
                 cookingConcreteKeys,
                 Is.Empty,
                 "Known dynamic cooking HP strings should be translated by CookingEffectTranslationPatch, not concrete exact keys.");
+            Assert.That(
+                cookingDynamicPrefixKeys,
+                Is.Empty,
+                "Dynamic cooking producer fragments should be translated by owner routes, not broad prefix-like exact dictionary keys.");
             Assert.That(
                 messageLogConcreteKeys,
                 Is.Empty,
@@ -472,6 +538,114 @@ public sealed class LocalizationCoverageTests
             Assert.That(uiDefaultKeys, Does.Contain("No active effects."));
             Assert.That(worldEffectsStatusKeys, Does.Contain("corrected vision"));
         });
+    }
+
+    [Test]
+    public void WorldEffectsStatusDictionary_CoversStaticActiveEffectDescriptionLeaves()
+    {
+        var worldEffectsStatusKeys = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "world-effects-status.ja.json"))
+            .Select(static entry => entry.Key)
+            .ToHashSet(StringComparer.Ordinal);
+        var expectedKeys = new[]
+        {
+            "&minhabited",
+            "astrally burdened",
+            "covered in liquid",
+            "demolishing",
+            "distracted by a decoy",
+            "emboldened",
+            "emptying the clips",
+            "entranced",
+            "greased",
+            "hooked",
+            "immobilized",
+            "incommunicado",
+            "locked in psychic battle",
+            "meditating",
+            "shaken",
+            "springing",
+            "sprinting",
+            "stained by liquid",
+            "suppressed",
+            "synapse snap",
+            "syphoned",
+            "waking dream",
+            "{{B|flying}}",
+            "{{B|mobility impaired}}",
+            "{{B|projecting consciousness}}",
+            "{{B|pulsed}}",
+            "{{B|stressed}}",
+            "{{B|submerged}}",
+            "{{B|swimming}}",
+            "{{B|wading}}",
+            "{{C|hobbled}}",
+            "{{C|interdicted}}",
+            "{{C|piloting}}",
+            "{{C|rebuked}}",
+            "{{C|sitting}}",
+            "{{C|stunned by gas}}",
+            "{{C|unpiloted}}",
+            "{{C|warming up}}",
+            "{{G|ecstatic}}",
+            "{{G|poisoned by gas}}",
+            "{{G|refreshed}}",
+            "{{K|disguised}}",
+            "{{K|gleaming}}",
+            "{{K|overburdened}}",
+            "{{K|unpowered}}",
+            "{{M|in stasis}}",
+            "{{M|inspired}}",
+            "{{M|mutating}}",
+            "{{O|shimmering}}",
+            "{{R|FURIOUS}}",
+            "{{R|crippled}}",
+            "{{R|famished}}",
+            "{{R|wilted}}",
+            "{{W|cardiac arrest}}",
+            "{{W|covered in spores}}",
+            "{{W|crackling}}",
+            "{{W|dashing}}",
+            "{{W|safe mode}}",
+            "{{W|well fed}}",
+            "{{Y|omniphase}}",
+            "{{Y|proselytized}}",
+            "{{Y|reflectively shielded}}",
+            "{{Y|sizzling}}",
+            "{{Y|tomb-tethered}}",
+            "{{b|deep dreaming}}",
+            "{{camouflage|camouflaged}}",
+            "{{coated in plasma|coated in plasma}}",
+            "{{c|cybernetic rejection syndrome}}",
+            "{{g|nullphased}}",
+            "{{g|phase spider venom}}",
+            "{{g|shield wall}}",
+            "{{g|vitalized}}",
+            "{{lovesickness|lovesick}}",
+            "{{m|phosphorescent}}",
+            "{{m|quantum-locked}}",
+            "{{rainbow|irisdual molting}}",
+            "{{rainbow|scintillating}}",
+            "{{r|broken}}",
+            "{{r|budding}}",
+            "{{r|callow}}",
+            "{{r|cracked}}",
+            "{{r|disoriented}}",
+            "{{r|drained}}",
+            "{{r|flagging}}",
+            "{{r|latched onto}}",
+            "{{r|nosebleed}}",
+            "{{r|prowling}}",
+            "{{r|shamed}}",
+            "{{r|war trance}}",
+            "{{urban camouflage|urban camouflage}}",
+            "{{w|burrowed}}",
+            "{{w|grounded}}",
+        };
+
+        Assert.That(
+            expectedKeys.Where(key => !worldEffectsStatusKeys.Contains(key)).ToArray(),
+            Is.Empty,
+            "Static active-effect description leaves from the decompiled effect inventory must stay covered.");
     }
 
     [Test]
@@ -814,6 +988,52 @@ public sealed class LocalizationCoverageTests
         return key.StartsWith(prefix, StringComparison.Ordinal)
                && key.EndsWith(suffix, StringComparison.Ordinal)
                && IsAsciiDigits(key.Substring(prefix.Length, key.Length - prefix.Length - suffix.Length));
+    }
+
+    private static bool IsCookingDynamicPrefixFragment(string key)
+    {
+        return key is "@they get +"
+            or "@they expel quills per the Quills mutation at level"
+            or "@they expel quills per the Quills mutation at level "
+            or "Reflect"
+            or "Reflect "
+            or "whenever @thisCreature take@s damage, there's a"
+            or "whenever @thisCreature take@s damage, there's a "
+            or "Whenever @thisCreature take@s avoidable damage, there's a"
+            or "Whenever @thisCreature take@s avoidable damage, there's a "
+            or "Can use"
+            or "Can use ";
+    }
+
+    private static bool IsCookingMutationDynamicFragment(string key)
+    {
+        return key is "Can use {MutationDisplayName} at level {0}."
+            or "+{0} level to {MutationDisplayName}."
+            or "+{0} levels to {MutationDisplayName}."
+            or "Can use {MutationDisplayName} at level {0}-{1}. If @they already have {MutationDisplayName}, it's enhanced by {2}-{3} levels."
+            or "Can use Intimidate."
+            or "+{0} bonus on Ego roll when using Intimidate."
+            or "+2 bonus on Ego roll when using Intimidate."
+            or "Can use Intimidate. If @they already have Intimidate, gain a +2 bonus on the Ego roll when using Intimidate."
+            || IsConcreteCookingMutationUseTemplate(key);
+    }
+
+    private static bool IsConcreteCookingMutationUseTemplate(string key)
+    {
+        return key.StartsWith("Can use ", StringComparison.Ordinal)
+               && key.IndexOf(" at level ", StringComparison.Ordinal) >= 0
+               && key.IndexOf(". If @they already have ", StringComparison.Ordinal) >= 0
+               && key.EndsWith(" levels.", StringComparison.Ordinal);
+    }
+
+    private static bool IsBasicCookingEffectDetailsFragment(string key)
+    {
+        return key is "+10% hit points"
+            or "+1 MA"
+            or "+6% Move Speed"
+            or "+3% Quickness"
+            or "+1 to hit"
+            or "+5% XP gained";
     }
 
     private static bool IsConcreteFallToGround(string key)

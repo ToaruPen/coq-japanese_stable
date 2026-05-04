@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using HarmonyLib;
@@ -8,26 +9,23 @@ namespace QudJP.Patches;
 [HarmonyPatch]
 public static class EffectDescriptionPatch
 {
-    [HarmonyTargetMethod]
-    private static MethodBase? TargetMethod()
+    [HarmonyTargetMethods]
+    private static IEnumerable<MethodBase> TargetMethods()
     {
         var targetType = GameTypeResolver.FindType("XRL.World.Effect", "Effect");
         if (targetType is null)
         {
             Trace.TraceError("QudJP: EffectDescriptionPatch target type not found.");
-            return null;
+            yield break;
         }
 
-        var method = AccessTools.Method(targetType, "GetDescription", Type.EmptyTypes);
-        if (method is null)
+        foreach (var method in ActiveEffectOwnerTargetResolver.ResolveTargetMethods(targetType, "GetDescription"))
         {
-            Trace.TraceError("QudJP: EffectDescriptionPatch.GetDescription not found.");
+            yield return method;
         }
-
-        return method;
     }
 
-    public static void Postfix(ref string __result)
+    public static void Postfix(MethodBase? __originalMethod, ref string __result)
     {
         try
         {
@@ -39,7 +37,7 @@ public static class EffectDescriptionPatch
             if (!ActiveEffectTextTranslator.TryTranslateText(
                     __result,
                     nameof(EffectDescriptionPatch),
-                    "ActiveEffects.Description",
+                    ComposeFamily(__originalMethod),
                     out var translated))
             {
                 return;
@@ -51,5 +49,13 @@ public static class EffectDescriptionPatch
         {
             Trace.TraceError("QudJP: EffectDescriptionPatch.Postfix failed: {0}", ex);
         }
+    }
+
+    private static string ComposeFamily(MethodBase? originalMethod)
+    {
+        var typeName = originalMethod?.DeclaringType?.Name;
+        return string.IsNullOrEmpty(typeName)
+            ? "ActiveEffects.Description"
+            : "ActiveEffects.Description." + typeName;
     }
 }

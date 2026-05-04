@@ -14,13 +14,28 @@
     },
     {
       "pattern": "^On the (.+?) of (.+?), you arrive at the oasis-hamlet of Joppa, along the far rim of Moghra'yi, the Great Salt Desert\\.\\n\\nAll around you, moisture farmers tend to groves of viridian watervine\\. There are huts wrought from rock salt and brinestalk\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",
-      "template": "{1}の{0}日、あなたは大塩砂漠モグラヤイの遥かな縁にあるオアシス集落ジョッパに到着した。\n\nあたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。",
+      "template": "{t1}の{t0}日、あなたは大塩砂漠モグラヤイの遥かな縁にあるオアシス集落ジョッパに到着した。\n\nあたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。",
       "route": "popup"
     },
     {
       "pattern": "^On the (.+?) of (.+?), you arrive at the village of (.+?)\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",
-      "template": "{1}の{0}日、あなたは{2}の村に到着した。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。",
+      "template": "{t1}の{t0}日、あなたは{2}の村に到着した。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。",
       "route": "popup"
+    },
+    {
+      "pattern": "^(?:\\{\\{C\\|)?This object is a monument to a scene from the history of the village (.+?):(?:\\}\\})?$",
+      "template": "これは{0}村の歴史の一場面を記念する碑である:",
+      "route": "description"
+    },
+    {
+      "pattern": "^The sanctity of (?:the )?(.+?) was revealed to the people of (.+?) through the dish known as (.+?)\\.(?:\\}\\})?$",
+      "template": "{t2}として知られる料理を通じて、{0}の聖性が{1}の人々に示された。",
+      "route": "description"
+    },
+    {
+      "pattern": "^Since the first (.+?), the villagers of (.+?) have (.+?) feasted on (.+?)\\.(?:\\}\\})?$",
+      "template": "最初の{t0}以来、{1}の村人たちは{t3}を{t2}食してきた。",
+      "route": "description"
     },
     {"pattern": "^(.+?), ((?i:someone|somebody|a mysterious person|a child|a woman|a man|a baby|some group|some sect|some organization|some party|some cabal|some group of friends|some group of lovers|people|folk|communities|kindred|families|kin|kind|kinsfolk|tribe|clan)) ((?i:gather|come together|habitate together|cluster|assemble|live together)) in ((?i:reverence|awe|worship|adoration|devotion|piety|deification|love|honor)) of (.+?)\\.$", "template": "{0}、{t1}が{4}に{t3}して{t2}。", "route": "unclassified"},
     {"pattern": "^((?i:someone|somebody|a mysterious person|a child|a woman|a man|a baby|some group|some sect|some organization|some party|some cabal|some group of friends|some group of lovers|people|folk|communities|kindred|families|kin|kind|kinsfolk|tribe|clan)) ((?i:gather|come together|habitate together|cluster|assemble|live together)) (.+?) in ((?i:reverence|awe|worship|adoration|devotion|piety|deification|love|honor)) of (.+?)\\.$", "template": "{2}に{t0}が{4}に{t3}して{t1}。", "route": "unclassified"},
@@ -181,6 +196,11 @@
     {
       "pattern": "^You take (\\d+) damage from (.+?)の freezing effect![.!]?$",
       "template": "{1}の凍結効果で{0}ダメージを受けた！",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You take (\\d+) damage from (?:the )?(.+?)の thorns\\.[.!]?$",
+      "template": "{1}の棘で{0}ダメージを受けた。",
       "route": "emit-message"
     },
     {
@@ -859,6 +879,11 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^You cannot find a path to (?:the )?(.+?)\\.[.!]?$",
+      "template": "{0}への経路が見つからない。",
+      "route": "popup"
+    },
+    {
       "pattern": "^You pass by a (.+?)[.!]?$",
       "template": "{0}のそばを通り過ぎた。",
       "route": "emit-message"
@@ -989,12 +1014,12 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^The (.+?) harvests a (.+?)[.!]?$",
+      "pattern": "^(?:The |the )?(.+?) harvests a (.+?)[.!]?$",
       "template": "{0}は{1}を収穫した。",
       "route": "emit-message"
     },
     {
-      "pattern": "^The (.+?) begins flying[.!]?$",
+      "pattern": "^(?:The |the )?(.+?) begins flying[.!]?$",
       "template": "{0}が飛翔し始めた。",
       "route": "emit-message"
     },

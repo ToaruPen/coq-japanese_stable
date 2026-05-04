@@ -408,11 +408,11 @@
     },
     {
       "key": "Harvest Dawn",
-      "text": "ハーヴェスト・ドーン"
+      "text": "収穫の夜明け"
     },
     {
       "key": "Waning Beetle Moon",
-      "text": "甲虫の月が欠ける"
+      "text": "欠けゆく甲虫月"
     },
     {
       "key": "The Shallows",
@@ -420,15 +420,15 @@
     },
     {
       "key": "Waxing Salt Sun",
-      "text": "塩の満ちる太陽"
+      "text": "満ちゆく塩の太陽"
     },
     {
       "key": "High Salt Sun",
-      "text": "ハイ・ソルト・サン"
+      "text": "高き塩の太陽"
     },
     {
       "key": "Waning Salt Sun",
-      "text": "塩の陽が欠ける"
+      "text": "欠けゆく塩の太陽"
     },
     {
       "key": "Hindsun",
@@ -440,7 +440,7 @@
     },
     {
       "key": "Beetle Moon Zenith",
-      "text": "ビートルムーン・ゼニス"
+      "text": "甲虫月の天頂"
     },
     {
       "key": "Jeweled Dusk",

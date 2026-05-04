@@ -79,6 +79,39 @@ public sealed class MainMenuRowTranslationPatchTests
         }
     }
 
+    [Test]
+    public void Prefix_DoesNotRetranslateModMenuLabel_WhenRowDataIsRebound()
+    {
+        WriteDictionary(
+            ("Mods", "Mod"),
+            ("Mod", "改造"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMainMenuRow), nameof(DummyMainMenuRow.setData)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(MainMenuRowTranslationPatch), nameof(MainMenuRowTranslationPatch.Prefix))));
+
+            var option = new DummyMainMenuOption("Mods", "Pick:Installed Mod Configuration");
+            var row = new DummyMainMenuRow();
+            row.setData(option);
+            row.setData(option);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(option.Text, Is.EqualTo("Mod"));
+                Assert.That(row.text.text, Is.EqualTo("Mod"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

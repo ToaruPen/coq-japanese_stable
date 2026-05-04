@@ -920,6 +920,11 @@ internal static class MessagePatternTranslator
         }
 
         using var _ = Translator.PushMissingKeyLoggingSuppression(true);
+        if (ActivatedAbilityNameTranslator.TryTranslateVisibleName(source, out var activatedAbilityCapture))
+        {
+            return activatedAbilityCapture;
+        }
+
         var direct = Translator.Translate(source);
         if (!string.Equals(direct, source, StringComparison.Ordinal))
         {
@@ -934,6 +939,11 @@ internal static class MessagePatternTranslator
             {
                 return lowered;
             }
+        }
+
+        if (HistoricSpiceGeneratedNameTranslator.TryTranslateCapture(source, out var historicGeneratedCapture))
+        {
+            return historicGeneratedCapture;
         }
 
         return source;

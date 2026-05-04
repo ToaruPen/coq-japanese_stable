@@ -158,7 +158,9 @@ public sealed class StatusScreenBindingOwnerPatchTests
     [Test]
     public void CharacterEffectLineTranslationPatch_TranslatesEffectName_WhenPatched()
     {
-        WriteDictionary(("Beguiled", "魅了"));
+        WriteDictionary(
+            ("Beguiled", "魅了"),
+            ("astrally burdened", "星界的に重く縛られた"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -176,10 +178,19 @@ public sealed class StatusScreenBindingOwnerPatchTests
                     DisplayName = "Beguiled",
                 },
             });
+            var uncoloredTarget = new DummyCharacterEffectLineTarget();
+            uncoloredTarget.setData(new DummyCharacterEffectLineDataTarget
+            {
+                effect = new DummyStatusEffect
+                {
+                    DisplayName = "astrally burdened",
+                },
+            });
 
             Assert.Multiple(() =>
             {
                 Assert.That(target.text.Text, Is.EqualTo("魅了"));
+                Assert.That(uncoloredTarget.text.Text, Is.EqualTo("星界的に重く縛られた"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(CharacterEffectLineTranslationPatch),

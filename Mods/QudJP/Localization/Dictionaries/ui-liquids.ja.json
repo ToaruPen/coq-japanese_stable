@@ -298,6 +298,11 @@
             "key": "{{w|honeyed}}",
             "context": "XRL.Liquids",
             "text": "{{w|蜜味}}"
+        },
+        {
+            "key": "salty water",
+            "context": "XRL.Liquids",
+            "text": "塩水"
         }
     ]
 }

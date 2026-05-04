@@ -23,6 +23,8 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        LocalizationAssetResolver.SetLocalizationRootForTests(tempDirectory);
+        ChargenStructuredTextTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
     }
@@ -31,6 +33,8 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        ChargenStructuredTextTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
 
@@ -55,6 +59,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             ("[disabled]", "[無効]"),
             ("on", "オン"),
             ("off", "オフ"));
+        WriteMutationsXml(("Corrosive Gas Generation", "腐食性ガス生成"));
 
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
         var harmony = new Harmony(harmonyId);
@@ -74,6 +79,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             var recoil = new DummyAbilityBarButton("Recoil");
             var recoilToJoppa = new DummyAbilityBarButton("Recoil to Joppa");
             var coloredRecoilToJoppa = new DummyAbilityBarButton("&CRecoil to Joppa {{K|[disabled]}}");
+            var corrosiveGas = new DummyAbilityBarButton("&CRelease Corrosive Gas {{K|[{{g|on}}]}}");
             var englishFallback = new DummyAbilityBarButton("UnregisteredText");
             var empty = new DummyAbilityBarButton(string.Empty);
             var marker = new DummyAbilityBarButton("\u0001SomeText");
@@ -86,6 +92,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             target.AbilityButtons.Add(recoil);
             target.AbilityButtons.Add(recoilToJoppa);
             target.AbilityButtons.Add(coloredRecoilToJoppa);
+            target.AbilityButtons.Add(corrosiveGas);
             target.AbilityButtons.Add(englishFallback);
             target.AbilityButtons.Add(empty);
             target.AbilityButtons.Add(marker);
@@ -103,6 +110,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
                 Assert.That(recoil.Text.text, Is.EqualTo("帰還"));
                 Assert.That(recoilToJoppa.Text.text, Is.EqualTo("ジョッパへ帰還"));
                 Assert.That(coloredRecoilToJoppa.Text.text, Is.EqualTo("&Cジョッパへ帰還 {{K|[無効]}}"));
+                Assert.That(corrosiveGas.Text.text, Is.EqualTo("&C腐食性ガス放出 {{K|[{{g|オン}}]}}"));
                 Assert.That(englishFallback.Text.text, Is.EqualTo("UnregisteredText"));
                 Assert.That(empty.Text.text, Is.EqualTo(string.Empty));
                 Assert.That(marker.Text.text, Is.EqualTo("\u0001SomeText"));
@@ -110,7 +118,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(AbilityBarButtonTextTranslationPatch),
                         "AbilityBar.ButtonText"),
-                    Is.EqualTo(9));
+                    Is.EqualTo(10));
                 Assert.That(
                     SinkObservation.GetHitCountForTests(
                         nameof(UITextSkinTranslationPatch),
@@ -339,10 +347,36 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
         writer.WriteLine("]}");
     }
 
+    private void WriteMutationsXml(params (string name, string displayName)[] entries)
+    {
+        var path = Path.Combine(tempDirectory, "Mutations.jp.xml");
+        using var writer = new StreamWriter(path, append: false, Utf8WithoutBom);
+        writer.WriteLine("<mutations>");
+        foreach (var entry in entries)
+        {
+            writer.Write("  <mutation Name=\"");
+            writer.Write(EscapeXml(entry.name));
+            writer.Write("\" DisplayName=\"");
+            writer.Write(EscapeXml(entry.displayName));
+            writer.WriteLine("\" />");
+        }
+
+        writer.WriteLine("</mutations>");
+    }
+
     private static string EscapeJson(string value)
     {
         return value
             .Replace("\\", "\\\\", StringComparison.Ordinal)
             .Replace("\"", "\\\"", StringComparison.Ordinal);
+    }
+
+    private static string EscapeXml(string value)
+    {
+        return value
+            .Replace("&", "&amp;", StringComparison.Ordinal)
+            .Replace("\"", "&quot;", StringComparison.Ordinal)
+            .Replace("<", "&lt;", StringComparison.Ordinal)
+            .Replace(">", "&gt;", StringComparison.Ordinal);
     }
 }

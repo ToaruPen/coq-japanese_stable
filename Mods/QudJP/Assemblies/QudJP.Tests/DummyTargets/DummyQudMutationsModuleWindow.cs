@@ -65,6 +65,7 @@ internal sealed class DummyMutationMenuOption
 internal sealed class DummyMutationCategoryMenusScroller
 {
     public List<string> LastRenderedDescriptions { get; } = [];
+    public List<string> LastRenderedLongDescriptions { get; } = [];
 
     public void BeforeShow(object? descriptor, IEnumerable<DummyMutationCategoryMenuData> selections)
     {
@@ -72,5 +73,9 @@ internal sealed class DummyMutationCategoryMenusScroller
         LastRenderedDescriptions.AddRange(
             selections.SelectMany(static categoryMenu => categoryMenu.menuOptions)
                 .Select(static menuOption => menuOption.Description));
+        LastRenderedLongDescriptions.Clear();
+        LastRenderedLongDescriptions.AddRange(
+            selections.SelectMany(static categoryMenu => categoryMenu.menuOptions)
+                .Select(static menuOption => menuOption.LongDescription));
     }
 }

@@ -352,6 +352,491 @@
             "key": "+{0} Quickness\n+{1} ranks to physical mutations",
             "context": "XRL.World.Effects.AdrenalControl2Boosted.Details",
             "text": "+{0} Quickness\n肉体変異 +{1}ランク"
+        },
+        {
+            "key": "&minhabited",
+            "context": "XRL.World.Effects.MutationInfection.Description",
+            "text": "&m寄生されている"
+        },
+        {
+            "key": "covered in liquid",
+            "context": "XRL.World.Effects.LiquidCovered.Description",
+            "text": "液体まみれ"
+        },
+        {
+            "key": "demolishing",
+            "context": "XRL.World.Effects.Cudgel_SmashingUp.Description",
+            "text": "破壊中"
+        },
+        {
+            "key": "distracted by a decoy",
+            "context": "XRL.World.Effects.Distracted.Description",
+            "text": "デコイに気を取られている"
+        },
+        {
+            "key": "emboldened",
+            "context": "XRL.World.Effects.Emboldened.Description",
+            "text": "奮起"
+        },
+        {
+            "key": "emptying the clips",
+            "context": "XRL.World.Effects.EmptyTheClips.Description",
+            "text": "弾倉撃ち尽くし中"
+        },
+        {
+            "key": "entranced",
+            "context": "XRL.World.Effects.Trance.Description",
+            "text": "トランス"
+        },
+        {
+            "key": "greased",
+            "context": "XRL.World.Effects.Greased.Description",
+            "text": "油まみれ"
+        },
+        {
+            "key": "hooked",
+            "context": "XRL.World.Effects.Hooked.Description",
+            "text": "鉤にかかった"
+        },
+        {
+            "key": "immobilized",
+            "context": "XRL.World.Effects.Immobilized.Description",
+            "text": "移動不能"
+        },
+        {
+            "key": "incommunicado",
+            "context": "XRL.World.Effects.Incommunicado.Description",
+            "text": "通信不能"
+        },
+        {
+            "key": "locked in psychic battle",
+            "context": "XRL.World.Effects.MemberOfPsychicBattle.Description",
+            "text": "精神戦に囚われている"
+        },
+        {
+            "key": "meditating",
+            "context": "XRL.World.Effects.Meditating.Description",
+            "text": "瞑想"
+        },
+        {
+            "key": "shaken",
+            "context": "XRL.World.Effects.Shaken.Description",
+            "text": "動揺"
+        },
+        {
+            "key": "springing",
+            "context": "XRL.World.Effects.Springing.Description",
+            "text": "跳躍準備"
+        },
+        {
+            "key": "sprinting",
+            "context": "XRL.World.Effects.Running.Description",
+            "text": "疾走"
+        },
+        {
+            "key": "stained by liquid",
+            "context": "XRL.World.Effects.LiquidStained.Description",
+            "text": "液体で汚れている"
+        },
+        {
+            "key": "suppressed",
+            "context": "XRL.World.Effects.Suppressed.Description",
+            "text": "抑制"
+        },
+        {
+            "key": "synapse snap",
+            "context": "XRL.World.Effects.SynapseSnap.Description",
+            "text": "シナプス断裂"
+        },
+        {
+            "key": "syphoned",
+            "context": "XRL.World.Effects.LifeDrain.Description",
+            "text": "生命吸収されている"
+        },
+        {
+            "key": "waking dream",
+            "context": "XRL.World.Effects.WakingDream.Description",
+            "text": "覚醒夢"
+        },
+        {
+            "key": "{{B|flying}}",
+            "context": "XRL.World.Effects.Flying.Description",
+            "text": "{{B|飛行}}"
+        },
+        {
+            "key": "{{B|mobility impaired}}",
+            "context": "XRL.World.Effects.MobilityImpaired.Description",
+            "text": "{{B|移動阻害}}"
+        },
+        {
+            "key": "{{B|projecting consciousness}}",
+            "context": "XRL.World.Effects.Dominating.Description",
+            "text": "{{B|意識投射中}}"
+        },
+        {
+            "key": "{{B|pulsed}}",
+            "context": "XRL.World.Effects.ElectromagneticPulsed.Description",
+            "text": "{{B|パルスを受けた}}"
+        },
+        {
+            "key": "{{B|stressed}}",
+            "context": "XRL.World.Effects.Stressed.Description",
+            "text": "{{B|ストレス}}"
+        },
+        {
+            "key": "{{B|submerged}}",
+            "context": "XRL.World.Effects.Submerged.Description",
+            "text": "{{B|水没}}"
+        },
+        {
+            "key": "{{B|swimming}}",
+            "context": "XRL.World.Effects.Swimming.Description",
+            "text": "{{B|泳いでいる}}"
+        },
+        {
+            "key": "{{B|wading}}",
+            "context": "XRL.World.Effects.Wading.Description",
+            "text": "{{B|浅瀬を進んでいる}}"
+        },
+        {
+            "key": "{{C|hobbled}}",
+            "context": "XRL.World.Effects.Hobbled.Description",
+            "text": "{{C|足止め}}"
+        },
+        {
+            "key": "{{C|interdicted}}",
+            "context": "XRL.World.Effects.Interdicted.Description",
+            "text": "{{C|阻止されている}}"
+        },
+        {
+            "key": "{{C|piloting}}",
+            "context": "XRL.World.Effects.Piloting.Description",
+            "text": "{{C|操縦中}}"
+        },
+        {
+            "key": "{{C|rebuked}}",
+            "context": "XRL.World.Effects.Rebuked.Description",
+            "text": "{{C|叱責された}}"
+        },
+        {
+            "key": "{{C|sitting}}",
+            "context": "XRL.World.Effects.Sitting.Description",
+            "text": "{{C|座っている}}"
+        },
+        {
+            "key": "{{C|stunned by gas}}",
+            "context": "XRL.World.Effects.StunGasStun.Description",
+            "text": "{{C|ガスでスタン}}"
+        },
+        {
+            "key": "{{C|unpiloted}}",
+            "context": "XRL.World.Effects.Unpiloted.Description",
+            "text": "{{C|操縦者なし}}"
+        },
+        {
+            "key": "{{C|warming up}}",
+            "context": "XRL.World.Effects.WarmingUp.Description",
+            "text": "{{C|ウォームアップ中}}"
+        },
+        {
+            "key": "{{G|ecstatic}}",
+            "context": "XRL.World.Effects.Ecstatic.Description",
+            "text": "{{G|恍惚}}"
+        },
+        {
+            "key": "{{G|poisoned by gas}}",
+            "context": "XRL.World.Effects.PoisonGasPoison.Description",
+            "text": "{{G|ガス中毒}}"
+        },
+        {
+            "key": "{{G|refreshed}}",
+            "context": "XRL.World.Effects.Refresh.Description",
+            "text": "{{G|リフレッシュ}}"
+        },
+        {
+            "key": "{{K|disguised}}",
+            "context": "XRL.World.Effects.Disguised.Description",
+            "text": "{{K|変装}}"
+        },
+        {
+            "key": "{{K|gleaming}}",
+            "context": "XRL.World.Effects.Gleaming.Description",
+            "text": "{{K|輝いている}}"
+        },
+        {
+            "key": "{{K|overburdened}}",
+            "context": "XRL.World.Effects.Overburdened.Description",
+            "text": "{{K|荷重超過}}"
+        },
+        {
+            "key": "{{K|unpowered}}",
+            "context": "XRL.World.Effects.VehicleUnpowered.Description",
+            "text": "{{K|電源なし}}"
+        },
+        {
+            "key": "{{M|in stasis}}",
+            "context": "XRL.World.Effects.Stasis.Description",
+            "text": "{{M|静止状態}}"
+        },
+        {
+            "key": "{{M|inspired}}",
+            "context": "XRL.World.Effects.Inspired.Description",
+            "text": "{{M|ひらめき}}"
+        },
+        {
+            "key": "{{M|mutating}}",
+            "context": "XRL.World.Effects.Mutating.Description",
+            "text": "{{M|変異中}}"
+        },
+        {
+            "key": "{{O|shimmering}}",
+            "context": "XRL.World.Effects.FungalVisionary.Description",
+            "text": "{{O|きらめき}}"
+        },
+        {
+            "key": "{{R|FURIOUS}}",
+            "context": "XRL.World.Effects.FuriouslyConfused.Description",
+            "text": "{{R|激怒}}"
+        },
+        {
+            "key": "{{R|crippled}}",
+            "context": "XRL.World.Effects.Cripple.Description",
+            "text": "{{R|不具}}"
+        },
+        {
+            "key": "{{R|famished}}",
+            "context": "XRL.World.Effects.Famished.Description",
+            "text": "{{R|飢餓}}"
+        },
+        {
+            "key": "{{R|wilted}}",
+            "context": "XRL.World.Effects.Famished.Description",
+            "text": "{{R|萎れた}}"
+        },
+        {
+            "key": "{{W|cardiac arrest}}",
+            "context": "XRL.World.Effects.CardiacArrest.Description",
+            "text": "{{W|心停止}}"
+        },
+        {
+            "key": "{{W|covered in spores}}",
+            "context": "XRL.World.Effects.SporeCloudPoison.Description",
+            "text": "{{W|胞子まみれ}}"
+        },
+        {
+            "key": "{{W|crackling}}",
+            "context": "XRL.World.Effects.Crackling.Description",
+            "text": "{{W|帯電}}"
+        },
+        {
+            "key": "{{W|dashing}}",
+            "context": "XRL.World.Effects.Dashing.Description",
+            "text": "{{W|ダッシュ}}"
+        },
+        {
+            "key": "{{W|safe mode}}",
+            "context": "XRL.World.Effects.Wakeful.Description",
+            "text": "{{W|セーフモード}}"
+        },
+        {
+            "key": "{{W|well fed}}",
+            "context": "XRL.World.Effects.BasicCookingEffect.Description",
+            "text": "{{W|満腹}}"
+        },
+        {
+            "key": "{{Y|omniphase}}",
+            "context": "XRL.World.Effects.Omniphase.Description",
+            "text": "{{Y|全相}}"
+        },
+        {
+            "key": "{{Y|proselytized}}",
+            "context": "XRL.World.Effects.Proselytized.Description",
+            "text": "{{Y|改宗}}"
+        },
+        {
+            "key": "{{Y|reflectively shielded}}",
+            "context": "XRL.World.Effects.ProjectileReflectionShield.Description",
+            "text": "{{Y|反射シールド}}"
+        },
+        {
+            "key": "{{Y|sizzling}}",
+            "context": "XRL.World.Effects.ContainedAcidEating.Description",
+            "text": "{{Y|焼けている}}"
+        },
+        {
+            "key": "{{Y|tomb-tethered}}",
+            "context": "XRL.World.Effects.CorpseTethered.Description",
+            "text": "{{Y|墓所に繋がれた}}"
+        },
+        {
+            "key": "{{b|deep dreaming}}",
+            "context": "XRL.World.Effects.DeepDream.Description",
+            "text": "{{b|深い夢見}}"
+        },
+        {
+            "key": "{{camouflage|camouflaged}}",
+            "context": "XRL.World.Effects.FoliageCamouflaged.Description",
+            "text": "{{camouflage|迷彩}}"
+        },
+        {
+            "key": "{{coated in plasma|coated in plasma}}",
+            "context": "XRL.World.Effects.CoatedInPlasma.Description",
+            "text": "{{coated in plasma|プラズマ被覆}}"
+        },
+        {
+            "key": "{{c|cybernetic rejection syndrome}}",
+            "context": "XRL.World.Effects.CyberneticRejectionSyndrome.Description",
+            "text": "{{c|サイバネ拒絶症候群}}"
+        },
+        {
+            "key": "{{g|nullphased}}",
+            "context": "XRL.World.Effects.Nullphased.Description",
+            "text": "{{g|ヌルフェイズ}}"
+        },
+        {
+            "key": "{{g|phase spider venom}}",
+            "context": "XRL.World.Effects.PhasePoisoned.Description",
+            "text": "{{g|フェイズスパイダー毒}}"
+        },
+        {
+            "key": "{{g|shield wall}}",
+            "context": "XRL.World.Effects.ShieldWall.Description",
+            "text": "{{g|盾壁}}"
+        },
+        {
+            "key": "{{g|vitalized}}",
+            "context": "XRL.World.Effects.ToughnessBoosted.Description",
+            "text": "{{g|活性化}}"
+        },
+        {
+            "key": "{{lovesickness|lovesick}}",
+            "context": "XRL.World.Effects.Lovesick.Description",
+            "text": "{{lovesickness|恋煩い}}"
+        },
+        {
+            "key": "{{m|phosphorescent}}",
+            "context": "XRL.World.Effects.Luminous.Description",
+            "text": "{{m|燐光}}"
+        },
+        {
+            "key": "{{m|quantum-locked}}",
+            "context": "XRL.World.Effects.QuantumStabilized.Description",
+            "text": "{{m|量子ロック}}"
+        },
+        {
+            "key": "{{rainbow|irisdual molting}}",
+            "context": "XRL.World.Effects.IrisdualMolting.Description",
+            "text": "{{rainbow|アイリスデュアル脱皮}}"
+        },
+        {
+            "key": "{{rainbow|scintillating}}",
+            "context": "XRL.World.Effects.Scintillating.Description",
+            "text": "{{rainbow|煌めき}}"
+        },
+        {
+            "key": "{{r|broken}}",
+            "context": "XRL.World.Effects.Broken.Description",
+            "text": "{{r|破損}}"
+        },
+        {
+            "key": "{{r|budding}}",
+            "context": "XRL.World.Effects.Budding.Description",
+            "text": "{{r|出芽}}"
+        },
+        {
+            "key": "{{r|callow}}",
+            "context": "XRL.World.Effects.IrisdualCallow.Description",
+            "text": "{{r|未熟}}"
+        },
+        {
+            "key": "{{r|cracked}}",
+            "context": "XRL.World.Effects.ShatteredArmor.Description",
+            "text": "{{r|ひび割れ}}"
+        },
+        {
+            "key": "{{r|disoriented}}",
+            "context": "XRL.World.Effects.Disoriented.Description",
+            "text": "{{r|方向感覚喪失}}"
+        },
+        {
+            "key": "{{r|drained}}",
+            "context": "XRL.World.Effects.ToughnessDrained.Description",
+            "text": "{{r|消耗}}"
+        },
+        {
+            "key": "{{r|flagging}}",
+            "context": "XRL.World.Effects.Flagging.Description",
+            "text": "{{r|衰弱}}"
+        },
+        {
+            "key": "{{r|latched onto}}",
+            "context": "XRL.World.Effects.LatchedOnto.Description",
+            "text": "{{r|取り付いている}}"
+        },
+        {
+            "key": "{{r|nosebleed}}",
+            "context": "XRL.World.Effects.Nosebleed.Description",
+            "text": "{{r|鼻血}}"
+        },
+        {
+            "key": "{{r|prowling}}",
+            "context": "XRL.World.Effects.NocturnalApexed.Description",
+            "text": "{{r|徘徊}}"
+        },
+        {
+            "key": "{{r|shamed}}",
+            "context": "XRL.World.Effects.Shamed.Description",
+            "text": "{{r|恥辱}}"
+        },
+        {
+            "key": "{{r|war trance}}",
+            "context": "XRL.World.Effects.WarTrance.Description",
+            "text": "{{r|戦闘トランス}}"
+        },
+        {
+            "key": "{{urban camouflage|urban camouflage}}",
+            "context": "XRL.World.Effects.UrbanCamouflaged.Description",
+            "text": "{{urban camouflage|都市迷彩}}"
+        },
+        {
+            "key": "{{w|burrowed}}",
+            "context": "XRL.World.Effects.Burrowed.Description",
+            "text": "{{w|潜行}}"
+        },
+        {
+            "key": "{{w|grounded}}",
+            "context": "XRL.World.Effects.Grounded.Description",
+            "text": "{{w|接地}}"
+        },
+        {
+            "key": "dominated ({0} turns remaining)",
+            "context": "XRL.World.Effects.Dominated.Description",
+            "text": "支配された（残り{0}ターン）"
+        },
+        {
+            "key": "astrally burdened",
+            "context": "Qud.UI.CharacterEffectLine.DisplayName",
+            "text": "星界的に重く縛られた"
+        },
+        {
+            "key": "piloting {0}",
+            "context": "XRL.World.Effects.Piloting.Description",
+            "text": "{0}を操縦中"
+        },
+        {
+            "key": "marked by {0}",
+            "context": "XRL.World.Effects.RifleMark.Description",
+            "text": "{0}にマークされている"
+        },
+        {
+            "key": "cleaved ({{C|-{0} AV}})",
+            "context": "XRL.World.Effects.ShatterArmor.Description",
+            "text": "裂かれた（{{C|-{0} AV}}）"
+        },
+        {
+            "key": "psionically cleaved (-{0} MA)",
+            "context": "XRL.World.Effects.ShatterMentalArmor.Description",
+            "text": "精神的に裂かれた（-{0} MA）"
         }
     ]
 }

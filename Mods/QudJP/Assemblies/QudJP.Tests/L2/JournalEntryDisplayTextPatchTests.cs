@@ -207,8 +207,11 @@ public sealed class JournalEntryDisplayTextPatchTests
     [Test]
     public void Postfix_TranslatesMapNoteLeaf_WhenPatched()
     {
-        WriteExactDictionary(("A {{w|dromad}} caravan", "{{w|ドロマド}}の隊商"));
-        WritePatternDictionary(("^Last visited on the (.+?) of (.+?)$", "{1}の{0}日に最後に訪れた。"));
+        WriteExactDictionary(
+            ("A {{w|dromad}} caravan", "{{w|ドロマド}}の隊商"),
+            ("5th", "第5"),
+            ("Ut yara Ux", "ウト・ヤラ・ウクス"));
+        WritePatternDictionary(("^Last visited on the (.+?) of (.+?)$", "{t1}の{t0}日に最後に訪れた。"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -224,7 +227,7 @@ public sealed class JournalEntryDisplayTextPatchTests
                 Text = "A {{w|dromad}} caravan\nLast visited on the 5th of Ut yara Ux",
             };
 
-            Assert.That(entry.GetDisplayText(), Is.EqualTo("{{w|ドロマド}}の隊商\nUt yara Uxの5th日に最後に訪れた。"));
+            Assert.That(entry.GetDisplayText(), Is.EqualTo("{{w|ドロマド}}の隊商\nウト・ヤラ・ウクスの第5日に最後に訪れた。"));
         }
         finally
         {
@@ -235,8 +238,11 @@ public sealed class JournalEntryDisplayTextPatchTests
     [Test]
     public void Postfix_RecordsJournalMapNoteOwnerRouteTransforms_WithoutUITextSkinSinkObservation_WhenPatched()
     {
-        WriteExactDictionary(("A dromad caravan", "ドロマドの隊商"));
-        WritePatternDictionary(("^Last visited on the (.+?) of (.+?)$", "{1}の{0}日に最後に訪れた。"));
+        WriteExactDictionary(
+            ("A dromad caravan", "ドロマドの隊商"),
+            ("5th", "第5"),
+            ("Ut yara Ux", "ウト・ヤラ・ウクス"));
+        WritePatternDictionary(("^Last visited on the (.+?) of (.+?)$", "{t1}の{t0}日に最後に訪れた。"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -257,7 +263,7 @@ public sealed class JournalEntryDisplayTextPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(result, Is.EqualTo("ドロマドの隊商\nUt yara Uxの5th日に最後に訪れた。"));
+                Assert.That(result, Is.EqualTo("ドロマドの隊商\nウト・ヤラ・ウクスの第5日に最後に訪れた。"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(JournalMapNoteDisplayTextPatch),

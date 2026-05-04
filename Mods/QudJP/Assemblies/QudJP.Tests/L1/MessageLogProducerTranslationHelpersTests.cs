@@ -389,6 +389,47 @@ public sealed class MessageLogProducerTranslationHelpersTests
     }
 
     [Test]
+    public void TryPreparePatternMessage_DoesNotReportNoPattern_ForAlreadyLocalizedJapaneseMessage()
+    {
+        const string localized =
+            "狂信者が叫んだ「信仰心があるなら聖遺物を大聖堂の司祭に届けよ！貴様の穢れを清めるのだ！」";
+        var source = localized;
+
+        var translated = MessageLogProducerTranslationHelpers.TryPreparePatternMessage(
+            ref source,
+            nameof(GameObjectEmitMessageTranslationPatch),
+            "EmitMessage",
+            markJapaneseAsDirect: true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(source, Is.EqualTo(MessageFrameTranslator.MarkDirectTranslation(localized)));
+            Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(localized), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TryPreparePatternMessage_DoesNotReportNoPattern_ForAlreadyLocalizedJapaneseMessageWithTrailingLbsToken()
+    {
+        const string localized = "装備重量: 10 lbs.";
+        var source = localized;
+
+        var translated = MessageLogProducerTranslationHelpers.TryPreparePatternMessage(
+            ref source,
+            nameof(GameObjectEmitMessageTranslationPatch),
+            "EmitMessage",
+            markJapaneseAsDirect: true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(source, Is.EqualTo(MessageFrameTranslator.MarkDirectTranslation(localized)));
+            Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(localized), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public void PrepareZoneBannerMessage_MarksAlreadyLocalizedBanner()
     {
         var result = MessageLogProducerTranslationHelpers.PrepareZoneBannerMessage(

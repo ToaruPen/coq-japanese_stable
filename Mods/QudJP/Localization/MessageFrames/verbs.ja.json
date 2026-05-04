@@ -732,6 +732,96 @@
       "text": "混乱した"
     },
     {
+      "verb": "beat",
+      "extra": "at the flames on {0} with its fists",
+      "text": "{0}の炎を拳で叩いた"
+    },
+    {
+      "verb": "beat",
+      "extra": "at the flames on {0} with his fists",
+      "text": "{0}の炎を拳で叩いた"
+    },
+    {
+      "verb": "beat",
+      "extra": "at the flames on {0} with her fists",
+      "text": "{0}の炎を拳で叩いた"
+    },
+    {
+      "verb": "beat",
+      "extra": "at the flames on {0} with their fists",
+      "text": "{0}の炎を拳で叩いた"
+    },
+    {
+      "verb": "beat",
+      "extra": "at the flames on {0} with your fists",
+      "text": "{0}の炎を拳で叩いた"
+    },
+    {
+      "verb": "beat",
+      "extra": "at the flames with its fists",
+      "text": "炎を拳で叩いた"
+    },
+    {
+      "verb": "beat",
+      "extra": "at the flames with his fists",
+      "text": "炎を拳で叩いた"
+    },
+    {
+      "verb": "beat",
+      "extra": "at the flames with her fists",
+      "text": "炎を拳で叩いた"
+    },
+    {
+      "verb": "beat",
+      "extra": "at the flames with their fists",
+      "text": "炎を拳で叩いた"
+    },
+    {
+      "verb": "beat",
+      "extra": "at the flames with your fists",
+      "text": "炎を拳で叩いた"
+    },
+    {
+      "verb": "attempt",
+      "extra": "to conk {0} on the head",
+      "text": "{0}の頭を強打しようとした"
+    },
+    {
+      "verb": "begin",
+      "extra": "bleeding from another wound",
+      "text": "別の傷から出血し始めた"
+    },
+    {
+      "verb": "sense",
+      "extra": "a psychic presence foreign to this place and time",
+      "text": "この地と時に馴染まぬサイキックな気配を感じ取った"
+    },
+    {
+      "verb": "spit",
+      "extra": "a puddle of acid",
+      "text": "酸の水溜まりを吐き出した"
+    },
+    {
+      "verb": "try",
+      "extra": "to beat at the flames on {0}, but it dodges",
+      "text": "{0}の炎を叩こうとしたが、かわされた"
+    },
+    {
+      "verb": "try",
+      "extra": "to beat at the flames on {0}, but he dodges",
+      "text": "{0}の炎を叩こうとしたが、かわされた"
+    },
+    {
+      "verb": "try",
+      "extra": "to beat at the flames on {0}, but she dodges",
+      "text": "{0}の炎を叩こうとしたが、かわされた"
+    },
+    {
+      "verb": "try",
+      "extra": "to beat at the flames on {0}, but they dodge",
+      "text": "{0}の炎を叩こうとしたが、かわされた"
+    },
+    {
       "verb": "are",
       "extra": "covered in sticky goop",
       "text": "{subject}はべとべとの粘液に覆われた{endmark}"
@@ -1800,6 +1890,11 @@
   "tier3": [
     {
       "verb": "activate",
+      "extra": "(?:your|his|her|its|their) reflective shield",
+      "text": "反射シールドを起動した"
+    },
+    {
+      "verb": "activate",
       "extra": "{0} reflective shield",
       "text": "{0}の反射シールドを起動した"
     },
@@ -1975,8 +2070,18 @@
     },
     {
       "verb": "beat",
+      "extra": "at the flames on {0} with (?:your|his|her|its|their) fists",
+      "text": "{0}の炎を拳で叩いた"
+    },
+    {
+      "verb": "beat",
       "extra": "at the flames on {0} with {1}",
       "text": "{0}の炎を{1}で叩いた"
+    },
+    {
+      "verb": "beat",
+      "extra": "at the flames with (?:your|his|her|its|their) fists",
+      "text": "炎を拳で叩いた"
     },
     {
       "verb": "beat",
@@ -2160,8 +2265,23 @@
     },
     {
       "verb": "fire",
+      "extra": "(?:your|his|her|its|their) molecular cannon",
+      "text": "分子砲を発射した"
+    },
+    {
+      "verb": "fire",
       "extra": "{0} molecular cannon",
       "text": "{0}の分子砲を発射した"
+    },
+    {
+      "verb": "fling",
+      "extra": "(?:your|his|her|its|their) quills",
+      "text": "棘を飛ばした"
+    },
+    {
+      "verb": "fling",
+      "extra": "(?:your|his|her|its|their) quills everywhere",
+      "text": "棘をあたりに飛ばした"
     },
     {
       "verb": "fling",
@@ -2172,6 +2292,11 @@
       "verb": "fling",
       "extra": "{0} {1} everywhere",
       "text": "{0}の{1}をあたりに飛ばした"
+    },
+    {
+      "verb": "focus",
+      "extra": "(?:your|his|her|its|their) sensor somewhere else",
+      "text": "センサーを別の場所に向けた"
     },
     {
       "verb": "focus",
@@ -2232,6 +2357,11 @@
       "verb": "have",
       "extra": "restocked {0} inventory",
       "text": "{0}の在庫を補充した"
+    },
+    {
+      "verb": "have",
+      "extra": "(?:your|his|her|its|their) reflective shield deactivated",
+      "text": "反射シールドが解除された"
     },
     {
       "verb": "have",
@@ -2490,6 +2620,11 @@
     },
     {
       "verb": "spin",
+      "extra": "up (?:your|his|her|its|their) molecular cannon",
+      "text": "分子砲を回転させた"
+    },
+    {
+      "verb": "spin",
       "extra": "up {0} molecular cannon",
       "text": "{0}の分子砲を回転させた"
     },
@@ -2595,6 +2730,11 @@
     },
     {
       "verb": "tighten",
+      "extra": "(?:your|his|her|its|their) carapace",
+      "text": "甲殻を締めつけた"
+    },
+    {
+      "verb": "tighten",
       "extra": "{0} carapace",
       "text": "{0}の甲殻を締めつけた"
     },
@@ -2667,6 +2807,11 @@
       "verb": "unlock",
       "extra": "(?:the |a |an )?(.+?)",
       "text": "{subject}が{0}の鍵を開けた"
+    },
+    {
+      "verb": "vibrate",
+      "extra": "as the current location is imprinted in (?:your|his|her|its|their) geospatial core",
+      "text": "現在地を地理空間コアに刻み込み、振動した"
     },
     {
       "verb": "vibrate",

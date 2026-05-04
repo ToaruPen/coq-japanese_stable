@@ -210,6 +210,10 @@ public static class AbilityBarButtonTextTranslationPatch
         {
             translated = dynamicTranslated;
         }
+        else if (ActivatedAbilityNameTranslator.TryTranslateVisibleName(stripped, out var activatedTranslated))
+        {
+            translated = activatedTranslated;
+        }
         else
         {
             if (!StringHelpers.TryGetTranslationExactOrLowerAscii(stripped, out translated))

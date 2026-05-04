@@ -99,24 +99,25 @@ public sealed class ColorTagAllowlistCoverageTests
         new(StringComparer.Ordinal)
         {
             ["Mods/QudJP/Assemblies/src/Observability/FinalOutputObservability.cs:109:RecordDirectMarker"] = "Observation-only final sink marker check.",
-            ["Mods/QudJP/Assemblies/src/Patches/AbilityBarAfterRenderTranslationPatch.cs:238:HasColorMarkup"] = "Predicate only; it compares stripped and original text.",
-            ["Mods/QudJP/Assemblies/src/Patches/ActiveEffectTextTranslator.cs:69:TryTranslateTemplate"] = "Delegates restoration to the template helper selected by the matched rule.",
+            ["Mods/QudJP/Assemblies/src/Patches/AbilityBarAfterRenderTranslationPatch.cs:239:HasColorMarkup"] = "Predicate only; it compares stripped and original text.",
+            ["Mods/QudJP/Assemblies/src/Patches/ActiveEffectTextTranslator.cs:98:TryTranslateExact"] = "Delegates exact-match restoration to RestoreExactTranslation.",
+            ["Mods/QudJP/Assemblies/src/Patches/ActiveEffectTextTranslator.cs:137:TryTranslateTemplate"] = "Delegates restoration to the template helper selected by the matched rule.",
             ["Mods/QudJP/Assemblies/src/Patches/BedChairFragmentTranslator.cs:120:TryTranslate"] = "Delegates capture restoration to rule builders through RestoreVisible.",
             ["Mods/QudJP/Assemblies/src/Patches/ClonelingVehicleFragmentTranslator.cs:56:TryTranslate"] = "Delegates capture restoration to the build function.",
             ["Mods/QudJP/Assemblies/src/Patches/CombatGetDefenderHitDiceTranslationPatch.cs:82:TryTranslateQueuedMessage"] = "Uses stripped text only for owner-route detection; queued message text is replaced wholesale.",
             ["Mods/QudJP/Assemblies/src/Patches/CombatMeleeAttackTranslationPatch.cs:100:TryTranslateQueuedMessage"] = "Uses stripped text only for owner-route detection; queued message text is replaced wholesale.",
-            ["Mods/QudJP/Assemblies/src/Patches/CookingEffectFragmentTranslator.cs:92:TryTranslate"] = "Delegates capture restoration to RestoreVisible.",
-            ["Mods/QudJP/Assemblies/src/Patches/DescriptionTextTranslator.cs:169:TryFindDanglingBoundaryOpening"] = "Uses stripped spans only to detect carried color boundary tokens for synthetic line reconstruction.",
-            ["Mods/QudJP/Assemblies/src/Patches/DescriptionTextTranslator.cs:225:HasColorBoundaryOpening"] = "Predicate only; it uses stripped spans to detect color boundary tokens.",
-            ["Mods/QudJP/Assemblies/src/Patches/DescriptionTextTranslator.cs:260:HasColorBoundaryClosing"] = "Predicate only; it uses stripped spans to detect color boundary closure.",
-            ["Mods/QudJP/Assemblies/src/Patches/DescriptionTextTranslator.cs:340:TryTranslateSultanShrineWrapperPreservingColors"] = "Passes stripped text and spans to SultanShrineWrapperTranslator.",
+            ["Mods/QudJP/Assemblies/src/Patches/CookingEffectFragmentTranslator.cs:312:TryTranslate"] = "Delegates capture restoration to RestoreVisible.",
+            ["Mods/QudJP/Assemblies/src/Patches/DescriptionTextTranslator.cs:175:TryFindDanglingBoundaryOpening"] = "Uses stripped spans only to detect carried color boundary tokens for synthetic line reconstruction.",
+            ["Mods/QudJP/Assemblies/src/Patches/DescriptionTextTranslator.cs:231:HasColorBoundaryOpening"] = "Predicate only; it uses stripped spans to detect color boundary tokens.",
+            ["Mods/QudJP/Assemblies/src/Patches/DescriptionTextTranslator.cs:266:HasColorBoundaryClosing"] = "Predicate only; it uses stripped spans to detect color boundary closure.",
+            ["Mods/QudJP/Assemblies/src/Patches/DescriptionTextTranslator.cs:346:TryTranslateSultanShrineWrapperPreservingColors"] = "Passes stripped text and spans to SultanShrineWrapperTranslator.",
             ["Mods/QudJP/Assemblies/src/Patches/EnclosingFragmentTranslator.cs:22:TryTranslatePopupMessage"] = "Delegates capture restoration to RestoreVisible.",
             ["Mods/QudJP/Assemblies/src/Patches/FactionsLineTranslationPatch.cs:84:TranslateTextField"] = "Strips only to detect whether the already-localized field contains visible text.",
             ["Mods/QudJP/Assemblies/src/Patches/FactionsStatusScreenTranslationPatch.cs:895:AddLocalizedSearchFragment"] = "Strips only to add searchable plain text beside the colored display text.",
             ["Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs:885:TranslateDisplayNameModifier"] = "Strips only to classify display-name modifier text before composing a translated modifier.",
             ["Mods/QudJP/Assemblies/src/Patches/JournalNotificationTranslator.cs:20:TryTranslate"] = "Strips source colors so journal notification patterns can replace the full system sentence.",
             ["Mods/QudJP/Assemblies/src/Patches/LiquidVolumeFragmentTranslator.cs:118:TryTranslate"] = "Delegates capture restoration to helper calls in the matched branch.",
-            ["Mods/QudJP/Assemblies/src/Patches/MainMenuLocalizationPatch.cs:174:TranslateProducerText"] = "Strips only for already-localized/direct-route checks before TranslatePreservingColors owns restoration.",
+            ["Mods/QudJP/Assemblies/src/Patches/MainMenuLocalizationPatch.cs:207:TranslateProducerText"] = "Strips only for already-localized/direct-route checks before TranslatePreservingColors owns restoration.",
             ["Mods/QudJP/Assemblies/src/Patches/MessageLogPatch.cs:77:Prefix"] = "Observation-only direct marker check before MessagePatternTranslator owns restoration.",
             ["Mods/QudJP/Assemblies/src/Patches/MutationsApiTranslationPatch.cs:85:TryTranslatePopupMessage"] = "Delegates capture restoration to term-specific branch helpers.",
             ["Mods/QudJP/Assemblies/src/Patches/OptionsLocalizationPatch.cs:106:TranslateProducerText"] = "Strips only for already-localized/direct-route checks before TranslatePreservingColors owns restoration.",
@@ -127,7 +128,8 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:303:TranslatePopupMenuItemTextForRoute"] = "Strips only for direct-marker and already-localized detection before producer routes own restoration.",
             ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:354:TryTranslatePopupProducerText"] = "Delegates capture restoration to template/exact branch helpers.",
             ["Mods/QudJP/Assemblies/src/Patches/SkillsAndPowersLineTranslationPatch.cs:229:TranslateSkillRightText"] = "Strips only for skill right-text detection before a non-colored exact replacement.",
-            ["Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs:261:TryTranslateTradeUiPopupText"] = "Delegates capture restoration to branch-specific RestoreCapture helpers.",
+            ["Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs:278:TryTranslateTradeUiPopupText"] = "Delegates capture restoration to branch-specific RestoreCapture helpers.",
+            ["Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs:987:ShouldSkipMessagePatternTranslation"] = "Predicate only; it strips markup to classify already-localized visible popup text.",
             ["Mods/QudJP/Assemblies/src/Patches/UITextSkinTranslationPatch.cs:100:TranslatePreservingColors"] = "Sink fallback uses stripped text only for already-localized/direct-route checks.",
             ["Mods/QudJP/Assemblies/src/Patches/WorldModsTextTranslator.cs:505:TryTranslateCoProcessorTemplate"] = "Delegates restoration to the template helper.",
             ["Mods/QudJP/Assemblies/src/Patches/WorldModsTextTranslator.cs:541:TryTranslateCounterweightedTemplate"] = "Delegates restoration to the template helper.",
@@ -142,7 +144,7 @@ public sealed class ColorTagAllowlistCoverageTests
     private static readonly SortedDictionary<string, string> NameLikeRestoreCaptureWithoutGuardAllowlist =
         new(StringComparer.Ordinal)
         {
-            ["Mods/QudJP/Assemblies/src/Patches/ChargenStructuredTextTranslator.cs:344:TryTranslateCyberneticsSlot:name"] =
+            ["Mods/QudJP/Assemblies/src/Patches/ChargenStructuredTextTranslator.cs:423:TryTranslateCyberneticsSlot:name"] =
                 "Cybernetics slot names are exact static labels, not display-name owner captures.",
         };
 

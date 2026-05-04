@@ -42,7 +42,8 @@ public sealed class TradeLineTranslationPatchTests
     {
         WriteDictionary(
             ("Weapons", "武器"),
-            ("iron sword", "鉄の剣"));
+            ("iron sword", "鉄の剣"),
+            ("bronze", "青銅"));
 
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
         var harmony = new Harmony(harmonyId);
@@ -72,6 +73,14 @@ public sealed class TradeLineTranslationPatchTests
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TradeLineTranslationPatch), "DisplayName.ExactLookup"),
                     Is.EqualTo(1));
             });
+
+            target.setData(new DummyFrameworkDataElement
+            {
+                Title = "Weapons",
+                Description = "{{w|bronze}}",
+            });
+
+            Assert.That(target.text.text, Is.EqualTo("{{w|青銅}}"));
         }
         finally
         {

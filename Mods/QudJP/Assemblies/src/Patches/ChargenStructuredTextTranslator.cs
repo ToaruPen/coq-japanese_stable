@@ -33,6 +33,14 @@ internal static class ChargenStructuredTextTranslator
         new Regex(@"^\[(?<value>-?\d+)pts\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex SelectionTokenPattern =
         new Regex(@"^\[(?: |■)\](?:\[(?<value>-?\d+)\])?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex BeakDescriptionPattern =
+        new Regex(
+            @"^Your face bears a sightly .+?\.\n\n\+1 Ego\nYou occasionally peck at your opponents\.\n\+200 reputation with \{\{w\|birds\}\}$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex StingerDescriptionPattern =
+        new Regex(
+            @"^You bear a tail with a stinger that delivers (?<adjective>confusing|paralyzing|poisonous) venom to your enemies\.",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex JapaneseCharacterPattern =
         new Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex AsciiLetterPattern =
@@ -109,6 +117,12 @@ internal static class ChargenStructuredTextTranslator
             return translated;
         }
 
+        if (TryTranslateKnownMutationDescriptionSource(source, out translated))
+        {
+            DynamicTextObservability.RecordTransform(nameof(ChargenStructuredTextTranslator), "Chargen.Mutation.LongDescription", source, translated);
+            return translated;
+        }
+
         if (!LooksLikeStructuredDescription(source))
         {
             return source;
@@ -163,8 +177,7 @@ internal static class ChargenStructuredTextTranslator
         var rankKey = string.Concat(descriptionKey, ":rank:1");
         var hasDescription = Translator.TryGetTranslation(descriptionKey, out var description)
             && !string.Equals(description, descriptionKey, StringComparison.Ordinal);
-        var hasRank = Translator.TryGetTranslation(rankKey, out var rankText)
-            && !string.Equals(rankText, rankKey, StringComparison.Ordinal);
+        var hasRank = TryGetMutationRankText(mutationName!, rankKey, out var rankText);
 
         if (!hasDescription && !hasRank)
         {
@@ -184,6 +197,72 @@ internal static class ChargenStructuredTextTranslator
         {
             translated = rankText;
         }
+        return true;
+    }
+
+    private static bool TryTranslateKnownMutationDescriptionSource(string source, out string translated)
+    {
+        if (BeakDescriptionPattern.IsMatch(source))
+        {
+            return TryTranslateMutationLongDescription("Beak", out translated);
+        }
+
+        var stingerMatch = StingerDescriptionPattern.Match(source);
+        if (stingerMatch.Success)
+        {
+            var mutationName = stingerMatch.Groups["adjective"].Value switch
+            {
+                "confusing" => "Stinger (Confusing Venom)",
+                "paralyzing" => "Stinger (Paralyzing Venom)",
+                "poisonous" => "Stinger (Poisoning Venom)",
+                _ => string.Empty,
+            };
+
+            if (!string.IsNullOrEmpty(mutationName))
+            {
+                return TryTranslateMutationLongDescription(mutationName, out translated);
+            }
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryGetMutationRankText(string mutationName, string simpleRankKey, out string rankText)
+    {
+        if (Translator.TryGetTranslation(simpleRankKey, out rankText)
+            && !string.Equals(rankText, simpleRankKey, StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        if (!TryGetStingerRankKey(mutationName, out var stingerRankKey))
+        {
+            rankText = simpleRankKey;
+            return false;
+        }
+
+        return Translator.TryGetTranslation(stingerRankKey, out rankText)
+            && !string.Equals(rankText, stingerRankKey, StringComparison.Ordinal);
+    }
+
+    private static bool TryGetStingerRankKey(string mutationName, out string rankKey)
+    {
+        var propertyName = mutationName switch
+        {
+            "Stinger (Confusing Venom)" => "Stinger Confusion",
+            "Stinger (Paralyzing Venom)" => "Stinger Paralysis",
+            "Stinger (Poisoning Venom)" => "Stinger Poison",
+            _ => string.Empty,
+        };
+
+        if (string.IsNullOrEmpty(propertyName))
+        {
+            rankKey = string.Empty;
+            return false;
+        }
+
+        rankKey = string.Concat("mutation:", mutationName, ":", propertyName, ":rank:1");
         return true;
     }
 

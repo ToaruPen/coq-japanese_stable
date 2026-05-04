@@ -34,6 +34,12 @@ internal static class DescriptionTextTranslator
     private static readonly Regex PreservedWeightUnitPattern =
         new Regex("(?:\\.lbs|lbs\\.)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex AllowedLocalizedEnglishTokenPattern =
+        new Regex("(?<![A-Za-z])(?:AV|DV|HP|MA|PV|Qud|Quickness|SP|XP)(?![A-Za-z])", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex AddsCookingEffectsPattern =
+        new Regex("^Adds (?<effect>.+?) effects to cooked meals\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     // Keep TranslateShortDescription and TranslateLongDescription separate even though they
     // currently delegate to TranslateDescriptionText, so short/long description routes can
     // diverge later without changing their patch call sites.
@@ -378,6 +384,11 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        if (TryTranslateAddsCookingEffectsLine(source, route, out translated))
+        {
+            return true;
+        }
+
         if (ShouldSkipExactLeafTranslation(source))
         {
             translated = source;
@@ -406,6 +417,29 @@ internal static class DescriptionTextTranslator
 
         translated = source;
         return false;
+    }
+
+    private static bool TryTranslateAddsCookingEffectsLine(string source, string route, out string translated)
+    {
+        var match = AddsCookingEffectsPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var effect = match.Groups["effect"].Value;
+        var translatedEffect = StringHelpers.TranslateExactOrLowerAsciiFallback(effect);
+        if (string.Equals(translatedEffect, effect, StringComparison.Ordinal)
+            && !ContainsJapaneseCharacters(effect))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = translatedEffect + "の効果を調理した食事に加える。";
+        DynamicTextObservability.RecordTransform(route, "Description.CookingEffects", source, translated);
+        return true;
     }
 
     private static bool TryTranslateBrainDispositionLinePreservingColors(string source, string route, out string translated)
@@ -754,8 +788,9 @@ internal static class DescriptionTextTranslator
             return false;
         }
 
-        var withoutPreservedWeightUnit = PreservedWeightUnitPattern.Replace(source, string.Empty);
-        return !AsciiLetterPattern.IsMatch(withoutPreservedWeightUnit);
+        var normalized = PreservedWeightUnitPattern.Replace(source, string.Empty);
+        normalized = AllowedLocalizedEnglishTokenPattern.Replace(normalized, string.Empty);
+        return !AsciiLetterPattern.IsMatch(normalized);
     }
 
     private static bool TryTranslateLabeledList(string source, string route, out string translated)

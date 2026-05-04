@@ -240,6 +240,51 @@ public sealed class TradeUiPopupTranslationPatchTests
     }
 
     [Test]
+    public void TranslatePopupText_DoesNotReportNoPattern_ForAlreadyLocalizedStaticPopup()
+    {
+        const string source = "クッドの洞窟へ旅立つ。";
+
+        var translated = TradeUiPopupTranslationPatch.TranslatePopupText(source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(source), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TranslatePopupText_DoesNotReportNoPattern_ForAlreadyLocalizedJoppaArrivalPopup()
+    {
+        const string source =
+            "シュウト・ウクスの第10日、あなたは大塩砂漠モグラヤイの遥かな縁にあるオアシス集落ジョッパに到着した。\n\n" +
+            "あたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n" +
+            "地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。";
+
+        var translated = TradeUiPopupTranslationPatch.TranslatePopupText(source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(source), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TranslatePopupText_DoesNotReportNoPattern_ForMarkupWrappedAlreadyLocalizedPopup()
+    {
+        const string source = "{{W|Qudのジョッパに到着した。}}";
+
+        var translated = TradeUiPopupTranslationPatch.TranslatePopupText(source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(source), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public void TranslatePopupText_LeavesUnknownTextUnchanged()
     {
         const string source = "This popup does not belong to trade UI.";

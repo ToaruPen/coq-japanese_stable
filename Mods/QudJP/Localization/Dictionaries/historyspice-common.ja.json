@@ -51,6 +51,16 @@
     { "key": "band", "text": "一団" },
     { "key": "flock", "text": "群れ" },
     { "key": "society", "text": "共同体" },
-    { "key": "the spindle", "text": "スピンドル" }
+    { "key": "the spindle", "text": "スピンドル" },
+    { "key": "prudence", "text": "慎慮" },
+    { "key": "judgement", "text": "判断" },
+    { "key": "merrily", "text": "陽気に" },
+    { "key": "gleefully", "text": "喜んで" },
+    { "key": "cheerfully", "text": "楽しげに" },
+    { "key": "joyfully", "text": "喜ばしく" },
+    { "key": "brisket", "text": "ブリスケット" },
+    { "key": "spreading", "text": "スプレッディング" },
+    { "key": "traveling", "text": "旅する" },
+    { "key": "prayer", "text": "祈り" }
   ]
 }

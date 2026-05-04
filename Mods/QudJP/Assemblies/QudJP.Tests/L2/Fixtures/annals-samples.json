@@ -185,7 +185,7 @@
       "candidate_id": "GenericDeath#tombInscription",
       "event_property": "tombInscription",
       "input_source": "In the High Salt Sun, Yarad, Hammer-in-Turquoise, the Ilep Sorrow laid his body to rest and crossed into Brightsheol. He was 216 years old.",
-      "expected_japanese_exact": "ハイ・ソルト・サン、Yarad, Hammer-in-Turquoise, the Ilep Sorrowはその身を休め、ブライトシェオルへ渡った。享年216歳であった。"
+      "expected_japanese_exact": "高き塩の太陽、Yarad, Hammer-in-Turquoise, the Ilep Sorrowはその身を休め、ブライトシェオルへ渡った。享年216歳であった。"
     },
     {
       "candidate_id": "FakedDeath#gospel",
@@ -197,7 +197,7 @@
       "candidate_id": "FakedDeath#tombInscription",
       "event_property": "tombInscription",
       "input_source": "Look! Behold the Gleaming Ghost of Barracks District Temrir, who in the High Salt Sun defied death and emerged from the glassy ruins.",
-      "expected_japanese_exact": "見よ、驚嘆せよ！ the Gleaming Ghost of Barracks District Temrirはハイ・ソルト・サンに死を退け、glassy ruinsより現れた。"
+      "expected_japanese_exact": "見よ、驚嘆せよ！ the Gleaming Ghost of Barracks District Temrirは高き塩の太陽に死を退け、glassy ruinsより現れた。"
     },
     {
       "candidate_id": "FoundAsBabe#gospel#case:0",
@@ -251,7 +251,7 @@
       "candidate_id": "BornAsHeir#tombInscription",
       "event_property": "tombInscription",
       "input_source": "Look! Behold the life of Nuntu -- called the Glassborn! -- scion of the Fossilized Saads and she who was dowered the Glass Crown. Observe the twin miracles of the High Salt Sun: the heiress was born, and a glass comet crossed the sky.",
-      "expected_japanese_exact": "調べるよ！ Behold、Nuntuの生涯を。すなわちthe Glassbornと呼ばれし者、化石化せしサアドの裔にして、Glass Crownを授けられし者なり。ハイ・ソルト・サンの双つの奇跡を見よ。heiressが生まれ、そしてa glass comet crossed the sky。"
+      "expected_japanese_exact": "調べるよ！ Behold、Nuntuの生涯を。すなわちthe Glassbornと呼ばれし者、化石化せしサアドの裔にして、Glass Crownを授けられし者なり。高き塩の太陽の双つの奇跡を見よ。heiressが生まれ、そしてa glass comet crossed the sky。"
     },
     {
       "candidate_id": "Marry#gospel#opt:base",

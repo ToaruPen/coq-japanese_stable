@@ -37,9 +37,13 @@ public sealed class ChargenAttributeDescriptionTranslationPatchTests
     [Test]
     public void Postfix_TranslatesChargenAttributeDescriptions_WhenBeforeGetBaseAttributesRuns()
     {
-        WriteDictionary((
-            "Your {{W|Strength}} score determines how effectively you penetrate your opponents' armor with melee attacks, how much damage your melee attacks do, your ability to resist forced movement, and your carry capacity.",
-            "あなたの{{W|筋力}}は、近接攻撃で敵の装甲を貫通する効率、近接攻撃のダメージ量、強制移動への抵抗力、所持重量を決定します。"));
+        WriteDictionary(
+            (
+                "Your {{W|Strength}} score determines how effectively you penetrate your opponents' armor with melee attacks, how much damage your melee attacks do, your ability to resist forced movement, and your carry capacity.",
+                "あなたの{{W|筋力}}は、近接攻撃で敵の装甲を貫通する効率、近接攻撃のダメージ量、強制移動への抵抗力、所持重量を決定します。"),
+            (
+                "Your {{W|Ego}} score determines the potency of your ability to haggle with merchants, and your ability to dominate the wills of other living creatures.",
+                "あなたの{{W|自我}}は、商人との値引き交渉力、および他の生物の意志を支配する能力を決定します。"));
 
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
         var harmony = new Harmony(harmonyId);
@@ -55,9 +59,11 @@ public sealed class ChargenAttributeDescriptionTranslationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(attributes, Has.Count.EqualTo(1));
+                Assert.That(attributes, Has.Count.EqualTo(2));
                 Assert.That(attributes[0].Attribute, Is.EqualTo("STR"));
                 Assert.That(attributes[0].Description, Is.EqualTo("あなたの{{W|筋力}}は、近接攻撃で敵の装甲を貫通する効率、近接攻撃のダメージ量、強制移動への抵抗力、所持重量を決定します。"));
+                Assert.That(attributes[1].Attribute, Is.EqualTo("EGO"));
+                Assert.That(attributes[1].Description, Is.EqualTo("あなたの{{W|自我}}は、商人との値引き交渉力、および他の生物の意志を支配する能力を決定します。"));
             });
         }
         finally
@@ -72,14 +78,26 @@ public sealed class ChargenAttributeDescriptionTranslationPatchTests
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
     }
 
-    private void WriteDictionary((string key, string text) entry)
+    private void WriteDictionary(params (string key, string text)[] entries)
     {
         var builder = new StringBuilder();
-        builder.Append("{\"entries\":[{\"key\":\"");
-        builder.Append(EscapeJson(entry.key));
-        builder.Append("\",\"text\":\"");
-        builder.Append(EscapeJson(entry.text));
-        builder.Append("\"}]}");
+        builder.Append('{');
+        builder.Append("\"entries\":[");
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
         builder.AppendLine();
 
         File.WriteAllText(

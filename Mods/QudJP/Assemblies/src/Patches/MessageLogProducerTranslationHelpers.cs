@@ -94,6 +94,14 @@ internal static class MessageLogProducerTranslationHelpers
         "^(?<count>\\d+) str(?:atum|ata) (?<direction>deep|high)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex AsciiLetterPattern = new Regex(
+        "[A-Za-z]",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex AllowedAlreadyLocalizedEnglishTokenPattern = new Regex(
+        @"\b(?:AV|DV|HP|MA|PV|Qud|Quickness|SP|XP)\b|\.lbs|\blbs\.",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     internal static bool TryTranslateZoneDisplayName(string source, string route, out string translated)
     {
         if (string.IsNullOrEmpty(source))
@@ -231,6 +239,12 @@ internal static class MessageLogProducerTranslationHelpers
 
         if (markJapaneseAsDirect && ContainsJapaneseCharacters(patternSource))
         {
+            if (ShouldMarkAlreadyLocalizedJapaneseDirectly(patternSource))
+            {
+                source = MessageFrameTranslator.MarkDirectTranslation(patternSource);
+                return true;
+            }
+
             var patternTranslated = MessagePatternTranslator.Translate(patternSource, route);
             if (!string.Equals(patternTranslated, patternSource, StringComparison.Ordinal))
             {
@@ -268,6 +282,17 @@ internal static class MessageLogProducerTranslationHelpers
         }
 
         return source.Substring(headerEnd + 1);
+    }
+
+    private static bool ShouldMarkAlreadyLocalizedJapaneseDirectly(string source)
+    {
+        if (string.IsNullOrEmpty(source))
+        {
+            return true;
+        }
+
+        var normalized = AllowedAlreadyLocalizedEnglishTokenPattern.Replace(source, string.Empty);
+        return !AsciiLetterPattern.IsMatch(normalized);
     }
 
     private static string TranslateVisibleZoneDisplayName(string source)

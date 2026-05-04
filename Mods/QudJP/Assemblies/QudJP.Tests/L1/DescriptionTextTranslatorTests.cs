@@ -61,6 +61,41 @@ public sealed class DescriptionTextTranslatorTests
     }
 
     [Test]
+    public void TranslateLongDescription_AppliesVillageHistoryMonumentPatterns()
+    {
+        WriteExactDictionary(
+            ("brisket", "ブリスケット"),
+            ("spreading", "スプレッディング"),
+            ("carnival", "カーニバル"),
+            ("traveling", "旅する"),
+            ("prayer", "祈り"),
+            ("gleefully", "喜んで"));
+        WritePatternDictionary(
+            (
+                "^(?:\\{\\{C\\|)?This object is a monument to a scene from the history of the village (.+?):(?:\\}\\})?$",
+                "これは{0}村の歴史の一場面を記念する碑である:"),
+            (
+                "^The sanctity of (?:the )?(.+?) was revealed to the people of (.+?) through the dish known as (.+?)\\.(?:\\}\\})?$",
+                "{t2}として知られる料理を通じて、{0}の聖性が{1}の人々に示された。"),
+            (
+                "^Since the first (.+?), the villagers of (.+?) have (.+?) feasted on (.+?)\\.(?:\\}\\})?$",
+                "最初の{t0}以来、{1}の村人たちは{t3}を{t2}食してきた。"));
+
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            "{{C|This object is a monument to a scene from the history of the village テッガトゥム:\n" +
+            "The sanctity of the 商人ギルド was revealed to the people of テッガトゥム through the dish known as Brisket Spreading.\n" +
+            "Since the first Carnival of the Traveling Prayer, the villagers of テッガトゥム have gleefully feasted on Brisket Spreading.}}",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(
+            translated,
+            Is.EqualTo(
+                "{{C|これはテッガトゥム村の歴史の一場面を記念する碑である:\n" +
+                "ブリスケット・スプレッディングとして知られる料理を通じて、商人ギルドの聖性がテッガトゥムの人々に示された。\n" +
+                "最初の旅する祈りのカーニバル以来、テッガトゥムの村人たちはブリスケット・スプレッディングを喜んで食してきた。}}"));
+    }
+
+    [Test]
     public void TranslateLongDescription_PreservesColoredFactionTarget_InDispositionLine()
     {
         var translated = DescriptionTextTranslator.TranslateLongDescription(
@@ -376,6 +411,69 @@ public sealed class DescriptionTextTranslatorTests
             Assert.That(Translator.GetMissingKeyHitCountForTests("Offhand Attack Chance: {0}%"), Is.EqualTo(0));
             Assert.That(Translator.GetMissingKeyHitCountForTests("Weight:"), Is.EqualTo(0));
         });
+    }
+
+    [Test]
+    public void TranslateLongDescription_DoesNotReportNoPattern_ForLocalizedTonicRulesWithAllowedStatTokens()
+    {
+        const string source =
+            "持続：41-50ラウンド　筋力 +9／レベルごとに一時HP +3／移動速度 -25。痛みを感じない。恐怖に免疫。毎ラウンド最大HPの1%のダメージを受ける（このダメージでHPは1未満にならない）。";
+
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            source,
+            "DescriptionTextTranslatorTests");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(source), Is.EqualTo(0));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TranslateShortDescription_TranslatesTonicLeafWithoutMissingSequenceTokens()
+    {
+        const string source = "This item is a tonic. Applying one tonic while under the effects of another may produce undesired results.";
+        WriteDictionary(
+            "world-effects-tonics.ja.json",
+            (source, "このアイテムはトニックです。別のトニックの効果中にトニックを使用すると、望ましくない結果を招くことがあります。"));
+
+        var translated = DescriptionTextTranslator.TranslateShortDescription(
+            source,
+            "DescriptionTextTranslatorTests");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("このアイテムはトニックです。別のトニックの効果中にトニックを使用すると、望ましくない結果を招くことがあります。"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("This"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TranslateShortDescription_TranslatesPreparedCookingIngredientEffectTemplate()
+    {
+        WriteDictionary(
+            "world-effects-cooking.ja.json",
+            ("simple plant-based", "シンプルな植物由来"));
+
+        var translated = DescriptionTextTranslator.TranslateShortDescription(
+            "Adds simple plant-based effects to cooked meals.",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo("シンプルな植物由来の効果を調理した食事に加える。"));
+    }
+
+    [Test]
+    public void TranslateShortDescription_LeavesPreparedCookingIngredientEffectTemplateUnchanged_WhenEffectIsUnknownEnglish()
+    {
+        const string source = "Adds mysterious effects to cooked meals.";
+
+        var translated = DescriptionTextTranslator.TranslateShortDescription(
+            source,
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo(source));
     }
 
     private void WritePatternDictionary(params (string pattern, string template)[] patterns)

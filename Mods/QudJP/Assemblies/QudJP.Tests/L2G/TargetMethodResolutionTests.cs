@@ -155,8 +155,6 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(AbilityBarUpdateAbilitiesTextPatch), "UpdateAbilitiesText", "Qud.UI.AbilityBar", "System.Void", new string[0])]
     [TestCase(typeof(AbilityBarButtonTextTranslationPatch), "Update", "Qud.UI.AbilityBar", "System.Void", new string[0])]
-    [TestCase(typeof(EffectDescriptionPatch), "GetDescription", "XRL.World.Effect", "System.String", new string[0])]
-    [TestCase(typeof(EffectDetailsPatch), "GetDetails", "XRL.World.Effect", "System.String", new string[0])]
     [TestCase(typeof(CherubimSpawnerReplaceDescriptionPatch), "ReplaceDescription", "XRL.World.Parts.CherubimSpawner", "System.Void", new[] { "XRL.World.GameObject", "System.String", "System.String" })]
     [TestCase(typeof(CharacterStatusScreenHighlightEffectPatch), "HandleHighlightEffect", "Qud.UI.CharacterStatusScreen", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(GameObjectShowActiveEffectsPatch), "ShowActiveEffects", "XRL.World.GameObject", "System.Void", new string[0])]
@@ -459,6 +457,10 @@ public sealed class TargetMethodResolutionTests
         "",
         "",
     })]
+    [TestCase(typeof(CreditsMenuBarsTranslationPatch), new[]
+    {
+        "",
+    })]
     [TestCase(typeof(GameObjectEmitMessageTranslationPatch), new[]
     {
         "System.String|XRL.World.GameObject|System.String|System.Boolean",
@@ -551,6 +553,89 @@ public sealed class TargetMethodResolutionTests
         "",
         "",
         "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
     })]
     [TestCase(typeof(AsleepMessageTranslationPatch), new[]
     {
@@ -581,6 +666,26 @@ public sealed class TargetMethodResolutionTests
     }
 
 #if HAS_GAME_DLL
+    [Test]
+    public void ActiveEffectOwnerPatches_TargetBaseAndOverridesButNotCookingOwnerMethods()
+    {
+        var descriptionTargets = ResolveTargetMethodNames(typeof(EffectDescriptionPatch));
+        var detailsTargets = ResolveTargetMethodNames(typeof(EffectDetailsPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(descriptionTargets, Does.Contain("XRL.World.Effect|GetDescription"));
+            Assert.That(descriptionTargets, Does.Contain("XRL.World.Effects.LiquidCovered|GetDescription"));
+            Assert.That(descriptionTargets, Does.Contain("XRL.World.Effects.Swimming|GetDescription"));
+            Assert.That(descriptionTargets, Does.Not.Contain("XRL.World.Effects.CookingDomainLove_UnitEgo|GetDescription"));
+
+            Assert.That(detailsTargets, Does.Contain("XRL.World.Effect|GetDetails"));
+            Assert.That(detailsTargets, Does.Contain("XRL.World.Effects.LiquidCovered|GetDetails"));
+            Assert.That(detailsTargets, Does.Contain("XRL.World.Effects.Swimming|GetDetails"));
+            Assert.That(detailsTargets, Does.Not.Contain("XRL.World.Effects.BasicCookingEffect_XP|GetDetails"));
+        });
+    }
+
     [Test]
     public void SinkPrereqPatches_DoNotRetargetDedicatedOwnerSurfaces()
     {
