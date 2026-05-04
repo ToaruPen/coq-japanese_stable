@@ -114,7 +114,12 @@ def load_metadata(metadata_path: Path) -> WorkshopMetadata:
 
 
 def vdf_escape(value: str) -> str:
-    """Escape a string for a quoted steamcmd VDF value."""
+    """
+    Normalize CRLF and CR newlines to LF and escape backslashes and double quotes so the string can be safely placed inside a quoted steamcmd VDF value; actual newline characters remain as real newlines.
+    
+    Returns:
+        The escaped string suitable for use as a quoted VDF value.
+    """
     normalized = value.replace("\r\n", "\n").replace("\r", "\n")
     return normalized.replace("\\", "\\\\").replace('"', '\\"')
 
@@ -127,7 +132,22 @@ def render_vdf(
     changenote: str,
     description: str | None,
 ) -> str:
-    """Render a steamcmd ``workshop_build_item`` VDF."""
+    """
+    Create the steamcmd `workshop_build_item` VDF text from validated metadata and provided file paths.
+    
+    Parameters:
+        metadata (WorkshopMetadata): Validated workshop metadata used for required VDF fields.
+        content_folder (Path): Path to the folder that will be uploaded as the workshop content (resolved to an absolute path in the VDF).
+        preview_file (Path): Path to the preview image file (resolved to an absolute path in the VDF).
+        changenote (str): Non-empty changenote text to include in the VDF; leading/trailing whitespace is stripped.
+        description (str | None): Optional description text to include in the VDF; if `None`, no description field is emitted.
+    
+    Returns:
+        str: The complete VDF text for `workshop_build_item`, formatted with quoted keys and values and terminated with a single trailing newline.
+    
+    Raises:
+        ValueError: If `changenote` is empty after stripping.
+    """
     if not changenote.strip():
         msg = "Workshop changenote must be non-empty"
         raise ValueError(msg)
