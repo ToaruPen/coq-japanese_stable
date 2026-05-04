@@ -5,6 +5,7 @@
     "secretlint": "secretlint ."
   },
   "devDependencies": {
+    "@secretlint/secretlint-rule-pattern": "^12.3.1",
     "@secretlint/secretlint-rule-preset-recommend": "^12.2.0",
     "secretlint": "^12.2.0"
   }

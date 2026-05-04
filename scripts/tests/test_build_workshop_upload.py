@@ -93,9 +93,9 @@ def test_load_metadata_rejects_non_object_json(tmp_path: Path) -> None:
         load_metadata(metadata_path)
 
 
-def test_vdf_escape_handles_quotes_backslashes_and_newlines() -> None:
+def test_vdf_escape_handles_quotes_backslashes_and_preserves_newlines() -> None:
     """VDF string values are escaped before writing quoted fields."""
-    assert vdf_escape('Path "A"\\B\nNext') == 'Path \\"A\\"\\\\B\\nNext'
+    assert vdf_escape('Path "A"\\B\nNext') == 'Path \\"A\\"\\\\B\nNext'
 
 
 def test_render_vdf_contains_absolute_content_preview_and_changenote(tmp_path: Path) -> None:
@@ -305,4 +305,4 @@ def test_main_reads_changenote_file(tmp_path: Path) -> None:
 
     assert exit_code == 0
     vdf = vdf_output.read_text(encoding="utf-8")
-    assert '"changenote" "v0.2.0 / abc1234\\n\\n更新内容:\\n- UI 翻訳を更新"' in vdf
+    assert '"changenote" "v0.2.0 / abc1234\n\n更新内容:\n- UI 翻訳を更新"' in vdf

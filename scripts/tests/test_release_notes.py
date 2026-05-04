@@ -77,7 +77,7 @@ def test_render_changelog_entry_uses_version_date_and_sections(tmp_path: Path) -
 
 
 def test_render_workshop_changenote_is_user_facing(tmp_path: Path) -> None:
-    """Workshop changenotes include version, git hash, and user-visible bullets."""
+    """Workshop changenotes include version and user-visible bullets."""
     fragments_dir = tmp_path / "docs" / "release-notes" / "unreleased"
     fragments_dir.mkdir(parents=True)
     (fragments_dir / "runtime.md").write_text(
@@ -87,13 +87,49 @@ def test_render_workshop_changenote_is_user_facing(tmp_path: Path) -> None:
 
     changenote = render_workshop_changenote(
         version="0.1.0",
-        git_hash="abc1234def56",
         fragments=collect_fragments(fragments_dir),
     )
 
     assert (
         changenote
-        == "v0.1.0 / abc1234def56\n\n"
+        == "v0.1.0 更新\n\n"
+        "更新内容:\n"
+        "- Fix untranslated sleep and game-summary messages.\n"
+    )
+
+
+def test_main_renders_workshop_changenote_without_git_hash(tmp_path: Path) -> None:
+    """The render CLI does not require a git hash for user-facing Workshop notes."""
+    fragments_dir = tmp_path / "docs" / "release-notes" / "unreleased"
+    fragments_dir.mkdir(parents=True)
+    (fragments_dir / "runtime.md").write_text(
+        "### Fixed\n\n- Fix untranslated sleep and game-summary messages.\n",
+        encoding="utf-8",
+    )
+    changelog_output = tmp_path / "CHANGELOG-entry.md"
+    workshop_output = tmp_path / "workshop-changenote.txt"
+
+    assert (
+        main(
+            [
+                "render",
+                "--version",
+                "0.1.0",
+                "--date",
+                "2026-05-04",
+                "--fragments-dir",
+                str(fragments_dir),
+                "--changelog-output",
+                str(changelog_output),
+                "--workshop-output",
+                str(workshop_output),
+            ],
+        )
+        == 0
+    )
+
+    assert workshop_output.read_text(encoding="utf-8") == (
+        "v0.1.0 更新\n\n"
         "更新内容:\n"
         "- Fix untranslated sleep and game-summary messages.\n"
     )
