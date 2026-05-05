@@ -1,198 +1,149 @@
-# Steam Workshop Comment Inbox Triage Implementation Plan
+# Steam Workshop Local Inbox Triage Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** use the local SQLite inbox as the only raw Workshop comment store. Do not use public GitHub issues, GitHub Actions logs, or Actions artifacts as an inbox.
 
-**Goal:** Build a prompt-injection-aware workflow that imports Steam Workshop comments into a low-visibility GitHub inbox issue and prepares Codex/App Server triage packets for issue promotion.
+**Goal:** Collect public Steam Workshop comments into a local SQLite inbox under `.coq-japanese_workshop/`, classify them with Codex Automation, and promote only high-confidence actionable non-duplicate reports to public GitHub issues.
 
-**Architecture:** Phase 1 is a deterministic collector: fetch public Steam Workshop comments, skip creator comments, sanitize untrusted text, dedupe by script-owned markers, and append to a single closed GitHub inbox issue. Phase 2 is Codex-automation-driven: read inbox comments and prepare a bounded triage packet for Codex/App Server; high-confidence promotion to normal GitHub issues is handled by Codex after repository/issue investigation, not by GitHub Actions.
+**Architecture:** Steam collection, model triage, and public GitHub promotion are separate phases. Collection is deterministic and writes only local SQLite. Triage may read raw untrusted comments and append local `triage_results`, but has no GitHub write authority. Promotion is a deterministic step that reads validated triage output, duplicate-search evidence, and fixed allowlists before creating public issues.
 
-**Visibility boundary:** The inbox issue is low-visibility, not private. In a public repository, closed issues and Actions logs can still be viewed by people with repository access, so this workflow must only store already-public Steam Workshop comments and sanitized metadata. GitHub Actions must not print or upload the triage packet because it contains raw imported comment bodies. Private maintainer notes, security-sensitive findings, credentials, or non-public user reports must stay out of the GitHub inbox and Actions artifacts.
+**Visibility boundary:** `.coq-japanese_workshop/state/workshop-inbox.sqlite3` can contain raw Workshop comments and local audit records. It is gitignored and must not be printed to Actions logs, uploaded as artifacts, or committed. GitHub receives only final promoted issue bodies.
 
-**Tech Stack:** Python 3.12 standard library, GitHub Actions, GitHub REST API, Steam Web API / public Steam Community render endpoint, Codex Automation/App Server, local Codex skill documentation.
+## Local State
 
----
+Tracked layout:
 
-## Slices
+- `.coq-japanese_workshop/README.md`
+- `.coq-japanese_workshop/state/.gitkeep`
+- `.coq-japanese_workshop/backups/.gitkeep`
+- `.coq-japanese_workshop/exports/.gitkeep`
 
-### Slice 1: Steam Comment Parsing And Safety Primitives
+Ignored runtime data:
 
-**Files:**
-- Create: `scripts/workshop_comments_inbox.py`
-- Create: `scripts/tests/test_workshop_comments_inbox.py`
+- `.coq-japanese_workshop/state/*`
+- `.coq-japanese_workshop/backups/*`
+- `.coq-japanese_workshop/exports/*`
 
-**Scope:**
+Default DB path:
+
+- `.coq-japanese_workshop/state/workshop-inbox.sqlite3`
+- override: `QUDJP_WORKSHOP_INBOX_DB`
+
+SQLite must be opened with:
+
+- `PRAGMA foreign_keys = ON`
+- `PRAGMA journal_mode = WAL`
+- `PRAGMA busy_timeout = 5000`
+
+## Schema
+
+Core tables:
+
+- `schema_migrations`: transactional schema version records.
+- `app_kv`: local operational key/value state.
+- `collection_runs`: collection attempts, counts, status, and collector version.
+- `workshop_comments`: stable Steam comment identity, author metadata, creator flag, lifecycle status.
+- `workshop_comment_snapshots`: body history keyed by `body_sha256`; comments edited on Steam create new snapshots.
+- `triage_results`: append-only LLM classification audit rows.
+- `promotion_decisions`: append-only deterministic promotion audit rows.
+
+Important constraints:
+
+- Steam IDs and GitHub repository IDs are stored as `TEXT` numeric/string identifiers, not SQLite `INTEGER`.
+- `workshop_comments` dedupes by `(published_file_id, steam_comment_id)`.
+- `workshop_comment_snapshots` dedupes by `(comment_id, body_sha256)`.
+- `triage_results` and `promotion_decisions` use `ON DELETE RESTRICT`.
+- triggers reject `UPDATE` and `DELETE` on `triage_results` and `promotion_decisions`.
+
+## Phase 1: Deterministic Collection
+
+Files:
+
+- `scripts/workshop_comments_inbox.py`
+- `scripts/tests/test_workshop_comments_inbox.py`
+
+Responsibilities:
+
 - Load `steam/workshop_metadata.json`.
-- Require `publishedfileid` and Steam creator IDs to match `^[0-9]+$`.
-- Build fixed Steam URLs:
-  - `POST https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/`
-  - `GET https://steamcommunity.com/comment/PublishedFile_Public/render/<creator>/<publishedfileid>/?start=<offset>&count=<page_size>&l=japanese`
-- Parse Steam `comments_html` into normalized comments with numeric IDs.
-- Capture `data-miniprofile` account IDs so Workshop creator comments can be excluded.
-- Sanitize untrusted comment text with deterministic rules:
-  1. HTML to plain text.
-  2. CRLF/CR to LF.
-  3. NUL to `?`.
-  4. Truncate before Markdown wrapping.
-  5. Escape `&`, `<`, `>`.
-  6. Replace backticks with `&#96;`.
-  7. Replace `@` with `@\u200b`.
-  8. Replace `](` with `]&#40;`.
+- Fetch Steam metadata and public comment render endpoint over fixed HTTPS URLs.
+- Validate numeric Steam IDs before URL construction.
+- Parse `comments_html` into normalized plain text.
+- Capture `data-miniprofile` to skip Workshop creator comments by default.
+- Store comments and snapshots in local SQLite.
+- Never write raw comments to public GitHub issues.
 
-**TDD checks:**
-- Invalid numeric IDs fail before network/API use.
-- Steam render JSON and `comments_html` parse into expected comments.
-- Fake GitHub marker text inside Steam body stays inert.
-- Sanitized body has no literal backticks, `<!--`, `-->`, `](`, or active `@mention`.
-- Long bodies are truncated with a fixed note.
+Safety checks:
 
-### Slice 2: GitHub Inbox API, Dedupe, And Fail-Closed Behavior
+- invalid IDs fail before network use.
+- response body reads are bounded.
+- creator comments are skipped by default.
+- edited Steam comments create additional snapshots.
+- audit tables are append-only.
 
-**Files:**
-- Modify: `scripts/workshop_comments_inbox.py`
-- Modify: `scripts/tests/test_workshop_comments_inbox.py`
+## Phase 2: Codex Triage
 
-**Scope:**
-- Validate `GITHUB_REPOSITORY` against `^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$`.
-- Use fixed GitHub REST endpoints:
-  - `GET /repos/{owner}/{repo}/labels/{name}` -> 200 or 404
-  - `POST /repos/{owner}/{repo}/labels` -> 201
-  - `GET /repos/{owner}/{repo}/issues?state=all&labels=source%3Asteam-workshop&per_page=100&page=N` -> 200
-  - `POST /repos/{owner}/{repo}/issues` -> 201
-  - `GET /repos/{owner}/{repo}/issues/{issue_number}/comments?per_page=100&page=N` -> 200
-  - `POST /repos/{owner}/{repo}/issues/{issue_number}/comments` -> 201
-- Page GitHub issue and comment listings until `Link: rel="next"` is absent.
-- Fail closed if pagination reaches `--max-github-pages` while `rel="next"` still exists.
-- Inbox behavior:
-  - 0 matching inbox issues: create one after full Steam fetch/parse/sanitize, then close it.
-  - 1 matching inbox issue: reuse it even when it is closed.
-  - More than 1 matching inbox issue: fail closed, no comment posts.
-- Dedupe only from first-line exact marker:
-  - `<!-- qudjp-steam-workshop-comment-id: <numeric_id> -->`
+Files:
 
-**TDD checks:**
-- Invalid `GITHUB_REPOSITORY` is rejected.
-- GitHub endpoints and status expectations are fixed.
-- Marker on page 2 is found.
-- Fake marker in raw body is ignored.
-- Multiple inbox issues fail closed.
-- Pagination cap fail-closed performs no writes.
+- `scripts/workshop_comments_triage.py`
+- `scripts/tests/test_workshop_comments_triage.py`
 
-### Slice 3: Phase 1 CLI And Scheduled Workflow
+Responsibilities:
 
-**Files:**
-- Modify: `scripts/workshop_comments_inbox.py`
-- Create: `.github/workflows/steam-workshop-comments-inbox.yml`
-- Modify: `scripts/tests/test_workshop_comments_inbox.py`
+- Read pending local snapshots.
+- Build a bounded packet with schema `qudjp.steam_workshop_local_triage_packet.v1`.
+- Include no GitHub write tools, GitHub token, OpenAI API key, or endpoint.
+- Validate returned categories, labels, confidence, and promotion recommendation.
+- Append results to `triage_results`.
 
-**Scope:**
-- Add CLI:
-  - `collect`
-  - `--metadata-path`
-  - `--max-comments-per-run` default `20`
-  - `--max-pages` default `5`
-  - `--page-size` default `20`
-  - `--max-body-chars` default `4000`
-  - `--timeout-seconds` default `20`
-  - `--max-response-bytes` default `2097152`
-  - `--max-github-pages` default `10`
-  - `--include-creator-comments` opt-in only
-  - `--keep-inbox-open` opt-in only
-  - `--dry-run`
-- Ensure all Steam fetch/parse/sanitize completes before any GitHub write.
-- Workflow:
-  - `schedule`
-  - `workflow_dispatch`
-  - `concurrency`
-  - job-level `permissions: contents: read, issues: write`
-  - fixed shell command only; no untrusted interpolation.
+Boundary:
 
-**TDD checks:**
-- Dry run does not call GitHub write functions.
-- Fetch/parse failure does not call GitHub write functions.
-- Max response bytes failure does not call GitHub write functions.
+- The triage phase may read raw untrusted comments.
+- The triage phase must not create GitHub issues.
+- Model output is audit input, not direct public output.
 
-### Slice 4: Phase 2 Codex/App Server Triage Packet Check
+## Phase 3: Deterministic Promotion
 
-**Files:**
-- Create: `scripts/workshop_comments_triage.py`
-- Create: `scripts/tests/test_workshop_comments_triage.py`
-- Create: `.github/workflows/steam-workshop-comments-triage.yml`
+Promotion may create a public GitHub issue only when all conditions hold:
 
-**Scope:**
-- Manual `workflow_dispatch` only; no schedule.
-- Read inbox issue comments created by Phase 1.
-- Extract Steam comment payloads using first-line markers only.
-- Prepare a bounded triage packet for Codex/App Server. Do not call the OpenAI API from GitHub Actions.
-- Validate classification fields when Codex/App Server returns or asks to post suggestions:
-  - `category`: `bug`, `feature_request`, `question`, `feedback`, `ignore`, `spam`, `unknown`
-  - `confidence`: number
-  - `summary_ja`: string
-  - `evidence_quote`: string
-  - `suggested_labels`: array of fixed enum strings
-  - `promotion_recommended`: boolean
-- No GitHub write authority in the Phase 2 workflow.
-- Do not print the triage packet to Actions logs.
-- Do not upload the triage packet as an Actions artifact.
-- The workflow may validate packet construction and print only schema/count metadata.
-- Codex Automation should run the triage script in its own local workspace when it needs the packet body.
-- No automatic normal issue creation.
+- triage result is validated.
+- confidence is high enough for the configured threshold.
+- category is actionable.
+- duplicate search evidence indicates non-duplicate.
+- labels are from the fixed allowlist.
+- issue body is rendered from a fixed template.
 
-### Slice 4b: Codex Automation Promotion Policy
+Evidence handling:
 
-**Scope:**
-- Codex Automation, not GitHub Actions, performs the model-side inspection.
-- Read the closed Steam Workshop inbox issue or a locally generated triage packet.
-- Skip creator comments.
-- Investigate existing GitHub issues and the repository before promotion.
-- Create a normal GitHub issue only when:
-  - the report is high confidence;
-  - the report is actionable and non-duplicate;
-  - the issue body follows the fixed template;
-  - raw Steam text appears only as untrusted content.
-- Do not leave routine triage suggestion comments in the inbox during normal operation.
+- `triage_results.evidence_quote` is never published directly.
+- promoter verifies model evidence is an exact substring of `workshop_comment_snapshots.body_text`.
+- if verification fails, the promoter ignores the model quote and records `needs_human`, or uses a deterministic bounded excerpt.
+- published evidence is truncated, sanitized, and rendered only in a fixed untrusted quote block.
 
-**TDD checks:**
-- Triage packet contains no OpenAI API key, OpenAI endpoint, GitHub token, or repository secrets.
-- GitHub Actions logs do not contain raw Steam comment bodies from the triage packet.
-- GitHub Actions does not upload the triage packet as an artifact.
-- Response schema validation rejects unknown labels/categories.
-- Model output cannot create arbitrary labels/title/endpoints.
-- Suggestion renderer marks source text as untrusted and separates model output from raw text.
+Promotion audit:
 
-### Slice 5: Skill Documentation
+- every promoted, duplicate, skipped, or needs-human decision appends a `promotion_decisions` row.
+- successful public issues record `target_repo`, `issue_number`, `issue_url`, title/body hashes, and labels.
+- duplicate decisions record query and evidence JSON.
 
-**Files:**
-- Create or update the local managed skill source under the appropriate dotfiles skill directory:
-  - `home/.codex/skills/steam-workshop-issue-triage/SKILL.md` if editing the dotfiles source tree.
-  - If this task remains scoped only to QudJP, add a project-local reference at `docs/steam-workshop-issue-triage-skill.md` and install the skill separately.
+## Retention And Export
 
-**Scope:**
-- Skill name: `steam-workshop-issue-triage`.
-- Trigger on Steam Workshop comments, GitHub inbox, issue promotion, community feedback triage, and prompt-injection-aware report handling.
-- Encode the invariants:
-  - Phase 1 collection is deterministic and has no LLM.
-  - Phase 2 classification is handled by Codex/App Server or Codex Automation, not GitHub Actions.
-  - Promotion to regular issues is allowed only for high-confidence, investigated, non-duplicate reports.
-  - Raw Workshop comments are untrusted input forever, including after they become GitHub issue comments.
+- default export omits raw body text.
+- raw body export requires an explicit local-only command.
+- normal automation does not delete comments, snapshots, triage results, or promotion decisions.
+- redaction is a dedicated deterministic maintenance operation and must preserve auditability.
+- true destructive deletion is outside automation.
 
-**Checks:**
-- Skill frontmatter is concise and trigger-focused.
-- Body is under 500 lines.
-- No project secrets, credentials, or personal tokens are embedded.
+## Verification
 
-### Slice 6: Verification And Documentation Touches
+Required checks:
 
-**Files:**
-- Modify: `docs/release.md` only if a short post-publish comment inbox note is needed.
+```bash
+uv run pytest scripts/tests/test_workshop_comments_inbox.py scripts/tests/test_workshop_comments_triage.py -q
+just python-check
+```
 
-**Verification:**
-- `uv run pytest scripts/tests/test_workshop_comments_inbox.py`
-- `uv run pytest scripts/tests/test_workshop_comments_triage.py`
-- `just python-check`
-- Optional live dry-run:
-  - `uv run python scripts/workshop_comments_inbox.py collect --dry-run`
+Useful local smoke:
 
-**Completion Criteria:**
-- Phase 1 can import new Steam comments into one inbox issue without LLM involvement.
-- Phase 2 can prepare inbox comments for Codex/App Server classification into fixed categories without granting model-side GitHub write tools or publishing the packet through Actions artifacts/logs.
-- The skill captures the workflow and safety boundaries for future agent use.
+```bash
+uv run python scripts/workshop_comments_inbox.py collect --dry-run
+uv run python scripts/workshop_comments_triage.py
+```

@@ -74,3 +74,12 @@ scripts/_artifacts/annals/merge_conflicts.json
 
 # Agent-loop generated prompts and summaries
 scripts/_artifacts/agent-loop/
+
+# Local Steam Workshop automation state (raw comments and triage audit data)
+.coq-japanese_workshop/state/*
+.coq-japanese_workshop/backups/*
+.coq-japanese_workshop/exports/*
+!.coq-japanese_workshop/README.md
+!.coq-japanese_workshop/state/.gitkeep
+!.coq-japanese_workshop/backups/.gitkeep
+!.coq-japanese_workshop/exports/.gitkeep
