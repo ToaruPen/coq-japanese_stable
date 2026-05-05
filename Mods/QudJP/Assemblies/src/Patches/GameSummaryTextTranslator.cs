@@ -106,6 +106,25 @@ internal static class GameSummaryTextTranslator
             return exact;
         }
 
+        var deathTranslated = ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            static (visible, spans) => DeathWrapperFamilyTranslator.TryTranslateMessage(visible, spans, out var translated)
+                ? translated
+                : visible);
+        if (!string.Equals(deathTranslated, source, StringComparison.Ordinal))
+        {
+            return deathTranslated;
+        }
+
+        if (LooksLikeJournalLine(ColorAwareTranslationComposer.GetVisibleText(source)))
+        {
+            var journalTranslated = JournalPatternTranslator.Translate(source, Context);
+            if (!string.Equals(journalTranslated, source, StringComparison.Ordinal))
+            {
+                return journalTranslated;
+            }
+        }
+
         var titleMatch = TitlePattern.Match(source);
         if (titleMatch.Success)
         {
@@ -190,6 +209,16 @@ internal static class GameSummaryTextTranslator
         }
 
         return source;
+    }
+
+    private static bool LooksLikeJournalLine(string source)
+    {
+        return source.StartsWith("On the ", StringComparison.Ordinal)
+            || source.StartsWith("You recover", StringComparison.Ordinal)
+            || source.StartsWith("You recovered", StringComparison.Ordinal)
+            || source.StartsWith("You note ", StringComparison.Ordinal)
+            || source.StartsWith("You discovered ", StringComparison.Ordinal)
+            || source.StartsWith("You located ", StringComparison.Ordinal);
     }
 
     private static string FormatTemplate(string key, string fallback, params object[] args)

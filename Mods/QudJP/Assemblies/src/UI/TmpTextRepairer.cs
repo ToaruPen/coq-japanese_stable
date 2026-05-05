@@ -469,6 +469,16 @@ internal static class TmpTextRepairer
         text.SetAllDirty();
         text.text = currentText;
         text.ForceMeshUpdate(ignoreActiveState: true, forceTextReparsing: true);
+        if (text.textInfo.characterCount > 0)
+        {
+            return true;
+        }
+
+        FontManager.ForcePrimaryFont(text);
+        text.havePropertiesChanged = true;
+        text.SetAllDirty();
+        text.text = currentText;
+        text.ForceMeshUpdate(ignoreActiveState: true, forceTextReparsing: true);
         return text.textInfo.characterCount > 0;
     }
 

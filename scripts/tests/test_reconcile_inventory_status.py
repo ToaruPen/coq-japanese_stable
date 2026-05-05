@@ -183,7 +183,9 @@ def test_reconcile_inventory_promotes_sites_from_current_assets(tmp_path: Path) 
 
 def test_repo_candidate_inventory_reclassifies_existing_message_frame_families() -> None:
     """Repo candidate inventory should not leave audited DidX message-frame families in needs_patch."""
-    inventory = read_candidate_inventory_json(REPO_ROOT / "docs" / "candidate-inventory.json")
+    inventory = read_candidate_inventory_json(
+        REPO_ROOT / "docs" / "archive" / "candidate-inventory-2026-04-14-reconciled-bridge.json",
+    )
     expected_ids = {
         "XRL.World.Capabilities/Firefighting.cs::L86:C4",
         "XRL.World.Capabilities/Firefighting.cs::L103:C7",

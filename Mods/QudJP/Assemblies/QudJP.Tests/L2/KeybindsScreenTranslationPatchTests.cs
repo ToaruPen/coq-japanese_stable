@@ -12,7 +12,6 @@ public sealed partial class Issue201StatusScreensBatch2Tests
         WriteDictionary(
             ("Configuring Controller:", "設定中のコントローラー:"),
             ("Keyboard && Mouse", "キーボード＆マウス"),
-            ("General", "一般"),
             ("Interact Nearby", "近くと交互作用"),
             ("remove keybind", "キーバインド削除"),
             ("Delete", "削除"),
@@ -29,11 +28,17 @@ public sealed partial class Issue201StatusScreensBatch2Tests
 
             var screen = new DummyKeybindsScreenTarget();
             screen.QueryKeybinds();
+            var categoryRow = screen.menuItems.OfType<DummyKeybindCategoryRowTarget>().Single();
+            var dataRow = screen.menuItems.OfType<DummyKeybindDataRowTarget>().Single();
 
             Assert.Multiple(() =>
             {
                 Assert.That(screen.OriginalExecuted, Is.True);
                 Assert.That(screen.inputTypeText.Text, Is.EqualTo("{{C|設定中のコントローラー:}} {{c|キーボード＆マウス}}"));
+                Assert.That(categoryRow.CategoryId, Is.EqualTo("Basic Move / Attack"));
+                Assert.That(categoryRow.CategoryDescription, Is.EqualTo("基本移動／攻撃"));
+                Assert.That(dataRow.CategoryId, Is.EqualTo("Basic Move / Attack"));
+                Assert.That(dataRow.KeyDescription, Is.EqualTo("近くと交互作用"));
                 Assert.That(DummyKeybindsScreenTarget.REMOVE_BIND.Description, Is.EqualTo("キーバインド削除"));
                 Assert.That(DummyKeybindsScreenTarget.RESTORE_DEFAULTS.Description, Is.EqualTo("デフォルトに戻す"));
                 Assert.That(

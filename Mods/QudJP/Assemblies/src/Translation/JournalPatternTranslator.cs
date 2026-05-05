@@ -821,6 +821,24 @@ internal static class JournalPatternTranslator
             return true;
         }
 
+        var direct = Translator.Translate(rest);
+        if (!string.Equals(direct, rest, StringComparison.Ordinal))
+        {
+            translated = direct;
+            return true;
+        }
+
+        var lower = LowerAscii(rest);
+        if (!string.Equals(lower, rest, StringComparison.Ordinal))
+        {
+            var lowered = Translator.Translate(lower);
+            if (!string.Equals(lowered, lower, StringComparison.Ordinal))
+            {
+                translated = lowered;
+                return true;
+            }
+        }
+
         translated = source;
         return false;
     }

@@ -114,6 +114,35 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [Test]
+    public void DesalinationPelletPatch_TranslatesCompositePopupPrefix_WhenPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyDesalinationPelletProducerTarget), nameof(DummyDesalinationPelletProducerTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(DesalinationPelletTranslationPatch));
+
+            var target = new DummyDesalinationPelletProducerTarget
+            {
+                PopupMessageToShow = "You drop desalination pellet into canteen.\n\nThe water is purified.",
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("desalination pelletをcanteenに入れた。\n\nThe water is purified."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void ClonelingVehiclePatch_TranslatesPopupFailure_WhenPatched()
     {
         var harmonyId = CreateHarmonyId();

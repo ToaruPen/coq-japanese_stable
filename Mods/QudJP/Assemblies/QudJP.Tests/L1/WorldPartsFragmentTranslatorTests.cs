@@ -59,6 +59,29 @@ public sealed class WorldPartsFragmentTranslatorTests
             expected);
     }
 
+    [TestCase("You drop desalination pellet into canteen.\n\nThe water is purified.", "desalination pelletをcanteenに入れた。\n\nThe water is purified.")]
+    [TestCase("You drop {{Y|desalination pellet}} into {{W|canteen}}.\n\n{{g|The water is purified.}}", "{{Y|desalination pellet}}を{{W|canteen}}に入れた。\n\n{{g|The water is purified.}}")]
+    public void DesalinationPelletTranslator_TranslatesCompositePopupPrefix(string input, string expected)
+    {
+        AssertTranslated(
+            DesalinationPelletFragmentTranslator.TryTranslatePopupMessage,
+            "DesalinationPellet",
+            input,
+            expected);
+    }
+
+    [TestCase("")]
+    [TestCase("\u0001")]
+    [TestCase("You drop desalination pellet.")]
+    [TestCase("The water is purified.")]
+    public void DesalinationPelletTranslator_ReturnsFalse_ForPassthroughPopupFragments(string input)
+    {
+        AssertPassthrough(
+            DesalinationPelletFragmentTranslator.TryTranslatePopupMessage,
+            "DesalinationPellet",
+            input);
+    }
+
     [TestCase("You do not have 1 dram of sunslag.", "sunslagを1ドラム持っていない。")]
     public void ClonelingVehicleTranslator_TranslatesPopupFragments(string input, string expected)
     {

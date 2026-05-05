@@ -151,7 +151,10 @@ public static class KeybindRowTranslationPatch
         if (rawCategoryDescription is null) { rawCategoryDescription = string.Empty; }
         var categorySource = rawCategoryDescription.ToUpperInvariant();
         var categoryRoute = ObservabilityHelpers.ComposeContext(Context, "field=categoryDescription");
-        var translatedCategory = TranslateVisibleText(categorySource, categoryRoute, "KeybindRow.CategoryDescription");
+        var translatedCategory = UiBindingTranslationHelpers.TranslateCommandCategoryLabel(
+            categorySource,
+            categoryRoute,
+            "KeybindRow.CategoryDescription");
         SetAppliedTranslatedText(
             GetMemberValue(instance, "categoryDescription"),
             "{{C|" + categorySource + "}}",

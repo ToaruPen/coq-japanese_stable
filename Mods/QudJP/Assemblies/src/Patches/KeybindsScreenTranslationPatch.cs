@@ -109,7 +109,10 @@ public static class KeybindsScreenTranslationPatch
             if (!string.IsNullOrEmpty(categoryDescription))
             {
                 var route = ObservabilityHelpers.ComposeContext(Context, "field=CategoryDescription");
-                var translated = TranslateVisibleText(categoryDescription!, route, "KeybindsScreen.CategoryDescription");
+                var translated = UiBindingTranslationHelpers.TranslateCommandCategoryLabel(
+                    categoryDescription!,
+                    route,
+                    "KeybindsScreen.CategoryDescription");
                 SetMemberValue(item, "CategoryDescription", translated);
             }
 

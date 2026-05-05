@@ -42,6 +42,12 @@ internal static class ColorAwareTranslationComposer
             spans as List<ColorSpan> ?? new List<ColorSpan>(spans));
     }
 
+    internal static string GetVisibleText(string? source)
+    {
+        var (stripped, _) = Strip(source);
+        return stripped;
+    }
+
     internal static string RestoreRelative(string? translated, IReadOnlyList<ColorSpan>? spans, int sourceLength)
     {
         if (spans is null || spans.Count == 0)
@@ -77,6 +83,32 @@ internal static class ColorAwareTranslationComposer
         }
 
         var translated = translateVisible(stripped);
+        if (HasColorMarkup(translated))
+        {
+            return RestoreTranslatedMarkupPreservingSourceOwnership(translated, spans, stripped);
+        }
+
+        return ShouldRestoreWholeRelatively(spans, stripped.Length)
+            ? RestoreRelative(translated, spans, stripped.Length)
+            : Restore(translated, spans);
+    }
+
+    internal static string TranslatePreservingColors(
+        string? source,
+        Func<string, IReadOnlyList<ColorSpan>, string> translateVisible)
+    {
+        if (string.IsNullOrEmpty(source))
+        {
+            return source ?? string.Empty;
+        }
+
+        var (stripped, spans) = Strip(source);
+        if (stripped.Length == 0)
+        {
+            return source!;
+        }
+
+        var translated = translateVisible(stripped, spans);
         if (HasColorMarkup(translated))
         {
             return RestoreTranslatedMarkupPreservingSourceOwnership(translated, spans, stripped);

@@ -11,21 +11,26 @@ public sealed class GameSummaryTextTranslatorTests
     private static readonly UTF8Encoding Utf8WithoutBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
     private string tempDirectory = null!;
+    private string patternFilePath = null!;
 
     [SetUp]
     public void SetUp()
     {
         tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-game-summary-l1", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDirectory);
+        patternFilePath = Path.Combine(tempDirectory, "journal-patterns.ja.json");
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        JournalPatternTranslator.ResetForTests();
+        JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
     }
 
     [TearDown]
     public void TearDown()
     {
         Translator.ResetForTests();
+        JournalPatternTranslator.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -109,6 +114,30 @@ public sealed class GameSummaryTextTranslatorTests
     }
 
     [Test]
+    public void TranslateCause_UsesSharedDeathWrapperForBareCause()
+    {
+        WriteDictionary(
+            ("QudJP.DeathWrapper.KilledBy.Bare", "{killer}に殺された。"),
+            ("snapjaw", "スナップジョー"));
+
+        var translated = GameSummaryTextTranslator.TranslateCause("You were killed by a snapjaw.");
+
+        Assert.That(translated, Is.EqualTo("スナップジョーに殺された。"));
+    }
+
+    [Test]
+    public void TranslateCause_PreservesSharedDeathWrapperKillerColor()
+    {
+        WriteDictionary(
+            ("QudJP.DeathWrapper.KilledBy.Bare", "{killer}に殺された。"),
+            ("snapjaw", "スナップジョー"));
+
+        var translated = GameSummaryTextTranslator.TranslateCause("You were killed by {{R|snapjaw}}.");
+
+        Assert.That(translated, Is.EqualTo("{{R|スナップジョー}}に殺された。"));
+    }
+
+    [Test]
     public void TranslateDetails_PreservesTemplateLine_WhenDictionaryEntryIsMissing()
     {
         WriteDictionary(("Game summary for {0}", "{0}のゲームサマリー"));
@@ -121,6 +150,18 @@ public sealed class GameSummaryTextTranslatorTests
             Assert.That(translated, Does.Contain("{{W|Qudman}}のゲームサマリー"));
             Assert.That(translated, Does.Contain("You scored {{C|10539}} points."));
         });
+    }
+
+    [TestCase("<color=#ff0>On the 5th of Ut yara Ux, you abandoned all hope.</color>", "<color=#ff0>ウト・ヤラ・ウクスの第5日、あなたはすべての希望を捨てた。</color>")]
+    [TestCase("{{Y|On the 5th of Ut yara Ux, you abandoned all hope.}}", "{{Y|ウト・ヤラ・ウクスの第5日、あなたはすべての希望を捨てた。}}")]
+    public void TranslateDetails_DetectsJournalLinesWrappedInColorMarkup(string source, string expected)
+    {
+        WriteDictionary(("5th", "第5"), ("Ut yara Ux", "ウト・ヤラ・ウクス"));
+        WritePatternDictionary(("^On the (.+?) of (.+?), you abandoned all hope\\.$", "{t1}の{t0}日、あなたはすべての希望を捨てた。"));
+
+        var translated = GameSummaryTextTranslator.TranslateDetails(source);
+
+        Assert.That(translated, Is.EqualTo(expected));
     }
 
     [Test]
@@ -169,10 +210,37 @@ public sealed class GameSummaryTextTranslatorTests
         File.WriteAllText(Path.Combine(tempDirectory, "game-summary-l1.ja.json"), builder.ToString(), Utf8WithoutBom);
     }
 
+    private void WritePatternDictionary(params (string pattern, string template)[] patterns)
+    {
+        var builder = new StringBuilder();
+        builder.Append("{\"patterns\":[");
+        for (var index = 0; index < patterns.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"pattern\":\"");
+            builder.Append(EscapeJson(patterns[index].pattern));
+            builder.Append("\",\"template\":\"");
+            builder.Append(EscapeJson(patterns[index].template));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        builder.AppendLine();
+
+        File.WriteAllText(patternFilePath, builder.ToString(), Utf8WithoutBom);
+    }
+
     private static string EscapeJson(string value)
     {
         return value
             .Replace("\\", "\\\\", StringComparison.Ordinal)
-            .Replace("\"", "\\\"", StringComparison.Ordinal);
+            .Replace("\"", "\\\"", StringComparison.Ordinal)
+            .Replace("\n", "\\n", StringComparison.Ordinal)
+            .Replace("\r", "\\r", StringComparison.Ordinal)
+            .Replace("\t", "\\t", StringComparison.Ordinal);
     }
 }

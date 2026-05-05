@@ -1,5 +1,9 @@
 # Fixed-leaf Workflow
 
+Archived note: this workflow is tied to the legacy bridge candidate inventory.
+It is preserved as historical context only and is not source of truth for
+issue #493 static producer work.
+
 この文書は、issue-357 の Roslyn static SoT pilot で fixed-leaf candidate を集め、レビューし、検証し、昇格するための手順です。runtime proof や issue-358 の observability とは別です。
 
 ## 前提

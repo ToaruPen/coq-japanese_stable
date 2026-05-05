@@ -447,6 +447,10 @@
         {
             "key": "WARNING: You have the Disable Zone Caching option enabled, this will cause massive memory use over time.",
             "text": "警告: ゾーンキャッシュ無効オプションが有効なため、時間の経過とともに大量のメモリを消費する。"
+        },
+        {
+            "key": "The zealot mumbles inaudibly, encased in ice.",
+            "text": "氷に閉じ込められた狂信者が、聞き取れないほどに呟いた。"
         }
     ]
 }

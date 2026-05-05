@@ -1,5 +1,10 @@
 # Emit-message coverage audit
 
+Archived note: this audit is legacy context only. It is not source of truth for
+issue #493 static producer work; use `docs/static-producer-inventory.json` and
+`docs/reports/2026-05-05-issue-493-static-producer-inventory.md` for the current
+inventory.
+
 ## Scope and evidence model
 
 This audit covers message-log text that enters through:
