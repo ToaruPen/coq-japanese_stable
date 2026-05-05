@@ -433,12 +433,12 @@ def collect_workshop_comments(
     if issue_number is None:
         issue_number = github_client.create_inbox_issue()
         created_issue = True
-    processed_ids = github_client.list_processed_comment_ids(
-        issue_number=issue_number,
-        max_pages=options.max_github_pages,
-    )
-    new_comments = [comment for comment in planned_comments if comment.comment_id not in processed_ids]
     try:
+        processed_ids = github_client.list_processed_comment_ids(
+            issue_number=issue_number,
+            max_pages=options.max_github_pages,
+        )
+        new_comments = [comment for comment in planned_comments if comment.comment_id not in processed_ids]
         for comment in new_comments:
             github_client.post_issue_comment(
                 issue_number=issue_number,

@@ -236,6 +236,13 @@ class _FailingPostGitHubInbox(_FakeGitHubInbox):
         super().post_issue_comment(issue_number=issue_number, body=body)
 
 
+class _FailingListProcessedGitHubInbox(_FakeGitHubInbox):
+    def list_processed_comment_ids(self, *, issue_number: int, max_pages: int) -> set[str]:
+        del issue_number, max_pages
+        msg = "list processed failed"
+        raise GitHubApiError(msg)
+
+
 def _github_client(transport: _FakeTransport) -> GitHubRestClient:
     return GitHubRestClient(repository="owner/repo", token=_TEST_GITHUB_TOKEN, transport=transport)
 
@@ -691,4 +698,47 @@ def test_collect_workshop_comments_closes_new_inbox_issue_when_posting_fails(tmp
 
     assert github.created_issue is True
     assert github.post_attempts == 2
+    assert github.closed_issue_numbers == [9]
+
+
+def test_collect_workshop_comments_closes_new_inbox_issue_when_dedupe_read_fails(tmp_path: Path) -> None:
+    """Newly created inbox issues are closed if dedupe marker reading fails."""
+    metadata_path = tmp_path / "workshop_metadata.json"
+    metadata_path.write_text(json.dumps({"publishedfileid": "3718988020"}), encoding="utf-8")
+    steam = _FakeTransport(
+        [
+            HttpResponse(
+                status_code=200,
+                body=json.dumps(
+                    {"response": {"publishedfiledetails": [{"result": 1, "creator": "76561198205102067"}]}},
+                ).encode(),
+                headers={},
+            ),
+            HttpResponse(
+                status_code=200,
+                body=json.dumps(
+                    {
+                        "success": True,
+                        "total_count": 1,
+                        "comments_html": '<div class="commentthread_comment" id="comment_111">'
+                        '<a class="hoverunderline commentthread_author_link" href="https://steam/a" '
+                        'data-miniprofile="123">A</a>'
+                        '<div class="commentthread_comment_text">First</div></div>',
+                    },
+                ).encode(),
+                headers={},
+            ),
+        ],
+    )
+    github = _FailingListProcessedGitHubInbox(existing_issue=None)
+
+    with pytest.raises(GitHubApiError, match="list processed failed"):
+        collect_workshop_comments(
+            metadata_path=metadata_path,
+            steam_transport=steam,
+            github_client=github,
+            options=CollectionOptions(dry_run=False),
+        )
+
+    assert github.created_issue is True
     assert github.closed_issue_numbers == [9]
