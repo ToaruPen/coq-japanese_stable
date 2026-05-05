@@ -14,7 +14,7 @@ internal static class DesalinationPelletFragmentTranslator
     {
         if (string.IsNullOrEmpty(source))
         {
-            translated = source ?? string.Empty;
+            translated = source is null ? string.Empty : source;
             return false;
         }
 

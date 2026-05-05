@@ -121,6 +121,18 @@ public sealed class GameSummaryTextTranslatorTests
     }
 
     [Test]
+    public void TranslateCause_PreservesSharedDeathWrapperKillerColor()
+    {
+        WriteDictionary(
+            ("QudJP.DeathWrapper.KilledBy.Bare", "{killer}に殺された。"),
+            ("snapjaw", "スナップジョー"));
+
+        var translated = GameSummaryTextTranslator.TranslateCause("You were killed by {{R|snapjaw}}.");
+
+        Assert.That(translated, Is.EqualTo("{{R|スナップジョー}}に殺された。"));
+    }
+
+    [Test]
     public void TranslateDetails_PreservesTemplateLine_WhenDictionaryEntryIsMissing()
     {
         WriteDictionary(("Game summary for {0}", "{0}のゲームサマリー"));

@@ -96,6 +96,50 @@ public sealed class DoesVerbRouteTranslatorTests
         });
     }
 
+    [TestCase("The 技師 readies a タレット.")]
+    [TestCase("{{g|The 技師 readies a タレット.}}")]
+    public void TryTranslatePlainSentence_RepositoryDictionary_ReturnsFalse_ForDeployFallbacks(string source)
+    {
+        UseRepositoryDictionary();
+
+        var ok = DoesVerbRouteTranslator.TryTranslatePlainSentence(source, out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(translated, Is.EqualTo(source));
+        });
+    }
+
+    [Test]
+    public void TryTranslatePlainSentence_RepositoryDictionary_ReturnsFalse_ForEmptyDeployInput()
+    {
+        UseRepositoryDictionary();
+
+        var ok = DoesVerbRouteTranslator.TryTranslatePlainSentence(string.Empty, out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(translated, Is.EqualTo(string.Empty));
+        });
+    }
+
+    [Test]
+    public void TryTranslatePlainSentence_RepositoryDictionary_ReturnsFalse_ForDirectMarkedDeployOutput()
+    {
+        UseRepositoryDictionary();
+        const string source = "\u0001技師はタレットを展開した";
+
+        var ok = DoesVerbRouteTranslator.TryTranslatePlainSentence(source, out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(translated, Is.EqualTo(source));
+        });
+    }
+
     [TestCase("The 熊 is", "are", " stunned!", "熊は気絶した！")]
     [TestCase("The 扉 is", "are", " open.", "扉は開いている")]
     [TestCase("The 水筒 is", "are", " already full.", "水筒はすでに満タンだ")]

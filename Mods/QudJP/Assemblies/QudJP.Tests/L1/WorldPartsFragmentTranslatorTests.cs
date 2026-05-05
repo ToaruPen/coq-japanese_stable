@@ -71,6 +71,7 @@ public sealed class WorldPartsFragmentTranslatorTests
     }
 
     [TestCase("")]
+    [TestCase("\u0001")]
     [TestCase("You drop desalination pellet.")]
     [TestCase("The water is purified.")]
     public void DesalinationPelletTranslator_ReturnsFalse_ForPassthroughPopupFragments(string input)

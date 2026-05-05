@@ -108,7 +108,7 @@ internal static class GameSummaryTextTranslator
 
         var deathTranslated = ColorAwareTranslationComposer.TranslatePreservingColors(
             source,
-            static visible => DeathWrapperFamilyTranslator.TryTranslateMessage(visible, null, out var translated)
+            static (visible, spans) => DeathWrapperFamilyTranslator.TryTranslateMessage(visible, spans, out var translated)
                 ? translated
                 : visible);
         if (!string.Equals(deathTranslated, source, StringComparison.Ordinal))
