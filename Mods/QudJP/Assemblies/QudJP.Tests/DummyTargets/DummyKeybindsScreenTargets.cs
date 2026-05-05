@@ -35,15 +35,15 @@ internal sealed class DummyKeybindsScreenTarget
 
         menuItems.Add(new DummyKeybindCategoryRowTarget
         {
-            CategoryId = "General",
-            CategoryDescription = "General",
+            CategoryId = "Basic Move / Attack",
+            CategoryDescription = "Basic Move / Attack",
         });
         menuItems.Add(new DummyKeybindDataRowTarget
         {
-            CategoryId = "General",
+            CategoryId = "Basic Move / Attack",
             KeyId = "InteractNearby",
             KeyDescription = "Interact Nearby",
-            SearchWords = "General Interact Nearby",
+            SearchWords = "Basic Move / Attack Interact Nearby",
             Bind1 = "Ctrl+Space",
         });
     }
