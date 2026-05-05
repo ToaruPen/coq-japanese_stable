@@ -518,6 +518,43 @@ public sealed class WorldPartsProducerTranslationPatchTests
         }
     }
 
+    [Test]
+    public void PetEitherOrExplodePatch_DoesNotTranslateEmptyQueuedMessage_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyPetEitherOrProducerTarget), nameof(DummyPetEitherOrProducerTarget.explode)),
+                typeof(PetEitherOrExplodeTranslationPatch));
+
+            var target = new DummyPetEitherOrProducerTarget
+            {
+                QueuedMessageToSend = string.Empty,
+            };
+
+            target.explode();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.Empty);
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PetEitherOrExplodeTranslationPatch),
+                        "PetEitherOr.Explode"),
+                    Is.EqualTo(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     [TestCase("The wind changes direction.", "風向きが変わった。")]
     [TestCase("The wind becomes still.", "風が静まった。")]
     [TestCase("The wind changes direction from the north to the southeast.", "風向きが北から南東へ変わった。")]
@@ -668,6 +705,43 @@ public sealed class WorldPartsProducerTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(ZoneWindChangeTranslationPatch),
+                        "Zone.WindChange"),
+                    Is.EqualTo(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void ZoneWindChangePatch_DoesNotTranslateEmptyQueuedMessage_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyZoneWindChangeProducerTarget), nameof(DummyZoneWindChangeProducerTarget.WindChange), typeof(long)),
+                typeof(ZoneWindChangeTranslationPatch));
+
+            var target = new DummyZoneWindChangeProducerTarget
+            {
+                QueuedMessageToSend = string.Empty,
+            };
+
+            target.WindChange(1234);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.Empty);
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(ZoneWindChangeTranslationPatch),
