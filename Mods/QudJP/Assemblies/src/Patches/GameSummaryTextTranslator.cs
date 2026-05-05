@@ -116,7 +116,7 @@ internal static class GameSummaryTextTranslator
             return deathTranslated;
         }
 
-        if (LooksLikeJournalLine(source))
+        if (LooksLikeJournalLine(ColorAwareTranslationComposer.GetVisibleText(source)))
         {
             var journalTranslated = JournalPatternTranslator.Translate(source, Context);
             if (!string.Equals(journalTranslated, source, StringComparison.Ordinal))

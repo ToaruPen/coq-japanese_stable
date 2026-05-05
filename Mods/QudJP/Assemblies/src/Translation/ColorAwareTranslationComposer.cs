@@ -42,6 +42,12 @@ internal static class ColorAwareTranslationComposer
             spans as List<ColorSpan> ?? new List<ColorSpan>(spans));
     }
 
+    internal static string GetVisibleText(string? source)
+    {
+        var (stripped, _) = Strip(source);
+        return stripped;
+    }
+
     internal static string RestoreRelative(string? translated, IReadOnlyList<ColorSpan>? spans, int sourceLength)
     {
         if (spans is null || spans.Count == 0)
