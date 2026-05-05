@@ -197,17 +197,17 @@ public static class PetEitherOrExplodeTranslationPatch
     private static string CaptureWithoutLeadingArticle(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
     {
         var value = Capture(match, spans, groupName);
-        if (value.StartsWith("a ", StringComparison.Ordinal))
+        if (value.StartsWith("a ", StringComparison.OrdinalIgnoreCase))
         {
             return value.Substring(2);
         }
 
-        if (value.StartsWith("an ", StringComparison.Ordinal))
+        if (value.StartsWith("an ", StringComparison.OrdinalIgnoreCase))
         {
             return value.Substring(3);
         }
 
-        if (value.StartsWith("the ", StringComparison.Ordinal))
+        if (value.StartsWith("the ", StringComparison.OrdinalIgnoreCase))
         {
             return value.Substring(4);
         }

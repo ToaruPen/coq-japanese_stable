@@ -6,9 +6,6 @@ namespace QudJP.Tests.L1;
 [Category("L1")]
 public sealed class ColorRouteCatalogTests
 {
-    private static readonly Regex FileScopedNamespacePattern =
-        new Regex("^namespace\\s+.+?;$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
-
     [Test]
     public void Catalog_CompletelyCoversColorSensitiveTranslationCallSites()
     {
@@ -69,28 +66,19 @@ public sealed class ColorRouteCatalogTests
             var file = files[fileIndex];
             var relativePath = Path.GetRelativePath(TestProjectPaths.GetRepositoryRoot(), file)
                 .Replace(Path.DirectorySeparatorChar, '/');
-            var lines = File.ReadAllLines(file);
+            var source = File.ReadAllText(file);
 
-            for (var lineIndex = 0; lineIndex < lines.Length; lineIndex++)
+            for (var symbolIndex = 0; symbolIndex < routeSymbols.Count; symbolIndex++)
             {
-                var line = lines[lineIndex].Trim();
-                if (line.Length == 0 || FileScopedNamespacePattern.IsMatch(line))
+                var symbol = routeSymbols[symbolIndex];
+                var occurrenceCount = CountOccurrences(source, symbol);
+                if (occurrenceCount == 0)
                 {
                     continue;
                 }
 
-                for (var symbolIndex = 0; symbolIndex < routeSymbols.Count; symbolIndex++)
-                {
-                    var symbol = routeSymbols[symbolIndex];
-                    var occurrenceCount = CountOccurrences(line, symbol);
-                    if (occurrenceCount == 0)
-                    {
-                        continue;
-                    }
-
-                    var key = relativePath + "|" + symbol;
-                    counts[key] = counts.TryGetValue(key, out var count) ? count + occurrenceCount : occurrenceCount;
-                }
+                var key = relativePath + "|" + symbol;
+                counts[key] = counts.TryGetValue(key, out var count) ? count + occurrenceCount : occurrenceCount;
             }
         }
 
@@ -99,21 +87,28 @@ public sealed class ColorRouteCatalogTests
 
     private static int CountOccurrences(string source, string symbol)
     {
-        var count = 0;
-        var searchIndex = 0;
-        while (searchIndex < source.Length)
-        {
-            var foundIndex = source.IndexOf(symbol, searchIndex, StringComparison.Ordinal);
-            if (foundIndex < 0)
-            {
-                break;
-            }
+        var pattern = Regex.Escape(symbol)
+            .Replace("\\.", "\\s*\\.\\s*", StringComparison.Ordinal)
+            .Replace("\\(", "\\s*\\(", StringComparison.Ordinal);
+        return Regex.Matches(source, pattern, RegexOptions.CultureInvariant | RegexOptions.Singleline).Count;
+    }
 
-            count++;
-            searchIndex = foundIndex + symbol.Length;
-        }
+    [Test]
+    public void CountOccurrences_AllowsWhitespaceAroundPopupRouteInvocation()
+    {
+        const string source = """
+            PopupTranslationPatch
+                .
+                TranslatePopupTextForProducerRoute
+                (
+                    message,
+                    Context);
+            PopupTranslationPatch.TranslatePopupTextForProducerRoute(message, Context);
+            """;
 
-        return count;
+        Assert.That(
+            CountOccurrences(source, "PopupTranslationPatch.TranslatePopupTextForProducerRoute("),
+            Is.EqualTo(2));
     }
 }
 

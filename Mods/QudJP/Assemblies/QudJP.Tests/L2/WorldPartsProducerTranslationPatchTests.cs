@@ -318,6 +318,8 @@ public sealed class WorldPartsProducerTranslationPatchTests
     [TestCase("temporal clone crumbles into beetles.", "temporal cloneは崩れて甲虫になった。")]
     [TestCase("temporal clone is vacuumed to another place and time. The void that remains is filled with three important objects from one of your side lives.", "temporal cloneは別の場所と時間へ吸い込まれた。残された虚空は、あなたの横道の人生のひとつから来た3つの重要な物体で満たされた。")]
     [TestCase("temporal clone atomizes and recombines into a chrome pyramid.", "temporal cloneは原子化し、再結合してchrome pyramidになった。")]
+    [TestCase("temporal clone atomizes and recombines into The chrome pyramid.", "temporal cloneは原子化し、再結合してchrome pyramidになった。")]
+    [TestCase("temporal clone atomizes and recombines into An ice frog.", "temporal cloneは原子化し、再結合してice frogになった。")]
     [TestCase("temporal clone's consciousness dissipates.", "temporal cloneの意識は霧散した。")]
     [TestCase("temporal clone's consciousness dissipates into brass chair and granite statue.", "temporal cloneの意識はbrass chair and granite statueへ霧散した。")]
     [TestCase("temporal clone liquifies into several pools of slime&y.", "temporal cloneは液化してslimeの水たまりいくつかになった。")]
