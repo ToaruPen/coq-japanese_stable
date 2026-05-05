@@ -6,71 +6,151 @@ on:
   pull_request:
     branches: [main, source-first]
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
+      - name: Detect changed paths
+        id: changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            base="${{ github.event.pull_request.base.sha }}"
+            head="${{ github.event.pull_request.head.sha }}"
+          elif [[ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]]; then
+            base="${{ github.event.before }}"
+            head="${{ github.sha }}"
+          else
+            base="$(git rev-list --max-parents=0 HEAD)"
+            head="${{ github.sha }}"
+          fi
+
+          git diff --name-only "$base" "$head" > changed-files.txt
+          if [[ ! -s changed-files.txt ]]; then
+            git ls-files > changed-files.txt
+          fi
+
+          matches() {
+            grep -Eq "$1" changed-files.txt
+          }
+
+          run_all=false
+          qudjp_dotnet=false
+          roslyn_tools=false
+          python=false
+          localization=false
+
+          if matches '^\.github/workflows/ci\.yml$'; then
+            run_all=true
+          fi
+          if [[ "$run_all" == true ]] || matches '^(Mods/QudJP/Assemblies/|Mods/QudJP/Assemblies/.*\.csproj$)'; then
+            qudjp_dotnet=true
+          fi
+          if [[ "$run_all" == true ]] || matches '^scripts/tools/'; then
+            roslyn_tools=true
+          fi
+          if [[ "$run_all" == true ]] || matches '^scripts/'; then
+            python=true
+          fi
+          if [[ "$run_all" == true ]] || matches '^(Mods/QudJP/Localization/|scripts/(check_translation_tokens|check_glossary_consistency)\.py|scripts/(translation_token_duplicate_baseline|glossary_consistency_baseline)\.json)'; then
+            localization=true
+          fi
+
+          {
+            echo "qudjp_dotnet=$qudjp_dotnet"
+            echo "roslyn_tools=$roslyn_tools"
+            echo "dotnet=$([[ "$qudjp_dotnet" == true || "$roslyn_tools" == true || "$python" == true ]] && echo true || echo false)"
+            echo "python=$python"
+            echo "localization=$localization"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Setup .NET
+        if: steps.changes.outputs.dotnet == 'true'
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
             8.0.x
             10.0.x
 
+      - name: Cache NuGet packages
+        if: steps.changes.outputs.dotnet == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
       - name: Build QudJP
+        if: steps.changes.outputs.qudjp_dotnet == 'true'
         run: dotnet build Mods/QudJP/Assemblies/QudJP.csproj --configuration Release
 
       - name: Build QudJP.Tests
-        if: hashFiles('Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj') != ''
+        if: steps.changes.outputs.qudjp_dotnet == 'true' && hashFiles('Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj') != ''
         run: dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release
 
       - name: Build AnnalsPatternExtractor
-        if: hashFiles('scripts/tools/AnnalsPatternExtractor/AnnalsPatternExtractor.csproj') != ''
+        if: steps.changes.outputs.roslyn_tools == 'true' && hashFiles('scripts/tools/AnnalsPatternExtractor/AnnalsPatternExtractor.csproj') != ''
         run: dotnet build scripts/tools/AnnalsPatternExtractor/AnnalsPatternExtractor.csproj --configuration Release
 
+      - name: Build StaticProducerInventoryScanner
+        if: steps.changes.outputs.roslyn_tools == 'true' && hashFiles('scripts/tools/StaticProducerInventoryScanner/StaticProducerInventoryScanner.csproj') != ''
+        run: dotnet build scripts/tools/StaticProducerInventoryScanner/StaticProducerInventoryScanner.csproj --configuration Release
+
       - name: Test QudJP
-        if: hashFiles('Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj') != ''
+        if: steps.changes.outputs.qudjp_dotnet == 'true' && hashFiles('Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj') != ''
         run: dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-build
 
       - name: Setup Python
+        if: steps.changes.outputs.python == 'true' || steps.changes.outputs.localization == 'true'
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
+          cache: pip
 
       - name: Check release-note fragment
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.changes.outputs.localization == 'true'
         run: >
           python scripts/release_notes.py check-fragment
           --base-ref "${{ github.event.pull_request.base.sha }}"
           --head-ref "${{ github.event.pull_request.head.sha }}"
 
       - name: Install ast-grep
+        if: steps.changes.outputs.python == 'true'
         run: npm install -g @ast-grep/cli
 
       - name: Install Ruff
+        if: steps.changes.outputs.python == 'true'
         run: pip install ruff
 
       - name: Lint Python
-        if: hashFiles('scripts/**/*.py') != ''
+        if: steps.changes.outputs.python == 'true' && hashFiles('scripts/**/*.py') != ''
         run: ruff check scripts/
 
       - name: Check translation tokens
-        if: hashFiles('Mods/QudJP/Localization/**/*.ja.json') != ''
+        if: steps.changes.outputs.localization == 'true' && hashFiles('Mods/QudJP/Localization/**/*.ja.json') != ''
         run: python scripts/check_translation_tokens.py Mods/QudJP/Localization
 
       - name: Check glossary consistency
-        if: hashFiles('Mods/QudJP/Localization/**/*') != ''
+        if: steps.changes.outputs.localization == 'true' && hashFiles('Mods/QudJP/Localization/**/*') != ''
         run: python scripts/check_glossary_consistency.py Mods/QudJP/Localization
 
       - name: Install Python test dependencies
-        if: hashFiles('scripts/tests/**/*.py') != ''
+        if: steps.changes.outputs.python == 'true' && hashFiles('scripts/tests/**/*.py') != ''
         run: pip install hypothesis pytest
 
       - name: Test Python
-        if: hashFiles('scripts/tests/**/*.py') != ''
+        if: steps.changes.outputs.python == 'true' && hashFiles('scripts/tests/**/*.py') != ''
         run: pytest scripts/tests/

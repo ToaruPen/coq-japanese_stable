@@ -1,4 +1,4 @@
-"""Smoke test: AnnalsPatternExtractor csproj builds in Release."""
+"""Smoke tests for repo-local Roslyn tool projects."""
 # ruff: noqa: S603,S607 -- tests invoke dotnet (PATH-resolved) to drive the repo-local tool
 
 from __future__ import annotations
@@ -7,11 +7,19 @@ import json
 import shutil
 import subprocess
 from pathlib import Path
+from typing import cast
 
 import pytest
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-PROJECT_PATH = _REPO_ROOT / "scripts" / "tools" / "AnnalsPatternExtractor" / "AnnalsPatternExtractor.csproj"
+ANNALS_PROJECT_PATH = _REPO_ROOT / "scripts" / "tools" / "AnnalsPatternExtractor" / "AnnalsPatternExtractor.csproj"
+STATIC_PRODUCER_PROJECT_PATH = (
+    _REPO_ROOT
+    / "scripts"
+    / "tools"
+    / "StaticProducerInventoryScanner"
+    / "StaticProducerInventoryScanner.csproj"
+)
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "annals"
 
 
@@ -19,7 +27,21 @@ FIXTURES = Path(__file__).resolve().parent / "fixtures" / "annals"
 def test_extractor_csproj_builds_in_release() -> None:
     """The Roslyn extractor csproj must build cleanly so the CI step does not rot."""
     result = subprocess.run(
-        ["dotnet", "build", str(PROJECT_PATH), "--configuration", "Release"],
+        ["dotnet", "build", str(ANNALS_PROJECT_PATH), "--configuration", "Release"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, (
+        f"dotnet build failed (exit {result.returncode}).\nstdout:\n{result.stdout}\nstderr:\n{result.stderr}"
+    )
+
+
+@pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
+def test_static_producer_inventory_scanner_csproj_builds_in_release() -> None:
+    """The Roslyn static producer scanner csproj must build cleanly."""
+    result = subprocess.run(
+        ["dotnet", "build", str(STATIC_PRODUCER_PROJECT_PATH), "--configuration", "Release"],
         capture_output=True,
         text=True,
         check=False,
@@ -50,7 +72,7 @@ def test_threeplus_arm_chain_does_not_collide_with_sibling_if(tmp_path: Path) ->
             "dotnet",
             "run",
             "--project",
-            str(PROJECT_PATH),
+            str(ANNALS_PROJECT_PATH),
             "--",
             "--source-root",
             str(FIXTURES),
@@ -68,8 +90,9 @@ def test_threeplus_arm_chain_does_not_collide_with_sibling_if(tmp_path: Path) ->
         f"duplicate-id collision. exit={result.returncode}\n"
         f"stdout:\n{result.stdout}\nstderr:\n{result.stderr}"
     )
-    actual = json.loads(output.read_text(encoding="utf-8"))
-    ids = [c["id"] for c in actual["candidates"]]
+    actual = cast("dict[str, object]", json.loads(output.read_text(encoding="utf-8")))
+    candidates = cast("list[dict[str, object]]", actual["candidates"])
+    ids = [str(candidate["id"]) for candidate in candidates]
     # Three case-labelled arms from the 3-arm chain (branched-local fanout
     # uses `#bl:` to avoid collision with setter-chain `#if:`) plus the
     # legacy then/else from the 2-arm sibling if (setter-chain).
@@ -107,7 +130,7 @@ def test_flatten_concat_partial_rollback(tmp_path: Path) -> None:
             "dotnet",
             "run",
             "--project",
-            str(PROJECT_PATH),
+            str(ANNALS_PROJECT_PATH),
             "--",
             "--source-root",
             str(FIXTURES),
@@ -123,10 +146,14 @@ def test_flatten_concat_partial_rollback(tmp_path: Path) -> None:
     assert result.returncode == 0, (
         f"extractor failed (exit {result.returncode}). stdout:\n{result.stdout}\nstderr:\n{result.stderr}"
     )
-    actual = json.loads(output.read_text(encoding="utf-8"))
-    expected = json.loads((FIXTURES / "expected_partial_rollback.json").read_text(encoding="utf-8"))
+    actual = cast("dict[str, object]", json.loads(output.read_text(encoding="utf-8")))
+    expected = cast(
+        "dict[str, object]",
+        json.loads((FIXTURES / "expected_partial_rollback.json").read_text(encoding="utf-8")),
+    )
+    actual_candidates = cast("list[dict[str, object]]", actual["candidates"])
     assert actual == expected, (
         "FlattenConcat rollback produced unexpected output.\n"
-        f"sample_source: {actual['candidates'][0]['sample_source']!r}\n"
+        f"sample_source: {actual_candidates[0]['sample_source']!r}\n"
         "(expected '{0} world', stale-piece bug would produce 'lit{0} world')"
     )
