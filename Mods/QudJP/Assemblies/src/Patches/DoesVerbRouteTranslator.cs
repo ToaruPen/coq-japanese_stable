@@ -55,7 +55,7 @@ internal static class DoesVerbRouteTranslator
         return false;
     }
 
-    internal static bool TryTranslatePlainSentenceForTests(string source, out string translated)
+    internal static bool TryTranslatePlainSentence(string source, out string translated)
     {
         if (string.IsNullOrEmpty(source))
         {
@@ -72,6 +72,11 @@ internal static class DoesVerbRouteTranslator
 
         translated = ColorAwareTranslationComposer.Restore(visibleTranslated, spans);
         return true;
+    }
+
+    internal static bool TryTranslatePlainSentenceForTests(string source, out string translated)
+    {
+        return TryTranslatePlainSentence(source, out translated);
     }
 
     private static bool TryTranslatePlainVisibleSentence(string source, out string translated)

@@ -413,6 +413,11 @@
       "key": "Attempting to add accomplishment without text.",
       "context": "Qud.UI.Qud.API.JournalAPI",
       "text": "テキストなしで功績を追加しようとしています。"
+    },
+    {
+      "key": "snapjaw fort",
+      "context": "XRL.World.WorldBuilders.JoppaWorldBuilder.JournalMapNote",
+      "text": "スナップジョーの砦"
     }
   ]
 }

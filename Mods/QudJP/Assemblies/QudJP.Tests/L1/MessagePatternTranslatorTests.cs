@@ -284,6 +284,48 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_AppliesCookingTossPattern()
+    {
+        WritePatternDictionary(("^You toss (.+?) into a pot and stir\\.$", "{0}を鍋に入れてかき混ぜた。"));
+
+        var translated = MessagePatternTranslator.Translate("You toss aluminum dram of water、smidgen of brinestalk、とsheathed スナップジョーの戦士の left hand into a pot and stir.");
+
+        Assert.That(translated, Is.EqualTo("aluminum dram of water、smidgen of brinestalk、とsheathed スナップジョーの戦士の left handを鍋に入れてかき混ぜた。"));
+    }
+
+    [Test]
+    public void Translate_AppliesBookExcerptPattern()
+    {
+        WritePatternDictionary(("^You read one of the few legible excerpts from (.+?):\\n\\n\"(.+?)\"$", "{0}から数少ない判読可能な抜粋を読んだ。\n\n\"{1}\""));
+
+        var translated = MessagePatternTranslator.Translate("You read one of the few legible excerpts from する 力 も:\n\n\"...\"");
+
+        Assert.That(translated, Is.EqualTo("する 力 もから数少ない判読可能な抜粋を読んだ。\n\n\"...\""));
+    }
+
+    [TestCase("Poisonous goo burns your eyes.", "有毒な粘液が目に染みた。")]
+    [TestCase("Putrid ooze splashes into your mouth. You gag at the awful taste.", "腐った軟泥が口に入った。ひどい味に吐き気を催した。")]
+    [TestCase("Brown sludge splashes into your mouth. You wince at the metallic taste.", "茶色い汚泥が口に入った。金属の味に顔をしかめた。")]
+    [TestCase("The liquids stop reacting.", "液体の反応が止まった")]
+    [TestCase("The reacting liquids congeal into a SoupSludge.", "反応した液体が凝固しSoupSludgeになった")]
+    [TestCase("The primordial soup nearby starts reacting with the water.", "nearbyの原初のスープがwaterと反応を始めた")]
+    [TestCase("You receive tinkering bits <{{|AB}}>.", "修理ビット<{{|AB}}>を受け取った。")]
+    [TestCase("You make some progress disarming 地雷.", "地雷の解除が少し進んだ。")]
+    [TestCase("An image of タム disappears.", "タムの映像が消えた。")]
+    [TestCase("The 熊's carapace loosens.", "熊の甲殻が緩んだ")]
+    [TestCase("熊の carapace loosens.", "熊の甲殻が緩んだ")]
+    [TestCase("The zealot mumbles inaudibly, encased in ice.", "氷に閉じ込められた狂信者が、聞き取れないほどに呟いた。")]
+    [TestCase("The infected crust of skin on 熊の left arm loosens and breaks away.", "熊の left armの感染した皮膚の痂皮が緩んで剥がれ落ちた。")]
+    public void Translate_RepositoryDictionary_AppliesEmitMessageSweepPatterns(string source, string expected)
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(source);
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
+    [Test]
     public void Translate_AppliesLowHealthWarningPattern()
     {
         WritePatternDictionary(("^Your health has dropped below 40%![.!]?$", "体力が40%を下回った！"));
@@ -514,6 +556,16 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate("The ウォーターヴァイン農家 hits (x2) for 4 damage with his 鉄の蔓刈り斧. [17]");
 
         Assert.That(translated, Is.EqualTo("ウォーターヴァイン農家の鉄の蔓刈り斧で4ダメージを受けた。(x2) [17]"));
+    }
+
+    [Test]
+    public void Translate_AppliesIncomingCriticalWeaponHitPatternBeforeGenericHitPattern()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("イジル critically hits (x1) for 1 damage with his 棍棒. [21]");
+
+        Assert.That(translated, Is.EqualTo("イジルの棍棒が会心し、1ダメージを受けた。(x1) [21]"));
     }
 
     [Test]

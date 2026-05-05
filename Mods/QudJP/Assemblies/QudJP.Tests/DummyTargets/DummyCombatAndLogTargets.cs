@@ -366,6 +366,22 @@ internal sealed class DummyGameObjectEmitMessageTarget
     }
 }
 
+internal sealed class DummyDeployableInfrastructureTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public void DeployOne(DummyGameObject actor, DummyCell cell, bool active = true, bool message = false)
+    {
+        _ = actor;
+        _ = cell;
+        _ = active;
+        _ = message;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+}
+
 internal static class DummyMessagingEmitMessageTarget
 {
     public static string MessageToSend { get; set; } = string.Empty;

@@ -792,6 +792,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
     [TestCase("You take 1 damage from bleeding.", "あなたは出血で1ダメージを受けた。")]
     [TestCase("The ワニ hits (x1) for 2 damage with his 噛みつき. [18]", "ワニの噛みつきで2ダメージを受けた。(x1) [18]")]
+    [TestCase("The ワニ critically hits (x1) for 2 damage with his 噛みつき. [18]", "ワニの噛みつきが会心し、2ダメージを受けた。(x1) [18]")]
     [TestCase("You hit glowfish for 3 damage.", "glowfishに3ダメージを与えた")]
     [TestCase("You miss with your レンチ! [10 vs 10]", "レンチでの攻撃は外れた。[10 vs 10]")]
     [TestCase("The タム fails to penetrate your armor [17]!", "タムはあなたの装甲を貫けなかった！ [17]")]
@@ -801,6 +802,19 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("The タム's nose begins to bleed.", "タムの鼻から血が流れ始めた")]
     [TestCase("The タム's brain begins to hemorrhage.", "タムの脳から出血が始まった")]
     [TestCase("The ウォーターヴァイン農家 misses you with his 鉄の蔓刈り斧! [3 vs 7]", "ウォーターヴァイン農家の鉄の蔓刈り斧は外れた。[3 vs 7]")]
+    [TestCase("Poisonous goo burns your eyes.", "有毒な粘液が目に染みた。")]
+    [TestCase("Putrid ooze splashes into your mouth. You gag at the awful taste.", "腐った軟泥が口に入った。ひどい味に吐き気を催した。")]
+    [TestCase("Brown sludge splashes into your mouth. You wince at the metallic taste.", "茶色い汚泥が口に入った。金属の味に顔をしかめた。")]
+    [TestCase("The liquids stop reacting.", "液体の反応が止まった")]
+    [TestCase("The reacting liquids congeal into a SoupSludge.", "反応した液体が凝固しSoupSludgeになった")]
+    [TestCase("The primordial soup nearby starts reacting with the water.", "nearbyの原初のスープがwaterと反応を始めた")]
+    [TestCase("You receive tinkering bits <{{|AB}}>.", "修理ビット<{{|AB}}>を受け取った。")]
+    [TestCase("You make some progress disarming 地雷.", "地雷の解除が少し進んだ。")]
+    [TestCase("An image of タム disappears.", "タムの映像が消えた。")]
+    [TestCase("The 熊's carapace loosens.", "熊の甲殻が緩んだ")]
+    [TestCase("熊の carapace loosens.", "熊の甲殻が緩んだ")]
+    [TestCase("The zealot mumbles inaudibly, encased in ice.", "氷に閉じ込められた狂信者が、聞き取れないほどに呟いた。")]
+    [TestCase("The infected crust of skin on 熊の left arm loosens and breaks away.", "熊の left armの感染した皮膚の痂皮が緩んで剥がれ落ちた。")]
     [TestCase("You lose 3 HP.", "あなたは3HPを失った")]
     [TestCase("You recover 5 HP.", "あなたは5HP回復した")]
     [TestCase("You take 14 damage from 監視官イラメの freezing effect!", "監視官イラメの凍結効果で14ダメージを受けた！")]
@@ -835,6 +849,42 @@ public sealed class CombatAndLogMessageQueuePatchTests
             DummyMessagingEmitMessageTarget.EmitMessage(new DummyGameObject(), "unused", 'W', false, false, false);
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void DeployableInfrastructurePatch_TranslatesDeployMessage_WhenPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyDeployableInfrastructureTarget),
+                    nameof(DummyDeployableInfrastructureTarget.DeployOne),
+                    typeof(DummyGameObject),
+                    typeof(DummyCell),
+                    typeof(bool),
+                    typeof(bool)),
+                typeof(DeployableInfrastructureTranslationPatch));
+
+            var target = new DummyDeployableInfrastructureTarget
+            {
+                MessageToSend = "The 技師 deploys a タレット.",
+            };
+
+            target.DeployOne(new DummyGameObject(), new DummyCell(), message: true);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("技師はタレットを展開した"));
         }
         finally
         {

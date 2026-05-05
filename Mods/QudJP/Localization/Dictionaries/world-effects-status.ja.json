@@ -837,6 +837,16 @@
             "key": "psionically cleaved (-{0} MA)",
             "context": "XRL.World.Effects.ShatterMentalArmor.Description",
             "text": "精神的に裂かれた（-{0} MA）"
+        },
+        {
+            "key": "dazed",
+            "context": "XRL.World.Effects.Dazed.DisplayName",
+            "text": "朦朧"
+        },
+        {
+            "key": "{{C|dazed}}",
+            "context": "XRL.World.Effects.Dazed.Description",
+            "text": "{{C|朦朧}}"
         }
     ]
 }

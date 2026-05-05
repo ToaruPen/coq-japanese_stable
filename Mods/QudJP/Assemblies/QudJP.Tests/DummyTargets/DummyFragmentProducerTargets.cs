@@ -62,6 +62,19 @@ internal sealed class DummyLiquidVolumeProducerTarget
     }
 }
 
+internal sealed class DummyDesalinationPelletProducerTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool HandleEvent(DummyInventoryActionEvent e)
+    {
+        _ = e;
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+}
+
 internal sealed class DummyClonelingProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;

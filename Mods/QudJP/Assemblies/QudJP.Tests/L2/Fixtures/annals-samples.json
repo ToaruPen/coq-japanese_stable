@@ -155,7 +155,7 @@
       "candidate_id": "FoundGuild#gospel",
       "event_property": "gospel",
       "input_source": "After treating with the Farmers' Guild, Nuntu convinced them to help him found a workshop in Hinnom for the purpose of studying glass. They named it the Glass Workshop.",
-      "expected_japanese_exact": "農夫ギルドとtreatingしたのち、NuntuはhimがHinnomにa workshopを創設する助力をするよう彼らを説得した。その目的はガラスのをstudyingことだった。彼らはそれをthe Glass Workshopと名づけた。"
+      "expected_japanese_exact": "農夫ギルドとtreatingしたのち、NuntuはhimがHinnomに工房を創設する助力をするよう彼らを説得した。その目的はガラスのをstudyingことだった。彼らはそれをthe Glass Workshopと名づけた。"
     },
     {
       "candidate_id": "CorruptAdministrator#gospel#case:0#if:then",

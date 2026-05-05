@@ -377,6 +377,12 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (DesalinationPelletTranslationPatch.TryTranslatePopupMessage(source, route, family, out var desalinationTranslated))
+        {
+            translated = desalinationTranslated;
+            return true;
+        }
+
         if (ClonelingVehicleTranslationPatch.TryTranslatePopupMessage(source, route, family, out var clonelingVehicleTranslated))
         {
             translated = clonelingVehicleTranslated;

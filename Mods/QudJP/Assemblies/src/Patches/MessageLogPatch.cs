@@ -74,7 +74,13 @@ public static class MessageLogPatch
                 return true;
             }
 
-            var (stripped, _) = ColorAwareTranslationComposer.Strip(Message);
+            var (stripped, spans) = ColorAwareTranslationComposer.Strip(Message);
+            if (DeathWrapperFamilyTranslator.TryTranslateMessage(stripped, spans, out var deathTranslated))
+            {
+                Message = deathTranslated;
+                return true;
+            }
+
             SinkObservation.LogUnclaimed(
                 nameof(MessageLogPatch),
                 nameof(MessageLogPatch),

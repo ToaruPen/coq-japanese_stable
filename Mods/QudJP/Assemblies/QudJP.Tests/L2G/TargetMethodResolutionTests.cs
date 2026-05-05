@@ -530,6 +530,14 @@ public sealed class TargetMethodResolutionTests
         "System.Boolean&|XRL.World.GameObject|XRL.World.Cell|System.Boolean|System.Boolean|System.Int32|System.Boolean",
         "XRL.World.GameObject|System.Boolean&|System.Boolean",
     })]
+    [TestCase(typeof(DeployableInfrastructureTranslationPatch), new[]
+    {
+        "XRL.World.GameObject|XRL.World.Cell|System.Boolean|System.Boolean",
+    })]
+    [TestCase(typeof(DesalinationPelletTranslationPatch), new[]
+    {
+        "XRL.World.InventoryActionEvent",
+    })]
     [TestCase(typeof(ClonelingVehicleTranslationPatch), new[]
     {
         "XRL.World.InventoryActionEvent",

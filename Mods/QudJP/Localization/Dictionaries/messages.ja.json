@@ -3,6 +3,16 @@
   "patterns": [
     {"pattern": "^You eat the meal\\.$", "template": "食事をとった。", "route": "popup"},
     {
+      "pattern": "^You toss (.+?) into a pot and stir\\.$",
+      "template": "{0}を鍋に入れてかき混ぜた。",
+      "route": "popup"
+    },
+    {
+      "pattern": "^You read one of the few legible excerpts from (.+?):\\n\\n\"(.+?)\"$",
+      "template": "{0}から数少ない判読可能な抜粋を読んだ。\n\n\"{1}\"",
+      "route": "popup"
+    },
+    {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) nothing to trade[.!]?$",
       "template": "{0}には取引するものがない",
       "route": "message-log"
@@ -424,16 +434,6 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The )?(.+) hits \\((x\\d+)\\) for (\\d+) damage with (?:his|her|its) (.+?)[.!] \\[(.+?)\\]$",
-      "template": "{0}の{3}で{2}ダメージを受けた。({1}) [{4}]",
-      "route": "emit-message"
-    },
-    {
-      "pattern": "^(?:The )?(.+) hits \\((x\\d+)\\) for (\\d+) damage with their (.+?)[.!] \\[(.+?)\\]$",
-      "template": "{0}の{3}で{2}ダメージを受けた。({1}) [{4}]",
-      "route": "emit-message"
-    },
-    {
       "pattern": "^(?:The )?(.+) critically hits \\((x\\d+)\\) for (\\d+) damage with (?:his|her|its) (.+?)[.!] \\[(.+?)\\]$",
       "template": "{0}の{3}が会心し、{2}ダメージを受けた。({1}) [{4}]",
       "route": "emit-message"
@@ -441,6 +441,16 @@
     {
       "pattern": "^(?:The )?(.+) critically hits \\((x\\d+)\\) for (\\d+) damage with their (.+?)[.!] \\[(.+?)\\]$",
       "template": "{0}の{3}が会心し、{2}ダメージを受けた。({1}) [{4}]",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The )?(.+) hits \\((x\\d+)\\) for (\\d+) damage with (?:his|her|its) (.+?)[.!] \\[(.+?)\\]$",
+      "template": "{0}の{3}で{2}ダメージを受けた。({1}) [{4}]",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The )?(.+) hits \\((x\\d+)\\) for (\\d+) damage with their (.+?)[.!] \\[(.+?)\\]$",
+      "template": "{0}の{3}で{2}ダメージを受けた。({1}) [{4}]",
       "route": "emit-message"
     },
     {
@@ -874,6 +884,11 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s'|の) carapace loosens[.!]?$",
+      "template": "{0}の甲殻が緩んだ",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^You have lost sight of (?:the )?(.+?)[.!]?$",
       "template": "{0}を見失った。",
       "route": "emit-message"
@@ -1041,6 +1056,11 @@
     {
       "pattern": "^You disassemble the (.+?)\\. You receive tinkering bits <(.+?)>\\.[.!]?$",
       "template": "{0}を分解し、修理ビット<{1}>を受け取った。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You receive tinkering bits <(.+?)>\\.?$",
+      "template": "修理ビット<{0}>を受け取った。",
       "route": "emit-message"
     },
     {
@@ -1599,6 +1619,11 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^An image of (.+?) disappears\\.$",
+      "template": "{0}の映像が消えた。",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^An image of (.+?) appears?\\.$",
       "template": "{0}の映像が現れた。",
       "route": "emit-message"
@@ -1606,6 +1631,16 @@
     {
       "pattern": "^You disarm (?:the |a |an )?(.+?)\\.$",
       "template": "{0}を解除した。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You make some progress disarming (?:the |a |an )?(.+?)\\.$",
+      "template": "{0}の解除が少し進んだ。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^The infected crust of skin on (.+?) loosens and breaks away\\.$",
+      "template": "{0}の感染した皮膚の痂皮が緩んで剥がれ落ちた。",
       "route": "emit-message"
     },
     {

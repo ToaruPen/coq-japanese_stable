@@ -23,7 +23,7 @@
     },
     {
       "pattern": "^You note the location of (.+?) in the Locations > (.+?) section of your journal\\.[.!]?$",
-      "template": "ジャーナルの「場所 > {t1}」欄に{0}の場所を記録した。",
+      "template": "ジャーナルの「場所 > {t1}」欄に{t0}の場所を記録した。",
       "route": "journal"
     },
     {
@@ -68,6 +68,11 @@
     },
     {
       "pattern": "^On the (.+?) of (.+?), you were killed by a (.+?)\\.$",
+      "template": "{t1}の{t0}日、{t2}に殺された。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^On the (.+?) of (.+?), you were killed by (.+?)\\.$",
       "template": "{t1}の{t0}日、{t2}に殺された。",
       "route": "journal"
     },
@@ -319,6 +324,7 @@
     {"pattern": "^(.+?) questioned the origins of the moon, insulting the beliefs of (.+?)\\.$", "template": "{t0}は月の起源に疑問を呈し、{t1}の信仰を侮辱した。", "route": "journal"},
     {"pattern": "^The lost Mark of Death from the late sultanate was (.+?)\\.$", "template": "亡きスルタンの死の刻印は{0}だった。", "route": "journal"},
     {"pattern": "^You recover the Mark of Death from (.+?)\\.$", "template": "{0}から死の刻印を回収した。", "route": "journal"},
+    {"pattern": "^You recover the Mark of Death of the late sultanate\\.$", "template": "亡きスルタンの死の刻印を回収した。", "route": "journal"},
     {"pattern": "^(.+?) praised a highly entropic being, insulting (.+?)\\.$", "template": "{t0}は高度にエントロピー的な存在を称賛し、{t1}を侮辱した。", "route": "journal"}
   ]
 }

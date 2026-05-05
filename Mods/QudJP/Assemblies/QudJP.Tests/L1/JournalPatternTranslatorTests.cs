@@ -74,6 +74,135 @@ public sealed class JournalPatternTranslatorTests
     }
 
     [Test]
+    public void Translate_AppliesArticlelessDeathEntryPattern()
+    {
+        WriteDictionaryFile("date-l1.ja.json", new[] { ("5th", "第5"), ("Tishru ii Ux", "ティシュル II・ウクス") });
+        WritePatternDictionary(("^On the (.+?) of (.+?), you were killed by (.+?)\\.$", "{t1}の{t0}日、{t2}に殺された。"));
+
+        var translated = JournalPatternTranslator.Translate("On the 5th of Tishru ii Ux, you were killed by イジル, 村の修理工.");
+
+        Assert.That(translated, Is.EqualTo("ティシュル II・ウクスの第5日、イジル, 村の修理工に殺された。"));
+    }
+
+    [Test]
+    public void Translate_AppliesArticlelessDeathEntryPattern_WithEnglishCaptureFallback()
+    {
+        WriteDictionaryFile("date-l1.ja.json", new[] { ("5th", "第5"), ("Tishru ii Ux", "ティシュル II・ウクス") });
+        WritePatternDictionary(("^On the (.+?) of (.+?), you were killed by (.+?)\\.$", "{t1}の{t0}日、{t2}に殺された。"));
+
+        var translated = JournalPatternTranslator.Translate("On the 5th of Tishru ii Ux, you were killed by a chrome pyramid.");
+
+        Assert.That(translated, Is.EqualTo("ティシュル II・ウクスの第5日、a chrome pyramidに殺された。"));
+    }
+
+    [Test]
+    public void Translate_AppliesArticlelessDeathEntryPattern_PreservesColorTags()
+    {
+        WriteDictionaryFile("date-l1.ja.json", new[] { ("5th", "第5"), ("Tishru ii Ux", "ティシュル II・ウクス") });
+        WritePatternDictionary(("^On the (.+?) of (.+?), you were killed by (.+?)\\.$", "{t1}の{t0}日、{t2}に殺された。"));
+
+        var translated = JournalPatternTranslator.Translate(
+            "On the 5th of Tishru ii Ux, you were killed by <color=#ff0>イジル, 村の修理工</color>.");
+
+        Assert.That(translated, Is.EqualTo("ティシュル II・ウクスの第5日、<color=#ff0>イジル, 村の修理工</color>に殺された。"));
+    }
+
+    [Test]
+    public void Translate_TranslatesArticlelessLocationCapture()
+    {
+        WriteDictionaryFile(
+            "location-l1.ja.json",
+            new[] { ("snapjaw fort", "スナップジョーの砦"), ("Settlements", "集落") });
+        WritePatternDictionary(("^You note the location of (.+?) in the Locations > (.+?) section of your journal\\.[.!]?$", "ジャーナルの「場所 > {t1}」欄に{t0}の場所を記録した。"));
+
+        var translated = JournalPatternTranslator.Translate(
+            "You note the location of a snapjaw fort in the Locations > Settlements section of your journal.");
+
+        Assert.That(translated, Is.EqualTo("ジャーナルの「場所 > 集落」欄にスナップジョーの砦の場所を記録した。"));
+    }
+
+    [Test]
+    public void Translate_TranslatesArticlelessLocationCapture_WithEnglishCaptureFallback()
+    {
+        WriteDictionaryFile("location-l1.ja.json", new[] { ("Settlements", "集落") });
+        WritePatternDictionary(("^You note the location of (.+?) in the Locations > (.+?) section of your journal\\.[.!]?$", "ジャーナルの「場所 > {t1}」欄に{t0}の場所を記録した。"));
+
+        var translated = JournalPatternTranslator.Translate(
+            "You note the location of a forgotten ruin in the Locations > Settlements section of your journal.");
+
+        Assert.That(translated, Is.EqualTo("ジャーナルの「場所 > 集落」欄にa forgotten ruinの場所を記録した。"));
+    }
+
+    [Test]
+    public void Translate_TranslatesArticlelessLocationCapture_PreservesColorTags()
+    {
+        WriteDictionaryFile(
+            "location-l1.ja.json",
+            new[] { ("snapjaw fort", "スナップジョーの砦"), ("Settlements", "集落") });
+        WritePatternDictionary(("^You note the location of (.+?) in the Locations > (.+?) section of your journal\\.[.!]?$", "ジャーナルの「場所 > {t1}」欄に{t0}の場所を記録した。"));
+
+        var translated = JournalPatternTranslator.Translate(
+            "You note the location of <color=#ff0>a snapjaw fort</color> in the Locations > Settlements section of your journal.");
+
+        Assert.That(translated, Is.EqualTo("ジャーナルの「場所 > 集落」欄に<color=#ff0>スナップジョーの砦</color>の場所を記録した。"));
+    }
+
+    [Test]
+    public void Translate_AppliesLateSultanateMarkOfDeathRecoveryPattern()
+    {
+        WritePatternDictionary(("^You recover the Mark of Death of the late sultanate\\.$", "亡きスルタンの死の刻印を回収した。"));
+
+        var translated = JournalPatternTranslator.Translate("You recover the Mark of Death of the late sultanate.");
+
+        Assert.That(translated, Is.EqualTo("亡きスルタンの死の刻印を回収した。"));
+    }
+
+    [Test]
+    public void Translate_AppliesLateSultanateMarkOfDeathRecoveryPattern_FallsBackToEnglishWhenPatternMissing()
+    {
+        WritePatternDictionary();
+
+        const string source = "You recover the Mark of Death of the late sultanate.";
+
+        Assert.That(JournalPatternTranslator.Translate(source), Is.EqualTo(source));
+    }
+
+    [Test]
+    public void Translate_AppliesLateSultanateMarkOfDeathRecoveryPattern_PreservesColorTags()
+    {
+        WritePatternDictionary(("^You recover the Mark of Death of the late sultanate\\.$", "亡きスルタンの死の刻印を回収した。"));
+
+        var translated = JournalPatternTranslator.Translate(
+            "<color=#ff0>You recover the Mark of Death of the late sultanate.</color>");
+
+        Assert.That(translated, Is.EqualTo("<color=#ff0>亡きスルタンの死の刻印を回収した。</color>"));
+    }
+
+    [Test]
+    public void Translate_NewArticlelessAndDeathPatterns_ReturnEmptyString_WhenSourceIsEmpty()
+    {
+        WritePatternDictionary(
+            ("^On the (.+?) of (.+?), you were killed by (.+?)\\.$", "{t1}の{t0}日、{t2}に殺された。"),
+            ("^You note the location of (.+?) in the Locations > (.+?) section of your journal\\.[.!]?$", "ジャーナルの「場所 > {t1}」欄に{t0}の場所を記録した。"),
+            ("^You recover the Mark of Death of the late sultanate\\.$", "亡きスルタンの死の刻印を回収した。"));
+
+        Assert.That(JournalPatternTranslator.Translate(string.Empty), Is.EqualTo(string.Empty));
+    }
+
+    [TestCase("\u0001On the 5th of Tishru ii Ux, you were killed by イジル, 村の修理工.")]
+    [TestCase("\u0001You note the location of a snapjaw fort in the Locations > Settlements section of your journal.")]
+    [TestCase("\u0001You recover the Mark of Death of the late sultanate.")]
+    public void Translate_NewArticlelessAndDeathPatterns_PreserveDirectMarkerInput(string source)
+    {
+        WritePatternDictionary(
+            ("^On the (.+?) of (.+?), you were killed by (.+?)\\.$", "{t1}の{t0}日、{t2}に殺された。"),
+            ("^You note the location of (.+?) in the Locations > (.+?) section of your journal\\.[.!]?$", "ジャーナルの「場所 > {t1}」欄に{t0}の場所を記録した。"),
+            ("^You recover the Mark of Death of the late sultanate\\.$", "亡きスルタンの死の刻印を回収した。"));
+
+        Assert.That(JournalPatternTranslator.Translate(source), Is.EqualTo(source));
+    }
+
+    [Test]
     public void Translate_AppliesVillageHistoriesNotificationPattern()
     {
         WritePatternDictionary(("^You note this piece of information in the Village Histories > (.+?) section of your journal\\.[.!]?$", "この情報をジャーナルの「村の歴史 > {0}」欄に記録した。"));
