@@ -208,6 +208,29 @@ New translation logic should come with the narrowest regression tests that prove
 
 When a bug came from a real runtime shape, prefer turning that exact shape into a regression test instead of inventing a cleaner synthetic string.
 
+Producer or queue-gated patches that translate traffic before a generic sink must prove the route contract, not just one translated string. For new or materially changed `AddPlayerMessage`, popup handoff, or similar producer patches, include focused coverage for:
+
+- exact translation of the owned sentence family
+- unchanged fallback for unknown or out-of-family text
+- empty input staying unchanged when the route can emit it
+- color markup and dynamic captures being restored in the final output
+- direct-translation markers passing through without retranslation
+- owner-absent or queue-only traffic staying unchanged
+- observability hit counts proving transformed owner traffic is recorded and pass-through traffic is not recorded as an owner hit
+
+If a route can emit articles, generated names, quantities, or placeholder-like fragments, include those emitted shapes in tests instead of replacing them with dictionary leaves.
+
+## PR review hygiene
+
+Before addressing PR review feedback, confirm the checkout matches the PR head branch:
+
+```bash
+git status --short --branch
+gh pr view <number> --json headRefName
+```
+
+If the active checkout has unrelated dirty work, either use a separate worktree or stage only explicit paths for the PR. Do not commit review fixes from an unrelated branch just because the patch applies cleanly.
+
 ## Runtime evidence
 
 Use runtime logs as evidence, not as the primary behavior definition.
