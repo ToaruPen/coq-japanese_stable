@@ -17,6 +17,7 @@ QudJP の翻訳ワークフローを支援する Python スクリプト群です
 | `sync_mod.py` | Mod ファイルの配備 |
 | `build_workshop_upload.py` | Steam Workshop 用 staging / steamcmd VDF 生成 |
 | `translation_checker.py` | Rosetta 起動で既知セーブを開き、翻訳確認用スクリーンショットを取得 |
+| `scan_static_producer_inventory.py` | Roslyn static producer inventory scanner の Python entrypoint |
 
 ---
 
@@ -41,6 +42,43 @@ python -m scripts.triage.cli classify --input-dir /path/to/evidence --output tri
 ```
 
 `--input-dir` が存在しない場合は空の report を返すので、証跡なしの場面でも形式確認に使えます。
+
+---
+
+## scan_static_producer_inventory.py
+
+Roslyn-backed static producer inventory scanner の入口です。
+`scripts/tools/StaticProducerInventoryScanner/` の C# console tool を呼び、
+decompiled C# source から `EmitMessage`、`Popup.Show*`、
+`AddPlayerMessage` の callsite / producer-family inventory を
+`docs/static-producer-inventory.json` 互換の JSON として出力します。
+
+この CLI は `~/dev/coq-decompiled_stable/` を既定の source root として読みます。
+decompiled inputs は外部の read-only 入力で、commit 対象ではありません。
+JSON は timestamp と absolute source-root path を含めず、同じ decompiled snapshot
+では machine-independent に安定します。
+
+**使い方**:
+
+```bash
+python3.12 scripts/scan_static_producer_inventory.py \
+  --source-root ~/dev/coq-decompiled_stable \
+  --output docs/static-producer-inventory.json
+```
+
+**検証**:
+
+```bash
+dotnet build scripts/tools/StaticProducerInventoryScanner/StaticProducerInventoryScanner.csproj --configuration Release
+uv run pytest scripts/tests/test_scan_static_producer_inventory.py -q
+ruff check scripts/scan_static_producer_inventory.py scripts/tests/test_scan_static_producer_inventory.py
+uvx basedpyright scripts/scan_static_producer_inventory.py scripts/tests/test_scan_static_producer_inventory.py
+```
+
+scanner は Roslyn syntax API を source of structure として使い、可能な範囲で
+SemanticModel も取得します。decompiled source の完全な semantic compilation は
+必須にしないため、symbol 解決できない callsite があっても scanner は継続し、
+`roslyn_symbol_status` に `resolved` / `candidate` / `unresolved` を出力します。
 
 ---
 

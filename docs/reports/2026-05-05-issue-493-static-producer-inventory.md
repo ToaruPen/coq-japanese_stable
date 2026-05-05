@@ -13,6 +13,7 @@ The committed machine-readable artifact is:
 The generator is:
 
 - `scripts/scan_static_producer_inventory.py`
+- `scripts/tools/StaticProducerInventoryScanner/` Roslyn syntax scanner
 
 Historical scanner outputs under `scripts/legacies/`,
 `docs/archive/candidate-inventory-2026-04-14-reconciled-bridge.json`, and old
@@ -51,9 +52,9 @@ surfaces.
 
 | Metric | Count |
 | --- | ---: |
-| callsites | 2210 |
-| producer families | 1013 |
-| text arguments | 2233 |
+| callsites | 2208 |
+| producer families | 1012 |
+| text arguments | 2238 |
 
 ### Callsites by surface
 
@@ -61,14 +62,14 @@ surfaces.
 | --- | ---: |
 | `Popup.Show*` | 1393 |
 | `AddPlayerMessage` | 583 |
-| `EmitMessage` | 234 |
+| `EmitMessage` | 232 |
 
 ### Text-argument status by surface
 
 | Surface | `messages_candidate` | `owner_patch_required` | `runtime_required` | `sink_observed_only` | `debug_ignore` |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `EmitMessage` | 162 | 0 | 71 | 1 | 0 |
-| `Popup.Show*` | 549 | 567 | 192 | 8 | 100 |
+| `EmitMessage` | 162 | 0 | 69 | 1 | 0 |
+| `Popup.Show*` | 554 | 567 | 194 | 8 | 100 |
 | `AddPlayerMessage` | 0 | 444 | 57 | 19 | 63 |
 
 ### Family closure status
@@ -78,7 +79,7 @@ surfaces.
 | `owner_patch_required` | 416 |
 | `messages_candidate` | 262 |
 | `runtime_required` | 167 |
-| `needs_family_review` | 145 |
+| `needs_family_review` | 144 |
 | `sink_observed_only` | 15 |
 | `debug_ignore` | 8 |
 
@@ -146,17 +147,32 @@ the branch was split into GitHub issue `#497`.
 Focused scanner verification:
 
 ```bash
+dotnet build scripts/tools/StaticProducerInventoryScanner/StaticProducerInventoryScanner.csproj --configuration Release
 uv run pytest scripts/tests/test_scan_static_producer_inventory.py -q
 ruff check scripts/scan_static_producer_inventory.py scripts/tests/test_scan_static_producer_inventory.py
 uvx basedpyright scripts/scan_static_producer_inventory.py scripts/tests/test_scan_static_producer_inventory.py
 ```
 
-All three commands passed during generation.
+The Python entrypoint invokes the Roslyn console scanner and keeps this JSON
+shape stable for current consumers.
+
+In the current decompiled `2.0.4` snapshot, Roslyn semantic enrichment resolved
+or produced candidate symbols for every inventoried callsite:
+
+| `roslyn_symbol_status` | Count |
+| --- | ---: |
+| `resolved` | 2206 |
+| `candidate` | 2 |
+
+`method_symbol` is present on all 2208 callsites, and `receiver_type_symbol` is
+present on 2136 callsites.
 
 ## Remaining limits
 
-- The scanner is a deterministic lexical scanner, not a complete C# compiler or
-  Roslyn model.
+- The scanner uses Roslyn syntax APIs for call shape and source context, but it
+  does not fail when decompiled game source has incomplete semantic resolution.
+- `roslyn_symbol_status=candidate` means Roslyn could not choose a single method
+  symbol but did provide a candidate method symbol for audit context.
 - Runtime logs remain useful for prioritization and verification, but not for
   primary discovery in this artifact.
 - `needs_family_review` families need a human split before being counted as

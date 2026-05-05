@@ -28,6 +28,7 @@ namespace Demo
             Popup.ShowKeybindAsync("Press key");
             Popup.ShowBlockWithCopy("Copy body", "Copy prompt", "Copy title", "Copy payload");
             Popup.ShowOptionList("Option title", options, null, null, "Option intro", 0, 0, 0, 0, "Spacing text", null, null, null, null, "Buttons text");
+            Popup.ShowColorPicker("Color title", 0, null, 60, RespectOptionNewlines: false, AllowEscape: false, null, "Semantic spacing", includeNone: true, includePatterns: false, allowBackground: false, "Semantic preview");
             Popup.ShowExperimental();
             Popup.Show(dynamicMessage);
             System.Action scopedDelegate = delegate()

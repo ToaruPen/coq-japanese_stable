@@ -187,6 +187,15 @@ def test_popup_roles_include_fail_keybind_option_list_and_ignored_show_title() -
     ]
     assert option_list["closure_status"] == "runtime_required"
 
+    color_picker = _callsite(payload, "Demo/StaticProducerCases.cs", "Popup.ShowColorPicker(")
+    assert [(arg["role"], arg["formal_index"], arg["expression"]) for arg in _text_args(color_picker)] == [
+        ("title", 0, '"Color title"'),
+        ("intro", 2, "null"),
+        ("spacing_text", 7, '"Semantic spacing"'),
+        ("preview_content", 11, '"Semantic preview"'),
+    ]
+    assert color_picker.get("roslyn_symbol_status") == "resolved"
+
     unknown = _callsite(payload, "Demo/StaticProducerCases.cs", "Popup.ShowExperimental()")
     assert unknown["text_arguments"] == []
     assert unknown["closure_status"] == "runtime_required"
@@ -200,9 +209,14 @@ def test_popup_cs_forwarding_is_sink_but_internal_literal_is_candidate() -> None
     forwarded = _exact_callsite(payload, "XRL.UI/Popup.cs", "Show(Message)")
     assert forwarded["closure_status"] == "sink_observed_only"
     assert _text_args(forwarded)[0]["expression_kind"] == "forwarded_parameter"
+    assert forwarded.get("roslyn_symbol_status") == "resolved"
+    assert forwarded.get("method_symbol") == "void XRL.UI.Popup.Show(string Message)"
+    assert forwarded.get("containing_type_symbol") == "XRL.UI.Popup"
 
     internal = _callsite(payload, "XRL.UI/Popup.cs", 'Popup.Show("Popup internal literal")')
     assert internal["closure_status"] == "messages_candidate"
+    assert internal.get("roslyn_symbol_status") == "resolved"
+    assert internal.get("receiver_type_symbol") == "XRL.UI.Popup"
 
 
 def test_closure_overrides_cover_wrappers_debug_and_marker_gated_paths() -> None:
