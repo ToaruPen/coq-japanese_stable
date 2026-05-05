@@ -26,6 +26,24 @@ public sealed class LocalizationCoverageTests
         "UI",
     };
 
+    private static readonly IReadOnlyDictionary<string, string> CommandCategoryLabels = new Dictionary<string, string>(StringComparer.Ordinal)
+    {
+        ["Ability Bar"] = "アビリティバー",
+        ["Advanced Adventuring"] = "高度な冒険操作",
+        ["Adventuring"] = "冒険操作",
+        ["Basic Move / Attack"] = "基本移動／攻撃",
+        ["Character Creation"] = "キャラクター作成",
+        ["Character Sheet"] = "キャラクターシート",
+        ["Debug"] = "デバッグ",
+        ["Menus"] = "メニュー操作",
+        ["Mouse-specific"] = "マウス操作",
+        ["Shortcuts to Character Sheet"] = "キャラクターシートショートカット",
+        ["System"] = "システム",
+        ["Targeting"] = "ターゲティング",
+        ["Trade"] = "取引",
+        ["UI"] = "UI",
+    };
+
     private string localizationRoot = null!;
 
     [SetUp]
@@ -96,6 +114,75 @@ public sealed class LocalizationCoverageTests
             Is.Empty,
             "Command Category is a stable grouping key consumed by Control Mapping. "
             + "Translate category labels at the UI route instead of localizing Category attributes.");
+    }
+
+    [Test]
+    public void TranslateCommandCategoryLabel_CoversStableCategoryKeysAndFallbacks()
+    {
+        const string route = "Qud.UI.KeybindsScreen:category";
+        const string family = "ui:keybind-category";
+
+        Assert.Multiple(() =>
+        {
+            foreach (var (source, expected) in CommandCategoryLabels)
+            {
+                Assert.That(
+                    UiBindingTranslationHelpers.TranslateCommandCategoryLabel(source, route, family),
+                    Is.EqualTo(expected),
+                    source);
+
+                Assert.That(
+                    UiBindingTranslationHelpers.TranslateCommandCategoryLabel(source.ToUpperInvariant(), route, family),
+                    Is.EqualTo(expected),
+                    source.ToUpperInvariant());
+            }
+
+            Assert.That(UiBindingTranslationHelpers.TranslateCommandCategoryLabel("Unknown Category", route, family), Is.EqualTo("Unknown Category"));
+            Assert.That(UiBindingTranslationHelpers.TranslateCommandCategoryLabel("{{C|Basic Move / Attack}}", route, family), Is.EqualTo("{{C|Basic Move / Attack}}"));
+            Assert.That(UiBindingTranslationHelpers.TranslateCommandCategoryLabel("\x01Basic Move / Attack", route, family), Is.EqualTo("\x01Basic Move / Attack"));
+            Assert.That(UiBindingTranslationHelpers.TranslateCommandCategoryLabel(string.Empty, route, family), Is.EqualTo(string.Empty));
+            Assert.That(UiBindingTranslationHelpers.TranslateCommandCategoryLabel(null!, route, family), Is.Null);
+        });
+    }
+
+    [Test]
+    public void CommandsXml_DirectionalBindingsRemainAlignedWithCommandIds()
+    {
+        var commandsDocument = XDocument.Load(Path.Combine(localizationRoot, "Commands.jp.xml"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                CommandElement(commandsDocument, "CmdAttackU")
+                    .Elements("keyboardBind")
+                    .Any(static element =>
+                        string.Equals(element.Attribute("Modifier")?.Value, "ctrl,shift", StringComparison.Ordinal)
+                        && string.Equals(element.Attribute("Key")?.Value, "comma", StringComparison.Ordinal)),
+                Is.True,
+                "CmdAttackU should keep the upstream Shift+, vertical-up bind.");
+
+            Assert.That(
+                CommandElement(commandsDocument, "CmdAttackD")
+                    .Elements("keyboardBind")
+                    .Any(static element =>
+                        string.Equals(element.Attribute("Modifier")?.Value, "ctrl,shift", StringComparison.Ordinal)
+                        && string.Equals(element.Attribute("Key")?.Value, "period", StringComparison.Ordinal)),
+                Is.True,
+                "CmdAttackD should keep the upstream Shift+. vertical-down bind.");
+
+            Assert.That(
+                CommandElement(commandsDocument, "UI:DetailsNavigate/left").Attribute("CanShareBindsWith")?.Value,
+                Is.EqualTo("IndicateDirection/left,CmdMoveW"));
+            Assert.That(
+                CommandElement(commandsDocument, "UI:DetailsNavigate/left").Attribute("UpgradeFrom")?.Value,
+                Is.EqualTo("CmdMoveW"));
+            Assert.That(
+                CommandElement(commandsDocument, "UI:DetailsNavigate/right").Attribute("CanShareBindsWith")?.Value,
+                Is.EqualTo("IndicateDirection/right,CmdMoveE"));
+            Assert.That(
+                CommandElement(commandsDocument, "UI:DetailsNavigate/right").Attribute("UpgradeFrom")?.Value,
+                Is.EqualTo("CmdMoveE"));
+        });
     }
 
     [Test]
@@ -1115,6 +1202,13 @@ public sealed class LocalizationCoverageTests
     private static bool IsAsciiDigits(string value)
     {
         return value.Length > 0 && value.All(static ch => ch is >= '0' and <= '9');
+    }
+
+    private static XElement CommandElement(XDocument document, string id)
+    {
+        return document.Root!
+            .Elements("command")
+            .Single(element => string.Equals(element.Attribute("ID")?.Value, id, StringComparison.Ordinal));
     }
 
     [Test]

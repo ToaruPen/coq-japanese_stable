@@ -202,11 +202,11 @@
   </command>
   <command ID="CmdAttackU" DisplayText="上を強制攻撃" Category="Basic Move / Attack" Layer="Adventure">
     <keyboardBind Modifier="ctrl" Key="numpadMinus" />
-    <keyboardBind Modifier="ctrl,shift" Key="period" />
+    <keyboardBind Modifier="ctrl,shift" Key="comma" />
   </command>
   <command ID="CmdAttackD" DisplayText="下を強制攻撃" Category="Basic Move / Attack" Layer="Adventure">
     <keyboardBind Modifier="ctrl" Key="numpadPlus" />
-    <keyboardBind Modifier="ctrl,shift" Key="comma" />
+    <keyboardBind Modifier="ctrl,shift" Key="period" />
   </command>
   <command ID="CmdAttackDirection" DisplayText="方向を指定して強制攻撃" Category="Basic Move / Attack" Layer="Adventure" Auto="Down">
     <keyboardBind Key="backslash" />
@@ -284,12 +284,12 @@
     <keyboardBind Modifier="shift" Key="downArrow" />
     <keyboardBind Modifier="shift" Key="j" Set="hjkl" />
   </command>
-  <command ID="UI:DetailsNavigate/left" DisplayText="詳細: 左へ移動" Category="Menus" Layer="UINav" CanShareBindsWith="IndicateDirection/up,CmdMoveN" UpgradeFrom="CmdMoveN" Required="true">
+  <command ID="UI:DetailsNavigate/left" DisplayText="詳細: 左へ移動" Category="Menus" Layer="UINav" CanShareBindsWith="IndicateDirection/left,CmdMoveW" UpgradeFrom="CmdMoveW" Required="true">
     <gamepadBind Button="rightStick/left" />
     <keyboardBind Modifier="shift" Key="leftArrow" />
     <keyboardBind Modifier="shift" Key="h" Set="hjkl" />
   </command>
-  <command ID="UI:DetailsNavigate/right" DisplayText="詳細: 右へ移動" Category="Menus" Layer="UINav" CanShareBindsWith="IndicateDirection/down,CmdMoveS" UpgradeFrom="CmdMoveS" Required="true">
+  <command ID="UI:DetailsNavigate/right" DisplayText="詳細: 右へ移動" Category="Menus" Layer="UINav" CanShareBindsWith="IndicateDirection/right,CmdMoveE" UpgradeFrom="CmdMoveE" Required="true">
     <gamepadBind Button="rightStick/right" />
     <keyboardBind Modifier="shift" Key="rightArrow" />
     <keyboardBind Modifier="shift" Key="l" Set="hjkl" />
