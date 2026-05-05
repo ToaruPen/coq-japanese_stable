@@ -40,3 +40,4 @@ dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCa
   - one patch class per file in `src/Patches/`
   - do not instantiate real game types in tests; use dummy targets with matching signatures
   - runtime Harmony comes from the game; tests use HarmonyLib NuGet `2.4.2`
+  - producer or queue-gated translation patches must follow the route-contract test checklist in `docs/RULES.md`
