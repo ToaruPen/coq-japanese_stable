@@ -125,10 +125,10 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Patches/PetEitherOrExplodeTranslationPatch.cs:131:TryTranslate"] = "Delegates capture and boundary restoration to matched owner-route branches.",
             ["Mods/QudJP/Assemblies/src/Patches/PickGameObjectScreenTranslationPatch.cs:115:TranslateProducerText"] = "Strips only for already-localized/direct-route checks before TranslatePreservingColors owns restoration.",
             ["Mods/QudJP/Assemblies/src/Patches/PlayerStatusBarProducerTranslationHelpers.cs:101:TryTranslateFoodWaterPart"] = "Strips only to choose an exact visible-text translation before TranslatePreservingColors owns restoration.",
-            ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:1302:IsAlreadyLocalizedPopupText"] = "Predicate only; it compares stripped and original text.",
-            ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:261:TranslatePopupTextForRoute"] = "Strips only for direct-marker and already-localized detection before producer routes own restoration.",
-            ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:307:TranslatePopupMenuItemTextForRoute"] = "Strips only for direct-marker and already-localized detection before producer routes own restoration.",
-            ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:370:TryTranslatePopupProducerText"] = "Delegates capture restoration to template/exact branch helpers.",
+            ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:1384:IsAlreadyLocalizedPopupText"] = "Predicate only; it compares stripped and original text.",
+            ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:263:TranslatePopupTextForRoute"] = "Strips only for direct-marker and already-localized detection before producer routes own restoration.",
+            ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:309:TranslatePopupMenuItemTextForRoute"] = "Strips only for direct-marker and already-localized detection before producer routes own restoration.",
+            ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:372:TryTranslatePopupProducerText"] = "Delegates capture restoration to template/exact branch helpers.",
             ["Mods/QudJP/Assemblies/src/Patches/SkillsAndPowersLineTranslationPatch.cs:229:TranslateSkillRightText"] = "Strips only for skill right-text detection before a non-colored exact replacement.",
             ["Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs:296:TryTranslatePerformOfferTradeWaterMessage"] = "Popup sink handoff delegates capture restoration to the PerformOffer owner-template helper.",
             ["Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs:314:TryTranslateHasNothingToTradeMessage"] = "Popup sink handoff delegates capture restoration to the has-nothing owner-template helper.",
@@ -143,7 +143,7 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:30:Strip"] = "Wrapper method exposes the Strip API; callers are checked where they consume the returned spans.",
             ["Mods/QudJP/Assemblies/src/Translation/JournalPatternTranslator.cs:76:Translate"] = "Passes stripped text and spans to TranslateStripped, where template application restores colors.",
             ["Mods/QudJP/Assemblies/src/Translation/MessagePatternTranslator.cs:79:Translate"] = "Passes stripped text and spans to TranslateStripped, where template application restores colors.",
-            ["Mods/QudJP/Assemblies/src/UI/FontManager.cs:174:TryWarmPrimaryFontCharactersForUi"] = "UI glyph warmup intentionally strips markup only to add visible characters to the font atlas.",
+            ["Mods/QudJP/Assemblies/src/UI/FontManager.cs:233:TryWarmPrimaryFontCharactersForUi"] = "UI glyph warmup intentionally strips markup only to add visible characters to the font atlas.",
         };
 
     private static readonly SortedDictionary<string, string> NameLikeRestoreCaptureWithoutGuardAllowlist =

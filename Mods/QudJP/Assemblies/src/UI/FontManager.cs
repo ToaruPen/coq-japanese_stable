@@ -96,9 +96,9 @@ public static class FontManager
 
             var patchedFontAssetCount = EnsureFallbackOnAllFontAssets(fontAsset);
 
-            if (!fontAsset.TryAddCharacters("日本語テスト"))
+            if (!TryWarmFontCharacters(fontAsset, "日本語テスト"))
             {
-                throw new InvalidOperationException("TryAddCharacters failed for probe string '日本語テスト'");
+                Debug.LogWarning("[QudJP] FontManager: CJK font probe warmup failed for '日本語テスト'. Continuing with runtime fallback.");
             }
 
             Debug.Log($"[QudJP] FontManager: CJK font registered. defaultFontAsset='{fontAsset.name}', patchedAssets={patchedFontAssetCount}.");
@@ -111,6 +111,65 @@ public static class FontManager
 #else
         Trace.TraceInformation("[QudJP] FontManager: TMP unavailable (CI build). Font injection skipped.");
 #endif
+    }
+
+    internal static bool TryWarmFontCharactersForTests(object? fontAsset, string? text)
+    {
+        return TryWarmFontCharacters(fontAsset, text);
+    }
+
+    private static bool TryWarmFontCharacters(object? fontAsset, string? text)
+    {
+        if (fontAsset is null || string.IsNullOrEmpty(text))
+        {
+            return false;
+        }
+
+        var fontAssetType = fontAsset.GetType();
+        var stringByReferenceType = typeof(string).MakeByRefType();
+        var overloadWithMissingCharacters = fontAssetType.GetMethod(
+            "TryAddCharacters",
+            BindingFlags.Instance | BindingFlags.Public,
+            binder: null,
+            types: new[] { typeof(string), stringByReferenceType },
+            modifiers: null);
+        if (TryInvokeBooleanMethod(overloadWithMissingCharacters, fontAsset, new object?[] { text, null }))
+        {
+            return true;
+        }
+
+        var overloadWithCharactersOnly = fontAssetType.GetMethod(
+            "TryAddCharacters",
+            BindingFlags.Instance | BindingFlags.Public,
+            binder: null,
+            types: new[] { typeof(string) },
+            modifiers: null);
+        return TryInvokeBooleanMethod(overloadWithCharactersOnly, fontAsset, new object?[] { text });
+    }
+
+    private static bool TryInvokeBooleanMethod(MethodInfo? method, object target, object?[] parameters)
+    {
+        if (method is null || method.ReturnType != typeof(bool))
+        {
+            return false;
+        }
+
+        try
+        {
+            return method.Invoke(target, parameters) is true;
+        }
+        catch (TargetInvocationException)
+        {
+            return false;
+        }
+        catch (ArgumentException)
+        {
+            return false;
+        }
+        catch (MethodAccessException)
+        {
+            return false;
+        }
     }
 
 #if HAS_TMP
@@ -177,7 +236,7 @@ public static class FontManager
                 return false;
             }
 
-            return fontAsset.TryAddCharacters(stripped, out _);
+            return TryWarmFontCharacters(fontAsset, stripped);
         }
         catch (Exception ex)
         {
