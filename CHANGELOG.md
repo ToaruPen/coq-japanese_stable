@@ -231,6 +231,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+[0.2.44]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.44
 [0.2.43]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.43
 [0.2.42]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.42
 [0.2.41]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.41
