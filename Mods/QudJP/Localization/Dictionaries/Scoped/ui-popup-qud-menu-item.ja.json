@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "id": "ui-popup-qud-menu-item",
+    "lang": "ja",
+    "version": "0.0.1"
+  },
+  "rules": {
+    "protectColorTags": true,
+    "protectHtmlEntities": true
+  },
+  "entries": [
+    { "key": "load", "context": "QudMenuItem", "text": "装填" },
+    { "key": "unload", "context": "QudMenuItem", "text": "装填解除" }
+  ]
+}
