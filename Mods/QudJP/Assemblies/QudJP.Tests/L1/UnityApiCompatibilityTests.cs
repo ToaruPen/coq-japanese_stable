@@ -10,13 +10,13 @@ public sealed class UnityApiCompatibilityTests
     private const RegexOptions SourceRegexOptions = RegexOptions.CultureInvariant;
 
     private static readonly Regex RectCenterTransformPattern = new(
-        @"TransformPoint\s*\(\s*[\s\S]*?\.\s*rectTransform\s*\.\s*rect\s*\.\s*center\s*\)",
+        @"TransformPoint\s*\(\s*(?!UnityRuntimeCompatibility\s*\.\s*ToVector3\s*\()[\s\S]*?\.\s*rectTransform\s*\.\s*rect\s*\.\s*center\s*\)",
         SourceRegexOptions);
 
     [NUnit.Framework.Test]
     public void RuntimeDiagnostics_AvoidDirectUnityColorAlphaAccess()
     {
-        var directColorAlphaPattern = new Regex(@"\.\s*color\s*\.\s*a", SourceRegexOptions);
+        var directColorAlphaPattern = new Regex(@"\.\s*color\s*\.\s*a\b", SourceRegexOptions);
         var faceColorAlphaPattern = new Regex(@"GetColor\s*\(\s*""_FaceColor""\s*\)\s*\.\s*a", SourceRegexOptions);
         var sourceRoot = Path.Combine(
             TestProjectPaths.GetRepositoryRoot(),
@@ -72,8 +72,16 @@ public sealed class UnityApiCompatibilityTests
     [NUnit.Framework.Test]
     public void RectCenterTransformPattern_AllowsExplicitVectorConversion()
     {
-        const string source = "TransformPoint(UnityRuntimeCompatibility.ToVector3(rectCenter))";
+        const string source = "TransformPoint(UnityRuntimeCompatibility.ToVector3(text.rectTransform.rect.center))";
 
         NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Not.Match(RectCenterTransformPattern));
+    }
+
+    [NUnit.Framework.Test]
+    public void DirectColorAlphaPattern_AllowsLongerAlphaMemberNames()
+    {
+        var directColorAlphaPattern = new Regex(@"\.\s*color\s*\.\s*a\b", SourceRegexOptions);
+
+        NUnit.Framework.Assert.That("text.color.alpha", NUnit.Framework.Does.Not.Match(directColorAlphaPattern));
     }
 }
