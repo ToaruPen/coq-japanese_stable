@@ -26,6 +26,7 @@ public sealed class PopupPickOptionTranslationPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
+        ScopedDictionaryLookup.ResetForTests();
         MessagePatternTranslator.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
         DynamicTextObservability.ResetForTests();
@@ -38,6 +39,7 @@ public sealed class PopupPickOptionTranslationPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
         MessagePatternTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
@@ -236,6 +238,47 @@ public sealed class PopupPickOptionTranslationPatchTests
         });
     }
 
+    [Test]
+    public void Prefix_TranslatesEmbeddedHotkeyLoadAndUnloadOptions()
+    {
+        WriteDictionary(("load", "GLOBAL-LOAD-POISON"), ("unload", "GLOBAL-UNLOAD-POISON"));
+        WriteQudMenuItemDictionary(
+            ("load", "QudMenuItem", "装填"),
+            ("unload", "QudMenuItem", "装填解除"));
+
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(
+            Options: new[]
+            {
+                "l{{hotkey|o}}ad",
+                "{{hotkey|u}}nload",
+            },
+            Buttons: new[]
+            {
+                new DummyPopupMenuItem("{{W|[o]}} {{y|l{{hotkey|o}}ad}}"),
+                new DummyPopupMenuItem("{{W|[u]}} {{y|{{hotkey|u}}nload}}"),
+            });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "装填", "装填解除" }));
+            Assert.That(DummyPopupGenericTarget.LastPickOptionButtons, Is.Not.Null);
+            Assert.That(DummyPopupGenericTarget.LastPickOptionButtons![0].text, Is.EqualTo("{{W|[o]}} {{y|装填}}"));
+            Assert.That(DummyPopupGenericTarget.LastPickOptionButtons[1].text, Is.EqualTo("{{W|[u]}} {{y|装填解除}}"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(PopupPickOptionTranslationPatch),
+                    "Popup.ProducerText.EmbeddedHotkeyLabel"),
+                Is.GreaterThan(0));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(PopupPickOptionTranslationPatch),
+                    "Popup.ProducerMenuItem.HotkeyLabel"),
+                Is.GreaterThan(0));
+        });
+    }
+
     private static IDisposable PatchPickOption()
     {
         var harmonyId = CreateHarmonyId();
@@ -280,6 +323,38 @@ public sealed class PopupPickOptionTranslationPatchTests
         builder.Append("]}");
         File.WriteAllText(
             Path.Combine(dictionaryDirectory, "popup-pickoption.ja.json"),
+            builder.ToString(),
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private void WriteQudMenuItemDictionary(params (string key, string context, string text)[] entries)
+    {
+        var scopedDirectory = Path.Combine(dictionaryDirectory, "Scoped");
+        Directory.CreateDirectory(scopedDirectory);
+
+        var builder = new StringBuilder();
+        builder.Append('{');
+        builder.Append("\"entries\":[");
+
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
+            builder.Append("\",\"context\":\"");
+            builder.Append(EscapeJson(entries[index].context));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        File.WriteAllText(
+            Path.Combine(scopedDirectory, "ui-popup-qud-menu-item.ja.json"),
             builder.ToString(),
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }

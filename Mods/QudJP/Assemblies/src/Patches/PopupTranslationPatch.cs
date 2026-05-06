@@ -13,6 +13,8 @@ public static class PopupTranslationPatch
 {
     private const string TargetTypeName = "XRL.UI.Popup";
     private const string UntilPrefix = "Until ";
+    private const string QudMenuItemContext = "QudMenuItem";
+    private const string QudMenuItemDictionaryFile = "Scoped/ui-popup-qud-menu-item.ja.json";
     private static readonly Regex HotkeyLabelPattern =
         new Regex("^\\[(?<hotkey>[^\\]]+)\\]\\s+(?<label>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PlainHotkeyLabelPattern =
@@ -420,6 +422,18 @@ public static class PopupTranslationPatch
         if (IsAlreadyLocalizedPopupTextCore(stripped))
         {
             translated = source;
+            return true;
+        }
+
+        if (TryTranslatePopupPickOptionHotkeyLabel(
+                source,
+                stripped,
+                spans,
+                route,
+                family,
+                out var hotkeyLabelTranslated))
+        {
+            translated = hotkeyLabelTranslated;
             return true;
         }
 
@@ -972,6 +986,74 @@ public static class PopupTranslationPatch
 
         translated = source;
         return false;
+    }
+
+    private static bool TryTranslatePopupPickOptionHotkeyLabel(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string family,
+        out string translated)
+    {
+        translated = source;
+        if (!string.Equals(route, nameof(PopupPickOptionTranslationPatch), StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        var hotkeyMatch = HotkeyLabelPattern.Match(stripped);
+        if (hotkeyMatch.Success && !int.TryParse(hotkeyMatch.Groups["hotkey"].Value, out _))
+        {
+            var label = hotkeyMatch.Groups["label"].Value;
+            var translatedLabel = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
+                label,
+                QudMenuItemContext,
+                QudMenuItemDictionaryFile);
+            if (translatedLabel is null || string.Equals(translatedLabel, label, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            var hotkey = ColorAwareTranslationComposer.RestoreSlice(
+                "[" + hotkeyMatch.Groups["hotkey"].Value + "]",
+                spans,
+                hotkeyMatch.Index,
+                hotkeyMatch.Groups["hotkey"].Length + 2);
+            var labelWithWrappers = ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
+                translatedLabel,
+                spans,
+                hotkeyMatch.Groups["label"]);
+            var visibleTranslation = hotkey + " " + labelWithWrappers;
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                visibleTranslation,
+                spans,
+                stripped.Length);
+            DynamicTextObservability.RecordTransform(route, family + ".HotkeyLabel", source, translated);
+            return true;
+        }
+
+        if (source.IndexOf("{{hotkey|", StringComparison.Ordinal) < 0
+            || !Regex.IsMatch(stripped, "^[A-Za-z][A-Za-z ]*[A-Za-z]$", RegexOptions.CultureInvariant))
+        {
+            return false;
+        }
+
+        var embeddedTranslated = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
+            stripped,
+            QudMenuItemContext,
+            QudMenuItemDictionaryFile);
+        if (embeddedTranslated is null || string.Equals(embeddedTranslated, stripped, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            embeddedTranslated,
+            spans,
+            stripped.Length);
+        DynamicTextObservability.RecordTransform(route, family + ".EmbeddedHotkeyLabel", source, translated);
+        return true;
     }
 
     private static bool TryTranslateUntilCalendarTimeOfDay(
