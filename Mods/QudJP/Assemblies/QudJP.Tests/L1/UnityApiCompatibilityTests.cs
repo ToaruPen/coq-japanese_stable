@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace QudJP.Tests.L1;
 
@@ -6,9 +7,13 @@ namespace QudJP.Tests.L1;
 [NUnit.Framework.Category("L1")]
 public sealed class UnityApiCompatibilityTests
 {
+    private const RegexOptions SourceRegexOptions = RegexOptions.CultureInvariant;
+
     [NUnit.Framework.Test]
     public void RuntimeDiagnostics_AvoidDirectUnityColorAlphaAccess()
     {
+        var directColorAlphaPattern = new Regex(@"\.\s*color\s*\.\s*a", SourceRegexOptions);
+        var faceColorAlphaPattern = new Regex(@"GetColor\s*\(\s*""_FaceColor""\s*\)\s*\.\s*a", SourceRegexOptions);
         var sourceRoot = Path.Combine(
             TestProjectPaths.GetRepositoryRoot(),
             "Mods",
@@ -22,11 +27,11 @@ public sealed class UnityApiCompatibilityTests
 
             NUnit.Framework.Assert.That(
                 source,
-                NUnit.Framework.Does.Not.Contain(".color.a"),
+                NUnit.Framework.Does.Not.Match(directColorAlphaPattern),
                 Path.GetRelativePath(TestProjectPaths.GetRepositoryRoot(), sourcePath));
             NUnit.Framework.Assert.That(
                 source,
-                NUnit.Framework.Does.Not.Contain("GetColor(\"_FaceColor\").a"),
+                NUnit.Framework.Does.Not.Match(faceColorAlphaPattern),
                 Path.GetRelativePath(TestProjectPaths.GetRepositoryRoot(), sourcePath));
         }
     }
@@ -34,6 +39,9 @@ public sealed class UnityApiCompatibilityTests
     [NUnit.Framework.Test]
     public void RuntimeDiagnostics_AvoidRectCenterImplicitVectorConversion()
     {
+        var rectCenterTransformPattern = new Regex(
+            @"TransformPoint\s*\(\s*text\s*\.\s*rectTransform\s*\.\s*rect\s*\.\s*center\s*\)",
+            SourceRegexOptions);
         var sourcePath = Path.Combine(
             TestProjectPaths.GetRepositoryRoot(),
             "Mods",
@@ -46,6 +54,6 @@ public sealed class UnityApiCompatibilityTests
 
         NUnit.Framework.Assert.That(
             source,
-            NUnit.Framework.Does.Not.Contain("TransformPoint(text.rectTransform.rect.center)"));
+            NUnit.Framework.Does.Not.Match(rectCenterTransformPattern));
     }
 }

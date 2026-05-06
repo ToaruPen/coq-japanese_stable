@@ -1,4 +1,5 @@
 #if HAS_TMP
+using System;
 using System.Reflection;
 using UnityEngine;
 #endif
@@ -17,34 +18,48 @@ internal static class UnityRuntimeCompatibility
 
     internal static float? TryGetColorAlpha(Color color)
     {
-        var boxedColor = (object)color;
-        var colorType = boxedColor.GetType();
-
-        var alphaField = colorType.GetField("a", PublicInstance);
-        if (alphaField?.FieldType == typeof(float) && alphaField.GetValue(boxedColor) is float fieldValue)
+        try
         {
-            return fieldValue;
-        }
+            var boxedColor = (object)color;
+            var colorType = boxedColor.GetType();
 
-        var alphaProperty = colorType.GetProperty("a", PublicInstance);
-        if (alphaProperty?.PropertyType == typeof(float)
-            && alphaProperty.GetIndexParameters().Length == 0
-            && alphaProperty.GetValue(boxedColor, null) is float propertyValue)
+            var alphaField = colorType.GetField("a", PublicInstance);
+            if (alphaField?.FieldType == typeof(float) && alphaField.GetValue(boxedColor) is float fieldValue)
+            {
+                return fieldValue;
+            }
+
+            var alphaProperty = colorType.GetProperty("a", PublicInstance);
+            if (alphaProperty?.PropertyType == typeof(float)
+                && alphaProperty.GetIndexParameters().Length == 0
+                && alphaProperty.GetValue(boxedColor, null) is float propertyValue)
+            {
+                return propertyValue;
+            }
+
+            return null;
+        }
+        catch (Exception)
         {
-            return propertyValue;
+            return null;
         }
-
-        return null;
     }
 
     internal static float? TryGetFaceColorAlpha(Material? material)
     {
-        if (material is null || !material.HasProperty("_FaceColor"))
+        try
+        {
+            if (material is null || !material.HasProperty("_FaceColor"))
+            {
+                return null;
+            }
+
+            return TryGetColorAlpha(material.GetColor("_FaceColor"));
+        }
+        catch (Exception)
         {
             return null;
         }
-
-        return TryGetColorAlpha(material.GetColor("_FaceColor"));
     }
 #endif
 }
