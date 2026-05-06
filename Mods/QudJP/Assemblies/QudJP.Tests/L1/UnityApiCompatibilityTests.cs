@@ -9,6 +9,10 @@ public sealed class UnityApiCompatibilityTests
 {
     private const RegexOptions SourceRegexOptions = RegexOptions.CultureInvariant;
 
+    private static readonly Regex RectCenterTransformPattern = new(
+        @"TransformPoint\s*\(\s*[A-Za-z_]\w*(?:\s*\.\s*[A-Za-z_]\w*)*\s*\.\s*rectTransform\s*\.\s*rect\s*\.\s*center\s*\)",
+        SourceRegexOptions);
+
     [NUnit.Framework.Test]
     public void RuntimeDiagnostics_AvoidDirectUnityColorAlphaAccess()
     {
@@ -39,9 +43,6 @@ public sealed class UnityApiCompatibilityTests
     [NUnit.Framework.Test]
     public void RuntimeDiagnostics_AvoidRectCenterImplicitVectorConversion()
     {
-        var rectCenterTransformPattern = new Regex(
-            @"TransformPoint\s*\(\s*text\s*\.\s*rectTransform\s*\.\s*rect\s*\.\s*center\s*\)",
-            SourceRegexOptions);
         var sourcePath = Path.Combine(
             TestProjectPaths.GetRepositoryRoot(),
             "Mods",
@@ -54,6 +55,23 @@ public sealed class UnityApiCompatibilityTests
 
         NUnit.Framework.Assert.That(
             source,
-            NUnit.Framework.Does.Not.Match(rectCenterTransformPattern));
+            NUnit.Framework.Does.Not.Match(RectCenterTransformPattern));
+    }
+
+    [NUnit.Framework.TestCase("TransformPoint(text.rectTransform.rect.center)")]
+    [NUnit.Framework.TestCase("TransformPoint(original.rectTransform.rect.center)")]
+    [NUnit.Framework.TestCase("TransformPoint(state.currentText.rectTransform.rect.center)")]
+    [NUnit.Framework.TestCase("TransformPoint( text . rectTransform . rect . center )")]
+    public void RectCenterTransformPattern_CatchesReceiverNameVariants(string source)
+    {
+        NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Match(RectCenterTransformPattern));
+    }
+
+    [NUnit.Framework.Test]
+    public void RectCenterTransformPattern_AllowsExplicitVectorConversion()
+    {
+        const string source = "TransformPoint(UnityRuntimeCompatibility.ToVector3(rectCenter))";
+
+        NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Not.Match(RectCenterTransformPattern));
     }
 }
