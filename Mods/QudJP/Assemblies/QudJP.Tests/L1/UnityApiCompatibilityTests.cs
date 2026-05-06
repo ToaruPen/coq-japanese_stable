@@ -10,7 +10,7 @@ public sealed class UnityApiCompatibilityTests
     private const RegexOptions SourceRegexOptions = RegexOptions.CultureInvariant;
 
     private static readonly Regex RectCenterTransformPattern = new(
-        @"TransformPoint\s*\(\s*[A-Za-z_]\w*(?:\s*\.\s*[A-Za-z_]\w*)*\s*\.\s*rectTransform\s*\.\s*rect\s*\.\s*center\s*\)",
+        @"TransformPoint\s*\(\s*[\s\S]*?\.\s*rectTransform\s*\.\s*rect\s*\.\s*center\s*\)",
         SourceRegexOptions);
 
     [NUnit.Framework.Test]
@@ -61,6 +61,8 @@ public sealed class UnityApiCompatibilityTests
     [NUnit.Framework.TestCase("TransformPoint(text.rectTransform.rect.center)")]
     [NUnit.Framework.TestCase("TransformPoint(original.rectTransform.rect.center)")]
     [NUnit.Framework.TestCase("TransformPoint(state.currentText.rectTransform.rect.center)")]
+    [NUnit.Framework.TestCase("TransformPoint(GetText().rectTransform.rect.center)")]
+    [NUnit.Framework.TestCase("TransformPoint(((TMP_Text)text).rectTransform.rect.center)")]
     [NUnit.Framework.TestCase("TransformPoint( text . rectTransform . rect . center )")]
     public void RectCenterTransformPattern_CatchesReceiverNameVariants(string source)
     {
