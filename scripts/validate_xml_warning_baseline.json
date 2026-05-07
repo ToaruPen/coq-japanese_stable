@@ -4,7 +4,7 @@
     {
       "path": "Mods/QudJP/Localization/Conversations.jp.xml",
       "warning": "Empty text in element 'text'",
-      "note": "Intentional upstream-preserved Tzedech/Welcome slot; base Conversations.xml 2.0.4 has the same empty <text></text> at line 12869."
+      "note": "Intentional upstream-preserved Tzedech/Welcome slot; base Conversations.xml 1.0.4 has the same empty <text></text> at line 12869."
     }
   ]
 }

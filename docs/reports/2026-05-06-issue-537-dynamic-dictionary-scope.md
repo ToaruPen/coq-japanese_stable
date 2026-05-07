@@ -10,7 +10,7 @@ HistorySpice surfaces that still need owner translators.
 
 - `docs/RULES.md` owner-route and fixed-leaf policy.
 - `Mods/QudJP/Localization/AGENTS.md` dictionary acceptance policy.
-- Decompiled Caves of Qud 2.0.4 source under `~/dev/coq-decompiled_stable/`.
+- Decompiled Caves of Qud 1.0.4 source under `~/dev/coq-decompiled_stable/`.
 - Structural source searches over `XRL.World.Effects`, especially
   `GetDescription()`, `GetDetails()`, `DisplayName = ...`, and `E.AddTag(...)`
   producers.

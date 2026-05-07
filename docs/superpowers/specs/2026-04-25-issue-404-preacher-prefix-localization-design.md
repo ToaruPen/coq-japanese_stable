@@ -115,5 +115,5 @@ dotnet build Mods/QudJP/Assemblies/QudJP.csproj
 ## Risks
 
 - **Translator drift.** A future contributor who edits these entries without the `Postfix="'}}"` invariant will silently re-introduce the imbalance. Mitigation: the test in step 1 owns the invariant.
-- **Extra Preacher entry surfaces in 2.0.4+ data.** A future game patch could add `Mechanimist Preacher 5`. The Book-set assertion will fail loudly so it is treated as an explicit decision rather than silent omission.
+- **Extra Preacher entry surfaces in 1.0.4+ data.** A future game patch could add `Mechanimist Preacher 5`. The Book-set assertion will fail loudly so it is treated as an explicit decision rather than silent omission.
 - **Translation tone.** `説教者は言う、` is a defensible reading of `The preacher says,`. If the project glossary later prefers `司祭は告げる、` or similar, change in one place; the test only asserts non-ASCII content, not exact wording.

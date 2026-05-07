@@ -181,7 +181,7 @@ def test_classify_family_keeps_generic_string_construction_as_candidate_only() -
 def _inventory(families: list[TextConstructionFamily]) -> TextConstructionInventory:
     return {
         "schema_version": "1.0",
-        "game_version": "2.0.4",
+        "game_version": "1.0.4",
         "totals": {},
         "families": families,
     }

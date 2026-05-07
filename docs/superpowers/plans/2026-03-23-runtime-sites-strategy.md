@@ -504,7 +504,7 @@ Mitigation:
 
 - Prefer stable producer methods over fragile IL surgery.
 - Keep L2/L2G signature validation for new targets.
-- Document the exact 2.0.4 assumptions per new producer patch.
+- Document the exact 1.0.4 assumptions per new producer patch.
 
 ### 3. Pattern-order regressions
 
@@ -564,7 +564,7 @@ In practice, that means:
 
 1. Keep existing sink patches working as observability/fallback layers.
 2. Add new producer patches incrementally rather than replacing the sink safety net in one step.
-3. Validate new producer patches under the current game version (`2.0.4`) and Rosetta runtime flow before calling a cluster "done."
+3. Validate new producer patches under the current game version (`1.0.4`) and Rosetta runtime flow before calling a cluster "done."
 
 ## Validation plan
 

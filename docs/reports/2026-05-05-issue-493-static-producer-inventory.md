@@ -156,7 +156,7 @@ uvx basedpyright scripts/scan_static_producer_inventory.py scripts/tests/test_sc
 The Python entrypoint invokes the Roslyn console scanner and keeps this JSON
 shape stable for current consumers.
 
-In the current decompiled `2.0.4` snapshot, Roslyn semantic enrichment resolved
+In the current decompiled `1.0.4` snapshot, Roslyn semantic enrichment resolved
 or produced candidate symbols for every inventoried callsite:
 
 | `roslyn_symbol_status` | Count |

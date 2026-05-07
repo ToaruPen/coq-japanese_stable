@@ -199,7 +199,7 @@ UI 文字列・アイテム名・能力名など、プロシージャルでな�
 </conversations>
 ```
 
-- ID (`conversation ID`、`node ID`、`choice ID`、`object Name` など) は **ゲームバージョン 2.0.4** の値と完全一致する必要があります。
+- ID (`conversation ID`、`node ID`、`choice ID`、`object Name` など) は **ゲームバージョン 1.0.4** の値と完全一致する必要があります。
 - `=variable.name=` のようなランタイム置換プレースホルダーは保持してください。
 - `<text>` 要素の中身 (およびそれに類する表示テキスト要素) だけを日本語化します。
 
@@ -402,9 +402,9 @@ PR を出すと GitHub Actions (`.github/workflows/ci.yml`) が変更ファイ�
 
 このファイルはゲームの著作物です。`.gitignore` で除外されていますが、意図的に追加しないよう注意してください。同様に、`Mods/QudJP/Assemblies/QudJP.dll` のビルド成果物もコミット対象ではありません。
 
-**ゲームバージョン 2.0.4 に合わせる**
+**ゲームバージョン 1.0.4 に合わせる**
 
-Blueprint ID、Conversation ID、メソッドシグネチャはすべてゲームバージョン 2.0.4 に合わせてください。バージョンが異なると Harmony パッチが当たらなくなります。
+Blueprint ID、Conversation ID、メソッドシグネチャはすべてゲームバージョン 1.0.4 に合わせてください。バージョンが異なると Harmony パッチが当たらなくなります。
 
 **クリーンルーム実装**
 
@@ -441,7 +441,7 @@ Blueprint ID、Conversation ID、メソッドシグネチャはすべてゲー�
 
 Issue を開く際は以下を含めてください:
 
-- **OS とバージョン** (例: Windows 11 / Caves of Qud v2.0.4 / QudJP v0.1.0)
+- **OS とバージョン** (例: Windows 11 / Caves of Qud v1.0.4 / QudJP v0.1.0)
 - **再現手順** — 最小ステップ
 - **期待される挙動 / 実際の挙動**
 - **`Player.log` の該当行** (上述の OS 別パスから抜粋)

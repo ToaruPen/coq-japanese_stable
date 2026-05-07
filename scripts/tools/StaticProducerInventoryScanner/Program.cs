@@ -135,7 +135,7 @@ internal static class InventoryWriter
 internal static class StaticProducerScanner
 {
     private const string SchemaVersion = "1.0";
-    private const string GameVersion = "2.0.4";
+    private const string GameVersion = "1.0.4";
     internal static readonly CSharpParseOptions ParseOptions =
         CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Preview);
 
