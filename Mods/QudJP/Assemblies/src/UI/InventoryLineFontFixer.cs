@@ -283,7 +283,17 @@ internal static class InventoryLineFontFixer
         }
         catch (Exception ex)
         {
-            Debug.LogWarning($"[QudJP] InventoryLineFontFixer diagnostics failed: {ex.GetType().Name}: {ex.Message}");
+            try
+            {
+                System.Diagnostics.Trace.TraceWarning(
+                    "QudJP: InventoryLineFontFixer diagnostics failed: {0}: {1}",
+                    ex.GetType().Name,
+                    ex.Message);
+            }
+            catch
+            {
+                // Diagnostics must never interrupt inventory row translation.
+            }
         }
     }
 
