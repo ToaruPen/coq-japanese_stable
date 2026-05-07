@@ -91,6 +91,27 @@ def test_verify_workshop_download_reports_missing_assembly(tmp_path: Path) -> No
     assert downloaded_dll_sha256 is None
 
 
+def test_verify_workshop_download_reports_unreadable_manifest(tmp_path: Path) -> None:
+    """A manifest with invalid encoding is reported as a validation finding."""
+    expected_dll = tmp_path / "QudJP.dll"
+    expected_dll.write_bytes(b"fixed dll")
+    workshop_dir = tmp_path / "workshop" / "3718988020"
+    (workshop_dir / "Assemblies").mkdir(parents=True)
+    (workshop_dir / "manifest.json").write_bytes(b"\xff")
+    (workshop_dir / "Assemblies" / "QudJP.dll").write_bytes(b"fixed dll")
+
+    findings, downloaded_dll_sha256 = verify_workshop_download(
+        workshop_dir,
+        expected_version="0.2.46",
+        expected_dll=expected_dll,
+    )
+
+    assert len(findings) == 2
+    assert findings[0].startswith("Workshop manifest is not valid JSON or could not be read:")
+    assert findings[1] == "manifest version mismatch: expected 0.2.46, got <missing>"
+    assert downloaded_dll_sha256 == "17af6e82115c251ea6aea5e9900ccfcd0f19ab211fd9f92d9e48b6efd02d19c6"
+
+
 def test_verify_workshop_download_accepts_expected_release_zip(tmp_path: Path) -> None:
     """The expected DLL can be read from the release ZIP used for Workshop staging."""
     release_zip = tmp_path / "QudJP-v0.2.46.zip"

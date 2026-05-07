@@ -79,8 +79,8 @@ def verify_workshop_download(
 
     try:
         actual_version = _read_manifest_version(manifest_path)
-    except json.JSONDecodeError as exc:
-        findings.append(f"Workshop manifest is not valid JSON: {exc.msg}")
+    except (json.JSONDecodeError, OSError, UnicodeDecodeError) as exc:
+        findings.append(f"Workshop manifest is not valid JSON or could not be read: {exc}")
         actual_version = None
 
     if actual_version != expected_version:

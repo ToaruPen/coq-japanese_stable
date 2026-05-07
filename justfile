@@ -188,13 +188,17 @@ workshop-download-check version expected_dll="" workshop_dir="":
           "${HOME}/.steam/steam/steamapps/workshop/content/333640/3718988020"
           "${HOME}/.local/share/Steam/steamapps/workshop/content/333640/3718988020"
         )
-        resolved_workshop_dir="${workshop_candidates[0]}"
+        resolved_workshop_dir=""
         for candidate in "${workshop_candidates[@]}"; do
           if [ -d "${candidate}" ]; then
             resolved_workshop_dir="${candidate}"
             break
           fi
         done
+        if [ -z "${resolved_workshop_dir}" ]; then
+          printf 'error: Workshop download directory not found; pass workshop_dir explicitly\n' >&2
+          exit 1
+        fi
         ;;
       *)
         printf 'error: pass workshop_dir explicitly on this platform\n' >&2
