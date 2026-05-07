@@ -10,7 +10,7 @@
 
 ---
 
-### Task 1: Character Status Fallback Safety
+## Task 1: Character Status Fallback Safety
 
 **Files:**
 - Modify: `Mods/QudJP/Assemblies/QudJP.Tests/L2/StatusScreenBindingOwnerPatchTests.cs`
@@ -36,7 +36,7 @@ Run: `dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter 
 
 Expected: all focused status binding tests pass.
 
-### Task 2: QudJP Initialization Retry Safety
+## Task 2: QudJP Initialization Retry Safety
 
 **Files:**
 - Modify: `Mods/QudJP/Assemblies/QudJP.Tests/L2/QudJPModTests.cs`
@@ -44,7 +44,7 @@ Expected: all focused status binding tests pass.
 
 - [x] **Step 1: Write the failing test**
 
-Add test helpers to reset and inspect `isInitialized`, then add a test that calls a new internal `QudJPMod.MarkInitializationFailedForTests()` and asserts a later attempt is not locked out.
+Add test helpers to reset and inspect `isInitialized`, then add tests that call `QudJPMod.InitializeForTests(...)` and verify failures reset the guard so a later attempt is not locked out. Use `ResetInitializationForTests()` to isolate each test and `IsInitializedForTests()` to assert the guard state.
 
 - [x] **Step 2: Run test to verify it fails**
 
@@ -62,7 +62,7 @@ Run: `dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter 
 
 Expected: all focused QudJPMod tests pass.
 
-### Task 3: Route Validation Gate
+## Task 3: Route Validation Gate
 
 **Files:**
 - Modify: `scripts/tests/test_validate_pattern_routes.py`
@@ -90,7 +90,7 @@ Run: `uv run pytest scripts/tests/test_validate_pattern_routes.py -q`
 
 Expected: route tests pass.
 
-### Task 4: Test Hygiene Fixes
+## Task 4: Test Hygiene Fixes
 
 **Files:**
 - Modify: `scripts/tests/test_artifact_gitignore.py`
@@ -118,7 +118,7 @@ Run both commands from Step 2 again.
 
 Expected: both focused tests pass.
 
-### Final Verification
+## Final Verification
 
 - [x] Run `just test-l1`
 - [x] Run `just python-test-filter 'validate_pattern_routes or artifact_gitignore or translate_corpus_batch'`

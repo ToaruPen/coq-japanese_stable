@@ -204,9 +204,14 @@ def main(argv: list[str] | None = None) -> int:
         help="Require an exact route count. May be specified more than once.",
     )
     args = parser.parse_args(argv)
+    expected_counts: dict[str, int] = {}
+    for route, count in args.expect_count:
+        if route in expected_counts:
+            parser.error(f"--expect-count for route '{route}' is duplicated")
+        expected_counts[route] = count
 
     try:
-        report = validate_pattern_routes(args.path, dict(args.expect_count))
+        report = validate_pattern_routes(args.path, expected_counts)
     except (FileNotFoundError, TypeError, json.JSONDecodeError) as exc:
         print(f"Error: {exc}", file=sys.stderr)  # noqa: T201
         return 1

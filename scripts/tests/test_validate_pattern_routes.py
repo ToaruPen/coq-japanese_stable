@@ -21,6 +21,11 @@ _EXPECTED_MESSAGE_ROUTE_COUNTS = {
     "unclassified": 6,
 }
 
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+_REPOSITORY_MESSAGE_PATTERNS_PATH = (
+    _REPO_ROOT / "Mods" / "QudJP" / "Localization" / "Dictionaries" / "messages.ja.json"
+)
+
 
 def _write_patterns(path: Path, patterns: list[dict[str, str]]) -> None:
     path.write_text(json.dumps({"patterns": patterns}, ensure_ascii=False), encoding="utf-8")
@@ -91,11 +96,14 @@ def test_main_reports_invalid_route_and_returns_nonzero(
     assert "invalid route 'unknown-route'" in captured.out
 
 
-def test_repository_message_patterns_match_expected_route_inventory() -> None:
+def test_repository_message_patterns_match_expected_route_inventory(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """The shipped message pattern dictionary must match the reviewed route inventory."""
-    path = Path("Mods/QudJP/Localization/Dictionaries/messages.ja.json")
+    monkeypatch.chdir(tmp_path)
 
-    report = validate_pattern_routes(path, _EXPECTED_MESSAGE_ROUTE_COUNTS)
+    report = validate_pattern_routes(_REPOSITORY_MESSAGE_PATTERNS_PATH, _EXPECTED_MESSAGE_ROUTE_COUNTS)
 
     assert report.missing_routes == []
     assert report.invalid_routes == []
@@ -142,6 +150,19 @@ def test_main_reports_route_count_mismatch_and_returns_nonzero(
     assert result == 1
     assert "Route count mismatches: 1" in captured.out
     assert "route 'emit-message' expected 2 entries but found 1" in captured.out
+
+
+def test_main_rejects_duplicate_expected_route_counts(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """CLI fails when --expect-count repeats a route."""
+    path = tmp_path / "duplicate-count.json"
+    _write_patterns(path, [{"pattern": "^You hit (.+)$", "template": "x", "route": "emit-message"}])
+
+    with pytest.raises(SystemExit) as exc_info:
+        main([str(path), "--expect-count", "emit-message=1", "--expect-count", "emit-message=2"])
+    captured = capsys.readouterr()
+
+    assert exc_info.value.code == 2
+    assert "--expect-count for route 'emit-message' is duplicated" in captured.err
 
 
 def test_main_reports_successful_validation(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
