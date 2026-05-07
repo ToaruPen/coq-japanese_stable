@@ -64,6 +64,7 @@ vX.Y.Z / <short-git-hash>
 
 - [ ] Workshop page title, description, preview image, visibility, file size, and changenote checked
 - [ ] Subscribe/resubscribe checked
+- [ ] `just workshop-download-check X.Y.Z dist/release-assets/vX.Y.Z/QudJP-vX.Y.Z.zip`
 - [ ] Mod Manager lists QudJP with expected version and preview
 - [ ] Options screen renders Japanese text and CJK glyphs
 - [ ] One short conversation renders Japanese text and CJK glyphs

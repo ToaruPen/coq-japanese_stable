@@ -13,6 +13,10 @@ public sealed class UnityApiCompatibilityTests
         @"TransformPoint\s*\(\s*(?!UnityRuntimeCompatibility\s*\.\s*ToVector3\s*\()[\s\S]*?\.\s*rectTransform\s*\.\s*rect\s*\.\s*center\s*\)",
         SourceRegexOptions);
 
+    private static readonly Regex DirectVector2CoordinateAccessPattern = new(
+        @"\b(?:value|vector)\s*\.\s*[xy]\b",
+        SourceRegexOptions);
+
     [NUnit.Framework.Test]
     public void RuntimeDiagnostics_AvoidDirectUnityColorAlphaAccess()
     {
@@ -83,5 +87,31 @@ public sealed class UnityApiCompatibilityTests
         var directColorAlphaPattern = new Regex(@"\.\s*color\s*\.\s*a\b", SourceRegexOptions);
 
         NUnit.Framework.Assert.That("text.color.alpha", NUnit.Framework.Does.Not.Match(directColorAlphaPattern));
+    }
+
+    [NUnit.Framework.TestCase("new Vector3(value.x, value.y, 0f)")]
+    [NUnit.Framework.TestCase("new Vector3(vector.x, vector.y, 0f)")]
+    public void DirectVector2CoordinateAccessPattern_CatchesKnownParameterNames(string source)
+    {
+        NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Match(DirectVector2CoordinateAccessPattern));
+    }
+
+    [NUnit.Framework.Test]
+    public void RuntimeCompatibility_ToVector3AvoidsDirectVector2CoordinateAccess()
+    {
+        var sourcePath = Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Assemblies",
+            "src",
+            "UI",
+            "UnityRuntimeCompatibility.cs");
+        var source = File.ReadAllText(sourcePath);
+
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Not.Match(DirectVector2CoordinateAccessPattern),
+            "UnityEngine.Vector2 x/y access can compile to get_x/get_y calls that are absent in the shipped game runtime.");
     }
 }

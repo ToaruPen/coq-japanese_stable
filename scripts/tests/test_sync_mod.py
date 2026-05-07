@@ -1,5 +1,6 @@
 """Tests for the sync_mod module."""
 
+import json
 import subprocess
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -9,6 +10,8 @@ import pytest
 from scripts.sync_mod import (
     _RSYNC_EXCLUDES,
     _RSYNC_INCLUDES,
+    DEFAULT_DEV_TITLE_SUFFIX,
+    DEFAULT_DEV_VERSION_SUFFIX,
     build_rsync_command,
     main,
     resolve_default_destination,
@@ -16,6 +19,8 @@ from scripts.sync_mod import (
 )
 
 LOCALIZATION_DOC_NAMES = ("AGENTS.md", "CLAUDE.md", "README.md")
+SAMPLE_RELEASE_VERSION = "1.2.3"
+SAMPLE_MOD_TITLE = "Caves of Qud Japanese Mod"
 
 
 class TestBuildRsyncCommand:
@@ -263,6 +268,222 @@ class TestRunSync:
         assert not (destination / "src.cs").exists()
         assert not (destination / "stale.txt").exists()
 
+    def test_python_fallback_rewrites_dev_manifest_only_at_destination(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        """Dev sync rewrites manifest display fields without mutating source."""
+        source = tmp_path / "source"
+        destination = tmp_path / "dest"
+        source.mkdir()
+        source_manifest = source / "manifest.json"
+        source_manifest.write_text(
+            json.dumps(
+                {
+                    "Id": "QudJP",
+                    "Title": SAMPLE_MOD_TITLE,
+                    "Version": SAMPLE_RELEASE_VERSION,
+                },
+            ),
+            encoding="utf-8",
+        )
+
+        with patch("scripts.sync_mod.shutil.which", return_value=None):
+            run_sync(
+                source,
+                destination,
+                manifest_version_suffix=DEFAULT_DEV_VERSION_SUFFIX,
+                manifest_title_suffix=DEFAULT_DEV_TITLE_SUFFIX,
+            )
+
+        assert json.loads(source_manifest.read_text(encoding="utf-8")) == {
+            "Id": "QudJP",
+            "Title": SAMPLE_MOD_TITLE,
+            "Version": SAMPLE_RELEASE_VERSION,
+        }
+        assert json.loads((destination / "manifest.json").read_text(encoding="utf-8")) == {
+            "Id": "QudJP",
+            "Title": f"{SAMPLE_MOD_TITLE}{DEFAULT_DEV_TITLE_SUFFIX}",
+            "Version": f"{SAMPLE_RELEASE_VERSION}{DEFAULT_DEV_VERSION_SUFFIX}",
+        }
+
+    def test_python_fallback_dev_manifest_suffix_is_idempotent(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        """Dev sync does not duplicate an existing destination-only suffix."""
+        source = tmp_path / "source"
+        destination = tmp_path / "dest"
+        source.mkdir()
+        (source / "manifest.json").write_text(
+            json.dumps(
+                {
+                    "Title": f"{SAMPLE_MOD_TITLE}{DEFAULT_DEV_TITLE_SUFFIX}",
+                    "Version": f"{SAMPLE_RELEASE_VERSION}{DEFAULT_DEV_VERSION_SUFFIX}",
+                },
+            ),
+            encoding="utf-8",
+        )
+
+        with patch("scripts.sync_mod.shutil.which", return_value=None):
+            run_sync(
+                source,
+                destination,
+                manifest_version_suffix=DEFAULT_DEV_VERSION_SUFFIX,
+                manifest_title_suffix=DEFAULT_DEV_TITLE_SUFFIX,
+            )
+
+        assert json.loads((destination / "manifest.json").read_text(encoding="utf-8")) == {
+            "Title": f"{SAMPLE_MOD_TITLE}{DEFAULT_DEV_TITLE_SUFFIX}",
+            "Version": f"{SAMPLE_RELEASE_VERSION}{DEFAULT_DEV_VERSION_SUFFIX}",
+        }
+
+    def test_python_fallback_requires_title_when_dev_title_suffix_is_set(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        """Dev title rewrite fails when manifest Title is missing."""
+        source = tmp_path / "source"
+        destination = tmp_path / "dest"
+        source.mkdir()
+        (source / "manifest.json").write_text(
+            json.dumps({"Version": SAMPLE_RELEASE_VERSION}),
+            encoding="utf-8",
+        )
+
+        with (
+            patch("scripts.sync_mod.shutil.which", return_value=None),
+            pytest.raises(ValueError, match="non-empty string Title"),
+        ):
+            run_sync(
+                source,
+                destination,
+                manifest_version_suffix=DEFAULT_DEV_VERSION_SUFFIX,
+                manifest_title_suffix=DEFAULT_DEV_TITLE_SUFFIX,
+            )
+
+    def test_python_fallback_requires_manifest_when_dev_rewrite_is_enabled(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        """Dev manifest rewrite fails fast when source manifest is missing."""
+        source = tmp_path / "source"
+        destination = tmp_path / "dest"
+        source.mkdir()
+
+        with (
+            patch("scripts.sync_mod.shutil.which", return_value=None),
+            pytest.raises(FileNotFoundError, match=r"manifest\.json not found"),
+        ):
+            run_sync(
+                source,
+                destination,
+                manifest_version_suffix=DEFAULT_DEV_VERSION_SUFFIX,
+                manifest_title_suffix=DEFAULT_DEV_TITLE_SUFFIX,
+            )
+
+    def test_python_fallback_dry_run_reports_dev_manifest_without_writing(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        """Dry-run dev sync reports the manifest rewrite but writes nothing."""
+        source = tmp_path / "source"
+        destination = tmp_path / "dest"
+        source.mkdir()
+        (source / "manifest.json").write_text(
+            json.dumps({"Version": SAMPLE_RELEASE_VERSION}),
+            encoding="utf-8",
+        )
+
+        with patch("scripts.sync_mod.shutil.which", return_value=None):
+            result = run_sync(
+                source,
+                destination,
+                dry_run=True,
+                manifest_version_suffix=DEFAULT_DEV_VERSION_SUFFIX,
+                manifest_title_suffix=DEFAULT_DEV_TITLE_SUFFIX,
+            )
+
+        assert result.returncode == 0
+        assert "Would rewrite manifest.json display metadata" in result.stdout
+        assert not destination.exists()
+
+    def test_rsync_rewrites_dev_manifest_after_sync(self, tmp_path: Path) -> None:
+        """Rsync mode applies dev manifest metadata after rsync copies files."""
+        source = tmp_path / "source"
+        destination = tmp_path / "dest"
+        source.mkdir()
+        destination.mkdir()
+        (source / "manifest.json").write_text(
+            json.dumps({"Title": SAMPLE_MOD_TITLE, "Version": SAMPLE_RELEASE_VERSION}),
+            encoding="utf-8",
+        )
+
+        def fake_rsync(*_args: object, **_kwargs: object) -> subprocess.CompletedProcess[str]:
+            (destination / "manifest.json").write_text(
+                json.dumps({"Title": SAMPLE_MOD_TITLE, "Version": SAMPLE_RELEASE_VERSION}),
+                encoding="utf-8",
+            )
+            return subprocess.CompletedProcess(
+                args=["rsync"],
+                returncode=0,
+                stdout="",
+                stderr="",
+            )
+
+        with (
+            patch("scripts.sync_mod.shutil.which", return_value="/usr/bin/rsync"),
+            patch("scripts.sync_mod.subprocess.run", side_effect=fake_rsync),
+        ):
+            run_sync(
+                source,
+                destination,
+                manifest_version_suffix=DEFAULT_DEV_VERSION_SUFFIX,
+                manifest_title_suffix=DEFAULT_DEV_TITLE_SUFFIX,
+            )
+
+        assert json.loads((destination / "manifest.json").read_text(encoding="utf-8")) == {
+            "Title": f"{SAMPLE_MOD_TITLE}{DEFAULT_DEV_TITLE_SUFFIX}",
+            "Version": f"{SAMPLE_RELEASE_VERSION}{DEFAULT_DEV_VERSION_SUFFIX}",
+        }
+
+    def test_rsync_dry_run_reports_dev_manifest_without_writing(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        """Rsync dry-run reports the manifest rewrite but writes nothing."""
+        source = tmp_path / "source"
+        destination = tmp_path / "dest"
+        source.mkdir()
+        (source / "manifest.json").write_text(
+            json.dumps({"Version": SAMPLE_RELEASE_VERSION}),
+            encoding="utf-8",
+        )
+
+        with (
+            patch("scripts.sync_mod.shutil.which", return_value="/usr/bin/rsync"),
+            patch(
+                "scripts.sync_mod.subprocess.run",
+                return_value=subprocess.CompletedProcess(
+                    args=["rsync"],
+                    returncode=0,
+                    stdout="Would copy manifest.json\n",
+                    stderr="",
+                ),
+            ),
+        ):
+            result = run_sync(
+                source,
+                destination,
+                dry_run=True,
+                manifest_version_suffix=DEFAULT_DEV_VERSION_SUFFIX,
+                manifest_title_suffix=DEFAULT_DEV_TITLE_SUFFIX,
+            )
+
+        assert "Would copy manifest.json" in result.stdout
+        assert "Would rewrite manifest.json display metadata" in result.stdout
+        assert not destination.exists()
+
     def test_python_fallback_preserves_local_workshop_json(
         self,
         tmp_path: Path,
@@ -426,3 +647,41 @@ class TestMain:
         assert result == 0
         assert mock_run.call_args.args[0] == source
         assert mock_run.call_args.args[1] == destination
+
+    def test_dev_flag_forwards_manifest_suffixes(self, tmp_path: Path) -> None:
+        """--dev forwards local-only manifest suffixes to run_sync."""
+        project_root = tmp_path / "repo"
+        source = project_root / "Mods" / "QudJP"
+        source.mkdir(parents=True)
+        destination = tmp_path / "custom-dest"
+
+        with (
+            patch("scripts.sync_mod._find_project_root", return_value=project_root),
+            patch(
+                "scripts.sync_mod.run_sync",
+                return_value=subprocess.CompletedProcess(
+                    args=["sync"],
+                    returncode=0,
+                    stdout="",
+                    stderr="",
+                ),
+            ) as mock_run,
+        ):
+            result = main(["--dev", "--dest", str(destination)])
+
+        assert result == 0
+        assert (
+            mock_run.call_args.kwargs["manifest_version_suffix"]
+            == DEFAULT_DEV_VERSION_SUFFIX
+        )
+        assert (
+            mock_run.call_args.kwargs["manifest_title_suffix"]
+            == DEFAULT_DEV_TITLE_SUFFIX
+        )
+
+    def test_dev_suffix_flags_require_dev_flag(self) -> None:
+        """Custom dev suffix flags fail fast without --dev."""
+        with pytest.raises(SystemExit) as exc_info:
+            main(["--dev-version-suffix", "-local"])
+
+        assert exc_info.value.code == 2
