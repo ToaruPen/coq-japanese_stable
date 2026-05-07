@@ -560,8 +560,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [Test]
     public void GameObjectHeal_TranslatesHealMessage_WhenPatched()
     {
-        WritePatternDictionary(
-            ("^You heal for (\\d+) hit points?\\.$", "あなたは{0}HP回復した。"));
+        UseRepositoryPatternDictionary();
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -581,6 +580,118 @@ public sealed class CombatAndLogMessageQueuePatchTests
             target.Heal(5, message: true);
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("あなたは5HP回復した。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectHeal_TranslatesHpLossMessage_WhenPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectHealTarget), nameof(DummyGameObjectHealTarget.Heal), typeof(int), typeof(bool), typeof(bool), typeof(bool)),
+                typeof(GameObjectHealTranslationPatch));
+
+            var target = new DummyGameObjectHealTarget
+            {
+                MessageToSend = "You lose 1 hit point.",
+            };
+
+            target.Heal(-1, message: true);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("あなたは1HP失った。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectHeal_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        WritePatternDictionary(
+            ("^You heal for (\\d+) hit points?\\.$", "あなたは{0}HP回復した。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("You heal for 5 hit points.", null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You heal for 5 hit points."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectHeal_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        WritePatternDictionary(
+            ("^You heal for (\\d+) hit points?\\.$", "あなたは{0}HP回復した。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectHealTarget), nameof(DummyGameObjectHealTarget.Heal), typeof(int), typeof(bool), typeof(bool), typeof(bool)),
+                typeof(GameObjectHealTranslationPatch));
+
+            var source = MessageFrameTranslator.MarkDirectTranslation("You heal for 5 hit points.");
+            var target = new DummyGameObjectHealTarget
+            {
+                MessageToSend = source,
+            };
+
+            target.Heal(5, message: true);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You heal for 5 hit points."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectHeal_LeavesEmptyMessageUnchanged_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectHealTarget), nameof(DummyGameObjectHealTarget.Heal), typeof(int), typeof(bool), typeof(bool), typeof(bool)),
+                typeof(GameObjectHealTranslationPatch));
+
+            var target = new DummyGameObjectHealTarget
+            {
+                MessageToSend = string.Empty,
+            };
+
+            target.Heal(5, message: true);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(string.Empty));
         }
         finally
         {
