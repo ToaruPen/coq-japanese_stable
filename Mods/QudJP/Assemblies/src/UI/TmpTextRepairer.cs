@@ -619,7 +619,7 @@ internal static class TmpTextRepairer
             return null;
         }
 
-        return material.GetColor("_FaceColor").a;
+        return UnityRuntimeCompatibility.TryGetFaceColorAlpha(material);
     }
 #endif
 }

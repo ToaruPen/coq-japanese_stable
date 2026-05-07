@@ -1,12 +1,17 @@
 ---
 name: roslyn-static-analysis
-description: Use in QudJP when designing, reviewing, or extending C# static analysis over decompiled Caves of Qud source, especially scanner inventories, owner/sink route discovery, symbol-backed call classification, or decisions about when ast-grep results should be promoted to a Roslyn SemanticModel-based tool.
+description: Use in QudJP when designing, reviewing, or extending C# static analysis over decompiled Caves of Qud source, including coverage maps, inventories, and semantic classification.
 ---
 
 # Roslyn Static Analysis
 
 Use this skill for QudJP static analysis work where syntax shape is not enough.
 The main goal is to turn exploratory source findings into a durable, low-false-positive inventory.
+
+Use cases include localization coverage maps, scanner inventories, owner/action
+queues, text-construction surface classification, owner/sink route discovery,
+symbol-backed call classification, and deciding when ast-grep findings should
+be promoted to Roslyn SemanticModel analysis.
 
 ## First Choose The Lane
 
@@ -19,10 +24,18 @@ Before choosing a C# static-analysis tool, classify the request:
 - One-off decompiled C# owner or sink-route investigation: start with `rg` /
   `ast-grep`, then use `just semantic-probe ...` only when symbol ownership
   changes the answer.
+- Broad C# localization coverage, "where should we start?", or "is static
+  coverage complete?" questions: start with `docs/localization-coverage-map.json`
+  and its queue commands before opening raw inventories. The coverage map is the
+  executable index of static-analysis lanes and closure gates.
 - Durable, reviewable, or tracked C# inventories: use or extend the
   purpose-built Roslyn inventory. For current text producer callsites, the
   tracked artifact is `docs/static-producer-inventory.json`, not generic
   semantic-probe output.
+- Blueprint XML merge sources are not a C# static-analysis lane in this repo.
+  They are handled by the localization merge flow; do not add them back to the
+  C# coverage map or use them as the answer to "which class file should we
+  inspect next?"
 - Runtime route proof: use fresh runtime evidence. Static analysis can choose
   the next hypothesis; it is not live behavior proof.
 
@@ -63,6 +76,38 @@ Interpretation rules:
   a purpose-built Roslyn inventory instead of using the generic probe as the
   source of truth.
 
+## Localization Coverage Map And Queues
+
+For broad QudJP C# localization coverage, start from the executable map and
+its current queue outputs:
+
+```bash
+just localization-coverage-map-check
+```
+
+`docs/localization-coverage-map.json` is the machine-readable index of static
+lanes, closure gates, tests, and next commands. Update it with tests whenever a
+surface is promoted, excluded, or closed.
+
+- `static_producer_messages_popups`: `EmitMessage`, `Popup.Show*`, and
+  `AddPlayerMessage`; pick work from `just static-producer-owner-queue`, not
+  raw inventory counts. Validate with `just static-producer-check`.
+- `ui_text_construction`: player-visible text-construction APIs and likely UI
+  owner candidates; classify with `just text-construction-surface-queue`. If
+  the user says "other scanner surfaces" without naming a scanner, start here.
+
+When asked to "make surfaces detectable", use an existing map lane and queue
+first; add scanner work only when no lane can express the needed
+player-visible/non-target classification. Generic construction shapes are not
+ownership surfaces by themselves; `SetText` and direct text assignment require
+player-visible owner context; Wish/debug/editor/test-like routes are queue noise
+unless separate evidence promotes them.
+
+Do not quote queue counts, top files, or representative families from memory.
+Use current command output or a current generated artifact and name that source.
+Static completeness is limited to the map lanes and current queue closure; a
+green map file alone does not prove runtime issue closure.
+
 ## Existing Scanner Quick Reference
 
 Use these repo-local facts when the task touches the current static producer
@@ -71,8 +116,10 @@ inventory:
 - Python entrypoint: `scripts/scan_static_producer_inventory.py`
 - Roslyn project: `scripts/tools/StaticProducerInventoryScanner/StaticProducerInventoryScanner.csproj`
 - Tracked generated artifact: `docs/static-producer-inventory.json`
+- Current-repo closure overlay: `scripts/static_producer_closure.py`
 - Target surfaces: `EmitMessage`, `Popup.Show*`, and `AddPlayerMessage`
 - Existing fixture tests: `scripts/tests/test_scan_static_producer_inventory.py`
+- Closure tests: `scripts/tests/test_static_producer_closure.py`
 - Existing Roslyn smoke tests: `scripts/tests/test_roslyn_extractor_smoke.py`
 
 Current semantic target owners:
@@ -121,6 +168,7 @@ For current static producer inventory changes, run:
 ```bash
 just static-producer-check
 just static-producer-preview
+just static-producer-owner-queue
 ```
 
 ## Roslyn Scanner Contract
@@ -207,6 +255,7 @@ Use a two-layer check:
 Recommended local checks:
 
 ```bash
+just localization-coverage-map-check
 just roslyn-build
 just roslyn-test
 just roslyn-python-check

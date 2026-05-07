@@ -31,7 +31,7 @@ from scripts.legacies.scanner.inventory import (
     write_inventory_draft_json,
 )
 
-DEFAULT_GAME_VERSION = "2.0.4"
+DEFAULT_GAME_VERSION = "1.0.4"
 DEFAULT_RAW_HITS_PATH = Path(".scanner-cache/raw_hits.jsonl")
 DEFAULT_OUTPUT_PATH = Path(".scanner-cache/inventory_draft.json")
 _INTERPOLATED_STRING_RE = re.compile(r'(?:\$@|@\$|\$)"')

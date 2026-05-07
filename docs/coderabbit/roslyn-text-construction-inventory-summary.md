@@ -1,7 +1,7 @@
 # Roslyn Text Construction Inventory Summary
 
 This is the CodeRabbit-facing summary for the raw-free Roslyn text construction
-inventory generated from local decompiled Caves of Qud `2.0.4` C# sources.
+inventory generated from local decompiled Caves of Qud `1.0.4` C# sources.
 
 The full generated family inventory is intentionally not committed and should
 not be added to CodeRabbit knowledge-base file patterns. It is a large

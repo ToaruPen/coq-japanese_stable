@@ -141,7 +141,7 @@ def test_cli_writes_deterministic_inventory_without_absolute_source_root(tmp_pat
     assert output_a.read_text(encoding="utf-8") == output_b.read_text(encoding="utf-8")
     payload = cast("dict[str, object]", json.loads(output_a.read_text(encoding="utf-8")))
     assert payload["schema_version"] == "1.0"
-    assert payload["game_version"] == "2.0.4"
+    assert payload["game_version"] == "1.0.4"
     assert payload["target_surfaces"] == ["EmitMessage", "Popup.Show*", "AddPlayerMessage"]
     assert "source_root" not in payload
 

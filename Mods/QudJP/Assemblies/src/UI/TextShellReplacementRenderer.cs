@@ -888,7 +888,8 @@ internal static class TextShellReplacementRenderer
         builder.Append('x');
         builder.Append(text.rectTransform.rect.height.ToString("0.###", CultureInfo.InvariantCulture));
         builder.Append(", worldCenter=");
-        AppendVector3(builder, text.rectTransform.TransformPoint(text.rectTransform.rect.center));
+        var rectCenter = text.rectTransform.rect.center;
+        AppendVector3(builder, text.rectTransform.TransformPoint(UnityRuntimeCompatibility.ToVector3(rectCenter)));
         builder.Append(", marginW=");
         builder.Append(TryGetFloatFieldValue(text, "m_marginWidth")?.ToString("0.###", CultureInfo.InvariantCulture) ?? "<unknown>");
         builder.Append(", marginH=");
@@ -908,7 +909,7 @@ internal static class TextShellReplacementRenderer
         builder.Append(", alpha=");
         builder.Append(text.alpha.ToString("0.###", CultureInfo.InvariantCulture));
         builder.Append(", colorA=");
-        builder.Append(text.color.a.ToString("0.###", CultureInfo.InvariantCulture));
+        builder.Append(UnityRuntimeCompatibility.TryGetColorAlpha(text.color)?.ToString("0.###", CultureInfo.InvariantCulture) ?? "<unknown>");
         builder.Append(", isAwake=");
         builder.Append(GetBoolFieldValue(text, "m_isAwake")?.ToString() ?? "<unknown>");
         builder.Append(", registered=");
@@ -1195,7 +1196,7 @@ internal static class TextShellReplacementRenderer
             return null;
         }
 
-        return material.GetColor("_FaceColor").a;
+        return UnityRuntimeCompatibility.TryGetFaceColorAlpha(material);
     }
 
     private static float? TryGetCanvasAlpha(TMP_Text text)
