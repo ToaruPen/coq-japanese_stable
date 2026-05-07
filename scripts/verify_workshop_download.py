@@ -31,7 +31,7 @@ def _sha256_bytes(payload: bytes) -> str:
 
 def _read_expected_dll(path: Path) -> bytes:
     """Read an expected DLL from a DLL file or QudJP release ZIP."""
-    if path.suffix == ".zip":
+    if path.suffix.casefold() == ".zip":
         with zipfile.ZipFile(path) as archive:
             return archive.read("QudJP/Assemblies/QudJP.dll")
     return path.read_bytes()
@@ -96,11 +96,16 @@ def verify_workshop_download(
 
     try:
         expected_payload = _read_expected_dll(expected_dll)
-    except (FileNotFoundError, KeyError, zipfile.BadZipFile) as exc:
+    except (FileNotFoundError, KeyError, OSError, zipfile.BadZipFile) as exc:
         findings.append(f"expected DLL could not be read from {expected_dll}: {exc}")
         return findings, None
 
-    downloaded_dll_sha256 = _sha256(downloaded_dll)
+    try:
+        downloaded_dll_sha256 = _sha256(downloaded_dll)
+    except OSError as exc:
+        findings.append(f"Workshop DLL could not be read: {exc}")
+        return findings, None
+
     if downloaded_dll_sha256 != _sha256_bytes(expected_payload):
         findings.append("DLL SHA256 mismatch: downloaded QudJP.dll does not match expected DLL")
 
