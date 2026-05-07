@@ -100,15 +100,15 @@ public static class PopupTranslationPatch
     private static readonly Regex WaterRitualLowReputationPattern =
         new Regex("^You don't have a high enough reputation with (?<value>.+?)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
-    // ShowBlock parameter count for game version 2.0.4
+    // ShowBlock parameter count for game version 1.0.4
     private const int ShowBlockParameterCount = 8;
 
-    // ShowOptionList parameter count for game version 2.0.4
+    // ShowOptionList parameter count for game version 1.0.4
     private const int ShowOptionListParameterCount = 19;
 
     private const int ShowConversationParameterCount = 7;
 
-    // ShowOptionList argument indices (game version 2.0.4)
+    // ShowOptionList argument indices (game version 1.0.4)
     private const int ShowOptionListIntroIndex = 4;
     private const int ShowOptionListSpacingTextIndex = 9;
     private const int ShowOptionListButtonsIndex = 14;

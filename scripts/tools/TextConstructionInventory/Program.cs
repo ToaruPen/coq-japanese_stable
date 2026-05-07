@@ -90,7 +90,7 @@ return 0;
 internal static class InventoryBuilder
 {
     private const string SchemaVersion = "1.0";
-    private const string GameVersion = "2.0.4";
+    private const string GameVersion = "1.0.4";
 
     public static InventoryDocument Scan(string sourceRoot)
     {

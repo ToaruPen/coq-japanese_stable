@@ -22,7 +22,7 @@ patch candidate.
 - `Mods/QudJP/Localization/AGENTS.md` dictionary acceptance rules.
 - Current dictionary rows under `Mods/QudJP/Localization/Dictionaries/`.
 - Static producer evidence in `docs/static-producer-inventory.json`.
-- Decompiled Caves of Qud 2.0.4 source under
+- Decompiled Caves of Qud 1.0.4 source under
   `~/dev/coq-decompiled_stable/`.
 - Structural searches with `just sg-cs` for `AddPlayerMessage`, `EmitMessage`,
   `StartReplace`, `JournalAPI.AddAccomplishment`, and conversation APIs.

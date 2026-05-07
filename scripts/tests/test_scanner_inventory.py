@@ -115,7 +115,7 @@ class TestInventoryDraftJson:
         """Inventory drafts persist explicit fixed-leaf provenance fields and counts."""
         draft = InventoryDraft(
             version="1.0",
-            game_version="2.0.4",
+            game_version="1.0.4",
             scan_date="2026-04-11",
             stats=InventoryStats(
                 input_hits=2,

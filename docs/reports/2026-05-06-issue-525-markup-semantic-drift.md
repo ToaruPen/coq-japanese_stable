@@ -68,7 +68,7 @@ arguments are data-bound values such as `message`, `itemText`, `sb.ToString()`,
 producer callsites and construction routes; it cannot enumerate every runtime
 value without complementary observations or focused fixtures.
 
-Current static bounds from the local decompiled `2.0.4` source:
+Current static bounds from the local decompiled `1.0.4` source:
 
 | Probe | Count | Notes |
 | --- | ---: | --- |
