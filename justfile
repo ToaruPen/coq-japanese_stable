@@ -167,6 +167,20 @@ build-workshop-upload release_zip="" changenote_file="/tmp/qudjp-workshop-change
     {{python}} scripts/build_workshop_upload.py --changenote-file "{{changenote_file}}"; \
   fi
 
+# Verify a downloaded Steam Workshop item against the expected release DLL or ZIP.
+workshop-download-check version expected_dll="" workshop_dir="":
+  #!/usr/bin/env bash
+  set -euo pipefail
+  resolved_workshop_dir={{quote(workshop_dir)}}
+  if [ -z "${resolved_workshop_dir}" ]; then
+    resolved_workshop_dir="${HOME}/Library/Application Support/Steam/steamapps/workshop/content/333640/3718988020"
+  fi
+  resolved_expected_dll={{quote(expected_dll)}}
+  if [ -z "${resolved_expected_dll}" ]; then
+    resolved_expected_dll="dist/QudJP-v{{version}}.zip"
+  fi
+  {{python}} scripts/verify_workshop_download.py --workshop-dir "${resolved_workshop_dir}" --expected-version {{quote(version)}} --expected-dll "${resolved_expected_dll}"
+
 # Download and verify the GitHub Release ZIP used for Workshop staging.
 download-release-zip version:
   #!/usr/bin/env bash

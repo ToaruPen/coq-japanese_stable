@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.2.46] - 2026-05-07
+
+### Fixed
+
+- Steam Workshop 版でインベントリのアイテム名修復処理が `UnityEngine.Vector2.get_x()` 例外により止まり、アイテム名が消える問題を修正しました。
+
+---
+
 ## [0.2.45] - 2026-05-07
 
 ### Fixed

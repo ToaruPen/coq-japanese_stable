@@ -338,15 +338,25 @@ After Steam finishes processing the item:
    image, visibility, file size, and change note.
 2. Subscribe to the item from a clean Steam client state or unsubscribe and
    resubscribe if updating an existing item.
-3. Launch the game, enable only QudJP for the smoke pass, and restart.
-4. Confirm the Mod Manager lists QudJP with the expected version and preview.
-5. Confirm the Options screen and one short conversation render Japanese text
+3. Validate the downloaded Workshop item against the staged content:
+
+   ```bash
+   just workshop-download-check X.Y.Z dist/release-assets/vX.Y.Z/QudJP-vX.Y.Z.zip
+   ```
+
+   This verifies that the downloaded `manifest.json` reports the expected
+   version and that the downloaded `Assemblies/QudJP.dll` SHA256 matches the
+   release ZIP DLL. Do not mark the release GO if the public Workshop download
+   still contains an older DLL.
+4. Launch the game, enable only QudJP for the smoke pass, and restart.
+5. Confirm the Mod Manager lists QudJP with the expected version and preview.
+6. Confirm the Options screen and one short conversation render Japanese text
    and CJK glyphs correctly.
-6. Check fresh logs under `~/Library/Logs/Freehold Games/CavesOfQud/` for QudJP
+7. Check fresh logs under `~/Library/Logs/Freehold Games/CavesOfQud/` for QudJP
    build markers, missing glyph warnings, compile errors, or `MODWARN`.
-7. Record the smoke result in the dated release evidence file copied from
+8. Record the smoke result in the dated release evidence file copied from
    `docs/reports/templates/workshop-release.md`.
-8. Publish the draft GitHub Release only after the Steam Workshop upload and
+9. Publish the draft GitHub Release only after the Steam Workshop upload and
    minimum post-publish checks are acceptable.
 
 ## Rollback
