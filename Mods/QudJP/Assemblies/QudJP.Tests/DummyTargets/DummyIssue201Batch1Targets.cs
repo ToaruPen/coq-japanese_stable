@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -135,8 +136,15 @@ namespace QudJP.Tests.DummyTargets
     {
         public List<object?> Items { get; private set; } = new List<object?>();
 
+        public bool ThrowOnBeforeShow { get; set; }
+
         public void BeforeShow(IEnumerable selections)
         {
+            if (ThrowOnBeforeShow)
+            {
+                throw new InvalidOperationException("simulated controller failure");
+            }
+
             Items = new List<object?>();
             foreach (var selection in selections)
             {

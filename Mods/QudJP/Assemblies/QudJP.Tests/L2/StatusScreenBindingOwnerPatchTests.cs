@@ -37,6 +37,10 @@ public sealed class StatusScreenBindingOwnerPatchTests
         };
         DummyCharacterStatusScreenBindingTarget.mutations = new List<DummyCharacterMutationRecord>();
         DummyCharacterStatusScreenBindingTarget.effects = new List<DummyStatusEffect>();
+        DummyCharacterStatusScreenBindingTarget.PrimaryAttributes = new[] { "Strength" };
+        DummyCharacterStatusScreenBindingTarget.SecondaryAttributes = Array.Empty<string>();
+        DummyCharacterStatusScreenBindingTarget.SecondaryAttributesWithCP = new[] { "CP" };
+        DummyCharacterStatusScreenBindingTarget.ResistanceAttributes = Array.Empty<string>();
     }
 
     [TearDown]
@@ -223,10 +227,18 @@ public sealed class StatusScreenBindingOwnerPatchTests
             ("Mutations", "突然変異"));
 
         var target = new DummyCharacterStatusScreenBindingTarget();
-        _ = CharacterStatusScreenBindingPatch.Prefix(target);
+        target.primaryAttributesController = null!;
+        target.secondaryAttributesController = null!;
+        target.resistanceAttributesController = null!;
+        target.mutationsController = null!;
+        target.effectsController = null!;
+
+        var shouldRunOriginal = true;
+        var trace = TestTraceHelper.CaptureTrace(() => shouldRunOriginal = CharacterStatusScreenBindingPatch.Prefix(target));
 
         Assert.Multiple(() =>
         {
+            Assert.That(shouldRunOriginal, Is.False, trace);
             Assert.That(target.mutationTermText.Text, Is.EqualTo("突然変異"));
             Assert.That(target.nameText.Text, Is.EqualTo("ソルトホッパー"));
             Assert.That(target.classText.Text, Is.EqualTo("変異人 巡礼者"));
@@ -250,6 +262,17 @@ public sealed class StatusScreenBindingOwnerPatchTests
                     "Level: 1 ¯ HP: 10/10 ¯ XP: 100/200 ¯ Weight: 123#"),
                 Is.EqualTo(0));
         });
+    }
+
+    [Test]
+    public void CharacterStatusScreenBindingPatch_AllowsOriginal_WhenControllerPopulationFails()
+    {
+        var target = new DummyCharacterStatusScreenBindingTarget();
+        target.primaryAttributesController.ThrowOnBeforeShow = true;
+
+        var shouldRunOriginal = CharacterStatusScreenBindingPatch.Prefix(target);
+
+        Assert.That(shouldRunOriginal, Is.True);
     }
 
     private static string CreateHarmonyId()

@@ -1,26 +1,41 @@
-"""Assert that scripts/_artifacts/annals/ is gitignored."""
+"""Assert that transient Annals artifacts are gitignored."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
+_GITIGNORE_PATH = Path(".gitignore")
 
-def test_gitignore_lists_annals_artifact_directory() -> None:
-    """scripts/_artifacts/annals/ must be present in .gitignore."""
-    text = Path(".gitignore").read_text(encoding="utf-8")
-    assert "scripts/_artifacts/annals/" in text, (
-        "scripts/_artifacts/annals/ must be gitignored to prevent accidental "
-        "commit of candidate JSON, conflict reports, and .bak backups."
-    )
+
+def _gitignore_lines() -> set[str]:
+    return {
+        line.strip()
+        for line in _GITIGNORE_PATH.read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    }
+
+
+def test_gitignore_lists_transient_annals_artifacts_without_hiding_review_source() -> None:
+    """Only transient Annals artifacts should be ignored."""
+    text = _GITIGNORE_PATH.read_text(encoding="utf-8")
+    lines = _gitignore_lines()
+    assert "scripts/_artifacts/annals/*.bak" in lines
+    assert "scripts/_artifacts/annals/*.bak-*" in lines
+    assert "scripts/_artifacts/annals/merge_conflicts.json" in lines
+    assert "scripts/_artifacts/annals/candidates_pending.json" not in lines
+    assert "scripts/_artifacts/annals/" not in lines
+    assert "scripts/_artifacts/annals/*" not in lines
+    assert "scripts/_artifacts/annals/**" not in lines
+    assert "candidates_pending.json IS committed" in text
 
 
 def test_gitignore_lists_local_workshop_state_directories() -> None:
     """Local Workshop inbox state contains raw comments and must not be committed."""
-    text = Path(".gitignore").read_text(encoding="utf-8")
-    assert ".coq-japanese_workshop/state/*" in text
-    assert ".coq-japanese_workshop/backups/*" in text
-    assert ".coq-japanese_workshop/exports/*" in text
-    assert "!.coq-japanese_workshop/README.md" in text
-    assert "!.coq-japanese_workshop/state/.gitkeep" in text
-    assert "!.coq-japanese_workshop/backups/.gitkeep" in text
-    assert "!.coq-japanese_workshop/exports/.gitkeep" in text
+    lines = _gitignore_lines()
+    assert ".coq-japanese_workshop/state/*" in lines
+    assert ".coq-japanese_workshop/backups/*" in lines
+    assert ".coq-japanese_workshop/exports/*" in lines
+    assert "!.coq-japanese_workshop/README.md" in lines
+    assert "!.coq-japanese_workshop/state/.gitkeep" in lines
+    assert "!.coq-japanese_workshop/backups/.gitkeep" in lines
+    assert "!.coq-japanese_workshop/exports/.gitkeep" in lines

@@ -8,6 +8,81 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class QudJPModTests
 {
+    [SetUp]
+    public void SetUp()
+    {
+        QudJPMod.ResetInitializationForTests();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        QudJPMod.ResetInitializationForTests();
+    }
+
+    [Test]
+    public void InitializeForTests_ResetsInitializationGuard_WhenInitializationFails()
+    {
+        var patchCalls = 0;
+
+        Assert.That(
+            () => QudJPMod.InitializeForTests(
+                () => throw new InvalidOperationException("font failure"),
+                () => patchCalls++),
+            Throws.TypeOf<InvalidOperationException>().With.Message.EqualTo("font failure"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(QudJPMod.IsInitializedForTests(), Is.False);
+            Assert.That(patchCalls, Is.EqualTo(0));
+        });
+
+        QudJPMod.InitializeForTests(
+            static () => { },
+            () => patchCalls++);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(QudJPMod.IsInitializedForTests(), Is.True);
+            Assert.That(patchCalls, Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void InitializeForTests_ResetsInitializationGuard_WhenPatchApplicationFails()
+    {
+        var fontCalls = 0;
+        var patchCalls = 0;
+
+        Assert.That(
+            () => QudJPMod.InitializeForTests(
+                () => fontCalls++,
+                () =>
+                {
+                    patchCalls++;
+                    throw new InvalidOperationException("patch failure");
+                }),
+            Throws.TypeOf<InvalidOperationException>().With.Message.EqualTo("patch failure"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(QudJPMod.IsInitializedForTests(), Is.False);
+            Assert.That(fontCalls, Is.EqualTo(1));
+            Assert.That(patchCalls, Is.EqualTo(1));
+        });
+
+        QudJPMod.InitializeForTests(
+            () => fontCalls++,
+            () => patchCalls++);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(QudJPMod.IsInitializedForTests(), Is.True);
+            Assert.That(fontCalls, Is.EqualTo(2));
+            Assert.That(patchCalls, Is.EqualTo(2));
+        });
+    }
+
     [Test]
     public void InvokePatchAll_ScansCorrectAssembly_AndHandlesErrorsGracefully()
     {
