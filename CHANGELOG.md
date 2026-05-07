@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.2.45] - 2026-05-07
+
+### Fixed
+
+- Windows 環境でインベントリ表示の診断処理が Unity API のビルド差異により失敗し、アイテム名の修復処理が止まる問題を修正しました。
+
+---
+
 ## [0.2.44] - 2026-05-07
 
 ### Fixed
