@@ -173,6 +173,45 @@ build-workshop-upload release_zip="" changenote_file="/tmp/qudjp-workshop-change
     {{python}} scripts/build_workshop_upload.py --changenote-file "{{changenote_file}}"; \
   fi
 
+# Verify a downloaded Steam Workshop item against the expected release DLL or ZIP.
+workshop-download-check version expected_dll="" workshop_dir="":
+  #!/usr/bin/env bash
+  set -euo pipefail
+  resolved_workshop_dir={{quote(workshop_dir)}}
+  if [ -z "${resolved_workshop_dir}" ]; then
+    case "$(uname -s)" in
+      Darwin)
+        resolved_workshop_dir="${HOME}/Library/Application Support/Steam/steamapps/workshop/content/333640/3718988020"
+        ;;
+      Linux)
+        workshop_candidates=(
+          "${HOME}/.steam/steam/steamapps/workshop/content/333640/3718988020"
+          "${HOME}/.local/share/Steam/steamapps/workshop/content/333640/3718988020"
+        )
+        resolved_workshop_dir=""
+        for candidate in "${workshop_candidates[@]}"; do
+          if [ -d "${candidate}" ]; then
+            resolved_workshop_dir="${candidate}"
+            break
+          fi
+        done
+        if [ -z "${resolved_workshop_dir}" ]; then
+          printf 'error: Workshop download directory not found; pass workshop_dir explicitly\n' >&2
+          exit 1
+        fi
+        ;;
+      *)
+        printf 'error: pass workshop_dir explicitly on this platform\n' >&2
+        exit 1
+        ;;
+    esac
+  fi
+  resolved_expected_dll={{quote(expected_dll)}}
+  if [ -z "${resolved_expected_dll}" ]; then
+    resolved_expected_dll="dist/QudJP-v{{version}}.zip"
+  fi
+  {{python}} scripts/verify_workshop_download.py --workshop-dir "${resolved_workshop_dir}" --expected-version {{quote(version)}} --expected-dll "${resolved_expected_dll}"
+
 # Download and verify the GitHub Release ZIP used for Workshop staging.
 download-release-zip version:
   #!/usr/bin/env bash
