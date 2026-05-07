@@ -66,6 +66,34 @@ class CoveredOwnerFamily:
 
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
+        family_id="XRL.World/GameObject.cs::XRL.World.GameObject.Heal",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/GameObjectHealTranslationPatch.cs",
+                ("TryTranslateQueuedMessage", '"Heal"'),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/CombatAndLogMessageQueuePatch.cs",
+                ("GameObjectHealTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                (
+                    "GameObjectHeal_TranslatesHealMessage_WhenPatched",
+                    "GameObjectHeal_TranslatesHpLossMessage_WhenPatched",
+                    "GameObjectHeal_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "GameObjectHeal_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "GameObjectHeal_LeavesEmptyMessageUnchanged_WhenOwnerPatched",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                ("typeof(GameObjectHealTranslationPatch)", '"Heal"'),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
         family_id="XRL.UI/TradeUI.cs::XRL.UI.TradeUI.PerformOffer",
         inventory_statuses=("needs_family_review",),
         evidence_files=(
