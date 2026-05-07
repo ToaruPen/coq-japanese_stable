@@ -378,7 +378,7 @@ public static class GrammarMakeOrListPatch
     }
 }
 
-// Grammar.SplitOfSentenceList is absent in game version 2.0.4, so this helper stays
+// Grammar.SplitOfSentenceList is absent in game version 1.0.4, so this helper stays
 // test-covered but is not registered as a Harmony patch to avoid TargetMethod failures.
 public static class GrammarSplitOfSentenceListPatch
 {

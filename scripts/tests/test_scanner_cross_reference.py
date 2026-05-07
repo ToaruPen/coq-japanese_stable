@@ -37,7 +37,7 @@ def _draft(*sites: InventorySite) -> InventoryDraft:
     """Build a minimal inventory draft for cross-reference tests."""
     return InventoryDraft(
         version="1.0",
-        game_version="2.0.4",
+        game_version="1.0.4",
         scan_date="2026-03-22",
         stats=InventoryStats(
             input_hits=len(sites),

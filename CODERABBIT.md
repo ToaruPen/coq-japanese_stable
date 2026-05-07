@@ -1,7 +1,7 @@
 # CodeRabbit Review Knowledge
 
 This root-level document is the CodeRabbit-specific global guideline for QudJP
-changes that depend on local inspection of Caves of Qud 2.0.4 runtime behavior.
+changes that depend on local inspection of Caves of Qud 1.0.4 runtime behavior.
 CodeRabbit may also auto-detect root `AGENTS.md` or `CLAUDE.md`; this file adds
 review rules they do not contain. It must be self-contained for critical
 CodeRabbit review rules because CodeRabbit scopes guideline files by the

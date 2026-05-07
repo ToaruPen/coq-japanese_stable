@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "game_version": "2.0.4",
+  "game_version": "1.0.4",
   "description": "Executable coverage map for QudJP C# localization discovery, closure gates, and runtime verification boundaries.",
   "surfaces": [
     {
