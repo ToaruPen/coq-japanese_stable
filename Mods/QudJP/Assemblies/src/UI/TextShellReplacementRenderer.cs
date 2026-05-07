@@ -850,6 +850,12 @@ internal static class TextShellReplacementRenderer
         return true;
     }
 
+    /// <summary>
+    /// Appends a compact diagnostic snapshot of the given TextMeshProUGUI's creation and runtime state to the provided StringBuilder under the specified stage name.
+    /// </summary>
+    /// <param name="builder">The StringBuilder to append the snapshot to; may already contain content and will receive a leading separator if needed.</param>
+    /// <param name="stageName">A short label used as the snapshot key (e.g., a lifecycle stage name).</param>
+    /// <param name="text">The TextMeshProUGUI instance whose state will be recorded.</param>
     private static void AppendCreationStageSnapshot(StringBuilder builder, string stageName, TextMeshProUGUI text)
     {
         var subMeshes = text.GetComponentsInChildren<TMP_SubMeshUI>(includeInactive: true);
@@ -1189,6 +1195,10 @@ internal static class TextShellReplacementRenderer
         builder.Append(value.z.ToString("0.###", CultureInfo.InvariantCulture));
     }
 
+    /// <summary>
+    /// Retrieves the alpha value from a material's `_FaceColor` color property, if present.
+    /// </summary>
+    /// <returns>`null` if the material is null or does not have a `_FaceColor` property; otherwise the property's alpha component (0 to 1).</returns>
     private static float? TryGetFaceColorAlpha(Material? material)
     {
         if (material is null || !material.HasProperty("_FaceColor"))
@@ -1199,6 +1209,10 @@ internal static class TextShellReplacementRenderer
         return UnityRuntimeCompatibility.TryGetFaceColorAlpha(material);
     }
 
+    /// <summary>
+    /// Attempts to read the canvas renderer alpha value from the given TMP_Text via reflection.
+    /// </summary>
+    /// <returns>The canvas renderer alpha as a float if available; otherwise <c>null</c>.</returns>
     private static float? TryGetCanvasAlpha(TMP_Text text)
     {
         var canvasRendererProperty = text.GetType().GetProperty(

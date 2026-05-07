@@ -53,6 +53,15 @@ internal static class SelectableTextMenuItemObservability
         return true;
     }
 
+    /// <summary>
+    /// Appends runtime information about the provided item skin to the given StringBuilder.
+    /// </summary>
+    /// <param name="builder">The StringBuilder to append state information to; must not be null.</param>
+    /// <param name="itemSkin">The item skin instance to inspect; may be null.</param>
+    /// <remarks>
+    /// Always appends the item skin's full type name as <c>itemSkin='&lt;FullTypeName&gt;'</c> (empty if null).
+    /// When compiled with <c>HAS_TMP</c> and <paramref name="itemSkin"/> is a Unity <c>Component</c> that contains a <c>TMP_Text</c> in its children, also appends TMP-derived state: escaped truncated text (<c>tmpText='...'</c>), character count (<c>charCount</c>), page count (<c>pageCount</c>), alpha formatted as <c>0.##</c> or &lt;unknown&gt; (<c>tmpAlpha</c>), rect size as <c>widthxheight</c>, canvas renderer cull (<c>cull</c>) or &lt;unknown&gt;, and nearest parent CanvasGroup alpha formatted as <c>0.##</c> or &lt;unknown&gt; (<c>groupAlpha</c>).
+    /// </remarks>
     private static void AppendTmpState(StringBuilder builder, object? itemSkin)
     {
         builder.Append(" itemSkin='");

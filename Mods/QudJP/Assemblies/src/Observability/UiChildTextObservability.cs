@@ -16,6 +16,13 @@ internal static class UiChildTextObservability
     private static readonly ConcurrentDictionary<string, int> BucketCounts =
         new ConcurrentDictionary<string, int>(StringComparer.Ordinal);
 
+    /// <summary>
+    /// Builds a compact observability snapshot string for a Unity Component by inspecting its TextMeshProUGUI children and selected rendering/material properties.
+    /// </summary>
+    /// <param name="lineInstance">The object expected to be a Unity <see cref="Component"/> whose children will be inspected.</param>
+    /// <param name="probeName">A label inserted into the snapshot header to identify the probe source.</param>
+    /// <param name="logLine">When the method returns <c>true</c>, contains the constructed snapshot string; otherwise <c>null</c>.</param>
+    /// <returns><c>true</c> if at least one TextMeshProUGUI child was captured and the per-bucket rate limit was not exceeded; <c>false</c> otherwise.</returns>
     internal static bool TryBuildSnapshot(object? lineInstance, string probeName, out string? logLine)
     {
         logLine = null;
@@ -190,6 +197,10 @@ internal static class UiChildTextObservability
         return material.GetInt(propertyName);
     }
 
+    /// <summary>
+    /// Extracts the alpha component of the material's `_FaceColor` property when available.
+    /// </summary>
+    /// <returns>The `_FaceColor` alpha value as a float, or `null` if the material is null or does not have a `_FaceColor` property.</returns>
     private static float? TryGetFaceColorAlpha(Material? material)
     {
         if (material is null || !material.HasProperty("_FaceColor"))
@@ -200,6 +211,13 @@ internal static class UiChildTextObservability
         return UnityRuntimeCompatibility.TryGetFaceColorAlpha(material);
     }
 #else
+    /// <summary>
+    /// No-op implementation used when TextMeshPro support is unavailable; it does not build a snapshot.
+    /// </summary>
+    /// <param name="lineInstance">Ignored in this build configuration.</param>
+    /// <param name="probeName">Ignored in this build configuration.</param>
+    /// <param name="logLine">Always set to <c>null</c> when this method returns.</param>
+    /// <returns><c>false</c> indicating that no snapshot string was produced.</returns>
     internal static bool TryBuildSnapshot(object? lineInstance, string probeName, out string? logLine)
     {
         _ = lineInstance;

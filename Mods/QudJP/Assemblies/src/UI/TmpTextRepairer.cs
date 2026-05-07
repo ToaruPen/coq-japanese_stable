@@ -612,6 +612,11 @@ internal static class TmpTextRepairer
         return material.GetInt(propertyName);
     }
 
+    /// <summary>
+    /// Gets the alpha component of a material's `_FaceColor` property when available.
+    /// </summary>
+    /// <param name="material">The material to inspect, or null.</param>
+    /// <returns>The `_FaceColor` alpha value (0 to 1) if present and obtainable; otherwise <c>null</c>.</returns>
     private static float? TryGetFaceColorAlpha(Material? material)
     {
         if (material is null || !material.HasProperty("_FaceColor"))
