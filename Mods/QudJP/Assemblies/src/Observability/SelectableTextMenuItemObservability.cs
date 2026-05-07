@@ -73,7 +73,7 @@ internal static class SelectableTextMenuItemObservability
                 builder.Append(" pageCount=");
                 builder.Append(tmp.textInfo.pageCount.ToString(CultureInfo.InvariantCulture));
                 builder.Append(" tmpAlpha=");
-                builder.Append(tmp.color.a.ToString("0.##", CultureInfo.InvariantCulture));
+                builder.Append(UnityRuntimeCompatibility.TryGetColorAlpha(tmp.color)?.ToString("0.##", CultureInfo.InvariantCulture) ?? "<unknown>");
 
                 var rect = tmp.rectTransform.rect;
                 builder.Append(" rect=");

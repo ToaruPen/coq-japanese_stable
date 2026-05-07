@@ -64,7 +64,7 @@ internal static class UiChildTextObservability
             builder.Append(" wrap=");
             builder.Append(text.textWrappingMode);
             builder.Append(" colorA=");
-            builder.Append(text.color.a.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture));
+            builder.Append(UnityRuntimeCompatibility.TryGetColorAlpha(text.color)?.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture) ?? "<unknown>");
             builder.Append(" alpha=");
             builder.Append(text.alpha.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture));
             builder.Append(" canvasA=");
@@ -197,7 +197,7 @@ internal static class UiChildTextObservability
             return null;
         }
 
-        return material.GetColor("_FaceColor").a;
+        return UnityRuntimeCompatibility.TryGetFaceColorAlpha(material);
     }
 #else
     internal static bool TryBuildSnapshot(object? lineInstance, string probeName, out string? logLine)
