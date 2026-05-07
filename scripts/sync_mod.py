@@ -1,6 +1,7 @@
 """Sync QudJP mod files to the Caves of Qud game directory."""
 
 import argparse
+import json
 import os
 import platform
 import shutil
@@ -37,6 +38,8 @@ _RSYNC_EXCLUDES: tuple[str, ...] = ("*",)
 _LOCAL_ONLY_FILES: tuple[Path, ...] = (Path("workshop.json"),)
 _LOCALIZATION_ASSET_SUFFIXES = {".json", ".txt", ".xml"}
 _WINDOWS_DRIVE_PREFIX_LENGTH = 2
+DEFAULT_DEV_VERSION_SUFFIX = "-dev"
+DEFAULT_DEV_TITLE_SUFFIX = " (local dev)"
 
 _MACOS_MODS_SUFFIX = (
     Path("Library")
@@ -215,16 +218,88 @@ def _iter_sync_files(source: Path, *, exclude_fonts: bool) -> list[Path]:
     return file_paths
 
 
+def _rewrite_manifest_metadata(
+    manifest_data: dict[str, object],
+    *,
+    version_suffix: str | None,
+    title_suffix: str | None,
+) -> dict[str, object]:
+    """Return manifest data with local-only display metadata applied."""
+    rewritten = dict(manifest_data)
+
+    if version_suffix:
+        version = rewritten.get("Version")
+        if not isinstance(version, str) or not version:
+            msg = "manifest.json must contain a non-empty string Version"
+            raise ValueError(msg)
+        rewritten["Version"] = (
+            version if version.endswith(version_suffix) else f"{version}{version_suffix}"
+        )
+
+    if title_suffix:
+        title = rewritten.get("Title")
+        if not isinstance(title, str) or not title:
+            msg = "manifest.json must contain a non-empty string Title"
+            raise ValueError(msg)
+        rewritten["Title"] = (
+            title if title.endswith(title_suffix) else f"{title}{title_suffix}"
+        )
+
+    return rewritten
+
+
+def _write_manifest_metadata(
+    source_manifest: Path,
+    destination_manifest: Path,
+    *,
+    version_suffix: str | None,
+    title_suffix: str | None,
+) -> None:
+    """Write destination manifest metadata without mutating the source manifest."""
+    manifest_data = json.loads(source_manifest.read_text(encoding="utf-8"))
+    if not isinstance(manifest_data, dict):
+        msg = "manifest.json must contain a JSON object"
+        raise TypeError(msg)
+
+    rewritten = _rewrite_manifest_metadata(
+        manifest_data,
+        version_suffix=version_suffix,
+        title_suffix=title_suffix,
+    )
+    destination_manifest.parent.mkdir(parents=True, exist_ok=True)
+    destination_manifest.write_text(
+        f"{json.dumps(rewritten, ensure_ascii=False, indent=2)}\n",
+        encoding="utf-8",
+    )
+
+
+def _append_stdout_line(
+    result: subprocess.CompletedProcess[str],
+    line: str,
+) -> subprocess.CompletedProcess[str]:
+    """Return a completed process result with one extra stdout line."""
+    stdout = f"{result.stdout.rstrip()}\n{line}\n" if result.stdout else f"{line}\n"
+    return subprocess.CompletedProcess(
+        args=result.args,
+        returncode=result.returncode,
+        stdout=stdout,
+        stderr=result.stderr,
+    )
+
+
 def _run_python_sync(
     source: Path,
     destination: Path,
     *,
     dry_run: bool,
     exclude_fonts: bool,
+    manifest_version_suffix: str | None,
+    manifest_title_suffix: str | None,
 ) -> subprocess.CompletedProcess[str]:
     """Synchronize files with a pure-Python copy fallback."""
     file_paths = _iter_sync_files(source, exclude_fonts=exclude_fonts)
     lines = ["Using Python copy fallback."]
+    rewrite_manifest = bool(manifest_version_suffix or manifest_title_suffix)
 
     if dry_run:
         action = "replace" if destination.exists() else "create"
@@ -233,6 +308,8 @@ def _run_python_sync(
             f"Would copy {file_path.relative_to(source)}"
             for file_path in file_paths
         )
+        if rewrite_manifest:
+            lines.append("Would rewrite manifest.json display metadata")
         return subprocess.CompletedProcess(
             args=["python-copy"],
             returncode=0,
@@ -250,7 +327,15 @@ def _run_python_sync(
         relative_path = file_path.relative_to(source)
         target_path = destination / relative_path
         target_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(file_path, target_path)
+        if relative_path == Path("manifest.json") and rewrite_manifest:
+            _write_manifest_metadata(
+                file_path,
+                target_path,
+                version_suffix=manifest_version_suffix,
+                title_suffix=manifest_title_suffix,
+            )
+        else:
+            shutil.copy2(file_path, target_path)
 
     lines.append(f"Copied {len(file_paths)} files to {destination}")
     return subprocess.CompletedProcess(
@@ -317,6 +402,8 @@ def run_sync(
     *,
     dry_run: bool = False,
     exclude_fonts: bool = False,
+    manifest_version_suffix: str | None = None,
+    manifest_title_suffix: str | None = None,
 ) -> subprocess.CompletedProcess[str]:
     """Execute sync to copy mod files into the game directory.
 
@@ -325,17 +412,29 @@ def run_sync(
         destination: Destination directory to sync to.
         dry_run: If True, perform a dry run without copying.
         exclude_fonts: If True, exclude Fonts/ directory.
+        manifest_version_suffix: Optional local-only Version suffix to apply at
+            destination.
+        manifest_title_suffix: Optional local-only Title suffix to apply at
+            destination.
 
     Returns:
         Completed process result from rsync or the Python fallback.
 
     Raises:
-        FileNotFoundError: If source directory does not exist.
+        FileNotFoundError: If source directory does not exist, or if dev
+            manifest rewriting is enabled but source manifest.json is missing.
         subprocess.CalledProcessError: If rsync fails.
     """
     if not source.is_dir():
         msg = f"Source directory not found: {source}"
         raise FileNotFoundError(msg)
+
+    rewrite_manifest = bool(manifest_version_suffix or manifest_title_suffix)
+    if rewrite_manifest and not dry_run:
+        source_manifest = source / "manifest.json"
+        if not source_manifest.is_file():
+            msg = f"manifest.json not found: {source_manifest}"
+            raise FileNotFoundError(msg)
 
     preserved = {} if dry_run else _capture_local_only_files(destination)
     try:
@@ -345,6 +444,8 @@ def run_sync(
                 destination,
                 dry_run=dry_run,
                 exclude_fonts=exclude_fonts,
+                manifest_version_suffix=manifest_version_suffix,
+                manifest_title_suffix=manifest_title_suffix,
             )
 
         cmd = build_rsync_command(
@@ -353,7 +454,20 @@ def run_sync(
             dry_run=dry_run,
             exclude_fonts=exclude_fonts,
         )
-        return subprocess.run(cmd, capture_output=True, text=True, check=True)  # noqa: S603 -- trusted rsync call
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)  # noqa: S603 -- trusted rsync call
+        if rewrite_manifest and dry_run:
+            return _append_stdout_line(
+                result,
+                "Would rewrite manifest.json display metadata",
+            )
+        if rewrite_manifest and not dry_run:
+            _write_manifest_metadata(
+                source / "manifest.json",
+                destination / "manifest.json",
+                version_suffix=manifest_version_suffix,
+                title_suffix=manifest_title_suffix,
+            )
+        return result
     finally:
         if preserved:
             _restore_local_only_files(destination, preserved)
@@ -382,6 +496,24 @@ def main(argv: list[str] | None = None) -> int:
         help="Exclude Fonts/ directory from sync.",
     )
     parser.add_argument(
+        "--dev",
+        action="store_true",
+        help=(
+            "Mark the synced destination manifest as a local development build "
+            "without changing the source manifest."
+        ),
+    )
+    parser.add_argument(
+        "--dev-version-suffix",
+        default=DEFAULT_DEV_VERSION_SUFFIX,
+        help="Version suffix used with --dev. Defaults to -dev.",
+    )
+    parser.add_argument(
+        "--dev-title-suffix",
+        default=DEFAULT_DEV_TITLE_SUFFIX,
+        help="Title suffix used with --dev. Defaults to ' (local dev)'.",
+    )
+    parser.add_argument(
         "--destination",
         "--dest",
         type=Path,
@@ -392,6 +524,12 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     args = parser.parse_args(argv)
+
+    if not args.dev and (
+        args.dev_version_suffix != DEFAULT_DEV_VERSION_SUFFIX
+        or args.dev_title_suffix != DEFAULT_DEV_TITLE_SUFFIX
+    ):
+        parser.error("--dev-version-suffix and --dev-title-suffix require --dev")
 
     try:
         project_root = _find_project_root()
@@ -406,14 +544,18 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     source = project_root / "Mods" / "QudJP"
+    manifest_version_suffix = args.dev_version_suffix if args.dev else None
+    manifest_title_suffix = args.dev_title_suffix if args.dev else None
     try:
         result = run_sync(
             source,
             destination,
             dry_run=args.dry_run,
             exclude_fonts=args.exclude_fonts,
+            manifest_version_suffix=manifest_version_suffix,
+            manifest_title_suffix=manifest_title_suffix,
         )
-    except FileNotFoundError as exc:
+    except (FileNotFoundError, TypeError, ValueError) as exc:
         print(f"Error: {exc}", file=sys.stderr)  # noqa: T201
         return 1
     except subprocess.CalledProcessError as exc:
