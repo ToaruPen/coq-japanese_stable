@@ -11,10 +11,16 @@ default:
 build:
   dotnet build Mods/QudJP/Assemblies/QudJP.csproj
 
+# Build the QudJP assembly for local development.
+build-dev: build
+
 # Clean and rebuild the shipped QudJP assembly without incremental artifacts.
 rebuild:
   dotnet clean Mods/QudJP/Assemblies/QudJP.csproj
   dotnet build Mods/QudJP/Assemblies/QudJP.csproj --no-incremental
+
+# Clean and rebuild the QudJP assembly for local development.
+rebuild-dev: rebuild
 
 # Run fast C# L1 tests.
 test-l1:
@@ -193,9 +199,17 @@ download-release-zip version:
 sync-mod:
   {{python}} scripts/sync_mod.py
 
+# Sync the built mod into the local game install as a local dev build.
+sync-mod-dev:
+  {{python}} scripts/sync_mod.py --dev
+
 # Preview the local mod sync without copying files.
 sync-mod-dry-run:
   {{python}} scripts/sync_mod.py --dry-run
+
+# Preview the local dev sync without copying files.
+sync-mod-dev-dry-run:
+  {{python}} scripts/sync_mod.py --dev --dry-run
 
 # Sync the built mod without copying fonts.
 sync-mod-exclude-fonts:
@@ -205,13 +219,25 @@ sync-mod-exclude-fonts:
 sync-mod-to destination:
   {{python}} scripts/sync_mod.py --destination {{quote(destination)}}
 
+# Sync the built mod to an explicit Mods/QudJP destination as a local dev build.
+sync-mod-dev-to destination:
+  {{python}} scripts/sync_mod.py --dev --destination {{quote(destination)}}
+
 # Rebuild and sync the local mod into the game install.
 deploy-mod: rebuild sync-mod
+
+# Rebuild and sync the local dev mod into the game install.
+deploy-dev: rebuild-dev sync-mod-dev
 
 # Rebuild and sync the local mod to an explicit Mods/QudJP destination.
 deploy-mod-to destination:
   just rebuild
   just sync-mod-to {{quote(destination)}}
+
+# Rebuild and sync the local dev mod to an explicit Mods/QudJP destination.
+deploy-dev-to destination:
+  just rebuild-dev
+  just sync-mod-dev-to {{quote(destination)}}
 
 # Run the Phase F runtime evidence verification commands.
 runtime-evidence-check: test-l1
