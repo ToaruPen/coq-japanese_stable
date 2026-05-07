@@ -49,7 +49,7 @@ def verify_workshop_download(
     *,
     expected_version: str,
     expected_dll: Path,
-) -> list[str]:
+) -> tuple[list[str], str | None]:
     """Verify a downloaded Workshop item folder.
 
     Args:
@@ -59,7 +59,8 @@ def verify_workshop_download(
             Workshop DLL must match.
 
     Returns:
-        A list of validation findings. An empty list means the download matches.
+        Validation findings and the downloaded DLL SHA256 when available.
+        An empty findings list means the download matches.
 
     Raises:
         ValueError: If ``expected_version`` is not simple ``X.Y.Z`` semver.
@@ -74,7 +75,7 @@ def verify_workshop_download(
 
     if not manifest_path.is_file():
         findings.append("Workshop manifest not found")
-        return findings
+        return findings, None
 
     try:
         actual_version = _read_manifest_version(manifest_path)
@@ -87,17 +88,23 @@ def verify_workshop_download(
 
     if not expected_dll.is_file():
         findings.append(f"expected DLL not found: {expected_dll}")
-        return findings
+        return findings, None
 
     if not downloaded_dll.is_file():
         findings.append("Workshop DLL not found: Assemblies/QudJP.dll")
-        return findings
+        return findings, None
 
-    expected_payload = _read_expected_dll(expected_dll)
-    if _sha256(downloaded_dll) != _sha256_bytes(expected_payload):
+    try:
+        expected_payload = _read_expected_dll(expected_dll)
+    except (FileNotFoundError, KeyError, zipfile.BadZipFile) as exc:
+        findings.append(f"expected DLL could not be read from {expected_dll}: {exc}")
+        return findings, None
+
+    downloaded_dll_sha256 = _sha256(downloaded_dll)
+    if downloaded_dll_sha256 != _sha256_bytes(expected_payload):
         findings.append("DLL SHA256 mismatch: downloaded QudJP.dll does not match expected DLL")
 
-    return findings
+    return findings, downloaded_dll_sha256
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -115,7 +122,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
-        findings = verify_workshop_download(
+        findings, downloaded_dll_sha256 = verify_workshop_download(
             args.workshop_dir,
             expected_version=args.expected_version,
             expected_dll=args.expected_dll,
@@ -129,11 +136,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"Error: {finding}", file=sys.stderr)  # noqa: T201
         return 1
 
-    downloaded_dll = args.workshop_dir / "Assemblies" / "QudJP.dll"
     print(  # noqa: T201
         "Workshop download verified: "
         f"version={args.expected_version} "
-        f"dll_sha256={_sha256(downloaded_dll)}",
+        f"dll_sha256={downloaded_dll_sha256}",
     )
     return 0
 

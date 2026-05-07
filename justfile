@@ -179,7 +179,28 @@ workshop-download-check version expected_dll="" workshop_dir="":
   set -euo pipefail
   resolved_workshop_dir={{quote(workshop_dir)}}
   if [ -z "${resolved_workshop_dir}" ]; then
-    resolved_workshop_dir="${HOME}/Library/Application Support/Steam/steamapps/workshop/content/333640/3718988020"
+    case "$(uname -s)" in
+      Darwin)
+        resolved_workshop_dir="${HOME}/Library/Application Support/Steam/steamapps/workshop/content/333640/3718988020"
+        ;;
+      Linux)
+        workshop_candidates=(
+          "${HOME}/.steam/steam/steamapps/workshop/content/333640/3718988020"
+          "${HOME}/.local/share/Steam/steamapps/workshop/content/333640/3718988020"
+        )
+        resolved_workshop_dir="${workshop_candidates[0]}"
+        for candidate in "${workshop_candidates[@]}"; do
+          if [ -d "${candidate}" ]; then
+            resolved_workshop_dir="${candidate}"
+            break
+          fi
+        done
+        ;;
+      *)
+        printf 'error: pass workshop_dir explicitly on this platform\n' >&2
+        exit 1
+        ;;
+    esac
   fi
   resolved_expected_dll={{quote(expected_dll)}}
   if [ -z "${resolved_expected_dll}" ]; then

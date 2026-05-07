@@ -27,11 +27,14 @@ def test_verify_workshop_download_accepts_matching_version_and_dll(tmp_path: Pat
     workshop_dir = tmp_path / "workshop" / "3718988020"
     _write_workshop_download(workshop_dir, version="0.2.46", dll_bytes=b"fixed dll")
 
-    assert verify_workshop_download(
+    findings, downloaded_dll_sha256 = verify_workshop_download(
         workshop_dir,
         expected_version="0.2.46",
         expected_dll=expected_dll,
-    ) == []
+    )
+
+    assert findings == []
+    assert downloaded_dll_sha256 == "17af6e82115c251ea6aea5e9900ccfcd0f19ab211fd9f92d9e48b6efd02d19c6"
 
 
 def test_verify_workshop_download_reports_version_and_dll_mismatch(tmp_path: Path) -> None:
@@ -42,7 +45,7 @@ def test_verify_workshop_download_reports_version_and_dll_mismatch(tmp_path: Pat
     workshop_dir = tmp_path / "workshop" / "3718988020"
     _write_workshop_download(workshop_dir, version="0.2.45", dll_bytes=b"old dll")
 
-    findings = verify_workshop_download(
+    findings, downloaded_dll_sha256 = verify_workshop_download(
         workshop_dir,
         expected_version="0.2.46",
         expected_dll=expected_dll,
@@ -52,6 +55,7 @@ def test_verify_workshop_download_reports_version_and_dll_mismatch(tmp_path: Pat
         "manifest version mismatch: expected 0.2.46, got 0.2.45",
         "DLL SHA256 mismatch: downloaded QudJP.dll does not match expected DLL",
     ]
+    assert downloaded_dll_sha256 == "6fa63fac4dbe68a82c66caa07a3d821e10d043e5ca2a1c774d4da9671f1305a9"
 
 
 def test_verify_workshop_download_reports_missing_manifest(tmp_path: Path) -> None:
@@ -59,13 +63,32 @@ def test_verify_workshop_download_reports_missing_manifest(tmp_path: Path) -> No
     expected_dll = tmp_path / "QudJP.dll"
     expected_dll.write_bytes(b"fixed dll")
 
-    findings = verify_workshop_download(
+    findings, downloaded_dll_sha256 = verify_workshop_download(
         tmp_path / "missing-workshop",
         expected_version="0.2.46",
         expected_dll=expected_dll,
     )
 
     assert findings == ["Workshop manifest not found"]
+    assert downloaded_dll_sha256 is None
+
+
+def test_verify_workshop_download_reports_missing_assembly(tmp_path: Path) -> None:
+    """A missing Workshop DLL is reported without crashing."""
+    expected_dll = tmp_path / "QudJP.dll"
+    expected_dll.write_bytes(b"fixed dll")
+    workshop_dir = tmp_path / "workshop" / "3718988020"
+    workshop_dir.mkdir(parents=True)
+    (workshop_dir / "manifest.json").write_text(json.dumps({"Version": "0.2.46"}), encoding="utf-8")
+
+    findings, downloaded_dll_sha256 = verify_workshop_download(
+        workshop_dir,
+        expected_version="0.2.46",
+        expected_dll=expected_dll,
+    )
+
+    assert findings == ["Workshop DLL not found: Assemblies/QudJP.dll"]
+    assert downloaded_dll_sha256 is None
 
 
 def test_verify_workshop_download_accepts_expected_release_zip(tmp_path: Path) -> None:
@@ -76,11 +99,31 @@ def test_verify_workshop_download_accepts_expected_release_zip(tmp_path: Path) -
     workshop_dir = tmp_path / "workshop" / "3718988020"
     _write_workshop_download(workshop_dir, version="0.2.46", dll_bytes=b"fixed dll")
 
-    assert verify_workshop_download(
+    findings, downloaded_dll_sha256 = verify_workshop_download(
         workshop_dir,
         expected_version="0.2.46",
         expected_dll=release_zip,
-    ) == []
+    )
+
+    assert findings == []
+    assert downloaded_dll_sha256 == "17af6e82115c251ea6aea5e9900ccfcd0f19ab211fd9f92d9e48b6efd02d19c6"
+
+
+def test_verify_workshop_download_reports_invalid_expected_release_zip(tmp_path: Path) -> None:
+    """An unreadable release ZIP is reported as a validation finding."""
+    release_zip = tmp_path / "QudJP-v0.2.46.zip"
+    release_zip.write_bytes(b"not a zip")
+    workshop_dir = tmp_path / "workshop" / "3718988020"
+    _write_workshop_download(workshop_dir, version="0.2.46", dll_bytes=b"fixed dll")
+
+    findings, downloaded_dll_sha256 = verify_workshop_download(
+        workshop_dir,
+        expected_version="0.2.46",
+        expected_dll=release_zip,
+    )
+
+    assert findings == [f"expected DLL could not be read from {release_zip}: File is not a zip file"]
+    assert downloaded_dll_sha256 is None
 
 
 def test_verify_workshop_download_rejects_invalid_expected_version(tmp_path: Path) -> None:
