@@ -52,7 +52,11 @@ public static class CharacterStatusScreenBindingPatch
             TryResolveMutationTerms(__instance, go);
             UpdateDirectTextFields(__instance, go);
             UpdatePointTexts(__instance, go);
-            TryPopulateControllers(__instance, instanceType, go);
+            if (!TryPopulateControllers(__instance, instanceType, go))
+            {
+                return true;
+            }
+
             TryUpdatePlayerIcon(__instance, go);
             return false;
         }
@@ -87,15 +91,17 @@ public static class CharacterStatusScreenBindingPatch
         }
     }
 
-    private static void TryPopulateControllers(object instance, Type instanceType, object go)
+    private static bool TryPopulateControllers(object instance, Type instanceType, object go)
     {
         try
         {
             PopulateControllers(instance, instanceType, go);
+            return true;
         }
         catch (Exception ex)
         {
             Trace.TraceWarning("QudJP: CharacterStatusScreenBindingPatch.PopulateControllers skipped: {0}", ex.Message);
+            return false;
         }
     }
 
@@ -551,7 +557,17 @@ public static class CharacterStatusScreenBindingPatch
         {
             mediaType = AccessTools.TypeByName("Media");
         }
-        var sizeClassValue = mediaType is null ? null : GetStaticMemberValue(mediaType, "sizeClass");
+        object? sizeClassValue;
+        try
+        {
+            sizeClassValue = mediaType is null ? null : GetStaticMemberValue(mediaType, "sizeClass");
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceWarning("QudJP: CharacterStatusScreenBindingPatch compact layout check skipped: {0}", ex.Message);
+            return false;
+        }
+
         if (sizeClassValue is null)
         {
             return false;

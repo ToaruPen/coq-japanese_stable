@@ -122,6 +122,32 @@ def test_strict_mode_fails_on_warning_not_in_baseline(tmp_path: Path, capsys: py
     assert "NEW WARNING" in captured.err
 
 
+def test_strict_mode_fails_when_same_file_adds_second_empty_text_warning(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A baseline for one empty text element must not hide another location."""
+    xml_path = tmp_path / "strict.xml"
+    baseline_path = tmp_path / "baseline.json"
+    _write_xml(
+        xml_path,
+        '<root><node ID="Allowed"><text /></node></root>',
+    )
+
+    assert main([str(xml_path), "--write-warning-baseline", str(baseline_path)]) == 0
+    _ = capsys.readouterr()
+    _write_xml(
+        xml_path,
+        '<root><node ID="Allowed"><text /></node><node ID="New"><text /></node></root>',
+    )
+
+    result = main(["--strict", "--warning-baseline", str(baseline_path), str(xml_path)])
+    captured = capsys.readouterr()
+
+    assert result == 1
+    assert "NEW WARNING" in captured.err
+    assert "node[@ID='New']" in captured.err
+
+
 def test_directory_scanning_finds_nested_xml_files(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """Directory input recursively scans nested XML files."""
     root_dir = tmp_path / "Localization"

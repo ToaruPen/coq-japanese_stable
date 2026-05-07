@@ -26,15 +26,43 @@ public static class QudJPMod
 
     internal static void Initialize()
     {
-        if (Interlocked.Exchange(ref isInitialized, 1) == 1)
+        InitializeCore(FontManager.Initialize, ApplyHarmonyPatches);
+    }
+
+    internal static void InitializeForTests(Action initializeFonts, Action applyPatches)
+    {
+        InitializeCore(initializeFonts, applyPatches);
+    }
+
+    internal static void ResetInitializationForTests()
+    {
+        Interlocked.Exchange(ref isInitialized, 0);
+    }
+
+    internal static bool IsInitializedForTests()
+    {
+        return Volatile.Read(ref isInitialized) == 1;
+    }
+
+    private static void InitializeCore(Action initializeFonts, Action applyPatches)
+    {
+        if (Interlocked.CompareExchange(ref isInitialized, 1, 0) == 1)
         {
             return;
         }
 
-        var assemblyVersion = typeof(QudJPMod).Assembly.GetName().Version;
-        LogToUnity($"[QudJP] Build marker: {BuildMarker}, Version: {assemblyVersion}");
-        FontManager.Initialize();
-        ApplyHarmonyPatches();
+        try
+        {
+            var assemblyVersion = typeof(QudJPMod).Assembly.GetName().Version;
+            LogToUnity($"[QudJP] Build marker: {BuildMarker}, Version: {assemblyVersion}");
+            initializeFonts();
+            applyPatches();
+        }
+        catch
+        {
+            Interlocked.Exchange(ref isInitialized, 0);
+            throw;
+        }
     }
 
     internal static void ApplyHarmonyPatches()
