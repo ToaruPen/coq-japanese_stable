@@ -100,13 +100,13 @@ Expected: route tests pass.
 
 Update artifact gitignore assertions to match the intended policy: `.bak` and `merge_conflicts.json` ignored, `candidates_pending.json` tracked. Update annals collision tests to assert regex compile failures are test failures.
 
-- [x] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run focused tests to confirm current behavior**
 
 Run: `uv run pytest scripts/tests/test_artifact_gitignore.py -q`
 
 Run: `dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter "FullyQualifiedName~AnnalsPatternsCollisionTests"`
 
-Expected: Python test passes after assertion text update if policy already matches; C# compile/collision test should still pass with valid current patterns.
+Expected: Python test may already pass if the tracked/ignored artifact policy is already encoded; C# compile/collision test should pass with valid current patterns. Any unexpected failure here identifies the implementation gap for Step 3.
 
 - [x] **Step 3: Write minimal implementation**
 
