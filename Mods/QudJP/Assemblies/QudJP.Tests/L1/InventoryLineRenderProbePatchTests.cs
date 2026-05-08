@@ -148,6 +148,8 @@ public sealed class InventoryLineRenderProbePatchTests
         NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Contain("ScreenHierarchyObservability.TryBuildLineItemSnapshot("));
         NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Contain("\"InventoryLineItemProbe/v1\""));
         NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Contain("LogInventoryReplacementEvidence(itemLogLine)"));
+        NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Contain("RuntimeDiagnostics.LogVerboseProbe(() => logLine!)"));
+        NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Not.Contain("QudJPMod.LogToUnity("));
 
         var repairIndex = source.IndexOf(
             "TextShellReplacementRenderer.TryRenderReplacementTexts(component, out var replacementLogLine)",

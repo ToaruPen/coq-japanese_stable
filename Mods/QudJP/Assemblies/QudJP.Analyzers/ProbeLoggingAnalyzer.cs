@@ -14,6 +14,12 @@ public sealed class ProbeLoggingAnalyzer : DiagnosticAnalyzer
 {
     public const string DiagnosticId = "QJ004";
 
+    private static readonly string[] QudJPVerboseMarkerFragments =
+    {
+        "/v1:",
+        "Translator: missing key",
+    };
+
     private static readonly DiagnosticDescriptor Rule = new(
         id: DiagnosticId,
         title: "Verbose probe logs must use RuntimeDiagnostics",
@@ -56,8 +62,7 @@ public sealed class ProbeLoggingAnalyzer : DiagnosticAnalyzer
         }
 
         var argumentCount = invocation.ArgumentList.Arguments.Count;
-        var argumentsToInspect = targetName.StartsWith("Trace.", StringComparison.Ordinal) ? argumentCount : Math.Min(argumentCount, 1);
-        for (var index = 0; index < argumentsToInspect; index++)
+        for (var index = 0; index < argumentCount; index++)
         {
             var argumentExpression = invocation.ArgumentList.Arguments[index].Expression;
             if (!ContainsVerboseProbeMarker(argumentExpression, context.SemanticModel, context.CancellationToken))
@@ -97,6 +102,13 @@ public sealed class ProbeLoggingAnalyzer : DiagnosticAnalyzer
             ("QudJP.RuntimeDiagnostics", "LogWarning") => "RuntimeDiagnostics.LogWarning",
             ("QudJP.RuntimeDiagnostics", "LogError") => "RuntimeDiagnostics.LogError",
             ("UnityEngine.Debug", "Log") => "Debug.Log",
+            ("UnityEngine.Debug", "LogWarning") => "Debug.LogWarning",
+            ("UnityEngine.Debug", "LogError") => "Debug.LogError",
+            ("UnityEngine.Debug", "LogAssertion") => "Debug.LogAssertion",
+            ("UnityEngine.Debug", "LogFormat") => "Debug.LogFormat",
+            ("UnityEngine.Debug", "LogWarningFormat") => "Debug.LogWarningFormat",
+            ("UnityEngine.Debug", "LogErrorFormat") => "Debug.LogErrorFormat",
+            ("UnityEngine.Debug", "LogAssertionFormat") => "Debug.LogAssertionFormat",
             _ => null,
         };
     }
@@ -149,9 +161,15 @@ public sealed class ProbeLoggingAnalyzer : DiagnosticAnalyzer
             return false;
         }
 
-        return text.Contains("Probe", StringComparison.Ordinal)
-            || text.Contains("SinkObserve", StringComparison.Ordinal)
-            || text.Contains("Translator: missing key", StringComparison.Ordinal);
+        for (var index = 0; index < QudJPVerboseMarkerFragments.Length; index++)
+        {
+            if (text.Contains(QudJPVerboseMarkerFragments[index], StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static string? GetStaticStringText(ExpressionSyntax expression)

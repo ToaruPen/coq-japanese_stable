@@ -39,6 +39,20 @@ namespace UnityEngine
     public static class Debug
     {
         public static void Log(string message) { }
+
+        public static void LogWarning(string message) { }
+
+        public static void LogError(string message) { }
+
+        public static void LogAssertion(string message) { }
+
+        public static void LogFormat(string format, params object[] args) { }
+
+        public static void LogWarningFormat(string format, params object[] args) { }
+
+        public static void LogErrorFormat(string format, params object[] args) { }
+
+        public static void LogAssertionFormat(string format, params object[] args) { }
     }
 }
 """;
@@ -83,6 +97,75 @@ public static class Sample
         await VerifyCS.VerifyAnalyzerAsync(source, expected).ConfigureAwait(false);
     }
 
+    [TestCase("LogWarning", "Debug.LogWarning")]
+    [TestCase("LogError", "Debug.LogError")]
+    [TestCase("LogAssertion", "Debug.LogAssertion")]
+    public async Task Diagnostic_WhenUnityDebugTextEmitterEmitsVersionedProbeMarkerAsync(
+        string methodName,
+        string targetName)
+    {
+        var source = QudJPStubs + $$"""
+public static class Sample
+{
+    public static void Log()
+    {
+        UnityEngine.Debug.{{methodName}}({|#0:"[QudJP] FutureProbe/v1: leaked"|});
+    }
+}
+""";
+
+        var expected = VerifyCS.Diagnostic(ProbeLoggingAnalyzer.DiagnosticId)
+            .WithLocation(0)
+            .WithArguments(targetName);
+
+        await VerifyCS.VerifyAnalyzerAsync(source, expected).ConfigureAwait(false);
+    }
+
+    [TestCase("LogFormat", "Debug.LogFormat")]
+    [TestCase("LogWarningFormat", "Debug.LogWarningFormat")]
+    [TestCase("LogErrorFormat", "Debug.LogErrorFormat")]
+    [TestCase("LogAssertionFormat", "Debug.LogAssertionFormat")]
+    public async Task Diagnostic_WhenUnityDebugFormatEmitterContainsFullVersionedProbeMarkerAsync(
+        string methodName,
+        string targetName)
+    {
+        var source = QudJPStubs + $$"""
+public static class Sample
+{
+    public static void Log()
+    {
+        UnityEngine.Debug.{{methodName}}({|#0:"[QudJP] FutureProbe/v1: {0}"|}, "leaked");
+    }
+}
+""";
+
+        var expected = VerifyCS.Diagnostic(ProbeLoggingAnalyzer.DiagnosticId)
+            .WithLocation(0)
+            .WithArguments(targetName);
+
+        await VerifyCS.VerifyAnalyzerAsync(source, expected).ConfigureAwait(false);
+    }
+
+    [Test]
+    public async Task Diagnostic_WhenUnityDebugFormatEmitterContainsVersionedProbeMarkerArgumentAsync()
+    {
+        var source = QudJPStubs + """
+public static class Sample
+{
+    public static void Log()
+    {
+        UnityEngine.Debug.LogFormat("{0}", {|#0:"[QudJP] FutureProbe/v1: leaked"|});
+    }
+}
+""";
+
+        var expected = VerifyCS.Diagnostic(ProbeLoggingAnalyzer.DiagnosticId)
+            .WithLocation(0)
+            .WithArguments("Debug.LogFormat");
+
+        await VerifyCS.VerifyAnalyzerAsync(source, expected).ConfigureAwait(false);
+    }
+
     [Test]
     public async Task Diagnostic_WhenTraceInformationEmitsTranslatorVerboseMarkerAsync()
     {
@@ -92,6 +175,26 @@ public static class Sample
     public static void Log()
     {
         Trace.TraceInformation({|#0:"[QudJP] Translator: missing key 'abc'"|});
+    }
+}
+""";
+
+        var expected = VerifyCS.Diagnostic(ProbeLoggingAnalyzer.DiagnosticId)
+            .WithLocation(0)
+            .WithArguments("Trace.TraceInformation");
+
+        await VerifyCS.VerifyAnalyzerAsync(source, expected).ConfigureAwait(false);
+    }
+
+    [Test]
+    public async Task Diagnostic_WhenTraceInformationEmitsVersionedRepairEvidenceMarkerAsync()
+    {
+        var source = "using System.Diagnostics;\n" + QudJPStubs + """
+public static class Sample
+{
+    public static void Log()
+    {
+        Trace.TraceInformation({|#0:"[QudJP] GameSummaryTextRepair/v1: repaired=1"|});
     }
 }
 """;
@@ -237,6 +340,22 @@ public static class Sample
         QudJP.RuntimeDiagnostics.LogVerboseProbe(() => "[QudJP] NewProbe/v1: gated");
         QudJP.RuntimeDiagnostics.LogImportant("[QudJP] Build marker: marker");
         Trace.TraceError("QudJP: failure");
+    }
+}
+""";
+
+        await VerifyCS.VerifyAnalyzerAsync(source).ConfigureAwait(false);
+    }
+
+    [Test]
+    public async Task NoDiagnostic_ForNonVersionedUnityWarningThatMentionsProbeAsync()
+    {
+        var source = QudJPStubs + """
+public static class Sample
+{
+    public static void Log()
+    {
+        UnityEngine.Debug.LogWarning("[QudJP] FontManager: CJK font probe warmup failed.");
     }
 }
 """;
