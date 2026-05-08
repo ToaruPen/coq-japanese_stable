@@ -2,7 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.Text;
-#if HAS_TMP
+#if HAS_TMP && QUDJP_DEV_BUILD
 using TMPro;
 using UnityEngine;
 #endif
@@ -11,7 +11,7 @@ namespace QudJP;
 
 internal static class InventoryLineUpdateObservability
 {
-#if HAS_TMP
+#if HAS_TMP && QUDJP_DEV_BUILD
     private const int MaxTransitionLogsPerLine = 6;
     private const string LeafSegment = "TextShell/Text";
     private const string ReplacementObjectName = "QudJPReplacementText";

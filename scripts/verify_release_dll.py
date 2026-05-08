@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 import zipfile
 from pathlib import Path
@@ -17,14 +18,21 @@ _REQUIRED_DLL_MARKERS = (
 )
 
 _FORBIDDEN_RELEASE_DLL_MARKERS = (
-    b"BaseLineWithTooltipStartTooltipPatch",
-    b"SelectableTextMenuItemProbePatch",
+    "BaseLineWithTooltipStartTooltipPatch",
+    "SelectableTextMenuItemProbePatch",
+    "[QudJP] SinkObserve/v1:",
+    "[QudJP] Translator: missing key",
+    "no pattern for",
 )
 
-_FORBIDDEN_VERBOSE_PROBE_MARKERS = (
-    b"DynamicTextProbe/",
-    b"FinalOutputProbe/",
-    b"SinkObserve/",
+_FORBIDDEN_VERBOSE_PROBE_MARKER_PATTERN = re.compile(
+    r"\[QudJP\] [A-Za-z0-9]+Probe/v1:",
+)
+
+_FORBIDDEN_VERBOSE_PROBE_FRAGMENTS = (
+    "DynamicTextProbe/",
+    "FinalOutputProbe/",
+    "SinkObserve/",
 )
 
 
@@ -49,16 +57,54 @@ def verify_release_dll(path: Path) -> list[str]:
         if marker not in data
     ]
     forbidden_markers = [
-        "forbidden dev marker: " + marker.decode("ascii")
-        for marker in _FORBIDDEN_RELEASE_DLL_MARKERS
-        if marker in data
+        "forbidden dev marker: " + marker
+        for marker in _find_forbidden_release_markers(data)
     ]
-    forbidden_probe_markers = [
-        "forbidden verbose probe marker: " + marker.decode("ascii")
-        for marker in _FORBIDDEN_VERBOSE_PROBE_MARKERS
-        if marker in data
-    ]
-    return missing_markers + forbidden_markers + forbidden_probe_markers
+
+    return missing_markers + forbidden_markers
+
+
+def _find_forbidden_release_markers(data: bytes) -> list[str]:
+    """Find forbidden marker text in ASCII test payloads and .NET UTF-16 metadata."""
+    findings: list[str] = []
+    seen: set[str] = set()
+    for text in _iter_search_texts(data):
+        for match in _FORBIDDEN_VERBOSE_PROBE_MARKER_PATTERN.finditer(text):
+            _append_once(findings, seen, match.group(0))
+
+        for marker in _FORBIDDEN_RELEASE_DLL_MARKERS:
+            if marker in text:
+                _append_once(findings, seen, marker)
+
+        for marker in _FORBIDDEN_VERBOSE_PROBE_FRAGMENTS:
+            if marker in text:
+                _append_contained_once(findings, seen, marker)
+
+    return findings
+
+
+def _iter_search_texts(data: bytes) -> tuple[str, str, str]:
+    return (
+        data.decode("latin1", errors="ignore"),
+        data.decode("utf-16le", errors="ignore"),
+        data[1:].decode("utf-16le", errors="ignore"),
+    )
+
+
+def _append_once(findings: list[str], seen: set[str], marker: str) -> None:
+    if marker in seen:
+        return
+
+    seen.add(marker)
+    findings.append(marker)
+
+
+def _append_contained_once(findings: list[str], seen: set[str], marker: str) -> None:
+    if marker in seen or any(marker in finding for finding in findings):
+        return
+
+    seen.add(marker)
+    findings.append(marker)
 
 
 def main(argv: list[str] | None = None) -> int:

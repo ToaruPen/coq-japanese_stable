@@ -60,6 +60,17 @@ public sealed class RuntimeDiagnosticsTests
     }
 
     [Test]
+    public void LogImportant_WritesRegardlessOfVerboseProbeOverride()
+    {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(false);
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+            RuntimeDiagnostics.LogImportant("[QudJP] Build marker test"));
+
+        Assert.That(output, Does.Contain("[QudJP] Build marker test"));
+    }
+
+    [Test]
     public void LogVerboseProbe_DoesNotInvokeMessageFactory_WhenVerboseProbesAreDisabled()
     {
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(false);
@@ -88,6 +99,20 @@ public sealed class RuntimeDiagnosticsTests
             RuntimeDiagnostics.LogVerboseProbe(() => "[QudJP] DynamicTextProbe/v1: route='test'"));
 
         Assert.That(output, Does.Contain("DynamicTextProbe/v1"));
+    }
+
+    [Test]
+    public void LogVerboseProbe_SkipsNullOrEmptyMessages()
+    {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+        {
+            RuntimeDiagnostics.LogVerboseProbe(() => null);
+            RuntimeDiagnostics.LogVerboseProbe(() => string.Empty);
+        });
+
+        Assert.That(output, Is.Empty);
     }
 
     [Test]

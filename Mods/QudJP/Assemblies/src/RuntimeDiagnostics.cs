@@ -60,8 +60,13 @@ internal static class RuntimeDiagnostics
         QudJPMod.LogToUnity(message, RuntimeLogSeverity.Error);
     }
 
+    internal static void LogImportant(string message)
+    {
+        LogStatus(message);
+    }
+
     [Conditional("QUDJP_DEV_BUILD")]
-    internal static void LogVerboseProbe(Func<string> messageFactory)
+    internal static void LogVerboseProbe(Func<string?> messageFactory)
     {
         if (!VerboseProbesEnabled)
         {
@@ -69,7 +74,7 @@ internal static class RuntimeDiagnostics
         }
 
         var message = messageFactory();
-        if (string.IsNullOrEmpty(message))
+        if (message is null || message.Length == 0)
         {
             return;
         }

@@ -1,29 +1,38 @@
 using System;
+#if QUDJP_DEV_BUILD
 using System.Collections.Concurrent;
+#endif
 
 namespace QudJP;
 
 internal static class SinkObservation
 {
     internal const string ObservationOnlyDetail = "ObservationOnly";
+#if QUDJP_DEV_BUILD
     private const string StructuredFamily = "sink_observe";
     private const string ProbeVersion = "v1";
     private const int MaxObservedEntries = 4096;
     private const int MaxValueLength = 200;
     private const string OverflowKey = "__overflow__";
+#endif
 
     [ThreadStatic]
     private static int suppressionDepth;
 
+#if QUDJP_DEV_BUILD
     private static readonly ConcurrentDictionary<string, int> HitCounts =
         new ConcurrentDictionary<string, int>(StringComparer.Ordinal);
+#endif
 
     internal static void ResetForTests()
     {
+#if QUDJP_DEV_BUILD
         HitCounts.Clear();
+#endif
         suppressionDepth = 0;
     }
 
+#if QUDJP_DEV_BUILD
     internal static int GetHitCountForTests(
         string sink,
         string route,
@@ -40,6 +49,7 @@ internal static class SinkObservation
                 source,
                 stripped));
     }
+#endif
 
     internal static IDisposable PushSuppression(bool suppress)
     {
@@ -59,6 +69,7 @@ internal static class SinkObservation
         string source,
         string stripped)
     {
+#if QUDJP_DEV_BUILD
         if (!RuntimeDiagnostics.VerboseProbesEnabled)
         {
             return;
@@ -104,8 +115,16 @@ internal static class SinkObservation
             "' source='" + ObservabilityHelpers.SanitizeForLog(sourceValue, MaxValueLength) +
             "' stripped='" + ObservabilityHelpers.SanitizeForLog(strippedValue, MaxValueLength) + "'"
             + ObservabilityHelpers.BuildHelperStructuredSuffix(normalizedRoute, StructuredFamily, sourceValue));
+#else
+        _ = sink;
+        _ = route;
+        _ = detail;
+        _ = source;
+        _ = stripped;
+#endif
     }
 
+#if QUDJP_DEV_BUILD
     private static string BuildCounterKey(
         string sink,
         string route,
@@ -133,6 +152,8 @@ internal static class SinkObservation
 
         return counters.AddOrUpdate(OverflowKey, 1, ObservabilityHelpers.IncrementCounter);
     }
+#endif
+
     private sealed class SuppressionScope : IDisposable
     {
         internal static readonly SuppressionScope Instance = new SuppressionScope();

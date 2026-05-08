@@ -27,6 +27,17 @@ about execution mechanics rather than a translation decision:
 - `docs/workflows/runtime-evidence.md` for runtime logs, Phase F evidence,
   local mod sync, deployment checks, and decompiled-source tracing
 
+## Runtime diagnostics policy
+
+Runtime diagnostics must use the centralized `RuntimeDiagnostics` API or helper
+APIs that delegate to it. Verbose probes are dev-only by default; release and
+Workshop logs should keep only important build, error, and sink-required
+signals. Do not add direct Unity log writes for verbose probe families such as
+`[QudJP] NewProbe/v1:`, `[QudJP] SinkObserve/v1:`,
+`[QudJP] Translator: missing key`, or `no pattern for`. The release DLL
+verifier rejects those direct marker strings when they remain in release
+artifacts.
+
 ## Route ownership
 
 `Ownership` means the route where QudJP can safely define the translation strategy for a string:
