@@ -58,6 +58,34 @@ git log --oneline --decorate --graph --max-count=8
 Do not keep the old parent commit in the child branch just because it applies;
 that makes GitHub conflict checks and review diffs describe the wrong work.
 
+## Base-Update Conflicts
+
+When `main` gains an implementation with the same purpose as the PR branch,
+resolve conflicts by choosing one canonical implementation and moving the
+remaining behavior into it. Do not keep parallel analyzers, helpers, or
+diagnostic paths just because both sides compile; duplicate abstractions make
+review, diagnostic IDs, and release gates drift.
+
+After each conflict-resolution push, re-fetch both `origin/main` and the PR
+head before reporting the final state:
+
+```bash
+git fetch origin main <head-branch> --prune
+gh pr view <number> --json headRefOid,baseRefOid,mergeable,mergeStateStatus,statusCheckRollup
+```
+
+If the remote PR branch advanced and a push is rejected, compare the trees
+before deciding whether to merge remote history:
+
+```bash
+git diff --stat HEAD..origin/<head-branch>
+git log --oneline --left-right --cherry-pick HEAD...origin/<head-branch>
+```
+
+When the tree diff is empty, merge the remote PR head to join equivalent history
+instead of force-pushing over it. Finish only after GitHub reports the current
+PR head as `mergeable=MERGEABLE` and `mergeStateStatus=CLEAN`.
+
 ## Route-family feedback
 
 For CodeRabbit or reviewer feedback on route ownership, do not stop at the exact
