@@ -38,6 +38,13 @@ Do not treat the original inventory TMP `charCount=0/pageCount=0` state as solve
 - once a matching active replacement exists, active-line refresh avoids rescheduling the original TMP path;
 - fresh runtime evidence must include the replacement success markers before #574 is closed.
 
+This is a provisional adoption of the replacement-rendering path rather than a
+root-cause fix for the original TMP geometry failure. If future runtime evidence
+shows replacement-rendering performance regressions, visual regressions, or
+inventory-line instability, reopen the root-cause investigation for the
+original `TextShell/Text` route instead of adding more replacement-layer
+workarounds.
+
 ## Branch Change
 
 `DelayedInventoryLineRepairScheduler` now logs bounded replacement evidence after successful replacement repair:
