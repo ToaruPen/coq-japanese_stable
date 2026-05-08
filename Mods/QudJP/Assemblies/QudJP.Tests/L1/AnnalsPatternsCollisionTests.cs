@@ -58,8 +58,7 @@ public sealed class AnnalsPatternsCollisionTests
             foreach (var j in journal)
             {
                 if (j?.Pattern is null) continue;
-                Regex re;
-                try { re = new Regex(j.Pattern); } catch { continue; }
+                var re = RequireRegex(j.Pattern, $"journal pattern while checking annals pattern '{a.Pattern}'");
                 Assert.That(re.IsMatch(literalSample), Is.False,
                     $"annals pattern '{a.Pattern}' (sample={literalSample}) is swallowed by journal pattern '{j.Pattern}'");
             }
@@ -91,8 +90,7 @@ public sealed class AnnalsPatternsCollisionTests
         {
             var earlier = annals[i];
             if (earlier?.Pattern is null) continue;
-            Regex earlierRe;
-            try { earlierRe = new Regex(earlier.Pattern); } catch { continue; }
+            var earlierRe = RequireRegex(earlier.Pattern, $"annals pattern at index {i}");
             for (var j = i + 1; j < annals.Count; j++)
             {
                 var later = annals[j];
@@ -108,6 +106,19 @@ public sealed class AnnalsPatternsCollisionTests
                     $"earlier annals pattern '{earlier.Pattern}' (index {i}) swallows later pattern '{later.Pattern}' (index {j}, sample={laterSample}). "
                     + "Reorder so concrete patterns precede generic ones, fix the merge sort, or deduplicate.");
             }
+        }
+    }
+
+    private static Regex RequireRegex(string pattern, string context)
+    {
+        try
+        {
+            return new Regex(pattern);
+        }
+        catch (ArgumentException ex)
+        {
+            Assert.Fail($"Invalid regex in {context}: '{pattern}'. {ex.Message}");
+            throw;
         }
     }
 }

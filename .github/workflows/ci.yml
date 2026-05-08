@@ -64,6 +64,7 @@ jobs:
           roslyn_tools=false
           python=false
           localization=false
+          justfile=false
           markdown_reports=false
 
           if matches '^\.github/workflows/.*\.ya?ml$'; then
@@ -78,8 +79,11 @@ jobs:
           if [[ "$run_all" == true ]] || matches '^(pyproject\.toml|uv\.lock)$' || matches_python_scripts; then
             python=true
           fi
-          if [[ "$run_all" == true ]] || matches '^(Mods/QudJP/Localization/|scripts/(check_translation_tokens|check_glossary_consistency)\.py|scripts/(translation_token_duplicate_baseline|glossary_consistency_baseline)\.json)'; then
+          if [[ "$run_all" == true ]] || matches '^(Mods/QudJP/Localization/|scripts/(check_translation_tokens|check_glossary_consistency|validate_pattern_routes)\.py|scripts/(translation_token_duplicate_baseline|glossary_consistency_baseline)\.json|justfile$)'; then
             localization=true
+          fi
+          if [[ "$run_all" == true ]] || matches '^justfile$'; then
+            justfile=true
           fi
           if [[ "$run_all" == true ]] || matches '^docs/reports/.*\.md$' || matches '^scripts/check_markdown_reports\.py$'; then
             markdown_reports=true
@@ -93,6 +97,7 @@ jobs:
             echo "dotnet=$([[ "$qudjp_dotnet" == true || "$roslyn_tools" == true ]] && echo true || echo false)"
             echo "python=$python"
             echo "localization=$localization"
+            echo "justfile=$justfile"
             echo "markdown_reports=$markdown_reports"
           } >> "$GITHUB_OUTPUT"
 
@@ -151,6 +156,14 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
 
+      - name: Install just
+        if: steps.changes.outputs.justfile == 'true'
+        run: sudo apt-get update && sudo apt-get install -y just
+
+      - name: Check justfile
+        if: steps.changes.outputs.justfile == 'true'
+        run: just --summary
+
       - name: Check Markdown reports
         if: steps.changes.outputs.markdown_reports == 'true'
         run: >
@@ -184,6 +197,23 @@ jobs:
       - name: Check glossary consistency
         if: steps.changes.outputs.localization == 'true' && hashFiles('Mods/QudJP/Localization/**/*') != ''
         run: python scripts/check_glossary_consistency.py Mods/QudJP/Localization
+
+      - name: Check message pattern routes
+        if: steps.changes.outputs.localization == 'true' && hashFiles('Mods/QudJP/Localization/Dictionaries/messages.ja.json') != ''
+        run: >
+          python scripts/validate_pattern_routes.py
+          Mods/QudJP/Localization/Dictionaries/messages.ja.json
+          --expect-count message-frame=41
+          --expect-count popup=12
+          --expect-count journal=0
+          --expect-count leaf=0
+          --expect-count emit-message=302
+          --expect-count does-verb=0
+          --expect-count message-log=1
+          --expect-count description=4
+          --expect-count effect-cripple=1
+          --expect-count needs-harmony-patch=34
+          --expect-count unclassified=6
 
       - name: Install Python test dependencies
         if: steps.changes.outputs.python == 'true' && hashFiles('scripts/tests/**/*.py') != ''

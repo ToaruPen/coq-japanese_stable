@@ -17,6 +17,9 @@ ALLOWED_ROUTES = (
     "leaf",
     "emit-message",
     "does-verb",
+    "message-log",
+    "description",
+    "effect-cripple",
     "needs-harmony-patch",
     "unclassified",
 )
@@ -59,6 +62,12 @@ class RouteValidationReport:
     counts: dict[str, int]
     missing_routes: list[str]
     invalid_routes: list[str]
+    route_count_mismatches: list[str]
+
+    @property
+    def has_errors(self) -> bool:
+        """Return true when any validation check failed."""
+        return bool(self.missing_routes or self.invalid_routes or self.route_count_mismatches)
 
 
 def classify_route(pattern: str) -> str:
@@ -84,7 +93,7 @@ def classify_route(pattern: str) -> str:
     return route
 
 
-def validate_pattern_routes(path: Path) -> RouteValidationReport:
+def validate_pattern_routes(path: Path, expected_counts: dict[str, int] | None = None) -> RouteValidationReport:
     """Validate route fields and summarize counts by allowed route."""
     raw = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(raw, dict):
@@ -116,11 +125,20 @@ def validate_pattern_routes(path: Path) -> RouteValidationReport:
         counts[route] += 1
 
     ordered_counts = {route: counts.get(route, 0) for route in ALLOWED_ROUTES}
+    route_count_mismatches = []
+    for route, expected_count in (expected_counts or {}).items():
+        actual_count = ordered_counts.get(route)
+        if actual_count != expected_count:
+            route_count_mismatches.append(
+                f"route '{route}' expected {expected_count} entries but found {actual_count}"
+            )
+
     return RouteValidationReport(
         path=path,
         counts=ordered_counts,
         missing_routes=missing_routes,
         invalid_routes=invalid_routes,
+        route_count_mismatches=route_count_mismatches,
     )
 
 
@@ -130,18 +148,39 @@ def _print_report(report: RouteValidationReport) -> None:
     for route in ALLOWED_ROUTES:
         print(f"  {route}: {report.counts[route]}")  # noqa: T201
 
-    if report.missing_routes:
-        print(f"Missing route entries: {len(report.missing_routes)}")  # noqa: T201
-        for issue in report.missing_routes:
-            print(f"  ERROR: {issue}")  # noqa: T201
+    _print_issues("Missing route entries", report.missing_routes)
+    _print_issues("Invalid route entries", report.invalid_routes)
+    _print_issues("Route count mismatches", report.route_count_mismatches)
 
-    if report.invalid_routes:
-        print(f"Invalid route entries: {len(report.invalid_routes)}")  # noqa: T201
-        for issue in report.invalid_routes:
-            print(f"  ERROR: {issue}")  # noqa: T201
-
-    if not report.missing_routes and not report.invalid_routes:
+    if not report.has_errors:
         print("All pattern routes are present and valid.")  # noqa: T201
+
+
+def _print_issues(label: str, issues: list[str]) -> None:
+    if not issues:
+        return
+    print(f"{label}: {len(issues)}")  # noqa: T201
+    for issue in issues:
+        print(f"  ERROR: {issue}")  # noqa: T201
+
+
+def _parse_expected_count(value: str) -> tuple[str, int]:
+    route, separator, raw_count = value.partition("=")
+    if not separator:
+        msg = f"expected count must use ROUTE=COUNT syntax: {value}"
+        raise argparse.ArgumentTypeError(msg)
+    if route not in ALLOWED_ROUTE_SET:
+        msg = f"unknown route in expected count: {route}"
+        raise argparse.ArgumentTypeError(msg)
+    try:
+        count = int(raw_count)
+    except ValueError as exc:
+        msg = f"expected count for {route} must be an integer: {raw_count}"
+        raise argparse.ArgumentTypeError(msg) from exc
+    if count < 0:
+        msg = f"expected count for {route} must be non-negative: {count}"
+        raise argparse.ArgumentTypeError(msg)
+    return route, count
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -156,16 +195,29 @@ def main(argv: list[str] | None = None) -> int:
         default=DEFAULT_PATTERN_FILE,
         help="Pattern dictionary path. Defaults to the repository messages.ja.json file.",
     )
+    parser.add_argument(
+        "--expect-count",
+        action="append",
+        default=[],
+        metavar="ROUTE=COUNT",
+        type=_parse_expected_count,
+        help="Require an exact route count. May be specified more than once.",
+    )
     args = parser.parse_args(argv)
+    expected_counts: dict[str, int] = {}
+    for route, count in args.expect_count:
+        if route in expected_counts:
+            parser.error(f"--expect-count for route '{route}' is duplicated")
+        expected_counts[route] = count
 
     try:
-        report = validate_pattern_routes(args.path)
+        report = validate_pattern_routes(args.path, expected_counts)
     except (FileNotFoundError, TypeError, json.JSONDecodeError) as exc:
         print(f"Error: {exc}", file=sys.stderr)  # noqa: T201
         return 1
 
     _print_report(report)
-    if report.missing_routes or report.invalid_routes:
+    if report.has_errors:
         return 1
     return 0
 
