@@ -200,7 +200,7 @@ def _validate_release_dll_markers(release_zip: Path) -> None:
     """Reject Workshop staging inputs whose DLL is not a release DLL."""
     marker_findings = verify_release_dll(release_zip)
     if marker_findings:
-        msg = "release DLL marker validation failed: " + ", ".join(marker_findings)
+        msg = f"{release_zip}: release DLL marker validation failed: " + ", ".join(marker_findings)
         raise ValueError(msg)
 
 

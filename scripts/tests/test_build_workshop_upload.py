@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 import zipfile
 from pathlib import Path
 
@@ -239,7 +240,10 @@ def test_create_workshop_staging_rejects_release_zip_with_dev_probe_markers(tmp_
         dll_payload=_VALID_RELEASE_DLL_MARKER_PAYLOAD + b"\0[QudJP] SinkObserve/v1:",
     )
 
-    with pytest.raises(ValueError, match=r"forbidden dev marker: \[QudJP\] SinkObserve/v1:"):
+    with pytest.raises(
+        ValueError,
+        match=rf"{re.escape(str(release_zip))}.*forbidden dev marker: \[QudJP\] SinkObserve/v1:",
+    ):
         create_workshop_staging(release_zip, tmp_path / "workshop")
 
 
@@ -248,7 +252,7 @@ def test_create_workshop_staging_rejects_release_zip_missing_required_dll_marker
     release_zip = tmp_path / "dist" / "QudJP-v0.2.0.zip"
     _write_release_zip(release_zip, dll_payload=b"dll")
 
-    with pytest.raises(ValueError, match=r"Unity\.TextMeshPro"):
+    with pytest.raises(ValueError, match=rf"{re.escape(str(release_zip))}.*Unity\.TextMeshPro"):
         create_workshop_staging(release_zip, tmp_path / "workshop")
 
 
