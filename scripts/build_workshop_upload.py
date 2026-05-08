@@ -11,6 +11,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+try:
+    from scripts.verify_release_dll import verify_release_dll
+except ModuleNotFoundError:
+    from verify_release_dll import verify_release_dll
+
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
@@ -191,6 +196,14 @@ def _validate_release_zip_members(zip_path: Path, members: list[str]) -> None:
         raise ValueError(msg)
 
 
+def _validate_release_dll_markers(release_zip: Path) -> None:
+    """Reject Workshop staging inputs whose DLL is not a release DLL."""
+    marker_findings = verify_release_dll(release_zip)
+    if marker_findings:
+        msg = "release DLL marker validation failed: " + ", ".join(marker_findings)
+        raise ValueError(msg)
+
+
 def create_workshop_staging(release_zip: Path, staging_root: Path) -> tuple[Path, Path]:
     """Extract a release ZIP into the generated Workshop staging directory."""
     resolved_release_zip = release_zip.resolve()
@@ -207,6 +220,7 @@ def create_workshop_staging(release_zip: Path, staging_root: Path) -> tuple[Path
     with zipfile.ZipFile(resolved_release_zip) as zf:
         members = zf.namelist()
         _validate_release_zip_members(resolved_release_zip, members)
+        _validate_release_dll_markers(resolved_release_zip)
         for info in zf.infolist():
             target = (staging_root / info.filename).resolve()
             if not target.is_relative_to(staging_root):

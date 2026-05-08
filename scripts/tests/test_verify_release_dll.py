@@ -154,3 +154,15 @@ def test_verify_release_dll_reads_release_zip(tmp_path: Path) -> None:
         )
 
     assert verify_release_dll(release_zip) == []
+
+
+def test_verify_release_dll_reads_zip_content_without_zip_suffix(tmp_path: Path) -> None:
+    """Detect ZIP archives by content so callers are not tied to file suffixes."""
+    release_zip = tmp_path / "QudJP-v0.0.0"
+    with zipfile.ZipFile(release_zip, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr(
+            "QudJP/Assemblies/QudJP.dll",
+            _REQUIRED_MARKER_PAYLOAD,
+        )
+
+    assert verify_release_dll(release_zip) == []
