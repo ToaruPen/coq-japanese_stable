@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
 using System.Text.RegularExpressions;
 using HarmonyLib;
 
@@ -101,13 +100,7 @@ public static class MarkovCorpusTranslationPatch
             throw new FileNotFoundException("Japanese Markov corpus file not found.", path);
         }
 
-        using var stream = File.OpenRead(path);
-        var serializer = new DataContractJsonSerializer(typeof(JapaneseCorpusDocument));
-        if (serializer.ReadObject(stream) is not JapaneseCorpusDocument document)
-        {
-            throw new InvalidDataException($"Could not deserialize Japanese Markov corpus at '{path}'.");
-        }
-
+        var document = JsonAssetLoader.LoadFromFile<JapaneseCorpusDocument>(path);
         if (document.Sentences is null || document.Sentences.Length == 0)
         {
             throw new InvalidDataException($"Japanese Markov corpus at '{path}' does not contain any sentences.");
