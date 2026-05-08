@@ -203,7 +203,16 @@ public class Material : Object
 
 public class CanvasRenderer : Component
 {
+    private float alpha = 1f;
+
     public bool cull { get; set; }
+
+    public void SetAlpha(float alpha)
+    {
+        this.alpha = alpha;
+    }
+
+    public float GetAlpha() => alpha;
 }
 
 public class CanvasGroup : Component
