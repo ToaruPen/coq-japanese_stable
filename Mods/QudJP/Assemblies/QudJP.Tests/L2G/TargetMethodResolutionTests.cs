@@ -180,6 +180,35 @@ public sealed class TargetMethodResolutionTests
         "System.Single",
         "System.Action",
     })]
+    [TestCase(typeof(TutorialManagerCellPopupTranslationPatch), "ShowCellPopup", "TutorialManager", "System.Threading.Tasks.Task", new[]
+    {
+        "Genkit.Location2D",
+        "System.String",
+        "System.String",
+        "System.Int32",
+        "System.Int32",
+        "System.Action",
+    })]
+    [TestCase(typeof(TutorialManagerHighlightTranslationPatch), "HighlightByCID", "TutorialManager", "System.Boolean", new[]
+    {
+        "System.String",
+        "System.String",
+        "System.String",
+        "System.Int32",
+        "System.Int32",
+        "System.Single",
+        "System.String",
+    })]
+    [TestCase(typeof(TutorialManagerDirectHighlightTranslationPatch), "Highlight", "TutorialManager", "System.Void", new[]
+    {
+        "UnityEngine.RectTransform",
+        "System.String",
+        "System.String",
+        "System.Single",
+        "System.Single",
+        "System.Single",
+        "System.String",
+    })]
     [TestCase(typeof(PhysicsEnterCellPassByTranslationPatch), "AddPlayerMessage", "XRL.Messages.MessageQueue", "System.Void", new[] { "System.String", "System.String", "System.Boolean" })]
     [TestCase(typeof(ZoneManagerSetActiveZoneMessageQueuePatch), "AddPlayerMessage", "XRL.Messages.MessageQueue", "System.Void", new[] { "System.String", "System.String", "System.Boolean" })]
     [TestCase(typeof(XrlCoreLostSightTranslationPatch), "RenderBaseToBuffer", "XRL.Core.XRLCore", "System.Void", new[] { "ConsoleLib.Console.ScreenBuffer" })]

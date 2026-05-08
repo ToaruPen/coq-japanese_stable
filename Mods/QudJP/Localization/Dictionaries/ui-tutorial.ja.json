@@ -1,0 +1,378 @@
+{
+  "meta": {
+    "id": "ui-tutorial",
+    "lang": "ja",
+    "version": "0.1.0"
+  },
+  "rules": {
+    "protectColorTags": true,
+    "protectHtmlEntities": true
+  },
+  "entries": [
+    {
+      "key": "This is the main gameplay stage. At the top of the screen are your attributes, HP, and XP.\n\nOn the right are action buttons, minimap, and the message log.\n\nAt the bottom is your ability hotbar.",
+      "context": "Qud.UI.TutorialManager.ShowIntermissionPopupAsync",
+      "text": "ここがメインのゲーム画面です。画面上部には能力値、HP、XPが表示されています。\n\n右側にはアクションボタン、ミニマップ、メッセージログがあります。\n\n下部にはアビリティホットバーがあります。"
+    },
+    {
+      "key": "Let's explore this cave we've found ourselves in.",
+      "context": "Qud.UI.TutorialManager.ShowIntermissionPopupAsync",
+      "text": "迷い込んだこの洞窟を探索しましょう。"
+    },
+    {
+      "key": "A torch. When it's nighttime or when you're underground, you need a torch equipped to see. Select it.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "松明です。夜間や地下では、周囲を見るために松明を装備する必要があります。選択してください。"
+    },
+    {
+      "key": "Equip the dagger too.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "短剣も装備してください。"
+    },
+    {
+      "key": "What's that??? Some sort of creature. Take a closer look at it.",
+      "context": "Qud.UI.TutorialManager.ShowCellPopup",
+      "text": "あれは何でしょう？？？ 何かの生き物です。もっとよく見てみましょう。"
+    },
+    {
+      "key": "Looking at a creature shows its description and some other important details. Every object in the world can be looked at.",
+      "context": "Qud.UI.TutorialManager.ShowIntermissionPopupAsync",
+      "text": "生き物を見ると、説明やその他の重要な詳細が表示されます。世界にあるすべての物体は見ることができます。"
+    },
+    {
+      "key": "The snapjaw is hostile! Let's get ready for a fight.",
+      "context": "Qud.UI.TutorialManager.ShowCIDPopupAsync",
+      "text": "スナップジョーは敵対しています！ 戦いの準備をしましょう。"
+    },
+    {
+      "key": "Inspect the snapjaw.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "スナップジョーを調べてください。"
+    },
+    {
+      "key": "Here we have a description of the creature, along with some details about them.",
+      "context": "Qud.UI.TutorialManager.ShowIntermissionPopupAsync",
+      "text": "ここには、その生き物の説明といくつかの詳細が表示されています。"
+    },
+    {
+      "key": "All actions are turn-based, meaning you take a turn, then other creatures take a turn. For the most part, creatures won't act until you do.\r\n\r\nIf you ever get panicked, just slow down and consider your next move. There's no rush.",
+      "context": "Qud.UI.TutorialManager.ShowCellPopup",
+      "text": "すべての行動はターン制です。あなたが1ターン行動すると、ほかの生き物も1ターン行動します。ほとんどの場合、あなたが行動するまで生き物は動きません。\r\n\r\n慌てたときは、落ち着いて次の一手を考えてください。急ぐ必要はありません。"
+    },
+    {
+      "key": "Huh, you somehow destroyed the leather armor. Let's move on.",
+      "context": "Qud.UI.TutorialManager.ShowCellPopup",
+      "text": "あれ、なぜかレザーアーマーを壊してしまいましたね。先へ進みましょう。"
+    },
+    {
+      "key": "Let's look at the leather armor you picked up.\n\nArmor has an armor value ({{b|♦}}{{y|2}}) and a dodge value ({{K|○}}{{y|0}})\n\nBoth help you avoid damage.",
+      "context": "Qud.UI.TutorialManager.ShowCIDPopupAsync",
+      "text": "拾ったレザーアーマーを見てみましょう。\n\n防具にはアーマー値（{{b|♦}}{{y|2}}）と回避値（{{K|○}}{{y|0}}）があります。\n\nどちらもダメージを避ける助けになります。"
+    },
+    {
+      "key": "Let's equip it.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "装備しましょう。"
+    },
+    {
+      "key": "It's leather armor. This time, get it instead of equipping it.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "レザーアーマーです。今回は装備せず、拾ってください。"
+    },
+    {
+      "key": "This is your equipment and inventory screen. Equipped items on the left, and inventory on the right.",
+      "context": "Qud.UI.TutorialManager.ShowIntermissionPopupAsync",
+      "text": "これは装備とインベントリの画面です。左側に装備中のアイテム、右側にインベントリが表示されます。"
+    },
+    {
+      "key": "You can also equip items by dragging them from your inventory to their equipment slot.\n\nBy the way, you have several other tabs in your character sheet. Feel free to explore them later.",
+      "context": "Qud.UI.TutorialManager.ShowCIDPopupAsync",
+      "text": "インベントリから装備スロットへドラッグして、アイテムを装備することもできます。\n\nちなみに、キャラクターシートにはほかにもいくつかタブがあります。あとで自由に見てみてください。"
+    },
+    {
+      "key": "Select the Inventory && Equipment tab.\n\nYou can use {{~Page Left}} and {{~Page Right}} to navigate between tabs.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "インベントリ && 装備タブを選択してください。\n\n{{~Page Left}} と {{~Page Right}} でタブを切り替えられます。"
+    },
+    {
+      "key": "Oh! Another creature. Let's look at it more closely.\n\nWhen you come across something new, it's always a good idea to inspect it.",
+      "context": "Qud.UI.TutorialManager.ShowCellPopup",
+      "text": "おや！ 別の生き物です。もっと詳しく見てみましょう。\n\n新しいものに出会ったら、まず調べてみるのがよい考えです。"
+    },
+    {
+      "key": "It's a bear.",
+      "context": "Qud.UI.TutorialManager.ShowIntermissionPopupAsync",
+      "text": "熊です。"
+    },
+    {
+      "key": "The bear is wounded, but it's tough. This'll be a harder fight.",
+      "context": "Qud.UI.TutorialManager.ShowCIDPopupAsync",
+      "text": "熊は傷ついていますが、頑丈です。これは少し厳しい戦いになります。"
+    },
+    {
+      "key": "Inspect the bear.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "熊を調べてください。"
+    },
+    {
+      "key": "You missed, then the bear attacked and missed.\n\nAttack again.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "あなたの攻撃は外れ、その後の熊の攻撃も外れました。\n\nもう一度攻撃してください。"
+    },
+    {
+      "key": "This time you hit, but you failed to penetrate the bear's armor.\n\nThen, the bear hit you and DID penetrate your armor. You took 4 damage.",
+      "context": "Qud.UI.TutorialManager.ShowCIDPopupAsync",
+      "text": "今回は命中しましたが、熊の装甲を貫通できませんでした。\n\n次に熊の攻撃が命中し、あなたの装甲を貫通しました。4ダメージを受けました。"
+    },
+    {
+      "key": "Let's try using an ability. Look at your ability bar. Let's start sprinting. \n\nSelect it with ~Next Ability and ~Previous Ability then press ~Use Ability.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "アビリティを使ってみましょう。アビリティバーを見てください。まずは全力疾走を始めましょう。\n\n~Next Ability と ~Previous Ability で選び、~Use Ability を押してください。"
+    },
+    {
+      "key": "Let's try using an ability. Look at your ability bar. Let's start sprinting. You can click the button or hit the hotkey {{hotkey|~CmdAbility1}}.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "アビリティを使ってみましょう。アビリティバーを見てください。まずは全力疾走を始めましょう。ボタンをクリックするか、ホットキー {{hotkey|~CmdAbility1}} を押してください。"
+    },
+    {
+      "key": "Every character has Sprint, but most of your abilities are determined by traits like your mutations. You have Freezing Ray, so you can shoot frost out of your hands.\n\nSelect it with ~Next Ability and ~Previous Ability then press ~Use Ability.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "すべてのキャラクターは全力疾走を使えますが、ほとんどのアビリティは変異などの特性で決まります。あなたには凍結光線があるので、手から冷気を放てます。\n\n~Next Ability と ~Previous Ability で選び、~Use Ability を押してください。"
+    },
+    {
+      "key": "Every character has Sprint, but most of your abilities are determined by traits like your mutations. You have Freezing Ray, so you can shoot frost out of your hands. Select it.\n\nPress {{hotkey|~CmdAbility2}}",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "すべてのキャラクターは全力疾走を使えますが、ほとんどのアビリティは変異などの特性で決まります。あなたには凍結光線があるので、手から冷気を放てます。選択してください。\n\n{{hotkey|~CmdAbility2}} を押してください。"
+    },
+    {
+      "key": "The bear is dead! Looks like it dropped something, too.\n\nBut first, let's use this opportunity to heal.",
+      "context": "Qud.UI.TutorialManager.ShowIntermissionPopupAsync",
+      "text": "熊は死にました！ 何かを落としたようです。\n\nですがその前に、この機会に回復しましょう。"
+    },
+    {
+      "key": "It's a chem cell. It can be used later to power other artifacts you find.",
+      "context": "Qud.UI.TutorialManager.ShowCIDPopupAsync",
+      "text": "これは化学電池です。あとで見つける別のアーティファクトに電力を供給するために使えます。"
+    },
+    {
+      "key": "What's that???",
+      "context": "Qud.UI.TutorialManager.ShowIntermissionPopupAsync",
+      "text": "あれは何でしょう？？？"
+    },
+    {
+      "key": "This is an artifact beyond simple understanding. Try examining it.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "これは簡単には理解できないアーティファクトです。調べてみてください。"
+    },
+    {
+      "key": "Select the Inventory && Equipment tab.\n\nYou can use ~Page Left and ~Page Right to navigate between tabs.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "インベントリ && 装備タブを選択してください。\n\n~Page Left と ~Page Right でタブを切り替えられます。"
+    },
+    {
+      "key": "Ascend.\n\nPress ~CmdMoveU.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "上昇してください。\n\n~CmdMoveU を押します。"
+    },
+    {
+      "key": "Ascend.\n\nYou can click this button or press ~CmdMoveU.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "上昇してください。\n\nこのボタンをクリックするか、~CmdMoveU を押せます。"
+    },
+    {
+      "key": "Descend.\n\nPress ~CmdMoveD.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "下降してください。\n\n~CmdMoveD を押します。"
+    },
+    {
+      "key": "Descend.\n\nYou can click this button or press ~CmdMoveD.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "下降してください。\n\nこのボタンをクリックするか、~CmdMoveD を押せます。"
+    },
+    {
+      "key": "Whoever this was, they had some books. All books can be read in game.\n\nBooks with {{Y|white}} titles are generated and usually contain nonsense, but the nonsense can occasionally be useful.\n\nBooks with {{W|gold}} titles are more valuable: they are handwritten by in-world beings and contain interesting takes on the world.",
+      "context": "Qud.UI.TutorialManager.ShowCIDPopupAsync",
+      "text": "この人物が誰であれ、いくつか本を持っていました。ゲーム内ではすべての本を読むことができます。\n\n{{Y|白}}い題名の本は生成されたもので、たいていは無意味な内容ですが、その無意味さが役に立つこともあります。\n\n{{W|金色}}の題名の本はより価値があります。世界内の存在が手書きしたもので、この世界について興味深い見解が書かれています。"
+    },
+    {
+      "key": "Get the books.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "本を拾ってください。"
+    },
+    {
+      "key": "This water is valuable too. Take it all.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "この水も貴重です。すべて取ってください。"
+    },
+    {
+      "key": "The battle axe has better penetration and deals more damage than your dagger.",
+      "context": "Qud.UI.TutorialManager.ShowIntermissionPopupAsync",
+      "text": "バトルアックスは短剣より貫通力が高く、より大きなダメージを与えます。"
+    },
+    {
+      "key": "Let’s take another look at weapon stats. Next to the {{c|→}} is 5. That means you’ll usually penetrate the armor of a creature with AV equal to 5.\r\n\r\nYou can penetrate armor multiple times, though, and each time you penetrate, you deal the weapon’s damage.\r\n\r\nlet’s equip it.",
+      "context": "Qud.UI.TutorialManager.ShowCIDPopupAsync",
+      "text": "武器のステータスをもう一度見てみましょう。{{c|→}} の隣にある数値は5です。これは通常、AVが5の生き物の装甲を貫通できることを意味します。\r\n\r\nただし、装甲は複数回貫通できます。貫通するたびに、その武器のダメージを与えます。\r\n\r\n装備しましょう。"
+    },
+    {
+      "key": "Huh, you somehow destroyed the battle axe. Let's move on.",
+      "context": "Qud.UI.TutorialManager.ShowCellPopup",
+      "text": "あれ、なぜかバトルアックスを壊してしまいましたね。先へ進みましょう。"
+    },
+    {
+      "key": "Hold on, we want to show you the tooltip compare feature.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "待ってください。ツールチップ比較機能を見せたいところです。"
+    },
+    {
+      "key": "Equip the battle axe.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "バトルアックスを装備してください。"
+    },
+    {
+      "key": "A battle axe. Get it.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "バトルアックスです。拾ってください。"
+    },
+    {
+      "key": "Press ~GamepadAlt + ~Take A Step to view the tooltip.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "ツールチップを見るには ~GamepadAlt + ~Take A Step を押してください。"
+    },
+    {
+      "key": "Mouse over the battle axe and hover or press {{W|Alt}} to view the tooltip.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "ツールチップを見るには、バトルアックスにマウスを重ねてホバーするか、{{W|Alt}} を押してください。"
+    },
+    {
+      "key": "Equip the battle axe since it's better than your dagger.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "短剣より優れているので、バトルアックスを装備してください。"
+    },
+    {
+      "key": "Tastes good.",
+      "context": "Qud.UI.TutorialManager.ShowIntermissionPopupAsync",
+      "text": "おいしい。"
+    },
+    {
+      "key": "We’re on the surface now. We can walk the whole world this way, or we can access the worldmap to fast travel.",
+      "context": "Qud.UI.TutorialManager.ShowCIDPopupAsync",
+      "text": "いま地上にいます。このまま世界全体を歩くこともできますし、ワールドマップを開いて高速移動することもできます。"
+    },
+    {
+      "key": "But first, you just became hungry. You need to eat.",
+      "context": "Qud.UI.TutorialManager.ShowCIDPopupAsync",
+      "text": "ですがその前に、空腹になりました。食事をする必要があります。"
+    },
+    {
+      "key": "Make camp.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "キャンプを張ってください。"
+    },
+    {
+      "key": "Not much of a talker. But that's not true for everyone. As long as a creature isn't hostile, you can try to chat with them.\n\nLet see what the beetle has for trade.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "あまり話好きではないようです。ですが、誰もがそうというわけではありません。敵対していない生き物なら、会話を試みることができます。\n\nこの甲虫が取引できるものを見てみましょう。"
+    },
+    {
+      "key": "The beetle's inventory is on the left, and your inventory is on the right.\n\nThe beetle has some witchwood bark. That's useful — it heals you when you eat it. Let's trade for it.",
+      "context": "Qud.UI.TutorialManager.ShowCIDPopupAsync",
+      "text": "左側が甲虫のインベントリ、右側があなたのインベントリです。\n\n甲虫はウィッチウッドの樹皮を持っています。食べると回復する便利な品です。取引で手に入れましょう。"
+    },
+    {
+      "key": "The beetle has some witchwood bark. That's useful — it heals you when you eat it. Let's trade for it.\n\nPress ~CmdTradeAdd or ~AdventureMouseContextAction",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "甲虫はウィッチウッドの樹皮を持っています。食べると回復する便利な品です。取引で手に入れましょう。\n\n~CmdTradeAdd または ~AdventureMouseContextAction を押してください。"
+    },
+    {
+      "key": "We don't need this dagger any more, so we can trade it away.\n\nPress ~CmdTradeAdd or ~AdventureMouseContextAction",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "この短剣はもう必要ないので、取引に出せます。\n\n~CmdTradeAdd または ~AdventureMouseContextAction を押してください。"
+    },
+    {
+      "key": "Complete the trade.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "取引を完了してください。"
+    },
+    {
+      "key": "The trade is uneven, so we'll have to pony up some money.\n\nIn the salt-stippled ecosystem of Qud, {{B|fresh water}} is currency. You need to drink it, too, so don't spend it all.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "取引額が釣り合っていないので、お金をいくらか払う必要があります。\n\n塩にまみれたクッドの生態系では、{{B|真水}}が通貨です。飲むためにも必要なので、使い切らないようにしましょう。"
+    },
+    {
+      "key": "Now to go to the world map. Try ascending again.\n\nPress ~CmdMoveU.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "ではワールドマップへ向かいます。もう一度上昇を試してください。\n\n~CmdMoveU を押します。"
+    },
+    {
+      "key": "Now to go to the world map. Try ascending again.\n\nYou can click this button or press ~CmdMoveU.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "ではワールドマップへ向かいます。もう一度上昇を試してください。\n\nこのボタンをクリックするか、~CmdMoveU を押せます。"
+    },
+    {
+      "key": "Choose Mehmet.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "メフメットを選んでください。"
+    },
+    {
+      "key": "Oh… it looks like Warden Yrame killed Mehmet. Why, you ask?\n\nWell, named creatures who you can perform the water ritual with, like Mehmet, generate with dynamic faction relationships. In your game, Mehmet must have been hated by the Fellowship of Wardens for some reason.",
+      "context": "Qud.UI.TutorialManager.ShowCellPopup",
+      "text": "おや……監視官イラメがメフメットを殺してしまったようです。なぜかって？\n\nメフメットのように水の儀式を行える名前付きの生き物は、動的な派閥関係を持って生成されます。あなたのゲームでは、何らかの理由でメフメットが監視官の友愛会から憎まれていたのでしょう。"
+    },
+    {
+      "key": "And so Warden Yrame took her revenge. In Qud, sometimes even our best efforts at providing a safe starter village are foiled by the simulation…\n\nWhat a charmed run! It's quite rare for this to happen, but now you get to see this hidden section of the tutorial. Good job.",
+      "context": "Qud.UI.TutorialManager.ShowCellPopup",
+      "text": "そして監視官イラメは復讐を果たしました。クッドでは、安全な初心者向けの村を用意しようとする最大限の努力さえ、シミュレーションに台無しにされることがあります……。\n\nなんと運のいいプレイでしょう！ これはかなり珍しい出来事ですが、おかげでチュートリアルの隠し場面を見ることができました。よくやりました。"
+    },
+    {
+      "key": "You have a few options now. You can roll with it and continue in this world where Mehmet's been revenge-slain. The early game will be a bit harder, but the main quest is not impacted.\n\nYou can start over and play the tutorial again, for the \"normal\" ending, which you were about to reach.\n\nOr, since you were near the end anyway, you can start a new game and begin your journey proper!",
+      "context": "Qud.UI.TutorialManager.ShowCellPopup",
+      "text": "ここからはいくつか選択肢があります。メフメットが復讐で殺されたこの世界を受け入れて、そのまま続けても構いません。序盤は少し難しくなりますが、メインクエストには影響しません。\n\n最初からやり直してチュートリアルをもう一度遊び、もう少しで到達するはずだった「通常の」結末を見ることもできます。\n\nあるいは、どうせ終盤近くまで来ていたので、新しいゲームを始めて本当の旅に出てもよいでしょう！"
+    },
+    {
+      "key": "Whatever you choose, good luck, and feel free to return here for a refresher.\n\nLive and drink.",
+      "context": "Qud.UI.TutorialManager.ShowCellPopup",
+      "text": "何を選ぶにせよ、幸運を。復習したくなったら、いつでもここに戻ってきてください。\n\n生きて、水を飲め。"
+    },
+    {
+      "key": "Quetzal! That's all for the tutorial, friend.\n\nWe just scratched the very tip of the surface. Quests, secrets, leveling up, physics, reputation, limbs... we leave that for you to discover.",
+      "context": "Qud.UI.TutorialManager.ShowCellPopup",
+      "text": "ケツァル！ チュートリアルはこれで終わりです、友よ。\n\nほんの表面をかすめただけにすぎません。クエスト、秘密、レベルアップ、物理現象、評判、四肢……それらはあなた自身で見つけてください。"
+    },
+    {
+      "key": "You're ready to continue the journey on your own, but don't hesitate to play the tutorial again if you need a refresher.",
+      "context": "Qud.UI.TutorialManager.ShowCellPopup",
+      "text": "あなたはもう自分の力で旅を続けられますが、復習が必要なら遠慮なくもう一度チュートリアルを遊んでください。"
+    },
+    {
+      "key": "Joppa is a village. Everything you learned in the cave applies here too. Villages are like caves with very high roofs.",
+      "context": "Qud.UI.TutorialManager.ShowCellPopup",
+      "text": "ジョッパは村です。洞窟で学んだことは、ここでも同じように使えます。村は屋根がとても高い洞窟のようなものです。"
+    },
+    {
+      "key": "You can see a list of points of interest by pressing ~CmdMoveToPointOfInterest.\n\nThe list will grow as you explore more of the map.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "~CmdMoveToPointOfInterest を押すと、注目地点の一覧を見ることができます。\n\nマップをさらに探索すると、この一覧は増えていきます。"
+    },
+    {
+      "key": "You can see a list of points of interest by clicking this button or pressing ~CmdMoveToPointOfInterest.\n\nThe list will grow as you explore more of the map.",
+      "context": "Qud.UI.TutorialManager.HighlightByCID",
+      "text": "このボタンをクリックするか ~CmdMoveToPointOfInterest を押すと、注目地点の一覧を見ることができます。\n\nマップをさらに探索すると、この一覧は増えていきます。"
+    },
+    {
+      "key": "Oh, you died. That's okay. It's a very common occurance in the world of Qud.\n\nBecause the tutorial drops you off in Classic mode with permadeath, your character is wiped when you die.\n\nThe good news is: you get to make a whole new character! Now with a little more knowledge than you had before.",
+      "context": "Qud.UI.TutorialManager.ShowIntermissionPopupAsync",
+      "text": "ああ、死んでしまいました。でも大丈夫です。クッドの世界ではごくよくあることです。\n\nチュートリアルでは永久死のあるクラシックモードに送り込まれるため、死亡するとキャラクターは消去されます。\n\n良い知らせもあります。まったく新しいキャラクターを作れるのです！ しかも今度は、前より少し知識が増えています。"
+    },
+    {
+      "key": "Next time, if you want a more forgiving mode of play, try Roleplay, which lets you checkpoint at settlements.\n\nOr try Wander mode, where most creatures are neutral to you and you gain experience via discovery instead of killing.\n\nOr keep playing Classic if the challenge appeals to you and you'd like to explore a breadth of character types.",
+      "context": "Qud.UI.TutorialManager.ShowIntermissionPopupAsync",
+      "text": "次回、もっと寛容なモードで遊びたいなら、集落でチェックポイントを作れるロールプレイを試してみてください。\n\nあるいは、ほとんどの生き物が中立で、殺害ではなく発見によって経験値を得る放浪者モードもあります。\n\n挑戦に魅力を感じ、幅広いキャラクタータイプを試したいなら、クラシックを続けるのもよいでしょう。"
+    },
+    {
+      "key": "Whatever you choose next, feel free to return to the tutorial if you need a refresher.\n\nLive and drink, friend!",
+      "context": "Qud.UI.TutorialManager.ShowIntermissionPopupAsync",
+      "text": "次に何を選ぶにせよ、復習が必要なら遠慮なくチュートリアルに戻ってきてください。\n\n生きて、水を飲め、友よ！"
+    }
+  ]
+}

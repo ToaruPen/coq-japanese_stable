@@ -196,6 +196,274 @@ public sealed class Issue289OrphanRoutePatchTests
         }
     }
 
+    [Test]
+    public void TutorialManagerCellPopupPrefix_TranslatesPopupText_WhenPatched()
+    {
+        WriteDictionary(("Look around the cave.", "洞窟を見回せ。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyTutorialManagerTarget),
+                    nameof(DummyTutorialManagerTarget.ShowCellPopup),
+                    new[]
+                    {
+                        typeof(Genkit.Location2D),
+                        typeof(string),
+                        typeof(string),
+                        typeof(int),
+                        typeof(int),
+                        typeof(Action),
+                    }),
+                prefix: new HarmonyMethod(RequireMethod(typeof(TutorialManagerCellPopupTranslationPatch), nameof(TutorialManagerCellPopupTranslationPatch.Prefix))));
+
+            DummyTutorialManagerTarget.ShowCellPopup(
+                    default!,
+                    "Look around the cave.",
+                    "ne")
+                .GetAwaiter()
+                .GetResult();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyTutorialManagerTarget.LastCellPopupText, Is.EqualTo("洞窟を見回せ。"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TutorialManagerCellPopupTranslationPatch), "TutorialManager.CellPopupText"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void TutorialManagerHighlightPrefix_TranslatesRawHighlightTextBeforeColorWrapping_WhenPatched()
+    {
+        WriteDictionary(("Inspect the snapjaw.", "スナップジョーを調べろ。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyTutorialManagerInstanceTarget),
+                    nameof(DummyTutorialManagerInstanceTarget.HighlightByCID),
+                    new[]
+                    {
+                        typeof(string),
+                        typeof(string),
+                        typeof(string),
+                        typeof(int),
+                        typeof(int),
+                        typeof(float),
+                        typeof(string),
+                    }),
+                prefix: new HarmonyMethod(RequireMethod(typeof(TutorialManagerHighlightTranslationPatch), nameof(TutorialManagerHighlightTranslationPatch.Prefix))));
+
+            var target = new DummyTutorialManagerInstanceTarget();
+            target.HighlightByCID(
+                "QudTextMenuItem:look",
+                "Inspect the snapjaw.",
+                "ne");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.LastHighlightText, Is.EqualTo("{{y|スナップジョーを調べろ。}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TutorialManagerHighlightTranslationPatch), "TutorialManager.HighlightText"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void TutorialManagerHighlightPrefix_LeavesNoMessageSentinelUntranslated_WhenPatched()
+    {
+        WriteDictionary(("<no message>", "翻訳してはいけない"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyTutorialManagerInstanceTarget),
+                    nameof(DummyTutorialManagerInstanceTarget.HighlightByCID),
+                    new[]
+                    {
+                        typeof(string),
+                        typeof(string),
+                        typeof(string),
+                        typeof(int),
+                        typeof(int),
+                        typeof(float),
+                        typeof(string),
+                    }),
+                prefix: new HarmonyMethod(RequireMethod(typeof(TutorialManagerHighlightTranslationPatch), nameof(TutorialManagerHighlightTranslationPatch.Prefix))));
+
+            var target = new DummyTutorialManagerInstanceTarget();
+            target.HighlightByCID(
+                "QudTextMenuItem:cancel",
+                "<no message>",
+                "ne");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.LastHighlightText, Is.EqualTo("{{y|<no message>}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TutorialManagerHighlightTranslationPatch), "TutorialManager.HighlightText"),
+                    Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [TestCase("<noframe>")]
+    [TestCase("<nohighlight>")]
+    public void TutorialManagerHighlightPrefix_LeavesControlSentinelsUntranslated_WhenPatched(string sentinel)
+    {
+        WriteDictionary((sentinel, "翻訳してはいけない"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyTutorialManagerInstanceTarget),
+                    nameof(DummyTutorialManagerInstanceTarget.HighlightByCID),
+                    new[]
+                    {
+                        typeof(string),
+                        typeof(string),
+                        typeof(string),
+                        typeof(int),
+                        typeof(int),
+                        typeof(float),
+                        typeof(string),
+                    }),
+                prefix: new HarmonyMethod(RequireMethod(typeof(TutorialManagerHighlightTranslationPatch), nameof(TutorialManagerHighlightTranslationPatch.Prefix))));
+
+            var target = new DummyTutorialManagerInstanceTarget();
+            target.HighlightByCID(
+                "QudTextMenuItem:cancel",
+                sentinel,
+                "ne");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.LastHighlightText, Is.EqualTo("{{y|" + sentinel + "}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TutorialManagerHighlightTranslationPatch), "TutorialManager.HighlightText"),
+                    Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void TutorialManagerDirectHighlightPrefix_TranslatesRawHighlightText_WhenPatched()
+    {
+        WriteDictionary(("You can name your character or choose Next for a random name.", "名前を付けるか、次へでランダムな名前を選べます。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyTutorialManagerInstanceTarget),
+                    nameof(DummyTutorialManagerInstanceTarget.Highlight),
+                    new[]
+                    {
+                        typeof(UnityEngine.RectTransform),
+                        typeof(string),
+                        typeof(string),
+                        typeof(float),
+                        typeof(float),
+                        typeof(float),
+                        typeof(string),
+                    }),
+                prefix: new HarmonyMethod(RequireMethod(typeof(TutorialManagerDirectHighlightTranslationPatch), nameof(TutorialManagerDirectHighlightTranslationPatch.Prefix))));
+
+            var target = new DummyTutorialManagerInstanceTarget();
+            target.Highlight(
+                null,
+                "You can name your character or choose Next for a random name.",
+                "se");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.LastDirectHighlightText, Is.EqualTo("{{y|名前を付けるか、次へでランダムな名前を選べます。}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TutorialManagerDirectHighlightTranslationPatch), "TutorialManager.DirectHighlightText"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void TutorialManagerDirectHighlightPrefix_LeavesNoFrameSentinelUntranslated_WhenPatched()
+    {
+        WriteDictionary(("<noframe>", "翻訳してはいけない"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyTutorialManagerInstanceTarget),
+                    nameof(DummyTutorialManagerInstanceTarget.Highlight),
+                    new[]
+                    {
+                        typeof(UnityEngine.RectTransform),
+                        typeof(string),
+                        typeof(string),
+                        typeof(float),
+                        typeof(float),
+                        typeof(float),
+                        typeof(string),
+                    }),
+                prefix: new HarmonyMethod(RequireMethod(typeof(TutorialManagerDirectHighlightTranslationPatch), nameof(TutorialManagerDirectHighlightTranslationPatch.Prefix))));
+
+            var target = new DummyTutorialManagerInstanceTarget();
+            target.Highlight(null, "<noframe>", "se");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.LastDirectHighlightText, Is.EqualTo("{{y|<noframe>}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TutorialManagerDirectHighlightTranslationPatch), "TutorialManager.DirectHighlightText"),
+                    Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

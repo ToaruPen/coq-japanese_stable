@@ -90,10 +90,13 @@ internal static class DummyTutorialManagerTarget
 
     public static string LastButtonText { get; private set; } = string.Empty;
 
+    public static string LastCellPopupText { get; private set; } = string.Empty;
+
     public static void Reset()
     {
         LastPopupText = string.Empty;
         LastButtonText = string.Empty;
+        LastCellPopupText = string.Empty;
     }
 
 #pragma warning disable CA1068
@@ -120,4 +123,69 @@ internal static class DummyTutorialManagerTarget
         after?.Invoke();
     }
 #pragma warning restore CA1068
+
+    public static async Task ShowCellPopup(
+        Genkit.Location2D cell,
+        string text,
+        string directionHint = "ne",
+        int paddingX = 6,
+        int paddingY = 6,
+        Action? after = null)
+    {
+        _ = cell;
+        _ = directionHint;
+        _ = paddingX;
+        _ = paddingY;
+
+        await Task.Yield();
+
+        LastCellPopupText = text;
+        after?.Invoke();
+    }
+}
+
+internal sealed class DummyTutorialManagerInstanceTarget
+{
+    public string LastHighlightText { get; private set; } = string.Empty;
+
+    public string LastDirectHighlightText { get; private set; } = string.Empty;
+
+    public bool HighlightByCID(
+        string cid,
+        string text,
+        string directionHint,
+        int paddingX = 64,
+        int paddingY = 64,
+        float bottomMargin = 0f,
+        string style = "horiz")
+    {
+        _ = cid;
+        _ = directionHint;
+        _ = paddingX;
+        _ = paddingY;
+        _ = bottomMargin;
+        _ = style;
+
+        LastHighlightText = text is null ? string.Empty : "{{y|" + text + "}}";
+        return true;
+    }
+
+    public void Highlight(
+        UnityEngine.RectTransform? target,
+        string text,
+        string directionHint,
+        float paddingX = 64f,
+        float paddingY = 64f,
+        float bottomMargin = 0f,
+        string style = "big")
+    {
+        _ = target;
+        _ = directionHint;
+        _ = paddingX;
+        _ = paddingY;
+        _ = bottomMargin;
+        _ = style;
+
+        LastDirectHighlightText = text is null ? string.Empty : "{{y|" + text + "}}";
+    }
 }
