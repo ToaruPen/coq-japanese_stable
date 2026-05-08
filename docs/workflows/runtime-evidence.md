@@ -48,6 +48,19 @@ matches the build under review. If the latest log predates the sync or lacks a
 matching marker, summarize it as stale context and do not use it as proof that
 the current worktree regressed or succeeded.
 
+For issue closeout PRs that rely on runtime evidence, state the closeout
+decision explicitly in both the PR body and the runtime report:
+
+- identify whether the PR is a root-cause fix, a supported fallback path, or an
+  observability-only mitigation;
+- if the issue acceptance criteria allowed multiple outcomes, name the chosen
+  outcome before using `Closes #...`;
+- include the final smoke log time or matching build marker, the success
+  marker counts, and the relevant failure marker counts;
+- if a supported fallback path is adopted provisionally, document the runtime
+  signals that should reopen root-cause investigation, such as performance
+  regressions, visual regressions, or instability in the affected UI route.
+
 ## Phase F boundary
 
 Phase F means runtime route-proof evidence. It is distinct from static coverage,
