@@ -111,6 +111,74 @@ public sealed class PickGameObjectScreenTranslationPatchTests
     }
 
     [Test]
+    public void PickItemTitlePrefix_LeavesUnsupportedGetItemDialogTitleUnchanged()
+    {
+        var title = "Choose an item to inspect.";
+
+        PickItemShowPickerTitleTranslationPatch.Prefix(
+            DummyPickItemDialogStyle.GetItemDialog,
+            new object(),
+            ref title);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(title, Is.EqualTo("Choose an item to inspect."));
+            Assert.That(GetPickItemContainerTitleHitCount(), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void PickItemTitlePrefix_LeavesEmptyGetItemDialogTitleUnchanged()
+    {
+        var title = string.Empty;
+
+        PickItemShowPickerTitleTranslationPatch.Prefix(
+            DummyPickItemDialogStyle.GetItemDialog,
+            new object(),
+            ref title);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(title, Is.Empty);
+            Assert.That(GetPickItemContainerTitleHitCount(), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void PickItemTitlePrefix_LeavesUnsupportedColorTaggedGetItemDialogTitleUnchanged()
+    {
+        var title = "{{y|Choose an item to inspect.}}";
+
+        PickItemShowPickerTitleTranslationPatch.Prefix(
+            DummyPickItemDialogStyle.GetItemDialog,
+            new object(),
+            ref title);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(title, Is.EqualTo("{{y|Choose an item to inspect.}}"));
+            Assert.That(GetPickItemContainerTitleHitCount(), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void PickItemTitlePrefix_ConsumesDirectTranslationMarkerWithoutTranslating()
+    {
+        var title = MessageFrameTranslator.MarkDirectTranslation("Opening a チェスト");
+
+        PickItemShowPickerTitleTranslationPatch.Prefix(
+            DummyPickItemDialogStyle.GetItemDialog,
+            new object(),
+            ref title);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(title, Is.EqualTo("Opening a チェスト"));
+            Assert.That(GetPickItemContainerTitleHitCount(), Is.Zero);
+        });
+    }
+
+    [Test]
     public void PickItemTitlePrefix_LeavesNonGetItemDialogOpeningTextUnchanged()
     {
         var title = "Opening the ark will expose the core to outside influence.";
@@ -121,6 +189,13 @@ public sealed class PickGameObjectScreenTranslationPatchTests
             ref title);
 
         Assert.That(title, Is.EqualTo("Opening the ark will expose the core to outside influence."));
+    }
+
+    private static int GetPickItemContainerTitleHitCount()
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PickItemShowPickerTitleTranslationPatch),
+            "PickItem.ContainerTitle");
     }
 
     private static string CreateHarmonyId()

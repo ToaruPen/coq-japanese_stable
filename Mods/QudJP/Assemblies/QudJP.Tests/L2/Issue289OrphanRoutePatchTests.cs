@@ -18,6 +18,7 @@ public sealed class Issue289OrphanRoutePatchTests
         CellPopup,
         HighlightByCid,
         DirectHighlight,
+        CellHighlight,
     }
 
     [SetUp]
@@ -610,6 +611,7 @@ public sealed class Issue289OrphanRoutePatchTests
     [TestCase(TutorialRouteKind.CellPopup)]
     [TestCase(TutorialRouteKind.HighlightByCid)]
     [TestCase(TutorialRouteKind.DirectHighlight)]
+    [TestCase(TutorialRouteKind.CellHighlight)]
     public void TutorialManagerRoutePrefixes_LeaveMissingDictionaryTextUnchanged_WhenPatched(TutorialRouteKind route)
     {
         WriteDictionary(("Look around the cave.", "洞窟を見回せ。"));
@@ -628,6 +630,7 @@ public sealed class Issue289OrphanRoutePatchTests
     [TestCase(TutorialRouteKind.CellPopup)]
     [TestCase(TutorialRouteKind.HighlightByCid)]
     [TestCase(TutorialRouteKind.DirectHighlight)]
+    [TestCase(TutorialRouteKind.CellHighlight)]
     public void TutorialManagerRoutePrefixes_LeaveDirectTranslationMarkerUnchanged_WhenPatched(TutorialRouteKind route)
     {
         WriteDictionary(("Look around the cave.", "洞窟を見回せ。"));
@@ -646,6 +649,7 @@ public sealed class Issue289OrphanRoutePatchTests
     [TestCase(TutorialRouteKind.CellPopup)]
     [TestCase(TutorialRouteKind.HighlightByCid)]
     [TestCase(TutorialRouteKind.DirectHighlight)]
+    [TestCase(TutorialRouteKind.CellHighlight)]
     public void TutorialManagerRoutePrefixes_LeaveEmptyInputUnchanged_WhenPatched(TutorialRouteKind route)
     {
         WriteDictionary(("Look around the cave.", "洞窟を見回せ。"));
@@ -662,6 +666,7 @@ public sealed class Issue289OrphanRoutePatchTests
     [TestCase(TutorialRouteKind.CellPopup)]
     [TestCase(TutorialRouteKind.HighlightByCid)]
     [TestCase(TutorialRouteKind.DirectHighlight)]
+    [TestCase(TutorialRouteKind.CellHighlight)]
     public void TutorialManagerRoutePrefixes_PreserveColorTags_WhenPatched(TutorialRouteKind route)
     {
         WriteDictionary(("Look around the cave.", "洞窟を見回せ。"));
@@ -691,6 +696,7 @@ public sealed class Issue289OrphanRoutePatchTests
                 TutorialRouteKind.CellPopup => nameof(TutorialManagerCellPopupTranslationPatch),
                 TutorialRouteKind.HighlightByCid => nameof(TutorialManagerHighlightTranslationPatch),
                 TutorialRouteKind.DirectHighlight => nameof(TutorialManagerDirectHighlightTranslationPatch),
+                TutorialRouteKind.CellHighlight => nameof(TutorialManagerCellHighlightTranslationPatch),
                 _ => throw new ArgumentOutOfRangeException(nameof(route), route, null),
             },
             route switch
@@ -698,6 +704,7 @@ public sealed class Issue289OrphanRoutePatchTests
                 TutorialRouteKind.CellPopup => "TutorialManager.CellPopupText",
                 TutorialRouteKind.HighlightByCid => "TutorialManager.HighlightText",
                 TutorialRouteKind.DirectHighlight => "TutorialManager.DirectHighlightText",
+                TutorialRouteKind.CellHighlight => "TutorialManager.CellHighlightText",
                 _ => throw new ArgumentOutOfRangeException(nameof(route), route, null),
             });
     }
@@ -735,6 +742,13 @@ public sealed class Issue289OrphanRoutePatchTests
                     var target = new DummyTutorialManagerInstanceTarget();
                     target.Highlight(null, text, "se");
                     return target.LastDirectHighlightText;
+                }
+
+                case TutorialRouteKind.CellHighlight:
+                {
+                    var target = new DummyTutorialManagerInstanceTarget();
+                    target.HighlightCell(16, 12, text, "ne");
+                    return target.LastCellHighlightText;
                 }
 
                 default:
@@ -802,6 +816,24 @@ public sealed class Issue289OrphanRoutePatchTests
                             typeof(string),
                         }),
                     prefix: new HarmonyMethod(RequireMethod(typeof(TutorialManagerDirectHighlightTranslationPatch), nameof(TutorialManagerDirectHighlightTranslationPatch.Prefix))));
+                break;
+
+            case TutorialRouteKind.CellHighlight:
+                harmony.Patch(
+                    original: RequireMethod(
+                        typeof(DummyTutorialManagerInstanceTarget),
+                        nameof(DummyTutorialManagerInstanceTarget.HighlightCell),
+                        new[]
+                        {
+                            typeof(int),
+                            typeof(int),
+                            typeof(string),
+                            typeof(string),
+                            typeof(float),
+                            typeof(float),
+                            typeof(float),
+                        }),
+                    prefix: new HarmonyMethod(RequireMethod(typeof(TutorialManagerCellHighlightTranslationPatch), nameof(TutorialManagerCellHighlightTranslationPatch.Prefix))));
                 break;
 
             default:
