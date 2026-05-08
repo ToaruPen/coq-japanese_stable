@@ -1,6 +1,7 @@
 #if HAS_TMP
 using TMPro;
 #endif
+using System.IO;
 
 namespace QudJP.Tests.L1;
 
@@ -56,6 +57,32 @@ public sealed class InventoryReplacementHardeningTests
     public bool IsReplacementTextNameForTests_DetectsOnlyReplacementName(string objectName)
     {
         return TextShellReplacementRenderer.IsReplacementTextNameForTests(objectName);
+    }
+
+    [NUnit.Framework.Test]
+    public void HasActiveReplacementForCurrentItemText_DoesNotForceMeshUpdateFromLateUpdateGuard()
+    {
+        var sourcePath = Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Assemblies",
+            "src",
+            "UI",
+            "TextShellReplacementRenderer.cs");
+        var source = File.ReadAllText(sourcePath);
+        var methodStart = source.IndexOf(
+            "internal static bool HasActiveReplacementForCurrentItemText",
+            System.StringComparison.Ordinal);
+        var methodEnd = source.IndexOf(
+            "internal static TextOverflowModes GetReplacementOverflowModeForTests",
+            System.StringComparison.Ordinal);
+
+        NUnit.Framework.Assert.That(methodStart, NUnit.Framework.Is.GreaterThanOrEqualTo(0));
+        NUnit.Framework.Assert.That(methodEnd, NUnit.Framework.Is.GreaterThan(methodStart));
+        var methodSource = source[methodStart..methodEnd];
+
+        NUnit.Framework.Assert.That(methodSource, NUnit.Framework.Does.Not.Contain("ForceMeshUpdate"));
     }
 
     [NUnit.Framework.TestCase("current", "original", ExpectedResult = "original")]

@@ -1,6 +1,9 @@
 #if HAS_TMP
 using System.Collections;
 using System.Collections.Concurrent;
+#if QUDJP_DEV_BUILD
+using System.Threading;
+#endif
 using TMPro;
 using UnityEngine;
 #endif
@@ -11,10 +14,16 @@ internal static class DelayedInventoryLineRepairScheduler
 {
 #if HAS_TMP
     private const int MaxAttemptsPerLine = 2;
+#if QUDJP_DEV_BUILD
+    private const int MaxEvidenceLogs = 48;
+#endif
 
     private static readonly ConcurrentDictionary<int, int> AttemptCounts = new();
     private static readonly ConcurrentDictionary<int, string> LastScheduledTextByLine = new();
     private static readonly ConcurrentDictionary<int, byte> Scheduled = new();
+#if QUDJP_DEV_BUILD
+    private static int evidenceLogCount;
+#endif
 
     private static RepairHost? host;
 
@@ -123,14 +132,21 @@ internal static class DelayedInventoryLineRepairScheduler
                 yield break;
             }
 
-            var replaced = TextShellReplacementRenderer.TryRenderReplacementTexts(component, out _);
+            var replaced = TextShellReplacementRenderer.TryRenderReplacementTexts(component, out var replacementLogLine);
 
             yield return null;
 
             if (replaced > 0)
             {
                 _ = TmpTextRepairer.TryRepairInvisibleTexts(component);
-                RuntimeDiagnostics.RunVerboseProbe(() => BuildVerboseRepairProbeSnapshots(component));
+                if (RuntimeDiagnostics.VerboseProbesEnabled)
+                {
+                    RuntimeDiagnostics.RunVerboseProbe(() =>
+                    {
+                        LogInventoryReplacementEvidence(replacementLogLine);
+                        LogVerboseRepairProbeSnapshots(component);
+                    });
+                }
             }
 
         }
@@ -140,16 +156,45 @@ internal static class DelayedInventoryLineRepairScheduler
         }
     }
 
-    private static void BuildVerboseRepairProbeSnapshots(Component component)
+    private static void LogVerboseRepairProbeSnapshots(Component component)
     {
 #if QUDJP_DEV_BUILD
-        _ = TextShellReplacementRenderer.TryBuildReplacementState(
+        if (TextShellReplacementRenderer.TryBuildReplacementState(
             component,
             "InventoryLineReplacementStateNextFrame/v1",
-            out _);
-        _ = ScreenHierarchyObservability.TryBuildLineItemSnapshot(component, "InventoryLineItemProbe/v1", out _);
+            out var stateLogLine))
+        {
+            LogInventoryReplacementEvidence(stateLogLine);
+        }
+
+        if (ScreenHierarchyObservability.TryBuildLineItemSnapshot(
+            component,
+            "InventoryLineItemProbe/v1",
+            out var itemLogLine))
+        {
+            LogInventoryReplacementEvidence(itemLogLine);
+        }
 #else
         _ = component;
+#endif
+    }
+
+    private static void LogInventoryReplacementEvidence(string? logLine)
+    {
+#if QUDJP_DEV_BUILD
+        if (string.IsNullOrEmpty(logLine))
+        {
+            return;
+        }
+
+        if (Interlocked.Increment(ref evidenceLogCount) > MaxEvidenceLogs)
+        {
+            return;
+        }
+
+        RuntimeDiagnostics.LogVerboseProbe(() => logLine!);
+#else
+        _ = logLine;
 #endif
     }
 
