@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -117,9 +116,8 @@ public static class StartReplaceTranslationPatch
 
         try
         {
-            var serializer = new DataContractJsonSerializer(typeof(VariableTemplateDictionary));
-            using var stream = File.OpenRead(path);
-            if (serializer.ReadObject(stream) is VariableTemplateDictionary doc && doc.Entries is not null)
+            var doc = JsonAssetLoader.LoadFromFile<VariableTemplateDictionary>(path);
+            if (doc.Entries is not null)
             {
                 var dict = new Dictionary<string, string>();
                 foreach (var entry in doc.Entries)

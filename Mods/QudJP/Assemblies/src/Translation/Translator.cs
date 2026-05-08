@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
 using System.Threading;
 
 namespace QudJP;
@@ -283,10 +282,8 @@ public static class Translator
         ref int rawEntryCount,
         ref int duplicateKeyCount)
     {
-        using var stream = File.OpenRead(filePath);
-        var serializer = new DataContractJsonSerializer(typeof(DictionaryDocument));
-        var document = serializer.ReadObject(stream) as DictionaryDocument;
-        if (document?.Entries is null)
+        var document = JsonAssetLoader.LoadFromFile<DictionaryDocument>(filePath);
+        if (document.Entries is null)
         {
             throw new InvalidDataException($"Dictionary file has no entries array: {filePath}");
         }

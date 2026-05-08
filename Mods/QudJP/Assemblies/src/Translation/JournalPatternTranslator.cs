@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -203,12 +202,10 @@ internal static class JournalPatternTranslator
                 continue;
             }
 
-            JournalPatternDocument? document;
+            JournalPatternDocument document;
             try
             {
-                using var stream = File.OpenRead(patternFilePath);
-                var serializer = new DataContractJsonSerializer(typeof(JournalPatternDocument));
-                document = serializer.ReadObject(stream) as JournalPatternDocument;
+                document = JsonAssetLoader.LoadFromFile<JournalPatternDocument>(patternFilePath);
             }
             catch (System.Runtime.Serialization.SerializationException ex)
             {
@@ -216,7 +213,7 @@ internal static class JournalPatternTranslator
                     $"QudJP: malformed JSON in pattern file '{patternFilePath}': {ex.Message}", ex);
             }
 
-            if (document?.Patterns is null)
+            if (document.Patterns is null)
             {
                 throw new InvalidDataException(
                     $"QudJP: journal pattern file has no patterns array: {patternFilePath}");
