@@ -284,7 +284,6 @@ internal static class TextShellReplacementRenderer
                 continue;
             }
 
-            replacement.ForceMeshUpdate(ignoreActiveState: true, forceTextReparsing: false);
             if (replacement.textInfo.characterCount > 0)
             {
                 return true;
