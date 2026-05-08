@@ -839,7 +839,7 @@
     },
     {
       "key": "Welcome to the Caves of Qud tutorial. We'll just be scratching the surface here, learning enough of the basics to help you get your footing.\\n\\nIn Caves of Qud, you play as a mutated human or true kin.\\n\\nFor the tutorial, we're picking mutated human.",
-      "text": "『Caves of クッド』のチュートリアルへようこそ。ここではごく基本だけをなぞり、歩き出すのに必要な基本を身に付けます。\\n\\nこのゲームでは突然変異した人間か、真の人間を操作します。\\n\\nチュートリアルでは突然変異した人間を選びましょう。"
+      "text": "『Caves of Qud』のチュートリアルへようこそ。ここではごく基本だけをなぞり、歩き出すのに必要な基礎を身に付けます。\n\nこのゲームでは突然変異した人間か真性人類を操作します。\n\nチュートリアルでは突然変異した人間を選びましょう。"
     },
     {
       "key": "Character creation is a deep and sometimes long process. We included some preset builds to help you get started. After the tutorial, you can try another build, or make a character from scratch. (The recommended way! Once you get your footing.) \\n\\nFor now, pick the marsh taur.",
@@ -860,22 +860,22 @@
     {
       "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\n Type 'QUIT' to confirm.",
       "context": "Qud.UI.PopupMessage.ShowPopup.Message",
-      "text": "保存せずに終了すると保存していない進捗をすべて失います。本当に終了してしまってよろしいですか？\\n\\n「QUIT」と入力すると確認します。"
+      "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
     },
     {
       "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\nType 'QUIT' to confirm.",
       "context": "Qud.UI.PopupMessage.ShowPopup.Message",
-      "text": "保存せずに終了すると保存していない進捗をすべて失います。本当に終了してしまってよろしいですか？\\n\\n「QUIT」と入力すると確認します。"
+      "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
     },
     {
       "key": "If you quit without saving, you will lose all your progress and your character will be lost. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\n Type 'QUIT' to confirm.",
       "context": "Qud.UI.PopupMessage.ShowPopup.Message",
-      "text": "保存せずに終了すると進捗とキャラクターがすべて消えてしまいます。本当に終了してしまってよろしいですか？\\n\\n「QUIT」と入力すると確認します。"
+      "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
     },
     {
       "key": "If you quit without saving, you will lose all your progress and your character will be lost. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\nType 'QUIT' to confirm.",
       "context": "Qud.UI.PopupMessage.ShowPopup.Message",
-      "text": "保存せずに終了すると進捗とキャラクターがすべて消えてしまいます。本当に終了してしまってよろしいですか？\\n\\n「QUIT」と入力すると確認します。"
+      "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
     },
     {
       "key": "navigate",

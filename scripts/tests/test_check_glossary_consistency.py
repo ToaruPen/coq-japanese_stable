@@ -124,6 +124,24 @@ def test_json_scans_translated_text_values_not_source_keys(tmp_path: Path) -> No
     assert result.issues[0].term == "Golgotha"
 
 
+def test_json_allows_qud_inside_caves_of_qud_title(tmp_path: Path) -> None:
+    """The game title is an English proper title, while standalone Qud remains glossary-scanned."""
+    glossary_path = tmp_path / "glossary.csv"
+    localization = tmp_path / "Localization"
+    _write_glossary_rows(glossary_path, "Qud,クッド,,confirmed term,confirmed")
+    _write_entries(
+        localization / "Dictionaries" / "demo.ja.json",
+        [
+            {"key": "Title source", "text": "『Caves of Qud』のチュートリアルへようこそ。"},
+            {"key": "Standalone source", "text": "Qudへ旅立つ。"},
+        ],
+    )
+
+    result = check_glossary_consistency.check_paths([localization], glossary_path=glossary_path, baseline_path=None)
+
+    assert [(issue.term, issue.location) for issue in result.issues] == [("Qud", "entry[2].text")]
+
+
 def test_json_locations_are_one_based_for_first_and_second_entries(tmp_path: Path) -> None:
     """JSON entry locations follow the translation-token checker's 1-based indexing."""
     glossary_path = tmp_path / "glossary.csv"
