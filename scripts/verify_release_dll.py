@@ -37,7 +37,7 @@ _FORBIDDEN_VERBOSE_PROBE_FRAGMENTS = (
 
 
 def _read_dll(path: Path) -> bytes:
-    if path.suffix.lower() == ".zip":
+    if zipfile.is_zipfile(path):
         with zipfile.ZipFile(path) as archive:
             try:
                 return archive.read("QudJP/Assemblies/QudJP.dll")

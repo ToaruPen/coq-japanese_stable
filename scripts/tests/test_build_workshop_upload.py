@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 import zipfile
 from pathlib import Path
 
@@ -19,8 +20,24 @@ from scripts.build_workshop_upload import (
     vdf_escape,
 )
 
+_VALID_RELEASE_DLL_MARKER_PAYLOAD = b"\0".join(
+    [
+        b"Unity.TextMeshPro",
+        b"TextMeshProUguiFontPatch",
+        b"TmpInputFieldFontPatch",
+        b"InventoryLineFontFixer",
+        b"DelayedInventoryLineRepairScheduler",
+        b"ShouldPreserveActiveReplacementForTests",
+    ],
+)
 
-def _write_release_zip(path: Path, *, version: str = "0.2.0") -> None:
+
+def _write_release_zip(
+    path: Path,
+    *,
+    version: str = "0.2.0",
+    dll_payload: bytes = _VALID_RELEASE_DLL_MARKER_PAYLOAD,
+) -> None:
     """Create a minimal QudJP release ZIP fixture."""
     path.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
@@ -35,7 +52,7 @@ def _write_release_zip(path: Path, *, version: str = "0.2.0") -> None:
         launcher_info = zipfile.ZipInfo("QudJP/Launch CavesOfQud (Rosetta).command")
         launcher_info.external_attr = 0o100755 << 16
         zf.writestr(launcher_info, "#!/usr/bin/env bash\n")
-        zf.writestr("QudJP/Assemblies/QudJP.dll", b"dll")
+        zf.writestr("QudJP/Assemblies/QudJP.dll", dll_payload)
         zf.writestr("QudJP/Localization/ui.json", "{}")
         zf.writestr("QudJP/Fonts/OFL.txt", "SIL Open Font License")
 
@@ -147,6 +164,17 @@ def test_create_workshop_staging_extracts_qudjp_root(tmp_path: Path) -> None:
     assert preview_file == content_folder / "preview.png"
 
 
+def test_create_workshop_staging_accepts_zip_content_without_zip_suffix(tmp_path: Path) -> None:
+    """Workshop staging validates ZIP content without requiring a .zip file suffix."""
+    release_zip = tmp_path / "dist" / "QudJP-v0.2.0"
+    _write_release_zip(release_zip)
+    staging_root = tmp_path / "dist" / "workshop"
+
+    content_folder, _preview_file = create_workshop_staging(release_zip, staging_root)
+
+    assert (content_folder / "Assemblies" / "QudJP.dll").is_file()
+
+
 def test_create_workshop_staging_removes_previous_generated_contents(tmp_path: Path) -> None:
     """Regenerating staging removes stale files from previous releases."""
     release_zip = tmp_path / "dist" / "QudJP-v0.2.0.zip"
@@ -201,6 +229,30 @@ def test_create_workshop_staging_rejects_zip_without_localization_or_fonts(tmp_p
         zf.writestr("QudJP/Assemblies/QudJP.dll", b"dll")
 
     with pytest.raises(ValueError, match="QudJP/Fonts/"):
+        create_workshop_staging(release_zip, tmp_path / "workshop")
+
+
+def test_create_workshop_staging_rejects_release_zip_with_dev_probe_markers(tmp_path: Path) -> None:
+    """Workshop staging rejects release ZIPs whose DLL still contains dev-only probes."""
+    release_zip = tmp_path / "dist" / "QudJP-v0.2.0.zip"
+    _write_release_zip(
+        release_zip,
+        dll_payload=_VALID_RELEASE_DLL_MARKER_PAYLOAD + b"\0[QudJP] SinkObserve/v1:",
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=rf"{re.escape(str(release_zip))}.*forbidden dev marker: \[QudJP\] SinkObserve/v1:",
+    ):
+        create_workshop_staging(release_zip, tmp_path / "workshop")
+
+
+def test_create_workshop_staging_rejects_release_zip_missing_required_dll_markers(tmp_path: Path) -> None:
+    """Workshop staging rejects ZIPs whose DLL is missing required release markers."""
+    release_zip = tmp_path / "dist" / "QudJP-v0.2.0.zip"
+    _write_release_zip(release_zip, dll_payload=b"dll")
+
+    with pytest.raises(ValueError, match=rf"{re.escape(str(release_zip))}.*Unity\.TextMeshPro"):
         create_workshop_staging(release_zip, tmp_path / "workshop")
 
 
