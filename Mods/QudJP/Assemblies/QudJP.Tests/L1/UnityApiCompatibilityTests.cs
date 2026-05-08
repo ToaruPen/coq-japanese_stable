@@ -17,6 +17,10 @@ public sealed class UnityApiCompatibilityTests
         @"\b(?:value|vector)\s*\.\s*[xy]\b",
         SourceRegexOptions);
 
+    private static readonly Regex TooltipObjectPatternNullCheck = new(
+        @"\btooltipObject\s+is\s+(?:not\s+)?null\b",
+        SourceRegexOptions);
+
     [NUnit.Framework.Test]
     public void RuntimeDiagnostics_AvoidDirectUnityColorAlphaAccess()
     {
@@ -47,15 +51,7 @@ public sealed class UnityApiCompatibilityTests
     [NUnit.Framework.Test]
     public void RuntimeDiagnostics_AvoidRectCenterImplicitVectorConversion()
     {
-        var sourcePath = Path.Combine(
-            TestProjectPaths.GetRepositoryRoot(),
-            "Mods",
-            "QudJP",
-            "Assemblies",
-            "src",
-            "UI",
-            "TextShellReplacementRenderer.cs");
-        var source = File.ReadAllText(sourcePath);
+        var source = ReadUiSource("TextShellReplacementRenderer.cs");
 
         NUnit.Framework.Assert.That(
             source,
@@ -99,19 +95,76 @@ public sealed class UnityApiCompatibilityTests
     [NUnit.Framework.Test]
     public void RuntimeCompatibility_ToVector3AvoidsDirectVector2CoordinateAccess()
     {
-        var sourcePath = Path.Combine(
+        var source = ReadUiSource("UnityRuntimeCompatibility.cs");
+
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Not.Match(DirectVector2CoordinateAccessPattern),
+            "UnityEngine.Vector2 x/y access can compile to get_x/get_y calls that are absent in the shipped game runtime.");
+    }
+
+    [NUnit.Framework.Test]
+    public void TooltipRepairer_UsesUnityNullSemanticsForTooltipObjects()
+    {
+        var source = ReadUiSource("TooltipTextRepairer.cs");
+
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Not.Match(TooltipObjectPatternNullCheck),
+            "UnityEngine.Object fake-null semantics require ==/!= null instead of pattern null checks.");
+        NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Contain("tooltipObject == null"));
+        NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Contain("tooltipObject != null"));
+    }
+
+    [NUnit.Framework.Test]
+    public void TooltipRepairer_SuppressesReplacementDiagnosticsForTooltipRoute()
+    {
+        var source = ReadUiSource("TooltipTextRepairer.cs");
+
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Match(
+                @"TryRenderReplacementTexts\s*\(\s*tooltipObject\.transform\s*,\s*out\s+_\s*,\s*emitDiagnostics:\s*false\s*\)"),
+            "Tooltip repair reuses the replacement renderer, but tooltip bodies must not enter inventory diagnostics.");
+    }
+
+    [NUnit.Framework.Test]
+    public void TextShellReplacementRenderer_LazilyCollectsVerboseDiagnostics()
+    {
+        var source = ReadUiSource("TextShellReplacementRenderer.cs");
+
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Contain("var collectDiagnostics = emitDiagnostics && RuntimeDiagnostics.VerboseProbesEnabled;"));
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Contain("var builder = collectDiagnostics ? new StringBuilder() : null;"));
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Contain("var creationStageLog = collectDiagnostics ? new StringBuilder() : null;"));
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Contain("private static void AppendCreationStageSnapshot(StringBuilder? builder"));
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Contain("if (builder is null)"));
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Not.Contain("var builder = emitDiagnostics ? new StringBuilder() : null;"));
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Not.Contain("var creationStageLog = emitDiagnostics ? new StringBuilder() : null;"));
+    }
+
+    private static string ReadUiSource(string fileName)
+    {
+        return File.ReadAllText(Path.Combine(
             TestProjectPaths.GetRepositoryRoot(),
             "Mods",
             "QudJP",
             "Assemblies",
             "src",
             "UI",
-            "UnityRuntimeCompatibility.cs");
-        var source = File.ReadAllText(sourcePath);
-
-        NUnit.Framework.Assert.That(
-            source,
-            NUnit.Framework.Does.Not.Match(DirectVector2CoordinateAccessPattern),
-            "UnityEngine.Vector2 x/y access can compile to get_x/get_y calls that are absent in the shipped game runtime.");
+            fileName));
     }
 }
