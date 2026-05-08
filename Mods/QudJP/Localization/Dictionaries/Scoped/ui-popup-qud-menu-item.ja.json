@@ -9,7 +9,11 @@
     "protectHtmlEntities": true
   },
   "entries": [
+    { "key": "cancel", "context": "QudMenuItem", "text": "キャンセル" },
+    { "key": "equip (auto)", "context": "QudMenuItem", "text": "自動で装備" },
+    { "key": "get", "context": "QudMenuItem", "text": "拾う" },
     { "key": "load", "context": "QudMenuItem", "text": "装填" },
+    { "key": "open", "context": "QudMenuItem", "text": "開ける" },
     { "key": "unload", "context": "QudMenuItem", "text": "装填解除" }
   ]
 }

@@ -63,6 +63,16 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_DoesNotTreatOpeningSentenceAsContainerTitle()
+    {
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(Title: "Opening the ark will expose the core to outside influence.");
+
+        Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("Opening the ark will expose the core to outside influence."));
+    }
+
+    [Test]
     public void Prefix_TranslatesPickOptionIntro()
     {
         WriteDictionary(("Choose a destination.", "行き先を選んでください。"));
@@ -84,6 +94,30 @@ public sealed class PopupPickOptionTranslationPatchTests
         DummyPopupGenericTarget.PickOption(Options: new[] { "Continue", "Cancel" });
 
         Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "続ける", "キャンセル" }));
+    }
+
+    [Test]
+    public void Prefix_PreservesInventoryActionMenuOptions_ForTutorialCommandGuards()
+    {
+        WriteDictionary(("get", "取得"), ("equip (auto)", "装備（自動）"));
+
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(
+            Options: new[] { "get", "equip (auto)" },
+            PopupID: "InventoryActionMenu:ABC123");
+
+        Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "get", "equip (auto)" }));
+    }
+
+    [Test]
+    public void SelectableTextMenuItemDisplayTranslation_TranslatesHotkeyLabelWithoutChangingMenuData()
+    {
+        WriteQudMenuItemDictionary(("get", "QudMenuItem", "拾う"));
+
+        var translated = SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay("{{W|[g]}} {{y|get}}");
+
+        Assert.That(translated, Is.EqualTo("{{W|[g]}} {{y|拾う}}"));
     }
 
     [Test]
@@ -285,7 +319,8 @@ public sealed class PopupPickOptionTranslationPatchTests
         var harmony = new Harmony(harmonyId);
         harmony.Patch(
             original: RequireMethod(typeof(DummyPopupGenericTarget), nameof(DummyPopupGenericTarget.PickOption)),
-            prefix: new HarmonyMethod(RequireMethod(typeof(PopupPickOptionTranslationPatch), nameof(PopupPickOptionTranslationPatch.Prefix))));
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupPickOptionTranslationPatch), nameof(PopupPickOptionTranslationPatch.Prefix))),
+            finalizer: new HarmonyMethod(RequireMethod(typeof(PopupPickOptionTranslationPatch), nameof(PopupPickOptionTranslationPatch.Finalizer))));
         return new HarmonyPatchScope(harmony, harmonyId);
     }
 

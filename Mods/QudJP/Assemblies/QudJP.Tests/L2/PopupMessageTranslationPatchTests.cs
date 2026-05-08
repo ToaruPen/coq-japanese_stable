@@ -253,6 +253,49 @@ public sealed class PopupMessageTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_PreservesInventoryActionMenuItemData_WhenPatched()
+    {
+        WriteDictionary(
+            ("[g] get", "[g] 拾う"),
+            ("[e] equip (auto)", "[e] 自動で装備"));
+
+        var buttons = new List<DummyPopupMessageItem>
+        {
+            new("{{W|[e]}} {{y|equip (auto)}}", "char:e", "option:0"),
+        };
+        var items = new List<DummyPopupMessageItem>
+        {
+            new("{{W|[g]}} {{y|get}}", "char:g", "option:2"),
+        };
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            new DummyPopupMessageTarget().ShowPopup(
+                "Pick an action",
+                buttons,
+                items: items,
+                PopupID: "InventoryActionMenu:ABC123");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupMessageTarget.LastButtons![0].text, Is.EqualTo("{{W|[e]}} {{y|equip (auto)}}"));
+                Assert.That(DummyPopupMessageTarget.LastItems![0].text, Is.EqualTo("{{W|[g]}} {{y|get}}"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_RecordsProducerRouteTransforms_WithoutPopupSinkObservation_WhenPatched()
     {
         WriteDictionary(("Save Slots", "セーブ一覧"));
