@@ -28,7 +28,9 @@ internal static class MessagePatternTranslator
     private static string? leafFileOverride;
     private static string patternLoadSummary = "MessagePatternTranslator: pattern load summary unavailable.";
     private static int loadInvocationCount;
+#if QUDJP_DEV_BUILD
     private const int MaxLogSourceLength = 200;
+#endif
     private const string DefaultLeafFileName = "ui-messagelog-leaf.ja.json";
     internal const int MaxUniquePatterns = 10_000;
     internal const int MaxUniqueRoutes = 1_000;
@@ -230,16 +232,18 @@ internal static class MessagePatternTranslator
             return translated;
         }
 
+#if QUDJP_DEV_BUILD
         if (RuntimeDiagnostics.VerboseProbesEnabled)
         {
             var hitCount = RecordMissingPattern(source);
             if (ObservabilityHelpers.ShouldLogMissingHit(hitCount))
             {
                 var sanitizedSource = SanitizeForLog(source);
-                LogObservability(
+                RuntimeDiagnostics.LogVerboseProbe(() =>
                     $"[QudJP] MessagePatternTranslator: no pattern for '{sanitizedSource}' (hit {hitCount}).{Translator.GetCurrentLogContextSuffix()}{Translator.BuildTranslatorStructuredSuffix(Translator.ExtractCurrentRoute(), "message_pattern", sanitizedSource)}");
             }
         }
+#endif
 
         return spans is null || spans.Count == 0
             ? source
@@ -340,6 +344,7 @@ internal static class MessagePatternTranslator
         return new Regex(pattern, RegexOptions.Compiled | RegexOptions.CultureInvariant);
     }
 
+#if QUDJP_DEV_BUILD
     private static int RecordMissingPattern(string source)
     {
         var hitCount = AddOrUpdateCapped(MissingPatternCounts, source, MaxUniquePatterns);
@@ -363,6 +368,7 @@ internal static class MessagePatternTranslator
 
         return counters.AddOrUpdate(OverflowKey, 1, ObservabilityHelpers.IncrementCounter);
     }
+#endif
 
     internal static bool ShouldLogMissingHitForTests(int hitCount)
     {
@@ -382,9 +388,10 @@ internal static class MessagePatternTranslator
 
     private static void LogObservability(string message)
     {
-        QudJPMod.LogToUnity(message);
+        RuntimeDiagnostics.LogImportant(message);
     }
 
+#if QUDJP_DEV_BUILD
     private static string SanitizeForLog(string source)
     {
 #if NET48
@@ -426,6 +433,7 @@ internal static class MessagePatternTranslator
 
         return builder.ToString();
     }
+#endif
 
     private static string ApplyTemplate(string template, Match match, string source, IReadOnlyList<ColorSpan>? spans)
     {

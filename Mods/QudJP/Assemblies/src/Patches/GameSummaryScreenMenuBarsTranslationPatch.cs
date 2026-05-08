@@ -60,9 +60,9 @@ public static class GameSummaryScreenMenuBarsTranslationPatch
         {
 #if HAS_TMP
             var repaired = TmpTextRepairer.TryRepairInvisibleTexts(__instance);
-            if (repaired > 0 && RuntimeDiagnostics.VerboseProbesEnabled)
+            if (repaired > 0)
             {
-                QudJPMod.LogToUnity(TmpTextRepairer.BuildRepairLog("GameSummaryTextRepair/v1", repaired));
+                RuntimeDiagnostics.LogVerboseProbe(() => TmpTextRepairer.BuildRepairLog("GameSummaryTextRepair/v1", repaired));
             }
 #else
             _ = __instance;
