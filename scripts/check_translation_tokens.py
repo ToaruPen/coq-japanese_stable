@@ -579,7 +579,7 @@ def _duplicate_baseline_state(item: object, baseline_path: Path) -> DuplicateCon
     return DuplicateConflictState(
         scope=scope,
         path=relative_path,
-        key=key,
+        key=_duplicate_source_key_identity(key),
         entry_count=entry_count,
         texts=tuple(sorted(texts)),
         occurrences=tuple(sorted(parsed_occurrences, key=lambda occurrence: (occurrence.path, occurrence.entry_index))),
@@ -616,6 +616,22 @@ def _duplicate_occurrences(entries: list[TranslationEntry]) -> tuple[DuplicateOc
     )
 
 
+def _duplicate_source_key_identity(key: str) -> str:
+    """Normalize source-key spellings that render as the same player-visible text."""
+    return (
+        key.replace("\r\n", "\n")
+        .replace("\r", "\n")
+        .replace("\\r\\n", "\n")
+        .replace("\\n", "\n")
+        .replace("\\r", "\n")
+    )
+
+
+def _duplicate_translation_text_identity(text: str) -> str:
+    """Normalize translation newline spellings for cross-file divergence checks."""
+    return _duplicate_source_key_identity(text)
+
+
 def _duplicate_state(
     *,
     scope: str,
@@ -638,9 +654,10 @@ def _duplicate_conflict_states(entries: list[TranslationEntry]) -> dict[tuple[st
     by_path_and_key: dict[tuple[str, str], list[TranslationEntry]] = defaultdict(list)
     dictionary_entries_by_key: dict[str, list[TranslationEntry]] = defaultdict(list)
     for entry in entries:
-        by_path_and_key[(entry.relative_path, entry.key)].append(entry)
+        duplicate_key = _duplicate_source_key_identity(entry.key)
+        by_path_and_key[(entry.relative_path, duplicate_key)].append(entry)
         if entry.relative_path.startswith("Dictionaries/"):
-            dictionary_entries_by_key[entry.key].append(entry)
+            dictionary_entries_by_key[duplicate_key].append(entry)
 
     states: dict[tuple[str, str, str], DuplicateConflictState] = {}
     for (relative_path, key), matches in sorted(by_path_and_key.items()):
@@ -657,7 +674,7 @@ def _duplicate_conflict_states(entries: list[TranslationEntry]) -> dict[tuple[st
 
     for key, matches in sorted(dictionary_entries_by_key.items()):
         paths = {entry.relative_path for entry in matches}
-        texts = {entry.text for entry in matches}
+        texts = {_duplicate_translation_text_identity(entry.text) for entry in matches}
         if len(paths) < _MIN_CONFLICTING_TRANSLATIONS or len(texts) < _MIN_CONFLICTING_TRANSLATIONS:
             continue
         state = _duplicate_state(

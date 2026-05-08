@@ -12,7 +12,7 @@
     {
       "key": "Welcome to the Caves of Qud tutorial. We'll just be scratching the surface here, learning enough of the basics to help you get your footing.\n\nIn Caves of Qud, you play as a mutated human or true kin.\n\nFor the tutorial, we're picking mutated human.",
       "context": "Qud.UI.TutorialManager.ShowIntermissionPopupAsync",
-      "text": "クッドの洞窟のチュートリアルへようこそ。ここでは基本の一端だけを学び、足場を固められるようにします。\n\nクッドの洞窟では、ミュータントの人間か純血の民としてプレイします。\n\nこのチュートリアルでは、ミュータントの人間を選びます。"
+      "text": "『Caves of Qud』のチュートリアルへようこそ。ここではごく基本だけをなぞり、歩き出すのに必要な基礎を身に付けます。\n\nこのゲームでは突然変異した人間か真性人類を操作します。\n\nチュートリアルでは突然変異した人間を選びましょう。"
     },
     {
       "key": "This is the main gameplay stage. At the top of the screen are your attributes, HP, and XP.\n\nOn the right are action buttons, minimap, and the message log.\n\nAt the bottom is your ability hotbar.",

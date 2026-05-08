@@ -99,6 +99,7 @@ _QUD_OPENER = re.compile(r"\{\{[^|}]+\|")
 _BARE_QUD_SPAN = re.compile(r"\{\{[^|{}]+\}\}")
 _LEGACY_COLOR = re.compile(r"(?<![&^])[&^][A-Za-z0-9]")
 _HTML_COLOR_TAG = re.compile(r"</?color=[^>]+>|</color>")
+_CAVES_OF_QUD_TITLE = re.compile(r"(?<![A-Za-z0-9])Caves of Qud(?![A-Za-z0-9])", re.IGNORECASE)
 
 
 @dataclass(frozen=True)
@@ -319,12 +320,26 @@ def _visible_text_for_matching(value: str) -> str:
     return _HTML_COLOR_TAG.sub(" ", text)
 
 
+def _has_unallowed_term_match(visible_text: str, term: GlossaryTerm) -> bool:
+    matches = tuple(term.pattern.finditer(visible_text))
+    if not matches:
+        return False
+    if term.english.casefold() != "qud":
+        return True
+
+    title_spans = tuple(match.span() for match in _CAVES_OF_QUD_TITLE.finditer(visible_text))
+    return any(
+        not any(title_start <= match.start() and match.end() <= title_end for title_start, title_end in title_spans)
+        for match in matches
+    )
+
+
 def _find_raw_english_issues(values: list[LocalizedValue], terms: list[GlossaryTerm]) -> list[GlossaryIssue]:
     issues: list[GlossaryIssue] = []
     for value in values:
         visible_text = _visible_text_for_matching(value.text)
         for term in terms:
-            if not term.pattern.search(visible_text):
+            if not _has_unallowed_term_match(visible_text, term):
                 continue
             issues.append(
                 GlossaryIssue(

@@ -1836,7 +1836,7 @@
       ],
       "occurrences": [
         {
-          "path": "Dictionaries/historyspice-common.ja.json",
+          "path": "Dictionaries/Scoped/historyspice-common.ja.json",
           "entry_index": 49,
           "text": "一団"
         },
@@ -2090,7 +2090,7 @@
       ],
       "occurrences": [
         {
-          "path": "Dictionaries/historyspice-common.ja.json",
+          "path": "Dictionaries/Scoped/historyspice-common.ja.json",
           "entry_index": 45,
           "text": "集まり"
         },
@@ -2288,7 +2288,7 @@
       ],
       "occurrences": [
         {
-          "path": "Dictionaries/historyspice-common.ja.json",
+          "path": "Dictionaries/Scoped/historyspice-common.ja.json",
           "entry_index": 38,
           "text": "愛"
         },
@@ -2758,7 +2758,7 @@
       ],
       "occurrences": [
         {
-          "path": "Dictionaries/historyspice-common.ja.json",
+          "path": "Dictionaries/Scoped/historyspice-common.ja.json",
           "entry_index": 51,
           "text": "共同体"
         },
@@ -4616,11 +4616,11 @@
     {
       "scope": "same_file",
       "path": "Dictionaries/ui-default.ja.json",
-      "key": "If you quit without saving, you will lose all your progress and your character will be lost. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\n Type 'QUIT' to confirm.",
+      "key": "If you quit without saving, you will lose all your progress and your character will be lost. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\n Type 'QUIT' to confirm.",
       "entry_count": 2,
       "texts": [
         "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。",
-        "保存せずに終了すると進捗とキャラクターがすべて消えてしまいます。本当に終了してしまってよろしいですか？\\n\\n「QUIT」と入力すると確認します。"
+        "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
       ],
       "occurrences": [
         {
@@ -4631,18 +4631,18 @@
         {
           "path": "Dictionaries/ui-default.ja.json",
           "entry_index": 212,
-          "text": "保存せずに終了すると進捗とキャラクターがすべて消えてしまいます。本当に終了してしまってよろしいですか？\\n\\n「QUIT」と入力すると確認します。"
+          "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
         }
       ]
     },
     {
       "scope": "same_file",
       "path": "Dictionaries/ui-default.ja.json",
-      "key": "If you quit without saving, you will lose all your progress and your character will be lost. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\nType 'QUIT' to confirm.",
+      "key": "If you quit without saving, you will lose all your progress and your character will be lost. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\nType 'QUIT' to confirm.",
       "entry_count": 2,
       "texts": [
         "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。",
-        "保存せずに終了すると進捗とキャラクターがすべて消えてしまいます。本当に終了してしまってよろしいですか？\\n\\n「QUIT」と入力すると確認します。"
+        "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
       ],
       "occurrences": [
         {
@@ -4653,18 +4653,18 @@
         {
           "path": "Dictionaries/ui-default.ja.json",
           "entry_index": 213,
-          "text": "保存せずに終了すると進捗とキャラクターがすべて消えてしまいます。本当に終了してしまってよろしいですか？\\n\\n「QUIT」と入力すると確認します。"
+          "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
         }
       ]
     },
     {
       "scope": "same_file",
       "path": "Dictionaries/ui-default.ja.json",
-      "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\n Type 'QUIT' to confirm.",
+      "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\n Type 'QUIT' to confirm.",
       "entry_count": 2,
       "texts": [
         "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。",
-        "保存せずに終了すると保存していない進捗をすべて失います。本当に終了してしまってよろしいですか？\\n\\n「QUIT」と入力すると確認します。"
+        "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
       ],
       "occurrences": [
         {
@@ -4675,18 +4675,18 @@
         {
           "path": "Dictionaries/ui-default.ja.json",
           "entry_index": 210,
-          "text": "保存せずに終了すると保存していない進捗をすべて失います。本当に終了してしまってよろしいですか？\\n\\n「QUIT」と入力すると確認します。"
+          "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
         }
       ]
     },
     {
       "scope": "same_file",
       "path": "Dictionaries/ui-default.ja.json",
-      "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\nType 'QUIT' to confirm.",
+      "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\nType 'QUIT' to confirm.",
       "entry_count": 2,
       "texts": [
         "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。",
-        "保存せずに終了すると保存していない進捗をすべて失います。本当に終了してしまってよろしいですか？\\n\\n「QUIT」と入力すると確認します。"
+        "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
       ],
       "occurrences": [
         {
@@ -4697,7 +4697,7 @@
         {
           "path": "Dictionaries/ui-default.ja.json",
           "entry_index": 211,
-          "text": "保存せずに終了すると保存していない進捗をすべて失います。本当に終了してしまってよろしいですか？\\n\\n「QUIT」と入力すると確認します。"
+          "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
         }
       ]
     },
