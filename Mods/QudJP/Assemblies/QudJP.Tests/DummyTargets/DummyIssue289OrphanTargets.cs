@@ -144,6 +144,10 @@ internal static class DummyTutorialManagerTarget
     }
 }
 
+internal interface IDummyRectTransform
+{
+}
+
 internal sealed class DummyTutorialManagerInstanceTarget
 {
     public string LastHighlightText { get; private set; } = string.Empty;
@@ -171,7 +175,7 @@ internal sealed class DummyTutorialManagerInstanceTarget
     }
 
     public void Highlight(
-        UnityEngine.RectTransform? target,
+        IDummyRectTransform? target,
         string text,
         string directionHint,
         float paddingX = 64f,

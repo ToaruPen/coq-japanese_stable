@@ -392,7 +392,7 @@ public sealed class Issue289OrphanRoutePatchTests
                     nameof(DummyTutorialManagerInstanceTarget.Highlight),
                     new[]
                     {
-                        typeof(UnityEngine.RectTransform),
+                        typeof(IDummyRectTransform),
                         typeof(string),
                         typeof(string),
                         typeof(float),
@@ -437,7 +437,7 @@ public sealed class Issue289OrphanRoutePatchTests
                     nameof(DummyTutorialManagerInstanceTarget.Highlight),
                     new[]
                     {
-                        typeof(UnityEngine.RectTransform),
+                        typeof(IDummyRectTransform),
                         typeof(string),
                         typeof(string),
                         typeof(float),
