@@ -31,13 +31,17 @@ public static class PopupMessageTranslationPatch
         return method;
     }
 
-    public static void Prefix(ref string __0, object? __1, object? __3, ref string? __5, ref string? __11)
+    public static void Prefix(ref string __0, object? __1, object? __3, ref string? __5, ref string? __11, string? __20)
     {
         try
         {
             __0 = TranslatePopupText(__0, "PopupMessage.Message")!;
-            TranslateItemTextCollection(__1, "PopupMessage.ButtonText");
-            TranslateItemTextCollection(__3, "PopupMessage.ItemText");
+            if (!ShouldPreserveMenuItemData(__20))
+            {
+                TranslateItemTextCollection(__1, "PopupMessage.ButtonText");
+                TranslateItemTextCollection(__3, "PopupMessage.ItemText");
+            }
+
             __5 = TranslatePopupText(__5, "PopupMessage.Title");
             __11 = TranslatePopupText(__11, "PopupMessage.ContextTitle");
         }
@@ -45,6 +49,12 @@ public static class PopupMessageTranslationPatch
         {
             Trace.TraceError("QudJP: PopupMessageTranslationPatch.Prefix failed: {0}", ex);
         }
+    }
+
+    internal static bool ShouldPreserveMenuItemData(string? popupId)
+    {
+        return popupId is not null
+            && popupId.StartsWith("InventoryActionMenu:", StringComparison.Ordinal);
     }
 
     private static void TranslateItemTextCollection(object? maybeList, string family)
