@@ -30,6 +30,7 @@ public sealed class PopupGetPopupOptionTranslationPatchTests
         Translator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
+        PopupPickOptionTranslationPatch.ClearPopupOptionMenuDataPreservationForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -83,6 +84,38 @@ public sealed class PopupGetPopupOptionTranslationPatchTests
         var option = DummyPopupGenericTarget.GetPopupOption(0, new[] { "Untranslated" }, new[] { 'x' });
 
         Assert.That(option.text, Is.EqualTo("{{W|[x]}} {{y|Untranslated}}"));
+    }
+
+    [Test]
+    public void Postfix_PreservesInventoryActionMenuText_ForTutorialCommandGuards()
+    {
+        WriteDictionary(("[g] get", "[g] 拾う"));
+
+        string title = "";
+        string? intro = null;
+        string spacingText = "";
+        IReadOnlyList<string>? options = new[] { "get" };
+
+        try
+        {
+            PopupPickOptionTranslationPatch.Prefix(
+                ref title,
+                ref intro,
+                ref spacingText,
+                ref options,
+                __7: null,
+                __21: "InventoryActionMenu:ABC123");
+
+            using var patch = PatchGetPopupOption();
+
+            var option = DummyPopupGenericTarget.GetPopupOption(0, new[] { "get" }, new[] { 'g' });
+
+            Assert.That(option.text, Is.EqualTo("{{W|[g]}} {{y|get}}"));
+        }
+        finally
+        {
+            PopupPickOptionTranslationPatch.Finalizer();
+        }
     }
 
     private static IDisposable PatchGetPopupOption()
