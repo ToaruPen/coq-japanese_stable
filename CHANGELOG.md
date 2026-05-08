@@ -10,6 +10,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.2.50] - 2026-05-09
+
+### Changed
+
+- 内部リリースメタデータとドキュメントの対象ゲーム表記を Caves of Qud 1.0.4 に合わせました。
+- チュートリアルに対応しました。具体的には、ポップアップ、ガイド付きハイライト、look-mode コマンド、キャラクタープリセット案内を日本語化しました。
+- 固有タイトル `Caves of Qud` は許容しつつ、単独の `Qud` 表記を glossary check で検出する挙動を文書化しました。
+
+### Fixed
+
+- `L` キーの look 表示経路で使われる TMP ツールチップに対して、日本語説明文が途中で欠けたり非表示になったりする問題を修復する処理を追加しました。
+- 長い日本語説明文を TMP / Qud markup / 変数 placeholder を壊さずに意味的な区切りで折り返すようにし、look tooltip の長文表示を読みやすくしました。
+- インベントリ項目名の TMP replacement が折り畳み・更新・非アクティブ行の影響で不安定になる経路を固めました。
+- verbose probe と runtime diagnostics の gate を整理し、通常リリースビルドでの診断ログ生成や観測処理の負荷を抑えるようにしました。
+- 実行時 JSON アセットの読み込みを `Newtonsoft.Json` ベースに統一し、Linux Unity/Mono 環境での辞書・パターン読み込み互換性を改善しました。
+- Workshop staging で release DLL に必須の runtime marker が含まれることを検証し、dev-only probe marker を含む DLL を弾くようにしました。
+- 改行エスケープ表記だけが異なる重複 JSON 辞書キーを検出できるようにしました。
+
+---
+
 ## [0.2.46] - 2026-05-07
 
 ### Fixed
