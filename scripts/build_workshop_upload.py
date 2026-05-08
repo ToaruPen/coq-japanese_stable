@@ -174,6 +174,7 @@ def _validate_release_zip_members(zip_path: Path, members: list[str]) -> None:
         "QudJP/manifest.json",
         "QudJP/preview.png",
         "QudJP/Bootstrap.cs",
+        "QudJP/Launch CavesOfQud (Rosetta).command",
         "QudJP/Assemblies/QudJP.dll",
     }
     required_prefixes = {
@@ -217,6 +218,9 @@ def create_workshop_staging(release_zip: Path, staging_root: Path) -> tuple[Path
             target.parent.mkdir(parents=True, exist_ok=True)
             with zf.open(info) as source, target.open("wb") as destination:
                 shutil.copyfileobj(source, destination)
+            mode = info.external_attr >> 16
+            if mode:
+                target.chmod(mode & 0o777)
 
     preview_file = content_folder / "preview.png"
     if not preview_file.is_file():

@@ -211,6 +211,19 @@ public sealed class QudJPModTests
     }
 
     [Test]
+    public void LogPatchResults_WhenNoMethodsPatched_LogsAppleSiliconRosettaGuidance()
+    {
+        var output = TestTraceHelper.CaptureTrace(() => QudJPMod.LogPatchResults(EmptyPatchedMethodsProbe.Create()));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(output, Does.Contain("Harmony patching complete: 0 method(s) patched."));
+            Assert.That(output, Does.Contain("mprotect returned EACCES"));
+            Assert.That(output, Does.Contain("arch -x86_64"));
+        });
+    }
+
+    [Test]
     public void LogToUnity_WritesToTrace_InTestEnvironment()
     {
         var output = TestTraceHelper.CaptureTrace(() => QudJPMod.LogToUnity("[QudJP] test message"));
@@ -292,6 +305,26 @@ public sealed class QudJPModTests
         {
             _ = sentinel;
             throw new InvalidOperationException("simulated patched-method enumeration failure");
+        }
+    }
+
+    internal sealed class EmptyPatchedMethodsProbe
+    {
+        private readonly int sentinel = 1;
+
+        private EmptyPatchedMethodsProbe()
+        {
+        }
+
+        public static EmptyPatchedMethodsProbe Create()
+        {
+            return new EmptyPatchedMethodsProbe();
+        }
+
+        public System.Collections.IEnumerable GetPatchedMethods()
+        {
+            _ = sentinel;
+            return Array.Empty<MethodBase>();
         }
     }
 }
