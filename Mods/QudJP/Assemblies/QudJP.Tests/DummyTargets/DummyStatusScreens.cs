@@ -164,6 +164,13 @@ internal sealed class DummyPickGameObjectScreen
     }
 }
 
+internal enum DummyPickItemDialogStyle
+{
+    SelectItemDialog,
+    StoreItemDialog,
+    GetItemDialog,
+}
+
 internal sealed class DummyInventoryAndEquipmentStatusScreen
 {
     public DummyMenuOption CMD_SHOWCYBERNETICS = new DummyMenuOption("Toggle Cybernetics");

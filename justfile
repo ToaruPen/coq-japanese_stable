@@ -11,7 +11,7 @@ default:
 build:
   dotnet build Mods/QudJP/Assemblies/QudJP.csproj
 
-# Build the QudJP assembly for local development.
+# Build the QudJP assembly for local development with dev-only probes enabled.
 build-dev:
   dotnet build Mods/QudJP/Assemblies/QudJP.csproj -p:QudJPDevBuild=true
 
@@ -20,7 +20,7 @@ rebuild:
   dotnet clean Mods/QudJP/Assemblies/QudJP.csproj
   dotnet build Mods/QudJP/Assemblies/QudJP.csproj --no-incremental
 
-# Clean and rebuild the QudJP assembly for local development.
+# Clean and rebuild the QudJP assembly for local development with dev-only probes enabled.
 rebuild-dev:
   dotnet clean Mods/QudJP/Assemblies/QudJP.csproj
   dotnet build Mods/QudJP/Assemblies/QudJP.csproj --no-incremental -p:QudJPDevBuild=true
@@ -242,7 +242,7 @@ download-release-zip version:
 sync-mod:
   {{python}} scripts/sync_mod.py
 
-# Sync the built mod into the local game install as a local dev build.
+# Sync the built mod into the local game install as a dev build with dev-only probes enabled.
 sync-mod-dev:
   {{python}} scripts/sync_mod.py --dev
 
@@ -250,7 +250,7 @@ sync-mod-dev:
 sync-mod-dry-run:
   {{python}} scripts/sync_mod.py --dry-run
 
-# Preview the local dev sync without copying files.
+# Preview the local dev sync with dev-only probes enabled without copying files.
 sync-mod-dev-dry-run:
   {{python}} scripts/sync_mod.py --dev --dry-run
 
@@ -262,14 +262,14 @@ sync-mod-exclude-fonts:
 sync-mod-to destination:
   {{python}} scripts/sync_mod.py --destination {{quote(destination)}}
 
-# Sync the built mod to an explicit Mods/QudJP destination as a local dev build.
+# Sync the built mod to an explicit Mods/QudJP destination as a dev build with dev-only probes enabled.
 sync-mod-dev-to destination:
   {{python}} scripts/sync_mod.py --dev --destination {{quote(destination)}}
 
 # Rebuild and sync the local mod into the game install.
 deploy-mod: rebuild sync-mod
 
-# Rebuild and sync the local dev mod into the game install.
+# Rebuild and sync the local dev mod with dev-only probes enabled.
 deploy-dev: rebuild-dev sync-mod-dev
 
 # Rebuild and sync the local mod to an explicit Mods/QudJP destination.
@@ -277,7 +277,7 @@ deploy-mod-to destination:
   just rebuild
   just sync-mod-to {{quote(destination)}}
 
-# Rebuild and sync the local dev mod to an explicit Mods/QudJP destination.
+# Rebuild and sync the local dev mod with dev-only probes enabled to an explicit destination.
 deploy-dev-to destination:
   just rebuild-dev
   just sync-mod-dev-to {{quote(destination)}}

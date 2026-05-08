@@ -62,6 +62,32 @@ public sealed class PickTargetWindowUpdateTranslationPatchTests
     }
 
     [Test]
+    public void TranslateCurrentText_TranslatesObservedLookCommandBarAtOwnerRoute()
+    {
+        WriteDictionary(
+            ("Look", "調べる"),
+            ("lock", "ロック"),
+            ("interact", "操作する"),
+            ("walk", "歩く"));
+        DummyPickTargetWindow.currentText = "Look | {{W|ESC}} | {{hotkey|({{hotkey|F1}})}} {{W|l}}ock | {{hotkey|space}} interact | {{hotkey|{{hotkey|W}}}} walk";
+
+        var changed = PickTargetWindowUpdateTranslationPatch.TranslateCurrentTextForTests(typeof(DummyPickTargetWindow));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(
+                DummyPickTargetWindow.currentText,
+                Is.EqualTo("調べる | {{W|ESC}} | {{hotkey|({{hotkey|F1}})}} {{W|ロ}}ック | {{hotkey|space}} 操作する | {{hotkey|{{hotkey|W}}}} 歩く"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(PickTargetWindowUpdateTranslationPatch),
+                    "PickTarget.CommandBar"),
+                Is.GreaterThan(0));
+        });
+    }
+
+    [Test]
     public void Prefix_TranslatesGeneratedPickTargetCommandBar_WhenPatched()
     {
         WriteDictionary(
