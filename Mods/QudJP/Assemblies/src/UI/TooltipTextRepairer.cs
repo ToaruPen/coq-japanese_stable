@@ -50,28 +50,43 @@ internal static class TooltipTextRepairer
 
     internal static bool TryRepairTooltip(object? triggerInstance, bool restoreCanvasRendererVisibility = false)
     {
-        var tooltipObject = TryGetTooltipObjectFromTrigger(triggerInstance, out var tooltip);
-        if (tooltipObject is null || !ShouldRepairTooltipName(tooltipObject.name))
+        GameObject? tooltipObject = null;
+        try
         {
+            tooltipObject = TryGetTooltipObjectFromTrigger(triggerInstance, out var tooltip);
+            if (tooltipObject is null || !ShouldRepairTooltipName(tooltipObject.name))
+            {
+                return false;
+            }
+
+            _ = TryPinLookerTooltip(triggerInstance, tooltip, tooltipObject);
+            var repaired = 0;
+            repaired += ApplyLegacyFonts(tooltipObject);
+            repaired += ApplyTmpFonts(tooltipObject);
+            repaired += TmpTextRepairer.TryRepairInvisibleTexts(tooltipObject.transform);
+            repaired += TextShellReplacementRenderer.TryRenderReplacementTexts(
+                tooltipObject.transform,
+                out _,
+                emitDiagnostics: false);
+            if (restoreCanvasRendererVisibility)
+            {
+                repaired += RestoreCanvasRendererVisibility(tooltipObject);
+            }
+
+            ForceRebuildLayout(tooltipObject);
+            return repaired > 0;
+        }
+        catch (Exception ex)
+        {
+            var triggerType = triggerInstance?.GetType().FullName ?? "<null>";
+            var tooltipName = tooltipObject == null ? "<null>" : tooltipObject.name;
+            System.Diagnostics.Trace.TraceError(
+                "QudJP: TooltipTextRepairer.TryRepairTooltip failed for trigger '{0}', tooltip '{1}': {2}",
+                triggerType,
+                tooltipName,
+                ex);
             return false;
         }
-
-        _ = TryPinLookerTooltip(triggerInstance, tooltip, tooltipObject);
-        var repaired = 0;
-        repaired += ApplyLegacyFonts(tooltipObject);
-        repaired += ApplyTmpFonts(tooltipObject);
-        repaired += TmpTextRepairer.TryRepairInvisibleTexts(tooltipObject.transform);
-        repaired += TextShellReplacementRenderer.TryRenderReplacementTexts(
-            tooltipObject.transform,
-            out _,
-            emitDiagnostics: false);
-        if (restoreCanvasRendererVisibility)
-        {
-            repaired += RestoreCanvasRendererVisibility(tooltipObject);
-        }
-
-        ForceRebuildLayout(tooltipObject);
-        return repaired > 0;
     }
 
     internal static bool TryPinLookerTooltip(object? triggerInstance)
