@@ -54,7 +54,7 @@ internal static class DynamicTextObservability
         }
 
         var semanticDiagnostics = MarkupSemanticDiagnostics.Analyze(translatedValue);
-        QudJPMod.LogToUnity(
+        RuntimeDiagnostics.LogVerboseProbe(() =>
             "[QudJP] DynamicTextProbe/" + ProbeVersion +
             ": route='" + normalizedRoute +
             "' family='" + family +

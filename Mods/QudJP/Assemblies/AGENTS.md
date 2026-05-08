@@ -36,6 +36,14 @@ just test-l2g
   - use `just sg-cs '<pattern>'` with the default decompiled-source target when tracing upstream game producers
 - Optional examples: try patterns such as `DynamicTextObservability.RecordTransform($$$ARGS)`, `Popup.Show($$$ARGS)`, or the method/class name you are changing.
 - If structural search is intentionally skipped for C# route work, state the reason in the work note or PR summary.
+- Runtime diagnostics must route through `RuntimeDiagnostics`: use
+  `RuntimeDiagnostics.LogVerboseProbe(...)` for verbose runtime probes and
+  `RuntimeDiagnostics.LogImportant(...)` only for build, error, or
+  sink-required shipping signals. Direct probe log markers such as
+  `[QudJP] NewProbe/v1:`, `[QudJP] SinkObserve/v1:`,
+  `[QudJP] Translator: missing key`, and `no pattern for` are dev-only by
+  default and are rejected by the release DLL verifier when they remain in a
+  release artifact.
 - For tooltip, TMP, or RTF display fixes:
   - identify the upstream producer route before patching sinks; prefer
     `Look.GenerateTooltipInformation(GameObject)` or another pre-render owner

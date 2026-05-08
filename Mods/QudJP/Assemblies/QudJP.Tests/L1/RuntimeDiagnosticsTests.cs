@@ -56,4 +56,39 @@ public sealed class RuntimeDiagnosticsTests
             Assert.That(FinalOutputObservability.GetHitCountForTests(finalOutputObservation), Is.Zero);
         });
     }
+
+    [Test]
+    public void LogImportant_WritesRegardlessOfVerboseProbeOverride()
+    {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(false);
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+            RuntimeDiagnostics.LogImportant("[QudJP] Build marker test"));
+
+        Assert.That(output, Does.Contain("[QudJP] Build marker test"));
+    }
+
+    [Test]
+    public void LogVerboseProbe_WritesOnlyWhenVerboseProbeEnabled()
+    {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
+        var enabledOutput = TestTraceHelper.CaptureTrace(() =>
+            RuntimeDiagnostics.LogVerboseProbe(() => "[QudJP] NewProbe/v1: enabled"));
+
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(false);
+        var factoryCalls = 0;
+        var disabledOutput = TestTraceHelper.CaptureTrace(() =>
+            RuntimeDiagnostics.LogVerboseProbe(() =>
+            {
+                factoryCalls++;
+                return "[QudJP] NewProbe/v1: disabled";
+            }));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(enabledOutput, Does.Contain("[QudJP] NewProbe/v1: enabled"));
+            Assert.That(disabledOutput, Does.Not.Contain("NewProbe/v1"));
+            Assert.That(factoryCalls, Is.Zero);
+        });
+    }
 }

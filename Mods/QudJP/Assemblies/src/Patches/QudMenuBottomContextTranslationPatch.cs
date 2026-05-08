@@ -112,7 +112,7 @@ public static class QudMenuBottomContextTranslationPatch
         if (QudMenuBottomContextObservability.TryBuildState(contextInstance, phase, out var logLine)
             && !string.IsNullOrEmpty(logLine))
         {
-            QudJPMod.LogToUnity(logLine!);
+            RuntimeDiagnostics.LogVerboseProbe(() => logLine);
         }
     }
 }

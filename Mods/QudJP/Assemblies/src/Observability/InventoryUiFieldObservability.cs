@@ -1,14 +1,18 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+#if QUDJP_DEV_BUILD
+using System.Collections.Concurrent;
+#endif
 
 namespace QudJP;
 
 internal static class InventoryUiFieldObservability
 {
+#if QUDJP_DEV_BUILD
     private const int MaxLogsPerBucket = 4;
+#endif
     private const int MaxEntriesPerSnapshot = 12;
 
     private static readonly string[] MemberNameHints =
@@ -24,9 +28,12 @@ internal static class InventoryUiFieldObservability
         "go",
     };
 
+#if QUDJP_DEV_BUILD
     private static readonly ConcurrentDictionary<string, int> BucketCounts =
         new ConcurrentDictionary<string, int>(StringComparer.Ordinal);
+#endif
 
+#if QUDJP_DEV_BUILD
     internal static bool TryBuildScreenSnapshot(object? screenInstance, out string? logLine)
     {
         logLine = null;
@@ -66,6 +73,14 @@ internal static class InventoryUiFieldObservability
         logLine = builder.ToString();
         return true;
     }
+#else
+    internal static bool TryBuildScreenSnapshot(object? screenInstance, out string? logLine)
+    {
+        _ = screenInstance;
+        logLine = null;
+        return false;
+    }
+#endif
 
     internal static string[] CollectEntriesForTests(object screenInstance)
     {

@@ -178,7 +178,7 @@ internal static class FinalOutputObservability
         var sourceVisibleSha256 = ObservabilityHelpers.ComputeSha256Hex(BuildVisibleText(normalized.SourceText));
         var finalVisibleSha256 = ObservabilityHelpers.ComputeSha256Hex(BuildVisibleText(normalized.FinalText));
 
-        QudJPMod.LogToUnity(
+        RuntimeDiagnostics.LogVerboseProbe(() =>
             "[QudJP] FinalOutputProbe/" + ProbeVersion +
             ": sink='" + SanitizeQuotedValue(normalized.Sink) +
             "' route='" + SanitizeQuotedValue(normalized.Route) +

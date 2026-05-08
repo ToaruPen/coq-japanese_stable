@@ -1,8 +1,10 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+#if QUDJP_DEV_BUILD
+using System.Collections.Concurrent;
+#endif
 #if HAS_TMP
 using TMPro;
 using UnityEngine;
@@ -12,6 +14,7 @@ namespace QudJP;
 
 internal static class EquipmentLineObservability
 {
+#if QUDJP_DEV_BUILD
     private const int MaxLogsPerBucket = 6;
 
     private static readonly string[] MemberNameHints =
@@ -27,7 +30,9 @@ internal static class EquipmentLineObservability
 
     private static readonly ConcurrentDictionary<string, int> BucketCounts =
         new ConcurrentDictionary<string, int>(StringComparer.Ordinal);
+#endif
 
+#if QUDJP_DEV_BUILD
     internal static bool TryBuildState(object? lineInstance, object? data, int fontApplications, out string? logLine)
     {
         logLine = null;
@@ -71,6 +76,16 @@ internal static class EquipmentLineObservability
         logLine = builder.ToString();
         return true;
     }
+#else
+    internal static bool TryBuildState(object? lineInstance, object? data, int fontApplications, out string? logLine)
+    {
+        _ = lineInstance;
+        _ = data;
+        _ = fontApplications;
+        logLine = null;
+        return false;
+    }
+#endif
 
     internal static bool TryBuildCompactChildSummary(object? lineInstance, out string? logLine)
     {
@@ -119,6 +134,7 @@ internal static class EquipmentLineObservability
 #endif
     }
 
+#if QUDJP_DEV_BUILD
     private static void AppendObjectEntries(List<string> entries, string prefix, object instance)
     {
         var type = instance.GetType();
@@ -280,6 +296,7 @@ internal static class EquipmentLineObservability
         return normalized.Substring(0, 80) + "...";
 #pragma warning restore CA1845
     }
+#endif
 
     #if HAS_TMP
     private static string CompactTruncate(string value)
