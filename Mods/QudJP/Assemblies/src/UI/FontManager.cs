@@ -6,9 +6,6 @@ using UnityEngine.TextCore.LowLevel;
 using UguiText = UnityEngine.UI.Text;
 #endif
 using System;
-#if !HAS_TMP
-using System.Diagnostics;
-#endif
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -57,7 +54,7 @@ public static class FontManager
                 throw new FileNotFoundException($"CJK font not found: {fontPath}", fontPath);
             }
 
-            Debug.Log($"[QudJP] FontManager: Loading CJK font from {fontPath}");
+            RuntimeDiagnostics.LogStatus($"[QudJP] FontManager: Loading CJK font from {fontPath}");
 
             var fontAsset = TMP_FontAsset.CreateFontAsset(fontPath, 0, 96, 6, GlyphRenderMode.SDFAA, 4096, 4096);
 #pragma warning disable CA1508 // Unity objects may be null despite non-nullable annotations
@@ -98,18 +95,19 @@ public static class FontManager
 
             if (!TryWarmFontCharacters(fontAsset, "日本語テスト"))
             {
-                Debug.LogWarning("[QudJP] FontManager: CJK font probe warmup failed for '日本語テスト'. Continuing with runtime fallback.");
+                RuntimeDiagnostics.LogStatus(
+                    "[QudJP] FontManager: CJK font startup warmup did not confirm glyphs for '日本語テスト'; runtime dynamic fallback remains enabled.");
             }
 
-            Debug.Log($"[QudJP] FontManager: CJK font registered. defaultFontAsset='{fontAsset.name}', patchedAssets={patchedFontAssetCount}.");
+            RuntimeDiagnostics.LogStatus($"[QudJP] FontManager: CJK font registered. defaultFontAsset='{fontAsset.name}', patchedAssets={patchedFontAssetCount}.");
         }
         catch (Exception ex)
         {
-            Debug.LogError($"[QudJP] FontManager failed: {ex}");
+            RuntimeDiagnostics.LogError($"[QudJP] FontManager failed: {ex}");
             throw;
         }
 #else
-        Trace.TraceInformation("[QudJP] FontManager: TMP unavailable (CI build). Font injection skipped.");
+        RuntimeDiagnostics.LogStatus("[QudJP] FontManager: TMP unavailable (CI build). Font injection skipped.");
 #endif
     }
 
@@ -224,7 +222,7 @@ public static class FontManager
         var fontAsset = primaryFontAsset;
         if (fontAsset is null)
         {
-            Debug.LogWarning("[QudJP] FontManager: primary TMP font asset is not initialized; skipping UI glyph warmup.");
+            RuntimeDiagnostics.LogWarning("[QudJP] FontManager: primary TMP font asset is not initialized; skipping UI glyph warmup.");
             return false;
         }
 
@@ -240,7 +238,7 @@ public static class FontManager
         }
         catch (Exception ex)
         {
-            Debug.LogWarning($"[QudJP] FontManager: UI glyph warmup failed: {ex.GetType().Name}: {ex.Message}");
+            RuntimeDiagnostics.LogWarning($"[QudJP] FontManager: UI glyph warmup failed: {ex.GetType().Name}: {ex.Message}");
             return false;
         }
     }
@@ -296,13 +294,13 @@ public static class FontManager
         try
         {
             var font = Font.CreateDynamicFontFromOSFont(LegacyFallbackOsFontNames, 16);
-            Debug.Log($"[QudJP] FontManager: legacy fallback font initialized from OS font '{font.name}'.");
+            RuntimeDiagnostics.LogStatus($"[QudJP] FontManager: legacy fallback font initialized from OS font '{font.name}'.");
 
             return font;
         }
         catch (Exception ex)
         {
-            Debug.LogWarning($"[QudJP] FontManager: failed to initialize legacy fallback font: {ex.GetType().Name}: {ex.Message}");
+            RuntimeDiagnostics.LogWarning($"[QudJP] FontManager: failed to initialize legacy fallback font: {ex.GetType().Name}: {ex.Message}");
             return null;
         }
     }

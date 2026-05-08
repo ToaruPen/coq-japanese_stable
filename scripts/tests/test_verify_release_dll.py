@@ -88,6 +88,28 @@ def test_verify_release_dll_reports_verbose_probe_log_markers(tmp_path: Path) ->
     ]
 
 
+def test_verify_release_dll_reports_verbose_probe_fragments(tmp_path: Path) -> None:
+    """Reject release DLLs that retain split verbose probe marker fragments."""
+    dll = tmp_path / "QudJP.dll"
+    dll.write_bytes(
+        _REQUIRED_MARKER_PAYLOAD
+        + b"\0"
+        + b"\0".join(
+            [
+                b"DynamicTextProbe/v1",
+                b"FinalOutputProbe/v1",
+                b"SinkObserve/v1",
+            ],
+        ),
+    )
+
+    assert verify_release_dll(dll) == [
+        "forbidden dev marker: DynamicTextProbe/",
+        "forbidden dev marker: FinalOutputProbe/",
+        "forbidden dev marker: SinkObserve/",
+    ]
+
+
 def test_verify_release_dll_reports_verbose_probe_log_markers_in_zip(
     tmp_path: Path,
 ) -> None:

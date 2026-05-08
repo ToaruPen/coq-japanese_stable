@@ -167,50 +167,52 @@ internal static class FinalOutputObservability
             return;
         }
 
-        var sourceMarkupSpans = BuildMarkupSpanSignature(normalized.SourceText);
-        var finalMarkupSpans = BuildMarkupSpanSignature(normalized.FinalText);
-        var markupSpanStatus = ComputeMarkupSpanStatus(
-            normalized.SourceText,
-            normalized.FinalText,
-            sourceMarkupSpans,
-            finalMarkupSpans);
-        var semanticDiagnostics = MarkupSemanticDiagnostics.Analyze(normalized.FinalText);
-        var sourceVisibleSha256 = ObservabilityHelpers.ComputeSha256Hex(BuildVisibleText(normalized.SourceText));
-        var finalVisibleSha256 = ObservabilityHelpers.ComputeSha256Hex(BuildVisibleText(normalized.FinalText));
-
         RuntimeDiagnostics.LogVerboseProbe(() =>
-            "[QudJP] FinalOutputProbe/" + ProbeVersion +
-            ": sink='" + SanitizeQuotedValue(normalized.Sink) +
-            "' route='" + SanitizeQuotedValue(normalized.Route) +
-            "' detail='" + SanitizeQuotedValue(normalized.Detail) +
-            "' phase='" + SanitizeQuotedValue(normalized.Phase) +
-            "' translation_status='" + SanitizeQuotedValue(normalized.TranslationStatus) +
-            "' markup_status='" + SanitizeQuotedValue(normalized.MarkupStatus) +
-            "' direct_marker_status='" + SanitizeQuotedValue(normalized.DirectMarkerStatus) +
-            "' hit=" + hitCount.ToString(CultureInfo.InvariantCulture) +
-            " source='" + SanitizeQuotedValue(normalized.SourceText) +
-            "' stripped='" + SanitizeQuotedValue(normalized.StrippedText) +
-            "' translated='" + SanitizeQuotedValue(normalized.TranslatedText) +
-            "' final='" + SanitizeQuotedValue(normalized.FinalText) + "'"
-            + ObservabilityHelpers.BuildFinalOutputStructuredSuffix(
-                normalized.Route,
-                normalized.Sink,
-                normalized.Detail,
-                normalized.Phase,
-                normalized.TranslationStatus,
-                normalized.MarkupStatus,
-                normalized.DirectMarkerStatus,
+        {
+            var sourceMarkupSpans = BuildMarkupSpanSignature(normalized.SourceText);
+            var finalMarkupSpans = BuildMarkupSpanSignature(normalized.FinalText);
+            var markupSpanStatus = ComputeMarkupSpanStatus(
                 normalized.SourceText,
-                normalized.StrippedText,
-                normalized.TranslatedText,
                 normalized.FinalText,
                 sourceMarkupSpans,
-                finalMarkupSpans,
-                markupSpanStatus,
-                semanticDiagnostics.Status,
-                semanticDiagnostics.Flags,
-                sourceVisibleSha256,
-                finalVisibleSha256));
+                finalMarkupSpans);
+            var semanticDiagnostics = MarkupSemanticDiagnostics.Analyze(normalized.FinalText);
+            var sourceVisibleSha256 = ObservabilityHelpers.ComputeSha256Hex(BuildVisibleText(normalized.SourceText));
+            var finalVisibleSha256 = ObservabilityHelpers.ComputeSha256Hex(BuildVisibleText(normalized.FinalText));
+
+            return "[QudJP] FinalOutputProbe/" + ProbeVersion +
+                ": sink='" + SanitizeQuotedValue(normalized.Sink) +
+                "' route='" + SanitizeQuotedValue(normalized.Route) +
+                "' detail='" + SanitizeQuotedValue(normalized.Detail) +
+                "' phase='" + SanitizeQuotedValue(normalized.Phase) +
+                "' translation_status='" + SanitizeQuotedValue(normalized.TranslationStatus) +
+                "' markup_status='" + SanitizeQuotedValue(normalized.MarkupStatus) +
+                "' direct_marker_status='" + SanitizeQuotedValue(normalized.DirectMarkerStatus) +
+                "' hit=" + hitCount.ToString(CultureInfo.InvariantCulture) +
+                " source='" + SanitizeQuotedValue(normalized.SourceText) +
+                "' stripped='" + SanitizeQuotedValue(normalized.StrippedText) +
+                "' translated='" + SanitizeQuotedValue(normalized.TranslatedText) +
+                "' final='" + SanitizeQuotedValue(normalized.FinalText) + "'"
+                + ObservabilityHelpers.BuildFinalOutputStructuredSuffix(
+                    normalized.Route,
+                    normalized.Sink,
+                    normalized.Detail,
+                    normalized.Phase,
+                    normalized.TranslationStatus,
+                    normalized.MarkupStatus,
+                    normalized.DirectMarkerStatus,
+                    normalized.SourceText,
+                    normalized.StrippedText,
+                    normalized.TranslatedText,
+                    normalized.FinalText,
+                    sourceMarkupSpans,
+                    finalMarkupSpans,
+                    markupSpanStatus,
+                    semanticDiagnostics.Status,
+                    semanticDiagnostics.Flags,
+                    sourceVisibleSha256,
+                    finalVisibleSha256);
+        });
     }
 
     private static string SanitizeQuotedValue(string value)

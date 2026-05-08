@@ -1,7 +1,9 @@
 #if HAS_TMP
 using System.Collections;
 using System.Collections.Concurrent;
+#if QUDJP_DEV_BUILD
 using System.Threading;
+#endif
 using TMPro;
 using UnityEngine;
 #endif
@@ -12,12 +14,16 @@ internal static class DelayedInventoryLineRepairScheduler
 {
 #if HAS_TMP
     private const int MaxAttemptsPerLine = 2;
+#if QUDJP_DEV_BUILD
     private const int MaxEvidenceLogs = 48;
+#endif
 
     private static readonly ConcurrentDictionary<int, int> AttemptCounts = new();
     private static readonly ConcurrentDictionary<int, string> LastScheduledTextByLine = new();
     private static readonly ConcurrentDictionary<int, byte> Scheduled = new();
+#if QUDJP_DEV_BUILD
     private static int evidenceLogCount;
+#endif
 
     private static RepairHost? host;
 
@@ -135,8 +141,11 @@ internal static class DelayedInventoryLineRepairScheduler
                 _ = TmpTextRepairer.TryRepairInvisibleTexts(component);
                 if (RuntimeDiagnostics.VerboseProbesEnabled)
                 {
-                    LogInventoryReplacementEvidence(replacementLogLine);
-                    LogVerboseRepairProbeSnapshots(component);
+                    RuntimeDiagnostics.RunVerboseProbe(() =>
+                    {
+                        LogInventoryReplacementEvidence(replacementLogLine);
+                        LogVerboseRepairProbeSnapshots(component);
+                    });
                 }
             }
 
@@ -149,6 +158,7 @@ internal static class DelayedInventoryLineRepairScheduler
 
     private static void LogVerboseRepairProbeSnapshots(Component component)
     {
+#if QUDJP_DEV_BUILD
         if (TextShellReplacementRenderer.TryBuildReplacementState(
             component,
             "InventoryLineReplacementStateNextFrame/v1",
@@ -164,10 +174,14 @@ internal static class DelayedInventoryLineRepairScheduler
         {
             LogInventoryReplacementEvidence(itemLogLine);
         }
+#else
+        _ = component;
+#endif
     }
 
     private static void LogInventoryReplacementEvidence(string? logLine)
     {
+#if QUDJP_DEV_BUILD
         if (string.IsNullOrEmpty(logLine))
         {
             return;
@@ -178,7 +192,10 @@ internal static class DelayedInventoryLineRepairScheduler
             return;
         }
 
-        QudJPMod.LogToUnity(logLine!);
+        RuntimeDiagnostics.LogVerboseProbe(() => logLine!);
+#else
+        _ = logLine;
+#endif
     }
 
     private sealed class RepairHost : MonoBehaviour

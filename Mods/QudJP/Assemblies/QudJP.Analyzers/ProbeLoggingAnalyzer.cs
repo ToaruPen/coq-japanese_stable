@@ -93,6 +93,9 @@ public sealed class ProbeLoggingAnalyzer : DiagnosticAnalyzer
         return (containingType, methodSymbol.Name) switch
         {
             ("QudJP.QudJPMod", "LogToUnity") => "QudJPMod.LogToUnity",
+            ("QudJP.RuntimeDiagnostics", "LogStatus") => "RuntimeDiagnostics.LogStatus",
+            ("QudJP.RuntimeDiagnostics", "LogWarning") => "RuntimeDiagnostics.LogWarning",
+            ("QudJP.RuntimeDiagnostics", "LogError") => "RuntimeDiagnostics.LogError",
             ("UnityEngine.Debug", "Log") => "Debug.Log",
             _ => null,
         };

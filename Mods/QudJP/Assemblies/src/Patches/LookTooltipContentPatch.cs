@@ -54,8 +54,8 @@ public static class LookTooltipContentPatch
 
             __result = TranslateTooltipContent(__result);
 #if QUDJP_DEV_BUILD
-            var translatedTooltipContent = __result;
-            RuntimeDiagnostics.LogVerboseProbe(() => BuildTooltipContentProbe(translatedTooltipContent));
+            var tooltipContent = __result;
+            RuntimeDiagnostics.LogVerboseProbe(() => BuildTooltipContentProbe(tooltipContent));
 #endif
 #if HAS_TMP
             DelayedSceneProbeScheduler.ScheduleCompareSceneProbe(__instance);
@@ -93,6 +93,5 @@ public static class LookTooltipContentPatch
             + truncated
             + "'";
     }
-
 #endif
 }

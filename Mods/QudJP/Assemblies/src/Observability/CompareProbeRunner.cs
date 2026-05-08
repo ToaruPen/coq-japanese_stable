@@ -10,6 +10,7 @@ internal static class CompareProbeRunner
     internal static void Run(object screenInstance)
     {
 #if HAS_TMP
+#if QUDJP_DEV_BUILD
         var verboseProbesEnabled = RuntimeDiagnostics.VerboseProbesEnabled;
 
         if (verboseProbesEnabled
@@ -78,7 +79,10 @@ internal static class CompareProbeRunner
         {
             LogProbe(sceneLogLine);
         }
-
+#else
+        _ = TmpTextRepairer.TryRepairInvisibleTexts(screenInstance);
+        _ = ComparePopupTextFixer.RepairActiveComparePopup();
+#endif
         DelayedSceneProbeScheduler.ScheduleCompareSceneProbe(screenInstance);
 #else
         _ = screenInstance;
@@ -97,7 +101,8 @@ internal static class CompareProbeRunner
 
         if (triggerInstance is Component component)
         {
-            LogProbe("[QudJP] CompareProbeRunner: failed to resolve InventoryAndEquipmentStatusScreen from trigger='"
+            RuntimeDiagnostics.LogVerboseProbe(() =>
+                "[QudJP] CompareProbeRunner: failed to resolve InventoryAndEquipmentStatusScreen from trigger='"
                 + component.GetType().FullName + "' object='" + component.gameObject.name + "'");
         }
 #endif

@@ -451,7 +451,10 @@ internal static class TextShellReplacementRenderer
 
     private static void LogProbeIfPresent(string? logLine)
     {
-        RuntimeDiagnostics.LogVerboseProbe(() => logLine);
+        if (logLine is { Length: > 0 } message)
+        {
+            RuntimeDiagnostics.LogVerboseProbe(() => message);
+        }
     }
 
     private static void TryDisableReplacement(Transform? shell)

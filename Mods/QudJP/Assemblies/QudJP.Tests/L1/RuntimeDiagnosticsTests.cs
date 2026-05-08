@@ -1,5 +1,7 @@
 namespace QudJP.Tests.L1;
 
+using System.Diagnostics;
+
 [TestFixture]
 [Category("L1")]
 [NonParallelizable]
@@ -69,26 +71,121 @@ public sealed class RuntimeDiagnosticsTests
     }
 
     [Test]
-    public void LogVerboseProbe_WritesOnlyWhenVerboseProbeEnabled()
+    public void LogVerboseProbe_DoesNotInvokeMessageFactory_WhenVerboseProbesAreDisabled()
     {
-        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
-        var enabledOutput = TestTraceHelper.CaptureTrace(() =>
-            RuntimeDiagnostics.LogVerboseProbe(() => "[QudJP] NewProbe/v1: enabled"));
-
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(false);
         var factoryCalls = 0;
-        var disabledOutput = TestTraceHelper.CaptureTrace(() =>
+
+        var output = TestTraceHelper.CaptureTrace(() =>
             RuntimeDiagnostics.LogVerboseProbe(() =>
             {
                 factoryCalls++;
-                return "[QudJP] NewProbe/v1: disabled";
+                return "[QudJP] DynamicTextProbe/v1: should-not-build";
             }));
 
         Assert.Multiple(() =>
         {
-            Assert.That(enabledOutput, Does.Contain("[QudJP] NewProbe/v1: enabled"));
-            Assert.That(disabledOutput, Does.Not.Contain("NewProbe/v1"));
             Assert.That(factoryCalls, Is.Zero);
+            Assert.That(output, Does.Not.Contain("DynamicTextProbe/v1"));
         });
+    }
+
+    [Test]
+    public void LogVerboseProbe_EmitsMessage_WhenVerboseProbesAreEnabled()
+    {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+            RuntimeDiagnostics.LogVerboseProbe(() => "[QudJP] DynamicTextProbe/v1: route='test'"));
+
+        Assert.That(output, Does.Contain("DynamicTextProbe/v1"));
+    }
+
+    [Test]
+    public void LogVerboseProbe_SkipsNullOrEmptyMessages()
+    {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+        {
+            RuntimeDiagnostics.LogVerboseProbe(() => null);
+            RuntimeDiagnostics.LogVerboseProbe(() => string.Empty);
+        });
+
+        Assert.That(output, Is.Empty);
+    }
+
+    [Test]
+    public void LogWarning_EmitsWarningTraceEvent()
+    {
+        using var listener = new EventTypeTraceListener();
+        Trace.Listeners.Add(listener);
+
+        try
+        {
+            RuntimeDiagnostics.LogWarning("[QudJP] warning event");
+            Trace.Flush();
+        }
+        finally
+        {
+            Trace.Listeners.Remove(listener);
+        }
+
+        Assert.That(listener.EventTypes, Does.Contain(TraceEventType.Warning));
+    }
+
+    [Test]
+    public void LogError_EmitsErrorTraceEvent()
+    {
+        using var listener = new EventTypeTraceListener();
+        Trace.Listeners.Add(listener);
+
+        try
+        {
+            RuntimeDiagnostics.LogError("[QudJP] error event");
+            Trace.Flush();
+        }
+        finally
+        {
+            Trace.Listeners.Remove(listener);
+        }
+
+        Assert.That(listener.EventTypes, Does.Contain(TraceEventType.Error));
+    }
+
+    private sealed class EventTypeTraceListener : TraceListener
+    {
+        internal List<TraceEventType> EventTypes { get; } = new();
+
+        public override void Write(string? message)
+        {
+        }
+
+        public override void WriteLine(string? message)
+        {
+        }
+
+        public override void TraceEvent(
+            TraceEventCache? eventCache,
+            string source,
+            TraceEventType eventType,
+            int id,
+            string? message)
+        {
+            EventTypes.Add(eventType);
+            base.TraceEvent(eventCache, source, eventType, id, message);
+        }
+
+        public override void TraceEvent(
+            TraceEventCache? eventCache,
+            string source,
+            TraceEventType eventType,
+            int id,
+            string? format,
+            params object?[]? args)
+        {
+            EventTypes.Add(eventType);
+            base.TraceEvent(eventCache, source, eventType, id, format, args);
+        }
     }
 }

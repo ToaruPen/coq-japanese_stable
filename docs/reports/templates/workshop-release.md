@@ -69,6 +69,7 @@ vX.Y.Z / <short-git-hash>
 - [ ] Options screen renders Japanese text and CJK glyphs
 - [ ] One short conversation renders Japanese text and CJK glyphs
 - [ ] Fresh Player.log checked for QudJP build markers, missing glyph warnings, compile errors, and `MODWARN`
+- [ ] Non-QudJP platform SDK noise, if present, recorded in notes and not conflated with QudJP blockers
 
 ## Decision
 

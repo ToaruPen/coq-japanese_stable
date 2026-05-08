@@ -53,19 +53,21 @@ internal static class DynamicTextObservability
             return;
         }
 
-        var semanticDiagnostics = MarkupSemanticDiagnostics.Analyze(translatedValue);
         RuntimeDiagnostics.LogVerboseProbe(() =>
-            "[QudJP] DynamicTextProbe/" + ProbeVersion +
-            ": route='" + normalizedRoute +
-            "' family='" + family +
-            "' hit=" + hitCount.ToString(CultureInfo.InvariantCulture) +
-            " changed=" + (changed ? "true" : "false") +
-            " source='" + ObservabilityHelpers.SanitizeForLog(sourceValue, MaxValueLength) +
-            "' translated='" + ObservabilityHelpers.SanitizeForLog(translatedValue, MaxValueLength) +
-            "'." + Translator.GetCurrentLogContextSuffix()
-            + ObservabilityHelpers.BuildHelperStructuredSuffix(structuredRoute, family, sourceValue)
-            + "; markup_semantic_status=" + semanticDiagnostics.Status
-            + "; markup_semantic_flags=" + semanticDiagnostics.Flags);
+        {
+            var semanticDiagnostics = MarkupSemanticDiagnostics.Analyze(translatedValue);
+            return "[QudJP] DynamicTextProbe/" + ProbeVersion +
+                ": route='" + normalizedRoute +
+                "' family='" + family +
+                "' hit=" + hitCount.ToString(CultureInfo.InvariantCulture) +
+                " changed=" + (changed ? "true" : "false") +
+                " source='" + ObservabilityHelpers.SanitizeForLog(sourceValue, MaxValueLength) +
+                "' translated='" + ObservabilityHelpers.SanitizeForLog(translatedValue, MaxValueLength) +
+                "'." + Translator.GetCurrentLogContextSuffix()
+                + ObservabilityHelpers.BuildHelperStructuredSuffix(structuredRoute, family, sourceValue)
+                + "; markup_semantic_status=" + semanticDiagnostics.Status
+                + "; markup_semantic_flags=" + semanticDiagnostics.Flags;
+        });
     }
 
     private static string BuildCounterKey(string route, string family)

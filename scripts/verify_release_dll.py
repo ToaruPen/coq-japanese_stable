@@ -29,6 +29,12 @@ _FORBIDDEN_VERBOSE_PROBE_MARKER_PATTERN = re.compile(
     r"\[QudJP\] [A-Za-z0-9]+Probe/v1:",
 )
 
+_FORBIDDEN_VERBOSE_PROBE_FRAGMENTS = (
+    "DynamicTextProbe/",
+    "FinalOutputProbe/",
+    "SinkObserve/",
+)
+
 
 def _read_dll(path: Path) -> bytes:
     if path.suffix.lower() == ".zip":
@@ -70,6 +76,10 @@ def _find_forbidden_release_markers(data: bytes) -> list[str]:
             if marker in text:
                 _append_once(findings, seen, marker)
 
+        for marker in _FORBIDDEN_VERBOSE_PROBE_FRAGMENTS:
+            if marker in text:
+                _append_contained_once(findings, seen, marker)
+
     return findings
 
 
@@ -83,6 +93,14 @@ def _iter_search_texts(data: bytes) -> tuple[str, str, str]:
 
 def _append_once(findings: list[str], seen: set[str], marker: str) -> None:
     if marker in seen:
+        return
+
+    seen.add(marker)
+    findings.append(marker)
+
+
+def _append_contained_once(findings: list[str], seen: set[str], marker: str) -> None:
+    if marker in seen or any(marker in finding for finding in findings):
         return
 
     seen.add(marker)

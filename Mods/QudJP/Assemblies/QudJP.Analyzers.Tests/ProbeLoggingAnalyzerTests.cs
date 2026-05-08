@@ -25,6 +25,12 @@ namespace QudJP
         public static void LogVerboseProbe(System.Func<string> buildMessage) { }
 
         public static void LogImportant(string message) { }
+
+        public static void LogStatus(string message) { }
+
+        public static void LogWarning(string message) { }
+
+        public static void LogError(string message) { }
     }
 }
 
@@ -154,6 +160,26 @@ public static class Sample
         var expected = VerifyCS.Diagnostic(ProbeLoggingAnalyzer.DiagnosticId)
             .WithLocation(0)
             .WithArguments("Trace.TraceInformation");
+
+        await VerifyCS.VerifyAnalyzerAsync(source, expected).ConfigureAwait(false);
+    }
+
+    [Test]
+    public async Task Diagnostic_WhenRuntimeDiagnosticsStatusLogEmitsProbeMarkerAsync()
+    {
+        var source = QudJPStubs + """
+public static class Sample
+{
+    public static void Log()
+    {
+        QudJP.RuntimeDiagnostics.LogStatus({|#0:"[QudJP] NewProbe/v1: leaked"|});
+    }
+}
+""";
+
+        var expected = VerifyCS.Diagnostic(ProbeLoggingAnalyzer.DiagnosticId)
+            .WithLocation(0)
+            .WithArguments("RuntimeDiagnostics.LogStatus");
 
         await VerifyCS.VerifyAnalyzerAsync(source, expected).ConfigureAwait(false);
     }

@@ -54,7 +54,7 @@ public static class QudJPMod
         try
         {
             var assemblyVersion = typeof(QudJPMod).Assembly.GetName().Version;
-            LogToUnity(
+            RuntimeDiagnostics.LogStatus(
                 $"[QudJP] Build marker: {BuildMarker}, Version: {assemblyVersion}, BuildFlavor: {RuntimeDiagnostics.BuildFlavor}");
             initializeFonts();
             applyPatches();
@@ -137,7 +137,7 @@ public static class QudJPMod
             // PatchAll may throw when individual patches fail to resolve their targets
             // (e.g., game types not available). Log the error but don't crash —
             // patches applied before the failure remain in effect.
-            LogToUnity($"[QudJP] Warning: Some patches failed to apply: {ex.InnerException?.Message ?? ex.Message}");
+            RuntimeDiagnostics.LogWarning($"[QudJP] Warning: Some patches failed to apply: {ex.InnerException?.Message ?? ex.Message}");
         }
     }
 
@@ -152,21 +152,21 @@ public static class QudJPMod
             {
                 if (!TryPreparePatchType(patchType, out var preparationFailure))
                 {
-                    LogToUnity($"[QudJP] Warning: Skipping patch {patchType.FullName}: {preparationFailure}");
+                    RuntimeDiagnostics.LogWarning($"[QudJP] Warning: Skipping patch {patchType.FullName}: {preparationFailure}");
                     continue;
                 }
 
                 var processor = createClassProcessor.Invoke(harmony, new object[] { patchType });
                 if (processor is null)
                 {
-                    LogToUnity($"[QudJP] Warning: Harmony returned null class processor for patch {patchType.FullName}.");
+                    RuntimeDiagnostics.LogWarning($"[QudJP] Warning: Harmony returned null class processor for patch {patchType.FullName}.");
                     continue;
                 }
 
                 var patchMethod = processor.GetType().GetMethod("Patch", Type.EmptyTypes);
                 if (patchMethod is null)
                 {
-                    LogToUnity($"[QudJP] Warning: Patch() missing on class processor for {patchType.FullName}.");
+                    RuntimeDiagnostics.LogWarning($"[QudJP] Warning: Patch() missing on class processor for {patchType.FullName}.");
                     continue;
                 }
 
@@ -177,7 +177,7 @@ public static class QudJPMod
                 var details = ex is TargetInvocationException tie
                     ? tie.InnerException?.ToString() ?? tie.ToString()
                     : ex.ToString();
-                LogToUnity($"[QudJP] Warning: Failed to apply patch {patchType.FullName}: {details}");
+                RuntimeDiagnostics.LogWarning($"[QudJP] Warning: Failed to apply patch {patchType.FullName}: {details}");
             }
         }
     }
@@ -340,6 +340,11 @@ public static class QudJPMod
 
     internal static void LogToUnity(string message)
     {
+        LogToUnity(message, RuntimeLogSeverity.Information);
+    }
+
+    internal static void LogToUnity(string message, RuntimeLogSeverity severity)
+    {
         try
         {
             var debugType = Type.GetType("UnityEngine.Debug, UnityEngine.CoreModule", throwOnError: false);
@@ -349,7 +354,7 @@ public static class QudJPMod
                 debugType = Type.GetType("UnityEngine.Debug, UnityEngine", throwOnError: false);
             }
 
-            var logMethod = debugType?.GetMethod("Log", BindingFlags.Public | BindingFlags.Static, binder: null, types: new[] { typeof(object) }, modifiers: null);
+            var logMethod = debugType?.GetMethod(GetUnityLogMethodName(severity), BindingFlags.Public | BindingFlags.Static, binder: null, types: new[] { typeof(object) }, modifiers: null);
             if (logMethod is not null)
             {
                 logMethod.Invoke(null, new object[] { message });
@@ -360,7 +365,33 @@ public static class QudJPMod
             Trace.TraceWarning("QudJP: Unity debug logging failed; falling back to trace. {0}", ex.Message);
         }
 
-        Trace.TraceInformation(message);
+        WriteTrace(message, severity);
+    }
+
+    private static string GetUnityLogMethodName(RuntimeLogSeverity severity)
+    {
+        return severity switch
+        {
+            RuntimeLogSeverity.Warning => "LogWarning",
+            RuntimeLogSeverity.Error => "LogError",
+            _ => "Log",
+        };
+    }
+
+    private static void WriteTrace(string message, RuntimeLogSeverity severity)
+    {
+        switch (severity)
+        {
+            case RuntimeLogSeverity.Warning:
+                Trace.TraceWarning("QudJP: {0}", message);
+                break;
+            case RuntimeLogSeverity.Error:
+                Trace.TraceError("QudJP: {0}", message);
+                break;
+            default:
+                Trace.TraceInformation(message);
+                break;
+        }
     }
 
     internal static void LogPatchResults(object harmony)
@@ -368,7 +399,7 @@ public static class QudJPMod
         var getPatchedMethods = harmony.GetType().GetMethod("GetPatchedMethods");
         if (getPatchedMethods is null)
         {
-            LogToUnity("[QudJP] Warning: GetPatchedMethods not available.");
+            RuntimeDiagnostics.LogWarning("[QudJP] Warning: GetPatchedMethods not available.");
             return;
         }
 
@@ -381,10 +412,10 @@ public static class QudJPMod
                 count++;
             }
 
-            LogToUnity($"[QudJP] Harmony patching complete: {count} method(s) patched.");
+            RuntimeDiagnostics.LogStatus($"[QudJP] Harmony patching complete: {count} method(s) patched.");
             if (count == 0)
             {
-                LogToUnity(
+                RuntimeDiagnostics.LogWarning(
                     "[QudJP] Warning: Harmony patched zero methods. On Apple Silicon macOS, "
                     + "'mprotect returned EACCES' in Player.log means the game was launched natively; "
                     + "launch Caves of Qud with Rosetta 2, for example: arch -x86_64 <CoQ binary>.");
@@ -395,7 +426,7 @@ public static class QudJPMod
             var message = ex is TargetInvocationException tie
                 ? tie.InnerException?.Message ?? tie.Message
                 : ex.Message;
-            LogToUnity($"[QudJP] Warning: Failed to enumerate patched methods: {message}");
+            RuntimeDiagnostics.LogWarning($"[QudJP] Warning: Failed to enumerate patched methods: {message}");
         }
     }
 
