@@ -156,6 +156,7 @@ Preserve all supported markup exactly while translating visible text:
 - escaped forms such as `&&` and `^^`
 - TMP tags such as `<color=#44ff88>text</color>`
 - runtime placeholders such as `=variable.name=`
+- numeric format placeholders such as `{0}` and `{12:format}`
 
 For color-aware restoration:
 
@@ -164,6 +165,31 @@ For color-aware restoration:
 - do not add ad hoc restore logic in unrelated files when a shared helper already defines the contract
 
 Mixed Qud markup and TMP markup must be fixed route-by-route, with tests that preserve the exact broken input shape.
+
+## Tooltip and pre-render wrapping rules
+
+Treat tooltip overflow and CJK wrapping as route-owned pre-render text shaping,
+not as a TMP sink or truncation problem by default. First identify whether the
+visible route flows through `Look.GenerateTooltipInformation(GameObject)`,
+`Look.GenerateTooltipContent(GameObject)`, or a direct
+`Description.GetLongDescription(...)` caller. Apply wrapping before
+`RTF.FormatToRTF(...)`, `Sidebar.FormatToRTF(...)`, `ToRTFCached()`, or TMP field
+assignment whenever an upstream owner exists.
+
+Wrapping must preserve every non-visible or structurally significant token as an
+indivisible boundary:
+
+- Qud wrappers and foreground/background color codes
+- TMP/rich-text tags such as `<sprite name=key>` and `<color=...>`
+- direct translation and runtime markers such as `\x01` and `=variable.name=`
+- numeric format placeholders such as `{0}` and `{12:format}`
+
+Do not split on punctuation merely because it is syntactically easy. Prefer
+Japanese punctuation and spaces for human-readable line breaks, but keep route
+semantics intact: stat delimiters such as `/`, `:`, and `;` often bind numeric
+terms and should not become preferred break points without route-specific
+evidence. Add regression tests for the exact long tooltip shape, token-boundary
+preservation, empty/no-op fallback, and at least one route-level patch boundary.
 
 Markup semantic diagnostics must distinguish raw token shape from user-visible
 semantic drift. Repeated same-color Qud wrappers and statically proven upstream
