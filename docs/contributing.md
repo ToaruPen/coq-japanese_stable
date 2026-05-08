@@ -16,7 +16,15 @@ QudJP へのコントリビューションを歓迎します。このドキュ�
 - 対応 OS: macOS / Linux / Windows / WSL2
 - .NET SDK `10.0.x` (`QudJP.Tests.csproj` が `net10.0` をターゲットするため。これを入れておけば `QudJP.csproj` の `net48` ビルドも同じ SDK で可能)
 - Python `3.12` 以上
+- `just` — 開発・検証コマンドの標準入口
+- `uv` — Python ツールと release helper の実行環境
 - (任意) `ast-grep` — Python スキャナーツールと CI で使用
+
+macOS の Homebrew 環境では、開発コマンドの入口は次で揃えられます。
+
+```bash
+brew install just uv
+```
 
 > `Assembly-CSharp.dll` はリポジトリに含まれていません。ゲームを所有していない場合でも、リポジトリを clone してローカライゼーションファイル (JSON / XML) を編集することは可能です。ただし C# のビルドと L2G テスト実行にはゲームの所有が必要です。
 >
@@ -33,7 +41,26 @@ git clone git@github.com:ToaruPen/coq-japanese_stable.git
 cd coq-japanese_stable
 ```
 
-### 2. ゲーム DLL 参照パスを設定する
+### 2. 開発コマンドを確認する
+
+QudJP の日常的な build / test / deploy / release helper は `justfile` に集約しています。コマンド名が不明な場合は、まず recipe 一覧を確認してください。
+
+```bash
+just --list
+```
+
+通常の `just build` / `just rebuild` / `just deploy-mod` は、Steam Workshop へ出す shipping 相当の DLL を作ります。このビルドでは冗長な runtime probe ログは出ません。
+
+ローカル調査で probe ログが必要な場合だけ、開発者用 build を使います。
+
+```bash
+just build-dev
+just deploy-dev
+```
+
+`build-dev` / `deploy-dev` は `QudJPDevBuild=true` を付けて DLL を作成し、dev-only probe を有効にします。Workshop / release 用の成果物には使わないでください。
+
+### 3. ゲーム DLL 参照パスを設定する
 
 `Mods/QudJP/Assemblies/QudJP.csproj` はゲーム同梱 DLL (`0Harmony.dll` / Unity ランタイム) を参照します。OS ごとの Steam 既定パスを `-p:GameDir=...` で MSBuild に渡してください。csproj 内の `<HintPath>` を直接書き換える必要はありません。
 
@@ -68,28 +95,28 @@ dotnet build Mods/QudJP/Assemblies/QudJP.csproj \
 
 > `Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj` も `QudJP.csproj` と同様に `-p:GameDir=...` を受け付けます。`Managed/Assembly-CSharp.dll` を直接指したい場合は `-p:AssemblyCSharpPath=...` でも上書きできます。
 
-### 3. ビルドを確認する
+### 4. ビルドを確認する
 
 ```bash
-dotnet build Mods/QudJP/Assemblies/QudJP.csproj
+just build
 ```
 
 `Mods/QudJP/Assemblies/QudJP.dll` が生成されれば成功です。
+非標準の `GameDir` を渡してゲーム DLL 参照を明示したい場合は、前節の `dotnet build ... -p:GameDir=...` 例を使ってください。
 
-### 4. テストを実行する
+### 5. テストを実行する
 
 ```bash
-# L1 + L2 (ゲーム DLL 不要、常に実行可能)
-dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj \
-  --filter "TestCategory=L1|TestCategory=L2"
+# L1 + L2 (L2G 以外はゲーム DLL 不要、常に実行可能)
+just test-l1
+just test-l2
 
 # L2G (ゲーム DLL 必須)
-dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj \
-  --filter TestCategory=L2G
+just test-l2g
 
 # Python スクリプトの lint とテスト
-ruff check scripts/
-pytest scripts/tests/
+just python-check
+just python-test
 ```
 
 全テストがパスすれば環境構築完了です。
