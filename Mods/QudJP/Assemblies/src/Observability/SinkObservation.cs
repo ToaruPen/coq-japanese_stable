@@ -59,6 +59,11 @@ internal static class SinkObservation
         string source,
         string stripped)
     {
+        if (!RuntimeDiagnostics.VerboseProbesEnabled)
+        {
+            return;
+        }
+
         if (suppressionDepth > 0)
         {
             return;

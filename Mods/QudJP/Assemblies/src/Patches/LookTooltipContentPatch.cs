@@ -53,7 +53,10 @@ public static class LookTooltipContentPatch
             }
 
             __result = TranslateTooltipContent(__result);
-            LogProbe(BuildTooltipContentProbe(__result));
+            if (RuntimeDiagnostics.VerboseProbesEnabled)
+            {
+                LogProbe(BuildTooltipContentProbe(__result));
+            }
 #if HAS_TMP
             DelayedSceneProbeScheduler.ScheduleCompareSceneProbe(__instance);
 #else
@@ -92,6 +95,11 @@ public static class LookTooltipContentPatch
 
     private static void LogProbe(string message)
     {
+        if (!RuntimeDiagnostics.VerboseProbesEnabled)
+        {
+            return;
+        }
+
         try
         {
             var debugType = Type.GetType("UnityEngine.Debug, UnityEngine.CoreModule", throwOnError: false);

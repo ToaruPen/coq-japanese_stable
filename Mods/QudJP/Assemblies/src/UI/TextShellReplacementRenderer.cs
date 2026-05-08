@@ -79,7 +79,7 @@ internal static class TextShellReplacementRenderer
     private static readonly ConcurrentDictionary<string, byte> FailureProbeLogged = new();
     private static readonly ConcurrentDictionary<string, byte> DisableProbeLogged = new();
 
-    internal static int TryRenderReplacementTexts(object? componentInstance, out string? logLine)
+    internal static int TryRenderReplacementTexts(object? componentInstance, out string? logLine, bool emitDiagnostics = true)
     {
         logLine = null;
         if (componentInstance is not Component component)
@@ -88,10 +88,14 @@ internal static class TextShellReplacementRenderer
         }
 
         var texts = component.GetComponentsInChildren<TextMeshProUGUI>(includeInactive: true);
-        var builder = new StringBuilder();
-        builder.Append("[QudJP] InventoryLineReplacement/v1: root='");
-        builder.Append(component.gameObject.name);
-        builder.Append('\'');
+        var collectDiagnostics = emitDiagnostics && RuntimeDiagnostics.VerboseProbesEnabled;
+        var builder = collectDiagnostics ? new StringBuilder() : null;
+        if (builder is not null)
+        {
+            builder.Append("[QudJP] InventoryLineReplacement/v1: root='");
+            builder.Append(component.gameObject.name);
+            builder.Append('\'');
+        }
 
         var replaced = 0;
         for (var index = 0; index < texts.Length; index++)
@@ -124,11 +128,12 @@ internal static class TextShellReplacementRenderer
 
             if (renderAction == ReplacementRenderAction.DisableReplacement)
             {
-                if (TryBuildDisableProbe(component, relativePath, original, out var disableLog)
+                if (collectDiagnostics
+                    && TryBuildDisableProbe(component, relativePath, original, out var disableLog)
                     && disableLog is not null
                     && disableLog.Length > 0)
                 {
-                    UnityEngine.Debug.Log(disableLog);
+                    LogProbeIfPresent(disableLog);
                 }
 
                 TryDisableReplacement(original.transform.parent);
@@ -147,7 +152,7 @@ internal static class TextShellReplacementRenderer
                 continue;
             }
 
-            var creationStageLog = new StringBuilder();
+            var creationStageLog = collectDiagnostics ? new StringBuilder() : null;
             AppendCreationStageSnapshot(creationStageLog, "afterGetOrCreate", replacement);
 
             SyncReplacement(replacement, original);
@@ -166,17 +171,21 @@ internal static class TextShellReplacementRenderer
                 StabilizeSuccessfulReplacement(replacement);
                 replaced++;
                 replacement.transform.SetAsLastSibling();
-                builder.Append("; leaf[");
-                builder.Append(replaced.ToString(CultureInfo.InvariantCulture));
-                builder.Append("] path='");
-                builder.Append(relativePath);
-                builder.Append("' replacementKind='tmp' replacementChars=");
-                builder.Append(replacement.textInfo.characterCount.ToString(CultureInfo.InvariantCulture));
-                builder.Append(" replacementPageCount=");
-                builder.Append(replacement.textInfo.pageCount.ToString(CultureInfo.InvariantCulture));
-                builder.Append(" parent='");
-                builder.Append(shell.name);
-                builder.Append("' phase='afterEnable'");
+                if (builder is not null)
+                {
+                    builder.Append("; leaf[");
+                    builder.Append(replaced.ToString(CultureInfo.InvariantCulture));
+                    builder.Append("] path='");
+                    builder.Append(relativePath);
+                    builder.Append("' replacementKind='tmp' replacementChars=");
+                    builder.Append(replacement.textInfo.characterCount.ToString(CultureInfo.InvariantCulture));
+                    builder.Append(" replacementPageCount=");
+                    builder.Append(replacement.textInfo.pageCount.ToString(CultureInfo.InvariantCulture));
+                    builder.Append(" parent='");
+                    builder.Append(shell.name);
+                    builder.Append("' phase='afterEnable'");
+                }
+
                 continue;
             }
 
@@ -201,11 +210,18 @@ internal static class TextShellReplacementRenderer
 
             if (replacement.textInfo.characterCount == 0)
             {
-                if (TryBuildReplacementFailureProbe(component, relativePath, original, replacement, creationStageLog.ToString(), out var failureLog)
+                if (collectDiagnostics
+                    && TryBuildReplacementFailureProbe(
+                        component,
+                        relativePath,
+                        original,
+                        replacement,
+                        creationStageLog?.ToString() ?? string.Empty,
+                        out var failureLog)
                     && failureLog is not null
                     && failureLog.Length > 0)
                 {
-                    UnityEngine.Debug.Log(failureLog);
+                    LogProbeIfPresent(failureLog);
                 }
 
                 replacement.enabled = false;
@@ -216,25 +232,28 @@ internal static class TextShellReplacementRenderer
             replaced++;
             original.enabled = false;
             replacement.transform.SetAsLastSibling();
-            builder.Append("; leaf[");
-            builder.Append(replaced.ToString(CultureInfo.InvariantCulture));
-            builder.Append("] path='");
-            builder.Append(relativePath);
-            builder.Append("' replacementKind='tmp' replacementChars=");
-            builder.Append(replacement.textInfo.characterCount.ToString(CultureInfo.InvariantCulture));
-            builder.Append(" replacementPageCount=");
-            builder.Append(replacement.textInfo.pageCount.ToString(CultureInfo.InvariantCulture));
-            builder.Append(" parent='");
-            builder.Append(shell.name);
-            builder.Append('\'');
+            if (builder is not null)
+            {
+                builder.Append("; leaf[");
+                builder.Append(replaced.ToString(CultureInfo.InvariantCulture));
+                builder.Append("] path='");
+                builder.Append(relativePath);
+                builder.Append("' replacementKind='tmp' replacementChars=");
+                builder.Append(replacement.textInfo.characterCount.ToString(CultureInfo.InvariantCulture));
+                builder.Append(" replacementPageCount=");
+                builder.Append(replacement.textInfo.pageCount.ToString(CultureInfo.InvariantCulture));
+                builder.Append(" parent='");
+                builder.Append(shell.name);
+                builder.Append('\'');
+            }
         }
 
-        if (replaced == 0)
+        if (builder is not null && replaced == 0)
         {
             builder.Append("; replaced=0");
         }
 
-        logLine = builder.ToString();
+        logLine = builder?.ToString();
         return replaced;
     }
 
@@ -431,6 +450,14 @@ internal static class TextShellReplacementRenderer
         return true;
     }
 
+    private static void LogProbeIfPresent(string? logLine)
+    {
+        if (logLine is { Length: > 0 })
+        {
+            UnityEngine.Debug.Log(logLine);
+        }
+    }
+
     private static void TryDisableReplacement(Transform? shell)
     {
         if (shell is null)
@@ -458,7 +485,7 @@ internal static class TextShellReplacementRenderer
     private static bool TryReuseActiveReplacement(
         Transform? shell,
         string relativePath,
-        StringBuilder builder,
+        StringBuilder? builder,
         ref int replaced)
     {
         if (shell is null)
@@ -495,19 +522,23 @@ internal static class TextShellReplacementRenderer
 
         replaced++;
         replacement.transform.SetAsLastSibling();
-        builder.Append("; leaf[");
-        builder.Append(replaced.ToString(CultureInfo.InvariantCulture));
-        builder.Append("] path='");
-        builder.Append(relativePath);
-        builder.Append("' replacementKind='tmp' replacementChars=");
-        builder.Append(replacement.textInfo.characterCount.ToString(CultureInfo.InvariantCulture));
-        builder.Append(" replacementPageCount=");
-        builder.Append(replacement.textInfo.pageCount.ToString(CultureInfo.InvariantCulture));
-        builder.Append(" parent='");
-        builder.Append(shell.name);
-        builder.Append("' phase='");
-        builder.Append(recovered ? "reuseActiveRecovered" : "reuseActive");
-        builder.Append('\'');
+        if (builder is not null)
+        {
+            builder.Append("; leaf[");
+            builder.Append(replaced.ToString(CultureInfo.InvariantCulture));
+            builder.Append("] path='");
+            builder.Append(relativePath);
+            builder.Append("' replacementKind='tmp' replacementChars=");
+            builder.Append(replacement.textInfo.characterCount.ToString(CultureInfo.InvariantCulture));
+            builder.Append(" replacementPageCount=");
+            builder.Append(replacement.textInfo.pageCount.ToString(CultureInfo.InvariantCulture));
+            builder.Append(" parent='");
+            builder.Append(shell.name);
+            builder.Append("' phase='");
+            builder.Append(recovered ? "reuseActiveRecovered" : "reuseActive");
+            builder.Append('\'');
+        }
+
         return true;
     }
 
@@ -850,8 +881,13 @@ internal static class TextShellReplacementRenderer
         return true;
     }
 
-    private static void AppendCreationStageSnapshot(StringBuilder builder, string stageName, TextMeshProUGUI text)
+    private static void AppendCreationStageSnapshot(StringBuilder? builder, string stageName, TextMeshProUGUI text)
     {
+        if (builder is null)
+        {
+            return;
+        }
+
         var subMeshes = text.GetComponentsInChildren<TMP_SubMeshUI>(includeInactive: true);
         if (builder.Length > 0)
         {
@@ -1396,9 +1432,10 @@ internal static class TextShellReplacementRenderer
         return false;
     }
 
-    internal static int TryRenderReplacementTexts(object? componentInstance, out string? logLine)
+    internal static int TryRenderReplacementTexts(object? componentInstance, out string? logLine, bool emitDiagnostics = true)
     {
         _ = componentInstance;
+        _ = emitDiagnostics;
         logLine = null;
         return 0;
     }

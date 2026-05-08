@@ -12,7 +12,8 @@ build:
   dotnet build Mods/QudJP/Assemblies/QudJP.csproj
 
 # Build the QudJP assembly for local development.
-build-dev: build
+build-dev:
+  dotnet build Mods/QudJP/Assemblies/QudJP.csproj -p:QudJPDevBuild=true
 
 # Clean and rebuild the shipped QudJP assembly without incremental artifacts.
 rebuild:
@@ -20,7 +21,9 @@ rebuild:
   dotnet build Mods/QudJP/Assemblies/QudJP.csproj --no-incremental
 
 # Clean and rebuild the QudJP assembly for local development.
-rebuild-dev: rebuild
+rebuild-dev:
+  dotnet clean Mods/QudJP/Assemblies/QudJP.csproj
+  dotnet build Mods/QudJP/Assemblies/QudJP.csproj --no-incremental -p:QudJPDevBuild=true
 
 # Run fast C# L1 tests.
 test-l1:

@@ -25,6 +25,8 @@ When reviewing a change, apply evidence in this order:
    `docs/coderabbit/owner-route-coverage.md`,
    `docs/coderabbit/color-token-review.md`, and
    `docs/coderabbit/glossary-variance-review.md`.
+   For TMP, Unity UI, and ModelShark tooltip rendering behavior, also use
+   `docs/coderabbit/tmp-runtime-rendering.md`.
 6. Derived findings from local decompiled inspection.
 7. Older notes in `docs/archive/` and historical reports.
 
@@ -207,6 +209,26 @@ Review changes involving observability for these expectations:
 On Apple Silicon, only Rosetta-launched L3 runtime logs count as localization
 observability evidence. Native ARM64 logs should not be accepted for that
 purpose.
+
+## TMP And Tooltip Rendering Contracts
+
+Use `docs/coderabbit/tmp-runtime-rendering.md` for the detailed maintainer notes.
+Critical review rules:
+
+- TMP `characterCount`, `pageCount`, and rect size prove mesh generation, not
+  final visibility.
+- Visibility investigation for Unity UI text should separately check active
+  state, `CanvasRenderer.GetAlpha()`, `cull`, TMP visibility limits, and tooltip
+  lifecycle callers.
+- Do not use `Graphic.color.a` as the primary proof of runtime draw visibility
+  when `CanvasRenderer.GetAlpha()` is the relevant evidence.
+- ModelShark tooltip warmup/display can leave generated text invisible if active
+  child `CanvasRenderer` alpha remains `0`.
+- `ForceHideTooltip()` in PolatLooker logs is not automatically a bug; distinguish
+  `TooltipManager.Update` automatic hide from `Look.ShowLooker` target-change
+  and `Look.HideTooltips` exit paths.
+- Permanent high-volume tooltip diagnostics, especially `StackTrace` collection
+  in hot UI paths, should be removed or guarded before merge.
 
 ## Localization Asset Contracts
 

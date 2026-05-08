@@ -248,6 +248,11 @@ internal static class InventoryLineFontFixer
 
     private static void LogDiagnostics(object? textSkin, TextMeshProUGUI? tmp, string? finalText, bool applied)
     {
+        if (!RuntimeDiagnostics.VerboseProbesEnabled)
+        {
+            return;
+        }
+
         var count = Interlocked.Increment(ref diagnosticsCount);
         if (count > MaxDiagnostics)
         {

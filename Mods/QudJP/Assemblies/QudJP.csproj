@@ -19,6 +19,10 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(QudJPDevBuild)' == 'true' Or '$(QUDJP_DEV_BUILD)' == '1' Or '$(QUDJP_DEV_BUILD)' == 'true'">
+    <DefineConstants>$(DefineConstants);QUDJP_DEV_BUILD</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="src/**/*.cs" />
   </ItemGroup>
@@ -76,6 +80,10 @@
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>$(ManagedDir)/UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>$(ManagedDir)/UnityEngine.UIModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">

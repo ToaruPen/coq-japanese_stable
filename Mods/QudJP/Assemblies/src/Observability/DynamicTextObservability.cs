@@ -31,6 +31,11 @@ internal static class DynamicTextObservability
         string? translated,
         bool logWhenUnchanged = false)
     {
+        if (!RuntimeDiagnostics.VerboseProbesEnabled)
+        {
+            return;
+        }
+
         var sourceValue = source ?? string.Empty;
         var translatedValue = translated ?? string.Empty;
         var changed = !string.Equals(sourceValue, translatedValue, StringComparison.Ordinal);

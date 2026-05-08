@@ -10,6 +10,7 @@
     <GameDir Condition="'$(GameDir)' == ''">$(HOME)/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/Resources/Data</GameDir>
     <AssemblyCSharpPath Condition="'$(AssemblyCSharpPath)' == ''">$(GameDir)/Managed/Assembly-CSharp.dll</AssemblyCSharpPath>
     <ManagedDir>$([System.IO.Path]::GetDirectoryName('$(AssemblyCSharpPath)'))</ManagedDir>
+    <DefineConstants>$(DefineConstants);QUDJP_DEV_BUILD</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="Exists('$(AssemblyCSharpPath)')">
@@ -42,6 +43,7 @@
     <Compile Include="../src/Observability/*.cs" Link="Production/Observability/%(Filename)%(Extension)" />
     <Compile Include="../src/Patches/*.cs" Link="Production/Patches/%(Filename)%(Extension)" />
     <Compile Include="../src/QudJPMod.cs" Link="Production/QudJPMod.cs" />
+    <Compile Include="../src/RuntimeDiagnostics.cs" Link="Production/RuntimeDiagnostics.cs" />
     <Compile Include="../src/Translation/*.cs" Link="Production/Translation/%(Filename)%(Extension)" />
     <Compile Include="../src/UI/*.cs" Link="Production/UI/%(Filename)%(Extension)" />
   </ItemGroup>
@@ -68,6 +70,10 @@
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>$(ManagedDir)/UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>$(ManagedDir)/UnityEngine.UIModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
@@ -101,6 +107,11 @@
     <None Include="$(ManagedDir)/UnityEngine.UI.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>UnityEngine.UI.dll</TargetPath>
+      <Visible>false</Visible>
+    </None>
+    <None Include="$(ManagedDir)/UnityEngine.UIModule.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>UnityEngine.UIModule.dll</TargetPath>
       <Visible>false</Visible>
     </None>
     <None Include="$(ManagedDir)/UnityEngine.CoreModule.dll">
