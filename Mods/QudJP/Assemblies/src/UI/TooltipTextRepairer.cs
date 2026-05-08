@@ -54,7 +54,7 @@ internal static class TooltipTextRepairer
         try
         {
             tooltipObject = TryGetTooltipObjectFromTrigger(triggerInstance, out var tooltip);
-            if (tooltipObject is null || !ShouldRepairTooltipName(tooltipObject.name))
+            if (tooltipObject == null || !ShouldRepairTooltipName(tooltipObject.name))
             {
                 return false;
             }
@@ -92,7 +92,7 @@ internal static class TooltipTextRepairer
     internal static bool TryPinLookerTooltip(object? triggerInstance)
     {
         var tooltipObject = TryGetTooltipObjectFromTrigger(triggerInstance, out var tooltip);
-        if (tooltipObject is null)
+        if (tooltipObject == null)
         {
             return false;
         }
@@ -109,7 +109,7 @@ internal static class TooltipTextRepairer
     internal static bool TryRestoreLookerTooltipVisibility(object? tooltipInstance)
     {
         var tooltipObject = GetTooltipObject(tooltipInstance);
-        if (tooltipObject is null || !ShouldRepairTooltipName(tooltipObject.name))
+        if (tooltipObject == null || !ShouldRepairTooltipName(tooltipObject.name))
         {
             return false;
         }
