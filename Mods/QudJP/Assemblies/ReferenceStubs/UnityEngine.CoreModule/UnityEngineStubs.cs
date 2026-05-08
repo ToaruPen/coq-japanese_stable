@@ -204,6 +204,10 @@ public class Material : Object
 public class CanvasRenderer : Component
 {
     public bool cull { get; set; }
+    public void SetAlpha(float alpha)
+    {
+        _ = alpha;
+    }
 }
 
 public class CanvasGroup : Component

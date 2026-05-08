@@ -72,6 +72,10 @@
       <HintPath>$(ManagedDir)/UnityEngine.UI.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>$(ManagedDir)/UnityEngine.UIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(ManagedDir)/UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
@@ -103,6 +107,11 @@
     <None Include="$(ManagedDir)/UnityEngine.UI.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>UnityEngine.UI.dll</TargetPath>
+      <Visible>false</Visible>
+    </None>
+    <None Include="$(ManagedDir)/UnityEngine.UIModule.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>UnityEngine.UIModule.dll</TargetPath>
       <Visible>false</Visible>
     </None>
     <None Include="$(ManagedDir)/UnityEngine.CoreModule.dll">
