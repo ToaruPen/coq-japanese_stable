@@ -22,6 +22,23 @@ public sealed class JapaneseBlockWrapTests
         });
     }
 
+    [TestCase(null)]
+    [TestCase("")]
+    public void TryWrapForCjkBlock_ReturnsFalseForNullOrEmptyInput(string? source)
+    {
+        var changed = JapaneseBlockWrap.TryWrapForCjkBlock(
+            source!,
+            width: 10,
+            maxLines: 5000,
+            out var wrapped);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.False);
+            Assert.That(wrapped, Is.EqualTo(source));
+        });
+    }
+
     [Test]
     public void TryWrapForCjkBlock_ReopensActiveQudColorAfterInsertedBreak()
     {
