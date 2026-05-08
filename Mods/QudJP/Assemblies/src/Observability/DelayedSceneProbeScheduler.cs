@@ -26,7 +26,10 @@ internal static class DelayedSceneProbeScheduler
             return;
         }
 
-        SceneTextObservability.ResetBuckets();
+        if (RuntimeDiagnostics.VerboseProbesEnabled)
+        {
+            SceneTextObservability.ResetBuckets();
+        }
         compareSceneScheduled = true;
         runner.StartCoroutine(RunCompareSceneProbe());
     }

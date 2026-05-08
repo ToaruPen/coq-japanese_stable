@@ -180,6 +180,11 @@ public static class Translator
             return translated;
         }
 
+        if (!RuntimeDiagnostics.VerboseProbesEnabled)
+        {
+            return key;
+        }
+
         var hitCount = RecordMissingKey(key);
         if (!IsMissingKeyLoggingSuppressed() && ObservabilityHelpers.ShouldLogMissingHit(hitCount))
         {

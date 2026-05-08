@@ -230,12 +230,15 @@ internal static class MessagePatternTranslator
             return translated;
         }
 
-        var hitCount = RecordMissingPattern(source);
-        if (ObservabilityHelpers.ShouldLogMissingHit(hitCount))
+        if (RuntimeDiagnostics.VerboseProbesEnabled)
         {
-            var sanitizedSource = SanitizeForLog(source);
-            LogObservability(
-                $"[QudJP] MessagePatternTranslator: no pattern for '{sanitizedSource}' (hit {hitCount}).{Translator.GetCurrentLogContextSuffix()}{Translator.BuildTranslatorStructuredSuffix(Translator.ExtractCurrentRoute(), "message_pattern", sanitizedSource)}");
+            var hitCount = RecordMissingPattern(source);
+            if (ObservabilityHelpers.ShouldLogMissingHit(hitCount))
+            {
+                var sanitizedSource = SanitizeForLog(source);
+                LogObservability(
+                    $"[QudJP] MessagePatternTranslator: no pattern for '{sanitizedSource}' (hit {hitCount}).{Translator.GetCurrentLogContextSuffix()}{Translator.BuildTranslatorStructuredSuffix(Translator.ExtractCurrentRoute(), "message_pattern", sanitizedSource)}");
+            }
         }
 
         return spans is null || spans.Count == 0

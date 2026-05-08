@@ -124,11 +124,10 @@ internal static class TextShellReplacementRenderer
 
             if (renderAction == ReplacementRenderAction.DisableReplacement)
             {
-                if (TryBuildDisableProbe(component, relativePath, original, out var disableLog)
-                    && disableLog is not null
-                    && disableLog.Length > 0)
+                if (RuntimeDiagnostics.VerboseProbesEnabled
+                    && TryBuildDisableProbe(component, relativePath, original, out var disableLog))
                 {
-                    UnityEngine.Debug.Log(disableLog);
+                    LogProbeIfPresent(disableLog);
                 }
 
                 TryDisableReplacement(original.transform.parent);
@@ -201,11 +200,10 @@ internal static class TextShellReplacementRenderer
 
             if (replacement.textInfo.characterCount == 0)
             {
-                if (TryBuildReplacementFailureProbe(component, relativePath, original, replacement, creationStageLog.ToString(), out var failureLog)
-                    && failureLog is not null
-                    && failureLog.Length > 0)
+                if (RuntimeDiagnostics.VerboseProbesEnabled
+                    && TryBuildReplacementFailureProbe(component, relativePath, original, replacement, creationStageLog.ToString(), out var failureLog))
                 {
-                    UnityEngine.Debug.Log(failureLog);
+                    LogProbeIfPresent(failureLog);
                 }
 
                 replacement.enabled = false;
@@ -429,6 +427,14 @@ internal static class TextShellReplacementRenderer
 
         logLine = builder.ToString();
         return true;
+    }
+
+    private static void LogProbeIfPresent(string? logLine)
+    {
+        if (logLine is { Length: > 0 })
+        {
+            UnityEngine.Debug.Log(logLine);
+        }
     }
 
     private static void TryDisableReplacement(Transform? shell)

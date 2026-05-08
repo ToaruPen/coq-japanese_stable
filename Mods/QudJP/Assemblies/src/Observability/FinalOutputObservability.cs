@@ -155,6 +155,11 @@ internal static class FinalOutputObservability
 
     internal static void Record(FinalOutputObservation observation)
     {
+        if (!RuntimeDiagnostics.VerboseProbesEnabled)
+        {
+            return;
+        }
+
         var normalized = Normalize(observation);
         var hitCount = AddOrUpdateCapped(HitCounts, BuildCounterKey(normalized), MaxObservedEntries);
         if (!ObservabilityHelpers.ShouldLogMissingHit(hitCount))

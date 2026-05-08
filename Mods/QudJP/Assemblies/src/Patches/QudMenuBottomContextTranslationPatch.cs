@@ -104,6 +104,11 @@ public static class QudMenuBottomContextTranslationPatch
 
     private static void LogProbe(object? contextInstance, string phase)
     {
+        if (!RuntimeDiagnostics.VerboseProbesEnabled)
+        {
+            return;
+        }
+
         if (QudMenuBottomContextObservability.TryBuildState(contextInstance, phase, out var logLine)
             && !string.IsNullOrEmpty(logLine))
         {

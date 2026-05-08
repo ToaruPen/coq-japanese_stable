@@ -1,3 +1,4 @@
+#if QUDJP_DEV_BUILD
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -70,3 +71,4 @@ public static class BaseLineWithTooltipStartTooltipPatch
         }
     }
 }
+#endif

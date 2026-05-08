@@ -130,8 +130,10 @@ internal static class DelayedInventoryLineRepairScheduler
             if (replaced > 0)
             {
                 _ = TmpTextRepairer.TryRepairInvisibleTexts(component);
-                _ = TextShellReplacementRenderer.TryBuildReplacementState(component, "InventoryLineReplacementStateNextFrame/v1", out _);
-                _ = ScreenHierarchyObservability.TryBuildLineItemSnapshot(component, "InventoryLineItemProbe/v1", out _);
+                if (RuntimeDiagnostics.VerboseProbesEnabled)
+                {
+                    BuildVerboseRepairProbeSnapshots(component);
+                }
             }
 
         }
@@ -139,6 +141,15 @@ internal static class DelayedInventoryLineRepairScheduler
         {
             Scheduled.TryRemove(lineId, out _);
         }
+    }
+
+    private static void BuildVerboseRepairProbeSnapshots(Component component)
+    {
+        _ = TextShellReplacementRenderer.TryBuildReplacementState(
+            component,
+            "InventoryLineReplacementStateNextFrame/v1",
+            out _);
+        _ = ScreenHierarchyObservability.TryBuildLineItemSnapshot(component, "InventoryLineItemProbe/v1", out _);
     }
 
     private sealed class RepairHost : MonoBehaviour
