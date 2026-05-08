@@ -36,6 +36,18 @@ just test-l2g
   - use `just sg-cs '<pattern>'` with the default decompiled-source target when tracing upstream game producers
 - Optional examples: try patterns such as `DynamicTextObservability.RecordTransform($$$ARGS)`, `Popup.Show($$$ARGS)`, or the method/class name you are changing.
 - If structural search is intentionally skipped for C# route work, state the reason in the work note or PR summary.
+- For tooltip, TMP, or RTF display fixes:
+  - identify the upstream producer route before patching sinks; prefer
+    `Look.GenerateTooltipInformation(GameObject)` or another pre-render owner
+    when the UI route permits it
+  - preserve root contract tokens and markup as indivisible text boundaries:
+    Qud wrappers, `&`/`^` color codes, TMP/rich-text tags, `\x01`,
+    `=variable.name=`, `{0}`, and `{12:format}`
+  - prove both no-op fallback behavior and at least one route boundary with
+    tests; use L2G target-resolution coverage when the upstream game signature
+    is the contract
+  - verify both normal game-DLL builds/tests and the no-game Release build path
+    when a patch needs `#if HAS_GAME_DLL` fallback code
 - Constraints:
   - one patch class per file in `src/Patches/`
   - do not instantiate real game types in L1/L2 tests; use dummy targets with matching signatures
