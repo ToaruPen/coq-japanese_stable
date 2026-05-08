@@ -4,27 +4,36 @@
 >
 > **対象ゲームバージョン**: Caves of Qud 1.0.4
 >
-> experimental branch (`lang-experimental`, build 212.x 系) は別リポジトリ [`ToaruPen/CoQ-Japanese_v2`](https://github.com/ToaruPen/CoQ-Japanese_v2) で observation mode 追跡中。
+> **Steam Workshop**: [`3718988020`](https://steamcommunity.com/sharedfiles/filedetails/?id=3718988020)
 
 ## Why
 
 Caves of Qud は完全な英語ローカライゼーション API が整備される前から運用されてきたタイトルで、UI / quest / conversation / 自動生成テキストを日本語化するには Harmony patch を主軸としたアプローチが必要。本リポジトリは Caves of Qud 1.0.4 ユーザーが実際にプレイできる翻訳状態を維持することを最優先する。
 
-experimental ブランチ (`lang-experimental`) の新ローカライゼーションフレームワーク (`Strings/_T/_S` / `[LanguageProvider]` / `ExampleLanguage` 等) は 2026-04-07 時点で early alpha 段階であることが判明しており、詳細な一次調査結果と observation mode 復帰の意思決定は v2 リポジトリの [`docs/snapshots/2026-04-07-beta-l10n-status.md`](https://github.com/ToaruPen/CoQ-Japanese_v2/blob/main/docs/snapshots/2026-04-07-beta-l10n-status.md) / [`docs/decisions/0001-v1-v2-roles.md`](https://github.com/ToaruPen/CoQ-Japanese_v2/blob/main/docs/decisions/0001-v1-v2-roles.md) を参照。
-
 ## What This Repo Is For
 
 - Caves of Qud 1.0.4 ユーザー向け日本語化 Mod の開発と出荷
 - 会話 / UI / quest / 自動生成テキスト / 装備名 / 能力名 / 書籍 等の翻訳資産の保守
-- Harmony patch 群 + Markov コーパス + 翻訳パイプラインスクリプトの維持
-- CJK フォント同梱
+- Harmony patch 群、CJK フォント、翻訳辞書、検証・release tooling の維持
+- フォント資産とライセンス情報の同梱管理
 
 ## What It Is Not For
 
-- experimental branch (`lang-experimental`, 212.x 系) ターゲットの開発 (→ v2)
+- experimental branch (`lang-experimental` 系) ターゲットの開発 (→ v2)
 - 新ローカライゼーション API (`Strings/_T/_S` / `[LanguageProvider]`) への先行移植
 - 英語以外の他言語サポート
 - Caves of Qud 1.0.4 の挙動を破壊する実験的リファクタ
+
+## Current Release Sources
+
+| 項目 | Source of truth |
+|---|---|
+| Mod metadata / version | [`Mods/QudJP/manifest.json`](Mods/QudJP/manifest.json) |
+| Release history | [`CHANGELOG.md`](CHANGELOG.md) |
+| Steam Workshop release procedure | [`docs/release.md`](docs/release.md) |
+| Local deployment / smoke check | [`docs/deployment.md`](docs/deployment.md) |
+| Public Workshop metadata | [`steam/workshop_metadata.json`](steam/workshop_metadata.json) |
+| Public Workshop description | [`steam/workshop_description.ja.txt`](steam/workshop_description.ja.txt) |
 
 ## Docs
 
@@ -34,6 +43,9 @@ experimental ブランチ (`lang-experimental`) の新ローカライゼーシ�
 | [`docs/test-architecture.md`](docs/test-architecture.md) | 3 層 + L3 テストアーキテクチャ定義 |
 | [`docs/contributing.md`](docs/contributing.md) | 貢献ガイド |
 | [`docs/deployment.md`](docs/deployment.md) | デプロイ手順 |
+| [`docs/release.md`](docs/release.md) | GitHub Release / Steam Workshop 出荷手順 |
+| [`docs/workflows/pr-review.md`](docs/workflows/pr-review.md) | PR レビュー手順 |
+| [`docs/workflows/runtime-evidence.md`](docs/workflows/runtime-evidence.md) | runtime evidence 収集手順 |
 | [`docs/glossary.csv`](docs/glossary.csv) | 翻訳用語集 |
 | [`docs/static-producer-inventory.json`](docs/static-producer-inventory.json) | issue #493 static producer inventory |
 | [`docs/reports/2026-05-05-issue-493-static-producer-inventory.md`](docs/reports/2026-05-05-issue-493-static-producer-inventory.md) | static producer inventory report |
@@ -41,15 +53,18 @@ experimental ブランチ (`lang-experimental`) の新ローカライゼーシ�
 
 ## Development / Verification
 
+- 開発コマンドは `justfile` に集約しています。初回は `just --list` で利用可能な recipe を確認してください。
+- 通常の `just build` / `just deploy-mod` は shipping 相当の DLL を作成し、冗長な probe ログを出しません。probe が必要なローカル調査では `just build-dev` / `just deploy-dev` を使います。
 - C# テストは NUnit、L1 / L2 / L2G の 3 層構成 + 手動 L3 ([`docs/test-architecture.md`](docs/test-architecture.md))
 - Python ツールは pytest + Ruff + ast-grep
 - 静的解析: Roslyn analyzer suite (`QudJP.Analyzers`) に独自規約 QJ001 / QJ002 / QJ003 を加えて強制
-- CI: GitHub Actions (Ubuntu 24.04 / .NET 8 + 10 / Python 3.12) で push / PR ごとに build + test
+- CI: GitHub Actions で変更パスに応じて .NET build/test、Roslyn tool build、Python lint/test、localization checks、justfile parse check を実行
+- Release: tag-triggered GitHub Actions が release ZIP と draft GitHub Release を作成し、Steam Workshop upload は `docs/release.md` の手動 gate に従う
 - コードレビュー: CodeRabbit
 
 ## Related Repo
 
-- [`ToaruPen/CoQ-Japanese_v2`](https://github.com/ToaruPen/CoQ-Japanese_v2) — **v2, observation mode (frozen 2026-04-07)**, Caves of Qud experimental branch (`lang-experimental`, build 212.x) 追跡用
+- [`ToaruPen/CoQ-Japanese_v2`](https://github.com/ToaruPen/CoQ-Japanese_v2) — Caves of Qud experimental branch (`lang-experimental` 系) と新ローカライゼーション API の追跡用
 
 ## License
 
