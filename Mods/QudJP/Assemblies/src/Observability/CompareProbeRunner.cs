@@ -12,12 +12,10 @@ internal static class CompareProbeRunner
     internal static void Run(object screenInstance)
     {
 #if HAS_TMP
-        if (!RuntimeDiagnostics.VerboseProbesEnabled)
-        {
-            return;
-        }
+        var verboseProbesEnabled = RuntimeDiagnostics.VerboseProbesEnabled;
 
-        if (TmpTextRepairer.TryBuildTextShellLeafProbe(screenInstance, "HandleSelectItemLeafReachBefore/v1", out var beforeLeafLog)
+        if (verboseProbesEnabled
+            && TmpTextRepairer.TryBuildTextShellLeafProbe(screenInstance, "HandleSelectItemLeafReachBefore/v1", out var beforeLeafLog)
             && beforeLeafLog is not null
             && beforeLeafLog.Length > 0)
         {
@@ -25,46 +23,58 @@ internal static class CompareProbeRunner
         }
 
         var repaired = TmpTextRepairer.TryRepairInvisibleTexts(screenInstance);
-        if (repaired > 0)
+        if (verboseProbesEnabled && repaired > 0)
         {
             LogProbe(TmpTextRepairer.BuildRepairLog("HandleSelectItemRepair/v1", repaired));
         }
 
-        if (TmpTextRepairer.TryBuildTextShellLeafProbe(screenInstance, "HandleSelectItemLeafReachAfter/v1", out var afterLeafLog)
+        if (verboseProbesEnabled
+            && TmpTextRepairer.TryBuildTextShellLeafProbe(screenInstance, "HandleSelectItemLeafReachAfter/v1", out var afterLeafLog)
             && afterLeafLog is not null
             && afterLeafLog.Length > 0)
         {
             LogProbe(afterLeafLog);
         }
 
-        if (UiChildTextObservability.TryBuildSnapshot(screenInstance, "HandleSelectItemProbe/v1", out var logLine)
+        if (verboseProbesEnabled
+            && UiChildTextObservability.TryBuildSnapshot(screenInstance, "HandleSelectItemProbe/v1", out var logLine)
             && logLine is not null
             && logLine.Length > 0)
         {
             LogProbe(logLine);
         }
 
-        if (ComparePopupTextFixer.TryRepairActiveComparePopup(out var comparePopupRepairLog)
+        if (verboseProbesEnabled
+            && ComparePopupTextFixer.TryRepairActiveComparePopup(out var comparePopupRepairLog)
             && comparePopupRepairLog is not null
             && comparePopupRepairLog.Length > 0)
         {
             LogProbe(comparePopupRepairLog);
         }
+        else if (!verboseProbesEnabled)
+        {
+            _ = ComparePopupTextFixer.RepairActiveComparePopup();
+        }
 
-        if (ScreenHierarchyObservability.TryBuildNeighborhoodSnapshot(screenInstance, "CompareHierarchyProbe/v1", out var hierarchyLogLine)
+        if (verboseProbesEnabled
+            && ScreenHierarchyObservability.TryBuildNeighborhoodSnapshot(screenInstance, "CompareHierarchyProbe/v1", out var hierarchyLogLine)
             && hierarchyLogLine is not null
             && hierarchyLogLine.Length > 0)
         {
             LogProbe(hierarchyLogLine);
         }
 
-        var focusedBranchLogs = ScreenHierarchyObservability.BuildFocusedBranchSnapshots(screenInstance, "CompareBranchProbe/v1");
-        for (var index = 0; index < focusedBranchLogs.Length; index++)
+        if (verboseProbesEnabled)
         {
-            LogProbe(focusedBranchLogs[index]);
+            var focusedBranchLogs = ScreenHierarchyObservability.BuildFocusedBranchSnapshots(screenInstance, "CompareBranchProbe/v1");
+            for (var index = 0; index < focusedBranchLogs.Length; index++)
+            {
+                LogProbe(focusedBranchLogs[index]);
+            }
         }
 
-        if (SceneTextObservability.TryBuildCompareSceneSnapshot("CompareSceneProbe/v1", out var sceneLogLine)
+        if (verboseProbesEnabled
+            && SceneTextObservability.TryBuildCompareSceneSnapshot("CompareSceneProbe/v1", out var sceneLogLine)
             && sceneLogLine is not null
             && sceneLogLine.Length > 0)
         {

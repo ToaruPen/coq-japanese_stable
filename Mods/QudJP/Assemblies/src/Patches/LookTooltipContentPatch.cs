@@ -56,11 +56,10 @@ public static class LookTooltipContentPatch
             if (RuntimeDiagnostics.VerboseProbesEnabled)
             {
                 LogProbe(BuildTooltipContentProbe(__result));
-#if HAS_TMP
-                DelayedSceneProbeScheduler.ScheduleCompareSceneProbe(__instance);
-#endif
             }
-#if !HAS_TMP
+#if HAS_TMP
+            DelayedSceneProbeScheduler.ScheduleCompareSceneProbe(__instance);
+#else
             _ = __instance;
 #endif
         }

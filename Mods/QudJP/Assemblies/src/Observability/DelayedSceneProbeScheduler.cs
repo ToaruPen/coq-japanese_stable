@@ -13,11 +13,6 @@ internal static class DelayedSceneProbeScheduler
 
     internal static void ScheduleCompareSceneProbe(object? screenInstance)
     {
-        if (!RuntimeDiagnostics.VerboseProbesEnabled)
-        {
-            return;
-        }
-
         if (compareSceneScheduled)
         {
             return;
@@ -31,7 +26,10 @@ internal static class DelayedSceneProbeScheduler
             return;
         }
 
-        SceneTextObservability.ResetBuckets();
+        if (RuntimeDiagnostics.VerboseProbesEnabled)
+        {
+            SceneTextObservability.ResetBuckets();
+        }
         compareSceneScheduled = true;
         runner.StartCoroutine(RunCompareSceneProbe());
     }
