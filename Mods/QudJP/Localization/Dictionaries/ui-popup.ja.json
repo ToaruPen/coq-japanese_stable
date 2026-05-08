@@ -301,7 +301,7 @@
         {
             "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\n Type 'QUIT' to confirm.",
             "context": "Popup.AskString.Prompt",
-            "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了して進行状況を失いますか？\\n\\n「QUIT」と入力すると確定します。"
+            "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
         },
         {
             "key": "If you quit without saving, you will lose all your progress and your character will be lost. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\nType 'ABANDON' to confirm.",
