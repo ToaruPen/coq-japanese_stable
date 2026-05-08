@@ -43,8 +43,10 @@ public static class LookTooltipInformationWrapPatch
             for (var index = 0; index < methods.Count; index++)
             {
                 var candidate = methods[index];
+                var parameters = candidate.GetParameters();
                 if (string.Equals(candidate.Name, "GenerateTooltipInformation", StringComparison.Ordinal)
-                    && candidate.GetParameters().Length == 1)
+                    && parameters.Length == 1
+                    && parameters[0].ParameterType == gameObjectType)
                 {
                     return candidate;
                 }

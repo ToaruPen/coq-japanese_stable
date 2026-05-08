@@ -24,5 +24,19 @@ public sealed class LookTooltipInformationWrapPatchTests
             information.LongDescription,
             Is.EqualTo(new string('あ', JapaneseBlockWrap.DefaultTooltipVisibleColumns) + "\nあ"));
     }
+
+    [TestCase("")]
+    [TestCase("The quick brown fox")]
+    public void Postfix_PreservesNoOpLongDescriptions(string source)
+    {
+        var information = new Look.TooltipInformation
+        {
+            LongDescription = source,
+        };
+
+        LookTooltipInformationWrapPatch.Postfix(ref information);
+
+        Assert.That(information.LongDescription, Is.EqualTo(source));
+    }
 }
 #endif

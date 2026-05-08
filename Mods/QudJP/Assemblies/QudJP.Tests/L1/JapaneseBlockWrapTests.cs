@@ -72,6 +72,67 @@ public sealed class JapaneseBlockWrapTests
     }
 
     [Test]
+    public void TryWrapForCjkBlock_PreservesRootContractTokens()
+    {
+        const string source = "あいうえお\u0001=variable.name={0}{12:format}<sprite name=key>{{TMP|かきくけこ}}";
+
+        var changed = JapaneseBlockWrap.TryWrapForCjkBlock(
+            source,
+            width: 8,
+            maxLines: 5000,
+            out var wrapped);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(wrapped, Does.Contain("\u0001"));
+            Assert.That(wrapped, Does.Contain("=variable.name="));
+            Assert.That(wrapped, Does.Contain("{0}"));
+            Assert.That(wrapped, Does.Contain("{12:format}"));
+            Assert.That(wrapped, Does.Contain("<sprite name=key>"));
+            Assert.That(wrapped, Does.Contain("{{TMP|"));
+            Assert.That(wrapped, Does.Contain("}}"));
+        });
+    }
+
+    [TestCase("ああ{0}いう", "{0}")]
+    [TestCase("ああ{12:format}いう", "{12:format}")]
+    [TestCase("ああ=variable.name=いう", "=variable.name=")]
+    public void TryWrapForCjkBlock_PreservesRootContractTokenBoundariesAcrossForcedBreaks(
+        string source,
+        string token)
+    {
+        var changed = JapaneseBlockWrap.TryWrapForCjkBlock(
+            source,
+            width: 3,
+            maxLines: 5000,
+            out var wrapped);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(wrapped, Does.Contain(token));
+            Assert.That(wrapped, Does.Not.Contain(token[..^1] + "\n" + token[^1]));
+        });
+    }
+
+    [Test]
+    public void TryWrapForCjkBlock_RejectsPreferredBreakPastWidth()
+    {
+        var changed = JapaneseBlockWrap.TryWrapForCjkBlock(
+            "あいうえおかきくけこさし。すせそ",
+            width: 12,
+            maxLines: 5000,
+            out var wrapped);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(wrapped.Split('\n'), Has.All.Length.LessThanOrEqualTo(12));
+        });
+    }
+
+    [Test]
     public void TryWrapForCjkBlock_LeavesNonCjkTextForVanillaWrapper()
     {
         var changed = JapaneseBlockWrap.TryWrapForCjkBlock(

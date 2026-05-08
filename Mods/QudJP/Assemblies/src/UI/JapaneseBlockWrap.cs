@@ -33,7 +33,9 @@ internal static class JapaneseBlockWrap
         for (var index = 0; index < source.Length; index++)
         {
             var current = source[index];
-            if (TryAppendQudMarkupToken(source, ref index, builder))
+            if (TryAppendQudMarkupToken(source, ref index, builder)
+                || TryAppendRootContractToken(source, ref index, builder)
+                || TryAppendTmpRichTextTag(source, ref index, builder))
             {
                 continue;
             }
@@ -79,6 +81,11 @@ internal static class JapaneseBlockWrap
                 InsertBreakAtCandidate(builder, breakAt.Value);
                 visibleColumn -= breakAt.Value.VisibleColumn;
             }
+            else if (visibleColumn > width)
+            {
+                InsertBreakBeforeCurrent(builder, activeForeground, activeBackground);
+                visibleColumn = 1;
+            }
             else
             {
                 builder.Append('\n');
@@ -97,6 +104,121 @@ internal static class JapaneseBlockWrap
         }
 
         wrapped = builder.ToString();
+        return true;
+    }
+
+    private static bool TryAppendRootContractToken(string source, ref int index, StringBuilder builder)
+    {
+        if (source[index] == '\u0001')
+        {
+            builder.Append(source[index]);
+            return true;
+        }
+
+        return TryAppendNumericPlaceholder(source, ref index, builder)
+            || TryAppendVariablePlaceholder(source, ref index, builder);
+    }
+
+    private static bool TryAppendNumericPlaceholder(string source, ref int index, StringBuilder builder)
+    {
+        if (source[index] != '{' || index + 1 >= source.Length || source[index + 1] == '{')
+        {
+            return false;
+        }
+
+        var closeIndex = source.IndexOf('}', index + 1);
+        if (closeIndex < 0 || closeIndex == index + 1 || !IsAsciiDigit(source[index + 1]))
+        {
+            return false;
+        }
+
+        var scanIndex = index + 1;
+        while (scanIndex < closeIndex && IsAsciiDigit(source[scanIndex]))
+        {
+            scanIndex++;
+        }
+
+        if (scanIndex < closeIndex)
+        {
+            if (source[scanIndex] != ':' || scanIndex == closeIndex - 1)
+            {
+                return false;
+            }
+
+            scanIndex++;
+            while (scanIndex < closeIndex)
+            {
+                if (source[scanIndex] is '\n' or '{' or '}')
+                {
+                    return false;
+                }
+
+                scanIndex++;
+            }
+        }
+
+        builder.Append(source, index, closeIndex - index + 1);
+        index = closeIndex;
+        return true;
+    }
+
+    private static bool TryAppendVariablePlaceholder(string source, ref int index, StringBuilder builder)
+    {
+        if (source[index] != '=')
+        {
+            return false;
+        }
+
+        var closeIndex = source.IndexOf('=', index + 1);
+        if (closeIndex < 0 || closeIndex == index + 1)
+        {
+            return false;
+        }
+
+        var hasDot = false;
+        for (var scanIndex = index + 1; scanIndex < closeIndex; scanIndex++)
+        {
+            var current = source[scanIndex];
+            hasDot |= current == '.';
+            if (!IsVariablePlaceholderChar(current))
+            {
+                return false;
+            }
+        }
+
+        if (!hasDot)
+        {
+            return false;
+        }
+
+        builder.Append(source, index, closeIndex - index + 1);
+        index = closeIndex;
+        return true;
+    }
+
+    private static bool TryAppendTmpRichTextTag(string source, ref int index, StringBuilder builder)
+    {
+        if (source[index] != '<')
+        {
+            return false;
+        }
+
+        var closeIndex = source.IndexOf('>', index + 1);
+        if (closeIndex < 0)
+        {
+            return false;
+        }
+
+        for (var scanIndex = index + 1; scanIndex < closeIndex; scanIndex++)
+        {
+            if (source[scanIndex] == '\n')
+            {
+                return false;
+            }
+        }
+
+        builder.Append(source, index, closeIndex - index + 1);
+        index = closeIndex;
         return true;
     }
 
@@ -188,6 +310,11 @@ internal static class JapaneseBlockWrap
             return null;
         }
 
+        if (preferredBreak.VisibleColumn > width)
+        {
+            return null;
+        }
+
         var columnsBeforeLimit = width - preferredBreak.VisibleColumn;
         if (columnsBeforeLimit > PreferredBreakSearchColumns)
         {
@@ -205,6 +332,14 @@ internal static class JapaneseBlockWrap
         builder.Insert(candidate.BuilderIndex, insertion.ToString());
     }
 
+    private static void InsertBreakBeforeCurrent(StringBuilder builder, char? activeForeground, char? activeBackground)
+    {
+        var insertion = new StringBuilder(5);
+        insertion.Append('\n');
+        AppendActiveFormatting(insertion, activeForeground, activeBackground);
+        builder.Insert(builder.Length - 1, insertion.ToString());
+    }
+
     private static bool IsPreferredBreakAfter(string source, int index)
     {
         var current = source[index];
@@ -220,6 +355,20 @@ internal static class JapaneseBlockWrap
     private static bool StartsNumericTerm(char value)
     {
         return value is '+' or '-' or >= '0' and <= '9' or >= '０' and <= '９';
+    }
+
+    private static bool IsAsciiDigit(char value)
+    {
+        return value is >= '0' and <= '9';
+    }
+
+    private static bool IsVariablePlaceholderChar(char value)
+    {
+        return value is >= 'a' and <= 'z'
+            or >= 'A' and <= 'Z'
+            or >= '0' and <= '9'
+            or '_'
+            or '.';
     }
 
     private static bool CanBreakAfter(string source, int index)
