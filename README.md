@@ -24,6 +24,28 @@ Caves of Qud は完全な英語ローカライゼーション API が整備さ�
 - 英語以外の他言語サポート
 - Caves of Qud 1.0.4 の挙動を破壊する実験的リファクタ
 
+## macOS Apple Silicon
+
+M1/M2/M3/M4 などの Apple Silicon Mac では、Caves of Qud をネイティブ起動すると Harmony patch が `mprotect returned EACCES` で失敗し、QudJP の UI 翻訳が効かない場合があります。その場合は Rosetta 2 経由で起動してください。
+
+Steam Workshop 版と GitHub Release ZIP には `QudJP/Launch CavesOfQud (Rosetta).command` を同梱しています。ダブルクリックで Caves of Qud を Rosetta 経由で起動できます。macOS の Steam 既定ライブラリでは、Workshop 版の wrapper は次の場所にあります。
+
+```text
+~/Library/Application Support/Steam/steamapps/workshop/content/333640/3718988020/Launch CavesOfQud (Rosetta).command
+```
+
+Steam ライブラリを別の場所に置いている場合は、そのライブラリ配下の `steamapps/workshop/content/333640/3718988020/` を探してください。GitHub Release ZIP を手動展開した場合は、展開した `QudJP/` フォルダ直下にあります。Rosetta 2 が未インストールの場合は、ターミナルで次を実行してください。
+
+```bash
+softwareupdate --install-rosetta --agree-to-license
+```
+
+直接起動する場合のコマンドは次の通りです。このコマンドはワンショットで、Steam から普通に起動した場合の設定を永続変更しません。
+
+```bash
+arch -x86_64 "$HOME/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/MacOS/CoQ"
+```
+
 ## Current Release Sources
 
 | 項目 | Source of truth |
