@@ -3,7 +3,9 @@ using System.Diagnostics;
 using System.Reflection;
 using HarmonyLib;
 using QudJP.UI;
+#if HAS_GAME_DLL
 using XRL.UI;
+#endif
 
 namespace QudJP.Patches;
 
@@ -58,6 +60,7 @@ public static class LookTooltipInformationWrapPatch
         }
     }
 
+#if HAS_GAME_DLL
     public static void Postfix(ref Look.TooltipInformation __result)
     {
         try
@@ -72,4 +75,29 @@ public static class LookTooltipInformationWrapPatch
             Trace.TraceError("QudJP: LookTooltipInformationWrapPatch.Postfix failed: {0}", ex);
         }
     }
+#else
+    public static void Postfix(ref object? __result)
+    {
+        try
+        {
+            if (__result is null)
+            {
+                return;
+            }
+
+            var longDescriptionField = __result.GetType().GetField(
+                "LongDescription",
+                BindingFlags.Instance | BindingFlags.Public);
+            if (longDescriptionField?.GetValue(__result) is string source
+                && JapaneseBlockWrap.TryWrapTooltipLongDescription(source, out var wrapped))
+            {
+                longDescriptionField.SetValue(__result, wrapped);
+            }
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: LookTooltipInformationWrapPatch.Postfix failed: {0}", ex);
+        }
+    }
+#endif
 }
