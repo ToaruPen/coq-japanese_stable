@@ -12,6 +12,13 @@ public static class PopupPickOptionTranslationPatch
 {
     private const string Context = nameof(PopupPickOptionTranslationPatch);
     private const string TargetTypeName = "XRL.UI.Popup";
+    private const string InventoryActionMenuPopupIdPrefix = "InventoryActionMenu:";
+
+    [ThreadStatic]
+    private static bool preservePopupOptionMenuData;
+
+    internal static bool ShouldPreservePopupOptionMenuData => preservePopupOptionMenuData;
+
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
     {
@@ -72,13 +79,19 @@ public static class PopupPickOptionTranslationPatch
         return method;
     }
 
-    public static void Prefix(ref string __0, ref string? __1, ref string __2, ref IReadOnlyList<string>? __4, object? __7)
+    public static void Prefix(ref string __0, ref string? __1, ref string __2, ref IReadOnlyList<string>? __4, object? __7, string? __21)
     {
         try
         {
             __0 = TranslatePopupText(__0)!;
             __1 = TranslatePopupText(__1);
             __2 = TranslatePopupText(__2)!;
+            preservePopupOptionMenuData = ShouldPreserveInventoryActionMenuData(__21);
+            if (preservePopupOptionMenuData)
+            {
+                return;
+            }
+
             __4 = TranslateStringList(__4);
             TranslatePopupMenuItemTextCollection(__7);
         }
@@ -86,6 +99,22 @@ public static class PopupPickOptionTranslationPatch
         {
             Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
         }
+    }
+
+    public static void Finalizer()
+    {
+        preservePopupOptionMenuData = false;
+    }
+
+    internal static void ClearPopupOptionMenuDataPreservationForTests()
+    {
+        preservePopupOptionMenuData = false;
+    }
+
+    private static bool ShouldPreserveInventoryActionMenuData(string? popupId)
+    {
+        return popupId is not null
+            && popupId.StartsWith(InventoryActionMenuPopupIdPrefix, StringComparison.Ordinal);
     }
 
     private static string? TranslatePopupText(string? text)

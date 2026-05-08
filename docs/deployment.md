@@ -10,8 +10,27 @@ For Steam Workshop publishing, use `docs/release.md` after local deployment and 
 
 - Caves of Qud installed (Steam, macOS / Windows / WSL2 / Linux)
 - `QudJP.dll` built via `just build` or `just rebuild`
+- `just` and `uv` installed for the recommended deployment recipes
 
 ---
+
+## Build Flavors
+
+`just deploy-mod` is the normal local deployment path. It rebuilds the same
+shipping-style DLL used for Workshop packaging and keeps verbose runtime probe
+logs disabled.
+
+Use `just deploy-dev` only when you are actively investigating runtime behavior
+and need dev-only probe logs. Development builds are for local diagnosis; do not
+use them for Steam Workshop staging, release ZIPs, or player-facing uploads.
+
+```bash
+# Shipping-style local deployment
+just deploy-mod
+
+# Local diagnostic deployment with dev-only probes enabled
+just deploy-dev
+```
 
 ## Deployment Methods
 

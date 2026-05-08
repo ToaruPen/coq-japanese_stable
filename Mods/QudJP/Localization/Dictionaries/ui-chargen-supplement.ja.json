@@ -87,6 +87,12 @@
     { "key": "Praetorian Prime", "context": "Chargen.Pregen.Name", "text": "プレトリアン・プライム" },
     { "key": "First Gardener", "context": "Chargen.Pregen.Name", "text": "第一庭師" },
     { "key": "First Child of the Hearth", "context": "Chargen.Pregen.Name", "text": "炉の第一子" },
+    { "key": "Marsh Taur", "context": "Chargen.Pregen.Name", "text": "湿地のタウル" },
+    { "key": "Dream Tortoise", "context": "Chargen.Pregen.Name", "text": "夢見のトータス" },
+    { "key": "Gunwing", "context": "Chargen.Pregen.Name", "text": "ガンウィング" },
+    { "key": "Star-Eye Esper", "context": "Chargen.Pregen.Name", "text": "星眼のエスパー" },
+    { "key": "Firefrond", "context": "Chargen.Pregen.Name", "text": "ファイアフロンド" },
+    { "key": "bzzzt", "context": "Chargen.Pregen.Name", "text": "ビズズズト" },
 
     { "key": "The Toxic Arboreta of Ekuemekiyye, the Holy City", "context": "Chargen.Caste.Category", "text": "聖都エクエメキイェの有毒樹木園" },
     { "key": "The Ice-Sheathed Arcology of Ibul", "context": "Chargen.Caste.Category", "text": "氷に覆われたアーコロジー、イブール" },
