@@ -32,6 +32,9 @@ def _write_release_zip(path: Path, *, version: str = "0.2.0") -> None:
         zf.writestr("QudJP/LICENSE", "MIT License")
         zf.writestr("QudJP/NOTICE.md", "# NOTICE")
         zf.writestr("QudJP/Bootstrap.cs", "public static class Bootstrap {}")
+        launcher_info = zipfile.ZipInfo("QudJP/Launch CavesOfQud (Rosetta).command")
+        launcher_info.external_attr = 0o100755 << 16
+        zf.writestr(launcher_info, "#!/usr/bin/env bash\n")
         zf.writestr("QudJP/Assemblies/QudJP.dll", b"dll")
         zf.writestr("QudJP/Localization/ui.json", "{}")
         zf.writestr("QudJP/Fonts/OFL.txt", "SIL Open Font License")
@@ -140,6 +143,7 @@ def test_create_workshop_staging_extracts_qudjp_root(tmp_path: Path) -> None:
     assert (content_folder / "manifest.json").is_file()
     assert (content_folder / "Assemblies" / "QudJP.dll").is_file()
     assert (content_folder / "Localization" / "ui.json").is_file()
+    assert os.access(content_folder / "Launch CavesOfQud (Rosetta).command", os.X_OK)
     assert preview_file == content_folder / "preview.png"
 
 

@@ -427,6 +427,33 @@ class TestCreateZip:
         assert "QudJP/Fonts/TestFont.otf" in members
         assert "QudJP/Fonts/OFL.txt" in members
 
+    def test_zip_contains_rosetta_launcher_when_present(self, tmp_path: Path) -> None:
+        """ZIP contains the macOS Rosetta launcher wrapper when it is present."""
+        output, manifest, dll, loc_dir, loc_files, legal_files = self._make_inputs(
+            tmp_path,
+        )
+        launcher = manifest.parent / "Launch CavesOfQud (Rosetta).command"
+        launcher.write_text(
+            '#!/usr/bin/env bash\nexec arch -x86_64 "$HOME/game/CoQ"\n',
+            encoding="utf-8",
+        )
+
+        members = create_zip(
+            output,
+            manifest,
+            dll,
+            loc_dir,
+            loc_files,
+            legal_files=legal_files,
+        )
+        with zipfile.ZipFile(output) as zf:
+            names = zf.namelist()
+            info = zf.getinfo("QudJP/Launch CavesOfQud (Rosetta).command")
+
+        assert "QudJP/Launch CavesOfQud (Rosetta).command" in names
+        assert "QudJP/Launch CavesOfQud (Rosetta).command" in members
+        assert info.external_attr >> 16 & 0o111
+
     def test_zip_contains_compliance_files(self, tmp_path: Path) -> None:
         """ZIP contains LICENSE and NOTICE.md at the archive root."""
         output, manifest, dll, loc_dir, loc_files, legal_files = self._make_inputs(
