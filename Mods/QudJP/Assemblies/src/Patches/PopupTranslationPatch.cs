@@ -997,7 +997,8 @@ public static class PopupTranslationPatch
         out string translated)
     {
         translated = source;
-        if (!string.Equals(route, nameof(PopupPickOptionTranslationPatch), StringComparison.Ordinal))
+        if (!string.Equals(route, nameof(PopupPickOptionTranslationPatch), StringComparison.Ordinal)
+            && !string.Equals(route, nameof(SelectableTextMenuItemTranslationPatch), StringComparison.Ordinal))
         {
             return false;
         }

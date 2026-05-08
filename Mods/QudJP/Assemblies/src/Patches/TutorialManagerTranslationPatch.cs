@@ -14,10 +14,55 @@ internal static class TutorialManagerTranslationHelpers
             return source;
         }
 
+        var route = ObservabilityHelpers.ComposeContext(context, routeSuffix);
+        if (TryTranslateRawDictionaryKey(source, route, family, out var rawTranslated))
+        {
+            return rawTranslated;
+        }
+
+        if (TryTranslateExpandedHotkeyText(source, route, family, out var hotkeyTranslated))
+        {
+            return hotkeyTranslated;
+        }
+
         return UiBindingTranslationHelpers.TranslateVisibleText(
             source,
-            ObservabilityHelpers.ComposeContext(context, routeSuffix),
+            route,
             family);
+    }
+
+    private static bool TryTranslateRawDictionaryKey(string source, string route, string family, out string translated)
+    {
+        translated = source;
+        if (!StringHelpers.TryGetTranslationExactOrLowerAscii(source, out var candidate)
+            || string.Equals(candidate, source, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        translated = candidate;
+        DynamicTextObservability.RecordTransform(route, family, source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateExpandedHotkeyText(string source, string route, string family, out string translated)
+    {
+        translated = source;
+        if (source.IndexOf("{{hotkey|", StringComparison.Ordinal) < 0)
+        {
+            return false;
+        }
+
+        var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
+        if (!StringHelpers.TryGetTranslationExactOrLowerAscii(stripped, out var candidate)
+            || string.Equals(candidate, stripped, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        translated = candidate;
+        DynamicTextObservability.RecordTransform(route, family, source, translated);
+        return true;
     }
 
     public static bool IsControlSentinel(string? source)

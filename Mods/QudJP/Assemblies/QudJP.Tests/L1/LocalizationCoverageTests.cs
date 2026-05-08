@@ -279,6 +279,114 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void ChargenPregenNames_CoverTutorialObservedMutantPresets()
+    {
+        var requiredNames = new[]
+        {
+            "Marsh Taur",
+            "Dream Tortoise",
+            "Gunwing",
+            "Star-Eye Esper",
+            "Firefrond",
+            "bzzzt",
+        };
+
+        var chargenSupplementPath = Path.Combine(localizationRoot, "Dictionaries", "ui-chargen-supplement.ja.json");
+        var pregenNameEntries = LoadEntries(chargenSupplementPath)
+            .Where(static entry => string.Equals(entry.Context, "Chargen.Pregen.Name", StringComparison.Ordinal))
+            .ToDictionary(static entry => entry.Key, static entry => entry.Text, StringComparer.Ordinal);
+
+        var missing = requiredNames
+            .Where(name => !pregenNameEntries.ContainsKey(name))
+            .ToArray();
+        var untranslated = requiredNames
+            .Where(name => pregenNameEntries.TryGetValue(name, out var text)
+                           && string.Equals(text, name, StringComparison.Ordinal))
+            .ToArray();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(missing, Is.Empty, "Missing tutorial-observed pregen names in ui-chargen-supplement.");
+            Assert.That(untranslated, Is.Empty, "Tutorial-observed pregen names should not remain identical to English.");
+        });
+    }
+
+    [Test]
+    public void ChargenPregenNames_UseCanonicalJapaneseNamesAcrossVisibleRoutes()
+    {
+        var expectedNames = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["Marsh Taur"] = "湿地のタウル",
+            ["Dream Tortoise"] = "夢見のトータス",
+            ["Gunwing"] = "ガンウィング",
+            ["Star-Eye Esper"] = "星眼のエスパー",
+            ["Firefrond"] = "ファイアフロンド",
+            ["bzzzt"] = "ビズズズト",
+        };
+        var forbiddenFragments = new[]
+        {
+            "マーシュ・ター",
+            "マーシュ・タウル",
+            "夢見る亀",
+            "ブズズズト",
+        };
+
+        var chargenSupplementPath = Path.Combine(localizationRoot, "Dictionaries", "ui-chargen-supplement.ja.json");
+        var pregenNameEntries = LoadEntries(chargenSupplementPath)
+            .Where(static entry => string.Equals(entry.Context, "Chargen.Pregen.Name", StringComparison.Ordinal))
+            .ToDictionary(static entry => entry.Key, static entry => entry.Text, StringComparer.Ordinal);
+        var staleEntries = Directory
+            .EnumerateFiles(Path.Combine(localizationRoot, "Dictionaries"), "*.ja.json", SearchOption.AllDirectories)
+            .SelectMany(path => LoadEntries(path).Select(entry => (Path: path, Entry: entry)))
+            .Where(row => forbiddenFragments.Any(fragment => row.Entry.Text.Contains(fragment, StringComparison.Ordinal)))
+            .Select(row => $"{Path.GetRelativePath(localizationRoot, row.Path)}:{row.Entry.Key}:{row.Entry.Text}")
+            .ToArray();
+
+        Assert.Multiple(() =>
+        {
+            foreach (var expected in expectedNames)
+            {
+                Assert.That(
+                    pregenNameEntries.TryGetValue(expected.Key, out var actual) ? actual : null,
+                    Is.EqualTo(expected.Value),
+                    $"Unexpected canonical pregen translation for '{expected.Key}'.");
+            }
+
+            Assert.That(staleEntries, Is.Empty, "Visible dictionary routes must not keep stale pregen-name variants.");
+        });
+    }
+
+    [Test]
+    public void TutorialDictionary_CoversStaticHighlightObjectRouteKeys()
+    {
+        var expectedEntries = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["You regain hitpoints naturally as turns pass. You can pass a few turns by waiting, or if there are no hostile creatures around, you can {{W|rest until healed}}.\n\nPress ~CmdWaitUntilHealed"] = "ターンが経過すると、ヒットポイントは自然に回復します。数ターン待機することもできますし、周囲に敵対的な生き物がいなければ、{{W|完全に回復するまで休む}}こともできます。\n\n~CmdWaitUntilHealed を押してください。",
+            ["You picked up the odd trinket automatically because it is an artifact.\n\nPress ~CmdCharacter to investigate it."] = "奇妙な小物はアーティファクトなので、自動的に拾いました。\n\n調べるには ~CmdCharacter を押してください。",
+            ["You picked up the odd trinket automatically because it is an artifact.\n\nPress ~CmdInventory to investigate it."] = "奇妙な小物はアーティファクトなので、自動的に拾いました。\n\n調べるには ~CmdInventory を押してください。",
+            ["The bear is dead! Looks like it dropped something, too."] = "熊は死にました！ 何かを落としたようです。",
+            ["Use the campfire."] = "キャンプファイアを使ってください。",
+            ["Let's not be rude. Talk to the beetle.\n\nPress ~CmdUse or ~AdventureMouseContextAction."] = "失礼にならないようにしましょう。甲虫に話しかけてください。\n\n~CmdUse または ~AdventureMouseContextAction を押してください。",
+            ["Let's not be rude. Talk to the beetle."] = "失礼にならないようにしましょう。甲虫に話しかけてください。",
+        };
+
+        var entries = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "ui-tutorial.ja.json"))
+            .Where(static entry => string.Equals(entry.Context, "Qud.UI.TutorialManager.HighlightCell", StringComparison.Ordinal))
+            .ToDictionary(static entry => entry.Key, static entry => entry.Text, StringComparer.Ordinal);
+
+        Assert.Multiple(() =>
+        {
+            foreach (var expected in expectedEntries)
+            {
+                Assert.That(
+                    entries.TryGetValue(expected.Key, out var actual) ? actual : null,
+                    Is.EqualTo(expected.Value),
+                    $"Missing or mismatched tutorial HighlightObject route text for '{expected.Key}'.");
+            }
+        });
+    }
+
+    [Test]
     public void ChargenAttributeHelpText_CoversRuntimeObservedTrueKinEgoDescription()
     {
         const string trueKinEgoDescription =

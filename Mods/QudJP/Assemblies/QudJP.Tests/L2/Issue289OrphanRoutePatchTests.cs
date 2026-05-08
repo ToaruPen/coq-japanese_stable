@@ -294,6 +294,142 @@ public sealed class Issue289OrphanRoutePatchTests
     }
 
     [Test]
+    public void TutorialManagerCellHighlightPrefix_TranslatesRawCellHighlightText_WhenPatched()
+    {
+        WriteDictionary(("Open the chest.", "チェストを開いてください。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyTutorialManagerInstanceTarget),
+                    nameof(DummyTutorialManagerInstanceTarget.HighlightCell),
+                    new[]
+                    {
+                        typeof(int),
+                        typeof(int),
+                        typeof(string),
+                        typeof(string),
+                        typeof(float),
+                        typeof(float),
+                        typeof(float),
+                    }),
+                prefix: new HarmonyMethod(RequireMethod(typeof(TutorialManagerCellHighlightTranslationPatch), nameof(TutorialManagerCellHighlightTranslationPatch.Prefix))));
+
+            var target = new DummyTutorialManagerInstanceTarget();
+            target.HighlightCell(16, 12, "Open the chest.", "ne");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.LastCellHighlightText, Is.EqualTo("{{y|チェストを開いてください。}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TutorialManagerCellHighlightTranslationPatch), "TutorialManager.CellHighlightText"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void TutorialManagerCellHighlightPrefix_TranslatesExpandedHotkeyCellHighlightText_WhenPatched()
+    {
+        WriteDictionary((
+            "You can interact with objects you're next to. Open the chest.\n\nPress Space or ",
+            "隣接した物体には干渉できます。チェストを開いてください。\n\nSpace または  を押してください。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyTutorialManagerInstanceTarget),
+                    nameof(DummyTutorialManagerInstanceTarget.HighlightCell),
+                    new[]
+                    {
+                        typeof(int),
+                        typeof(int),
+                        typeof(string),
+                        typeof(string),
+                        typeof(float),
+                        typeof(float),
+                        typeof(float),
+                    }),
+                prefix: new HarmonyMethod(RequireMethod(typeof(TutorialManagerCellHighlightTranslationPatch), nameof(TutorialManagerCellHighlightTranslationPatch.Prefix))));
+
+            var target = new DummyTutorialManagerInstanceTarget();
+            target.HighlightCell(
+                16,
+                12,
+                "You can interact with objects you're next to. Open the chest.\n\nPress {{hotkey|{{hotkey|Space}}}} or {{hotkey|{{hotkey|}}}}",
+                "ne");
+
+            Assert.That(
+                target.LastCellHighlightText,
+                Is.EqualTo("{{y|隣接した物体には干渉できます。チェストを開いてください。\n\nSpace または  を押してください。}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void TutorialManagerCellHighlightPrefix_TranslatesRawMarkupDictionaryKeyBeforeVisibleFallback_WhenPatched()
+    {
+        WriteDictionary((
+            "You can attack a hostile creature by moving into its square. This is called {{W|bump attacking}}.",
+            "敵対的な生き物のマスへ移動すると攻撃できます。これは{{W|体当たり攻撃}}と呼ばれます。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyTutorialManagerInstanceTarget),
+                    nameof(DummyTutorialManagerInstanceTarget.HighlightCell),
+                    new[]
+                    {
+                        typeof(int),
+                        typeof(int),
+                        typeof(string),
+                        typeof(string),
+                        typeof(float),
+                        typeof(float),
+                        typeof(float),
+                    }),
+                prefix: new HarmonyMethod(RequireMethod(typeof(TutorialManagerCellHighlightTranslationPatch), nameof(TutorialManagerCellHighlightTranslationPatch.Prefix))));
+
+            var target = new DummyTutorialManagerInstanceTarget();
+            target.HighlightCell(
+                16,
+                12,
+                "You can attack a hostile creature by moving into its square. This is called {{W|bump attacking}}.",
+                "ne");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    target.LastCellHighlightText,
+                    Is.EqualTo("{{y|敵対的な生き物のマスへ移動すると攻撃できます。これは{{W|体当たり攻撃}}と呼ばれます。}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TutorialManagerCellHighlightTranslationPatch), "TutorialManager.CellHighlightText"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void TutorialManagerHighlightPrefix_LeavesNoMessageSentinelUntranslated_WhenPatched()
     {
         WriteDictionary(("<no message>", "翻訳してはいけない"));

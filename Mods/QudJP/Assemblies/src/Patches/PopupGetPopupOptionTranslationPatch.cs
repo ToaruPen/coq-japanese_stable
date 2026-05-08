@@ -56,6 +56,11 @@ public static class PopupGetPopupOptionTranslationPatch
                 return;
             }
 
+            if (PopupPickOptionTranslationPatch.ShouldPreservePopupOptionMenuData)
+            {
+                return;
+            }
+
             var textField = AccessTools.Field(__result.GetType(), "text");
             if (textField is null || textField.FieldType != typeof(string))
             {

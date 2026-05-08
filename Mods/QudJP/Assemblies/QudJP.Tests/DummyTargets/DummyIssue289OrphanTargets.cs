@@ -152,6 +152,8 @@ internal sealed class DummyTutorialManagerInstanceTarget
 {
     public string LastHighlightText { get; private set; } = string.Empty;
 
+    public string LastCellHighlightText { get; private set; } = string.Empty;
+
     public string LastDirectHighlightText { get; private set; } = string.Empty;
 
     public bool HighlightByCID(
@@ -172,6 +174,25 @@ internal sealed class DummyTutorialManagerInstanceTarget
 
         LastHighlightText = text is null ? string.Empty : "{{y|" + text + "}}";
         return true;
+    }
+
+    public void HighlightCell(
+        int x,
+        int y,
+        string text,
+        string directionHint,
+        float paddingX = 3f,
+        float paddingY = 3f,
+        float bottomMargin = 0f)
+    {
+        _ = x;
+        _ = y;
+        _ = directionHint;
+        _ = paddingX;
+        _ = paddingY;
+        _ = bottomMargin;
+
+        LastCellHighlightText = text is null ? string.Empty : "{{y|" + text + "}}";
     }
 
     public void Highlight(

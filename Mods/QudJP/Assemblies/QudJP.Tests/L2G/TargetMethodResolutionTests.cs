@@ -58,6 +58,22 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(TinkeringStatusScreenTranslationPatch), "UpdateViewFromData", "Qud.UI.TinkeringStatusScreen", "System.Void", new string[0])]
     [TestCase(typeof(BookLineTranslationPatch), "setData", "Qud.UI.BookLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(PickGameObjectScreenTranslationPatch), "UpdateViewFromData", "Qud.UI.PickGameObjectScreen", "System.Void", new[] { "System.Boolean" })]
+    [TestCase(typeof(PickItemShowPickerTitleTranslationPatch), "ShowPicker", "XRL.UI.PickItem", "XRL.World.GameObject", new[]
+    {
+        "System.Collections.Generic.IList`1[[XRL.World.GameObject]]",
+        "System.Boolean&",
+        "System.String",
+        "XRL.UI.PickItem+PickItemDialogStyle",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "XRL.World.Cell",
+        "System.String",
+        "System.Boolean",
+        "System.Func`1[[System.Collections.Generic.List`1[[XRL.World.GameObject]]]]",
+        "System.Boolean",
+        "System.Boolean",
+        "System.Boolean",
+    })]
     [TestCase(typeof(InventoryAndEquipmentStatusScreenTranslationPatch), "UpdateViewFromData", "Qud.UI.InventoryAndEquipmentStatusScreen", "System.Void", new string[0])]
     [TestCase(typeof(InventoryLineTranslationPatch), "setData", "Qud.UI.InventoryLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(EquipmentLineTranslationPatch), "setData", "Qud.UI.EquipmentLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
@@ -156,6 +172,7 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(AbilityBarUpdateAbilitiesTextPatch), "UpdateAbilitiesText", "Qud.UI.AbilityBar", "System.Void", new string[0])]
     [TestCase(typeof(AbilityBarButtonTextTranslationPatch), "Update", "Qud.UI.AbilityBar", "System.Void", new string[0])]
+    [TestCase(typeof(SelectableTextMenuItemTranslationPatch), "SelectChanged", "Qud.UI.SelectableTextMenuItem", "System.Void", new[] { "System.Boolean" })]
     [TestCase(typeof(MissileWeaponAreaTranslationPatch), "AfterRender", "Qud.UI.MissileWeaponArea", "System.Void", new[] { "XRL.Core.XRLCore", "ConsoleLib.Console.ScreenBuffer" })]
     [TestCase(typeof(CherubimSpawnerReplaceDescriptionPatch), "ReplaceDescription", "XRL.World.Parts.CherubimSpawner", "System.Void", new[] { "XRL.World.GameObject", "System.String", "System.String" })]
     [TestCase(typeof(CharacterStatusScreenHighlightEffectPatch), "HandleHighlightEffect", "Qud.UI.CharacterStatusScreen", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
@@ -199,6 +216,16 @@ public sealed class TargetMethodResolutionTests
         "System.Int32",
         "System.Single",
         "System.String",
+    })]
+    [TestCase(typeof(TutorialManagerCellHighlightTranslationPatch), "HighlightCell", "TutorialManager", "System.Void", new[]
+    {
+        "System.Int32",
+        "System.Int32",
+        "System.String",
+        "System.String",
+        "System.Single",
+        "System.Single",
+        "System.Single",
     })]
     [TestCase(typeof(TutorialManagerDirectHighlightTranslationPatch), "Highlight", "TutorialManager", "System.Void", new[]
     {

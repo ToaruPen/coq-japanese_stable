@@ -398,6 +398,26 @@ public sealed class UITextSkinTranslationPatchTests
         Assert.That(translated, Is.EqualTo("調べる | ESC | (F1) ロック | space インタラクト | W 歩く | Enter-選択"));
     }
 
+    [Test]
+    public void TranslatePreservingColors_LeavesLookPickTargetCommandBarToOwnerRouteAtTextSink()
+    {
+        WriteDictionaryFile(
+            "ui-default.ja.json",
+            ("lock", "ロック"));
+        WriteDictionaryFile(
+            "ui-pick-target.ja.json",
+            ("Look", "調べる"),
+            ("interact", "操作する"),
+            ("walk", "歩く"));
+
+        var source = "Look | ESC | (F1) lock | space interact | W walk";
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+            source,
+            nameof(UITextSkinTranslationPatch));
+
+        Assert.That(translated, Is.EqualTo(source));
+    }
+
     [TestCase("navigate", "移動")]
     [TestCase("Navigate", "移動")]
     [TestCase("select", "選択")]

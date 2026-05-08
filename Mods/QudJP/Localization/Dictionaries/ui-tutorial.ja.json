@@ -10,6 +10,11 @@
   },
   "entries": [
     {
+      "key": "Welcome to the Caves of Qud tutorial. We'll just be scratching the surface here, learning enough of the basics to help you get your footing.\n\nIn Caves of Qud, you play as a mutated human or true kin.\n\nFor the tutorial, we're picking mutated human.",
+      "context": "Qud.UI.TutorialManager.ShowIntermissionPopupAsync",
+      "text": "クッドの洞窟のチュートリアルへようこそ。ここでは基本の一端だけを学び、足場を固められるようにします。\n\nクッドの洞窟では、ミュータントの人間か純血の民としてプレイします。\n\nこのチュートリアルでは、ミュータントの人間を選びます。"
+    },
+    {
       "key": "This is the main gameplay stage. At the top of the screen are your attributes, HP, and XP.\n\nOn the right are action buttons, minimap, and the message log.\n\nAt the bottom is your ability hotbar.",
       "context": "Qud.UI.TutorialManager.ShowIntermissionPopupAsync",
       "text": "ここがメインのゲーム画面です。画面上部には能力値、HP、XPが表示されています。\n\n右側にはアクションボタン、ミニマップ、メッセージログがあります。\n\n下部にはアビリティホットバーがあります。"
@@ -18,6 +23,31 @@
       "key": "Let's explore this cave we've found ourselves in.",
       "context": "Qud.UI.TutorialManager.ShowIntermissionPopupAsync",
       "text": "迷い込んだこの洞窟を探索しましょう。"
+    },
+    {
+      "key": "You can interact with objects you're next to. Open the chest.\n\nPress Space or ",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "隣接した物体には干渉できます。チェストを開いてください。\n\nSpace または  を押してください。"
+    },
+    {
+      "key": "You can interact with objects you're next to. Open the chest.\n\nPress {{hotkey|~Accept}}",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "隣接した物体には干渉できます。チェストを開いてください。\n\n{{hotkey|~Accept}}を押してください。"
+    },
+    {
+      "key": "You can interact with objects you're next to. Open the chest.\n\nPress {{hotkey|~Accept}} or {{hotkey|~AdventureMouseContextAction}}",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "隣接した物体には干渉できます。チェストを開いてください。\n\n{{hotkey|~Accept}}または{{hotkey|~AdventureMouseContextAction}}を押してください。"
+    },
+    {
+      "key": "Looks like there's a chest over at the end of the room. Let's walk over to it.\n\nHold ~IndicateDirection in the direction you want to move and press ~Take A Step.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "部屋の端にチェストがあるようです。そこまで歩いていきましょう。\n\n移動したい方向へ~IndicateDirectionを倒したまま、~Take A Stepを押してください。"
+    },
+    {
+      "key": "Looks like there's a chest over at the end of the room. Let's walk over to it.\n\nYou can click ~AdventureNavMouseLeftClick the square you want to move to, or use the {{hotkey|arrow keys}} or {{hotkey|numpad.}}\n\nWith arrow keys, you can press {{hotkey|shift+arrow keys}} to move diagonally.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "部屋の端にチェストがあるようです。そこまで歩いていきましょう。\n\n移動したいマスを~AdventureNavMouseLeftClickでクリックするか、{{hotkey|矢印キー}}または{{hotkey|テンキー}}を使ってください。\n\n矢印キーでは、{{hotkey|Shift+矢印キー}}で斜めに移動できます。"
     },
     {
       "key": "A torch. When it's nighttime or when you're underground, you need a torch equipped to see. Select it.",
@@ -148,6 +178,26 @@
       "key": "The bear is dead! Looks like it dropped something, too.\n\nBut first, let's use this opportunity to heal.",
       "context": "Qud.UI.TutorialManager.ShowIntermissionPopupAsync",
       "text": "熊は死にました！ 何かを落としたようです。\n\nですがその前に、この機会に回復しましょう。"
+    },
+    {
+      "key": "You regain hitpoints naturally as turns pass. You can pass a few turns by waiting, or if there are no hostile creatures around, you can {{W|rest until healed}}.\n\nPress ~CmdWaitUntilHealed",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "ターンが経過すると、ヒットポイントは自然に回復します。数ターン待機することもできますし、周囲に敵対的な生き物がいなければ、{{W|完全に回復するまで休む}}こともできます。\n\n~CmdWaitUntilHealed を押してください。"
+    },
+    {
+      "key": "You picked up the odd trinket automatically because it is an artifact.\n\nPress ~CmdCharacter to investigate it.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "奇妙な小物はアーティファクトなので、自動的に拾いました。\n\n調べるには ~CmdCharacter を押してください。"
+    },
+    {
+      "key": "You picked up the odd trinket automatically because it is an artifact.\n\nPress ~CmdInventory to investigate it.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "奇妙な小物はアーティファクトなので、自動的に拾いました。\n\n調べるには ~CmdInventory を押してください。"
+    },
+    {
+      "key": "The bear is dead! Looks like it dropped something, too.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "熊は死にました！ 何かを落としたようです。"
     },
     {
       "key": "It's a chem cell. It can be used later to power other artifacts you find.",
@@ -358,6 +408,201 @@
       "key": "You can see a list of points of interest by clicking this button or pressing ~CmdMoveToPointOfInterest.\n\nThe list will grow as you explore more of the map.",
       "context": "Qud.UI.TutorialManager.HighlightByCID",
       "text": "このボタンをクリックするか ~CmdMoveToPointOfInterest を押すと、注目地点の一覧を見ることができます。\n\nマップをさらに探索すると、この一覧は増えていきます。"
+    },
+    {
+      "key": "Character creation is a deep and sometimes long process. We included some preset builds to help you get started. After the tutorial, you can try another build, or make a character from scratch. (The recommended way! Once you get your footing.) \n\nFor now, pick the marsh taur.",
+      "context": "Qud.UI.TutorialManager.Highlight",
+      "text": "キャラクター作成は奥深く、ときには時間のかかる工程です。始めやすいように、いくつかのプリセットビルドを用意しています。チュートリアル後は別のビルドを試したり、一からキャラクターを作ったりできます。（足場を固めた後なら、それがおすすめです。）\n\n今は湿地のタウルを選んでください。"
+    },
+    {
+      "key": "A battle axe. Get it.\n\nHit ~CmdUse",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "バトルアックスです。拾ってください。\n\n~CmdUse を押します。"
+    },
+    {
+      "key": "A battle axe. Get it.\n\nHit ~CmdGet",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "バトルアックスです。拾ってください。\n\n~CmdGet を押します。"
+    },
+    {
+      "key": "Looks like there was some sort of battle to the north. Let’s grab the gear that was left behind.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "北の方で何か戦いがあったようです。残された装備を手に入れましょう。"
+    },
+    {
+      "key": "Keep moving forward.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "そのまま前へ進んでください。"
+    },
+    {
+      "key": "Let's take a look at the Equipment screen.\n\nPress ~CmdCharacter",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "装備画面を見てみましょう。\n\n~CmdCharacter を押します。"
+    },
+    {
+      "key": "Let's take a look at the Equipment screen.\n\nPress ~CmdEquipment",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "装備画面を見てみましょう。\n\n~CmdEquipment を押します。"
+    },
+    {
+      "key": "The whole game world is a series of contiguous maps. Our passage continues off screen. Let's follow it. Walk north.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "ゲーム世界全体は、連続したマップの集まりです。通路は画面外へ続いています。追ってみましょう。北へ歩いてください。"
+    },
+    {
+      "key": "Let's move on. Keep exploring.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "先へ進みましょう。探索を続けてください。"
+    },
+    {
+      "key": "Keep exploring.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "探索を続けてください。"
+    },
+    {
+      "key": "Finally, a staircase. Walk over to it.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "ようやく階段です。そこまで歩いてください。"
+    },
+    {
+      "key": "You can look around here just like on a local map.\n\nUse ~LookDirection",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "ここでもローカルマップと同じように周囲を見回せます。\n\n~LookDirection を使います。"
+    },
+    {
+      "key": "You can look around here just like on a local map.\n\nPress ~CmdLook",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "ここでもローカルマップと同じように周囲を見回せます。\n\n~CmdLook を押します。"
+    },
+    {
+      "key": "There’s a village to the north called Joppa. Let’s go there.\n\nHold ~IndicateDirection towards the north and press ~Take A Step.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "北にジョッパという村があります。そこへ向かいましょう。\n\n北へ ~IndicateDirection を倒したまま、~Take A Step を押します。"
+    },
+    {
+      "key": "There’s a village to the north called Joppa. Let’s go there.\n\nPress ~CmdMoveN or ~AdventureMouseContextAction.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "北にジョッパという村があります。そこへ向かいましょう。\n\n~CmdMoveN または ~AdventureMouseContextAction を押します。"
+    },
+    {
+      "key": "Keep moving down the passage...",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "通路をさらに進んでください……"
+    },
+    {
+      "key": "Use ~LookDirection to look at the bear.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "~LookDirection を使って熊を見てください。"
+    },
+    {
+      "key": "Press ~CmdLook or ~AdventureMouseInteract the bear.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "~CmdLook を押すか、熊に ~AdventureMouseInteract してください。"
+    },
+    {
+      "key": "Look view lets you look around and investigate your surroundings.\n\nMove the cursor to the bear.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "見る画面では、周囲を見回して調べることができます。\n\nカーソルを熊に合わせてください。"
+    },
+    {
+      "key": "Bump attack the bear.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "熊に体当たり攻撃してください。"
+    },
+    {
+      "key": "You can wait a turn for the bear to approach. That way, it won't be in range to attack you when it takes its turn.\n\nTap ~Take A Step without choosing a direction with the stick to pass a turn.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "熊が近づくまで1ターン待つことができます。そうすれば、熊のターンになっても攻撃範囲に入らずに済みます。\n\nスティックで方向を選ばずに ~Take A Step をタップして、ターンを送ってください。"
+    },
+    {
+      "key": "You can wait a turn for the bear to approach. That way, it won't be in range to attack you when it takes its turn.\n\nPress %CmdWait or ~AdventureMouseContextAction on your character to pass a turn.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "熊が近づくまで1ターン待つことができます。そうすれば、熊のターンになっても攻撃範囲に入らずに済みます。\n\n%CmdWait を押すか、自分のキャラクターに ~AdventureMouseContextAction してターンを送ってください。"
+    },
+    {
+      "key": "Sprinting doubles your movespeed but ends if you make an attack. Let's sprint back down the corridor to put some distance between us and the bear.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "全力疾走すると移動速度が2倍になりますが、攻撃すると終了します。通路を引き返して全力疾走し、熊との距離を取りましょう。"
+    },
+    {
+      "key": "Let's explore further into the cave.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "洞窟の奥をさらに探索しましょう。"
+    },
+    {
+      "key": "Let's explore further into the cave.\n\nWalk down the passage.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "洞窟の奥をさらに探索しましょう。\n\n通路を進んでください。"
+    },
+    {
+      "key": "Use ~LookDirection to look at the snapjaw.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "~LookDirection を使ってスナップジョーを見てください。"
+    },
+    {
+      "key": "Press ~CmdLook or ~AdventureMouseInteract the snapjaw.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "~CmdLook を押すか、スナップジョーに ~AdventureMouseInteract してください。"
+    },
+    {
+      "key": "Look view lets you look around and investigate your surroundings.\n\nMove the cursor to the snapjaw.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "見る画面では、周囲を見回して調べることができます。\n\nカーソルをスナップジョーに合わせてください。"
+    },
+    {
+      "key": "You can attack a hostile creature by moving into its square. This is called {{W|bump attacking}}.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "敵対的な生き物のマスへ移動すると攻撃できます。これは{{W|体当たり攻撃}}と呼ばれます。"
+    },
+    {
+      "key": "Take a step toward the snapjaw.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "スナップジョーに向かって一歩進んでください。"
+    },
+    {
+      "key": "You can pick up things that are in the same space as you.\n\nPress ~CmdUse",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "自分と同じマスにある物は拾えます。\n\n~CmdUse を押します。"
+    },
+    {
+      "key": "You can pick up things that are in the same space as you.\n\nPress ~CmdGet",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "自分と同じマスにある物は拾えます。\n\n~CmdGet を押します。"
+    },
+    {
+      "key": "Whew! You killed the snapjaw and earned some experience. It looks like they dropped a piece of equipment, too.\n\nPress ~CmdGetFrom and then choose a direction or press ~AdventureMouseInteract.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "ふう！ スナップジョーを倒して経験値を得ました。装備品も落としたようです。\n\n~CmdGetFrom を押してから方向を選ぶか、~AdventureMouseInteract を押してください。"
+    },
+    {
+      "key": "There's something else over here.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "こちらにも何かあります。"
+    },
+    {
+      "key": "Sometimes squares have multiple items in them.\n\nTo see everything in a space, press ~CmdGetFrom and then choose a direction or press ~AdventureMouseInteractAll.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "マスには複数のアイテムがあることもあります。\n\nその場所にあるものをすべて見るには、~CmdGetFrom を押してから方向を選ぶか、~AdventureMouseInteractAll を押してください。"
+    },
+    {
+      "key": "Let's make camp. How about next to that beetle over there.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "キャンプしましょう。あそこの甲虫の隣はどうでしょう。"
+    },
+    {
+      "key": "Use the campfire.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "キャンプファイアを使ってください。"
+    },
+    {
+      "key": "Let's not be rude. Talk to the beetle.\n\nPress ~CmdUse or ~AdventureMouseContextAction.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "失礼にならないようにしましょう。甲虫に話しかけてください。\n\n~CmdUse または ~AdventureMouseContextAction を押してください。"
+    },
+    {
+      "key": "Let's not be rude. Talk to the beetle.",
+      "context": "Qud.UI.TutorialManager.HighlightCell",
+      "text": "失礼にならないようにしましょう。甲虫に話しかけてください。"
     },
     {
       "key": "Oh, you died. That's okay. It's a very common occurance in the world of Qud.\n\nBecause the tutorial drops you off in Classic mode with permadeath, your character is wiped when you die.\n\nThe good news is: you get to make a whole new character! Now with a little more knowledge than you had before.",
