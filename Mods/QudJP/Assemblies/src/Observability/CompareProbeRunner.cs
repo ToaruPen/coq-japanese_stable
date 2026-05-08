@@ -12,6 +12,11 @@ internal static class CompareProbeRunner
     internal static void Run(object screenInstance)
     {
 #if HAS_TMP
+        if (!RuntimeDiagnostics.VerboseProbesEnabled)
+        {
+            return;
+        }
+
         if (TmpTextRepairer.TryBuildTextShellLeafProbe(screenInstance, "HandleSelectItemLeafReachBefore/v1", out var beforeLeafLog)
             && beforeLeafLog is not null
             && beforeLeafLog.Length > 0)
@@ -67,6 +72,8 @@ internal static class CompareProbeRunner
         }
 
         DelayedSceneProbeScheduler.ScheduleCompareSceneProbe(screenInstance);
+#else
+        _ = screenInstance;
 #endif
     }
 
@@ -151,6 +158,11 @@ internal static class CompareProbeRunner
 
     internal static void LogProbe(string message)
     {
+        if (!RuntimeDiagnostics.VerboseProbesEnabled)
+        {
+            return;
+        }
+
         try
         {
             var debugType = Type.GetType("UnityEngine.Debug, UnityEngine.CoreModule", throwOnError: false);

@@ -54,7 +54,8 @@ public static class QudJPMod
         try
         {
             var assemblyVersion = typeof(QudJPMod).Assembly.GetName().Version;
-            LogToUnity($"[QudJP] Build marker: {BuildMarker}, Version: {assemblyVersion}");
+            LogToUnity(
+                $"[QudJP] Build marker: {BuildMarker}, Version: {assemblyVersion}, BuildFlavor: {RuntimeDiagnostics.BuildFlavor}");
             initializeFonts();
             applyPatches();
         }

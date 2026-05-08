@@ -13,6 +13,11 @@ internal static class DelayedSceneProbeScheduler
 
     internal static void ScheduleCompareSceneProbe(object? screenInstance)
     {
+        if (!RuntimeDiagnostics.VerboseProbesEnabled)
+        {
+            return;
+        }
+
         if (compareSceneScheduled)
         {
             return;

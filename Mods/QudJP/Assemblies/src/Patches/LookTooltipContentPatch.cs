@@ -53,10 +53,14 @@ public static class LookTooltipContentPatch
             }
 
             __result = TranslateTooltipContent(__result);
-            LogProbe(BuildTooltipContentProbe(__result));
+            if (RuntimeDiagnostics.VerboseProbesEnabled)
+            {
+                LogProbe(BuildTooltipContentProbe(__result));
 #if HAS_TMP
-            DelayedSceneProbeScheduler.ScheduleCompareSceneProbe(__instance);
-#else
+                DelayedSceneProbeScheduler.ScheduleCompareSceneProbe(__instance);
+#endif
+            }
+#if !HAS_TMP
             _ = __instance;
 #endif
         }
@@ -92,6 +96,11 @@ public static class LookTooltipContentPatch
 
     private static void LogProbe(string message)
     {
+        if (!RuntimeDiagnostics.VerboseProbesEnabled)
+        {
+            return;
+        }
+
         try
         {
             var debugType = Type.GetType("UnityEngine.Debug, UnityEngine.CoreModule", throwOnError: false);

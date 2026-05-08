@@ -129,12 +129,15 @@ internal static class JournalPatternTranslator
             return translated;
         }
 
-        var hitCount = RecordMissingPattern(source);
-        if (ObservabilityHelpers.ShouldLogMissingHit(hitCount))
+        if (RuntimeDiagnostics.VerboseProbesEnabled)
         {
-            var sanitizedSource = SanitizeForLog(source);
-            LogObservability(
-                $"[QudJP] JournalPatternTranslator: no pattern for '{sanitizedSource}' (hit {hitCount}).{Translator.GetCurrentLogContextSuffix()}");
+            var hitCount = RecordMissingPattern(source);
+            if (ObservabilityHelpers.ShouldLogMissingHit(hitCount))
+            {
+                var sanitizedSource = SanitizeForLog(source);
+                LogObservability(
+                    $"[QudJP] JournalPatternTranslator: no pattern for '{sanitizedSource}' (hit {hitCount}).{Translator.GetCurrentLogContextSuffix()}");
+            }
         }
 
         return spans is null || spans.Count == 0

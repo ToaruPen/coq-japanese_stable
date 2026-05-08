@@ -550,7 +550,7 @@ class TestBuildReleaseImport:
             patch("scripts.build_release.collect_localization_files", return_value=[]),
             patch("scripts.build_release.create_zip", side_effect=_write_marker_reject_fixture_zip),
             patch("scripts.build_release.verify_release_dll", return_value=["InventoryLineFontFixer"]),
-            pytest.raises(ValueError, match="release DLL missing required marker\\(s\\): InventoryLineFontFixer"),
+            pytest.raises(ValueError, match="release DLL marker validation failed: InventoryLineFontFixer"),
         ):
             build_release()
         assert not (tmp_path / "dist" / "QudJP-v1.2.3.zip").exists()

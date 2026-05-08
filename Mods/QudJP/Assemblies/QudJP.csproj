@@ -19,6 +19,10 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(QudJPDevBuild)' == 'true' Or '$(QUDJP_DEV_BUILD)' == '1' Or '$(QUDJP_DEV_BUILD)' == 'true'">
+    <DefineConstants>$(DefineConstants);QUDJP_DEV_BUILD</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="src/**/*.cs" />
   </ItemGroup>

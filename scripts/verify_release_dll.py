@@ -1,4 +1,4 @@
-"""Verify that a QudJP release DLL contains required runtime feature markers."""
+"""Verify QudJP release DLL runtime markers and dev-only marker absence."""
 
 from __future__ import annotations
 
@@ -16,6 +16,11 @@ _REQUIRED_DLL_MARKERS = (
     b"ShouldPreserveActiveReplacementForTests",
 )
 
+_FORBIDDEN_RELEASE_DLL_MARKERS = (
+    b"BaseLineWithTooltipStartTooltipPatch",
+    b"SelectableTextMenuItemProbePatch",
+)
+
 
 def _read_dll(path: Path) -> bytes:
     if path.suffix.lower() == ".zip":
@@ -30,13 +35,19 @@ def _read_dll(path: Path) -> bytes:
 
 
 def verify_release_dll(path: Path) -> list[str]:
-    """Return release DLL marker names missing from a DLL or release ZIP."""
+    """Return release DLL marker validation findings for a DLL or release ZIP."""
     data = _read_dll(path)
-    return [
+    missing_markers = [
         marker.decode("ascii")
         for marker in _REQUIRED_DLL_MARKERS
         if marker not in data
     ]
+    forbidden_markers = [
+        "forbidden dev marker: " + marker.decode("ascii")
+        for marker in _FORBIDDEN_RELEASE_DLL_MARKERS
+        if marker in data
+    ]
+    return missing_markers + forbidden_markers
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -45,11 +56,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("path", type=Path, help="QudJP.dll or QudJP release ZIP")
     args = parser.parse_args(argv)
 
-    missing = verify_release_dll(args.path)
-    if missing:
+    findings = verify_release_dll(args.path)
+    if findings:
         print(  # noqa: T201
-            f"{args.path}: release DLL is missing required marker(s): "
-            + ", ".join(missing),
+            f"{args.path}: release DLL marker validation failed: "
+            + ", ".join(findings),
             file=sys.stderr,
         )
         return 1

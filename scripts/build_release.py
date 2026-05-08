@@ -280,10 +280,10 @@ def build_release() -> None:
         localization_files,
         legal_files=legal_files,
     )
-    missing_markers = verify_release_dll(output_path)
-    if missing_markers:
+    marker_findings = verify_release_dll(output_path)
+    if marker_findings:
         output_path.unlink(missing_ok=True)
-        msg = "release DLL missing required marker(s): " + ", ".join(missing_markers)
+        msg = "release DLL marker validation failed: " + ", ".join(marker_findings)
         raise ValueError(msg)
 
     print(f"\nCreated: {output_path}")  # noqa: T201
