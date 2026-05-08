@@ -51,6 +51,7 @@ public sealed class RuntimeJsonLoaderTests
     }
 
     [Test]
+    [NonParallelizable]
     public void JsonAssetLoader_IgnoresGlobalNewtonsoftDefaultSettings()
     {
         var previousDefaultSettings = JsonConvert.DefaultSettings;

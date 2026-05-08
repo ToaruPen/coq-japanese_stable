@@ -160,7 +160,10 @@ internal static class MessagePatternTranslator
                 }
                 catch (Exception ex)
                 {
-                    Trace.TraceError("QudJP: failed to load leaf dictionary: {0}", ex.Message);
+                    Trace.TraceError(
+                        "QudJP: failed to load leaf dictionary '{0}': {1}",
+                        leafPath,
+                        ex);
                 }
             }
             leafDictionary = dict;
