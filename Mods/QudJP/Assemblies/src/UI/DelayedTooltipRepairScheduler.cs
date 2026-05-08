@@ -27,18 +27,26 @@ internal static class DelayedTooltipRepairScheduler
         }
 
         var runner = EnsureHost();
-        if (runner is null)
+        if (runner == null)
         {
             Scheduled.TryRemove(triggerId, out _);
             return;
         }
 
-        runner.StartCoroutine(RunRepair(component, triggerId));
+        try
+        {
+            runner.StartCoroutine(RunRepair(component, triggerId));
+        }
+        catch
+        {
+            Scheduled.TryRemove(triggerId, out _);
+            throw;
+        }
     }
 
     private static RepairHost? EnsureHost()
     {
-        if (host is not null)
+        if (host != null)
         {
             return host;
         }

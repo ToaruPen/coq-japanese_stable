@@ -203,7 +203,7 @@ internal static class TooltipTextRepairer
         ApplySharedFontMaterial(text);
 
         RefreshTextMesh(text, currentText);
-        return true;
+        return text.textInfo.characterCount > 0;
     }
 
     private static void ApplySharedFontMaterial(TextMeshProUGUI text)
