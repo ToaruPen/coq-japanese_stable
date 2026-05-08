@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -822,14 +821,7 @@ internal static class MessageFrameTranslator
             throw new FileNotFoundException($"QudJP: message-frame verb dictionary file not found: {path}", path);
         }
 
-        using var stream = File.OpenRead(path);
-        var serializer = new DataContractJsonSerializer(typeof(VerbDictionaryDocument));
-        var document = serializer.ReadObject(stream) as VerbDictionaryDocument;
-        if (document is null)
-        {
-            throw new InvalidDataException($"QudJP: failed to deserialize message-frame verb dictionary: {path}");
-        }
-
+        var document = JsonAssetLoader.LoadFromFile<VerbDictionaryDocument>(path);
         var tier1 = new Dictionary<string, string>(StringComparer.Ordinal);
         var tier2 = new Dictionary<string, string>(StringComparer.Ordinal);
         var tier3 = new List<VerbTemplateDefinition>();

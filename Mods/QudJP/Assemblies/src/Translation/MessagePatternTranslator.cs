@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -147,10 +146,8 @@ internal static class MessagePatternTranslator
             {
                 try
                 {
-                    var json = File.ReadAllText(leafPath, Encoding.UTF8);
-                    using var ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
-                    var serializer = new DataContractJsonSerializer(typeof(LeafDictionaryFile));
-                    if (serializer.ReadObject(ms) is LeafDictionaryFile file && file.Entries != null)
+                    var file = JsonAssetLoader.LoadFromFile<LeafDictionaryFile>(leafPath);
+                    if (file.Entries != null)
                     {
                         foreach (var entry in file.Entries)
                         {
@@ -163,7 +160,10 @@ internal static class MessagePatternTranslator
                 }
                 catch (Exception ex)
                 {
-                    Trace.TraceError("QudJP: failed to load leaf dictionary: {0}", ex.Message);
+                    Trace.TraceError(
+                        "QudJP: failed to load leaf dictionary '{0}': {1}",
+                        leafPath,
+                        ex);
                 }
             }
             leafDictionary = dict;
@@ -277,10 +277,8 @@ internal static class MessagePatternTranslator
                 patternFilePath);
         }
 
-        using var stream = File.OpenRead(patternFilePath);
-        var serializer = new DataContractJsonSerializer(typeof(MessagePatternDocument));
-        var document = serializer.ReadObject(stream) as MessagePatternDocument;
-        if (document?.Patterns is null)
+        var document = JsonAssetLoader.LoadFromFile<MessagePatternDocument>(patternFilePath);
+        if (document.Patterns is null)
         {
             throw new InvalidDataException($"QudJP: message pattern file has no patterns array: {patternFilePath}");
         }

@@ -9,6 +9,7 @@ needs:
 - ``QudJP/LICENSE``
 - ``QudJP/NOTICE.md``
 - ``QudJP/Bootstrap.cs``
+- ``QudJP/Launch CavesOfQud (Rosetta).command`` when present
 - ``QudJP/Assemblies/QudJP.dll``
 - ``QudJP/Localization/**/*.xml``
 - ``QudJP/Localization/**/*.json``
@@ -32,6 +33,7 @@ except ModuleNotFoundError:
     from verify_release_dll import verify_release_dll
 
 _LOCALIZATION_ASSET_SUFFIXES = {".json", ".txt", ".xml"}
+_ROSETTA_LAUNCHER_NAME = "Launch CavesOfQud (Rosetta).command"
 
 
 def _find_project_root() -> Path:
@@ -166,6 +168,12 @@ def collect_localization_files(localization_dir: Path) -> list[Path]:
     )
 
 
+def _write_executable_zip_member(zip_file: zipfile.ZipFile, source_path: Path, archive_name: str) -> None:
+    """Write a script-like file to a ZIP while marking it executable."""
+    zip_file.write(source_path, archive_name)
+    zip_file.getinfo(archive_name).external_attr = 0o100755 << 16
+
+
 def create_zip(
     output_path: Path,
     manifest_path: Path,
@@ -227,6 +235,13 @@ def create_zip(
             arc_bootstrap = "QudJP/Bootstrap.cs"
             zf.write(bootstrap_path, arc_bootstrap)
             members.append(arc_bootstrap)
+
+        # macOS helper launcher for Apple Silicon users who need Rosetta.
+        rosetta_launcher_path = manifest_path.parent / _ROSETTA_LAUNCHER_NAME
+        if rosetta_launcher_path.exists():
+            arc_rosetta_launcher = f"QudJP/{_ROSETTA_LAUNCHER_NAME}"
+            _write_executable_zip_member(zf, rosetta_launcher_path, arc_rosetta_launcher)
+            members.append(arc_rosetta_launcher)
 
         # Localization files
         for file_path in localization_files:

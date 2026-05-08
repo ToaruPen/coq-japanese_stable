@@ -413,6 +413,13 @@ public static class QudJPMod
             }
 
             RuntimeDiagnostics.LogStatus($"[QudJP] Harmony patching complete: {count} method(s) patched.");
+            if (count == 0)
+            {
+                RuntimeDiagnostics.LogWarning(
+                    "[QudJP] Warning: Harmony patched zero methods. On Apple Silicon macOS, "
+                    + "'mprotect returned EACCES' in Player.log means the game was launched natively; "
+                    + "launch Caves of Qud with Rosetta 2, for example: arch -x86_64 <CoQ binary>.");
+            }
         }
         catch (Exception ex)
         {

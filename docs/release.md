@@ -101,6 +101,7 @@ Required files in the staged content folder:
 | `LICENSE` | License compliance |
 | `NOTICE.md` | Third-party and project notices |
 | `Bootstrap.cs` | Game-compiled loader shim |
+| `Launch CavesOfQud (Rosetta).command` | macOS Apple Silicon helper launcher |
 | `Assemblies/QudJP.dll` | Built Harmony patch DLL |
 | `Localization/` | XML overlays, JSON dictionaries, and text corpus assets |
 | `Fonts/` | CJK font assets and font license |
@@ -340,6 +341,9 @@ After Steam finishes processing the item:
 
 1. Open the Workshop page and confirm the title, description, tags, preview
    image, visibility, file size, and change note.
+   - For Apple Silicon support, confirm the description mentions
+     `Launch CavesOfQud (Rosetta).command`, Rosetta 2, and the one-shot
+     `arch -x86_64` launch command.
 2. Subscribe to the item from a clean Steam client state or unsubscribe and
    resubscribe if updating an existing item.
 3. Validate the downloaded Workshop item against the staged content:
@@ -352,7 +356,14 @@ After Steam finishes processing the item:
    version and that the downloaded `Assemblies/QudJP.dll` SHA256 matches the
    release ZIP DLL. Do not mark the release GO if the public Workshop download
    still contains an older DLL.
+   Also confirm the downloaded `Launch CavesOfQud (Rosetta).command` exists and
+   is executable in the downloaded `QudJP` folder.
+   On the default macOS Steam library, the downloaded Workshop folder is usually
+   `~/Library/Application Support/Steam/steamapps/workshop/content/333640/3718988020/`.
 4. Launch the game, enable only QudJP for the smoke pass, and restart.
+   - On Apple Silicon, launch through the downloaded Rosetta wrapper. A native
+     ARM64 run with `mprotect returned EACCES` or zero patched Harmony methods
+     does not count as a valid smoke pass.
 5. Confirm the Mod Manager lists QudJP with the expected version and preview.
 6. Confirm the Options screen and one short conversation render Japanese text
    and CJK glyphs correctly.
