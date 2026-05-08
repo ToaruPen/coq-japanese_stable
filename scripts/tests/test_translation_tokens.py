@@ -532,6 +532,27 @@ def test_dictionary_cross_file_duplicate_key_normalizes_escaped_newlines(
     assert "Dictionaries/b.ja.json" in captured.out
 
 
+def test_dictionary_same_file_duplicate_key_normalizes_escaped_newlines(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    r"""Same-file duplicate detection treats JSON newlines and literal '\n' source keys as the same text."""
+    localization = tmp_path / "Localization"
+    _write_entries(
+        localization / "Dictionaries" / "a.ja.json",
+        [
+            {"key": "Shared\nsource", "text": "訳語A"},
+            {"key": "Shared\\nsource", "text": "訳語B"},
+        ],
+    )
+
+    assert check_translation_tokens.main([str(localization)]) == 1
+    captured = capsys.readouterr()
+    assert "duplicate source key conflict" in captured.out
+    assert "scope=same_file" in captured.out
+    assert "Dictionaries/a.ja.json" in captured.out
+
+
 def test_duplicate_baseline_keys_normalize_escaped_newlines(
     tmp_path: Path,
 ) -> None:
@@ -555,6 +576,20 @@ def test_dictionary_cross_file_duplicate_key_with_identical_text_passes(
     localization = tmp_path / "Localization"
     _write_entries(localization / "Dictionaries" / "a.ja.json", [{"key": "Shared source", "text": "同じ訳語"}])
     _write_entries(localization / "Dictionaries" / "b.ja.json", [{"key": "Shared source", "text": "同じ訳語"}])
+
+    assert check_translation_tokens.main([str(localization)]) == 0
+    captured = capsys.readouterr()
+    assert "0 issue(s)" in captured.out
+
+
+def test_dictionary_cross_file_duplicate_text_normalizes_escaped_newlines(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    r"""Cross-file duplicate text divergence ignores only newline spelling differences."""
+    localization = tmp_path / "Localization"
+    _write_entries(localization / "Dictionaries" / "a.ja.json", [{"key": "Shared source", "text": "同じ\n訳語"}])
+    _write_entries(localization / "Dictionaries" / "b.ja.json", [{"key": "Shared source", "text": "同じ\\n訳語"}])
 
     assert check_translation_tokens.main([str(localization)]) == 0
     captured = capsys.readouterr()

@@ -627,6 +627,11 @@ def _duplicate_source_key_identity(key: str) -> str:
     )
 
 
+def _duplicate_translation_text_identity(text: str) -> str:
+    """Normalize translation newline spellings for cross-file divergence checks."""
+    return _duplicate_source_key_identity(text)
+
+
 def _duplicate_state(
     *,
     scope: str,
@@ -669,7 +674,7 @@ def _duplicate_conflict_states(entries: list[TranslationEntry]) -> dict[tuple[st
 
     for key, matches in sorted(dictionary_entries_by_key.items()):
         paths = {entry.relative_path for entry in matches}
-        texts = {entry.text for entry in matches}
+        texts = {_duplicate_translation_text_identity(entry.text) for entry in matches}
         if len(paths) < _MIN_CONFLICTING_TRANSLATIONS or len(texts) < _MIN_CONFLICTING_TRANSLATIONS:
             continue
         state = _duplicate_state(
