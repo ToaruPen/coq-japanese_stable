@@ -452,9 +452,9 @@ internal static class TextShellReplacementRenderer
 
     private static void LogProbeIfPresent(string? logLine)
     {
-        if (logLine is { Length: > 0 })
+        if (logLine is { Length: > 0 } message)
         {
-            UnityEngine.Debug.Log(logLine);
+            RuntimeDiagnostics.LogVerboseProbe(() => message);
         }
     }
 

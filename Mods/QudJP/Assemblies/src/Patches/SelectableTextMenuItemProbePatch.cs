@@ -37,7 +37,7 @@ public static class SelectableTextMenuItemProbePatch
             if (SelectableTextMenuItemObservability.TryBuildState(__instance, "update-postfix", out var logLine)
                 && !string.IsNullOrEmpty(logLine))
             {
-                QudJPMod.LogToUnity(logLine!);
+                RuntimeDiagnostics.LogVerboseProbe(() => logLine!);
             }
         }
         catch (Exception ex)

@@ -53,10 +53,10 @@ public static class LookTooltipContentPatch
             }
 
             __result = TranslateTooltipContent(__result);
-            if (RuntimeDiagnostics.VerboseProbesEnabled)
-            {
-                LogProbe(BuildTooltipContentProbe(__result));
-            }
+#if QUDJP_DEV_BUILD
+            var tooltipContent = __result;
+            RuntimeDiagnostics.LogVerboseProbe(() => BuildTooltipContentProbe(tooltipContent));
+#endif
 #if HAS_TMP
             DelayedSceneProbeScheduler.ScheduleCompareSceneProbe(__instance);
 #else
@@ -79,6 +79,7 @@ public static class LookTooltipContentPatch
         return DescriptionTextTranslator.TranslateLongDescription(source, nameof(LookTooltipContentPatch));
     }
 
+#if QUDJP_DEV_BUILD
     private static string BuildTooltipContentProbe(string content)
     {
         var normalized = content.Replace("\r", "\\r")
@@ -92,37 +93,5 @@ public static class LookTooltipContentPatch
             + truncated
             + "'";
     }
-
-    private static void LogProbe(string message)
-    {
-        if (!RuntimeDiagnostics.VerboseProbesEnabled)
-        {
-            return;
-        }
-
-        try
-        {
-            var debugType = Type.GetType("UnityEngine.Debug, UnityEngine.CoreModule", throwOnError: false);
-            if (debugType is null)
-            {
-                Trace.TraceWarning(
-                    "QudJP: LookTooltipContentPatch.LogProbe could not find UnityEngine.Debug in UnityEngine.CoreModule. Trying UnityEngine assembly name.");
-                debugType = Type.GetType("UnityEngine.Debug, UnityEngine", throwOnError: false);
-            }
-
-            var logMethod = debugType?.GetMethod(
-                "Log",
-                BindingFlags.Public | BindingFlags.Static,
-                binder: null,
-                types: new[] { typeof(object) },
-                modifiers: null);
-            logMethod?.Invoke(null, new object[] { message });
-        }
-        catch (Exception ex)
-        {
-            Trace.TraceWarning("QudJP: LookTooltipContentPatch.LogProbe fell back to trace. {0}", ex.Message);
-        }
-
-        Trace.TraceInformation(message);
-    }
+#endif
 }

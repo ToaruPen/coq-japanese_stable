@@ -48,6 +48,10 @@ When asked to update the Steam Workshop item, do this first:
    translation changes in user-facing terms before pipeline or tooling notes.
 9. Download and verify the GitHub Release ZIP with the local release ZIP
    download recipe.
+   `just release-zip-check` also runs the release DLL marker gate: the shipped
+   DLL must contain required runtime markers and must not contain dev-only probe
+   patch markers or verbose probe markers such as `DynamicTextProbe/v1`,
+   `FinalOutputProbe/v1`, and `SinkObserve/v1`.
 10. Generate `dist/workshop/QudJP/` and `dist/workshop/workshop_item.vdf` with
    the Workshop staging recipe, passing the downloaded GitHub Release ZIP
    explicitly.
@@ -354,6 +358,10 @@ After Steam finishes processing the item:
    and CJK glyphs correctly.
 7. Check fresh logs under `~/Library/Logs/Freehold Games/CavesOfQud/` for QudJP
    build markers, missing glyph warnings, compile errors, or `MODWARN`.
+   Platform SDK noise such as local `GalaxyCSharpGlue` load failures may be
+   recorded in notes, but do not treat it as a QudJP release blocker without a
+   QudJP-owned marker, compile error, warning, or exception in the same fresh
+   log.
 8. Record the smoke result in the dated release evidence file copied from
    `docs/reports/templates/workshop-release.md`.
 9. Publish the draft GitHub Release only after the Steam Workshop upload and

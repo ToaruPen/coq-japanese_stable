@@ -138,7 +138,7 @@ arguments, wrappers, direct markers, collection arguments, and forwarding sinks
 unless a new fixture file is clearer.
 
 The current `docs/static-producer-inventory.json` baseline for decompiled
-`2.0.4` has 2,208 callsites, 1,012 families, 2,238 text arguments, 2,206
+`1.0.4` has 2,208 callsites, 1,012 families, 2,238 text arguments, 2,206
 `resolved` callsites, 2 `candidate` callsites, and 0 `unresolved` callsites.
 Use this as the starting comparison for this artifact. Any delta should be
 explained; do not treat these counts as a universal threshold for unrelated

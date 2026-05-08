@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace QudJP;
@@ -42,4 +44,52 @@ internal static class RuntimeDiagnostics
         };
         Volatile.Write(ref verboseProbesOverride, value);
     }
+
+    internal static void LogStatus(string message)
+    {
+        QudJPMod.LogToUnity(message, RuntimeLogSeverity.Information);
+    }
+
+    internal static void LogWarning(string message)
+    {
+        QudJPMod.LogToUnity(message, RuntimeLogSeverity.Warning);
+    }
+
+    internal static void LogError(string message)
+    {
+        QudJPMod.LogToUnity(message, RuntimeLogSeverity.Error);
+    }
+
+    [Conditional("QUDJP_DEV_BUILD")]
+    internal static void LogVerboseProbe(Func<string> messageFactory)
+    {
+        if (!VerboseProbesEnabled)
+        {
+            return;
+        }
+
+        var message = messageFactory();
+        if (string.IsNullOrEmpty(message))
+        {
+            return;
+        }
+
+        QudJPMod.LogToUnity(message);
+    }
+
+    [Conditional("QUDJP_DEV_BUILD")]
+    internal static void RunVerboseProbe(Action action)
+    {
+        if (VerboseProbesEnabled)
+        {
+            action();
+        }
+    }
+}
+
+internal enum RuntimeLogSeverity
+{
+    Information,
+    Warning,
+    Error,
 }

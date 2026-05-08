@@ -130,10 +130,7 @@ internal static class DelayedInventoryLineRepairScheduler
             if (replaced > 0)
             {
                 _ = TmpTextRepairer.TryRepairInvisibleTexts(component);
-                if (RuntimeDiagnostics.VerboseProbesEnabled)
-                {
-                    BuildVerboseRepairProbeSnapshots(component);
-                }
+                RuntimeDiagnostics.RunVerboseProbe(() => BuildVerboseRepairProbeSnapshots(component));
             }
 
         }
@@ -145,11 +142,15 @@ internal static class DelayedInventoryLineRepairScheduler
 
     private static void BuildVerboseRepairProbeSnapshots(Component component)
     {
+#if QUDJP_DEV_BUILD
         _ = TextShellReplacementRenderer.TryBuildReplacementState(
             component,
             "InventoryLineReplacementStateNextFrame/v1",
             out _);
         _ = ScreenHierarchyObservability.TryBuildLineItemSnapshot(component, "InventoryLineItemProbe/v1", out _);
+#else
+        _ = component;
+#endif
     }
 
     private sealed class RepairHost : MonoBehaviour

@@ -21,6 +21,12 @@ _FORBIDDEN_RELEASE_DLL_MARKERS = (
     b"SelectableTextMenuItemProbePatch",
 )
 
+_FORBIDDEN_VERBOSE_PROBE_MARKERS = (
+    b"DynamicTextProbe/",
+    b"FinalOutputProbe/",
+    b"SinkObserve/",
+)
+
 
 def _read_dll(path: Path) -> bytes:
     if path.suffix.lower() == ".zip":
@@ -47,7 +53,12 @@ def verify_release_dll(path: Path) -> list[str]:
         for marker in _FORBIDDEN_RELEASE_DLL_MARKERS
         if marker in data
     ]
-    return missing_markers + forbidden_markers
+    forbidden_probe_markers = [
+        "forbidden verbose probe marker: " + marker.decode("ascii")
+        for marker in _FORBIDDEN_VERBOSE_PROBE_MARKERS
+        if marker in data
+    ]
+    return missing_markers + forbidden_markers + forbidden_probe_markers
 
 
 def main(argv: list[str] | None = None) -> int:

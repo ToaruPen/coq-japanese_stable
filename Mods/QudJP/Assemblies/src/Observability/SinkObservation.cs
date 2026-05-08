@@ -96,7 +96,7 @@ internal static class SinkObservation
             return;
         }
 
-        QudJPMod.LogToUnity(
+        RuntimeDiagnostics.LogVerboseProbe(() =>
             "[QudJP] SinkObserve/" + ProbeVersion +
             ": sink='" + ObservabilityHelpers.SanitizeForLog(normalizedSink, MaxValueLength) +
             "' route='" + ObservabilityHelpers.SanitizeForLog(normalizedRoute, MaxValueLength) +

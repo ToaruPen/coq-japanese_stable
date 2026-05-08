@@ -263,7 +263,7 @@ internal static class InventoryLineFontFixer
         {
             var textInfo = tmp?.textInfo;
             var rect = tmp?.rectTransform?.rect;
-            Debug.Log(
+            RuntimeDiagnostics.LogVerboseProbe(() =>
                 "[QudJP] InventoryLineFontFixer/v1: "
                 + $"applied={applied} "
                 + $"textSkin='{textSkin?.GetType().FullName ?? "<null>"}' "

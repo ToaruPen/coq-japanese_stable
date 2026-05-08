@@ -18,9 +18,19 @@ Useful markers:
 
 - `[QudJP] Build marker`
 - `DynamicTextProbe/v1`
+- `FinalOutputProbe/v1`
 - `SinkObserve/v1`
 - `missing key`
 - `MODWARN`
+
+Known non-QudJP runtime noise:
+
+- `GALAXY - Error initializing` with
+  `System.DllNotFoundException: GalaxyCSharpGlue` can appear during local
+  direct/Rosetta validation before QudJP bootstrap. Treat it as game/Galaxy SDK
+  platform noise unless fresh evidence also shows a QudJP build marker,
+  QudJP-owned compile error, `MODWARN`, missing glyph warning, or QudJP
+  exception that makes it actionable for this mod.
 
 On Apple Silicon, use Rosetta for in-game evidence:
 
@@ -76,6 +86,23 @@ just runtime-evidence-check
 
 Use these commands when checking Phase F docs, runtime observability, or the
 first-PR boundary.
+
+## Diagnostics and probe logging
+
+Runtime diagnostics must keep shipping logs small and actionable:
+
+- startup/status, warning, and error logs go through `RuntimeDiagnostics`
+- verbose route-proof probes go through `RuntimeDiagnostics.LogVerboseProbe`
+- expensive probe message construction belongs inside the lazy message factory
+- dev-only probe builders and probe patch classes should stay behind
+  `QUDJP_DEV_BUILD` when their marker strings are not needed in release builds
+- release artifacts must not contain obvious verbose probe markers such as
+  `DynamicTextProbe/v1`, `FinalOutputProbe/v1`, or `SinkObserve/v1`
+
+Use dev builds for route-proof collection. Release/shipping builds keep the
+important QudJP startup, warning, and error logs, but verbose probes are off by
+default and are rejected by the release DLL marker gate when obvious marker
+strings leak into the shipped DLL.
 
 ## Mod sync and deployment
 

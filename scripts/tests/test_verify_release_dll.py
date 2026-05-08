@@ -62,6 +62,28 @@ def test_verify_release_dll_reports_dev_only_probe_markers(tmp_path: Path) -> No
     ]
 
 
+def test_verify_release_dll_reports_verbose_probe_markers(tmp_path: Path) -> None:
+    """Reject release DLLs that contain verbose runtime probe markers."""
+    dll = tmp_path / "QudJP.dll"
+    dll.write_bytes(
+        _REQUIRED_MARKER_PAYLOAD
+        + b"\0"
+        + b"\0".join(
+            [
+                b"DynamicTextProbe/v1",
+                b"FinalOutputProbe/v1",
+                b"SinkObserve/v1",
+            ],
+        ),
+    )
+
+    assert verify_release_dll(dll) == [
+        "forbidden verbose probe marker: DynamicTextProbe/",
+        "forbidden verbose probe marker: FinalOutputProbe/",
+        "forbidden verbose probe marker: SinkObserve/",
+    ]
+
+
 def test_verify_release_dll_reads_release_zip(tmp_path: Path) -> None:
     """Read QudJP.dll from a release ZIP before checking markers."""
     release_zip = tmp_path / "QudJP-v0.0.0.zip"

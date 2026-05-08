@@ -1,5 +1,7 @@
 namespace QudJP.Tests.L1;
 
+using System.Diagnostics;
+
 [TestFixture]
 [Category("L1")]
 [NonParallelizable]
@@ -55,5 +57,110 @@ public sealed class RuntimeDiagnosticsTests
             Assert.That(DynamicTextObservability.GetRouteFamilyHitCountForTests("Route", "Family"), Is.Zero);
             Assert.That(FinalOutputObservability.GetHitCountForTests(finalOutputObservation), Is.Zero);
         });
+    }
+
+    [Test]
+    public void LogVerboseProbe_DoesNotInvokeMessageFactory_WhenVerboseProbesAreDisabled()
+    {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(false);
+        var factoryCalls = 0;
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+            RuntimeDiagnostics.LogVerboseProbe(() =>
+            {
+                factoryCalls++;
+                return "[QudJP] DynamicTextProbe/v1: should-not-build";
+            }));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(factoryCalls, Is.Zero);
+            Assert.That(output, Does.Not.Contain("DynamicTextProbe/v1"));
+        });
+    }
+
+    [Test]
+    public void LogVerboseProbe_EmitsMessage_WhenVerboseProbesAreEnabled()
+    {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+            RuntimeDiagnostics.LogVerboseProbe(() => "[QudJP] DynamicTextProbe/v1: route='test'"));
+
+        Assert.That(output, Does.Contain("DynamicTextProbe/v1"));
+    }
+
+    [Test]
+    public void LogWarning_EmitsWarningTraceEvent()
+    {
+        using var listener = new EventTypeTraceListener();
+        Trace.Listeners.Add(listener);
+
+        try
+        {
+            RuntimeDiagnostics.LogWarning("[QudJP] warning event");
+            Trace.Flush();
+        }
+        finally
+        {
+            Trace.Listeners.Remove(listener);
+        }
+
+        Assert.That(listener.EventTypes, Does.Contain(TraceEventType.Warning));
+    }
+
+    [Test]
+    public void LogError_EmitsErrorTraceEvent()
+    {
+        using var listener = new EventTypeTraceListener();
+        Trace.Listeners.Add(listener);
+
+        try
+        {
+            RuntimeDiagnostics.LogError("[QudJP] error event");
+            Trace.Flush();
+        }
+        finally
+        {
+            Trace.Listeners.Remove(listener);
+        }
+
+        Assert.That(listener.EventTypes, Does.Contain(TraceEventType.Error));
+    }
+
+    private sealed class EventTypeTraceListener : TraceListener
+    {
+        internal List<TraceEventType> EventTypes { get; } = new();
+
+        public override void Write(string? message)
+        {
+        }
+
+        public override void WriteLine(string? message)
+        {
+        }
+
+        public override void TraceEvent(
+            TraceEventCache? eventCache,
+            string source,
+            TraceEventType eventType,
+            int id,
+            string? message)
+        {
+            EventTypes.Add(eventType);
+            base.TraceEvent(eventCache, source, eventType, id, message);
+        }
+
+        public override void TraceEvent(
+            TraceEventCache? eventCache,
+            string source,
+            TraceEventType eventType,
+            int id,
+            string? format,
+            params object?[]? args)
+        {
+            EventTypes.Add(eventType);
+            base.TraceEvent(eventCache, source, eventType, id, format, args);
+        }
     }
 }
