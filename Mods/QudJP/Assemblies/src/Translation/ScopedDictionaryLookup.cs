@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
 
 namespace QudJP;
 
@@ -95,10 +94,8 @@ internal static class ScopedDictionaryLookup
             return new DictionaryStore(unscopedEntries, contextualEntries);
         }
 
-        using var stream = File.OpenRead(path);
-        var serializer = new DataContractJsonSerializer(typeof(DictionaryDocument));
-        var document = serializer.ReadObject(stream) as DictionaryDocument;
-        if (document?.Entries is null)
+        var document = JsonAssetLoader.LoadFromFile<DictionaryDocument>(path);
+        if (document.Entries is null)
         {
             throw new InvalidDataException($"Dictionary file has no entries array: {path}");
         }
