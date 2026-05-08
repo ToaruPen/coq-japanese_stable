@@ -58,8 +58,14 @@ the current worktree regressed or succeeded.
 For issue closeout PRs that rely on runtime evidence, state the closeout
 decision explicitly in both the PR body and the runtime report:
 
-- identify whether the PR is a root-cause fix, a supported fallback path, or an
-  observability-only mitigation;
+- identify the decision type:
+  - root-cause fix: fixes the underlying failure so the original route works
+    normally, such as correcting a broken API call;
+  - supported fallback path: adopts a controlled alternate route when the
+    original route is unreliable, such as rendering through a replacement UI
+    child;
+  - observability-only mitigation: adds evidence or monitoring without claiming
+    user-visible behavior is fixed, such as bounded diagnostic log markers;
 - if the issue acceptance criteria allowed multiple outcomes, name the chosen
   outcome before using `Closes #...`;
 - include the final smoke log time or matching build marker, the success
