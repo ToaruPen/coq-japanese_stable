@@ -13,6 +13,13 @@ public sealed class Issue289OrphanRoutePatchTests
 {
     private string tempDirectory = null!;
 
+    public enum TutorialRouteKind
+    {
+        CellPopup,
+        HighlightByCid,
+        DirectHighlight,
+    }
+
     [SetUp]
     public void SetUp()
     {
@@ -464,9 +471,206 @@ public sealed class Issue289OrphanRoutePatchTests
         }
     }
 
+    [TestCase(TutorialRouteKind.CellPopup)]
+    [TestCase(TutorialRouteKind.HighlightByCid)]
+    [TestCase(TutorialRouteKind.DirectHighlight)]
+    public void TutorialManagerRoutePrefixes_LeaveMissingDictionaryTextUnchanged_WhenPatched(TutorialRouteKind route)
+    {
+        WriteDictionary(("Look around the cave.", "洞窟を見回せ。"));
+
+        const string source = "Unmapped tutorial text.";
+
+        var result = RunTutorialRouteWithPatch(route, source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(ExpectedTutorialRouteOutput(route, source)));
+            Assert.That(GetTutorialRouteHitCount(route), Is.Zero);
+        });
+    }
+
+    [TestCase(TutorialRouteKind.CellPopup)]
+    [TestCase(TutorialRouteKind.HighlightByCid)]
+    [TestCase(TutorialRouteKind.DirectHighlight)]
+    public void TutorialManagerRoutePrefixes_LeaveDirectTranslationMarkerUnchanged_WhenPatched(TutorialRouteKind route)
+    {
+        WriteDictionary(("Look around the cave.", "洞窟を見回せ。"));
+
+        var source = MessageFrameTranslator.MarkDirectTranslation("Look around the cave.");
+
+        var result = RunTutorialRouteWithPatch(route, source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(ExpectedTutorialRouteOutput(route, source)));
+            Assert.That(GetTutorialRouteHitCount(route), Is.Zero);
+        });
+    }
+
+    [TestCase(TutorialRouteKind.CellPopup)]
+    [TestCase(TutorialRouteKind.HighlightByCid)]
+    [TestCase(TutorialRouteKind.DirectHighlight)]
+    public void TutorialManagerRoutePrefixes_LeaveEmptyInputUnchanged_WhenPatched(TutorialRouteKind route)
+    {
+        WriteDictionary(("Look around the cave.", "洞窟を見回せ。"));
+
+        var result = RunTutorialRouteWithPatch(route, string.Empty);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(ExpectedTutorialRouteOutput(route, string.Empty)));
+            Assert.That(GetTutorialRouteHitCount(route), Is.Zero);
+        });
+    }
+
+    [TestCase(TutorialRouteKind.CellPopup)]
+    [TestCase(TutorialRouteKind.HighlightByCid)]
+    [TestCase(TutorialRouteKind.DirectHighlight)]
+    public void TutorialManagerRoutePrefixes_PreserveColorTags_WhenPatched(TutorialRouteKind route)
+    {
+        WriteDictionary(("Look around the cave.", "洞窟を見回せ。"));
+
+        const string source = "{{W|Look around the cave.}}";
+        const string translated = "{{W|洞窟を見回せ。}}";
+
+        var result = RunTutorialRouteWithPatch(route, source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(ExpectedTutorialRouteOutput(route, translated)));
+            Assert.That(GetTutorialRouteHitCount(route), Is.EqualTo(1));
+        });
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
+    }
+
+    private static int GetTutorialRouteHitCount(TutorialRouteKind route)
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            route switch
+            {
+                TutorialRouteKind.CellPopup => nameof(TutorialManagerCellPopupTranslationPatch),
+                TutorialRouteKind.HighlightByCid => nameof(TutorialManagerHighlightTranslationPatch),
+                TutorialRouteKind.DirectHighlight => nameof(TutorialManagerDirectHighlightTranslationPatch),
+                _ => throw new ArgumentOutOfRangeException(nameof(route), route, null),
+            },
+            route switch
+            {
+                TutorialRouteKind.CellPopup => "TutorialManager.CellPopupText",
+                TutorialRouteKind.HighlightByCid => "TutorialManager.HighlightText",
+                TutorialRouteKind.DirectHighlight => "TutorialManager.DirectHighlightText",
+                _ => throw new ArgumentOutOfRangeException(nameof(route), route, null),
+            });
+    }
+
+    private static string ExpectedTutorialRouteOutput(TutorialRouteKind route, string text)
+    {
+        return route == TutorialRouteKind.CellPopup
+            ? text
+            : "{{y|" + text + "}}";
+    }
+
+    private static string RunTutorialRouteWithPatch(TutorialRouteKind route, string text)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchTutorialRoute(harmony, route);
+
+            switch (route)
+            {
+                case TutorialRouteKind.CellPopup:
+                    DummyTutorialManagerTarget.ShowCellPopup(default!, text, "ne").GetAwaiter().GetResult();
+                    return DummyTutorialManagerTarget.LastCellPopupText;
+
+                case TutorialRouteKind.HighlightByCid:
+                {
+                    var target = new DummyTutorialManagerInstanceTarget();
+                    target.HighlightByCID("QudTextMenuItem:look", text, "ne");
+                    return target.LastHighlightText;
+                }
+
+                case TutorialRouteKind.DirectHighlight:
+                {
+                    var target = new DummyTutorialManagerInstanceTarget();
+                    target.Highlight(null, text, "se");
+                    return target.LastDirectHighlightText;
+                }
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(route), route, null);
+            }
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void PatchTutorialRoute(Harmony harmony, TutorialRouteKind route)
+    {
+        switch (route)
+        {
+            case TutorialRouteKind.CellPopup:
+                harmony.Patch(
+                    original: RequireMethod(
+                        typeof(DummyTutorialManagerTarget),
+                        nameof(DummyTutorialManagerTarget.ShowCellPopup),
+                        new[]
+                        {
+                            typeof(Genkit.Location2D),
+                            typeof(string),
+                            typeof(string),
+                            typeof(int),
+                            typeof(int),
+                            typeof(Action),
+                        }),
+                    prefix: new HarmonyMethod(RequireMethod(typeof(TutorialManagerCellPopupTranslationPatch), nameof(TutorialManagerCellPopupTranslationPatch.Prefix))));
+                break;
+
+            case TutorialRouteKind.HighlightByCid:
+                harmony.Patch(
+                    original: RequireMethod(
+                        typeof(DummyTutorialManagerInstanceTarget),
+                        nameof(DummyTutorialManagerInstanceTarget.HighlightByCID),
+                        new[]
+                        {
+                            typeof(string),
+                            typeof(string),
+                            typeof(string),
+                            typeof(int),
+                            typeof(int),
+                            typeof(float),
+                            typeof(string),
+                        }),
+                    prefix: new HarmonyMethod(RequireMethod(typeof(TutorialManagerHighlightTranslationPatch), nameof(TutorialManagerHighlightTranslationPatch.Prefix))));
+                break;
+
+            case TutorialRouteKind.DirectHighlight:
+                harmony.Patch(
+                    original: RequireMethod(
+                        typeof(DummyTutorialManagerInstanceTarget),
+                        nameof(DummyTutorialManagerInstanceTarget.Highlight),
+                        new[]
+                        {
+                            typeof(IDummyRectTransform),
+                            typeof(string),
+                            typeof(string),
+                            typeof(float),
+                            typeof(float),
+                            typeof(float),
+                            typeof(string),
+                        }),
+                    prefix: new HarmonyMethod(RequireMethod(typeof(TutorialManagerDirectHighlightTranslationPatch), nameof(TutorialManagerDirectHighlightTranslationPatch.Prefix))));
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException(nameof(route), route, null);
+        }
     }
 
     private static MethodInfo RequireMethod(Type type, string methodName, Type[]? parameterTypes = null)

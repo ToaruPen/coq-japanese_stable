@@ -113,10 +113,9 @@ public static class TutorialManagerCellPopupTranslationPatch
                 });
         }
 
-        method ??= AccessTools.Method(targetType, "ShowCellPopup");
         if (method is null)
         {
-            Trace.TraceError("QudJP: TutorialManagerCellPopupTranslationPatch.ShowCellPopup(...) not found.");
+            Trace.TraceError("QudJP: TutorialManagerCellPopupTranslationPatch.ShowCellPopup(...) exact signature not found.");
         }
 
         return method;
@@ -223,10 +222,9 @@ public static class TutorialManagerDirectHighlightTranslationPatch
                 });
         }
 
-        method ??= AccessTools.Method(targetType, "Highlight");
         if (method is null)
         {
-            Trace.TraceError("QudJP: TutorialManagerDirectHighlightTranslationPatch.Highlight(...) not found.");
+            Trace.TraceError("QudJP: TutorialManagerDirectHighlightTranslationPatch.Highlight(...) exact signature not found.");
         }
 
         return method;
