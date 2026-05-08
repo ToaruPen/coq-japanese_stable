@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -150,12 +149,10 @@ public static class BlueprintTemplateTranslationPatch
             return null;
         }
 
-        TemplateDictionaryDocument? document;
+        TemplateDictionaryDocument document;
         try
         {
-            using var stream = File.OpenRead(path);
-            var serializer = new DataContractJsonSerializer(typeof(TemplateDictionaryDocument));
-            document = serializer.ReadObject(stream) as TemplateDictionaryDocument;
+            document = JsonAssetLoader.LoadFromFile<TemplateDictionaryDocument>(path);
         }
         catch (Exception ex)
         {
@@ -163,7 +160,7 @@ public static class BlueprintTemplateTranslationPatch
             return null;
         }
 
-        if (document?.Entries is null)
+        if (document.Entries is null)
         {
             Trace.TraceError("QudJP: BlueprintTemplateTranslation: dictionary has no entries array: {0}", path);
             return null;
