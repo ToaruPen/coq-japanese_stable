@@ -166,10 +166,12 @@ public static class Translator
         return new MissingKeySuppressionScope();
     }
 
+#if QUDJP_DEV_BUILD
     private static bool IsMissingKeyLoggingSuppressed()
     {
         return suppressMissingKeyLoggingDepth > 0;
     }
+#endif
 
     private static string TranslateCore(string key)
     {
@@ -185,12 +187,14 @@ public static class Translator
             return key;
         }
 
+#if QUDJP_DEV_BUILD
         var hitCount = RecordMissingKey(key);
         if (!IsMissingKeyLoggingSuppressed() && ObservabilityHelpers.ShouldLogMissingHit(hitCount))
         {
-            LogObservability(
+            RuntimeDiagnostics.LogVerboseProbe(() =>
                 $"[QudJP] Translator: missing key '{key}' (hit {hitCount}).{GetCurrentLogContextSuffix()}{BuildTranslatorStructuredSuffix(ExtractCurrentRoute(), "missing_key", key)}");
         }
+#endif
 
         return key;
     }
@@ -324,6 +328,7 @@ public static class Translator
         }
     }
 
+#if QUDJP_DEV_BUILD
     private static int RecordMissingKey(string key)
     {
         var hitCount = MissingKeyCounts.AddOrUpdate(key, 1, ObservabilityHelpers.IncrementCounter);
@@ -333,6 +338,7 @@ public static class Translator
             ObservabilityHelpers.IncrementCounter);
         return hitCount;
     }
+#endif
 
     internal static bool ShouldLogMissingHitForTests(int hitCount)
     {
@@ -352,7 +358,7 @@ public static class Translator
 
     private static void LogObservability(string message)
     {
-        QudJPMod.LogToUnity(message);
+        RuntimeDiagnostics.LogImportant(message);
     }
 
     internal static string BuildTranslatorStructuredSuffix(string route, string family, string renderedTextSample)

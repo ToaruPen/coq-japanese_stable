@@ -17,10 +17,17 @@ Important paths:
 Useful markers:
 
 - `[QudJP] Build marker`
-- `DynamicTextProbe/v1`
-- `SinkObserve/v1`
-- `missing key`
+- important error or warning lines that affect shipping behavior
+- sink-required signals that prove a route still needs sink observation
 - `MODWARN`
+
+Verbose probe markers such as `DynamicTextProbe/v1`, `SinkObserve/v1`,
+`[QudJP] Translator: missing key`, and `no pattern for` are development
+evidence by default. Add or change them through `RuntimeDiagnostics`
+(`LogVerboseProbe(...)` or the existing helper APIs that call it), not by
+writing directly to Unity logs. Release artifacts must not retain direct
+verbose probe log markers; `scripts/verify_release_dll.py` rejects known
+direct marker strings in release DLLs and release ZIPs.
 
 On Apple Silicon, use Rosetta for in-game evidence:
 

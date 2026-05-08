@@ -42,7 +42,9 @@ internal static class JournalPatternTranslator
         "Dictionaries/annals-patterns.ja.json",
     };
     private static int loadInvocationCount;
+#if QUDJP_DEV_BUILD
     private const int MaxLogSourceLength = 200;
+#endif
     internal const int MaxUniquePatterns = 10_000;
     internal const int MaxUniqueRoutes = 1_000;
     internal const string OverflowKey = "__overflow__";
@@ -129,16 +131,18 @@ internal static class JournalPatternTranslator
             return translated;
         }
 
+#if QUDJP_DEV_BUILD
         if (RuntimeDiagnostics.VerboseProbesEnabled)
         {
             var hitCount = RecordMissingPattern(source);
             if (ObservabilityHelpers.ShouldLogMissingHit(hitCount))
             {
                 var sanitizedSource = SanitizeForLog(source);
-                LogObservability(
+                RuntimeDiagnostics.LogVerboseProbe(() =>
                     $"[QudJP] JournalPatternTranslator: no pattern for '{sanitizedSource}' (hit {hitCount}).{Translator.GetCurrentLogContextSuffix()}");
             }
         }
+#endif
 
         return spans is null || spans.Count == 0
             ? source
@@ -295,6 +299,7 @@ internal static class JournalPatternTranslator
         return new Regex(pattern, RegexOptions.Compiled | RegexOptions.CultureInvariant);
     }
 
+#if QUDJP_DEV_BUILD
     private static int RecordMissingPattern(string source)
     {
         var hitCount = AddOrUpdateCapped(MissingPatternCounts, source, MaxUniquePatterns);
@@ -318,6 +323,7 @@ internal static class JournalPatternTranslator
 
         return counters.AddOrUpdate(OverflowKey, 1, ObservabilityHelpers.IncrementCounter);
     }
+#endif
 
     private static void LogDuplicatePatternSummary(Dictionary<string, int> duplicatePatternCounts)
     {
@@ -332,9 +338,10 @@ internal static class JournalPatternTranslator
 
     private static void LogObservability(string message)
     {
-        QudJPMod.LogToUnity(message);
+        RuntimeDiagnostics.LogImportant(message);
     }
 
+#if QUDJP_DEV_BUILD
     private static string SanitizeForLog(string source)
     {
 #if NET48
@@ -376,6 +383,7 @@ internal static class JournalPatternTranslator
 
         return builder.ToString();
     }
+#endif
 
     private static string ApplyTemplate(string template, Match match, string source, IReadOnlyList<ColorSpan>? spans)
     {

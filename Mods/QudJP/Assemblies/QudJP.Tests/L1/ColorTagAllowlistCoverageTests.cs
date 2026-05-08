@@ -141,8 +141,8 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Patches/WorldModsTextTranslator.cs:652:TryTranslateTemplate"] = "Delegates restoration to the template helper.",
             ["Mods/QudJP/Assemblies/src/Patches/ZoneWindChangeTranslationPatch.cs:114:TryTranslate"] = "Delegates capture and whole-boundary restoration to matched owner-route branches.",
             ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:30:Strip"] = "Wrapper method exposes the Strip API; callers are checked where they consume the returned spans.",
-            ["Mods/QudJP/Assemblies/src/Translation/JournalPatternTranslator.cs:76:Translate"] = "Passes stripped text and spans to TranslateStripped, where template application restores colors.",
-            ["Mods/QudJP/Assemblies/src/Translation/MessagePatternTranslator.cs:79:Translate"] = "Passes stripped text and spans to TranslateStripped, where template application restores colors.",
+            ["Mods/QudJP/Assemblies/src/Translation/JournalPatternTranslator.cs:78:Translate"] = "Passes stripped text and spans to TranslateStripped, where template application restores colors.",
+            ["Mods/QudJP/Assemblies/src/Translation/MessagePatternTranslator.cs:81:Translate"] = "Passes stripped text and spans to TranslateStripped, where template application restores colors.",
             ["Mods/QudJP/Assemblies/src/UI/FontManager.cs:233:TryWarmPrimaryFontCharactersForUi"] = "UI glyph warmup intentionally strips markup only to add visible characters to the font atlas.",
         };
 
