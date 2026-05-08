@@ -148,8 +148,23 @@ For inventory / equipment display checks, follow the runtime evidence rules in
 ### Apple Silicon / Rosetta
 
 - On Apple Silicon, in-game verification must run under Rosetta 2
-- Use `scripts/launch_rosetta.sh` or `Launch CavesOfQud (Rosetta).command`
+- For local repo verification, use `scripts/launch_rosetta.sh` or the root
+  `Launch CavesOfQud (Rosetta).command`
+- For player-facing builds, the release ZIP and Workshop content include
+  `QudJP/Launch CavesOfQud (Rosetta).command`; launch through that wrapper
+  from the installed `QudJP` folder
+- On macOS with the default Steam library, the subscribed Workshop item is
+  normally under:
+  `~/Library/Application Support/Steam/steamapps/workshop/content/333640/3718988020/`
+  If Steam uses another library, look under that library's
+  `steamapps/workshop/content/333640/3718988020/` directory instead.
+- `arch -x86_64 .../CoQ` is a one-shot launch path. It does not persist to
+  future Steam launches, so Apple Silicon users should use the wrapper each
+  time unless they have separately configured a reliable Rosetta launch path.
 - Do not use native ARM64 runtime logs as localization observability evidence
+- If `Player.log` contains `mprotect returned EACCES` or QudJP reports
+  `Harmony patching complete: 0 method(s) patched`, treat that run as native
+  ARM64 and ask for a Rosetta-backed retry before triaging localization routes.
 
 ### Troubleshooting
 
@@ -160,6 +175,7 @@ For inventory / equipment display checks, follow the runtime evidence rules in
 | Japanese text shows as tofu squares | CJK font not bundled | Verify Fonts directory is deployed |
 | DLL load error | `QudJP.dll` not built | Run `just deploy-mod` |
 | No QudJP traces in Player.log | Bootstrap.cs not deployed or failed to compile | Verify `Bootstrap.cs` exists in game `Mods/QudJP/` directory; check Player.log for compile errors |
+| Apple Silicon: title/UI text stays English and `mprotect returned EACCES` appears | Native ARM64 launch blocked Harmony patching | Launch through `Launch CavesOfQud (Rosetta).command` or `arch -x86_64 .../CoQ` |
 
 ---
 

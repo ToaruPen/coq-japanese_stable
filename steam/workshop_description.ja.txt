@@ -32,6 +32,8 @@ macOS Apple Silicon での注意
   * M1/M2/M3/M4 などの Apple Silicon Mac では、Caves of Qud をネイティブ起動すると Harmony パッチが `mprotect returned EACCES` で失敗し、この Mod の UI 翻訳が効かない場合があります。
   * その場合は Rosetta 2 経由で Caves of Qud を起動してください。
   * この Mod には `Launch CavesOfQud (Rosetta).command` という起動用 wrapper を同梱しています。Steam Workshop のダウンロード先にある `QudJP` フォルダ内からダブルクリックで起動できます。
+  * macOS の Steam 既定ライブラリでは、通常 `~/Library/Application Support/Steam/steamapps/workshop/content/333640/3718988020/Launch CavesOfQud (Rosetta).command` にあります。別の Steam ライブラリを使っている場合は、そのライブラリ内の `steamapps/workshop/content/333640/3718988020/` を探してください。
+  * Steam から通常起動した場合、この wrapper の効果は引き継がれません。Apple Silicon で翻訳が効かない場合は、毎回 wrapper から起動してください。
   * Rosetta 2 が未インストールの場合は、ターミナルで `softwareupdate --install-rosetta --agree-to-license` を実行してください。
   * 起動例:
 
