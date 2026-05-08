@@ -118,7 +118,7 @@ internal static class TooltipTextRepairer
 
     private static bool ShouldRepairTooltip(GameObject? tooltipObject)
     {
-        return tooltipObject is not null && ShouldRepairTooltipName(tooltipObject.name);
+        return tooltipObject != null && ShouldRepairTooltipName(tooltipObject.name);
     }
 
     private static int RestoreCanvasRendererVisibility(GameObject root)
