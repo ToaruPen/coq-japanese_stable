@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using XRL;
@@ -11,6 +13,7 @@ namespace QudJP
         [ModSensitiveCacheInit]
         public static void Bootstrap()
         {
+            var total = Stopwatch.StartNew();
             try
             {
                 UnityEngine.Debug.Log("[QudJP] Bootstrap: resolving QudJP.dll path...");
@@ -40,7 +43,16 @@ namespace QudJP
                 }
 
                 UnityEngine.Debug.Log("[QudJP] Bootstrap: loading assembly from " + dllPath);
-                Assembly assembly = Assembly.LoadFrom(dllPath);
+                Assembly assembly;
+                var loadAssembly = Stopwatch.StartNew();
+                try
+                {
+                    assembly = Assembly.LoadFrom(dllPath);
+                }
+                finally
+                {
+                    LogStartupTiming("bootstrap.load_assembly", loadAssembly.Elapsed);
+                }
 
                 Type modType = assembly.GetType("QudJP.QudJPMod");
                 if (modType == null)
@@ -56,7 +68,15 @@ namespace QudJP
                     throw new InvalidOperationException("[QudJP] Bootstrap: method 'Init' not found on QudJP.QudJPMod");
                 }
 
-                initMethod.Invoke(null, null);
+                var invokeInit = Stopwatch.StartNew();
+                try
+                {
+                    initMethod.Invoke(null, null);
+                }
+                finally
+                {
+                    LogStartupTiming("bootstrap.invoke_init", invokeInit.Elapsed);
+                }
 
                 UnityEngine.Debug.Log("[QudJP] Bootstrap: initialization complete.");
             }
@@ -65,6 +85,20 @@ namespace QudJP
                 UnityEngine.Debug.LogError("[QudJP] Bootstrap failed: " + ex);
                 throw;
             }
+            finally
+            {
+                total.Stop();
+                LogStartupTiming("bootstrap.total", total.Elapsed);
+            }
+        }
+
+        private static void LogStartupTiming(string phase, TimeSpan elapsed)
+        {
+            UnityEngine.Debug.Log(
+                "[QudJP] StartupTiming/v1: phase="
+                + phase
+                + " elapsed_ms="
+                + elapsed.TotalMilliseconds.ToString("0.###", CultureInfo.InvariantCulture));
         }
     }
 }

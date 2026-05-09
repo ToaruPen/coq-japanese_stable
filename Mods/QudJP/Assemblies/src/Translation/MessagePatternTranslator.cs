@@ -146,6 +146,7 @@ internal static class MessagePatternTranslator
             var leafPath = leafFileOverride ?? ResolveLeafFilePath();
             if (leafPath != null && File.Exists(leafPath))
             {
+                using var timing = RuntimeStartupTiming.Measure("message_pattern.load_leaf_dictionary");
                 try
                 {
                     var file = JsonAssetLoader.LoadFromFile<LeafDictionaryFile>(leafPath);
@@ -271,6 +272,7 @@ internal static class MessagePatternTranslator
 
     private static List<MessagePatternDefinition> LoadPatterns()
     {
+        using var timing = RuntimeStartupTiming.Measure("message_pattern.load_patterns");
         Interlocked.Increment(ref loadInvocationCount);
 
         var patternFilePath = ResolvePatternFilePath();

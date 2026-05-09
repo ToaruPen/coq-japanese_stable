@@ -14,13 +14,14 @@ public static class XDidYTranslationPatch
     private const string XDidYMethodName = "XDidY";
     private const string XDidYToZMethodName = "XDidYToZ";
     private const string WDidXToYWithZMethodName = "WDidXToYWithZ";
+    internal const string TheTypeName = "XRL.The";
 
     private static readonly Type? MessagingType =
         GameTypeResolver.FindType("XRL.World.Capabilities.Messaging", "Messaging");
     private static readonly Type? GameObjectType =
         GameTypeResolver.FindType("XRL.World.GameObject", "GameObject");
     private static readonly Type? TheType =
-        GameTypeResolver.FindType("XRL.World.The", "The");
+        GameTypeResolver.FindType(TheTypeName, "The");
 
     private static readonly MethodInfo? HandleMessageMethod = FindHandleMessageMethod();
     private static readonly MethodInfo? ValidateMethod = ResolveValidateMethod();

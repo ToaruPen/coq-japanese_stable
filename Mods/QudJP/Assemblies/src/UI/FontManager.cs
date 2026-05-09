@@ -48,7 +48,12 @@ public static class FontManager
 #if HAS_TMP
         try
         {
-            var fontPath = ResolveFontPath();
+            string fontPath;
+            using (RuntimeStartupTiming.Measure("font.resolve_path"))
+            {
+                fontPath = ResolveFontPath();
+            }
+
             if (!File.Exists(fontPath))
             {
                 throw new FileNotFoundException($"CJK font not found: {fontPath}", fontPath);
@@ -56,7 +61,11 @@ public static class FontManager
 
             RuntimeDiagnostics.LogStatus($"[QudJP] FontManager: Loading CJK font from {fontPath}");
 
-            var fontAsset = TMP_FontAsset.CreateFontAsset(fontPath, 0, 96, 6, GlyphRenderMode.SDFAA, 4096, 4096);
+            TMP_FontAsset fontAsset;
+            using (RuntimeStartupTiming.Measure("font.create_tmp_asset"))
+            {
+                fontAsset = TMP_FontAsset.CreateFontAsset(fontPath, 0, 96, 6, GlyphRenderMode.SDFAA, 4096, 4096);
+            }
 #pragma warning disable CA1508 // Unity objects may be null despite non-nullable annotations
             if (fontAsset is null)
             {
@@ -91,9 +100,19 @@ public static class FontManager
                 EnsureFontListed(TMP_Settings.fallbackFontAssets, previousDefaultFont, prepend: false);
             }
 
-            var patchedFontAssetCount = EnsureFallbackOnAllFontAssets(fontAsset);
+            int patchedFontAssetCount;
+            using (RuntimeStartupTiming.Measure("font.patch_existing_fallbacks"))
+            {
+                patchedFontAssetCount = EnsureFallbackOnAllFontAssets(fontAsset);
+            }
 
-            if (!TryWarmFontCharacters(fontAsset, "日本語テスト"))
+            bool warmed;
+            using (RuntimeStartupTiming.Measure("font.warm_startup_glyphs"))
+            {
+                warmed = TryWarmFontCharacters(fontAsset, "日本語テスト");
+            }
+
+            if (!warmed)
             {
                 RuntimeDiagnostics.LogStatus(
                     "[QudJP] FontManager: CJK font startup warmup did not confirm glyphs for '日本語テスト'; runtime dynamic fallback remains enabled.");
