@@ -63,7 +63,7 @@ internal static class DummyPopupShow
         int defaultResult = 0)
     {
         LastShowYesNoCancelMessage = Message;
-        return 0;
+        return defaultResult;
     }
 
     public static Task<int> ShowYesNoAsync(string Message)

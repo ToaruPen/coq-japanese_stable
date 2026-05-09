@@ -62,6 +62,23 @@ public sealed class PlayerDanceRitualTranslationPatchTests
         });
     }
 
+    [TestCase("\x01The dance ended in failure! [相手が倒れた]")]
+    [TestCase("")]
+    public void TryTranslatePopup_ReturnsFalseForDirectMarkerAndEmptyInput(string source)
+    {
+        var translated = PlayerDanceRitualTranslationPatch.TryTranslatePopup(
+            source,
+            nameof(PopupShowTranslationPatch),
+            "Popup.Show.PlayerDanceRitual",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(result, Is.EqualTo(source));
+        });
+    }
+
     [Test]
     public void TryTranslateMessage_ReturnsFalseForDirectMarkerAndEmptyInput()
     {

@@ -823,6 +823,71 @@ public sealed class TargetMethodResolutionTests
         Assert.That(actualSignatures, Is.EquivalentTo(expectedSignatures));
     }
 
+    [TestCase(typeof(GameObjectStatPopupTranslationPatch), new[]
+    {
+        "XRL.World.GameObject|GainSP|System.Void|System.Int32|System.Boolean",
+        "XRL.World.GameObject|GainEgo|System.Void|System.Int32|System.Boolean",
+        "XRL.World.GameObject|LoseEgo|System.Void|System.Int32|System.Boolean",
+        "XRL.World.GameObject|GainIntelligence|System.Void|System.Int32|System.Boolean",
+        "XRL.World.GameObject|GainWillpower|System.Void|System.Int32|System.Boolean",
+    })]
+    [TestCase(typeof(RepairTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Repair|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.Repair|RepairResultSuccess|System.Void|XRL.World.GameObject|XRL.World.GameObject",
+        "XRL.World.Parts.Repair|RepairResultExceptionalSuccess|System.Void|XRL.World.GameObject|XRL.World.GameObject",
+        "XRL.World.Parts.Repair|RepairResultPartialSuccess|System.Void|XRL.World.GameObject|XRL.World.GameObject",
+        "XRL.World.Parts.Repair|RepairResultFailure|System.Void|XRL.World.GameObject|XRL.World.GameObject",
+        "XRL.World.Parts.Skill.Tinkering_Repair|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.Skill.Tinkering_Repair|RepairResultSuccess|System.Void|XRL.World.GameObject|XRL.World.GameObject",
+        "XRL.World.Parts.Skill.Tinkering_Repair|RepairResultExceptionalSuccess|System.Void|XRL.World.GameObject|XRL.World.GameObject",
+        "XRL.World.Parts.Skill.Tinkering_Repair|RepairResultPartialSuccess|System.Void|XRL.World.GameObject|XRL.World.GameObject",
+        "XRL.World.Parts.Skill.Tinkering_Repair|RepairResultFailure|System.Void|XRL.World.GameObject|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(PlayerDanceRitualTranslationPatch), new[]
+    {
+        "XRL.World.Parts.PlayerDanceRitual|ExecuteMove|System.Void|System.String|System.String",
+        "XRL.World.Parts.PlayerDanceRitual|PassStep|System.Void|System.String",
+        "XRL.World.Parts.PlayerDanceRitual|FailStep|System.Void|System.String",
+        "XRL.World.Parts.PlayerDanceRitual|FailDance|System.Void|System.String",
+        "XRL.World.Parts.PlayerDanceRitual|SuccessDance|System.Void|System.String",
+    })]
+    [TestCase(typeof(BeguilingSifrahTranslationPatch), new[]
+    {
+        "XRL.World.BeguilingSifrah|ResultCriticalFailure|System.Void|XRL.World.GameObject",
+        "XRL.World.BeguilingSifrah|ResultFailure|System.Void|XRL.World.GameObject",
+        "XRL.World.BeguilingSifrah|ResultPartialSuccess|System.Void|XRL.World.GameObject",
+        "XRL.World.BeguilingSifrah|ResultSuccess|System.Void|XRL.World.GameObject",
+        "XRL.World.BeguilingSifrah|ResultExceptionalSuccess|System.Void|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(ProselytizationSifrahTranslationPatch), new[]
+    {
+        "XRL.World.ProselytizationSifrah|ResultCriticalFailure|System.Void|XRL.World.GameObject",
+        "XRL.World.ProselytizationSifrah|ResultFailure|System.Void|XRL.World.GameObject",
+        "XRL.World.ProselytizationSifrah|ResultPartialSuccess|System.Void|XRL.World.GameObject",
+        "XRL.World.ProselytizationSifrah|ResultSuccess|System.Void|XRL.World.GameObject",
+        "XRL.World.ProselytizationSifrah|ResultExceptionalSuccess|System.Void|XRL.World.GameObject",
+    })]
+    public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
+    {
+        var targetMethodsMethod = patchType.GetMethod("TargetMethods", BindingFlags.NonPublic | BindingFlags.Static);
+        Assert.That(targetMethodsMethod, Is.Not.Null, $"TargetMethods not found for {patchType.FullName}");
+
+        var result = targetMethodsMethod!.Invoke(null, null) as System.Collections.IEnumerable;
+        Assert.That(result, Is.Not.Null, $"TargetMethods returned null for {patchType.FullName}");
+
+        var actualSignatures = new List<string>();
+        foreach (var item in result!)
+        {
+            if (item is MethodInfo methodInfo)
+            {
+                actualSignatures.Add(FullMethodSignature(methodInfo));
+            }
+        }
+
+        Assert.That(actualSignatures, Is.EquivalentTo(expectedSignatures));
+    }
+
 #if HAS_GAME_DLL
     [Test]
     public void ActiveEffectOwnerPatches_TargetBaseAndOverridesButNotCookingOwnerMethods()

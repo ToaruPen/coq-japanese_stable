@@ -233,36 +233,11 @@ public static class PlayerDanceRitualTranslationPatch
         string stripped,
         IReadOnlyList<ColorSpan> spans)
     {
-        var restored = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+        return ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
             translated,
             spans,
-            stripped.Length);
-        return RestoreLeadingAmpersandColor(source, restored);
-    }
-
-    private static string RestoreLeadingAmpersandColor(string source, string translated)
-    {
-        if (source.Length < 2 || source[0] != '&' || translated.StartsWith("&", StringComparison.Ordinal))
-        {
-            return translated;
-        }
-
-        var color = source[1];
-        return IsQudAmpersandColor(color)
-            ? source.Substring(0, 2) + translated
-            : translated;
-    }
-
-    private static bool IsQudAmpersandColor(char color)
-    {
-        return color is 'K' or 'k'
-            or 'R' or 'r'
-            or 'G' or 'g'
-            or 'B' or 'b'
-            or 'C' or 'c'
-            or 'M' or 'm'
-            or 'Y' or 'y'
-            or 'W' or 'w';
+            stripped.Length,
+            source);
     }
 
     private static void Record(string route, string family, string detail, string source, string translated)
