@@ -112,6 +112,27 @@ just runtime-evidence-check
 Use these commands when checking Phase F docs, runtime observability, or the
 first-PR boundary.
 
+## Startup performance evidence
+
+Startup performance PRs need repeatable measurements rather than a single
+manual impression. Capture at least three ready iterations for the baseline and
+candidate profiles, then include the median `runner.elapsed_until_ready` delta
+and the largest remaining QudJP startup phases in the PR body. Use
+`scripts/startup_measure.py` for collection, parsing, comparison, and top-phase
+reports.
+
+When a startup change adds or edits `GameTypeResolver.FindType(...)` targets,
+run the local decompiled-source check before closeout:
+
+```bash
+just game-type-resolver-check
+```
+
+This check is intentionally local because decompiled game sources live outside
+the repo under `~/dev/coq-decompiled_stable/`. It verifies statically visible
+full type names, including same-file `const string` aliases, so simple-name
+fallback resolution does not hide a misspelled or stale full type name.
+
 ## Diagnostics and probe logging
 
 Runtime diagnostics must keep shipping logs small and actionable:

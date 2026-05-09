@@ -287,6 +287,10 @@ runtime-evidence-check: test-l1
   uv run pytest scripts/tests/test_triage_log_parser.py scripts/tests/test_triage_models.py scripts/tests/test_triage_classifier.py scripts/tests/test_triage_integration.py -q
   uv run pytest scripts/tests/test_triage_integration.py -q -k sample_log_smoke
 
+# Validate literal GameTypeResolver full type names against decompiled game source.
+game-type-resolver-check decompiled_source_root=decompiled_root output="/tmp/qudjp-game-type-resolver-check.json":
+  {{python}} scripts/check_game_type_resolver_names.py --decompiled-root {{quote(decompiled_source_root)}} --output {{quote(output)}}
+
 # Run the broad local verification gate.
 check: build test-l1 test-l2 test-l2g python-check python-test localization-check translation-token-check markdown-report-check localization-coverage-map-check
 
