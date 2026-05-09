@@ -10,12 +10,8 @@ from pathlib import Path
 
 _DEFAULT_GAME_BASE_DIR = (
     Path.home()
-    / "Library"
-    / "Application Support"
-    / "Steam"
-    / "steamapps"
-    / "common"
-    / "Caves of Qud"
+    / "Games"
+    / "CavesOfQud-stable-ref"
     / "CoQ.app"
     / "Contents"
     / "Resources"

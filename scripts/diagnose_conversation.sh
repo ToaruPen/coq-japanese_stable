@@ -27,7 +27,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 PLAYER_LOG="$HOME/Library/Logs/Freehold Games/CavesOfQud/Player.log"
-GAME_BINARY="$HOME/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/MacOS/CoQ"
+GAME_BINARY="$HOME/Games/CavesOfQud-stable-ref/CoQ.app/Contents/MacOS/CoQ"
 HS=/Applications/Hammerspoon.app/Contents/Frameworks/hs/hs
 DIAG_TAG="ConversationDiag"
 

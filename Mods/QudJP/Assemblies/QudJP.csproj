@@ -10,8 +10,8 @@
     <AnalysisLevel>latest-all</AnalysisLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <!-- macOS default. Override with -p:GameDir=... for Windows -->
-    <GameDir Condition="'$(GameDir)' == ''">$(HOME)/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/Resources/Data</GameDir>
+    <!-- macOS stable reference default. Override with -p:GameDir=... for beta, Windows, or other installs. -->
+    <GameDir Condition="'$(GameDir)' == ''">$(HOME)/Games/CavesOfQud-stable-ref/CoQ.app/Contents/Resources/Data</GameDir>
     <ManagedDir>$(GameDir)/Managed</ManagedDir>
     <AssemblyCSharpPath>$(ManagedDir)/Assembly-CSharp.dll</AssemblyCSharpPath>
     <OutputPath>$(MSBuildProjectDirectory)/</OutputPath>
