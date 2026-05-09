@@ -75,6 +75,7 @@ public sealed class TargetMethodResolutionTests
         "System.Boolean",
     })]
     [TestCase(typeof(InventoryAndEquipmentStatusScreenTranslationPatch), "UpdateViewFromData", "Qud.UI.InventoryAndEquipmentStatusScreen", "System.Void", new string[0])]
+    [TestCase(typeof(InventoryAndEquipmentStatusScreenShowRepairPatch), "ShowScreen", "Qud.UI.InventoryAndEquipmentStatusScreen", "XRL.UI.Framework.NavigationContext", new[] { "XRL.World.GameObject", "Qud.UI.StatusScreensScreen" })]
     [TestCase(typeof(InventoryLineTranslationPatch), "setData", "Qud.UI.InventoryLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(InventoryLineRenderProbePatch), "setData", "Qud.UI.InventoryLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(InventoryLineActiveTextRefreshPatch), "LateUpdate", "Qud.UI.InventoryLine", "System.Void", new string[0])]
@@ -474,6 +475,45 @@ public sealed class TargetMethodResolutionTests
             Assert.That(parameterTypes, Is.EqualTo(expectedParameterTypes));
         });
     }
+
+#if HAS_GAME_DLL && HAS_TMP
+    [Test]
+    public void SelectableTextMenuItemPopupIdParentRouteContractsResolve()
+    {
+        var gameAssembly = EnsureGameAssemblyLoaded();
+        var popupMessageType = gameAssembly.GetType("Qud.UI.PopupMessage", throwOnError: false);
+        var componentType = Type.GetType("UnityEngine.Component, UnityEngine.CoreModule", throwOnError: false);
+
+        Assert.That(popupMessageType, Is.Not.Null, "Type not found: Qud.UI.PopupMessage");
+        Assert.That(componentType, Is.Not.Null, "Type not found: UnityEngine.Component");
+
+        var popupIdField = popupMessageType!.GetField(
+            "PopupID",
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        var includeInactiveGetComponentInParent = componentType!.GetMethod(
+            "GetComponentInParent",
+            BindingFlags.Public | BindingFlags.Instance,
+            binder: null,
+            types: new[] { typeof(Type), typeof(bool) },
+            modifiers: null);
+        var legacyGetComponentInParent = componentType.GetMethod(
+            "GetComponentInParent",
+            BindingFlags.Public | BindingFlags.Instance,
+            binder: null,
+            types: new[] { typeof(Type) },
+            modifiers: null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(popupIdField, Is.Not.Null, "PopupMessage.PopupID field not found.");
+            Assert.That(popupIdField?.FieldType, Is.EqualTo(typeof(string)));
+            Assert.That(
+                includeInactiveGetComponentInParent ?? legacyGetComponentInParent,
+                Is.Not.Null,
+                "UnityEngine.Component.GetComponentInParent(Type[, bool]) route not found.");
+        });
+    }
+#endif
 
 #if HAS_GAME_DLL
     [TestCase(typeof(SinkPrereqSetDataTranslationPatch), new[]

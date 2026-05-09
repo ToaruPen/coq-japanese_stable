@@ -23,10 +23,10 @@ internal static class InventoryActionObservability
         }
 
         var command = TryGetStringPropertyOrField(inventoryActionEvent, "Command");
-        var actor = DescribeObject(GetPropertyOrFieldValue(inventoryActionEvent, "Actor"));
-        var item = DescribeObject(GetPropertyOrFieldValue(inventoryActionEvent, "Item"));
-        var objectTarget = DescribeObject(GetPropertyOrFieldValue(inventoryActionEvent, "ObjectTarget"));
-        var parentObject = DescribeObject(GetPropertyOrFieldValue(descriptionPartInstance, "ParentObject"));
+        var actor = DescribeObject(ReflectionUtils.GetPropertyOrFieldValue(inventoryActionEvent, "Actor"));
+        var item = DescribeObject(ReflectionUtils.GetPropertyOrFieldValue(inventoryActionEvent, "Item"));
+        var objectTarget = DescribeObject(ReflectionUtils.GetPropertyOrFieldValue(inventoryActionEvent, "ObjectTarget"));
+        var parentObject = DescribeObject(ReflectionUtils.GetPropertyOrFieldValue(descriptionPartInstance, "ParentObject"));
 
         var bucket = string.IsNullOrEmpty(command) ? "<empty>" : command!;
         var hitCount = CommandCounts.AddOrUpdate(bucket, 1, static (_, current) => current + 1);
@@ -110,22 +110,6 @@ internal static class InventoryActionObservability
         }
 
         return Access(instance, memberName) as string;
-    }
-
-    private static object? GetPropertyOrFieldValue(object? instance, string memberName)
-    {
-        if (instance is null)
-        {
-            return null;
-        }
-
-        var property = instance.GetType().GetProperty(memberName);
-        if (property is not null && property.GetIndexParameters().Length == 0)
-        {
-            return property.GetValue(instance);
-        }
-
-        return Access(instance, memberName);
     }
 
     private static object? Access(object instance, string memberName)

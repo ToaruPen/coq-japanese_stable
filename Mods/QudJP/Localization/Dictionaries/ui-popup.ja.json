@@ -163,10 +163,6 @@
             "text": "最寄りの下り階段まで移動するか？"
         },
         {
-            "key": "drop",
-            "text": "落とす"
-        },
-        {
             "key": "learn",
             "text": "習得"
         },
@@ -339,66 +335,6 @@
             "text": "[~Accept] 続行"
         },
         {
-            "key": "chat",
-            "context": "QudMenuItem",
-            "text": "話す"
-        },
-        {
-            "key": "collect liquid",
-            "context": "QudMenuItem",
-            "text": "液体を採取"
-        },
-        {
-            "key": "attack",
-            "context": "QudMenuItem",
-            "text": "攻撃"
-        },
-        {
-            "key": "look",
-            "context": "QudMenuItem",
-            "text": "調べる"
-        },
-        {
-            "key": "target",
-            "context": "QudMenuItem",
-            "text": "狙う"
-        },
-        {
-            "key": "show effects",
-            "context": "QudMenuItem",
-            "text": "効果を表示"
-        },
-        {
-            "key": "[h] chat",
-            "context": "QudMenuItem",
-            "text": "[h] 話す"
-        },
-        {
-            "key": "[k] attack",
-            "context": "QudMenuItem",
-            "text": "[k] 攻撃"
-        },
-        {
-            "key": "[l] look",
-            "context": "QudMenuItem",
-            "text": "[l] 調べる"
-        },
-        {
-            "key": "[t] target",
-            "context": "QudMenuItem",
-            "text": "[t] 狙う"
-        },
-        {
-            "key": "[w] show effects",
-            "context": "QudMenuItem",
-            "text": "[w] 効果を表示"
-        },
-        {
-            "key": "[c] collect liquid",
-            "context": "QudMenuItem",
-            "text": "[c] 液体を採取"
-        },
-        {
             "key": "You embark for the caves of Qud.",
             "context": "Qud.UI.PopupMessage.ShowPopup.Message",
             "text": "クッドの洞窟へ旅立つ。"
@@ -407,11 +343,6 @@
             "key": "Acting on some inscrutable impulse, a parallel version of yourself travels through space and time to destroy you.\n\nEach time you embark on a new location, there's a small chance your evil twin has tracked you there and attempts to kill you.",
             "context": "XRL.UI.XRL.World.Parts.Mutation.EvilTwin",
             "text": "不可解な衝動に突き動かされ、並行世界の自分自身が時空を越えてあなたを滅ぼしに来る。\\n\\n新しい場所へ赴くたび、あなたの邪悪な双子がそこを突き止め、命を狙ってくる可能性がある。"
-        },
-        {
-            "key": "equip (auto)",
-            "context": "QudMenuItem",
-            "text": "自動で装備"
         },
         {
             "key": "Equip (manual)",
@@ -434,61 +365,6 @@
             "text": "Tab"
         },
         {
-            "key": "get",
-            "context": "QudMenuItem",
-            "text": "拾う"
-        },
-        {
-            "key": "open",
-            "context": "QudMenuItem",
-            "text": "開ける"
-        },
-        {
-            "key": "close",
-            "context": "QudMenuItem",
-            "text": "閉める"
-        },
-        {
-            "key": "drink",
-            "context": "QudMenuItem",
-            "text": "飲む"
-        },
-        {
-            "key": "eat",
-            "context": "QudMenuItem",
-            "text": "食べる"
-        },
-        {
-            "key": "fill",
-            "context": "QudMenuItem",
-            "text": "満たす"
-        },
-        {
-            "key": "pour",
-            "context": "QudMenuItem",
-            "text": "注ぐ"
-        },
-        {
-            "key": "activate",
-            "context": "QudMenuItem",
-            "text": "起動する"
-        },
-        {
-            "key": "apply",
-            "context": "QudMenuItem",
-            "text": "使用する"
-        },
-        {
-            "key": "disassemble",
-            "context": "QudMenuItem",
-            "text": "分解する"
-        },
-        {
-            "key": "examine",
-            "context": "QudMenuItem",
-            "text": "調べる"
-        },
-        {
             "key": "give",
             "context": "QudMenuItem",
             "text": "渡す"
@@ -499,19 +375,9 @@
             "text": "操作する"
         },
         {
-            "key": "read",
-            "context": "QudMenuItem",
-            "text": "読む"
-        },
-        {
             "key": "take",
             "context": "QudMenuItem",
             "text": "取る"
-        },
-        {
-            "key": "unequip",
-            "context": "QudMenuItem",
-            "text": "装備を外す"
         },
         {
             "key": "paint",
@@ -529,29 +395,9 @@
             "text": "立つ"
         },
         {
-            "key": "[e] equip (auto)",
-            "context": "QudMenuItem",
-            "text": "[e] 自動で装備"
-        },
-        {
             "key": "[E] Equip (manual)",
             "context": "QudMenuItem",
             "text": "[E] 手動で装備"
-        },
-        {
-            "key": "[g] get",
-            "context": "QudMenuItem",
-            "text": "[g] 拾う"
-        },
-        {
-            "key": "[o] open",
-            "context": "QudMenuItem",
-            "text": "[o] 開ける"
-        },
-        {
-            "key": "[c] close",
-            "context": "QudMenuItem",
-            "text": "[c] 閉める"
         },
         {
             "key": "You need to reload! (R)",

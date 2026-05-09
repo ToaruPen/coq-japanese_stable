@@ -118,7 +118,7 @@
         },
         {
           "path": "Dictionaries/ui-popup.ja.json",
-          "entry_index": 380,
+          "entry_index": 349,
           "text": "……"
         }
       ]
@@ -1930,8 +1930,8 @@
       ],
       "occurrences": [
         {
-          "path": "Dictionaries/ui-popup.ja.json",
-          "entry_index": 76,
+          "path": "Dictionaries/Scoped/ui-menu-actions.ja.json",
+          "entry_index": 8,
           "text": "液体を採取"
         },
         {
@@ -2228,7 +2228,7 @@
         },
         {
           "path": "Dictionaries/ui-popup.ja.json",
-          "entry_index": 106,
+          "entry_index": 81,
           "text": "操作する"
         }
       ]

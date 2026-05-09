@@ -317,6 +317,47 @@ public sealed class PopupRouteHandoffTranslationTests
         });
     }
 
+    [Test]
+    public void PopupMessageRoute_OwnsStaticButtonHotkeyLabels_BeforeBottomContextDisplay()
+    {
+        WriteDictionary(
+            ("[space] Continue", "[space] 続ける"),
+            ("[Esc] Cancel", "[Esc] キャンセル"));
+
+        using var popupMessagePatch = PatchMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup), typeof(PopupMessageTranslationPatch));
+
+        var buttons = new List<DummyPopupMessageItem>
+        {
+            new("{{W|[space]}} {{y|Continue}}", "Accept,Cancel", "Accept"),
+            new("{{W|[Esc]}} {{y|Cancel}}", "Cancel", "Cancel"),
+        };
+
+        new DummyPopupMessageTarget().ShowPopup("Pick one.", buttons);
+
+        var bottomContext = new DummyQudMenuBottomContext(
+            DummyPopupMessageTarget.LastButtons!
+                .Select(static button => new DummyQudMenuItem(button.text, button.hotkey))
+                .ToList());
+        QudMenuBottomContextTranslationPatch.NormalizeItemTexts(bottomContext);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupMessageTarget.LastButtons, Is.Not.Null);
+            Assert.That(DummyPopupMessageTarget.LastButtons![0].text, Is.EqualTo("{{W|[space]}} {{y|続ける}}"));
+            Assert.That(DummyPopupMessageTarget.LastButtons[1].text, Is.EqualTo("{{W|[Esc]}} {{y|キャンセル}}"));
+            Assert.That(bottomContext.items[0].text, Is.EqualTo("{{W|[space]}} {{y|続ける}}"));
+            Assert.That(bottomContext.items[1].text, Is.EqualTo("{{W|[Esc]}} {{y|キャンセル}}"));
+            Assert.That(
+                SinkObservation.GetHitCountForTests(
+                    nameof(QudMenuBottomContextTranslationPatch),
+                    nameof(PopupTranslationPatch),
+                    SinkObservation.ObservationOnlyDetail,
+                    "{{W|[space]}} {{y|Continue}}",
+                    "[space] Continue"),
+                Is.Zero);
+        });
+    }
+
     private static IDisposable PatchMethod(Type targetType, string methodName, Type patchType)
     {
         var harmonyId = CreateHarmonyId();
