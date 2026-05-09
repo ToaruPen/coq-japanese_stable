@@ -109,12 +109,12 @@ public sealed class RuntimeDiagnosticsTests
     {
         var summary = QudJPMod.FormatPatchLoopSummary(
             new QudJPMod.PatchLoopSummary(
-                PatchTypes: 10,
-                Prepared: 9,
-                PrepareSkipped: 1,
-                Applied: 0,
-                ApplySkipped: 9,
-                Preflight: true));
+                10,
+                9,
+                1,
+                0,
+                9,
+                true));
 
         Assert.Multiple(() =>
         {

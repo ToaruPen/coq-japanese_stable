@@ -329,13 +329,36 @@ public static class QudJPMod
             $"count={GameTypeResolver.FallbackScanCountForDiagnostics - fallbackScansBeforePatchLoop}");
     }
 
-    internal readonly record struct PatchLoopSummary(
-        int PatchTypes,
-        int Prepared,
-        int PrepareSkipped,
-        int Applied,
-        int ApplySkipped,
-        bool Preflight);
+    internal readonly struct PatchLoopSummary
+    {
+        internal PatchLoopSummary(
+            int patchTypes,
+            int prepared,
+            int prepareSkipped,
+            int applied,
+            int applySkipped,
+            bool preflight)
+        {
+            PatchTypes = patchTypes;
+            Prepared = prepared;
+            PrepareSkipped = prepareSkipped;
+            Applied = applied;
+            ApplySkipped = applySkipped;
+            Preflight = preflight;
+        }
+
+        internal int PatchTypes { get; }
+
+        internal int Prepared { get; }
+
+        internal int PrepareSkipped { get; }
+
+        internal int Applied { get; }
+
+        internal int ApplySkipped { get; }
+
+        internal bool Preflight { get; }
+    }
 
     internal static (string PrepareDetail, string ApplyDetail) FormatPatchLoopSummary(PatchLoopSummary summary)
     {
