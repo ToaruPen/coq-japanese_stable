@@ -245,7 +245,7 @@ class TestRunSync:
             (source / "Localization" / doc_name).write_text("# docs", encoding="utf-8")
         (source / "Fonts" / "Font.otf").write_bytes(b"font")
         (source / "Launch CavesOfQud (Rosetta).command").write_text(
-            "#!/usr/bin/env bash\nexec arch -x86_64 \"$HOME/game/CoQ\"\n",
+            '#!/usr/bin/env bash\nexec arch -x86_64 "$HOME/game/CoQ"\n',
             encoding="utf-8",
         )
         (source / "src.cs").write_text("// do not copy", encoding="utf-8")

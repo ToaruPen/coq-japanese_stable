@@ -17,7 +17,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Self
 from urllib.error import HTTPError
-from urllib.parse import urlencode, urlparse
+from urllib.parse import parse_qsl, urlencode, urlparse
 from urllib.request import Request, urlopen
 
 _NUMERIC_ID_PATTERN = re.compile(r"^[0-9]+$")
@@ -428,30 +428,33 @@ def collect_workshop_comments(
         steam_transport=steam_transport,
         max_response_bytes=options.max_response_bytes,
     )
-    comments = _fetch_all_comments(
-        creator_id=creator_id,
-        published_file_id=published_file_id,
-        steam_transport=steam_transport,
+    comment_sources = [
+        _fetch_all_comments(
+            creator_id=creator_id,
+            published_file_id=published_file_id,
+            steam_transport=steam_transport,
+            options=options,
+        ),
+    ]
+    comment_sources.extend(
+        _fetch_discussion_thread_comments(
+            discussion_thread_url=discussion_thread_url,
+            published_file_id=published_file_id,
+            steam_transport=steam_transport,
+            options=options,
+        )
+        for discussion_thread_url in discussion_thread_urls or []
+    )
+    creator_account_id = creator_account_id_from_steam_id(creator_id)
+    fetched_count = sum(len(source) for source in comment_sources)
+    importable_comments = _select_importable_comments(
+        comment_sources,
+        creator_account_id=creator_account_id,
         options=options,
     )
-    for discussion_thread_url in discussion_thread_urls or []:
-        comments.extend(
-            _fetch_discussion_thread_comments(
-                discussion_thread_url=discussion_thread_url,
-                published_file_id=published_file_id,
-                steam_transport=steam_transport,
-                options=options,
-            ),
-        )
-    creator_account_id = creator_account_id_from_steam_id(creator_id)
-    importable_comments = [
-        comment
-        for comment in comments
-        if not options.skip_creator_comments or comment.author_account_id != creator_account_id
-    ][: options.max_comments_per_run]
 
     if options.dry_run:
-        return CollectionSummary(fetched=len(comments), new_comments=len(importable_comments), new_snapshots=0)
+        return CollectionSummary(fetched=fetched_count, new_comments=len(importable_comments), new_snapshots=0)
 
     before_comments = store.count_comments()
     before_snapshots = store.count_snapshots()
@@ -469,7 +472,7 @@ def collect_workshop_comments(
         store.finish_collection_run(
             run_id=run_id,
             status="success",
-            fetched_count=len(comments),
+            fetched_count=fetched_count,
             new_comment_count=new_comments,
             new_snapshot_count=new_snapshots,
         )
@@ -477,13 +480,46 @@ def collect_workshop_comments(
         store.finish_collection_run(
             run_id=run_id,
             status="failed",
-            fetched_count=len(comments),
+            fetched_count=fetched_count,
             new_comment_count=store.count_comments() - before_comments,
             new_snapshot_count=store.count_snapshots() - before_snapshots,
             error_message=str(error),
         )
         raise
-    return CollectionSummary(fetched=len(comments), new_comments=new_comments, new_snapshots=new_snapshots)
+    return CollectionSummary(fetched=fetched_count, new_comments=new_comments, new_snapshots=new_snapshots)
+
+
+def _select_importable_comments(
+    comment_sources: list[list[WorkshopComment]],
+    *,
+    creator_account_id: str | None,
+    options: CollectionOptions,
+) -> list[WorkshopComment]:
+    """Select importable comments without starving configured sources."""
+    filtered_sources = [
+        [
+            comment
+            for comment in source
+            if not options.skip_creator_comments or comment.author_account_id != creator_account_id
+        ]
+        for source in comment_sources
+    ]
+    selected: list[WorkshopComment] = []
+    positions = [0 for _ in filtered_sources]
+    while len(selected) < options.max_comments_per_run:
+        added = False
+        for index, source in enumerate(filtered_sources):
+            if len(selected) >= options.max_comments_per_run:
+                break
+            position = positions[index]
+            if position >= len(source):
+                continue
+            selected.append(source[position])
+            positions[index] = position + 1
+            added = True
+        if not added:
+            break
+    return selected
 
 
 def validate_numeric_id(value: object, *, field_name: str) -> str:
@@ -533,7 +569,14 @@ def build_steam_discussion_thread_url(discussion_thread_url: str) -> str:
         raise ValueError(msg)
     published_file_id = validate_numeric_id(parts[3], field_name="publishedfileid")
     topic_id = validate_numeric_id(parts[4], field_name="discussion_topic")
-    return f"https://steamcommunity.com/workshop/filedetails/discussion/{published_file_id}/{topic_id}/?l=japanese"
+    query_params: list[tuple[str, str]] = []
+    for key, value in parse_qsl(parsed.query, keep_blank_values=True):
+        if key == "ctp":
+            query_params.append(("ctp", validate_numeric_id(value, field_name="ctp")))
+            break
+    query_params.append(("l", "japanese"))
+    query = urlencode(query_params)
+    return f"https://steamcommunity.com/workshop/filedetails/discussion/{published_file_id}/{topic_id}/?{query}"
 
 
 def extract_comments_from_render_response(payload: bytes) -> list[WorkshopComment]:
