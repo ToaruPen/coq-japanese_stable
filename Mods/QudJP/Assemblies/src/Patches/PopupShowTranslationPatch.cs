@@ -168,6 +168,12 @@ public static class PopupShowTranslationPatch
                 return;
             }
 
+            if (GameObjectStatPopupTranslationPatch.TryTranslatePopupMessage(__0, Context, "Popup.Show", out var statTranslated))
+            {
+                __0 = statTranslated;
+                return;
+            }
+
             __0 = PopupTranslationPatch.TranslatePopupTextForProducerRoute(__0, Context);
         }
         catch (Exception ex)

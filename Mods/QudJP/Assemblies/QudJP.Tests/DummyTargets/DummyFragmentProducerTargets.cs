@@ -62,6 +62,49 @@ internal sealed class DummyLiquidVolumeProducerTarget
     }
 }
 
+internal sealed class DummyGameObjectStatPopupProducerTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void GainSP(int amount, bool message = true)
+    {
+        ShowStatPopup(nameof(GainSP), amount, message);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void GainEgo(int amount, bool message = true)
+    {
+        ShowStatPopup(nameof(GainEgo), amount, message);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void LoseEgo(int amount, bool message = true)
+    {
+        ShowStatPopup(nameof(LoseEgo), amount, message);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void GainIntelligence(int amount, bool message = true)
+    {
+        ShowStatPopup(nameof(GainIntelligence), amount, message);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void GainWillpower(int amount, bool message = true)
+    {
+        ShowStatPopup(nameof(GainWillpower), amount, message);
+    }
+
+    private void ShowStatPopup(string methodName, int amount, bool message)
+    {
+        _ = methodName;
+        _ = amount;
+        _ = message;
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+}
+
 internal sealed class DummyDesalinationPelletProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
@@ -107,6 +150,67 @@ internal sealed class DummyVehicleRepairProducerTarget
         _ = e;
         DummyPopupShow.Show(PopupMessageToShow);
         return true;
+    }
+}
+
+internal sealed class DummyRepairProducerTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    public string HandleEventPopupMethod { get; set; } = "ShowYesNoCancel";
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool HandleEvent(DummyInventoryActionEvent e)
+    {
+        _ = e;
+        if (HandleEventPopupMethod == "ShowFail")
+        {
+            DummyPopupShow.ShowFail(PopupMessageToShow);
+        }
+        else if (HandleEventPopupMethod == "Show")
+        {
+            DummyPopupShow.Show(PopupMessageToShow);
+        }
+        else
+        {
+            DummyPopupShow.ShowYesNoCancel(PopupMessageToShow);
+        }
+
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void RepairResultSuccess(DummyGameObject who, DummyGameObject obj)
+    {
+        _ = who;
+        _ = obj;
+        DummyPopupTarget.ShowBlock(PopupMessageToShow);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void RepairResultExceptionalSuccess(DummyGameObject who, DummyGameObject obj)
+    {
+        ShowRepairPopup(nameof(RepairResultExceptionalSuccess), who, obj);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void RepairResultPartialSuccess(DummyGameObject who, DummyGameObject obj)
+    {
+        ShowRepairPopup(nameof(RepairResultPartialSuccess), who, obj);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void RepairResultFailure(DummyGameObject who, DummyGameObject obj)
+    {
+        ShowRepairPopup(nameof(RepairResultFailure), who, obj);
+    }
+
+    private void ShowRepairPopup(string methodName, DummyGameObject who, DummyGameObject obj)
+    {
+        _ = methodName;
+        _ = who;
+        _ = obj;
+        DummyPopupShow.Show(PopupMessageToShow);
     }
 }
 
@@ -170,6 +274,137 @@ internal sealed class DummyZoneWindChangeProducerTarget
     {
         _ = turnNumber;
         DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, null, Capitalize: false);
+    }
+}
+
+internal sealed class DummyPlayerDanceRitualProducerTarget
+{
+    public string QueuedMessageToSend { get; set; } = string.Empty;
+
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ExecuteMove(string actor, string direction)
+    {
+        _ = actor;
+        _ = direction;
+        DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, null, Capitalize: false);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void PassStep(string reason = "")
+    {
+        _ = nameof(PassStep);
+        _ = reason;
+        DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, null, Capitalize: false);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void FailStep(string reason = "")
+    {
+        _ = nameof(FailStep);
+        _ = reason;
+        DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, null, Capitalize: false);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void FailDance(string reason = "")
+    {
+        _ = nameof(FailDance);
+        _ = reason;
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void SuccessDance(string reason = "")
+    {
+        _ = nameof(SuccessDance);
+        _ = reason;
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+}
+
+internal sealed class DummyBeguilingSifrahProducerTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ResultCriticalFailure(DummyGameObject contextObject)
+    {
+        ShowResultPopup(nameof(ResultCriticalFailure), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ResultFailure(DummyGameObject contextObject)
+    {
+        ShowResultPopup(nameof(ResultFailure), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ResultPartialSuccess(DummyGameObject contextObject)
+    {
+        ShowResultPopup(nameof(ResultPartialSuccess), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ResultSuccess(DummyGameObject contextObject)
+    {
+        ShowResultPopup(nameof(ResultSuccess), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ResultExceptionalSuccess(DummyGameObject contextObject)
+    {
+        ShowResultPopup(nameof(ResultExceptionalSuccess), contextObject);
+    }
+
+    private void ShowResultPopup(string methodName, DummyGameObject contextObject)
+    {
+        _ = methodName;
+        _ = contextObject;
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+}
+
+internal sealed class DummyProselytizationSifrahProducerTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ResultCriticalFailure(DummyGameObject contextObject)
+    {
+        ShowResultPopup(nameof(ResultCriticalFailure), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ResultFailure(DummyGameObject contextObject)
+    {
+        ShowResultPopup(nameof(ResultFailure), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ResultPartialSuccess(DummyGameObject contextObject)
+    {
+        ShowResultPopup(nameof(ResultPartialSuccess), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ResultSuccess(DummyGameObject contextObject)
+    {
+        ShowResultPopup(nameof(ResultSuccess), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ResultExceptionalSuccess(DummyGameObject contextObject)
+    {
+        ShowResultPopup(nameof(ResultExceptionalSuccess), contextObject);
+    }
+
+    private void ShowResultPopup(string methodName, DummyGameObject contextObject)
+    {
+        _ = methodName;
+        _ = contextObject;
+        DummyPopupShow.Show(PopupMessageToShow);
     }
 }
 

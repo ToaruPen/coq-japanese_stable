@@ -153,6 +153,10 @@ For inventory / equipment display checks, follow the runtime evidence rules in
 - For player-facing builds, the release ZIP and Workshop content include
   `QudJP/Launch CavesOfQud (Rosetta).command`; launch through that wrapper
   from the installed `QudJP` folder
+- The Workshop launcher is intended for Finder double-click use. If Rosetta 2
+  is missing, it offers to install Rosetta 2 through a macOS dialog. If Caves of
+  Qud is not in the default Steam library, it opens a file picker so the user can
+  select `CoQ.app`.
 - On macOS with the default Steam library, the subscribed Workshop item is
   normally under:
   `~/Library/Application Support/Steam/steamapps/workshop/content/333640/3718988020/`

@@ -15,10 +15,15 @@ def _justfile_text() -> str:
 
 
 def _download_release_zip_recipe() -> str:
+    return _recipe_body("download-release-zip")
+
+
+def _recipe_body(name: str) -> str:
     justfile = _justfile_text()
-    marker = "\ndownload-release-zip version:\n"
-    _prefix, separator, remainder = justfile.partition(marker)
-    assert separator, "download-release-zip version: recipe not found in justfile"
+    marker_pattern = rf"\n{name}(?:\s+[^:\n]+)*:\n"
+    match = re.search(marker_pattern, justfile)
+    assert match, f"{name}: recipe not found in justfile"
+    remainder = justfile[match.end() :]
     next_recipe = re.search(r"^[A-Za-z0-9_-]+(?:\s+[^:\n]+)*:\n", remainder, flags=re.MULTILINE)
     return remainder[: next_recipe.start()] if next_recipe is not None else remainder
 
@@ -47,3 +52,14 @@ def test_download_release_zip_quotes_version_argument() -> None:
 
     assert re.search(r"^version=(['\"]).*touch /tmp/qudjp-just-injection.*\1$", dry_run, re.MULTILINE)
     assert not re.search(r"^(?!version=).*;\s*touch\s+/tmp/qudjp-just-injection", dry_run, re.MULTILINE)
+
+
+def test_workshop_upload_preflight_recipe_uses_dedicated_verifier() -> None:
+    """The upload gate must verify staged content against the chosen release ZIP."""
+    recipe = _recipe_body("workshop-upload-preflight")
+
+    assert "scripts/verify_workshop_upload.py" in recipe
+    assert "--release-zip" in recipe
+    assert "--content-folder" in recipe
+    assert "--vdf" in recipe
+    assert "--expected-version" in recipe

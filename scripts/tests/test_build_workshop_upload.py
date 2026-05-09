@@ -18,17 +18,11 @@ from scripts.build_workshop_upload import (
     main,
     render_vdf,
     vdf_escape,
+    verify_workshop_upload_staging,
 )
-
-_VALID_RELEASE_DLL_MARKER_PAYLOAD = b"\0".join(
-    [
-        b"Unity.TextMeshPro",
-        b"TextMeshProUguiFontPatch",
-        b"TmpInputFieldFontPatch",
-        b"InventoryLineFontFixer",
-        b"DelayedInventoryLineRepairScheduler",
-        b"ShouldPreserveActiveReplacementForTests",
-    ],
+from scripts.tests._common import (
+    VALID_RELEASE_DLL_MARKER_PAYLOAD,
+    write_workshop_release_zip,
 )
 
 
@@ -36,25 +30,10 @@ def _write_release_zip(
     path: Path,
     *,
     version: str = "0.2.0",
-    dll_payload: bytes = _VALID_RELEASE_DLL_MARKER_PAYLOAD,
+    dll_payload: bytes = VALID_RELEASE_DLL_MARKER_PAYLOAD,
 ) -> None:
     """Create a minimal QudJP release ZIP fixture."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-        zf.writestr(
-            "QudJP/manifest.json",
-            json.dumps({"Version": version, "PreviewImage": "preview.png"}),
-        )
-        zf.writestr("QudJP/preview.png", b"png")
-        zf.writestr("QudJP/LICENSE", "MIT License")
-        zf.writestr("QudJP/NOTICE.md", "# NOTICE")
-        zf.writestr("QudJP/Bootstrap.cs", "public static class Bootstrap {}")
-        launcher_info = zipfile.ZipInfo("QudJP/Launch CavesOfQud (Rosetta).command")
-        launcher_info.external_attr = 0o100755 << 16
-        zf.writestr(launcher_info, "#!/usr/bin/env bash\n")
-        zf.writestr("QudJP/Assemblies/QudJP.dll", dll_payload)
-        zf.writestr("QudJP/Localization/ui.json", "{}")
-        zf.writestr("QudJP/Fonts/OFL.txt", "SIL Open Font License")
+    write_workshop_release_zip(path, version=version, dll_payload=dll_payload)
 
 
 def test_default_workshop_ids_are_caves_of_qud_item() -> None:
@@ -136,7 +115,7 @@ def test_render_vdf_contains_absolute_content_preview_and_changenote(tmp_path: P
         metadata,
         content_folder=content_folder,
         preview_file=preview_file,
-        changenote='v0.2.0: "release"',
+        changenote="v0.2.0: release",
         description="Caves of Qud 日本語化",
     )
 
@@ -144,8 +123,41 @@ def test_render_vdf_contains_absolute_content_preview_and_changenote(tmp_path: P
     assert '"publishedfileid" "3718988020"' in vdf
     assert f'"contentfolder" "{content_folder.resolve()}"' in vdf
     assert f'"previewfile" "{preview_file.resolve()}"' in vdf
-    assert '"changenote" "v0.2.0: \\"release\\""' in vdf
+    assert '"changenote" "v0.2.0: release"' in vdf
     assert '"description" "Caves of Qud 日本語化"' in vdf
+
+
+def test_render_vdf_rejects_quotes_in_description_or_changenote(tmp_path: Path) -> None:
+    """Steam KeyValues parsing is fragile with escaped quotes in long text fields."""
+    content_folder = tmp_path / "QudJP"
+    content_folder.mkdir()
+    preview_file = content_folder / "preview.png"
+    preview_file.write_bytes(b"png")
+    metadata = WorkshopMetadata(
+        appid="333640",
+        publishedfileid="3718988020",
+        title="Caves of Qud Japanese Mod",
+        visibility="0",
+        description_file=None,
+    )
+
+    with pytest.raises(ValueError, match=r"description.*double quote"):
+        render_vdf(
+            metadata,
+            content_folder=content_folder,
+            preview_file=preview_file,
+            changenote="v0.2.0 release",
+            description='Launch with "Rosetta"',
+        )
+
+    with pytest.raises(ValueError, match=r"changenote.*double quote"):
+        render_vdf(
+            metadata,
+            content_folder=content_folder,
+            preview_file=preview_file,
+            changenote='v0.2.0 "release"',
+            description="Caves of Qud 日本語化",
+        )
 
 
 def test_create_workshop_staging_extracts_qudjp_root(tmp_path: Path) -> None:
@@ -237,7 +249,7 @@ def test_create_workshop_staging_rejects_release_zip_with_dev_probe_markers(tmp_
     release_zip = tmp_path / "dist" / "QudJP-v0.2.0.zip"
     _write_release_zip(
         release_zip,
-        dll_payload=_VALID_RELEASE_DLL_MARKER_PAYLOAD + b"\0[QudJP] SinkObserve/v1:",
+        dll_payload=VALID_RELEASE_DLL_MARKER_PAYLOAD + b"\0[QudJP] SinkObserve/v1:",
     )
 
     with pytest.raises(
@@ -254,6 +266,77 @@ def test_create_workshop_staging_rejects_release_zip_missing_required_dll_marker
 
     with pytest.raises(ValueError, match=rf"{re.escape(str(release_zip))}.*Unity\.TextMeshPro"):
         create_workshop_staging(release_zip, tmp_path / "workshop")
+
+
+def test_verify_workshop_upload_staging_accepts_matching_release_zip(tmp_path: Path) -> None:
+    """Upload preflight accepts staging generated from the same release ZIP."""
+    release_zip = tmp_path / "dist" / "QudJP-v0.2.50.zip"
+    _write_release_zip(release_zip, version="0.2.50", dll_payload=VALID_RELEASE_DLL_MARKER_PAYLOAD)
+    content_folder, _preview = create_workshop_staging(release_zip, tmp_path / "dist" / "workshop")
+
+    findings = verify_workshop_upload_staging(release_zip, content_folder, expected_version="0.2.50")
+
+    assert findings == []
+
+
+def test_verify_workshop_upload_staging_reports_stale_content_folder(tmp_path: Path) -> None:
+    """Upload preflight reports stale staged content before steamcmd can publish it."""
+    release_zip = tmp_path / "dist" / "QudJP-v0.2.50.zip"
+    _write_release_zip(release_zip, version="0.2.50", dll_payload=VALID_RELEASE_DLL_MARKER_PAYLOAD)
+    stale_zip = tmp_path / "dist" / "QudJP-v0.2.0.zip"
+    _write_release_zip(stale_zip, version="0.2.0", dll_payload=b"old dll" + VALID_RELEASE_DLL_MARKER_PAYLOAD)
+    content_folder, _preview = create_workshop_staging(stale_zip, tmp_path / "dist" / "workshop")
+
+    findings = verify_workshop_upload_staging(release_zip, content_folder, expected_version="0.2.50")
+
+    assert findings == [
+        "staged manifest version mismatch: expected 0.2.50, got 0.2.0",
+        "staged QudJP.dll SHA256 does not match release ZIP",
+        "staged file hash mismatch: manifest.json",
+    ]
+
+
+def test_verify_workshop_upload_staging_reports_stale_localization_asset(tmp_path: Path) -> None:
+    """Upload preflight reports stale non-DLL files, not only manifest and assembly drift."""
+    release_zip = tmp_path / "dist" / "QudJP-v0.2.50.zip"
+    _write_release_zip(release_zip, version="0.2.50", dll_payload=VALID_RELEASE_DLL_MARKER_PAYLOAD)
+    content_folder, _preview = create_workshop_staging(release_zip, tmp_path / "dist" / "workshop")
+    (content_folder / "Localization" / "ui.json").write_text('{"stale": true}', encoding="utf-8")
+
+    findings = verify_workshop_upload_staging(release_zip, content_folder, expected_version="0.2.50")
+
+    assert findings == ["staged file hash mismatch: Localization/ui.json"]
+
+
+def test_verify_workshop_upload_staging_reports_missing_and_extra_files(tmp_path: Path) -> None:
+    """Upload preflight reports content set drift before steamcmd upload."""
+    release_zip = tmp_path / "dist" / "QudJP-v0.2.50.zip"
+    _write_release_zip(release_zip, version="0.2.50", dll_payload=VALID_RELEASE_DLL_MARKER_PAYLOAD)
+    content_folder, _preview = create_workshop_staging(release_zip, tmp_path / "dist" / "workshop")
+    (content_folder / "preview.png").unlink()
+    (content_folder / "stale.txt").write_text("stale", encoding="utf-8")
+
+    findings = verify_workshop_upload_staging(release_zip, content_folder, expected_version="0.2.50")
+
+    assert findings == [
+        "staged content missing file: preview.png",
+        "staged content has extra file: stale.txt",
+    ]
+
+
+def test_verify_workshop_upload_staging_reports_same_version_manifest_drift(tmp_path: Path) -> None:
+    """Upload preflight reports manifest drift even when Version still matches."""
+    release_zip = tmp_path / "dist" / "QudJP-v0.2.50.zip"
+    _write_release_zip(release_zip, version="0.2.50", dll_payload=VALID_RELEASE_DLL_MARKER_PAYLOAD)
+    content_folder, _preview = create_workshop_staging(release_zip, tmp_path / "dist" / "workshop")
+    (content_folder / "manifest.json").write_text(
+        json.dumps({"Version": "0.2.50", "PreviewImage": "old-preview.png"}),
+        encoding="utf-8",
+    )
+
+    findings = verify_workshop_upload_staging(release_zip, content_folder, expected_version="0.2.50")
+
+    assert findings == ["staged file hash mismatch: manifest.json"]
 
 
 def test_find_latest_release_zip_uses_newest_mtime(tmp_path: Path) -> None:
