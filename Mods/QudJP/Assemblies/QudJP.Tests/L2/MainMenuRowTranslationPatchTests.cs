@@ -117,15 +117,21 @@ public sealed class MainMenuRowTranslationPatchTests
     {
         var row = new DummyMainMenuRow();
         var applied = false;
+        object? capturedTarget = null;
 
         var result = MainMenuRowTranslationPatch.TryApplyLegacyFontToRowTextForTests(
             row,
-            _ => applied = true);
+            target =>
+            {
+                applied = true;
+                capturedTarget = target;
+            });
 
         Assert.Multiple(() =>
         {
             Assert.That(result, Is.True);
             Assert.That(applied, Is.True);
+            Assert.That(capturedTarget, Is.SameAs(row.text));
         });
     }
 

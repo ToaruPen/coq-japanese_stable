@@ -131,8 +131,22 @@ public static class MainMenuRowTranslationPatch
             return false;
         }
 
-        var text = AccessTools.Field(row.GetType(), "text")?.GetValue(row)
-            ?? AccessTools.Property(row.GetType(), "text")?.GetValue(row);
+        var rowType = row.GetType();
+        object? text = null;
+        var textField = AccessTools.Field(rowType, "text");
+        if (textField is not null)
+        {
+            text = textField.GetValue(row);
+        }
+        else
+        {
+            var textProperty = AccessTools.Property(rowType, "text");
+            if (textProperty is not null)
+            {
+                text = textProperty.GetValue(row);
+            }
+        }
+
         if (text is null)
         {
             return false;

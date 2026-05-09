@@ -96,8 +96,15 @@ class TestProjectManifest:
         launcher = PROJECT_ROOT / "Mods" / "QudJP" / "Launch CavesOfQud (Rosetta).command"
         text = launcher.read_text(encoding="utf-8")
 
-        assert 'export SteamAppId="333640"' in text
-        assert 'export SteamGameId="333640"' in text
+        steam_app_id = 'export SteamAppId="333640"'
+        steam_game_id = 'export SteamGameId="333640"'
+        exec_launch = "exec arch -x86_64"
+
+        assert steam_app_id in text
+        assert steam_game_id in text
+        assert exec_launch in text
+        assert text.index(steam_app_id) < text.index(exec_launch)
+        assert text.index(steam_game_id) < text.index(exec_launch)
 
 
 class TestReadPreviewImagePath:
