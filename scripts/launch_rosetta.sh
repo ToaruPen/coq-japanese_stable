@@ -36,7 +36,7 @@
 
 set -euo pipefail
 
-GAME_BINARY="${HOME}/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/MacOS/CoQ"
+GAME_BINARY="${HOME}/Games/CavesOfQud-stable-ref/CoQ.app/Contents/MacOS/CoQ"
 
 # ---------------------------------------------------------------------------
 # --help
@@ -75,7 +75,7 @@ if [[ ! -f "${GAME_BINARY}" ]]; then
   echo "ERROR: Game binary not found at:" >&2
   echo "       ${GAME_BINARY}" >&2
   echo "" >&2
-  echo "Make sure Caves of Qud is installed via Steam in the default library." >&2
+  echo "Make sure Caves of Qud stable reference exists at ~/Games/CavesOfQud-stable-ref." >&2
   exit 1
 fi
 

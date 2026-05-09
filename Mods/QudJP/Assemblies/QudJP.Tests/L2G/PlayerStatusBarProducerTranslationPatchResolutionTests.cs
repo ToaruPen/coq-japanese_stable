@@ -102,7 +102,7 @@ public sealed class PlayerStatusBarProducerTranslationPatchResolutionTests
 
         yield return Path.Combine(
             home,
-            "Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/Resources/Data/Managed");
+            "Games/CavesOfQud-stable-ref/CoQ.app/Contents/Resources/Data/Managed");
     }
 
     private static Assembly EnsureGameAssemblyLoaded()

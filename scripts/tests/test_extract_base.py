@@ -4,11 +4,26 @@ from pathlib import Path
 
 import pytest
 
-from scripts.extract_base import extract_xml_files
+from scripts.extract_base import _GAME_BASE_DIR, extract_xml_files
 
 
 class TestExtractXmlFiles:
     """Tests for extract_xml_files."""
+
+    def test_default_game_base_dir_uses_stable_reference_snapshot(self) -> None:
+        """Default Base extraction reads from the stable reference snapshot."""
+        expected = (
+            Path.home()
+            / "Games"
+            / "CavesOfQud-stable-ref"
+            / "CoQ.app"
+            / "Contents"
+            / "Resources"
+            / "Data"
+            / "StreamingAssets"
+            / "Base"
+        )
+        assert expected == _GAME_BASE_DIR
 
     def test_copies_xml_files(self, tmp_path: Path) -> None:
         """XML files are copied to the destination."""
