@@ -106,6 +106,18 @@ public sealed class MessagePatternTranslatorTests
         Assert.That(translated, Is.EqualTo("{{c|腐食性ガス放出}}をオンにした。"));
     }
 
+    [TestCase("You are a snapjaw.", "あなたはスナップジョー。")]
+    [TestCase("You are a スナップジョー.", "あなたはスナップジョー。")]
+    public void Translate_TranslatedCaptureStripsLeadingArticleBeforeLogicResolution(string source, string expected)
+    {
+        WriteExactDictionary(("snapjaw", "スナップジョー"));
+        WritePatternDictionary(("^You are (.+?)[.!]?$", "あなたは{t0}。"));
+
+        var translated = MessagePatternTranslator.Translate(source);
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
 
     [Test]
     public void Translate_SupportsPlaceholderReordering()
