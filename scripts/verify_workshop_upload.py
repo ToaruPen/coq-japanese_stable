@@ -36,10 +36,23 @@ def _parse_vdf_fields(vdf_text: str) -> dict[str, str]:
     return fields
 
 
-def _append_vdf_mismatch(findings: list[str], fields: dict[str, str], key: str, expected: str) -> None:
+def _vdf_unescape(value: str) -> str:
+    """Unescape the subset emitted by build_workshop_upload.vdf_escape."""
+    return value.replace(r"\\", "\\").replace(r"\"", '"')
+
+
+def _append_vdf_mismatch(
+    findings: list[str],
+    fields: dict[str, str],
+    key: str,
+    expected: str,
+    *,
+    unescape_actual: bool = False,
+) -> None:
     """Append a standard VDF field mismatch finding."""
     actual = fields.get(key, "<missing>")
-    if actual != expected:
+    comparable_actual = _vdf_unescape(actual) if unescape_actual and actual != "<missing>" else actual
+    if comparable_actual != expected:
         findings.append(f"VDF {key} mismatch: expected {expected}, got {actual}")
 
 
@@ -54,9 +67,9 @@ def verify_workshop_vdf(vdf_path: Path, *, content_folder: Path) -> list[str]:
     _append_vdf_mismatch(findings, fields, "appid", WORKSHOP_APP_ID)
     _append_vdf_mismatch(findings, fields, "publishedfileid", WORKSHOP_PUBLISHED_FILE_ID)
     expected_content_folder = str(content_folder.resolve())
-    _append_vdf_mismatch(findings, fields, "contentfolder", expected_content_folder)
+    _append_vdf_mismatch(findings, fields, "contentfolder", expected_content_folder, unescape_actual=True)
     expected_preview_file = str((content_folder / "preview.png").resolve())
-    _append_vdf_mismatch(findings, fields, "previewfile", expected_preview_file)
+    _append_vdf_mismatch(findings, fields, "previewfile", expected_preview_file, unescape_actual=True)
     if r"\"" in vdf_text:
         findings.append('VDF contains escaped double quote sequences (\\"); remove double quotes from text fields')
     if r"\n" in vdf_text:

@@ -44,6 +44,31 @@ def test_verify_workshop_vdf_reports_identity_and_escaped_text_findings(tmp_path
     ]
 
 
+def test_verify_workshop_vdf_unescapes_path_fields_before_comparison(tmp_path: Path) -> None:
+    """The VDF gate accepts path fields escaped by render_vdf."""
+    content_folder = tmp_path / "Steam\\Library" / "QudJP"
+    content_folder.mkdir(parents=True)
+    vdf = tmp_path / "workshop_item.vdf"
+    escaped_content_folder = str(content_folder.resolve()).replace("\\", "\\\\")
+    escaped_preview_file = str((content_folder / "preview.png").resolve()).replace("\\", "\\\\")
+    vdf.write_text(
+        "\n".join(
+            [
+                '"workshopitem"',
+                "{",
+                '  "appid" "333640"',
+                '  "publishedfileid" "3718988020"',
+                f'  "contentfolder" "{escaped_content_folder}"',
+                f'  "previewfile" "{escaped_preview_file}"',
+                "}",
+            ],
+        ),
+        encoding="utf-8",
+    )
+
+    assert verify_workshop_vdf(vdf, content_folder=content_folder) == []
+
+
 def test_main_accepts_matching_staging_and_vdf(tmp_path: Path) -> None:
     """The CLI accepts upload files generated from the same release ZIP."""
     release_zip = tmp_path / "dist" / "QudJP-v0.2.50.zip"
