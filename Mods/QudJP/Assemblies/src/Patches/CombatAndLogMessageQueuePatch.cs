@@ -49,6 +49,7 @@ public static class CombatAndLogMessageQueuePatch
                 || GameObjectSpotTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
                 || XrlCoreLostSightTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
                 || DeployableInfrastructureTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
+                || PlayerDanceRitualTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
                 || GameObjectEmitMessageTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
                 || ZoneManagerTryThawZoneTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
                 || ZoneManagerTickTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)

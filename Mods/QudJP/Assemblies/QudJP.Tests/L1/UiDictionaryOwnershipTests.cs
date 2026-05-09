@@ -31,6 +31,8 @@ public sealed class UiDictionaryOwnershipTests
         {
             ("drop", "落とす"),
             ("detonate", "起爆する"),
+            ("look", "見る"),
+            ("examine", "調べる"),
         };
 
         Assert.Multiple(() =>

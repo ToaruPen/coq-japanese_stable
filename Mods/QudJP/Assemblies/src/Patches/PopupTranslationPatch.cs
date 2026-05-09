@@ -445,6 +445,30 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (RepairTranslationPatch.TryTranslatePopupMessage(source, route, family, out var repairTranslated))
+        {
+            translated = repairTranslated;
+            return true;
+        }
+
+        if (PlayerDanceRitualTranslationPatch.TryTranslatePopupMessage(source, route, family, out var playerDanceRitualTranslated))
+        {
+            translated = playerDanceRitualTranslated;
+            return true;
+        }
+
+        if (BeguilingSifrahTranslationPatch.TryTranslatePopupMessage(source, route, family, out var beguilingSifrahTranslated))
+        {
+            translated = beguilingSifrahTranslated;
+            return true;
+        }
+
+        if (ProselytizationSifrahTranslationPatch.TryTranslatePopupMessage(source, route, family, out var proselytizationSifrahTranslated))
+        {
+            translated = proselytizationSifrahTranslated;
+            return true;
+        }
+
         if (MutationsApiTranslationPatch.TryTranslatePopupMessage(source, route, family, out var mutationTranslated))
         {
             translated = mutationTranslated;

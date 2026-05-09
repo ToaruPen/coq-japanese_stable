@@ -551,6 +551,14 @@ public sealed class TargetMethodResolutionTests
         "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
         "System.String",
     })]
+    [TestCase(typeof(GameObjectStatPopupTranslationPatch), new[]
+    {
+        "System.Int32|System.Boolean",
+        "System.Int32|System.Boolean",
+        "System.Int32|System.Boolean",
+        "System.Int32|System.Boolean",
+        "System.Int32|System.Boolean",
+    })]
     [TestCase(typeof(ZoneDisplayNameTranslationPatch), new[]
     {
         "System.String|System.Int32|XRL.World.ZoneBlueprint|System.Boolean|System.Boolean|System.Boolean|System.Boolean",
@@ -634,6 +642,43 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.InventoryActionEvent",
         "System.Boolean&|XRL.World.GameObject|XRL.World.Cell|System.Boolean|System.Boolean|System.Int32|System.Boolean",
         "XRL.World.GameObject|System.Boolean&|System.Boolean",
+    })]
+    [TestCase(typeof(RepairTranslationPatch), new[]
+    {
+        "XRL.World.InventoryActionEvent",
+        "XRL.World.GameObject|XRL.World.GameObject",
+        "XRL.World.GameObject|XRL.World.GameObject",
+        "XRL.World.GameObject|XRL.World.GameObject",
+        "XRL.World.GameObject|XRL.World.GameObject",
+        "XRL.World.InventoryActionEvent",
+        "XRL.World.GameObject|XRL.World.GameObject",
+        "XRL.World.GameObject|XRL.World.GameObject",
+        "XRL.World.GameObject|XRL.World.GameObject",
+        "XRL.World.GameObject|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(PlayerDanceRitualTranslationPatch), new[]
+    {
+        "System.String|System.String",
+        "System.String",
+        "System.String",
+        "System.String",
+        "System.String",
+    })]
+    [TestCase(typeof(BeguilingSifrahTranslationPatch), new[]
+    {
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+    })]
+    [TestCase(typeof(ProselytizationSifrahTranslationPatch), new[]
+    {
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
     })]
     [TestCase(typeof(DeployableInfrastructureTranslationPatch), new[]
     {
