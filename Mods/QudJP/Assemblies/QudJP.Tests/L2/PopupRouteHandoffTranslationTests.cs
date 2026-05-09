@@ -139,7 +139,7 @@ public sealed class PopupRouteHandoffTranslationTests
     public void PickOptionRoute_HandsOffTranslatedSiblingOptions_ToSelectableText()
     {
         WriteDictionary(
-            ("Look", "調べる"),
+            ("Look", "見る"),
             ("Show Effects", "効果を見る"),
             ("Detonate", "起爆する"),
             ("Quit Without Saving", "保存せず終了"));
@@ -162,7 +162,7 @@ public sealed class PopupRouteHandoffTranslationTests
         {
             Assert.That(
                 DummyPopupGenericTarget.LastPickOptionOptions,
-                Is.EqualTo(new[] { "調べる", "効果を見る", "起爆する", "保存せず終了" }));
+                Is.EqualTo(new[] { "見る", "効果を見る", "起爆する", "保存せず終了" }));
             Assert.That(
                 UITextSkinTranslationPatch.TranslatePreservingColors(renderedOptions[0], nameof(PopupMessageTranslationPatch)),
                 Is.EqualTo(renderedOptions[0]));
@@ -191,7 +191,7 @@ public sealed class PopupRouteHandoffTranslationTests
             ("Choose your response.", "返答を選択してください。"),
             ("Ask about water", "水について尋ねる"),
             ("Leave", "立ち去る"),
-            ("[L] Look", "[L] 調べる"),
+            ("[L] Look", "[L] 見る"),
             ("[Esc] Cancel", "[Esc] キャンセル"));
 
         using var conversationPatch = PatchMethod(
@@ -235,12 +235,12 @@ public sealed class PopupRouteHandoffTranslationTests
             Assert.That(DummyPopupTarget.LastShowConversationOptions, Is.EqualTo(new[] { "水について尋ねる", "{{G|立ち去る}}" }));
             Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("返答を選択してください。\n\n"));
             Assert.That(DummyPopupMessageTarget.LastTitle, Is.EqualTo("取引"));
-            Assert.That(DummyPopupMessageTarget.LastButtons![0].text, Is.EqualTo("{{W|[L]}} {{y|調べる}}"));
+            Assert.That(DummyPopupMessageTarget.LastButtons![0].text, Is.EqualTo("{{W|[L]}} {{y|見る}}"));
             Assert.That(DummyPopupMessageTarget.LastButtons[1].text, Is.EqualTo("{{W|[Esc]}} {{y|キャンセル}}"));
             Assert.That(DummyPopupMessageTarget.LastItems![0].text, Is.EqualTo("{{w|[1]}} 水について尋ねる\n\n"));
             Assert.That(DummyPopupMessageTarget.LastItems[1].text, Is.EqualTo("{{w|[2]}} {{G|立ち去る}}\n\n"));
             Assert.That(renderedMessage, Is.EqualTo("{{y|返答を選択してください。\n\n}}"));
-            Assert.That(renderedButton, Is.EqualTo("{{W|[L]}} {{y|調べる}}"));
+            Assert.That(renderedButton, Is.EqualTo("{{W|[L]}} {{y|見る}}"));
             Assert.That(renderedItem, Is.EqualTo("{{w|[1]}} 水について尋ねる\n\n"));
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
@@ -263,12 +263,12 @@ public sealed class PopupRouteHandoffTranslationTests
             ("Quit Without Saving", "保存せず終了"),
             ("Are you sure you want to quit?", "本当に終了しますか？"),
             ("Hold to Accept", "長押しで決定"),
-            ("Look", "調べる"),
+            ("Look", "見る"),
             ("Show Effects", "効果を見る"),
             ("Detonate", "起爆する"),
             ("[Tab] Hold to Accept", "[Tab] 長押しで決定"),
             ("[Esc] Quit Without Saving", "[Esc] 保存せず終了"),
-            ("[L] Look", "[L] 調べる"),
+            ("[L] Look", "[L] 見る"),
             ("[E] Show Effects", "[E] 効果を見る"),
             ("[N] Detonate", "[N] 起爆する"));
 
@@ -305,7 +305,7 @@ public sealed class PopupRouteHandoffTranslationTests
             Assert.That(DummyPopupMessageTarget.LastButtons![0].text, Is.EqualTo("{{W|[Tab]}} {{y|長押しで決定}}"));
             Assert.That(DummyPopupMessageTarget.LastButtons[1].text, Is.EqualTo("{{W|[Esc]}} {{y|保存せず終了}}"));
             Assert.That(DummyPopupMessageTarget.LastItems, Is.Not.Null);
-            Assert.That(DummyPopupMessageTarget.LastItems![0].text, Is.EqualTo("{{W|[L]}} {{y|調べる}}"));
+            Assert.That(DummyPopupMessageTarget.LastItems![0].text, Is.EqualTo("{{W|[L]}} {{y|見る}}"));
             Assert.That(DummyPopupMessageTarget.LastItems[1].text, Is.EqualTo("{{W|[E]}} {{y|効果を見る}}"));
             Assert.That(DummyPopupMessageTarget.LastItems[2].text, Is.EqualTo("{{W|[N]}} {{y|起爆する}}"));
             Assert.That(sinkText, Is.EqualTo("{{y|そこには設置できない！}}"));

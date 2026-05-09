@@ -67,6 +67,11 @@
       "route": "annals"
     },
     {
+      "pattern": "^Look!\\ (.+?)\\ the\\ life\\ of\\ (.+?)\\ --\\ called\\ (.+?)!\\ --\\ scion\\ of\\ the\\ Fossilized\\ Saads\\ and\\ (.+?)\\ who\\ was\\ dowered\\ the\\ (.+?)\\.\\ Observe\\ the\\ twin\\ miracles\\ of\\ the\\ (.+?):\\ the\\ (.+?)\\ was\\ born,\\ and\\ (.+?)\\.$",
+      "template": "見よ！ {t0}、{t1}の生涯を。すなわち{t2}と呼ばれし者、化石化せしサアドの裔にして、{t4}を授けられし者なり。{t5}の双つの奇跡を見よ。{t6}が生まれ、そして{t7}。",
+      "route": "annals"
+    },
+    {
       "pattern": "^(.+?)!\\ (.+?)\\ the\\ life\\ of\\ (.+?)\\ --\\ called\\ (.+?)!\\ --\\ scion\\ of\\ the\\ Fossilized\\ Saads\\ and\\ (.+?)\\ who\\ was\\ dowered\\ the\\ (.+?)\\.\\ Observe\\ the\\ twin\\ miracles\\ of\\ the\\ (.+?):\\ the\\ (.+?)\\ was\\ born,\\ and\\ (.+?)\\.$",
       "template": "{t0}よ！ {t1}、{t2}の生涯を。すなわち{t3}と呼ばれし者、化石化せしサアドの裔にして、{t5}を授けられし者なり。{t6}の双つの奇跡を見よ。{t7}が生まれ、そして{t8}。",
       "route": "annals"

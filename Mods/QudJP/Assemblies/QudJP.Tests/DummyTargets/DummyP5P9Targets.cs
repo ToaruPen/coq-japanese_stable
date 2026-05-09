@@ -30,6 +30,7 @@ internal static class DummyPopupShow
 {
     public static string? LastShowMessage;
     public static string? LastShowYesNoMessage;
+    public static string? LastShowYesNoCancelMessage;
     public static string? LastShowYesNoAsyncMessage;
     public static string? LastShowYesNoCancelAsyncMessage;
 
@@ -53,6 +54,16 @@ internal static class DummyPopupShow
     {
         LastShowYesNoMessage = Message;
         return 0;
+    }
+
+    public static int ShowYesNoCancel(
+        string Message,
+        string? Sound = null,
+        bool AllowEscape = true,
+        int defaultResult = 0)
+    {
+        LastShowYesNoCancelMessage = Message;
+        return defaultResult;
     }
 
     public static Task<int> ShowYesNoAsync(string Message)
@@ -80,6 +91,7 @@ internal static class DummyPopupShow
     {
         LastShowMessage = null;
         LastShowYesNoMessage = null;
+        LastShowYesNoCancelMessage = null;
         LastShowYesNoAsyncMessage = null;
         LastShowYesNoCancelAsyncMessage = null;
     }
