@@ -17,7 +17,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Self
 from urllib.error import HTTPError
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse
 from urllib.request import Request, urlopen
 
 _NUMERIC_ID_PATTERN = re.compile(r"^[0-9]+$")
@@ -26,6 +26,7 @@ _STEAM_DETAILS_URL = "https://api.steampowered.com/ISteamRemoteStorage/GetPublis
 _TRUNCATION_NOTE = "[truncated]"
 _HTTP_OK = 200
 _STEAMID64_ACCOUNT_ID_BASE = 76_561_197_960_265_728
+_DISCUSSION_THREAD_PATH_PARTS = 5
 _DEFAULT_STATE_DIR = Path(".coq-japanese_workshop/state")
 _DEFAULT_DB_NAME = "workshop-inbox.sqlite3"
 _COLLECTOR_VERSION = "local-sqlite-v1"
@@ -396,6 +397,7 @@ def main(argv: list[str] | None = None) -> int:
     with open_workshop_inbox(args.db_path) as store:
         summary = collect_workshop_comments(
             metadata_path=args.metadata_path,
+            discussion_thread_urls=args.discussion_thread_url,
             steam_transport=_make_urllib_transport(
                 timeout_seconds=options.timeout_seconds,
                 max_response_bytes=options.max_response_bytes,
@@ -413,6 +415,7 @@ def main(argv: list[str] | None = None) -> int:
 def collect_workshop_comments(
     *,
     metadata_path: Path,
+    discussion_thread_urls: list[str] | None = None,
     steam_transport: Transport,
     store: WorkshopInboxStore,
     options: CollectionOptions,
@@ -431,6 +434,15 @@ def collect_workshop_comments(
         steam_transport=steam_transport,
         options=options,
     )
+    for discussion_thread_url in discussion_thread_urls or []:
+        comments.extend(
+            _fetch_discussion_thread_comments(
+                discussion_thread_url=discussion_thread_url,
+                published_file_id=published_file_id,
+                steam_transport=steam_transport,
+                options=options,
+            ),
+        )
     creator_account_id = creator_account_id_from_steam_id(creator_id)
     importable_comments = [
         comment
@@ -509,6 +521,21 @@ def build_steam_comments_url(*, creator_id: str, published_file_id: str, start: 
     return f"{_STEAM_COMMENTS_URL.format(creator=creator, published=published)}?start={start}&count={count}&l=japanese"
 
 
+def build_steam_discussion_thread_url(discussion_thread_url: str) -> str:
+    """Build the fixed public Workshop discussion page URL from a user-provided Steam URL."""
+    parsed = urlparse(discussion_thread_url)
+    if parsed.scheme != "https" or parsed.netloc != "steamcommunity.com":
+        msg = "Steam discussion URL must use https://steamcommunity.com"
+        raise ValueError(msg)
+    parts = [part for part in parsed.path.split("/") if part]
+    if len(parts) != _DISCUSSION_THREAD_PATH_PARTS or parts[:3] != ["workshop", "filedetails", "discussion"]:
+        msg = "Steam discussion URL must be a Workshop filedetails discussion URL"
+        raise ValueError(msg)
+    published_file_id = validate_numeric_id(parts[3], field_name="publishedfileid")
+    topic_id = validate_numeric_id(parts[4], field_name="discussion_topic")
+    return f"https://steamcommunity.com/workshop/filedetails/discussion/{published_file_id}/{topic_id}/?l=japanese"
+
+
 def extract_comments_from_render_response(payload: bytes) -> list[WorkshopComment]:
     """Extract normalized comments from a Steam render JSON response."""
     data = json.loads(payload.decode("utf-8"))
@@ -522,6 +549,14 @@ def extract_comments_from_render_response(payload: bytes) -> list[WorkshopCommen
 
     parser = _SteamCommentParser()
     parser.feed(comments_html)
+    parser.close()
+    return parser.comments
+
+
+def extract_comments_from_discussion_page(payload: bytes) -> list[WorkshopComment]:
+    """Extract normalized comments from a public Steam Workshop discussion page."""
+    parser = _SteamCommentParser()
+    parser.feed(payload.decode("utf-8"))
     parser.close()
     return parser.comments
 
@@ -922,6 +957,26 @@ def _fetch_all_comments(
     return comments
 
 
+def _fetch_discussion_thread_comments(
+    *,
+    discussion_thread_url: str,
+    published_file_id: str,
+    steam_transport: Transport,
+    options: CollectionOptions,
+) -> list[WorkshopComment]:
+    url = build_steam_discussion_thread_url(discussion_thread_url)
+    expected_prefix = f"https://steamcommunity.com/workshop/filedetails/discussion/{published_file_id}/"
+    if not url.startswith(expected_prefix):
+        msg = "Steam discussion URL publishedfileid did not match Workshop metadata"
+        raise ValueError(msg)
+    response = steam_transport("GET", url, None, {})
+    if response.status_code != _HTTP_OK:
+        msg = "Steam discussion thread request failed"
+        raise ValueError(msg)
+    _require_bounded_response(response, max_response_bytes=options.max_response_bytes)
+    return extract_comments_from_discussion_page(response.body)
+
+
 def _require_bounded_response(response: HttpResponse, *, max_response_bytes: int) -> None:
     if len(response.body) > max_response_bytes:
         msg = "HTTP response exceeded max response bytes"
@@ -961,6 +1016,12 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     collect.add_argument("--max-body-chars", type=int, default=4000)
     collect.add_argument("--timeout-seconds", type=int, default=20)
     collect.add_argument("--max-response-bytes", type=int, default=2_097_152)
+    collect.add_argument(
+        "--discussion-thread-url",
+        action="append",
+        default=[],
+        help="Also collect public comments from this Steam Workshop discussion thread URL.",
+    )
     collect.add_argument("--include-creator-comments", action="store_true")
     collect.add_argument("--dry-run", action="store_true")
     return parser.parse_args(argv)

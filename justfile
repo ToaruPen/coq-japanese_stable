@@ -121,6 +121,7 @@ release-zip-check release_zip="":
       "QudJP/LICENSE",
       "QudJP/NOTICE.md",
       "QudJP/Bootstrap.cs",
+      "QudJP/Launch CavesOfQud (Rosetta).command",
       "QudJP/Assemblies/QudJP.dll",
   }
   required_prefixes = {
