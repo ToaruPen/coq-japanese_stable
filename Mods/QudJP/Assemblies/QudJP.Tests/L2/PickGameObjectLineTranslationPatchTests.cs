@@ -77,6 +77,48 @@ public sealed partial class Issue201OtherUiBindingPatchTests
     }
 
     [Test]
+    public void PickGameObjectLinePrefix_UpdatesIconUsingGameRenderForUiSignature_WhenPatched()
+    {
+        WriteDictionary(("Laser Pistol", "レーザーピストル"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPickGameObjectLineTarget), nameof(DummyPickGameObjectLineTarget.setData)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PickGameObjectLineTranslationPatch), nameof(PickGameObjectLineTranslationPatch.Prefix))));
+
+            var item = new DummyGameSignaturePickGameObjectTargetObject
+            {
+                DisplayName = "Laser Pistol",
+                Weight = 7,
+            };
+            var target = new DummyPickGameObjectLineTarget();
+            target.icon.FromRenderable(new DummyRenderable("stale-water-tile"));
+
+            target.setData(new DummyGameSignaturePickGameObjectLineDataTarget
+            {
+                go = item,
+                hotkeyDescription = "a",
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.text.Text, Is.EqualTo("レーザーピストル"));
+                Assert.That(target.icon.LastRenderable, Is.InstanceOf<DummyRenderable>());
+                Assert.That(((DummyRenderable)target.icon.LastRenderable!).Tile, Is.EqualTo("Laser Pistol"));
+                Assert.That(item.LastRenderContext, Is.Null);
+                Assert.That(item.LastAsIfKnown, Is.False);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void PickGameObjectLinePrefix_FallsBackToOriginal_OnUnsupportedInput()
     {
         var harmonyId = CreateHarmonyId();

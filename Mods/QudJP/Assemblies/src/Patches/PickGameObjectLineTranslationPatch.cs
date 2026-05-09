@@ -118,7 +118,7 @@ public static class PickGameObjectLineTranslationPatch
         }
 
         TrySetActive(GetMemberValue(instance, "iconSpacer"), active: true);
-        var renderable = AccessTools.Method(go.GetType(), "RenderForUI", Type.EmptyTypes)?.Invoke(go, null);
+        var renderable = InvokeRenderForUi(go);
         if (icon is not null && renderable is not null)
         {
             _ = AccessTools.Method(icon.GetType(), "FromRenderable")?.Invoke(icon, new[] { renderable });
@@ -244,6 +244,19 @@ public static class PickGameObjectLineTranslationPatch
     {
         var translated = Translator.Translate(source);
         return string.Equals(translated, source, StringComparison.Ordinal) ? source : translated;
+    }
+
+    private static object? InvokeRenderForUi(object go)
+    {
+        var type = go.GetType();
+        var method = AccessTools.Method(type, "RenderForUI", new[] { typeof(string), typeof(bool) });
+        if (method is not null)
+        {
+            return method.Invoke(go, new object?[] { null, false });
+        }
+
+        method = AccessTools.Method(type, "RenderForUI", Type.EmptyTypes);
+        return method?.Invoke(go, null);
     }
 
     private static bool ShouldNotePlayerOwned()
