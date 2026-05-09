@@ -44,6 +44,15 @@ just test-l2g
   `[QudJP] Translator: missing key`, and `no pattern for` are dev-only by
   default and are rejected by the release DLL verifier when they remain in a
   release artifact.
+- Keep QJ004 as a narrow bypass guard, not a general C# logging or
+  format-string analyzer. It should detect known verbose probe markers that
+  are statically visible on direct logging calls. Do not expand it into
+  arbitrary format reconstruction, exception message inspection, or broad
+  Unity/System.Diagnostics logging API modeling unless the probe policy itself
+  changes.
+- When future probes need stronger guarantees, prefer tightening the
+  centralized `RuntimeDiagnostics` API, marker convention, release verifier, or
+  focused analyzer tests before adding broad static inference to QJ004.
 - For tooltip, TMP, or RTF display fixes:
   - identify the upstream producer route before patching sinks; prefer
     `Look.GenerateTooltipInformation(GameObject)` or another pre-render owner
