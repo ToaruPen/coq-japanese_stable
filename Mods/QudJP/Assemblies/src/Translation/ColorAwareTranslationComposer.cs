@@ -199,6 +199,19 @@ internal static class ColorAwareTranslationComposer
         return RestoreWholeBoundaryPairsPreservingTranslatedOwnership(translatedValue, wholeSourcePairs);
     }
 
+    internal static string RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+        string translatedValue,
+        IReadOnlyList<ColorSpan>? spans,
+        int sourceLength,
+        string? source)
+    {
+        var restored = RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translatedValue,
+            spans,
+            sourceLength);
+        return RestoreLeadingAmpersandColor(source, restored);
+    }
+
     internal static string RestoreSourceBoundaryWrappersByVisibleTextPreservingTranslatedOwnership(
         string translatedValue,
         IReadOnlyList<ColorSpan>? spans,
@@ -568,6 +581,33 @@ internal static class ColorAwareTranslationComposer
         }
 
         return false;
+    }
+
+    private static string RestoreLeadingAmpersandColor(string? source, string translated)
+    {
+        if (string.IsNullOrEmpty(source)
+            || source!.Length < 2
+            || source[0] != '&'
+            || translated.StartsWith("&", StringComparison.Ordinal))
+        {
+            return translated;
+        }
+
+        return IsQudAmpersandColor(source[1])
+            ? source.Substring(0, 2) + translated
+            : translated;
+    }
+
+    private static bool IsQudAmpersandColor(char color)
+    {
+        return color is 'K' or 'k'
+            or 'R' or 'r'
+            or 'G' or 'g'
+            or 'B' or 'b'
+            or 'C' or 'c'
+            or 'M' or 'm'
+            or 'Y' or 'y'
+            or 'W' or 'w';
     }
 
     private static string RestoreWholeBoundaryPairsPreservingTranslatedOwnership(

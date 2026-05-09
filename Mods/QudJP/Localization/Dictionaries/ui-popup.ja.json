@@ -32,12 +32,12 @@
         {
             "key": "{{W|[L]}} {{y|Look}}",
             "context": "Qud.UI.PopupMessage.Button.Look.Hotkey",
-            "text": "{{W|[L]}} {{y|調べる}}"
+            "text": "{{W|[L]}} {{y|見る}}"
         },
         {
             "key": "Look",
             "context": "Qud.UI.PopupMessage.Button.Look.Label",
-            "text": "調べる"
+            "text": "見る"
         },
         {
             "key": "It's you.",
@@ -95,7 +95,7 @@
         },
         {
             "key": "[L] Look",
-            "text": "[L] 調べる"
+            "text": "[L] 見る"
         },
         {
             "key": "[Tab] Trade",
