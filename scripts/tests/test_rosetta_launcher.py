@@ -34,9 +34,38 @@ def test_rosetta_launcher_restricts_manual_selection_to_coq_binary() -> None:
     launcher = _launcher_text()
 
     assert "canonicalize_binary_path" in launcher
+    assert "while [[ -L" in launcher
+    assert "readlink" in launcher
     assert '[[ "${canonical_chosen}" != */CoQ.app/Contents/MacOS/CoQ ]]' in launcher
     assert '[[ ! -x "${canonical_chosen}" ]]' in launcher
     assert 'printf \'%s\\n\' "${canonical_chosen}"' in launcher
+
+
+def test_rosetta_launcher_resolves_final_binary_symlink(tmp_path: Path) -> None:
+    """The manual selection guard resolves a symlink at the final CoQ component."""
+    launcher = _launcher_text()
+    start = launcher.index("canonicalize_binary_path() {")
+    end = launcher.index("\n}\n\nresolve_game_binary", start) + len("\n}")
+    function_source = launcher[start:end]
+
+    macos_dir = tmp_path / "Caves of Qud" / "CoQ.app" / "Contents" / "MacOS"
+    macos_dir.mkdir(parents=True)
+    target_dir = tmp_path / "elsewhere"
+    target_dir.mkdir()
+    target_binary = target_dir / "NotCoQ"
+    target_binary.write_text("#!/bin/sh\n", encoding="utf-8")
+    target_binary.chmod(0o755)
+    coq_link = macos_dir / "CoQ"
+    coq_link.symlink_to(target_binary)
+
+    result = subprocess.run(  # noqa: S603 -- fixed test command with a temporary path argument
+        ["/bin/bash", "-c", f'{function_source}\ncanonicalize_binary_path "$1"\n', "bash", str(coq_link)],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.stdout.strip() == str(target_binary)
 
 
 def test_rosetta_launcher_infers_game_from_workshop_or_installed_mod_location() -> None:

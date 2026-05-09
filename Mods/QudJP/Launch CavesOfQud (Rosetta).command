@@ -122,6 +122,8 @@ canonicalize_binary_path() {
   local binary_path="$1"
   local binary_dir
   local binary_name
+  local link_target
+  local symlink_depth=0
 
   binary_dir="$(dirname "${binary_path}")"
   binary_name="$(basename "${binary_path}")"
@@ -130,7 +132,27 @@ canonicalize_binary_path() {
     return 1
   fi
 
-  (cd -P "${binary_dir}" && printf '%s/%s\n' "$(pwd -P)" "${binary_name}")
+  binary_dir="$(cd -P "${binary_dir}" && pwd -P)" || return 1
+  binary_path="${binary_dir}/${binary_name}"
+
+  while [[ -L "${binary_path}" ]]; do
+    if ((symlink_depth >= 40)); then
+      return 1
+    fi
+    symlink_depth=$((symlink_depth + 1))
+
+    link_target="$(readlink "${binary_path}")" || return 1
+    if [[ "${link_target}" == /* ]]; then
+      binary_path="${link_target}"
+    else
+      binary_path="$(dirname "${binary_path}")/${link_target}"
+    fi
+
+    binary_dir="$(cd -P "$(dirname "${binary_path}")" && pwd -P)" || return 1
+    binary_path="${binary_dir}/$(basename "${binary_path}")"
+  done
+
+  printf '%s\n' "${binary_path}"
 }
 
 resolve_game_binary() {
