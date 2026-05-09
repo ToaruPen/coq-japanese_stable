@@ -45,7 +45,14 @@ def _member_name_from_family_id(family_id: str) -> str:
 def _is_owner_target_resolution_token(
     token: str, *, declaring_type: str, member_name: str
 ) -> bool:
-    return "|" in token and declaring_type in token and member_name in token
+    parts = token.split("|")
+    return len(parts) >= 3 and parts[0] == declaring_type and parts[1] == member_name
+
+
+def _unquoted_token(token: str) -> str:
+    if len(token) >= 2 and token[0] == token[-1] == '"':
+        return token[1:-1]
+    return token
 
 
 def test_owner_patch_l2g_evidence_is_family_specific() -> None:
@@ -58,9 +65,20 @@ def test_owner_patch_l2g_evidence_is_family_specific() -> None:
 
         declaring_type = _declaring_type_from_family_id(family.family_id)
         member_name = _member_name_from_family_id(family.family_id)
-        for evidence in family.evidence_files:
-            if not evidence.path.endswith("L2G/TargetMethodResolutionTests.cs"):
-                continue
+        l2g_evidence_files = [
+            evidence
+            for evidence in family.evidence_files
+            if evidence.path.endswith("L2G/TargetMethodResolutionTests.cs")
+        ]
+
+        if not l2g_evidence_files:
+            problems.append(f"{family.family_id}: missing L2G target resolution evidence")
+            continue
+
+        for evidence in l2g_evidence_files:
+            normalized_tokens = [
+                _unquoted_token(token) for token in evidence.required_substrings
+            ]
 
             has_full_target_token = any(
                 _is_owner_target_resolution_token(
@@ -69,9 +87,9 @@ def test_owner_patch_l2g_evidence_is_family_specific() -> None:
                 for token in evidence.required_substrings
             )
             has_declaring_type = any(
-                declaring_type in token for token in evidence.required_substrings
+                token == declaring_type for token in normalized_tokens
             )
-            has_member_name = any(member_name in token for token in evidence.required_substrings)
+            has_member_name = any(token == member_name for token in normalized_tokens)
 
             if not has_full_target_token and not (has_declaring_type and has_member_name):
                 problem = (
