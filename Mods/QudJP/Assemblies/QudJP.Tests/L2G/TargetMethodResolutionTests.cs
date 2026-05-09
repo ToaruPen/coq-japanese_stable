@@ -1201,6 +1201,27 @@ public sealed class TargetMethodResolutionTests
             Assert.That(signatures, Does.Contain("XRL.CharacterBuilds.Qud.QudCyberneticsModule|DataErrors"));
         });
     }
+
+    [Test]
+    public void PickGameObjectLineIconRoute_GameObjectRenderForUiSignatureResolves()
+    {
+        var assembly = EnsureGameAssemblyLoaded();
+        var gameObjectType = assembly.GetType("XRL.World.GameObject", throwOnError: false);
+        Assert.That(gameObjectType, Is.Not.Null, "Type not found: XRL.World.GameObject");
+
+        var method = gameObjectType!.GetMethod(
+            "RenderForUI",
+            BindingFlags.Public | BindingFlags.Instance,
+            binder: null,
+            types: new[] { typeof(string), typeof(bool) },
+            modifiers: null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(method, Is.Not.Null, "GameObject.RenderForUI(string, bool) not found.");
+            Assert.That(method?.ReturnType.FullName, Is.EqualTo("XRL.World.RenderEvent"));
+        });
+    }
 #endif
 
     private static MethodBase? InvokeTargetMethod(Type patchType)
