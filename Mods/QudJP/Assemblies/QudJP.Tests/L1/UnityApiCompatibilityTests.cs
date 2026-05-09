@@ -128,6 +128,26 @@ public sealed class UnityApiCompatibilityTests
     }
 
     [NUnit.Framework.Test]
+    public void TooltipRepairer_UsesDedicatedReplacementRendererForTooltipRoute()
+    {
+        var source = ReadUiSource("TooltipTextRepairer.cs");
+
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Contain("TooltipReplacementRenderer.TryRenderReplacementTexts"),
+            "Tooltip repair needs its own replacement renderer because some tooltip TMP fields do not recover through font/material refresh alone.");
+    }
+
+    [NUnit.Framework.Test]
+    public void TooltipReplacementRenderer_DoesNotUseInventoryTextShellLeafContract()
+    {
+        var source = ReadUiSource("TooltipReplacementRenderer.cs");
+
+        NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Not.Contain("TextShellReplacementRenderer"));
+        NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Not.Contain("IsTextShellLeaf"));
+    }
+
+    [NUnit.Framework.Test]
     public void SelectableTextMenuItemTranslation_UsesPopupMessageLastPopupIdFallback()
     {
         var source = ReadPatchSource("SelectableTextMenuItemTranslationPatch.cs");

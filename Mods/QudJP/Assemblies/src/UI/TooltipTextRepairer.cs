@@ -40,7 +40,7 @@ internal static class TooltipTextRepairer
 
     internal static bool ShouldRepairTooltipName(string? objectName)
     {
-        return IsLookerTooltipName(objectName);
+        return !string.IsNullOrEmpty(objectName);
     }
 
 #if HAS_TMP
@@ -64,6 +64,7 @@ internal static class TooltipTextRepairer
             repaired += ApplyLegacyFonts(tooltipObject);
             repaired += ApplyTmpFonts(tooltipObject);
             repaired += TmpTextRepairer.TryRepairInvisibleTexts(tooltipObject.transform);
+            repaired += TooltipReplacementRenderer.TryRenderReplacementTexts(tooltipObject.transform);
             if (restoreCanvasRendererVisibility)
             {
                 repaired += RestoreCanvasRendererVisibility(tooltipObject);

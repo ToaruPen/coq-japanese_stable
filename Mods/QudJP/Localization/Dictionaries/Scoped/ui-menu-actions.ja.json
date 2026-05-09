@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "id": "ui-menu-actions",
+    "lang": "ja",
+    "version": "0.1.0"
+  },
+  "rules": {
+    "protectColorTags": true,
+    "protectHtmlEntities": true
+  },
+  "entries": [
+    { "key": "activate", "text": "起動する" },
+    { "key": "apply", "text": "使用する" },
+    { "key": "attack", "text": "攻撃" },
+    { "key": "cancel", "text": "キャンセル" },
+    { "key": "chat", "text": "話す" },
+    { "key": "close", "text": "閉める" },
+    { "key": "Close Menu", "text": "メニューを閉じる" },
+    { "key": "collect liquid", "text": "液体を採取" },
+    { "key": "detonate", "text": "起爆する" },
+    { "key": "disassemble", "text": "分解する" },
+    { "key": "drink", "text": "飲む" },
+    { "key": "drop", "text": "落とす" },
+    { "key": "eat", "text": "食べる" },
+    { "key": "equip (auto)", "text": "自動で装備" },
+    { "key": "examine", "text": "調べる" },
+    { "key": "fill", "text": "満たす" },
+    { "key": "get", "text": "拾う" },
+    { "key": "load", "text": "装填" },
+    { "key": "look", "text": "調べる" },
+    { "key": "open", "text": "開ける" },
+    { "key": "pour", "text": "注ぐ" },
+    { "key": "read", "text": "読む" },
+    { "key": "show effects", "text": "効果を表示" },
+    { "key": "target", "text": "狙う" },
+    { "key": "unequip", "text": "装備を外す" },
+    { "key": "unload", "text": "装填解除" }
+  ]
+}

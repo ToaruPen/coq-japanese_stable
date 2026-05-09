@@ -47,18 +47,19 @@ public sealed class TooltipTextRepairerTests
     }
 
     [Test]
-    public void ShouldRepairTooltipNameForTests_LimitsRepairToPolatLooker()
+    public void ShouldRepairTooltipNameForTests_AcceptsModelSharkTooltipInstances()
     {
         var method = RequireTooltipTextRepairerMethod("ShouldRepairTooltipName");
 
         Assert.Multiple(() =>
         {
             Assert.That(method.Invoke(null, new object?[] { "PolatLooker" }), Is.EqualTo(true));
-            Assert.That(method.Invoke(null, new object?[] { "TileTooltip" }), Is.EqualTo(false));
-            Assert.That(method.Invoke(null, new object?[] { "GenericModelSharkTooltip" }), Is.EqualTo(false));
-            Assert.That(method.Invoke(null, new object?[] { "DualPolatLooker" }), Is.EqualTo(false));
-            Assert.That(method.Invoke(null, new object?[] { "PolatLooker:Debug" }), Is.EqualTo(false));
+            Assert.That(method.Invoke(null, new object?[] { "lookerTooltip" }), Is.EqualTo(true));
+            Assert.That(method.Invoke(null, new object?[] { "tileTooltip" }), Is.EqualTo(true));
+            Assert.That(method.Invoke(null, new object?[] { "generalTooltip" }), Is.EqualTo(true));
+            Assert.That(method.Invoke(null, new object?[] { "compareLookerTooltip" }), Is.EqualTo(true));
             Assert.That(method.Invoke(null, new object?[] { null }), Is.EqualTo(false));
+            Assert.That(method.Invoke(null, new object?[] { string.Empty }), Is.EqualTo(false));
         });
     }
 

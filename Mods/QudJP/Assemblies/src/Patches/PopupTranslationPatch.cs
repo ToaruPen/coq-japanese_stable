@@ -15,6 +15,7 @@ public static class PopupTranslationPatch
     private const string UntilPrefix = "Until ";
     private const string QudMenuItemContext = "QudMenuItem";
     private const string QudMenuItemDictionaryFile = "Scoped/ui-popup-qud-menu-item.ja.json";
+    private const string CommonMenuActionDictionaryFile = "Scoped/ui-menu-actions.ja.json";
     private const string InventoryActionMenuPopupIdPrefix = "InventoryActionMenu:";
     private const string InventoryActionContext = "XRL.World.IInventoryActionsEvent";
     private const string InventoryActionDictionaryFile = "ui-inventory-actions.ja.json";
@@ -1167,16 +1168,22 @@ public static class PopupTranslationPatch
     {
         if (IsInventoryActionMenuPopup(popupId))
         {
-            return ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContextOnly(
+            var inventoryActionTranslation = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContextOnly(
                 label,
                 InventoryActionContext,
                 InventoryActionDictionaryFile);
+            return inventoryActionTranslation is not null
+                ? inventoryActionTranslation
+                : ScopedDictionaryLookup.TranslateExactOrLowerAscii(label, CommonMenuActionDictionaryFile);
         }
 
-        return ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
+        var qudMenuItemTranslation = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
             label,
             QudMenuItemContext,
             QudMenuItemDictionaryFile);
+        return qudMenuItemTranslation is not null
+            ? qudMenuItemTranslation
+            : ScopedDictionaryLookup.TranslateExactOrLowerAscii(label, CommonMenuActionDictionaryFile);
     }
 
     internal static bool IsInventoryActionMenuPopup(string? popupId)

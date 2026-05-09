@@ -33,40 +33,6 @@
       "key": "remove",
       "context": "XRL.World.IInventoryActionsEvent",
       "text": "外す"
-    },
-    {
-      "key": "drop",
-      "context": "XRL.World.IInventoryActionsEvent",
-      "text": "落とす"
-    },
-    {
-      "key": "detonate",
-      "context": "XRL.World.IInventoryActionsEvent",
-      "text": "起爆する"
-    },
-    {
-      "key": "Close Menu",
-      "text": "メニューを閉じる"
-    },
-    {
-      "key": "sort: a-z/by class",
-      "text": "並び替え: A-Z/カテゴリ別"
-    },
-    {
-      "key": "vendor actions",
-      "text": "取引"
-    },
-    {
-      "key": "add one",
-      "text": "1つ追加"
-    },
-    {
-      "key": "remove one",
-      "text": "1つ減らす"
-    },
-    {
-      "key": "toggle all",
-      "text": "すべて切り替え"
     }
   ]
 }

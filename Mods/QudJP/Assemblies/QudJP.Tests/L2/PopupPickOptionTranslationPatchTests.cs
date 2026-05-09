@@ -181,6 +181,7 @@ public sealed class PopupPickOptionTranslationPatchTests
     [Test]
     public void SelectableTextMenuItemDisplayTranslation_DoesNotFallbackToQudMenuItemDictionaryInsideInventoryActionMenu()
     {
+        WriteCommonMenuActionDictionary(("get", "拾う"));
         WriteQudMenuItemDictionary(("get", "QudMenuItem", "拾う"));
 
         Assert.Multiple(() =>
@@ -189,12 +190,12 @@ public sealed class PopupPickOptionTranslationPatchTests
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[g]}} {{y|get}}",
                     "InventoryActionMenu:ABC123"),
-                Is.EqualTo("{{W|[g]}} {{y|get}}"));
+                Is.EqualTo("{{W|[g]}} {{y|拾う}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "    {{y|get}}",
                     "InventoryActionMenu:ABC123"),
-                Is.EqualTo("    {{y|get}}"));
+                Is.EqualTo("    {{y|拾う}}"));
         });
     }
 
@@ -218,6 +219,113 @@ public sealed class PopupPickOptionTranslationPatchTests
                     "    {{y|get}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("    {{y|get}}"));
+        });
+    }
+
+    [Test]
+    public void SelectableTextMenuItemDisplayTranslation_UsesCommonMenuActionDictionaryAcrossRoutes()
+    {
+        WriteCommonMenuActionDictionary(
+            ("attack", "攻撃"),
+            ("chat", "話す"),
+            ("Close Menu", "メニューを閉じる"),
+            ("collect liquid", "液体を採取"),
+            ("get", "拾う"),
+            ("look", "調べる"),
+            ("open", "開ける"),
+            ("drop", "落とす"),
+            ("eat", "食べる"),
+            ("fill", "満たす"),
+            ("pour", "注ぐ"),
+            ("apply", "使用する"),
+            ("read", "読む"),
+            ("target", "狙う"),
+            ("show effects", "効果を表示"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay("{{W|[g]}} {{y|get}}"),
+                Is.EqualTo("{{W|[g]}} {{y|拾う}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay("{{W|[h]}} {{y|chat}}"),
+                Is.EqualTo("{{W|[h]}} {{y|話す}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay("{{W|[k]}} {{y|attack}}"),
+                Is.EqualTo("{{W|[k]}} {{y|攻撃}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay("{{W|[l]}} {{y|look}}"),
+                Is.EqualTo("{{W|[l]}} {{y|調べる}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay("{{W|[c]}} {{y|collect liquid}}"),
+                Is.EqualTo("{{W|[c]}} {{y|液体を採取}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay("{{W|[Esc]}} {{y|Close Menu}}"),
+                Is.EqualTo("{{W|[Esc]}} {{y|メニューを閉じる}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[g]}} {{y|get}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[g]}} {{y|拾う}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[o]}} {{y|open}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[o]}} {{y|開ける}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[d]}} {{y|drop}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[d]}} {{y|落とす}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[p]}} {{y|pour}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[p]}} {{y|注ぐ}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[a]}} {{y|{{hotkey|a}}pply}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[a]}} {{y|使用する}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[w]}} {{y|show effects}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[w]}} {{y|効果を表示}}"));
+        });
+    }
+
+    [Test]
+    public void SelectableTextMenuItemDisplayTranslation_CommonMenuActionDictionaryDoesNotLeakToGlobalTranslator()
+    {
+        WriteCommonMenuActionDictionary(("get", "拾う"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Translator.Translate("get"), Is.EqualTo("get"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay("{{W|[g]}} {{y|get}}"),
+                Is.EqualTo("{{W|[g]}} {{y|拾う}}"));
+        });
+    }
+
+    [Test]
+    public void SelectableTextMenuItemDisplayTranslation_RouteSpecificDictionaryOverridesCommonMenuActions()
+    {
+        WriteCommonMenuActionDictionary(("remove", "COMMON-REMOVE-POISON"));
+        WriteQudMenuItemDictionary(("remove", "QudMenuItem", "QUD-REMOVE"));
+        WriteInventoryActionDictionary(("remove", "XRL.World.IInventoryActionsEvent", "外す"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay("{{W|[r]}} {{y|remove}}"),
+                Is.EqualTo("{{W|[r]}} {{y|QUD-REMOVE}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[r]}} {{y|remove}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[r]}} {{y|外す}}"));
         });
     }
 
@@ -558,6 +666,34 @@ public sealed class PopupPickOptionTranslationPatchTests
     private void WriteInventoryActionDictionary(params (string key, string context, string text)[] entries)
     {
         WriteScopedDictionary("ui-inventory-actions.ja.json", entries);
+    }
+
+    private void WriteCommonMenuActionDictionary(params (string key, string text)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.Append('{');
+        builder.Append("\"entries\":[");
+
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        Directory.CreateDirectory(Path.Combine(dictionaryDirectory, "Scoped"));
+        File.WriteAllText(
+            Path.Combine(dictionaryDirectory, "Scoped", "ui-menu-actions.ja.json"),
+            builder.ToString(),
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 
     private void WriteInventoryActionDictionaryContents(string contents)

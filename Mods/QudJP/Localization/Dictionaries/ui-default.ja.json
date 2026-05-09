@@ -1174,6 +1174,10 @@
       "key": "defensive stance",
       "context": "QudJP.Description.Leaf",
       "text": "防御姿勢"
+    },
+    {
+      "key": "Close Menu",
+      "text": "メニューを閉じる"
     }
   ]
 }

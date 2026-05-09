@@ -25,10 +25,23 @@ public sealed class InventoryLineRenderProbePatchTests
         NUnit.Framework.Assert.That(inventoryActionSource, NUnit.Framework.Does.Contain("\"text\": \"メモを追加\""));
         NUnit.Framework.Assert.That(inventoryActionSource, NUnit.Framework.Does.Contain("\"key\": \"remove\""));
         NUnit.Framework.Assert.That(inventoryActionSource, NUnit.Framework.Does.Contain("\"text\": \"外す\""));
-        NUnit.Framework.Assert.That(inventoryActionSource, NUnit.Framework.Does.Contain("\"key\": \"drop\""));
-        NUnit.Framework.Assert.That(inventoryActionSource, NUnit.Framework.Does.Contain("\"text\": \"落とす\""));
-        NUnit.Framework.Assert.That(inventoryActionSource, NUnit.Framework.Does.Contain("\"key\": \"detonate\""));
-        NUnit.Framework.Assert.That(inventoryActionSource, NUnit.Framework.Does.Contain("\"text\": \"起爆する\""));
+        NUnit.Framework.Assert.That(inventoryActionSource, NUnit.Framework.Does.Not.Contain("\"key\": \"drop\""));
+        NUnit.Framework.Assert.That(inventoryActionSource, NUnit.Framework.Does.Not.Contain("\"key\": \"detonate\""));
+
+        var commonMenuActionPath = Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "Dictionaries",
+            "Scoped",
+            "ui-menu-actions.ja.json");
+        var commonMenuActionSource = File.ReadAllText(commonMenuActionPath);
+
+        NUnit.Framework.Assert.That(commonMenuActionSource, NUnit.Framework.Does.Contain("\"key\": \"drop\""));
+        NUnit.Framework.Assert.That(commonMenuActionSource, NUnit.Framework.Does.Contain("\"text\": \"落とす\""));
+        NUnit.Framework.Assert.That(commonMenuActionSource, NUnit.Framework.Does.Contain("\"key\": \"detonate\""));
+        NUnit.Framework.Assert.That(commonMenuActionSource, NUnit.Framework.Does.Contain("\"text\": \"起爆する\""));
 
         var qudMenuItemPath = Path.Combine(
             TestProjectPaths.GetRepositoryRoot(),
