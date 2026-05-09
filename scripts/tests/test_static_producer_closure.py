@@ -34,6 +34,55 @@ def test_covered_owner_families_have_current_source_and_test_evidence() -> None:
     assert errors == []
 
 
+def _declaring_type_from_family_id(family_id: str) -> str:
+    return family_id.split("::", maxsplit=1)[1].rsplit(".", maxsplit=1)[0]
+
+
+def _member_name_from_family_id(family_id: str) -> str:
+    return family_id.rsplit(".", maxsplit=1)[1]
+
+
+def _is_owner_target_resolution_token(
+    token: str, *, declaring_type: str, member_name: str
+) -> bool:
+    return "|" in token and declaring_type in token and member_name in token
+
+
+def test_owner_patch_l2g_evidence_is_family_specific() -> None:
+    """Owner-patch L2G evidence must identify the upstream owner method."""
+    problems: list[str] = []
+
+    for family in COVERED_OWNER_FAMILIES:
+        if family.inventory_statuses != ("owner_patch_required",):
+            continue
+
+        declaring_type = _declaring_type_from_family_id(family.family_id)
+        member_name = _member_name_from_family_id(family.family_id)
+        for evidence in family.evidence_files:
+            if not evidence.path.endswith("L2G/TargetMethodResolutionTests.cs"):
+                continue
+
+            has_full_target_token = any(
+                _is_owner_target_resolution_token(
+                    token, declaring_type=declaring_type, member_name=member_name
+                )
+                for token in evidence.required_substrings
+            )
+            has_declaring_type = any(
+                declaring_type in token for token in evidence.required_substrings
+            )
+            has_member_name = any(member_name in token for token in evidence.required_substrings)
+
+            if not has_full_target_token and not (has_declaring_type and has_member_name):
+                problem = (
+                    f"{family.family_id}: L2G evidence must include a full target signature "
+                    f"or both the upstream declaring type and member name"
+                )
+                problems.append(problem)
+
+    assert problems == []
+
+
 def test_covered_owner_families_are_removed_from_owner_action_queue() -> None:
     """Covered owner families must not remain in the owner implementation queue."""
     inventory = load_inventory(TRACKED_INVENTORY)

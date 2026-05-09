@@ -28,6 +28,9 @@ just test-l2
 just test-l2g
 ```
 
+- Run `just test-l1`, `just test-l2`, and `just test-l2g` sequentially. Parallel
+  local invocations can race on shared `ReferenceStubs`/NuGet restore outputs.
+
 - Prefer producer-owned or stable mid-pipeline fixes. Many sink and near-sink routes are intentionally observation-only.
 - Use `~/dev/coq-decompiled_stable/` to trace upstream producers, verify signatures, and investigate unclaimed routes.
 - When a patch reflects into upstream game members, verify the real method
