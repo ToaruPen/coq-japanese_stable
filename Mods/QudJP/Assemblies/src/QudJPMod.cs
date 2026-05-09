@@ -171,7 +171,8 @@ public static class QudJPMod
         }
 
         var preparedCount = 0;
-        var skippedCount = 0;
+        var prepareSkippedCount = 0;
+        var applySkippedCount = 0;
         var appliedCount = 0;
         var fallbackScansBeforePatchLoop = GameTypeResolver.FallbackScanCountForDiagnostics;
         var preparationStopwatch = new Stopwatch();
@@ -194,7 +195,7 @@ public static class QudJPMod
                     {
                         preparationStopwatch.Stop();
                         detailedStopwatch?.Stop();
-                        skippedCount++;
+                        prepareSkippedCount++;
                         LogPatchTypeTiming(
                             detailedPatchTiming,
                             "harmony.patch_prepare",
@@ -237,7 +238,7 @@ public static class QudJPMod
                 {
                     patchStopwatch.Stop();
                     detailedStopwatch?.Stop();
-                    skippedCount++;
+                    applySkippedCount++;
                     LogPatchTypeTiming(
                         detailedPatchTiming,
                         "harmony.patch_apply",
@@ -254,7 +255,7 @@ public static class QudJPMod
                 {
                     patchStopwatch.Stop();
                     detailedStopwatch?.Stop();
-                    skippedCount++;
+                    applySkippedCount++;
                     LogPatchTypeTiming(
                         detailedPatchTiming,
                         "harmony.patch_apply",
@@ -283,7 +284,15 @@ public static class QudJPMod
                 preparationStopwatch.Stop();
                 patchStopwatch.Stop();
                 detailedStopwatch?.Stop();
-                skippedCount++;
+                if (currentPhase == "prepare")
+                {
+                    prepareSkippedCount++;
+                }
+                else
+                {
+                    applySkippedCount++;
+                }
+
                 LogPatchTypeTiming(
                     detailedPatchTiming,
                     currentPhase == "prepare" ? "harmony.patch_prepare" : "harmony.patch_apply",
@@ -301,12 +310,12 @@ public static class QudJPMod
         RuntimeStartupTiming.LogElapsed(
             "harmony.prepare_patch_types",
             preparationStopwatch.Elapsed,
-            $"patch_types={patchTypes.Length};prepared={preparedCount};skipped={skippedCount};"
+            $"patch_types={patchTypes.Length};prepared={preparedCount};skipped={prepareSkippedCount};"
             + $"preflight={preflightPatchTargets}");
         RuntimeStartupTiming.LogElapsed(
             "harmony.apply_patch_types",
             patchStopwatch.Elapsed,
-            $"patch_types={patchTypes.Length};applied={appliedCount};skipped={skippedCount}");
+            $"patch_types={patchTypes.Length};applied={appliedCount};skipped={applySkippedCount}");
         RuntimeStartupTiming.LogElapsed(
             "harmony.type_fallback_scans_total",
             TimeSpan.Zero,

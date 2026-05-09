@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sys
+import time
 from typing import TYPE_CHECKING
 
 import pytest
@@ -278,6 +279,40 @@ def test_collect_cli_writes_process_output_without_pipes(tmp_path: Path) -> None
     assert exit_code == 0
     assert (iteration_dir / "stdout.txt").read_text(encoding="utf-8").strip() == "stdout marker"
     assert (iteration_dir / "stderr.txt").read_text(encoding="utf-8").strip() == "stderr marker"
+
+
+def test_collect_cli_stops_waiting_after_launcher_exits(tmp_path: Path) -> None:
+    """The collect command records fast launcher exits without waiting for timeout."""
+    log_path = tmp_path / "Player.log"
+    launcher = tmp_path / "fast_exit.py"
+    launcher.write_text("import sys\nsys.exit(3)\n", encoding="utf-8")
+
+    started = time.monotonic()
+    exit_code = main(
+        [
+            "collect",
+            "--profile",
+            "enabled",
+            "--iterations",
+            "1",
+            "--artifact-dir",
+            str(tmp_path / "artifacts"),
+            "--launch-cmd",
+            f"{sys.executable} {launcher}",
+            "--log",
+            str(log_path),
+            "--timeout",
+            "1.25",
+        ],
+    )
+    elapsed = time.monotonic() - started
+
+    metadata_path = tmp_path / "artifacts" / "profiles" / "enabled" / "iteration-01" / "metadata.json"
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    assert exit_code == 0
+    assert elapsed < 0.75
+    assert metadata["status"] == "process_exited"
+    assert metadata["exit_code"] == 3
 
 
 def _result(profile: str, iteration: int, status: str, timings: dict[str, float]) -> IterationResult:

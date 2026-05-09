@@ -393,7 +393,12 @@ def _read_profile_summaries(summary_path: Path) -> tuple[ProfileSummary, ...]:
     )
 
 
-def _wait_for_ready_marker(log_path: Path, timeout_seconds: float, ready_marker: str) -> tuple[str, float | None]:
+def _wait_for_ready_marker(
+    log_path: Path,
+    timeout_seconds: float,
+    ready_marker: str,
+    process: subprocess.Popen[bytes] | None = None,
+) -> tuple[str, float | None]:
     started = time.monotonic()
     deadline = started + timeout_seconds
     while time.monotonic() < deadline:
@@ -403,6 +408,8 @@ def _wait_for_ready_marker(log_path: Path, timeout_seconds: float, ready_marker:
                 return "harmony_failed", time.monotonic() - started
             if ready_marker in text:
                 return "ready", time.monotonic() - started
+        if process is not None and process.poll() is not None:
+            return "process_exited", time.monotonic() - started
         time.sleep(0.25)
     return "timeout", None
 
@@ -483,7 +490,7 @@ def _collect(args: argparse.Namespace) -> int:
                     stdout=stdout_file,
                     stderr=stderr_file,
                 )
-                status, elapsed = _wait_for_ready_marker(args.log, args.timeout, ready_marker)
+                status, elapsed = _wait_for_ready_marker(args.log, args.timeout, ready_marker, process)
                 if status == "ready" and args.settle_seconds > 0:
                     time.sleep(args.settle_seconds)
                 _stop_process(process)

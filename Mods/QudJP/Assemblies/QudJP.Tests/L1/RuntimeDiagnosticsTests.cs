@@ -1,6 +1,9 @@
 namespace QudJP.Tests.L1;
 
 using System.Diagnostics;
+using System.Globalization;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 [TestFixture]
 [Category("L1")]
@@ -85,6 +88,33 @@ public sealed class RuntimeDiagnosticsTests
             Assert.That(output, Does.Contain("phase=harmony.prepare_patch_types"));
             Assert.That(output, Does.Contain("elapsed_ms=12.346"));
             Assert.That(output, Does.Contain("detail=patch_types\\=140\\;prepared\\=139"));
+        });
+    }
+
+    [Test]
+    public void PatchLoopSummaries_KeepPrepareAndApplySkippedCountsSeparate()
+    {
+        var patchByClassProcessor = typeof(QudJPMod).GetMethod(
+            "PatchByClassProcessor",
+            BindingFlags.NonPublic | BindingFlags.Static);
+        var createClassProcessor = typeof(NullClassProcessorFactory).GetMethod(
+            nameof(NullClassProcessorFactory.CreateClassProcessor));
+        Assert.That(patchByClassProcessor, Is.Not.Null);
+        Assert.That(createClassProcessor, Is.Not.Null);
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+            patchByClassProcessor!.Invoke(
+                null,
+                new object[] { new object(), createClassProcessor! }));
+
+        var prepare = ParseTimingCounts(output, "harmony.prepare_patch_types");
+        var apply = ParseTimingCounts(output, "harmony.apply_patch_types");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(apply["skipped"], Is.GreaterThan(0));
+            Assert.That(prepare["prepared"] + prepare["skipped"], Is.LessThanOrEqualTo(prepare["patch_types"]));
+            Assert.That(prepare["skipped"], Is.EqualTo(prepare["patch_types"] - prepare["prepared"]));
         });
     }
 
@@ -205,5 +235,25 @@ public sealed class RuntimeDiagnosticsTests
             EventTypes.Add(eventType);
             base.TraceEvent(eventCache, source, eventType, id, format, args);
         }
+    }
+
+    private static class NullClassProcessorFactory
+    {
+        public static object? CreateClassProcessor(Type patchType)
+        {
+            _ = patchType;
+            return null;
+        }
+    }
+
+    private static Dictionary<string, int> ParseTimingCounts(string output, string phase)
+    {
+        var line = output
+            .Split('\n')
+            .Single(value => value.Contains($"phase={phase}", StringComparison.Ordinal));
+        return Regex.Matches(line, @"(?:detail=|\\;)(patch_types|prepared|skipped|applied)\\=(\d+)")
+            .ToDictionary(
+                match => match.Groups[1].Value,
+                match => int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture));
     }
 }
