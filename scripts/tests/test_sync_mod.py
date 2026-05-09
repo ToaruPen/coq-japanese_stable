@@ -244,6 +244,10 @@ class TestRunSync:
         for doc_name in LOCALIZATION_DOC_NAMES:
             (source / "Localization" / doc_name).write_text("# docs", encoding="utf-8")
         (source / "Fonts" / "Font.otf").write_bytes(b"font")
+        (source / "Launch CavesOfQud (Rosetta).command").write_text(
+            "#!/usr/bin/env bash\nexec arch -x86_64 \"$HOME/game/CoQ\"\n",
+            encoding="utf-8",
+        )
         (source / "src.cs").write_text("// do not copy", encoding="utf-8")
         destination.mkdir()
         (destination / "stale.txt").write_text("stale", encoding="utf-8")
@@ -255,6 +259,7 @@ class TestRunSync:
         assert (destination / "manifest.json").exists()
         assert (destination / "preview.png").exists()
         assert (destination / "Bootstrap.cs").exists()
+        assert (destination / "Launch CavesOfQud (Rosetta).command").exists()
         assert (destination / "Assemblies" / "QudJP.dll").exists()
         assert (destination / "Localization" / "Creatures.jp.xml").exists()
         assert (destination / "Localization" / "ui.ja.json").exists()
