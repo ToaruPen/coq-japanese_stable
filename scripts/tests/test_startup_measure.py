@@ -224,6 +224,25 @@ def test_wait_for_ready_marker_detects_zero_patch_warning(tmp_path: Path) -> Non
     assert elapsed is not None
 
 
+def test_wait_for_ready_marker_prefers_zero_patch_warning_over_ready_marker(tmp_path: Path) -> None:
+    """Harmony failure markers take precedence over completion markers."""
+    log_path = tmp_path / "Player.log"
+    log_path.write_text(
+        "[QudJP] Harmony patching complete: 0 method(s) patched.\n"
+        "[QudJP] Warning: Harmony patched zero methods.\n",
+        encoding="utf-8",
+    )
+
+    status, elapsed = _wait_for_ready_marker(
+        log_path,
+        timeout_seconds=1,
+        ready_marker="[QudJP] Harmony patching complete:",
+    )
+
+    assert status == "harmony_failed"
+    assert elapsed is not None
+
+
 def test_collect_cli_writes_process_output_without_pipes(tmp_path: Path) -> None:
     """The collect command preserves child stdout/stderr via files."""
     log_path = tmp_path / "Player.log"

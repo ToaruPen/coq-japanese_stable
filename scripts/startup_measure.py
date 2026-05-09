@@ -399,10 +399,10 @@ def _wait_for_ready_marker(log_path: Path, timeout_seconds: float, ready_marker:
     while time.monotonic() < deadline:
         if log_path.exists():
             text = log_path.read_text(encoding="utf-8", errors="replace")
-            if ready_marker in text:
-                return "ready", time.monotonic() - started
             if "Harmony patched zero methods" in text or "mprotect returned EACCES" in text:
                 return "harmony_failed", time.monotonic() - started
+            if ready_marker in text:
+                return "ready", time.monotonic() - started
         time.sleep(0.25)
     return "timeout", None
 
