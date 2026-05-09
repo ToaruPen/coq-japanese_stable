@@ -21,6 +21,21 @@ public sealed class UnityApiCompatibilityTests
         @"\btooltipObject\s+is\s+(?:not\s+)?null\b",
         SourceRegexOptions);
 
+    private static readonly Regex TooltipRendererUnityObjectPatternNullCheck = new(
+        @"\b(?:existingReplacement|replacement|parent|replacementTransform)\s+is\s+(?:not\s+)?null\b"
+            + @"|(?:original|replacement)\s*\.\s*(?:font|fontSharedMaterial)\s+is\s+(?:not\s+)?null\b"
+            + @"|original\s*\.\s*transform\s*\.\s*parent\s+is\s+not\s+RectTransform\b"
+            + @"|\bexisting\s*\?\.\s*GetComponent\s*<",
+        SourceRegexOptions);
+
+    private static readonly Regex OriginalTmpLifecycleCallPattern = new(
+        @"InventoryLineTmpLifecycleObservability\s*\.\s*LogOriginalTmpLifecycle\s*\(",
+        SourceRegexOptions);
+
+    private static readonly Regex CallerGatedOriginalTmpLifecycleCallPattern = new(
+        @"if\s*\(\s*RuntimeDiagnostics\s*\.\s*VerboseProbesEnabled\s*\)\s*\{[\s\S]*?InventoryLineTmpLifecycleObservability\s*\.\s*LogOriginalTmpLifecycle\s*\(",
+        SourceRegexOptions);
+
     [NUnit.Framework.Test]
     public void RuntimeDiagnostics_AvoidDirectUnityColorAlphaAccess()
     {
@@ -145,6 +160,31 @@ public sealed class UnityApiCompatibilityTests
 
         NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Not.Contain("TextShellReplacementRenderer"));
         NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Not.Contain("IsTextShellLeaf"));
+    }
+
+    [NUnit.Framework.Test]
+    public void TooltipReplacementRenderer_UsesUnityNullSemanticsForUnityObjects()
+    {
+        var source = ReadUiSource("TooltipReplacementRenderer.cs");
+
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Not.Match(TooltipRendererUnityObjectPatternNullCheck),
+            "UnityEngine.Object-derived tooltip renderer values require ==/!= null so Unity fake-null semantics are preserved.");
+    }
+
+    [NUnit.Framework.TestCase("InventoryLineRenderProbePatch.cs")]
+    [NUnit.Framework.TestCase("InventoryLineTranslationPatch.cs")]
+    public void InventoryLineHotPathOriginalTmpLifecycleProbesRequireCallerVerboseGate(string fileName)
+    {
+        var source = ReadPatchSource(fileName);
+        var directCalls = OriginalTmpLifecycleCallPattern.Count(source);
+        var callerGatedCalls = CallerGatedOriginalTmpLifecycleCallPattern.Count(source);
+
+        NUnit.Framework.Assert.That(
+            callerGatedCalls,
+            NUnit.Framework.Is.EqualTo(directCalls),
+            fileName + " should avoid calling TMP lifecycle diagnostics on hot paths unless verbose probes are enabled.");
     }
 
     [NUnit.Framework.Test]

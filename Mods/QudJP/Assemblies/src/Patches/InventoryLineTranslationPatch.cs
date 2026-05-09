@@ -114,23 +114,29 @@ public static class InventoryLineTranslationPatch
             Context,
             typeof(InventoryLineTranslationPatch));
 #if HAS_TMP && QUDJP_DEV_BUILD
-        InventoryLineTmpLifecycleObservability.LogOriginalTmpLifecycle(
-            instance,
-            "translation-after-owner-set",
-            displayName,
-            translatedDisplayName,
-            forceMesh: false);
+        if (RuntimeDiagnostics.VerboseProbesEnabled)
+        {
+            InventoryLineTmpLifecycleObservability.LogOriginalTmpLifecycle(
+                instance,
+                "translation-after-owner-set",
+                displayName,
+                translatedDisplayName,
+                forceMesh: false);
+        }
 #endif
 #if HAS_TMP
         _ = InventoryLineFontFixer.TryRefreshTextSkinWithFallbackFont(itemTextSkin, translatedDisplayName);
 #endif
 #if HAS_TMP && QUDJP_DEV_BUILD
-        InventoryLineTmpLifecycleObservability.LogOriginalTmpLifecycle(
-            instance,
-            "translation-after-font-refresh",
-            displayName,
-            translatedDisplayName,
-            forceMesh: false);
+        if (RuntimeDiagnostics.VerboseProbesEnabled)
+        {
+            InventoryLineTmpLifecycleObservability.LogOriginalTmpLifecycle(
+                instance,
+                "translation-after-font-refresh",
+                displayName,
+                translatedDisplayName,
+                forceMesh: false);
+        }
 #endif
 
         var weight = go is null ? 0 : GetIntMemberValue(go, "Weight");
