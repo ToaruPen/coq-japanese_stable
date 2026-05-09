@@ -51,13 +51,21 @@ public static class QudJPMod
             return;
         }
 
+        using var totalTiming = RuntimeStartupTiming.Measure("qudjp.initialize_core");
         try
         {
             var assemblyVersion = typeof(QudJPMod).Assembly.GetName().Version;
             RuntimeDiagnostics.LogStatus(
                 $"[QudJP] Build marker: {BuildMarker}, Version: {assemblyVersion}, BuildFlavor: {RuntimeDiagnostics.BuildFlavor}");
-            initializeFonts();
-            applyPatches();
+            using (RuntimeStartupTiming.Measure("font.initialize"))
+            {
+                initializeFonts();
+            }
+
+            using (RuntimeStartupTiming.Measure("harmony.setup_and_apply"))
+            {
+                applyPatches();
+            }
         }
         catch
         {
@@ -68,15 +76,27 @@ public static class QudJPMod
 
     internal static void ApplyHarmonyPatches()
     {
-        var harmony = CreateHarmony("com.qudjp.localization");
+        object? harmony;
+        using (RuntimeStartupTiming.Measure("harmony.create"))
+        {
+            harmony = CreateHarmony("com.qudjp.localization");
+        }
+
         if (harmony is null)
         {
             throw new InvalidOperationException(
                 "QudJP: Harmony runtime not available. The mod cannot function without Harmony.");
         }
 
-        InvokePatchAll(harmony);
-        LogPatchResults(harmony);
+        using (RuntimeStartupTiming.Measure("harmony.invoke_patch_all"))
+        {
+            InvokePatchAll(harmony);
+        }
+
+        using (RuntimeStartupTiming.Measure("harmony.log_patch_results"))
+        {
+            LogPatchResults(harmony);
+        }
     }
 
     internal static object? CreateHarmony(string harmonyId)
@@ -144,21 +164,87 @@ public static class QudJPMod
     private static void PatchByClassProcessor(object harmony, MethodInfo createClassProcessor)
     {
         var patchAssembly = Assembly.GetExecutingAssembly();
-        var patchTypes = GetHarmonyPatchTypes(patchAssembly);
+        Type[] patchTypes;
+        using (RuntimeStartupTiming.Measure("harmony.scan_patch_types"))
+        {
+            patchTypes = GetHarmonyPatchTypes(patchAssembly);
+        }
+
+        var preparedCount = 0;
+        var skippedCount = 0;
+        var appliedCount = 0;
+        var fallbackScansBeforePreparation = GameTypeResolver.FallbackScanCountForDiagnostics;
+        var preparationStopwatch = new Stopwatch();
+        var patchStopwatch = new Stopwatch();
+        var detailedPatchTiming = IsDetailedPatchTimingEnabled();
+        var preflightPatchTargets = IsPatchTargetPreflightEnabled();
         for (var index = 0; index < patchTypes.Length; index++)
         {
             var patchType = patchTypes[index];
+            var patchTypeName = patchType.FullName ?? patchType.Name;
+            var resolvedTargetCount = 0;
+            var currentPhase = "prepare";
+            var detailedStopwatch = detailedPatchTiming ? Stopwatch.StartNew() : null;
             try
             {
-                if (!TryPreparePatchType(patchType, out var preparationFailure))
+                if (ShouldPreflightPatchType(patchType, preflightPatchTargets))
                 {
-                    RuntimeDiagnostics.LogWarning($"[QudJP] Warning: Skipping patch {patchType.FullName}: {preparationFailure}");
-                    continue;
+                    preparationStopwatch.Start();
+                    if (!TryPreparePatchType(patchType, out var preparationFailure, out resolvedTargetCount))
+                    {
+                        preparationStopwatch.Stop();
+                        detailedStopwatch?.Stop();
+                        skippedCount++;
+                        LogPatchTypeTiming(
+                            detailedPatchTiming,
+                            "harmony.patch_prepare",
+                            patchTypeName,
+                            detailedStopwatch?.Elapsed ?? TimeSpan.Zero,
+                            "skipped",
+                            resolvedTargetCount);
+                        RuntimeDiagnostics.LogWarning($"[QudJP] Warning: Skipping patch {patchType.FullName}: {preparationFailure}");
+                        continue;
+                    }
+                    preparationStopwatch.Stop();
+                    detailedStopwatch?.Stop();
+                    preparedCount++;
+                    LogPatchTypeTiming(
+                        detailedPatchTiming,
+                        "harmony.patch_prepare",
+                        patchTypeName,
+                        detailedStopwatch?.Elapsed ?? TimeSpan.Zero,
+                        "prepared",
+                        resolvedTargetCount);
+                }
+                else
+                {
+                    detailedStopwatch?.Stop();
+                    preparedCount++;
+                    LogPatchTypeTiming(
+                        detailedPatchTiming,
+                        "harmony.patch_prepare",
+                        patchTypeName,
+                        detailedStopwatch?.Elapsed ?? TimeSpan.Zero,
+                        "preflight_disabled",
+                        resolvedTargetCount);
                 }
 
+                currentPhase = "apply";
+                detailedStopwatch = detailedPatchTiming ? Stopwatch.StartNew() : null;
+                patchStopwatch.Start();
                 var processor = createClassProcessor.Invoke(harmony, new object[] { patchType });
                 if (processor is null)
                 {
+                    patchStopwatch.Stop();
+                    detailedStopwatch?.Stop();
+                    skippedCount++;
+                    LogPatchTypeTiming(
+                        detailedPatchTiming,
+                        "harmony.patch_apply",
+                        patchTypeName,
+                        detailedStopwatch?.Elapsed ?? TimeSpan.Zero,
+                        "skipped_null_processor",
+                        resolvedTargetCount);
                     RuntimeDiagnostics.LogWarning($"[QudJP] Warning: Harmony returned null class processor for patch {patchType.FullName}.");
                     continue;
                 }
@@ -166,39 +252,95 @@ public static class QudJPMod
                 var patchMethod = processor.GetType().GetMethod("Patch", Type.EmptyTypes);
                 if (patchMethod is null)
                 {
+                    patchStopwatch.Stop();
+                    detailedStopwatch?.Stop();
+                    skippedCount++;
+                    LogPatchTypeTiming(
+                        detailedPatchTiming,
+                        "harmony.patch_apply",
+                        patchTypeName,
+                        detailedStopwatch?.Elapsed ?? TimeSpan.Zero,
+                        "skipped_missing_patch_method",
+                        resolvedTargetCount);
                     RuntimeDiagnostics.LogWarning($"[QudJP] Warning: Patch() missing on class processor for {patchType.FullName}.");
                     continue;
                 }
 
                 patchMethod.Invoke(processor, null);
+                patchStopwatch.Stop();
+                detailedStopwatch?.Stop();
+                appliedCount++;
+                LogPatchTypeTiming(
+                    detailedPatchTiming,
+                    "harmony.patch_apply",
+                    patchTypeName,
+                    detailedStopwatch?.Elapsed ?? TimeSpan.Zero,
+                    "applied",
+                    resolvedTargetCount);
             }
             catch (Exception ex)
             {
+                preparationStopwatch.Stop();
+                patchStopwatch.Stop();
+                detailedStopwatch?.Stop();
+                skippedCount++;
+                LogPatchTypeTiming(
+                    detailedPatchTiming,
+                    currentPhase == "prepare" ? "harmony.patch_prepare" : "harmony.patch_apply",
+                    patchTypeName,
+                    detailedStopwatch?.Elapsed ?? TimeSpan.Zero,
+                    "failed",
+                    resolvedTargetCount);
                 var details = ex is TargetInvocationException tie
                     ? tie.InnerException?.ToString() ?? tie.ToString()
                     : ex.ToString();
                 RuntimeDiagnostics.LogWarning($"[QudJP] Warning: Failed to apply patch {patchType.FullName}: {details}");
             }
         }
+
+        RuntimeStartupTiming.LogElapsed(
+            "harmony.prepare_patch_types",
+            preparationStopwatch.Elapsed,
+            $"patch_types={patchTypes.Length};prepared={preparedCount};skipped={skippedCount};"
+            + $"preflight={preflightPatchTargets};"
+            + $"type_fallback_scans={GameTypeResolver.FallbackScanCountForDiagnostics - fallbackScansBeforePreparation}");
+        RuntimeStartupTiming.LogElapsed(
+            "harmony.apply_patch_types",
+            patchStopwatch.Elapsed,
+            $"patch_types={patchTypes.Length};applied={appliedCount};skipped={skippedCount}");
     }
 
     internal static bool TryPreparePatchType(Type patchType, out string failureReason)
     {
+        return TryPreparePatchType(patchType, out failureReason, out _);
+    }
+
+    internal static bool TryPreparePatchType(Type patchType, out string failureReason, out int resolvedTargetCount)
+    {
+        resolvedTargetCount = 0;
         var methods = AccessTools.GetDeclaredMethods(patchType);
         for (var index = 0; index < methods.Count; index++)
         {
             var method = methods[index];
 
-            if (HasHarmonyTargetMethodAttribute(method)
-                && !TryResolveSingleTarget(method, out failureReason))
+            if (HasHarmonyTargetMethodAttribute(method))
             {
-                return false;
+                if (!TryResolveSingleTarget(method, out failureReason, out var singleTargetCount))
+                {
+                    return false;
+                }
+
+                resolvedTargetCount += singleTargetCount;
             }
 
-            if (HasHarmonyTargetMethodsAttribute(method)
-                && !TryResolveMultipleTargets(method, out failureReason))
+            if (HasHarmonyTargetMethodsAttribute(method))
             {
-                return false;
+                if (!TryResolveMultipleTargets(method, out failureReason, out var multipleTargetCount))
+                {
+                    return false;
+                }
+
+                resolvedTargetCount += multipleTargetCount;
             }
         }
 
@@ -286,12 +428,14 @@ public static class QudJPMod
         return false;
     }
 
-    private static bool TryResolveSingleTarget(MethodInfo resolver, out string failureReason)
+    private static bool TryResolveSingleTarget(MethodInfo resolver, out string failureReason, out int resolvedTargetCount)
     {
+        resolvedTargetCount = 0;
         try
         {
             if (resolver.Invoke(null, null) is MethodBase)
             {
+                resolvedTargetCount = 1;
                 failureReason = string.Empty;
                 return true;
             }
@@ -309,8 +453,9 @@ public static class QudJPMod
         }
     }
 
-    private static bool TryResolveMultipleTargets(MethodInfo resolver, out string failureReason)
+    private static bool TryResolveMultipleTargets(MethodInfo resolver, out string failureReason, out int resolvedTargetCount)
     {
+        resolvedTargetCount = 0;
         try
         {
             if (resolver.Invoke(null, null) is not IEnumerable enumerable)
@@ -319,7 +464,8 @@ public static class QudJPMod
                 return false;
             }
 
-            if (enumerable.Cast<object?>().OfType<MethodBase>().Any())
+            resolvedTargetCount = enumerable.Cast<object?>().OfType<MethodBase>().Count();
+            if (resolvedTargetCount > 0)
             {
                 failureReason = string.Empty;
                 return true;
@@ -336,6 +482,51 @@ public static class QudJPMod
             failureReason = $"{resolver.DeclaringType?.FullName}.{resolver.Name} threw: {details}";
             return false;
         }
+    }
+
+    private static bool IsDetailedPatchTimingEnabled()
+    {
+        return IsEnvironmentFlagEnabled("QUDJP_STARTUP_PATCH_TIMING");
+    }
+
+    private static bool IsPatchTargetPreflightEnabled()
+    {
+        return IsEnvironmentFlagEnabled("QUDJP_PATCH_TARGET_PREFLIGHT");
+    }
+
+    private static bool IsEnvironmentFlagEnabled(string name)
+    {
+        var value = Environment.GetEnvironmentVariable(name);
+        return string.Equals(value, "1", StringComparison.Ordinal)
+            || string.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool ShouldPreflightPatchType(Type patchType, bool preflightAllPatchTargets)
+    {
+        return preflightAllPatchTargets
+            || string.Equals(
+                patchType.FullName,
+                "QudJP.Patches.HistoricStringExpanderPatch",
+                StringComparison.Ordinal);
+    }
+
+    private static void LogPatchTypeTiming(
+        bool enabled,
+        string phasePrefix,
+        string patchTypeName,
+        TimeSpan elapsed,
+        string status,
+        int resolvedTargetCount)
+    {
+        if (!enabled)
+        {
+            return;
+        }
+
+        RuntimeStartupTiming.LogElapsed(
+            phasePrefix + "." + patchTypeName,
+            elapsed,
+            $"status={status};targets={resolvedTargetCount}");
     }
 
     internal static void LogToUnity(string message)

@@ -169,6 +169,7 @@ internal static class JournalPatternTranslator
 
     private static List<JournalPatternDefinition> LoadPatterns()
     {
+        using var timing = RuntimeStartupTiming.Measure("journal_pattern.load_patterns");
         Interlocked.Increment(ref loadInvocationCount);
 
         var paths = ResolvePatternFilePaths();

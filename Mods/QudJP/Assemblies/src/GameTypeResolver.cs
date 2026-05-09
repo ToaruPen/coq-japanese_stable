@@ -1,12 +1,19 @@
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading;
 using HarmonyLib;
 
 namespace QudJP;
 
 internal static class GameTypeResolver
 {
+    private static readonly ConcurrentDictionary<string, Type> FallbackResolutionCache =
+        new ConcurrentDictionary<string, Type>(StringComparer.Ordinal);
+
+    private static int fallbackScanCount;
+
     internal static Type? FindType(string fullTypeName, string simpleTypeName)
     {
         var byFullName = AccessTools.TypeByName(fullTypeName);
@@ -15,11 +22,37 @@ internal static class GameTypeResolver
             return byFullName;
         }
 
+        var cacheKey = BuildCacheKey(fullTypeName, simpleTypeName);
+        if (FallbackResolutionCache.TryGetValue(cacheKey, out var cached))
+        {
+            return cached;
+        }
+
+        var resolved = FindTypeBySimpleName(fullTypeName, simpleTypeName, AppDomain.CurrentDomain.GetAssemblies());
+        if (resolved is not null)
+        {
+            _ = FallbackResolutionCache.TryAdd(cacheKey, resolved);
+        }
+
+        return resolved;
+    }
+
+    internal static void ResetCacheForTests()
+    {
+        FallbackResolutionCache.Clear();
+        Interlocked.Exchange(ref fallbackScanCount, 0);
+    }
+
+    internal static int FallbackScanCountForDiagnostics => Volatile.Read(ref fallbackScanCount);
+
+    private static Type? FindTypeBySimpleName(string fullTypeName, string simpleTypeName, Assembly[] assemblies)
+    {
+        Interlocked.Increment(ref fallbackScanCount);
+
         Type? firstMatch = null;
         string? firstMatchAssembly = null;
         System.Collections.Generic.List<string>? allCandidates = null;
 
-        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         for (var assemblyIndex = 0; assemblyIndex < assemblies.Length; assemblyIndex++)
         {
             Type[] types;
@@ -75,5 +108,10 @@ internal static class GameTypeResolver
         }
 
         return firstMatch;
+    }
+
+    private static string BuildCacheKey(string fullTypeName, string simpleTypeName)
+    {
+        return fullTypeName + "\n" + simpleTypeName;
     }
 }

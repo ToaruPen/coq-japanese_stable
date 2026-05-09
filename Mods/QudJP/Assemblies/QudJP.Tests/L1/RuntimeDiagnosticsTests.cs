@@ -71,6 +71,24 @@ public sealed class RuntimeDiagnosticsTests
     }
 
     [Test]
+    public void StartupTiming_WritesStructuredElapsedMarker()
+    {
+        var output = TestTraceHelper.CaptureTrace(() =>
+            RuntimeStartupTiming.LogElapsed(
+                "harmony.prepare_patch_types",
+                TimeSpan.FromMilliseconds(12.3456),
+                "patch_types=140;prepared=139"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(output, Does.Contain("[QudJP] StartupTiming/v1:"));
+            Assert.That(output, Does.Contain("phase=harmony.prepare_patch_types"));
+            Assert.That(output, Does.Contain("elapsed_ms=12.346"));
+            Assert.That(output, Does.Contain("detail=patch_types\\=140\\;prepared\\=139"));
+        });
+    }
+
+    [Test]
     public void LogVerboseProbe_DoesNotInvokeMessageFactory_WhenVerboseProbesAreDisabled()
     {
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(false);
