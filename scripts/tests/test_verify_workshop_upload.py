@@ -69,6 +69,56 @@ def test_verify_workshop_vdf_unescapes_path_fields_before_comparison(tmp_path: P
     assert verify_workshop_vdf(vdf, content_folder=content_folder) == []
 
 
+def test_verify_workshop_vdf_ignores_escaped_newline_sequence_in_path_fields(tmp_path: Path) -> None:
+    """The escaped-newline gate does not reject Windows-style paths containing backslash-n."""
+    content_folder = tmp_path / "Steam\\newlibrary" / "QudJP"
+    content_folder.mkdir(parents=True)
+    vdf = tmp_path / "workshop_item.vdf"
+    escaped_content_folder = str(content_folder.resolve()).replace("\\", "\\\\")
+    escaped_preview_file = str((content_folder / "preview.png").resolve()).replace("\\", "\\\\")
+    vdf.write_text(
+        "\n".join(
+            [
+                '"workshopitem"',
+                "{",
+                '  "appid" "333640"',
+                '  "publishedfileid" "3718988020"',
+                f'  "contentfolder" "{escaped_content_folder}"',
+                f'  "previewfile" "{escaped_preview_file}"',
+                "}",
+            ],
+        ),
+        encoding="utf-8",
+    )
+
+    assert verify_workshop_vdf(vdf, content_folder=content_folder) == []
+
+
+def test_verify_workshop_vdf_reports_escaped_newline_in_text_fields(tmp_path: Path) -> None:
+    """The escaped-newline gate still rejects text fields that steamcmd can misparse."""
+    content_folder = tmp_path / "QudJP"
+    vdf = tmp_path / "workshop_item.vdf"
+    vdf.write_text(
+        "\n".join(
+            [
+                '"workshopitem"',
+                "{",
+                '  "appid" "333640"',
+                '  "publishedfileid" "3718988020"',
+                f'  "contentfolder" "{content_folder.resolve()}"',
+                f'  "previewfile" "{(content_folder / "preview.png").resolve()}"',
+                '  "changenote" "Line\\nBreak"',
+                "}",
+            ],
+        ),
+        encoding="utf-8",
+    )
+
+    assert verify_workshop_vdf(vdf, content_folder=content_folder) == [
+        r"VDF contains escaped newline sequences (\n); use literal multiline text",
+    ]
+
+
 def test_main_accepts_matching_staging_and_vdf(tmp_path: Path) -> None:
     """The CLI accepts upload files generated from the same release ZIP."""
     release_zip = tmp_path / "dist" / "QudJP-v0.2.50.zip"

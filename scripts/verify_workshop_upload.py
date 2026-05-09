@@ -26,6 +26,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
 _VDF_FIELD_PATTERN = re.compile(r'^\s*"(?P<key>[^"]+)"\s+"(?P<value>.*)"\s*$', re.MULTILINE)
+_VDF_TEXT_FIELD_KEYS = ("title", "description", "changenote")
 
 
 def _parse_vdf_fields(vdf_text: str) -> dict[str, str]:
@@ -72,7 +73,7 @@ def verify_workshop_vdf(vdf_path: Path, *, content_folder: Path) -> list[str]:
     _append_vdf_mismatch(findings, fields, "previewfile", expected_preview_file, unescape_actual=True)
     if r"\"" in vdf_text:
         findings.append('VDF contains escaped double quote sequences (\\"); remove double quotes from text fields')
-    if r"\n" in vdf_text:
+    if any(r"\n" in fields.get(key, "") for key in _VDF_TEXT_FIELD_KEYS):
         findings.append(r"VDF contains escaped newline sequences (\n); use literal multiline text")
     return findings
 
