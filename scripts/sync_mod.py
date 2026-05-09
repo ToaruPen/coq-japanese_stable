@@ -41,13 +41,9 @@ _WINDOWS_DRIVE_PREFIX_LENGTH = 2
 DEFAULT_DEV_VERSION_SUFFIX = "-dev"
 DEFAULT_DEV_TITLE_SUFFIX = " (local dev)"
 
-_MACOS_MODS_SUFFIX = (
-    Path("Library")
-    / "Application Support"
-    / "Steam"
-    / "steamapps"
-    / "common"
-    / "Caves of Qud"
+_MACOS_STABLE_REF_MODS_SUFFIX = (
+    Path("Games")
+    / "CavesOfQud-stable-ref"
     / "CoQ.app"
     / "Contents"
     / "Resources"
@@ -159,7 +155,7 @@ def resolve_default_destination(
     current_env = env or os.environ
 
     if detected_system == "Darwin":
-        return current_home / _MACOS_MODS_SUFFIX
+        return current_home / _MACOS_STABLE_REF_MODS_SUFFIX
 
     if detected_system == "Windows":
         windows_home = _resolve_windows_home(current_env, wsl=False)

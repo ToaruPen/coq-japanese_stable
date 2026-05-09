@@ -9,7 +9,7 @@
 #
 # Prerequisites:
 #   - ilspycmd installed: dotnet tool install -g ilspycmd
-#   - Game DLL accessible at the default Steam path (macOS)
+#   - Game DLL accessible at the stable reference path (macOS)
 #   - DOTNET_ROLL_FORWARD=LatestMajor (set automatically by this script)
 
 set -euo pipefail
@@ -18,8 +18,8 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 OUTPUT_DIR="${COQ_DECOMPILED_DIR:-$HOME/dev/coq-decompiled_stable}"
 
-# Game DLL path (macOS Steam default)
-DLL_PATH="$HOME/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/Resources/Data/Managed/Assembly-CSharp.dll"
+# Game DLL path (macOS stable reference default)
+DLL_PATH="$HOME/Games/CavesOfQud-stable-ref/CoQ.app/Contents/Resources/Data/Managed/Assembly-CSharp.dll"
 
 # ilspycmd path
 ILSPY="${ILSPY_CMD:-$HOME/.dotnet/tools/ilspycmd}"

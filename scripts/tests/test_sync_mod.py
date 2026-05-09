@@ -555,17 +555,13 @@ class TestRunSync:
 class TestResolveDefaultDestination:
     """Tests for platform-specific default destination resolution."""
 
-    def test_macos_uses_streaming_assets_mods(self, tmp_path: Path) -> None:
-        """MacOS defaults to the Steam app bundle Mods directory."""
+    def test_macos_uses_stable_reference_streaming_assets_mods(self, tmp_path: Path) -> None:
+        """MacOS defaults to the stable reference app bundle Mods directory."""
         destination = resolve_default_destination(system="Darwin", home=tmp_path)
         assert destination == (
             tmp_path
-            / "Library"
-            / "Application Support"
-            / "Steam"
-            / "steamapps"
-            / "common"
-            / "Caves of Qud"
+            / "Games"
+            / "CavesOfQud-stable-ref"
             / "CoQ.app"
             / "Contents"
             / "Resources"

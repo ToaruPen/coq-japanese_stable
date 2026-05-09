@@ -374,7 +374,7 @@ public sealed class CharGenProducerTranslationPatchResolutionTests
         var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         var defaultDir = Path.Combine(
             home,
-            "Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/Resources/Data/Managed");
+            "Games/CavesOfQud-stable-ref/CoQ.app/Contents/Resources/Data/Managed");
 
         if (Directory.Exists(defaultDir))
         {
