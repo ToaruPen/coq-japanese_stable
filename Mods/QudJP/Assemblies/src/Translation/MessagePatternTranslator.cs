@@ -17,6 +17,8 @@ internal static class MessagePatternTranslator
     private static readonly object SyncRoot = new object();
     private static readonly ConcurrentDictionary<string, Regex> RegexCache =
         new ConcurrentDictionary<string, Regex>(StringComparer.Ordinal);
+    private static readonly Regex JapaneseCharacterPattern =
+        new Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly ConcurrentDictionary<string, int> MissingPatternCounts =
         new ConcurrentDictionary<string, int>(StringComparer.Ordinal);
     private static readonly ConcurrentDictionary<string, int> MissingRouteCounts =
@@ -963,7 +965,40 @@ internal static class MessagePatternTranslator
             return historicGeneratedCapture;
         }
 
+        var articleStripped = TranslateArticleStrippedTemplateCapture(source);
+        if (articleStripped is not null)
+        {
+            return articleStripped;
+        }
+
         return source;
+    }
+
+    private static string? TranslateArticleStrippedTemplateCapture(string source)
+    {
+        var strippedArticle = StringHelpers.StripLeadingEnglishArticle(source);
+        if (string.Equals(strippedArticle, source, StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        var direct = Translator.Translate(strippedArticle);
+        if (!string.Equals(direct, strippedArticle, StringComparison.Ordinal))
+        {
+            return direct;
+        }
+
+        var lower = LowerAscii(strippedArticle);
+        if (!string.Equals(lower, strippedArticle, StringComparison.Ordinal))
+        {
+            var lowered = Translator.Translate(lower);
+            if (!string.Equals(lowered, lower, StringComparison.Ordinal))
+            {
+                return lowered;
+            }
+        }
+
+        return JapaneseCharacterPattern.IsMatch(strippedArticle) ? strippedArticle : null;
     }
 
     private static string LowerAscii(string source)

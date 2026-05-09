@@ -14,6 +14,12 @@ from typing import NoReturn, Self
 FRAGMENTS_DIR = Path("docs/release-notes/unreleased")
 LOCALIZATION_PREFIX = "Mods/QudJP/Localization/"
 SECTION_ORDER = ("Added", "Changed", "Fixed", "Removed", "Deprecated", "Security")
+_NAME_STATUS_STATUS_INDEX = 0
+_NAME_STATUS_PATH_INDEX = 1
+_NAME_STATUS_RENAMED_PATH_INDEX = 2
+_NAME_STATUS_MIN_PATH_FIELDS = 2
+_NAME_STATUS_MIN_RENAME_FIELDS = 3
+_RENAMED_OR_COPIED_STATUSES = ("R", "C")
 
 
 class ReleaseNoteError(ValueError):
@@ -191,7 +197,7 @@ def git_changed_files(base_ref: str, head_ref: str) -> list[str]:
         raise ReleaseNoteError(msg)
     try:
         result = subprocess.run(  # noqa: S603
-            [git, "diff", "--name-only", f"{base_ref}...{head_ref}"],
+            [git, "diff", "--name-status", f"{base_ref}...{head_ref}"],
             check=True,
             capture_output=True,
             text=True,
@@ -200,7 +206,21 @@ def git_changed_files(base_ref: str, head_ref: str) -> list[str]:
         detail = (exc.stderr or "").strip() or str(exc)
         msg = f"git diff failed for {base_ref}...{head_ref}: {detail}"
         raise ReleaseNoteError(msg) from exc
-    return [line for line in result.stdout.splitlines() if line]
+    changed_files: list[str] = []
+    for line in result.stdout.splitlines():
+        if not line:
+            continue
+        fields = line.split("\t")
+        status = fields[_NAME_STATUS_STATUS_INDEX]
+        if status == "D":
+            continue
+        if status.startswith(_RENAMED_OR_COPIED_STATUSES):
+            if len(fields) >= _NAME_STATUS_MIN_RENAME_FIELDS:
+                changed_files.append(fields[_NAME_STATUS_RENAMED_PATH_INDEX])
+            continue
+        if len(fields) >= _NAME_STATUS_MIN_PATH_FIELDS:
+            changed_files.append(fields[_NAME_STATUS_PATH_INDEX])
+    return changed_files
 
 
 def _write_output(path: Path, text: str) -> None:

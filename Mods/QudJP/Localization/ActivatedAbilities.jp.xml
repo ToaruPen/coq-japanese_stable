@@ -1384,7 +1384,7 @@
   </ability>
   <ability Command="CommandSnapjawHowl">
     <description>
-      <p>遠吠えし、近くのスナップジョウを狂乱させる。</p>
+      <p>遠吠えし、近くのスナップジョーを狂乱させる。</p>
       <br />
       <statline Name="Radius" DisplayName="効果半径" />
       <statline Name="Duration" />      

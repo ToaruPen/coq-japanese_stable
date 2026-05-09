@@ -314,6 +314,37 @@ def test_git_changed_files_wraps_git_diff_errors(monkeypatch: pytest.MonkeyPatch
         git_changed_files("bad", "HEAD")
 
 
+def test_git_changed_files_excludes_deleted_paths(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Deleted unreleased fragments are ignored after their content is rolled into CHANGELOG."""
+
+    def fake_run(
+        args: Sequence[str],
+        **_kwargs: object,
+    ) -> subprocess.CompletedProcess[str]:
+        assert "--name-status" in args
+        return subprocess.CompletedProcess(
+            args=args,
+            returncode=0,
+            stdout=(
+                "M\tMods/QudJP/Localization/Dictionaries/ui-popup.ja.json\n"
+                "D\tdocs/release-notes/unreleased/old-fragment.md\n"
+                "A\tdocs/release-notes/unreleased/new-fragment.md\n"
+                "R100\tdocs/release-notes/unreleased/renamed-old.md\t"
+                "docs/release-notes/unreleased/renamed-new.md\n"
+            ),
+            stderr="",
+        )
+
+    monkeypatch.setattr(release_notes.shutil, "which", lambda _name: "git")
+    monkeypatch.setattr(release_notes.subprocess, "run", fake_run)
+
+    assert git_changed_files("base", "HEAD") == [
+        "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+        "docs/release-notes/unreleased/new-fragment.md",
+        "docs/release-notes/unreleased/renamed-new.md",
+    ]
+
+
 def test_main_reports_parse_errors_without_traceback(capsys: pytest.CaptureFixture[str]) -> None:
     """CLI argument errors are normalized into the release-note error format."""
     assert main(["render"]) == 1

@@ -14,6 +14,7 @@ from scripts.workshop_comments_inbox import (
     WorkshopComment,
     WorkshopInboxStore,
     build_steam_comments_url,
+    build_steam_discussion_thread_url,
     collect_workshop_comments,
     creator_account_id_from_steam_id,
     default_workshop_state_dir,
@@ -89,6 +90,49 @@ def test_build_steam_comments_url_uses_fixed_endpoint() -> None:
         == "https://steamcommunity.com/comment/PublishedFile_Public/render/"
         "76561198205102067/3718988020/?start=20&count=10&l=japanese"
     )
+
+
+def test_build_steam_discussion_thread_url_uses_fixed_endpoint() -> None:
+    """Discussion URLs are parsed into a fixed public page endpoint with numeric path slots only."""
+    url = build_steam_discussion_thread_url(
+        "https://steamcommunity.com/workshop/filedetails/discussion/3718988020/837250028234869281/?tscn=1778250394",
+    )
+
+    assert (
+        url
+        == "https://steamcommunity.com/workshop/filedetails/discussion/"
+        "3718988020/837250028234869281/?l=japanese"
+    )
+
+
+def test_build_steam_discussion_thread_url_preserves_numeric_page() -> None:
+    """Discussion page URLs keep Steam's ctp page while dropping unrelated query fields."""
+    url = build_steam_discussion_thread_url(
+        "https://steamcommunity.com/workshop/filedetails/discussion/"
+        "3718988020/837250028234869281/?ctp=2&tscn=1778250394",
+    )
+
+    assert (
+        url
+        == "https://steamcommunity.com/workshop/filedetails/discussion/"
+        "3718988020/837250028234869281/?ctp=2&l=japanese"
+    )
+
+
+def test_build_steam_discussion_thread_url_rejects_non_workshop_hosts_and_ids() -> None:
+    """User-provided discussion URLs cannot become arbitrary HTTP endpoints."""
+    with pytest.raises(ValueError, match="Steam discussion URL"):
+        build_steam_discussion_thread_url("https://example.com/workshop/filedetails/discussion/3718988020/1/")
+
+    with pytest.raises(ValueError, match="discussion_topic"):
+        build_steam_discussion_thread_url(
+            "https://steamcommunity.com/workshop/filedetails/discussion/3718988020/not-numeric/",
+        )
+
+    with pytest.raises(ValueError, match="ctp"):
+        build_steam_discussion_thread_url(
+            "https://steamcommunity.com/workshop/filedetails/discussion/3718988020/837250028234869281/?ctp=two",
+        )
 
 
 def test_creator_account_id_from_steam_id_converts_steamid64() -> None:
@@ -211,6 +255,94 @@ def test_collect_workshop_comments_stores_local_comments_and_snapshots(tmp_path:
     assert summary.new_snapshots == 1
     assert comments == [("222", 0)]
     assert snapshots == [("Bug report",)]
+
+
+def test_collect_workshop_comments_includes_configured_discussion_threads(tmp_path: Path) -> None:
+    """Configured Workshop discussion threads are collected into the same local inbox."""
+    metadata_path = tmp_path / "workshop_metadata.json"
+    metadata_path.write_text(json.dumps({"publishedfileid": "3718988020"}), encoding="utf-8")
+    steam = _FakeTransport(
+        [
+            _metadata_response(),
+            _comments_response(_comment_html(comment_id="222", account_id="123", author="Reporter", body="Bug")),
+            HttpResponse(
+                status_code=200,
+                body=(
+                    _comment_html(comment_id="333", account_id="244836339", author="Creator", body="Template")
+                    + _comment_html(comment_id="444", account_id="456", author="ThreadReporter", body="Thread bug")
+                ).encode(),
+                headers={},
+            ),
+        ],
+    )
+
+    with open_workshop_inbox(tmp_path / "inbox.sqlite3") as store:
+        summary = collect_workshop_comments(
+            metadata_path=metadata_path,
+            discussion_thread_urls=[
+                "https://steamcommunity.com/workshop/filedetails/discussion/3718988020/837250028234869281/",
+            ],
+            steam_transport=steam,
+            store=store,
+            options=CollectionOptions(dry_run=False),
+        )
+        comments = list(
+            store.connection.execute("SELECT steam_comment_id, is_creator FROM workshop_comments ORDER BY id"),
+        )
+        snapshots = list(store.connection.execute("SELECT body_text FROM workshop_comment_snapshots ORDER BY id"))
+
+    assert summary.fetched == 3
+    assert summary.new_comments == 2
+    assert summary.new_snapshots == 2
+    assert comments == [("222", 0), ("444", 0)]
+    assert snapshots == [("Bug",), ("Thread bug",)]
+
+
+def test_collect_workshop_comments_does_not_starve_discussion_threads(tmp_path: Path) -> None:
+    """Per-run caps keep configured discussion threads represented alongside Workshop comments."""
+    metadata_path = tmp_path / "workshop_metadata.json"
+    metadata_path.write_text(json.dumps({"publishedfileid": "3718988020"}), encoding="utf-8")
+    steam = _FakeTransport(
+        [
+            _metadata_response(),
+            _comments_response(
+                _comment_html(comment_id="222", account_id="123", author="Reporter", body="Bug A")
+                + _comment_html(comment_id="223", account_id="124", author="Reporter2", body="Bug B"),
+                total_count=2,
+            ),
+            HttpResponse(
+                status_code=200,
+                body=_comment_html(
+                    comment_id="444",
+                    account_id="456",
+                    author="ThreadReporter",
+                    body="Thread bug",
+                ).encode(),
+                headers={},
+            ),
+        ],
+    )
+
+    with open_workshop_inbox(tmp_path / "inbox.sqlite3") as store:
+        summary = collect_workshop_comments(
+            metadata_path=metadata_path,
+            discussion_thread_urls=[
+                "https://steamcommunity.com/workshop/filedetails/discussion/3718988020/837250028234869281/",
+            ],
+            steam_transport=steam,
+            store=store,
+            options=CollectionOptions(dry_run=False, max_comments_per_run=2),
+        )
+        comments = list(
+            store.connection.execute("SELECT steam_comment_id, is_creator FROM workshop_comments ORDER BY id"),
+        )
+        snapshots = list(store.connection.execute("SELECT body_text FROM workshop_comment_snapshots ORDER BY id"))
+
+    assert summary.fetched == 3
+    assert summary.new_comments == 2
+    assert summary.new_snapshots == 2
+    assert comments == [("222", 0), ("444", 0)]
+    assert snapshots == [("Bug A",), ("Thread bug",)]
 
 
 def test_collect_workshop_comments_adds_snapshot_when_body_changes(tmp_path: Path) -> None:

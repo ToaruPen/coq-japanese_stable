@@ -20,6 +20,7 @@ _RSYNC_INCLUDES: tuple[str, ...] = (
     "manifest.json",
     "preview.png",
     "Bootstrap.cs",
+    "Launch CavesOfQud (Rosetta).command",
     "Assemblies/",
     "Assemblies/QudJP.dll",
     "Localization/",
@@ -188,6 +189,7 @@ def _iter_sync_files(source: Path, *, exclude_fonts: bool) -> list[Path]:
         Path("manifest.json"),
         Path("preview.png"),
         Path("Bootstrap.cs"),
+        Path("Launch CavesOfQud (Rosetta).command"),
         Path("Assemblies") / "QudJP.dll",
     ):
         candidate = source / relative

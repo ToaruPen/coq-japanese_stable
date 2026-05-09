@@ -10644,7 +10644,7 @@
 
 <object Name="Snapjaw Golem" Inherits="Snapjaw" Replace="true">
     <mixin Name="BaseVehicleGolem" />
-    <part Name="Render" DisplayName="スナップジョウのゴーレム" RenderString="S" Tile="Creatures/sw_golem_snapjaw.png" />
+    <part Name="Render" DisplayName="スナップジョーのゴーレム" RenderString="S" Tile="Creatures/sw_golem_snapjaw.png" />
   </object>
 
 <object Name="Spider Golem" Inherits="BaseSpider" Replace="true">
