@@ -135,6 +135,25 @@ public sealed class MainMenuRowTranslationPatchTests
         });
     }
 
+    [Test]
+    public void Postfix_FallsBackToTextProperty_WhenInheritedTextFieldIsNull()
+    {
+        var row = new DummyMainMenuRowWithTextPropertyFallback();
+        object? capturedTarget = null;
+
+        Assert.That(((DummyMainMenuRowWithNullTextField)row).text, Is.Null);
+
+        var result = MainMenuRowTranslationPatch.TryApplyLegacyFontToRowTextForTests(
+            row,
+            target => capturedTarget = target);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.True);
+            Assert.That(capturedTarget, Is.SameAs(row.text));
+        });
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
@@ -178,5 +197,25 @@ public sealed class MainMenuRowTranslationPatchTests
         return value
             .Replace("\\", "\\\\", StringComparison.Ordinal)
             .Replace("\"", "\\\"", StringComparison.Ordinal);
+    }
+
+    private class DummyMainMenuRowWithNullTextField
+    {
+        protected DummyMainMenuRowWithNullTextField(DummyUnityText? text)
+        {
+            this.text = text;
+        }
+
+        public DummyUnityText? text;
+    }
+
+    private sealed class DummyMainMenuRowWithTextPropertyFallback : DummyMainMenuRowWithNullTextField
+    {
+        public DummyMainMenuRowWithTextPropertyFallback()
+            : base(null)
+        {
+        }
+
+        public new DummyUnityText text { get; } = new();
     }
 }

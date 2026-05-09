@@ -138,7 +138,8 @@ public static class MainMenuRowTranslationPatch
         {
             text = textField.GetValue(row);
         }
-        else
+
+        if (text is null)
         {
             var textProperty = AccessTools.Property(rowType, "text");
             if (textProperty is not null)
