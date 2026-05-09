@@ -219,6 +219,7 @@ public static class Translator
 
     private static Dictionary<string, string> LoadTranslations()
     {
+        using var timing = RuntimeStartupTiming.Measure("translator.load_global_dictionaries");
         Interlocked.Increment(ref loadInvocationCount);
 
         var translations = new Dictionary<string, string>(StringComparer.Ordinal);

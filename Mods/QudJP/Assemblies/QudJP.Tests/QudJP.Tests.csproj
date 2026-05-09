@@ -45,6 +45,7 @@
     <Compile Include="../src/Patches/*.cs" Link="Production/Patches/%(Filename)%(Extension)" />
     <Compile Include="../src/QudJPMod.cs" Link="Production/QudJPMod.cs" />
     <Compile Include="../src/RuntimeDiagnostics.cs" Link="Production/RuntimeDiagnostics.cs" />
+    <Compile Include="../src/RuntimeStartupTiming.cs" Link="Production/RuntimeStartupTiming.cs" />
     <Compile Include="../src/Translation/*.cs" Link="Production/Translation/%(Filename)%(Extension)" />
     <Compile Include="../src/UI/*.cs" Link="Production/UI/%(Filename)%(Extension)" />
   </ItemGroup>

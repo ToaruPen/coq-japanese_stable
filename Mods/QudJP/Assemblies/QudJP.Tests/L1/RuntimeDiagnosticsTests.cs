@@ -1,6 +1,8 @@
 namespace QudJP.Tests.L1;
 
 using System.Diagnostics;
+using System.Globalization;
+using System.Threading;
 
 [TestFixture]
 [Category("L1")]
@@ -68,6 +70,57 @@ public sealed class RuntimeDiagnosticsTests
             RuntimeDiagnostics.LogImportant("[QudJP] Build marker test"));
 
         Assert.That(output, Does.Contain("[QudJP] Build marker test"));
+    }
+
+    [Test]
+    public void StartupTiming_WritesStructuredElapsedMarker()
+    {
+        var originalCulture = Thread.CurrentThread.CurrentCulture;
+        var originalUiCulture = Thread.CurrentThread.CurrentUICulture;
+        string output;
+        try
+        {
+            var commaDecimalCulture = CultureInfo.GetCultureInfo("fr-FR");
+            Thread.CurrentThread.CurrentCulture = commaDecimalCulture;
+            Thread.CurrentThread.CurrentUICulture = commaDecimalCulture;
+            output = TestTraceHelper.CaptureTrace(() =>
+                RuntimeStartupTiming.LogElapsed(
+                    "harmony.prepare_patch_types",
+                    TimeSpan.FromMilliseconds(12.3456),
+                    "patch_types=140;prepared=139"));
+        }
+        finally
+        {
+            Thread.CurrentThread.CurrentCulture = originalCulture;
+            Thread.CurrentThread.CurrentUICulture = originalUiCulture;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(output, Does.Contain("[QudJP] StartupTiming/v1:"));
+            Assert.That(output, Does.Contain("phase=harmony.prepare_patch_types"));
+            Assert.That(output, Does.Contain("elapsed_ms=12.346"));
+            Assert.That(output, Does.Contain("detail=patch_types\\=140\\;prepared\\=139"));
+        });
+    }
+
+    [Test]
+    public void PatchLoopSummaries_KeepPrepareAndApplySkippedCountsSeparate()
+    {
+        var summary = QudJPMod.FormatPatchLoopSummary(
+            new QudJPMod.PatchLoopSummary(
+                10,
+                9,
+                1,
+                0,
+                9,
+                true));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(summary.PrepareDetail, Is.EqualTo("patch_types=10;prepared=9;skipped=1;preflight=True"));
+            Assert.That(summary.ApplyDetail, Is.EqualTo("patch_types=10;applied=0;skipped=9"));
+        });
     }
 
     [Test]
@@ -188,4 +241,5 @@ public sealed class RuntimeDiagnosticsTests
             base.TraceEvent(eventCache, source, eventType, id, format, args);
         }
     }
+
 }
