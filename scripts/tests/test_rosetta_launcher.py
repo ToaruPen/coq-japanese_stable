@@ -2,11 +2,19 @@
 
 from __future__ import annotations
 
+import subprocess
 from pathlib import Path
+
+_LAUNCHER_PATH = Path("Mods/QudJP/Launch CavesOfQud (Rosetta).command")
 
 
 def _launcher_text() -> str:
-    return Path("Mods/QudJP/Launch CavesOfQud (Rosetta).command").read_text(encoding="utf-8")
+    return _LAUNCHER_PATH.read_text(encoding="utf-8")
+
+
+def test_rosetta_launcher_is_valid_bash() -> None:
+    """The distributed launcher remains valid for macOS /bin/bash."""
+    subprocess.run(["/bin/bash", "-n", str(_LAUNCHER_PATH)], check=True)  # noqa: S603 -- fixed test command
 
 
 def test_rosetta_launcher_uses_gui_dialogs_for_player_facing_errors() -> None:
@@ -19,10 +27,11 @@ def test_rosetta_launcher_uses_gui_dialogs_for_player_facing_errors() -> None:
     assert "edit this launcher" not in launcher
 
 
-def test_rosetta_launcher_can_offer_rosetta_install_without_manual_terminal_command() -> None:
+def test_rosetta_launcher_can_offer_rosetta_install_through_dialog() -> None:
     """Missing Rosetta is handled through the launcher, not only a printed command."""
     launcher = _launcher_text()
 
+    assert 'LAUNCHER_TITLE="QudJP Rosetta Launcher"' in launcher
     assert "softwareupdate --install-rosetta --agree-to-license" in launcher
     assert "Install Rosetta 2" in launcher
     assert "exec arch -x86_64" in launcher

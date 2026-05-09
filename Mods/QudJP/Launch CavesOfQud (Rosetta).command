@@ -7,6 +7,7 @@
 
 set -euo pipefail
 
+LAUNCHER_TITLE="QudJP Rosetta Launcher"
 DEFAULT_GAME_BINARY="${HOME}/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/MacOS/CoQ"
 
 show_message() {
@@ -43,22 +44,22 @@ APPLESCRIPT
 
 install_rosetta() {
   if ! confirm_dialog \
-    "QudJP Rosetta Launcher" \
+    "${LAUNCHER_TITLE}" \
     "Rosetta 2 is required to launch Caves of Qud this way on Apple Silicon. Install Rosetta 2 now?" \
     "Install Rosetta 2"; then
     show_message \
-      "QudJP Rosetta Launcher" \
+      "${LAUNCHER_TITLE}" \
       "Rosetta 2 is not installed. The game was not launched."
     exit 1
   fi
 
   show_message \
-    "QudJP Rosetta Launcher" \
+    "${LAUNCHER_TITLE}" \
     "macOS will install Rosetta 2 now. This may take a moment."
 
   if ! /usr/sbin/softwareupdate --install-rosetta --agree-to-license; then
     show_message \
-      "QudJP Rosetta Launcher" \
+      "${LAUNCHER_TITLE}" \
       "Rosetta 2 installation did not complete. Please try this launcher again after installing Rosetta 2."
     exit 1
   fi
@@ -97,14 +98,28 @@ resolve_game_binary() {
     return 0
   fi
 
+  if [[ -f "${DEFAULT_GAME_BINARY}" ]]; then
+    show_message \
+      "${LAUNCHER_TITLE}" \
+      "Caves of Qud was found in the default Steam library, but it is not executable. Please verify the game installation in Steam and try again."
+    exit 1
+  fi
+
   show_message \
-    "QudJP Rosetta Launcher" \
+    "${LAUNCHER_TITLE}" \
     "Caves of Qud was not found in the default Steam library. In the next window, select CoQ.app from your Steam library."
 
   local chosen_binary
-  if ! chosen_binary="$(choose_game_binary)" || [[ ! -x "${chosen_binary}" ]]; then
+  if ! chosen_binary="$(choose_game_binary)"; then
     show_message \
-      "QudJP Rosetta Launcher" \
+      "${LAUNCHER_TITLE}" \
+      "Caves of Qud could not be launched. Please select CoQ.app from your Steam library and try again."
+    exit 1
+  fi
+
+  if [[ ! -x "${chosen_binary}" ]]; then
+    show_message \
+      "${LAUNCHER_TITLE}" \
       "Caves of Qud could not be launched. Please select CoQ.app from your Steam library and try again."
     exit 1
   fi
@@ -112,24 +127,29 @@ resolve_game_binary() {
   printf '%s\n' "${chosen_binary}"
 }
 
+is_apple_silicon() {
+  [[ "$(uname -m)" == "arm64" ]]
+}
+
+rosetta_available() {
+  /usr/bin/pgrep -q oahd 2>/dev/null || arch -x86_64 /usr/bin/true 2>/dev/null
+}
+
 if [[ "$(uname -s)" != "Darwin" ]]; then
   show_message \
-    "QudJP Rosetta Launcher" \
+    "${LAUNCHER_TITLE}" \
     "This launcher is only needed on macOS. On Windows or Linux, start Caves of Qud normally from Steam."
   exit 1
 fi
 
-if [[ "$(uname -m)" == "arm64" ]]; then
-  if ! /usr/bin/pgrep -q oahd 2>/dev/null &&
-    ! arch -x86_64 /usr/bin/true 2>/dev/null; then
-    install_rosetta
-  fi
+if is_apple_silicon && ! rosetta_available; then
+  install_rosetta
 fi
 
 GAME_BINARY="$(resolve_game_binary)"
 
 printf '%s\n%s\n' \
-  "QudJP Rosetta Launcher" \
+  "${LAUNCHER_TITLE}" \
   "Launching Caves of Qud through Rosetta 2." >&2
 
 exec arch -x86_64 "${GAME_BINARY}"
