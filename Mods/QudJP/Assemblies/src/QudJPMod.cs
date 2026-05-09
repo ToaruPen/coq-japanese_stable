@@ -173,7 +173,7 @@ public static class QudJPMod
         var preparedCount = 0;
         var skippedCount = 0;
         var appliedCount = 0;
-        var fallbackScansBeforePreparation = GameTypeResolver.FallbackScanCountForDiagnostics;
+        var fallbackScansBeforePatchLoop = GameTypeResolver.FallbackScanCountForDiagnostics;
         var preparationStopwatch = new Stopwatch();
         var patchStopwatch = new Stopwatch();
         var detailedPatchTiming = IsDetailedPatchTimingEnabled();
@@ -302,12 +302,15 @@ public static class QudJPMod
             "harmony.prepare_patch_types",
             preparationStopwatch.Elapsed,
             $"patch_types={patchTypes.Length};prepared={preparedCount};skipped={skippedCount};"
-            + $"preflight={preflightPatchTargets};"
-            + $"type_fallback_scans={GameTypeResolver.FallbackScanCountForDiagnostics - fallbackScansBeforePreparation}");
+            + $"preflight={preflightPatchTargets}");
         RuntimeStartupTiming.LogElapsed(
             "harmony.apply_patch_types",
             patchStopwatch.Elapsed,
             $"patch_types={patchTypes.Length};applied={appliedCount};skipped={skippedCount}");
+        RuntimeStartupTiming.LogElapsed(
+            "harmony.type_fallback_scans_total",
+            TimeSpan.Zero,
+            $"count={GameTypeResolver.FallbackScanCountForDiagnostics - fallbackScansBeforePatchLoop}");
     }
 
     internal static bool TryPreparePatchType(Type patchType, out string failureReason)

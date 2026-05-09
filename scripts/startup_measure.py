@@ -401,7 +401,7 @@ def _wait_for_ready_marker(log_path: Path, timeout_seconds: float, ready_marker:
             text = log_path.read_text(encoding="utf-8", errors="replace")
             if ready_marker in text:
                 return "ready", time.monotonic() - started
-            if "QudJP: Harmony patched zero methods" in text or "mprotect returned EACCES" in text:
+            if "Harmony patched zero methods" in text or "mprotect returned EACCES" in text:
                 return "harmony_failed", time.monotonic() - started
         time.sleep(0.25)
     return "timeout", None
@@ -475,18 +475,18 @@ def _collect(args: argparse.Namespace) -> int:
                 shutil.copy2(args.log, previous_log)
                 args.log.unlink()
             started_at = datetime.now(UTC).isoformat()
-            process = subprocess.Popen(  # noqa: S603 -- command is explicit CLI input for local measurement.
-                command,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
-            status, elapsed = _wait_for_ready_marker(args.log, args.timeout, ready_marker)
-            if status == "ready" and args.settle_seconds > 0:
-                time.sleep(args.settle_seconds)
-            _stop_process(process)
-            stdout, stderr = process.communicate(timeout=5)
-            (iteration_dir / "stdout.txt").write_bytes(stdout)
-            (iteration_dir / "stderr.txt").write_bytes(stderr)
+            with (iteration_dir / "stdout.txt").open("wb") as stdout_file, (iteration_dir / "stderr.txt").open(
+                "wb",
+            ) as stderr_file:
+                process = subprocess.Popen(  # noqa: S603 -- command is explicit CLI input for local measurement.
+                    command,
+                    stdout=stdout_file,
+                    stderr=stderr_file,
+                )
+                status, elapsed = _wait_for_ready_marker(args.log, args.timeout, ready_marker)
+                if status == "ready" and args.settle_seconds > 0:
+                    time.sleep(args.settle_seconds)
+                _stop_process(process)
             if args.log.exists():
                 shutil.copy2(args.log, iteration_dir / "Player.log")
             else:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from typing import TYPE_CHECKING
 
 import pytest
@@ -14,6 +15,7 @@ from scripts.startup_measure import (
     ProfileSummary,
     _resolve_ready_marker,
     _restore_mod,
+    _wait_for_ready_marker,
     compare_profiles,
     main,
     parse_startup_log_text,
@@ -209,6 +211,54 @@ def test_disable_mod_requires_explicit_ready_marker() -> None:
     """A disabled QudJP profile cannot wait on QudJP's own completion marker."""
     with pytest.raises(ValueError, match="--disable-mod requires --ready-marker"):
         _resolve_ready_marker(disable_mod=True, ready_marker=None)
+
+
+def test_wait_for_ready_marker_detects_zero_patch_warning(tmp_path: Path) -> None:
+    """Harmony zero-patch logs are treated as failed startup evidence."""
+    log_path = tmp_path / "Player.log"
+    log_path.write_text("[QudJP] Warning: Harmony patched zero methods.\n", encoding="utf-8")
+
+    status, elapsed = _wait_for_ready_marker(log_path, timeout_seconds=1, ready_marker="never appears")
+
+    assert status == "harmony_failed"
+    assert elapsed is not None
+
+
+def test_collect_cli_writes_process_output_without_pipes(tmp_path: Path) -> None:
+    """The collect command preserves child stdout/stderr via files."""
+    log_path = tmp_path / "Player.log"
+    launcher = tmp_path / "fake_launch.py"
+    launcher.write_text(
+        "from pathlib import Path\n"
+        "import sys\n"
+        f"Path({str(log_path)!r}).write_text('[QudJP] Harmony patching complete:\\n', encoding='utf-8')\n"
+        "print('stdout marker')\n"
+        "print('stderr marker', file=sys.stderr)\n",
+        encoding="utf-8",
+    )
+
+    exit_code = main(
+        [
+            "collect",
+            "--profile",
+            "enabled",
+            "--iterations",
+            "1",
+            "--artifact-dir",
+            str(tmp_path / "artifacts"),
+            "--launch-cmd",
+            f"{sys.executable} {launcher}",
+            "--log",
+            str(log_path),
+            "--timeout",
+            "5",
+        ],
+    )
+
+    iteration_dir = tmp_path / "artifacts" / "profiles" / "enabled" / "iteration-01"
+    assert exit_code == 0
+    assert (iteration_dir / "stdout.txt").read_text(encoding="utf-8").strip() == "stdout marker"
+    assert (iteration_dir / "stderr.txt").read_text(encoding="utf-8").strip() == "stderr marker"
 
 
 def _result(profile: str, iteration: int, status: str, timings: dict[str, float]) -> IterationResult:
