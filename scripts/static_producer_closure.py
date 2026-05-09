@@ -89,7 +89,7 @@ COVERED_OWNER_FAMILIES: Final = (
             ),
             EvidenceFile(
                 "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
-                ("typeof(GameObjectHealTranslationPatch)", '"Heal"'),
+                ("typeof(GameObjectHealTranslationPatch)", '"Heal"', '"XRL.World.GameObject"'),
             ),
         ),
     ),
@@ -149,7 +149,11 @@ COVERED_OWNER_FAMILIES: Final = (
             ),
             EvidenceFile(
                 "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
-                ("typeof(PetEitherOrExplodeTranslationPatch)", '"explode"'),
+                (
+                    "typeof(PetEitherOrExplodeTranslationPatch)",
+                    '"explode"',
+                    '"XRL.World.Parts.PetEitherOr"',
+                ),
             ),
         ),
     ),
@@ -178,7 +182,7 @@ COVERED_OWNER_FAMILIES: Final = (
             ),
             EvidenceFile(
                 "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
-                ("typeof(ZoneWindChangeTranslationPatch)", '"WindChange"'),
+                ("typeof(ZoneWindChangeTranslationPatch)", '"WindChange"', '"XRL.World.Zone"'),
             ),
         ),
     ),
