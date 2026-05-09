@@ -19,17 +19,10 @@ _DEFAULT_DECOMPILED_ROOT = Path("~/dev/coq-decompiled_stable").expanduser()
 _STRING_LITERAL = r'"(?P<{name}>(?:\\.|[^"\\])*)"'
 _IDENTIFIER = r"[A-Za-z_][A-Za-z0-9_]*"
 _MEMBER_ACCESS = rf"{_IDENTIFIER}(?:\.{_IDENTIFIER})*"
-_FIND_TYPE_PATTERN = re.compile(
-    "".join(
-        (
-            r"GameTypeResolver\.FindType\(\s*",
-            rf"(?P<full_arg>{_STRING_LITERAL.format(name='full_literal')}|{_MEMBER_ACCESS})",
-            r"\s*,\s*(?:simpleTypeName\s*:\s*)?",
-            rf"{_STRING_LITERAL.format(name='simple_literal')}",
-        ),
-    ),
-    re.DOTALL,
-)
+_STRING_LITERAL_PATTERN = re.compile(rf"^{_STRING_LITERAL.format(name='value')}$", re.DOTALL)
+_MEMBER_ACCESS_PATTERN = re.compile(rf"^{_MEMBER_ACCESS}$")
+_NAMED_ARGUMENT_PATTERN = re.compile(rf"^(?P<name>{_IDENTIFIER})\s*:\s*(?P<value>.*)$", re.DOTALL)
+_FIND_TYPE_CALL_PATTERN = re.compile(r"GameTypeResolver\.FindType\((?P<arguments>.*?)\)", re.DOTALL)
 _CONST_STRING_PATTERN = re.compile(
     rf"\bconst\s+string\s+(?P<name>{_IDENTIFIER})\s*=\s*{_STRING_LITERAL.format(name='value')}",
 )
@@ -221,6 +214,20 @@ class _ConstIndex:
     type_spans: tuple[_TypeSpan, ...]
 
 
+@dataclass(frozen=True)
+class _FindTypeArguments:
+    full_arg: str
+    full_literal: str | None
+    simple_type_name: str
+
+
+@dataclass
+class _ArgumentScanState:
+    depth: int = 0
+    in_string: bool = False
+    escaped: bool = False
+
+
 def _build_decompiled_type_index(decompiled_root: Path) -> _TypeIndex:
     full_type_names: set[str] = set()
     by_simple_name: dict[str, list[str]] = {}
@@ -248,13 +255,16 @@ def _extract_resolver_calls(
     calls: list[ResolverCall] = []
     unresolved: list[UnresolvedResolverCall] = []
 
-    for match in _FIND_TYPE_PATTERN.finditer(text):
+    for match in _FIND_TYPE_CALL_PATTERN.finditer(text):
+        arguments = _parse_find_type_arguments(match.group("arguments"))
+        if arguments is None:
+            continue
+
         line = text.count("\n", 0, match.start()) + 1
-        full_arg = match.group("full_arg")
-        simple_type_name = _decode_csharp_string(match.group("simple_literal"))
-        full_literal = match.groupdict().get("full_literal")
-        if full_literal is not None:
-            full_type_name = _decode_csharp_string(full_literal)
+        full_arg = arguments.full_arg
+        simple_type_name = arguments.simple_type_name
+        if arguments.full_literal is not None:
+            full_type_name = arguments.full_literal
         else:
             full_type_name = _resolve_const_argument(full_arg, constants, match.start())
             if full_type_name is None:
@@ -278,6 +288,102 @@ def _extract_resolver_calls(
         )
 
     return tuple(calls), tuple(unresolved)
+
+
+def _parse_find_type_arguments(argument_text: str) -> _FindTypeArguments | None:
+    positional: list[str] = []
+    named: dict[str, str] = {}
+    for argument in _split_arguments(argument_text):
+        name, value = _parse_argument(argument)
+        if name is None:
+            positional.append(value)
+        else:
+            named[name] = value
+
+    full_arg = named.get("fullTypeName")
+    if full_arg is None and positional:
+        full_arg = positional[0]
+
+    simple_arg = named.get("simpleTypeName")
+    if simple_arg is None and len(positional) > 1:
+        simple_arg = positional[1]
+
+    if full_arg is None or simple_arg is None:
+        return None
+
+    simple_type_name = _extract_string_literal_value(simple_arg)
+    if simple_type_name is None:
+        return None
+
+    full_arg = full_arg.strip()
+    full_literal = _extract_string_literal_value(full_arg)
+    if full_literal is None and _MEMBER_ACCESS_PATTERN.fullmatch(full_arg) is None:
+        return None
+
+    return _FindTypeArguments(
+        full_arg=full_arg,
+        full_literal=full_literal,
+        simple_type_name=simple_type_name,
+    )
+
+
+def _split_arguments(argument_text: str) -> tuple[str, ...]:
+    arguments: list[str] = []
+    current: list[str] = []
+    state = _ArgumentScanState()
+    for char in argument_text:
+        if _consume_argument_character(char, state):
+            argument = "".join(current).strip()
+            if argument:
+                arguments.append(argument)
+            current = []
+            continue
+        current.append(char)
+
+    argument = "".join(current).strip()
+    if argument:
+        arguments.append(argument)
+    return tuple(arguments)
+
+
+def _consume_argument_character(char: str, state: _ArgumentScanState) -> bool:
+    if state.in_string:
+        _consume_string_character(char, state)
+        return False
+
+    if char == '"':
+        state.in_string = True
+        return False
+    if char in "([{":
+        state.depth += 1
+        return False
+    if char in ")]}":
+        state.depth = max(0, state.depth - 1)
+        return False
+    return char == "," and state.depth == 0
+
+
+def _consume_string_character(char: str, state: _ArgumentScanState) -> None:
+    if state.escaped:
+        state.escaped = False
+    elif char == "\\":
+        state.escaped = True
+    elif char == '"':
+        state.in_string = False
+
+
+def _parse_argument(argument: str) -> tuple[str | None, str]:
+    match = _NAMED_ARGUMENT_PATTERN.fullmatch(argument.strip())
+    if match is None:
+        return None, argument.strip()
+    return match.group("name"), match.group("value").strip()
+
+
+def _extract_string_literal_value(value: str) -> str | None:
+    match = _STRING_LITERAL_PATTERN.fullmatch(value.strip())
+    if match is None:
+        return None
+    return _decode_csharp_string(match.group("value"))
 
 
 def _extract_const_strings(text: str) -> _ConstIndex:
