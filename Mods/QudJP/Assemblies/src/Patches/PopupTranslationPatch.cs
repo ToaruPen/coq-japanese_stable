@@ -15,6 +15,9 @@ public static class PopupTranslationPatch
     private const string UntilPrefix = "Until ";
     private const string QudMenuItemContext = "QudMenuItem";
     private const string QudMenuItemDictionaryFile = "Scoped/ui-popup-qud-menu-item.ja.json";
+    private const string InventoryActionMenuPopupIdPrefix = "InventoryActionMenu:";
+    private const string InventoryActionContext = "XRL.World.IInventoryActionsEvent";
+    private const string InventoryActionDictionaryFile = "ui-inventory-actions.ja.json";
     private static readonly Regex HotkeyLabelPattern =
         new Regex("^\\[(?<hotkey>[^\\]]+)\\]\\s+(?<label>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PlainHotkeyLabelPattern =
@@ -255,7 +258,7 @@ public static class PopupTranslationPatch
 
     internal static string TranslatePopupTextForRoute(string source, string route)
     {
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        if (TryStripPopupDirectTranslationMarker(source, out var markedText))
         {
             return markedText;
         }
@@ -281,12 +284,17 @@ public static class PopupTranslationPatch
 
     internal static string TranslatePopupTextForProducerRoute(string source, string route)
     {
-        return TranslatePopupProducerText(source, route, "Popup.ProducerText");
+        return TranslatePopupProducerText(source, route, "Popup.ProducerText", popupId: null);
     }
 
     internal static string TranslatePopupMenuItemTextForProducerRoute(string source, string route)
     {
-        return TranslatePopupProducerText(source, route, "Popup.ProducerMenuItem");
+        return TranslatePopupMenuItemTextForProducerRoute(source, route, popupId: null);
+    }
+
+    internal static string TranslatePopupMenuItemTextForProducerRoute(string source, string route, string? popupId)
+    {
+        return TranslatePopupProducerText(source, route, "Popup.ProducerMenuItem", popupId);
     }
 
     private static string TranslatePopupText(string source)
@@ -301,7 +309,7 @@ public static class PopupTranslationPatch
             return source ?? string.Empty;
         }
 
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        if (TryStripPopupDirectTranslationMarker(source, out var markedText))
         {
             return markedText;
         }
@@ -320,14 +328,14 @@ public static class PopupTranslationPatch
         return source;
     }
 
-    private static string TranslatePopupProducerText(string source, string route, string family)
+    private static string TranslatePopupProducerText(string source, string route, string family, string? popupId)
     {
         if (string.IsNullOrEmpty(source))
         {
             return source ?? string.Empty;
         }
 
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        if (TryStripPopupDirectTranslationMarker(source, out var markedText))
         {
             return markedText;
         }
@@ -344,7 +352,7 @@ public static class PopupTranslationPatch
             return NormalizeProducerText(doesVerbTranslated);
         }
 
-        if (TryTranslatePopupProducerText(source, route, family, out var translated))
+        if (TryTranslatePopupProducerText(source, route, family, popupId, out var translated))
         {
             return NormalizeProducerText(translated);
         }
@@ -367,7 +375,30 @@ public static class PopupTranslationPatch
         return translated.Replace("{{hotkey|}}", string.Empty);
     }
 
-    private static bool TryTranslatePopupProducerText(string source, string route, string family, out string translated)
+    private static bool TryStripPopupDirectTranslationMarker(string source, out string stripped)
+    {
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out stripped))
+        {
+            return true;
+        }
+
+        var markerIndex = source.IndexOf(MessageFrameTranslator.DirectTranslationMarker);
+        if (markerIndex < 0)
+        {
+            stripped = source;
+            return false;
+        }
+
+        stripped = source.Remove(markerIndex, 1);
+        return true;
+    }
+
+    private static bool TryTranslatePopupProducerText(
+        string source,
+        string route,
+        string family,
+        string? popupId,
+        out string translated)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
 
@@ -431,6 +462,7 @@ public static class PopupTranslationPatch
                 spans,
                 route,
                 family,
+                popupId,
                 out var hotkeyLabelTranslated))
         {
             translated = hotkeyLabelTranslated;
@@ -994,6 +1026,7 @@ public static class PopupTranslationPatch
         IReadOnlyList<ColorSpan> spans,
         string route,
         string family,
+        string? popupId,
         out string translated)
     {
         translated = source;
@@ -1007,11 +1040,13 @@ public static class PopupTranslationPatch
         if (hotkeyMatch.Success && !int.TryParse(hotkeyMatch.Groups["hotkey"].Value, out _))
         {
             var label = hotkeyMatch.Groups["label"].Value;
-            var translatedLabel = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
-                label,
-                QudMenuItemContext,
-                QudMenuItemDictionaryFile);
-            if (translatedLabel is null || string.Equals(translatedLabel, label, StringComparison.Ordinal))
+            var translatedLabel = TranslatePopupMenuItemLabel(label, popupId);
+            if (translatedLabel is null)
+            {
+                return TryAcceptInventoryActionMenuOwnerMiss(source, popupId, out translated);
+            }
+
+            if (string.Equals(translatedLabel, label, StringComparison.Ordinal))
             {
                 return false;
             }
@@ -1034,17 +1069,34 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        // TryTranslatePlainInventoryActionMenuLabel owns InventoryActionMenu labels
+        // without inline {{hotkey|...}} markup; embedded hotkey rows continue below.
+        if (TryTranslatePlainInventoryActionMenuLabel(
+                source,
+                stripped,
+                spans,
+                route,
+                family,
+                popupId,
+                out var plainInventoryActionTranslated))
+        {
+            translated = plainInventoryActionTranslated;
+            return true;
+        }
+
         if (source.IndexOf("{{hotkey|", StringComparison.Ordinal) < 0
             || !Regex.IsMatch(stripped, "^[A-Za-z][A-Za-z ]*[A-Za-z]$", RegexOptions.CultureInvariant))
         {
             return false;
         }
 
-        var embeddedTranslated = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
-            stripped,
-            QudMenuItemContext,
-            QudMenuItemDictionaryFile);
-        if (embeddedTranslated is null || string.Equals(embeddedTranslated, stripped, StringComparison.Ordinal))
+        var embeddedTranslated = TranslatePopupMenuItemLabel(stripped, popupId);
+        if (embeddedTranslated is null)
+        {
+            return TryAcceptInventoryActionMenuOwnerMiss(source, popupId, out translated);
+        }
+
+        if (string.Equals(embeddedTranslated, stripped, StringComparison.Ordinal))
         {
             return false;
         }
@@ -1055,6 +1107,82 @@ public static class PopupTranslationPatch
             stripped.Length);
         DynamicTextObservability.RecordTransform(route, family + ".EmbeddedHotkeyLabel", source, translated);
         return true;
+    }
+
+    private static bool TryTranslatePlainInventoryActionMenuLabel(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string family,
+        string? popupId,
+        out string translated)
+    {
+        translated = source;
+        if (!IsInventoryActionMenuPopup(popupId) || source.Contains("{{hotkey|"))
+        {
+            return false;
+        }
+
+        var labelStart = 0;
+        while (labelStart < stripped.Length && stripped[labelStart] == ' ')
+        {
+            labelStart++;
+        }
+
+        if (labelStart >= stripped.Length)
+        {
+            return false;
+        }
+
+        var label = stripped.Substring(labelStart);
+        var translatedLabel = TranslatePopupMenuItemLabel(label, popupId);
+        if (translatedLabel is null)
+        {
+            translated = source;
+            return true;
+        }
+
+        if (string.Equals(translatedLabel, label, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        var visibleTranslation = stripped.Substring(0, labelStart) + translatedLabel;
+        translated = ColorAwareTranslationComposer.RestoreSourceBoundaryWrappersByVisibleTextPreservingTranslatedOwnership(
+            visibleTranslation,
+            spans,
+            stripped);
+        DynamicTextObservability.RecordTransform(route, family + ".PlainInventoryActionLabel", source, translated);
+        return true;
+    }
+
+    private static bool TryAcceptInventoryActionMenuOwnerMiss(string source, string? popupId, out string translated)
+    {
+        translated = source;
+        return IsInventoryActionMenuPopup(popupId);
+    }
+
+    private static string? TranslatePopupMenuItemLabel(string label, string? popupId)
+    {
+        if (IsInventoryActionMenuPopup(popupId))
+        {
+            return ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContextOnly(
+                label,
+                InventoryActionContext,
+                InventoryActionDictionaryFile);
+        }
+
+        return ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
+            label,
+            QudMenuItemContext,
+            QudMenuItemDictionaryFile);
+    }
+
+    internal static bool IsInventoryActionMenuPopup(string? popupId)
+    {
+        return popupId is not null
+            && popupId.StartsWith(InventoryActionMenuPopupIdPrefix, StringComparison.Ordinal);
     }
 
     private static bool TryTranslateUntilCalendarTimeOfDay(

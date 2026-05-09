@@ -33,45 +33,45 @@ internal static class InventoryRenderObservability
             dataTypeName = data.GetType().Name;
         }
 
-        var itemValue = GetPropertyOrFieldValue(data, "item");
+        var itemValue = ReflectionUtils.GetPropertyOrFieldValue(data, "item");
         if (itemValue is null)
         {
-            itemValue = GetPropertyOrFieldValue(data, "Item");
+            itemValue = ReflectionUtils.GetPropertyOrFieldValue(data, "Item");
         }
 
         var itemSummary = DescribeObject(itemValue);
-        var textSkin = GetPropertyOrFieldValue(inventoryLineInstance, "text");
+        var textSkin = ReflectionUtils.GetPropertyOrFieldValue(inventoryLineInstance, "text");
         var rawText = TryGetStringPropertyOrField(textSkin, "text");
         var formattedText = TryGetStringPropertyOrField(textSkin, "formattedText");
         var tmp = textSkin is null ? null : GetFieldValue(textSkin, "_tmp");
         var tmpText = TryGetStringPropertyOrField(tmp, "text");
         var tmpEnabled = tmp is not null && TryGetBooleanPropertyOrField(tmp, "enabled", out var isEnabled) ? isEnabled : (bool?)null;
-        var tmpGameObject = tmp is null ? null : GetPropertyOrFieldValue(tmp, "gameObject");
+        var tmpGameObject = tmp is null ? null : ReflectionUtils.GetPropertyOrFieldValue(tmp, "gameObject");
         var tmpActive = tmpGameObject is not null && TryGetBooleanPropertyOrField(tmpGameObject, "activeInHierarchy", out var isActive)
             ? isActive
             : (bool?)null;
-        var fontObject = GetPropertyOrFieldValue(tmp, "font");
+        var fontObject = ReflectionUtils.GetPropertyOrFieldValue(tmp, "font");
         var fontName = TryGetStringPropertyOrField(fontObject, "name");
-        var fontMaterial = GetPropertyOrFieldValue(tmp, "fontMaterial");
+        var fontMaterial = ReflectionUtils.GetPropertyOrFieldValue(tmp, "fontMaterial");
         if (fontMaterial is null)
         {
-            fontMaterial = GetPropertyOrFieldValue(tmp, "fontSharedMaterial");
+            fontMaterial = ReflectionUtils.GetPropertyOrFieldValue(tmp, "fontSharedMaterial");
         }
 
         var materialName = TryGetStringPropertyOrField(fontMaterial, "name");
         var tmpAlpha = TryGetFloatPropertyOrField(tmp, "alpha");
-        var tmpColor = GetPropertyOrFieldValue(tmp, "color");
+        var tmpColor = ReflectionUtils.GetPropertyOrFieldValue(tmp, "color");
         var tmpColorAlpha = TryGetFloatPropertyOrField(tmpColor, "a");
-        var canvasRenderer = GetPropertyOrFieldValue(tmp, "canvasRenderer");
+        var canvasRenderer = ReflectionUtils.GetPropertyOrFieldValue(tmp, "canvasRenderer");
         var canvasAlpha = TryInvokeFloatMethod(canvasRenderer, "GetAlpha");
         var canvasCull = canvasRenderer is not null && TryGetBooleanPropertyOrField(canvasRenderer, "cull", out var isCulled)
             ? isCulled
             : (bool?)null;
-        var rectTransform = GetPropertyOrFieldValue(tmp, "rectTransform");
-        var rect = GetPropertyOrFieldValue(rectTransform, "rect");
+        var rectTransform = ReflectionUtils.GetPropertyOrFieldValue(tmp, "rectTransform");
+        var rect = ReflectionUtils.GetPropertyOrFieldValue(rectTransform, "rect");
         var rectWidth = TryGetFloatPropertyOrField(rect, "width");
         var rectHeight = TryGetFloatPropertyOrField(rect, "height");
-        var atlasPopulationMode = GetPropertyOrFieldValue(fontObject, "atlasPopulationMode")?.ToString();
+        var atlasPopulationMode = ReflectionUtils.GetPropertyOrFieldValue(fontObject, "atlasPopulationMode")?.ToString();
         var atlasTextureCount = TryGetIntPropertyOrField(fontObject, "atlasTextureCount");
         var sampleChar = FindRepresentativeCharacter(displayName, rawText, tmpText);
         var hasSampleCharacter = sampleChar is null ? (bool?)null : TryCallHasCharacter(fontObject, sampleChar.Value);
@@ -343,22 +343,6 @@ internal static class InventoryRenderObservability
 
         var value = method.Invoke(instance, null);
         return value is float floatValue ? floatValue : null;
-    }
-
-    private static object? GetPropertyOrFieldValue(object? instance, string memberName)
-    {
-        if (instance is null)
-        {
-            return null;
-        }
-
-        var property = instance.GetType().GetProperty(memberName);
-        if (property is not null && property.GetIndexParameters().Length == 0)
-        {
-            return property.GetValue(instance);
-        }
-
-        return Access(instance, memberName);
     }
 
     private static object? GetFieldValue(object instance, string memberName)

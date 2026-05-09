@@ -64,10 +64,6 @@ internal static class TooltipTextRepairer
             repaired += ApplyLegacyFonts(tooltipObject);
             repaired += ApplyTmpFonts(tooltipObject);
             repaired += TmpTextRepairer.TryRepairInvisibleTexts(tooltipObject.transform);
-            repaired += TextShellReplacementRenderer.TryRenderReplacementTexts(
-                tooltipObject.transform,
-                out _,
-                emitDiagnostics: false);
             if (restoreCanvasRendererVisibility)
             {
                 repaired += RestoreCanvasRendererVisibility(tooltipObject);
@@ -252,32 +248,15 @@ internal static class TooltipTextRepairer
     }
 
 
-    private static object? GetPropertyOrFieldValue(object? instance, string memberName)
-    {
-        if (instance is null)
-        {
-            return null;
-        }
-
-        var type = instance.GetType();
-        var property = type.GetProperty(memberName);
-        if (property is not null && property.GetIndexParameters().Length == 0)
-        {
-            return property.GetValue(instance);
-        }
-
-        return AccessField(type, instance, memberName);
-    }
-
     private static GameObject? TryGetTooltipObjectFromTrigger(object? triggerInstance, out object? tooltip)
     {
-        tooltip = GetPropertyOrFieldValue(triggerInstance, "Tooltip");
+        tooltip = ReflectionUtils.GetPropertyOrFieldValue(triggerInstance, "Tooltip");
         return GetTooltipObject(tooltip);
     }
 
     private static GameObject? GetTooltipObject(object? tooltip)
     {
-        return GetPropertyOrFieldValue(tooltip, "GameObject") as GameObject;
+        return ReflectionUtils.GetPropertyOrFieldValue(tooltip, "GameObject") as GameObject;
     }
 
     private static void ForceUpdateCanvases()
@@ -307,20 +286,6 @@ internal static class TooltipTextRepairer
         {
             Debug.LogWarning($"[QudJP] TooltipTextRepairer: ForceUpdateCanvases failed: {ex.GetType().Name}: {ex.Message}");
         }
-    }
-
-    private static object? AccessField(Type type, object instance, string memberName)
-    {
-        var field = type.GetField(memberName);
-        if (field is not null)
-        {
-            return field.GetValue(instance);
-        }
-
-#pragma warning disable S3011
-        var nonPublicField = type.GetField(memberName, InstanceMemberFlags);
-#pragma warning restore S3011
-        return nonPublicField?.GetValue(instance);
     }
 
     private static bool TrySetBooleanMember(object? instance, string memberName, bool value)

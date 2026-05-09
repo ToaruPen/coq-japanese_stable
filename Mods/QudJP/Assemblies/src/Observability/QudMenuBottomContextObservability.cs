@@ -28,8 +28,8 @@ internal static class QudMenuBottomContextObservability
             return false;
         }
 
-        var items = GetEnumerable(GetPropertyOrFieldValue(contextInstance, "items"));
-        var buttons = GetEnumerable(GetPropertyOrFieldValue(contextInstance, "buttons"));
+        var items = GetEnumerable(ReflectionUtils.GetPropertyOrFieldValue(contextInstance, "items"));
+        var buttons = GetEnumerable(ReflectionUtils.GetPropertyOrFieldValue(contextInstance, "buttons"));
         var builder = new StringBuilder();
         builder.Append("[QudJP] QudMenuBottomContextProbe/");
         builder.Append(phase);
@@ -133,26 +133,4 @@ internal static class QudMenuBottomContextObservability
         return null;
     }
 
-    private static object? GetPropertyOrFieldValue(object? instance, string memberName)
-    {
-        if (instance is null)
-        {
-            return null;
-        }
-
- #pragma warning disable S3011
-        var property = instance.GetType().GetProperty(memberName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
- #pragma warning restore S3011
-        if (property is not null && property.GetIndexParameters().Length == 0)
-        {
-#pragma warning disable S3011
-            return property.GetValue(instance);
-#pragma warning restore S3011
-        }
-
-#pragma warning disable S3011
-        var field = instance.GetType().GetField(memberName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-#pragma warning restore S3011
-        return field?.GetValue(instance);
-    }
 }

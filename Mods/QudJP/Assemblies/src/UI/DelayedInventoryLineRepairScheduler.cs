@@ -1,9 +1,7 @@
 #if HAS_TMP
 using System.Collections;
 using System.Collections.Concurrent;
-#if QUDJP_DEV_BUILD
 using System.Threading;
-#endif
 using TMPro;
 using UnityEngine;
 #endif
@@ -16,11 +14,13 @@ internal static class DelayedInventoryLineRepairScheduler
     private const int MaxAttemptsPerLine = 2;
 #if QUDJP_DEV_BUILD
     private const int MaxEvidenceLogs = 48;
+    private const string VisibleRepairScanProbeName = "InventoryLineVisibleRepairScan/v1";
 #endif
 
     private static readonly ConcurrentDictionary<int, int> AttemptCounts = new();
     private static readonly ConcurrentDictionary<int, string> LastScheduledTextByLine = new();
     private static readonly ConcurrentDictionary<int, byte> Scheduled = new();
+    private static int visibleProbeScanScheduled;
 #if QUDJP_DEV_BUILD
     private static int evidenceLogCount;
 #endif
@@ -81,9 +81,16 @@ internal static class DelayedInventoryLineRepairScheduler
         ScheduleRepair(component);
     }
 
-    internal static void ScheduleVisibleInventoryRepairs()
+    internal static void LogVisibleInventoryProbeSnapshots(object? inventoryScreenInstance)
     {
-        var allComponents = Resources.FindObjectsOfTypeAll<Component>();
+        if (ReflectionUtils.GetPropertyOrFieldValue(inventoryScreenInstance, "inventoryController") is not Component inventoryController)
+        {
+            LogVisibleRepairScanProbe(inventoryScreenInstance, componentCount: 0, candidateCount: 0, controllerFound: false);
+            return;
+        }
+
+        var allComponents = inventoryController.GetComponentsInChildren<Component>(includeInactive: true);
+        var candidateCount = 0;
         for (var index = 0; index < allComponents.Length; index++)
         {
             var component = allComponents[index];
@@ -100,8 +107,35 @@ internal static class DelayedInventoryLineRepairScheduler
                 continue;
             }
 
-            ScheduleRepair(component, resetAttempts: true);
+            candidateCount++;
+            InventoryLineTmpLifecycleObservability.LogOriginalTmpLifecycle(
+                component,
+                "visible-scan-candidate",
+                forceMesh: false);
         }
+
+        LogVisibleRepairScanProbe(
+            inventoryScreenInstance,
+            allComponents.Length,
+            candidateCount,
+            controllerFound: true);
+    }
+
+    internal static void ScheduleVisibleInventoryProbeSnapshotsAfterDelay(object? inventoryScreenInstance)
+    {
+        if (Interlocked.Exchange(ref visibleProbeScanScheduled, 1) == 1)
+        {
+            return;
+        }
+
+        var runner = EnsureHost();
+        if (runner is null)
+        {
+            Interlocked.Exchange(ref visibleProbeScanScheduled, 0);
+            return;
+        }
+
+        runner.StartCoroutine(RunVisibleInventoryProbeScan(inventoryScreenInstance));
     }
 
     private static RepairHost? EnsureHost()
@@ -132,6 +166,10 @@ internal static class DelayedInventoryLineRepairScheduler
                 yield break;
             }
 
+            InventoryLineTmpLifecycleObservability.LogOriginalTmpLifecycle(
+                component,
+                "repair-before-replacement",
+                forceMesh: false);
             var replaced = TextShellReplacementRenderer.TryRenderReplacementTexts(component, out var replacementLogLine);
 
             yield return null;
@@ -154,6 +192,43 @@ internal static class DelayedInventoryLineRepairScheduler
         {
             Scheduled.TryRemove(lineId, out _);
         }
+    }
+
+    private static IEnumerator RunVisibleInventoryProbeScan(object? inventoryScreenInstance)
+    {
+        try
+        {
+            yield return null;
+            yield return new WaitForEndOfFrame();
+            yield return null;
+
+            LogVisibleInventoryProbeSnapshots(inventoryScreenInstance);
+        }
+        finally
+        {
+            Interlocked.Exchange(ref visibleProbeScanScheduled, 0);
+        }
+    }
+
+    private static void LogVisibleRepairScanProbe(
+        object? inventoryScreenInstance,
+        int componentCount,
+        int candidateCount,
+        bool controllerFound)
+    {
+#if QUDJP_DEV_BUILD
+        RuntimeDiagnostics.LogVerboseProbe(() =>
+            "[QudJP] " + VisibleRepairScanProbeName + ": "
+            + $"screen='{inventoryScreenInstance?.GetType().FullName ?? "<null>"}' "
+            + $"controllerFound={controllerFound.ToString()} "
+            + $"components={componentCount.ToString(System.Globalization.CultureInfo.InvariantCulture)} "
+            + $"candidates={candidateCount.ToString(System.Globalization.CultureInfo.InvariantCulture)}");
+#else
+        _ = inventoryScreenInstance;
+        _ = componentCount;
+        _ = candidateCount;
+        _ = controllerFound;
+#endif
     }
 
     private static void LogVerboseRepairProbeSnapshots(Component component)

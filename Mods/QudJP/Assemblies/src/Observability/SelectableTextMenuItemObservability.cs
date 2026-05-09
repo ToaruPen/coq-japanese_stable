@@ -25,11 +25,11 @@ internal static class SelectableTextMenuItemObservability
             return false;
         }
 
-        var data = GetPropertyOrFieldValue(menuInstance, "data");
+        var data = ReflectionUtils.GetPropertyOrFieldValue(menuInstance, "data");
         var command = TryGetStringByCandidates(data, "command", "Command");
         var hotkey = TryGetStringByCandidates(data, "hotkey", "Hotkey");
         var dataText = TryGetStringByCandidates(data, "text", "Text");
-        var itemSkin = GetPropertyOrFieldValue(menuInstance, "item");
+        var itemSkin = ReflectionUtils.GetPropertyOrFieldValue(menuInstance, "item");
         var bucket = (command ?? "<null>") + ":" + phase;
         var hitCount = BucketCounts.AddOrUpdate(bucket, 1, static (_, current) => current + 1);
         if (hitCount > MaxLogsPerBucket)
@@ -126,26 +126,6 @@ internal static class SelectableTextMenuItemObservability
         }
 
         return Access(instance, memberName) as string;
-    }
-
-    private static object? GetPropertyOrFieldValue(object? instance, string memberName)
-    {
-        if (instance is null)
-        {
-            return null;
-        }
-
- #pragma warning disable S3011
-        var property = instance.GetType().GetProperty(memberName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
- #pragma warning restore S3011
-        if (property is not null && property.GetIndexParameters().Length == 0)
-        {
-#pragma warning disable S3011
-            return property.GetValue(instance);
-#pragma warning restore S3011
-        }
-
-        return Access(instance, memberName);
     }
 
     private static object? Access(object instance, string memberName)

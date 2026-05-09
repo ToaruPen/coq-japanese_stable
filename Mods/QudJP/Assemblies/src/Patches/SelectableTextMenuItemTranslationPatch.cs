@@ -40,12 +40,12 @@ public static class SelectableTextMenuItemTranslationPatch
             }
 
             var itemText = AccessTools.Property(__instance.GetType(), "itemText")?.GetValue(__instance) as string;
-            if (string.IsNullOrEmpty(itemText))
+            if (itemText is null || itemText.Length == 0)
             {
                 return;
             }
 
-            var translated = TranslateMenuItemTextForDisplay(itemText!);
+            var translated = TranslateMenuItemTextForDisplay(itemText, TryGetPopupIdFromParentPopup(__instance));
             if (string.Equals(translated, itemText, StringComparison.Ordinal))
             {
                 return;
@@ -63,11 +63,68 @@ public static class SelectableTextMenuItemTranslationPatch
 
     internal static string TranslateMenuItemTextForDisplay(string source)
     {
-        return PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute(source, Context);
+        return TranslateMenuItemTextForDisplay(source, popupId: null);
+    }
+
+    internal static string TranslateMenuItemTextForDisplay(string source, string? popupId)
+    {
+        return StripDirectTranslationMarkers(
+            PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute(source, Context, popupId));
     }
 
     internal static string WrapForSelection(string source, bool selected)
     {
         return selected ? "{{W|" + source + "}}" : "{{c|" + source + "}}";
+    }
+
+    private static string? TryGetPopupIdFromParentPopup(object instance)
+    {
+        var popupMessageType = AccessTools.TypeByName("Qud.UI.PopupMessage");
+        if (popupMessageType is null)
+        {
+            return null;
+        }
+
+        var popupMessage = TryGetParentPopupMessage(instance, popupMessageType);
+        if (popupMessage is null)
+        {
+            return TryGetLastPopupId(popupMessageType);
+        }
+
+        return AccessTools.Field(popupMessageType, "PopupID")?.GetValue(popupMessage) as string
+            ?? TryGetLastPopupId(popupMessageType);
+    }
+
+    private static object? TryGetParentPopupMessage(object instance, Type popupMessageType)
+    {
+        var componentType = AccessTools.TypeByName("UnityEngine.Component");
+        if (componentType is null || !componentType.IsInstanceOfType(instance))
+        {
+            return null;
+        }
+
+        var includeInactiveMethod = AccessTools.Method(
+            componentType,
+            "GetComponentInParent",
+            new[] { typeof(Type), typeof(bool) });
+        if (includeInactiveMethod is not null)
+        {
+            return includeInactiveMethod.Invoke(instance, new object[] { popupMessageType, true });
+        }
+
+        var method = AccessTools.Method(componentType, "GetComponentInParent", new[] { typeof(Type) });
+        return method?.Invoke(instance, new object[] { popupMessageType });
+    }
+
+    private static string? TryGetLastPopupId(Type popupMessageType)
+    {
+        return AccessTools.Field(popupMessageType, "lastPopupID")?.GetValue(null) as string;
+    }
+
+    private static string StripDirectTranslationMarkers(string source)
+    {
+        return source.IndexOf(MessageFrameTranslator.DirectTranslationMarker) < 0
+            ? source
+            : source.Replace(MessageFrameTranslator.DirectTranslationMarker.ToString(), string.Empty);
     }
 }

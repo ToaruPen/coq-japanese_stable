@@ -35,6 +35,16 @@
       "text": "外す"
     },
     {
+      "key": "drop",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "落とす"
+    },
+    {
+      "key": "detonate",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "起爆する"
+    },
+    {
       "key": "Close Menu",
       "text": "メニューを閉じる"
     },

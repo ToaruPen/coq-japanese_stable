@@ -117,15 +117,23 @@ public sealed class UnityApiCompatibilityTests
     }
 
     [NUnit.Framework.Test]
-    public void TooltipRepairer_SuppressesReplacementDiagnosticsForTooltipRoute()
+    public void TooltipRepairer_DoesNotUseInventoryTextShellReplacementForTooltipRoute()
     {
         var source = ReadUiSource("TooltipTextRepairer.cs");
 
         NUnit.Framework.Assert.That(
             source,
-            NUnit.Framework.Does.Match(
-                @"TryRenderReplacementTexts\s*\(\s*tooltipObject\.transform\s*,\s*out\s+_\s*,\s*emitDiagnostics:\s*false\s*\)"),
-            "Tooltip repair reuses the replacement renderer, but tooltip bodies must not enter inventory diagnostics.");
+            NUnit.Framework.Does.Not.Contain("TextShellReplacementRenderer.TryRenderReplacementTexts"),
+            "Tooltip repair must not reuse the InventoryLine TextShell replacement path because it can hide original tooltip TMP text.");
+    }
+
+    [NUnit.Framework.Test]
+    public void SelectableTextMenuItemTranslation_UsesPopupMessageLastPopupIdFallback()
+    {
+        var source = ReadPatchSource("SelectableTextMenuItemTranslationPatch.cs");
+
+        NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Contain("TryGetLastPopupId(popupMessageType)"));
+        NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Contain("\"lastPopupID\""));
     }
 
     [NUnit.Framework.Test]
@@ -165,6 +173,18 @@ public sealed class UnityApiCompatibilityTests
             "Assemblies",
             "src",
             "UI",
+            fileName));
+    }
+
+    private static string ReadPatchSource(string fileName)
+    {
+        return File.ReadAllText(Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Assemblies",
+            "src",
+            "Patches",
             fileName));
     }
 }
