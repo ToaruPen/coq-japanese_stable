@@ -30,6 +30,12 @@ just test-l2g
 
 - Prefer producer-owned or stable mid-pipeline fixes. Many sink and near-sink routes are intentionally observation-only.
 - Use `~/dev/coq-decompiled_stable/` to trace upstream producers, verify signatures, and investigate unclaimed routes.
+- When a patch reflects into upstream game members, verify the real method
+  signature in decompiled source before choosing `AccessTools.Method`
+  parameter types. C# optional arguments still appear as real parameters to
+  reflection, so a source call such as `RenderForUI()` may require resolving
+  `RenderForUI(string, bool)`. Add an L2G signature/contract test when this
+  reflection path controls runtime UI behavior.
 - For C# patch, translator, observability, or target-method changes, use structural search before editing or before finalizing the patch:
   - use `just --list` to discover repo recipes when command routing is unclear
   - use `just sg-cs '<pattern>' Mods/QudJP/Assemblies/src` to compare repo-owned call shapes
