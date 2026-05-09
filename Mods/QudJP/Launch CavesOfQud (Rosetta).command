@@ -8,6 +8,8 @@
 set -euo pipefail
 
 DEFAULT_GAME_BINARY="${HOME}/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/MacOS/CoQ"
+export SteamAppId="333640"
+export SteamGameId="333640"
 
 show_message() {
   local title="$1"
