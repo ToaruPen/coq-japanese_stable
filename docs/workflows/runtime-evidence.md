@@ -123,6 +123,12 @@ Runtime diagnostics must keep shipping logs small and actionable:
   `QUDJP_DEV_BUILD` when their marker strings are not needed in release builds
 - release artifacts must not contain obvious verbose probe markers such as
   `DynamicTextProbe/v1`, `FinalOutputProbe/v1`, or `SinkObserve/v1`
+- QJ004 is a bypass guard for statically visible verbose probe markers on
+  direct logging calls. It is intentionally not a general formatter,
+  exception-message, or Unity logging API analyzer. If new probes need stronger
+  guarantees, tighten `RuntimeDiagnostics`, the marker convention, release
+  verification, or focused analyzer coverage before adding broad static
+  inference.
 
 Use dev builds for route-proof collection. Release/shipping builds keep the
 important QudJP startup, warning, and error logs, but verbose probes are off by
