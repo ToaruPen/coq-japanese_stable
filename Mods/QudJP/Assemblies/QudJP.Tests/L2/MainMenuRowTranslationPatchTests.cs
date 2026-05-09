@@ -112,6 +112,23 @@ public sealed class MainMenuRowTranslationPatchTests
         }
     }
 
+    [Test]
+    public void Postfix_AppliesLegacyFontToRowTextMember()
+    {
+        var row = new DummyMainMenuRow();
+        var applied = false;
+
+        var result = MainMenuRowTranslationPatch.TryApplyLegacyFontToRowTextForTests(
+            row,
+            _ => applied = true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.True);
+            Assert.That(applied, Is.True);
+        });
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

@@ -91,6 +91,14 @@ class TestProjectManifest:
         assert data["PreviewImage"] == "preview.png"
         assert read_preview_image_path(manifest) == PROJECT_ROOT / "Mods" / "QudJP" / "preview.png"
 
+    def test_rosetta_launcher_preserves_steam_app_context(self) -> None:
+        """The shipped Rosetta helper exports Steam app IDs before direct launch."""
+        launcher = PROJECT_ROOT / "Mods" / "QudJP" / "Launch CavesOfQud (Rosetta).command"
+        text = launcher.read_text(encoding="utf-8")
+
+        assert 'export SteamAppId="333640"' in text
+        assert 'export SteamGameId="333640"' in text
+
 
 class TestReadPreviewImagePath:
     """Tests for manifest PreviewImage handling."""

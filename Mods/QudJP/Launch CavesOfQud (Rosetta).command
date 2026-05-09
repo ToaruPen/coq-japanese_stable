@@ -7,6 +7,8 @@
 set -euo pipefail
 
 GAME_BINARY="${HOME}/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/MacOS/CoQ"
+export SteamAppId="333640"
+export SteamGameId="333640"
 
 if [[ "$(uname -s)" != "Darwin" ]]; then
   echo "This launcher is only needed on macOS." >&2

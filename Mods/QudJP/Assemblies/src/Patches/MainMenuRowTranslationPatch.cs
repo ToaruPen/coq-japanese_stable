@@ -2,6 +2,9 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using HarmonyLib;
+#if HAS_TMP
+using UguiText = UnityEngine.UI.Text;
+#endif
 
 namespace QudJP.Patches;
 
@@ -41,6 +44,18 @@ public static class MainMenuRowTranslationPatch
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: MainMenuRowTranslationPatch.Prefix failed: {0}", ex);
+        }
+    }
+
+    public static void Postfix(object __instance)
+    {
+        try
+        {
+            _ = TryApplyLegacyFontToRowText(__instance);
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: MainMenuRowTranslationPatch.Postfix failed: {0}", ex);
         }
     }
 
@@ -102,5 +117,40 @@ public static class MainMenuRowTranslationPatch
         {
             field.SetValue(instance, value);
         }
+    }
+
+    private static bool TryApplyLegacyFontToRowText(object? row)
+    {
+        return TryApplyLegacyFontToRowTextForTests(row, ApplyLegacyFont);
+    }
+
+    internal static bool TryApplyLegacyFontToRowTextForTests(object? row, Action<object> applyFont)
+    {
+        if (row is null)
+        {
+            return false;
+        }
+
+        var text = AccessTools.Field(row.GetType(), "text")?.GetValue(row)
+            ?? AccessTools.Property(row.GetType(), "text")?.GetValue(row);
+        if (text is null)
+        {
+            return false;
+        }
+
+        applyFont(text);
+        return true;
+    }
+
+    private static void ApplyLegacyFont(object text)
+    {
+#if HAS_TMP
+        if (text is UguiText legacyText)
+        {
+            FontManager.ApplyToLegacyText(legacyText);
+        }
+#else
+        _ = text;
+#endif
     }
 }
