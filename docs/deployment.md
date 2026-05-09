@@ -156,8 +156,10 @@ For inventory / equipment display checks, follow the runtime evidence rules in
 - The Workshop launcher is intended for Finder double-click use. If Rosetta 2
   is missing, it offers to install Rosetta 2 through a macOS dialog. It first
   checks the default Steam library and the Steam library implied by the
-  downloaded Workshop folder. If neither path contains Caves of Qud, it opens a
-  file picker so the user can select `CoQ.app`.
+  downloaded Workshop folder. If it is launched from an installed
+  `CoQ.app/Contents/Resources/Data/StreamingAssets/Mods/QudJP` folder, it also
+  infers the parent `CoQ.app` directly. If none of those paths contains Caves of
+  Qud, it opens a file picker so the user can select `CoQ.app`.
 - On macOS with the default Steam library, the subscribed Workshop item is
   normally under:
   `~/Library/Application Support/Steam/steamapps/workshop/content/333640/3718988020/`

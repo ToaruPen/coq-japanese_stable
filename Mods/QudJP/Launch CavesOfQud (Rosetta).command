@@ -74,7 +74,7 @@ choose_game_binary() {
   local selected_app
   selected_app="$(
     osascript <<'APPLESCRIPT'
-set promptText to "既定のSteamライブラリにCaves of Qudが見つかりませんでした。Steamライブラリ内の steamapps/common/Caves of Qud/CoQ.app を選択してください。"
+set promptText to "Caves of Qudが既定のSteamライブラリ、およびこの起動ファイルの場所から推定したSteamライブラリに見つかりませんでした。Steamライブラリ内の steamapps/common/Caves of Qud/CoQ.app を選択してください。"
 set selectedFile to choose file with prompt promptText
 return POSIX path of selectedFile
 APPLESCRIPT
@@ -118,6 +118,21 @@ show_not_executable_message() {
     "${source_description}にCaves of Qudは見つかりましたが、実行できる状態ではありません。Steamを開き、ライブラリ > Caves of Qud > プロパティ > インストール済みファイル > ゲームファイルの整合性を確認 を実行してから、もう一度このファイルを開いてください。"
 }
 
+canonicalize_binary_path() {
+  local binary_path="$1"
+  local binary_dir
+  local binary_name
+
+  binary_dir="$(dirname "${binary_path}")"
+  binary_name="$(basename "${binary_path}")"
+
+  if [[ ! -d "${binary_dir}" ]]; then
+    return 1
+  fi
+
+  (cd -P "${binary_dir}" && printf '%s/%s\n' "$(pwd -P)" "${binary_name}")
+}
+
 resolve_game_binary() {
   if [[ -x "${DEFAULT_GAME_BINARY}" ]]; then
     printf '%s\n' "${DEFAULT_GAME_BINARY}"
@@ -154,14 +169,17 @@ resolve_game_binary() {
     exit 1
   fi
 
-  if [[ ! -x "${chosen_binary}" ]]; then
+  local canonical_chosen
+  if ! canonical_chosen="$(canonicalize_binary_path "${chosen_binary}")" ||
+    [[ "${canonical_chosen}" != */CoQ.app/Contents/MacOS/CoQ ]] ||
+    [[ ! -x "${canonical_chosen}" ]]; then
     show_message \
       "${LAUNCHER_TITLE}" \
       "選択されたファイルからCaves of Qudを起動できませんでした。Steamライブラリ内の Caves of Qud/CoQ.app を選択してください。"
     exit 1
   fi
 
-  printf '%s\n' "${chosen_binary}"
+  printf '%s\n' "${canonical_chosen}"
 }
 
 is_apple_silicon() {

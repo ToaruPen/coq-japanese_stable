@@ -23,9 +23,20 @@ def test_rosetta_launcher_uses_gui_dialogs_for_player_facing_errors() -> None:
 
     assert "display dialog" in launcher
     assert "choose file" in launcher
+    assert "この起動ファイルの場所から推定したSteamライブラリ" in launcher
     assert "CoQ.app/Contents/MacOS/CoQ" in launcher
     assert "edit this launcher" not in launcher
     assert "ゲームファイルの整合性を確認" in launcher
+
+
+def test_rosetta_launcher_restricts_manual_selection_to_coq_binary() -> None:
+    """Manual file picker results must still resolve to the CoQ app binary."""
+    launcher = _launcher_text()
+
+    assert "canonicalize_binary_path" in launcher
+    assert '[[ "${canonical_chosen}" != */CoQ.app/Contents/MacOS/CoQ ]]' in launcher
+    assert '[[ ! -x "${canonical_chosen}" ]]' in launcher
+    assert 'printf \'%s\\n\' "${canonical_chosen}"' in launcher
 
 
 def test_rosetta_launcher_infers_game_from_workshop_or_installed_mod_location() -> None:
