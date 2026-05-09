@@ -359,8 +359,9 @@ After Steam finishes processing the item:
 1. Open the Workshop page and confirm the title, description, tags, preview
    image, visibility, file size, and change note.
    - For Apple Silicon support, confirm the description mentions
-     `Launch CavesOfQud (Rosetta).command`, Rosetta 2, and a quote-free
-     `arch -x86_64` launch example.
+     `Launch CavesOfQud (Rosetta).command`, Rosetta 2, Finder double-click use,
+     the `CoQ.app` picker fallback, and a quote-free `arch -x86_64` launch
+     example for advanced users.
 2. Subscribe to the item from a clean Steam client state or unsubscribe and
    resubscribe if updating an existing item.
 3. Validate the downloaded Workshop item against the staged content:
@@ -375,7 +376,9 @@ After Steam finishes processing the item:
    release ZIP DLL. Do not mark the release GO if the public Workshop download
    still contains an older DLL.
    Also confirm the downloaded `Launch CavesOfQud (Rosetta).command` exists and
-   is executable in the downloaded `QudJP` folder.
+   is executable in the downloaded `QudJP` folder. The launcher should guide
+   player-facing failures with macOS dialogs rather than requiring manual script
+   edits.
    On the default macOS Steam library, the downloaded Workshop folder is usually
    `~/Library/Application Support/Steam/steamapps/workshop/content/333640/3718988020/`.
 4. Launch the game, enable only QudJP for the smoke pass, and restart.
