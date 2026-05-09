@@ -11,9 +11,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  detect-changes:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
+
+    outputs:
+      base_ref: ${{ steps.changes.outputs.base_ref }}
+      head_ref: ${{ steps.changes.outputs.head_ref }}
+      qudjp_dotnet: ${{ steps.changes.outputs.qudjp_dotnet }}
+      roslyn_tools: ${{ steps.changes.outputs.roslyn_tools }}
+      python: ${{ steps.changes.outputs.python }}
+      localization: ${{ steps.changes.outputs.localization }}
+      justfile: ${{ steps.changes.outputs.justfile }}
+      markdown_reports: ${{ steps.changes.outputs.markdown_reports }}
 
     steps:
       - uses: actions/checkout@v5
@@ -94,15 +104,22 @@ jobs:
             echo "head_ref=$head"
             echo "qudjp_dotnet=$qudjp_dotnet"
             echo "roslyn_tools=$roslyn_tools"
-            echo "dotnet=$([[ "$qudjp_dotnet" == true || "$roslyn_tools" == true ]] && echo true || echo false)"
             echo "python=$python"
             echo "localization=$localization"
             echo "justfile=$justfile"
             echo "markdown_reports=$markdown_reports"
           } >> "$GITHUB_OUTPUT"
 
+  qudjp-dotnet-build:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.qudjp_dotnet == 'true'
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v5
+
       - name: Setup .NET
-        if: steps.changes.outputs.dotnet == 'true'
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
@@ -110,24 +127,85 @@ jobs:
             10.0.x
 
       - name: Cache NuGet packages
-        if: steps.changes.outputs.dotnet == 'true'
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('Mods/QudJP/Assemblies/**/*.csproj', 'scripts/tools/**/*.csproj') }}
+          key: ${{ runner.os }}-nuget-qudjp-${{ hashFiles('Mods/QudJP/Assemblies/**/*.csproj') }}
           restore-keys: |
+            ${{ runner.os }}-nuget-qudjp-
             ${{ runner.os }}-nuget-
 
       - name: Build QudJP
-        if: steps.changes.outputs.qudjp_dotnet == 'true'
         run: dotnet build Mods/QudJP/Assemblies/QudJP.csproj --configuration Release
 
       - name: Build QudJP.Tests
-        if: steps.changes.outputs.qudjp_dotnet == 'true' && hashFiles('Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj') != ''
+        if: hashFiles('Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj') != ''
         run: dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release
 
+      - name: Upload QudJP test artifact
+        if: hashFiles('Mods/QudJP/Assemblies/QudJP.Tests/bin/Release/net10.0/QudJP.Tests.dll') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: qudjp-tests-release
+          path: Mods/QudJP/Assemblies/QudJP.Tests/bin/Release/net10.0
+          if-no-files-found: error
+
+  qudjp-dotnet-test:
+    name: C# tests (${{ matrix.category }})
+    runs-on: ubuntu-latest
+    needs: [detect-changes, qudjp-dotnet-build]
+    if: always() && needs.detect-changes.outputs.qudjp_dotnet == 'true' && needs.qudjp-dotnet-build.result == 'success'
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        category: [L1, L2, L2G]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Download QudJP test artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: qudjp-tests-release
+          path: Mods/QudJP/Assemblies/QudJP.Tests/bin/Release/net10.0
+
+      - name: Test QudJP ${{ matrix.category }}
+        run: >
+          dotnet test Mods/QudJP/Assemblies/QudJP.Tests/bin/Release/net10.0/QudJP.Tests.dll
+          --filter "TestCategory=${{ matrix.category }}"
+
+  roslyn-tools:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.roslyn_tools == 'true'
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-roslyn-tools-${{ hashFiles('scripts/tools/**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-roslyn-tools-
+            ${{ runner.os }}-nuget-
+
       - name: Build script tools
-        if: steps.changes.outputs.roslyn_tools == 'true' && hashFiles('scripts/tools/**/*.csproj') != ''
+        if: hashFiles('scripts/tools/**/*.csproj') != ''
         shell: bash
         run: |
           set -euo pipefail
@@ -144,62 +222,77 @@ jobs:
             echo "::endgroup::"
           done
 
-      - name: Test QudJP
-        if: steps.changes.outputs.qudjp_dotnet == 'true' && hashFiles('Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj') != ''
-        run: dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-build
+  python:
+    runs-on: ubuntu-latest
+    needs: [detect-changes, roslyn-tools]
+    if: always() && needs.detect-changes.outputs.python == 'true' && (needs.roslyn-tools.result == 'success' || needs.roslyn-tools.result == 'skipped')
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup .NET for Roslyn-backed Python tests
+        if: needs.detect-changes.outputs.roslyn_tools == 'true'
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
 
       - name: Setup Python
-        if: steps.changes.outputs.python == 'true' || steps.changes.outputs.localization == 'true' || steps.changes.outputs.markdown_reports == 'true'
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: pyproject.toml
 
-      - name: Install just
-        if: steps.changes.outputs.justfile == 'true'
-        uses: extractions/setup-just@v3
+      - name: Install ast-grep
+        run: npm install -g @ast-grep/cli
 
-      - name: Check justfile
-        if: steps.changes.outputs.justfile == 'true'
-        run: just --summary
+      - name: Install Python test tools
+        run: pip install hypothesis pytest ruff
 
-      - name: Check Markdown reports
-        if: steps.changes.outputs.markdown_reports == 'true'
-        run: >
-          python scripts/check_markdown_reports.py
-          --base-ref "${{ steps.changes.outputs.base_ref }}"
-          --head-ref "${{ steps.changes.outputs.head_ref }}"
+      - name: Lint Python
+        if: hashFiles('scripts/**/*.py') != ''
+        run: ruff check scripts/
+
+      - name: Test Python
+        if: hashFiles('scripts/tests/**/*.py') != ''
+        run: pytest scripts/tests/
+
+  localization:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.localization == 'true'
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
 
       - name: Check release-note fragment
-        if: github.event_name == 'pull_request' && steps.changes.outputs.localization == 'true'
+        if: github.event_name == 'pull_request'
         run: >
           python scripts/release_notes.py check-fragment
           --base-ref "${{ github.event.pull_request.base.sha }}"
           --head-ref "${{ github.event.pull_request.head.sha }}"
 
-      - name: Install ast-grep
-        if: steps.changes.outputs.python == 'true'
-        run: npm install -g @ast-grep/cli
-
-      - name: Install Ruff
-        if: steps.changes.outputs.python == 'true'
-        run: pip install ruff
-
-      - name: Lint Python
-        if: steps.changes.outputs.python == 'true' && hashFiles('scripts/**/*.py') != ''
-        run: ruff check scripts/
-
       - name: Check translation tokens
-        if: steps.changes.outputs.localization == 'true' && hashFiles('Mods/QudJP/Localization/**/*.ja.json') != ''
+        if: hashFiles('Mods/QudJP/Localization/**/*.ja.json') != ''
         run: python scripts/check_translation_tokens.py Mods/QudJP/Localization
 
       - name: Check glossary consistency
-        if: steps.changes.outputs.localization == 'true' && hashFiles('Mods/QudJP/Localization/**/*') != ''
+        if: hashFiles('Mods/QudJP/Localization/**/*') != ''
         run: python scripts/check_glossary_consistency.py Mods/QudJP/Localization
 
       - name: Check message pattern routes
-        if: steps.changes.outputs.localization == 'true' && hashFiles('Mods/QudJP/Localization/Dictionaries/messages.ja.json') != ''
+        if: hashFiles('Mods/QudJP/Localization/Dictionaries/messages.ja.json') != ''
         run: >
           python scripts/validate_pattern_routes.py
           Mods/QudJP/Localization/Dictionaries/messages.ja.json
@@ -215,10 +308,87 @@ jobs:
           --expect-count needs-harmony-patch=34
           --expect-count unclassified=6
 
-      - name: Install Python test dependencies
-        if: steps.changes.outputs.python == 'true' && hashFiles('scripts/tests/**/*.py') != ''
-        run: pip install hypothesis pytest
+  justfile:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.justfile == 'true'
+    timeout-minutes: 10
 
-      - name: Test Python
-        if: steps.changes.outputs.python == 'true' && hashFiles('scripts/tests/**/*.py') != ''
-        run: pytest scripts/tests/
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install just
+        uses: extractions/setup-just@v3
+
+      - name: Check justfile
+        run: just --summary
+
+  markdown-reports:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.markdown_reports == 'true'
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Check Markdown reports
+        run: >
+          python scripts/check_markdown_reports.py
+          --base-ref "${{ needs.detect-changes.outputs.base_ref }}"
+          --head-ref "${{ needs.detect-changes.outputs.head_ref }}"
+
+  build:
+    runs-on: ubuntu-latest
+    needs:
+      - detect-changes
+      - qudjp-dotnet-build
+      - qudjp-dotnet-test
+      - roslyn-tools
+      - python
+      - localization
+      - justfile
+      - markdown-reports
+    if: always()
+    timeout-minutes: 5
+
+    steps:
+      - name: Check required jobs
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          failed=0
+          check_result() {
+            local job_name="$1"
+            local result="$2"
+
+            case "$result" in
+              success|skipped)
+                ;;
+              *)
+                printf '%s ended with result: %s\n' "$job_name" "$result" >&2
+                failed=1
+                ;;
+            esac
+          }
+
+          check_result detect-changes "${{ needs.detect-changes.result }}"
+          check_result qudjp-dotnet-build "${{ needs.qudjp-dotnet-build.result }}"
+          check_result qudjp-dotnet-test "${{ needs.qudjp-dotnet-test.result }}"
+          check_result roslyn-tools "${{ needs.roslyn-tools.result }}"
+          check_result python "${{ needs.python.result }}"
+          check_result localization "${{ needs.localization.result }}"
+          check_result justfile "${{ needs.justfile.result }}"
+          check_result markdown-reports "${{ needs.markdown-reports.result }}"
+
+          exit "$failed"
