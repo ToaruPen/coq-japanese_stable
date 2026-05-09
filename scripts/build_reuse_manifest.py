@@ -14,12 +14,8 @@ from pathlib import Path
 
 _DEFAULT_CORPUS_RAW = (
     Path.home()
-    / "Library"
-    / "Application Support"
-    / "Steam"
-    / "steamapps"
-    / "common"
-    / "Caves of Qud"
+    / "Games"
+    / "CavesOfQud-stable-ref"
     / "CoQ.app"
     / "Contents"
     / "Resources"
