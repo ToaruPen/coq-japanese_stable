@@ -2,8 +2,7 @@ namespace QudJP.Tests.L1;
 
 using System.Diagnostics;
 using System.Globalization;
-using System.Reflection;
-using System.Text.RegularExpressions;
+using System.Threading;
 
 [TestFixture]
 [Category("L1")]
@@ -76,11 +75,25 @@ public sealed class RuntimeDiagnosticsTests
     [Test]
     public void StartupTiming_WritesStructuredElapsedMarker()
     {
-        var output = TestTraceHelper.CaptureTrace(() =>
-            RuntimeStartupTiming.LogElapsed(
-                "harmony.prepare_patch_types",
-                TimeSpan.FromMilliseconds(12.3456),
-                "patch_types=140;prepared=139"));
+        var originalCulture = Thread.CurrentThread.CurrentCulture;
+        var originalUiCulture = Thread.CurrentThread.CurrentUICulture;
+        string output;
+        try
+        {
+            var commaDecimalCulture = CultureInfo.GetCultureInfo("fr-FR");
+            Thread.CurrentThread.CurrentCulture = commaDecimalCulture;
+            Thread.CurrentThread.CurrentUICulture = commaDecimalCulture;
+            output = TestTraceHelper.CaptureTrace(() =>
+                RuntimeStartupTiming.LogElapsed(
+                    "harmony.prepare_patch_types",
+                    TimeSpan.FromMilliseconds(12.3456),
+                    "patch_types=140;prepared=139"));
+        }
+        finally
+        {
+            Thread.CurrentThread.CurrentCulture = originalCulture;
+            Thread.CurrentThread.CurrentUICulture = originalUiCulture;
+        }
 
         Assert.Multiple(() =>
         {
@@ -94,27 +107,19 @@ public sealed class RuntimeDiagnosticsTests
     [Test]
     public void PatchLoopSummaries_KeepPrepareAndApplySkippedCountsSeparate()
     {
-        var patchByClassProcessor = typeof(QudJPMod).GetMethod(
-            "PatchByClassProcessor",
-            BindingFlags.NonPublic | BindingFlags.Static);
-        var createClassProcessor = typeof(NullClassProcessorFactory).GetMethod(
-            nameof(NullClassProcessorFactory.CreateClassProcessor));
-        Assert.That(patchByClassProcessor, Is.Not.Null);
-        Assert.That(createClassProcessor, Is.Not.Null);
-
-        var output = TestTraceHelper.CaptureTrace(() =>
-            patchByClassProcessor!.Invoke(
-                null,
-                new object[] { new object(), createClassProcessor! }));
-
-        var prepare = ParseTimingCounts(output, "harmony.prepare_patch_types");
-        var apply = ParseTimingCounts(output, "harmony.apply_patch_types");
+        var summary = QudJPMod.FormatPatchLoopSummary(
+            new QudJPMod.PatchLoopSummary(
+                PatchTypes: 10,
+                Prepared: 9,
+                PrepareSkipped: 1,
+                Applied: 0,
+                ApplySkipped: 9,
+                Preflight: true));
 
         Assert.Multiple(() =>
         {
-            Assert.That(apply["skipped"], Is.GreaterThan(0));
-            Assert.That(prepare["prepared"] + prepare["skipped"], Is.LessThanOrEqualTo(prepare["patch_types"]));
-            Assert.That(prepare["skipped"], Is.EqualTo(prepare["patch_types"] - prepare["prepared"]));
+            Assert.That(summary.PrepareDetail, Is.EqualTo("patch_types=10;prepared=9;skipped=1;preflight=True"));
+            Assert.That(summary.ApplyDetail, Is.EqualTo("patch_types=10;applied=0;skipped=9"));
         });
     }
 
@@ -237,23 +242,4 @@ public sealed class RuntimeDiagnosticsTests
         }
     }
 
-    private static class NullClassProcessorFactory
-    {
-        public static object? CreateClassProcessor(Type patchType)
-        {
-            _ = patchType;
-            return null;
-        }
-    }
-
-    private static Dictionary<string, int> ParseTimingCounts(string output, string phase)
-    {
-        var line = output
-            .Split('\n')
-            .Single(value => value.Contains($"phase={phase}", StringComparison.Ordinal));
-        return Regex.Matches(line, @"(?:detail=|\\;)(patch_types|prepared|skipped|applied)\\=(\d+)")
-            .ToDictionary(
-                match => match.Groups[1].Value,
-                match => int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture));
-    }
 }

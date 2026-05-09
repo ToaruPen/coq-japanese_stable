@@ -466,11 +466,11 @@ def _resolve_ready_marker(*, disable_mod: bool, ready_marker: str | None) -> str
 def _collect(args: argparse.Namespace) -> int:
     command = tuple(shlex.split(args.launch_cmd))
     artifact_dir = args.artifact_dir
-    mod_dir = args.mod_dir or resolve_default_destination()
     ready_marker = _resolve_ready_marker(disable_mod=args.disable_mod, ready_marker=args.ready_marker)
     disabled_dirs: list[tuple[Path, Path | None]] = []
     try:
         if args.disable_mod:
+            mod_dir = args.mod_dir or resolve_default_destination()
             disabled_dirs.append((mod_dir, _disable_mod(mod_dir)))
         disabled_dirs.extend((extra_mod_dir, _disable_mod(extra_mod_dir)) for extra_mod_dir in args.disable_mod_dir)
         results: list[IterationResult] = []

@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from scripts import startup_measure
 from scripts.startup_measure import (
     IterationMetadata,
     IterationResult,
@@ -279,6 +280,45 @@ def test_collect_cli_writes_process_output_without_pipes(tmp_path: Path) -> None
     assert exit_code == 0
     assert (iteration_dir / "stdout.txt").read_text(encoding="utf-8").strip() == "stdout marker"
     assert (iteration_dir / "stderr.txt").read_text(encoding="utf-8").strip() == "stderr marker"
+
+
+def test_collect_cli_without_disable_mod_does_not_resolve_default_destination(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The collect command only resolves the default mod directory when disabling QudJP."""
+    log_path = tmp_path / "Player.log"
+    launcher = tmp_path / "fake_launch.py"
+    launcher.write_text(
+        "from pathlib import Path\n"
+        f"Path({str(log_path)!r}).write_text('[QudJP] Harmony patching complete:\\n', encoding='utf-8')\n",
+        encoding="utf-8",
+    )
+
+    def fail_resolve_default_destination() -> Path:
+        raise AssertionError
+
+    monkeypatch.setattr(startup_measure, "resolve_default_destination", fail_resolve_default_destination)
+
+    exit_code = main(
+        [
+            "collect",
+            "--profile",
+            "enabled",
+            "--iterations",
+            "1",
+            "--artifact-dir",
+            str(tmp_path / "artifacts"),
+            "--launch-cmd",
+            f"{sys.executable} {launcher}",
+            "--log",
+            str(log_path),
+            "--timeout",
+            "5",
+        ],
+    )
+
+    assert exit_code == 0
 
 
 def test_collect_cli_stops_waiting_after_launcher_exits(tmp_path: Path) -> None:

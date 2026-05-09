@@ -307,19 +307,42 @@ public static class QudJPMod
             }
         }
 
+        var patchLoopSummary = FormatPatchLoopSummary(
+            new PatchLoopSummary(
+                patchTypes.Length,
+                preparedCount,
+                prepareSkippedCount,
+                appliedCount,
+                applySkippedCount,
+                preflightPatchTargets));
         RuntimeStartupTiming.LogElapsed(
             "harmony.prepare_patch_types",
             preparationStopwatch.Elapsed,
-            $"patch_types={patchTypes.Length};prepared={preparedCount};skipped={prepareSkippedCount};"
-            + $"preflight={preflightPatchTargets}");
+            patchLoopSummary.PrepareDetail);
         RuntimeStartupTiming.LogElapsed(
             "harmony.apply_patch_types",
             patchStopwatch.Elapsed,
-            $"patch_types={patchTypes.Length};applied={appliedCount};skipped={applySkippedCount}");
+            patchLoopSummary.ApplyDetail);
         RuntimeStartupTiming.LogElapsed(
             "harmony.type_fallback_scans_total",
             TimeSpan.Zero,
             $"count={GameTypeResolver.FallbackScanCountForDiagnostics - fallbackScansBeforePatchLoop}");
+    }
+
+    internal readonly record struct PatchLoopSummary(
+        int PatchTypes,
+        int Prepared,
+        int PrepareSkipped,
+        int Applied,
+        int ApplySkipped,
+        bool Preflight);
+
+    internal static (string PrepareDetail, string ApplyDetail) FormatPatchLoopSummary(PatchLoopSummary summary)
+    {
+        return (
+            $"patch_types={summary.PatchTypes};prepared={summary.Prepared};skipped={summary.PrepareSkipped};"
+            + $"preflight={summary.Preflight}",
+            $"patch_types={summary.PatchTypes};applied={summary.Applied};skipped={summary.ApplySkipped}");
     }
 
     internal static bool TryPreparePatchType(Type patchType, out string failureReason)
