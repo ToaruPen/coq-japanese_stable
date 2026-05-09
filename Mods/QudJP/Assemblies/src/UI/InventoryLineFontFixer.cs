@@ -1,4 +1,5 @@
 #if HAS_TMP
+using System.Collections.Concurrent;
 using TMPro;
 using UnityEngine;
 #endif
@@ -11,7 +12,12 @@ internal static class InventoryLineFontFixer
 {
 #if HAS_TMP
     private const int MaxDiagnostics = 128;
+    private const int MaxSuccessfulRefreshCacheEntries = 1024;
+    private const int CleanupInterval = 128;
+    private const long SuccessfulRefreshCacheTtlTicks = 5L * 60L * 10_000_000L;
     private static int diagnosticsCount;
+    private static int cleanupCount;
+    private static readonly ConcurrentDictionary<int, SuccessfulRefreshEntry> SuccessfulRefreshKeysByLine = new();
 
     internal static bool TryApplyPrimaryFontToItemRow(object? inventoryLineInstance, object? data)
     {
@@ -26,11 +32,11 @@ internal static class InventoryLineFontFixer
         }
 
         var displayName = TryGetStringPropertyOrField(data, "displayName");
-        var textSkin = GetPropertyOrFieldValue(inventoryLineInstance, "text");
-        return TryForcePrimaryFontOnTextSkin(textSkin, displayName);
+        var textSkin = ReflectionUtils.GetPropertyOrFieldValue(inventoryLineInstance, "text");
+        return TryRefreshTextSkinWithFallbackFont(textSkin, displayName);
     }
 
-    internal static bool TryForcePrimaryFontOnTextSkin(object? textSkin, string? finalText)
+    internal static bool TryRefreshTextSkinWithFallbackFont(object? textSkin, string? finalText)
     {
         if (!TryGetTextMeshPro(textSkin, out var tmp) || tmp is null)
         {
@@ -48,11 +54,13 @@ internal static class InventoryLineFontFixer
             InvokeIfPresent(textSkin, "Apply");
         }
         _ = FontManager.TryWarmPrimaryFontCharactersForUi(finalText);
-        FontManager.ForcePrimaryFont(tmp);
+        FontManager.ApplyToText(tmp);
         if (tmp.font is not null)
         {
             tmp.fontSharedMaterial = tmp.font.material;
         }
+
+        tmp.overflowMode = TextOverflowModes.Overflow;
 
         if (tmp.maxVisibleCharacters <= 0)
         {
@@ -94,13 +102,13 @@ internal static class InventoryLineFontFixer
             return false;
         }
 
-        if (GetPropertyOrFieldValue(inventoryLineInstance, "categoryMode") is GameObject categoryMode
+        if (ReflectionUtils.GetPropertyOrFieldValue(inventoryLineInstance, "categoryMode") is GameObject categoryMode
             && categoryMode.activeSelf)
         {
             return false;
         }
 
-        if (GetPropertyOrFieldValue(inventoryLineInstance, "itemMode") is GameObject itemMode
+        if (ReflectionUtils.GetPropertyOrFieldValue(inventoryLineInstance, "itemMode") is GameObject itemMode
             && !itemMode.activeSelf)
         {
             return false;
@@ -116,14 +124,223 @@ internal static class InventoryLineFontFixer
             return false;
         }
 
-        return TryForcePrimaryFontOnTextSkin(
-            GetPropertyOrFieldValue(inventoryLineInstance, "text"),
+        return TryRefreshTextSkinWithFallbackFont(
+            ReflectionUtils.GetPropertyOrFieldValue(inventoryLineInstance, "text"),
             GetActiveItemLineText(inventoryLineInstance));
+    }
+
+    internal static string? GetActiveItemLineRefreshKey(object? inventoryLineInstance)
+    {
+        var textSkin = ReflectionUtils.GetPropertyOrFieldValue(inventoryLineInstance, "text");
+        var currentText = GetActiveItemLineText(inventoryLineInstance);
+
+        _ = TryGetTextMeshPro(textSkin, out var tmp);
+        if (tmp is not null)
+        {
+            if (string.IsNullOrEmpty(currentText))
+            {
+                currentText = tmp.text;
+            }
+
+            if (string.IsNullOrEmpty(currentText))
+            {
+                return null;
+            }
+
+            return currentText
+                + "\u001f"
+                + (tmp.font is null ? string.Empty : tmp.font.name)
+                + "\u001f"
+                + (tmp.fontSharedMaterial is null ? string.Empty : tmp.fontSharedMaterial.name)
+                + "\u001f"
+                + tmp.overflowMode;
+        }
+
+        return string.IsNullOrEmpty(currentText) ? null : currentText;
+    }
+
+    internal static bool HasSuccessfulRefreshForCurrentKey(object? inventoryLineInstance, string? refreshKey)
+    {
+        if (string.IsNullOrEmpty(refreshKey) || inventoryLineInstance is not Component component)
+        {
+            return false;
+        }
+
+        CleanupSuccessfulRefreshCacheIfNeeded();
+        var lineId = component.GetInstanceID();
+        if (!SuccessfulRefreshKeysByLine.TryGetValue(lineId, out var previousEntry))
+        {
+            return false;
+        }
+
+        if (IsExpired(previousEntry))
+        {
+            SuccessfulRefreshKeysByLine.TryRemove(lineId, out _);
+            return false;
+        }
+
+        return string.Equals(previousEntry.RefreshKey, refreshKey, StringComparison.Ordinal);
+    }
+
+    internal static bool HasHealthySuccessfulRefreshForCurrentKey(object? inventoryLineInstance, string? refreshKey)
+    {
+        if (!HasSuccessfulRefreshForCurrentKey(inventoryLineInstance, refreshKey))
+        {
+            return false;
+        }
+
+        var textSkin = ReflectionUtils.GetPropertyOrFieldValue(inventoryLineInstance, "text");
+        if (!TryGetTextMeshPro(textSkin, out var tmp) || tmp is null)
+        {
+            ForgetSuccessfulRefreshForLine(inventoryLineInstance);
+            return false;
+        }
+
+        var healthy = HasLiveRenderableText(tmp);
+        if (!healthy)
+        {
+            ForgetSuccessfulRefreshForLine(inventoryLineInstance);
+        }
+
+        return healthy;
+    }
+
+    private static bool HasLiveRenderableText(TextMeshProUGUI tmp)
+    {
+        if (tmp.gameObject is null
+            || !tmp.gameObject.activeInHierarchy
+            || !tmp.isActiveAndEnabled
+            || tmp.textInfo.characterCount <= 0
+            || tmp.maxVisibleCharacters <= 0
+            || tmp.maxVisibleLines <= 0
+            || tmp.pageToDisplay <= 0
+            || tmp.font is null
+            || tmp.fontSharedMaterial is null
+            || tmp.alpha <= 0f)
+        {
+            return false;
+        }
+
+        var textColorAlpha = UnityRuntimeCompatibility.TryGetColorAlpha(tmp.color);
+        if (textColorAlpha.HasValue && textColorAlpha.Value <= 0f)
+        {
+            return false;
+        }
+
+        var faceColorAlpha = UnityRuntimeCompatibility.TryGetFaceColorAlpha(tmp.fontSharedMaterial);
+        if (faceColorAlpha.HasValue && faceColorAlpha.Value <= 0f)
+        {
+            return false;
+        }
+
+        var canvasRenderer = tmp.canvasRenderer;
+        if (canvasRenderer is null || canvasRenderer.cull || canvasRenderer.GetAlpha() <= 0f)
+        {
+            return false;
+        }
+
+        var rect = tmp.rectTransform.rect;
+        if (rect.width <= 0f || rect.height <= 0f)
+        {
+            return false;
+        }
+
+        var combinedParentCanvasGroupAlpha = TryGetCombinedParentCanvasGroupAlpha(tmp.transform);
+        return !combinedParentCanvasGroupAlpha.HasValue || combinedParentCanvasGroupAlpha.Value > 0f;
+    }
+
+    private static float? TryGetCombinedParentCanvasGroupAlpha(Transform transform)
+    {
+        float? combinedAlpha = null;
+        for (var current = transform; current is not null; current = current.parent)
+        {
+            var component = current.GetComponent("CanvasGroup");
+            if (component is null)
+            {
+                continue;
+            }
+
+#pragma warning disable S3011
+            var alphaProperty = component.GetType().GetProperty(
+                "alpha",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+#pragma warning restore S3011
+            if (alphaProperty?.PropertyType == typeof(float)
+                && alphaProperty.GetIndexParameters().Length == 0
+                && alphaProperty.GetValue(component, null) is float alpha)
+            {
+                combinedAlpha = (combinedAlpha ?? 1f) * alpha;
+            }
+        }
+
+        return combinedAlpha;
+    }
+
+    internal static void RecordSuccessfulRefreshForCurrentKey(object? inventoryLineInstance, string? refreshKey)
+    {
+        if (refreshKey is null || refreshKey.Length == 0)
+        {
+            ForgetSuccessfulRefreshForLine(inventoryLineInstance);
+            return;
+        }
+
+        if (inventoryLineInstance is not Component component)
+        {
+            return;
+        }
+
+        SuccessfulRefreshKeysByLine[component.GetInstanceID()] = new SuccessfulRefreshEntry(refreshKey, DateTime.UtcNow.Ticks);
+        CleanupSuccessfulRefreshCacheIfNeeded();
+    }
+
+    internal static void ForgetSuccessfulRefreshForLine(object? inventoryLineInstance)
+    {
+        if (inventoryLineInstance is Component component)
+        {
+            SuccessfulRefreshKeysByLine.TryRemove(component.GetInstanceID(), out _);
+        }
+    }
+
+    private static void CleanupSuccessfulRefreshCacheIfNeeded()
+    {
+        var count = Interlocked.Increment(ref cleanupCount);
+        if (count % CleanupInterval != 0 && SuccessfulRefreshKeysByLine.Count <= MaxSuccessfulRefreshCacheEntries)
+        {
+            return;
+        }
+
+        var nowTicks = DateTime.UtcNow.Ticks;
+        foreach (var entry in SuccessfulRefreshKeysByLine)
+        {
+            if (nowTicks - entry.Value.LastSeenUtcTicks > SuccessfulRefreshCacheTtlTicks
+                || SuccessfulRefreshKeysByLine.Count > MaxSuccessfulRefreshCacheEntries)
+            {
+                SuccessfulRefreshKeysByLine.TryRemove(entry.Key, out _);
+            }
+        }
+    }
+
+    private static bool IsExpired(SuccessfulRefreshEntry entry)
+    {
+        return DateTime.UtcNow.Ticks - entry.LastSeenUtcTicks > SuccessfulRefreshCacheTtlTicks;
+    }
+
+    private readonly struct SuccessfulRefreshEntry
+    {
+        internal SuccessfulRefreshEntry(string refreshKey, long lastSeenUtcTicks)
+        {
+            RefreshKey = refreshKey;
+            LastSeenUtcTicks = lastSeenUtcTicks;
+        }
+
+        internal string RefreshKey { get; }
+
+        internal long LastSeenUtcTicks { get; }
     }
 
     internal static string? GetActiveItemLineText(object? inventoryLineInstance)
     {
-        var textSkin = GetPropertyOrFieldValue(inventoryLineInstance, "text");
+        var textSkin = ReflectionUtils.GetPropertyOrFieldValue(inventoryLineInstance, "text");
         var currentText = TryGetStringPropertyOrField(textSkin, "text");
         if (currentText is null)
         {
@@ -191,22 +408,6 @@ internal static class InventoryLineFontFixer
         }
 
         return false;
-    }
-
-    private static object? GetPropertyOrFieldValue(object? instance, string memberName)
-    {
-        if (instance is null)
-        {
-            return null;
-        }
-
-        var property = instance.GetType().GetProperty(memberName);
-        if (property is not null && property.GetIndexParameters().Length == 0)
-        {
-            return property.GetValue(instance);
-        }
-
-        return Access(instance, memberName);
     }
 
     private static object? Access(object instance, string memberName)

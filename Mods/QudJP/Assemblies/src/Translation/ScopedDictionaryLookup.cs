@@ -58,6 +58,29 @@ internal static class ScopedDictionaryLookup
             : null;
     }
 
+    internal static string? TranslateExactOrLowerAsciiForContextOnly(string source, string context, params string[] dictionaryFileNames)
+    {
+        if (string.IsNullOrEmpty(source) || string.IsNullOrWhiteSpace(context) || dictionaryFileNames.Length == 0)
+        {
+            return null;
+        }
+
+        if (TryGetContextualTranslation(source, context, dictionaryFileNames, out var translated))
+        {
+            return translated;
+        }
+
+        var lowerAscii = StringHelpers.LowerAscii(source);
+        if (string.Equals(lowerAscii, source, StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        return TryGetContextualTranslation(lowerAscii, context, dictionaryFileNames, out translated)
+            ? translated
+            : null;
+    }
+
     internal static void ResetForTests()
     {
         Cache.Clear();
@@ -68,6 +91,25 @@ internal static class ScopedDictionaryLookup
         for (var index = 0; index < dictionaryFileNames.Count; index++)
         {
             if (LoadDictionary(dictionaryFileNames[index]).TryGetValue(source, context, out var loadedTranslation))
+            {
+                translated = loadedTranslation;
+                return true;
+            }
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryGetContextualTranslation(
+        string source,
+        string context,
+        IReadOnlyList<string> dictionaryFileNames,
+        out string translated)
+    {
+        for (var index = 0; index < dictionaryFileNames.Count; index++)
+        {
+            if (LoadDictionary(dictionaryFileNames[index]).TryGetContextValue(source, context, out var loadedTranslation))
             {
                 translated = loadedTranslation;
                 return true;
@@ -193,6 +235,18 @@ internal static class ScopedDictionaryLookup
             if (unscopedEntries.TryGetValue(source, out var unscopedTranslation))
             {
                 translated = unscopedTranslation;
+                return true;
+            }
+
+            translated = source;
+            return false;
+        }
+
+        internal bool TryGetContextValue(string source, string context, out string translated)
+        {
+            if (contextualEntries.TryGetValue(BuildContextKey(context.Trim(), source), out var contextualTranslation))
+            {
+                translated = contextualTranslation;
                 return true;
             }
 

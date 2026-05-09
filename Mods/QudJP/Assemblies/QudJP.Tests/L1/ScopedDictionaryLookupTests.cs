@@ -76,6 +76,47 @@ public sealed class ScopedDictionaryLookupTests
         });
     }
 
+    [Test]
+    public void TranslateExactOrLowerAsciiForContextOnly_DoesNotFallbackToUnscopedEntry()
+    {
+        WriteDictionaryContents(
+            "scoped.ja.json",
+            "{\"entries\":[" +
+            "{\"key\":\"stone\",\"text\":\"石ではない\"}" +
+            "]}\n");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                ScopedDictionaryLookup.TranslateExactOrLowerAscii("stone", "scoped.ja.json"),
+                Is.EqualTo("石ではない"));
+            Assert.That(
+                ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContextOnly("stone", "Route.A", "scoped.ja.json"),
+                Is.Null);
+        });
+    }
+
+    [Test]
+    public void TranslateExactOrLowerAsciiForContextOnly_UsesLowerAsciiContextualEntry()
+    {
+        WriteDictionaryContents(
+            "scoped.ja.json",
+            "{\"entries\":[" +
+            "{\"key\":\"detonate\",\"context\":\"Route.A\",\"text\":\"起爆する\"}," +
+            "{\"key\":\"detonate\",\"text\":\"起爆\"}" +
+            "]}\n");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                ScopedDictionaryLookup.TranslateExactOrLowerAscii("Detonate", "scoped.ja.json"),
+                Is.EqualTo("起爆"));
+            Assert.That(
+                ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContextOnly("Detonate", "Route.A", "scoped.ja.json"),
+                Is.EqualTo("起爆する"));
+        });
+    }
+
     private void WriteDictionary(string fileName, params (string key, string text)[] entries)
     {
         var builder = new StringBuilder();

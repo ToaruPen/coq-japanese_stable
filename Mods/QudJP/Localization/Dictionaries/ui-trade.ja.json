@@ -147,6 +147,22 @@
       "key": "As a result, the trade goes from being worth {0} to being worth {1}.",
       "context": "TradeUiPopupTranslationPatch",
       "text": "その結果、その取引は{0}の得から{1}の得へ変わった。"
+    },
+    {
+      "key": "vendor actions",
+      "text": "取引"
+    },
+    {
+      "key": "add one",
+      "text": "1つ追加"
+    },
+    {
+      "key": "remove one",
+      "text": "1つ減らす"
+    },
+    {
+      "key": "toggle all",
+      "text": "すべて切り替え"
     }
   ]
 }

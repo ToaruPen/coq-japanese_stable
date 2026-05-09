@@ -50,9 +50,28 @@ public static class InventoryLineRenderProbePatch
     {
         try
         {
+#if HAS_TMP && QUDJP_DEV_BUILD
+            if (RuntimeDiagnostics.VerboseProbesEnabled)
+            {
+                InventoryLineTmpLifecycleObservability.LogOriginalTmpLifecycle(
+                    __instance,
+                    "setData-postfix-before-font-refresh",
+                    forceMesh: false);
+            }
+#endif
 #if HAS_TMP
             _ = InventoryLineFontFixer.TryApplyPrimaryFontToItemRow(__instance, data);
-#else
+#endif
+#if HAS_TMP && QUDJP_DEV_BUILD
+            if (RuntimeDiagnostics.VerboseProbesEnabled)
+            {
+                InventoryLineTmpLifecycleObservability.LogOriginalTmpLifecycle(
+                    __instance,
+                    "setData-postfix-after-font-refresh",
+                    forceMesh: false);
+            }
+#endif
+#if !HAS_TMP
             _ = __instance;
             _ = data;
 #endif
