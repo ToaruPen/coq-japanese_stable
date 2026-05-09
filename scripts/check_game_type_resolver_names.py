@@ -178,7 +178,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         output.parent.mkdir(parents=True, exist_ok=True)
         _ = output.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    _ = sys.stdout.write(f"checked={result.checked} ok={result.checked - result.non_ok} non_ok={result.non_ok}\n")
+    ok_count = result.checked - len(result.mismatches)
+    _ = sys.stdout.write(f"checked={result.checked} ok={ok_count} non_ok={result.non_ok}\n")
     for mismatch in result.mismatches:
         candidates = ", ".join(mismatch.candidates) if mismatch.candidates else "<none>"
         message = "".join(
@@ -204,6 +205,20 @@ def main(argv: Sequence[str] | None = None) -> int:
 class _TypeIndex:
     full_type_names: frozenset[str]
     by_simple_name: dict[str, tuple[str, ...]]
+
+
+@dataclass(frozen=True)
+class _TypeSpan:
+    name: str
+    body_start: int
+    body_end: int
+
+
+@dataclass(frozen=True)
+class _ConstIndex:
+    top_level: dict[str, str]
+    qualified: dict[str, str]
+    type_spans: tuple[_TypeSpan, ...]
 
 
 def _build_decompiled_type_index(decompiled_root: Path) -> _TypeIndex:
@@ -240,18 +255,18 @@ def _extract_resolver_calls(
         full_literal = match.groupdict().get("full_literal")
         if full_literal is not None:
             full_type_name = _decode_csharp_string(full_literal)
-        elif full_arg in constants:
-            full_type_name = constants[full_arg]
         else:
-            unresolved.append(
-                UnresolvedResolverCall(
-                    path=relative_path,
-                    line=line,
-                    full_arg=full_arg,
-                    simple_type_name=simple_type_name,
-                ),
-            )
-            continue
+            full_type_name = _resolve_const_argument(full_arg, constants, match.start())
+            if full_type_name is None:
+                unresolved.append(
+                    UnresolvedResolverCall(
+                        path=relative_path,
+                        line=line,
+                        full_arg=full_arg,
+                        simple_type_name=simple_type_name,
+                    ),
+                )
+                continue
 
         calls.append(
             ResolverCall(
@@ -265,15 +280,33 @@ def _extract_resolver_calls(
     return tuple(calls), tuple(unresolved)
 
 
-def _extract_const_strings(text: str) -> dict[str, str]:
-    constants = {
-        match.group("name"): _decode_csharp_string(match.group("value"))
-        for match in _CONST_STRING_PATTERN.finditer(text)
-    }
-    for type_name, body in _iter_type_bodies(text):
+def _extract_const_strings(text: str) -> _ConstIndex:
+    type_spans = _iter_type_spans(text)
+    top_level: dict[str, str] = {}
+    for match in _CONST_STRING_PATTERN.finditer(text):
+        if _find_enclosing_type_name(type_spans, match.start()) is None:
+            top_level[match.group("name")] = _decode_csharp_string(match.group("value"))
+
+    qualified: dict[str, str] = {}
+    for span in type_spans:
+        body = text[span.body_start : span.body_end]
         for match in _CONST_STRING_PATTERN.finditer(body):
-            constants[f"{type_name}.{match.group('name')}"] = _decode_csharp_string(match.group("value"))
-    return constants
+            qualified[f"{span.name}.{match.group('name')}"] = _decode_csharp_string(match.group("value"))
+
+    return _ConstIndex(top_level=top_level, qualified=qualified, type_spans=type_spans)
+
+
+def _resolve_const_argument(full_arg: str, constants: _ConstIndex, position: int) -> str | None:
+    if "." in full_arg:
+        return constants.qualified.get(full_arg)
+
+    enclosing_type = _find_enclosing_type_name(constants.type_spans, position)
+    if enclosing_type is not None:
+        scoped_value = constants.qualified.get(f"{enclosing_type}.{full_arg}")
+        if scoped_value is not None:
+            return scoped_value
+
+    return constants.top_level.get(full_arg)
 
 
 def _find_namespace(text: str) -> str:
@@ -285,8 +318,8 @@ def _find_type_names(text: str) -> tuple[str, ...]:
     return tuple(match.group("name") for match in _TYPE_PATTERN.finditer(text))
 
 
-def _iter_type_bodies(text: str) -> tuple[tuple[str, str], ...]:
-    bodies: list[tuple[str, str]] = []
+def _iter_type_spans(text: str) -> tuple[_TypeSpan, ...]:
+    spans: list[_TypeSpan] = []
     for match in _CLASS_PATTERN.finditer(text):
         open_brace_index = text.find("{", match.end())
         if open_brace_index == -1:
@@ -294,8 +327,25 @@ def _iter_type_bodies(text: str) -> tuple[tuple[str, str], ...]:
         close_brace_index = _find_matching_brace(text, open_brace_index)
         if close_brace_index == -1:
             continue
-        bodies.append((match.group("name"), text[open_brace_index + 1 : close_brace_index]))
-    return tuple(bodies)
+        spans.append(
+            _TypeSpan(
+                name=match.group("name"),
+                body_start=open_brace_index + 1,
+                body_end=close_brace_index,
+            ),
+        )
+    return tuple(spans)
+
+
+def _find_enclosing_type_name(type_spans: tuple[_TypeSpan, ...], position: int) -> str | None:
+    enclosing = [
+        span
+        for span in type_spans
+        if span.body_start <= position <= span.body_end
+    ]
+    if not enclosing:
+        return None
+    return max(enclosing, key=lambda span: span.body_start).name
 
 
 def _find_matching_brace(text: str, open_brace_index: int) -> int:
