@@ -161,5 +161,28 @@ public sealed class TooltipReplacementRendererTests
                 text: "再表示"),
             Is.True);
     }
+
+    [Test]
+    public void ExistingReplacementStateForTests_RestoresOriginalWhenRefreshFails()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                TooltipReplacementRenderer.ShouldRestoreOriginalAfterExistingReplacementRefreshForTests(
+                    replacementExists: true,
+                    renderSucceeded: false),
+                Is.True);
+            Assert.That(
+                TooltipReplacementRenderer.ShouldRestoreOriginalAfterExistingReplacementRefreshForTests(
+                    replacementExists: true,
+                    renderSucceeded: true),
+                Is.False);
+            Assert.That(
+                TooltipReplacementRenderer.ShouldRestoreOriginalAfterExistingReplacementRefreshForTests(
+                    replacementExists: false,
+                    renderSucceeded: false),
+                Is.False);
+        });
+    }
 }
 #endif

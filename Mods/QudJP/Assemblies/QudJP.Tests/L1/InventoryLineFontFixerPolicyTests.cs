@@ -181,7 +181,7 @@ public sealed class InventoryLineFontFixerPolicyTests
         {
             NUnit.Framework.Assert.That(
                 patchSource,
-                NUnit.Framework.Does.Contain("if (!isActiveItemLine)"));
+                NUnit.Framework.Does.Contain("if (!isActiveItemLine || hasActiveReplacement)"));
             NUnit.Framework.Assert.That(
                 patchSource,
                 NUnit.Framework.Does.Contain("InventoryLineFontFixer.ForgetSuccessfulRefreshForLine(__instance);"));

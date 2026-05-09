@@ -47,6 +47,13 @@ internal static class TooltipReplacementRenderer
         return replacementExists && !HasVisibleSourceText(activeInHierarchy, text);
     }
 
+    internal static bool ShouldRestoreOriginalAfterExistingReplacementRefreshForTests(
+        bool replacementExists,
+        bool renderSucceeded)
+    {
+        return replacementExists && !renderSucceeded;
+    }
+
     internal static int TryRenderReplacementTexts(object? componentInstance)
     {
         if (componentInstance is not Component component)
@@ -67,7 +74,7 @@ internal static class TooltipReplacementRenderer
             original.ForceMeshUpdate(ignoreActiveState: true, forceTextReparsing: true);
             var existingReplacement = GetExistingReplacement(original);
             if (ShouldHideExistingReplacementForTests(
-                    existingReplacement is not null,
+                    existingReplacement != null,
                     original.gameObject.activeInHierarchy,
                     original.text))
             {
@@ -85,14 +92,22 @@ internal static class TooltipReplacementRenderer
             }
 
             if (ShouldRefreshExistingReplacementForTests(
-                    existingReplacement is not null,
+                    existingReplacement != null,
                     original.gameObject.activeInHierarchy,
                     original.text))
             {
-                if (RenderReplacement(existingReplacement!, original))
+                var renderSucceeded = existingReplacement != null
+                    && RenderReplacement(existingReplacement, original);
+                if (renderSucceeded)
                 {
                     original.enabled = false;
                     replaced++;
+                }
+                else if (ShouldRestoreOriginalAfterExistingReplacementRefreshForTests(
+                             existingReplacement != null,
+                             renderSucceeded))
+                {
+                    original.enabled = true;
                 }
 
                 continue;
@@ -109,7 +124,7 @@ internal static class TooltipReplacementRenderer
             }
 
             var replacement = GetOrCreateReplacement(original);
-            if (replacement is null)
+            if (replacement == null)
             {
                 continue;
             }
@@ -133,24 +148,26 @@ internal static class TooltipReplacementRenderer
 
     private static TextMeshProUGUI? GetExistingReplacement(TextMeshProUGUI original)
     {
-        if (original.transform.parent is not RectTransform parent)
+        var parent = original.transform.parent as RectTransform;
+        if (parent == null)
         {
             return null;
         }
 
         var existing = parent.Find(ReplacementObjectName);
-        return existing?.GetComponent<TextMeshProUGUI>();
+        return existing == null ? null : existing.GetComponent<TextMeshProUGUI>();
     }
 
     private static TextMeshProUGUI? GetOrCreateReplacement(TextMeshProUGUI original)
     {
-        if (original.transform.parent is not RectTransform parent)
+        var parent = original.transform.parent as RectTransform;
+        if (parent == null)
         {
             return null;
         }
 
         var existing = parent.Find(ReplacementObjectName);
-        if (existing is not null)
+        if (existing != null)
         {
             return existing.GetComponent<TextMeshProUGUI>();
         }
@@ -161,7 +178,7 @@ internal static class TooltipReplacementRenderer
         gameObject.SetActive(false);
 
         var replacement = gameObject.GetComponent<TextMeshProUGUI>();
-        if (replacement is null)
+        if (replacement == null)
         {
             return null;
         }
@@ -232,14 +249,14 @@ internal static class TooltipReplacementRenderer
         replacement.maxVisibleLines = limits.MaxVisibleLines;
         replacement.pageToDisplay = limits.PageToDisplay;
 
-        if (original.fontSharedMaterial is not null)
+        if (original.fontSharedMaterial != null)
         {
             replacement.fontSharedMaterial = original.fontSharedMaterial;
         }
 
         replacement.text = original.text;
         FontManager.ApplyToText(replacement);
-        if (replacement.font is not null)
+        if (replacement.font != null)
         {
             replacement.fontSharedMaterial = replacement.font.material;
         }
@@ -258,13 +275,13 @@ internal static class TooltipReplacementRenderer
 
     private static void TryDisableReplacement(Transform? parent)
     {
-        if (parent is null)
+        if (parent == null)
         {
             return;
         }
 
         var replacementTransform = parent.Find(ReplacementObjectName);
-        if (replacementTransform is null)
+        if (replacementTransform == null)
         {
             return;
         }
@@ -274,7 +291,7 @@ internal static class TooltipReplacementRenderer
 
     private static void HideReplacement(TextMeshProUGUI? replacement)
     {
-        if (replacement is not null)
+        if (replacement != null)
         {
             replacement.enabled = false;
             replacement.gameObject.SetActive(false);

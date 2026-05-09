@@ -165,6 +165,9 @@ public sealed class InventoryLineRenderProbePatchTests
             NUnit.Framework.Does.Contain("forceMesh: false"));
         NUnit.Framework.Assert.That(
             source,
+            NUnit.Framework.Does.Contain("RuntimeDiagnostics.VerboseProbesEnabled"));
+        NUnit.Framework.Assert.That(
+            source,
             NUnit.Framework.Does.Not.Contain("forceMesh: true"));
     }
 

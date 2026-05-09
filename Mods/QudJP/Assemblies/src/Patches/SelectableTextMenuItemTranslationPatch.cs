@@ -91,8 +91,13 @@ public static class SelectableTextMenuItemTranslationPatch
             return TryGetLastPopupId(popupMessageType);
         }
 
-        return AccessTools.Field(popupMessageType, "PopupID")?.GetValue(popupMessage) as string
-            ?? TryGetLastPopupId(popupMessageType);
+        var popupId = AccessTools.Field(popupMessageType, "PopupID")?.GetValue(popupMessage) as string;
+        if (popupId is null)
+        {
+            popupId = TryGetLastPopupId(popupMessageType);
+        }
+
+        return popupId;
     }
 
     private static object? TryGetParentPopupMessage(object instance, Type popupMessageType)

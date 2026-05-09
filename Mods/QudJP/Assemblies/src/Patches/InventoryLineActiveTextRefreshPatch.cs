@@ -38,7 +38,7 @@ public static class InventoryLineActiveTextRefreshPatch
 #endif
             string? currentText = null;
 
-            if (!isActiveItemLine)
+            if (!isActiveItemLine || hasActiveReplacement)
             {
                 InventoryLineFontFixer.ForgetSuccessfulRefreshForLine(__instance);
             }
