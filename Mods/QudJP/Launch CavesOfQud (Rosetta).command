@@ -7,8 +7,9 @@
 
 set -euo pipefail
 
-LAUNCHER_TITLE="QudJP Rosetta Launcher"
+LAUNCHER_TITLE="QudJP Rosetta 起動"
 DEFAULT_GAME_BINARY="${HOME}/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/MacOS/CoQ"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd -P)"
 
 show_message() {
   local title="$1"
@@ -36,7 +37,7 @@ confirm_dialog() {
   osascript - "${title}" "${message}" "${action}" <<'APPLESCRIPT' >/dev/null
 on run argv
   set actionName to item 3 of argv
-  set dialogResult to display dialog (item 2 of argv) buttons {"Cancel", actionName} default button actionName cancel button "Cancel" with title (item 1 of argv)
+  set dialogResult to display dialog (item 2 of argv) buttons {"キャンセル", actionName} default button actionName cancel button "キャンセル" with title (item 1 of argv)
   return button returned of dialogResult
 end run
 APPLESCRIPT
@@ -45,22 +46,22 @@ APPLESCRIPT
 install_rosetta() {
   if ! confirm_dialog \
     "${LAUNCHER_TITLE}" \
-    "Rosetta 2 is required to launch Caves of Qud this way on Apple Silicon. Install Rosetta 2 now?" \
-    "Install Rosetta 2"; then
+    "Apple Silicon MacでCaves of Qudをこの方法で起動するにはRosetta 2が必要です。今インストールしますか？" \
+    "Rosetta 2をインストール"; then
     show_message \
       "${LAUNCHER_TITLE}" \
-      "Rosetta 2 is not installed. The game was not launched."
+      "Rosetta 2がインストールされていないため、Caves of Qudを起動しませんでした。"
     exit 1
   fi
 
   show_message \
     "${LAUNCHER_TITLE}" \
-    "macOS will install Rosetta 2 now. This may take a moment."
+    "macOSがRosetta 2をインストールします。完了まで少し時間がかかる場合があります。"
 
   if ! /usr/sbin/softwareupdate --install-rosetta --agree-to-license; then
     show_message \
       "${LAUNCHER_TITLE}" \
-      "Rosetta 2 installation did not complete. Please try this launcher again after installing Rosetta 2."
+      "Rosetta 2のインストールが完了しませんでした。時間をおいてもう一度このファイルを開くか、macOSのソフトウェアアップデートを確認してください。"
     exit 1
   fi
 }
@@ -73,7 +74,7 @@ choose_game_binary() {
   local selected_app
   selected_app="$(
     osascript <<'APPLESCRIPT'
-set promptText to "Caves of Qud was not found in the default Steam library. Please select CoQ.app from your Steam library."
+set promptText to "既定のSteamライブラリにCaves of Qudが見つかりませんでした。Steamライブラリ内の steamapps/common/Caves of Qud/CoQ.app を選択してください。"
 set selectedFile to choose file with prompt promptText
 return POSIX path of selectedFile
 APPLESCRIPT
@@ -92,6 +93,31 @@ APPLESCRIPT
   printf '%s\n' "${selected_app}"
 }
 
+infer_game_binary_from_launcher_location() {
+  case "${SCRIPT_DIR}" in
+    */steamapps/workshop/content/333640/3718988020)
+      local steamapps_dir="${SCRIPT_DIR%/workshop/content/333640/3718988020}"
+      printf '%s/common/Caves of Qud/CoQ.app/Contents/MacOS/CoQ\n' "${steamapps_dir}"
+      return 0
+      ;;
+    */CoQ.app/Contents/Resources/Data/StreamingAssets/Mods/QudJP)
+      local app_dir="${SCRIPT_DIR%/Contents/Resources/Data/StreamingAssets/Mods/QudJP}"
+      printf '%s/Contents/MacOS/CoQ\n' "${app_dir}"
+      return 0
+      ;;
+  esac
+
+  return 1
+}
+
+show_not_executable_message() {
+  local source_description="$1"
+
+  show_message \
+    "${LAUNCHER_TITLE}" \
+    "${source_description}にCaves of Qudは見つかりましたが、実行できる状態ではありません。Steamを開き、ライブラリ > Caves of Qud > プロパティ > インストール済みファイル > ゲームファイルの整合性を確認 を実行してから、もう一度このファイルを開いてください。"
+}
+
 resolve_game_binary() {
   if [[ -x "${DEFAULT_GAME_BINARY}" ]]; then
     printf '%s\n' "${DEFAULT_GAME_BINARY}"
@@ -99,28 +125,39 @@ resolve_game_binary() {
   fi
 
   if [[ -f "${DEFAULT_GAME_BINARY}" ]]; then
-    show_message \
-      "${LAUNCHER_TITLE}" \
-      "Caves of Qud was found in the default Steam library, but it is not executable. Please verify the game installation in Steam and try again."
+    show_not_executable_message "既定のSteamライブラリ"
     exit 1
+  fi
+
+  local inferred_binary
+  if inferred_binary="$(infer_game_binary_from_launcher_location)"; then
+    if [[ -x "${inferred_binary}" ]]; then
+      printf '%s\n' "${inferred_binary}"
+      return 0
+    fi
+
+    if [[ -f "${inferred_binary}" ]]; then
+      show_not_executable_message "この起動ファイルの場所から推定したSteamライブラリ"
+      exit 1
+    fi
   fi
 
   show_message \
     "${LAUNCHER_TITLE}" \
-    "Caves of Qud was not found in the default Steam library. In the next window, select CoQ.app from your Steam library."
+    "Caves of Qudが見つかりませんでした。次の画面で、Steamライブラリ内の Caves of Qud/CoQ.app を選択してください。"
 
   local chosen_binary
   if ! chosen_binary="$(choose_game_binary)"; then
     show_message \
       "${LAUNCHER_TITLE}" \
-      "Caves of Qud could not be launched. Please select CoQ.app from your Steam library and try again."
+      "Caves of Qudを起動できませんでした。もう一度このファイルを開き、Steamライブラリ内の Caves of Qud/CoQ.app を選択してください。"
     exit 1
   fi
 
   if [[ ! -x "${chosen_binary}" ]]; then
     show_message \
       "${LAUNCHER_TITLE}" \
-      "Caves of Qud could not be launched. Please select CoQ.app from your Steam library and try again."
+      "選択されたファイルからCaves of Qudを起動できませんでした。Steamライブラリ内の Caves of Qud/CoQ.app を選択してください。"
     exit 1
   fi
 
@@ -138,7 +175,7 @@ rosetta_available() {
 if [[ "$(uname -s)" != "Darwin" ]]; then
   show_message \
     "${LAUNCHER_TITLE}" \
-    "This launcher is only needed on macOS. On Windows or Linux, start Caves of Qud normally from Steam."
+    "この起動ファイルはmacOS専用です。WindowsやLinuxでは、Steamから通常どおりCaves of Qudを起動してください。"
   exit 1
 fi
 
@@ -150,6 +187,6 @@ GAME_BINARY="$(resolve_game_binary)"
 
 printf '%s\n%s\n' \
   "${LAUNCHER_TITLE}" \
-  "Launching Caves of Qud through Rosetta 2." >&2
+  "Rosetta 2経由でCaves of Qudを起動します。" >&2
 
 exec arch -x86_64 "${GAME_BINARY}"

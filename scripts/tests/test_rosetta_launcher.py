@@ -25,13 +25,25 @@ def test_rosetta_launcher_uses_gui_dialogs_for_player_facing_errors() -> None:
     assert "choose file" in launcher
     assert "CoQ.app/Contents/MacOS/CoQ" in launcher
     assert "edit this launcher" not in launcher
+    assert "ゲームファイルの整合性を確認" in launcher
+
+
+def test_rosetta_launcher_infers_game_from_workshop_or_installed_mod_location() -> None:
+    """The launcher tries the Steam library implied by its own installed location."""
+    launcher = _launcher_text()
+
+    assert "infer_game_binary_from_launcher_location" in launcher
+    assert "steamapps/workshop/content/333640/3718988020" in launcher
+    assert "common/Caves of Qud/CoQ.app/Contents/MacOS/CoQ" in launcher
+    assert "CoQ.app/Contents/Resources/Data/StreamingAssets/Mods/QudJP" in launcher
 
 
 def test_rosetta_launcher_can_offer_rosetta_install_through_dialog() -> None:
     """Missing Rosetta is handled through the launcher, not only a printed command."""
     launcher = _launcher_text()
 
-    assert 'LAUNCHER_TITLE="QudJP Rosetta Launcher"' in launcher
+    assert 'LAUNCHER_TITLE="QudJP Rosetta 起動"' in launcher
     assert "softwareupdate --install-rosetta --agree-to-license" in launcher
-    assert "Install Rosetta 2" in launcher
+    assert "Rosetta 2をインストール" in launcher
+    assert "キャンセル" in launcher
     assert "exec arch -x86_64" in launcher

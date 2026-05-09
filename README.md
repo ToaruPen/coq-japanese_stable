@@ -36,7 +36,7 @@ Steam Workshop 版と GitHub Release ZIP には `QudJP/Launch CavesOfQud (Rosett
 
 Steam ライブラリを別の場所に置いている場合は、そのライブラリ配下の `steamapps/workshop/content/333640/3718988020/` を探してください。GitHub Release ZIP を手動展開した場合は、展開した `QudJP/` フォルダ直下にあります。
 
-Rosetta 2 が未インストールの場合、wrapper が macOS の確認ダイアログを表示します。ゲーム本体が既定の Steam ライブラリに見つからない場合も、wrapper が `CoQ.app` の選択画面を表示します。表示に従って進めれば、手動でターミナル操作をする必要はありません。
+Rosetta 2 が未インストールの場合、wrapper が macOS の確認ダイアログを表示します。ゲーム本体は、まず既定の Steam ライブラリと wrapper 自身が置かれている Workshop フォルダから同じ Steam ライブラリ内を探します。それでも見つからない場合だけ `CoQ.app` の選択画面を表示します。表示に従って進めれば、手動でターミナル操作をする必要はありません。
 
 直接起動する場合のコマンドは次の通りです。このコマンドはワンショットで、Steam から普通に起動した場合の設定を永続変更しません。
 
