@@ -178,6 +178,10 @@ build-workshop-upload release_zip="" changenote_file="/tmp/qudjp-workshop-change
     {{python}} scripts/build_workshop_upload.py --changenote-file "{{changenote_file}}"; \
   fi
 
+# Verify generated Workshop staging and VDF before running steamcmd.
+workshop-upload-preflight release_zip version content_folder="dist/workshop/QudJP" vdf="dist/workshop/workshop_item.vdf":
+  {{python}} scripts/verify_workshop_upload.py --release-zip {{quote(release_zip)}} --content-folder {{quote(content_folder)}} --vdf {{quote(vdf)}} --expected-version {{quote(version)}}
+
 # Verify a downloaded Steam Workshop item against the expected release DLL or ZIP.
 workshop-download-check version expected_dll="" workshop_dir="":
   #!/usr/bin/env bash
