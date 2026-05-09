@@ -87,7 +87,7 @@ public sealed class GameTypeResolverTests
         {
             Assert.That(GameTypeResolver.FallbackScanCountForDiagnostics, Is.EqualTo(2));
             Assert.That(
-                System.Text.RegularExpressions.Regex.Matches(output, "GameTypeResolver failed to resolve type").Count,
+                System.Text.RegularExpressions.Regex.Count(output, "GameTypeResolver failed to resolve type"),
                 Is.EqualTo(2));
         });
     }
