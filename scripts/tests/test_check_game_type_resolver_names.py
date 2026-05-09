@@ -302,6 +302,109 @@ public static class The
     assert result.mismatches == ()
 
 
+def test_validate_game_type_resolver_calls_ignores_braces_in_string_literals_and_comments(
+    tmp_path: Path,
+) -> None:
+    """Type span extraction ignores braces that are not C# block delimiters."""
+    repo_root = tmp_path / "repo"
+    patch_root = repo_root / "Mods" / "QudJP" / "Assemblies" / "src" / "Patches"
+    patch_root.mkdir(parents=True)
+    (patch_root / "Patch.cs").write_text(
+        """
+namespace QudJP.Patches;
+
+internal static class FirstPatchTarget
+{
+    private const string Template = "}";
+    /* } */
+    // }
+    internal const string TypeName = "XRL.The";
+}
+
+internal static class SecondPatchTarget
+{
+    private const string TypeName = "XRL.World.The";
+}
+
+internal static class Patch
+{
+    private static Type? Resolve()
+    {
+        return GameTypeResolver.FindType(FirstPatchTarget.TypeName, "The");
+    }
+}
+""",
+        encoding="utf-8",
+    )
+    decompiled_root = tmp_path / "decompiled"
+    (decompiled_root / "XRL").mkdir(parents=True)
+    (decompiled_root / "XRL" / "The.cs").write_text(
+        """
+namespace XRL;
+
+public static class The
+{
+}
+""",
+        encoding="utf-8",
+    )
+
+    result = check_game_type_resolver_names.validate_game_type_resolver_calls(
+        source_root=patch_root,
+        decompiled_root=decompiled_root,
+        repo_root=repo_root,
+    )
+
+    assert result.checked == 1
+    assert result.unresolved == ()
+    assert result.mismatches == ()
+
+
+def test_validate_game_type_resolver_calls_decodes_csharp_hex_escape_sequences(tmp_path: Path) -> None:
+    """C# string decoding treats variable-length hex escapes as one character."""
+    repo_root = tmp_path / "repo"
+    patch_root = repo_root / "Mods" / "QudJP" / "Assemblies" / "src" / "Patches"
+    patch_root.mkdir(parents=True)
+    (patch_root / "Patch.cs").write_text(
+        """
+namespace QudJP.Patches;
+
+internal static class Patch
+{
+    private const string TypeName = "XRL\\x002EThe";
+
+    private static Type? Resolve()
+    {
+        return GameTypeResolver.FindType(TypeName, "The");
+    }
+}
+""",
+        encoding="utf-8",
+    )
+    decompiled_root = tmp_path / "decompiled"
+    (decompiled_root / "XRL").mkdir(parents=True)
+    (decompiled_root / "XRL" / "The.cs").write_text(
+        """
+namespace XRL;
+
+public static class The
+{
+}
+""",
+        encoding="utf-8",
+    )
+
+    result = check_game_type_resolver_names.validate_game_type_resolver_calls(
+        source_root=patch_root,
+        decompiled_root=decompiled_root,
+        repo_root=repo_root,
+    )
+
+    assert result.checked == 1
+    assert result.unresolved == ()
+    assert result.mismatches == ()
+
+
 def test_validate_game_type_resolver_calls_reports_wrong_full_type_name(tmp_path: Path) -> None:
     """A simple-name fallback candidate does not hide a wrong full type name."""
     repo_root = tmp_path / "repo"

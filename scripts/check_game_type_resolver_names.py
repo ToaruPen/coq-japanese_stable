@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
 _DEFAULT_SOURCE_ROOT = Path("Mods/QudJP/Assemblies/src/Patches")
 _DEFAULT_DECOMPILED_ROOT = Path("~/dev/coq-decompiled_stable").expanduser()
+_CSHARP_VARIABLE_HEX_ESCAPE_MAX_LENGTH = 4
 
 _STRING_LITERAL = r'"(?P<{name}>(?:\\.|[^"\\])*)"'
 _IDENTIFIER = r"[A-Za-z_][A-Za-z0-9_]*"
@@ -26,6 +27,19 @@ _FIND_TYPE_CALL_PATTERN = re.compile(r"GameTypeResolver\.FindType\((?P<arguments
 _CONST_STRING_PATTERN = re.compile(
     rf"\bconst\s+string\s+(?P<name>{_IDENTIFIER})\s*=\s*{_STRING_LITERAL.format(name='value')}",
 )
+_CSHARP_SIMPLE_ESCAPES = {
+    "'": "'",
+    '"': '"',
+    "\\": "\\",
+    "0": "\0",
+    "a": "\a",
+    "b": "\b",
+    "f": "\f",
+    "n": "\n",
+    "r": "\r",
+    "t": "\t",
+    "v": "\v",
+}
 _CLASS_PATTERN = re.compile(
     "".join(
         (
@@ -456,18 +470,144 @@ def _find_enclosing_type_name(type_spans: tuple[_TypeSpan, ...], position: int) 
 
 def _find_matching_brace(text: str, open_brace_index: int) -> int:
     depth = 0
-    for index in range(open_brace_index, len(text)):
+    index = open_brace_index
+    while index < len(text):
+        if text.startswith("//", index) or _starts_preprocessor_directive(text, index):
+            index = _skip_line(text, index)
+            continue
+        if text.startswith("/*", index):
+            index = _skip_block_comment(text, index)
+            continue
+        if text[index] in "\"'":
+            index = _skip_quoted_literal(text, index)
+            continue
+
         if text[index] == "{":
             depth += 1
         elif text[index] == "}":
             depth -= 1
             if depth == 0:
                 return index
+        index += 1
     return -1
 
 
+def _starts_preprocessor_directive(text: str, index: int) -> bool:
+    if text[index] != "#":
+        return False
+    line_start = text.rfind("\n", 0, index) + 1
+    return text[line_start:index].strip() == ""
+
+
+def _skip_line(text: str, index: int) -> int:
+    newline_index = text.find("\n", index)
+    return len(text) if newline_index == -1 else newline_index + 1
+
+
+def _skip_block_comment(text: str, index: int) -> int:
+    end_index = text.find("*/", index + 2)
+    return len(text) if end_index == -1 else end_index + 2
+
+
+def _skip_quoted_literal(text: str, index: int) -> int:
+    if text[index] == '"' and index > 0 and text[index - 1] == "@":
+        return _skip_verbatim_string(text, index)
+    return _skip_escaped_literal(text, index, text[index])
+
+
+def _skip_verbatim_string(text: str, index: int) -> int:
+    index += 1
+    while index < len(text):
+        if text[index] == '"':
+            if index + 1 < len(text) and text[index + 1] == '"':
+                index += 2
+                continue
+            return index + 1
+        index += 1
+    return len(text)
+
+
+def _skip_escaped_literal(text: str, index: int, quote: str) -> int:
+    index += 1
+    escaped = False
+    while index < len(text):
+        char = text[index]
+        if escaped:
+            escaped = False
+        elif char == "\\":
+            escaped = True
+        elif char == quote:
+            return index + 1
+        index += 1
+    return len(text)
+
+
 def _decode_csharp_string(value: str) -> str:
-    return bytes(value, "utf-8").decode("unicode_escape")
+    decoded: list[str] = []
+    index = 0
+    while index < len(value):
+        if value[index] != "\\":
+            decoded.append(value[index])
+            index += 1
+            continue
+
+        replacement, next_index = _decode_csharp_escape(value, index)
+        decoded.append(replacement)
+        index = next_index
+
+    return "".join(decoded)
+
+
+def _decode_csharp_escape(value: str, slash_index: int) -> tuple[str, int]:
+    escape_index = slash_index + 1
+    if escape_index >= len(value):
+        return "\\", escape_index
+
+    escape = value[escape_index]
+    simple_escape = _CSHARP_SIMPLE_ESCAPES.get(escape)
+    if simple_escape is not None:
+        return simple_escape, escape_index + 1
+    if escape == "u":
+        return _decode_fixed_hex_escape(value, escape_index + 1, 4, value[slash_index : escape_index + 1])
+    if escape == "U":
+        return _decode_fixed_hex_escape(value, escape_index + 1, 8, value[slash_index : escape_index + 1])
+    if escape == "x":
+        return _decode_variable_hex_escape(value, escape_index + 1, value[slash_index : escape_index + 1])
+
+    return value[slash_index : escape_index + 1], escape_index + 1
+
+
+def _decode_fixed_hex_escape(value: str, start_index: int, length: int, fallback: str) -> tuple[str, int]:
+    end_index = start_index + length
+    digits = value[start_index:end_index]
+    if len(digits) != length or not _is_hex(digits):
+        return fallback, start_index
+    return _chr_or_fallback(digits, fallback), end_index
+
+
+def _decode_variable_hex_escape(value: str, start_index: int, fallback: str) -> tuple[str, int]:
+    end_index = start_index
+    while (
+        end_index < len(value)
+        and end_index - start_index < _CSHARP_VARIABLE_HEX_ESCAPE_MAX_LENGTH
+        and _is_hex(value[end_index])
+    ):
+        end_index += 1
+    if end_index == start_index:
+        return fallback, start_index
+    digits = value[start_index:end_index]
+    return _chr_or_fallback(digits, fallback), end_index
+
+
+def _is_hex(value: str) -> bool:
+    return all(char in "0123456789abcdefABCDEF" for char in value)
+
+
+def _chr_or_fallback(hex_digits: str, fallback: str) -> str:
+    try:
+        return chr(int(hex_digits, 16))
+    except ValueError:
+        return fallback
 
 
 def _format_path(path: Path, repo_root: Path) -> str:
