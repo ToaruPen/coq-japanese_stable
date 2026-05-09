@@ -54,6 +54,21 @@ public sealed class XDidYTranslationPatchTests
     }
 
     [Test]
+    public void TheTypeName_UsesCanonicalGameNamespace()
+    {
+        Assert.That(XDidYTranslationPatch.TheTypeName, Is.EqualTo("XRL.The"));
+#if HAS_GAME_DLL
+        var gameAssemblyName = AssemblyName.GetAssemblyName(Path.Combine(AppContext.BaseDirectory, "Assembly-CSharp.dll"));
+        _ = Assembly.Load(gameAssemblyName);
+        Assert.Multiple(() =>
+        {
+            Assert.That(GameTypeResolver.FindType(XDidYTranslationPatch.TheTypeName, "The")?.FullName, Is.EqualTo("XRL.The"));
+            Assert.That(AccessTools.TypeByName("XRL.World.The"), Is.Null);
+        });
+#endif
+    }
+
+    [Test]
     public void Prefix_TranslatesXDidYAndSkipsOriginalEnglishAssembly()
     {
         WriteDictionary(tier1: new[] { ("block", "防いだ") });
