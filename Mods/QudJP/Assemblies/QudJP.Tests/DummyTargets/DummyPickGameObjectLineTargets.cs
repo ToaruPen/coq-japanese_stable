@@ -53,6 +53,53 @@ internal sealed class DummyPickGameObjectLineDataTarget
     public string? hotkeyDescription { get; set; }
 }
 
+internal sealed class DummyGameSignaturePickGameObjectLineDataTarget
+{
+    public string? style { get; set; }
+
+    public object? go { get; set; }
+
+    public string category { get; set; } = string.Empty;
+
+    public bool collapsed { get; set; }
+
+    public bool indent { get; set; }
+
+    public string? hotkeyDescription { get; set; }
+}
+
+internal sealed class DummyGameSignaturePickGameObjectTargetObject
+{
+    public string DisplayName { get; set; } = string.Empty;
+
+    public bool OwnedByPlayer { get; set; }
+
+    public int Weight { get; set; }
+
+    public string ListDisplayContext { get; set; } = string.Empty;
+
+    public string IDIfAssigned { get; set; } = "item-1";
+
+    public string? LastRenderContext { get; private set; }
+
+    public bool? LastAsIfKnown { get; private set; }
+
+    public object RenderForUI(string? context = null, bool asIfKnown = false)
+    {
+        LastRenderContext = context;
+        LastAsIfKnown = asIfKnown;
+        return new DummyRenderable(DisplayName);
+    }
+
+    public int GetWeight() => Weight;
+
+    public string GetListDisplayContext(object? player)
+    {
+        _ = player;
+        return ListDisplayContext;
+    }
+}
+
 internal sealed class DummyFallbackPickGameObjectLineDataTarget
 {
     public string FallbackText { get; set; } = "pick fallback";
