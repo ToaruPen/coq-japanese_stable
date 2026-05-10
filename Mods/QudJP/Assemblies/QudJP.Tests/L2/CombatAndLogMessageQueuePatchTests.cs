@@ -365,6 +365,74 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void MessageQueueSemanticPipeline_TranslatesActiveOwnerMessage()
+    {
+        WritePatternDictionary(
+            ("^You are crippled for (.+?)!$", "{t0}のあいだ手足が不自由になった！"));
+        WriteLeafDictionary(("5 turns", "5ターン"));
+
+        var message = "You are crippled for 5 turns!";
+
+        CrippleApplyTranslationPatch.Prefix();
+        try
+        {
+            var translated = MessageQueueSemanticPipeline.TryTranslateQueuedMessage(ref message, "R");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(translated, Is.True);
+                Assert.That(message, Is.EqualTo("\u00015ターンのあいだ手足が不自由になった！"));
+            });
+        }
+        finally
+        {
+            CrippleApplyTranslationPatch.Finalizer(null);
+        }
+    }
+
+    [Test]
+    public void MessageQueueSemanticPipeline_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        WritePatternDictionary(
+            ("^You are crippled for (.+?)!$", "{t0}のあいだ手足が不自由になった！"));
+
+        var message = "You are crippled for 5 turns!";
+
+        var translated = MessageQueueSemanticPipeline.TryTranslateQueuedMessage(ref message, "R");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(message, Is.EqualTo("You are crippled for 5 turns!"));
+        });
+    }
+
+    [Test]
+    public void MessageQueueSemanticPipeline_DoesNotRetranslateDirectMarkedMessage()
+    {
+        WritePatternDictionary(
+            ("^You are crippled for (.+?)!$", "{t0}のあいだ手足が不自由になった！"));
+
+        var message = "\u0001You are crippled for 5 turns!";
+
+        CrippleApplyTranslationPatch.Prefix();
+        try
+        {
+            var translated = MessageQueueSemanticPipeline.TryTranslateQueuedMessage(ref message, "R");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(translated, Is.False);
+                Assert.That(message, Is.EqualTo("\u0001You are crippled for 5 turns!"));
+            });
+        }
+        finally
+        {
+            CrippleApplyTranslationPatch.Finalizer(null);
+        }
+    }
+
+    [Test]
     public void ExperienceAwardXp_TranslatesColorizedXpGain_WhenPatched()
     {
         UseRepositoryPatternDictionary();

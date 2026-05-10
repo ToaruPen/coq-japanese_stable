@@ -48,22 +48,14 @@ public static class InventoryLocalizationPatch
     {
         try
         {
-            if (string.IsNullOrEmpty(__result))
-            {
-                return;
-            }
-
-            var methodContext = __originalMethod is null
-                ? nameof(InventoryLocalizationPatch)
-                : ObservabilityHelpers.ComposeContext(
-                    nameof(InventoryLocalizationPatch),
-                    $"method={__originalMethod.DeclaringType?.Name ?? "<unknown>"}.{__originalMethod.Name}");
-            __result = GetDisplayNameRouteTranslator.TranslatePreservingColors(__result, methodContext);
+            _ = DisplayNameSemanticPipeline.TryTranslateResult(
+                ref __result,
+                __originalMethod,
+                nameof(InventoryLocalizationPatch));
         }
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: InventoryLocalizationPatch.Postfix failed: {0}", ex);
         }
     }
-
 }

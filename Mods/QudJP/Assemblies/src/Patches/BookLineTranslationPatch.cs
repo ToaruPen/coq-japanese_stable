@@ -13,23 +13,7 @@ public static class BookLineTranslationPatch
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
     {
-        var targetType = GameTypeResolver.FindType("Qud.UI.BookLine", "BookLine");
-        if (targetType is null)
-        {
-            Trace.TraceError("QudJP: BookLineTranslationPatch target type not found.");
-            return null;
-        }
-
-        var frameworkDataElementType = GameTypeResolver.FindType("XRL.UI.Framework.FrameworkDataElement", "FrameworkDataElement");
-        var method = frameworkDataElementType is null
-            ? null
-            : AccessTools.Method(targetType, "setData", new[] { frameworkDataElementType });
-        if (method is null)
-        {
-            Trace.TraceError("QudJP: BookLineTranslationPatch.setData(FrameworkDataElement) not found.");
-        }
-
-        return method;
+        return FrameworkDataElementSetDataTargetResolver.Resolve(Context, "Qud.UI.BookLine", "BookLine");
     }
 
     public static bool Prefix(object? __instance, object? data)

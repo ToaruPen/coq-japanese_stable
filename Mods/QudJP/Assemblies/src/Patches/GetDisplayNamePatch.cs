@@ -64,12 +64,7 @@ public static class GetDisplayNamePatch
     {
         try
         {
-            if (string.IsNullOrEmpty(__result))
-            {
-                return;
-            }
-
-            __result = GetDisplayNameRouteTranslator.TranslatePreservingColors(__result, nameof(GetDisplayNamePatch));
+            _ = DisplayNameSemanticPipeline.TryTranslateResult(ref __result, nameof(GetDisplayNamePatch));
         }
         catch (Exception ex)
         {
