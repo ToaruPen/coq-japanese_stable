@@ -4,6 +4,7 @@ namespace QudJP.Tests.L1;
 
 [TestFixture]
 [Category("L1")]
+[NonParallelizable]
 public sealed class ModManagementTranslationPatchTests
 {
     [TestCase("{{y|by Example Author}}", "{{y|作者: Example Author}}")]

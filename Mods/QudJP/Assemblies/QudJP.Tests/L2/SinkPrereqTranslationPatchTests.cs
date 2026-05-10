@@ -8,6 +8,7 @@ namespace QudJP.Tests.L2;
 
 [TestFixture]
 [Category("L2")]
+[NonParallelizable]
 public sealed class SinkPrereqTranslationPatchTests
 {
     private string tempDir = null!;

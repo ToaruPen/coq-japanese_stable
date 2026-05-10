@@ -5,6 +5,7 @@ namespace QudJP.Tests.L1;
 
 [TestFixture]
 [Category("L1")]
+[NonParallelizable]
 public sealed class SkillsAndPowersStatusScreenTranslationPatchTests
 {
     private string tempDirectory = null!;

@@ -7,6 +7,7 @@ namespace QudJP.Tests.L1.Pbt;
 
 [TestFixture]
 [Category("L1")]
+[NonParallelizable]
 public sealed class MessageLogProducerTranslationHelpersPropertyTests
 {
     private const string ReplaySeed = "246813579,97531";
