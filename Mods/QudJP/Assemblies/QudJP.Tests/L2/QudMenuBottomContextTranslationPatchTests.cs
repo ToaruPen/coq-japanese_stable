@@ -38,72 +38,45 @@ public sealed class QudMenuBottomContextTranslationPatchTests
         WriteDictionary(("Inspect", "調べる"));
 
         var context = new DummyQudMenuBottomContext("Inspect");
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
+        RunRefreshButtonsWithPatch(context);
 
-        try
+        Assert.Multiple(() =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyQudMenuBottomContext), nameof(DummyQudMenuBottomContext.RefreshButtons)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(QudMenuBottomContextTranslationPatch), nameof(QudMenuBottomContextTranslationPatch.Prefix))));
-
-            context.RefreshButtons();
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("調べる"));
-                Assert.That(
-                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
-                        nameof(QudMenuBottomContextTranslationPatch),
-                        "Popup.ProducerMenuItem.Exact"),
-                    Is.GreaterThan(0));
-                Assert.That(
-                    SinkObservation.GetHitCountForTests(
-                        nameof(PopupTranslationPatch),
-                        nameof(QudMenuBottomContextTranslationPatch),
-                        SinkObservation.ObservationOnlyDetail,
-                        "Inspect",
-                        "Inspect"),
-                    Is.EqualTo(0));
-            });
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+            Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("調べる"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(QudMenuBottomContextTranslationPatch),
+                    "Popup.ProducerMenuItem.Exact"),
+                Is.GreaterThan(0));
+            Assert.That(
+                SinkObservation.GetHitCountForTests(
+                    nameof(PopupTranslationPatch),
+                    nameof(QudMenuBottomContextTranslationPatch),
+                    SinkObservation.ObservationOnlyDetail,
+                    "Inspect",
+                    "Inspect"),
+                Is.EqualTo(0));
+        });
     }
 
     [Test]
     public void Prefix_StripsDirectTranslationMarker_FromMenuItemText()
     {
         var context = new DummyQudMenuBottomContext("調べる");
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
 
-        try
-        {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyQudMenuBottomContext), nameof(DummyQudMenuBottomContext.RefreshButtons)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(QudMenuBottomContextTranslationPatch), nameof(QudMenuBottomContextTranslationPatch.Prefix))));
+        RunRefreshButtonsWithPatch(context);
 
-            context.RefreshButtons();
-
-            Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("調べる"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("調べる"));
     }
 
     [Test]
-    public void NormalizeItemTexts_TranslatesAndFlattensNestedHotkeyLabel()
+    public void Prefix_TranslatesAndFlattensNestedHotkeyLabel()
     {
         WriteScopedMenuActionDictionary(("back", "戻る"));
 
         var context = new DummyQudMenuBottomContext("{{y|{{W|[Esc]}} Back}}");
 
-        QudMenuBottomContextTranslationPatch.NormalizeItemTexts(context);
+        RunRefreshButtonsWithPatch(context);
 
         Assert.Multiple(() =>
         {
@@ -117,26 +90,56 @@ public sealed class QudMenuBottomContextTranslationPatchTests
     }
 
     [Test]
-    public void NormalizeItemTexts_FlattensNestedHotkeyLabel_WhenLabelIsUntranslated()
+    public void Prefix_FlattensNestedHotkeyLabel_WhenLabelIsUntranslated()
     {
         var context = new DummyQudMenuBottomContext("{{y|{{W|[Esc]}} Back}}");
 
-        QudMenuBottomContextTranslationPatch.NormalizeItemTexts(context);
+        RunRefreshButtonsWithPatch(context);
 
         Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("[Esc] Back"));
     }
 
     [TestCase("{{y|{{W|[~Accept]}} Continue}}", "[~Accept] 続ける")]
     [TestCase("{{y|{{W|[space]}} Continue}}", "[space] 続ける")]
-    public void NormalizeItemTexts_PreservesNestedHotkeyTokenAndBrackets(string source, string expected)
+    public void Prefix_PreservesNestedHotkeyTokenAndBrackets(string source, string expected)
     {
         WriteScopedMenuActionDictionary(("continue", "続ける"));
 
         var context = new DummyQudMenuBottomContext(source);
 
-        QudMenuBottomContextTranslationPatch.NormalizeItemTexts(context);
+        RunRefreshButtonsWithPatch(context);
 
         Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void Prefix_StripsMalformedNestedHotkeyLabelToVisibleFallback()
+    {
+        var source = "{{y|{{W|Esc}} Back}}";
+        var context = new DummyQudMenuBottomContext(source);
+
+        Assert.DoesNotThrow(() => RunRefreshButtonsWithPatch(context));
+
+        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("Esc Back"));
+    }
+
+    private static void RunRefreshButtonsWithPatch(DummyQudMenuBottomContext context)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyQudMenuBottomContext), nameof(DummyQudMenuBottomContext.RefreshButtons)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(QudMenuBottomContextTranslationPatch), nameof(QudMenuBottomContextTranslationPatch.Prefix))));
+
+            context.RefreshButtons();
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private static string CreateHarmonyId()

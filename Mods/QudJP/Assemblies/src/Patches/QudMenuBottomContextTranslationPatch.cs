@@ -119,7 +119,7 @@ public static class QudMenuBottomContextTranslationPatch
 
         var hotkey = match.Groups["hotkey"].Value;
         var label = match.Groups["label"].Value;
-        if (hotkey.Length == 0 || label.Length == 0)
+        if (label.Length == 0)
         {
             return source;
         }

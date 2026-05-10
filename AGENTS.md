@@ -42,9 +42,19 @@ QudJP is the Japanese localization mod for Caves of Qud `1.0.4`. The repo contai
   artifacts; runtime evidence is still required for live route proof.
 - Prefer `just` recipes for routine validation so local runs match the repo task runner.
   Raw commands below document what the recipes execute.
+- Create and use a git worktree for implementation work by default. Use the
+  main checkout for coordination, cleanup, and read-only inspection unless the
+  user explicitly asks for an in-place edit.
 - Before opening or updating a PR that changes `Mods/QudJP/Localization/`, add
   a release-note fragment under `docs/release-notes/unreleased/*.md` and run
-  `python3.12 scripts/release_notes.py check-fragment --base-ref origin/main --head-ref HEAD`.
+  `just release-note-check origin/main HEAD`.
+- Python tools should run through `uv run python` or `just` recipes. The repo
+  pins the preferred local interpreter with `.python-version`, while
+  `pyproject.toml` keeps the compatibility floor at Python `3.12+`.
+- Treat ad hoc `Mods/QudJP/manifest.json` version bumps used only for local
+  in-game verification as temporary dirty state. Restore the manifest to the
+  merged/default-branch value during post-merge cleanup unless the user
+  explicitly asks to keep, release, or commit that version bump.
 - Core commands:
 
 ```bash

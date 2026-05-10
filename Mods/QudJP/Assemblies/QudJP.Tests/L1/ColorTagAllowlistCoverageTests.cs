@@ -129,7 +129,7 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Patches/PlayerDanceRitualTranslationPatch.cs:131:TryTranslateMessage"] = "Delegates capture and whole-source wrapper restoration to matched owner-route branches.",
             ["Mods/QudJP/Assemblies/src/Patches/PlayerDanceRitualTranslationPatch.cs:151:TryTranslatePopup"] = "Delegates capture and whole-source wrapper restoration to matched owner-route branches.",
             ["Mods/QudJP/Assemblies/src/Patches/PlayerStatusBarProducerTranslationHelpers.cs:101:TryTranslateFoodWaterPart"] = "Strips only to choose an exact visible-text translation before TranslatePreservingColors owns restoration.",
-            ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:1545:IsAlreadyLocalizedPopupText"] = "Predicate only; it compares stripped and original text.",
+            ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:1560:IsAlreadyLocalizedPopupText"] = "Predicate only; it compares stripped and original text.",
             ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:267:TranslatePopupTextForRoute"] = "Strips only for direct-marker and already-localized detection before producer routes own restoration.",
             ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:318:TranslatePopupMenuItemTextForRoute"] = "Strips only for direct-marker and already-localized detection before producer routes own restoration.",
             ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:404:TryTranslatePopupProducerText"] = "Delegates capture restoration to template/exact branch helpers.",
