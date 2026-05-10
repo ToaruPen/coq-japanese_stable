@@ -738,62 +738,6 @@ public sealed class TargetMethodResolutionTests
         "",
         "",
         "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
     })]
     [TestCase(typeof(AsleepMessageTranslationPatch), new[]
     {
@@ -1270,8 +1214,7 @@ public sealed class TargetMethodResolutionTests
         var result = targetMethodsMethod!.Invoke(null, null) as System.Collections.IEnumerable;
         Assert.That(result, Is.Not.Null, "TargetMethods returned null for CharGenLocalizationPatch");
 
-        var foundKnownCharGenType = false;
-        var foundAnyMethod = false;
+        var signatures = new List<string>();
         foreach (var item in result!)
         {
             if (item is not MethodInfo methodInfo)
@@ -1279,26 +1222,17 @@ public sealed class TargetMethodResolutionTests
                 continue;
             }
 
-            foundAnyMethod = true;
-            var declaringTypeName = methodInfo.DeclaringType?.Name;
-            if (!string.IsNullOrEmpty(declaringTypeName)
-                && (declaringTypeName.Contains("Embark", StringComparison.Ordinal)
-                    || declaringTypeName.Contains("Genotype", StringComparison.Ordinal)
-                    || declaringTypeName.Contains("Mutation", StringComparison.Ordinal)
-                    || declaringTypeName.Contains("Cybernetics", StringComparison.Ordinal)
-                    || declaringTypeName.Contains("CharacterCreation", StringComparison.Ordinal)
-                    || declaringTypeName.Contains("Calling", StringComparison.Ordinal)))
-            {
-                foundKnownCharGenType = true;
-                break;
-            }
+            signatures.Add(FullMethodSignature(methodInfo));
         }
 
-        Assert.Multiple(() =>
+        Assert.That(signatures, Is.EquivalentTo(new[]
         {
-            Assert.That(foundAnyMethod, Is.True, "CharGenLocalizationPatch resolved no target methods.");
-            Assert.That(foundKnownCharGenType, Is.True, "CharGenLocalizationPatch did not resolve any char-gen-related declaring types.");
-        });
+            "XRL.CharacterBuilds.Qud.QudAttributesModule|DataWarnings|System.String",
+            "XRL.CharacterBuilds.Qud.QudAttributesModule|DataErrors|System.String",
+            "XRL.CharacterBuilds.Qud.QudMutationsModule|DataWarnings|System.String",
+            "XRL.CharacterBuilds.Qud.QudMutationsModule|DataErrors|System.String",
+            "XRL.CharacterBuilds.Qud.QudCyberneticsModule|DataErrors|System.String",
+        }));
     }
 
     [Test]

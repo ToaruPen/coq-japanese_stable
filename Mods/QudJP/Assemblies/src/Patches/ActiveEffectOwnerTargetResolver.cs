@@ -8,10 +8,13 @@ namespace QudJP.Patches;
 
 internal static class ActiveEffectOwnerTargetResolver
 {
+    private static readonly object AssignableTypesLock = new();
+    private static readonly Dictionary<Type, IReadOnlyList<Type>> AssignableTypesByBaseType = new();
+
     internal static IEnumerable<MethodBase> ResolveTargetMethods(Type effectBaseType, string methodName)
     {
         var seen = new HashSet<MethodBase>();
-        foreach (var type in EnumerateAssignableTypes(effectBaseType))
+        foreach (var type in GetAssignableTypes(effectBaseType))
         {
             if (ShouldSkipType(type))
             {
@@ -28,7 +31,21 @@ internal static class ActiveEffectOwnerTargetResolver
         }
     }
 
-    private static IEnumerable<Type> EnumerateAssignableTypes(Type effectBaseType)
+    private static IReadOnlyList<Type> GetAssignableTypes(Type effectBaseType)
+    {
+        lock (AssignableTypesLock)
+        {
+            if (!AssignableTypesByBaseType.TryGetValue(effectBaseType, out var types))
+            {
+                types = EnumerateAssignableTypes(effectBaseType);
+                AssignableTypesByBaseType[effectBaseType] = types;
+            }
+
+            return types;
+        }
+    }
+
+    private static IReadOnlyList<Type> EnumerateAssignableTypes(Type effectBaseType)
     {
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         var types = new List<Type>();

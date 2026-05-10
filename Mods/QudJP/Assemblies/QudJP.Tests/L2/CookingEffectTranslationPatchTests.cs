@@ -151,6 +151,32 @@ public sealed class CookingEffectTranslationPatchTests
         Assert.That(translated, Is.EqualTo(expected));
     }
 
+    [Test]
+    public void Postfix_TranslatesProceduralEffectDescriptionLines_WhenPatched()
+    {
+        var target = new DummyCookingEffectTextTarget
+        {
+            ReturnValue = "+12 Acid Resistance\n+4 Strength\nunchanged line",
+        };
+
+        var translated = InvokePatched(target, nameof(DummyCookingEffectTextTarget.GetProceduralEffectDescription));
+        Assert.That(translated, Is.EqualTo("酸耐性+12\n筋力+4\nunchanged line"));
+    }
+
+    [Test]
+    public void Postfix_TranslatesTemplatedProceduralEffectDescriptionLines_WhenPatched()
+    {
+        var target = new DummyCookingEffectTextTarget
+        {
+            ReturnValue = "Can use Quills at level 5-6. If @they already have Quills, it's enhanced by 3-4 levels.\r\nNo effect.",
+        };
+
+        var translated = InvokePatched(target, nameof(DummyCookingEffectTextTarget.GetTemplatedProceduralEffectDescription));
+        Assert.That(
+            translated,
+            Is.EqualTo("〈棘〉をレベル5～6で使用できる。既に持つ場合、さらにレベル3～4強化される。\r\n効果なし。"));
+    }
+
     private static string InvokePatched(DummyCookingEffectTextTarget target, string methodName)
     {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
