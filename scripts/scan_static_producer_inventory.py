@@ -1,18 +1,21 @@
 """Python wrapper for the Roslyn static producer inventory scanner."""
-# ruff: noqa: S603 -- invokes the repo-local dotnet scanner with explicit arguments
 
 from __future__ import annotations
 
 import argparse
 import json
 import shlex
-import shutil
-import subprocess
 import sys
 import tempfile
 from functools import cache
 from pathlib import Path
 from typing import Final, NotRequired, TypedDict, cast
+
+REPO_ROOT: Final = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.dotnet_tool_runner import DotnetToolError, run_tool_project  # noqa: E402
 
 SCHEMA_VERSION: Final = "1.0"
 GAME_VERSION: Final = "1.0.4"
@@ -20,7 +23,6 @@ DEFAULT_SOURCE_ROOT: Final = Path("~/dev/coq-decompiled_stable").expanduser()
 TARGET_SURFACES: Final = ["EmitMessage", "Popup.Show*", "AddPlayerMessage"]
 ROSLYN_SCANNER_TIMEOUT_SECONDS: Final = 600
 
-REPO_ROOT: Final = Path(__file__).resolve().parents[1]
 PROJECT_PATH: Final = (
     REPO_ROOT
     / "scripts"
@@ -191,62 +193,28 @@ def _scanner_cache_fingerprint(source_root: Path) -> tuple[tuple[str, int, int],
 
 
 def _run_roslyn_scanner(source_root: Path, output_path: Path) -> InventoryPayload:
-    dotnet = shutil.which("dotnet")
-    if dotnet is None:
-        msg = "dotnet 10.0.x SDK required to run the Roslyn static producer scanner"
-        raise RuntimeError(msg)
     if not PROJECT_PATH.is_file():
         msg = f"Roslyn static producer scanner project is missing: {PROJECT_PATH}"
         raise RuntimeError(msg)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    command = [
-        dotnet,
-        "run",
-        "--project",
-        str(PROJECT_PATH),
-        "--",
+    tool_args = [
         "--source-root",
         str(source_root),
         "--output",
         str(output_path),
     ]
     try:
-        result = subprocess.run(
-            command,
-            capture_output=True,
-            text=True,
-            check=False,
-            timeout=ROSLYN_SCANNER_TIMEOUT_SECONDS,
-        )
-    except subprocess.TimeoutExpired as exc:
-        details = "\n".join(
-            part
-            for part in (
-                _subprocess_output_text(exc.stdout),
-                _subprocess_output_text(exc.stderr),
-            )
-            if part
-        )
-        msg = f"Roslyn static producer scanner timed out after {ROSLYN_SCANNER_TIMEOUT_SECONDS}s: {shlex.join(command)}"
-        if details:
-            msg = f"{msg}\n{details}"
-        raise RuntimeError(msg) from exc
+        result = run_tool_project(PROJECT_PATH, tool_args, timeout=ROSLYN_SCANNER_TIMEOUT_SECONDS)
+    except DotnetToolError as exc:
+        raise RuntimeError(str(exc)) from exc
     if result.returncode != 0:
         details = "\n".join(part for part in (result.stdout.strip(), result.stderr.strip()) if part)
-        msg = f"Roslyn static producer scanner failed with exit {result.returncode}"
+        msg = f"Roslyn static producer scanner failed with exit {result.returncode}: {shlex.join(tool_args)}"
         if details:
             msg = f"{msg}\n{details}"
         raise RuntimeError(msg)
     return _load_inventory(output_path)
-
-
-def _subprocess_output_text(value: str | bytes | None) -> str:
-    if value is None:
-        return ""
-    if isinstance(value, bytes):
-        return value.decode(errors="replace").strip()
-    return value.strip()
 
 
 def _load_inventory(path: Path) -> InventoryPayload:

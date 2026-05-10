@@ -18,18 +18,13 @@ if TYPE_CHECKING:
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT / "scripts"))
+
+from scripts.dotnet_tool_runner import build_tool_project  # noqa: E402
+
 FIXTURE_SOURCE = Path(__file__).resolve().parent / "fixtures" / "roslyn_semantic_probe"
 WRAPPER = REPO_ROOT / "scripts" / "roslyn_semantic_probe.py"
-PROBE_DLL = (
-    REPO_ROOT
-    / "scripts"
-    / "tools"
-    / "RoslynSemanticProbe"
-    / "bin"
-    / "Release"
-    / "net10.0"
-    / "RoslynSemanticProbe.dll"
-)
+PROBE_PROJECT_PATH = REPO_ROOT / "scripts" / "tools" / "RoslynSemanticProbe" / "RoslynSemanticProbe.csproj"
 DEFAULT_MANAGED_DIR = (
     Path.home()
     / "Library"
@@ -146,6 +141,11 @@ def load_payload_validator() -> Callable[[str], object]:
     """Load the wrapper payload validator without invoking the CLI."""
     namespace = runpy.run_path(str(WRAPPER), run_name="roslyn_semantic_probe_test")
     return cast("Callable[[str], object]", namespace["_load_payload"])
+
+
+def ensure_probe_dll() -> Path:
+    """Build the semantic probe into the configured artifacts root and return its DLL."""
+    return build_tool_project(PROBE_PROJECT_PATH)
 
 
 def test_owner_filter_excludes_same_name_false_positive() -> None:
@@ -357,7 +357,7 @@ def test_external_reference_option_preserves_existing_resolution() -> None:
         "--owner",
         "XRL.UI.Popup",
         "--reference",
-        str(PROBE_DLL),
+        str(ensure_probe_dll()),
         "--limit",
         "20",
     )
