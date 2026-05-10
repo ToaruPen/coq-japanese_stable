@@ -112,6 +112,17 @@ public sealed class QudMenuBottomContextTranslationPatchTests
         Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo(expected));
     }
 
+    [Test]
+    public void Prefix_PreservesMalformedNestedHotkeyLabel()
+    {
+        var source = "{{y|{{W|Esc}} Back}}";
+        var context = new DummyQudMenuBottomContext(source);
+
+        Assert.DoesNotThrow(() => RunRefreshButtonsWithPatch(context));
+
+        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo(source));
+    }
+
     private static void RunRefreshButtonsWithPatch(DummyQudMenuBottomContext context)
     {
         var harmonyId = CreateHarmonyId();
