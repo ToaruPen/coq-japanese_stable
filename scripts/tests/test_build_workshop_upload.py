@@ -17,6 +17,7 @@ from scripts.build_workshop_upload import (
     load_metadata,
     main,
     render_vdf,
+    validate_workshop_changenote,
     vdf_escape,
     verify_workshop_upload_staging,
 )
@@ -156,6 +157,48 @@ def test_render_vdf_rejects_quotes_in_description_or_changenote(tmp_path: Path) 
             content_folder=content_folder,
             preview_file=preview_file,
             changenote='v0.2.0 "release"',
+            description="Caves of Qud 日本語化",
+        )
+
+
+def test_validate_workshop_changenote_rejects_internal_release_terms() -> None:
+    """Workshop changenotes must stay player-facing rather than implementation-facing."""
+    findings = validate_workshop_changenote(
+        "v0.2.51 / abc123\n\n"
+        "主な改善:\n"
+        "- InventoryLine の TMP override を調整しました。\n"
+        "- CI preflight を強化しました。",
+    )
+
+    assert findings == [
+        "Workshop changenote contains internal term 'CI'; rewrite it in player-facing terms",
+        "Workshop changenote contains internal term 'InventoryLine'; rewrite it in player-facing terms",
+        "Workshop changenote contains internal term 'override'; rewrite it in player-facing terms",
+        "Workshop changenote contains internal term 'preflight'; rewrite it in player-facing terms",
+        "Workshop changenote contains internal term 'TMP'; rewrite it in player-facing terms",
+    ]
+
+
+def test_render_vdf_rejects_internal_terms_in_changenote(tmp_path: Path) -> None:
+    """VDF generation refuses changenotes that describe repo internals."""
+    content_folder = tmp_path / "QudJP"
+    content_folder.mkdir()
+    preview_file = content_folder / "preview.png"
+    preview_file.write_bytes(b"png")
+    metadata = WorkshopMetadata(
+        appid="333640",
+        publishedfileid="3718988020",
+        title="Caves of Qud Japanese Mod",
+        visibility="0",
+        description_file=None,
+    )
+
+    with pytest.raises(ValueError, match="InventoryLine"):
+        render_vdf(
+            metadata,
+            content_folder=content_folder,
+            preview_file=preview_file,
+            changenote="v0.2.51 / abc123\n\n主な改善:\n- InventoryLine の表示を修正しました。",
             description="Caves of Qud 日本語化",
         )
 

@@ -46,6 +46,11 @@ When asked to update the Steam Workshop item, do this first:
    and packaging changes. If the release includes localization changes, the
    first substantive section of the Steam changenote must describe those
    translation changes in user-facing terms before pipeline or tooling notes.
+   Compare the draft against the previous Workshop changenote before upload and
+   remove items that were already shipped. Rewrite repository-only terms such as
+   patch class names, scanner jargon, CI/preflight work, and staging mechanics
+   into the player-visible behavior they enabled, or omit them if there is no
+   player-visible effect.
 9. Download and verify the GitHub Release ZIP with the local release ZIP
    download recipe.
    `just release-zip-check` also runs the release DLL marker gate: the shipped
@@ -271,6 +276,15 @@ Use the previous release ref recorded before tag creation or documented in the
 release evidence report. Do not recompute it with `git describe` after the new
 release tag exists.
 
+Before building the VDF, compare the changenote with the previous shipped
+Workshop changenote and the recorded release range. Do not repeat bullets that
+were already published in the previous release. The Workshop changenote is for
+players, so describe visible translation, UI, runtime, and packaging outcomes.
+Do not include repository-only details such as owner/sink routes,
+`InventoryLine`, `TMP`, Harmony patch internals, CI/preflight changes,
+release-note fragments, staging mechanics, Roslyn probes, or semantic-probe
+status unless they are rewritten as a concrete player-facing effect.
+
 Download and verify the draft GitHub Release ZIP:
 
 ```bash
@@ -351,7 +365,9 @@ just workshop-upload-preflight \
 
 This catches stale `dist/workshop/QudJP/` contents, mismatched Workshop item
 IDs, mismatched `contentfolder`, escaped newline sequences, and escaped double
-quotes before Steam can reject or publish the wrong upload.
+quotes before Steam can reject or publish the wrong upload. It also rejects
+known implementation-facing terms in the changenote so the final Steam text
+does not expose repository jargon.
 
 ## Post-Publish Smoke
 
