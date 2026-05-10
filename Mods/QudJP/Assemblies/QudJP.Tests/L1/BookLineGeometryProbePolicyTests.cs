@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 
 namespace QudJP.Tests.L1;
@@ -11,9 +12,13 @@ public sealed class BookLineGeometryProbePolicyTests
     {
         var source = ReadSource("Patches", "BookLineTranslationPatch.cs");
 
-        Assert.That(source, Does.Contain("BookLineGeometryObservability.TryBuildSnapshot("));
-        Assert.That(source, Does.Contain("RuntimeDiagnostics.LogVerboseProbe(() => logLine!)"));
-        Assert.That(source, Does.Contain("DelayedBookLineGeometryProbeScheduler.ScheduleSnapshot("));
+        AssertContainsInOrder(
+            source,
+            "#if QUDJP_DEV_BUILD",
+            "BookLineGeometryObservability.TryBuildSnapshot(",
+            "RuntimeDiagnostics.LogVerboseProbe(() => logLine!)",
+            "DelayedBookLineGeometryProbeScheduler.ScheduleSnapshot(",
+            "#endif");
         Assert.That(source, Does.Not.Contain("BookLineTextLayoutAdjustment.Apply("));
         Assert.That(source, Does.Not.Contain("DelayedBookLineTextLayoutAdjustmentScheduler.ScheduleAdjustment("));
     }
@@ -38,6 +43,48 @@ public sealed class BookLineGeometryProbePolicyTests
         });
     }
 
+    [Test]
+    public void BookLineGeometryObservability_IsDevOnlyAndReleaseBuildIsNoOp()
+    {
+        var source = ReadSource("Observability", "BookLineGeometryObservability.cs");
+
+        AssertContainsInOrder(
+            source,
+            "#if HAS_TMP && QUDJP_DEV_BUILD",
+            "internal static bool TryBuildSnapshot(",
+            "try",
+            "BookLineGeometryProbe/v1",
+            "catch (Exception ex)",
+            "Trace.TraceError(",
+            "logLine = null;",
+            "return false;",
+            "#else",
+            "internal static bool TryBuildSnapshot(",
+            "logLine = null;",
+            "return false;",
+            "#endif");
+    }
+
+    [Test]
+    public void DelayedBookLineGeometryProbeScheduler_IsDevOnlyAndReleaseBuildIsNoOp()
+    {
+        var source = ReadSource("Observability", "DelayedBookLineGeometryProbeScheduler.cs");
+
+        AssertContainsInOrder(
+            source,
+            "#if HAS_TMP && QUDJP_DEV_BUILD",
+            "internal static void ScheduleSnapshot(",
+            "runner == null",
+            "host != null",
+            "component == null",
+            "#else",
+            "internal static void ScheduleSnapshot(",
+            "_ = lineInstance;",
+            "_ = source;",
+            "_ = rendered;",
+            "#endif");
+    }
+
     private static string ReadSource(params string[] parts)
     {
         var pathParts = new string[parts.Length + 5];
@@ -48,5 +95,16 @@ public sealed class BookLineGeometryProbePolicyTests
         pathParts[4] = "src";
         Array.Copy(parts, 0, pathParts, 5, parts.Length);
         return File.ReadAllText(Path.Combine(pathParts));
+    }
+
+    private static void AssertContainsInOrder(string source, params string[] snippets)
+    {
+        var searchStart = 0;
+        foreach (var snippet in snippets)
+        {
+            var index = source.IndexOf(snippet, searchStart, StringComparison.Ordinal);
+            Assert.That(index, Is.GreaterThanOrEqualTo(0), $"Missing snippet after index {searchStart}: {snippet}");
+            searchStart = index + snippet.Length;
+        }
     }
 }

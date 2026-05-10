@@ -1,6 +1,7 @@
 #if HAS_TMP && QUDJP_DEV_BUILD
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
@@ -28,50 +29,60 @@ internal static class BookLineGeometryObservability
         string phase = "setData")
     {
         logLine = null;
-        if (bookLineInstance is not Component component)
+
+        try
         {
+            if (bookLineInstance is not Component component)
+            {
+                return false;
+            }
+
+            var bucket = component.gameObject.name + ":" + Truncate(rendered, 32);
+            var hitCount = BucketCounts.AddOrUpdate(
+                bucket,
+                1,
+                static (_, current) => current < int.MaxValue ? current + 1 : int.MaxValue);
+            if (hitCount > MaxLogsPerBucket)
+            {
+                return false;
+            }
+
+            var builder = new StringBuilder();
+            var rootTypeName = component.GetType().FullName;
+            if (rootTypeName is null)
+            {
+                rootTypeName = component.GetType().Name;
+            }
+
+            builder.Append("[QudJP] BookLineGeometryProbe/v1: root='");
+            builder.Append(Escape(component.gameObject.name));
+            builder.Append("' rootType='");
+            builder.Append(Escape(rootTypeName));
+            builder.Append("' phase='");
+            builder.Append(Escape(phase));
+            builder.Append("' sourceLen=");
+            builder.Append((source?.Length ?? 0).ToString(CultureInfo.InvariantCulture));
+            builder.Append(" renderedLen=");
+            builder.Append((rendered?.Length ?? 0).ToString(CultureInfo.InvariantCulture));
+            builder.Append(" source='");
+            builder.Append(Truncate(source ?? string.Empty, 160));
+            builder.Append("' rendered='");
+            builder.Append(Truncate(rendered ?? string.Empty, 160));
+            builder.Append('\'');
+
+            AppendTmpTexts(builder, component);
+            AppendLegacyTexts(builder, component);
+            AppendHierarchy(builder, component.transform);
+
+            logLine = builder.ToString();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: BookLineGeometryObservability.TryBuildSnapshot failed: {0}", ex);
+            logLine = null;
             return false;
         }
-
-        var bucket = component.gameObject.name + ":" + Truncate(rendered, 32);
-        var hitCount = BucketCounts.AddOrUpdate(
-            bucket,
-            1,
-            static (_, current) => current < int.MaxValue ? current + 1 : int.MaxValue);
-        if (hitCount > MaxLogsPerBucket)
-        {
-            return false;
-        }
-
-        var builder = new StringBuilder();
-        var rootTypeName = component.GetType().FullName;
-        if (rootTypeName is null)
-        {
-            rootTypeName = component.GetType().Name;
-        }
-
-        builder.Append("[QudJP] BookLineGeometryProbe/v1: root='");
-        builder.Append(Escape(component.gameObject.name));
-        builder.Append("' rootType='");
-        builder.Append(Escape(rootTypeName));
-        builder.Append("' phase='");
-        builder.Append(Escape(phase));
-        builder.Append("' sourceLen=");
-        builder.Append((source?.Length ?? 0).ToString(CultureInfo.InvariantCulture));
-        builder.Append(" renderedLen=");
-        builder.Append((rendered?.Length ?? 0).ToString(CultureInfo.InvariantCulture));
-        builder.Append(" source='");
-        builder.Append(Truncate(source ?? string.Empty, 160));
-        builder.Append("' rendered='");
-        builder.Append(Truncate(rendered ?? string.Empty, 160));
-        builder.Append('\'');
-
-        AppendTmpTexts(builder, component);
-        AppendLegacyTexts(builder, component);
-        AppendHierarchy(builder, component.transform);
-
-        logLine = builder.ToString();
-        return true;
     }
 
     private static void AppendTmpTexts(StringBuilder builder, Component root)

@@ -29,7 +29,7 @@ internal static class DelayedBookLineGeometryProbeScheduler
         }
 
         var runner = EnsureHost();
-        if (runner is null)
+        if (runner == null)
         {
             Scheduled.TryRemove(lineId, out _);
             PendingSnapshots.TryRemove(lineId, out _);
@@ -41,7 +41,7 @@ internal static class DelayedBookLineGeometryProbeScheduler
 
     private static ProbeHost? EnsureHost()
     {
-        if (host is not null)
+        if (host != null)
         {
             return host;
         }
@@ -62,7 +62,7 @@ internal static class DelayedBookLineGeometryProbeScheduler
             yield return new WaitForEndOfFrame();
             yield return null;
 
-            if (component is null || !PendingSnapshots.TryGetValue(lineId, out var snapshot))
+            if (component == null || !PendingSnapshots.TryGetValue(lineId, out var snapshot))
             {
                 yield break;
             }
