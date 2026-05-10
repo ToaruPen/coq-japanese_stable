@@ -154,6 +154,46 @@ public sealed class MainMenuRowTranslationPatchTests
         });
     }
 
+    [Test]
+    public void MainMenuRowObservability_BuildsLegacyTextAndFontProbe()
+    {
+        var row = new DummyObservableMainMenuRow
+        {
+            data = new DummyObservableMainMenuOption { Text = "New Game" },
+            text = new DummyObservableUnityText
+            {
+                text = "ニューゲーム",
+                font = new DummyObservableFont { name = "Noto Sans CJK JP" },
+            },
+        };
+
+        var built = MainMenuRowObservability.TryBuildStateForTests(row, "postfix", out var logLine);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(built, Is.True);
+            Assert.That(logLine, Does.Contain("[QudJP] MainMenuRowProbe/postfix:"));
+            Assert.That(logLine, Does.Contain("dataText='New Game'"));
+            Assert.That(logLine, Does.Contain("rowText='ニューゲーム'"));
+            Assert.That(logLine, Does.Contain("font='Noto Sans CJK JP'"));
+        });
+    }
+
+    [Test]
+    public void MainMenuRowObservability_FailsClosed_WhenProbeMemberThrows()
+    {
+        var built = MainMenuRowObservability.TryBuildStateForTests(
+            new DummyThrowingObservableMainMenuRow(),
+            "postfix",
+            out var logLine);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(built, Is.False);
+            Assert.That(logLine, Is.Null);
+        });
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
@@ -217,5 +257,36 @@ public sealed class MainMenuRowTranslationPatchTests
         }
 
         public new DummyUnityText text { get; } = new();
+    }
+
+    private sealed class DummyObservableMainMenuRow
+    {
+        public DummyObservableMainMenuOption? data;
+
+        public DummyObservableUnityText? text;
+    }
+
+#pragma warning disable S1144, S2325
+    private sealed class DummyThrowingObservableMainMenuRow
+    {
+        public DummyObservableMainMenuOption data => throw new InvalidOperationException("simulated runtime probe failure");
+    }
+#pragma warning restore S1144, S2325
+
+    private sealed class DummyObservableMainMenuOption
+    {
+        public string Text = string.Empty;
+    }
+
+    private sealed class DummyObservableUnityText
+    {
+        public string text = string.Empty;
+
+        public DummyObservableFont? font;
+    }
+
+    private sealed class DummyObservableFont
+    {
+        public string name = string.Empty;
     }
 }
