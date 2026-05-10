@@ -20,6 +20,11 @@ Localization asset changes also need a changed release-note fragment under
 `docs/release-notes/unreleased/*.md`; `just pr-check` verifies that requirement
 against `origin/main..HEAD`.
 
+When CI reports a release-note failure, reproduce it with the exact base and
+head revisions shown in the CI log before trusting a moving local ref such as
+`origin/main`. A stale local remote can make `origin/main..HEAD` look different
+from the server-side PR range.
+
 ## Review checkout
 
 Before addressing PR review feedback, confirm the checkout matches the PR head
