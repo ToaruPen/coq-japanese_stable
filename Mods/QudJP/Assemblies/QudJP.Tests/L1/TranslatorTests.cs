@@ -19,12 +19,14 @@ public sealed class TranslatorTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
     }
 
     [TearDown]
     public void TearDown()
     {
         Translator.ResetForTests();
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
 
         if (Directory.Exists(tempDirectory))
         {
@@ -330,20 +332,21 @@ public sealed class TranslatorTests
     }
 
     [Test]
-    public void Translate_LogsLoadSummary_AndDuplicateKeyDiagnostics()
+    public void Translate_LogsLoadSummary_AndTracksTextChangingDuplicateKeyDiagnostics()
     {
         WriteDictionary(
             "first.ja.json",
             ("Hello", "こんにちは"),
             ("Inventory", "インベントリ"));
         WriteDictionary("second.ja.json", ("Hello", "やあ"));
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(false);
 
         var output = TestTraceHelper.CaptureTrace(() => Assert.That(Translator.Translate("Hello"), Is.EqualTo("やあ")));
         var summary = Translator.GetDictionaryLoadSummaryForTests();
 
         Assert.Multiple(() =>
         {
-            Assert.That(output, Does.Contain("text-changing duplicate key overrides: Hello=1"));
+            Assert.That(output, Does.Not.Contain("duplicate key"));
             Assert.That(output, Does.Contain("Translator: loaded 2 unique entries from 2 file(s)."));
             Assert.That(summary, Does.Contain("3 raw entries"));
             Assert.That(summary, Does.Contain("1 text-changing duplicate key override(s)"));
@@ -421,23 +424,21 @@ public sealed class TranslatorTests
     }
 
     [Test]
-    public void Translate_LogsFirstDuplicateOverrideDetails_OncePerKey()
+    public void Translate_DoesNotWriteTextChangingDuplicateOverrideDetailsToNormalTrace()
     {
         WriteDictionary("first.ja.json", ("Hello", "こんにちは"));
         WriteDictionary("second.ja.json", ("Hello", "やあ"));
         WriteDictionary("third.ja.json", ("Hello", "もしもし"));
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(false);
 
         var output = TestTraceHelper.CaptureTrace(() =>
             Assert.That(Translator.Translate("Hello"), Is.EqualTo("もしもし")));
 
         Assert.Multiple(() =>
         {
-            Assert.That(
-                output,
-                Does.Contain("Translator duplicate key 'Hello': overridden by"));
-            Assert.That(output, Does.Contain("second.ja.json"));
-            Assert.That(output, Does.Contain("first.ja.json"));
-            Assert.That(CountOccurrences(output, "Translator duplicate key 'Hello':"), Is.EqualTo(1));
+            Assert.That(output, Does.Not.Contain("Translator duplicate key 'Hello':"));
+            Assert.That(output, Does.Not.Contain("text-changing duplicate key overrides"));
+            Assert.That(Translator.GetDictionaryLoadSummaryForTests(), Does.Contain("2 text-changing duplicate key override(s)"));
         });
     }
 
@@ -460,20 +461,6 @@ public sealed class TranslatorTests
         return value
             .Replace("\\", "\\\\", StringComparison.Ordinal)
             .Replace("\"", "\\\"", StringComparison.Ordinal);
-    }
-
-    private static int CountOccurrences(string text, string value)
-    {
-        var count = 0;
-        var startIndex = 0;
-
-        while ((startIndex = text.IndexOf(value, startIndex, StringComparison.Ordinal)) >= 0)
-        {
-            count++;
-            startIndex += value.Length;
-        }
-
-        return count;
     }
 
     private void WriteRawDictionary(string fileName, string content)

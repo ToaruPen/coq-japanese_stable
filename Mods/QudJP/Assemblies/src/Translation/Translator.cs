@@ -318,11 +318,11 @@ public static class Translator
                 duplicateKeyCounts[entry.Key!] = duplicateCount;
                 if (duplicateCount == 1)
                 {
-                    Trace.TraceWarning(
-                        "QudJP: Translator duplicate key '{0}': overridden by '{1}' (was in '{2}').",
-                        entry.Key,
-                        filePath,
-                        previousFile);
+                    var duplicateKey = entry.Key;
+                    RuntimeDiagnostics.LogVerboseProbe(() =>
+                        "QudJP: Translator duplicate key '" + duplicateKey
+                        + "': overridden by '" + filePath
+                        + "' (was in '" + previousFile + "').");
                 }
             }
 
@@ -356,9 +356,10 @@ public static class Translator
             return;
         }
 
-        Trace.TraceWarning(
-            "QudJP: Translator text-changing duplicate key overrides: {0}.",
-            ObservabilityHelpers.BuildRankedCounterBody(duplicateKeyCounts, 10));
+        RuntimeDiagnostics.LogVerboseProbe(() =>
+            "QudJP: Translator text-changing duplicate key overrides: "
+            + ObservabilityHelpers.BuildRankedCounterBody(duplicateKeyCounts, 10)
+            + ".");
     }
 
     private static void LogObservability(string message)
