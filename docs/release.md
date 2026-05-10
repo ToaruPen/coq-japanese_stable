@@ -62,7 +62,8 @@ When asked to update the Steam Workshop item, do this first:
 
 Use `just` recipes for release commands so local runs match the repo task
 runner. The recipes execute Python through `uv run python`; do not rewrite the
-documented workflow just because a local shell lacks `python3.12`.
+documented workflow just because a local shell lacks a versioned Python
+executable.
 
 For each Workshop update, copy
 `docs/reports/templates/workshop-release.md` to a dated file under

@@ -96,6 +96,49 @@ public sealed class QudMenuBottomContextTranslationPatchTests
         }
     }
 
+    [Test]
+    public void NormalizeItemTexts_TranslatesAndFlattensNestedHotkeyLabel()
+    {
+        WriteScopedMenuActionDictionary(("back", "戻る"));
+
+        var context = new DummyQudMenuBottomContext("{{y|{{W|[Esc]}} Back}}");
+
+        QudMenuBottomContextTranslationPatch.NormalizeItemTexts(context);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("{{W|[Esc]}} {{y|戻る}}"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(QudMenuBottomContextTranslationPatch),
+                    "Popup.ProducerMenuItem.HotkeyLabel"),
+                Is.GreaterThan(0));
+        });
+    }
+
+    [Test]
+    public void NormalizeItemTexts_FlattensNestedHotkeyLabel_WhenLabelIsUntranslated()
+    {
+        var context = new DummyQudMenuBottomContext("{{y|{{W|[Esc]}} Back}}");
+
+        QudMenuBottomContextTranslationPatch.NormalizeItemTexts(context);
+
+        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("{{W|[Esc]}} {{y|Back}}"));
+    }
+
+    [TestCase("{{y|{{W|[~Accept]}} Continue}}", "{{W|[~Accept]}} {{y|続ける}}")]
+    [TestCase("{{y|{{W|[space]}} Continue}}", "{{W|[space]}} {{y|続ける}}")]
+    public void NormalizeItemTexts_PreservesNestedHotkeyTokenAndBrackets(string source, string expected)
+    {
+        WriteScopedMenuActionDictionary(("continue", "続ける"));
+
+        var context = new DummyQudMenuBottomContext(source);
+
+        QudMenuBottomContextTranslationPatch.NormalizeItemTexts(context);
+
+        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo(expected));
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
@@ -115,6 +158,20 @@ public sealed class QudMenuBottomContextTranslationPatchTests
     }
 
     private void WriteDictionary(params (string key, string text)[] entries)
+    {
+        WriteDictionaryFile(Path.Combine(tempDirectory, "bottom-context.ja.json"), entries);
+        Translator.SetDictionaryDirectoryForTests(tempDirectory);
+    }
+
+    private void WriteScopedMenuActionDictionary(params (string key, string text)[] entries)
+    {
+        var scopedDirectory = Path.Combine(tempDirectory, "Scoped");
+        Directory.CreateDirectory(scopedDirectory);
+        WriteDictionaryFile(Path.Combine(scopedDirectory, "ui-menu-actions.ja.json"), entries);
+        Translator.SetDictionaryDirectoryForTests(tempDirectory);
+    }
+
+    private static void WriteDictionaryFile(string path, params (string key, string text)[] entries)
     {
         var builder = new StringBuilder();
         builder.Append('{');
@@ -137,9 +194,7 @@ public sealed class QudMenuBottomContextTranslationPatchTests
         builder.Append("]}");
         builder.AppendLine();
 
-        var path = Path.Combine(tempDirectory, "bottom-context.ja.json");
         File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
-        Translator.SetDictionaryDirectoryForTests(tempDirectory);
     }
 
     private static string EscapeJson(string value)

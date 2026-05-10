@@ -49,7 +49,9 @@ just sync-mod
 
 - Prefer extending an existing script over creating a parallel tool for the same job.
 - Keep error paths explicit and actionable; these scripts support validation and deployment.
-- Python baseline is `3.12+`, with typed and documented public interfaces.
+- Python compatibility baseline is `3.12+`; the preferred local interpreter is
+  pinned by the repo `.python-version`. Run tools through `uv run python` or
+  `just` recipes instead of a versioned Python executable.
 - Use `just semantic-probe` for ad hoc Roslyn owner checks over decompiled C#.
   Keep it exploratory: promote recurring or artifact-grade surfaces into a
   purpose-built inventory instead of treating the generic probe as a tracked
@@ -86,19 +88,19 @@ just annals-pattern-extract-tracked
 
 $EDITOR scripts/_artifacts/annals/candidates_pending.json   # human review
 
-python3.12 scripts/validate_candidate_schema.py \
+uv run python scripts/validate_candidate_schema.py \
   scripts/_artifacts/annals/candidates_pending.json
 
-python3.12 scripts/translate_annals_patterns.py \
+uv run python scripts/translate_annals_patterns.py \
   scripts/_artifacts/annals/candidates_pending.json
 
 $EDITOR scripts/_artifacts/annals/candidates_pending.json   # translation review (optional)
 
-python3.12 scripts/merge_annals_patterns.py \
+uv run python scripts/merge_annals_patterns.py \
   scripts/_artifacts/annals/candidates_pending.json
 ```
 
-**Prerequisites:** dotnet 10.0.x SDK, Python 3.12 with `pytest`/`ruff`, Node.js
+**Prerequisites:** dotnet 10.0.x SDK, `uv` with the repo-pinned Python, Node.js
 with `@ast-grep/cli`, `codex` CLI authenticated via `codex login`, decompiled
 game source under `~/dev/coq-decompiled_stable/`. Apple Silicon hosts need
 Rosetta for the live verification flow.

@@ -360,13 +360,13 @@ changenote は `scripts/release_notes.py render` で
 
 ```bash
 # 最新の dist/QudJP-v*.zip から dist/workshop/ を生成
-python3.12 scripts/build_workshop_upload.py \
+uv run python scripts/build_workshop_upload.py \
   --changenote-file /tmp/qudjp-workshop-changenote.txt
 
 # GitHub Release から取得・検証した release ZIP を指定
 just download-release-zip 0.2.2
 
-python3.12 scripts/build_workshop_upload.py \
+uv run python scripts/build_workshop_upload.py \
   --release-zip dist/release-assets/v0.2.2/QudJP-v0.2.2.zip \
   --changenote-file /tmp/qudjp-workshop-changenote.txt
 ```
@@ -407,12 +407,12 @@ Steam credentials、2FA material、login script は repo に置かないでく�
 
 ```bash
 # Localization 差分に release-note fragment が含まれるか確認
-python3.12 scripts/release_notes.py check-fragment \
+uv run python scripts/release_notes.py check-fragment \
   --base-ref origin/main \
   --head-ref HEAD
 
 # CHANGELOG / Workshop changenote の下書きを生成
-python3.12 scripts/release_notes.py render \
+uv run python scripts/release_notes.py render \
   --version 0.1.0 \
   --git-hash "$(git rev-parse --short=12 HEAD)" \
   --date YYYY-MM-DD \
@@ -420,7 +420,7 @@ python3.12 scripts/release_notes.py render \
   --workshop-output /tmp/qudjp-workshop-changenote.txt
 
 # GitHub Release notes 用に確定済み CHANGELOG entry を抽出
-python3.12 scripts/release_notes.py extract-changelog \
+uv run python scripts/release_notes.py extract-changelog \
   --version 0.2.2 \
   --output /tmp/qudjp-github-release-notes.md
 ```
@@ -445,12 +445,12 @@ draft release を作成する前にこのチェックを実行します。
 
 ```bash
 # tag / manifest / CHANGELOG / main 到達性を確認
-python3.12 scripts/release_identity.py \
+uv run python scripts/release_identity.py \
   --tag v0.2.2 \
   --main-ref origin/main
 
 # release ZIP 内 manifest も確認
-python3.12 scripts/release_identity.py \
+uv run python scripts/release_identity.py \
   --tag v0.2.2 \
   --release-zip dist/QudJP-v0.2.2.zip \
   --main-ref origin/main
