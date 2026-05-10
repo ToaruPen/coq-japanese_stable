@@ -3,6 +3,7 @@
 python := "uv run python"
 decompiled_root := env_var("HOME") + "/dev/coq-decompiled_stable"
 decompiled_annals_root := env_var("HOME") + "/dev/coq-decompiled_stable/XRL.Annals"
+dotnet_artifacts_root := env_var_or_default("QUDJP_DOTNET_ARTIFACTS_ROOT", ".artifacts/dotnet")
 
 default:
   just --list
@@ -27,15 +28,45 @@ rebuild-dev:
 
 # Run fast C# L1 tests.
 test-l1:
-  dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L1
+  #!/usr/bin/env bash
+  set -euo pipefail
+  mkdir -p "{{dotnet_artifacts_root}}/test-l1"
+  run_root="$(mktemp -d "{{dotnet_artifacts_root}}/test-l1/run.XXXXXX")"
+  trap 'rm -rf "$run_root"' EXIT
+  mkdir -p "$run_root/a/b"
+  cp -R Mods/QudJP/Localization "$run_root/Localization"
+  artifacts_root="$run_root/a/b"
+  dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-dependencies --artifacts-path "$artifacts_root"
+  test_dll="$artifacts_root/bin/QudJP.Tests/release/QudJP.Tests.dll"
+  dotnet test "$test_dll" --filter "TestCategory=L1"
 
 # Run C# L2 tests.
 test-l2:
-  dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L2
+  #!/usr/bin/env bash
+  set -euo pipefail
+  mkdir -p "{{dotnet_artifacts_root}}/test-l2"
+  run_root="$(mktemp -d "{{dotnet_artifacts_root}}/test-l2/run.XXXXXX")"
+  trap 'rm -rf "$run_root"' EXIT
+  mkdir -p "$run_root/a/b"
+  cp -R Mods/QudJP/Localization "$run_root/Localization"
+  artifacts_root="$run_root/a/b"
+  dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-dependencies --artifacts-path "$artifacts_root"
+  test_dll="$artifacts_root/bin/QudJP.Tests/release/QudJP.Tests.dll"
+  dotnet test "$test_dll" --filter "TestCategory=L2"
 
 # Run C# L2 tests that require the game DLL reference.
 test-l2g:
-  dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L2G
+  #!/usr/bin/env bash
+  set -euo pipefail
+  mkdir -p "{{dotnet_artifacts_root}}/test-l2g"
+  run_root="$(mktemp -d "{{dotnet_artifacts_root}}/test-l2g/run.XXXXXX")"
+  trap 'rm -rf "$run_root"' EXIT
+  mkdir -p "$run_root/a/b"
+  cp -R Mods/QudJP/Localization "$run_root/Localization"
+  artifacts_root="$run_root/a/b"
+  dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-dependencies --artifacts-path "$artifacts_root"
+  test_dll="$artifacts_root/bin/QudJP.Tests/release/QudJP.Tests.dll"
+  dotnet test "$test_dll" --filter "TestCategory=L2G"
 
 # Run Python static checks.
 python-check:
@@ -302,37 +333,129 @@ pr-check base_ref="origin/main" head_ref="HEAD": ci-dotnet roslyn-build python-c
 
 # Build and test QudJP with the same Release configuration used by CI.
 ci-dotnet:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  mkdir -p "{{dotnet_artifacts_root}}/ci-dotnet" "{{dotnet_artifacts_root}}/locks"
+  run_root="$(mktemp -d "{{dotnet_artifacts_root}}/ci-dotnet/run.XXXXXX")"
+  lock_dir="{{dotnet_artifacts_root}}/locks/qudjp-csproj.lock"
+  lock_owner="$lock_dir/owner.pid"
+  lock_acquired=0
+  lock_timeout_seconds=600
+  lock_owner_grace_seconds=2
+  is_stale_path() {
+    if path_mtime="$(stat -c %Y "$1" 2>/dev/null)"; then
+      :
+    else
+      path_mtime="$(stat -f %m "$1" 2>/dev/null || printf 0)"
+    fi
+    if [ "$path_mtime" = 0 ]; then
+      return 1
+    fi
+    (( $(date +%s) - path_mtime >= lock_owner_grace_seconds ))
+  }
+  remove_stale_lock() {
+    if [ -e "$lock_dir" ] && [ ! -d "$lock_dir" ]; then
+      rm -f "$lock_dir"
+      return 0
+    fi
+    if [ ! -d "$lock_dir" ]; then
+      return 1
+    fi
+    if [ ! -f "$lock_owner" ]; then
+      if is_stale_path "$lock_dir" && [ -d "$lock_dir" ] && [ ! -f "$lock_owner" ]; then
+        rmdir "$lock_dir" 2>/dev/null && return 0
+      fi
+      return 1
+    fi
+    owner_pid="$(cat "$lock_owner" 2>/dev/null || true)"
+    if [[ "$owner_pid" =~ ^[0-9]+$ ]] && kill -0 "$owner_pid" 2>/dev/null; then
+      return 1
+    fi
+    if [[ ! "$owner_pid" =~ ^[0-9]+$ ]] && ! is_stale_path "$lock_owner"; then
+      return 1
+    fi
+    rm -f "$lock_owner"
+    rmdir "$lock_dir" 2>/dev/null && return 0
+    return 1
+  }
+  cleanup() {
+    rm -rf "$run_root"
+    if [ "$lock_acquired" = 1 ]; then
+      rm -f "$lock_owner"
+      rmdir "$lock_dir" 2>/dev/null || true
+    fi
+  }
+  trap cleanup EXIT
+  lock_start=$SECONDS
+  while ! mkdir "$lock_dir" 2>/dev/null; do
+    if remove_stale_lock; then
+      continue
+    fi
+    if (( SECONDS - lock_start >= lock_timeout_seconds )); then
+      printf 'error: timed out waiting for dotnet build lock: %s\n' "$lock_dir" >&2
+      exit 1
+    fi
+    sleep 0.2
+  done
+  printf '%s\n' "$$" > "$lock_owner"
+  lock_acquired=1
   dotnet build Mods/QudJP/Assemblies/QudJP.csproj --configuration Release
-  dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release
-  dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-build
+  rm -f "$lock_owner"
+  rmdir "$lock_dir"
+  lock_acquired=0
+  mkdir -p "$run_root/a/b"
+  cp -R Mods/QudJP/Localization "$run_root/Localization"
+  artifacts_root="$run_root/a/b"
+  dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-dependencies --artifacts-path "$artifacts_root"
+  dotnet test "$artifacts_root/bin/QudJP.Tests/release/QudJP.Tests.dll"
 
 # Build the Annals Roslyn extractor.
 roslyn-build-annals:
-  dotnet build scripts/tools/AnnalsPatternExtractor/AnnalsPatternExtractor.csproj --configuration Release --no-incremental
+  #!/usr/bin/env bash
+  set -euo pipefail
+  mkdir -p "{{dotnet_artifacts_root}}/roslyn-annals"
+  artifacts_root="$(mktemp -d "{{dotnet_artifacts_root}}/roslyn-annals/run.XXXXXX")"
+  trap 'rm -rf "$artifacts_root"' EXIT
+  dotnet build scripts/tools/AnnalsPatternExtractor/AnnalsPatternExtractor.csproj --configuration Release --no-incremental --artifacts-path "$artifacts_root"
 
 # Build the static producer Roslyn scanner.
 roslyn-build-static-producer:
-  dotnet build scripts/tools/StaticProducerInventoryScanner/StaticProducerInventoryScanner.csproj --configuration Release --no-incremental
+  #!/usr/bin/env bash
+  set -euo pipefail
+  mkdir -p "{{dotnet_artifacts_root}}/roslyn-static-producer"
+  artifacts_root="$(mktemp -d "{{dotnet_artifacts_root}}/roslyn-static-producer/run.XXXXXX")"
+  trap 'rm -rf "$artifacts_root"' EXIT
+  dotnet build scripts/tools/StaticProducerInventoryScanner/StaticProducerInventoryScanner.csproj --configuration Release --no-incremental --artifacts-path "$artifacts_root"
 
 # Build the semantic probe Roslyn CLI.
 roslyn-build-semantic-probe:
-  dotnet build scripts/tools/RoslynSemanticProbe/RoslynSemanticProbe.csproj --configuration Release --no-incremental
+  #!/usr/bin/env bash
+  set -euo pipefail
+  mkdir -p "{{dotnet_artifacts_root}}/roslyn-semantic-probe"
+  artifacts_root="$(mktemp -d "{{dotnet_artifacts_root}}/roslyn-semantic-probe/run.XXXXXX")"
+  trap 'rm -rf "$artifacts_root"' EXIT
+  dotnet build scripts/tools/RoslynSemanticProbe/RoslynSemanticProbe.csproj --configuration Release --no-incremental --artifacts-path "$artifacts_root"
 
 # Build the text construction Roslyn inventory tool.
 roslyn-build-text-construction:
-  dotnet build scripts/tools/TextConstructionInventory/TextConstructionInventory.csproj --configuration Release --no-incremental
+  #!/usr/bin/env bash
+  set -euo pipefail
+  mkdir -p "{{dotnet_artifacts_root}}/roslyn-text-construction"
+  artifacts_root="$(mktemp -d "{{dotnet_artifacts_root}}/roslyn-text-construction/run.XXXXXX")"
+  trap 'rm -rf "$artifacts_root"' EXIT
+  dotnet build scripts/tools/TextConstructionInventory/TextConstructionInventory.csproj --configuration Release --no-incremental --artifacts-path "$artifacts_root"
 
 # Build all repo-local Roslyn analysis tools.
 roslyn-build: roslyn-build-annals roslyn-build-static-producer roslyn-build-semantic-probe roslyn-build-text-construction
 
 # Run focused pytest coverage for repo-local Roslyn analysis tools.
 roslyn-test:
-  uv run pytest scripts/tests/test_extract_annals_patterns.py scripts/tests/test_roslyn_extractor_smoke.py scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_roslyn_text_construction_inventory.py scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_text_construction_surface_policy.py -q
+  uv run pytest scripts/tests/test_extract_annals_patterns.py scripts/tests/test_parallel_dotnet_contract.py scripts/tests/test_roslyn_extractor_smoke.py scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_roslyn_text_construction_inventory.py scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_text_construction_surface_policy.py -q
 
 # Run Ruff for Roslyn Python files and basedpyright for the typed static-producer gate.
 roslyn-python-check:
-  ruff check scripts/extract_annals_patterns.py scripts/roslyn_semantic_probe.py scripts/scan_static_producer_inventory.py scripts/static_producer_closure.py scripts/text_construction_surface_policy.py scripts/tests/test_extract_annals_patterns.py scripts/tests/test_roslyn_extractor_smoke.py scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_roslyn_text_construction_inventory.py scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_text_construction_surface_policy.py
-  uvx basedpyright scripts/roslyn_semantic_probe.py scripts/scan_static_producer_inventory.py scripts/static_producer_closure.py scripts/text_construction_surface_policy.py scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_text_construction_surface_policy.py scripts/tests/test_roslyn_extractor_smoke.py
+  ruff check scripts/dotnet_tool_runner.py scripts/extract_annals_patterns.py scripts/roslyn_semantic_probe.py scripts/scan_static_producer_inventory.py scripts/static_producer_closure.py scripts/text_construction_surface_policy.py scripts/tests/test_extract_annals_patterns.py scripts/tests/test_parallel_dotnet_contract.py scripts/tests/test_roslyn_extractor_smoke.py scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_roslyn_text_construction_inventory.py scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_text_construction_surface_policy.py
+  uvx basedpyright scripts/dotnet_tool_runner.py scripts/roslyn_semantic_probe.py scripts/scan_static_producer_inventory.py scripts/static_producer_closure.py scripts/text_construction_surface_policy.py scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_text_construction_surface_policy.py scripts/tests/test_roslyn_extractor_smoke.py
 
 # Run build, focused tests, and static checks for Roslyn analysis tooling.
 roslyn-check: roslyn-build roslyn-test roslyn-python-check
@@ -388,10 +511,15 @@ annals-pattern-extract-tracked source_root=decompiled_annals_root include="Reshe
 text-construction-inventory source_root=decompiled_root output="/tmp/roslyn-text-construction-inventory.json" summary_output="":
   #!/usr/bin/env bash
   set -euo pipefail
+  mkdir -p "{{dotnet_artifacts_root}}/text-construction-inventory"
+  artifacts_root="$(mktemp -d "{{dotnet_artifacts_root}}/text-construction-inventory/run.XXXXXX")"
+  trap 'rm -rf "$artifacts_root"' EXIT
+  dotnet build scripts/tools/TextConstructionInventory/TextConstructionInventory.csproj --configuration Release --artifacts-path "$artifacts_root"
+  tool_dll="$artifacts_root/bin/TextConstructionInventory/release/TextConstructionInventory.dll"
   if [ -n {{quote(summary_output)}} ]; then
-    dotnet run --project scripts/tools/TextConstructionInventory/TextConstructionInventory.csproj -- --source-root {{quote(source_root)}} --output {{quote(output)}} --summary-output {{quote(summary_output)}}
+    dotnet "$tool_dll" --source-root {{quote(source_root)}} --output {{quote(output)}} --summary-output {{quote(summary_output)}}
   else
-    dotnet run --project scripts/tools/TextConstructionInventory/TextConstructionInventory.csproj -- --source-root {{quote(source_root)}} --output {{quote(output)}}
+    dotnet "$tool_dll" --source-root {{quote(source_root)}} --output {{quote(output)}}
   fi
 
 # Generate and classify player-visible text-construction surfaces for C# owner work.

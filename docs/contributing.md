@@ -358,6 +358,7 @@ pytest scripts/tests/
 
 - **C# 純粋ロジック** → L1 テスト
 - **新規 Harmony パッチ** → L2G でターゲット解決を固定 → L2 で DummyTarget 挙動を固定 → 実装 → L1/L2 をパス → L3 で表示確認
+- **既存 Harmony パッチの target resolution 変更** → 新規パッチと同じく L2G で実 DLL の declaring type / return type / parameter list を固定する
 - **Python スクリプト** → `scripts/tests/test_<script_name>.py`
 - **ローカライゼーション資産** → 自動テスト対象外。手動検証 + L3
 
@@ -374,6 +375,8 @@ pytest scripts/tests/
 3. 実装する
 4. 必要なら L2G で hook inventory / namespace probe を追加する
 5. 最後に L3 で表示確認する
+
+既存パッチの `TargetMethod()` / `TargetMethods()` / resolver helper を変更する場合も、手順 1 は省略しないでください。実装ファイルが既存でも、実ゲーム DLL への bind 契約は新しく変わっています。
 
 L3 の表示確認は、[`RULES.md`](RULES.md) の runtime evidence ルールに従って fresh log と再現メモを残してください。
 
@@ -420,6 +423,8 @@ PR を出すと GitHub Actions (`.github/workflows/ci.yml`) が変更ファイ�
 - CI は同一 ref の古い実行を自動キャンセルし、NuGet / pip キャッシュを使います。branch protection 用の `build` job は最後に各 lane の結果を集約する互換チェックです。
 
 **全ジョブがパスしないとマージできません。**
+
+ローカルの同一 worktree では `just test-l1` / `just test-l2` / `just test-l2g` を並列実行しないでください。各カテゴリは `obj/` と `bin/` の出力先を共有するため、同時ビルドすると `CS2012` などの DLL file lock で失敗することがあります。CI の matrix 実行は runner が隔離されているため、この制約の対象外です。
 
 ---
 

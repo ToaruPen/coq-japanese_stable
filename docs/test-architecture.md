@@ -37,7 +37,7 @@ issue-357 の Roslyn pilot は静的 SoT 収集であり、この文書の runti
 **実行コマンド**:
 
 ```bash
-dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L1
+just test-l1
 ```
 
 ---
@@ -115,9 +115,16 @@ L2 の基本方針は次の順序です。
 **実行コマンド**:
 
 ```bash
-dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L2
-dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter TestCategory=L2G
+just test-l2
+just test-l2g
 ```
+
+`just test-l1` / `just test-l2` / `just test-l2g` は、各 recipe ごとに
+`QUDJP_DOTNET_ARTIFACTS_ROOT` 配下の一時 artifacts root を作り、
+`QudJP.Tests.csproj` を `--no-dependencies` で build してから生成済み
+`QudJP.Tests.dll` を test します。これにより別 shell から L1/L2/L2G を
+parallel 実行しても、MSBuild/Roslyn の `bin` / `obj` 書き込みが競合しません。
+既定の artifacts root は `.artifacts/dotnet` です。
 
 ---
 
