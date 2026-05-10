@@ -69,6 +69,11 @@ def _extract_vdf_field_value(vdf_text: str, key: str) -> str | None:
     return None
 
 
+def _vdf_contains_field(vdf_text: str, key: str) -> bool:
+    """Return whether the VDF text contains a field marker for the given key."""
+    return f'"{key}" "' in vdf_text
+
+
 def _append_vdf_mismatch(
     findings: list[str],
     fields: dict[str, str],
@@ -100,9 +105,15 @@ def verify_workshop_vdf(vdf_path: Path, *, content_folder: Path) -> list[str]:
     _append_vdf_mismatch(findings, fields, "previewfile", expected_preview_file, unescape_actual=True)
     if r"\"" in vdf_text:
         findings.append('VDF contains escaped double quote sequences (\\"); remove double quotes from text fields')
-    text_field_values = {
-        key: _extract_vdf_field_value(vdf_text, key) or fields.get(key, "") for key in _VDF_TEXT_FIELD_KEYS
-    }
+    text_field_values: dict[str, str] = {}
+    for key in _VDF_TEXT_FIELD_KEYS:
+        extracted_value = _extract_vdf_field_value(vdf_text, key)
+        if extracted_value is None:
+            if _vdf_contains_field(vdf_text, key):
+                findings.append(f"VDF {key} field is malformed or unterminated")
+            text_field_values[key] = fields.get(key, "")
+            continue
+        text_field_values[key] = extracted_value
     if any(r"\n" in value for value in text_field_values.values()):
         findings.append(r"VDF contains escaped newline sequences (\n); use literal multiline text")
     changenote = text_field_values.get("changenote", "")
