@@ -16,23 +16,10 @@ public static class PickGameObjectLineTranslationPatch
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
     {
-        var targetType = GameTypeResolver.FindType("Qud.UI.PickGameObjectLine", "PickGameObjectLine");
-        if (targetType is null)
-        {
-            Trace.TraceError("QudJP: PickGameObjectLineTranslationPatch target type not found.");
-            return null;
-        }
-
-        var frameworkDataElementType = GameTypeResolver.FindType("XRL.UI.Framework.FrameworkDataElement", "FrameworkDataElement");
-        var method = frameworkDataElementType is null
-            ? null
-            : AccessTools.Method(targetType, "setData", new[] { frameworkDataElementType });
-        if (method is null)
-        {
-            Trace.TraceError("QudJP: PickGameObjectLineTranslationPatch.setData(FrameworkDataElement) not found.");
-        }
-
-        return method;
+        return FrameworkDataElementSetDataTargetResolver.Resolve(
+            Context,
+            "Qud.UI.PickGameObjectLine",
+            "PickGameObjectLine");
     }
 
     public static bool Prefix(object? __instance, object? data)

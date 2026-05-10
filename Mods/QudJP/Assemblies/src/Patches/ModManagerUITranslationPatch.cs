@@ -46,7 +46,7 @@ public static class ModManagerUITranslationPatch
                 return;
             }
 
-            var translated = ModMenuLineTranslationPatch.TranslateAuthorLabel(current!);
+            var translated = ModManagementSemanticPipeline.TranslateAuthorLabel(current!);
             if (!string.Equals(translated, current, StringComparison.Ordinal))
             {
                 DynamicTextObservability.RecordTransform(Context, "ModManagerUI.AuthorText", current!, translated);

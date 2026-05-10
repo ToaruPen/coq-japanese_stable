@@ -12,11 +12,6 @@ public static class ModScrollerOneTranslationPatch
 {
     private const string Context = nameof(ModScrollerOneTranslationPatch);
     private const string TargetTypeName = "Qud.UI.ModScrollerOne";
-    private const string DisabledScriptsSuffix =
-        " contains scripts and has been permanently disabled in the options.\n{{K|(Options->Modding->Allow scripting mods)}}";
-    private const string DisabledScriptsSuffixJa =
-        " にはスクリプトが含まれていますが、オプションで永続的に無効化されています。\n{{K|(オプション->Mod->スクリプトModを許可)}}";
-
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
@@ -45,10 +40,9 @@ public static class ModScrollerOneTranslationPatch
             foreach (var instruction in instructions)
             {
                 if (instruction.opcode == OpCodes.Ldstr
-                    && instruction.operand is string literal
-                    && string.Equals(literal, DisabledScriptsSuffix, StringComparison.Ordinal))
+                    && instruction.operand is string literal)
                 {
-                    instruction.operand = DisabledScriptsSuffixJa;
+                    instruction.operand = ModManagementSemanticPipeline.TranslateDisabledScriptsSuffix(literal);
                 }
 
                 translated.Add(instruction);
@@ -65,8 +59,6 @@ public static class ModScrollerOneTranslationPatch
 
     internal static string TranslateLiteralForTests(string source)
     {
-        return string.Equals(source, DisabledScriptsSuffix, StringComparison.Ordinal)
-            ? DisabledScriptsSuffixJa
-            : source;
+        return ModManagementSemanticPipeline.TranslateDisabledScriptsSuffix(source);
     }
 }

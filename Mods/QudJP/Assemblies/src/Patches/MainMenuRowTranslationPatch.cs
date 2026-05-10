@@ -16,23 +16,7 @@ public static class MainMenuRowTranslationPatch
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
     {
-        var targetType = GameTypeResolver.FindType("MainMenuRow", "MainMenuRow");
-        if (targetType is null)
-        {
-            Trace.TraceError("QudJP: MainMenuRowTranslationPatch target type not found.");
-            return null;
-        }
-
-        var frameworkDataElementType = GameTypeResolver.FindType("XRL.UI.Framework.FrameworkDataElement", "FrameworkDataElement");
-        var method = frameworkDataElementType is null
-            ? null
-            : AccessTools.Method(targetType, "setData", new[] { frameworkDataElementType });
-        if (method is null)
-        {
-            Trace.TraceError("QudJP: MainMenuRowTranslationPatch.setData(FrameworkDataElement) not found.");
-        }
-
-        return method;
+        return FrameworkDataElementSetDataTargetResolver.Resolve(Context, "MainMenuRow", "MainMenuRow");
     }
 
     public static void Prefix(object? data)

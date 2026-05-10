@@ -67,6 +67,8 @@ public sealed class TargetMethodResolutionTests
         "System.Int32",
         "System.Int32",
     })]
+    [TestCase(typeof(CharacterAttributeLineTranslationPatch), "setData", "Qud.UI.CharacterAttributeLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
+    [TestCase(typeof(CharacterEffectLineTranslationPatch), "setData", "Qud.UI.CharacterEffectLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(PickGameObjectScreenTranslationPatch), "UpdateViewFromData", "Qud.UI.PickGameObjectScreen", "System.Void", new[] { "System.Boolean" })]
     [TestCase(typeof(PickItemShowPickerTitleTranslationPatch), "ShowPicker", "XRL.UI.PickItem", "XRL.World.GameObject", new[]
     {

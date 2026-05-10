@@ -19,23 +19,7 @@ public static class HelpRowTranslationPatch
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
     {
-        var targetType = GameTypeResolver.FindType("Qud.UI.HelpRow", "HelpRow");
-        if (targetType is null)
-        {
-            Trace.TraceError("QudJP: HelpRowTranslationPatch target type not found.");
-            return null;
-        }
-
-        var frameworkDataElementType = GameTypeResolver.FindType("XRL.UI.Framework.FrameworkDataElement", "FrameworkDataElement");
-        var method = frameworkDataElementType is null
-            ? null
-            : AccessTools.Method(targetType, "setData", new[] { frameworkDataElementType });
-        if (method is null)
-        {
-            Trace.TraceError("QudJP: HelpRowTranslationPatch.setData(FrameworkDataElement) not found.");
-        }
-
-        return method;
+        return FrameworkDataElementSetDataTargetResolver.Resolve(Context, "Qud.UI.HelpRow", "HelpRow");
     }
 
     public static bool Prefix(object? __instance, object? data)

@@ -61,27 +61,16 @@ public static class PopupGetPopupOptionTranslationPatch
                 return;
             }
 
-            var textField = AccessTools.Field(__result.GetType(), "text");
-            if (textField is null || textField.FieldType != typeof(string))
-            {
-                return;
-            }
-
-            var current = textField.GetValue(__result) as string;
-            if (string.IsNullOrEmpty(current))
-            {
-                return;
-            }
-
-            var translated = PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute(current!, Context);
-            if (!string.Equals(translated, current, StringComparison.Ordinal))
-            {
-                textField.SetValue(__result, translated);
-            }
+            PopupTextFieldTranslator.TryTranslateTextField(__result, TranslatePopupMenuItemText);
         }
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: {0}.Postfix failed: {1}", Context, ex);
         }
+    }
+
+    private static string TranslatePopupMenuItemText(string source)
+    {
+        return PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute(source, Context);
     }
 }

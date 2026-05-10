@@ -74,7 +74,7 @@ COVERED_OWNER_FAMILIES: Final = (
                 ("TryTranslateQueuedMessage", '"Heal"'),
             ),
             EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/CombatAndLogMessageQueuePatch.cs",
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
                 ("GameObjectHealTranslationPatch.TryTranslateQueuedMessage",),
             ),
             EvidenceFile(
@@ -102,7 +102,7 @@ COVERED_OWNER_FAMILIES: Final = (
                 ("TryTranslatePerformOfferTradeWaterMessage",),
             ),
             EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/PopupShowTranslationPatch.cs",
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
                 ("TryTranslatePerformOfferTradeWaterMessage",),
             ),
             EvidenceFile(
@@ -134,7 +134,7 @@ COVERED_OWNER_FAMILIES: Final = (
                 ("TryTranslateQueuedMessage", "PetEitherOr.Explode"),
             ),
             EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/CombatAndLogMessageQueuePatch.cs",
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
                 ("PetEitherOrExplodeTranslationPatch.TryTranslateQueuedMessage",),
             ),
             EvidenceFile(
@@ -166,7 +166,7 @@ COVERED_OWNER_FAMILIES: Final = (
                 ("TryTranslateQueuedMessage", "Zone.WindChange"),
             ),
             EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/CombatAndLogMessageQueuePatch.cs",
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
                 ("ZoneWindChangeTranslationPatch.TryTranslateQueuedMessage",),
             ),
             EvidenceFile(
@@ -195,7 +195,7 @@ COVERED_OWNER_FAMILIES: Final = (
                 ("TryTranslatePopupMessage", '"GainSP"'),
             ),
             EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/PopupShowTranslationPatch.cs",
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
                 ("GameObjectStatPopupTranslationPatch.TryTranslatePopupMessage",),
             ),
             EvidenceFile(
@@ -227,7 +227,7 @@ COVERED_OWNER_FAMILIES: Final = (
                 ("TryTranslatePopupMessage", '"GainEgo"'),
             ),
             EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/PopupShowTranslationPatch.cs",
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
                 ("GameObjectStatPopupTranslationPatch.TryTranslatePopupMessage",),
             ),
             EvidenceFile(
@@ -259,7 +259,7 @@ COVERED_OWNER_FAMILIES: Final = (
                 ("TryTranslatePopupMessage", '"LoseEgo"'),
             ),
             EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/PopupShowTranslationPatch.cs",
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
                 ("GameObjectStatPopupTranslationPatch.TryTranslatePopupMessage",),
             ),
             EvidenceFile(
@@ -291,7 +291,7 @@ COVERED_OWNER_FAMILIES: Final = (
                 ("TryTranslatePopupMessage", '"GainIntelligence"'),
             ),
             EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/PopupShowTranslationPatch.cs",
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
                 ("GameObjectStatPopupTranslationPatch.TryTranslatePopupMessage",),
             ),
             EvidenceFile(
@@ -323,7 +323,7 @@ COVERED_OWNER_FAMILIES: Final = (
                 ("TryTranslatePopupMessage", '"GainWillpower"'),
             ),
             EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/PopupShowTranslationPatch.cs",
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
                 ("GameObjectStatPopupTranslationPatch.TryTranslatePopupMessage",),
             ),
             EvidenceFile(
@@ -653,7 +653,7 @@ COVERED_OWNER_FAMILIES: Final = (
                 ("TryTranslateQueuedMessage", "ExecuteMove", "PlayerDanceRitual.Queue"),
             ),
             EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/CombatAndLogMessageQueuePatch.cs",
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
                 ("PlayerDanceRitualTranslationPatch.TryTranslateQueuedMessage",),
             ),
             EvidenceFile(
@@ -684,7 +684,7 @@ COVERED_OWNER_FAMILIES: Final = (
                 ("TryTranslateQueuedMessage", "PassStep", "PlayerDanceRitual.Queue"),
             ),
             EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/CombatAndLogMessageQueuePatch.cs",
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
                 ("PlayerDanceRitualTranslationPatch.TryTranslateQueuedMessage",),
             ),
             EvidenceFile(
@@ -714,7 +714,7 @@ COVERED_OWNER_FAMILIES: Final = (
                 ("TryTranslateQueuedMessage", "FailStep", "PlayerDanceRitual.Queue"),
             ),
             EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/CombatAndLogMessageQueuePatch.cs",
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
                 ("PlayerDanceRitualTranslationPatch.TryTranslateQueuedMessage",),
             ),
             EvidenceFile(

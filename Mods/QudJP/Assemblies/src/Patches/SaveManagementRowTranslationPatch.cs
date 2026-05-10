@@ -15,23 +15,7 @@ public static class SaveManagementRowTranslationPatch
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
     {
-        var targetType = GameTypeResolver.FindType("SaveManagementRow", "SaveManagementRow");
-        if (targetType is null)
-        {
-            Trace.TraceError("QudJP: SaveManagementRowTranslationPatch target type not found.");
-            return null;
-        }
-
-        var frameworkDataElementType = GameTypeResolver.FindType("XRL.UI.Framework.FrameworkDataElement", "FrameworkDataElement");
-        var method = frameworkDataElementType is null
-            ? null
-            : AccessTools.Method(targetType, "setData", new[] { frameworkDataElementType });
-        if (method is null)
-        {
-            Trace.TraceError("QudJP: SaveManagementRowTranslationPatch.setData(FrameworkDataElement) not found.");
-        }
-
-        return method;
+        return FrameworkDataElementSetDataTargetResolver.Resolve(Context, "SaveManagementRow", "SaveManagementRow");
     }
 
     public static void Postfix(object? __instance)

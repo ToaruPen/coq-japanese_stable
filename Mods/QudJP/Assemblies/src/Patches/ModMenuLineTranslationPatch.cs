@@ -11,9 +11,6 @@ public static class ModMenuLineTranslationPatch
 {
     private const string Context = nameof(ModMenuLineTranslationPatch);
     private const string TargetTypeName = "Qud.UI.ModMenuLine";
-    private const string AuthorPrefix = "by ";
-    private const string JapaneseAuthorPrefix = "作者: ";
-
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
     {
@@ -50,7 +47,7 @@ public static class ModMenuLineTranslationPatch
                 return;
             }
 
-            var translated = TranslateAuthorLabel(current!);
+            var translated = ModManagementSemanticPipeline.TranslateAuthorLabel(current!);
             if (!string.Equals(translated, current, StringComparison.Ordinal))
             {
                 DynamicTextObservability.RecordTransform(Context, "ModMenuLine.AuthorText", current!, translated);
@@ -79,45 +76,18 @@ public static class ModMenuLineTranslationPatch
                 continue;
             }
 
-            var translated = TranslateTagText(source);
+            var translated = ModManagementSemanticPipeline.TranslateTagText(source);
             if (!string.Equals(translated, source, StringComparison.Ordinal))
             {
+                DynamicTextObservability.RecordTransform(Context, "ModMenuLine.TagText", source, translated);
                 tags[index] = translated;
             }
         }
     }
 
-    internal static string TranslateTagText(string source)
-    {
-        if (string.IsNullOrEmpty(source))
-        {
-            return source;
-        }
+    internal static string TranslateTagText(string source) =>
+        ModManagementSemanticPipeline.TranslateTagText(source);
 
-        if (!StringHelpers.TryGetTranslationExactOrLowerAscii(source, out var translated))
-        {
-            return source;
-        }
-
-        DynamicTextObservability.RecordTransform(Context, "ModMenuLine.TagText", source, translated);
-        return translated;
-    }
-
-    internal static string TranslateAuthorLabel(string source)
-    {
-        if (string.IsNullOrEmpty(source))
-        {
-            return source;
-        }
-
-        var colorMarkerIndex = source.IndexOf(AuthorPrefix, StringComparison.Ordinal);
-        if (colorMarkerIndex < 0)
-        {
-            return source;
-        }
-
-        return source.Substring(0, colorMarkerIndex)
-            + JapaneseAuthorPrefix
-            + source.Substring(colorMarkerIndex + AuthorPrefix.Length);
-    }
+    internal static string TranslateAuthorLabel(string source) =>
+        ModManagementSemanticPipeline.TranslateAuthorLabel(source);
 }
