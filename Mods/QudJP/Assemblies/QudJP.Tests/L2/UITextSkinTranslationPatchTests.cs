@@ -385,7 +385,7 @@ public sealed class UITextSkinTranslationPatchTests
             ("lock", "ロック"));
         WriteDictionaryFile(
             "ui-pick-target.ja.json",
-            ("Look", "調べる"),
+            ("Look", "見る"),
             ("interact", "インタラクト"),
             ("walk", "歩く"),
             ("select", "選択"));
@@ -395,7 +395,7 @@ public sealed class UITextSkinTranslationPatchTests
             source,
             nameof(PickTargetWindowTextTranslator));
 
-        Assert.That(translated, Is.EqualTo("調べる | ESC | (F1) ロック | space インタラクト | W 歩く | Enter-選択"));
+        Assert.That(translated, Is.EqualTo("見る | ESC | (F1) ロック | space インタラクト | W 歩く | Enter-選択"));
     }
 
     [Test]
@@ -406,7 +406,7 @@ public sealed class UITextSkinTranslationPatchTests
             ("lock", "ロック"));
         WriteDictionaryFile(
             "ui-pick-target.ja.json",
-            ("Look", "調べる"),
+            ("Look", "見る"),
             ("interact", "操作する"),
             ("walk", "歩く"));
 

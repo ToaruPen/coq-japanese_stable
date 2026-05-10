@@ -37,6 +37,8 @@
 set -euo pipefail
 
 GAME_BINARY="${HOME}/Games/CavesOfQud-stable-ref/CoQ.app/Contents/MacOS/CoQ"
+export SteamAppId="333640"
+export SteamGameId="333640"
 
 # ---------------------------------------------------------------------------
 # --help

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import shutil
 import sys
@@ -124,6 +125,13 @@ def vdf_escape(value: str) -> str:
     return normalized.replace("\\", "\\\\").replace('"', '\\"')
 
 
+def _reject_double_quotes(field: str, value: str) -> None:
+    """Reject text that steamcmd's KeyValues parser can misparse after escaping."""
+    if '"' in value:
+        msg = f"Workshop {field} must not contain double quote characters"
+        raise ValueError(msg)
+
+
 def render_vdf(
     metadata: WorkshopMetadata,
     *,
@@ -136,6 +144,9 @@ def render_vdf(
     if not changenote.strip():
         msg = "Workshop changenote must be non-empty"
         raise ValueError(msg)
+    _reject_double_quotes("changenote", changenote)
+    if description is not None:
+        _reject_double_quotes("description", description)
 
     fields = [
         ("appid", metadata.appid),
@@ -241,6 +252,102 @@ def create_workshop_staging(release_zip: Path, staging_root: Path) -> tuple[Path
         msg = f"Workshop preview file not found after staging: {preview_file}"
         raise FileNotFoundError(msg)
     return content_folder, preview_file
+
+
+def _read_zip_text(zip_path: Path, member: str) -> str:
+    """Read a UTF-8 text member from a release ZIP."""
+    with zipfile.ZipFile(zip_path) as zf:
+        return zf.read(member).decode("utf-8")
+
+
+def _read_zip_bytes(zip_path: Path, member: str) -> bytes:
+    """Read a binary member from a release ZIP."""
+    with zipfile.ZipFile(zip_path) as zf:
+        return zf.read(member)
+
+
+def _sha256_bytes(data: bytes) -> str:
+    """Return the SHA256 digest for in-memory bytes."""
+    return hashlib.sha256(data).hexdigest()
+
+
+def _release_zip_file_hashes(release_zip: Path) -> dict[str, str]:
+    """Return SHA256 by release-relative path for files under QudJP/."""
+    hashes: dict[str, str] = {}
+    with zipfile.ZipFile(release_zip) as zf:
+        for info in zf.infolist():
+            if info.is_dir():
+                continue
+            if not info.filename.startswith("QudJP/"):
+                msg = f"release ZIP member is outside QudJP/: {info.filename}"
+                raise ValueError(msg)
+            relative_path = info.filename.removeprefix("QudJP/")
+            hashes[relative_path] = _sha256_bytes(zf.read(info))
+    return hashes
+
+
+def _staged_file_hashes(content_folder: Path) -> dict[str, str]:
+    """Return SHA256 by staged content-relative path."""
+    if not content_folder.is_dir():
+        return {}
+    return {
+        path.relative_to(content_folder).as_posix(): _sha256_bytes(path.read_bytes())
+        for path in sorted(content_folder.rglob("*"))
+        if path.is_file()
+    }
+
+
+def verify_workshop_upload_staging(
+    release_zip: Path,
+    content_folder: Path,
+    *,
+    expected_version: str | None = None,
+) -> list[str]:
+    """Verify staged Workshop content still matches the release ZIP to upload."""
+    findings: list[str] = []
+    release_zip = release_zip.resolve()
+    content_folder = content_folder.resolve()
+
+    release_manifest = json.loads(_read_zip_text(release_zip, "QudJP/manifest.json"))
+    if not isinstance(release_manifest, dict):
+        msg = f"release manifest must be a JSON object: {release_zip}"
+        raise TypeError(msg)
+    release_version = str(release_manifest.get("Version", "<missing>"))
+    version = expected_version or release_version
+
+    manifest_path = content_folder / "manifest.json"
+    if not manifest_path.is_file():
+        findings.append("staged manifest not found")
+    else:
+        staged_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if not isinstance(staged_manifest, dict):
+            findings.append("staged manifest is not a JSON object")
+        else:
+            staged_version = str(staged_manifest.get("Version", "<missing>"))
+            if staged_version != version:
+                findings.append(f"staged manifest version mismatch: expected {version}, got {staged_version}")
+
+    release_dll_sha = _sha256_bytes(_read_zip_bytes(release_zip, "QudJP/Assemblies/QudJP.dll"))
+    staged_dll = content_folder / "Assemblies" / "QudJP.dll"
+    if not staged_dll.is_file():
+        findings.append("staged QudJP.dll not found")
+    elif _sha256_bytes(staged_dll.read_bytes()) != release_dll_sha:
+        findings.append("staged QudJP.dll SHA256 does not match release ZIP")
+
+    release_hashes = _release_zip_file_hashes(release_zip)
+    staged_hashes = _staged_file_hashes(content_folder)
+    release_files = set(release_hashes)
+    staged_files = set(staged_hashes)
+    findings.extend(f"staged content missing file: {path}" for path in sorted(release_files - staged_files))
+    findings.extend(f"staged content has extra file: {path}" for path in sorted(staged_files - release_files))
+    hash_mismatch_suppressed = {"Assemblies/QudJP.dll"}
+    findings.extend(
+        f"staged file hash mismatch: {path}"
+        for path in sorted((release_files & staged_files) - hash_mismatch_suppressed)
+        if release_hashes[path] != staged_hashes[path]
+    )
+
+    return findings
 
 
 def _read_description(metadata: WorkshopMetadata) -> str | None:
