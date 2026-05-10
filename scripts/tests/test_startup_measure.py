@@ -31,7 +31,8 @@ def test_parse_startup_log_text_extracts_timing_markers() -> None:
     log = (
         "[QudJP] Build marker: marker\n"
         "[QudJP] StartupTiming/v1: phase=harmony.prepare_patch_types elapsed_ms=12.346 "
-        r"detail=patch_types\=140\;\ prepared\=139\;\ skipped\=1"
+        r"detail=patch_types\=140\;\ prepared\=139\;\ skipped\=1\;\ delta\=-1\;\ ratio\=1.5"
+        r"\;\ nan\=nan\;\ inf\=inf\;\ \=3"
         "\n[QudJP] StartupTiming/v1: phase=harmony.apply_patch_types elapsed_ms=100.500 "
         r"detail=patch_types\=140\;applied\=139\;skipped\=1"
         "\nINFO - Finished 'Loading Naming.xml' task in 42ms"
@@ -46,21 +47,25 @@ def test_parse_startup_log_text_extracts_timing_markers() -> None:
     assert len(parsed.timings) == 3
     assert parsed.timings[0].phase == "harmony.prepare_patch_types"
     assert parsed.timings[0].elapsed_ms == 12.346
-    assert parsed.timings[0].detail == "patch_types=140; prepared=139; skipped=1"
+    assert parsed.timings[0].detail == (
+        "patch_types=140; prepared=139; skipped=1; delta=-1; ratio=1.5; nan=nan; inf=inf; =3"
+    )
     assert parsed.timings[2].phase == "game.loading.naming_xml"
     assert parsed.timings[2].elapsed_ms == 42.0
     assert parsed.timings[2].detail == "Naming.xml"
-    metric_names = [metric.name for metric in parsed.metrics]
-    assert len(metric_names) == len(set(metric_names))
-    assert {metric.name: metric.value for metric in parsed.metrics} == {
-        "harmony.prepare_patch_types.patch_types": 140,
-        "harmony.prepare_patch_types.prepared": 139,
-        "harmony.prepare_patch_types.skipped": 1,
-        "harmony.apply_patch_types.patch_types": 140,
-        "harmony.apply_patch_types.applied": 139,
-        "harmony.apply_patch_types.skipped": 1,
-        "harmony.patched_methods": 590,
-    }
+    assert sorted((metric.name, metric.value) for metric in parsed.metrics) == sorted(
+        [
+            ("harmony.prepare_patch_types.patch_types", 140),
+            ("harmony.prepare_patch_types.prepared", 139),
+            ("harmony.prepare_patch_types.skipped", 1),
+            ("harmony.prepare_patch_types.delta", -1),
+            ("harmony.prepare_patch_types.ratio", 1.5),
+            ("harmony.apply_patch_types.patch_types", 140),
+            ("harmony.apply_patch_types.applied", 139),
+            ("harmony.apply_patch_types.skipped", 1),
+            ("harmony.patched_methods", 590),
+        ],
+    )
 
 
 def test_summarize_iterations_groups_by_profile_and_phase() -> None:

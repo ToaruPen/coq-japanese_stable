@@ -36,6 +36,10 @@ public static class MainMenuRowTranslationPatch
         try
         {
             _ = TryApplyLegacyFontToRowText(__instance);
+            RuntimeDiagnostics.LogVerboseProbe(
+                () => MainMenuRowObservability.TryBuildState(__instance, "postfix", out var logLine)
+                    ? logLine
+                    : null);
         }
         catch (Exception ex)
         {

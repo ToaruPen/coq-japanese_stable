@@ -154,6 +154,52 @@ public sealed class MainMenuRowTranslationPatchTests
         });
     }
 
+    [Test]
+    public void MainMenuRowObservability_BuildsLegacyTextAndFontProbe()
+    {
+        var longDataText = "New\r\nGame " + new string('A', 100);
+        var row = new DummyObservableMainMenuRow
+        {
+            data = new DummyObservableMainMenuOption { Text = longDataText },
+            text = new DummyObservableUnityText
+            {
+                text = "ニュー\r\nゲーム",
+                font = new DummyObservableFont { name = "Noto Sans CJK JP" },
+            },
+        };
+
+        var built = MainMenuRowObservability.TryBuildStateForTests(row, "postfix", out var logLine);
+        var truncatedDataText = "New\\r\\nGame " + new string('A', 86) + "...";
+        var expectedLogLine =
+            "[QudJP] MainMenuRowProbe/postfix: " +
+            $"rowType='{typeof(DummyObservableMainMenuRow).FullName}' " +
+            $"textType='{typeof(DummyObservableUnityText).FullName}' " +
+            $"dataText='{truncatedDataText}' " +
+            "rowText='ニュー\\r\\nゲーム' " +
+            "font='Noto Sans CJK JP'";
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(built, Is.True);
+            Assert.That(logLine, Is.EqualTo(expectedLogLine));
+        });
+    }
+
+    [Test]
+    public void MainMenuRowObservability_FailsClosed_WhenProbeMemberThrows()
+    {
+        var built = MainMenuRowObservability.TryBuildStateForTests(
+            new DummyThrowingObservableMainMenuRow(),
+            "postfix",
+            out var logLine);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(built, Is.False);
+            Assert.That(logLine, Is.Null);
+        });
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
@@ -217,5 +263,36 @@ public sealed class MainMenuRowTranslationPatchTests
         }
 
         public new DummyUnityText text { get; } = new();
+    }
+
+    private sealed class DummyObservableMainMenuRow
+    {
+        public DummyObservableMainMenuOption? data;
+
+        public DummyObservableUnityText? text;
+    }
+
+#pragma warning disable S1144, S2325
+    private sealed class DummyThrowingObservableMainMenuRow
+    {
+        public DummyObservableMainMenuOption data => throw new InvalidOperationException("simulated runtime probe failure");
+    }
+#pragma warning restore S1144, S2325
+
+    private sealed class DummyObservableMainMenuOption
+    {
+        public string Text = string.Empty;
+    }
+
+    private sealed class DummyObservableUnityText
+    {
+        public string text = string.Empty;
+
+        public DummyObservableFont? font;
+    }
+
+    private sealed class DummyObservableFont
+    {
+        public string name = string.Empty;
     }
 }

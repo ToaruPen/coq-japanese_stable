@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import re
 import shlex
 import shutil
@@ -854,12 +855,18 @@ def _parse_harmony_count_metrics(
         if "=" not in part:
             continue
         key, value = (field.strip() for field in part.split("=", maxsplit=1))
-        if not value.isdigit():
+        if not key:
+            continue
+        try:
+            numeric_value = float(value)
+        except ValueError:
+            continue
+        if not math.isfinite(numeric_value):
             continue
         metrics.append(
             StartupMetricEntry(
                 name=f"{phase}.{key}",
-                value=float(value),
+                value=numeric_value,
                 line_number=line_number,
             ),
         )
