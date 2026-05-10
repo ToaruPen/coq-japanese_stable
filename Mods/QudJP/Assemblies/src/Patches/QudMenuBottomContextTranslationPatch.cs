@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -10,6 +11,10 @@ namespace QudJP.Patches;
 public static class QudMenuBottomContextTranslationPatch
 {
     private const string TargetTypeName = "Qud.UI.QudMenuBottomContext";
+    private static readonly Regex NestedHotkeyLabelPattern =
+        new Regex(
+            @"^\{\{(?<labelColor>[A-Za-z]+)\|\{\{(?<hotkeyColor>[A-Za-z]+)\|(?<hotkey>\[[^\]]+\])\}\}\s*(?<label>.*?)\}\}$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
 
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
@@ -88,18 +93,46 @@ public static class QudMenuBottomContextTranslationPatch
                 continue;
             }
 
+            var normalized = NormalizeNestedHotkeyLabel(current!);
             var translated = PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute(
-                current!,
+                normalized,
                 nameof(QudMenuBottomContextTranslationPatch));
+            var displayText = ColorAwareTranslationComposer.Strip(translated).stripped;
 
-            if (string.Equals(translated, current, StringComparison.Ordinal))
+            if (string.Equals(displayText, current, StringComparison.Ordinal))
             {
                 continue;
             }
 
-            textField.SetValue(item, translated);
+            textField.SetValue(item, displayText);
             items[index] = item;
         }
+    }
+
+    private static string NormalizeNestedHotkeyLabel(string source)
+    {
+        var match = NestedHotkeyLabelPattern.Match(source);
+        if (!match.Success)
+        {
+            return source;
+        }
+
+        var hotkey = match.Groups["hotkey"].Value;
+        var label = match.Groups["label"].Value;
+        if (hotkey.Length == 0 || label.Length == 0)
+        {
+            return source;
+        }
+
+        return "{{"
+            + match.Groups["hotkeyColor"].Value
+            + "|"
+            + hotkey
+            + "}} {{"
+            + match.Groups["labelColor"].Value
+            + "|"
+            + label
+            + "}}";
     }
 
     private static void LogProbe(object? contextInstance, string phase)

@@ -343,11 +343,30 @@ public sealed class TranslatorTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(output, Does.Contain("duplicate key overrides: Hello=1"));
-            Assert.That(output, Does.Contain("loaded 2 unique entries from 2 file(s)"));
+            Assert.That(output, Does.Contain("text-changing duplicate key overrides: Hello=1"));
+            Assert.That(output, Does.Contain("Translator: loaded 2 unique entries from 2 file(s)."));
             Assert.That(summary, Does.Contain("3 raw entries"));
-            Assert.That(summary, Does.Contain("1 duplicate key override(s)"));
+            Assert.That(summary, Does.Contain("1 text-changing duplicate key override(s)"));
             Assert.That(summary, Does.Contain("1 distinct key(s)"));
+        });
+    }
+
+    [Test]
+    public void Translate_DoesNotWarnForSameTextDuplicateKeys()
+    {
+        WriteDictionary("first.ja.json", ("Hello", "こんにちは"));
+        WriteDictionary("second.ja.json", ("Hello", "こんにちは"));
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+            Assert.That(Translator.Translate("Hello"), Is.EqualTo("こんにちは")));
+        var summary = Translator.GetDictionaryLoadSummaryForTests();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(output, Does.Not.Contain("duplicate key"));
+            Assert.That(summary, Does.Contain("2 raw entries"));
+            Assert.That(summary, Does.Contain("0 text-changing duplicate key override(s)"));
+            Assert.That(summary, Does.Contain("0 distinct key(s)"));
         });
     }
 

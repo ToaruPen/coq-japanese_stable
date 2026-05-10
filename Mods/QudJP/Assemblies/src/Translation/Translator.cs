@@ -233,6 +233,7 @@ public static class Translator
         var files = Directory.GetFiles(dictionaryDirectory, "*.ja.json", SearchOption.TopDirectoryOnly);
         Array.Sort(files, StringComparer.OrdinalIgnoreCase);
         var keySources = new Dictionary<string, string>(StringComparer.Ordinal);
+        var keyTexts = new Dictionary<string, string>(StringComparer.Ordinal);
         var duplicateKeyCounts = new Dictionary<string, int>(StringComparer.Ordinal);
         var rawEntryCount = 0;
         var duplicateKeyCount = 0;
@@ -245,6 +246,7 @@ public static class Translator
                     files[fileIndex],
                     translations,
                     keySources,
+                    keyTexts,
                     duplicateKeyCounts,
                     ref rawEntryCount,
                     ref duplicateKeyCount);
@@ -257,8 +259,8 @@ public static class Translator
 
         dictionaryLoadSummary =
             $"Translator: loaded {translations.Count} unique entries from {files.Length} file(s) " +
-            $"({rawEntryCount} raw entries, {duplicateKeyCount} duplicate key override(s) across {duplicateKeyCounts.Count} distinct key(s)).";
-        LogObservability($"[QudJP] {dictionaryLoadSummary}");
+            $"({rawEntryCount} raw entries, {duplicateKeyCount} text-changing duplicate key override(s) across {duplicateKeyCounts.Count} distinct key(s)).";
+        LogObservability($"[QudJP] Translator: loaded {translations.Count} unique entries from {files.Length} file(s).");
         LogDuplicateKeySummary(duplicateKeyCounts);
 
         return translations;
@@ -283,6 +285,7 @@ public static class Translator
         string filePath,
         Dictionary<string, string> translations,
         Dictionary<string, string> keySources,
+        Dictionary<string, string> keyTexts,
         Dictionary<string, int> duplicateKeyCounts,
         ref int rawEntryCount,
         ref int duplicateKeyCount)
@@ -304,7 +307,9 @@ public static class Translator
             }
 
             rawEntryCount++;
-            if (keySources.TryGetValue(entry.Key!, out var previousFile))
+            if (keySources.TryGetValue(entry.Key!, out var previousFile)
+                && keyTexts.TryGetValue(entry.Key!, out var previousText)
+                && !string.Equals(previousText, entry.Text, StringComparison.Ordinal))
             {
                 duplicateKeyCount++;
                 var duplicateCount = duplicateKeyCounts.TryGetValue(entry.Key!, out var currentDuplicateCount)
@@ -322,6 +327,7 @@ public static class Translator
             }
 
             keySources[entry.Key!] = filePath;
+            keyTexts[entry.Key!] = entry.Text;
             translations[entry.Key!] = entry.Text;
         }
     }
@@ -350,8 +356,9 @@ public static class Translator
             return;
         }
 
-        LogObservability(
-            $"[QudJP] Warning: Translator duplicate key overrides: {ObservabilityHelpers.BuildRankedCounterBody(duplicateKeyCounts, 10)}.");
+        Trace.TraceWarning(
+            "QudJP: Translator text-changing duplicate key overrides: {0}.",
+            ObservabilityHelpers.BuildRankedCounterBody(duplicateKeyCounts, 10));
     }
 
     private static void LogObservability(string message)

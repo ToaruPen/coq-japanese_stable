@@ -1056,6 +1056,7 @@ public static class PopupTranslationPatch
     {
         translated = source;
         if (!string.Equals(route, nameof(PopupPickOptionTranslationPatch), StringComparison.Ordinal)
+            && !string.Equals(route, nameof(QudMenuBottomContextTranslationPatch), StringComparison.Ordinal)
             && !string.Equals(route, nameof(SelectableTextMenuItemTranslationPatch), StringComparison.Ordinal))
         {
             return false;
