@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace QudJP.Tests.L1;
@@ -26,6 +27,10 @@ public sealed class UnityApiCompatibilityTests
             + @"|(?:original|replacement)\s*\.\s*(?:font|fontSharedMaterial)\s+is\s+(?:not\s+)?null\b"
             + @"|original\s*\.\s*transform\s*\.\s*parent\s+is\s+not\s+RectTransform\b"
             + @"|\bexisting\s*\?\.\s*GetComponent\s*<",
+        SourceRegexOptions);
+
+    private static readonly Regex DelayedProbeSchedulerUnityObjectPatternNullCheck = new(
+        @"\b(?:runner|host|component)\s+is\s+(?:not\s+)?null\b",
         SourceRegexOptions);
 
     private static readonly Regex OriginalTmpLifecycleCallPattern = new(
@@ -171,6 +176,38 @@ public sealed class UnityApiCompatibilityTests
             source,
             NUnit.Framework.Does.Not.Match(TooltipRendererUnityObjectPatternNullCheck),
             "UnityEngine.Object-derived tooltip renderer values require ==/!= null so Unity fake-null semantics are preserved.");
+    }
+
+    [NUnit.Framework.Test]
+    public void DelayedProbeSchedulers_UseUnityNullSemanticsForCoroutineHosts()
+    {
+        var sourceRoot = Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Assemblies",
+            "src",
+            "Observability");
+
+        var schedulerFiles = Directory
+            .EnumerateFiles(sourceRoot, "Delayed*ProbeScheduler.cs", SearchOption.AllDirectories)
+            .ToArray();
+
+        NUnit.Framework.Assert.That(
+            schedulerFiles,
+            NUnit.Framework.Is.Not.Empty,
+            "Delayed probe scheduler source files must exist for Unity null-semantics policy coverage.");
+
+        foreach (var sourcePath in schedulerFiles)
+        {
+            var source = File.ReadAllText(sourcePath);
+
+            NUnit.Framework.Assert.That(
+                source,
+                NUnit.Framework.Does.Not.Match(DelayedProbeSchedulerUnityObjectPatternNullCheck),
+                Path.GetRelativePath(TestProjectPaths.GetRepositoryRoot(), sourcePath)
+                    + " should use ==/!= null for UnityEngine.Object-derived coroutine hosts and components.");
+        }
     }
 
     [NUnit.Framework.TestCase("InventoryLineRenderProbePatch.cs")]
