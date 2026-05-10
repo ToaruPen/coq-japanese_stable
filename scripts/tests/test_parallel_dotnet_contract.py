@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import re
 import subprocess
 import time
 from pathlib import Path
@@ -19,12 +20,12 @@ def _read_repo_file(path: str) -> str:
 
 
 def _recipe_block(justfile: str, recipe_name: str) -> str:
-    start = justfile.index(f"\n{recipe_name}")
-    colon = justfile.index(":", start)
-    header = justfile[start:colon]
-    assert header.lstrip().startswith(recipe_name)
-    next_recipe = justfile.find("\n\n", start + 1)
-    return justfile[start:] if next_recipe == -1 else justfile[start:next_recipe]
+    escaped_name = re.escape(recipe_name)
+    start_match = re.search(rf"(?m)^{escaped_name}(?:[ \t][^:\n]*)?:", justfile)
+    assert start_match is not None, f"recipe not found: {recipe_name}"
+    next_match = re.search(r"(?m)^[A-Za-z0-9_-]+(?:[ \t][^:\n]*)?:", justfile[start_match.end() :])
+    end = len(justfile) if next_match is None else start_match.end() + next_match.start()
+    return justfile[start_match.start() : end]
 
 
 def _probe_lock_path(tmp_path: Path) -> Path:
