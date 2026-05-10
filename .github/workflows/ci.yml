@@ -86,7 +86,7 @@ jobs:
           if [[ "$run_all" == true ]] || matches '^scripts/tools/' || matches_annals_extractor_tests; then
             roslyn_tools=true
           fi
-          if [[ "$run_all" == true ]] || matches '^(pyproject\.toml|uv\.lock)$' || matches_python_scripts; then
+          if [[ "$run_all" == true ]] || matches '^(pyproject\.toml|uv\.lock|CHANGELOG\.md|Mods/QudJP/manifest\.json|docs/release-notes/)' || matches_python_scripts; then
             python=true
           fi
           if [[ "$run_all" == true ]] || matches '^(Mods/QudJP/Localization/|scripts/(check_translation_tokens|check_glossary_consistency|validate_pattern_routes)\.py|scripts/(translation_token_duplicate_baseline|glossary_consistency_baseline)\.json|justfile$)'; then
@@ -257,6 +257,9 @@ jobs:
       - name: Test Python
         if: hashFiles('scripts/tests/**/*.py') != ''
         run: pytest scripts/tests/
+
+      - name: Check CHANGELOG release links
+        run: python scripts/release_notes.py check-changelog-links
 
   localization:
     runs-on: ubuntu-latest
