@@ -5,6 +5,7 @@ namespace QudJP.Tests.L1;
 
 [TestFixture]
 [Category("L1")]
+[NonParallelizable]
 public sealed class MessageLogProducerTranslationHelpersTests
 {
     private string tempDirectory = null!;
