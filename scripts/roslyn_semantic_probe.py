@@ -1,20 +1,22 @@
 """Python wrapper for the Roslyn semantic probe CLI."""
-# ruff: noqa: S603 -- invokes the repo-local dotnet probe with explicit arguments
 
 from __future__ import annotations
 
 import argparse
 import json
 import shlex
-import shutil
-import subprocess
 import sys
 from pathlib import Path
 from typing import Final, cast
 
+REPO_ROOT: Final = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.dotnet_tool_runner import DotnetToolError, run_tool_project  # noqa: E402
+
 DEFAULT_SOURCE_ROOT: Final = Path("~/dev/coq-decompiled_stable").expanduser()
 ROSLYN_PROBE_TIMEOUT_SECONDS: Final = 600
-REPO_ROOT: Final = Path(__file__).resolve().parents[1]
 PROJECT_PATH: Final = REPO_ROOT / "scripts" / "tools" / "RoslynSemanticProbe" / "RoslynSemanticProbe.csproj"
 REQUIRED_TOP_LEVEL_KEYS: Final = {"schema_version", "query", "metrics", "hits"}
 REQUIRED_METRIC_KEYS: Final = {
@@ -37,34 +39,19 @@ type JsonObject = dict[str, object]
 
 def run_probe(args: list[str]) -> JsonObject:
     """Run the Roslyn semantic probe and return its JSON payload."""
-    dotnet = shutil.which("dotnet")
-    if dotnet is None:
-        msg = "dotnet 10.0.x SDK required to run the Roslyn semantic probe"
-        raise RuntimeError(msg)
     if not PROJECT_PATH.is_file():
         msg = f"Roslyn semantic probe project is missing: {PROJECT_PATH}"
         raise RuntimeError(msg)
 
     output_path = _output_path_from_args(args)
-    command = [dotnet, "run", "--project", str(PROJECT_PATH), "--", *args]
     try:
-        result = subprocess.run(
-            command,
-            capture_output=True,
-            text=True,
-            check=False,
-            timeout=ROSLYN_PROBE_TIMEOUT_SECONDS,
-        )
-    except subprocess.TimeoutExpired as exc:
-        details = "\n".join(part for part in (_output_text(exc.stdout), _output_text(exc.stderr)) if part)
-        msg = f"Roslyn semantic probe timed out after {ROSLYN_PROBE_TIMEOUT_SECONDS}s: {shlex.join(command)}"
-        if details:
-            msg = f"{msg}\n{details}"
-        raise RuntimeError(msg) from exc
+        result = run_tool_project(PROJECT_PATH, args, timeout=ROSLYN_PROBE_TIMEOUT_SECONDS)
+    except DotnetToolError as exc:
+        raise RuntimeError(str(exc)) from exc
 
     if result.returncode != 0:
         details = "\n".join(part for part in (result.stdout.strip(), result.stderr.strip()) if part)
-        msg = f"Roslyn semantic probe failed with exit {result.returncode}: {shlex.join(command)}"
+        msg = f"Roslyn semantic probe failed with exit {result.returncode}: {shlex.join(args)}"
         if details:
             msg = f"{msg}\n{details}"
         raise RuntimeError(msg)
@@ -138,14 +125,6 @@ def _output_path_from_args(args: list[str]) -> Path | None:
         if arg == "--output" and index + 1 < len(args):
             return Path(args[index + 1]).expanduser()
     return None
-
-
-def _output_text(value: str | bytes | None) -> str:
-    if value is None:
-        return ""
-    if isinstance(value, bytes):
-        return value.decode(errors="replace").strip()
-    return value.strip()
 
 
 if __name__ == "__main__":

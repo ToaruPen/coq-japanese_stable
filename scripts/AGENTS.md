@@ -57,6 +57,9 @@ just sync-mod
 - Roslyn tracked artifact recipes are intentionally named `*-tracked`;
   prefer preview recipes for review and validation unless the task explicitly
   owns the generated artifact.
+- Repo-local Roslyn wrappers and just recipes build into
+  `QUDJP_DOTNET_ARTIFACTS_ROOT` (default: `.artifacts/dotnet`) and execute the
+  produced tool DLL so parallel local runs do not share build outputs.
 - Skill eval execution is orchestrator-owned: render prompts with
   `just render-skill-evals`, run them in fresh Codex subagents from the parent
   session, append results that match `skill-eval-result.schema.json` and

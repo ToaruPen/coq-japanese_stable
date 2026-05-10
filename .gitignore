@@ -28,6 +28,7 @@ Thumbs.db
 
 # Build artifacts
 dist/
+.artifacts/
 
 # Test results
 TestResults/

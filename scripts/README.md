@@ -89,6 +89,11 @@ just roslyn-test
 just roslyn-check
 ```
 
+These recipes and the Python wrappers build repo-local Roslyn tools into
+`QUDJP_DOTNET_ARTIFACTS_ROOT` (default: `.artifacts/dotnet`) and execute the
+produced DLL. This is the supported path for parallel local test and scanner
+runs.
+
 Annals pattern extractor と text construction inventory の入口も `just`
 から呼び出せます。
 
