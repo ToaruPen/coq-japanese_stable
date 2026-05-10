@@ -1508,7 +1508,7 @@ public sealed class PopupTranslationPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(context.items[0].text, Is.EqualTo("{{W|[space]}} {{y|Continue}}"));
+            Assert.That(context.items[0].text, Is.EqualTo("[space] Continue"));
         });
     }
 
@@ -1526,7 +1526,7 @@ public sealed class PopupTranslationPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(context.items[0].text, Is.EqualTo("{{W|[Tab]}} {{y|取引}}"));
+            Assert.That(context.items[0].text, Is.EqualTo("[Tab] 取引"));
             Assert.That(Translator.GetMissingKeyHitCountForTests("[Tab] 取引"), Is.EqualTo(0));
             Assert.That(Translator.GetMissingKeyHitCountForTests("取引"), Is.EqualTo(0));
         });

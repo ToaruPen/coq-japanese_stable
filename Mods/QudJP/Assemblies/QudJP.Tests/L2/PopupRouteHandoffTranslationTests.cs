@@ -345,8 +345,8 @@ public sealed class PopupRouteHandoffTranslationTests
             Assert.That(DummyPopupMessageTarget.LastButtons, Is.Not.Null);
             Assert.That(DummyPopupMessageTarget.LastButtons![0].text, Is.EqualTo("{{W|[space]}} {{y|続ける}}"));
             Assert.That(DummyPopupMessageTarget.LastButtons[1].text, Is.EqualTo("{{W|[Esc]}} {{y|キャンセル}}"));
-            Assert.That(bottomContext.items[0].text, Is.EqualTo("{{W|[space]}} {{y|続ける}}"));
-            Assert.That(bottomContext.items[1].text, Is.EqualTo("{{W|[Esc]}} {{y|キャンセル}}"));
+            Assert.That(bottomContext.items[0].text, Is.EqualTo("[space] 続ける"));
+            Assert.That(bottomContext.items[1].text, Is.EqualTo("[Esc] キャンセル"));
             Assert.That(
                 SinkObservation.GetHitCountForTests(
                     nameof(QudMenuBottomContextTranslationPatch),
