@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace QudJP.Tests.L1;
@@ -188,7 +189,16 @@ public sealed class UnityApiCompatibilityTests
             "src",
             "Observability");
 
-        foreach (var sourcePath in Directory.EnumerateFiles(sourceRoot, "Delayed*ProbeScheduler.cs", SearchOption.TopDirectoryOnly))
+        var schedulerFiles = Directory
+            .EnumerateFiles(sourceRoot, "Delayed*ProbeScheduler.cs", SearchOption.AllDirectories)
+            .ToArray();
+
+        NUnit.Framework.Assert.That(
+            schedulerFiles,
+            NUnit.Framework.Is.Not.Empty,
+            "Delayed probe scheduler source files must exist for Unity null-semantics policy coverage.");
+
+        foreach (var sourcePath in schedulerFiles)
         {
             var source = File.ReadAllText(sourcePath);
 
