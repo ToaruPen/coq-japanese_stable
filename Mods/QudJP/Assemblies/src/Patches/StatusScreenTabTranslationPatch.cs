@@ -46,10 +46,10 @@ public static class StatusScreenTabTranslationPatch
     {
         try
         {
-            var typeName = __originalMethod.DeclaringType?.FullName ?? string.Empty;
+            var declaringType = __originalMethod.DeclaringType;
             for (var index = 0; index < Targets.Length; index++)
             {
-                if (Targets[index].QualifiedName == typeName)
+                if (MatchesTargetType(declaringType, Targets[index].QualifiedName, Targets[index].FallbackName))
                 {
                     Targets[index].Postfix(ref __result);
                     break;
@@ -60,5 +60,11 @@ public static class StatusScreenTabTranslationPatch
         {
             Trace.TraceError("QudJP: StatusScreenTabTranslationPatch.Postfix failed: {0}", ex);
         }
+    }
+
+    private static bool MatchesTargetType(Type? declaringType, string qualifiedName, string fallbackName)
+    {
+        return string.Equals(declaringType?.FullName, qualifiedName, StringComparison.Ordinal)
+               || string.Equals(declaringType?.Name, fallbackName, StringComparison.Ordinal);
     }
 }

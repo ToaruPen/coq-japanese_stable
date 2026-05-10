@@ -13,12 +13,24 @@ public static class LegacyGamepadPromptTranslationPatch
 {
     private const string Context = nameof(LegacyGamepadPromptTranslationPatch);
 
+    private delegate IEnumerable<CodeInstruction> ScreenTranspiler(IEnumerable<CodeInstruction> instructions);
+
+    private static readonly (string QualifiedName, string FallbackName, ScreenTranspiler Transpiler)[] TargetHandlers =
+    {
+        ("XRL.UI.InventoryScreen", "InventoryScreen", InventoryScreenTranslationPatch.Transpiler),
+        ("XRL.UI.StatusScreen", "StatusScreen", StatusScreenTranslationPatch.Transpiler),
+        ("XRL.UI.JournalScreen", "JournalScreen", JournalScreenTranslationPatch.Transpiler),
+        ("XRL.UI.TinkeringScreen", "TinkeringScreen", TinkeringScreenTranslationPatch.Transpiler),
+        ("XRL.UI.QuestLog", "QuestLog", QuestLogGamepadPromptTranslationPatch.Transpiler),
+        ("XRL.UI.FactionsScreen", "FactionsScreen", FactionsScreenGamepadPromptTranslationPatch.Transpiler),
+        ("XRL.UI.SkillsAndPowersScreen", "SkillsAndPowersScreen", SkillsAndPowersScreenTranslationPatch.Transpiler),
+        ("XRL.UI.EquipmentScreen", "EquipmentScreen", EquipmentScreenTranslationPatch.Transpiler),
+    };
+
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
-        return ResolveTargetMethods()
-            .Where(static target => target is not null)
-            .Cast<MethodBase>();
+        return ResolveTargetMethods().OfType<MethodBase>();
     }
 
     [HarmonyTranspiler]
@@ -42,14 +54,14 @@ public static class LegacyGamepadPromptTranslationPatch
         var gameObjectType = GameTypeResolver.FindType("XRL.World.GameObject", "GameObject");
         var eventType = GameTypeResolver.FindType("XRL.World.IEvent", "IEvent");
 
-        yield return TryResolveShowMethod("XRL.UI.InventoryScreen", "InventoryScreen", new[] { gameObjectType });
-        yield return TryResolveShowMethod("XRL.UI.StatusScreen", "StatusScreen", new[] { gameObjectType });
-        yield return TryResolveShowMethod("XRL.UI.JournalScreen", "JournalScreen", new[] { gameObjectType });
-        yield return TryResolveShowMethod("XRL.UI.TinkeringScreen", "TinkeringScreen", new[] { gameObjectType, gameObjectType, eventType });
-        yield return TryResolveShowMethod("XRL.UI.QuestLog", "QuestLog", new[] { gameObjectType });
-        yield return TryResolveShowMethod("XRL.UI.FactionsScreen", "FactionsScreen", new[] { gameObjectType });
-        yield return TryResolveShowMethod("XRL.UI.SkillsAndPowersScreen", "SkillsAndPowersScreen", new[] { gameObjectType });
-        yield return TryResolveShowMethod("XRL.UI.EquipmentScreen", "EquipmentScreen", new[] { gameObjectType });
+        for (var index = 0; index < TargetHandlers.Length; index++)
+        {
+            var target = TargetHandlers[index];
+            var parameterTypes = string.Equals(target.FallbackName, "TinkeringScreen", StringComparison.Ordinal)
+                ? new[] { gameObjectType, gameObjectType, eventType }
+                : new[] { gameObjectType };
+            yield return TryResolveShowMethod(target.QualifiedName, target.FallbackName, parameterTypes);
+        }
     }
 
     private static MethodBase? TryResolveShowMethod(string fullTypeName, string shortTypeName, Type?[] parameterTypes)
@@ -83,17 +95,21 @@ public static class LegacyGamepadPromptTranslationPatch
         IEnumerable<CodeInstruction> instructions,
         MethodBase originalMethod)
     {
-        return originalMethod.DeclaringType?.FullName switch
+        var declaringType = originalMethod.DeclaringType;
+        for (var index = 0; index < TargetHandlers.Length; index++)
         {
-            "XRL.UI.InventoryScreen" => InventoryScreenTranslationPatch.Transpiler(instructions),
-            "XRL.UI.StatusScreen" => StatusScreenTranslationPatch.Transpiler(instructions),
-            "XRL.UI.JournalScreen" => JournalScreenTranslationPatch.Transpiler(instructions),
-            "XRL.UI.TinkeringScreen" => TinkeringScreenTranslationPatch.Transpiler(instructions),
-            "XRL.UI.QuestLog" => QuestLogGamepadPromptTranslationPatch.Transpiler(instructions),
-            "XRL.UI.FactionsScreen" => FactionsScreenGamepadPromptTranslationPatch.Transpiler(instructions),
-            "XRL.UI.SkillsAndPowersScreen" => SkillsAndPowersScreenTranslationPatch.Transpiler(instructions),
-            "XRL.UI.EquipmentScreen" => EquipmentScreenTranslationPatch.Transpiler(instructions),
-            _ => instructions,
-        };
+            if (MatchesTargetType(declaringType, TargetHandlers[index].QualifiedName, TargetHandlers[index].FallbackName))
+            {
+                return TargetHandlers[index].Transpiler(instructions);
+            }
+        }
+
+        return instructions;
+    }
+
+    private static bool MatchesTargetType(Type? declaringType, string qualifiedName, string fallbackName)
+    {
+        return string.Equals(declaringType?.FullName, qualifiedName, StringComparison.Ordinal)
+               || string.Equals(declaringType?.Name, fallbackName, StringComparison.Ordinal);
     }
 }

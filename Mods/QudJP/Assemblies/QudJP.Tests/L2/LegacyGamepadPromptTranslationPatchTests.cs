@@ -57,6 +57,26 @@ public sealed class LegacyGamepadPromptTranslationPatchTests
     }
 
     [Test]
+    public void AggregateTranspiler_DispatchesByFallbackTypeName()
+    {
+        RunWithPatch(
+            typeof(InventoryScreen),
+            nameof(InventoryScreen.Show),
+            typeof(LegacyGamepadPromptTranslationPatch),
+            () =>
+            {
+                var target = new InventoryScreen();
+                target.Show();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(target.Buffer.Writes, Does.Contain(" {{W|B}} 終了 "));
+                    Assert.That(target.Buffer.Writes, Does.Contain("< {{W|LB}} キャラクター | 装備 {{W|RB}} >"));
+                });
+            });
+    }
+
+    [Test]
     public void StatusScreenTranspiler_TranslatesFooterAndMutationPrompts()
     {
         RunWithPatch(

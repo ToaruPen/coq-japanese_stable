@@ -71,6 +71,64 @@ public sealed class PhysicsEnterCellPassByTranslationPatchTests
     }
 
     [Test]
+    public void AggregateMessageQueuePatch_PreservesPrefixOrder_WhenPatched()
+    {
+        WritePatternDictionary(("^You pass by (.+?)[.!]?$", "{0}のそばを通り過ぎた。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            var original = RequireMethod(
+                typeof(DummyMessageQueue),
+                nameof(DummyMessageQueue.AddPlayerMessage),
+                typeof(string),
+                typeof(string),
+                typeof(bool));
+            harmony.Patch(
+                original: original,
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(MessageQueueTranslationPatch),
+                    nameof(MessageQueueTranslationPatch.PrefixPhysicsEnterCellPassBy),
+                    typeof(string).MakeByRefType(),
+                    typeof(string),
+                    typeof(bool))));
+            harmony.Patch(
+                original: original,
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(MessageQueueTranslationPatch),
+                    nameof(MessageQueueTranslationPatch.PrefixZoneManagerSetActiveZone),
+                    typeof(string).MakeByRefType(),
+                    typeof(string),
+                    typeof(bool))));
+            harmony.Patch(
+                original: original,
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(MessageQueueTranslationPatch),
+                    nameof(MessageQueueTranslationPatch.PrefixCombatAndLog),
+                    typeof(string).MakeByRefType(),
+                    typeof(string),
+                    typeof(bool))));
+            harmony.Patch(
+                original: original,
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(MessageQueueTranslationPatch),
+                    nameof(MessageQueueTranslationPatch.PrefixMessageLog),
+                    typeof(string).MakeByRefType(),
+                    typeof(string),
+                    typeof(bool))));
+
+            DummyMessageQueue.AddPlayerMessage("You pass by ウォーターヴァイン.", "&W", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("ウォーターヴァインのそばを通り過ぎた。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_PassesThroughEnglishWhenPatternDoesNotMatch_WhenPatched()
     {
         var harmonyId = CreateHarmonyId();
