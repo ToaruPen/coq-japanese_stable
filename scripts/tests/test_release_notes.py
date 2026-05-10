@@ -18,6 +18,7 @@ from scripts.release_notes import (
     main,
     render_changelog_entry,
     render_workshop_changenote,
+    validate_changelog_release_links,
 )
 
 if TYPE_CHECKING:
@@ -130,6 +131,67 @@ def test_extract_changelog_entry_rejects_missing_version(tmp_path: Path) -> None
 
     with pytest.raises(ReleaseNoteError, match="CHANGELOG entry"):
         extract_changelog_entry(changelog, "1.2.3")
+
+
+def test_validate_changelog_release_links_rejects_stale_footer(tmp_path: Path) -> None:
+    """Release entries require matching footer links and Unreleased comparison."""
+    changelog = tmp_path / "CHANGELOG.md"
+    changelog.write_text(
+        "# Changelog\n\n"
+        "## [Unreleased]\n\n"
+        "---\n\n"
+        "## [1.2.4] - 2026-05-06\n\n"
+        "### Fixed\n\n"
+        "- Fix release links.\n\n"
+        "---\n\n"
+        "## [1.2.3] - 2026-05-05\n\n"
+        "### Fixed\n\n"
+        "- Older fix.\n\n"
+        "[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v1.2.3...HEAD\n"
+        "[1.2.3]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v1.2.3\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ReleaseNoteError, match=r"\[Unreleased\].*v1\.2\.4"):
+        validate_changelog_release_links(changelog)
+
+
+def test_validate_changelog_release_links_accepts_em_dash_release_date(tmp_path: Path) -> None:
+    """Release heading dates can use common dash variants."""
+    changelog = tmp_path / "CHANGELOG.md"
+    changelog.write_text(
+        "# Changelog\n\n"
+        "## [Unreleased]\n\n"
+        "---\n\n"
+        "## [1.2.4] — 2026-05-06\n\n"
+        "### Fixed\n\n"
+        "- Fix release links.\n\n"
+        "[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v1.2.4...HEAD\n"
+        "[1.2.4]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v1.2.4\n",
+        encoding="utf-8",
+    )
+
+    validate_changelog_release_links(changelog)
+
+
+def test_validate_changelog_release_links_rejects_duplicate_footer_labels(tmp_path: Path) -> None:
+    """Duplicate footer labels are rejected instead of silently overwritten."""
+    changelog = tmp_path / "CHANGELOG.md"
+    changelog.write_text(
+        "# Changelog\n\n"
+        "## [Unreleased]\n\n"
+        "---\n\n"
+        "## [1.2.4] - 2026-05-06\n\n"
+        "### Fixed\n\n"
+        "- Fix release links.\n\n"
+        "[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v1.2.4...HEAD\n"
+        "[1.2.4]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v1.2.4\n"
+        "[1.2.4]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v1.2.4\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ReleaseNoteError, match=r"duplicate.*1\.2\.4"):
+        validate_changelog_release_links(changelog)
 
 
 def test_main_extracts_changelog_entry(tmp_path: Path) -> None:

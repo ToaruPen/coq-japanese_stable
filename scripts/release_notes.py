@@ -20,6 +20,7 @@ _NAME_STATUS_RENAMED_PATH_INDEX = 2
 _NAME_STATUS_MIN_PATH_FIELDS = 2
 _NAME_STATUS_MIN_RENAME_FIELDS = 3
 _RENAMED_OR_COPIED_STATUSES = ("R", "C")
+_DEFAULT_REPOSITORY_URL = "https://github.com/ToaruPen/coq-japanese_stable"
 
 
 class ReleaseNoteError(ValueError):
@@ -177,6 +178,48 @@ def extract_changelog_entry(changelog_path: Path, version: str) -> str:
     return re.sub(r"\n---\s*$", "", entry).rstrip()
 
 
+def validate_changelog_release_links(
+    changelog_path: Path,
+    *,
+    repository_url: str = _DEFAULT_REPOSITORY_URL,
+) -> None:
+    """Validate CHANGELOG release heading links and Unreleased comparison."""
+    if not changelog_path.is_file():
+        msg = f"CHANGELOG file not found: {changelog_path}"
+        raise ReleaseNoteError(msg)
+
+    text = changelog_path.read_text(encoding="utf-8")
+    versions = [
+        match.group(1)
+        for match in re.finditer(
+            r"^## \[([0-9]+\.[0-9]+\.[0-9]+)\](?:\s+[-\u2013\u2014]\s+.+)?$",
+            text,
+            flags=re.MULTILINE,
+        )
+    ]
+    if not versions:
+        msg = "CHANGELOG.md has no release entries"
+        raise ReleaseNoteError(msg)
+
+    links: dict[str, str] = {}
+    for label, url in re.findall(r"^\[([^\]]+)\]:\s+(\S+)\s*$", text, flags=re.MULTILINE):
+        if label in links:
+            msg = f"duplicate CHANGELOG link label: {label}"
+            raise ReleaseNoteError(msg)
+        links[label] = url
+    latest_version = versions[0]
+    expected_unreleased = f"{repository_url}/compare/v{latest_version}...HEAD"
+    if links.get("Unreleased") != expected_unreleased:
+        msg = f"[Unreleased] link must point to {expected_unreleased}"
+        raise ReleaseNoteError(msg)
+
+    for version in versions:
+        expected_release = f"{repository_url}/releases/tag/v{version}"
+        if links.get(version) != expected_release:
+            msg = f"[{version}] link must point to {expected_release}"
+            raise ReleaseNoteError(msg)
+
+
 def _render_section_lines(fragments: ReleaseNoteFragments) -> list[str]:
     lines: list[str] = []
     for section in SECTION_ORDER:
@@ -285,7 +328,50 @@ def build_parser() -> argparse.ArgumentParser:
     extract_parser.add_argument("--changelog", type=Path, default=Path("CHANGELOG.md"))
     extract_parser.add_argument("--output", type=Path)
 
+    check_changelog_parser = subparsers.add_parser(
+        "check-changelog-links",
+        help="Validate CHANGELOG release link definitions.",
+    )
+    check_changelog_parser.add_argument("--changelog", type=Path, default=Path("CHANGELOG.md"))
+    check_changelog_parser.add_argument("--repository-url", default=_DEFAULT_REPOSITORY_URL)
+
     return parser
+
+
+def _run_check_fragment(args: argparse.Namespace) -> int:
+    changed_files = args.changed_file or git_changed_files(args.base_ref, args.head_ref)
+    check_fragment_requirement(changed_files, fragments_dir=args.fragments_dir)
+    return 0
+
+
+def _run_render(args: argparse.Namespace) -> int:
+    fragments = _require_fragments(args.fragments_dir)
+    changelog = render_changelog_entry(version=args.version, release_date=args.date, fragments=fragments)
+    workshop = render_workshop_changenote(version=args.version, fragments=fragments)
+    if args.changelog_output is None and args.workshop_output is None:
+        print(changelog)  # noqa: T201
+        print("---")  # noqa: T201
+        print(workshop)  # noqa: T201
+        return 0
+    if args.changelog_output is not None:
+        _write_output(args.changelog_output, changelog)
+    if args.workshop_output is not None:
+        _write_output(args.workshop_output, workshop)
+    return 0
+
+
+def _run_extract_changelog(args: argparse.Namespace) -> int:
+    entry = extract_changelog_entry(args.changelog, args.version)
+    if args.output is None:
+        print(entry)  # noqa: T201
+        return 0
+    _write_output(args.output, entry)
+    return 0
+
+
+def _run_check_changelog_links(args: argparse.Namespace) -> int:
+    validate_changelog_release_links(args.changelog, repository_url=args.repository_url)
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -293,35 +379,16 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     try:
         args = parser.parse_args(argv)
-        if args.command == "check-fragment":
-            changed_files = args.changed_file or git_changed_files(args.base_ref, args.head_ref)
-            check_fragment_requirement(changed_files, fragments_dir=args.fragments_dir)
-            return 0
-        if args.command == "render":
-            fragments = _require_fragments(args.fragments_dir)
-            changelog = render_changelog_entry(version=args.version, release_date=args.date, fragments=fragments)
-            workshop = render_workshop_changenote(version=args.version, fragments=fragments)
-            if args.changelog_output is None and args.workshop_output is None:
-                print(changelog)  # noqa: T201
-                print("---")  # noqa: T201
-                print(workshop)  # noqa: T201
-                return 0
-            if args.changelog_output is not None:
-                _write_output(args.changelog_output, changelog)
-            if args.workshop_output is not None:
-                _write_output(args.workshop_output, workshop)
-            return 0
-        if args.command == "extract-changelog":
-            entry = extract_changelog_entry(args.changelog, args.version)
-            if args.output is None:
-                print(entry)  # noqa: T201
-                return 0
-            _write_output(args.output, entry)
-            return 0
+        handlers = {
+            "check-fragment": _run_check_fragment,
+            "render": _run_render,
+            "extract-changelog": _run_extract_changelog,
+            "check-changelog-links": _run_check_changelog_links,
+        }
+        return handlers[args.command](args)
     except ReleaseNoteError as exc:
         print(f"error: {exc}", file=sys.stderr)  # noqa: T201
         return 1
-    raise AssertionError(args.command)
 
 
 if __name__ == "__main__":
