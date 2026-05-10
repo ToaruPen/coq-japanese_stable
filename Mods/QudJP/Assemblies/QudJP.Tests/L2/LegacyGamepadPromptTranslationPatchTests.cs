@@ -57,6 +57,22 @@ public sealed class LegacyGamepadPromptTranslationPatchTests
     }
 
     [Test]
+    public void DispatchTranspiler_UsesFallbackTypeName_ForInventoryScreen()
+    {
+        RunWithPatch(
+            typeof(InventoryScreen),
+            nameof(InventoryScreen.Show),
+            typeof(LegacyGamepadPromptTranslationPatch),
+            () =>
+            {
+                var target = new InventoryScreen();
+                target.Show();
+
+                Assert.That(target.Buffer.Writes, Does.Contain(" {{W|B}} 終了 "));
+            });
+    }
+
+    [Test]
     public void StatusScreenTranspiler_TranslatesFooterAndMutationPrompts()
     {
         RunWithPatch(
@@ -242,5 +258,15 @@ public sealed class LegacyGamepadPromptTranslationPatchTests
 
         return method
                ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private sealed class InventoryScreen
+    {
+        public DummyLegacyBuffer Buffer { get; } = new();
+
+        public void Show()
+        {
+            Buffer.Write(" {{W|B}} to exit ");
+        }
     }
 }

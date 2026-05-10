@@ -83,16 +83,20 @@ public static class LegacyGamepadPromptTranslationPatch
         IEnumerable<CodeInstruction> instructions,
         MethodBase originalMethod)
     {
-        return originalMethod.DeclaringType?.FullName switch
+        var declaringType = originalMethod.DeclaringType;
+        var fullName = declaringType?.FullName;
+        var simpleName = declaringType?.Name;
+
+        return (fullName, simpleName) switch
         {
-            "XRL.UI.InventoryScreen" => InventoryScreenTranslationPatch.Transpiler(instructions),
-            "XRL.UI.StatusScreen" => StatusScreenTranslationPatch.Transpiler(instructions),
-            "XRL.UI.JournalScreen" => JournalScreenTranslationPatch.Transpiler(instructions),
-            "XRL.UI.TinkeringScreen" => TinkeringScreenTranslationPatch.Transpiler(instructions),
-            "XRL.UI.QuestLog" => QuestLogGamepadPromptTranslationPatch.Transpiler(instructions),
-            "XRL.UI.FactionsScreen" => FactionsScreenGamepadPromptTranslationPatch.Transpiler(instructions),
-            "XRL.UI.SkillsAndPowersScreen" => SkillsAndPowersScreenTranslationPatch.Transpiler(instructions),
-            "XRL.UI.EquipmentScreen" => EquipmentScreenTranslationPatch.Transpiler(instructions),
+            ("XRL.UI.InventoryScreen", _) or (_, "InventoryScreen") => InventoryScreenTranslationPatch.Transpiler(instructions),
+            ("XRL.UI.StatusScreen", _) or (_, "StatusScreen") => StatusScreenTranslationPatch.Transpiler(instructions),
+            ("XRL.UI.JournalScreen", _) or (_, "JournalScreen") => JournalScreenTranslationPatch.Transpiler(instructions),
+            ("XRL.UI.TinkeringScreen", _) or (_, "TinkeringScreen") => TinkeringScreenTranslationPatch.Transpiler(instructions),
+            ("XRL.UI.QuestLog", _) or (_, "QuestLog") => QuestLogGamepadPromptTranslationPatch.Transpiler(instructions),
+            ("XRL.UI.FactionsScreen", _) or (_, "FactionsScreen") => FactionsScreenGamepadPromptTranslationPatch.Transpiler(instructions),
+            ("XRL.UI.SkillsAndPowersScreen", _) or (_, "SkillsAndPowersScreen") => SkillsAndPowersScreenTranslationPatch.Transpiler(instructions),
+            ("XRL.UI.EquipmentScreen", _) or (_, "EquipmentScreen") => EquipmentScreenTranslationPatch.Transpiler(instructions),
             _ => instructions,
         };
     }

@@ -46,10 +46,12 @@ public static class StatusScreenTabTranslationPatch
     {
         try
         {
-            var typeName = __originalMethod.DeclaringType?.FullName ?? string.Empty;
+            var declaringType = __originalMethod.DeclaringType;
+            var fullName = declaringType?.FullName;
+            var simpleName = declaringType?.Name;
             for (var index = 0; index < Targets.Length; index++)
             {
-                if (Targets[index].QualifiedName == typeName)
+                if (Targets[index].QualifiedName == fullName || Targets[index].FallbackName == simpleName)
                 {
                     Targets[index].Postfix(ref __result);
                     break;

@@ -854,12 +854,16 @@ def _parse_harmony_count_metrics(
         if "=" not in part:
             continue
         key, value = part.split("=", maxsplit=1)
-        if not value.isdigit():
+        key = key.strip()
+        value = value.strip()
+        try:
+            numeric_value = float(value)
+        except ValueError:
             continue
         metrics.append(
             StartupMetricEntry(
                 name=f"{phase}.{key}",
-                value=float(value),
+                value=numeric_value,
                 line_number=line_number,
             ),
         )

@@ -157,25 +157,31 @@ public sealed class MainMenuRowTranslationPatchTests
     [Test]
     public void MainMenuRowObservability_BuildsLegacyTextAndFontProbe()
     {
+        var longDataText = "New\r\nGame " + new string('A', 100);
         var row = new DummyObservableMainMenuRow
         {
-            data = new DummyObservableMainMenuOption { Text = "New Game" },
+            data = new DummyObservableMainMenuOption { Text = longDataText },
             text = new DummyObservableUnityText
             {
-                text = "ニューゲーム",
+                text = "ニュー\r\nゲーム",
                 font = new DummyObservableFont { name = "Noto Sans CJK JP" },
             },
         };
 
         var built = MainMenuRowObservability.TryBuildStateForTests(row, "postfix", out var logLine);
+        var truncatedDataText = "New\\r\\nGame " + new string('A', 86) + "...";
+        var expectedLogLine =
+            "[QudJP] MainMenuRowProbe/postfix: " +
+            $"rowType='{typeof(DummyObservableMainMenuRow).FullName}' " +
+            $"textType='{typeof(DummyObservableUnityText).FullName}' " +
+            $"dataText='{truncatedDataText}' " +
+            "rowText='ニュー\\r\\nゲーム' " +
+            "font='Noto Sans CJK JP'";
 
         Assert.Multiple(() =>
         {
             Assert.That(built, Is.True);
-            Assert.That(logLine, Does.Contain("[QudJP] MainMenuRowProbe/postfix:"));
-            Assert.That(logLine, Does.Contain("dataText='New Game'"));
-            Assert.That(logLine, Does.Contain("rowText='ニューゲーム'"));
-            Assert.That(logLine, Does.Contain("font='Noto Sans CJK JP'"));
+            Assert.That(logLine, Is.EqualTo(expectedLogLine));
         });
     }
 
