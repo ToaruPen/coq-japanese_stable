@@ -51,12 +51,21 @@ public static class BookLineTranslationPatch
 
             var route = ObservabilityHelpers.ComposeContext(Context, "field=text");
             var translated = TranslateVisibleText(source, route, "Book.LineText");
+            var textSkin = GetMemberValue(__instance, "text");
             OwnerTextSetter.SetTranslatedText(
-                GetMemberValue(__instance, "text"),
+                textSkin,
                 source,
                 translated,
                 Context,
                 typeof(BookLineTranslationPatch));
+#if QUDJP_DEV_BUILD
+            if (BookLineGeometryObservability.TryBuildSnapshot(__instance, source, translated, out var logLine))
+            {
+                RuntimeDiagnostics.LogVerboseProbe(() => logLine!);
+            }
+
+            DelayedBookLineGeometryProbeScheduler.ScheduleSnapshot(__instance, source, translated);
+#endif
             return false;
         }
         catch (Exception ex)
