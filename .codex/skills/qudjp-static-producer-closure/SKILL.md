@@ -113,7 +113,11 @@ split/deferred with a reason.
    - negative coverage for queue-only or owner-absent traffic when applicable,
    - direct marker and empty input handling,
    - color/capture preservation when the family can carry markup,
-   - L2G target/signature resolution for Harmony patches.
+   - L2G target/signature resolution for Harmony patches. Owner-patch closure
+     evidence in `scripts/static_producer_closure.py` must include
+     family-specific target tokens: prefer a full
+     `DeclaringType|Method|Return|...` signature, or include both the exact
+     upstream declaring type and member name.
 
 7. **Verify and report.**
    - Run the focused L1/L2/L2G tests touched by the batch.
@@ -134,6 +138,9 @@ split/deferred with a reason.
 
 - Do not register coverage from substring evidence alone; evidence files must
   contain tests that exercise the inventoried shapes.
+- Do not use only `typeof(Patch)` plus parameter-only signatures or shared test
+  names in `EvidenceFile.required_substrings`; those can match unrelated
+  families in the same patch.
 - Do not let a temporary pattern dictionary prove production coverage.
 - Do not treat a sink or generic popup/message fallback as owner coverage.
 - Do not close a mixed `needs_family_review` family without first naming the

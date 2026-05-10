@@ -61,17 +61,12 @@ public static class SteamWorkshopUploaderViewTranslationPatch
 
     internal static string TranslateText(string source)
     {
-        if (string.IsNullOrEmpty(source))
+        var translated = ModManagementSemanticPipeline.TranslateWorkshopUploaderText(source);
+        if (!string.Equals(translated, source, StringComparison.Ordinal))
         {
-            return source;
+            DynamicTextObservability.RecordTransform(Context, "SteamWorkshopUploaderView.Text", source, translated);
         }
 
-        if (!StringHelpers.TryGetTranslationExactOrLowerAscii(source, out var translated))
-        {
-            return source;
-        }
-
-        DynamicTextObservability.RecordTransform(Context, "SteamWorkshopUploaderView.Text", source, translated);
         return translated;
     }
 }

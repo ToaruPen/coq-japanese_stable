@@ -156,19 +156,7 @@ public static class PopupShowTranslationPatch
                 return;
             }
 
-            if (TradeUiPopupTranslationPatch.TryTranslatePerformOfferTradeWaterMessage(__0, out var tradeWaterTranslated))
-            {
-                __0 = tradeWaterTranslated;
-                return;
-            }
-
-            if (TradeUiPopupTranslationPatch.TryTranslateHasNothingToTradeMessage(__0, out var hasNothingTranslated))
-            {
-                __0 = hasNothingTranslated;
-                return;
-            }
-
-            __0 = PopupTranslationPatch.TranslatePopupTextForProducerRoute(__0, Context);
+            __0 = PopupShowSemanticPipeline.TranslateMessage(__0, Context);
         }
         catch (Exception ex)
         {

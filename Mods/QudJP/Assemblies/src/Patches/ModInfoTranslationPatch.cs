@@ -53,7 +53,7 @@ public static class ModInfoTranslationPatch
                     && instruction.operand is string literal
                     && __originalMethod is not null)
                 {
-                    instruction.operand = TranslateLiteral(__originalMethod.Name, literal);
+                    instruction.operand = ModManagementSemanticPipeline.TranslateLiteral(__originalMethod.Name, literal);
                 }
 
                 translated.Add(instruction);
@@ -68,57 +68,6 @@ public static class ModInfoTranslationPatch
         }
     }
 
-    internal static string TranslateLiteral(string methodName, string source)
-    {
-        return methodName switch
-        {
-            "ConfirmDependencies" => TranslateConfirmDependenciesLiteral(source),
-            "ConfirmUpdate" => TranslateConfirmUpdateLiteral(source),
-            "DownloadUpdate" => TranslateDownloadUpdateLiteral(source),
-            "AppendDependencyConfirmation" => TranslateAppendDependencyConfirmationLiteral(source),
-            _ => source,
-        };
-    }
-
-    internal static string TranslateLiteralForTests(string methodName, string source) => TranslateLiteral(methodName, source);
-
-    private static string TranslateConfirmDependenciesLiteral(string source)
-    {
-        return string.Equals(source, "{{W|Dependencies}}", StringComparison.Ordinal)
-            ? "{{W|依存関係}}"
-            : source;
-    }
-
-    private static string TranslateConfirmUpdateLiteral(string source)
-    {
-        return source switch
-        {
-            " has a new version available: " => "の新しいバージョンが利用可能です: ",
-            "\n\nDo you want to download it?" => "\n\nダウンロードしますか？",
-            ".\n\nDo you want to download it?" => ".\n\nダウンロードしますか？",
-            "{{W|Update Available}}" => "{{W|更新あり}}",
-            _ => source,
-        };
-    }
-
-    private static string TranslateDownloadUpdateLiteral(string source)
-    {
-        return source switch
-        {
-            "Updating " => string.Empty,
-            "..." => "を更新中…",
-            _ => source,
-        };
-    }
-
-    private static string TranslateAppendDependencyConfirmationLiteral(string source)
-    {
-        return source switch
-        {
-            "Invalid" => "無効",
-            "Version mismatch" => "バージョン不一致",
-            "Missing" => "未検出",
-            _ => source,
-        };
-    }
+    internal static string TranslateLiteralForTests(string methodName, string source) =>
+        ModManagementSemanticPipeline.TranslateLiteral(methodName, source);
 }

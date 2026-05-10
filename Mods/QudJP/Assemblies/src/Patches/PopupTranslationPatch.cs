@@ -445,6 +445,30 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (RepairTranslationPatch.TryTranslatePopupMessage(source, route, family, out var repairTranslated))
+        {
+            translated = repairTranslated;
+            return true;
+        }
+
+        if (PlayerDanceRitualTranslationPatch.TryTranslatePopupMessage(source, route, family, out var playerDanceRitualTranslated))
+        {
+            translated = playerDanceRitualTranslated;
+            return true;
+        }
+
+        if (BeguilingSifrahTranslationPatch.TryTranslatePopupMessage(source, route, family, out var beguilingSifrahTranslated))
+        {
+            translated = beguilingSifrahTranslated;
+            return true;
+        }
+
+        if (ProselytizationSifrahTranslationPatch.TryTranslatePopupMessage(source, route, family, out var proselytizationSifrahTranslated))
+        {
+            translated = proselytizationSifrahTranslated;
+            return true;
+        }
+
         if (MutationsApiTranslationPatch.TryTranslatePopupMessage(source, route, family, out var mutationTranslated))
         {
             translated = mutationTranslated;
@@ -1601,26 +1625,10 @@ public static class PopupTranslationPatch
         for (var index = 0; index < list.Count; index++)
         {
             var item = list[index];
-            if (item is null)
-            {
-                continue;
-            }
-
-            var field = AccessTools.Field(item.GetType(), "text");
-            if (field is null || field.FieldType != typeof(string))
-            {
-                continue;
-            }
-
-            var current = field.GetValue(item) as string;
-            var translated = TranslatePopupMenuItemText(current ?? string.Empty);
-            if (string.Equals(current, translated, StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            field.SetValue(item, translated);
-            list[index] = item;
+            _ = PopupTextFieldTranslator.TryTranslateTextField(
+                item,
+                TranslatePopupMenuItemText,
+                translateNullAsEmpty: true);
         }
     }
 

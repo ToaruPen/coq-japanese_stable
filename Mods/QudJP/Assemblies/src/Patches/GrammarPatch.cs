@@ -325,12 +325,7 @@ public static class GrammarMakeAndListPatch
         try
         {
             _ = __1;
-            var items = GrammarPatchHelpers.EnsureList(__0);
-            __result = GrammarPatchHelpers.BuildJapaneseList(items, "と");
-            GrammarPatchHelpers.LogTransform(
-                GrammarPatchHelpers.DescribeCountFamily("MakeAndList", items.Count),
-                string.Join(" | ", items),
-                __result);
+            __result = GrammarListSemanticPipeline.TranslateAndList(__0);
             return false;
         }
         catch (Exception ex)
@@ -362,12 +357,7 @@ public static class GrammarMakeOrListPatch
         try
         {
             _ = __1;
-            var items = GrammarPatchHelpers.EnsureList(__0);
-            __result = GrammarPatchHelpers.BuildJapaneseList(items, "または");
-            GrammarPatchHelpers.LogTransform(
-                GrammarPatchHelpers.DescribeCountFamily("MakeOrList", items.Count),
-                string.Join(" | ", items),
-                __result);
+            __result = GrammarListSemanticPipeline.TranslateOrList(__0);
             return false;
         }
         catch (Exception ex)

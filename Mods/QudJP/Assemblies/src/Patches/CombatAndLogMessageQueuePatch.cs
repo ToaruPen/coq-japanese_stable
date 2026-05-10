@@ -29,31 +29,7 @@ public static class CombatAndLogMessageQueuePatch
         {
             _ = Capitalize;
 
-            _ = PhysicsApplyDischargeTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || AutoActTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || PhysicsObjectEnteringCellTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || CrippleApplyTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || GameObjectHealTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || ExperienceAwardXpTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || GameObjectMoveTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || GameObjectPerformThrowTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || GameObjectToggleActivatedAbilityTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || CombatGetDefenderHitDiceTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || DoorAttemptOpenTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || CombatMeleeAttackTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || GameObjectDieTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || GameObjectRegeneraTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || ClonelingVehicleTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || PetEitherOrExplodeTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || ZoneWindChangeTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || GameObjectSpotTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || XrlCoreLostSightTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || DeployableInfrastructureTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || GameObjectEmitMessageTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || ZoneManagerTryThawZoneTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || ZoneManagerTickTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || ZoneManagerSetActiveZoneMapNotesTranslationPatch.TryTranslateQueuedMessage(ref Message, Color)
-                || ZoneManagerGenerateZoneTranslationPatch.TryTranslateQueuedMessage(ref Message, Color);
+            _ = MessageQueueSemanticPipeline.TryTranslateQueuedMessage(ref Message, Color);
 
             return true;
         }

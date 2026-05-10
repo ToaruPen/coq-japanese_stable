@@ -297,6 +297,10 @@ publishing, verify the rendered Workshop page and changelog in the target
 locale, for example `?l=japanese`, because Steam stores localized Change Notes
 separately.
 
+Steam's KeyValues parser can reject escaped double quotes inside long
+description or changenote fields. Keep Workshop text free of literal `"`
+characters; prefer backticks, Japanese corner quotes, or plain text instead.
+
 ## Upload Or Update
 
 Run steamcmd with the generated VDF:
@@ -335,6 +339,19 @@ The release tag must point at the commit that produced the staged content. If
 the repo changes after generating `dist/workshop/`, regenerate the release ZIP
 and Workshop VDF before uploading.
 
+Immediately before `steamcmd +workshop_build_item`, verify that the generated
+content folder and VDF still match the intended release ZIP:
+
+```bash
+just workshop-upload-preflight \
+  dist/release-assets/vX.Y.Z/QudJP-vX.Y.Z.zip \
+  X.Y.Z
+```
+
+This catches stale `dist/workshop/QudJP/` contents, mismatched Workshop item
+IDs, mismatched `contentfolder`, escaped newline sequences, and escaped double
+quotes before Steam can reject or publish the wrong upload.
+
 ## Post-Publish Smoke
 
 After Steam finishes processing the item:
@@ -342,13 +359,15 @@ After Steam finishes processing the item:
 1. Open the Workshop page and confirm the title, description, tags, preview
    image, visibility, file size, and change note.
    - For Apple Silicon support, confirm the description mentions
-     `Launch CavesOfQud (Rosetta).command`, Rosetta 2, and the one-shot
-     `arch -x86_64` launch command.
+     `Launch CavesOfQud (Rosetta).command`, Rosetta 2, Finder double-click use,
+     the `CoQ.app` picker fallback, and a quote-free `arch -x86_64` launch
+     example for advanced users.
 2. Subscribe to the item from a clean Steam client state or unsubscribe and
    resubscribe if updating an existing item.
 3. Validate the downloaded Workshop item against the staged content:
 
    ```bash
+   steamcmd +login "$STEAM_USER" +workshop_download_item 333640 3718988020 validate +quit
    just workshop-download-check X.Y.Z dist/release-assets/vX.Y.Z/QudJP-vX.Y.Z.zip
    ```
 
@@ -357,7 +376,9 @@ After Steam finishes processing the item:
    release ZIP DLL. Do not mark the release GO if the public Workshop download
    still contains an older DLL.
    Also confirm the downloaded `Launch CavesOfQud (Rosetta).command` exists and
-   is executable in the downloaded `QudJP` folder.
+   is executable in the downloaded `QudJP` folder. The launcher should guide
+   player-facing failures with macOS dialogs rather than requiring manual script
+   edits.
    On the default macOS Steam library, the downloaded Workshop folder is usually
    `~/Library/Application Support/Steam/steamapps/workshop/content/333640/3718988020/`.
 4. Launch the game, enable only QudJP for the smoke pass, and restart.

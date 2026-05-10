@@ -266,6 +266,39 @@ public sealed class PopupShowTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_UsesTradeOwnerHandoffBeforeProducerRoute()
+    {
+        WriteDictionary(
+            ("You don't have 50 drams of fresh water to even up the trade!", "dictionary exact fallback should not be used"),
+            ("You don't have {0} to even up the trade!", "dictionary template should not be used: {0}"));
+
+        var translated = RunShowWithPopupPatch(
+            "{{y|You don't have {{C|50}} drams of fresh water to even up the trade!}}");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{y|取引を釣り合わせるための{{C|50}}ドラムの真水が足りない！}}"));
+    }
+
+    [Test]
+    public void Prefix_FallsBackToProducerRoute()
+    {
+        WriteDictionary(("Delete save game?", "セーブデータを削除しますか？"));
+
+        var translated = RunShowWithPopupPatch("Delete save game?");
+
+        Assert.That(translated, Is.EqualTo("セーブデータを削除しますか？"));
+    }
+
+    [Test]
+    public void Prefix_ReturnsEmptyInputUnchanged()
+    {
+        var translated = RunShowWithPopupPatch(string.Empty);
+
+        Assert.That(translated, Is.EqualTo(string.Empty));
+    }
+
+    [Test]
     public void Prefix_LeavesUnknownPopupShowMessageUnchanged()
     {
         var harmonyId = CreateHarmonyId();
@@ -792,6 +825,26 @@ public sealed class PopupShowTranslationPatchTests
     {
         return AccessTools.Method(type, methodName)
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static string? RunShowWithPopupPatch(string source)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+
+            DummyPopupShow.Show(source);
+            return DummyPopupShow.LastShowMessage;
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private static string? RunShowYesNoWithPopupPatch(string source)

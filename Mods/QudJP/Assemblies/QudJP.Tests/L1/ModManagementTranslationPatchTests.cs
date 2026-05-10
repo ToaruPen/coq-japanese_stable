@@ -9,11 +9,19 @@ public sealed class ModManagementTranslationPatchTests
     [TestCase("{{y|by Example Author}}", "{{y|作者: Example Author}}")]
     [TestCase("{{C|by Example Author}}", "{{C|作者: Example Author}}")]
     [TestCase("by Example Author", "作者: Example Author")]
+    [TestCase("Created by Example Author", "Created by Example Author")]
+    [TestCase("{{y|Updated by Example Author}}", "{{y|Updated by Example Author}}")]
     [TestCase("Example Author", "Example Author")]
     public void ModMenuLine_TranslateAuthorLabel_TranslatesOnlyPrefix(string source, string expected)
     {
-        var translated = ModMenuLineTranslationPatch.TranslateAuthorLabel(source);
-        Assert.That(translated, Is.EqualTo(expected));
+        var translated = ModManagementSemanticPipeline.TranslateAuthorLabel(source);
+        var wrapperTranslated = ModMenuLineTranslationPatch.TranslateAuthorLabel(source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(expected));
+            Assert.That(wrapperTranslated, Is.EqualTo(expected));
+        });
     }
 
     [TestCase("ConfirmDependencies", "{{W|Dependencies}}", "{{W|依存関係}}")]
@@ -29,8 +37,14 @@ public sealed class ModManagementTranslationPatchTests
     [TestCase("OtherMethod", "Upload failed", "Upload failed")]
     public void ModInfo_TranslateLiteralForTests_ReturnsExpectedValue(string methodName, string source, string expected)
     {
-        var translated = ModInfoTranslationPatch.TranslateLiteralForTests(methodName, source);
-        Assert.That(translated, Is.EqualTo(expected));
+        var translated = ModManagementSemanticPipeline.TranslateLiteral(methodName, source);
+        var wrapperTranslated = ModInfoTranslationPatch.TranslateLiteralForTests(methodName, source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(expected));
+            Assert.That(wrapperTranslated, Is.EqualTo(expected));
+        });
     }
 
     [TestCase("Committing changes...", "変更を確定中…")]
@@ -57,7 +71,7 @@ public sealed class ModManagementTranslationPatchTests
             ]}
             """);
 
-        var translated = SteamWorkshopUploaderViewTranslationPatch.TranslateText(source);
+        var translated = ModManagementSemanticPipeline.TranslateWorkshopUploaderText(source);
         Assert.That(translated, Is.EqualTo(expected));
     }
 
@@ -67,7 +81,7 @@ public sealed class ModManagementTranslationPatchTests
         const string source =
             " contains scripts and has been permanently disabled in the options.\n{{K|(Options->Modding->Allow scripting mods)}}";
 
-        var translated = ModScrollerOneTranslationPatch.TranslateLiteralForTests(source);
+        var translated = ModManagementSemanticPipeline.TranslateDisabledScriptsSuffix(source);
 
         Assert.That(
             translated,

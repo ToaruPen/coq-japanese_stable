@@ -84,10 +84,8 @@ public static class GetDisplayNameProcessPatch
                 return;
             }
 
-            var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(__result, nameof(GetDisplayNameProcessPatch));
-            if (!string.Equals(translated, __result, StringComparison.Ordinal))
+            if (DisplayNameSemanticPipeline.TryTranslateResult(ref __result, nameof(GetDisplayNameProcessPatch)))
             {
-                __result = translated;
                 return;
             }
         }

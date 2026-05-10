@@ -28,6 +28,9 @@ just test-l2
 just test-l2g
 ```
 
+- Run `just test-l1`, `just test-l2`, and `just test-l2g` sequentially. Parallel
+  local invocations can race on shared `ReferenceStubs`/NuGet restore outputs.
+
 - Prefer producer-owned or stable mid-pipeline fixes. Many sink and near-sink routes are intentionally observation-only.
 - Use `~/dev/coq-decompiled_stable/` to trace upstream producers, verify signatures, and investigate unclaimed routes.
 - When a patch reflects into upstream game members, verify the real method
@@ -50,6 +53,14 @@ just test-l2g
   `[QudJP] Translator: missing key`, and `no pattern for` are dev-only by
   default and are rejected by the release DLL verifier when they remain in a
   release artifact.
+- Dev-only probes that touch Unity, TMP, or reflection should fail closed:
+  catch probe-building exceptions inside the probe and return a no-op result so
+  observability cannot change visible translation behavior. When a probe depends
+  on `#if` guards, add L1 policy coverage for the caller guard and release
+  no-op branch.
+- For `UnityEngine.Object`-derived coroutine hosts, components, transforms, or
+  UI objects, use `== null` / `!= null` when lifetime semantics matter. Pattern
+  null checks such as `is null` bypass Unity fake-null behavior.
 - Keep QJ004 as a narrow bypass guard, not a general C# logging or
   format-string analyzer. It should detect known verbose probe markers that
   are statically visible on direct logging calls. Do not expand it into

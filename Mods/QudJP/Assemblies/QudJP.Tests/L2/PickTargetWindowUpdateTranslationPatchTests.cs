@@ -65,7 +65,7 @@ public sealed class PickTargetWindowUpdateTranslationPatchTests
     public void TranslateCurrentText_TranslatesObservedLookCommandBarAtOwnerRoute()
     {
         WriteDictionary(
-            ("Look", "調べる"),
+            ("Look", "見る"),
             ("lock", "ロック"),
             ("interact", "操作する"),
             ("walk", "歩く"));
@@ -78,7 +78,7 @@ public sealed class PickTargetWindowUpdateTranslationPatchTests
             Assert.That(changed, Is.True);
             Assert.That(
                 DummyPickTargetWindow.currentText,
-                Is.EqualTo("調べる | {{W|ESC}} | {{hotkey|({{hotkey|F1}})}} {{W|ロ}}ック | {{hotkey|space}} 操作する | {{hotkey|{{hotkey|W}}}} 歩く"));
+                Is.EqualTo("見る | {{W|ESC}} | {{hotkey|({{hotkey|F1}})}} {{W|ロ}}ック | {{hotkey|space}} 操作する | {{hotkey|{{hotkey|W}}}} 歩く"));
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     nameof(PickTargetWindowUpdateTranslationPatch),

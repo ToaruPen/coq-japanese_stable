@@ -293,6 +293,26 @@ public sealed class GrammarPatchTests
     }
 
     [Test]
+    public void GrammarListSemanticPipeline_TranslatesAndLogsOrList()
+    {
+        var output = TestTraceHelper.CaptureTrace(() =>
+        {
+            var translated = GrammarListSemanticPipeline.TranslateOrList(new[] { "A", "B", "C" });
+
+            Assert.That(translated, Is.EqualTo("A、B、またはC"));
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(output, Does.Contain("DynamicTextProbe/v1"));
+            Assert.That(output, Does.Contain("route='GrammarPatch'"));
+            Assert.That(output, Does.Contain("family='MakeOrList/count=3+'"));
+            Assert.That(output, Does.Contain("source='A | B | C'"));
+            Assert.That(output, Does.Contain("translated='A、B、またはC'"));
+        });
+    }
+
+    [Test]
     public void MakeOrListPatch_JoinsThreeItemsInJapaneseStyle()
     {
         var result = string.Empty;

@@ -37,6 +37,156 @@ _ERROR_MARKERS = (
     "[QudJP] Bootstrap failed",
     "[QudJP] FontManager failed",
 )
+_PATCH_GROUP_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    ("message_queue", re.compile(r"AddPlayerMessage|MessageQueue")),
+    ("popup", re.compile(r"Popup(?::\w+|\.\w+)?")),
+    ("mod_management", re.compile(r"Mod(?:Info|Management|MenuLine)|SteamWorkshopUploader")),
+    ("chargen", re.compile(r"(?:CharGen|Chargen|EmbarkBuilder|CharacterBuilds)")),
+    ("journal", re.compile(r"Journal(?!Line)")),
+    ("zone_world", re.compile(r"(?:Zone(?:Manager|DisplayName|Wind)|World(?:Creation|Generation))")),
+    ("conversation", re.compile(r"Conversation")),
+    ("description_effect", re.compile(r"(?:Description|Effect|GivesRep|Cripple)")),
+    (
+        "game_event",
+        re.compile(
+            r"(?:GameObject|Combat|Physics|DeathReason|AsleepMessage|AutoAct|ExperienceAwardXp|"
+            r"DoorAttemptOpen|PetEitherOrExplode|XrlCoreLostSight|StartReplace)",
+        ),
+    ),
+    ("ability_ui", re.compile(r"(?:AbilityBar|AbilityManager|ActivatedAbility)")),
+    ("inventory_equipment_ui", re.compile(r"(?:Inventory|Equipment|PickGameObject|PickItem|TradeLine|TradeScreen)")),
+    ("quest_ui", re.compile(r"(?:QuestLog|Quests?|Quest)")),
+    ("factions_ui", re.compile(r"Factions")),
+    ("skills_powers_ui", re.compile(r"SkillsAndPowers")),
+    ("tinkering_ui", re.compile(r"Tinkering")),
+    ("cybernetics_ui", re.compile(r"Cybernetics")),
+    ("tutorial_ui", re.compile(r"Tutorial")),
+    ("game_summary_ui", re.compile(r"GameSummaryScreen")),
+    ("save_ui", re.compile(r"(?:SavesApi|SaveManagement)")),
+    ("book_help_ui", re.compile(r"(?:Book|Help|XRLManual|HighScores|StatisticGetHelpText)")),
+    (
+        "menu_options_ui",
+        re.compile(
+            r"(?:Accessibility|Options|MainMenu|Keybind|LoadingStatus|FilterBar|SaveManagement|"
+            r"MessageLog|Achievement)",
+        ),
+    ),
+    (
+        "lore_history_text",
+        re.compile(r"(?:Village|Historic|MarkovCorpus|BlueprintTemplate|DeployableInfrastructure|NameStyle)"),
+    ),
+    ("emit_message", re.compile(r"EmitMessage")),
+    (
+        "ui_update",
+        re.compile(
+            r'"(?:Update|LateUpdate|AfterRender|Tick|UpdateDescriptions|BeforeShow)"'
+            r"|:[A-Za-z0-9_.]*(?:Update|LateUpdate|AfterRender|Tick)\b",
+        ),
+    ),
+    ("ui_set_data", re.compile(r"setData")),
+    ("display_name", re.compile(r"GetDisplayName(?:RouteTranslator|ProcessPatch|Patch)?")),
+    ("grammar", re.compile(r"Grammar(?:Patch(?:Helpers)?|\.\w+)?")),
+    ("font_mesh", re.compile(r"ForceMeshUpdate|TextMeshPro|TmpText|TMP")),
+)
+_PATCH_PRIMARY_GROUP_PRIORITY = (
+    "message_queue_semantic_pipeline",
+    "mod_management_ui",
+    "popup_pipeline",
+    "chargen_producer",
+    "journal_producer",
+    "zone_world_producer",
+    "conversation_text",
+    "description_effect_text",
+    "game_event_text",
+    "ability_ui",
+    "inventory_equipment_ui",
+    "quest_ui",
+    "factions_ui",
+    "skills_powers_ui",
+    "tinkering_ui",
+    "cybernetics_ui",
+    "tutorial_ui",
+    "game_summary_ui",
+    "save_ui",
+    "book_help_ui",
+    "menu_options_ui",
+    "lore_history_text",
+    "runtime_ui_text",
+    "ui_line_set_data",
+    "display_name_route",
+    "grammar_route",
+    "emit_message_pipeline",
+    "producer_patch",
+    "support_helper",
+)
+_PATCH_TOUCH_POLICY_NO_TOUCH = "no_touch"
+_PATCH_TOUCH_POLICY_EDITABLE = "editable"
+_PATCH_NO_TOUCH_PATHS: frozenset[str] = frozenset(
+    {
+        "BaseLineWithTooltipStartTooltipPatch.cs",
+        "EquipmentLineRenderProbePatch.cs",
+        "GameSummaryScreenMenuBarsTranslationPatch.cs",
+        "InventoryAndEquipmentStatusScreenShowRepairPatch.cs",
+        "InventoryLineActiveTextRefreshPatch.cs",
+        "InventoryLineRenderProbePatch.cs",
+        "InventoryLineTranslationPatch.cs",
+        "LegacyUITextFontPatch.cs",
+        "LookTooltipContentPatch.cs",
+        "TextMeshProFontPatch.cs",
+        "TextMeshProUguiFontPatch.cs",
+        "TmpInputFieldFontPatch.cs",
+        "TooltipDisplayVisibilityPatch.cs",
+        "TooltipManagerSetTextAndSizePatch.cs",
+    },
+)
+_PATCH_RAW_TO_SEMANTIC_GROUP = {
+    "message_queue": "message_queue_semantic_pipeline",
+    "popup": "popup_pipeline",
+    "mod_management": "mod_management_ui",
+    "chargen": "chargen_producer",
+    "journal": "journal_producer",
+    "zone_world": "zone_world_producer",
+    "conversation": "conversation_text",
+    "description_effect": "description_effect_text",
+    "game_event": "game_event_text",
+    "ability_ui": "ability_ui",
+    "inventory_equipment_ui": "inventory_equipment_ui",
+    "quest_ui": "quest_ui",
+    "factions_ui": "factions_ui",
+    "skills_powers_ui": "skills_powers_ui",
+    "tinkering_ui": "tinkering_ui",
+    "cybernetics_ui": "cybernetics_ui",
+    "tutorial_ui": "tutorial_ui",
+    "game_summary_ui": "game_summary_ui",
+    "save_ui": "save_ui",
+    "book_help_ui": "book_help_ui",
+    "menu_options_ui": "menu_options_ui",
+    "lore_history_text": "lore_history_text",
+    "ui_update": "runtime_ui_text",
+    "ui_set_data": "ui_line_set_data",
+    "display_name": "display_name_route",
+    "grammar": "grammar_route",
+    "emit_message": "emit_message_pipeline",
+}
+_PATCH_NO_TOUCH_REASON_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    ("tmp_font_mesh", re.compile(r"TMPro|TextMeshPro|TMP_|TMPInputField|TmpText|ForceMeshUpdate")),
+    ("text_shell_renderer", re.compile(r"TextShellReplacementRenderer|TooltipReplacementRenderer")),
+    ("tmp_repairer", re.compile(r"TmpTextRepairer|TooltipTextRepairer|[A-Za-z0-9_]*FontFixer")),
+    ("inventory_line_active_refresh", re.compile(r"InventoryLineActiveTextRefreshPatch")),
+    ("font_patch", re.compile(r"TextMeshProFontPatch|TextMeshProUguiFontPatch|LegacyUITextFontPatch")),
+)
+_HARMONY_PATCH_ATTRIBUTE_PATTERN = re.compile(r"\[HarmonyPatch(?:\]|\()")
+_HARMONY_TARGET_METHOD_ATTRIBUTE_PATTERN = re.compile(r"\[HarmonyTargetMethod(?:\]|\()")
+_HARMONY_TARGET_METHODS_ATTRIBUTE_PATTERN = re.compile(r"\[HarmonyTargetMethods(?:\]|\()")
+_CLASS_NAME_PATTERN = re.compile(
+    r"\b(?:public|internal|private)?\s*(?:static\s+)?class\s+(?P<class_name>[A-Za-z_][A-Za-z0-9_]*)",
+)
+_PATCH_METHOD_PATTERNS = {
+    "prefix": re.compile(r"\b(?:public|private|internal)\s+static\s+[^{;=]+?\bPrefix\s*\("),
+    "postfix": re.compile(r"\b(?:public|private|internal)\s+static\s+[^{;=]+?\bPostfix\s*\("),
+    "transpiler": re.compile(r"\b(?:public|private|internal)\s+static\s+[^{;=]+?\bTranspiler\s*\("),
+    "finalizer": re.compile(r"\b(?:public|private|internal)\s+static\s+[^{;=]+?\bFinalizer\s*\("),
+}
 
 
 @dataclass(frozen=True)
@@ -110,6 +260,71 @@ class PhaseComparison:
     baseline_median_ms: float
     candidate_median_ms: float
     delta_median_ms: float
+
+
+@dataclass(frozen=True)
+class PatchSurfaceFile:
+    """Static Harmony patch shape for one C# patch file."""
+
+    path: str
+    source_kind: str
+    is_harmony_patch: bool
+    class_name: str | None
+    harmony_patch_attributes: int
+    harmony_target_method_attributes: int
+    harmony_target_methods_attributes: int
+    prefix_methods: int
+    postfix_methods: int
+    transpiler_methods: int
+    finalizer_methods: int
+    functional_family: str
+    semantic_groups: tuple[str, ...]
+    touch_policy: str
+    protected: bool
+    protection_reasons: tuple[str, ...]
+    groups: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class PatchSurfaceGroup:
+    """A semantic patch surface group derived from static markers."""
+
+    group: str
+    file_count: int
+    marker_count: int
+    protected_file_count: int
+    files: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class PatchFunctionalFamily:
+    """A primary implementation bucket for patch maintenance planning."""
+
+    group: str
+    file_count: int
+    protected_file_count: int
+    files: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class PatchSurfaceInventory:
+    """Static Harmony patch surface inventory for review and trend tracking."""
+
+    patch_root: str
+    patch_files: int
+    harmony_patch_attributes: int
+    harmony_target_method_attributes: int
+    harmony_target_methods_attributes: int
+    prefix_methods: int
+    postfix_methods: int
+    transpiler_methods: int
+    finalizer_methods: int
+    protected_files: int
+    source_files: int
+    harmony_patch_files: int
+    functional_families: tuple[PatchFunctionalFamily, ...]
+    groups: tuple[PatchSurfaceGroup, ...]
+    files: tuple[PatchSurfaceFile, ...]
 
 
 def parse_startup_log_text(text: str) -> ParsedStartupLog:
@@ -300,6 +515,250 @@ def write_top_phases_markdown(
                 for rank, phase in enumerate(matching[:limit], start=1)
             )
         lines.append("")
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def build_patch_surface_inventory(patch_root: Path) -> PatchSurfaceInventory:
+    """Build a deterministic static inventory of Harmony patch surfaces."""
+    patch_files = sorted(path for path in patch_root.rglob("*.cs") if path.is_file())
+    file_entries: list[PatchSurfaceFile] = []
+    group_files: dict[str, set[str]] = {}
+    group_protected_files: dict[str, set[str]] = {}
+    group_marker_counts: dict[str, int] = {}
+
+    for path in patch_files:
+        text = path.read_text(encoding="utf-8")
+        relative_path = path.relative_to(patch_root).as_posix()
+        file_groups: list[str] = []
+        harmony_patch_attributes = len(_HARMONY_PATCH_ATTRIBUTE_PATTERN.findall(text))
+        is_harmony_patch = harmony_patch_attributes > 0
+        source_kind = _classify_patch_source_kind(relative_path, text, is_harmony_patch=is_harmony_patch)
+        class_name = _extract_patch_class_name(text)
+        protection_reasons = _find_patch_protection_reasons(relative_path, text)
+        protected = bool(protection_reasons)
+        for group, pattern in _PATCH_GROUP_PATTERNS:
+            marker_count = len(pattern.findall(text))
+            if marker_count <= 0:
+                continue
+            file_groups.append(group)
+            group_files.setdefault(group, set()).add(relative_path)
+            if protected:
+                group_protected_files.setdefault(group, set()).add(relative_path)
+            group_marker_counts[group] = group_marker_counts.get(group, 0) + marker_count
+
+        raw_groups = tuple(sorted(file_groups))
+        semantic_groups = _classify_patch_semantic_groups(
+            groups=raw_groups,
+            harmony_patch_attributes=harmony_patch_attributes,
+        )
+        functional_family = _classify_patch_functional_family(semantic_groups)
+        file_entries.append(
+            PatchSurfaceFile(
+                path=relative_path,
+                source_kind=source_kind,
+                is_harmony_patch=is_harmony_patch,
+                class_name=class_name,
+                harmony_patch_attributes=harmony_patch_attributes,
+                harmony_target_method_attributes=len(_HARMONY_TARGET_METHOD_ATTRIBUTE_PATTERN.findall(text)),
+                harmony_target_methods_attributes=len(_HARMONY_TARGET_METHODS_ATTRIBUTE_PATTERN.findall(text)),
+                prefix_methods=len(_PATCH_METHOD_PATTERNS["prefix"].findall(text)),
+                postfix_methods=len(_PATCH_METHOD_PATTERNS["postfix"].findall(text)),
+                transpiler_methods=len(_PATCH_METHOD_PATTERNS["transpiler"].findall(text)),
+                finalizer_methods=len(_PATCH_METHOD_PATTERNS["finalizer"].findall(text)),
+                functional_family=functional_family,
+                semantic_groups=semantic_groups,
+                touch_policy=_PATCH_TOUCH_POLICY_NO_TOUCH if protected else _PATCH_TOUCH_POLICY_EDITABLE,
+                protected=protected,
+                protection_reasons=protection_reasons,
+                groups=raw_groups,
+            ),
+        )
+
+    groups = tuple(
+        PatchSurfaceGroup(
+            group=group,
+            file_count=len(files),
+            marker_count=group_marker_counts[group],
+            protected_file_count=len(group_protected_files.get(group, set())),
+            files=tuple(sorted(files)),
+        )
+        for group, files in sorted(group_files.items())
+    )
+    functional_families = _build_patch_functional_family_summaries(file_entries)
+
+    return PatchSurfaceInventory(
+        patch_root=_format_patch_root(patch_root),
+        patch_files=len(patch_files),
+        harmony_patch_attributes=sum(entry.harmony_patch_attributes for entry in file_entries),
+        harmony_target_method_attributes=sum(entry.harmony_target_method_attributes for entry in file_entries),
+        harmony_target_methods_attributes=sum(entry.harmony_target_methods_attributes for entry in file_entries),
+        prefix_methods=sum(entry.prefix_methods for entry in file_entries),
+        postfix_methods=sum(entry.postfix_methods for entry in file_entries),
+        transpiler_methods=sum(entry.transpiler_methods for entry in file_entries),
+        finalizer_methods=sum(entry.finalizer_methods for entry in file_entries),
+        protected_files=sum(1 for entry in file_entries if entry.protected),
+        source_files=len(file_entries),
+        harmony_patch_files=sum(1 for entry in file_entries if entry.is_harmony_patch),
+        functional_families=functional_families,
+        groups=groups,
+        files=tuple(file_entries),
+    )
+
+
+def _classify_patch_source_kind(relative_path: str, text: str, *, is_harmony_patch: bool) -> str:
+    if is_harmony_patch:
+        return "harmony_patch"
+    if "Translator" in relative_path or re.search(r"\bclass\s+[A-Za-z0-9_]*Translator\b", text):
+        return "translator"
+    return "helper"
+
+
+def _extract_patch_class_name(text: str) -> str | None:
+    match = _CLASS_NAME_PATTERN.search(text)
+    return None if match is None else match.group("class_name")
+
+
+def _find_patch_protection_reasons(relative_path: str, text: str) -> tuple[str, ...]:
+    path_haystack = relative_path
+    content_haystack = relative_path + "\n" + text
+    reasons: list[str] = []
+    if relative_path in _PATCH_NO_TOUCH_PATHS:
+        reasons.append("tmp_font_mesh")
+    for reason, pattern in _PATCH_NO_TOUCH_REASON_PATTERNS:
+        haystack = path_haystack if reason == "tmp_font_mesh" else content_haystack
+        if reason not in reasons and pattern.search(haystack):
+            reasons.append(reason)
+    return tuple(reasons)
+
+
+def _format_patch_root(patch_root: Path) -> str:
+    resolved = patch_root.resolve()
+    try:
+        return resolved.relative_to(_PROJECT_ROOT).as_posix()
+    except ValueError:
+        return patch_root.as_posix()
+
+
+def _classify_patch_functional_family(semantic_groups: Sequence[str]) -> str:
+    return min(semantic_groups, key=_PATCH_PRIMARY_GROUP_PRIORITY.index)
+
+
+def _classify_patch_semantic_groups(
+    *,
+    groups: tuple[str, ...],
+    harmony_patch_attributes: int,
+) -> tuple[str, ...]:
+    candidates = [
+        semantic_group
+        for raw_group, semantic_group in _PATCH_RAW_TO_SEMANTIC_GROUP.items()
+        if raw_group in groups
+    ]
+    if harmony_patch_attributes > 0:
+        candidates.append("producer_patch")
+    if not candidates:
+        candidates.append("support_helper")
+
+    deduplicated: list[str] = []
+    for group in candidates:
+        if group not in deduplicated:
+            deduplicated.append(group)
+    return tuple(deduplicated)
+
+
+def _build_patch_functional_family_summaries(files: Sequence[PatchSurfaceFile]) -> tuple[PatchFunctionalFamily, ...]:
+    grouped: dict[str, list[PatchSurfaceFile]] = {}
+    for file in files:
+        grouped.setdefault(file.functional_family, []).append(file)
+
+    return tuple(
+        PatchFunctionalFamily(
+            group=group,
+            file_count=len(group_files),
+            protected_file_count=sum(1 for file in group_files if file.protected),
+            files=tuple(file.path for file in sorted(group_files, key=lambda item: item.path)),
+        )
+        for group, group_files in sorted(
+            grouped.items(),
+            key=lambda item: _PATCH_PRIMARY_GROUP_PRIORITY.index(item[0]),
+        )
+    )
+
+
+def write_patch_surface_inventory_markdown(inventory: PatchSurfaceInventory, path: Path) -> None:
+    """Write a compact Markdown patch surface inventory."""
+    lines = [
+        "# Harmony Patch Surface Inventory",
+        "",
+        f"- patch root: `{inventory.patch_root}`",
+        f"- patch files: {inventory.patch_files}",
+        f"- `[HarmonyPatch]`: {inventory.harmony_patch_attributes}",
+        f"- `[HarmonyTargetMethod]`: {inventory.harmony_target_method_attributes}",
+        f"- `[HarmonyTargetMethods]`: {inventory.harmony_target_methods_attributes}",
+        f"- source files: {inventory.source_files}",
+        f"- Harmony patch files: {inventory.harmony_patch_files}",
+        f"- patch methods: Prefix {inventory.prefix_methods}, Postfix {inventory.postfix_methods}, "
+        f"Transpiler {inventory.transpiler_methods}, Finalizer {inventory.finalizer_methods}",
+        f"- protected no-touch files: {inventory.protected_files}",
+        "",
+        "## Functional Families",
+        "",
+        "| functional family | files | protected files |",
+        "| --- | ---: | ---: |",
+    ]
+    lines.extend(
+        f"| {group.group} | {group.file_count} | {group.protected_file_count} |"
+        for group in inventory.functional_families
+    )
+    lines.extend(
+        [
+            "",
+            "## Marker Groups",
+            "",
+            "| group | files | protected files | markers |",
+            "| --- | ---: | ---: | ---: |",
+        ],
+    )
+    lines.extend(
+        f"| {group.group} | {group.file_count} | {group.protected_file_count} | {group.marker_count} |"
+        for group in inventory.groups
+    )
+    lines.extend(
+        [
+            "",
+            "## Files",
+            "",
+            (
+                "| file | kind | functional family | touch policy | protected | protection reasons | groups | "
+                "patch attrs | target attrs | "
+                "target plural attrs | methods |"
+            ),
+            "| --- | --- | --- | --- | --- | --- | --- | ---: | ---: | ---: | --- |",
+        ],
+    )
+    lines.extend(
+        (
+            "| {path} | {kind} | {family} | {touch} | {protected} | {protection_reasons} | {groups} | "
+            "{patch} | {target} | {targets} | "
+            "P:{prefix} Po:{postfix} T:{transpiler} F:{finalizer} |"
+        ).format(
+            path=file.path,
+            kind=file.source_kind,
+            family=file.functional_family,
+            touch=file.touch_policy,
+            protected=str(file.protected).lower(),
+            protection_reasons=", ".join(file.protection_reasons) if file.protection_reasons else "",
+            groups=", ".join(file.groups) if file.groups else "",
+            patch=file.harmony_patch_attributes,
+            target=file.harmony_target_method_attributes,
+            targets=file.harmony_target_methods_attributes,
+            prefix=file.prefix_methods,
+            postfix=file.postfix_methods,
+            transpiler=file.transpiler_methods,
+            finalizer=file.finalizer_methods,
+        )
+        for file in inventory.files
+    )
+    lines.append("")
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
@@ -564,6 +1023,24 @@ def _top(args: argparse.Namespace) -> int:
     return 0
 
 
+def _patch_inventory(args: argparse.Namespace) -> int:
+    patch_root = _resolve_patch_inventory_root(args.patch_root)
+    inventory = build_patch_surface_inventory(patch_root)
+    _write_json(args.output, inventory)
+    if args.markdown is not None:
+        write_patch_surface_inventory_markdown(inventory, args.markdown)
+    return 0
+
+
+def _resolve_patch_inventory_root(patch_root: Path) -> Path:
+    resolved = patch_root if patch_root.is_absolute() else _PROJECT_ROOT / patch_root
+    if not resolved.is_dir():
+        message = f"Patch root does not exist: {resolved}"
+        raise FileNotFoundError(message)
+
+    return resolved
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -631,6 +1108,20 @@ def _build_parser() -> argparse.ArgumentParser:
     top.add_argument("--output", type=Path, required=True, help="JSON top phases output path.")
     top.add_argument("--markdown", type=Path, default=None, help="Optional Markdown top phases output path.")
     top.set_defaults(func=_top)
+
+    patch_inventory = subparsers.add_parser(
+        "patch-inventory",
+        help="Build a static Harmony patch surface inventory for review.",
+    )
+    patch_inventory.add_argument(
+        "--patch-root",
+        type=Path,
+        default=Path("Mods/QudJP/Assemblies/src/Patches"),
+        help="Root containing Harmony patch C# files.",
+    )
+    patch_inventory.add_argument("--output", type=Path, required=True, help="JSON inventory output path.")
+    patch_inventory.add_argument("--markdown", type=Path, default=None, help="Optional Markdown inventory output path.")
+    patch_inventory.set_defaults(func=_patch_inventory)
 
     return parser
 

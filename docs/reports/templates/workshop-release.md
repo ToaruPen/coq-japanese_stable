@@ -52,6 +52,7 @@ vX.Y.Z / <short-git-hash>
 - [ ] `just workshop-preflight X.Y.Z`
 - [ ] `just release-zip-check dist/release-assets/vX.Y.Z/QudJP-vX.Y.Z.zip`
 - [ ] `just build-workshop-upload dist/release-assets/vX.Y.Z/QudJP-vX.Y.Z.zip /tmp/qudjp-workshop-changenote.txt`
+- [ ] `just workshop-upload-preflight dist/release-assets/vX.Y.Z/QudJP-vX.Y.Z.zip X.Y.Z`
 
 ## Upload
 
@@ -64,6 +65,7 @@ vX.Y.Z / <short-git-hash>
 
 - [ ] Workshop page title, description, preview image, visibility, file size, and changenote checked
 - [ ] Subscribe/resubscribe checked
+- [ ] `steamcmd +login "$STEAM_USER" +workshop_download_item 333640 3718988020 validate +quit`
 - [ ] `just workshop-download-check X.Y.Z dist/release-assets/vX.Y.Z/QudJP-vX.Y.Z.zip`
 - [ ] Mod Manager lists QudJP with expected version and preview
 - [ ] Options screen renders Japanese text and CJK glyphs

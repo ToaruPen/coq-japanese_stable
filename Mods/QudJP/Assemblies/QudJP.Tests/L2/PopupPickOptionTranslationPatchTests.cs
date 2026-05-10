@@ -231,7 +231,8 @@ public sealed class PopupPickOptionTranslationPatchTests
             ("Close Menu", "メニューを閉じる"),
             ("collect liquid", "液体を採取"),
             ("get", "拾う"),
-            ("look", "調べる"),
+            ("look", "見る"),
+            ("examine", "調べる"),
             ("open", "開ける"),
             ("drop", "落とす"),
             ("eat", "食べる"),
@@ -255,7 +256,10 @@ public sealed class PopupPickOptionTranslationPatchTests
                 Is.EqualTo("{{W|[k]}} {{y|攻撃}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay("{{W|[l]}} {{y|look}}"),
-                Is.EqualTo("{{W|[l]}} {{y|調べる}}"));
+                Is.EqualTo("{{W|[l]}} {{y|見る}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay("{{W|[x]}} {{y|examine}}"),
+                Is.EqualTo("{{W|[x]}} {{y|調べる}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay("{{W|[c]}} {{y|collect liquid}}"),
                 Is.EqualTo("{{W|[c]}} {{y|液体を採取}}"));
@@ -507,7 +511,7 @@ public sealed class PopupPickOptionTranslationPatchTests
     public void Prefix_TranslatesSiblingHotkeyOptionsConsistently()
     {
         WriteDictionary(
-            ("[l] look", "[l] 調べる"),
+            ("[l] look", "[l] 見る"),
             ("[w] show effects", "[w] 効果を表示"),
             ("[n] detonate", "[n] 起爆"),
             ("Quit Without Saving", "セーブせずに終了"),
@@ -531,7 +535,7 @@ public sealed class PopupPickOptionTranslationPatchTests
                 DummyPopupGenericTarget.LastPickOptionOptions,
                 Is.EqualTo(new[]
                 {
-                    "[l] 調べる",
+                    "[l] 見る",
                     "[w] 効果を表示",
                     "[n] 起爆",
                     "セーブせずに終了",
