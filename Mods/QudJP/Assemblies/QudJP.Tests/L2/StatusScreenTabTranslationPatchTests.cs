@@ -7,6 +7,7 @@ namespace QudJP.Tests.L2;
 
 [TestFixture]
 [Category("L2")]
+[NonParallelizable]
 public sealed class StatusScreenTabTranslationPatchTests
 {
     private string tempDirectory = null!;
