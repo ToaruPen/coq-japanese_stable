@@ -88,10 +88,10 @@ public static class CharGenChromeTranslationPatch
 
             if (string.Equals(__originalMethod.Name, "BeforeShow", StringComparison.Ordinal))
             {
-                CharGenProducerTranslationHelpers.TranslateStringMember(__args[0], "title", Context);
+                CharGenTextSurface.TranslateWindowTitle(__args[0], "title", Context);
                 if (__args.Length > 1 && __args[1] is IEnumerable selections)
                 {
-                    __args[1] = CharGenProducerTranslationHelpers.MaterializeTranslatedFrameworkDataEnumerable(selections, Context);
+                    __args[1] = CharGenTextSurface.MaterializeTranslatedFrameworkData(selections, Context);
                 }
 
                 return;
@@ -99,7 +99,7 @@ public static class CharGenChromeTranslationPatch
 
             if (string.Equals(__originalMethod.Name, "setData", StringComparison.Ordinal))
             {
-                CharGenProducerTranslationHelpers.TranslateStringMember(__args[0], "Title", Context);
+                CharGenTextSurface.TranslateWindowTitle(__args[0], "Title", Context);
             }
         }
         catch (Exception ex)
