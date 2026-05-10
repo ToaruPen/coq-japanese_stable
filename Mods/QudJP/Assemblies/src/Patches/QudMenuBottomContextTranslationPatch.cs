@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -10,6 +11,10 @@ namespace QudJP.Patches;
 public static class QudMenuBottomContextTranslationPatch
 {
     private const string TargetTypeName = "Qud.UI.QudMenuBottomContext";
+    private static readonly Regex NestedHotkeyLabelPattern =
+        new Regex(
+            @"^\{\{(?<labelColor>[A-Za-z]+)\|\{\{(?<hotkeyColor>[A-Za-z]+)\|(?<hotkey>\[[^\]]+\])\}\}\s*(?<label>.*?)\}\}$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
 
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
@@ -88,8 +93,9 @@ public static class QudMenuBottomContextTranslationPatch
                 continue;
             }
 
+            var normalized = NormalizeNestedHotkeyLabel(current!);
             var translated = PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute(
-                current!,
+                normalized,
                 nameof(QudMenuBottomContextTranslationPatch));
 
             if (string.Equals(translated, current, StringComparison.Ordinal))
@@ -100,6 +106,32 @@ public static class QudMenuBottomContextTranslationPatch
             textField.SetValue(item, translated);
             items[index] = item;
         }
+    }
+
+    private static string NormalizeNestedHotkeyLabel(string source)
+    {
+        var match = NestedHotkeyLabelPattern.Match(source);
+        if (!match.Success)
+        {
+            return source;
+        }
+
+        var hotkey = match.Groups["hotkey"].Value;
+        var label = match.Groups["label"].Value;
+        if (label.Length == 0)
+        {
+            return source;
+        }
+
+        return "{{"
+            + match.Groups["hotkeyColor"].Value
+            + "|"
+            + hotkey
+            + "}} {{"
+            + match.Groups["labelColor"].Value
+            + "|"
+            + label
+            + "}}";
     }
 
     private static void LogProbe(object? contextInstance, string phase)

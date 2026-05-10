@@ -301,6 +301,55 @@ public sealed class ColorCodePreserverTests
     }
 
     [Test]
+    public void RestoreWholeSliceBoundaryWrappersPreservingTranslatedOwnership_IgnoresOuterWholeSourceWrapper()
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip("{{y|{{W|[Esc]}} Back}}");
+
+        var restored = ColorAwareTranslationComposer.RestoreWholeSliceBoundaryWrappersPreservingTranslatedOwnership(
+            "[Esc]",
+            spans,
+            sourceStart: 0,
+            sourceLength: "[Esc]".Length);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stripped, Is.EqualTo("[Esc] Back"));
+            Assert.That(restored, Is.EqualTo("{{W|[Esc]}}"));
+        });
+    }
+
+    [Test]
+    public void RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership_RestoresOuterWrapperAroundNestedSlice()
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip("{{y|{{W|[Esc]}} Back}}");
+
+        var restored = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            "戻る",
+            spans,
+            stripped.Length);
+
+        Assert.That(restored, Is.EqualTo("{{y|戻る}}"));
+    }
+
+    [Test]
+    public void RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership_RestoresAdjacentHotkeyLabelWrapper()
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip("{{W|[Esc]}} {{y|Back}}");
+        var match = System.Text.RegularExpressions.Regex.Match(stripped, "^\\[[^\\]]+\\]\\s+(?<label>.+)$");
+
+        var restored = ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
+            "戻る",
+            spans,
+            match.Groups["label"]);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stripped, Is.EqualTo("[Esc] Back"));
+            Assert.That(restored, Is.EqualTo("{{y|戻る}}"));
+        });
+    }
+
+    [Test]
     public void RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership_PreservesNestedQudAndTmpColorWrappers()
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip("{{W|<color=#44ff88>No</color>}}");

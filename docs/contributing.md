@@ -15,7 +15,7 @@ QudJP へのコントリビューションを歓迎します。このドキュ�
 - **Caves of Qud** を Steam で所有していること (C# ビルドおよび L2G テストで `Assembly-CSharp.dll` を参照するため)
 - 対応 OS: macOS / Linux / Windows / WSL2
 - .NET SDK `10.0.x` (`QudJP.Tests.csproj` が `net10.0` をターゲットするため。これを入れておけば `QudJP.csproj` の `net48` ビルドも同じ SDK で可能)
-- Python `3.12` 以上
+- Python `3.12` 以上 (`.python-version` で推奨ローカル実行系を指定)
 - `just` — 開発・検証コマンドの標準入口
 - `uv` — Python ツールと release helper の実行環境
 - (任意) `ast-grep` — Python スキャナーツールと CI で使用
@@ -280,12 +280,12 @@ python3 -m json.tool \
 
 ゲーム内で実際に反映されることを確認するため、Mod をゲームの Mods ディレクトリにデプロイして L3 (手動プレイ) で最終検証してください。
 
-`python3.12 scripts/sync_mod.py` は macOS / Windows / WSL2 / Linux の既定パスを解決します。`rsync` が無い環境では Python コピー実装に自動フォールバックします。
+`just sync-mod` は macOS / Windows / WSL2 / Linux の既定パスを解決します。`rsync` が無い環境では Python コピー実装に自動フォールバックします。
 
 非標準パスへ出したい場合は `--destination` (`--dest`) を使ってください。例:
 
 ```bash
-python3.12 scripts/sync_mod.py \
+uv run python scripts/sync_mod.py \
   --destination "/mnt/c/Users/<name>/AppData/LocalLow/Freehold Games/CavesOfQud/Mods/QudJP"
 ```
 
@@ -324,7 +324,8 @@ python3.12 scripts/sync_mod.py \
 
 ### Python
 
-- Python ベースライン: `3.12+`
+- Python 互換ベースライン: `3.12+`。通常は `.python-version` と `uv run`
+  / `just` recipe を使う。
 - Ruff `select = ["ALL"]` — 全ルールを有効化 (`pyproject.toml` で `D100` / `D104` / `COM812` / `ISC001` のみ除外)
 - McCabe 複雑度 `C ≤ 10`、pylint 限界: `max-branches=10` / `max-returns=6` / `max-args=6` / `max-statements=50`
 - 全パブリック関数に型ヒントと Google スタイル docstring が必要

@@ -1055,7 +1055,9 @@ public static class PopupTranslationPatch
         out string translated)
     {
         translated = source;
+        var isBottomContextRoute = string.Equals(route, nameof(QudMenuBottomContextTranslationPatch), StringComparison.Ordinal);
         if (!string.Equals(route, nameof(PopupPickOptionTranslationPatch), StringComparison.Ordinal)
+            && !isBottomContextRoute
             && !string.Equals(route, nameof(SelectableTextMenuItemTranslationPatch), StringComparison.Ordinal))
         {
             return false;
@@ -1076,16 +1078,30 @@ public static class PopupTranslationPatch
                 return false;
             }
 
-            var hotkey = ColorAwareTranslationComposer.RestoreSlice(
-                "[" + hotkeyMatch.Groups["hotkey"].Value + "]",
-                spans,
-                hotkeyMatch.Index,
-                hotkeyMatch.Groups["hotkey"].Length + 2);
+            var hotkeySourceLength = hotkeyMatch.Groups["hotkey"].Length + 2;
+            var hotkey = isBottomContextRoute
+                ? ColorAwareTranslationComposer.RestoreWholeSliceBoundaryWrappersPreservingTranslatedOwnership(
+                    "[" + hotkeyMatch.Groups["hotkey"].Value + "]",
+                    spans,
+                    hotkeyMatch.Index,
+                    hotkeySourceLength)
+                : ColorAwareTranslationComposer.RestoreSlice(
+                    "[" + hotkeyMatch.Groups["hotkey"].Value + "]",
+                    spans,
+                    hotkeyMatch.Index,
+                    hotkeySourceLength);
             var labelWithWrappers = ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
                 translatedLabel,
                 spans,
                 hotkeyMatch.Groups["label"]);
             var visibleTranslation = hotkey + " " + labelWithWrappers;
+            if (isBottomContextRoute)
+            {
+                translated = visibleTranslation;
+                DynamicTextObservability.RecordTransform(route, family + ".HotkeyLabel", source, translated);
+                return true;
+            }
+
             translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
                 visibleTranslation,
                 spans,

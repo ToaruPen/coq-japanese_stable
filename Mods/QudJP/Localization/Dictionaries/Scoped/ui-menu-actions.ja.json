@@ -12,6 +12,7 @@
     { "key": "activate", "text": "起動する" },
     { "key": "apply", "text": "使用する" },
     { "key": "attack", "text": "攻撃" },
+    { "key": "back", "text": "戻る" },
     { "key": "cancel", "text": "キャンセル" },
     { "key": "chat", "text": "話す" },
     { "key": "close", "text": "閉める" },

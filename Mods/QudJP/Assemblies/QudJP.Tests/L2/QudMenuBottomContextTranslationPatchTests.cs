@@ -38,45 +38,93 @@ public sealed class QudMenuBottomContextTranslationPatchTests
         WriteDictionary(("Inspect", "調べる"));
 
         var context = new DummyQudMenuBottomContext("Inspect");
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
+        RunRefreshButtonsWithPatch(context);
 
-        try
+        Assert.Multiple(() =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyQudMenuBottomContext), nameof(DummyQudMenuBottomContext.RefreshButtons)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(QudMenuBottomContextTranslationPatch), nameof(QudMenuBottomContextTranslationPatch.Prefix))));
-
-            context.RefreshButtons();
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("調べる"));
-                Assert.That(
-                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
-                        nameof(QudMenuBottomContextTranslationPatch),
-                        "Popup.ProducerMenuItem.Exact"),
-                    Is.GreaterThan(0));
-                Assert.That(
-                    SinkObservation.GetHitCountForTests(
-                        nameof(PopupTranslationPatch),
-                        nameof(QudMenuBottomContextTranslationPatch),
-                        SinkObservation.ObservationOnlyDetail,
-                        "Inspect",
-                        "Inspect"),
-                    Is.EqualTo(0));
-            });
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+            Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("調べる"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(QudMenuBottomContextTranslationPatch),
+                    "Popup.ProducerMenuItem.Exact"),
+                Is.GreaterThan(0));
+            Assert.That(
+                SinkObservation.GetHitCountForTests(
+                    nameof(PopupTranslationPatch),
+                    nameof(QudMenuBottomContextTranslationPatch),
+                    SinkObservation.ObservationOnlyDetail,
+                    "Inspect",
+                    "Inspect"),
+                Is.EqualTo(0));
+        });
     }
 
     [Test]
     public void Prefix_StripsDirectTranslationMarker_FromMenuItemText()
     {
         var context = new DummyQudMenuBottomContext("調べる");
+
+        RunRefreshButtonsWithPatch(context);
+
+        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("調べる"));
+    }
+
+    [Test]
+    public void Prefix_TranslatesAndFlattensNestedHotkeyLabel()
+    {
+        WriteScopedMenuActionDictionary(("back", "戻る"));
+
+        var context = new DummyQudMenuBottomContext("{{y|{{W|[Esc]}} Back}}");
+
+        RunRefreshButtonsWithPatch(context);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("{{W|[Esc]}} {{y|戻る}}"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(QudMenuBottomContextTranslationPatch),
+                    "Popup.ProducerMenuItem.HotkeyLabel"),
+                Is.GreaterThan(0));
+        });
+    }
+
+    [Test]
+    public void Prefix_FlattensNestedHotkeyLabel_WhenLabelIsUntranslated()
+    {
+        var context = new DummyQudMenuBottomContext("{{y|{{W|[Esc]}} Back}}");
+
+        RunRefreshButtonsWithPatch(context);
+
+        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("{{W|[Esc]}} {{y|Back}}"));
+    }
+
+    [TestCase("{{y|{{W|[~Accept]}} Continue}}", "{{W|[~Accept]}} {{y|続ける}}")]
+    [TestCase("{{y|{{W|[space]}} Continue}}", "{{W|[space]}} {{y|続ける}}")]
+    public void Prefix_PreservesNestedHotkeyTokenAndBrackets(string source, string expected)
+    {
+        WriteScopedMenuActionDictionary(("continue", "続ける"));
+
+        var context = new DummyQudMenuBottomContext(source);
+
+        RunRefreshButtonsWithPatch(context);
+
+        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void Prefix_PreservesMalformedNestedHotkeyLabel()
+    {
+        var source = "{{y|{{W|Esc}} Back}}";
+        var context = new DummyQudMenuBottomContext(source);
+
+        Assert.DoesNotThrow(() => RunRefreshButtonsWithPatch(context));
+
+        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo(source));
+    }
+
+    private static void RunRefreshButtonsWithPatch(DummyQudMenuBottomContext context)
+    {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
 
@@ -87,8 +135,6 @@ public sealed class QudMenuBottomContextTranslationPatchTests
                 prefix: new HarmonyMethod(RequireMethod(typeof(QudMenuBottomContextTranslationPatch), nameof(QudMenuBottomContextTranslationPatch.Prefix))));
 
             context.RefreshButtons();
-
-            Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("調べる"));
         }
         finally
         {
@@ -116,6 +162,20 @@ public sealed class QudMenuBottomContextTranslationPatchTests
 
     private void WriteDictionary(params (string key, string text)[] entries)
     {
+        WriteDictionaryFile(Path.Combine(tempDirectory, "bottom-context.ja.json"), entries);
+        Translator.SetDictionaryDirectoryForTests(tempDirectory);
+    }
+
+    private void WriteScopedMenuActionDictionary(params (string key, string text)[] entries)
+    {
+        var scopedDirectory = Path.Combine(tempDirectory, "Scoped");
+        Directory.CreateDirectory(scopedDirectory);
+        WriteDictionaryFile(Path.Combine(scopedDirectory, "ui-menu-actions.ja.json"), entries);
+        Translator.SetDictionaryDirectoryForTests(tempDirectory);
+    }
+
+    private static void WriteDictionaryFile(string path, params (string key, string text)[] entries)
+    {
         var builder = new StringBuilder();
         builder.Append('{');
         builder.Append("\"entries\":[");
@@ -137,9 +197,7 @@ public sealed class QudMenuBottomContextTranslationPatchTests
         builder.Append("]}");
         builder.AppendLine();
 
-        var path = Path.Combine(tempDirectory, "bottom-context.ja.json");
         File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
-        Translator.SetDictionaryDirectoryForTests(tempDirectory);
     }
 
     private static string EscapeJson(string value)
