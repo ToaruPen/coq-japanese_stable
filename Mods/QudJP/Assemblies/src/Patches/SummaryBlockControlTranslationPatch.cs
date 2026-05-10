@@ -13,23 +13,10 @@ public static class SummaryBlockControlTranslationPatch
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
     {
-        var targetType = GameTypeResolver.FindType("XRL.UI.Framework.SummaryBlockControl", "SummaryBlockControl");
-        if (targetType is null)
-        {
-            Trace.TraceError("QudJP: {0} target type not found.", Context);
-            return null;
-        }
-
-        var frameworkDataElementType = GameTypeResolver.FindType("XRL.UI.Framework.FrameworkDataElement", "FrameworkDataElement");
-        var method = frameworkDataElementType is null
-            ? null
-            : AccessTools.Method(targetType, "setData", new[] { frameworkDataElementType });
-        if (method is null)
-        {
-            Trace.TraceError("QudJP: {0}.setData(FrameworkDataElement) not found.", Context);
-        }
-
-        return method;
+        return FrameworkDataElementSetDataTargetResolver.Resolve(
+            Context,
+            "XRL.UI.Framework.SummaryBlockControl",
+            "SummaryBlockControl");
     }
 
     public static void Postfix(object? __instance)

@@ -208,25 +208,12 @@ public static class PopupPickOptionTranslationPatch
                 continue;
             }
 
-            var textField = AccessTools.Field(item.GetType(), "text");
-            if (textField is null || textField.FieldType != typeof(string))
-            {
-                continue;
-            }
-
-            var current = textField.GetValue(item) as string;
-            if (string.IsNullOrEmpty(current))
-            {
-                continue;
-            }
-
-            var translated = PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute(current!, Context);
-            if (string.Equals(current, translated, StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            textField.SetValue(item, translated);
+            PopupTextFieldTranslator.TryTranslateTextField(item, TranslatePopupMenuItemText);
         }
+    }
+
+    private static string TranslatePopupMenuItemText(string source)
+    {
+        return PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute(source, Context);
     }
 }

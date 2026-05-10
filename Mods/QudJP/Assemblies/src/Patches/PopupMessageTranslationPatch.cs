@@ -67,27 +67,8 @@ public static class PopupMessageTranslationPatch
         for (var itemIndex = 0; itemIndex < list.Count; itemIndex++)
         {
             var item = list[itemIndex];
-            if (item is null)
+            if (PopupTextFieldTranslator.TryTranslateTextField(item, text => TranslatePopupText(text, family)!))
             {
-                continue;
-            }
-
-            var textField = AccessTools.Field(item.GetType(), "text");
-            if (textField is null || textField.FieldType != typeof(string))
-            {
-                continue;
-            }
-
-            var current = textField.GetValue(item) as string;
-            if (string.IsNullOrEmpty(current))
-            {
-                continue;
-            }
-
-            var translated = TranslatePopupText(current!, family);
-            if (!string.Equals(translated, current, StringComparison.Ordinal))
-            {
-                textField.SetValue(item, translated);
                 list[itemIndex] = item;
             }
         }

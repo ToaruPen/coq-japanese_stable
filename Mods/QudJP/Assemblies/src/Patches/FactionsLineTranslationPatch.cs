@@ -8,6 +8,8 @@ namespace QudJP.Patches;
 [HarmonyPatch]
 public static class FactionsLineTranslationPatch
 {
+    private const string Context = nameof(FactionsLineTranslationPatch);
+
     private static readonly string[] TextFieldNames =
     {
         "barText",
@@ -20,23 +22,7 @@ public static class FactionsLineTranslationPatch
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
     {
-        var targetType = GameTypeResolver.FindType("Qud.UI.FactionsLine", "FactionsLine");
-        if (targetType is null)
-        {
-            Trace.TraceError("QudJP: FactionsLineTranslationPatch target type not found.");
-            return null;
-        }
-
-        var frameworkDataElementType = GameTypeResolver.FindType("XRL.UI.Framework.FrameworkDataElement", "FrameworkDataElement");
-        var method = frameworkDataElementType is null
-            ? null
-            : AccessTools.Method(targetType, "setData", new[] { frameworkDataElementType });
-        if (method is null)
-        {
-            Trace.TraceError("QudJP: FactionsLineTranslationPatch.setData(FrameworkDataElement) not found.");
-        }
-
-        return method;
+        return FrameworkDataElementSetDataTargetResolver.Resolve(Context, "Qud.UI.FactionsLine", "FactionsLine");
     }
 
     public static void Postfix(object? __instance, object? data)

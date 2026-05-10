@@ -18,23 +18,7 @@ public static class TradeLineTranslationPatch
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
     {
-        var targetType = GameTypeResolver.FindType("Qud.UI.TradeLine", "TradeLine");
-        if (targetType is null)
-        {
-            Trace.TraceError("QudJP: {0} target type not found.", Context);
-            return null;
-        }
-
-        var frameworkDataElementType = GameTypeResolver.FindType("XRL.UI.Framework.FrameworkDataElement", "FrameworkDataElement");
-        var method = frameworkDataElementType is null
-            ? null
-            : AccessTools.Method(targetType, "setData", new[] { frameworkDataElementType });
-        if (method is null)
-        {
-            Trace.TraceError("QudJP: {0}.setData(FrameworkDataElement) not found.", Context);
-        }
-
-        return method;
+        return FrameworkDataElementSetDataTargetResolver.Resolve(Context, "Qud.UI.TradeLine", "TradeLine");
     }
 
     public static void Postfix(object? __instance)
