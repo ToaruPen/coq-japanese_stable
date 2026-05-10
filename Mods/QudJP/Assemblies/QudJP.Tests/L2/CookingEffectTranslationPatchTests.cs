@@ -163,6 +163,45 @@ public sealed class CookingEffectTranslationPatchTests
         Assert.That(translated, Is.EqualTo("酸耐性+12\n筋力+4\nunchanged line"));
     }
 
+    [TestCase(nameof(DummyCookingEffectTextTarget.GetProceduralEffectDescription))]
+    [TestCase(nameof(DummyCookingEffectTextTarget.GetTemplatedProceduralEffectDescription))]
+    public void Postfix_HandlesProceduralEffectDescriptionLines_EmptyInput_WhenPatched(string methodName)
+    {
+        var target = new DummyCookingEffectTextTarget
+        {
+            ReturnValue = string.Empty,
+        };
+
+        var translated = InvokePatched(target, methodName);
+        Assert.That(translated, Is.Empty);
+    }
+
+    [TestCase(nameof(DummyCookingEffectTextTarget.GetProceduralEffectDescription))]
+    [TestCase(nameof(DummyCookingEffectTextTarget.GetTemplatedProceduralEffectDescription))]
+    public void Postfix_HandlesProceduralEffectDescriptionLines_ColorTags_WhenPatched(string methodName)
+    {
+        var target = new DummyCookingEffectTextTarget
+        {
+            ReturnValue = "@they get +<color=yellow>31</color>% max HP for 1 hour.",
+        };
+
+        var translated = InvokePatched(target, methodName);
+        Assert.That(translated, Is.EqualTo("@they は1時間のあいだ最大HP+<color=yellow>31</color>%を得る。"));
+    }
+
+    [TestCase(nameof(DummyCookingEffectTextTarget.GetProceduralEffectDescription))]
+    [TestCase(nameof(DummyCookingEffectTextTarget.GetTemplatedProceduralEffectDescription))]
+    public void Postfix_HandlesProceduralEffectDescriptionLines_Marker_WhenPatched(string methodName)
+    {
+        var target = new DummyCookingEffectTextTarget
+        {
+            ReturnValue = "\u0001@they get +31% max HP for 1 hour.",
+        };
+
+        var translated = InvokePatched(target, methodName);
+        Assert.That(translated, Is.EqualTo("\u0001@they get +31% max HP for 1 hour."));
+    }
+
     [Test]
     public void Postfix_TranslatesTemplatedProceduralEffectDescriptionLines_WhenPatched()
     {

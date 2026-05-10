@@ -124,6 +124,7 @@ public sealed class QudJPModTests
 
         Assert.Multiple(() =>
         {
+            Assert.That(patchTypes, Does.Contain(typeof(MessageQueueTranslationPatch)));
             Assert.That(patchTypes, Does.Not.Contain(typeof(MessageLogPatch)));
             Assert.That(patchTypes, Does.Not.Contain(typeof(PhysicsEnterCellPassByTranslationPatch)));
             Assert.That(patchTypes, Does.Not.Contain(typeof(ZoneManagerSetActiveZoneMessageQueuePatch)));
