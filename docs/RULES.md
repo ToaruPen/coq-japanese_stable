@@ -38,6 +38,11 @@ signals. Do not add direct Unity log writes for verbose probe families such as
 verifier rejects those direct marker strings when they remain in release
 artifacts.
 
+Dictionary-noise diagnostics, including duplicate-key observations that do not
+change the selected translation, are verbose probes rather than release
+warnings. Keep normal `Player.log` startup paths focused on load counts,
+important build state, and actionable errors.
+
 ## Route ownership
 
 `Ownership` means the route where QudJP can safely define the translation strategy for a string:
@@ -176,6 +181,10 @@ For color-aware restoration:
 - do not add ad hoc restore logic in unrelated files when a shared helper already defines the contract
 
 Mixed Qud markup and TMP markup must be fixed route-by-route, with tests that preserve the exact broken input shape.
+
+Do not infer Qud color names from the code letter. Verify the active mapping in
+`ConsoleLib.Console.ColorUtility` when behavior depends on a specific rendered
+color; for the current game, `W` renders yellow and `Y` renders white.
 
 ## Tooltip and pre-render wrapping rules
 
