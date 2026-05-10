@@ -21,7 +21,7 @@ internal static class DelayedSceneProbeScheduler
         _ = screenInstance;
 
         var runner = EnsureHost();
-        if (runner is null)
+        if (runner == null)
         {
             return;
         }
@@ -36,7 +36,7 @@ internal static class DelayedSceneProbeScheduler
 
     private static ProbeHost? EnsureHost()
     {
-        if (host is not null)
+        if (host != null)
         {
             return host;
         }

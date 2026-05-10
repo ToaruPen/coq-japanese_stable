@@ -28,6 +28,10 @@ public sealed class UnityApiCompatibilityTests
             + @"|\bexisting\s*\?\.\s*GetComponent\s*<",
         SourceRegexOptions);
 
+    private static readonly Regex DelayedProbeSchedulerUnityObjectPatternNullCheck = new(
+        @"\b(?:runner|host|component)\s+is\s+(?:not\s+)?null\b",
+        SourceRegexOptions);
+
     private static readonly Regex OriginalTmpLifecycleCallPattern = new(
         @"InventoryLineTmpLifecycleObservability\s*\.\s*LogOriginalTmpLifecycle\s*\(",
         SourceRegexOptions);
@@ -171,6 +175,29 @@ public sealed class UnityApiCompatibilityTests
             source,
             NUnit.Framework.Does.Not.Match(TooltipRendererUnityObjectPatternNullCheck),
             "UnityEngine.Object-derived tooltip renderer values require ==/!= null so Unity fake-null semantics are preserved.");
+    }
+
+    [NUnit.Framework.Test]
+    public void DelayedProbeSchedulers_UseUnityNullSemanticsForCoroutineHosts()
+    {
+        var sourceRoot = Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Assemblies",
+            "src",
+            "Observability");
+
+        foreach (var sourcePath in Directory.EnumerateFiles(sourceRoot, "Delayed*ProbeScheduler.cs", SearchOption.TopDirectoryOnly))
+        {
+            var source = File.ReadAllText(sourcePath);
+
+            NUnit.Framework.Assert.That(
+                source,
+                NUnit.Framework.Does.Not.Match(DelayedProbeSchedulerUnityObjectPatternNullCheck),
+                Path.GetRelativePath(TestProjectPaths.GetRepositoryRoot(), sourcePath)
+                    + " should use ==/!= null for UnityEngine.Object-derived coroutine hosts and components.");
+        }
     }
 
     [NUnit.Framework.TestCase("InventoryLineRenderProbePatch.cs")]
