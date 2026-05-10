@@ -61,6 +61,17 @@ internal sealed class DummyInventoryScreenTarget
     }
 }
 
+internal sealed class InventoryScreen
+{
+    public DummyLegacyBuffer Buffer { get; } = new();
+
+    public void Show()
+    {
+        Buffer.Write(" {{W|B}} to exit ");
+        Buffer.Write("< {{W|LB}} Character | Equipment {{W|RB}} >");
+    }
+}
+
 internal sealed class DummyStatusScreenTarget
 {
     public DummyLegacyBuffer Buffer { get; } = new();

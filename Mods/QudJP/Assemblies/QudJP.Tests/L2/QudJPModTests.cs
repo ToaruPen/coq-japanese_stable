@@ -1,5 +1,6 @@
 using System.Reflection;
 using HarmonyLib;
+using QudJP.Patches;
 
 namespace QudJP.Tests.L2;
 
@@ -113,6 +114,54 @@ public sealed class QudJPModTests
             Assert.That(patchTypes, Does.Contain(typeof(PatchAllTestPatch)));
             Assert.That(patchTypes, Does.Not.Contain(typeof(QudJPModTests)));
             Assert.That(patchTypes, Does.Not.Contain(typeof(PatchAllDummyTarget)));
+        });
+    }
+
+    [Test]
+    public void GetHarmonyPatchTypes_ExcludesMessageQueueHelperPrefixClasses()
+    {
+        var patchTypes = QudJPMod.GetHarmonyPatchTypes(typeof(MessageLogPatch).Assembly);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(patchTypes, Does.Contain(typeof(MessageQueueTranslationPatch)));
+            Assert.That(patchTypes, Does.Not.Contain(typeof(MessageLogPatch)));
+            Assert.That(patchTypes, Does.Not.Contain(typeof(PhysicsEnterCellPassByTranslationPatch)));
+            Assert.That(patchTypes, Does.Not.Contain(typeof(ZoneManagerSetActiveZoneMessageQueuePatch)));
+            Assert.That(patchTypes, Does.Not.Contain(typeof(CombatAndLogMessageQueuePatch)));
+        });
+    }
+
+    [Test]
+    public void GetHarmonyPatchTypes_ExcludesStatusTabHelperPostfixClasses()
+    {
+        var patchTypes = QudJPMod.GetHarmonyPatchTypes(typeof(MessageLogStatusScreenTranslationPatch).Assembly);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(patchTypes, Does.Contain(typeof(StatusScreenTabTranslationPatch)));
+            Assert.That(patchTypes, Does.Not.Contain(typeof(MessageLogStatusScreenTranslationPatch)));
+            Assert.That(patchTypes, Does.Not.Contain(typeof(JournalStatusScreenTabTranslationPatch)));
+            Assert.That(patchTypes, Does.Not.Contain(typeof(QuestsStatusScreenTabTranslationPatch)));
+        });
+    }
+
+    [Test]
+    public void GetHarmonyPatchTypes_ExcludesLegacyGamepadPromptHelperTranspilerClasses()
+    {
+        var patchTypes = QudJPMod.GetHarmonyPatchTypes(typeof(InventoryScreenTranslationPatch).Assembly);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(patchTypes, Does.Contain(typeof(LegacyGamepadPromptTranslationPatch)));
+            Assert.That(patchTypes, Does.Not.Contain(typeof(InventoryScreenTranslationPatch)));
+            Assert.That(patchTypes, Does.Not.Contain(typeof(StatusScreenTranslationPatch)));
+            Assert.That(patchTypes, Does.Not.Contain(typeof(JournalScreenTranslationPatch)));
+            Assert.That(patchTypes, Does.Not.Contain(typeof(TinkeringScreenTranslationPatch)));
+            Assert.That(patchTypes, Does.Not.Contain(typeof(QuestLogGamepadPromptTranslationPatch)));
+            Assert.That(patchTypes, Does.Not.Contain(typeof(FactionsScreenGamepadPromptTranslationPatch)));
+            Assert.That(patchTypes, Does.Not.Contain(typeof(SkillsAndPowersScreenTranslationPatch)));
+            Assert.That(patchTypes, Does.Not.Contain(typeof(EquipmentScreenTranslationPatch)));
         });
     }
 

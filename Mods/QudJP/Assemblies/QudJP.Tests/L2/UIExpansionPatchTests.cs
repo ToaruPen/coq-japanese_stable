@@ -181,55 +181,6 @@ public sealed class UIExpansionPatchTests
     }
 
     [Test]
-    public void CharGen_TargetCandidate_IncludesTextGetter_ButExcludesTypeGetter()
-    {
-        var candidateMethod = typeof(CharGenLocalizationPatch).GetMethod(
-            "IsTextReturningMethodCandidate",
-            BindingFlags.NonPublic | BindingFlags.Static);
-        var typeFilterMethod = typeof(CharGenLocalizationPatch).GetMethod(
-            "IsCharGenType",
-            BindingFlags.NonPublic | BindingFlags.Static);
-
-        Assert.That(candidateMethod, Is.Not.Null);
-        Assert.That(typeFilterMethod, Is.Not.Null);
-
-        var headerGetter = RequireMethod(typeof(DummyCharGenProperties), nameof(DummyCharGenProperties.get_HeaderText));
-        var typeGetter = RequireMethod(typeof(DummyCharGenProperties), nameof(DummyCharGenProperties.get_type));
-        var embarkTypeResult = (bool)typeFilterMethod!.Invoke(null, new object[] { typeof(DummyEmbarkModuleRow) })!;
-        var qudMutationTypeResult = (bool)typeFilterMethod.Invoke(null, new object[] { typeof(DummyQudMutationModuleDataRow) })!;
-
-        var headerResult = (bool)candidateMethod!.Invoke(null, new object[] { headerGetter })!;
-        var typeResult = (bool)candidateMethod.Invoke(null, new object[] { typeGetter })!;
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(headerResult, Is.True);
-            Assert.That(typeResult, Is.False);
-            Assert.That(embarkTypeResult, Is.True);
-            Assert.That(qudMutationTypeResult, Is.False);
-        });
-    }
-
-    [Test]
-    public void CharGen_TargetCandidate_IncludesDataWarningsAndDataErrors()
-    {
-        var candidateMethod = typeof(CharGenLocalizationPatch).GetMethod(
-            "IsTextReturningMethodCandidate",
-            BindingFlags.NonPublic | BindingFlags.Static);
-
-        Assert.That(candidateMethod, Is.Not.Null);
-
-        var dataWarningsMethod = RequireMethod(typeof(DummyCharGenValidationMethods), nameof(DummyCharGenValidationMethods.DataWarnings));
-        var dataErrorsMethod = RequireMethod(typeof(DummyCharGenValidationMethods), nameof(DummyCharGenValidationMethods.DataErrors));
-
-        Assert.Multiple(() =>
-        {
-            Assert.That((bool)candidateMethod!.Invoke(null, new object[] { dataWarningsMethod })!, Is.True);
-            Assert.That((bool)candidateMethod.Invoke(null, new object[] { dataErrorsMethod })!, Is.True);
-        });
-    }
-
-    [Test]
     public void Inventory_TranslatesKnownText_WhenPatched()
     {
         WriteDictionary(("Total weight", "総重量"));
@@ -430,35 +381,4 @@ public sealed class UIExpansionPatchTests
         }
     }
 
-    private static class DummyCharGenProperties
-    {
-        public static string get_HeaderText()
-        {
-            return "Header";
-        }
-
-        public static string get_type()
-        {
-            return "type";
-        }
-    }
-
-#pragma warning disable S2094
-    private static class DummyEmbarkModuleRow;
-
-    private static class DummyQudMutationModuleDataRow;
-#pragma warning restore S2094
-
-    private static class DummyCharGenValidationMethods
-    {
-        public static string DataWarnings()
-        {
-            return "warning";
-        }
-
-        public static string DataErrors()
-        {
-            return "error";
-        }
-    }
 }

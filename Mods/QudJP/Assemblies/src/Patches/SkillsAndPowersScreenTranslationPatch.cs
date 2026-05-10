@@ -7,7 +7,6 @@ using HarmonyLib;
 
 namespace QudJP.Patches;
 
-[HarmonyPatch]
 public static class SkillsAndPowersScreenTranslationPatch
 {
     private const string Context = nameof(SkillsAndPowersScreenTranslationPatch);
@@ -25,26 +24,6 @@ public static class SkillsAndPowersScreenTranslationPatch
     private static readonly MethodInfo TranslateRenderedPromptMethod =
         AccessTools.Method(typeof(SkillsAndPowersScreenTranslationPatch), nameof(TranslateRenderedPrompt))
         ?? throw new InvalidOperationException("TranslateRenderedPrompt method not found.");
-
-    [HarmonyTargetMethod]
-    private static MethodBase? TargetMethod()
-    {
-        var targetType = GameTypeResolver.FindType("XRL.UI.SkillsAndPowersScreen", "SkillsAndPowersScreen");
-        var gameObjectType = GameTypeResolver.FindType("XRL.World.GameObject", "GameObject");
-        if (targetType is null || gameObjectType is null)
-        {
-            Trace.TraceError("QudJP: {0} target type or GameObject type not found.", Context);
-            return null;
-        }
-
-        var method = AccessTools.Method(targetType, "Show", new[] { gameObjectType });
-        if (method is null)
-        {
-            Trace.TraceError("QudJP: {0}.Show(GameObject) not found.", Context);
-        }
-
-        return method;
-    }
 
     public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {

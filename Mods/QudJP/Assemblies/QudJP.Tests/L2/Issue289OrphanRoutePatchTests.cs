@@ -117,6 +117,19 @@ public sealed class Issue289OrphanRoutePatchTests
     }
 
     [Test]
+    public void StatusScreenTabAggregatePostfix_DispatchesByFallbackTypeName()
+    {
+        WriteDictionary(("Message Log", "メッセージログ"));
+
+        var result = "Message Log";
+        StatusScreenTabTranslationPatch.Postfix(
+            ref result,
+            RequireMethod(typeof(MessageLogStatusScreen), nameof(MessageLogStatusScreen.GetTabString)));
+
+        Assert.That(result, Is.EqualTo("メッセージログ"));
+    }
+
+    [Test]
     public void MessageLogLinePostfix_TranslatesExpandCollapseOptionsWithoutTouchingMessageText_WhenPatched()
     {
         WriteDictionary(

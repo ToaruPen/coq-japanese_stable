@@ -45,14 +45,21 @@ public sealed class CharGenProducerTranslationPatchTests
     }
 
     [Test]
-    public void BreadcrumbPostfix_TranslatesReturnedTitle()
+    public void BreadcrumbPostfix_TranslatesReturnedTitlesFromAggregateOwner()
     {
         WriteDictionary(("Choose Game Mode", "：プレイ方式を選択："));
 
         RunWithBreadcrumbPostfix(() =>
         {
-            var result = new DummyCharGenModuleWindowTarget { BreadcrumbTitle = "Choose Game Mode" }.GetBreadcrumb();
-            Assert.That(result.Title, Is.EqualTo("：プレイ方式を選択："));
+            var target = new DummyCharGenBuilderTarget();
+            target.Breadcrumbs.Add(new DummyCharGenBreadcrumb { Id = "GameMode", Title = "Choose Game Mode" });
+
+            var result = target.GetBreadcrumbs().ToList();
+            Assert.Multiple(() =>
+            {
+                Assert.That(result[0].Id, Is.EqualTo("GameMode"));
+                Assert.That(result[0].Title, Is.EqualTo("：プレイ方式を選択："));
+            });
         });
     }
 
@@ -63,22 +70,29 @@ public sealed class CharGenProducerTranslationPatchTests
 
         RunWithBreadcrumbPostfix(() =>
         {
+            var target = new DummyCharGenBuilderTarget();
+            target.Breadcrumbs.Add(new DummyCharGenBreadcrumb { Title = "Untranslated Title" });
+            target.Breadcrumbs.Add(new DummyCharGenBreadcrumb { Title = string.Empty });
+            target.Breadcrumbs.Add(new DummyCharGenBreadcrumb { Title = "\u0001Choose Game Mode" });
+            target.Breadcrumbs.Add(new DummyCharGenBreadcrumb { Title = "{{y|Choose Game Mode}}" });
+
+            var result = target.GetBreadcrumbs().ToList();
             Assert.Multiple(() =>
             {
                 Assert.That(
-                    new DummyCharGenModuleWindowTarget { BreadcrumbTitle = "Untranslated Title" }.GetBreadcrumb().Title,
+                    result[0].Title,
                     Is.EqualTo("Untranslated Title"),
                     "Missing entries should fall back to English.");
                 Assert.That(
-                    new DummyCharGenModuleWindowTarget { BreadcrumbTitle = string.Empty }.GetBreadcrumb().Title,
+                    result[1].Title,
                     Is.EqualTo(string.Empty),
                     "Empty strings should pass through unchanged.");
                 Assert.That(
-                    new DummyCharGenModuleWindowTarget { BreadcrumbTitle = "\u0001Choose Game Mode" }.GetBreadcrumb().Title,
+                    result[2].Title,
                     Is.EqualTo("\u0001Choose Game Mode"),
                     "Marker-prefixed strings should pass through unchanged.");
                 Assert.That(
-                    new DummyCharGenModuleWindowTarget { BreadcrumbTitle = "{{y|Choose Game Mode}}" }.GetBreadcrumb().Title,
+                    result[3].Title,
                     Is.EqualTo("{{y|：プレイ方式を選択：}}"),
                     "Color-tagged strings should preserve tags while translating visible text.");
             });
@@ -94,59 +108,84 @@ public sealed class CharGenProducerTranslationPatchTests
 
         RunWithBreadcrumbPostfix(() =>
         {
-            var result = new DummyCharGenModuleWindowTarget { BreadcrumbTitle = "Choose Game Mode" }.GetBreadcrumb();
-            Assert.That(result.Title, Is.EqualTo("Play Mode"));
+            var target = new DummyCharGenBuilderTarget();
+            target.Breadcrumbs.Add(new DummyCharGenBreadcrumb { Title = "Choose Game Mode" });
+
+            var result = target.GetBreadcrumbs().ToList();
+            Assert.That(result[0].Title, Is.EqualTo("Play Mode"));
         });
     }
 
     [Test]
-    public void MenuOptionPostfix_TranslatesReturnedDescriptions()
+    public void ChromePrefix_TranslatesTopLevelMenuOptionDescriptionsBeforeDisplay()
     {
         WriteDictionary(("Points Remaining:", "残りポイント:"));
 
-        RunWithMenuOptionPostfix(() =>
+        RunWithChromePrefix(() =>
         {
-            var target = new DummyCharGenModuleWindowTarget();
-            target.MenuOptions.Add(new DummyCharGenMenuOption { Description = "{{y|Points Remaining: 12}}" });
+            var descriptor = new DummyEmbarkBuilderModuleWindowDescriptor { title = "Choose Game Mode" };
+            var selections = new List<DummyFrameworkDataElement>
+            {
+                new DummyTopLevelMenuOption
+                {
+                    Id = "Random",
+                    InputCommand = "CmdChargenRandom",
+                    KeyDescription = "R",
+                    Description = "{{y|Points Remaining: 12}}",
+                },
+            };
+            var scroller = new DummyCharGenFrameworkScrollerTarget();
 
-            var result = target.GetKeyMenuBar().ToList();
-            Assert.That(result[0].Description, Is.EqualTo("{{y|残りポイント: 12}}"));
-        });
-    }
-
-    [Test]
-    public void MenuOptionPostfix_PreservesFallbackAndEdgeCases()
-    {
-        WriteDictionary(("Points Remaining:", "残りポイント:"));
-
-        RunWithMenuOptionPostfix(() =>
-        {
+            scroller.BeforeShow(descriptor, selections);
+            var option = (DummyTopLevelMenuOption)selections[0];
             Assert.Multiple(() =>
             {
-                Assert.That(
-                    TranslateMenuOptionDescription("Untranslated Description"),
-                    Is.EqualTo("Untranslated Description"),
-                    "Missing entries should fall back to English.");
-                Assert.That(
-                    TranslateMenuOptionDescription(string.Empty),
-                    Is.EqualTo(string.Empty),
-                    "Empty strings should pass through unchanged.");
-                Assert.That(
-                    TranslateMenuOptionDescription("\u0001Points Remaining: 12"),
-                    Is.EqualTo("\u0001Points Remaining: 12"),
-                    "Marker-prefixed strings should pass through unchanged.");
-                Assert.That(
-                    TranslateMenuOptionDescription("{{y|Points Remaining: 12}}"),
-                    Is.EqualTo("{{y|残りポイント: 12}}"),
-                    "Color-tagged strings should preserve tags while translating visible text.");
+                Assert.That(option.Id, Is.EqualTo("Random"));
+                Assert.That(option.InputCommand, Is.EqualTo("CmdChargenRandom"));
+                Assert.That(option.KeyDescription, Is.EqualTo("R"));
+                Assert.That(option.Description, Is.EqualTo("{{y|残りポイント: 12}}"));
             });
         });
     }
 
     [Test]
-    public void MenuOptionPostfix_ReturnsNullWhenSourceEnumerableIsNull()
+    public void ChromePrefix_PreservesTopLevelMenuOptionDescriptionFallbacks()
     {
-        Assert.That(CharGenMenuOptionTranslationPatch.Postfix(null!), Is.Null);
+        WriteDictionary(("Points Remaining:", "残りポイント:"));
+
+        RunWithChromePrefix(() =>
+        {
+            var descriptor = new DummyEmbarkBuilderModuleWindowDescriptor { title = "Choose Game Mode" };
+            var selections = new List<DummyFrameworkDataElement>
+            {
+                new() { Description = "Untranslated Description" },
+                new() { Description = string.Empty },
+                new() { Description = "\u0001Points Remaining: 12" },
+                new() { Description = "{{y|Points Remaining: 12}}" },
+            };
+            var scroller = new DummyCharGenFrameworkScrollerTarget();
+
+            scroller.BeforeShow(descriptor, selections);
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    selections[0].Description,
+                    Is.EqualTo("Untranslated Description"),
+                    "Missing entries should fall back to English.");
+                Assert.That(
+                    selections[1].Description,
+                    Is.EqualTo(string.Empty),
+                    "Empty strings should pass through unchanged.");
+                Assert.That(
+                    selections[2].Description,
+                    Is.EqualTo("\u0001Points Remaining: 12"),
+                    "Marker-prefixed strings should pass through unchanged.");
+                Assert.That(
+                    selections[3].Description,
+                    Is.EqualTo("{{y|残りポイント: 12}}"),
+                    "Color-tagged strings should preserve tags while translating visible text.");
+            });
+        });
     }
 
     [Test]
@@ -491,30 +530,9 @@ public sealed class CharGenProducerTranslationPatchTests
         try
         {
             harmony.Patch(
-                original: RequireMethod(typeof(DummyCharGenModuleWindowTarget), nameof(DummyCharGenModuleWindowTarget.GetBreadcrumb)),
+                original: RequireMethod(typeof(DummyCharGenBuilderTarget), nameof(DummyCharGenBuilderTarget.GetBreadcrumbs)),
                 postfix: new HarmonyMethod(RequirePatchMethod(
                     "QudJP.Patches.CharGenBreadcrumbTranslationPatch",
-                    "Postfix",
-                    typeof(object))));
-            assertion();
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
-    }
-
-    private static void RunWithMenuOptionPostfix(Action assertion)
-    {
-        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
-        var harmony = new Harmony(harmonyId);
-
-        try
-        {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyCharGenModuleWindowTarget), nameof(DummyCharGenModuleWindowTarget.GetKeyMenuBar)),
-                postfix: new HarmonyMethod(RequirePatchMethod(
-                    "QudJP.Patches.CharGenMenuOptionTranslationPatch",
                     "Postfix",
                     typeof(IEnumerable))));
             assertion();
@@ -701,15 +719,6 @@ public sealed class CharGenProducerTranslationPatchTests
             Assert.That(scroller.LastTitle, Is.EqualTo(expectedDescriptorTitle));
             Assert.That(controller.LastTitle, Is.EqualTo(expectedCategoryTitle));
         });
-    }
-
-    private static string? TranslateMenuOptionDescription(string source)
-    {
-        var target = new DummyCharGenModuleWindowTarget();
-        target.MenuOptions.Add(new DummyCharGenMenuOption { Description = source });
-
-        var result = target.GetKeyMenuBar().ToList();
-        return result[0].Description;
     }
 
     private static string? TranslateSubtypeSelectionDescription(string source)

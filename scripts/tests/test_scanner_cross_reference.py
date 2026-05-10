@@ -315,6 +315,7 @@ def test_cross_reference_marks_dictionary_xml_and_patch_matches(tmp_path: Path) 
     assert (
         "MessageLogPatch" in sites["message-template"].existing_patch
         or "MessageQueuePatch" in sites["message-template"].existing_patch
+        or "MessageQueueTranslationPatch" in sites["message-template"].existing_patch
     )
 
     assert sites["needs-translation"].status is SiteStatus.NEEDS_TRANSLATION

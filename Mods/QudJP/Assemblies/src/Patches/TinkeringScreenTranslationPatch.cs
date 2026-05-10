@@ -7,7 +7,6 @@ using HarmonyLib;
 
 namespace QudJP.Patches;
 
-[HarmonyPatch]
 public static class TinkeringScreenTranslationPatch
 {
     private const string Context = nameof(TinkeringScreenTranslationPatch);
@@ -25,27 +24,6 @@ public static class TinkeringScreenTranslationPatch
     private static readonly MethodInfo TranslateRenderedPromptMethod =
         AccessTools.Method(typeof(TinkeringScreenTranslationPatch), nameof(TranslateRenderedPrompt))
         ?? throw new InvalidOperationException("TranslateRenderedPrompt method not found.");
-
-    [HarmonyTargetMethod]
-    private static MethodBase? TargetMethod()
-    {
-        var targetType = GameTypeResolver.FindType("XRL.UI.TinkeringScreen", "TinkeringScreen");
-        var gameObjectType = GameTypeResolver.FindType("XRL.World.GameObject", "GameObject");
-        var eventType = GameTypeResolver.FindType("XRL.World.IEvent", "IEvent");
-        if (targetType is null || gameObjectType is null || eventType is null)
-        {
-            Trace.TraceError("QudJP: {0} target type or parameter types not found.", Context);
-            return null;
-        }
-
-        var method = AccessTools.Method(targetType, "Show", new[] { gameObjectType, gameObjectType, eventType });
-        if (method is null)
-        {
-            Trace.TraceError("QudJP: {0}.Show(GameObject, GameObject, IEvent) not found.", Context);
-        }
-
-        return method;
-    }
 
     public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {

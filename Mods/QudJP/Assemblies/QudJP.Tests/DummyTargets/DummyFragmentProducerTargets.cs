@@ -471,6 +471,18 @@ internal sealed class DummyCookingEffectTextTarget
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
+    public string GetProceduralEffectDescription()
+    {
+        return ReturnValue;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public string GetTemplatedProceduralEffectDescription()
+    {
+        return ReturnValue;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public string GetDetails()
     {
         return ReturnValue;
