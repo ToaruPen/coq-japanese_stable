@@ -48,6 +48,8 @@ vX.Y.Z / <short-git-hash>
 - [ ] `git rev-list -n1 vX.Y.Z` matches `git rev-parse HEAD`
 - [ ] `git merge-base --is-ancestor "$(git rev-list -n1 vX.Y.Z)" origin/main`
 - [ ] Draft GitHub Release created by tag workflow
+- [ ] Workshop changenote compared with the previous release to remove already-shipped bullets
+- [ ] Workshop changenote rewritten in player-facing terms and checked by `workshop-upload-preflight`
 - [ ] `just download-release-zip X.Y.Z`
 - [ ] `just workshop-preflight X.Y.Z`
 - [ ] `just release-zip-check dist/release-assets/vX.Y.Z/QudJP-vX.Y.Z.zip`

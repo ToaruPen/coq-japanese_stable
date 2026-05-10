@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import shutil
 import sys
 import zipfile
@@ -25,6 +26,25 @@ WORKSHOP_PUBLISHED_FILE_ID = "3718988020"
 _DEFAULT_STAGING_DIR = Path("dist/workshop")
 _DEFAULT_VDF_OUTPUT = _DEFAULT_STAGING_DIR / "workshop_item.vdf"
 _DEFAULT_METADATA_PATH = Path("steam/workshop_metadata.json")
+_WORKSHOP_CHANGELOG_INTERNAL_TERMS = (
+    "AGENTS.md",
+    "CHANGELOG",
+    "CI",
+    "GitHub Actions",
+    "Harmony",
+    "InventoryLine",
+    "owner-route",
+    "preflight",
+    "release-note",
+    "Roslyn",
+    "semantic-probe",
+    "sink-route",
+    "staged",
+    "staging",
+    "TMP",
+    "override",
+    "オーバーライド",
+)
 
 
 @dataclass(frozen=True)
@@ -132,6 +152,23 @@ def _reject_double_quotes(field: str, value: str) -> None:
         raise ValueError(msg)
 
 
+def _contains_term(text: str, term: str) -> bool:
+    """Return whether text contains a banned term as an implementation-facing token."""
+    if term.isascii() and term.replace(".", "").replace("-", "").replace("_", "").isalnum():
+        pattern = rf"(?<![A-Za-z0-9_]){re.escape(term)}(?![A-Za-z0-9_])"
+        return re.search(pattern, text, flags=re.IGNORECASE) is not None
+    return term.casefold() in text.casefold()
+
+
+def validate_workshop_changenote(changenote: str) -> list[str]:
+    """Find implementation-facing terms that should not ship in Workshop changenotes."""
+    return [
+        f"Workshop changenote contains internal term {term!r}; rewrite it in player-facing terms"
+        for term in sorted(_WORKSHOP_CHANGELOG_INTERNAL_TERMS, key=str.casefold)
+        if _contains_term(changenote, term)
+    ]
+
+
 def render_vdf(
     metadata: WorkshopMetadata,
     *,
@@ -145,6 +182,9 @@ def render_vdf(
         msg = "Workshop changenote must be non-empty"
         raise ValueError(msg)
     _reject_double_quotes("changenote", changenote)
+    changenote_findings = validate_workshop_changenote(changenote)
+    if changenote_findings:
+        raise ValueError("; ".join(changenote_findings))
     if description is not None:
         _reject_double_quotes("description", description)
 

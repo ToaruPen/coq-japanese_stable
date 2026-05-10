@@ -13,12 +13,14 @@ try:
     from scripts.build_workshop_upload import (
         WORKSHOP_APP_ID,
         WORKSHOP_PUBLISHED_FILE_ID,
+        validate_workshop_changenote,
         verify_workshop_upload_staging,
     )
 except ModuleNotFoundError:
     from build_workshop_upload import (
         WORKSHOP_APP_ID,
         WORKSHOP_PUBLISHED_FILE_ID,
+        validate_workshop_changenote,
         verify_workshop_upload_staging,
     )
 
@@ -40,6 +42,31 @@ def _parse_vdf_fields(vdf_text: str) -> dict[str, str]:
 def _vdf_unescape(value: str) -> str:
     """Unescape the subset emitted by build_workshop_upload.vdf_escape."""
     return value.replace(r"\\", "\\").replace(r"\"", '"')
+
+
+def _extract_vdf_field_value(vdf_text: str, key: str) -> str | None:
+    """Extract a generated VDF value, including literal multiline text fields."""
+    marker = f'"{key}" "'
+    start = vdf_text.find(marker)
+    if start == -1:
+        return None
+
+    index = start + len(marker)
+    value: list[str] = []
+    escaped = False
+    while index < len(vdf_text):
+        char = vdf_text[index]
+        if escaped:
+            value.append(f"\\{char}")
+            escaped = False
+        elif char == "\\":
+            escaped = True
+        elif char == '"':
+            return "".join(value)
+        else:
+            value.append(char)
+        index += 1
+    return None
 
 
 def _append_vdf_mismatch(
@@ -73,8 +100,14 @@ def verify_workshop_vdf(vdf_path: Path, *, content_folder: Path) -> list[str]:
     _append_vdf_mismatch(findings, fields, "previewfile", expected_preview_file, unescape_actual=True)
     if r"\"" in vdf_text:
         findings.append('VDF contains escaped double quote sequences (\\"); remove double quotes from text fields')
-    if any(r"\n" in fields.get(key, "") for key in _VDF_TEXT_FIELD_KEYS):
+    text_field_values = {
+        key: _extract_vdf_field_value(vdf_text, key) or fields.get(key, "") for key in _VDF_TEXT_FIELD_KEYS
+    }
+    if any(r"\n" in value for value in text_field_values.values()):
         findings.append(r"VDF contains escaped newline sequences (\n); use literal multiline text")
+    changenote = text_field_values.get("changenote", "")
+    if changenote:
+        findings.extend(validate_workshop_changenote(_vdf_unescape(changenote)))
     return findings
 
 
