@@ -853,7 +853,7 @@ def _parse_harmony_count_metrics(
     for part in detail.split(";"):
         if "=" not in part:
             continue
-        key, value = part.split("=", maxsplit=1)
+        key, value = (field.strip() for field in part.split("=", maxsplit=1))
         if not value.isdigit():
             continue
         metrics.append(
