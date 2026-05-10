@@ -80,7 +80,7 @@ public sealed class QudMenuBottomContextTranslationPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("{{W|[Esc]}} {{y|戻る}}"));
+            Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("[Esc] 戻る"));
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     nameof(QudMenuBottomContextTranslationPatch),
@@ -96,11 +96,11 @@ public sealed class QudMenuBottomContextTranslationPatchTests
 
         RunRefreshButtonsWithPatch(context);
 
-        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("{{W|[Esc]}} {{y|Back}}"));
+        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("[Esc] Back"));
     }
 
-    [TestCase("{{y|{{W|[~Accept]}} Continue}}", "{{W|[~Accept]}} {{y|続ける}}")]
-    [TestCase("{{y|{{W|[space]}} Continue}}", "{{W|[space]}} {{y|続ける}}")]
+    [TestCase("{{y|{{W|[~Accept]}} Continue}}", "[~Accept] 続ける")]
+    [TestCase("{{y|{{W|[space]}} Continue}}", "[space] 続ける")]
     public void Prefix_PreservesNestedHotkeyTokenAndBrackets(string source, string expected)
     {
         WriteScopedMenuActionDictionary(("continue", "続ける"));
@@ -113,14 +113,14 @@ public sealed class QudMenuBottomContextTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_PreservesMalformedNestedHotkeyLabel()
+    public void Prefix_StripsMalformedNestedHotkeyLabelToVisibleFallback()
     {
         var source = "{{y|{{W|Esc}} Back}}";
         var context = new DummyQudMenuBottomContext(source);
 
         Assert.DoesNotThrow(() => RunRefreshButtonsWithPatch(context));
 
-        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo(source));
+        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("Esc Back"));
     }
 
     private static void RunRefreshButtonsWithPatch(DummyQudMenuBottomContext context)

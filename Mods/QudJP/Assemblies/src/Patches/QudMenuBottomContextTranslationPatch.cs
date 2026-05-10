@@ -97,13 +97,14 @@ public static class QudMenuBottomContextTranslationPatch
             var translated = PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute(
                 normalized,
                 nameof(QudMenuBottomContextTranslationPatch));
+            var displayText = ColorAwareTranslationComposer.Strip(translated).stripped;
 
-            if (string.Equals(translated, current, StringComparison.Ordinal))
+            if (string.Equals(displayText, current, StringComparison.Ordinal))
             {
                 continue;
             }
 
-            textField.SetValue(item, translated);
+            textField.SetValue(item, displayText);
             items[index] = item;
         }
     }
