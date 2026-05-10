@@ -343,7 +343,11 @@ ci-dotnet:
   lock_timeout_seconds=600
   lock_owner_grace_seconds=2
   is_stale_path() {
-    path_mtime="$(stat -f %m "$1" 2>/dev/null || stat -c %Y "$1" 2>/dev/null || printf 0)"
+    if path_mtime="$(stat -c %Y "$1" 2>/dev/null)"; then
+      :
+    else
+      path_mtime="$(stat -f %m "$1" 2>/dev/null || printf 0)"
+    fi
     if [ "$path_mtime" = 0 ]; then
       return 1
     fi

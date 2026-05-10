@@ -95,6 +95,7 @@ def test_ci_dotnet_uses_run_scoped_artifacts_and_serializes_production_build() -
     assert "remove_stale_lock" in block
     assert "lock_owner_grace_seconds=2" in block
     assert "is_stale_path" in block
+    assert block.index("stat -c %Y") < block.index("stat -f %m")
     assert "lock_timeout_seconds=600" in block
     assert "timed out waiting for dotnet build lock" in block
     assert "lock_acquired=1" in block
