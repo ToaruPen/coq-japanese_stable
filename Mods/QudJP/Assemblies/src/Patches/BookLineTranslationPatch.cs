@@ -58,7 +58,7 @@ public static class BookLineTranslationPatch
                 translated,
                 Context,
                 typeof(BookLineTranslationPatch));
-#if QUDJP_DEV_BUILD
+#if HAS_TMP && QUDJP_DEV_BUILD
             if (BookLineGeometryObservability.TryBuildSnapshot(__instance, source, translated, out var logLine))
             {
                 RuntimeDiagnostics.LogVerboseProbe(() => logLine!);

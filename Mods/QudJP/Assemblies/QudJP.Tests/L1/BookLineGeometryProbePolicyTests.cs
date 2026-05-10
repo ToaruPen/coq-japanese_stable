@@ -14,7 +14,8 @@ public sealed class BookLineGeometryProbePolicyTests
 
         AssertContainsInOrder(
             source,
-            "#if QUDJP_DEV_BUILD",
+            "OwnerTextSetter.SetTranslatedText(",
+            "#if HAS_TMP && QUDJP_DEV_BUILD",
             "BookLineGeometryObservability.TryBuildSnapshot(",
             "RuntimeDiagnostics.LogVerboseProbe(() => logLine!)",
             "DelayedBookLineGeometryProbeScheduler.ScheduleSnapshot(",
