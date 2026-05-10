@@ -128,7 +128,8 @@ public sealed class JapaneseBlockWrapTests
         Assert.Multiple(() =>
         {
             Assert.That(changed, Is.True);
-            Assert.That(wrapped.Split('\n'), Has.All.Length.LessThanOrEqualTo(12));
+            Assert.That(wrapped, Is.EqualTo("あいうえおかきくけこさし。\nすせそ"));
+            Assert.That(wrapped, Does.Not.Contain("\n。"));
         });
     }
 
@@ -209,6 +210,22 @@ public sealed class JapaneseBlockWrapTests
         {
             Assert.That(changed, Is.True);
             Assert.That(wrapped, Is.EqualTo("古い遺物 \n調査記録が残って\nいる"));
+        });
+    }
+
+    [Test]
+    public void TryWrapForCjkBlock_KeepsForbiddenLineStartPunctuationOnPreviousLine()
+    {
+        var changed = JapaneseBlockWrap.TryWrapForCjkBlock(
+            new string('あ', 5) + "、い",
+            width: 5,
+            maxLines: 5000,
+            out var wrapped);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(wrapped, Is.EqualTo(new string('あ', 5) + "、\nい"));
         });
     }
 }

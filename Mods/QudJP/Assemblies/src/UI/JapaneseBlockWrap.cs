@@ -14,7 +14,13 @@ internal static class JapaneseBlockWrap
         return TryWrapForCjkBlock(source, DefaultTooltipVisibleColumns, DefaultMaxLines, out wrapped);
     }
 
-    internal static bool TryWrapForCjkBlock(string source, int width, int maxLines, out string wrapped)
+    internal static bool TryWrapForCjkBlock(
+        string source,
+        int width,
+        int maxLines,
+        out string wrapped,
+        int preferredBreakSearchColumns = PreferredBreakSearchColumns,
+        bool reopenFormattingAfterLineBreak = true)
     {
         wrapped = source;
         if (string.IsNullOrEmpty(source) || width <= 0 || maxLines <= 0 || !ContainsCjk(source))
@@ -56,7 +62,11 @@ internal static class JapaneseBlockWrap
                     break;
                 }
 
-                AppendActiveFormatting(builder, activeForeground, activeBackground);
+                if (reopenFormattingAfterLineBreak)
+                {
+                    AppendActiveFormatting(builder, activeForeground, activeBackground);
+                }
+
                 continue;
             }
 
@@ -75,22 +85,21 @@ internal static class JapaneseBlockWrap
                 continue;
             }
 
-            var breakAt = SelectBreakCandidate(preferredBreak, width);
+            var breakAt = SelectBreakCandidate(preferredBreak, width, preferredBreakSearchColumns);
             if (breakAt.HasValue)
             {
-                InsertBreakAtCandidate(builder, breakAt.Value);
+                InsertBreakAtCandidate(builder, breakAt.Value, reopenFormattingAfterLineBreak);
                 visibleColumn -= breakAt.Value.VisibleColumn;
             }
-            else if (visibleColumn > width)
+            else if (visibleColumn > width && !IsForbiddenLineStart(current))
             {
-                InsertBreakBeforeCurrent(builder, activeForeground, activeBackground);
+                InsertBreakBeforeCurrent(builder, activeForeground, activeBackground, reopenFormattingAfterLineBreak);
                 visibleColumn = 1;
             }
             else
             {
-                builder.Append('\n');
+                BreakAfterCurrent(builder, activeForeground, activeBackground, reopenFormattingAfterLineBreak);
                 visibleColumn = 0;
-                AppendActiveFormatting(builder, activeForeground, activeBackground);
             }
 
             lineCount++;
@@ -303,7 +312,7 @@ internal static class JapaneseBlockWrap
         }
     }
 
-    private static BreakCandidate? SelectBreakCandidate(BreakCandidate preferredBreak, int width)
+    private static BreakCandidate? SelectBreakCandidate(BreakCandidate preferredBreak, int width, int preferredBreakSearchColumns)
     {
         if (!preferredBreak.HasValue)
         {
@@ -316,7 +325,7 @@ internal static class JapaneseBlockWrap
         }
 
         var columnsBeforeLimit = width - preferredBreak.VisibleColumn;
-        if (columnsBeforeLimit > PreferredBreakSearchColumns)
+        if (columnsBeforeLimit > preferredBreakSearchColumns)
         {
             return null;
         }
@@ -324,20 +333,48 @@ internal static class JapaneseBlockWrap
         return preferredBreak;
     }
 
-    private static void InsertBreakAtCandidate(StringBuilder builder, BreakCandidate candidate)
+    private static void InsertBreakAtCandidate(
+        StringBuilder builder,
+        BreakCandidate candidate,
+        bool reopenFormattingAfterLineBreak)
     {
         var insertion = new StringBuilder(5);
         insertion.Append('\n');
-        AppendActiveFormatting(insertion, candidate.ActiveForeground, candidate.ActiveBackground);
+        if (reopenFormattingAfterLineBreak)
+        {
+            AppendActiveFormatting(insertion, candidate.ActiveForeground, candidate.ActiveBackground);
+        }
+
         builder.Insert(candidate.BuilderIndex, insertion.ToString());
     }
 
-    private static void InsertBreakBeforeCurrent(StringBuilder builder, char? activeForeground, char? activeBackground)
+    private static void InsertBreakBeforeCurrent(
+        StringBuilder builder,
+        char? activeForeground,
+        char? activeBackground,
+        bool reopenFormattingAfterLineBreak)
     {
         var insertion = new StringBuilder(5);
         insertion.Append('\n');
-        AppendActiveFormatting(insertion, activeForeground, activeBackground);
+        if (reopenFormattingAfterLineBreak)
+        {
+            AppendActiveFormatting(insertion, activeForeground, activeBackground);
+        }
+
         builder.Insert(builder.Length - 1, insertion.ToString());
+    }
+
+    private static void BreakAfterCurrent(
+        StringBuilder builder,
+        char? activeForeground,
+        char? activeBackground,
+        bool reopenFormattingAfterLineBreak)
+    {
+        builder.Append('\n');
+        if (reopenFormattingAfterLineBreak)
+        {
+            AppendActiveFormatting(builder, activeForeground, activeBackground);
+        }
     }
 
     private static bool IsPreferredBreakAfter(string source, int index)
