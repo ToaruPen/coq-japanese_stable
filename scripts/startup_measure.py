@@ -853,9 +853,7 @@ def _parse_harmony_count_metrics(
     for part in detail.split(";"):
         if "=" not in part:
             continue
-        key, value = part.split("=", maxsplit=1)
-        key = key.strip()
-        value = value.strip()
+        key, value = (field.strip() for field in part.split("=", maxsplit=1))
         try:
             numeric_value = float(value)
         except ValueError:

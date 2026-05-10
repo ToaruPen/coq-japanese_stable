@@ -40,6 +40,14 @@ internal static class CharGenProducerTranslationHelpers
         return translated;
     }
 
+    private static string TranslateStructuredTextWithDictionaryFallback(string source)
+    {
+        var structured = TranslateStructuredText(source);
+        return string.Equals(structured, source, StringComparison.Ordinal)
+            ? TranslateText(source)
+            : structured;
+    }
+
     internal static void TranslateStringMember(object target, string memberName, string context)
     {
         TranslateStringMember(target, memberName, context, TranslateText);
@@ -179,7 +187,7 @@ internal static class CharGenProducerTranslationHelpers
         System.Collections.Generic.List<StringMemberUpdate> updates)
     {
         CollectStringMemberTranslation(item, "Title", TranslateText, updates);
-        CollectStringMemberTranslation(item, "Description", TranslateStructuredText, updates);
+        CollectStringMemberTranslation(item, "Description", TranslateStructuredTextWithDictionaryFallback, updates);
         CollectStringMemberTranslation(item, "LongDescription", TranslateStructuredText, updates);
 
         CollectChildCollectionTranslations(item, "Choices", context, updates);

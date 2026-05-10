@@ -44,6 +44,16 @@ internal sealed class DummyMessageLogStatusScreenTarget
     }
 }
 
+internal sealed class MessageLogStatusScreen
+{
+    public string Label { get; set; } = "Message Log";
+
+    public string GetTabString()
+    {
+        return Label;
+    }
+}
+
 internal sealed class DummyMessageLogLineDataTarget
 {
     public string text { get; set; } = string.Empty;

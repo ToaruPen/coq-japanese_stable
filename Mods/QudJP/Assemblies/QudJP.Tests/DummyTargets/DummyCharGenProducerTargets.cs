@@ -5,6 +5,8 @@ namespace QudJP.Tests.DummyTargets;
 
 internal sealed class DummyCharGenBreadcrumb
 {
+    public string? Id { get; set; }
+
     public string? Title { get; set; }
 }
 
@@ -38,6 +40,19 @@ internal sealed class DummyCharGenModuleWindowTarget
         foreach (var option in MenuOptions)
         {
             yield return option;
+        }
+    }
+}
+
+internal sealed class DummyCharGenBuilderTarget
+{
+    public List<DummyCharGenBreadcrumb> Breadcrumbs { get; } = new List<DummyCharGenBreadcrumb>();
+
+    public IEnumerable<DummyCharGenBreadcrumb> GetBreadcrumbs()
+    {
+        foreach (var breadcrumb in Breadcrumbs)
+        {
+            yield return breadcrumb;
         }
     }
 }
@@ -94,6 +109,15 @@ internal sealed class DummyCategoryMenuData : DummyFrameworkDataElement
 internal sealed class DummyPrefixMenuOption : DummyFrameworkDataElement
 {
     public string? Prefix { get; set; }
+}
+
+internal sealed class DummyTopLevelMenuOption : DummyFrameworkDataElement
+{
+    public string? Id { get; set; }
+
+    public string? InputCommand { get; set; }
+
+    public string? KeyDescription { get; set; }
 }
 
 internal sealed class DummyCharGenSubtypeModuleTarget

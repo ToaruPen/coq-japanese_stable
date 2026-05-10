@@ -21,34 +21,7 @@ public sealed class CharGenProducerTranslationPatchResolutionTests
             "QudJP.Patches.CharGenBreadcrumbTranslationPatch",
             new[]
             {
-                "XRL.CharacterBuilds.Qud.UI.QudAttributesModuleWindow|GetBreadcrumb|",
-                "XRL.CharacterBuilds.Qud.UI.QudBuildLibraryModuleWindow|GetBreadcrumb|",
-                "XRL.CharacterBuilds.Qud.UI.QudBuildSummaryModuleWindow|GetBreadcrumb|",
-                "XRL.CharacterBuilds.Qud.UI.QudChartypeModuleWindow|GetBreadcrumb|",
-                "XRL.CharacterBuilds.Qud.UI.QudChooseStartingLocationModuleWindow|GetBreadcrumb|",
-                "XRL.CharacterBuilds.Qud.UI.QudCustomizeCharacterModuleWindow|GetBreadcrumb|",
-                "XRL.CharacterBuilds.Qud.UI.QudCyberneticsModuleWindow|GetBreadcrumb|",
-                "XRL.CharacterBuilds.Qud.UI.QudGamemodeModuleWindow|GetBreadcrumb|",
-                "XRL.CharacterBuilds.Qud.UI.QudGenotypeModuleWindow|GetBreadcrumb|",
-                "XRL.CharacterBuilds.Qud.UI.QudMutationsModuleWindow|GetBreadcrumb|",
-                "XRL.CharacterBuilds.Qud.UI.QudPregenModuleWindow|GetBreadcrumb|",
-                "XRL.CharacterBuilds.Qud.UI.QudSubtypeModuleWindow|GetBreadcrumb|",
-            });
-    }
-
-    [Test]
-    public void MenuOptionPatch_TargetMethods_ResolveExpectedOverrides()
-    {
-        AssertTargetMethods(
-            "QudJP.Patches.CharGenMenuOptionTranslationPatch",
-            new[]
-            {
-                "XRL.CharacterBuilds.Qud.UI.QudAttributesModuleWindow|GetKeyMenuBar|",
-                "XRL.CharacterBuilds.Qud.UI.QudBuildLibraryModuleWindow|GetKeyMenuBar|",
-                "XRL.CharacterBuilds.Qud.UI.QudBuildSummaryModuleWindow|GetKeyMenuBar|",
-                "XRL.CharacterBuilds.AbstractBuilderModuleWindowBase|GetKeyMenuBar|",
-                "XRL.CharacterBuilds.Qud.UI.QudGamemodeModuleWindow|GetKeyMenuBar|",
-                "XRL.CharacterBuilds.Qud.UI.QudMutationsModuleWindow|GetKeyMenuBar|",
+                "XRL.CharacterBuilds.EmbarkBuilder|GetBreadcrumbs|",
             });
     }
 
@@ -85,6 +58,21 @@ public sealed class CharGenProducerTranslationPatchResolutionTests
                 "XRL.UI.Framework.FrameworkScroller|BeforeShow|XRL.CharacterBuilds.EmbarkBuilderModuleWindowDescriptor|System.Collections.Generic.IEnumerable`1[[XRL.UI.Framework.FrameworkDataElement]]",
                 "XRL.UI.Framework.CategoryMenuController|setData|XRL.UI.Framework.FrameworkDataElement",
             });
+    }
+
+    [Test]
+    public void MenuOptions_RemainFrameworkDataElementsForChromeDisplayRoute()
+    {
+        var assembly = EnsureGameAssemblyLoaded();
+        var menuOptionType = assembly.GetType("XRL.UI.Framework.MenuOption", throwOnError: false);
+        var frameworkDataElementType = assembly.GetType("XRL.UI.Framework.FrameworkDataElement", throwOnError: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(menuOptionType, Is.Not.Null, "Type not found: XRL.UI.Framework.MenuOption");
+            Assert.That(frameworkDataElementType, Is.Not.Null, "Type not found: XRL.UI.Framework.FrameworkDataElement");
+            Assert.That(frameworkDataElementType!.IsAssignableFrom(menuOptionType), Is.True);
+        });
     }
 
     [Test]
@@ -191,17 +179,6 @@ public sealed class CharGenProducerTranslationPatchResolutionTests
             case "QudJP.Patches.CharGenBreadcrumbTranslationPatch":
                 foreach (var methodInfo in resolvedMethods)
                 {
-                    AssertStringMemberExists(
-                        methodInfo.ReturnType,
-                        "Title",
-                        $"{patchTypeName} return type for {methodInfo.DeclaringType!.FullName}.{methodInfo.Name}");
-                }
-
-                return;
-
-            case "QudJP.Patches.CharGenMenuOptionTranslationPatch":
-                foreach (var methodInfo in resolvedMethods)
-                {
                     var elementType = ResolveEnumerableElementType(methodInfo.ReturnType);
                     Assert.That(
                         elementType,
@@ -209,7 +186,7 @@ public sealed class CharGenProducerTranslationPatchResolutionTests
                         $"{patchTypeName} return type should expose an enumerable element type: {methodInfo.ReturnType.FullName}");
                     AssertStringMemberExists(
                         elementType!,
-                        "Description",
+                        "Title",
                         $"{patchTypeName} enumerable element type for {methodInfo.DeclaringType!.FullName}.{methodInfo.Name}");
                 }
 
