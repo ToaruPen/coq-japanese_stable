@@ -31,7 +31,9 @@ def test_parse_startup_log_text_extracts_timing_markers() -> None:
     log = (
         "[QudJP] Build marker: marker\n"
         "[QudJP] StartupTiming/v1: phase=harmony.prepare_patch_types elapsed_ms=12.346 "
-        r"detail=patch_types\=140\;prepared\=139"
+        r"detail=patch_types\=140\;prepared\=139\;skipped\=1"
+        "\n[QudJP] StartupTiming/v1: phase=harmony.apply_patch_types elapsed_ms=100.500 "
+        r"detail=patch_types\=140\;applied\=139\;skipped\=1"
         "\nINFO - Finished 'Loading Naming.xml' task in 42ms"
         "\n[QudJP] Harmony patching complete: 590 method(s) patched."
     )
@@ -40,13 +42,23 @@ def test_parse_startup_log_text_extracts_timing_markers() -> None:
 
     assert parsed.build_marker_seen is True
     assert parsed.harmony_complete_seen is True
-    assert len(parsed.timings) == 2
+    assert parsed.harmony_patched_methods == 590
+    assert len(parsed.timings) == 3
     assert parsed.timings[0].phase == "harmony.prepare_patch_types"
     assert parsed.timings[0].elapsed_ms == 12.346
-    assert parsed.timings[0].detail == "patch_types=140;prepared=139"
-    assert parsed.timings[1].phase == "game.loading.naming_xml"
-    assert parsed.timings[1].elapsed_ms == 42.0
-    assert parsed.timings[1].detail == "Naming.xml"
+    assert parsed.timings[0].detail == "patch_types=140;prepared=139;skipped=1"
+    assert parsed.timings[2].phase == "game.loading.naming_xml"
+    assert parsed.timings[2].elapsed_ms == 42.0
+    assert parsed.timings[2].detail == "Naming.xml"
+    assert {metric.name: metric.value for metric in parsed.metrics} == {
+        "harmony.prepare_patch_types.patch_types": 140,
+        "harmony.prepare_patch_types.prepared": 139,
+        "harmony.prepare_patch_types.skipped": 1,
+        "harmony.apply_patch_types.patch_types": 140,
+        "harmony.apply_patch_types.applied": 139,
+        "harmony.apply_patch_types.skipped": 1,
+        "harmony.patched_methods": 590,
+    }
 
 
 def test_summarize_iterations_groups_by_profile_and_phase() -> None:
@@ -61,6 +73,7 @@ def test_summarize_iterations_groups_by_profile_and_phase() -> None:
     enabled = next(summary for summary in summaries if summary.profile == "enabled")
     font = next(phase for phase in enabled.phases if phase.phase == "font.initialize")
     runner = next(phase for phase in enabled.phases if phase.phase == "runner.elapsed_until_ready")
+    patched_methods = next(metric for metric in enabled.metrics if metric.metric == "harmony.patched_methods")
 
     assert enabled.iterations == 2
     assert enabled.ready_iterations == 2
@@ -69,6 +82,8 @@ def test_summarize_iterations_groups_by_profile_and_phase() -> None:
     assert font.mean_ms == 110.0
     assert runner.count == 2
     assert runner.median_ms == 1000.0
+    assert patched_methods.count == 2
+    assert patched_methods.median == 590.0
 
 
 def test_compare_profiles_reports_median_delta() -> None:
@@ -79,12 +94,14 @@ def test_compare_profiles_reports_median_delta() -> None:
             iterations=1,
             ready_iterations=1,
             phases=(PhaseSummary("bootstrap.total", 1, 50.0, 50.0, 50.0, 50.0),),
+            metrics=(),
         ),
         ProfileSummary(
             profile="enabled",
             iterations=1,
             ready_iterations=1,
             phases=(PhaseSummary("bootstrap.total", 1, 80.0, 80.0, 80.0, 80.0),),
+            metrics=(),
         ),
     )
 
@@ -757,7 +774,8 @@ def _result(profile: str, iteration: int, status: str, timings: dict[str, float]
         "\n".join(
             f"[QudJP] StartupTiming/v1: phase={phase} elapsed_ms={elapsed}"
             for phase, elapsed in timings.items()
-        ),
+        )
+        + "\n[QudJP] Harmony patching complete: 590 method(s) patched.",
     )
     return IterationResult(
         metadata=IterationMetadata(

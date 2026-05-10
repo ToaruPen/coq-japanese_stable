@@ -31,6 +31,7 @@ _STARTUP_TIMING_MARKER = "[QudJP] StartupTiming/v1:"
 _GAME_LOADING_TASK_PATTERN = re.compile(r"INFO - Finished 'Loading (?P<task>[^']+)' task in (?P<elapsed>\d+)ms")
 _BUILD_MARKER = "[QudJP] Build marker:"
 _HARMONY_COMPLETE_MARKER = "[QudJP] Harmony patching complete:"
+_HARMONY_COMPLETE_PATTERN = re.compile(r"Harmony patching complete:\s*(?P<count>\d+) method\(s\) patched")
 _ERROR_MARKERS = (
     "MissingMethodException",
     "MODWARN",
@@ -200,12 +201,23 @@ class StartupTimingEntry:
 
 
 @dataclass(frozen=True)
+class StartupMetricEntry:
+    """A numeric startup metric parsed from a log marker detail field."""
+
+    name: str
+    value: float
+    line_number: int
+
+
+@dataclass(frozen=True)
 class ParsedStartupLog:
     """Structured timing and marker data extracted from one Player.log."""
 
     timings: tuple[StartupTimingEntry, ...]
+    metrics: tuple[StartupMetricEntry, ...]
     build_marker_seen: bool
     harmony_complete_seen: bool
+    harmony_patched_methods: int | None
     error_lines: tuple[str, ...]
 
 
@@ -243,6 +255,18 @@ class PhaseSummary:
 
 
 @dataclass(frozen=True)
+class MetricSummary:
+    """Aggregate numeric startup metrics for one profile."""
+
+    metric: str
+    count: int
+    mean: float
+    median: float
+    min: float
+    max: float
+
+
+@dataclass(frozen=True)
 class ProfileSummary:
     """Aggregate timing statistics for one measurement profile."""
 
@@ -250,6 +274,7 @@ class ProfileSummary:
     iterations: int
     ready_iterations: int
     phases: tuple[PhaseSummary, ...]
+    metrics: tuple[MetricSummary, ...]
 
 
 @dataclass(frozen=True)
@@ -330,15 +355,27 @@ class PatchSurfaceInventory:
 def parse_startup_log_text(text: str) -> ParsedStartupLog:
     """Parse QudJP startup timing markers from Player.log text."""
     timings: list[StartupTimingEntry] = []
+    metrics: list[StartupMetricEntry] = []
     error_lines: list[str] = []
     build_marker_seen = False
     harmony_complete_seen = False
+    harmony_patched_methods: int | None = None
 
     for index, line in enumerate(text.splitlines(), start=1):
         if _BUILD_MARKER in line:
             build_marker_seen = True
         if _HARMONY_COMPLETE_MARKER in line:
             harmony_complete_seen = True
+            complete_match = _HARMONY_COMPLETE_PATTERN.search(line)
+            if complete_match is not None:
+                harmony_patched_methods = int(complete_match.group("count"))
+                metrics.append(
+                    StartupMetricEntry(
+                        name="harmony.patched_methods",
+                        value=float(harmony_patched_methods),
+                        line_number=index,
+                    ),
+                )
         if any(marker in line for marker in _ERROR_MARKERS):
             error_lines.append(line)
         marker_index = line.find(_STARTUP_TIMING_MARKER)
@@ -360,6 +397,7 @@ def parse_startup_log_text(text: str) -> ParsedStartupLog:
                     line_number=index,
                 ),
             )
+            metrics.extend(_parse_harmony_count_metrics(phase, fields.get("detail"), line_number=index))
             continue
 
         game_loading_match = _GAME_LOADING_TASK_PATTERN.search(line)
@@ -375,8 +413,10 @@ def parse_startup_log_text(text: str) -> ParsedStartupLog:
 
     return ParsedStartupLog(
         timings=tuple(timings),
+        metrics=tuple(metrics),
         build_marker_seen=build_marker_seen,
         harmony_complete_seen=harmony_complete_seen,
+        harmony_patched_methods=harmony_patched_methods,
         error_lines=tuple(error_lines),
     )
 
@@ -390,11 +430,14 @@ def summarize_iterations(results: Iterable[IterationResult]) -> tuple[ProfileSum
     summaries: list[ProfileSummary] = []
     for profile, profile_results in sorted(grouped.items()):
         phase_values: dict[str, list[float]] = {}
+        metric_values: dict[str, list[float]] = {}
         for result in profile_results:
             if result.metadata.elapsed_until_ready_ms is not None:
                 phase_values.setdefault("runner.elapsed_until_ready", []).append(result.metadata.elapsed_until_ready_ms)
             for timing in result.parsed.timings:
                 phase_values.setdefault(timing.phase, []).append(timing.elapsed_ms)
+            for metric in result.parsed.metrics:
+                metric_values.setdefault(metric.name, []).append(metric.value)
         phases = tuple(
             PhaseSummary(
                 phase=phase,
@@ -406,12 +449,24 @@ def summarize_iterations(results: Iterable[IterationResult]) -> tuple[ProfileSum
             )
             for phase, values in sorted(phase_values.items())
         )
+        metrics = tuple(
+            MetricSummary(
+                metric=metric,
+                count=len(values),
+                mean=round(mean(values), 3),
+                median=round(median(values), 3),
+                min=round(min(values), 3),
+                max=round(max(values), 3),
+            )
+            for metric, values in sorted(metric_values.items())
+        )
         summaries.append(
             ProfileSummary(
                 profile=profile,
                 iterations=len(profile_results),
                 ready_iterations=sum(1 for result in profile_results if result.metadata.status == "ready"),
                 phases=phases,
+                metrics=metrics,
             ),
         )
     return tuple(summaries)
@@ -465,6 +520,19 @@ def write_summary_markdown(summaries: Sequence[ProfileSummary], path: Path) -> N
             f"{phase.min_ms:.3f} | {phase.max_ms:.3f} |"
             for phase in summary.phases
         )
+        if summary.metrics:
+            lines.extend(
+                [
+                    "",
+                    "| metric | count | median | mean | min | max |",
+                    "| --- | ---: | ---: | ---: | ---: | ---: |",
+                ],
+            )
+            lines.extend(
+                f"| {metric.metric} | {metric.count} | {metric.median:.3f} | {metric.mean:.3f} | "
+                f"{metric.min:.3f} | {metric.max:.3f} |"
+                for metric in summary.metrics
+            )
         lines.append("")
     path.write_text("\n".join(lines), encoding="utf-8")
 
@@ -772,6 +840,32 @@ def _parse_timing_fields(text: str) -> dict[str, str]:
     return fields
 
 
+def _parse_harmony_count_metrics(
+    phase: str,
+    detail: str | None,
+    *,
+    line_number: int,
+) -> tuple[StartupMetricEntry, ...]:
+    if detail is None or not phase.startswith("harmony."):
+        return ()
+
+    metrics: list[StartupMetricEntry] = []
+    for part in detail.split(";"):
+        if "=" not in part:
+            continue
+        key, value = part.split("=", maxsplit=1)
+        if not value.isdigit():
+            continue
+        metrics.append(
+            StartupMetricEntry(
+                name=f"{phase}.{key}",
+                value=float(value),
+                line_number=line_number,
+            ),
+        )
+    return tuple(metrics)
+
+
 def _split_escaped_tokens(text: str) -> list[str]:
     tokens: list[str] = []
     current: list[str] = []
@@ -847,6 +941,7 @@ def _read_profile_summaries(summary_path: Path) -> tuple[ProfileSummary, ...]:
             iterations=summary["iterations"],
             ready_iterations=summary["ready_iterations"],
             phases=tuple(PhaseSummary(**phase) for phase in summary["phases"]),
+            metrics=tuple(MetricSummary(**metric) for metric in summary.get("metrics", ())),
         )
         for summary in summaries
     )

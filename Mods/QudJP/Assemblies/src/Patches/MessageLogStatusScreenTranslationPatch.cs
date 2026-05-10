@@ -1,33 +1,11 @@
 using System;
 using System.Diagnostics;
-using System.Reflection;
-using HarmonyLib;
 
 namespace QudJP.Patches;
 
-[HarmonyPatch]
 public static class MessageLogStatusScreenTranslationPatch
 {
     private const string Context = nameof(MessageLogStatusScreenTranslationPatch);
-
-    [HarmonyTargetMethod]
-    private static MethodBase? TargetMethod()
-    {
-        var targetType = GameTypeResolver.FindType("Qud.UI.MessageLogStatusScreen", "MessageLogStatusScreen");
-        if (targetType is null)
-        {
-            Trace.TraceError("QudJP: MessageLogStatusScreenTranslationPatch target type not found.");
-            return null;
-        }
-
-        var method = AccessTools.Method(targetType, "GetTabString", Type.EmptyTypes);
-        if (method is null)
-        {
-            Trace.TraceError("QudJP: MessageLogStatusScreenTranslationPatch.GetTabString() not found.");
-        }
-
-        return method;
-    }
 
     public static void Postfix(ref string __result)
     {

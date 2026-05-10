@@ -121,7 +121,7 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Patches/JournalNotificationTranslator.cs:20:TryTranslate"] = "Strips source colors so journal notification patterns can replace the full system sentence.",
             ["Mods/QudJP/Assemblies/src/Patches/LiquidVolumeFragmentTranslator.cs:118:TryTranslate"] = "Delegates capture restoration to helper calls in the matched branch.",
             ["Mods/QudJP/Assemblies/src/Patches/MainMenuLocalizationPatch.cs:207:TranslateProducerText"] = "Strips only for already-localized/direct-route checks before TranslatePreservingColors owns restoration.",
-            ["Mods/QudJP/Assemblies/src/Patches/MessageLogPatch.cs:77:Prefix"] = "Observation-only direct marker check before MessagePatternTranslator owns restoration.",
+            ["Mods/QudJP/Assemblies/src/Patches/MessageLogPatch.cs:60:Prefix"] = "Observation-only direct marker check before MessagePatternTranslator owns restoration.",
             ["Mods/QudJP/Assemblies/src/Patches/MutationsApiTranslationPatch.cs:85:TryTranslatePopupMessage"] = "Delegates capture restoration to term-specific branch helpers.",
             ["Mods/QudJP/Assemblies/src/Patches/OptionsLocalizationPatch.cs:106:TranslateProducerText"] = "Strips only for already-localized/direct-route checks before TranslatePreservingColors owns restoration.",
             ["Mods/QudJP/Assemblies/src/Patches/PetEitherOrExplodeTranslationPatch.cs:131:TryTranslate"] = "Delegates capture and boundary restoration to matched owner-route branches.",

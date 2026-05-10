@@ -106,14 +106,6 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(KeybindRowTranslationPatch), "setData", "Qud.UI.KeybindRow", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(KeybindsScreenTranslationPatch), "QueryKeybinds", "Qud.UI.KeybindsScreen", "System.Void", new string[0])]
     [TestCase(typeof(XrlManualTranslationPatch), "RenderIndex", "XRL.Help.XRLManual", "System.Void", new[] { "System.Int32" })]
-    [TestCase(typeof(InventoryScreenTranslationPatch), "Show", "XRL.UI.InventoryScreen", "XRL.UI.ScreenReturn", new[] { "XRL.World.GameObject" })]
-    [TestCase(typeof(StatusScreenTranslationPatch), "Show", "XRL.UI.StatusScreen", "XRL.UI.ScreenReturn", new[] { "XRL.World.GameObject" })]
-    [TestCase(typeof(JournalScreenTranslationPatch), "Show", "XRL.UI.JournalScreen", "XRL.UI.ScreenReturn", new[] { "XRL.World.GameObject" })]
-    [TestCase(typeof(TinkeringScreenTranslationPatch), "Show", "XRL.UI.TinkeringScreen", "XRL.UI.ScreenReturn", new[] { "XRL.World.GameObject", "XRL.World.GameObject", "XRL.World.IEvent" })]
-    [TestCase(typeof(QuestLogGamepadPromptTranslationPatch), "Show", "XRL.UI.QuestLog", "XRL.UI.ScreenReturn", new[] { "XRL.World.GameObject" })]
-    [TestCase(typeof(FactionsScreenGamepadPromptTranslationPatch), "Show", "XRL.UI.FactionsScreen", "XRL.UI.ScreenReturn", new[] { "XRL.World.GameObject" })]
-    [TestCase(typeof(SkillsAndPowersScreenTranslationPatch), "Show", "XRL.UI.SkillsAndPowersScreen", "XRL.UI.ScreenReturn", new[] { "XRL.World.GameObject" })]
-    [TestCase(typeof(EquipmentScreenTranslationPatch), "Show", "XRL.UI.EquipmentScreen", "XRL.UI.ScreenReturn", new[] { "XRL.World.GameObject" })]
     [TestCase(typeof(CharacterStatusScreenMutationDetailsPatch), "HandleHighlightMutation", "Qud.UI.CharacterStatusScreen", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(StatisticGetHelpTextPatch), "GetHelpText", "XRL.World.Statistic", "System.String", new string[0])]
     [TestCase(typeof(ChargenAttributeDescriptionTranslationPatch), "handleUIEvent", "XRL.CharacterBuilds.Qud.QudGenotypeModule", "System.Object", new[] { "System.String", "System.Object" })]
@@ -199,8 +191,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(SummaryBlockControlTranslationPatch), "setData", "XRL.UI.Framework.SummaryBlockControl", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(TradeLineTranslationPatch), "setData", "Qud.UI.TradeLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(SkillsAndPowersStatusScreenTranslationPatch), "UpdateViewFromData", "Qud.UI.SkillsAndPowersStatusScreen", "System.Void", new string[0])]
-    [TestCase(typeof(MessageLogPatch), "AddPlayerMessage", "XRL.Messages.MessageQueue", "System.Void", new[] { "System.String", "System.String", "System.Boolean" })]
-    [TestCase(typeof(MessageLogStatusScreenTranslationPatch), "GetTabString", "Qud.UI.MessageLogStatusScreen", "System.String", new string[0])]
+    [TestCase(typeof(MessageQueueTranslationPatch), "AddPlayerMessage", "XRL.Messages.MessageQueue", "System.Void", new[] { "System.String", "System.String", "System.Boolean" })]
     [TestCase(typeof(MessageLogLineTranslationPatch), "setData", "Qud.UI.MessageLogLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(TutorialManagerTranslationPatch), "ShowCIDPopupAsync", "TutorialManager", "System.Threading.Tasks.Task", new[]
     {
@@ -252,8 +243,6 @@ public sealed class TargetMethodResolutionTests
         "System.Single",
         "System.String",
     })]
-    [TestCase(typeof(PhysicsEnterCellPassByTranslationPatch), "AddPlayerMessage", "XRL.Messages.MessageQueue", "System.Void", new[] { "System.String", "System.String", "System.Boolean" })]
-    [TestCase(typeof(ZoneManagerSetActiveZoneMessageQueuePatch), "AddPlayerMessage", "XRL.Messages.MessageQueue", "System.Void", new[] { "System.String", "System.String", "System.Boolean" })]
     [TestCase(typeof(XrlCoreLostSightTranslationPatch), "RenderBaseToBuffer", "XRL.Core.XRLCore", "System.Void", new[] { "ConsoleLib.Console.ScreenBuffer" })]
     [TestCase(typeof(ZoneManagerSetActiveZoneTranslationPatch), "SetActiveZone", "XRL.World.ZoneManager", "XRL.World.Zone", new[] { "XRL.World.Zone" })]
     [TestCase(typeof(JournalEntryDisplayTextPatch), "GetDisplayText", "Qud.API.IBaseJournalEntry", "System.String", new string[0])]
@@ -329,7 +318,6 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(ModManagerUITranslationPatch), "OnSelect", "Qud.UI.ModManagerUI", "System.Void", new[] { "XRL.ModInfo" })]
     [TestCase(typeof(SelectableTextMenuItemProbePatch), "Update", "Qud.UI.SelectableTextMenuItem", "System.Void", new string[0])]
     [TestCase(typeof(LoadingStatusTranslationPatch), "SetLoadingStatus", "XRL.UI.Loading", "System.Void", new[] { "System.String", "System.Boolean" })]
-    [TestCase(typeof(CombatAndLogMessageQueuePatch), "AddPlayerMessage", "XRL.Messages.MessageQueue", "System.Void", new[] { "System.String", "System.String", "System.Boolean" })]
     [TestCase(typeof(CombatGetDefenderHitDiceTranslationPatch), "HandleEvent", "XRL.World.Parts.Combat", "System.Boolean", new[] { "XRL.World.GetDefenderHitDiceEvent" })]
     [TestCase(typeof(PetEitherOrExplodeTranslationPatch), "explode", "XRL.World.Parts.PetEitherOr", "System.Void", new string[0])]
     [TestCase(typeof(ZoneWindChangeTranslationPatch), "WindChange", "XRL.World.Zone", "System.Void", new[] { "System.Int64" })]
@@ -879,6 +867,23 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.ProselytizationSifrah|ResultPartialSuccess|System.Void|XRL.World.GameObject",
         "XRL.World.ProselytizationSifrah|ResultSuccess|System.Void|XRL.World.GameObject",
         "XRL.World.ProselytizationSifrah|ResultExceptionalSuccess|System.Void|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(StatusScreenTabTranslationPatch), new[]
+    {
+        "Qud.UI.JournalStatusScreen|GetTabString|System.String",
+        "Qud.UI.MessageLogStatusScreen|GetTabString|System.String",
+        "Qud.UI.QuestsStatusScreen|GetTabString|System.String",
+    })]
+    [TestCase(typeof(LegacyGamepadPromptTranslationPatch), new[]
+    {
+        "XRL.UI.InventoryScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
+        "XRL.UI.StatusScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
+        "XRL.UI.JournalScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
+        "XRL.UI.TinkeringScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject|XRL.World.GameObject|XRL.World.IEvent",
+        "XRL.UI.QuestLog|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
+        "XRL.UI.FactionsScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
+        "XRL.UI.SkillsAndPowersScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
+        "XRL.UI.EquipmentScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
     })]
     public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
     {
