@@ -58,7 +58,7 @@ public static class FungalSporeInfectionTranslationPatch
     {
         try
         {
-            OwnerTranslationScope.Enter(ref activeDepth);
+            activeDepth++;
         }
         catch (Exception ex)
         {
@@ -70,7 +70,10 @@ public static class FungalSporeInfectionTranslationPatch
     {
         try
         {
-            OwnerTranslationScope.Exit(ref activeDepth);
+            if (activeDepth > 0)
+            {
+                activeDepth--;
+            }
         }
         catch (Exception ex)
         {
@@ -83,7 +86,7 @@ public static class FungalSporeInfectionTranslationPatch
     internal static bool TryTranslateQueuedMessage(ref string message, string? color)
     {
         _ = color;
-        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(message))
+        if (activeDepth <= 0 || string.IsNullOrEmpty(message))
         {
             return false;
         }
@@ -106,7 +109,7 @@ public static class FungalSporeInfectionTranslationPatch
 
     internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
     {
-        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(source))
+        if (activeDepth <= 0 || string.IsNullOrEmpty(source))
         {
             translated = source;
             return false;

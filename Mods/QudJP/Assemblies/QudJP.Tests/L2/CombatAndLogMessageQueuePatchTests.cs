@@ -2724,7 +2724,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase(
         nameof(DummyLatchesOnTarget.HandleEvent),
         "Since {{R|the hook}} is still latched onto you, {{G|the snapjaw}} releasing {{R|it}} leaves {{R|it}} in your possession!",
-        "{{G|the snapjaw}}",
+        "{{R|the hook}}",
         "{{R|the hook}}はまだあなたに噛み付いているため、{{G|the snapjaw}}が{{R|it}}を放すと{{R|it}}はあなたの所有物として残る！")]
     [TestCase(
         nameof(DummyLatchesOnTarget.FireEvent),

@@ -11,13 +11,14 @@ namespace QudJP.Patches;
 public static class LatchesOnTranslationPatch
 {
     private const string Context = nameof(LatchesOnTranslationPatch);
+    private const string LatchedItemCapture = "(?<item>.+?)";
 
     private static readonly Regex ReleasePattern = new(
-        "^Since (?<item>.+?) (?:is|are) still latched onto (?<target>.+?), releasing (?<released>.+?) leaves (?<left>.+?) in (?<possession>.+?)!$",
+        "^Since " + LatchedItemCapture + " (?:is|are) still latched onto (?<target>.+?), releasing (?<released>.+?) leaves (?<left>.+?) in (?<possession>.+?)!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex ActorReleasePattern = new(
-        "^Since (?<item>.+?) (?:is|are) still latched onto you, (?<actor>.+?) releasing (?<released>.+?) leaves (?<left>.+?) in your possession!$",
+        "^Since " + LatchedItemCapture + " (?:is|are) still latched onto you, (?<actor>.+?) releasing (?<released>.+?) leaves (?<left>.+?) in your possession!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex LatchPattern = new(
