@@ -103,6 +103,10 @@ translation-token-baseline:
 release-note-check base_ref="origin/main" head_ref="HEAD":
   {{python}} scripts/release_notes.py check-fragment --base-ref "{{base_ref}}" --head-ref "{{head_ref}}"
 
+# Check that CHANGELOG release headings have matching footer links.
+changelog-link-check:
+  {{python}} scripts/release_notes.py check-changelog-links
+
 # Check changed Markdown reports for recurring GitHub rendering pitfalls.
 markdown-report-check base_ref="origin/main" head_ref="HEAD":
   {{python}} scripts/check_markdown_reports.py --base-ref "{{base_ref}}" --head-ref "{{head_ref}}"
@@ -324,10 +328,10 @@ runtime-evidence-check: test-l1
   uv run pytest scripts/tests/test_triage_integration.py -q -k sample_log_smoke
 
 # Run the broad local verification gate.
-check: build test-l1 test-l2 test-l2g python-check python-test localization-check translation-token-check markdown-report-check localization-coverage-map-check
+check: build test-l1 test-l2 test-l2g python-check python-test localization-check translation-token-check changelog-link-check markdown-report-check localization-coverage-map-check
 
 # Run the CI-like PR gate before pushing broad C#, script, or localization changes.
-pr-check base_ref="origin/main" head_ref="HEAD": ci-dotnet roslyn-build python-check python-test localization-check translation-token-check localization-coverage-map-check
+pr-check base_ref="origin/main" head_ref="HEAD": ci-dotnet roslyn-build python-check python-test localization-check translation-token-check changelog-link-check localization-coverage-map-check
   {{python}} scripts/release_notes.py check-fragment --base-ref "{{base_ref}}" --head-ref "{{head_ref}}"
   {{python}} scripts/check_markdown_reports.py --base-ref "{{base_ref}}" --head-ref "{{head_ref}}"
 

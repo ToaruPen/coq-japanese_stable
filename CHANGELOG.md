@@ -10,6 +10,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.2.51] - 2026-05-10
+
+### Changed
+
+- UI コマンドの日本語ラベルについて、look 系の操作と examine 系の操作を区別しやすくしました。
+
+### Fixed
+
+- 複数の自動生成ポップアップ・メッセージ経路に不足していた日本語 owner-route 翻訳を追加しました。
+- 歴史的な墓碑銘の冒頭文を、UI の look コマンドではなく物語文として訳すようにしました。
+- インベントリ UI 更新後に InventoryLine の TMP 表示が崩れる問題を修復しました。
+- インベントリの追加操作コンテキストメニューラベルを日本語化しました。
+- Mod Manager 下部コンテキストのホットキー表示で、括弧付きキー表記を保持し、不明な color-code 警告が出ないようにしました。
+- 実行時辞書の重複キー診断を通常起動ログへ出しすぎないようにし、テキストを変える重複だけを override として扱うようにしました。
+- `あなたは a ...` のような翻訳済み動的メッセージに残る英語冠詞を除去しました。
+- スナップジョー関連の日本語表記を `スナップジョー` に統一しました。
+
+---
+
 ## [0.2.50] - 2026-05-09
 
 ### Changed
@@ -267,7 +286,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.2.50...HEAD
+[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.2.51...HEAD
+[0.2.51]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.51
 [0.2.50]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.50
 [0.2.46]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.46
 [0.2.45]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.45

@@ -119,6 +119,61 @@ def test_verify_workshop_vdf_reports_escaped_newline_in_text_fields(tmp_path: Pa
     ]
 
 
+def test_verify_workshop_vdf_reports_internal_terms_in_multiline_changenote(tmp_path: Path) -> None:
+    """The final upload gate catches implementation-facing Workshop changenotes."""
+    content_folder = tmp_path / "QudJP"
+    vdf = tmp_path / "workshop_item.vdf"
+    vdf.write_text(
+        "\n".join(
+            [
+                '"workshopitem"',
+                "{",
+                '  "appid" "333640"',
+                '  "publishedfileid" "3718988020"',
+                f'  "contentfolder" "{content_folder.resolve()}"',
+                f'  "previewfile" "{(content_folder / "preview.png").resolve()}"',
+                '  "changenote" "v0.2.51 / abc123',
+                "",
+                "主な改善:",
+                '- InventoryLine の TMP override を修正しました。"',
+                "}",
+            ],
+        ),
+        encoding="utf-8",
+    )
+
+    assert verify_workshop_vdf(vdf, content_folder=content_folder) == [
+        "Workshop changenote contains internal term 'InventoryLine'; rewrite it in player-facing terms",
+        "Workshop changenote contains internal term 'override'; rewrite it in player-facing terms",
+        "Workshop changenote contains internal term 'TMP'; rewrite it in player-facing terms",
+    ]
+
+
+def test_verify_workshop_vdf_reports_malformed_text_field(tmp_path: Path) -> None:
+    """Malformed text fields are reported instead of falling back to the regex parser."""
+    content_folder = tmp_path / "QudJP"
+    vdf = tmp_path / "workshop_item.vdf"
+    vdf.write_text(
+        "\n".join(
+            [
+                '"workshopitem"',
+                "{",
+                '  "appid" "333640"',
+                '  "publishedfileid" "3718988020"',
+                f'  "contentfolder" "{content_folder.resolve()}"',
+                f'  "previewfile" "{(content_folder / "preview.png").resolve()}"',
+                '  "changenote" "unterminated changenote',
+                "}",
+            ],
+        ),
+        encoding="utf-8",
+    )
+
+    assert verify_workshop_vdf(vdf, content_folder=content_folder) == [
+        "VDF changenote field is malformed or unterminated",
+    ]
+
+
 def test_main_accepts_matching_staging_and_vdf(tmp_path: Path) -> None:
     """The CLI accepts upload files generated from the same release ZIP."""
     release_zip = tmp_path / "dist" / "QudJP-v0.2.50.zip"
