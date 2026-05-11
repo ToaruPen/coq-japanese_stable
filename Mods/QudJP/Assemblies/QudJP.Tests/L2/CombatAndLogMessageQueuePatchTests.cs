@@ -25,6 +25,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
         MessagePatternTranslator.ResetForTests();
+        QuestLifecyclePopupTranslationPatch.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         DummyMessageQueue.Reset();
@@ -37,6 +38,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         Translator.ResetForTests();
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
         MessagePatternTranslator.ResetForTests();
+        QuestLifecyclePopupTranslationPatch.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {

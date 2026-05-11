@@ -31,6 +31,9 @@ public static class QuestLifecyclePopupTranslationPatch
         "^You have completed the quest (?<quest>.+)!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly object SyncRoot = new();
+    private static Dictionary<string, string>? questStepTextByName;
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -267,10 +270,45 @@ public static class QuestLifecyclePopupTranslationPatch
             return false;
         }
 
+        if (GetQuestStepTextByName().TryGetValue(stepName, out var found))
+        {
+            translated = found;
+            return true;
+        }
+
+        return false;
+    }
+
+    internal static void ResetForTests()
+    {
+        activeDepth = 0;
+        lock (SyncRoot)
+        {
+            questStepTextByName = null;
+        }
+    }
+
+    private static Dictionary<string, string> GetQuestStepTextByName()
+    {
+        lock (SyncRoot)
+        {
+            if (questStepTextByName is not null)
+            {
+                return questStepTextByName;
+            }
+
+            questStepTextByName = LoadQuestStepTextByName();
+            return questStepTextByName;
+        }
+    }
+
+    private static Dictionary<string, string> LoadQuestStepTextByName()
+    {
+        var map = new Dictionary<string, string>(StringComparer.Ordinal);
         var path = LocalizationAssetResolver.GetLocalizationPath("Quests.jp.xml");
         if (!File.Exists(path))
         {
-            return false;
+            return map;
         }
 
         try
@@ -279,7 +317,7 @@ public static class QuestLifecyclePopupTranslationPatch
             foreach (var step in document.Descendants("step"))
             {
                 var name = step.Attribute("Name")?.Value;
-                if (!string.Equals(name, stepName, StringComparison.Ordinal))
+                if (string.IsNullOrWhiteSpace(name))
                 {
                     continue;
                 }
@@ -287,11 +325,13 @@ public static class QuestLifecyclePopupTranslationPatch
                 var text = step.Element("text")?.Value.Trim();
                 if (string.IsNullOrWhiteSpace(text))
                 {
-                    return false;
+                    continue;
                 }
 
-                translated = text!;
-                return true;
+                if (!map.ContainsKey(name!))
+                {
+                    map[name!] = text!;
+                }
             }
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or XmlException)
@@ -300,6 +340,6 @@ public static class QuestLifecyclePopupTranslationPatch
                 $"QudJP: {Context} failed to load 'Quests.jp.xml': {ex.Message}");
         }
 
-        return false;
+        return map;
     }
 }
