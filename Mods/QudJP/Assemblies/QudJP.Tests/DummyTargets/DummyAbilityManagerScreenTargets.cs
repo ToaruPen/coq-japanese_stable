@@ -1,3 +1,5 @@
+using System.Threading;
+
 namespace QudJP.Tests.DummyTargets;
 
 internal sealed class DummyAbilityManagerEntryTarget
@@ -65,8 +67,12 @@ internal sealed class DummyAbilityManagerScreenTarget
     public List<DummyAbilityManagerScreenLineData> leftSideItems = [];
     public List<DummyAbilityManagerScreenLineData> filteredItems = [];
     public string searchText = string.Empty;
+    public string PopupMessageToShow { get; set; } = string.Empty;
     public DummyUITextSkinField rightSideHeaderText = new();
     public DummyUITextSkinField rightSideDescriptionArea = new();
+
+    public static string StaticPopupMessageToShow { get; set; } = string.Empty;
+    public static string StaticPopupSurface { get; set; } = "ShowKeybindAsync";
 
     public void FilterItems()
     {
@@ -105,6 +111,33 @@ internal sealed class DummyAbilityManagerScreenTarget
         rightSideDescriptionArea.SetText(string.Empty);
     }
 
+    public void HandleFilterItems()
+    {
+        DummyPopupShow.ShowAsync(PopupMessageToShow).GetAwaiter().GetResult();
+    }
+
+    public static async Task HandleRebindAsync(DummyAbilityManagerEntryTarget ability, string? layerToResetTo = null)
+    {
+        _ = ability;
+        _ = layerToResetTo;
+        await Task.Yield();
+        if (string.Equals(StaticPopupSurface, "ShowAsync", StringComparison.Ordinal))
+        {
+            await DummyPopupShow.ShowAsync(StaticPopupMessageToShow).ConfigureAwait(false);
+            return;
+        }
+
+        await DummyPopupShow.ShowKeybindAsync(StaticPopupMessageToShow, CancellationToken.None).ConfigureAwait(false);
+    }
+
+    public static async Task<bool> HandleRemoveBindAsync(DummyAbilityManagerEntryTarget ability)
+    {
+        _ = ability;
+        await Task.Yield();
+        _ = await DummyPopupShow.ShowYesNoAsync(StaticPopupMessageToShow).ConfigureAwait(false);
+        return true;
+    }
+
     public static void ResetMenuOptions()
     {
         TOGGLE_SORT = new DummyAbilityManagerMenuOption
@@ -121,5 +154,7 @@ internal sealed class DummyAbilityManagerScreenTarget
             new DummyAbilityManagerMenuOption { Description = "Activate Selected Ability" },
             FILTER_ITEMS,
         ];
+        StaticPopupMessageToShow = string.Empty;
+        StaticPopupSurface = "ShowKeybindAsync";
     }
 }

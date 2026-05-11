@@ -128,7 +128,7 @@ public sealed class TradeUiPopupTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(playerPays, Is.EqualTo("あなたは取引を釣り合わせるために1ドラムの真水を支払った。"));
-            Assert.That(traderPays, Is.EqualTo("商人は取引を釣り合わせるために12ドラムの真水を支払った。"));
+            Assert.That(traderPays, Is.EqualTo("商人は取引を釣り合わせるためにあなたへ12ドラムの真水を支払った。"));
             Assert.That(traderCannotPay, Is.EqualTo("商人には取引を釣り合わせるための1ドラムの真水がない！"));
         });
     }
@@ -152,7 +152,7 @@ public sealed class TradeUiPopupTranslationPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(traderPays, Is.EqualTo("{{G|商人}}は取引を釣り合わせるために12ドラムの真水を支払った。"));
+            Assert.That(traderPays, Is.EqualTo("{{G|商人}}は取引を釣り合わせるためにあなたへ12ドラムの真水を支払った。"));
             Assert.That(hasNothing, Is.EqualTo("{{G|ウォーターヴァイン農家}}には取引するものがない"));
             Assert.That(waterDebt, Is.EqualTo("{{G|商人}}は、あなたが彼に借りている5ドラムの{{B|真水}}を支払うまで取引してくれない。"));
         });

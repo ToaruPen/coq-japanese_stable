@@ -554,6 +554,11 @@
       "route": "needs-harmony-patch"
     },
     {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits with (?:a |an |the )?(.+?) \\(x(\\d+)\\) for (\\d+) damage!$",
+      "template": "{0}は{1}で{3}ダメージを与えた！ (x{2})",
+      "route": "needs-harmony-patch"
+    },
+    {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically (?:hits|hit) (?:the |a |an )?(?!you)(.+?) with (?:a |an |the )?(.+?), but (?:his|her|its|their) mental attack has no effect[.!]?$",
       "template": "{0}は{2}で{1}に会心の一撃だが、精神攻撃は効果がない",
       "route": "message-frame"
@@ -1929,6 +1934,11 @@
       "route": "needs-harmony-patch"
     },
     {
+      "pattern": "^There (?:is|are) (.+?) that way\\. Do you want to go (.+?) and start swimming\\?$",
+      "template": "その先には{0}がある。{1}へ進み、泳ぎ始めるか？",
+      "route": "needs-harmony-patch"
+    },
+    {
       "pattern": "^Are you sure you want to move into (.+?)\\? Move (.+?) again to confirm\\.$",
       "template": "{0}に入ってもよいか？ 確認するにはもう一度{1}へ移動する。",
       "route": "needs-harmony-patch"
@@ -1936,6 +1946,11 @@
     {
       "pattern": "^Are you sure you want to drop down a level\\? Move (.+?) again to confirm\\.$",
       "template": "1階層下へ降りてもよいか？ 確認するにはもう一度{0}へ移動する。",
+      "route": "needs-harmony-patch"
+    },
+    {
+      "pattern": "^Are you sure you want to target (.+?)\\?$",
+      "template": "{0}を標的にしてもよいか？",
       "route": "needs-harmony-patch"
     },
     {

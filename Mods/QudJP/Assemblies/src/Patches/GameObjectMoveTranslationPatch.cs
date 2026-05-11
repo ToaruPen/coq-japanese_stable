@@ -94,6 +94,29 @@ public static class GameObjectMoveTranslationPatch
             && MessageLogProducerTranslationHelpers.TryPreparePatternMessage(ref message, Context, "Move");
     }
 
+    internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
+    {
+        if (activeDepth <= 0
+            || string.IsNullOrEmpty(source)
+            || MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _)
+            || !IsTargetPopupMessage(source))
+        {
+            translated = source;
+            return false;
+        }
+
+        var patternTranslated = MessagePatternTranslator.Translate(source, route);
+        if (string.Equals(patternTranslated, source, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(route, family + ".MovePopup", source, patternTranslated);
+        translated = patternTranslated;
+        return true;
+    }
+
     private static bool IsTargetMessage(string? message)
     {
         if (string.IsNullOrEmpty(message))
@@ -112,5 +135,12 @@ public static class GameObjectMoveTranslationPatch
                 && value.EndsWith(" and start swimming.", StringComparison.Ordinal))
             || value.StartsWith("Are you sure you want to move into ", StringComparison.Ordinal)
             || value.StartsWith("Are you sure you want to drop down a level? Move ", StringComparison.Ordinal);
+    }
+
+    private static bool IsTargetPopupMessage(string value)
+    {
+        return value.StartsWith("There ", StringComparison.Ordinal)
+            && value.Contains(" that way. Do you want to go ")
+            && value.EndsWith(" and start swimming?", StringComparison.Ordinal);
     }
 }

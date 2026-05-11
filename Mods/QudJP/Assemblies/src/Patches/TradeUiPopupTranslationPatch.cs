@@ -1030,7 +1030,7 @@ public static class TradeUiPopupTranslationPatch
                 stripped,
                 spans,
                 TraderPonyUpQuestionPattern,
-                "{0}は取引を釣り合わせるために{1}を支払う必要がある。承諾する？",
+                "{0}が取引を釣り合わせるためにあなたへ{1}を支払う必要がある。承諾する？",
                 "TradeUiPopup.TraderPonyUpQuestion",
                 match => new object[]
                 {
@@ -1047,7 +1047,7 @@ public static class TradeUiPopupTranslationPatch
                 stripped,
                 spans,
                 TraderPonyUpPattern,
-                "{0}は取引を釣り合わせるために{1}を支払った。",
+                "{0}は取引を釣り合わせるためにあなたへ{1}を支払った。",
                 "TradeUiPopup.TraderPonyUp",
                 match => new object[]
                 {

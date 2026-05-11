@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace QudJP.Tests.DummyTargets;
 
@@ -11,6 +13,11 @@ internal sealed class DummyCell
 internal sealed class DummyZone
 {
     public string ZoneId { get; set; } = string.Empty;
+}
+
+internal sealed class DummyFaction
+{
+    public string Name { get; set; } = string.Empty;
 }
 
 internal sealed class DummyScreenBuffer
@@ -164,6 +171,8 @@ internal sealed class DummyGameObjectMoveTarget
 {
     public string MessageToSend { get; set; } = string.Empty;
 
+    public string? PopupMessageToSend { get; set; }
+
     public string? ColorToSend { get; set; }
 
     public bool Move(
@@ -207,6 +216,11 @@ internal sealed class DummyGameObjectMoveTarget
         _ = callDepth;
 
         blocking = null;
+        if (PopupMessageToSend is not null)
+        {
+            DummyPopupShow.ShowYesNo(PopupMessageToSend);
+        }
+
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
         return false;
     }
@@ -246,6 +260,8 @@ internal sealed class DummyGameObjectPerformThrowTarget
 {
     public string MessageToSend { get; set; } = string.Empty;
 
+    public string? PopupMessageToSend { get; set; }
+
     public string? ColorToSend { get; set; }
 
     public bool PerformThrow(
@@ -266,6 +282,11 @@ internal sealed class DummyGameObjectPerformThrowTarget
         _ = rangeVariance;
         _ = distanceVariance;
         _ = energyCost;
+        if (PopupMessageToSend is not null)
+        {
+            DummyPopupShow.ShowYesNoCancel(PopupMessageToSend);
+        }
+
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
         return true;
     }
@@ -295,6 +316,1091 @@ internal sealed class DummyGameObjectToggleActivatedAbilityTarget
         _ = id;
         _ = silent;
         _ = setState;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+}
+
+internal sealed class DummyGameObjectPopupTarget
+{
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public bool UseShowFail { get; set; }
+
+    public Task<bool> ConfirmUseImportantAsync()
+    {
+        _ = DummyPopupShow.ShowYesNoAsync(PopupMessageToSend).GetAwaiter().GetResult();
+        return Task.FromResult(true);
+    }
+
+    public bool ConfirmUseImportant()
+    {
+        _ = DummyPopupShow.ShowYesNo(PopupMessageToSend);
+        return true;
+    }
+
+    public void HandleRename()
+    {
+        if (UseShowFail)
+        {
+            DummyPopupShow.ShowFail(PopupMessageToSend);
+            return;
+        }
+
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    public void ChangeCompanionAbilityUse()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    public bool CheckCompanionDirection()
+    {
+        DummyPopupShow.ShowFail(PopupMessageToSend);
+        return true;
+    }
+}
+
+internal sealed class DummyRealityStabilizedInterdictTarget
+{
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public void ShowGenericInterdictMessage()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    public void ShowDistantInterdictMessage()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    public void ShowDualInterdictMessage()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+}
+
+internal sealed class DummyHackingSifrahResultTarget
+{
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public void HackingResultSuccess()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    public void HackingResultExceptionalSuccess()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    public void HackingResultPartialSuccess()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    public void HackingResultFailure()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    public void HackingResultCriticalFailure()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+}
+
+internal sealed class DummyQuestLifecyclePopupTarget
+{
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public void ShowStartPopup()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    public void ShowFailPopup()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    public void ShowFailStepPopup()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    public void ShowFinishPopup()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+}
+
+internal sealed class DummyFlightTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public bool StartFlying()
+    {
+        return EmitFlightMessage(nameof(StartFlying));
+    }
+
+    public bool StopFlying()
+    {
+        return EmitFlightMessage(nameof(StopFlying));
+    }
+
+    public void Land()
+    {
+        _ = nameof(Land);
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public bool FailFlying()
+    {
+        return EmitFlightMessage(nameof(FailFlying));
+    }
+
+    private bool EmitFlightMessage(string route)
+    {
+        _ = route;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+}
+
+internal sealed class DummyBodyTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public void CheckUnsupportedPartLoss()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public void CheckPartRecovery()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public void Dismember()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    public bool RegenerateLimb()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+}
+
+internal sealed class DummyItemModdingSifrahTarget
+{
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public void ResultFailure()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    public void ResultPartialSuccess()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    public void ResultSuccess()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    public void ResultCriticalSuccess()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+}
+
+internal sealed class DummySunderMindTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public void CancelSunder()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public void BeginSunder(bool usePopup)
+    {
+        if (usePopup)
+        {
+            DummyPopupShow.Show(PopupMessageToSend);
+            return;
+        }
+
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public void PenetrationFailure()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+}
+
+internal sealed class DummyKeybindsScreenConflictTarget
+{
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public Task<bool> ConfirmConflictBind()
+    {
+        return ShowYesNoAsync(nameof(ConfirmConflictBind));
+    }
+
+    public Task<bool> ConfirmDynamicConflictBind()
+    {
+        return ShowYesNoAsync(nameof(ConfirmDynamicConflictBind));
+    }
+
+    public Task RequiredConflictBind()
+    {
+        _ = nameof(RequiredConflictBind);
+        return DummyPopupShow.ShowAsync(PopupMessageToSend);
+    }
+
+    private Task<bool> ShowYesNoAsync(string route)
+    {
+        _ = route;
+        _ = DummyPopupShow.ShowYesNoAsync(PopupMessageToSend).GetAwaiter().GetResult();
+        return Task.FromResult(true);
+    }
+}
+
+internal sealed class DummyRealityStabilizedEventTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public bool TryContest()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public void ShortCircuitDevice(bool usePopup)
+    {
+        if (usePopup)
+        {
+            DummyPopupShow.Show(PopupMessageToSend);
+            return;
+        }
+
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+}
+
+internal sealed class DummyCyberneticRejectionSyndromeTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public bool Apply(DummyGameObject? gameObject = null)
+    {
+        _ = gameObject;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public void Remove(DummyGameObject? gameObject = null)
+    {
+        _ = gameObject;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public void Reduce(int by = 1)
+    {
+        _ = by;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+}
+
+internal sealed class DummyGeomagneticDiscTarget
+{
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public void SignalFailure(DummyGameObject? actor = null)
+    {
+        _ = actor;
+        _ = nameof(SignalFailure);
+        DummyPopupShow.ShowFail(PopupMessageToSend);
+    }
+
+    public void SignalLowPower(DummyGameObject? actor = null)
+    {
+        _ = actor;
+        _ = nameof(SignalLowPower);
+        DummyPopupShow.ShowFail(PopupMessageToSend);
+    }
+
+    public bool ExamineFailure(DummyExamineEvent? examineEvent = null, int chance = 100)
+    {
+        _ = examineEvent;
+        _ = chance;
+        DummyPopupShow.Show(PopupMessageToSend);
+        return true;
+    }
+}
+
+internal sealed class DummyExamineEvent
+{
+}
+
+internal sealed class DummyCampfireCookTarget
+{
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public bool Cook()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+        return false;
+    }
+}
+
+internal sealed class DummyTeleprojectorTarget
+{
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public bool HandleEvent(DummyBootSequenceDoneEvent? bootSequenceDoneEvent = null)
+    {
+        _ = bootSequenceDoneEvent;
+        DummyPopupShow.Show(PopupMessageToSend);
+        return true;
+    }
+
+    public bool ActivateTeleprojector()
+    {
+        DummyPopupShow.ShowFail(PopupMessageToSend);
+        return false;
+    }
+
+    public bool RoboDom(DummyMentalAttackEvent? mentalAttackEvent = null)
+    {
+        _ = mentalAttackEvent;
+        DummyPopupShow.Show(PopupMessageToSend);
+        return true;
+    }
+}
+
+internal sealed class DummyBootSequenceDoneEvent
+{
+}
+
+internal sealed class DummyMentalAttackEvent
+{
+}
+
+internal sealed class DummyTombAnchorSystemTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public void OnEndTurn()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public void Recall(DummyZone? zone = null)
+    {
+        _ = zone;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public void AnchorCall()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+}
+
+internal sealed class DummyCyberneticsMedassistModuleTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public bool HandleEvent(DummyInventoryActionEvent? inventoryActionEvent = null)
+    {
+        _ = inventoryActionEvent;
+        DummyPopupShow.Show(PopupMessageToSend);
+        return true;
+    }
+
+    public void AttemptMedicalAssistance(DummyDamage? damage = null)
+    {
+        _ = damage;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+}
+
+internal sealed class DummyDamage
+{
+    public string Id { get; set; } = nameof(DummyDamage);
+}
+
+internal sealed class DummyLiquidLoaderTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public bool HandleEvent(DummyCommandReloadEvent? commandReloadEvent = null)
+    {
+        _ = commandReloadEvent;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public bool FireEvent(DummyEvent? eventObject = null)
+    {
+        _ = eventObject;
+        DummyPopupShow.Show(PopupMessageToSend);
+        return true;
+    }
+}
+
+internal sealed class DummyCommandReloadEvent
+{
+    public string Id { get; set; } = nameof(DummyCommandReloadEvent);
+}
+
+internal sealed class DummyEvent
+{
+    public string Id { get; set; } = nameof(DummyEvent);
+}
+
+internal sealed class DummyTrollKingTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public void CheckSpawn(int turns = 1)
+    {
+        _ = turns;
+        _ = nameof(CheckSpawn);
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public void StopBudding(int turns = 1)
+    {
+        _ = turns;
+        _ = nameof(StopBudding);
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+}
+
+internal sealed class DummyMutatingTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public bool Apply(DummyGameObject? gameObject = null)
+    {
+        _ = gameObject;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public bool HandleEvent(DummyEndTurnEvent? endTurnEvent = null, bool usePopup = false)
+    {
+        _ = endTurnEvent;
+        if (usePopup)
+        {
+            DummyPopupShow.Show(PopupMessageToSend);
+            return true;
+        }
+
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+}
+
+internal sealed class DummyEndTurnEvent
+{
+    public string Id { get; set; } = nameof(DummyEndTurnEvent);
+}
+
+internal sealed class DummyQuillsTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public bool HandleEvent(DummyTookDamageEvent? tookDamageEvent = null)
+    {
+        _ = tookDamageEvent;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public bool FireEvent(DummyEvent? eventObject = null)
+    {
+        _ = eventObject;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+}
+
+internal sealed class DummyTookDamageEvent
+{
+    public string Id { get; set; } = nameof(DummyTookDamageEvent);
+}
+
+internal sealed class DummyLightManipulationTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public bool HandleEvent(DummyCommandEvent? commandEvent = null, bool usePopup = false)
+    {
+        _ = commandEvent;
+        if (usePopup)
+        {
+            DummyPopupShow.ShowFail(PopupMessageToSend);
+            return true;
+        }
+
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public bool Lase(DummyCell? cell = null, int pathLength = 0)
+    {
+        _ = cell;
+        _ = pathLength;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+}
+
+internal sealed class DummyCommandEvent
+{
+    public string Id { get; set; } = nameof(DummyCommandEvent);
+}
+
+internal sealed class DummyLatchesOnTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public bool HandleEvent(DummyUnequippedEvent? unequippedEvent = null)
+    {
+        _ = unequippedEvent;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public bool FireEvent(DummyEvent? eventObject = null)
+    {
+        _ = eventObject;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+}
+
+internal sealed class DummyUnequippedEvent
+{
+    public string Id { get; set; } = nameof(DummyUnequippedEvent);
+}
+
+internal sealed class DummyAsleepOwnerTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public bool Apply(DummyGameObject? obj = null)
+    {
+        _ = obj;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public bool HandleEvent(DummyBeginTakeActionEvent? beginTakeActionEvent = null)
+    {
+        _ = beginTakeActionEvent;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public bool HandleEvent(DummyInventoryActionEvent? inventoryActionEvent = null, bool usePopup = false)
+    {
+        _ = inventoryActionEvent;
+        if (usePopup)
+        {
+            DummyPopupShow.Show(PopupMessageToSend);
+            return true;
+        }
+
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+}
+
+internal sealed class DummyBeginTakeActionEvent
+{
+    public string Id { get; set; } = nameof(DummyBeginTakeActionEvent);
+}
+
+internal sealed class DummyEffectAppliedEvent
+{
+}
+
+internal sealed class DummyBuddingTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public bool Apply(DummyGameObject? obj = null)
+    {
+        _ = obj;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public void Remove(DummyGameObject? obj = null)
+    {
+        _ = obj;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+}
+
+internal sealed class DummyBeguilingTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public static bool Cast(
+        DummyGameObject? who = null,
+        DummyBeguilingTarget? mutation = null,
+        DummyEvent? eventObject = null,
+        int genericLevel = 1)
+    {
+        _ = who;
+        _ = mutation;
+        _ = eventObject;
+        _ = genericLevel;
+        DummyMessageQueue.AddPlayerMessage(StaticMessageToSend, StaticColorToSend, Capitalize: false);
+        if (StaticPopupMessageToSend is not null)
+        {
+            _ = DummyPopupShow.ShowYesNo(StaticPopupMessageToSend);
+        }
+
+        return true;
+    }
+
+    public bool Beguile(DummyMentalAttackEvent? mentalAttackEvent = null)
+    {
+        _ = mentalAttackEvent;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public static string StaticMessageToSend { get; set; } = string.Empty;
+
+    public static string? StaticColorToSend { get; set; }
+
+    public static string? StaticPopupMessageToSend { get; set; }
+}
+
+internal sealed class DummyAscensionCableTarget
+{
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public bool TryAscend(DummyGameObject? actor = null, bool fromDialog = false)
+    {
+        return ShowPopup(actor, fromDialog, nameof(TryAscend));
+    }
+
+    public bool TryDescend(DummyGameObject? actor = null, bool fromDialog = false)
+    {
+        return ShowPopup(actor, fromDialog, nameof(TryDescend));
+    }
+
+    private bool ShowPopup(DummyGameObject? actor, bool fromDialog, string route)
+    {
+        _ = actor;
+        _ = fromDialog;
+        _ = route;
+        DummyPopupShow.Show(PopupMessageToSend);
+        return false;
+    }
+}
+
+internal sealed class DummyCarapaceTarget
+{
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public void Tighten(bool message = false)
+    {
+        _ = message;
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+}
+
+internal sealed class DummySvardymSystemTarget
+{
+    public string FirstMessageToSend { get; set; } = string.Empty;
+
+    public string SecondMessageToSend { get; set; } = string.Empty;
+
+    public void BeginStorm()
+    {
+        DummyMessageQueue.AddPlayerMessage(FirstMessageToSend);
+        if (!string.IsNullOrEmpty(SecondMessageToSend))
+        {
+            DummyMessageQueue.AddPlayerMessage(SecondMessageToSend);
+        }
+    }
+
+    public void Tick()
+    {
+        var message = FirstMessageToSend;
+        DummyMessageQueue.AddPlayerMessage(message);
+        if (!string.IsNullOrEmpty(SecondMessageToSend))
+        {
+            DummyMessageQueue.AddPlayerMessage(SecondMessageToSend);
+        }
+    }
+}
+
+internal sealed class DummyPhasedTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public bool HandleEvent(DummyEffectAppliedEvent? effectAppliedEvent = null)
+    {
+        _ = effectAppliedEvent;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend);
+        return true;
+    }
+
+    public bool HandleEvent(DummyBeginTakeActionEvent? beginTakeActionEvent = null)
+    {
+        _ = beginTakeActionEvent;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend);
+        return true;
+    }
+
+    public void Remove(DummyGameObject? obj = null)
+    {
+        _ = obj;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend);
+    }
+}
+
+internal sealed class DummyPersuasionRebukeRobotTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public bool Rebuke(DummyMentalAttackEvent? mentalAttackEvent = null)
+    {
+        _ = mentalAttackEvent;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend);
+        return false;
+    }
+}
+
+internal sealed class DummyNephalPropertiesTarget
+{
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public bool TryPacify()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+        return true;
+    }
+}
+
+internal sealed class DummyTonicTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public bool FireEvent(DummyEvent? eventObject = null)
+    {
+        _ = eventObject;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend);
+        return true;
+    }
+}
+
+internal sealed class DummySimpleOwnerQueueTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public bool FireEvent(DummyEvent? eventObject = null)
+    {
+        _ = eventObject;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public bool Apply(DummyGameObject? obj = null)
+    {
+        _ = obj;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public static bool ApplyFear(DummyMentalAttackEvent? mentalAttackEvent = null)
+    {
+        _ = mentalAttackEvent;
+        DummyMessageQueue.AddPlayerMessage(StaticMessageToSend, StaticColorToSend, Capitalize: false);
+        return false;
+    }
+
+    public void Remove(DummyGameObject? obj = null)
+    {
+        _ = obj;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public static bool CheckpointOn()
+    {
+        DummyMessageQueue.AddPlayerMessage(StaticMessageToSend, StaticColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public void SetHolyZone(DummyZone? zone = null, DummyFaction? faction = null)
+    {
+        _ = zone;
+        _ = faction;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public static string StaticMessageToSend { get; set; } = string.Empty;
+
+    public static string? StaticColorToSend { get; set; }
+}
+
+internal sealed class DummyQuest
+{
+    public string ID { get; set; } = string.Empty;
+}
+
+internal sealed class DummyXrlGameTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public bool FinishQuestStep(
+        DummyQuest? quest = null,
+        string? questStepList = null,
+        int xp = -1,
+        bool canFinishQuest = true,
+        string? zoneId = null)
+    {
+        _ = quest;
+        _ = questStepList;
+        _ = xp;
+        _ = canFinishQuest;
+        _ = zoneId;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, "R");
+        return false;
+    }
+}
+
+internal sealed class DummyIntegratedWeaponHostsTarget
+{
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public DummyGameObject GenerateTurret(DummyGameObject weapon, DummyGameObject? owner = null, bool overrideSupply = false)
+    {
+        _ = weapon;
+        _ = owner;
+        _ = overrideSupply;
+        DummyPopupShow.Show(PopupMessageToSend);
+        return new DummyGameObject();
+    }
+
+    public bool HandleTurretWish(Match match)
+    {
+        _ = match;
+        DummyPopupShow.ShowFail(PopupMessageToSend);
+        return true;
+    }
+}
+
+internal sealed class DummyBoostStatisticTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public bool Apply(DummyGameObject obj)
+    {
+        _ = obj;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public void Remove(DummyGameObject obj)
+    {
+        _ = obj;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+}
+
+internal sealed class DummyEmboldenedTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public bool Apply(DummyGameObject obj)
+    {
+        _ = obj;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public void Remove(DummyGameObject obj)
+    {
+        _ = obj;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+}
+
+internal sealed class DummyFungalSporeInfectionTarget
+{
+    public static string PopupMessageToSend { get; set; } = string.Empty;
+
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public static bool ApplyFungalInfection(DummyGameObject obj, string infectionBlueprint, DummyBodyPart? selectedPart = null)
+    {
+        _ = obj;
+        _ = infectionBlueprint;
+        _ = selectedPart;
+        DummyPopupShow.Show(PopupMessageToSend);
+        return true;
+    }
+
+    public bool FireEvent(DummyGameEvent e)
+    {
+        _ = e;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+}
+
+internal sealed class DummyUseEnergyEvent
+{
+    public bool Passive { get; set; }
+
+    public string? Type { get; set; }
+}
+
+internal sealed class DummyHealingTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public bool HandleEvent(DummyUseEnergyEvent e)
+    {
+        _ = e;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public bool FireEvent(DummyGameEvent e)
+    {
+        _ = e;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+}
+
+internal sealed class DummyStressedTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public bool Apply(DummyGameObject obj)
+    {
+        _ = obj;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public void Remove(DummyGameObject obj)
+    {
+        _ = obj;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+}
+
+internal sealed class DummySecretVisibilityChangedEvent
+{
+    public string Id { get; set; } = nameof(DummySecretVisibilityChangedEvent);
+}
+
+internal sealed class DummyEnteredCellEvent
+{
+    public string Id { get; set; } = nameof(DummyEnteredCellEvent);
+}
+
+internal sealed class DummyAmnesiaTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public bool HandleEvent(DummySecretVisibilityChangedEvent e)
+    {
+        _ = e;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public bool HandleEvent(DummyEnteredCellEvent e)
+    {
+        _ = e;
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
         return true;
     }

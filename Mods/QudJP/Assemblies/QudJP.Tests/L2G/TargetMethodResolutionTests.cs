@@ -16,6 +16,7 @@ public sealed class TargetMethodResolutionTests
 #if HAS_GAME_DLL
         _ = EnsureGameAssemblyLoaded();
         _ = EnsureManagedAssemblyLoaded("ZString");
+        _ = EnsureManagedAssemblyLoaded("Unity.InputSystem");
 #endif
 #if HAS_TMP
         _ = EnsureManagedAssemblyLoaded("UnityEngine.CoreModule");
@@ -108,6 +109,12 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(XrlManualTranslationPatch), "RenderIndex", "XRL.Help.XRLManual", "System.Void", new[] { "System.Int32" })]
     [TestCase(typeof(CharacterStatusScreenMutationDetailsPatch), "HandleHighlightMutation", "Qud.UI.CharacterStatusScreen", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(StatisticGetHelpTextPatch), "GetHelpText", "XRL.World.Statistic", "System.String", new string[0])]
+    [TestCase(typeof(EnergyStorageChargeStatusTranslationPatch), "GetChargeStatus", "XRL.World.Capabilities.EnergyStorage", "System.String", new[]
+    {
+        "System.Int32",
+        "System.Int32",
+        "System.String",
+    })]
     [TestCase(typeof(ChargenAttributeDescriptionTranslationPatch), "handleUIEvent", "XRL.CharacterBuilds.Qud.QudGenotypeModule", "System.Object", new[] { "System.String", "System.Object" })]
     [TestCase(typeof(CharacterStatusScreenAttributeHighlightPatch), "HandleHighlightAttribute", "Qud.UI.CharacterStatusScreen", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(SkillsAndPowersStatusScreenDetailsPatch), "UpdateDetailsFromNode", "Qud.UI.SkillsAndPowersStatusScreen", "System.Void", new[] { "XRL.UI.SPNode" })]
@@ -546,7 +553,9 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(PopupShowTranslationPatch), new[]
     {
         "System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
+        "System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean",
         "System.String|System.Boolean|System.Boolean|System.Boolean",
+        "System.String|System.Threading.CancellationToken",
         "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
         "System.String",
         "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
@@ -701,6 +710,25 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.GameObject",
         "XRL.World.BeginTakeActionEvent",
     })]
+    [TestCase(typeof(CookingRuntimeTranslationPatch), new[]
+    {
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "XRL.World.Event",
+        "XRL.World.Event",
+        "XRL.World.Event",
+        "XRL.World.Event",
+        "XRL.World.GameObject|System.Boolean",
+        "XRL.World.Conversations.EnteredElementEvent",
+    })]
     public void TargetMethods_ResolveExpectedOverloads(Type patchType, string[] expectedSignatures)
     {
         var targetMethodsMethod = patchType.GetMethod("TargetMethods", BindingFlags.NonPublic | BindingFlags.Static);
@@ -724,6 +752,32 @@ public sealed class TargetMethodResolutionTests
         Assert.That(actualSignatures, Is.EquivalentTo(expectedSignatures));
     }
 
+    [Test]
+    public void CookingRuntimeTranslationPatch_TargetMethods_ResolveExpectedOwners()
+    {
+        var signatures = ResolveTargetMethodSignatures(typeof(CookingRuntimeTranslationPatch));
+
+        Assert.That(signatures, Is.EquivalentTo(new[]
+        {
+            "XRL.World.Effects.BasicCookingEffect_Hitpoints|ApplyEffect|System.Void|XRL.World.GameObject",
+            "XRL.World.Effects.BasicCookingEffect_MA|ApplyEffect|System.Void|XRL.World.GameObject",
+            "XRL.World.Effects.BasicCookingEffect_MS|ApplyEffect|System.Void|XRL.World.GameObject",
+            "XRL.World.Effects.BasicCookingEffect_Quickness|ApplyEffect|System.Void|XRL.World.GameObject",
+            "XRL.World.Effects.BasicCookingEffect_ToHit|ApplyEffect|System.Void|XRL.World.GameObject",
+            "XRL.World.Effects.BasicCookingEffect_XP|ApplyEffect|System.Void|XRL.World.GameObject",
+            "XRL.World.Effects.BasicCookingEffect_Regeneration|ApplyEffect|System.Void|XRL.World.GameObject",
+            "XRL.World.Effects.BasicCookingEffect_RandomStat|ApplyEffect|System.Void|XRL.World.GameObject",
+            "XRL.World.Effects.CookingDomainSpecial_UnitCrystalTransform|ApplyTo|System.Void|XRL.World.GameObject",
+            "XRL.World.Effects.CookingDomainSpecial_UnitSlogTransform|ApplyTo|System.Void|XRL.World.GameObject",
+            "XRL.World.Effects.CookingDomainReflect_UnitReflectDamage|FireEvent|System.Void|XRL.World.Event",
+            "XRL.World.Effects.CookingDomainReflect_Reflect100_ProceduralCookingTriggeredAction_Effect|FireEvent|System.Boolean|XRL.World.Event",
+            "XRL.World.Effects.CookingDomainTeleport_UnitBlink|FireEvent|System.Void|XRL.World.Event",
+            "XRL.World.Effects.NoPhase_ProceduralCookingTriggeredAction_Effect|FireEvent|System.Boolean|XRL.World.Event",
+            "XRL.World.Skills.Cooking.CookingRecipe|ApplyEffectsTo|System.Boolean|XRL.World.GameObject|System.Boolean",
+            "XRL.World.Conversations.Parts.WaterRitualCookingRecipe|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+        }));
+    }
+
     [TestCase(typeof(GameObjectStatPopupTranslationPatch), new[]
     {
         "XRL.World.GameObject|GainSP|System.Void|System.Int32|System.Boolean",
@@ -731,6 +785,297 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.GameObject|LoseEgo|System.Void|System.Int32|System.Boolean",
         "XRL.World.GameObject|GainIntelligence|System.Void|System.Int32|System.Boolean",
         "XRL.World.GameObject|GainWillpower|System.Void|System.Int32|System.Boolean",
+    })]
+    [TestCase(typeof(GameObjectPopupTranslationPatch), new[]
+    {
+        "XRL.World.GameObject|ConfirmUseImportantAsync|System.Threading.Tasks.Task`1[[System.Boolean]]|XRL.World.GameObject|System.String|System.String|System.Int32",
+        "XRL.World.GameObject|ConfirmUseImportant|System.Boolean|XRL.World.GameObject|System.String|System.String|System.Int32",
+        "XRL.World.GameObject|HandleRename|System.Void|XRL.World.InventoryActionEvent",
+        "XRL.World.GameObject|ChangeCompanionAbilityUse|System.Void|XRL.World.GameObject|XRL.World.Parts.ActivatedAbilities",
+        "XRL.World.GameObject|CheckCompanionDirection|System.Boolean|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(RealityStabilizedInterdictTranslationPatch), new[]
+    {
+        "XRL.World.Effects.RealityStabilized|ShowGenericInterdictMessage|System.Void|XRL.World.GameObject|XRL.World.Event",
+        "XRL.World.Effects.RealityStabilized|ShowDistantInterdictMessage|System.Void|XRL.World.GameObject|XRL.World.Event",
+        "XRL.World.Effects.RealityStabilized|ShowDualInterdictMessage|System.Void|XRL.World.GameObject|XRL.World.Event",
+    })]
+    [TestCase(typeof(HackingSifrahResultTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Door|HackingResultSuccess|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah",
+        "XRL.World.Parts.Door|HackingResultExceptionalSuccess|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah",
+        "XRL.World.Parts.Door|HackingResultPartialSuccess|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah",
+        "XRL.World.Parts.Door|HackingResultFailure|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah",
+        "XRL.World.Parts.Door|HackingResultCriticalFailure|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah",
+        "XRL.World.Parts.PowerSwitch|HackingResultSuccess|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah",
+        "XRL.World.Parts.PowerSwitch|HackingResultExceptionalSuccess|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah",
+        "XRL.World.Parts.PowerSwitch|HackingResultPartialSuccess|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah",
+        "XRL.World.Parts.PowerSwitch|HackingResultFailure|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah",
+        "XRL.World.Parts.PowerSwitch|HackingResultCriticalFailure|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah",
+        "XRL.World.Parts.TemplarPhylactery|HackingResultSuccess|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah",
+        "XRL.World.Parts.TemplarPhylactery|HackingResultExceptionalSuccess|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah",
+        "XRL.World.Parts.TemplarPhylactery|HackingResultPartialSuccess|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah",
+        "XRL.World.Parts.TemplarPhylactery|HackingResultFailure|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah",
+        "XRL.World.Parts.TemplarPhylactery|HackingResultCriticalFailure|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah",
+        "XRL.World.Parts.CyberneticsTerminal2|HackingResultExceptionalSuccess|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah",
+        "XRL.World.Parts.CyberneticsTerminal2|HackingResultFailure|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah",
+        "XRL.World.Parts.CyberneticsTerminal2|HackingResultCriticalFailure|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah",
+    })]
+    [TestCase(typeof(QuestLifecyclePopupTranslationPatch), new[]
+    {
+        "XRL.World.Quest|ShowStartPopup|System.Void",
+        "XRL.World.Quest|ShowFailPopup|System.Void",
+        "XRL.World.Quest|ShowFailStepPopup|System.Void|XRL.World.QuestStep",
+        "XRL.World.Quest|ShowFinishPopup|System.Void",
+    })]
+    [TestCase(typeof(FlightTranslationPatch), new[]
+    {
+        "XRL.World.Capabilities.Flight|StartFlying|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|XRL.World.Capabilities.IFlightSource",
+        "XRL.World.Capabilities.Flight|StopFlying|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|XRL.World.Capabilities.IFlightSource|System.Boolean|System.Boolean",
+        "XRL.World.Capabilities.Flight|Land|System.Void|XRL.World.GameObject|System.Boolean",
+        "XRL.World.Capabilities.Flight|FailFlying|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|XRL.World.Capabilities.IFlightSource",
+    })]
+    [TestCase(typeof(BodyTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Body|CheckUnsupportedPartLoss|System.Void",
+        "XRL.World.Parts.Body|CheckPartRecovery|System.Void",
+        "XRL.World.Parts.Body|Dismember|XRL.World.GameObject|XRL.World.Anatomy.BodyPart|XRL.World.GameObject|XRL.World.IInventory|System.Boolean|System.Boolean|XRL.World.IEvent",
+        "XRL.World.Parts.Body|RegenerateLimb|System.Boolean|System.Boolean|XRL.World.Parts.Body+DismemberedPart|System.Nullable`1[[System.Int32]]|System.Nullable`1[[System.Int32]]|System.Int32[]|System.Nullable`1[[System.Int32]]|System.Int32[]|System.Boolean",
+    })]
+    [TestCase(typeof(ItemModdingSifrahTranslationPatch), new[]
+    {
+        "XRL.World.ItemModdingSifrah|ResultFailure|System.Void|XRL.World.GameObject",
+        "XRL.World.ItemModdingSifrah|ResultPartialSuccess|System.Void|XRL.World.GameObject",
+        "XRL.World.ItemModdingSifrah|ResultSuccess|System.Void|XRL.World.GameObject",
+        "XRL.World.ItemModdingSifrah|ResultCriticalSuccess|System.Void|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(SunderMindTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.SunderMind|CancelSunder|System.Void",
+        "XRL.World.Parts.Mutation.SunderMind|BeginSunder|System.Void|XRL.World.GameObject",
+        "XRL.World.Parts.Mutation.SunderMind|PenetrationFailure|System.Void|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(KeybindsScreenConflictTranslationPatch), new[]
+    {
+        "Qud.UI.KeybindsScreen|ConfirmConflictBind|System.Threading.Tasks.Task`1[[System.Boolean]]|System.String|System.Collections.Generic.List`1[[XRL.UI.GameCommand]]|System.String",
+        "Qud.UI.KeybindsScreen|ConfirmDynamicConflictBind|System.Threading.Tasks.Task`1[[System.Boolean]]|System.String|System.Collections.Generic.List`1[[XRL.UI.GameCommand]]|System.String",
+        "Qud.UI.KeybindsScreen|RequiredConflictBind|System.Threading.Tasks.Task|System.String|System.String",
+    })]
+    [TestCase(typeof(AbilityManagerPopupTranslationPatch), new[]
+    {
+        "Qud.UI.AbilityManagerScreen|HandleFilterItems|System.Void",
+        "Qud.UI.AbilityManagerScreen+<HandleRebindAsync>d__47|MoveNext|System.Void",
+        "Qud.UI.AbilityManagerScreen+<HandleRemoveBindAsync>d__48|MoveNext|System.Void",
+    })]
+    [TestCase(typeof(RealityStabilizedEventTranslationPatch), new[]
+    {
+        "XRL.World.Effects.RealityStabilized|TryContest|XRL.World.Effects.RealityStabilized+ContestResult|XRL.World.GameObject|System.Int32|System.Int32",
+        "XRL.World.Effects.RealityStabilized|ShortCircuitDevice|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.Event",
+    })]
+    [TestCase(typeof(CyberneticRejectionSyndromeTranslationPatch), new[]
+    {
+        "XRL.World.Effects.CyberneticRejectionSyndrome|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Effects.CyberneticRejectionSyndrome|Remove|System.Void|XRL.World.GameObject",
+        "XRL.World.Effects.CyberneticRejectionSyndrome|Reduce|System.Void|System.Int32",
+    })]
+    [TestCase(typeof(GeomagneticDiscTranslationPatch), new[]
+    {
+        "XRL.World.Parts.GeomagneticDisc|SignalFailure|System.Void|XRL.World.GameObject",
+        "XRL.World.Parts.GeomagneticDisc|SignalLowPower|System.Void|XRL.World.GameObject",
+        "XRL.World.Parts.GeomagneticDisc|ExamineFailure|System.Boolean|XRL.World.IExamineEvent|System.Int32",
+    })]
+    [TestCase(typeof(CampfireCookAvailabilityTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Campfire|Cook|System.Boolean",
+    })]
+    [TestCase(typeof(TeleprojectorTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Teleprojector|HandleEvent|System.Boolean|XRL.World.BootSequenceDoneEvent",
+        "XRL.World.Parts.Teleprojector|ActivateTeleprojector|System.Boolean",
+        "XRL.World.Parts.Teleprojector|RoboDom|System.Boolean|XRL.World.MentalAttackEvent",
+    })]
+    [TestCase(typeof(TombAnchorSystemTranslationPatch), new[]
+    {
+        "XRL.ITombAnchorSystem|OnEndTurn|System.Void",
+        "XRL.ITombAnchorSystem|Recall|System.Void|XRL.World.Zone",
+        "XRL.ITombAnchorSystem|AnchorCall|System.Void",
+    })]
+    [TestCase(typeof(CyberneticsMedassistModuleTranslationPatch), new[]
+    {
+        "XRL.World.Parts.CyberneticsMedassistModule|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.CyberneticsMedassistModule|AttemptMedicalAssistance|System.Void|XRL.World.Damage",
+    })]
+    [TestCase(typeof(LiquidLoaderTranslationPatch), new[]
+    {
+        "XRL.World.Parts.BioAmmoLoader|HandleEvent|System.Boolean|XRL.World.CommandReloadEvent",
+        "XRL.World.Parts.BioAmmoLoader|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.LiquidAmmoLoader|HandleEvent|System.Boolean|XRL.World.CommandReloadEvent",
+        "XRL.World.Parts.LiquidAmmoLoader|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.ModLiquidCooled|HandleEvent|System.Boolean|XRL.World.CommandReloadEvent",
+        "XRL.World.Parts.ModLiquidCooled|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(TrollKingTranslationPatch), new[]
+    {
+        "XRL.World.Parts.TrollKing|CheckSpawn|System.Void|System.Int32",
+        "XRL.World.Parts.TrollKing|StopBudding|System.Void|System.Int32",
+    })]
+    [TestCase(typeof(MutatingTranslationPatch), new[]
+    {
+        "XRL.World.Effects.Mutating|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Effects.Mutating|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+    })]
+    [TestCase(typeof(QuillsTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.Quills|HandleEvent|System.Boolean|XRL.World.TookDamageEvent",
+        "XRL.World.Parts.Mutation.Quills|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(LightManipulationTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.LightManipulation|HandleEvent|System.Boolean|XRL.World.CommandEvent",
+        "XRL.World.Parts.Mutation.LightManipulation|Lase|System.Boolean|XRL.World.Cell|System.Int32",
+    })]
+    [TestCase(typeof(LatchesOnTranslationPatch), new[]
+    {
+        "XRL.World.Parts.LatchesOn|HandleEvent|System.Boolean|XRL.World.UnequippedEvent",
+        "XRL.World.Parts.LatchesOn|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(AsleepOwnerTranslationPatch), new[]
+    {
+        "XRL.World.Effects.Asleep|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Effects.Asleep|HandleEvent|System.Boolean|XRL.World.BeginTakeActionEvent",
+        "XRL.World.Effects.Asleep|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+    })]
+    [TestCase(typeof(BuddingTranslationPatch), new[]
+    {
+        "XRL.World.Effects.Budding|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Effects.Budding|Remove|System.Void|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(BeguilingTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.Beguiling|Cast|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Mutation.Beguiling|XRL.World.Event|System.Int32",
+        "XRL.World.Parts.Mutation.Beguiling|Beguile|System.Boolean|XRL.World.MentalAttackEvent",
+    })]
+    [TestCase(typeof(AscensionCableTranslationPatch), new[]
+    {
+        "XRL.World.Parts.AscensionCable|TryAscend|System.Boolean|XRL.World.GameObject|System.Boolean",
+        "XRL.World.Parts.AscensionCable|TryDescend|System.Boolean|XRL.World.GameObject|System.Boolean",
+    })]
+    [TestCase(typeof(CarapaceTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.Carapace|Tighten|System.Void|System.Boolean",
+    })]
+    [TestCase(typeof(SvardymSystemTranslationPatch), new[]
+    {
+        "XRL.SvardymSystem|BeginStorm|System.Void",
+        "XRL.SvardymSystem|Tick|System.Void",
+    })]
+    [TestCase(typeof(PhasedTranslationPatch), new[]
+    {
+        "XRL.World.Effects.Phased|HandleEvent|System.Boolean|XRL.World.EffectAppliedEvent",
+        "XRL.World.Effects.Phased|HandleEvent|System.Boolean|XRL.World.BeginTakeActionEvent",
+        "XRL.World.Effects.Phased|Remove|System.Void|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(PersuasionRebukeRobotTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Skill.Persuasion_RebukeRobot|Rebuke|System.Boolean|XRL.World.MentalAttackEvent",
+    })]
+    [TestCase(typeof(NephalPropertiesTranslationPatch), new[]
+    {
+        "XRL.World.Parts.NephalProperties|TryPacify|System.Boolean",
+    })]
+    [TestCase(typeof(TonicTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Tonic|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(XrlGameTranslationPatch), new[]
+    {
+        "XRL.XRLGame|FinishQuestStep|System.Boolean|XRL.World.Quest|System.String|System.Int32|System.Boolean|System.String",
+    })]
+    [TestCase(typeof(IntegratedWeaponHostsTranslationPatch), new[]
+    {
+        "XRL.World.Capabilities.IntegratedWeaponHosts|GenerateTurret|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.Boolean",
+        "XRL.World.Capabilities.IntegratedWeaponHosts|HandleTurretWish|System.Boolean|System.Text.RegularExpressions.Match",
+    })]
+    [TestCase(typeof(BoostStatisticTranslationPatch), new[]
+    {
+        "XRL.World.Effects.BoostStatistic|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Effects.BoostStatistic|Remove|System.Void|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(EmboldenedTranslationPatch), new[]
+    {
+        "XRL.World.Effects.Emboldened|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Effects.Emboldened|Remove|System.Void|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(FungalSporeInfectionTranslationPatch), new[]
+    {
+        "XRL.World.Effects.FungalSporeInfection|ApplyFungalInfection|System.Boolean|XRL.World.GameObject|System.String|XRL.World.Anatomy.BodyPart",
+        "XRL.World.Effects.FungalSporeInfection|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(HealingTranslationPatch), new[]
+    {
+        "XRL.World.Effects.Healing|HandleEvent|System.Boolean|XRL.World.UseEnergyEvent",
+        "XRL.World.Effects.Healing|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(StressedTranslationPatch), new[]
+    {
+        "XRL.World.Effects.Stressed|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Effects.Stressed|Remove|System.Void|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(MonochromeOnsetTranslationPatch), new[]
+    {
+        "XRL.World.Effects.MonochromeOnset|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(IronshankOnsetTranslationPatch), new[]
+    {
+        "XRL.World.Effects.IronshankOnset|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(AdrenalControlTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.AdrenalControl2|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(AmnesiaTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.Amnesia|HandleEvent|System.Boolean|XRL.World.SecretVisibilityChangedEvent",
+        "XRL.World.Parts.Mutation.Amnesia|HandleEvent|System.Boolean|XRL.World.EnteredCellEvent",
+    })]
+    [TestCase(typeof(BlinkingTicTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.BlinkingTic|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Effects.BlinkingTicSickness|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(BrittleBonesTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.BrittleBones|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(ElectromagneticImpulseTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.ElectromagneticImpulse|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(FearAuraTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.FearAura|ApplyFear|System.Boolean|XRL.World.MentalAttackEvent",
+    })]
+    [TestCase(typeof(MeditatingTranslationPatch), new[]
+    {
+        "XRL.World.Effects.Meditating|Remove|System.Void|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(RegenerationTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.Regeneration|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(EffectStaticMessageTranslationPatch), new[]
+    {
+        "XRL.World.Effects.AxonsDeflated|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Effects.AxonsInflated|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Effects.BasiliskPoison|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Effects.EmptyTheClips|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Effects.NocturnalApexed|Apply|System.Boolean|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(SystemStaticMessageTranslationPatch), new[]
+    {
+        "XRL.CheckpointingSystem|CheckpointOn|System.Boolean",
+        "XRL.HolyPlaceSystem|SetHolyZone|System.Void|XRL.World.Zone|XRL.World.Faction",
+        "XRL.World.Parts.Mutation.HeightenedIntelligence|FireEvent|System.Boolean|XRL.World.Event",
     })]
     [TestCase(typeof(RepairTranslationPatch), new[]
     {
@@ -830,6 +1175,16 @@ public sealed class TargetMethodResolutionTests
         "XRL.UI.SkillsAndPowersScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
         "XRL.UI.EquipmentScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
     })]
+    [TestCase(typeof(StatusScreenPopupTranslationPatch), new[]
+    {
+        "XRL.UI.StatusScreen|BuyStat|System.Void|XRL.World.GameObject|System.String",
+        "XRL.UI.StatusScreen|BuyRandomMutation|System.Boolean|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(CampfirePreserveTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Campfire|Preserve|System.Boolean",
+        "XRL.World.Parts.Campfire|PreserveExotic|System.Boolean",
+    })]
     public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
     {
         var targetMethodsMethod = patchType.GetMethod("TargetMethods", BindingFlags.NonPublic | BindingFlags.Static);
@@ -902,7 +1257,9 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(PopupShowTranslationPatch), new[]
     {
         "XRL.UI.Popup|Show|System.Void|System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
+        "XRL.UI.Popup|ShowAsync|System.Threading.Tasks.Task|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean",
         "XRL.UI.Popup|ShowFail|System.Void|System.String|System.Boolean|System.Boolean|System.Boolean",
+        "XRL.UI.Popup|ShowKeybindAsync|System.Threading.Tasks.Task|System.String|System.Threading.CancellationToken",
         "XRL.UI.Popup|ShowYesNo|XRL.UI.DialogResult|System.String|System.String|System.Boolean|XRL.UI.DialogResult",
         "XRL.UI.Popup|ShowYesNoAsync|System.Threading.Tasks.Task`1[[XRL.UI.DialogResult]]|System.String",
         "XRL.UI.Popup|ShowYesNoCancel|XRL.UI.DialogResult|System.String|System.String|System.Boolean|XRL.UI.DialogResult",
@@ -1306,6 +1663,26 @@ public sealed class TargetMethodResolutionTests
             if (item is MethodInfo methodInfo)
             {
                 signatures.Add((methodInfo.DeclaringType?.FullName ?? string.Empty) + "|" + methodInfo.Name);
+            }
+        }
+
+        return signatures;
+    }
+
+    private static HashSet<string> ResolveTargetMethodSignatures(Type patchType)
+    {
+        var targetMethodsMethod = patchType.GetMethod("TargetMethods", BindingFlags.NonPublic | BindingFlags.Static);
+        Assert.That(targetMethodsMethod, Is.Not.Null, $"TargetMethods not found for {patchType.FullName}");
+
+        var result = targetMethodsMethod!.Invoke(null, null) as System.Collections.IEnumerable;
+        Assert.That(result, Is.Not.Null, $"TargetMethods returned null for {patchType.FullName}");
+
+        var signatures = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var item in result!)
+        {
+            if (item is MethodInfo methodInfo)
+            {
+                signatures.Add(FullMethodSignature(methodInfo));
             }
         }
 

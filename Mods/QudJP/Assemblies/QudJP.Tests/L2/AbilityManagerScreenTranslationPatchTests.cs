@@ -1,5 +1,7 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
@@ -332,9 +334,187 @@ public sealed class AbilityManagerScreenTranslationPatchTests
         }
     }
 
+    [Test]
+    public void PopupPrefix_TranslatesNoFilteredAbilitiesMessage_WhenOwnerPatched()
+    {
+        AssertOwnerPopupMessage(
+            patchOriginal: RequireMethod(typeof(DummyAbilityManagerScreenTarget), nameof(DummyAbilityManagerScreenTarget.HandleFilterItems)),
+            callOwner: () =>
+            {
+                var screen = new DummyAbilityManagerScreenTarget
+                {
+                    PopupMessageToShow = "No activated abilites found for 'phase'",
+                };
+                screen.HandleFilterItems();
+                return DummyPopupShow.LastShowAsyncMessage;
+            },
+            expected: "'phase' に一致する有効化能力は見つからなかった。",
+            patchPopupOriginal: RequireMethod(
+                typeof(DummyPopupShow),
+                nameof(DummyPopupShow.ShowAsync),
+                typeof(string),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool)));
+    }
+
+    [Test]
+    public void PopupPrefix_TranslatesKeybindPrompt_WhenOwnerPatched()
+    {
+        AssertOwnerPopupMessage(
+            patchOriginal: RequireMethod(
+                typeof(DummyAbilityManagerScreenTarget),
+                nameof(DummyAbilityManagerScreenTarget.HandleRebindAsync),
+                typeof(DummyAbilityManagerEntryTarget),
+                typeof(string)),
+            callOwner: () =>
+            {
+                DummyAbilityManagerScreenTarget.StaticPopupMessageToShow =
+                    "Press the keyboard key to bind to {{w|Sprint}}";
+                DummyAbilityManagerScreenTarget.StaticPopupSurface = "ShowKeybindAsync";
+                DummyAbilityManagerScreenTarget.HandleRebindAsync(new DummyAbilityManagerEntryTarget(), null).GetAwaiter().GetResult();
+                return DummyPopupShow.LastShowKeybindAsyncMessage;
+            },
+            expected: "{{w|Sprint}} に割り当てるキーボードのキーを押してください。",
+            patchPopupOriginal: RequireMethod(
+                typeof(DummyPopupShow),
+                nameof(DummyPopupShow.ShowKeybindAsync),
+                typeof(string),
+                typeof(CancellationToken)));
+    }
+
+    [TestCase("Ctrl+F is already bound to the system menu.", "Ctrl+F はすでにシステムメニューに割り当てられている。")]
+    [TestCase("Ctrl+A is already bound to the ability picker.", "Ctrl+A はすでに能力ピッカーに割り当てられている。")]
+    public void PopupPrefix_TranslatesRebindConflictMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertOwnerPopupMessage(
+            patchOriginal: RequireMethod(
+                typeof(DummyAbilityManagerScreenTarget),
+                nameof(DummyAbilityManagerScreenTarget.HandleRebindAsync),
+                typeof(DummyAbilityManagerEntryTarget),
+                typeof(string)),
+            callOwner: () =>
+            {
+                DummyAbilityManagerScreenTarget.StaticPopupMessageToShow = source;
+                DummyAbilityManagerScreenTarget.StaticPopupSurface = "ShowAsync";
+                DummyAbilityManagerScreenTarget.HandleRebindAsync(new DummyAbilityManagerEntryTarget(), null).GetAwaiter().GetResult();
+                return DummyPopupShow.LastShowAsyncMessage;
+            },
+            expected: expected,
+            patchPopupOriginal: RequireMethod(
+                typeof(DummyPopupShow),
+                nameof(DummyPopupShow.ShowAsync),
+                typeof(string),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool)));
+    }
+
+    [Test]
+    public void PopupPrefix_TranslatesRemoveBindConfirmation_WhenOwnerPatched()
+    {
+        AssertOwnerPopupMessage(
+            patchOriginal: RequireMethod(
+                typeof(DummyAbilityManagerScreenTarget),
+                nameof(DummyAbilityManagerScreenTarget.HandleRemoveBindAsync),
+                typeof(DummyAbilityManagerEntryTarget)),
+            callOwner: () =>
+            {
+                DummyAbilityManagerScreenTarget.StaticPopupMessageToShow =
+                    "Are you sure you wish to remove the binding for {{w|Sprint}}?";
+                _ = DummyAbilityManagerScreenTarget.HandleRemoveBindAsync(new DummyAbilityManagerEntryTarget()).GetAwaiter().GetResult();
+                return DummyPopupShow.LastShowYesNoAsyncMessage;
+            },
+            expected: "{{w|Sprint}} の割り当てを削除しますか？",
+            patchPopupOriginal: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNoAsync), typeof(string)));
+    }
+
+    [Test]
+    public void PopupPrefix_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShowAsync(harmony);
+
+            _ = DummyPopupShow.ShowAsync("No activated abilites found for 'phase'");
+
+            Assert.That(DummyPopupShow.LastShowAsyncMessage, Is.EqualTo("No activated abilites found for 'phase'"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+            DummyPopupShow.Reset();
+        }
+    }
+
+    [Test]
+    public void PopupPrefix_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertOwnerPopupMessage(
+            patchOriginal: RequireMethod(typeof(DummyAbilityManagerScreenTarget), nameof(DummyAbilityManagerScreenTarget.HandleFilterItems)),
+            callOwner: () =>
+            {
+                var screen = new DummyAbilityManagerScreenTarget
+                {
+                    PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation("No activated abilites found for 'phase'"),
+                };
+                screen.HandleFilterItems();
+                return DummyPopupShow.LastShowAsyncMessage;
+            },
+            expected: "No activated abilites found for 'phase'",
+            patchPopupOriginal: RequireMethod(
+                typeof(DummyPopupShow),
+                nameof(DummyPopupShow.ShowAsync),
+                typeof(string),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool)));
+    }
+
+    [Test]
+    public void PopupPrefix_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        AssertOwnerPopupMessage(
+            patchOriginal: RequireMethod(typeof(DummyAbilityManagerScreenTarget), nameof(DummyAbilityManagerScreenTarget.HandleFilterItems)),
+            callOwner: () =>
+            {
+                var screen = new DummyAbilityManagerScreenTarget
+                {
+                    PopupMessageToShow = string.Empty,
+                };
+                screen.HandleFilterItems();
+                return DummyPopupShow.LastShowAsyncMessage;
+            },
+            expected: string.Empty,
+            patchPopupOriginal: RequireMethod(
+                typeof(DummyPopupShow),
+                nameof(DummyPopupShow.ShowAsync),
+                typeof(string),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool)));
+    }
+
     private static MethodInfo RequireMethod(Type type, string methodName)
     {
         return AccessTools.Method(type, methodName)
+            ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static MethodInfo RequireMethod(Type type, string methodName, params Type[] parameterTypes)
+    {
+        return AccessTools.Method(type, methodName, parameterTypes)
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
     }
 
@@ -342,6 +522,68 @@ public sealed class AbilityManagerScreenTranslationPatchTests
     {
         return AccessTools.Method(typeof(AbilityManagerScreenTranslationPatch), nameof(AbilityManagerScreenTranslationPatch.Postfix))
             ?? throw new InvalidOperationException("AbilityManagerScreenTranslationPatch.Postfix not found.");
+    }
+
+    private static void AssertOwnerPopupMessage(
+        MethodInfo patchOriginal,
+        Func<string?> callOwner,
+        string expected,
+        MethodInfo patchPopupOriginal)
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopup(harmony, patchPopupOriginal);
+            var original = ResolveStateMachineMoveNext(patchOriginal) ?? patchOriginal;
+            harmony.Patch(
+                original: original,
+                prefix: new HarmonyMethod(RequireMethod(typeof(AbilityManagerPopupTranslationPatch), nameof(AbilityManagerPopupTranslationPatch.Prefix))),
+                finalizer: new HarmonyMethod(RequireMethod(
+                    typeof(AbilityManagerPopupTranslationPatch),
+                    nameof(AbilityManagerPopupTranslationPatch.Finalizer),
+                    typeof(Exception))));
+
+            Assert.That(callOwner(), Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+            DummyPopupShow.Reset();
+            DummyAbilityManagerScreenTarget.StaticPopupMessageToShow = string.Empty;
+            DummyAbilityManagerScreenTarget.StaticPopupSurface = "ShowKeybindAsync";
+        }
+    }
+
+    private static void PatchPopupShowAsync(Harmony harmony)
+    {
+        PatchPopup(
+            harmony,
+            RequireMethod(
+                typeof(DummyPopupShow),
+                nameof(DummyPopupShow.ShowAsync),
+                typeof(string),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool)));
+    }
+
+    private static void PatchPopup(Harmony harmony, MethodInfo original)
+    {
+        harmony.Patch(
+            original: original,
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix), typeof(string).MakeByRefType())));
+    }
+
+    private static MethodInfo? ResolveStateMachineMoveNext(MethodInfo sourceMethod)
+    {
+        var asyncStateMachine = sourceMethod.GetCustomAttribute<AsyncStateMachineAttribute>();
+        return asyncStateMachine?.StateMachineType is null
+            ? null
+            : AccessTools.Method(asyncStateMachine.StateMachineType, "MoveNext");
     }
 
     private void WriteDictionary(params (string key, string text)[] entries)
