@@ -297,18 +297,23 @@ public static class QuestLifecyclePopupTranslationPatch
                 return questStepTextByName;
             }
 
-            questStepTextByName = LoadQuestStepTextByName();
-            return questStepTextByName;
+            if (TryLoadQuestStepTextByName(out var loaded))
+            {
+                questStepTextByName = loaded;
+                return questStepTextByName;
+            }
+
+            return new Dictionary<string, string>(StringComparer.Ordinal);
         }
     }
 
-    private static Dictionary<string, string> LoadQuestStepTextByName()
+    private static bool TryLoadQuestStepTextByName(out Dictionary<string, string> map)
     {
-        var map = new Dictionary<string, string>(StringComparer.Ordinal);
+        map = new Dictionary<string, string>(StringComparer.Ordinal);
         var path = LocalizationAssetResolver.GetLocalizationPath("Quests.jp.xml");
         if (!File.Exists(path))
         {
-            return map;
+            return false;
         }
 
         try
@@ -338,8 +343,9 @@ public static class QuestLifecyclePopupTranslationPatch
         {
             RuntimeDiagnostics.LogImportant(
                 $"QudJP: {Context} failed to load 'Quests.jp.xml': {ex.Message}");
+            return false;
         }
 
-        return map;
+        return true;
     }
 }
