@@ -86,48 +86,65 @@ public static class FungalSporeInfectionTranslationPatch
     internal static bool TryTranslateQueuedMessage(ref string message, string? color)
     {
         _ = color;
-        if (activeDepth <= 0 || string.IsNullOrEmpty(message))
+        try
         {
-            return false;
-        }
+            if (activeDepth <= 0 || string.IsNullOrEmpty(message))
+            {
+                return false;
+            }
 
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var markedText))
-        {
-            message = markedText;
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var markedText))
+            {
+                message = markedText;
+                return true;
+            }
+
+            if (!TryTranslateQueuedCore(message, out var translated))
+            {
+                return false;
+            }
+
+            DynamicTextObservability.RecordTransform("MessageQueue.AddPlayerMessage", Context, message, translated);
+            message = MessageFrameTranslator.MarkDirectTranslation(translated);
             return true;
         }
-
-        if (!TryTranslateQueuedCore(message, out var translated))
+        catch (Exception ex)
         {
+            Trace.TraceError("QudJP: {0}.TryTranslateQueuedMessage failed: {1}", Context, ex);
             return false;
         }
-
-        DynamicTextObservability.RecordTransform("MessageQueue.AddPlayerMessage", Context, message, translated);
-        message = MessageFrameTranslator.MarkDirectTranslation(translated);
-        return true;
     }
 
     internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
     {
-        if (activeDepth <= 0 || string.IsNullOrEmpty(source))
+        translated = source;
+        try
         {
+            if (activeDepth <= 0 || string.IsNullOrEmpty(source))
+            {
+                return false;
+            }
+
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+            {
+                translated = markedText;
+                return true;
+            }
+
+            if (!TryTranslatePopupCore(source, out translated))
+            {
+                return false;
+            }
+
+            DynamicTextObservability.RecordTransform(route, family + "." + Context, source, translated);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.TryTranslatePopupMessage failed: {1}", Context, ex);
             translated = source;
             return false;
         }
-
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
-        {
-            translated = markedText;
-            return true;
-        }
-
-        if (!TryTranslatePopupCore(source, out translated))
-        {
-            return false;
-        }
-
-        DynamicTextObservability.RecordTransform(route, family + "." + Context, source, translated);
-        return true;
     }
 
     private static void AddTarget(List<MethodBase> targets, Type targetType, string methodName, Type[] parameters)
@@ -175,6 +192,6 @@ public static class FungalSporeInfectionTranslationPatch
     private static string Restore(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
     {
         var group = match.Groups[groupName];
-        return ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group).Trim();
+        return ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group);
     }
 }
