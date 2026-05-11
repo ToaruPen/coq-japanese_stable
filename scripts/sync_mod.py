@@ -16,11 +16,17 @@ from pathlib import Path
 # the game compiles to discover and initialize QudJP.dll.  We use an
 # include-first strategy: explicitly allow the needed files, then exclude
 # everything else.
+_MACOS_HELPER_COMMAND_NAMES: tuple[str, ...] = (
+    "Launch CavesOfQud (Rosetta).command",
+    "Install Native Apple Silicon Harmony.command",
+    "Restore Game Harmony.command",
+)
+
 _RSYNC_INCLUDES: tuple[str, ...] = (
     "manifest.json",
     "preview.png",
     "Bootstrap.cs",
-    "Launch CavesOfQud (Rosetta).command",
+    *_MACOS_HELPER_COMMAND_NAMES,
     "Assemblies/",
     "Assemblies/QudJP.dll",
     "Localization/",
@@ -36,6 +42,9 @@ _RSYNC_INCLUDES: tuple[str, ...] = (
 )
 
 _RSYNC_EXCLUDES: tuple[str, ...] = ("*",)
+_MACOS_HELPER_COMMANDS: tuple[Path, ...] = tuple(
+    Path(helper_name) for helper_name in _MACOS_HELPER_COMMAND_NAMES
+)
 _LOCAL_ONLY_FILES: tuple[Path, ...] = (Path("workshop.json"),)
 _LOCALIZATION_ASSET_SUFFIXES = {".json", ".txt", ".xml"}
 _WINDOWS_DRIVE_PREFIX_LENGTH = 2
@@ -189,7 +198,7 @@ def _iter_sync_files(source: Path, *, exclude_fonts: bool) -> list[Path]:
         Path("manifest.json"),
         Path("preview.png"),
         Path("Bootstrap.cs"),
-        Path("Launch CavesOfQud (Rosetta).command"),
+        *_MACOS_HELPER_COMMANDS,
         Path("Assemblies") / "QudJP.dll",
     ):
         candidate = source / relative

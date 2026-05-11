@@ -216,6 +216,8 @@ def test_create_workshop_staging_extracts_qudjp_root(tmp_path: Path) -> None:
     assert (content_folder / "Assemblies" / "QudJP.dll").is_file()
     assert (content_folder / "Localization" / "ui.json").is_file()
     assert os.access(content_folder / "Launch CavesOfQud (Rosetta).command", os.X_OK)
+    assert os.access(content_folder / "Install Native Apple Silicon Harmony.command", os.X_OK)
+    assert os.access(content_folder / "Restore Game Harmony.command", os.X_OK)
     assert preview_file == content_folder / "preview.png"
 
 

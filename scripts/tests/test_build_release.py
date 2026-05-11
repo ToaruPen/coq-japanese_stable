@@ -469,6 +469,36 @@ class TestCreateZip:
         assert "QudJP/Launch CavesOfQud (Rosetta).command" in members
         assert info.external_attr >> 16 & 0o111
 
+    def test_zip_contains_native_harmony_helpers_when_present(self, tmp_path: Path) -> None:
+        """ZIP contains opt-in native Apple Silicon Harmony helpers when present."""
+        output, manifest, dll, loc_dir, loc_files, legal_files = self._make_inputs(
+            tmp_path,
+        )
+        install = manifest.parent / "Install Native Apple Silicon Harmony.command"
+        restore = manifest.parent / "Restore Game Harmony.command"
+        install.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
+        restore.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
+
+        members = create_zip(
+            output,
+            manifest,
+            dll,
+            loc_dir,
+            loc_files,
+            legal_files=legal_files,
+        )
+        with zipfile.ZipFile(output) as zf:
+            names = zf.namelist()
+            install_info = zf.getinfo("QudJP/Install Native Apple Silicon Harmony.command")
+            restore_info = zf.getinfo("QudJP/Restore Game Harmony.command")
+
+        assert "QudJP/Install Native Apple Silicon Harmony.command" in names
+        assert "QudJP/Restore Game Harmony.command" in names
+        assert "QudJP/Install Native Apple Silicon Harmony.command" in members
+        assert "QudJP/Restore Game Harmony.command" in members
+        assert install_info.external_attr >> 16 & 0o111
+        assert restore_info.external_attr >> 16 & 0o111
+
     def test_zip_contains_compliance_files(self, tmp_path: Path) -> None:
         """ZIP contains LICENSE and NOTICE.md at the archive root."""
         output, manifest, dll, loc_dir, loc_files, legal_files = self._make_inputs(

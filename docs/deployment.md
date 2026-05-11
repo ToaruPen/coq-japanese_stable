@@ -168,9 +168,14 @@ For inventory / equipment display checks, follow the runtime evidence rules in
 - `arch -x86_64 .../CoQ` is a one-shot launch path. It does not persist to
   future Steam launches, so Apple Silicon users should use the wrapper each
   time unless they have separately configured a reliable Rosetta launch path.
-- QudJP does not bundle or overwrite the game's `0Harmony.dll`; Rosetta 2 is
-  the recommended player-facing workaround. Advanced users may choose to back up
-  the game file and replace
+- QudJP does not automatically bundle or overwrite the game's `0Harmony.dll`;
+  Rosetta 2 is the recommended player-facing workaround. Release and Workshop
+  builds may include opt-in `Install Native Apple Silicon Harmony.command` and
+  `Restore Game Harmony.command` helpers. These helpers must only mutate the
+  game file after explicit user confirmation, must create a backup first, must
+  restore only from the QudJP-named backup, and must fall back to a file picker
+  if they cannot infer the target from their installed location or the default
+  Steam path. Advanced users may choose to back up the game file and replace
   `CoQ.app/Contents/Resources/Data/Managed/0Harmony.dll` with the
   `net48/0Harmony.dll` from Harmony `v2.4.2.0` to run native ARM64. Treat this
   as a user-managed game-file change; Steam verification, reinstall, or game

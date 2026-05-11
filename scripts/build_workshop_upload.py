@@ -231,6 +231,8 @@ def _validate_release_zip_members(zip_path: Path, members: list[str]) -> None:
         "QudJP/preview.png",
         "QudJP/Bootstrap.cs",
         "QudJP/Launch CavesOfQud (Rosetta).command",
+        "QudJP/Install Native Apple Silicon Harmony.command",
+        "QudJP/Restore Game Harmony.command",
         "QudJP/Assemblies/QudJP.dll",
     }
     required_prefixes = {

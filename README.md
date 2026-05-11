@@ -28,7 +28,7 @@ Caves of Qud は完全な英語ローカライゼーション API が整備さ�
 
 M1/M2/M3/M4 などの Apple Silicon Mac では、Caves of Qud をネイティブ起動すると、ゲーム本体側の `0Harmony.dll` が原因で Harmony patch が `mprotect returned EACCES` により失敗し、QudJP の UI 翻訳が効かない場合があります。
 
-QudJP では Rosetta 2 経由での起動を推奨します。QudJP は `0Harmony.dll` を同梱・上書きしません。
+QudJP では Rosetta 2 経由での起動を推奨します。QudJP は `0Harmony.dll` を自動では同梱・上書きしません。
 
 Steam Workshop 版と GitHub Release ZIP には `QudJP/Launch CavesOfQud (Rosetta).command` を同梱しています。ダブルクリックで Caves of Qud を Rosetta 経由で起動できます。macOS の Steam 既定ライブラリでは、Workshop 版の wrapper は次の場所にあります。
 
@@ -46,7 +46,11 @@ Rosetta 2 が未インストールの場合、wrapper が macOS の確認ダイ�
 arch -x86_64 $HOME/Library/Application\ Support/Steam/steamapps/common/Caves\ of\ Qud/CoQ.app/Contents/MacOS/CoQ
 ```
 
-上級者向けの別手段として、ゲーム本体側の `0Harmony.dll` を Harmony 2.4.2 に差し替えると、Apple Silicon ネイティブ起動でも動作したという報告があります。通常は上記の Rosetta 起動を使ってください。手動差し替えを行う場合は、CoQ を終了し、[Harmony 2.4.2](https://github.com/pardeike/Harmony/releases/tag/v2.4.2.0) の `Harmony-Fat.2.4.2.0.zip` から `net48/0Harmony.dll` を取り出して、次のファイルをバックアップ後に置き換えます。
+上級者向けの別手段として、ゲーム本体側の `0Harmony.dll` を Harmony 2.4.2 に差し替えると、Apple Silicon ネイティブ起動でも動作することを確認しています。通常は上記の Rosetta 起動を使ってください。
+
+Steam Workshop 版と GitHub Release ZIP には、明示的に実行した場合だけこの差し替えを行う `Install Native Apple Silicon Harmony.command` と、元に戻す `Restore Game Harmony.command` を同梱しています。これらはまず配置場所から Caves of Qud を探し、見つからない場合は `0Harmony.dll` の選択画面を表示します。
+
+手動差し替えを行う場合は、CoQ を終了し、[Harmony 2.4.2](https://github.com/pardeike/Harmony/releases/tag/v2.4.2.0) の `Harmony-Fat.2.4.2.0.zip` から `net48/0Harmony.dll` を取り出して、次のファイルをバックアップ後に置き換えます。
 
 ```text
 ~/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/Resources/Data/Managed/0Harmony.dll
