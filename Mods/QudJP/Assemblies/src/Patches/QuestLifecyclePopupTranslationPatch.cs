@@ -95,29 +95,38 @@ public static class QuestLifecyclePopupTranslationPatch
 
     internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
     {
-        if (activeDepth <= 0 || string.IsNullOrEmpty(source))
+        translated = source;
+        try
         {
+            if (activeDepth <= 0 || string.IsNullOrEmpty(source))
+            {
+                return false;
+            }
+
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+            {
+                translated = markedText;
+                return true;
+            }
+
+            var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+            if (TryTranslateQuestReceived(source, stripped, spans, route, family, out translated)
+                || TryTranslateQuestFailed(source, stripped, spans, route, family, out translated)
+                || TryTranslateQuestStepFailed(source, stripped, spans, route, family, out translated)
+                || TryTranslateQuestCompleted(source, stripped, spans, route, family, out translated))
+            {
+                return true;
+            }
+
             translated = source;
             return false;
         }
-
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        catch (Exception ex)
         {
-            translated = markedText;
-            return true;
+            Trace.TraceError("QudJP: {0}.TryTranslatePopupMessage failed: {1}", Context, ex);
+            translated = source;
+            return false;
         }
-
-        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
-        if (TryTranslateQuestReceived(source, stripped, spans, route, family, out translated)
-            || TryTranslateQuestFailed(source, stripped, spans, route, family, out translated)
-            || TryTranslateQuestStepFailed(source, stripped, spans, route, family, out translated)
-            || TryTranslateQuestCompleted(source, stripped, spans, route, family, out translated))
-        {
-            return true;
-        }
-
-        translated = source;
-        return false;
     }
 
     private static void AddTarget(List<MethodBase> targets, Type targetType, string methodName, Type[] parameters)

@@ -139,7 +139,7 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:404:TryTranslatePopupProducerText"] = "Delegates capture restoration to template/exact branch helpers.",
             ["Mods/QudJP/Assemblies/src/Patches/ProselytizationSifrahTranslationPatch.cs:105:TryTranslatePopupMessage"] = "Delegates dynamic target and whole-source wrapper restoration to matched owner-route helpers.",
             ["Mods/QudJP/Assemblies/src/Patches/QudMenuBottomContextTranslationPatch.cs:100:NormalizeItemTexts"] = "Bottom-context items are recolored by SelectableTextMenuItem; this strips nested source colors while preserving visible hotkey text.",
-            ["Mods/QudJP/Assemblies/src/Patches/QuestLifecyclePopupTranslationPatch.cs:110:TryTranslatePopupMessage"] = "Delegates quest item captures and whole-source wrapper restoration to matched owner-route helpers.",
+            ["Mods/QudJP/Assemblies/src/Patches/QuestLifecyclePopupTranslationPatch.cs:112:TryTranslatePopupMessage"] = "Delegates quest item captures and whole-source wrapper restoration to matched owner-route helpers.",
             ["Mods/QudJP/Assemblies/src/Patches/RepairTranslationPatch.cs:156:TryTranslatePopupMessage"] = "Delegates dynamic object and bit-list restoration to matched owner-route helpers.",
             ["Mods/QudJP/Assemblies/src/Patches/SkillsAndPowersLineTranslationPatch.cs:216:TranslateSkillRightText"] = "Strips only for skill right-text detection before a non-colored exact replacement.",
             ["Mods/QudJP/Assemblies/src/Patches/StatusScreenPopupTranslationPatch.cs:114:TryTranslatePopupMessage"] = "Delegates attribute, mutation, and whole-source wrapper restoration to matched status-screen popup branches.",
