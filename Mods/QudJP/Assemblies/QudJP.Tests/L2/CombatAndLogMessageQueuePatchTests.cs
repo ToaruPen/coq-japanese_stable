@@ -25,9 +25,11 @@ public sealed class CombatAndLogMessageQueuePatchTests
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
         MessagePatternTranslator.ResetForTests();
+        QuestLifecyclePopupTranslationPatch.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         DummyMessageQueue.Reset();
+        DummyPopupShow.Reset();
     }
 
     [TearDown]
@@ -36,6 +38,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         Translator.ResetForTests();
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
         MessagePatternTranslator.ResetForTests();
+        QuestLifecyclePopupTranslationPatch.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -871,6 +874,85 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
+    [TestCase("You cannot go that way.", "そちらには行けない。")]
+    [TestCase("You are stopped short by the snapjaw.", "snapjawに行く手を阻まれた。")]
+    [TestCase("The boulder cannot be moved.", "boulderは動かせない")]
+    [TestCase("The crate is stuck.", "crateは動けなくなった。")]
+    [TestCase("You can't budge the boulder.", "boulderを押し動かせない。")]
+    [TestCase("There is deep water that way. Move north again to enter it and start swimming.", "その先にはdeep waterがある。もう一度northへ移動すると中に入り、泳ぎ始める。")]
+    [TestCase("Are you sure you want to move into lava? Move north again to confirm.", "lavaに入ってもよいか？ 確認するにはもう一度northへ移動する。")]
+    [TestCase("Are you sure you want to drop down a level? Move down again to confirm.", "1階層下へ降りてもよいか？ 確認するにはもう一度downへ移動する。")]
+    public void GameObjectMove_TranslatesInventoriedQueuedShapes_WithRepositoryPatterns(string message, string expected)
+    {
+        UseRepositoryPatternDictionary();
+        AssertGameObjectMoveQueuedMessage(message, expected);
+    }
+
+    [Test]
+    public void GameObjectMove_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("The crate is stuck.", null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("The crate is stuck."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectMove_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        AssertGameObjectMoveQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("The crate is stuck."),
+            "The crate is stuck.");
+    }
+
+    [Test]
+    public void GameObjectMove_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+        AssertGameObjectMoveQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void GameObjectMove_TranslatesSwimmingPopup_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowYesNo(harmony);
+            PatchOwner(harmony, GameObjectMoveMethod(), typeof(GameObjectMoveTranslationPatch));
+
+            var target = new DummyGameObjectMoveTarget
+            {
+                PopupMessageToSend = "There is deep water that way. Do you want to go north and start swimming?",
+            };
+
+            target.Move("N", out _);
+
+            Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo("その先にはdeep waterがある。northへ進み、泳ぎ始めるか？"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     [Test]
     [TestCase("You cannot open the 扉.", "扉を開けられない")]
     [TestCase("You are out of phase with the 扉.", "扉と位相がずれている")]
@@ -930,6 +1012,96 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
+    [TestCase("You hit the snapjaw with the iron javelin (x2) for 7 damage!", "iron javelinでsnapjawに7ダメージを与えた！ (x2)")]
+    [TestCase("The snapjaw hits with an iron javelin (x2) for 7 damage!", "snapjawはiron javelinで7ダメージを与えた！ (x2)")]
+    [TestCase("The snapjaw hits the eyeless crab with an iron javelin (x2) for 7 damage!", "snapjawがiron javelinでeyeless crabに7ダメージを与えた！ (x2)")]
+    public void GameObjectPerformThrow_TranslatesInventoriedQueuedShapes_WithRepositoryPatterns(string message, string expected)
+    {
+        UseRepositoryPatternDictionary();
+        AssertGameObjectPerformThrowQueuedMessage(message, expected);
+    }
+
+    [Test]
+    public void GameObjectPerformThrow_TranslatesSelfTargetPopup_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowYesNoCancel(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyGameObjectPerformThrowTarget),
+                    nameof(DummyGameObjectPerformThrowTarget.PerformThrow),
+                    typeof(DummyGameObject),
+                    typeof(DummyCell),
+                    typeof(DummyGameObject),
+                    typeof(DummyMissilePath),
+                    typeof(int),
+                    typeof(int?),
+                    typeof(int?),
+                    typeof(int?)),
+                typeof(GameObjectPerformThrowTranslationPatch));
+
+            var target = new DummyGameObjectPerformThrowTarget
+            {
+                PopupMessageToSend = "Are you sure you want to target yourself?",
+            };
+
+            target.PerformThrow(new DummyGameObject(), new DummyCell());
+
+            Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo("yourselfを標的にしてもよいか？"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectPerformThrow_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        WritePatternDictionary(
+            ("^You hit (?:the |a |an )?(.+?) with (?:the |a |an )?(.+?) \\(x(\\d+)\\) for (\\d+) damage!$", "{1}で{0}に{3}ダメージを与えた！ (x{2})"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("You hit the snapjaw with the iron javelin (x2) for 7 damage!", null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You hit the snapjaw with the iron javelin (x2) for 7 damage!"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectPerformThrow_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        WritePatternDictionary(
+            ("^You hit (?:the |a |an )?(.+?) with (?:the |a |an )?(.+?) \\(x(\\d+)\\) for (\\d+) damage!$", "{1}で{0}に{3}ダメージを与えた！ (x{2})"));
+
+        var source = MessageFrameTranslator.MarkDirectTranslation("You hit the snapjaw with the iron javelin (x2) for 7 damage!");
+        AssertGameObjectPerformThrowQueuedMessage(source, "You hit the snapjaw with the iron javelin (x2) for 7 damage!");
+    }
+
+    [Test]
+    public void GameObjectPerformThrow_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        WritePatternDictionary(
+            ("^You hit (?:the |a |an )?(.+?) with (?:the |a |an )?(.+?) \\(x(\\d+)\\) for (\\d+) damage!$", "{1}で{0}に{3}ダメージを与えた！ (x{2})"));
+
+        AssertGameObjectPerformThrowQueuedMessage(string.Empty, string.Empty);
+    }
+
     [Test]
     public void GameObjectToggleActivatedAbility_TranslatesToggleMessage_WhenPatched()
     {
@@ -959,6 +1131,2977 @@ public sealed class CombatAndLogMessageQueuePatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    [Test]
+    public void GameObjectToggleActivatedAbility_TranslatesOffMessage_WithRepositoryPatterns()
+    {
+        UseRepositoryPatternDictionary();
+        AssertGameObjectToggleActivatedAbilityQueuedMessage("You toggle {{c|Akimbo}} off.", "{{c|二挺拳銃}}をオフにした。");
+    }
+
+    [Test]
+    public void GameObjectToggleActivatedAbility_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("You toggle {{c|Akimbo}} on.", null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You toggle {{c|Akimbo}} on."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectToggleActivatedAbility_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        AssertGameObjectToggleActivatedAbilityQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("You toggle Force Bubble on."),
+            "You toggle Force Bubble on.");
+    }
+
+    [Test]
+    public void GameObjectToggleActivatedAbility_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+        AssertGameObjectToggleActivatedAbilityQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void GameObjectPopup_TranslatesConfirmUseImportantAsyncPlural_WhenOwnerPatched()
+    {
+        AssertGameObjectPopupShowYesNoAsync(
+            "bronze daggers are important. Are you sure you want to disassemble them for bits?",
+            "bronze daggersは重要だ。本当にそれらをdisassemble for bitsしますか？");
+    }
+
+    [Test]
+    public void GameObjectPopup_TranslatesConfirmUseImportantSingular_WhenOwnerPatched()
+    {
+        AssertGameObjectPopupShowYesNo(
+            "bronze dagger is important. Are you sure you want to use it?",
+            "bronze daggerは重要だ。本当にuseしますか？");
+    }
+
+    [TestCase("bronze dagger doesn't want a new name.", "bronze daggerは新しい名前を望んでいない。")]
+    [TestCase("You start calling bronze dagger by the name 'Edge'.", "bronze daggerを「Edge」と呼び始めた。")]
+    public void GameObjectPopup_TranslatesHandleRenameMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertGameObjectPopupHandleRename(source, expected, useShowFail: source.EndsWith("new name.", StringComparison.Ordinal));
+    }
+
+    [TestCase("Irudad's Force Bubble ability is now toggled on.", "IrudadのForce Bubble能力はオンに切り替わった。")]
+    [TestCase("Irudad's Force Bubble ability is now toggled off.", "IrudadのForce Bubble能力はオフに切り替わった。")]
+    [TestCase("Irudad's Force Bubble ability cannot be toggled at this time.", "IrudadのForce Bubble能力は今は切り替えられない。")]
+    [TestCase("Irudad's Force Bubble ability is now forbidden.", "IrudadのForce Bubble能力は禁止された。")]
+    [TestCase("Irudad's Force Bubble ability is now allowed.", "IrudadのForce Bubble能力は許可された。")]
+    public void GameObjectPopup_TranslatesChangeCompanionAbilityUseMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertGameObjectPopupChangeCompanionAbilityUse(source, expected);
+    }
+
+    [Test]
+    public void GameObjectPopup_TranslatesCheckCompanionDirectionMessage_WhenOwnerPatched()
+    {
+        AssertGameObjectPopupCheckCompanionDirection("Irudad can't hear you!", "Irudadにはあなたの声が聞こえない！");
+    }
+
+    [Test]
+    public void GameObjectPopup_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("You start calling bronze dagger by the name 'Edge'.");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You start calling bronze dagger by the name 'Edge'."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectPopup_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertGameObjectPopupHandleRename(
+            MessageFrameTranslator.MarkDirectTranslation("You start calling bronze dagger by the name 'Edge'."),
+            "You start calling bronze dagger by the name 'Edge'.",
+            useShowFail: false);
+    }
+
+    [Test]
+    public void GameObjectPopup_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        AssertGameObjectPopupHandleRename(string.Empty, string.Empty, useShowFail: false);
+    }
+
+    [TestCase(
+        nameof(DummyRealityStabilizedInterdictTarget.ShowGenericInterdictMessage),
+        "You cannot alter spacetime through the normality lattice in the local region.",
+        "局所領域のノーマリティ格子により、時空を変えることはできない。")]
+    [TestCase(
+        nameof(DummyRealityStabilizedInterdictTarget.ShowDistantInterdictMessage),
+        "You cannot alter spacetime through the normality lattice in the local region, in order to teleport.",
+        "局所領域のノーマリティ格子により、時空を変えることはできない。目的: teleport。")]
+    [TestCase(
+        nameof(DummyRealityStabilizedInterdictTarget.ShowDualInterdictMessage),
+        "You cannot alter spacetime through either the normality lattice in your local region or the local region you're trying to interact with, in order to phase.",
+        "あなたの局所領域か干渉しようとしている局所領域のノーマリティ格子により、時空を変えることはできない。目的: phase。")]
+    public void RealityStabilizedInterdict_TranslatesPopupMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        AssertRealityStabilizedInterdictPopup(methodName, source, expected);
+    }
+
+    [Test]
+    public void RealityStabilizedInterdict_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("You cannot alter spacetime through the normality lattice in the local region.");
+
+            Assert.That(
+                DummyPopupShow.LastShowMessage,
+                Is.EqualTo("You cannot alter spacetime through the normality lattice in the local region."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void RealityStabilizedInterdict_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertRealityStabilizedInterdictPopup(
+            nameof(DummyRealityStabilizedInterdictTarget.ShowGenericInterdictMessage),
+            MessageFrameTranslator.MarkDirectTranslation("You cannot alter spacetime through the normality lattice in the local region."),
+            "You cannot alter spacetime through the normality lattice in the local region.");
+    }
+
+    [Test]
+    public void RealityStabilizedInterdict_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        AssertRealityStabilizedInterdictPopup(
+            nameof(DummyRealityStabilizedInterdictTarget.ShowGenericInterdictMessage),
+            string.Empty,
+            string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummyHackingSifrahResultTarget.HackingResultSuccess),
+        "You hack bronze door.",
+        "bronze doorをハックした。")]
+    [TestCase(
+        nameof(DummyHackingSifrahResultTarget.HackingResultExceptionalSuccess),
+        "You hack bronze door and find tinkering bits <{{|ABCD}}> in it!",
+        "bronze doorをハックし、itの中に修理ビット<{{|ABCD}}>を見つけた！")]
+    [TestCase(
+        nameof(DummyHackingSifrahResultTarget.HackingResultExceptionalSuccess),
+        "You hack bronze door and find a weird artifact stuck in it!",
+        "bronze doorをハックし、itの中に挟まっているa weird artifactを見つけた！")]
+    [TestCase(
+        nameof(DummyHackingSifrahResultTarget.HackingResultPartialSuccess),
+        "You feel like you're making progress on hacking bronze door open.",
+        "bronze doorを開くハックが進んでいる気がする。")]
+    [TestCase(
+        nameof(DummyHackingSifrahResultTarget.HackingResultPartialSuccess),
+        "You feel like you're making progress on hacking power switch.",
+        "power switchのハックが進んでいる気がする。")]
+    [TestCase(
+        nameof(DummyHackingSifrahResultTarget.HackingResultFailure),
+        "You cannot seem to work out how to hack bronze door.",
+        "bronze doorをハックする方法がわからない。")]
+    [TestCase(
+        nameof(DummyHackingSifrahResultTarget.HackingResultCriticalFailure),
+        "Your attempt to hack bronze door has gone very wrong.",
+        "bronze doorのハックはひどく失敗した。")]
+    [TestCase(
+        nameof(DummyHackingSifrahResultTarget.HackingResultExceptionalSuccess),
+        "You hack phylactery, and find a way to reduce its power consumption in the process!",
+        "phylacteryをハックし、その過程でitsの電力消費を減らす方法を見つけた！")]
+    [TestCase(
+        nameof(DummyHackingSifrahResultTarget.HackingResultExceptionalSuccess),
+        "In the course of the hack, you are able to insert instructions into cybernetics terminal granting you an extra license point!",
+        "ハックの過程でcybernetics terminalに命令を挿入し、追加のlicense pointを得た！")]
+    [TestCase(
+        nameof(DummyHackingSifrahResultTarget.HackingResultFailure),
+        "The hack fails, and alert lights on cybernetics terminal begin pulsing rhythmically...",
+        "ハックは失敗し、cybernetics terminalの警告灯が規則的に点滅し始めた...")]
+    [TestCase(
+        nameof(DummyHackingSifrahResultTarget.HackingResultCriticalFailure),
+        "The hack fails, and alert lights on cybernetics terminal begin pulsing urgently...",
+        "ハックは失敗し、cybernetics terminalの警告灯が緊急に点滅し始めた...")]
+    public void HackingSifrahResult_TranslatesPopupMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        AssertHackingSifrahResultPopup(methodName, source, expected);
+    }
+
+    [Test]
+    public void HackingSifrahResult_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("You hack bronze door.");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You hack bronze door."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void HackingSifrahResult_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertHackingSifrahResultPopup(
+            nameof(DummyHackingSifrahResultTarget.HackingResultSuccess),
+            MessageFrameTranslator.MarkDirectTranslation("You hack bronze door."),
+            "You hack bronze door.");
+    }
+
+    [Test]
+    public void HackingSifrahResult_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        AssertHackingSifrahResultPopup(
+            nameof(DummyHackingSifrahResultTarget.HackingResultSuccess),
+            string.Empty,
+            string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummyQuestLifecyclePopupTarget.ShowStartPopup),
+        "You have received a new quest, {{W|Aiding {{&Y|ドリンクス}} to Find the ポリセフian 祖父角の角笛}}!",
+        "新しいクエスト「{{W|{{&Y|ドリンクス}}がポリセフian 祖父角の角笛を探すのを助ける}}」を受けた！")]
+    [TestCase(
+        nameof(DummyQuestLifecyclePopupTarget.ShowFailPopup),
+        "You have failed the quest {{W|O Glorious Shekhinah!}}!",
+        "クエスト「{{W|O Glorious Shekhinah!}}」に失敗した！")]
+    [TestCase(
+        nameof(DummyQuestLifecyclePopupTarget.ShowFailStepPopup),
+        "You have failed the step, {{R|Travel to Red Rock}}, of the quest {{W|What's Eating the Watervine?}}!",
+        "クエスト「{{W|What's Eating the Watervine?}}」のステップ「{{R|ジョッパから北へ2パラサング進み、レッドロックへ向かう。}}」に失敗した！")]
+    [TestCase(
+        nameof(DummyQuestLifecyclePopupTarget.ShowFinishPopup),
+        "You have completed the quest {{W|O Glorious Shekhinah!}}!",
+        "クエスト「{{W|O Glorious Shekhinah!}}」を完了した！")]
+    public void QuestLifecyclePopup_TranslatesPopupMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        AssertQuestLifecyclePopup(methodName, source, expected);
+    }
+
+    [Test]
+    public void QuestLifecyclePopup_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("You have failed the quest O Glorious Shekhinah!!");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You have failed the quest O Glorious Shekhinah!!"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void QuestLifecyclePopup_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertQuestLifecyclePopup(
+            nameof(DummyQuestLifecyclePopupTarget.ShowFailPopup),
+            MessageFrameTranslator.MarkDirectTranslation("You have failed the quest O Glorious Shekhinah!!"),
+            "You have failed the quest O Glorious Shekhinah!!");
+    }
+
+    [Test]
+    public void QuestLifecyclePopup_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        AssertQuestLifecyclePopup(
+            nameof(DummyQuestLifecyclePopupTarget.ShowStartPopup),
+            string.Empty,
+            string.Empty);
+    }
+
+    [TestCase(nameof(DummyFlightTarget.StartFlying), "You begin flying!", null, "飛行を開始した！")]
+    [TestCase(nameof(DummyFlightTarget.StartFlying), "{{G|chrome hoverer}} begins flying.", null, "{{G|chrome hoverer}}が飛行を開始した。")]
+    [TestCase(nameof(DummyFlightTarget.StartFlying), "You begin using an additional flight capability.", null, "追加の飛行手段を使い始めた。")]
+    [TestCase(nameof(DummyFlightTarget.StopFlying), "You return to the ground.", null, "地上に戻った。")]
+    [TestCase(nameof(DummyFlightTarget.StopFlying), "{{G|chrome hoverer}} returns to the ground.", null, "{{G|chrome hoverer}}が地上に戻った。")]
+    [TestCase(nameof(DummyFlightTarget.StopFlying), "You cease using one of your flight capabilities.", null, "飛行手段の1つの使用をやめた。")]
+    [TestCase(nameof(DummyFlightTarget.Land), "You return to the ground.", null, "地上に戻った。")]
+    [TestCase(nameof(DummyFlightTarget.Land), "{{G|chrome hoverer}} returns to the ground.", null, "{{G|chrome hoverer}}が地上に戻った。")]
+    [TestCase(nameof(DummyFlightTarget.FailFlying), "You fall to the ground!", "R", "地面に落下した！")]
+    [TestCase(nameof(DummyFlightTarget.FailFlying), "{{G|chrome hoverer}} falls to the ground.", null, "{{G|chrome hoverer}}が地面に落下した。")]
+    [TestCase(nameof(DummyFlightTarget.FailFlying), "One of your flight capabilities fails.", "R", "飛行能力のひとつが失われた。")]
+    public void Flight_TranslatesQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string? color,
+        string expected)
+    {
+        AssertFlightMessage(methodName, source, color, expected);
+    }
+
+    [Test]
+    public void Flight_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("You begin flying!", null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You begin flying!"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Flight_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertFlightMessage(
+            nameof(DummyFlightTarget.StartFlying),
+            MessageFrameTranslator.MarkDirectTranslation("You begin flying!"),
+            null,
+            "You begin flying!");
+    }
+
+    [Test]
+    public void Flight_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertFlightMessage(nameof(DummyFlightTarget.StartFlying), string.Empty, null, string.Empty);
+    }
+
+    [TestCase(nameof(DummyBodyTarget.CheckUnsupportedPartLoss), "You have lost the use of your {{R|left arm}}.", "R", "{{R|left arm}}が使えなくなった。")]
+    [TestCase(nameof(DummyBodyTarget.CheckPartRecovery), "You have recovered the use of your {{G|left arm}}.", "G", "{{G|left arm}}の使用が回復した。")]
+    [TestCase(nameof(DummyBodyTarget.RegenerateLimb), "You regenerate your {{G|left arm}}!", "G", "{{G|left arm}}を再生した！")]
+    public void Body_TranslatesQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string? color,
+        string expected)
+    {
+        AssertBodyQueuedMessage(methodName, source, color, expected);
+    }
+
+    [TestCase("Your {{R|left arm}} is dismembered!", "{{R|left arm}}が切断された！")]
+    [TestCase("Your {{R|feet}} are dismembered!", "{{R|feet}}が切断された！")]
+    public void Body_TranslatesDismemberPopup_WhenOwnerPatched(string source, string expected)
+    {
+        AssertBodyPopup(nameof(DummyBodyTarget.Dismember), source, expected);
+    }
+
+    [Test]
+    public void Body_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("You have lost the use of your left arm.", "R", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You have lost the use of your left arm."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Body_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("Your left arm is dismembered!");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("Your left arm is dismembered!"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Body_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertBodyQueuedMessage(
+            nameof(DummyBodyTarget.CheckUnsupportedPartLoss),
+            MessageFrameTranslator.MarkDirectTranslation("You have lost the use of your left arm."),
+            "R",
+            "You have lost the use of your left arm.");
+    }
+
+    [Test]
+    public void Body_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertBodyPopup(
+            nameof(DummyBodyTarget.Dismember),
+            MessageFrameTranslator.MarkDirectTranslation("Your left arm is dismembered!"),
+            "Your left arm is dismembered!");
+    }
+
+    [Test]
+    public void Body_LeavesEmptyMessagesUnchanged_WhenOwnerPatched()
+    {
+        AssertBodyQueuedMessage(nameof(DummyBodyTarget.CheckUnsupportedPartLoss), string.Empty, "R", string.Empty);
+        AssertBodyPopup(nameof(DummyBodyTarget.Dismember), string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummyItemModdingSifrahTarget.ResultFailure),
+        "You abjectly failed to mod {{G|sturdy phase cannon}}.",
+        "{{G|sturdy phase cannon}}の改造に完全に失敗した。")]
+    [TestCase(
+        nameof(DummyItemModdingSifrahTarget.ResultPartialSuccess),
+        "Your work modding {{G|sturdy phase cannon}} was passable.",
+        "{{G|sturdy phase cannon}}の改造作業はまずまずだった。")]
+    [TestCase(
+        nameof(DummyItemModdingSifrahTarget.ResultSuccess),
+        "Your work modding {{G|sturdy phase cannon}} was solid and craftsmanlike.",
+        "{{G|sturdy phase cannon}}の改造作業は堅実で職人らしい仕上がりだった。")]
+    [TestCase(
+        nameof(DummyItemModdingSifrahTarget.ResultCriticalSuccess),
+        "Your work modding {{G|sturdy phase cannon}} was outstanding.",
+        "{{G|sturdy phase cannon}}の改造作業は見事だった。")]
+    public void ItemModdingSifrah_TranslatesResultPopups_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        AssertItemModdingSifrahPopup(methodName, source, expected);
+    }
+
+    [Test]
+    public void ItemModdingSifrah_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("You abjectly failed to mod sturdy phase cannon.");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You abjectly failed to mod sturdy phase cannon."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void ItemModdingSifrah_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertItemModdingSifrahPopup(
+            nameof(DummyItemModdingSifrahTarget.ResultFailure),
+            MessageFrameTranslator.MarkDirectTranslation("You abjectly failed to mod sturdy phase cannon."),
+            "You abjectly failed to mod sturdy phase cannon.");
+    }
+
+    [Test]
+    public void ItemModdingSifrah_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        AssertItemModdingSifrahPopup(
+            nameof(DummyItemModdingSifrahTarget.ResultFailure),
+            string.Empty,
+            string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummySunderMindTarget.CancelSunder),
+        "Your concentration slips and the channel between you and {{G|glowfish}} dissipates into aether.",
+        null,
+        "集中が途切れ、あなたと{{G|glowfish}}の間の回路が霊気へ霧散した。")]
+    [TestCase(
+        nameof(DummySunderMindTarget.CancelSunder),
+        "Your concentration slips and the channel dissipates.",
+        null,
+        "集中が途切れ、回路が霧散した。")]
+    [TestCase(
+        nameof(DummySunderMindTarget.PenetrationFailure),
+        "Your attack fails to penetrate {{G|glowfish}}'s mental defenses.",
+        "r",
+        "{{G|glowfish}}'s mental defensesを突破できなかった。")]
+    public void SunderMind_TranslatesQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string? color,
+        string expected)
+    {
+        AssertSunderMindQueuedMessage(methodName, source, color, expected);
+    }
+
+    [Test]
+    public void SunderMind_TranslatesBeginSunderQueuedMessage_WhenOwnerPatched()
+    {
+        AssertSunderMindBeginSunderQueuedMessage(
+            "You burrow a channel through the psychic aether to {{G|glowfish}} and begin to sunder its mind!",
+            "精神の霊界に穿ち{{G|glowfish}}へ通路を掘り、its精神を破壊し始めた！");
+    }
+
+    [Test]
+    public void SunderMind_TranslatesBeginSunderPopup_WhenOwnerPatched()
+    {
+        AssertSunderMindBeginSunderPopup(
+            "{{G|glowfish}} north burrows a channel through the psychic aether and begins to sunder your mind!",
+            "{{G|glowfish}} north 精神の霊界に通路を掘り、あなたの精神を破壊し始めた！");
+    }
+
+    [Test]
+    public void SunderMind_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("Your concentration slips and the channel dissipates.", null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your concentration slips and the channel dissipates."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void SunderMind_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("glowfish north burrows a channel through the psychic aether and begins to sunder your mind!");
+
+            Assert.That(
+                DummyPopupShow.LastShowMessage,
+                Is.EqualTo("glowfish north burrows a channel through the psychic aether and begins to sunder your mind!"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void SunderMind_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertSunderMindQueuedMessage(
+            nameof(DummySunderMindTarget.CancelSunder),
+            MessageFrameTranslator.MarkDirectTranslation("Your concentration slips and the channel dissipates."),
+            null,
+            "Your concentration slips and the channel dissipates.");
+    }
+
+    [Test]
+    public void SunderMind_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertSunderMindBeginSunderPopup(
+            MessageFrameTranslator.MarkDirectTranslation("glowfish burrows a channel through the psychic aether and begins to sunder your mind!"),
+            "glowfish burrows a channel through the psychic aether and begins to sunder your mind!");
+    }
+
+    [Test]
+    public void SunderMind_LeavesEmptyMessagesUnchanged_WhenOwnerPatched()
+    {
+        AssertSunderMindQueuedMessage(nameof(DummySunderMindTarget.CancelSunder), string.Empty, null, string.Empty);
+        AssertSunderMindBeginSunderPopup(string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummyKeybindsScreenConflictTarget.ConfirmConflictBind),
+        "{{W|Ctrl+F}} is already bound to {{C|Fire}} and {{C|Force Bubble}}.\r\n\r\nDo you want to bind it to {{C|Fly}} instead?",
+        "{{W|Ctrl+F}}はすでに{{C|Fire}} and {{C|Force Bubble}}に割り当てられています。\r\n\r\n代わりに{{C|Fly}}へ割り当てますか？")]
+    [TestCase(
+        nameof(DummyKeybindsScreenConflictTarget.ConfirmDynamicConflictBind),
+        "{{W|Ctrl+F}} is already bound to {{C|Fire}}.\r\n\r\nDo you want to bind it to {{C|Fly}} anyway?",
+        "{{W|Ctrl+F}}はすでに{{C|Fire}}に割り当てられています。\r\n\r\nそれでも{{C|Fly}}へ割り当てますか？")]
+    public void KeybindsScreenConflict_TranslatesConfirmPopups_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        AssertKeybindsScreenConflictYesNoAsync(methodName, source, expected);
+    }
+
+    [Test]
+    public void KeybindsScreenConflict_TranslatesRequiredConflictPopup_WhenOwnerPatched()
+    {
+        AssertKeybindsScreenConflictShowAsync(
+            "{{W|Ctrl+F}} is already bound to {{C|Fire}}.  This is a required bind and can't be removed.\r\n\r\nChoose a new bind for {{C|Fire}} first, and then rebind {{W|Ctrl+F}}.",
+            "{{W|Ctrl+F}}はすでに{{C|Fire}}に割り当てられています。これは必須の割り当てなので削除できません。\r\n\r\n先に{{C|Fire}}の新しい割り当てを選んでから、{{W|Ctrl+F}}を割り当て直してください。");
+    }
+
+    [Test]
+    public void KeybindsScreenConflict_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowYesNoAsync(harmony);
+
+            _ = DummyPopupShow.ShowYesNoAsync("{{W|Ctrl+F}} is already bound to {{C|Fire}}.\r\n\r\nDo you want to bind it to {{C|Fly}} anyway?")
+                .GetAwaiter()
+                .GetResult();
+
+            Assert.That(
+                DummyPopupShow.LastShowYesNoAsyncMessage,
+                Is.EqualTo("{{W|Ctrl+F}} is already bound to {{C|Fire}}.\r\n\r\nDo you want to bind it to {{C|Fly}} anyway?"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void KeybindsScreenConflict_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertKeybindsScreenConflictYesNoAsync(
+            nameof(DummyKeybindsScreenConflictTarget.ConfirmDynamicConflictBind),
+            MessageFrameTranslator.MarkDirectTranslation(
+                "{{W|Ctrl+F}} is already bound to {{C|Fire}}.\r\n\r\nDo you want to bind it to {{C|Fly}} anyway?"),
+            "{{W|Ctrl+F}} is already bound to {{C|Fire}}.\r\n\r\nDo you want to bind it to {{C|Fly}} anyway?");
+    }
+
+    [Test]
+    public void KeybindsScreenConflict_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        AssertKeybindsScreenConflictYesNoAsync(
+            nameof(DummyKeybindsScreenConflictTarget.ConfirmDynamicConflictBind),
+            string.Empty,
+            string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummyRealityStabilizedEventTarget.TryContest),
+        "You feel a psychic whiff as {{G|glowfish}} pushes past resistance in the structure of spacetime.",
+        "{{G|glowfish}}が時空構造の抵抗を押し通る、精神的なかすかな感触を覚えた。")]
+    [TestCase(
+        nameof(DummyRealityStabilizedEventTarget.ShortCircuitDevice),
+        "{{G|phase cannon}} showers sparks everywhere.",
+        "{{G|phase cannon}}があたり一面に火花を散らした。")]
+    public void RealityStabilizedEvent_TranslatesQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        AssertRealityStabilizedEventQueuedMessage(methodName, source, expected);
+    }
+
+    [Test]
+    public void RealityStabilizedEvent_TranslatesShortCircuitPopup_WhenOwnerPatched()
+    {
+        AssertRealityStabilizedEventPopup(
+            "{{G|phase cannon}} emits a shower of sparks!",
+            "{{G|phase cannon}}が火花の雨を放った！");
+    }
+
+    [Test]
+    public void RealityStabilizedEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage(
+                "You feel a psychic whiff as glowfish pushes past resistance in the structure of spacetime.",
+                null,
+                Capitalize: false);
+
+            Assert.That(
+                DummyMessageQueue.LastMessage,
+                Is.EqualTo("You feel a psychic whiff as glowfish pushes past resistance in the structure of spacetime."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void RealityStabilizedEvent_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("phase cannon emits a shower of sparks!");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("phase cannon emits a shower of sparks!"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void RealityStabilizedEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertRealityStabilizedEventQueuedMessage(
+            nameof(DummyRealityStabilizedEventTarget.TryContest),
+            MessageFrameTranslator.MarkDirectTranslation(
+                "You feel a psychic whiff as glowfish pushes past resistance in the structure of spacetime."),
+            "You feel a psychic whiff as glowfish pushes past resistance in the structure of spacetime.");
+    }
+
+    [Test]
+    public void RealityStabilizedEvent_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertRealityStabilizedEventPopup(
+            MessageFrameTranslator.MarkDirectTranslation("phase cannon emits a shower of sparks!"),
+            "phase cannon emits a shower of sparks!");
+    }
+
+    [Test]
+    public void RealityStabilizedEvent_LeavesEmptyMessagesUnchanged_WhenOwnerPatched()
+    {
+        AssertRealityStabilizedEventQueuedMessage(nameof(DummyRealityStabilizedEventTarget.TryContest), string.Empty, string.Empty);
+        AssertRealityStabilizedEventPopup(string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummyCyberneticRejectionSyndromeTarget.Apply),
+        "Your feverish feeling is getting worse.",
+        "r",
+        "発熱感が悪化している。")]
+    [TestCase(
+        nameof(DummyCyberneticRejectionSyndromeTarget.Apply),
+        "{{r|You feel feverish.}}",
+        "r",
+        "{{r|熱っぽく感じる。}}")]
+    [TestCase(
+        nameof(DummyCyberneticRejectionSyndromeTarget.Remove),
+        "You feel less feverish.",
+        "g",
+        "熱っぽさが少し和らいだ。")]
+    [TestCase(
+        nameof(DummyCyberneticRejectionSyndromeTarget.Reduce),
+        "Your feverish feeling eases up a bit.",
+        "g",
+        "発熱感が少し和らいだ。")]
+    public void CyberneticRejectionSyndrome_TranslatesQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string? color,
+        string expected)
+    {
+        AssertCyberneticRejectionSyndromeQueuedMessage(methodName, source, color, expected);
+    }
+
+    [Test]
+    public void CyberneticRejectionSyndrome_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("You feel feverish.", "r", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You feel feverish."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void CyberneticRejectionSyndrome_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertCyberneticRejectionSyndromeQueuedMessage(
+            nameof(DummyCyberneticRejectionSyndromeTarget.Apply),
+            MessageFrameTranslator.MarkDirectTranslation("You feel feverish."),
+            "r",
+            "You feel feverish.");
+    }
+
+    [Test]
+    public void CyberneticRejectionSyndrome_LeavesEmptyMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertCyberneticRejectionSyndromeQueuedMessage(
+            nameof(DummyCyberneticRejectionSyndromeTarget.Apply),
+            string.Empty,
+            "r",
+            string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummyGeomagneticDiscTarget.SignalFailure),
+        "A loud buzz is emitted. The failure glyph flashes on the side of {{Y|geomagnetic disc}}.",
+        "{{Y|geomagnetic disc}}",
+        "大きなブザー音が鳴り、{{Y|geomagnetic disc}}の側面で故障のグリフが点滅した。")]
+    [TestCase(
+        nameof(DummyGeomagneticDiscTarget.SignalLowPower),
+        "A loud buzz is emitted. The low power glyph flashes on the side of {{Y|geomagnetic disc}}.",
+        "{{Y|geomagnetic disc}}",
+        "大きなブザー音が鳴り、{{Y|geomagnetic disc}}の側面で低電力のグリフが点滅した。")]
+    [TestCase(
+        nameof(DummyGeomagneticDiscTarget.ExamineFailure),
+        "{{Y|The geomagnetic disc}} suddenly starts flying around!",
+        "{{Y|The geomagnetic disc}}",
+        "{{Y|The geomagnetic disc}}が突然飛び回り始めた！")]
+    public void GeomagneticDisc_TranslatesPopupMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string captureToken,
+        string expected)
+    {
+        AssertGeomagneticDiscPopup(methodName, source, captureToken, expected);
+    }
+
+    [Test]
+    public void GeomagneticDisc_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowFail(harmony);
+
+            DummyPopupShow.ShowFail(
+                "A loud buzz is emitted. The failure glyph flashes on the side of geomagnetic disc.");
+
+            Assert.That(
+                DummyPopupShow.LastShowMessage,
+                Is.EqualTo("A loud buzz is emitted. The failure glyph flashes on the side of geomagnetic disc."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GeomagneticDisc_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertGeomagneticDiscPopup(
+            nameof(DummyGeomagneticDiscTarget.SignalFailure),
+            MessageFrameTranslator.MarkDirectTranslation(
+                "A loud buzz is emitted. The failure glyph flashes on the side of geomagnetic disc."),
+            "geomagnetic disc",
+            "A loud buzz is emitted. The failure glyph flashes on the side of geomagnetic disc.");
+    }
+
+    [Test]
+    public void GeomagneticDisc_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        AssertGeomagneticDiscPopup(
+            nameof(DummyGeomagneticDiscTarget.SignalFailure),
+            string.Empty,
+            string.Empty,
+            string.Empty);
+    }
+
+    [TestCase(
+        "{{Y|The campfire}} is turned off.",
+        "{{Y|The campfire}}",
+        "{{Y|The campfire}}はオフになっている。")]
+    [TestCase(
+        "{{Y|The campfire}} does not have enough charge to operate.",
+        "{{Y|The campfire}}",
+        "{{Y|The campfire}}には動作に必要な充電が足りない。")]
+    [TestCase(
+        "{{Y|The campfire}} needs to be hung up first.",
+        "{{Y|The campfire}}",
+        "{{Y|The campfire}}は先につり下げる必要がある。")]
+    [TestCase(
+        "{{Y|The campfire}} does not seem to be working.",
+        "{{Y|The campfire}}",
+        "{{Y|The campfire}}は動作していないようだ。")]
+    public void CampfireCookAvailability_TranslatesPopupMessages_WhenOwnerPatched(
+        string source,
+        string captureToken,
+        string expected)
+    {
+        AssertCampfireCookAvailabilityPopup(source, captureToken, expected);
+    }
+
+    [Test]
+    public void CampfireCookAvailability_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("The campfire is turned off.");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("The campfire is turned off."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void CampfireCookAvailability_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertCampfireCookAvailabilityPopup(
+            MessageFrameTranslator.MarkDirectTranslation("The campfire is turned off."),
+            "The campfire",
+            "The campfire is turned off.");
+    }
+
+    [Test]
+    public void CampfireCookAvailability_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        AssertCampfireCookAvailabilityPopup(string.Empty, string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummyTeleprojectorTarget.HandleEvent),
+        "{{Y|The teleprojector}} attunes to your physiology.",
+        "{{Y|The teleprojector}}",
+        "{{Y|The teleprojector}}があなたの生理機能に同調した。")]
+    [TestCase(
+        nameof(DummyTeleprojectorTarget.ActivateTeleprojector),
+        "There is nothing there that {{Y|the teleprojector}} can uplink with.",
+        "{{Y|the teleprojector}}",
+        "そこには{{Y|the teleprojector}}がアップリンクできるものが何もない。")]
+    [TestCase(
+        nameof(DummyTeleprojectorTarget.RoboDom),
+        "You take control of {{G|scrap shoveler}}!",
+        "{{G|scrap shoveler}}",
+        "{{G|scrap shoveler}}を支配した！")]
+    public void Teleprojector_TranslatesPopupMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string captureToken,
+        string expected)
+    {
+        AssertTeleprojectorPopup(methodName, source, captureToken, expected);
+    }
+
+    [Test]
+    public void Teleprojector_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("The teleprojector attunes to your physiology.");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("The teleprojector attunes to your physiology."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Teleprojector_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertTeleprojectorPopup(
+            nameof(DummyTeleprojectorTarget.HandleEvent),
+            MessageFrameTranslator.MarkDirectTranslation("The teleprojector attunes to your physiology."),
+            "The teleprojector",
+            "The teleprojector attunes to your physiology.");
+    }
+
+    [Test]
+    public void Teleprojector_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        AssertTeleprojectorPopup(nameof(DummyTeleprojectorTarget.HandleEvent), string.Empty, string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummyTombAnchorSystemTarget.OnEndTurn),
+        "&MThe Bell of Rest tolls! The dead will be recalled in 12 rounds.",
+        null,
+        "&M安息の鐘が鳴る！死者は12ラウンド後に呼び戻される。")]
+    [TestCase(
+        nameof(DummyTombAnchorSystemTarget.Recall),
+        "You've been recalled to a resting place.",
+        "M",
+        "安息の場所へ呼び戻された。")]
+    [TestCase(
+        nameof(DummyTombAnchorSystemTarget.AnchorCall),
+        "You were not recalled as you're already in a resting place.",
+        "M",
+        "すでに安息の地にいるため呼び戻されなかった。")]
+    public void TombAnchorSystem_TranslatesQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string? color,
+        string expected)
+    {
+        AssertTombAnchorSystemQueuedMessage(methodName, source, color, expected);
+    }
+
+    [Test]
+    public void TombAnchorSystem_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("You've been recalled to a resting place.", "M", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You've been recalled to a resting place."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void TombAnchorSystem_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertTombAnchorSystemQueuedMessage(
+            nameof(DummyTombAnchorSystemTarget.Recall),
+            MessageFrameTranslator.MarkDirectTranslation("You've been recalled to a resting place."),
+            "M",
+            "You've been recalled to a resting place.");
+    }
+
+    [Test]
+    public void TombAnchorSystem_LeavesEmptyMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertTombAnchorSystemQueuedMessage(
+            nameof(DummyTombAnchorSystemTarget.Recall),
+            string.Empty,
+            "M",
+            string.Empty);
+    }
+
+    [TestCase(
+        "You slot {{G|salve tonic}} into {{Y|your medassist module}}.",
+        "{{G|salve tonic}}",
+        "{{G|salve tonic}}を{{Y|your medassist module}}に装填した。")]
+    [TestCase(
+        "You eject {{G|the injectors}} from {{Y|your medassist module}}.",
+        "{{G|the injectors}}",
+        "{{G|the injectors}}を{{Y|your medassist module}}から排出した。")]
+    public void CyberneticsMedassistModule_TranslatesPopupMessages_WhenOwnerPatched(
+        string source,
+        string captureToken,
+        string expected)
+    {
+        AssertCyberneticsMedassistModulePopup(source, captureToken, expected);
+    }
+
+    [TestCase(
+        "Your {{Y|medassist module}} injects you with {{G|a salve tonic}}.",
+        "{{G|a salve tonic}}",
+        "あなたの{{Y|medassist module}}が{{G|a salve tonic}}を注射した。")]
+    [TestCase("The injection fails.", "injection", "注射は失敗に終わった。")]
+    public void CyberneticsMedassistModule_TranslatesQueuedMessages_WhenOwnerPatched(
+        string source,
+        string captureToken,
+        string expected)
+    {
+        AssertCyberneticsMedassistModuleQueuedMessage(source, captureToken, expected);
+    }
+
+    [Test]
+    public void CyberneticsMedassistModule_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("You slot salve tonic into your medassist module.");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You slot salve tonic into your medassist module."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void CyberneticsMedassistModule_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("The injection fails.", null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("The injection fails."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void CyberneticsMedassistModule_DoesNotRetranslateDirectMarkedMessages_WhenOwnerPatched()
+    {
+        AssertCyberneticsMedassistModulePopup(
+            MessageFrameTranslator.MarkDirectTranslation("You slot salve tonic into your medassist module."),
+            "salve tonic",
+            "You slot salve tonic into your medassist module.");
+        AssertCyberneticsMedassistModuleQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("The injection fails."),
+            "injection",
+            "The injection fails.");
+    }
+
+    [Test]
+    public void CyberneticsMedassistModule_LeavesEmptyMessagesUnchanged_WhenOwnerPatched()
+    {
+        AssertCyberneticsMedassistModulePopup(string.Empty, string.Empty, string.Empty);
+        AssertCyberneticsMedassistModuleQueuedMessage(string.Empty, string.Empty, string.Empty);
+    }
+
+    [TestCase("{{Y|The biodynamic power plant}} is already full.", "{{Y|The biodynamic power plant}}はすでに満杯だ。")]
+    [TestCase("{{Y|The liquid-cooled chain pistol}} is already full of {{B|water}}.", "{{Y|The liquid-cooled chain pistol}}はすでに{{B|water}}で満杯だ。")]
+    [TestCase("You have no {{B|water}} for {{Y|the chain pistol}}.", "{{Y|the chain pistol}}用の{{B|water}}がない。")]
+    [TestCase("You dump the {{B|water}} out of {{Y|the chain pistol}}.", "{{Y|the chain pistol}}から{{B|water}}を捨てた。")]
+    [TestCase("You partially fill {{Y|the chain pistol}} with {{B|water}}.", "{{Y|the chain pistol}}を{{B|water}}で部分的に満たした。")]
+    [TestCase("You fill {{Y|the chain pistol}} with {{B|water}}.", "{{Y|the chain pistol}}を{{B|water}}で満たした。")]
+    public void LiquidLoader_TranslatesQueuedMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertLiquidLoaderQueuedMessage(source, expected);
+    }
+
+    [TestCase("You have no {{B|water}} to supply {{Y|the host}} with.", "{{Y|the host}}に供給する{{B|water}}がない。")]
+    [TestCase("{{Y|The host}} has no room for more {{B|water}}.", "{{Y|The host}}にはこれ以上{{B|water}}を入れる余地がない。")]
+    public void LiquidLoader_TranslatesPopupMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertLiquidLoaderPopup(source, expected);
+    }
+
+    [Test]
+    public void LiquidLoader_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("You have no water for the chain pistol.", null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You have no water for the chain pistol."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LiquidLoader_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("You have no water to supply the host with.");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You have no water to supply the host with."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LiquidLoader_DoesNotRetranslateDirectMarkedMessages_WhenOwnerPatched()
+    {
+        AssertLiquidLoaderQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("You have no water for the chain pistol."),
+            "You have no water for the chain pistol.");
+        AssertLiquidLoaderPopup(
+            MessageFrameTranslator.MarkDirectTranslation("You have no water to supply the host with."),
+            "You have no water to supply the host with.");
+    }
+
+    [Test]
+    public void LiquidLoader_LeavesEmptyMessagesUnchanged_WhenOwnerPatched()
+    {
+        AssertLiquidLoaderQueuedMessage(string.Empty, string.Empty);
+        AssertLiquidLoaderPopup(string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummyTrollKingTarget.CheckSpawn),
+        "A grotesque protuberance swells from {{G|the troll king's back}} as {{G|he}} begins to bud!",
+        "{{G|the troll king's back}}",
+        "{{G|the troll king's back}}からグロテスクな突起が膨らみ、{{G|he}}が芽吹き始めた！")]
+    [TestCase(
+        nameof(DummyTrollKingTarget.CheckSpawn),
+        "The protuberance on {{G|the troll king's back}} shrinks.",
+        "{{G|the troll king's back}}",
+        "{{G|the troll king's back}}の突起が縮んだ。")]
+    [TestCase(
+        nameof(DummyTrollKingTarget.StopBudding),
+        "The protuberance on {{G|the troll king}} shrinks.",
+        "{{G|the troll king}}",
+        "{{G|the troll king}}の突起が縮んだ。")]
+    public void TrollKing_TranslatesQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string captureToken,
+        string expected)
+    {
+        AssertTrollKingQueuedMessage(methodName, source, captureToken, expected);
+    }
+
+    [Test]
+    public void TrollKing_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage(
+                "The protuberance on the troll king shrinks.",
+                null,
+                Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("The protuberance on the troll king shrinks."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void TrollKing_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertTrollKingQueuedMessage(
+            nameof(DummyTrollKingTarget.StopBudding),
+            MessageFrameTranslator.MarkDirectTranslation("The protuberance on the troll king shrinks."),
+            "the troll king",
+            "The protuberance on the troll king shrinks.");
+    }
+
+    [Test]
+    public void TrollKing_LeavesEmptyMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertTrollKingQueuedMessage(
+            nameof(DummyTrollKingTarget.StopBudding),
+            string.Empty,
+            string.Empty,
+            string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummyMutatingTarget.Apply),
+        "You start to feel unstable.",
+        "M",
+        "不安定になり始めた。")]
+    [TestCase(
+        nameof(DummyMutatingTarget.HandleEvent),
+        "You feel increasingly unstable.",
+        "M",
+        "ますます不安定になってきた。")]
+    public void Mutating_TranslatesQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string? color,
+        string expected)
+    {
+        AssertMutatingQueuedMessage(methodName, source, color, expected);
+    }
+
+    [TestCase(
+        "Your genome destabilizes and you gain a new mutation:\n\n{{W|Wings}}",
+        "{{W|Wings}}",
+        "ゲノムが不安定化し、新しい変異を得た:\n\n{{W|Wings}}")]
+    [TestCase(
+        "Your genome destabilizes and you gain a new defect:\n\n{{W|Amphibious}}",
+        "{{W|Amphibious}}",
+        "ゲノムが不安定化し、新しい欠陥を得た:\n\n{{W|Amphibious}}")]
+    [TestCase(
+        "Your genome destabilizes and you gain 2 mutation points.",
+        "2",
+        "ゲノムが不安定化し、変異ポイントを2得た。")]
+    public void Mutating_TranslatesPopupMessages_WhenOwnerPatched(
+        string source,
+        string captureToken,
+        string expected)
+    {
+        AssertMutatingPopup(source, captureToken, expected);
+    }
+
+    [Test]
+    public void Mutating_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("You start to feel unstable.", "M", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You start to feel unstable."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Mutating_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("Your genome destabilizes and you gain 2 mutation points.");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("Your genome destabilizes and you gain 2 mutation points."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Mutating_DoesNotRetranslateDirectMarkedMessages_WhenOwnerPatched()
+    {
+        AssertMutatingQueuedMessage(
+            nameof(DummyMutatingTarget.Apply),
+            MessageFrameTranslator.MarkDirectTranslation("You start to feel unstable."),
+            "M",
+            "You start to feel unstable.");
+        AssertMutatingPopup(
+            MessageFrameTranslator.MarkDirectTranslation("Your genome destabilizes and you gain 2 mutation points."),
+            "2",
+            "Your genome destabilizes and you gain 2 mutation points.");
+    }
+
+    [Test]
+    public void Mutating_LeavesEmptyMessagesUnchanged_WhenOwnerPatched()
+    {
+        AssertMutatingQueuedMessage(nameof(DummyMutatingTarget.Apply), string.Empty, "M", string.Empty);
+        AssertMutatingPopup(string.Empty, string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummyQuillsTarget.HandleEvent),
+        "{{G|The snapjaw}} impales {{G|itself}} on {{Y|your quills}} and takes 3 damage!",
+        "{{Y|your quills}}",
+        "{{G|The snapjaw}}は{{G|itself}}を{{Y|your quills}}に突き刺し、3ダメージを受けた！")]
+    [TestCase(
+        nameof(DummyQuillsTarget.FireEvent),
+        "The attack breaks {{W|two}} {{Y|quills}}!",
+        "{{Y|quills}}",
+        "攻撃で{{W|two}}本の{{Y|quills}}が折れた！")]
+    public void Quills_TranslatesQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string captureToken,
+        string expected)
+    {
+        AssertQuillsQueuedMessage(methodName, source, captureToken, expected);
+    }
+
+    [Test]
+    public void Quills_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage(
+                "The attack breaks two quills!",
+                null,
+                Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("The attack breaks two quills!"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Quills_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertQuillsQueuedMessage(
+            nameof(DummyQuillsTarget.FireEvent),
+            MessageFrameTranslator.MarkDirectTranslation("The attack breaks two quills!"),
+            "quills",
+            "The attack breaks two quills!");
+    }
+
+    [Test]
+    public void Quills_LeavesEmptyMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertQuillsQueuedMessage(nameof(DummyQuillsTarget.FireEvent), string.Empty, string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummyLightManipulationTarget.HandleEvent),
+        "The darkness absorbs the laser beam.",
+        null,
+        "闇がレーザービームを吸収した。")]
+    [TestCase(
+        nameof(DummyLightManipulationTarget.HandleEvent),
+        "You must wait {{C|7 turns}} before you can enable ambient light.",
+        null,
+        "環境光を有効化するには{{C|7 turns}}待つ必要がある。")]
+    [TestCase(
+        nameof(DummyLightManipulationTarget.Lase),
+        "Your laser beam doesn't penetrate {{Y|the snapjaw's armor}}.",
+        "r",
+        "あなたのレーザービームは{{Y|the snapjaw's armor}}を貫通しなかった。")]
+    [TestCase(
+        nameof(DummyLightManipulationTarget.Lase),
+        "{{Y|The snapjaw's laser beam}} doesn't penetrate your armor.",
+        "g",
+        "{{Y|The snapjaw's laser beam}}はあなたの装甲を貫通しなかった。")]
+    public void LightManipulation_TranslatesQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string? color,
+        string expected)
+    {
+        AssertLightManipulationQueuedMessage(methodName, source, color, expected);
+    }
+
+    [Test]
+    public void LightManipulation_TranslatesPopupMessage_WhenOwnerPatched()
+    {
+        AssertLightManipulationPopup(
+            "You must wait {{C|7 turns}} before you can enable ambient light.",
+            "環境光を有効化するには{{C|7 turns}}待つ必要がある。");
+    }
+
+    [Test]
+    public void LightManipulation_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("The darkness absorbs the laser beam.", null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("The darkness absorbs the laser beam."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LightManipulation_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowFail(harmony);
+
+            DummyPopupShow.ShowFail("You must wait {{C|7 turns}} before you can enable ambient light.");
+
+            Assert.That(
+                DummyPopupShow.LastShowMessage,
+                Is.EqualTo("You must wait {{C|7 turns}} before you can enable ambient light."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LightManipulation_DoesNotRetranslateDirectMarkedMessages_WhenOwnerPatched()
+    {
+        AssertLightManipulationQueuedMessage(
+            nameof(DummyLightManipulationTarget.HandleEvent),
+            MessageFrameTranslator.MarkDirectTranslation("The darkness absorbs the laser beam."),
+            null,
+            "The darkness absorbs the laser beam.");
+        AssertLightManipulationPopup(
+            MessageFrameTranslator.MarkDirectTranslation("You must wait {{C|7 turns}} before you can enable ambient light."),
+            "You must wait {{C|7 turns}} before you can enable ambient light.");
+    }
+
+    [Test]
+    public void LightManipulation_LeavesEmptyMessagesUnchanged_WhenOwnerPatched()
+    {
+        AssertLightManipulationQueuedMessage(nameof(DummyLightManipulationTarget.HandleEvent), string.Empty, null, string.Empty);
+        AssertLightManipulationPopup(string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummyLatchesOnTarget.HandleEvent),
+        "Since {{R|the hook}} is still latched onto {{G|the snapjaw}}, releasing {{R|it}} leaves {{R|it}} in {{G|its possession}}!",
+        "{{G|the snapjaw}}",
+        "{{R|the hook}}はまだ{{G|the snapjaw}}に噛み付いているため、{{R|it}}を放すと{{R|it}}は{{G|its possession}}に残る！")]
+    [TestCase(
+        nameof(DummyLatchesOnTarget.HandleEvent),
+        "Since {{R|the hook}} is still latched onto you, {{G|the snapjaw}} releasing {{R|it}} leaves {{R|it}} in your possession!",
+        "{{R|the hook}}",
+        "{{R|the hook}}はまだあなたに噛み付いているため、{{G|the snapjaw}}が{{R|it}}を放すと{{R|it}}はあなたの所有物として残る！")]
+    [TestCase(
+        nameof(DummyLatchesOnTarget.FireEvent),
+        "{{R|The barbed hook}}{{R| latches}} onto your {{G|steel shield}}{{R|!}}",
+        "{{G|steel shield}}",
+        "{{R|The barbed hook}}がyour {{G|steel shield}}に噛み付いた！")]
+    [TestCase(
+        nameof(DummyLatchesOnTarget.FireEvent),
+        "{{R|The snapjaw's barbed hook}}{{R| latches}} onto {{G|the watervine}}{{R|!}}",
+        "{{G|the watervine}}",
+        "{{R|The snapjaw's barbed hook}}が{{G|the watervine}}に噛み付いた！")]
+    public void LatchesOn_TranslatesQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string captureToken,
+        string expected)
+    {
+        AssertLatchesOnQueuedMessage(methodName, source, captureToken, expected);
+    }
+
+    [Test]
+    public void LatchesOn_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("The barbed hook latches onto you!", null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("The barbed hook latches onto you!"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LatchesOn_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertLatchesOnQueuedMessage(
+            nameof(DummyLatchesOnTarget.FireEvent),
+            MessageFrameTranslator.MarkDirectTranslation("The barbed hook latches onto you!"),
+            "you",
+            "The barbed hook latches onto you!");
+    }
+
+    [Test]
+    public void LatchesOn_LeavesEmptyMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertLatchesOnQueuedMessage(nameof(DummyLatchesOnTarget.FireEvent), string.Empty, string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        "Apply",
+        "You enter {{C|sleep mode}}.",
+        "あなたは{{C|スリープモード}}に入った。")]
+    [TestCase(
+        "Apply",
+        "{{G|The robot}} goes into {{C|sleep mode}}.",
+        "{{G|The robot}}は{{C|スリープモード}}に入った。")]
+    [TestCase(
+        "Apply",
+        "You fall {{C|asleep}}!",
+        "あなたは{{C|眠り}}に落ちた。")]
+    [TestCase(
+        "BeginTakeAction",
+        "You are asleep.",
+        "眠っている。")]
+    [TestCase(
+        "InventoryAction",
+        "{{G|The snapjaw}} presses your activation panel.",
+        "{{G|The snapjaw}}はあなたの起動パネルを押した。")]
+    [TestCase(
+        "InventoryAction",
+        "{{G|The snapjaw}} gently shakes you awake.",
+        "{{G|The snapjaw}}はyouをやさしく揺り起こした。")]
+    public void AsleepOwner_TranslatesQueuedMessages_WhenOwnerPatched(
+        string methodKey,
+        string source,
+        string expected)
+    {
+        AssertAsleepOwnerQueuedMessage(methodKey, source, expected);
+    }
+
+    [TestCase(
+        "You press {{C|the robot's activation panel}}.",
+        "あなたは{{C|the robot's activation panel}}を押した。")]
+    [TestCase(
+        "You gently shake {{G|the snapjaw}} awake.",
+        "あなたは{{G|the snapjaw}}をやさしく揺り起こした。")]
+    [TestCase(
+        "You can't figure out how to wake {{G|the robot}}.",
+        "あなたには{{G|the robot}}を起こす方法がわからない。")]
+    public void AsleepOwner_TranslatesPopupMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertAsleepOwnerPopup(source, expected);
+    }
+
+    [Test]
+    public void AsleepOwner_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("You are asleep.", null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You are asleep."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void AsleepOwner_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("You gently shake the snapjaw awake.");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You gently shake the snapjaw awake."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void AsleepOwner_DoesNotRetranslateDirectMarkedMessages_WhenOwnerPatched()
+    {
+        AssertAsleepOwnerQueuedMessage(
+            "BeginTakeAction",
+            MessageFrameTranslator.MarkDirectTranslation("You are asleep."),
+            "You are asleep.");
+        AssertAsleepOwnerPopup(
+            MessageFrameTranslator.MarkDirectTranslation("You gently shake the snapjaw awake."),
+            "You gently shake the snapjaw awake.");
+    }
+
+    [Test]
+    public void AsleepOwner_LeavesEmptyMessagesUnchanged_WhenOwnerPatched()
+    {
+        AssertAsleepOwnerQueuedMessage("BeginTakeAction", string.Empty, string.Empty);
+        AssertAsleepOwnerPopup(string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummyBuddingTarget.Apply),
+        "A grotesque protuberance swells from {{G|the snapjaw's back}} as {{G|it}} begins to bud!",
+        "{{G|the snapjaw's back}}",
+        "{{G|the snapjaw's back}}からグロテスクな突起が膨らみ、{{G|it}}が芽吹き始めた！")]
+    [TestCase(
+        nameof(DummyBuddingTarget.Apply),
+        "A grotesque protuberance swells from {{G|the snapjaw}} as {{G|it}} begins to bud!",
+        "{{G|the snapjaw}}",
+        "{{G|the snapjaw}}からグロテスクな突起が膨らみ、{{G|it}}が芽吹き始めた！")]
+    [TestCase(
+        nameof(DummyBuddingTarget.Remove),
+        "The grotesque protuberance on {{G|the snapjaw's back}} subsides.",
+        "{{G|the snapjaw's back}}",
+        "{{G|the snapjaw's back}}のグロテスクな突起が引っ込んだ。")]
+    [TestCase(
+        nameof(DummyBuddingTarget.Remove),
+        "{{G|The snapjaw's grotesque protuberance}} subsides.",
+        "{{G|The snapjaw's grotesque protuberance}}",
+        "{{G|The snapjaw's grotesque protuberance}}が引っ込んだ。")]
+    public void Budding_TranslatesQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string captureToken,
+        string expected)
+    {
+        AssertBuddingQueuedMessage(methodName, source, captureToken, expected);
+    }
+
+    [Test]
+    public void Budding_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage(
+                "The grotesque protuberance on the snapjaw's back subsides.",
+                null,
+                Capitalize: false);
+
+            Assert.That(
+                DummyMessageQueue.LastMessage,
+                Is.EqualTo("The grotesque protuberance on the snapjaw's back subsides."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Budding_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertBuddingQueuedMessage(
+            nameof(DummyBuddingTarget.Remove),
+            MessageFrameTranslator.MarkDirectTranslation("The grotesque protuberance on the snapjaw's back subsides."),
+            "the snapjaw's back",
+            "The grotesque protuberance on the snapjaw's back subsides.");
+    }
+
+    [Test]
+    public void Budding_LeavesEmptyMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertBuddingQueuedMessage(nameof(DummyBuddingTarget.Remove), string.Empty, string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummyBeguilingTarget.Cast),
+        "You can't beguile {{R|yourself}}!",
+        "{{R|yourself}}を魅了できない！")]
+    [TestCase(
+        nameof(DummyBeguilingTarget.Cast),
+        "{{G|The snapjaw}} seems utterly impervious to your charms.",
+        "{{G|The snapjaw}}はあなたの魅力にまったく動じない。")]
+    [TestCase(
+        nameof(DummyBeguilingTarget.Cast),
+        "You have already beguiled {{G|the snapjaw}}.",
+        "すでに{{G|the snapjaw}}を魅了している。")]
+    [TestCase(
+        nameof(DummyBeguilingTarget.Cast),
+        "You fail to outshine the current object of {{G|the snapjaw's affection}}.",
+        "{{G|the snapjaw's affection}}の現在の想い人を上回れなかった。")]
+    [TestCase(
+        nameof(DummyBeguilingTarget.Beguile),
+        "Your coquetry infuriates {{R|the snapjaw}}.",
+        "{{R|the snapjaw}}を口説こうとして怒らせた。")]
+    public void Beguiling_TranslatesQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        AssertBeguilingQueuedMessage(methodName, source, expected);
+    }
+
+    [Test]
+    public void Beguiling_TranslatesPopupMessage_WhenOwnerPatched()
+    {
+        AssertBeguilingPopup(
+            "{{G|The snapjaw}} is already your follower. Do you want to beguile {{G|it}} anyway?",
+            "{{G|The snapjaw}}はすでにあなたの仲間だ。それでも{{G|it}}を魅了するか？");
+    }
+
+    [Test]
+    public void Beguiling_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("Your coquetry infuriates the snapjaw.", null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your coquetry infuriates the snapjaw."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Beguiling_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowYesNo(harmony);
+
+            DummyPopupShow.ShowYesNo("The snapjaw is already your follower. Do you want to beguile it anyway?");
+
+            Assert.That(
+                DummyPopupShow.LastShowYesNoMessage,
+                Is.EqualTo("The snapjaw is already your follower. Do you want to beguile it anyway?"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Beguiling_DoesNotRetranslateDirectMarkedMessages_WhenOwnerPatched()
+    {
+        AssertBeguilingQueuedMessage(
+            nameof(DummyBeguilingTarget.Beguile),
+            MessageFrameTranslator.MarkDirectTranslation("Your coquetry infuriates the snapjaw."),
+            "Your coquetry infuriates the snapjaw.");
+        AssertBeguilingPopup(
+            MessageFrameTranslator.MarkDirectTranslation("The snapjaw is already your follower. Do you want to beguile it anyway?"),
+            "The snapjaw is already your follower. Do you want to beguile it anyway?");
+    }
+
+    [Test]
+    public void Beguiling_LeavesEmptyMessagesUnchanged_WhenOwnerPatched()
+    {
+        AssertBeguilingQueuedMessage(nameof(DummyBeguilingTarget.Beguile), string.Empty, string.Empty);
+        AssertBeguilingPopup(string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummyAscensionCableTarget.TryAscend),
+        "You don't have the capacity to ascend {{G|the cable}}.",
+        "{{G|the cable}}を上昇する能力がない。")]
+    [TestCase(
+        nameof(DummyAscensionCableTarget.TryAscend),
+        "You can't safely ascend {{G|the cable}} right now.",
+        "今は安全に{{G|the cable}}を上昇できない。")]
+    [TestCase(
+        nameof(DummyAscensionCableTarget.TryDescend),
+        "You don't have the capacity to descend {{G|the cable}}.",
+        "{{G|the cable}}を下降する能力がない。")]
+    [TestCase(
+        nameof(DummyAscensionCableTarget.TryDescend),
+        "You can't safely descend {{G|the cable}} right now.",
+        "今は安全に{{G|the cable}}を下降できない。")]
+    public void AscensionCable_TranslatesPopupMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        AssertAscensionCablePopup(methodName, source, expected);
+    }
+
+    [Test]
+    public void AscensionCable_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("You can't safely ascend the cable right now.");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You can't safely ascend the cable right now."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void AscensionCable_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertAscensionCablePopup(
+            nameof(DummyAscensionCableTarget.TryAscend),
+            MessageFrameTranslator.MarkDirectTranslation("You can't safely ascend the cable right now."),
+            "You can't safely ascend the cable right now.");
+    }
+
+    [Test]
+    public void AscensionCable_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        AssertAscensionCablePopup(nameof(DummyAscensionCableTarget.TryAscend), string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        "You tighten your carapace. Your AV increases by {{G|3}}.",
+        "甲羅を引き締めた。AVが{{G|3}}増加する。")]
+    [TestCase(
+        "You tighten {{W|your shell}}. Your AV increases by {{G|2}}.",
+        "{{W|your shell}}を引き締めた。AVが{{G|2}}増加する。")]
+    public void CarapaceTighten_TranslatesPopupMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertCarapaceTightenPopup(source, expected);
+    }
+
+    [Test]
+    public void CarapaceTighten_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("You tighten your carapace. Your AV increases by {{G|3}}.");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You tighten your carapace. Your AV increases by {{G|3}}."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void CarapaceTighten_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertCarapaceTightenPopup(
+            MessageFrameTranslator.MarkDirectTranslation("You tighten your carapace. Your AV increases by {{G|3}}."),
+            "You tighten your carapace. Your AV increases by {{G|3}}.");
+    }
+
+    [Test]
+    public void CarapaceTighten_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        AssertCarapaceTightenPopup(string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummySvardymSystemTarget.BeginStorm),
+        "Your hear a swelling thpthp sound.",
+        "thpthpという音が大きくなっていくのが聞こえる。")]
+    [TestCase(
+        nameof(DummySvardymSystemTarget.BeginStorm),
+        "The sky begins to darken.",
+        "空が暗くなり始める。")]
+    [TestCase(
+        nameof(DummySvardymSystemTarget.Tick),
+        "The thpthp sound wanes.",
+        "thpthpという音が弱まる。")]
+    [TestCase(
+        nameof(DummySvardymSystemTarget.Tick),
+        "The sky begins to brighten.",
+        "空が明るくなり始める。")]
+    public void SvardymSystem_TranslatesQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        AssertSvardymSystemQueuedMessage(methodName, source, expected);
+    }
+
+    [Test]
+    public void SvardymSystem_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("The sky begins to darken.");
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("The sky begins to darken."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void SvardymSystem_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertSvardymSystemQueuedMessage(
+            nameof(DummySvardymSystemTarget.BeginStorm),
+            MessageFrameTranslator.MarkDirectTranslation("The sky begins to darken."),
+            "The sky begins to darken.");
+    }
+
+    [Test]
+    public void SvardymSystem_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertSvardymSystemQueuedMessage(nameof(DummySvardymSystemTarget.BeginStorm), string.Empty, string.Empty);
+    }
+
+    [TestCase("EffectApplied", "You phase out.", "位相がずれた。")]
+    [TestCase("BeginTakeAction", "You will phase back in in {{C|3 rounds}}.", "{{C|3 rounds}}後に位相が戻る。")]
+    [TestCase("Remove", "You phase back in.", "位相が戻った。")]
+    public void Phased_TranslatesQueuedMessages_WhenOwnerPatched(
+        string methodKey,
+        string source,
+        string expected)
+    {
+        AssertPhasedQueuedMessage(methodKey, source, expected);
+    }
+
+    [Test]
+    public void Phased_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("You phase out.");
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You phase out."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Phased_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertPhasedQueuedMessage(
+            "EffectApplied",
+            MessageFrameTranslator.MarkDirectTranslation("You phase out."),
+            "You phase out.");
+    }
+
+    [Test]
+    public void Phased_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertPhasedQueuedMessage("EffectApplied", string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void PersuasionRebukeRobot_TranslatesRebukeFailureMessage_WhenOwnerPatched()
+    {
+        AssertPersuasionRebukeRobotQueuedMessage(
+            "Your argument does not compute.",
+            "あなたの論理は処理されなかった。");
+    }
+
+    [Test]
+    public void PersuasionRebukeRobot_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("Your argument does not compute.");
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your argument does not compute."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void PersuasionRebukeRobot_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertPersuasionRebukeRobotQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("Your argument does not compute."),
+            "Your argument does not compute.");
+    }
+
+    [Test]
+    public void PersuasionRebukeRobot_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertPersuasionRebukeRobotQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        "{{G|Saad Amus}} slouches in pacification and radiates a chord of light.",
+        "{{G|Saad Amus}}は平伏し、光の和音を放った。")]
+    [TestCase(
+        "you slouch in pacification and radiate a chord of light.",
+        "youは平伏し、光の和音を放った。")]
+    public void NephalPropertiesTryPacify_TranslatesPopupMessage_WhenOwnerPatched(string source, string expected)
+    {
+        AssertNephalPropertiesTryPacifyPopup(source, expected);
+    }
+
+    [Test]
+    public void NephalPropertiesTryPacify_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("Saad Amus slouches in pacification and radiates a chord of light.");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("Saad Amus slouches in pacification and radiates a chord of light."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void NephalPropertiesTryPacify_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertNephalPropertiesTryPacifyPopup(
+            MessageFrameTranslator.MarkDirectTranslation("Saad Amus slouches in pacification and radiates a chord of light."),
+            "Saad Amus slouches in pacification and radiates a chord of light.");
+    }
+
+    [Test]
+    public void NephalPropertiesTryPacify_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        AssertNephalPropertiesTryPacifyPopup(string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        "You have no ammunition to supply {{Y|chain turret}} with. It may be ineffective unless stocked.",
+        "{{Y|chain turret}}に補給する弾薬がない。補充しない限りItは効果が薄いかもしれない。")]
+    [TestCase(
+        "You have no ammunition to supply the turret with. it may be ineffective unless stocked.",
+        "the turretに補給する弾薬がない。補充しない限りitは効果が薄いかもしれない。")]
+    public void IntegratedWeaponHostsGenerateTurret_TranslatesNoAmmoPopup_WhenOwnerPatched(string source, string expected)
+    {
+        AssertIntegratedWeaponHostsGenerateTurretPopup(source, expected);
+    }
+
+    [Test]
+    public void IntegratedWeaponHostsGenerateTurret_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("You have no ammunition to supply chain turret with. It may be ineffective unless stocked.");
+
+            Assert.That(
+                DummyPopupShow.LastShowMessage,
+                Is.EqualTo("You have no ammunition to supply chain turret with. It may be ineffective unless stocked."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void IntegratedWeaponHostsGenerateTurret_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertIntegratedWeaponHostsGenerateTurretPopup(
+            MessageFrameTranslator.MarkDirectTranslation("You have no ammunition to supply chain turret with. It may be ineffective unless stocked."),
+            "You have no ammunition to supply chain turret with. It may be ineffective unless stocked.");
+    }
+
+    [Test]
+    public void IntegratedWeaponHostsGenerateTurret_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        AssertIntegratedWeaponHostsGenerateTurretPopup(string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        "Could not generate turret from blueprint \"PhaseCannon\"\n\nSystem.Exception: missing blueprint",
+        "blueprint \"PhaseCannon\" からタレットを生成できなかった\n\nSystem.Exception: missing blueprint")]
+    [TestCase(
+        "Could not generate turret from blueprint \"{{C|ArcWinder}}\"\n\nSystem.Exception: invalid tier",
+        "blueprint \"{{C|ArcWinder}}\" からタレットを生成できなかった\n\nSystem.Exception: invalid tier")]
+    public void IntegratedWeaponHostsHandleTurretWish_TranslatesShowFail_WhenOwnerPatched(string source, string expected)
+    {
+        AssertIntegratedWeaponHostsHandleTurretWishPopup(source, expected);
+    }
+
+    [Test]
+    public void IntegratedWeaponHostsHandleTurretWish_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowFail(harmony);
+
+            DummyPopupShow.ShowFail("Could not generate turret from blueprint \"PhaseCannon\"\n\nSystem.Exception: missing blueprint");
+
+            Assert.That(
+                DummyPopupShow.LastShowMessage,
+                Is.EqualTo("Could not generate turret from blueprint \"PhaseCannon\"\n\nSystem.Exception: missing blueprint"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void IntegratedWeaponHostsHandleTurretWish_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertIntegratedWeaponHostsHandleTurretWishPopup(
+            MessageFrameTranslator.MarkDirectTranslation("Could not generate turret from blueprint \"PhaseCannon\"\n\nSystem.Exception: missing blueprint"),
+            "Could not generate turret from blueprint \"PhaseCannon\"\n\nSystem.Exception: missing blueprint");
+    }
+
+    [Test]
+    public void IntegratedWeaponHostsHandleTurretWish_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        AssertIntegratedWeaponHostsHandleTurretWishPopup(string.Empty, string.Empty);
+    }
+
+    [TestCase(nameof(DummyBoostStatisticTarget.Apply), "Your Strength increases.", "筋力が上昇した。")]
+    [TestCase(nameof(DummyBoostStatisticTarget.Apply), "Your {{C|Agility}} decreases.", "{{C|敏捷}}が低下した。")]
+    [TestCase(nameof(DummyBoostStatisticTarget.Remove), "Your Toughness returns to normal.", "頑健が通常に戻った。")]
+    public void BoostStatistic_TranslatesQueuedMessages_WhenOwnerPatched(string methodName, string source, string expected)
+    {
+        AssertBoostStatisticQueuedMessage(methodName, source, expected);
+    }
+
+    [Test]
+    public void BoostStatistic_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("Your Strength increases.", "g", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your Strength increases."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void BoostStatistic_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertBoostStatisticQueuedMessage(
+            nameof(DummyBoostStatisticTarget.Apply),
+            MessageFrameTranslator.MarkDirectTranslation("Your Strength increases."),
+            "Your Strength increases.");
+    }
+
+    [Test]
+    public void BoostStatistic_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertBoostStatisticQueuedMessage(nameof(DummyBoostStatisticTarget.Apply), string.Empty, string.Empty);
+    }
+
+    [TestCase(nameof(DummyEmboldenedTarget.Apply), "Your Hitpoints increase!", "ヒットポイントが増加した！")]
+    [TestCase(nameof(DummyEmboldenedTarget.Apply), "Your {{C|Agility}} increase!", "{{C|敏捷}}が増加した！")]
+    [TestCase(nameof(DummyEmboldenedTarget.Remove), "Your Hitpoints return to normal.", "ヒットポイントが通常に戻った。")]
+    [TestCase(nameof(DummyEmboldenedTarget.Remove), "Your Strength returns to normal.", "筋力が通常に戻った。")]
+    public void Emboldened_TranslatesQueuedMessages_WhenOwnerPatched(string methodName, string source, string expected)
+    {
+        AssertEmboldenedQueuedMessage(methodName, source, expected);
+    }
+
+    [Test]
+    public void Emboldened_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("Your Hitpoints increase!", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your Hitpoints increase!"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Emboldened_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEmboldenedQueuedMessage(
+            nameof(DummyEmboldenedTarget.Apply),
+            MessageFrameTranslator.MarkDirectTranslation("Your Hitpoints increase!"),
+            "Your Hitpoints increase!");
+    }
+
+    [Test]
+    public void Emboldened_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertEmboldenedQueuedMessage(nameof(DummyEmboldenedTarget.Apply), string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        "You've contracted {{G|glowcrust}} on your left arm.",
+        "left armに{{G|glowcrust}}を発症した。")]
+    [TestCase(
+        "You've contracted waxflab on your {{C|right hand}}.",
+        "{{C|right hand}}にwaxflabを発症した。")]
+    public void FungalSporeInfectionApplyFungalInfection_TranslatesContractedPopup_WhenOwnerPatched(string source, string expected)
+    {
+        AssertFungalSporeInfectionPopup(source, expected);
+    }
+
+    [Test]
+    public void FungalSporeInfectionApplyFungalInfection_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("You've contracted glowcrust on your left arm.");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You've contracted glowcrust on your left arm."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void FungalSporeInfectionApplyFungalInfection_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertFungalSporeInfectionPopup(
+            MessageFrameTranslator.MarkDirectTranslation("You've contracted glowcrust on your left arm."),
+            "You've contracted glowcrust on your left arm.");
+    }
+
+    [Test]
+    public void FungalSporeInfectionApplyFungalInfection_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        AssertFungalSporeInfectionPopup(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void FungalSporeInfectionFireEvent_TranslatesSkinItchesQueuedMessage_WhenOwnerPatched()
+    {
+        AssertFungalSporeInfectionQueuedMessage("Your skin itches.", "肌がむずむずする。");
+    }
+
+    [Test]
+    public void FungalSporeInfectionFireEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("Your skin itches.", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your skin itches."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void FungalSporeInfectionFireEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertFungalSporeInfectionQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("Your skin itches."),
+            "Your skin itches.");
+    }
+
+    [Test]
+    public void FungalSporeInfectionFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertFungalSporeInfectionQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [TestCase(nameof(DummyHealingTarget.HandleEvent))]
+    [TestCase(nameof(DummyHealingTarget.FireEvent))]
+    public void Healing_TranslatesInterruptedQueuedMessage_WhenOwnerPatched(string methodName)
+    {
+        AssertHealingQueuedMessage(methodName, "Your healing is interrupted!", "治癒が中断された！");
+    }
+
+    [Test]
+    public void Healing_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("Your healing is interrupted!", "r", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your healing is interrupted!"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Healing_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertHealingQueuedMessage(
+            nameof(DummyHealingTarget.HandleEvent),
+            MessageFrameTranslator.MarkDirectTranslation("Your healing is interrupted!"),
+            "Your healing is interrupted!");
+    }
+
+    [Test]
+    public void Healing_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertHealingQueuedMessage(nameof(DummyHealingTarget.HandleEvent), string.Empty, string.Empty);
+    }
+
+    [TestCase(nameof(DummyStressedTarget.Apply), "Your body flushes with adrenaline!", "体にアドレナリンがほとばしった！")]
+    [TestCase(nameof(DummyStressedTarget.Remove), "Your adrenaline level returns to normal!", "アドレナリンの分泌が落ち着いた！")]
+    public void Stressed_TranslatesQueuedMessages_WhenOwnerPatched(string methodName, string source, string expected)
+    {
+        AssertStressedQueuedMessage(methodName, source, expected);
+    }
+
+    [Test]
+    public void Stressed_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("Your body flushes with adrenaline!", "g", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your body flushes with adrenaline!"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Stressed_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertStressedQueuedMessage(
+            nameof(DummyStressedTarget.Apply),
+            MessageFrameTranslator.MarkDirectTranslation("Your body flushes with adrenaline!"),
+            "Your body flushes with adrenaline!");
+    }
+
+    [Test]
+    public void Stressed_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertStressedQueuedMessage(nameof(DummyStressedTarget.Apply), string.Empty, string.Empty);
+    }
+
+    [TestCase("You feel a bit better.", "少し気分が良くなった。")]
+    [TestCase("Your vision blurs.", "視界がぼやける。")]
+    [TestCase("Your vision clears up.", "視界が晴れた。")]
+    public void MonochromeOnsetFireEvent_TranslatesQueuedMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertMonochromeOnsetQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void MonochromeOnsetFireEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("Your vision blurs.", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your vision blurs."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void MonochromeOnsetFireEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertMonochromeOnsetQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("Your vision blurs."),
+            "Your vision blurs.");
+    }
+
+    [Test]
+    public void MonochromeOnsetFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertMonochromeOnsetQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [TestCase("You feel a bit better.", "少し気分が良くなった。")]
+    [TestCase("Your legs ache at the joints.", "脚の関節が痛む。")]
+    [TestCase("You feel better.", "気分が良くなった。")]
+    public void IronshankOnsetFireEvent_TranslatesQueuedMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertIronshankOnsetQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void IronshankOnsetFireEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("Your legs ache at the joints.", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your legs ache at the joints."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void IronshankOnsetFireEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertIronshankOnsetQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("Your legs ache at the joints."),
+            "Your legs ache at the joints.");
+    }
+
+    [Test]
+    public void IronshankOnsetFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertIronshankOnsetQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [TestCase("Your adrenaline subsides.", "アドレナリンが引いていく。")]
+    [TestCase("{{G|Your adrenaline starts to flow.}}", "{{G|アドレナリンが流れ始めた。}}")]
+    public void AdrenalControlFireEvent_TranslatesQueuedMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertAdrenalControlQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void AdrenalControlFireEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("Your adrenaline subsides.", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your adrenaline subsides."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void AdrenalControlFireEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertAdrenalControlQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("Your adrenaline subsides."),
+            "Your adrenaline subsides.");
+    }
+
+    [Test]
+    public void AdrenalControlFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertAdrenalControlQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [TestCase(nameof(DummyAmnesiaTarget.HandleEvent), typeof(DummySecretVisibilityChangedEvent), "You feel like you forgot something important.", "大事な何かを忘れた気がする。")]
+    [TestCase(nameof(DummyAmnesiaTarget.HandleEvent), typeof(DummyEnteredCellEvent), "This place feels vaguely familiar.", "この場所にはどこか見覚えがある。")]
+    public void AmnesiaHandleEvent_TranslatesQueuedMessages_WhenOwnerPatched(string methodName, Type eventType, string source, string expected)
+    {
+        AssertAmnesiaQueuedMessage(methodName, eventType, source, expected);
+    }
+
+    [Test]
+    public void AmnesiaHandleEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("This place feels vaguely familiar.", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("This place feels vaguely familiar."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void AmnesiaHandleEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertAmnesiaQueuedMessage(
+            nameof(DummyAmnesiaTarget.HandleEvent),
+            typeof(DummyEnteredCellEvent),
+            MessageFrameTranslator.MarkDirectTranslation("This place feels vaguely familiar."),
+            "This place feels vaguely familiar.");
+    }
+
+    [Test]
+    public void AmnesiaHandleEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertAmnesiaQueuedMessage(nameof(DummyAmnesiaTarget.HandleEvent), typeof(DummyEnteredCellEvent), string.Empty, string.Empty);
+    }
+
+    [TestCase(typeof(BlinkingTicTranslationPatch), "You lurch suddenly!", "突然ぐらりとよろめいた！")]
+    [TestCase(typeof(BrittleBonesTranslationPatch), "You feel your bones fracture.", "骨がひび割れるのを感じた。")]
+    [TestCase(typeof(ElectromagneticImpulseTranslationPatch), "{{r|You surge with energy!}}", "{{r|エネルギーが満ちあふれる！}}")]
+    [TestCase(typeof(RegenerationTranslationPatch), "{{G|You were decapitated, but a new head regrew immediately!}}", "{{G|首を刎ねられたが、すぐに新しい頭が生えた！}}")]
+    public void SimpleFireEvent_TranslatesFixedQueuedMessages_WhenOwnerPatched(Type patchType, string source, string expected)
+    {
+        AssertSimpleFireEventQueuedMessage(patchType, source, expected);
+    }
+
+    [TestCase(typeof(BlinkingTicTranslationPatch), "You lurch suddenly!")]
+    [TestCase(typeof(BrittleBonesTranslationPatch), "You feel your bones fracture.")]
+    [TestCase(typeof(ElectromagneticImpulseTranslationPatch), "{{r|You surge with energy!}}")]
+    [TestCase(typeof(RegenerationTranslationPatch), "{{G|You were decapitated, but a new head regrew immediately!}}")]
+    public void SimpleFireEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched(Type patchType, string source)
+    {
+        AssertSimpleFireEventQueuedMessage(patchType, MessageFrameTranslator.MarkDirectTranslation(source), source);
+    }
+
+    [TestCase(typeof(BlinkingTicTranslationPatch))]
+    [TestCase(typeof(BrittleBonesTranslationPatch))]
+    [TestCase(typeof(ElectromagneticImpulseTranslationPatch))]
+    [TestCase(typeof(RegenerationTranslationPatch))]
+    public void SimpleFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched(Type patchType)
+    {
+        AssertSimpleFireEventQueuedMessage(patchType, string.Empty, string.Empty);
+    }
+
+    [TestCase("You lurch suddenly!")]
+    [TestCase("You feel your bones fracture.")]
+    [TestCase("{{r|You surge with energy!}}")]
+    [TestCase("{{G|You were decapitated, but a new head regrew immediately!}}")]
+    [TestCase("You feel uneasy.")]
+    [TestCase("You stop meditating and feel refreshed.")]
+    [TestCase("You stop meditating.")]
+    [TestCase("You start to feel sluggish.")]
+    [TestCase("The hurdles that separate the will and the way begin to collapse.")]
+    [TestCase("You feel stiff as a stone.")]
+    [TestCase("You begin itching for a trigger.")]
+    [TestCase("You start to prowl.")]
+    [TestCase("Checkpointing enabled")]
+    [TestCase("You feel a sense of holiness here.")]
+    [TestCase("&CA flash of insight overcomes you!")]
+    public void FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage(source, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void FearAuraApplyFear_TranslatesFixedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertSimpleApplyFearQueuedMessage("You feel uneasy.", "不安を感じる。");
+    }
+
+    [Test]
+    public void FearAuraApplyFear_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertSimpleApplyFearQueuedMessage(MessageFrameTranslator.MarkDirectTranslation("You feel uneasy."), "You feel uneasy.");
+    }
+
+    [Test]
+    public void FearAuraApplyFear_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertSimpleApplyFearQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [TestCase("You stop meditating and feel refreshed.", "瞑想を終え、気分がすっきりした。")]
+    [TestCase("You stop meditating.", "瞑想をやめた。")]
+    public void MeditatingRemove_TranslatesFixedQueuedMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertMeditatingRemoveQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void MeditatingRemove_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertMeditatingRemoveQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("You stop meditating."),
+            "You stop meditating.");
+    }
+
+    [Test]
+    public void MeditatingRemove_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertMeditatingRemoveQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [TestCase("You start to feel sluggish.", "体がだるくなってきた。")]
+    [TestCase(
+        "The hurdles that separate the will and the way begin to collapse.",
+        "志と道を隔てていた障害が崩れ始める。")]
+    [TestCase("You begin itching for a trigger.", "引き金を求めてうずうずしてきた。")]
+    [TestCase("You start to prowl.", "うろつき始めた。")]
+    public void EffectStaticApply_TranslatesFixedQueuedMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertEffectStaticApplyQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void EffectStaticFireEvent_TranslatesFixedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectStaticFireEventQueuedMessage("You feel stiff as a stone.", "石のように体がこわばる。");
+    }
+
+    [Test]
+    public void EffectStaticApply_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectStaticApplyQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("You start to feel sluggish."),
+            "You start to feel sluggish.");
+    }
+
+    [Test]
+    public void EffectStaticFireEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectStaticFireEventQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("You feel stiff as a stone."),
+            "You feel stiff as a stone.");
+    }
+
+    [Test]
+    public void EffectStaticApply_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertEffectStaticApplyQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void EffectStaticFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertEffectStaticFireEventQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void SystemStaticCheckpointOn_TranslatesFixedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertSystemStaticCheckpointQueuedMessage("Checkpointing enabled", "チェックポイント機能を有効化した。");
+    }
+
+    [TestCase("You feel a sense of holiness here.", "この場所には神聖さを感じる。")]
+    public void SystemStaticSetHolyZone_TranslatesFixedQueuedMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertSystemStaticSetHolyZoneQueuedMessage(source, expected);
+    }
+
+    [TestCase("&CA flash of insight overcomes you!", "&Cひらめきがあなたを満たした！")]
+    public void SystemStaticFireEvent_TranslatesFixedQueuedMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertSystemStaticFireEventQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void SystemStatic_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertSystemStaticCheckpointQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("Checkpointing enabled"),
+            "Checkpointing enabled");
+    }
+
+    [Test]
+    public void SystemStatic_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertSystemStaticCheckpointQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        "{{G|salve tonic}} fails to penetrate {{R|snapjaw's armor}} and is destroyed.",
+        "{{G|salve tonic}}は{{R|snapjaw's armor}}を貫通できず、破壊された。")]
+    [TestCase(
+        "phase cannon tonic fails to penetrate your armor and is destroyed.",
+        "phase cannon tonicはyour armorを貫通できず、破壊された。")]
+    public void TonicFireEvent_TranslatesArmorFailureMessage_WhenOwnerPatched(string source, string expected)
+    {
+        AssertTonicFireEventQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void TonicFireEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("salve tonic fails to penetrate snapjaw's armor and is destroyed.");
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("salve tonic fails to penetrate snapjaw's armor and is destroyed."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void TonicFireEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertTonicFireEventQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("salve tonic fails to penetrate snapjaw's armor and is destroyed."),
+            "salve tonic fails to penetrate snapjaw's armor and is destroyed.");
+    }
+
+    [Test]
+    public void TonicFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertTonicFireEventQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void XrlGameFinishQuestStep_TranslatesErrorMessage_WhenOwnerPatched()
+    {
+        AssertXrlGameFinishQuestStepQueuedMessage(
+            "Error finishing quest step Quest_Demo @ Step1~Step2 : System.Exception: boom",
+            "クエストステップ完了エラー Quest_Demo @ Step1~Step2 : System.Exception: boom");
+    }
+
+    [Test]
+    public void XrlGameFinishQuestStep_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("Error finishing quest step Quest_Demo @ Step1 : System.Exception: boom", "R");
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Error finishing quest step Quest_Demo @ Step1 : System.Exception: boom"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void XrlGameFinishQuestStep_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertXrlGameFinishQuestStepQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("Error finishing quest step Quest_Demo @ Step1 : System.Exception: boom"),
+            "Error finishing quest step Quest_Demo @ Step1 : System.Exception: boom");
+    }
+
+    [Test]
+    public void XrlGameFinishQuestStep_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertXrlGameFinishQuestStepQueuedMessage(string.Empty, string.Empty);
     }
 
     [Test]
@@ -1577,6 +4720,53 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
+    [TestCase("W")]
+    [TestCase("r")]
+    public void ZoneManagerTryThawZone_TranslatesInventoriedColorShapes_WithRepositoryLeafDictionary(string color)
+    {
+        UseRepositoryPatternDictionary();
+        AssertZoneManagerTryThawZoneMessage("ThawZone exception", color, "ゾーン解凍エラー");
+    }
+
+    [Test]
+    public void ZoneManagerTryThawZone_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("ThawZone exception", "W", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("ThawZone exception"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void ZoneManagerTryThawZone_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        AssertZoneManagerTryThawZoneMessage(
+            MessageFrameTranslator.MarkDirectTranslation("ThawZone exception"),
+            "W",
+            "ThawZone exception");
+    }
+
+    [Test]
+    public void ZoneManagerTryThawZone_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+        AssertZoneManagerTryThawZoneMessage(string.Empty, "W", string.Empty);
+    }
+
     [Test]
     public void ZoneManagerTick_TranslatesWarning_WhenPatched()
     {
@@ -1607,6 +4797,73 @@ public sealed class CombatAndLogMessageQueuePatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    [Test]
+    public void ZoneManagerTick_TranslatesInlineColorWarning_WithRepositoryLeafDictionary()
+    {
+        UseRepositoryPatternDictionary();
+
+        AssertZoneManagerTickMessage(
+            "&RWARNING: You have the Disable Zone Caching option enabled, this will cause massive memory use over time.",
+            null,
+            "&R警告: ゾーンキャッシュ無効オプションが有効なため、時間の経過とともに大量のメモリを消費する。");
+    }
+
+    [Test]
+    public void ZoneManagerTick_TranslatesColorArgumentWarning_WithRepositoryLeafDictionary()
+    {
+        UseRepositoryPatternDictionary();
+
+        AssertZoneManagerTickMessage(
+            "WARNING: You have the Disable Zone Caching option enabled, this will cause massive memory use over time.",
+            "R",
+            "警告: ゾーンキャッシュ無効オプションが有効なため、時間の経過とともに大量のメモリを消費する。");
+    }
+
+    [Test]
+    public void ZoneManagerTick_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage(
+                "&RWARNING: You have the Disable Zone Caching option enabled, this will cause massive memory use over time.",
+                null,
+                Capitalize: false);
+
+            Assert.That(
+                DummyMessageQueue.LastMessage,
+                Is.EqualTo("&RWARNING: You have the Disable Zone Caching option enabled, this will cause massive memory use over time."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void ZoneManagerTick_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        AssertZoneManagerTickMessage(
+            MessageFrameTranslator.MarkDirectTranslation(
+                "&RWARNING: You have the Disable Zone Caching option enabled, this will cause massive memory use over time."),
+            null,
+            "&RWARNING: You have the Disable Zone Caching option enabled, this will cause massive memory use over time.");
+    }
+
+    [Test]
+    public void ZoneManagerTick_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+        AssertZoneManagerTickMessage(string.Empty, "R", string.Empty);
     }
 
     [Test]
@@ -1984,6 +5241,2429 @@ public sealed class CombatAndLogMessageQueuePatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    private static void AssertGameObjectMoveQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(harmony, GameObjectMoveMethod(), typeof(GameObjectMoveTranslationPatch));
+
+            var target = new DummyGameObjectMoveTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.Move("N", out _);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertGameObjectPerformThrowQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyGameObjectPerformThrowTarget),
+                    nameof(DummyGameObjectPerformThrowTarget.PerformThrow),
+                    typeof(DummyGameObject),
+                    typeof(DummyCell),
+                    typeof(DummyGameObject),
+                    typeof(DummyMissilePath),
+                    typeof(int),
+                    typeof(int?),
+                    typeof(int?),
+                    typeof(int?)),
+                typeof(GameObjectPerformThrowTranslationPatch));
+
+            var target = new DummyGameObjectPerformThrowTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.PerformThrow(new DummyGameObject(), new DummyCell());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertGameObjectToggleActivatedAbilityQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectToggleActivatedAbilityTarget), nameof(DummyGameObjectToggleActivatedAbilityTarget.ToggleActivatedAbility), typeof(Guid), typeof(bool), typeof(bool?)),
+                typeof(GameObjectToggleActivatedAbilityTranslationPatch));
+
+            var target = new DummyGameObjectToggleActivatedAbilityTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.ToggleActivatedAbility(Guid.NewGuid());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertGameObjectPopupShowYesNoAsync(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowYesNoAsync(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectPopupTarget), nameof(DummyGameObjectPopupTarget.ConfirmUseImportantAsync)),
+                typeof(GameObjectPopupTranslationPatch));
+
+            var target = new DummyGameObjectPopupTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            _ = target.ConfirmUseImportantAsync().GetAwaiter().GetResult();
+
+            Assert.That(DummyPopupShow.LastShowYesNoAsyncMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertGameObjectPopupShowYesNo(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowYesNo(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectPopupTarget), nameof(DummyGameObjectPopupTarget.ConfirmUseImportant)),
+                typeof(GameObjectPopupTranslationPatch));
+
+            var target = new DummyGameObjectPopupTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            _ = target.ConfirmUseImportant();
+
+            Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertGameObjectPopupHandleRename(string message, string expected, bool useShowFail)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            if (useShowFail)
+            {
+                PatchPopupShowFail(harmony);
+            }
+            else
+            {
+                PatchPopupShow(harmony);
+            }
+
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectPopupTarget), nameof(DummyGameObjectPopupTarget.HandleRename)),
+                typeof(GameObjectPopupTranslationPatch));
+
+            var target = new DummyGameObjectPopupTarget
+            {
+                PopupMessageToSend = message,
+                UseShowFail = useShowFail,
+            };
+
+            target.HandleRename();
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertGameObjectPopupChangeCompanionAbilityUse(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectPopupTarget), nameof(DummyGameObjectPopupTarget.ChangeCompanionAbilityUse)),
+                typeof(GameObjectPopupTranslationPatch));
+
+            var target = new DummyGameObjectPopupTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            target.ChangeCompanionAbilityUse();
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertGameObjectPopupCheckCompanionDirection(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowFail(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectPopupTarget), nameof(DummyGameObjectPopupTarget.CheckCompanionDirection)),
+                typeof(GameObjectPopupTranslationPatch));
+
+            var target = new DummyGameObjectPopupTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            _ = target.CheckCompanionDirection();
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertRealityStabilizedInterdictPopup(string methodName, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyRealityStabilizedInterdictTarget), methodName),
+                typeof(RealityStabilizedInterdictTranslationPatch));
+
+            var target = new DummyRealityStabilizedInterdictTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            RequireMethod(typeof(DummyRealityStabilizedInterdictTarget), methodName).Invoke(target, null);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertHackingSifrahResultPopup(string methodName, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyHackingSifrahResultTarget), methodName),
+                typeof(HackingSifrahResultTranslationPatch));
+
+            var target = new DummyHackingSifrahResultTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            RequireMethod(typeof(DummyHackingSifrahResultTarget), methodName).Invoke(target, null);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertQuestLifecyclePopup(string methodName, string message, string expected)
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyQuestLifecyclePopupTarget), methodName),
+                typeof(QuestLifecyclePopupTranslationPatch));
+
+            var target = new DummyQuestLifecyclePopupTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            RequireMethod(typeof(DummyQuestLifecyclePopupTarget), methodName).Invoke(target, null);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertFlightMessage(string methodName, string message, string? color, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyFlightTarget), methodName),
+                typeof(FlightTranslationPatch));
+
+            var target = new DummyFlightTarget
+            {
+                MessageToSend = message,
+                ColorToSend = color,
+            };
+
+            RequireMethod(typeof(DummyFlightTarget), methodName).Invoke(target, null);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertBodyQueuedMessage(string methodName, string message, string? color, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyBodyTarget), methodName),
+                typeof(BodyTranslationPatch));
+
+            var target = new DummyBodyTarget
+            {
+                MessageToSend = message,
+                ColorToSend = color,
+            };
+
+            RequireMethod(typeof(DummyBodyTarget), methodName).Invoke(target, null);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertBodyPopup(string methodName, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyBodyTarget), methodName),
+                typeof(BodyTranslationPatch));
+
+            var target = new DummyBodyTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            RequireMethod(typeof(DummyBodyTarget), methodName).Invoke(target, null);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertItemModdingSifrahPopup(string methodName, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyItemModdingSifrahTarget), methodName),
+                typeof(ItemModdingSifrahTranslationPatch));
+
+            var target = new DummyItemModdingSifrahTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            RequireMethod(typeof(DummyItemModdingSifrahTarget), methodName).Invoke(target, null);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertSunderMindQueuedMessage(string methodName, string message, string? color, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySunderMindTarget), methodName),
+                typeof(SunderMindTranslationPatch));
+
+            var target = new DummySunderMindTarget
+            {
+                MessageToSend = message,
+                ColorToSend = color,
+            };
+
+            RequireMethod(typeof(DummySunderMindTarget), methodName).Invoke(target, null);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertSunderMindBeginSunderQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySunderMindTarget), nameof(DummySunderMindTarget.BeginSunder), typeof(bool)),
+                typeof(SunderMindTranslationPatch));
+
+            var target = new DummySunderMindTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.BeginSunder(usePopup: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertSunderMindBeginSunderPopup(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySunderMindTarget), nameof(DummySunderMindTarget.BeginSunder), typeof(bool)),
+                typeof(SunderMindTranslationPatch));
+
+            var target = new DummySunderMindTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            target.BeginSunder(usePopup: true);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertKeybindsScreenConflictYesNoAsync(string methodName, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowYesNoAsync(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyKeybindsScreenConflictTarget), methodName),
+                typeof(KeybindsScreenConflictTranslationPatch));
+
+            var target = new DummyKeybindsScreenConflictTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            _ = ((Task<bool>)RequireMethod(typeof(DummyKeybindsScreenConflictTarget), methodName).Invoke(target, null)!).GetAwaiter().GetResult();
+
+            Assert.That(DummyPopupShow.LastShowYesNoAsyncMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertKeybindsScreenConflictShowAsync(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowAsync(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyKeybindsScreenConflictTarget), nameof(DummyKeybindsScreenConflictTarget.RequiredConflictBind)),
+                typeof(KeybindsScreenConflictTranslationPatch));
+
+            var target = new DummyKeybindsScreenConflictTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            target.RequiredConflictBind().GetAwaiter().GetResult();
+
+            Assert.That(DummyPopupShow.LastShowAsyncMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertRealityStabilizedEventQueuedMessage(string methodName, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            MethodInfo original = string.Equals(methodName, nameof(DummyRealityStabilizedEventTarget.ShortCircuitDevice), StringComparison.Ordinal)
+                ? RequireMethod(typeof(DummyRealityStabilizedEventTarget), methodName, typeof(bool))
+                : RequireMethod(typeof(DummyRealityStabilizedEventTarget), methodName);
+            PatchOwner(harmony, original, typeof(RealityStabilizedEventTranslationPatch));
+
+            var target = new DummyRealityStabilizedEventTarget
+            {
+                MessageToSend = message,
+            };
+
+            if (string.Equals(methodName, nameof(DummyRealityStabilizedEventTarget.ShortCircuitDevice), StringComparison.Ordinal))
+            {
+                target.ShortCircuitDevice(usePopup: false);
+            }
+            else
+            {
+                target.TryContest();
+            }
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertRealityStabilizedEventPopup(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyRealityStabilizedEventTarget), nameof(DummyRealityStabilizedEventTarget.ShortCircuitDevice), typeof(bool)),
+                typeof(RealityStabilizedEventTranslationPatch));
+
+            var target = new DummyRealityStabilizedEventTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            target.ShortCircuitDevice(usePopup: true);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertCyberneticRejectionSyndromeQueuedMessage(
+        string methodName,
+        string message,
+        string? color,
+        string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                methodName switch
+                {
+                    nameof(DummyCyberneticRejectionSyndromeTarget.Apply) => RequireMethod(
+                        typeof(DummyCyberneticRejectionSyndromeTarget),
+                        methodName,
+                        typeof(DummyGameObject)),
+                    nameof(DummyCyberneticRejectionSyndromeTarget.Remove) => RequireMethod(
+                        typeof(DummyCyberneticRejectionSyndromeTarget),
+                        methodName,
+                        typeof(DummyGameObject)),
+                    _ => RequireMethod(typeof(DummyCyberneticRejectionSyndromeTarget), methodName, typeof(int)),
+                },
+                typeof(CyberneticRejectionSyndromeTranslationPatch));
+
+            var target = new DummyCyberneticRejectionSyndromeTarget
+            {
+                MessageToSend = message,
+                ColorToSend = color,
+            };
+
+            switch (methodName)
+            {
+                case nameof(DummyCyberneticRejectionSyndromeTarget.Apply):
+                    _ = target.Apply(new DummyGameObject());
+                    break;
+                case nameof(DummyCyberneticRejectionSyndromeTarget.Remove):
+                    target.Remove(new DummyGameObject());
+                    break;
+                default:
+                    target.Reduce(1);
+                    break;
+            }
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertGeomagneticDiscPopup(
+        string methodName,
+        string message,
+        string captureToken,
+        string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            if (string.Equals(methodName, nameof(DummyGeomagneticDiscTarget.ExamineFailure), StringComparison.Ordinal))
+            {
+                PatchPopupShow(harmony);
+            }
+            else
+            {
+                PatchPopupShowFail(harmony);
+            }
+
+            MethodInfo original = string.Equals(methodName, nameof(DummyGeomagneticDiscTarget.ExamineFailure), StringComparison.Ordinal)
+                ? RequireMethod(typeof(DummyGeomagneticDiscTarget), methodName, typeof(DummyExamineEvent), typeof(int))
+                : RequireMethod(typeof(DummyGeomagneticDiscTarget), methodName, typeof(DummyGameObject));
+            PatchOwner(harmony, original, typeof(GeomagneticDiscTranslationPatch));
+
+            var target = new DummyGeomagneticDiscTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            switch (methodName)
+            {
+                case nameof(DummyGeomagneticDiscTarget.SignalFailure):
+                    target.SignalFailure(new DummyGameObject());
+                    break;
+                case nameof(DummyGeomagneticDiscTarget.SignalLowPower):
+                    target.SignalLowPower(new DummyGameObject());
+                    break;
+                default:
+                    _ = target.ExamineFailure(new DummyExamineEvent(), 100);
+                    break;
+            }
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+            if (captureToken.Length > 0)
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Does.Contain(captureToken));
+            }
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertCampfireCookAvailabilityPopup(
+        string message,
+        string captureToken,
+        string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyCampfireCookTarget), nameof(DummyCampfireCookTarget.Cook)),
+                typeof(CampfireCookAvailabilityTranslationPatch));
+
+            var target = new DummyCampfireCookTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            _ = target.Cook();
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+            if (captureToken.Length > 0)
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Does.Contain(captureToken));
+            }
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertTeleprojectorPopup(
+        string methodName,
+        string message,
+        string captureToken,
+        string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            if (string.Equals(methodName, nameof(DummyTeleprojectorTarget.ActivateTeleprojector), StringComparison.Ordinal))
+            {
+                PatchPopupShowFail(harmony);
+            }
+            else
+            {
+                PatchPopupShow(harmony);
+            }
+
+            MethodInfo original = methodName switch
+            {
+                nameof(DummyTeleprojectorTarget.HandleEvent) => RequireMethod(
+                    typeof(DummyTeleprojectorTarget),
+                    methodName,
+                    typeof(DummyBootSequenceDoneEvent)),
+                nameof(DummyTeleprojectorTarget.RoboDom) => RequireMethod(
+                    typeof(DummyTeleprojectorTarget),
+                    methodName,
+                    typeof(DummyMentalAttackEvent)),
+                _ => RequireMethod(typeof(DummyTeleprojectorTarget), methodName),
+            };
+            PatchOwner(harmony, original, typeof(TeleprojectorTranslationPatch));
+
+            var target = new DummyTeleprojectorTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            switch (methodName)
+            {
+                case nameof(DummyTeleprojectorTarget.HandleEvent):
+                    _ = target.HandleEvent(new DummyBootSequenceDoneEvent());
+                    break;
+                case nameof(DummyTeleprojectorTarget.RoboDom):
+                    _ = target.RoboDom(new DummyMentalAttackEvent());
+                    break;
+                default:
+                    _ = target.ActivateTeleprojector();
+                    break;
+            }
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+            if (captureToken.Length > 0)
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Does.Contain(captureToken));
+            }
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertTombAnchorSystemQueuedMessage(
+        string methodName,
+        string message,
+        string? color,
+        string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            MethodInfo original = string.Equals(methodName, nameof(DummyTombAnchorSystemTarget.Recall), StringComparison.Ordinal)
+                ? RequireMethod(typeof(DummyTombAnchorSystemTarget), methodName, typeof(DummyZone))
+                : RequireMethod(typeof(DummyTombAnchorSystemTarget), methodName);
+            PatchOwner(harmony, original, typeof(TombAnchorSystemTranslationPatch));
+
+            var target = new DummyTombAnchorSystemTarget
+            {
+                MessageToSend = message,
+                ColorToSend = color,
+            };
+
+            switch (methodName)
+            {
+                case nameof(DummyTombAnchorSystemTarget.OnEndTurn):
+                    target.OnEndTurn();
+                    break;
+                case nameof(DummyTombAnchorSystemTarget.AnchorCall):
+                    target.AnchorCall();
+                    break;
+                default:
+                    target.Recall(new DummyZone());
+                    break;
+            }
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertCyberneticsMedassistModulePopup(
+        string message,
+        string captureToken,
+        string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyCyberneticsMedassistModuleTarget), nameof(DummyCyberneticsMedassistModuleTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(CyberneticsMedassistModuleTranslationPatch));
+
+            var target = new DummyCyberneticsMedassistModuleTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            _ = target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+            if (captureToken.Length > 0)
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Does.Contain(captureToken));
+            }
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertCyberneticsMedassistModuleQueuedMessage(
+        string message,
+        string captureToken,
+        string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyCyberneticsMedassistModuleTarget), nameof(DummyCyberneticsMedassistModuleTarget.AttemptMedicalAssistance), typeof(DummyDamage)),
+                typeof(CyberneticsMedassistModuleTranslationPatch));
+
+            var target = new DummyCyberneticsMedassistModuleTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.AttemptMedicalAssistance(new DummyDamage());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+            if (captureToken.Length > 0 && expected.Contains(captureToken, StringComparison.Ordinal))
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Does.Contain(captureToken));
+            }
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertLiquidLoaderQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyLiquidLoaderTarget), nameof(DummyLiquidLoaderTarget.HandleEvent), typeof(DummyCommandReloadEvent)),
+                typeof(LiquidLoaderTranslationPatch));
+
+            var target = new DummyLiquidLoaderTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.HandleEvent(new DummyCommandReloadEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertLiquidLoaderPopup(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyLiquidLoaderTarget), nameof(DummyLiquidLoaderTarget.FireEvent), typeof(DummyEvent)),
+                typeof(LiquidLoaderTranslationPatch));
+
+            var target = new DummyLiquidLoaderTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            _ = target.FireEvent(new DummyEvent());
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertTrollKingQueuedMessage(
+        string methodName,
+        string message,
+        string captureToken,
+        string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyTrollKingTarget), methodName, typeof(int)),
+                typeof(TrollKingTranslationPatch));
+
+            var target = new DummyTrollKingTarget
+            {
+                MessageToSend = message,
+            };
+
+            if (string.Equals(methodName, nameof(DummyTrollKingTarget.CheckSpawn), StringComparison.Ordinal))
+            {
+                target.CheckSpawn(1);
+            }
+            else
+            {
+                target.StopBudding(1);
+            }
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+            if (captureToken.Length > 0)
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Does.Contain(captureToken));
+            }
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertMutatingQueuedMessage(
+        string methodName,
+        string message,
+        string? color,
+        string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            MethodInfo original = string.Equals(methodName, nameof(DummyMutatingTarget.Apply), StringComparison.Ordinal)
+                ? RequireMethod(typeof(DummyMutatingTarget), methodName, typeof(DummyGameObject))
+                : RequireMethod(typeof(DummyMutatingTarget), methodName, typeof(DummyEndTurnEvent), typeof(bool));
+            PatchOwner(harmony, original, typeof(MutatingTranslationPatch));
+
+            var target = new DummyMutatingTarget
+            {
+                MessageToSend = message,
+                ColorToSend = color,
+            };
+
+            if (string.Equals(methodName, nameof(DummyMutatingTarget.Apply), StringComparison.Ordinal))
+            {
+                _ = target.Apply(new DummyGameObject());
+            }
+            else
+            {
+                _ = target.HandleEvent(new DummyEndTurnEvent(), usePopup: false);
+            }
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertMutatingPopup(
+        string message,
+        string captureToken,
+        string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyMutatingTarget), nameof(DummyMutatingTarget.HandleEvent), typeof(DummyEndTurnEvent), typeof(bool)),
+                typeof(MutatingTranslationPatch));
+
+            var target = new DummyMutatingTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            _ = target.HandleEvent(new DummyEndTurnEvent(), usePopup: true);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+            if (captureToken.Length > 0)
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Does.Contain(captureToken));
+            }
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertQuillsQueuedMessage(
+        string methodName,
+        string message,
+        string captureToken,
+        string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            MethodInfo original = string.Equals(methodName, nameof(DummyQuillsTarget.HandleEvent), StringComparison.Ordinal)
+                ? RequireMethod(typeof(DummyQuillsTarget), methodName, typeof(DummyTookDamageEvent))
+                : RequireMethod(typeof(DummyQuillsTarget), methodName, typeof(DummyEvent));
+            PatchOwner(harmony, original, typeof(QuillsTranslationPatch));
+
+            var target = new DummyQuillsTarget
+            {
+                MessageToSend = message,
+            };
+
+            if (string.Equals(methodName, nameof(DummyQuillsTarget.HandleEvent), StringComparison.Ordinal))
+            {
+                _ = target.HandleEvent(new DummyTookDamageEvent());
+            }
+            else
+            {
+                _ = target.FireEvent(new DummyEvent());
+            }
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+            if (captureToken.Length > 0)
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Does.Contain(captureToken));
+            }
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertLightManipulationQueuedMessage(
+        string methodName,
+        string message,
+        string? color,
+        string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            MethodInfo original = string.Equals(methodName, nameof(DummyLightManipulationTarget.Lase), StringComparison.Ordinal)
+                ? RequireMethod(typeof(DummyLightManipulationTarget), methodName, typeof(DummyCell), typeof(int))
+                : RequireMethod(typeof(DummyLightManipulationTarget), methodName, typeof(DummyCommandEvent), typeof(bool));
+            PatchOwner(harmony, original, typeof(LightManipulationTranslationPatch));
+
+            var target = new DummyLightManipulationTarget
+            {
+                MessageToSend = message,
+                ColorToSend = color,
+            };
+
+            if (string.Equals(methodName, nameof(DummyLightManipulationTarget.Lase), StringComparison.Ordinal))
+            {
+                _ = target.Lase(new DummyCell(), 0);
+            }
+            else
+            {
+                _ = target.HandleEvent(new DummyCommandEvent(), usePopup: false);
+            }
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertLightManipulationPopup(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowFail(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyLightManipulationTarget), nameof(DummyLightManipulationTarget.HandleEvent), typeof(DummyCommandEvent), typeof(bool)),
+                typeof(LightManipulationTranslationPatch));
+
+            var target = new DummyLightManipulationTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            _ = target.HandleEvent(new DummyCommandEvent(), usePopup: true);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertLatchesOnQueuedMessage(
+        string methodName,
+        string message,
+        string captureToken,
+        string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            MethodInfo original = string.Equals(methodName, nameof(DummyLatchesOnTarget.HandleEvent), StringComparison.Ordinal)
+                ? RequireMethod(typeof(DummyLatchesOnTarget), methodName, typeof(DummyUnequippedEvent))
+                : RequireMethod(typeof(DummyLatchesOnTarget), methodName, typeof(DummyEvent));
+            PatchOwner(harmony, original, typeof(LatchesOnTranslationPatch));
+
+            var target = new DummyLatchesOnTarget
+            {
+                MessageToSend = message,
+            };
+
+            if (string.Equals(methodName, nameof(DummyLatchesOnTarget.HandleEvent), StringComparison.Ordinal))
+            {
+                _ = target.HandleEvent(new DummyUnequippedEvent());
+            }
+            else
+            {
+                _ = target.FireEvent(new DummyEvent());
+            }
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+            if (captureToken.Length > 0)
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Does.Contain(captureToken));
+            }
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertAsleepOwnerQueuedMessage(string methodKey, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(harmony, RequireAsleepOwnerMethod(methodKey), typeof(AsleepOwnerTranslationPatch));
+
+            var target = new DummyAsleepOwnerTarget
+            {
+                MessageToSend = message,
+            };
+
+            switch (methodKey)
+            {
+                case "Apply":
+                    _ = target.Apply(new DummyGameObject());
+                    break;
+                case "BeginTakeAction":
+                    _ = target.HandleEvent(new DummyBeginTakeActionEvent());
+                    break;
+                case "InventoryAction":
+                    _ = target.HandleEvent(new DummyInventoryActionEvent(), usePopup: false);
+                    break;
+                default:
+                    Assert.Fail($"Unknown Asleep owner method key: {methodKey}");
+                    break;
+            }
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertAsleepOwnerPopup(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyAsleepOwnerTarget), nameof(DummyAsleepOwnerTarget.HandleEvent), typeof(DummyInventoryActionEvent), typeof(bool)),
+                typeof(AsleepOwnerTranslationPatch));
+
+            var target = new DummyAsleepOwnerTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            _ = target.HandleEvent(new DummyInventoryActionEvent(), usePopup: true);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static MethodInfo RequireAsleepOwnerMethod(string methodKey)
+    {
+        return methodKey switch
+        {
+            "Apply" => RequireMethod(typeof(DummyAsleepOwnerTarget), nameof(DummyAsleepOwnerTarget.Apply), typeof(DummyGameObject)),
+            "BeginTakeAction" => RequireMethod(typeof(DummyAsleepOwnerTarget), nameof(DummyAsleepOwnerTarget.HandleEvent), typeof(DummyBeginTakeActionEvent)),
+            "InventoryAction" => RequireMethod(typeof(DummyAsleepOwnerTarget), nameof(DummyAsleepOwnerTarget.HandleEvent), typeof(DummyInventoryActionEvent), typeof(bool)),
+            _ => throw new ArgumentOutOfRangeException(nameof(methodKey), methodKey, "Unknown Asleep owner method key."),
+        };
+    }
+
+    private static void AssertBuddingQueuedMessage(
+        string methodName,
+        string message,
+        string captureToken,
+        string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyBuddingTarget), methodName, typeof(DummyGameObject)),
+                typeof(BuddingTranslationPatch));
+
+            var target = new DummyBuddingTarget
+            {
+                MessageToSend = message,
+            };
+
+            if (string.Equals(methodName, nameof(DummyBuddingTarget.Apply), StringComparison.Ordinal))
+            {
+                _ = target.Apply(new DummyGameObject());
+            }
+            else
+            {
+                target.Remove(new DummyGameObject());
+            }
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+            if (captureToken.Length > 0)
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Does.Contain(captureToken));
+            }
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertBeguilingQueuedMessage(string methodName, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            MethodInfo original = string.Equals(methodName, nameof(DummyBeguilingTarget.Cast), StringComparison.Ordinal)
+                ? RequireMethod(
+                    typeof(DummyBeguilingTarget),
+                    methodName,
+                    typeof(DummyGameObject),
+                    typeof(DummyBeguilingTarget),
+                    typeof(DummyEvent),
+                    typeof(int))
+                : RequireMethod(typeof(DummyBeguilingTarget), methodName, typeof(DummyMentalAttackEvent));
+            PatchOwner(harmony, original, typeof(BeguilingTranslationPatch));
+
+            if (string.Equals(methodName, nameof(DummyBeguilingTarget.Cast), StringComparison.Ordinal))
+            {
+                DummyBeguilingTarget.StaticMessageToSend = message;
+                DummyBeguilingTarget.StaticColorToSend = null;
+                DummyBeguilingTarget.StaticPopupMessageToSend = null;
+                _ = DummyBeguilingTarget.Cast(new DummyGameObject(), new DummyBeguilingTarget(), new DummyEvent(), 1);
+            }
+            else
+            {
+                var target = new DummyBeguilingTarget
+                {
+                    MessageToSend = message,
+                };
+                _ = target.Beguile(new DummyMentalAttackEvent());
+            }
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            DummyBeguilingTarget.StaticMessageToSend = string.Empty;
+            DummyBeguilingTarget.StaticColorToSend = null;
+            DummyBeguilingTarget.StaticPopupMessageToSend = null;
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertBeguilingPopup(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowYesNo(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyBeguilingTarget),
+                    nameof(DummyBeguilingTarget.Cast),
+                    typeof(DummyGameObject),
+                    typeof(DummyBeguilingTarget),
+                    typeof(DummyEvent),
+                    typeof(int)),
+                typeof(BeguilingTranslationPatch));
+
+            DummyBeguilingTarget.StaticMessageToSend = string.Empty;
+            DummyBeguilingTarget.StaticPopupMessageToSend = message;
+            _ = DummyBeguilingTarget.Cast(new DummyGameObject(), new DummyBeguilingTarget(), new DummyEvent(), 1);
+
+            Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            DummyBeguilingTarget.StaticMessageToSend = string.Empty;
+            DummyBeguilingTarget.StaticColorToSend = null;
+            DummyBeguilingTarget.StaticPopupMessageToSend = null;
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertAscensionCablePopup(string methodName, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyAscensionCableTarget), methodName, typeof(DummyGameObject), typeof(bool)),
+                typeof(AscensionCableTranslationPatch));
+
+            var target = new DummyAscensionCableTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            if (string.Equals(methodName, nameof(DummyAscensionCableTarget.TryAscend), StringComparison.Ordinal))
+            {
+                _ = target.TryAscend(new DummyGameObject(), fromDialog: true);
+            }
+            else
+            {
+                _ = target.TryDescend(new DummyGameObject(), fromDialog: true);
+            }
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertCarapaceTightenPopup(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyCarapaceTarget), nameof(DummyCarapaceTarget.Tighten), typeof(bool)),
+                typeof(CarapaceTranslationPatch));
+
+            var target = new DummyCarapaceTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            target.Tighten(message: true);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertSvardymSystemQueuedMessage(string methodName, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySvardymSystemTarget), methodName),
+                typeof(SvardymSystemTranslationPatch));
+
+            var target = new DummySvardymSystemTarget
+            {
+                FirstMessageToSend = message,
+                SecondMessageToSend = string.Empty,
+            };
+
+            if (string.Equals(methodName, nameof(DummySvardymSystemTarget.BeginStorm), StringComparison.Ordinal))
+            {
+                target.BeginStorm();
+            }
+            else
+            {
+                target.Tick();
+            }
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertPhasedQueuedMessage(string methodKey, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(harmony, RequirePhasedMethod(methodKey), typeof(PhasedTranslationPatch));
+
+            var target = new DummyPhasedTarget
+            {
+                MessageToSend = message,
+            };
+
+            switch (methodKey)
+            {
+                case "EffectApplied":
+                    _ = target.HandleEvent(new DummyEffectAppliedEvent());
+                    break;
+                case "BeginTakeAction":
+                    _ = target.HandleEvent(new DummyBeginTakeActionEvent());
+                    break;
+                case "Remove":
+                    target.Remove(new DummyGameObject());
+                    break;
+            }
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static MethodInfo RequirePhasedMethod(string methodKey)
+    {
+        return methodKey switch
+        {
+            "EffectApplied" => RequireMethod(typeof(DummyPhasedTarget), nameof(DummyPhasedTarget.HandleEvent), typeof(DummyEffectAppliedEvent)),
+            "BeginTakeAction" => RequireMethod(typeof(DummyPhasedTarget), nameof(DummyPhasedTarget.HandleEvent), typeof(DummyBeginTakeActionEvent)),
+            "Remove" => RequireMethod(typeof(DummyPhasedTarget), nameof(DummyPhasedTarget.Remove), typeof(DummyGameObject)),
+            _ => throw new ArgumentOutOfRangeException(nameof(methodKey), methodKey, "Unknown phased method key."),
+        };
+    }
+
+    private static void AssertPersuasionRebukeRobotQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyPersuasionRebukeRobotTarget), nameof(DummyPersuasionRebukeRobotTarget.Rebuke), typeof(DummyMentalAttackEvent)),
+                typeof(PersuasionRebukeRobotTranslationPatch));
+
+            var target = new DummyPersuasionRebukeRobotTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.Rebuke(new DummyMentalAttackEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertNephalPropertiesTryPacifyPopup(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyNephalPropertiesTarget), nameof(DummyNephalPropertiesTarget.TryPacify)),
+                typeof(NephalPropertiesTranslationPatch));
+
+            var target = new DummyNephalPropertiesTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            _ = target.TryPacify();
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertIntegratedWeaponHostsGenerateTurretPopup(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyIntegratedWeaponHostsTarget),
+                    nameof(DummyIntegratedWeaponHostsTarget.GenerateTurret),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject),
+                    typeof(bool)),
+                typeof(IntegratedWeaponHostsTranslationPatch));
+
+            var target = new DummyIntegratedWeaponHostsTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            _ = target.GenerateTurret(new DummyGameObject(), new DummyGameObject(), overrideSupply: false);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertIntegratedWeaponHostsHandleTurretWishPopup(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowFail(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyIntegratedWeaponHostsTarget),
+                    nameof(DummyIntegratedWeaponHostsTarget.HandleTurretWish),
+                    typeof(System.Text.RegularExpressions.Match)),
+                typeof(IntegratedWeaponHostsTranslationPatch));
+
+            var target = new DummyIntegratedWeaponHostsTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            _ = target.HandleTurretWish(System.Text.RegularExpressions.Regex.Match("turret:PhaseCannon", "^turret:\\s*(.*?)\\s*$"));
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertBoostStatisticQueuedMessage(string methodName, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyBoostStatisticTarget), methodName, typeof(DummyGameObject)),
+                typeof(BoostStatisticTranslationPatch));
+
+            var target = new DummyBoostStatisticTarget
+            {
+                MessageToSend = message,
+            };
+
+            if (string.Equals(methodName, nameof(DummyBoostStatisticTarget.Apply), StringComparison.Ordinal))
+            {
+                _ = target.Apply(new DummyGameObject());
+            }
+            else
+            {
+                target.Remove(new DummyGameObject());
+            }
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertEmboldenedQueuedMessage(string methodName, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyEmboldenedTarget), methodName, typeof(DummyGameObject)),
+                typeof(EmboldenedTranslationPatch));
+
+            var target = new DummyEmboldenedTarget
+            {
+                MessageToSend = message,
+            };
+
+            if (string.Equals(methodName, nameof(DummyEmboldenedTarget.Apply), StringComparison.Ordinal))
+            {
+                _ = target.Apply(new DummyGameObject());
+            }
+            else
+            {
+                target.Remove(new DummyGameObject());
+            }
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertFungalSporeInfectionPopup(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyFungalSporeInfectionTarget),
+                    nameof(DummyFungalSporeInfectionTarget.ApplyFungalInfection),
+                    typeof(DummyGameObject),
+                    typeof(string),
+                    typeof(DummyBodyPart)),
+                typeof(FungalSporeInfectionTranslationPatch));
+
+            DummyFungalSporeInfectionTarget.PopupMessageToSend = message;
+
+            _ = DummyFungalSporeInfectionTarget.ApplyFungalInfection(new DummyGameObject(), "WaxInfection", new DummyBodyPart());
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            DummyFungalSporeInfectionTarget.PopupMessageToSend = string.Empty;
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertFungalSporeInfectionQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyFungalSporeInfectionTarget), nameof(DummyFungalSporeInfectionTarget.FireEvent), typeof(DummyGameEvent)),
+                typeof(FungalSporeInfectionTranslationPatch));
+
+            var target = new DummyFungalSporeInfectionTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.FireEvent(new DummyGameEvent { ID = "EndTurn" });
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertHealingQueuedMessage(string methodName, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            var original = string.Equals(methodName, nameof(DummyHealingTarget.HandleEvent), StringComparison.Ordinal)
+                ? RequireMethod(typeof(DummyHealingTarget), methodName, typeof(DummyUseEnergyEvent))
+                : RequireMethod(typeof(DummyHealingTarget), methodName, typeof(DummyGameEvent));
+            PatchOwner(harmony, original, typeof(HealingTranslationPatch));
+
+            var target = new DummyHealingTarget
+            {
+                MessageToSend = message,
+                ColorToSend = "r",
+            };
+
+            if (string.Equals(methodName, nameof(DummyHealingTarget.HandleEvent), StringComparison.Ordinal))
+            {
+                _ = target.HandleEvent(new DummyUseEnergyEvent { Passive = false });
+            }
+            else
+            {
+                _ = target.FireEvent(new DummyGameEvent { ID = "TakeDamage" });
+            }
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertStressedQueuedMessage(string methodName, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyStressedTarget), methodName, typeof(DummyGameObject)),
+                typeof(StressedTranslationPatch));
+
+            var target = new DummyStressedTarget
+            {
+                MessageToSend = message,
+            };
+
+            if (string.Equals(methodName, nameof(DummyStressedTarget.Apply), StringComparison.Ordinal))
+            {
+                _ = target.Apply(new DummyGameObject());
+            }
+            else
+            {
+                target.Remove(new DummyGameObject());
+            }
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertMonochromeOnsetQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectFireEventTarget), nameof(DummyGameObjectFireEventTarget.FireEvent), typeof(DummyGameEvent)),
+                typeof(MonochromeOnsetTranslationPatch));
+
+            var target = new DummyGameObjectFireEventTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.FireEvent(new DummyGameEvent { ID = "EndTurn" });
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertIronshankOnsetQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectFireEventTarget), nameof(DummyGameObjectFireEventTarget.FireEvent), typeof(DummyGameEvent)),
+                typeof(IronshankOnsetTranslationPatch));
+
+            var target = new DummyGameObjectFireEventTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.FireEvent(new DummyGameEvent { ID = "EndTurn" });
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertAdrenalControlQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectFireEventTarget), nameof(DummyGameObjectFireEventTarget.FireEvent), typeof(DummyGameEvent)),
+                typeof(AdrenalControlTranslationPatch));
+
+            var target = new DummyGameObjectFireEventTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.FireEvent(new DummyGameEvent { ID = "BeginTakeAction" });
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertAmnesiaQueuedMessage(string methodName, Type eventType, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyAmnesiaTarget), methodName, eventType),
+                typeof(AmnesiaTranslationPatch));
+
+            var target = new DummyAmnesiaTarget
+            {
+                MessageToSend = message,
+            };
+
+            if (eventType == typeof(DummySecretVisibilityChangedEvent))
+            {
+                _ = target.HandleEvent(new DummySecretVisibilityChangedEvent());
+            }
+            else
+            {
+                _ = target.HandleEvent(new DummyEnteredCellEvent());
+            }
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertSimpleFireEventQueuedMessage(Type patchType, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.FireEvent), typeof(DummyEvent)),
+                patchType);
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.FireEvent(new DummyEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertSimpleApplyFearQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.ApplyFear), typeof(DummyMentalAttackEvent)),
+                typeof(FearAuraTranslationPatch));
+
+            DummySimpleOwnerQueueTarget.StaticMessageToSend = message;
+
+            _ = DummySimpleOwnerQueueTarget.ApplyFear(new DummyMentalAttackEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            DummySimpleOwnerQueueTarget.StaticMessageToSend = string.Empty;
+            DummySimpleOwnerQueueTarget.StaticColorToSend = null;
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertMeditatingRemoveQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.Remove), typeof(DummyGameObject)),
+                typeof(MeditatingTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.Remove(new DummyGameObject());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertEffectStaticApplyQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.Apply), typeof(DummyGameObject)),
+                typeof(EffectStaticMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.Apply(new DummyGameObject());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertEffectStaticFireEventQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.FireEvent), typeof(DummyEvent)),
+                typeof(EffectStaticMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.FireEvent(new DummyEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertSystemStaticCheckpointQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.CheckpointOn)),
+                typeof(SystemStaticMessageTranslationPatch));
+
+            DummySimpleOwnerQueueTarget.StaticMessageToSend = message;
+
+            _ = DummySimpleOwnerQueueTarget.CheckpointOn();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            DummySimpleOwnerQueueTarget.StaticMessageToSend = string.Empty;
+            DummySimpleOwnerQueueTarget.StaticColorToSend = null;
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertSystemStaticSetHolyZoneQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummySimpleOwnerQueueTarget),
+                    nameof(DummySimpleOwnerQueueTarget.SetHolyZone),
+                    typeof(DummyZone),
+                    typeof(DummyFaction)),
+                typeof(SystemStaticMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.SetHolyZone(new DummyZone(), new DummyFaction());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertSystemStaticFireEventQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.FireEvent), typeof(DummyEvent)),
+                typeof(SystemStaticMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.FireEvent(new DummyEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertTonicFireEventQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyTonicTarget), nameof(DummyTonicTarget.FireEvent), typeof(DummyEvent)),
+                typeof(TonicTranslationPatch));
+
+            var target = new DummyTonicTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.FireEvent(new DummyEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertXrlGameFinishQuestStepQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyXrlGameTarget),
+                    nameof(DummyXrlGameTarget.FinishQuestStep),
+                    typeof(DummyQuest),
+                    typeof(string),
+                    typeof(int),
+                    typeof(bool),
+                    typeof(string)),
+                typeof(XrlGameTranslationPatch));
+
+            var target = new DummyXrlGameTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.FinishQuestStep(new DummyQuest(), "Step1", -1, true, null);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertZoneManagerTryThawZoneMessage(string message, string? color, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyZoneManagerTryThawZoneTarget), nameof(DummyZoneManagerTryThawZoneTarget.TryThawZone), typeof(string), typeof(DummyZone).MakeByRefType()),
+                typeof(ZoneManagerTryThawZoneTranslationPatch));
+
+            var target = new DummyZoneManagerTryThawZoneTarget
+            {
+                MessageToSend = message,
+                ColorToSend = color,
+            };
+
+            target.TryThawZone("JoppaWorld.1.1.1.1.10", out _);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertZoneManagerTickMessage(string message, string? color, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyZoneManagerTickTarget), nameof(DummyZoneManagerTickTarget.Tick), typeof(bool)),
+                typeof(ZoneManagerTickTranslationPatch));
+
+            var target = new DummyZoneManagerTickTarget
+            {
+                MessageToSend = message,
+                ColorToSend = color,
+            };
+
+            target.Tick(allowFreeze: true);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static MethodInfo GameObjectMoveMethod()
+    {
+        return RequireMethod(
+            typeof(DummyGameObjectMoveTarget),
+            nameof(DummyGameObjectMoveTarget.Move),
+            typeof(string),
+            typeof(DummyGameObject).MakeByRefType(),
+            typeof(bool),
+            typeof(bool),
+            typeof(bool),
+            typeof(bool),
+            typeof(bool),
+            typeof(bool),
+            typeof(DummyGameObject),
+            typeof(DummyGameObject),
+            typeof(bool),
+            typeof(int?),
+            typeof(string),
+            typeof(int?),
+            typeof(bool),
+            typeof(bool),
+            typeof(DummyGameObject),
+            typeof(DummyGameObject),
+            typeof(int));
+    }
+
+    private static void PatchPopupShowYesNo(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNo)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+    }
+
+    private static void PatchPopupShowYesNoAsync(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNoAsync)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+    }
+
+    private static void PatchPopupShowYesNoCancel(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNoCancel)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+    }
+
+    private static void PatchPopupShow(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+    }
+
+    private static void PatchPopupShowAsync(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowAsync)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+    }
+
+    private static void PatchPopupShowFail(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowFail)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
     }
 
     private static void PatchQueue(Harmony harmony)

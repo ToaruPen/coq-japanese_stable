@@ -87,4 +87,28 @@ public static class GameObjectPerformThrowTranslationPatch
             && message.EndsWith(" damage!", StringComparison.Ordinal)
             && MessageLogProducerTranslationHelpers.TryPreparePatternMessage(ref message, Context, "PerformThrow");
     }
+
+    internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
+    {
+        if (activeDepth <= 0
+            || string.IsNullOrEmpty(source)
+            || MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _)
+            || !source.StartsWith("Are you sure you want to target ", StringComparison.Ordinal)
+            || !source.EndsWith("?", StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var patternTranslated = MessagePatternTranslator.Translate(source, route);
+        if (string.Equals(patternTranslated, source, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(route, family + ".PerformThrowPopup", source, patternTranslated);
+        translated = patternTranslated;
+        return true;
+    }
 }

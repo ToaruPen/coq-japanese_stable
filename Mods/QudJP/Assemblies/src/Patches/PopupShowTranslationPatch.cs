@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -49,6 +50,26 @@ public static class PopupShowTranslationPatch
             Trace.TraceWarning("QudJP: {0} failed to resolve Popup.Show.", Context);
         }
 
+        MethodInfo? showAsyncMethod = AccessTools.Method(popupType, "ShowAsync",
+            new[] { typeof(string), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(bool) });
+        if (showAsyncMethod is null)
+        {
+            showAsyncMethod = AccessTools.Method(popupType, "ShowAsync", new[] { typeof(string) });
+        }
+        if (showAsyncMethod is null)
+        {
+            showAsyncMethod = AccessTools.Method(popupType, "ShowAsync");
+        }
+
+        if (showAsyncMethod is not null)
+        {
+            targets.Add(showAsyncMethod);
+        }
+        else
+        {
+            Trace.TraceWarning("QudJP: {0} failed to resolve Popup.ShowAsync.", Context);
+        }
+
         var showFailMethod = AccessTools.Method(popupType, "ShowFail",
             new[] { typeof(string), typeof(bool), typeof(bool), typeof(bool) });
         if (showFailMethod is null)
@@ -63,6 +84,17 @@ public static class PopupShowTranslationPatch
         else
         {
             Trace.TraceWarning("QudJP: {0} failed to resolve Popup.ShowFail.", Context);
+        }
+
+        var showKeybindAsyncMethod = AccessTools.Method(popupType, "ShowKeybindAsync",
+            new[] { typeof(string), typeof(CancellationToken) });
+        if (showKeybindAsyncMethod is not null)
+        {
+            targets.Add(showKeybindAsyncMethod);
+        }
+        else
+        {
+            Trace.TraceWarning("QudJP: {0} failed to resolve Popup.ShowKeybindAsync.", Context);
         }
 
         MethodInfo? showYesNoMethod = null;

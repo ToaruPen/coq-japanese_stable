@@ -17,7 +17,7 @@ _EXPECTED_MESSAGE_ROUTE_COUNTS = {
     "message-log": 1,
     "description": 4,
     "effect-cripple": 1,
-    "needs-harmony-patch": 34,
+    "needs-harmony-patch": 37,
     "unclassified": 6,
 }
 

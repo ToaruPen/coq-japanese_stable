@@ -181,10 +181,10 @@ public sealed class TradeUiPopupTranslationPatchTests
         "今や商人に7ドラムの真水借りている。")]
     [TestCase(
         "商人 will have to pony up 12 drams of fresh water to even up the trade. Agreed?",
-        "商人は取引を釣り合わせるために12ドラムの真水を支払う必要がある。承諾する？")]
+        "商人が取引を釣り合わせるためにあなたへ12ドラムの真水を支払う必要がある。承諾する？")]
     [TestCase(
         "The 商人 ponies up 12 drams of fresh water to even up the trade.",
-        "商人は取引を釣り合わせるために12ドラムの真水を支払った。")]
+        "商人は取引を釣り合わせるためにあなたへ12ドラムの真水を支払った。")]
     [TestCase(
         "The 商人 doesn't have 1 dram of fresh water to even up the trade!",
         "商人には取引を釣り合わせるための1ドラムの真水がない！")]
@@ -202,6 +202,21 @@ public sealed class TradeUiPopupTranslationPatchTests
         var translated = TradeUiPopupTranslationPatch.TranslatePopupText(source);
 
         Assert.That(translated, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void TranslatePopupText_MakesTraderPaysWordingDistinctFromPlayerPaysWording()
+    {
+        var playerPays = TradeUiPopupTranslationPatch.TranslatePopupText(
+            "You pony up 1 dram of fresh water to even up the trade.");
+        var traderPays = TradeUiPopupTranslationPatch.TranslatePopupText(
+            "The 商人 ponies up 12 drams of fresh water to even up the trade.");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(playerPays, Is.EqualTo("あなたは取引を釣り合わせるために1ドラムの真水を支払った。"));
+            Assert.That(traderPays, Is.EqualTo("商人は取引を釣り合わせるためにあなたへ12ドラムの真水を支払った。"));
+        });
     }
 
     [Test]
