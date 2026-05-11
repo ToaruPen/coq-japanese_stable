@@ -100,7 +100,7 @@ public static class FungalSporeInfectionTranslationPatch
         }
 
         DynamicTextObservability.RecordTransform("MessageQueue.AddPlayerMessage", Context, message, translated);
-        message = translated;
+        message = MessageFrameTranslator.MarkDirectTranslation(translated);
         return true;
     }
 

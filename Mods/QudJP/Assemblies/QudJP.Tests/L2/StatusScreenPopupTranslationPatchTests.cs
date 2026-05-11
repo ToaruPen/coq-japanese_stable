@@ -46,6 +46,16 @@ public sealed class StatusScreenPopupTranslationPatchTests
             expected);
     }
 
+    [Test]
+    public void BuyStat_LeavesUnknownAttributeTailUnchanged_WhenOwnerPatched()
+    {
+        const string source = "Your Strength is {{C|16}}.\n\n{{W|Unrecognized tail}}";
+        AssertPopupMessage(
+            ownerMethod: RequireMethod(typeof(DummyStatusScreenPopupTarget), nameof(DummyStatusScreenPopupTarget.BuyStat), typeof(DummyGameObject), typeof(string)),
+            source,
+            source);
+    }
+
     [TestCase(
         "You gain {{C|Light Manipulation}}!",
         "{{C|光操作}}を得た！")]
@@ -128,25 +138,10 @@ public sealed class StatusScreenPopupTranslationPatchTests
         try
         {
             PatchPopupShow(harmony);
+            PatchOwner(harmony, ownerMethod);
 
             DummyStatusScreenPopupTarget.MessageToSend = source;
-            if (ownerMethod.Name == nameof(DummyStatusScreenPopupTarget.BuyStat))
-            {
-                PatchOwner(harmony, ownerMethod);
-                _ = ownerMethod.Invoke(null, new object[] { new DummyGameObject(), "Strength" });
-            }
-            else
-            {
-                StatusScreenPopupTranslationPatch.Prefix();
-                try
-                {
-                    DummyPopupShow.Show(source);
-                }
-                finally
-                {
-                    _ = StatusScreenPopupTranslationPatch.Finalizer(null);
-                }
-            }
+            _ = ownerMethod.Invoke(null, CreateOwnerArguments(ownerMethod));
 
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
         }
@@ -154,6 +149,16 @@ public sealed class StatusScreenPopupTranslationPatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    private static object[] CreateOwnerArguments(MethodInfo ownerMethod)
+    {
+        return ownerMethod.Name switch
+        {
+            nameof(DummyStatusScreenPopupTarget.BuyStat) => new object[] { new DummyGameObject(), "Strength" },
+            nameof(DummyStatusScreenPopupTarget.BuyRandomMutation) => new object[] { new DummyGameObject() },
+            _ => Array.Empty<object>(),
+        };
     }
 
     private static void PatchPopupShow(Harmony harmony)

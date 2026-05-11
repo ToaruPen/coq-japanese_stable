@@ -163,12 +163,23 @@ public sealed class CookingRuntimeTranslationPatchTests
 
     private static void PatchQueue(Harmony harmony)
     {
+        var original = RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool));
+        PatchQueuePrefix(harmony, original, nameof(MessageQueueTranslationPatch.PrefixPhysicsEnterCellPassBy));
+        PatchQueuePrefix(harmony, original, nameof(MessageQueueTranslationPatch.PrefixZoneManagerSetActiveZone));
+        PatchQueuePrefix(harmony, original, nameof(MessageQueueTranslationPatch.PrefixCombatAndLog));
+        PatchQueuePrefix(harmony, original, nameof(MessageQueueTranslationPatch.PrefixMessageLog));
+    }
+
+    private static void PatchQueuePrefix(Harmony harmony, MethodInfo original, string prefixName)
+    {
         harmony.Patch(
-            original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
-            prefix: new HarmonyMethod(RequireMethod(typeof(CombatAndLogMessageQueuePatch), nameof(CombatAndLogMessageQueuePatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
-        harmony.Patch(
-            original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
-            prefix: new HarmonyMethod(RequireMethod(typeof(MessageLogPatch), nameof(MessageLogPatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+            original: original,
+            prefix: new HarmonyMethod(RequireMethod(
+                typeof(MessageQueueTranslationPatch),
+                prefixName,
+                typeof(string).MakeByRefType(),
+                typeof(string),
+                typeof(bool))));
     }
 
     private static void PatchOwner(Harmony harmony, MethodInfo original)

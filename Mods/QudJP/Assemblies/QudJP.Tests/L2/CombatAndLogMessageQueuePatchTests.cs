@@ -1407,8 +1407,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
         "クエスト「{{W|O Glorious Shekhinah!}}」に失敗した！")]
     [TestCase(
         nameof(DummyQuestLifecyclePopupTarget.ShowFailStepPopup),
-        "You have failed the step, {{R|Find the key}}, of the quest {{W|O Glorious Shekhinah!}}!",
-        "クエスト「{{W|O Glorious Shekhinah!}}」のステップ「{{R|Find the key}}」に失敗した！")]
+        "You have failed the step, {{R|Travel to Red Rock}}, of the quest {{W|What's Eating the Watervine?}}!",
+        "クエスト「{{W|What's Eating the Watervine?}}」のステップ「{{R|ジョッパから北へ2パラサング進み、レッドロックへ向かう。}}」に失敗した！")]
     [TestCase(
         nameof(DummyQuestLifecyclePopupTarget.ShowFinishPopup),
         "You have completed the quest {{W|O Glorious Shekhinah!}}!",
@@ -5529,6 +5529,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
     private static void AssertQuestLifecyclePopup(string methodName, string message, string expected)
     {
+        UseRepositoryPatternDictionary();
+
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try

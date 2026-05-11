@@ -77,7 +77,7 @@ public static class ElectromagneticImpulseTranslationPatch
 
         const string translated = "{{r|エネルギーが満ちあふれる！}}";
         DynamicTextObservability.RecordTransform("MessageQueue.AddPlayerMessage", Context, message, translated);
-        message = translated;
+        message = MessageFrameTranslator.MarkDirectTranslation(translated);
         return true;
     }
 

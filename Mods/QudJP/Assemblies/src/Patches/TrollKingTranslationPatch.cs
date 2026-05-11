@@ -72,11 +72,15 @@ public static class TrollKingTranslationPatch
     {
         _ = color;
 
-        if (activeDepth <= 0
-            || string.IsNullOrEmpty(message)
-            || MessageFrameTranslator.TryStripDirectTranslationMarker(message, out _))
+        if (activeDepth <= 0 || string.IsNullOrEmpty(message))
         {
             return false;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var markedText))
+        {
+            message = markedText;
+            return true;
         }
 
         if (!TryTranslateCore(message, out var translated))

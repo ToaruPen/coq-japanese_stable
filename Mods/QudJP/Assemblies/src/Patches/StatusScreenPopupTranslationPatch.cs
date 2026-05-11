@@ -172,64 +172,95 @@ public static class StatusScreenPopupTranslationPatch
         var currentMatch = CurrentStatPattern.Match(stripped);
         if (currentMatch.Success)
         {
-            translated = RestoreWhole(
-                TranslateCurrentStat(currentMatch, spans),
-                source,
-                stripped,
-                spans);
-            return true;
+            if (TryTranslateCurrentStat(currentMatch, spans, out var currentTranslated))
+            {
+                translated = RestoreWhole(
+                    currentTranslated,
+                    source,
+                    stripped,
+                    spans);
+                return true;
+            }
+
+            translated = source;
+            return false;
         }
 
         var modifiedMatch = ModifiedStatPattern.Match(stripped);
         if (modifiedMatch.Success)
         {
-            translated = RestoreWhole(
-                TranslateModifiedStat(modifiedMatch, spans),
-                source,
-                stripped,
-                spans);
-            return true;
+            if (TryTranslateModifiedStat(modifiedMatch, spans, out var modifiedTranslated))
+            {
+                translated = RestoreWhole(
+                    modifiedTranslated,
+                    source,
+                    stripped,
+                    spans);
+                return true;
+            }
+
+            translated = source;
+            return false;
         }
 
         translated = source;
         return false;
     }
 
-    private static string TranslateCurrentStat(Match match, IReadOnlyList<ColorSpan> spans)
+    private static bool TryTranslateCurrentStat(Match match, IReadOnlyList<ColorSpan> spans, out string translated)
     {
         var stat = TranslateStat(match.Groups["stat"].Value);
         var value = Restore(match, spans, "value");
-        var tail = TranslateAttributeTail(match.Groups["tail"].Value, match.Groups["tail"].Index, spans);
-        return tail.Length == 0
+        if (!TryTranslateAttributeTail(match.Groups["tail"].Value, match.Groups["tail"].Index, spans, out var tail))
+        {
+            translated = string.Empty;
+            return false;
+        }
+
+        translated = tail.Length == 0
             ? $"{stat}は{value}。"
             : $"{stat}は{value}。\n\n{tail}";
+        return true;
     }
 
-    private static string TranslateModifiedStat(Match match, IReadOnlyList<ColorSpan> spans)
+    private static bool TryTranslateModifiedStat(Match match, IReadOnlyList<ColorSpan> spans, out string translated)
     {
         var stat = TranslateStat(match.Groups["stat"].Value);
         var baseValue = Restore(match, spans, "base");
         var value = Restore(match, spans, "value");
-        var tail = TranslateAttributeTail(match.Groups["tail"].Value, match.Groups["tail"].Index, spans);
+        if (!TryTranslateAttributeTail(match.Groups["tail"].Value, match.Groups["tail"].Index, spans, out var tail))
+        {
+            translated = string.Empty;
+            return false;
+        }
+
         var heading = $"{stat}の基本値は{baseValue}で、{value}に修正されている。";
-        return tail.Length == 0 ? heading : $"{heading}\n\n{tail}";
+        translated = tail.Length == 0 ? heading : $"{heading}\n\n{tail}";
+        return true;
     }
 
-    private static string TranslateAttributeTail(string tail, int tailStartIndex, IReadOnlyList<ColorSpan> spans)
+    private static bool TryTranslateAttributeTail(
+        string tail,
+        int tailStartIndex,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated)
     {
         if (tail.Length == 0)
         {
-            return string.Empty;
+            translated = string.Empty;
+            return true;
         }
 
         if (string.Equals(tail, "You may not raise an attribute above 100.", StringComparison.Ordinal))
         {
-            return "属性を100より高く上げることはできない。";
+            translated = "属性を100より高く上げることはできない。";
+            return true;
         }
 
         if (string.Equals(tail, "You have no attribute points to raise this attribute.", StringComparison.Ordinal))
         {
-            return "この属性を上げるための属性ポイントがない。";
+            translated = "この属性を上げるための属性ポイントがない。";
+            return true;
         }
 
         var costMatch = AttributeCostTailPattern.Match(tail);
@@ -242,10 +273,12 @@ public static class StatusScreenPopupTranslationPatch
                 spans,
                 tailStartIndex + costGroup.Index,
                 costGroup.Length);
-            return $"{stat}を1上げるには属性ポイントが{cost}ポイント必要だ。\nこの属性を上げますか？";
+            translated = $"{stat}を1上げるには属性ポイントが{cost}ポイント必要だ。\nこの属性を上げますか？";
+            return true;
         }
 
-        return tail;
+        translated = string.Empty;
+        return false;
     }
 
     private static bool TryTranslateIncreasedStat(
@@ -422,11 +455,8 @@ public static class StatusScreenPopupTranslationPatch
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or XmlException)
         {
-            Trace.TraceWarning(
-                "QudJP: {0} failed to load '{1}': {2}",
-                Context,
-                relativePath,
-                ex.Message);
+            QudJP.RuntimeDiagnostics.LogImportant(
+                $"QudJP: {Context} failed to load '{relativePath}': {ex.Message}");
         }
 
         return map;

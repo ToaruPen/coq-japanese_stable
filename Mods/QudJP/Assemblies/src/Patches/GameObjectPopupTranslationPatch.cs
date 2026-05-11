@@ -91,10 +91,19 @@ public static class GameObjectPopupTranslationPatch
 
     internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
     {
-        if (activeDepth <= 0
-            || string.IsNullOrEmpty(source)
-            || MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _)
-            || !IsTargetMessage(source))
+        if (activeDepth <= 0 || string.IsNullOrEmpty(source))
+        {
+            translated = source;
+            return false;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return true;
+        }
+
+        if (!IsTargetMessage(source))
         {
             translated = source;
             return false;

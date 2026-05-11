@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Linq;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -242,9 +245,61 @@ public static class QuestLifecyclePopupTranslationPatch
     private static string RestoreStep(Match match, IReadOnlyList<ColorSpan> spans)
     {
         var group = match.Groups["step"];
-        return ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
+        var step = ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
             group.Value,
             spans,
             group).Trim();
+        return TranslateQuestStepPreservingColors(step);
+    }
+
+    private static string TranslateQuestStepPreservingColors(string step)
+    {
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            step,
+            static visible => TryTranslateQuestStepName(visible, out var translated) ? translated : visible);
+    }
+
+    private static bool TryTranslateQuestStepName(string stepName, out string translated)
+    {
+        translated = stepName;
+        if (string.IsNullOrWhiteSpace(stepName))
+        {
+            return false;
+        }
+
+        var path = LocalizationAssetResolver.GetLocalizationPath("Quests.jp.xml");
+        if (!File.Exists(path))
+        {
+            return false;
+        }
+
+        try
+        {
+            var document = XDocument.Load(path, LoadOptions.None);
+            foreach (var step in document.Descendants("step"))
+            {
+                var name = step.Attribute("Name")?.Value;
+                if (!string.Equals(name, stepName, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                var text = step.Element("text")?.Value.Trim();
+                if (string.IsNullOrWhiteSpace(text))
+                {
+                    return false;
+                }
+
+                translated = text!;
+                return true;
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or XmlException)
+        {
+            RuntimeDiagnostics.LogImportant(
+                $"QudJP: {Context} failed to load 'Quests.jp.xml': {ex.Message}");
+        }
+
+        return false;
     }
 }

@@ -65,36 +65,48 @@ public static class CyberneticRejectionSyndromeTranslationPatch
     {
         _ = color;
 
-        if (activeDepth <= 0
-            || string.IsNullOrEmpty(message)
-            || MessageFrameTranslator.TryStripDirectTranslationMarker(message, out _))
+        if (activeDepth <= 0 || string.IsNullOrEmpty(message))
         {
             return false;
         }
 
-        var (stripped, spans) = ColorAwareTranslationComposer.Strip(message);
-        var translatedCore = stripped switch
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var markedText))
         {
-            "Your feverish feeling is getting worse." => "発熱感が悪化している。",
-            "You feel feverish." => "熱っぽく感じる。",
-            "You feel less feverish." => "熱っぽさが少し和らいだ。",
-            "Your feverish feeling eases up a bit." => "発熱感が少し和らいだ。",
-            _ => string.Empty,
-        };
-
-        if (translatedCore.Length == 0)
-        {
-            return false;
+            message = markedText;
+            return true;
         }
 
-        var translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
-            translatedCore,
-            spans,
-            stripped.Length,
-            message);
-        DynamicTextObservability.RecordTransform(Context, "CyberneticRejectionSyndrome.Queue", message, translated);
-        message = MessageFrameTranslator.MarkDirectTranslation(translated);
-        return true;
+        try
+        {
+            var (stripped, spans) = ColorAwareTranslationComposer.Strip(message);
+            var translatedCore = stripped switch
+            {
+                "Your feverish feeling is getting worse." => "発熱感が悪化している。",
+                "You feel feverish." => "熱っぽく感じる。",
+                "You feel less feverish." => "熱っぽさが少し和らいだ。",
+                "Your feverish feeling eases up a bit." => "発熱感が少し和らいだ。",
+                _ => string.Empty,
+            };
+
+            if (translatedCore.Length == 0)
+            {
+                return false;
+            }
+
+            var translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                translatedCore,
+                spans,
+                stripped.Length,
+                message);
+            DynamicTextObservability.RecordTransform(Context, "CyberneticRejectionSyndrome.Queue", message, translated);
+            message = MessageFrameTranslator.MarkDirectTranslation(translated);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.TryTranslateQueuedMessage failed: {1}", Context, ex);
+            return false;
+        }
     }
 
     private static void AddTarget(List<MethodBase> targets, Type targetType, string methodName, Type[] parameters)

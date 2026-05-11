@@ -55,7 +55,7 @@ public static class EmboldenedTranslationPatch
     {
         try
         {
-            activeDepth++;
+            OwnerTranslationScope.Enter(ref activeDepth);
         }
         catch (Exception ex)
         {
@@ -67,10 +67,7 @@ public static class EmboldenedTranslationPatch
     {
         try
         {
-            if (activeDepth > 0)
-            {
-                activeDepth--;
-            }
+            OwnerTranslationScope.Exit(ref activeDepth);
         }
         catch (Exception ex)
         {
@@ -83,7 +80,7 @@ public static class EmboldenedTranslationPatch
     internal static bool TryTranslateQueuedMessage(ref string message, string? color)
     {
         _ = color;
-        if (activeDepth <= 0 || string.IsNullOrEmpty(message))
+        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(message))
         {
             return false;
         }
@@ -100,7 +97,7 @@ public static class EmboldenedTranslationPatch
         }
 
         DynamicTextObservability.RecordTransform("MessageQueue.AddPlayerMessage", Context, message, translated);
-        message = translated;
+        message = MessageFrameTranslator.MarkDirectTranslation(translated);
         return true;
     }
 
