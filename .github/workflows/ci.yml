@@ -308,7 +308,7 @@ jobs:
           --expect-count message-log=1
           --expect-count description=4
           --expect-count effect-cripple=1
-          --expect-count needs-harmony-patch=34
+          --expect-count needs-harmony-patch=37
           --expect-count unclassified=6
 
   justfile:
