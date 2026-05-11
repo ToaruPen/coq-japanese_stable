@@ -666,8 +666,11 @@ public static class QudJPMod
             {
                 RuntimeDiagnostics.LogWarning(
                     "[QudJP] Warning: Harmony patched zero methods. On Apple Silicon macOS, "
-                    + "'mprotect returned EACCES' in Player.log means the game was launched natively; "
-                    + "launch Caves of Qud with Rosetta 2, for example: arch -x86_64 <CoQ binary>.");
+                    + "'mprotect returned EACCES' in Player.log usually means the game-bundled "
+                    + "0Harmony.dll cannot patch under native ARM64; launch Caves of Qud with "
+                    + "Rosetta 2 as the recommended workaround, for example: arch -x86_64 "
+                    + "<CoQ binary>. Advanced users can also back up and replace the game "
+                    + "Managed/0Harmony.dll with Harmony 2.4.2.");
             }
         }
         catch (Exception ex)

@@ -269,6 +269,8 @@ public sealed class QudJPModTests
             Assert.That(output, Does.Contain("Harmony patching complete: 0 method(s) patched."));
             Assert.That(output, Does.Contain("mprotect returned EACCES"));
             Assert.That(output, Does.Contain("arch -x86_64"));
+            Assert.That(output, Does.Contain("0Harmony.dll"));
+            Assert.That(output, Does.Contain("Harmony 2.4.2"));
         });
     }
 

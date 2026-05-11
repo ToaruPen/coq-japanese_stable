@@ -147,7 +147,7 @@ For inventory / equipment display checks, follow the runtime evidence rules in
 
 ### Apple Silicon / Rosetta
 
-- On Apple Silicon, in-game verification must run under Rosetta 2
+- On Apple Silicon, repo-owned in-game verification must run under Rosetta 2
 - For local repo verification, use `scripts/launch_rosetta.sh` or the root
   `Launch CavesOfQud (Rosetta).command`
 - For player-facing builds, the release ZIP and Workshop content include
@@ -168,10 +168,18 @@ For inventory / equipment display checks, follow the runtime evidence rules in
 - `arch -x86_64 .../CoQ` is a one-shot launch path. It does not persist to
   future Steam launches, so Apple Silicon users should use the wrapper each
   time unless they have separately configured a reliable Rosetta launch path.
+- QudJP does not bundle or overwrite the game's `0Harmony.dll`; Rosetta 2 is
+  the recommended player-facing workaround. Advanced users may choose to back up
+  the game file and replace
+  `CoQ.app/Contents/Resources/Data/Managed/0Harmony.dll` with the
+  `net48/0Harmony.dll` from Harmony `v2.4.2.0` to run native ARM64. Treat this
+  as a user-managed game-file change; Steam verification, reinstall, or game
+  updates may revert it.
 - Do not use native ARM64 runtime logs as localization observability evidence
 - If `Player.log` contains `mprotect returned EACCES` or QudJP reports
   `Harmony patching complete: 0 method(s) patched`, treat that run as native
-  ARM64 and ask for a Rosetta-backed retry before triaging localization routes.
+  ARM64 with an unsupported game-bundled Harmony runtime and ask for a
+  Rosetta-backed retry before triaging localization routes.
 
 ### Troubleshooting
 
@@ -182,7 +190,7 @@ For inventory / equipment display checks, follow the runtime evidence rules in
 | Japanese text shows as tofu squares | CJK font not bundled | Verify Fonts directory is deployed |
 | DLL load error | `QudJP.dll` not built | Run `just deploy-mod` |
 | No QudJP traces in Player.log | Bootstrap.cs not deployed or failed to compile | Verify `Bootstrap.cs` exists in game `Mods/QudJP/` directory; check Player.log for compile errors |
-| Apple Silicon: title/UI text stays English and `mprotect returned EACCES` appears | Native ARM64 launch blocked Harmony patching | Launch through `Launch CavesOfQud (Rosetta).command` or `arch -x86_64 .../CoQ` |
+| Apple Silicon: title/UI text stays English and `mprotect returned EACCES` appears | Native ARM64 launch blocked Harmony patching through the game-bundled `0Harmony.dll` | Launch through `Launch CavesOfQud (Rosetta).command` or `arch -x86_64 .../CoQ`; advanced users may back up and replace the game `0Harmony.dll` with Harmony 2.4.2 |
 
 ---
 
