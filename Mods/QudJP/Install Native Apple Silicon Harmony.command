@@ -124,7 +124,11 @@ read_harmony_identity() {
 download_harmony() {
   local temp_dir="$1"
   local zip_path="${temp_dir}/${HARMONY_ZIP_NAME}"
-  curl --location --fail --output "${zip_path}" "${HARMONY_ZIP_URL}"
+  curl --proto '=https' --tlsv1.2 \
+    --location --fail \
+    --retry 3 --retry-delay 2 --retry-all-errors \
+    --connect-timeout 10 --max-time 180 \
+    --output "${zip_path}" "${HARMONY_ZIP_URL}"
   unzip -q "${zip_path}" net48/0Harmony.dll -d "${temp_dir}/extracted"
 
   local dll_path="${temp_dir}/extracted/net48/0Harmony.dll"

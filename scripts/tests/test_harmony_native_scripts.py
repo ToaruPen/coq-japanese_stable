@@ -50,7 +50,9 @@ def test_native_harmony_install_is_explicit_opt_in_and_restorable() -> None:
     assert "0Harmony.dll.qudjp-backup-before-2.4.2" in installer
     assert "Harmony-Fat.2.4.2.0.zip" in installer
     assert "77e6901ecc606aec66c2a972782a3779e4f50c037d2d165eb7ececdd4d8f794d" in installer
-    assert "curl --location --fail" in installer
+    assert "curl --proto '=https' --tlsv1.2" in installer
+    assert "--retry 3 --retry-delay 2 --retry-all-errors" in installer
+    assert "--connect-timeout 10 --max-time 180" in installer
     assert "unzip" in installer
     assert "CoQ.app/Contents/Resources/Data/Managed/0Harmony.dll" in installer
     assert "Restore Game Harmony.command" in installer
