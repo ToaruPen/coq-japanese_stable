@@ -10,6 +10,8 @@ needs:
 - ``QudJP/NOTICE.md``
 - ``QudJP/Bootstrap.cs``
 - ``QudJP/Launch CavesOfQud (Rosetta).command`` when present
+- ``QudJP/Install Native Apple Silicon Harmony.command`` when present
+- ``QudJP/Restore Game Harmony.command`` when present
 - ``QudJP/Assemblies/QudJP.dll``
 - ``QudJP/Localization/**/*.xml``
 - ``QudJP/Localization/**/*.json``
@@ -34,6 +36,11 @@ except ModuleNotFoundError:
 
 _LOCALIZATION_ASSET_SUFFIXES = {".json", ".txt", ".xml"}
 _ROSETTA_LAUNCHER_NAME = "Launch CavesOfQud (Rosetta).command"
+_MACOS_HELPER_COMMAND_NAMES = (
+    _ROSETTA_LAUNCHER_NAME,
+    "Install Native Apple Silicon Harmony.command",
+    "Restore Game Harmony.command",
+)
 
 
 def _find_project_root() -> Path:
@@ -174,6 +181,21 @@ def _write_executable_zip_member(zip_file: zipfile.ZipFile, source_path: Path, a
     zip_file.getinfo(archive_name).external_attr = 0o100755 << 16
 
 
+def _write_optional_macos_helper_commands(
+    zip_file: zipfile.ZipFile,
+    mod_root: Path,
+) -> list[str]:
+    """Write present macOS helper scripts to the ZIP as executable members."""
+    members: list[str] = []
+    for helper_name in _MACOS_HELPER_COMMAND_NAMES:
+        helper_path = mod_root / helper_name
+        if helper_path.is_file():
+            archive_name = f"QudJP/{helper_name}"
+            _write_executable_zip_member(zip_file, helper_path, archive_name)
+            members.append(archive_name)
+    return members
+
+
 def create_zip(
     output_path: Path,
     manifest_path: Path,
@@ -236,12 +258,8 @@ def create_zip(
             zf.write(bootstrap_path, arc_bootstrap)
             members.append(arc_bootstrap)
 
-        # macOS helper launcher for Apple Silicon users who need Rosetta.
-        rosetta_launcher_path = manifest_path.parent / _ROSETTA_LAUNCHER_NAME
-        if rosetta_launcher_path.exists():
-            arc_rosetta_launcher = f"QudJP/{_ROSETTA_LAUNCHER_NAME}"
-            _write_executable_zip_member(zf, rosetta_launcher_path, arc_rosetta_launcher)
-            members.append(arc_rosetta_launcher)
+        # macOS helper scripts for Apple Silicon users.
+        members.extend(_write_optional_macos_helper_commands(zf, manifest_path.parent))
 
         # Localization files
         for file_path in localization_files:
