@@ -378,7 +378,9 @@ After Steam finishes processing the item:
    - For Apple Silicon support, confirm the description mentions
      `Launch CavesOfQud (Rosetta).command`, Rosetta 2, Finder double-click use,
      the `CoQ.app` picker fallback, and a quote-free `arch -x86_64` launch
-     example for advanced users.
+     example for advanced users. It should also say QudJP does not bundle or
+     overwrite `0Harmony.dll`, and mention the user-managed Harmony 2.4.2 game
+     DLL replacement path as an advanced native ARM64 workaround.
 2. Subscribe to the item from a clean Steam client state or unsubscribe and
    resubscribe if updating an existing item.
 3. Validate the downloaded Workshop item against the staged content:
