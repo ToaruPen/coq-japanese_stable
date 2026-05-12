@@ -2261,6 +2261,85 @@ def _integrated_weapon_hosts_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _floating_equipment_popup_families() -> tuple[CoveredOwnerFamily, ...]:
+    common_evidence = (
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/src/Patches/FloatingEquipmentPopupTranslationPatch.cs",
+            (
+                "FloatingEquipmentPopupTranslationPatch",
+                "TryTranslatePopupMessage",
+                "MessageFrameTranslator.TryTranslateXDidY",
+            ),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+            ("FloatingEquipmentPopupTranslationPatch.TryTranslatePopupMessage",),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+            (
+                '"extra": "floating near you"',
+                '"extra": "to the ground; you pick {0} up"',
+                '"extra": "to the ground; you scoop {0} up"',
+            ),
+        ),
+    )
+
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/PoweredFloating.cs::XRL.World.Parts.PoweredFloating.CheckFloating",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                *common_evidence,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/FloatingEquipmentPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesFloatingEquipmentPopup_WhenOwnerPatched",
+                        "PoweredCheckFloating",
+                        "cease floating near you",
+                        "scoop it up",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_StripsDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(FloatingEquipmentPopupTranslationPatch)",
+                        "XRL.World.Parts.PoweredFloating|CheckFloating|System.Void",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/ModMagnetized.cs::XRL.World.Parts.ModMagnetized.CheckFloating",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                *common_evidence,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/FloatingEquipmentPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesFloatingEquipmentPopup_WhenOwnerPatched",
+                        "MagnetizedCheckFloating",
+                        "pick it up",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_StripsDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(FloatingEquipmentPopupTranslationPatch)",
+                        "XRL.World.Parts.ModMagnetized|CheckFloating|System.Void",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _boost_statistic_families() -> tuple[CoveredOwnerFamily, ...]:
     common_evidence = (
         EvidenceFile(
@@ -3980,6 +4059,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_tonic_families(),
     *_xrl_game_families(),
     *_integrated_weapon_hosts_families(),
+    *_floating_equipment_popup_families(),
     *_boost_statistic_families(),
     *_emboldened_families(),
     *_fungal_spore_infection_families(),

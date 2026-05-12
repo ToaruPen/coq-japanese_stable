@@ -46,6 +46,7 @@ internal static class PopupShowSemanticPipeline
         CarapaceTranslationPatch.TryTranslatePopupMessage,
         NephalPropertiesTranslationPatch.TryTranslatePopupMessage,
         IntegratedWeaponHostsTranslationPatch.TryTranslatePopupMessage,
+        FloatingEquipmentPopupTranslationPatch.TryTranslatePopupMessage,
         FungalSporeInfectionTranslationPatch.TryTranslatePopupMessage,
     ];
 
