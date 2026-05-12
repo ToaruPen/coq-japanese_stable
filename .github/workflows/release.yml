@@ -42,8 +42,11 @@ jobs:
       - name: Install Python tools
         run: pip install hypothesis pytest ruff
 
-      - name: Install ast-grep
-        run: npm install -g @ast-grep/cli
+      - name: Install Node tool dependencies
+        run: npm ci
+
+      - name: Add Node tool binaries to PATH
+        run: echo "$PWD/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Validate release identity
         id: identity

@@ -58,6 +58,42 @@ def test_ci_runs_python_and_dotnet_lanes_as_independent_jobs() -> None:
     assert "qudjp-dotnet-test" not in python_job
 
 
+def test_ci_python_lane_restores_repo_local_node_tools() -> None:
+    """Python/agent-tool tests should use package-lock pinned Node tools."""
+    workflow = _workflow_text()
+    python_job = _job_block(workflow, "python", "localization")
+    node_bin_path_step = 'echo "$PWD/node_modules/.bin" >> "$GITHUB_PATH"'
+
+    assert "npm ci" in python_job
+    assert node_bin_path_step in python_job
+    assert "pytest scripts/tests/" in python_job
+    assert python_job.index("npm ci") < python_job.index(node_bin_path_step)
+    assert python_job.index(node_bin_path_step) < python_job.index("pytest scripts/tests/")
+    assert "npm install -g @ast-grep/cli" not in python_job
+
+
+def test_ci_package_lock_changes_trigger_python_tool_checks() -> None:
+    """Node tool dependency changes must exercise the Python/agent tooling lane."""
+    workflow = _workflow_text()
+
+    assert "package(-lock)?\\.json" in workflow
+
+
+def test_ci_dotnet_tool_manifest_changes_trigger_python_tool_checks() -> None:
+    """The pinned csharp-ls manifest must exercise agent tooling checks."""
+    workflow = _workflow_text()
+
+    assert "dotnet-tools\\.json" in workflow
+
+
+def test_ci_codex_hook_changes_trigger_python_tool_checks() -> None:
+    """Repo-local Codex hooks are shell/tooling and must exercise Python tests."""
+    workflow = _workflow_text()
+
+    assert "\\.codex/hooks/" in workflow
+    assert "\\.codex/hooks\\.json" in workflow
+
+
 def test_ci_installs_just_without_apt_update() -> None:
     """The justfile-only lane should avoid apt package-index overhead."""
     workflow = _workflow_text()

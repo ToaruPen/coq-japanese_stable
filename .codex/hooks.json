@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .codex/hooks/lsp-check-after-tool.sh",
+            "timeout": 180,
+            "statusMessage": "Checking C# solution load when relevant"
+          }
+        ]
+      }
+    ]
+  }
+}

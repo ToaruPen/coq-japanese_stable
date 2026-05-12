@@ -28,12 +28,16 @@ just roslyn-check
 just semantic-probe --method Show --owner XRL.UI.Popup
 just semantic-probe-check
 just semantic-probe-real-smoke
+just ast-search-cs '<pattern>' [path]
+just ast-search-py '<pattern>' [path]
+just lsp-check
+.codex/hooks/lsp-check-after-tool.sh
 just static-producer-check
 just static-producer-preview
 just annals-pattern-preview
 just text-construction-inventory
-just ast-grep-smoke
 just ast-grep-check
+just ast-grep-smoke
 just render-skill-evals <repo-local-skill> <scenario>
 DOTFILES_ROOT=/path/to/dotfiles just render-skill-evals <dotfiles-skill> <scenario>
 DOTFILES_ROOT=/path/to/dotfiles just summarize-skill-evals /tmp/skill-eval-results.jsonl
@@ -56,6 +60,20 @@ just sync-mod
   Keep it exploratory: promote recurring or artifact-grade surfaces into a
   purpose-built inventory instead of treating the generic probe as a tracked
   source of truth.
+- Use `just ast-search-cs` / `just ast-search-py` for structural pattern
+  search. The older `sg-cs` / `sg-py` recipes remain aliases, but the
+  `ast-search-*` names are the preferred agent-facing entrypoints.
+- Use `just lsp-check` for repo-local C# language-server solution-load
+  diagnostics via the pinned `csharp-ls` dotnet tool. Use it when C# tooling
+  configuration changes or editor diagnostics look suspicious; do not treat it
+  as a replacement for `dotnet build`, analyzer tests, or runtime-route tests.
+- The Codex hook script `.codex/hooks/lsp-check-after-tool.sh` is intentionally
+  path- and tool-filtered behind a broad `.codex/hooks.json` `PostToolUse`
+  matcher. Keep it silent for irrelevant tool use, skip ordinary read-only C#
+  inspection unless `QUDJP_CODEX_LSP_HOOK_ON_READ=1`, skip shell-command reads
+  unless `QUDJP_CODEX_LSP_HOOK_ON_EXEC=1`, and preserve the debounce guard
+  unless there is concrete evidence that stale LSP feedback is causing missed
+  failures.
 - Roslyn tracked artifact recipes are intentionally named `*-tracked`;
   prefer preview recipes for review and validation unless the task explicitly
   owns the generated artifact.

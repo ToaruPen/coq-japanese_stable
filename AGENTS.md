@@ -28,13 +28,22 @@ QudJP is the Japanese localization mod for Caves of Qud `1.0.4`. The repo contai
   procedures.
 - For decompiled C# exploration, use structural search with `ast-grep` before
   or alongside `rg` when call shape, argument structure, producer/sink routes,
-  wrappers, assignments, or attributes matter. Prefer `just sg-cs
+  wrappers, assignments, or attributes matter. Prefer `just ast-search-cs
   'Popup.Show($$$ARGS)'` for common C# searches; plain `rg` is still fine for
   literal text, symbol names, and file discovery.
 - When ad hoc C# exploration depends on type, receiver, overload, alias,
   inheritance, generic owner identity, or Unity/TMP property ownership, promote
   the candidate set to `just semantic-probe ...` and keep `candidate` /
   `unresolved` rows visible as uncertainty, not resolved owner proof.
+- Use `just lsp-check` as a selective C# solution-load check, not as a
+  default read-time tax. Run it after `.sln`/`.csproj`/reference-stub/dotnet
+  tool changes, when editor diagnostics disagree with build output, or before
+  relying on language-server feedback for type/overload/receiver decisions.
+- The repo-local Codex `PostToolUse` hook in `.codex/hooks.json` is a guardrail
+  for that same route: its matcher is intentionally broad, while
+  `.codex/hooks/lsp-check-after-tool.sh` does the path/tool filtering. It runs
+  `just lsp-check` only after relevant C# write-like tool use, skips plain reads
+  and shell-command reads by default, and debounces repeated checks.
 - For authoritative C# static inventories or scanner changes, use the
   repo-local Roslyn static analysis skill at
   `.codex/skills/roslyn-static-analysis/SKILL.md`. Purpose-built Roslyn

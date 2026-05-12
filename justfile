@@ -544,16 +544,36 @@ ast-grep-smoke:
   bash scripts/agent_cycle.sh ast-grep-smoke
 
 # Run an ast-grep structural search.
-sg lang pattern path=".":
+ast-search lang pattern path=".":
   AST_GREP_PATTERN={{quote(pattern)}} AST_GREP_PATH={{quote(path)}} bash scripts/agent_cycle.sh sg {{quote(lang)}}
 
 # Search C# structure. Defaults to the decompiled game source.
-sg-cs pattern path="":
+ast-search-cs pattern path="":
   AST_GREP_PATTERN={{quote(pattern)}} AST_GREP_PATH={{quote(path)}} bash scripts/agent_cycle.sh sg csharp
 
 # Search Python structure.
-sg-py pattern path="scripts":
+ast-search-py pattern path="scripts":
   AST_GREP_PATTERN={{quote(pattern)}} AST_GREP_PATH={{quote(path)}} bash scripts/agent_cycle.sh sg python
+
+# Backward-compatible short alias for ast-search.
+sg lang pattern path=".":
+  just ast-search {{quote(lang)}} {{quote(pattern)}} {{quote(path)}}
+
+# Backward-compatible short alias for ast-search-cs.
+sg-cs pattern path="":
+  just ast-search-cs {{quote(pattern)}} {{quote(path)}}
+
+# Backward-compatible short alias for ast-search-py.
+sg-py pattern path="scripts":
+  just ast-search-py {{quote(pattern)}} {{quote(path)}}
+
+# Check that repo-local C# LSP can load the solution.
+lsp-check solution="Mods/QudJP/Assemblies/QudJP.sln":
+  bash scripts/agent_cycle.sh lsp-check {{quote(solution)}}
+
+# Backward-compatible alias for lsp-check.
+lsp-diagnostics solution="Mods/QudJP/Assemblies/QudJP.sln":
+  bash scripts/agent_cycle.sh lsp-diagnostics {{quote(solution)}}
 
 # Render skill-eval prompts from this repo's manifest.
 render-skill-evals skill="" scenario="":

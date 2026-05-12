@@ -37,10 +37,16 @@ def test_release_workflow_requires_main_ancestor_and_identity_validation() -> No
 def test_release_workflow_installs_python_test_tooling() -> None:
     """Release full-suite Python tests must have their external CLI dependencies."""
     workflow = _workflow_text()
+    node_bin_path_step = 'echo "$PWD/node_modules/.bin" >> "$GITHUB_PATH"'
 
     assert "pip install hypothesis pytest ruff" in workflow
-    assert "npm install -g @ast-grep/cli" in workflow
-    assert workflow.index("npm install -g @ast-grep/cli") < workflow.index("pytest scripts/tests/")
+    assert "npm ci" in workflow
+    assert node_bin_path_step in workflow
+    assert "npm install -g @ast-grep/cli" not in workflow
+    assert "pytest scripts/tests/" in workflow
+    assert workflow.index("npm ci") < workflow.index(node_bin_path_step)
+    assert workflow.index(node_bin_path_step) < workflow.index("pytest scripts/tests/")
+    assert workflow.index("npm ci") < workflow.index("pytest scripts/tests/")
 
 
 def test_release_workflow_creates_draft_github_release_without_steam_upload() -> None:

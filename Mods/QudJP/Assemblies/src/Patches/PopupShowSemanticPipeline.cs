@@ -1,7 +1,48 @@
+using System;
+using System.Diagnostics;
+
 namespace QudJP.Patches;
 
 internal static class PopupShowSemanticPipeline
 {
+    private const string PopupShowFamily = "Popup.Show";
+
+    private static readonly PopupMessageTranslator[] Translators =
+    [
+        TryTranslatePerformOfferTradeWaterMessage,
+        TryTranslateHasNothingToTradeMessage,
+        GameObjectStatPopupTranslationPatch.TryTranslatePopupMessage,
+        GameObjectMoveTranslationPatch.TryTranslatePopupMessage,
+        GameObjectPerformThrowTranslationPatch.TryTranslatePopupMessage,
+        GameObjectPopupTranslationPatch.TryTranslatePopupMessage,
+        RealityStabilizedInterdictTranslationPatch.TryTranslatePopupMessage,
+        HackingSifrahResultTranslationPatch.TryTranslatePopupMessage,
+        QuestLifecyclePopupTranslationPatch.TryTranslatePopupMessage,
+        BodyTranslationPatch.TryTranslatePopupMessage,
+        ItemModdingSifrahTranslationPatch.TryTranslatePopupMessage,
+        SunderMindTranslationPatch.TryTranslatePopupMessage,
+        KeybindsScreenConflictTranslationPatch.TryTranslatePopupMessage,
+        AbilityManagerPopupTranslationPatch.TryTranslatePopupMessage,
+        RealityStabilizedEventTranslationPatch.TryTranslatePopupMessage,
+        GeomagneticDiscTranslationPatch.TryTranslatePopupMessage,
+        CampfireCookAvailabilityTranslationPatch.TryTranslatePopupMessage,
+        CampfirePreserveTranslationPatch.TryTranslatePopupMessage,
+        CookingRuntimeTranslationPatch.TryTranslatePopupMessage,
+        StatusScreenPopupTranslationPatch.TryTranslatePopupMessage,
+        TeleprojectorTranslationPatch.TryTranslatePopupMessage,
+        CyberneticsMedassistModuleTranslationPatch.TryTranslatePopupMessage,
+        LiquidLoaderTranslationPatch.TryTranslatePopupMessage,
+        MutatingTranslationPatch.TryTranslatePopupMessage,
+        LightManipulationTranslationPatch.TryTranslatePopupMessage,
+        AsleepOwnerTranslationPatch.TryTranslatePopupMessage,
+        BeguilingTranslationPatch.TryTranslatePopupMessage,
+        AscensionCableTranslationPatch.TryTranslatePopupMessage,
+        CarapaceTranslationPatch.TryTranslatePopupMessage,
+        NephalPropertiesTranslationPatch.TryTranslatePopupMessage,
+        IntegratedWeaponHostsTranslationPatch.TryTranslatePopupMessage,
+        FungalSporeInfectionTranslationPatch.TryTranslatePopupMessage,
+    ];
+
     internal static string TranslateMessage(string source, string route)
     {
         if (string.IsNullOrEmpty(source))
@@ -14,166 +55,68 @@ internal static class PopupShowSemanticPipeline
             return source;
         }
 
-        if (TradeUiPopupTranslationPatch.TryTranslatePerformOfferTradeWaterMessage(source, out var tradeWaterTranslated))
+        for (var index = 0; index < Translators.Length; index++)
         {
-            return tradeWaterTranslated;
-        }
-
-        if (TradeUiPopupTranslationPatch.TryTranslateHasNothingToTradeMessage(source, out var hasNothingTranslated))
-        {
-            return hasNothingTranslated;
-        }
-
-        if (GameObjectStatPopupTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var statTranslated))
-        {
-            return statTranslated;
-        }
-
-        if (GameObjectMoveTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var moveTranslated))
-        {
-            return moveTranslated;
-        }
-
-        if (GameObjectPerformThrowTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var performThrowTranslated))
-        {
-            return performThrowTranslated;
-        }
-
-        if (GameObjectPopupTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var gameObjectPopupTranslated))
-        {
-            return gameObjectPopupTranslated;
-        }
-
-        if (RealityStabilizedInterdictTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var realityStabilizedTranslated))
-        {
-            return realityStabilizedTranslated;
-        }
-
-        if (HackingSifrahResultTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var hackingSifrahTranslated))
-        {
-            return hackingSifrahTranslated;
-        }
-
-        if (QuestLifecyclePopupTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var questLifecycleTranslated))
-        {
-            return questLifecycleTranslated;
-        }
-
-        if (BodyTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var bodyTranslated))
-        {
-            return bodyTranslated;
-        }
-
-        if (ItemModdingSifrahTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var itemModdingTranslated))
-        {
-            return itemModdingTranslated;
-        }
-
-        if (SunderMindTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var sunderMindTranslated))
-        {
-            return sunderMindTranslated;
-        }
-
-        if (KeybindsScreenConflictTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var keybindsTranslated))
-        {
-            return keybindsTranslated;
-        }
-
-        if (AbilityManagerPopupTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var abilityManagerTranslated))
-        {
-            return abilityManagerTranslated;
-        }
-
-        if (RealityStabilizedEventTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var realityEventTranslated))
-        {
-            return realityEventTranslated;
-        }
-
-        if (GeomagneticDiscTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var geomagneticDiscTranslated))
-        {
-            return geomagneticDiscTranslated;
-        }
-
-        if (CampfireCookAvailabilityTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var campfireCookTranslated))
-        {
-            return campfireCookTranslated;
-        }
-
-        if (CampfirePreserveTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var campfirePreserveTranslated))
-        {
-            return campfirePreserveTranslated;
-        }
-
-        if (CookingRuntimeTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var cookingRuntimeTranslated))
-        {
-            return cookingRuntimeTranslated;
-        }
-
-        if (StatusScreenPopupTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var statusScreenTranslated))
-        {
-            return statusScreenTranslated;
-        }
-
-        if (TeleprojectorTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var teleprojectorTranslated))
-        {
-            return teleprojectorTranslated;
-        }
-
-        if (CyberneticsMedassistModuleTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var medassistTranslated))
-        {
-            return medassistTranslated;
-        }
-
-        if (LiquidLoaderTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var liquidLoaderTranslated))
-        {
-            return liquidLoaderTranslated;
-        }
-
-        if (MutatingTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var mutatingTranslated))
-        {
-            return mutatingTranslated;
-        }
-
-        if (LightManipulationTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var lightManipulationTranslated))
-        {
-            return lightManipulationTranslated;
-        }
-
-        if (AsleepOwnerTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var asleepTranslated))
-        {
-            return asleepTranslated;
-        }
-
-        if (BeguilingTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var beguilingTranslated))
-        {
-            return beguilingTranslated;
-        }
-
-        if (AscensionCableTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var ascensionCableTranslated))
-        {
-            return ascensionCableTranslated;
-        }
-
-        if (CarapaceTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var carapaceTranslated))
-        {
-            return carapaceTranslated;
-        }
-
-        if (NephalPropertiesTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var nephalTranslated))
-        {
-            return nephalTranslated;
-        }
-
-        if (IntegratedWeaponHostsTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var integratedWeaponHostsTranslated))
-        {
-            return integratedWeaponHostsTranslated;
-        }
-
-        if (FungalSporeInfectionTranslationPatch.TryTranslatePopupMessage(source, route, "Popup.Show", out var fungalSporeInfectionTranslated))
-        {
-            return fungalSporeInfectionTranslated;
+            if (TryTranslatePopupMessageWithFallback(
+                Translators[index],
+                source,
+                route,
+                out var translated))
+            {
+                return translated;
+            }
         }
 
         return PopupTranslationPatch.TranslatePopupTextForProducerRoute(source, route);
     }
+
+    private static bool TryTranslatePerformOfferTradeWaterMessage(
+        string source,
+        string route,
+        string family,
+        out string translated)
+    {
+        _ = route;
+        _ = family;
+        return TradeUiPopupTranslationPatch.TryTranslatePerformOfferTradeWaterMessage(source, out translated);
+    }
+
+    private static bool TryTranslateHasNothingToTradeMessage(
+        string source,
+        string route,
+        string family,
+        out string translated)
+    {
+        _ = route;
+        _ = family;
+        return TradeUiPopupTranslationPatch.TryTranslateHasNothingToTradeMessage(source, out translated);
+    }
+
+    private static bool TryTranslatePopupMessageWithFallback(
+        PopupMessageTranslator translator,
+        string source,
+        string route,
+        out string translated)
+    {
+        try
+        {
+            return translator(source, route, PopupShowFamily, out translated);
+        }
+        catch (Exception ex)
+        {
+            translated = source;
+            Trace.TraceError(
+                "QudJP: PopupShowSemanticPipeline translator {0} failed: {1}",
+                FormatTranslatorName(translator),
+                ex);
+            return false;
+        }
+    }
+
+    private static string FormatTranslatorName(Delegate translator)
+    {
+        return translator.Method.DeclaringType?.FullName ?? translator.Method.Name;
+    }
+
+    private delegate bool PopupMessageTranslator(string source, string route, string family, out string translated);
 }

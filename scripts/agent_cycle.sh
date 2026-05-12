@@ -12,7 +12,10 @@ Usage:
   scripts/agent_cycle.sh tool-check
   scripts/agent_cycle.sh ast-grep-check
   scripts/agent_cycle.sh ast-grep-smoke
+  scripts/agent_cycle.sh ast-search <lang> [pattern] [path]
   scripts/agent_cycle.sh sg <lang> [pattern] [path]
+  scripts/agent_cycle.sh lsp-check [solution]
+  scripts/agent_cycle.sh lsp-diagnostics [solution]
   scripts/agent_cycle.sh render-skill-evals [skill] [scenario]
   scripts/agent_cycle.sh summarize-skill-evals [results-jsonl]
   scripts/agent_cycle.sh retrospective-open
@@ -42,7 +45,7 @@ require_dotfiles_root() {
 
 tool_check() {
   local missing=0
-  for tool in just ast-grep "$PYTHON_BIN"; do
+  for tool in just "$PYTHON_BIN"; do
     if ! command -v "$tool" >/dev/null 2>&1; then
       echo "missing tool: $tool" >&2
       missing=1
@@ -50,6 +53,20 @@ tool_check() {
     fi
     "$tool" --version
   done
+
+  if ! ast_grep --version; then
+    missing=1
+  fi
+  if ! command -v dotnet >/dev/null 2>&1; then
+    echo "missing tool: dotnet" >&2
+    missing=1
+  elif ! dotnet tool restore >/dev/null 2>&1; then
+    echo "dotnet tool restore failed; csharp-ls diagnostics are unavailable." >&2
+    missing=1
+  elif ! dotnet tool run csharp-ls -- --version; then
+    echo "csharp-ls version check failed; csharp-ls diagnostics are unavailable." >&2
+    missing=1
+  fi
 
   require_file "$ROOT_DIR/scripts/render_skill_eval_prompts.py" || missing=1
   require_file "$ROOT_DIR/scripts/validate_skill_eval_results.py" || missing=1
@@ -67,6 +84,26 @@ tool_check() {
   return "$missing"
 }
 
+ast_grep() {
+  if [[ -x "$ROOT_DIR/node_modules/.bin/ast-grep" ]]; then
+    "$ROOT_DIR/node_modules/.bin/ast-grep" "$@"
+    return
+  fi
+
+  if command -v ast-grep >/dev/null 2>&1; then
+    command ast-grep "$@"
+    return
+  fi
+
+  if command -v npx >/dev/null 2>&1; then
+    npx --no-install ast-grep "$@"
+    return
+  fi
+
+  echo "missing tool: ast-grep (run npm ci, or install @ast-grep/cli)" >&2
+  return 127
+}
+
 ast_grep_check() {
   cd "$ROOT_DIR"
   require_file "$ROOT_DIR/sgconfig.yml"
@@ -80,8 +117,8 @@ ast_grep_check() {
     echo "ast-grep rules and rule tests must be added together (rules=$rule_count tests=$test_count)" >&2
     return 1
   else
-    ast-grep test --skip-snapshot-tests
-    ast-grep scan .
+    ast_grep test --skip-snapshot-tests
+    ast_grep scan .
   fi
   ast_grep_smoke
 }
@@ -140,7 +177,17 @@ structural_search() {
   fi
 
   path=$(expand_search_path "$path")
-  ast-grep run --lang "$lang" --pattern "$pattern" "$path"
+  ast_grep run --lang "$lang" --pattern "$pattern" "$path"
+}
+
+lsp_diagnostics() {
+  local solution=${1:-Mods/QudJP/Assemblies/QudJP.sln}
+  cd "$ROOT_DIR"
+  require_file "$ROOT_DIR/dotnet-tools.json"
+  require_file "$ROOT_DIR/$solution"
+
+  dotnet tool restore
+  dotnet tool run csharp-ls -- --solution "$solution" --diagnose --loglevel warning
 }
 
 render_skill_evals() {
@@ -215,8 +262,11 @@ main() {
     ast-grep-smoke)
       ast_grep_smoke
       ;;
-    sg)
+    sg|ast-search)
       structural_search "${1:-}" "${2:-}" "${3:-}"
+      ;;
+    lsp-check|lsp-diagnostics)
+      lsp_diagnostics "${1:-}"
       ;;
     render-skill-evals)
       render_skill_evals "${1:-}" "${2:-}"

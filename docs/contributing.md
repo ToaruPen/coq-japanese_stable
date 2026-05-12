@@ -309,8 +309,29 @@ uv run python scripts/sync_mod.py \
 | `QJ001` | `[HarmonyPatch]` クラス内の `Prefix` / `Postfix` メソッドは、本体全体が単一の `try { } catch (Exception) { }` 文でなければならない (型無し `catch` は不可)。`TargetMethod` / `TargetMethods` は除外。 |
 | `QJ002` | メソッド呼び出しの戻り値に対する `??` null フォールバックの直前には `Trace.TraceWarning` / `Trace.TraceError` を置かなければならない (catch 内とテストコードは除外)。 |
 | `QJ003` | `Trace.TraceError` / `Trace.TraceWarning` の第 1 引数文字列は `"QudJP:"` で始まらなければならない。 |
+| `QJ005` | semantic pipeline entrypoint は他 patch の `TryTranslate*` を直接呼ばず、crash-safe helper または `Exception` を捕捉する `try` / `catch` (`catch (Exception)` または型省略 `catch`) 経由で呼ばなければならない。 |
 
 すべて `DiagnosticSeverity.Warning` で発行され、`<TreatWarningsAsErrors>true</TreatWarningsAsErrors>` によりビルドエラーになります。
+
+補助診断:
+
+- `just ast-search-cs '<pattern>' [path]` — C# structural search (`sg-cs` は後方互換 alias)
+- `just ast-search-py '<pattern>' [path]` — Python structural search (`sg-py` は後方互換 alias)
+- `just lsp-check` — repo-local `csharp-ls` による C# solution-load diagnostics
+
+`just lsp-check` は `.sln` / `.csproj` / reference stub / dotnet tool manifest
+の変更時、または editor の診断と `dotnet build` の結果が食い違う時に使います。
+これは language-server が repo の solution を読めることを確認する補助導線であり、
+compiler / analyzer / test の代替ではありません。挙動ゲートは引き続き `just build`
+と `just test-l1` / `just test-l2` / `just test-l2g` です。
+
+Codex では repo-local hook (`.codex/hooks.json`) から
+`.codex/hooks/lsp-check-after-tool.sh` を呼びます。Codex 側の matcher は広く、
+実際の path / tool filtering は script 側で行います。この hook は relevant C#
+write-like tool use の後だけ `just lsp-check` を実行し、通常の read-only 調査や
+shell-command read では走りません。read 後にも検証したい場合は
+`QUDJP_CODEX_LSP_HOOK_ON_READ=1`、shell command 後にも検証したい場合は
+`QUDJP_CODEX_LSP_HOOK_ON_EXEC=1` を付けて明示的に使います。
 
 **エラーハンドリング規約** (fail-fast):
 
@@ -418,7 +439,7 @@ PR を出すと GitHub Actions (`.github/workflows/ci.yml`) が変更ファイ�
 
 - `Mods/QudJP/Assemblies/` 変更: `.NET SDK 8.0.x + 10.0.x` をインストールし、QudJP / QudJP.Tests を Release build します。build artifact を作成した後、C# テストは `L1` / `L2` / `L2G` の matrix job で並列実行します。L2G は `QudJP.Tests.csproj` の `<Exists('$(AssemblyCSharpPath)')>` 条件付き参照により、CI 環境に `Assembly-CSharp.dll` が存在しないため自動的にスキップされます。
 - `scripts/tools/` または Annals extractor のテスト / fixture 変更: `scripts/tools/**/*.csproj` を列挙し、見つかった tool projects をすべて Release build します。
-- `scripts/` 変更: `ast-grep`、`ruff`、`pytest` をセットアップし、`ruff check scripts/` と `pytest scripts/tests/` を実行します。この Python lane は QudJP C# test matrix を待たずに並列実行されます。
+- `scripts/` (`scripts/tools/` を除く) / `.codex/hooks/**` / `.codex/hooks.json` / `dotnet-tools.json` / `package.json` / `package-lock.json` / `CHANGELOG.md` / `Mods/QudJP/manifest.json` / `docs/release-notes/` 変更: `npm ci` で Node tool dependencies を復元し、`ruff`、`pytest` をセットアップして `ruff check scripts/` と `pytest scripts/tests/` を実行します。この Python lane は QudJP C# test matrix を待たずに並列実行されます。
 - `Mods/QudJP/Localization/` 変更: release-note fragment requirement、translation-token check、glossary consistency check を実行します。
 - `pyproject.toml` / `uv.lock` 変更: Python tooling 変更として `ruff check scripts/` と `pytest scripts/tests/` を実行します。
 - CI は同一 ref の古い実行を自動キャンセルし、NuGet / pip キャッシュを使います。branch protection 用の `build` job は最後に各 lane の結果を集約する互換チェックです。

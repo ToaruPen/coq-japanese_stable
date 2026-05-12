@@ -83,7 +83,7 @@ public sealed class HarmonyPatchTryCatchAnalyzer : DiagnosticAnalyzer
         var declaration = catchClause.Declaration;
         if (declaration is null)
         {
-            return false;
+            return true;
         }
 
         var typeSymbol = semanticModel.GetTypeInfo(declaration.Type, cancellationToken).Type;
