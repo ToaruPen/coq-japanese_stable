@@ -77,15 +77,44 @@ internal sealed class DummyTradeUiVendorPopupProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
 
+    public bool UseShowFailPopup { get; set; }
+
     public bool UseConfirmationPopup { get; set; }
+
+    public void ShowTradeScreen()
+    {
+        ShowConfiguredPopup();
+    }
 
     public void TryRemove()
     {
         DummyPopupTarget.ShowBlock(PopupMessageToShow);
     }
 
+    public void DoVendorExamine()
+    {
+        ShowConfiguredPopup();
+    }
+
     public void DoVendorRepair()
     {
+        ShowConfiguredPopup();
+    }
+
+    public bool DoVendorRecharge()
+    {
+        ShowConfiguredPopup();
+        return false;
+    }
+
+    private void ShowConfiguredPopup()
+    {
+        if (UseShowFailPopup)
+        {
+            DummyPopupShow.ShowFail(PopupMessageToShow);
+            return;
+        }
+
         if (UseConfirmationPopup)
         {
             _ = DummyPopupShow.ShowYesNo(PopupMessageToShow);

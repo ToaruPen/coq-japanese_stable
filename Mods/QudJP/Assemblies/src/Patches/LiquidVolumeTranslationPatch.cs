@@ -68,7 +68,7 @@ public static class LiquidVolumeTranslationPatch
     {
         try
         {
-            activeDepth++;
+            OwnerTranslationScope.Enter(ref activeDepth);
         }
         catch (Exception ex)
         {
@@ -80,10 +80,7 @@ public static class LiquidVolumeTranslationPatch
     {
         try
         {
-            if (activeDepth > 0)
-            {
-                activeDepth--;
-            }
+            OwnerTranslationScope.Exit(ref activeDepth);
         }
         catch (Exception ex)
         {
@@ -95,12 +92,46 @@ public static class LiquidVolumeTranslationPatch
 
     internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
     {
-        if (activeDepth <= 0)
+        if (!OwnerTranslationScope.IsActive(activeDepth))
         {
             translated = source;
             return false;
         }
 
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return true;
+        }
+
         return LiquidVolumeFragmentTranslator.TryTranslatePopupMessage(source, route, family + "." + Context, out translated);
+    }
+
+    internal static bool TryTranslateQueuedMessage(ref string message, string? color)
+    {
+        _ = color;
+
+        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(message))
+        {
+            return false;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var markedText))
+        {
+            message = markedText;
+            return true;
+        }
+
+        if (!LiquidVolumeFragmentTranslator.TryTranslateQueuedMessage(
+                message,
+                "MessageQueue.AddPlayerMessage",
+                Context + ".Queued",
+                out var translated))
+        {
+            return false;
+        }
+
+        message = translated;
+        return true;
     }
 }

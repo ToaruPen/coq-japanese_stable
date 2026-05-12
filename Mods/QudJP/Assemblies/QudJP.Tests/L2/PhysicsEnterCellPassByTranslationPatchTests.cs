@@ -37,6 +37,7 @@ public sealed class PhysicsEnterCellPassByTranslationPatchTests
     {
         Translator.ResetForTests();
         MessagePatternTranslator.ResetForTests();
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
 
         if (Directory.Exists(tempDirectory))
         {
@@ -129,6 +130,106 @@ public sealed class PhysicsEnterCellPassByTranslationPatchTests
     }
 
     [Test]
+    public void AggregateMessageQueuePatch_TranslatesEnterCellPassByUsingRepositoryPattern_WhenPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            var original = RequireMethod(
+                typeof(DummyMessageQueue),
+                nameof(DummyMessageQueue.AddPlayerMessage),
+                typeof(string),
+                typeof(string),
+                typeof(bool));
+            harmony.Patch(
+                original: original,
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(MessageQueueTranslationPatch),
+                    nameof(MessageQueueTranslationPatch.PrefixPhysicsEnterCellPassBy),
+                    typeof(string).MakeByRefType(),
+                    typeof(string),
+                    typeof(bool))));
+            harmony.Patch(
+                original: original,
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(MessageQueueTranslationPatch),
+                    nameof(MessageQueueTranslationPatch.PrefixMessageLog),
+                    typeof(string).MakeByRefType(),
+                    typeof(string),
+                    typeof(bool))));
+
+            var target = new DummyPhysicsEnterCellTarget();
+            target.PassingBy.Add("ウォーターヴァイン");
+
+            target.EnterCell();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("ウォーターヴァインのそばを通り過ぎた。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void AggregateMessageQueuePatch_PassesThroughEmptyAndDirectMarkedMessages_WhenPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            var original = RequireMethod(
+                typeof(DummyMessageQueue),
+                nameof(DummyMessageQueue.AddPlayerMessage),
+                typeof(string),
+                typeof(string),
+                typeof(bool));
+            harmony.Patch(
+                original: original,
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(MessageQueueTranslationPatch),
+                    nameof(MessageQueueTranslationPatch.PrefixPhysicsEnterCellPassBy),
+                    typeof(string).MakeByRefType(),
+                    typeof(string),
+                    typeof(bool))));
+            harmony.Patch(
+                original: original,
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(MessageQueueTranslationPatch),
+                    nameof(MessageQueueTranslationPatch.PrefixMessageLog),
+                    typeof(string).MakeByRefType(),
+                    typeof(string),
+                    typeof(bool))));
+
+            DummyMessageQueue.AddPlayerMessage(string.Empty, "&W", Capitalize: false);
+            var empty = DummyMessageQueue.LastMessage;
+
+            const string unmarked = "You pass by ウォーターヴァイン.";
+            DummyMessageQueue.AddPlayerMessage(MessageFrameTranslator.MarkDirectTranslation(unmarked), "&W", Capitalize: false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(empty, Is.EqualTo(string.Empty));
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(unmarked));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PhysicsEnterCellPassByTranslationPatch),
+                        "PassBy"),
+                    Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_PassesThroughEnglishWhenPatternDoesNotMatch_WhenPatched()
     {
         var harmonyId = CreateHarmonyId();
@@ -200,5 +301,21 @@ public sealed class PhysicsEnterCellPassByTranslationPatchTests
         return value
             .Replace("\\", "\\\\", StringComparison.Ordinal)
             .Replace("\"", "\\\"", StringComparison.Ordinal);
+    }
+
+    private static void UseRepositoryPatternDictionary()
+    {
+        var localizationRoot = Path.GetFullPath(
+            Path.Combine(
+                TestContext.CurrentContext.TestDirectory,
+                "..",
+                "..",
+                "..",
+                "..",
+                "..",
+                "Localization"));
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
+        MessagePatternTranslator.SetPatternFileForTests(null);
     }
 }

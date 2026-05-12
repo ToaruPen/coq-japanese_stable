@@ -44,6 +44,43 @@ internal static class LiquidVolumeFragmentTranslator
                 spans,
                 static target => string.Concat(target, "はあなたの所有物ではない。本当に満たしますか？"))),
         new(
+            "OwnershipPour",
+            new Regex(
+                "^(?<target>.+?) (?:is|are) not owned by you\\. Are you sure you want to pour from (?<object>.+?)\\?$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => BuildOwnershipQuestion(
+                match.Groups["target"],
+                spans,
+                static target => string.Concat(target, "はあなたの所有物ではない。本当にそこから注ぎますか？"))),
+        new(
+            "OwnershipTake",
+            new Regex(
+                "^(?<target>.+?) (?:is|are) not owned by you\\. Are you sure you want to take from (?<object>.+?)\\?$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => BuildOwnershipQuestion(
+                match.Groups["target"],
+                spans,
+                static target => string.Concat(target, "はあなたの所有物ではない。本当にそこから取りますか？"))),
+        new(
+            "OwnershipCollect",
+            new Regex(
+                "^(?<target>.+?) (?:is|are) not owned by you\\. Are you sure you want to collect from (?<object>.+?)\\?$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => BuildOwnershipQuestion(
+                match.Groups["target"],
+                spans,
+                static target => string.Concat(target, "はあなたの所有物ではない。本当にそこから集めますか？"))),
+        new(
+            "OwnershipUseLiquid",
+            new Regex(
+                "^(?<target>.+?) (?:is|are) not owned by you\\. Are you sure you want to use (?<liquid>.+?) from (?<object>.+?)\\?$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                TranslateTarget(match.Groups["target"], spans),
+                "はあなたの所有物ではない。",
+                RestoreVisible(match.Groups["liquid"], spans),
+                "を本当にそこから使いますか？")),
+        new(
             "NowStatus",
             new Regex(
                 "^You are now (?<status>.+)\\.$",
@@ -92,9 +129,58 @@ internal static class LiquidVolumeFragmentTranslator
             static (match, spans) => string.Concat(
                 TranslateTarget(match.Groups["target"], spans),
                 "を先に空にしますか？")),
+        new(
+            "DrainConfirm",
+            new Regex(
+                "^Are you sure you want to drain (?<target>.+?)\\?$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                TranslateTarget(match.Groups["target"], spans),
+                "を本当に排出しますか？")),
+        new(
+            "CollectConfirm",
+            new Regex(
+                "^You are able to collect (?<amount>\\d+) drams? of (?<liquid>.+?)\\. Are you sure you want to\\?$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                RestoreVisible(match.Groups["liquid"], spans),
+                "を",
+                match.Groups["amount"].Value,
+                "ドラム集められる。本当にそうしますか？")),
+        new(
+            "PourOutSelf",
+            new Regex(
+                "^(?<amount>\\d+) drams? of (?<liquid>.+?) pours out all over you!$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => BuildPourOutMessage(
+                match.Groups["amount"],
+                match.Groups["liquid"],
+                "あなた",
+                spans)),
+        new(
+            "PourOutActor",
+            new Regex(
+                "^(?<amount>\\d+) drams? of (?<liquid>.+?) pours out all over (?<target>.+?)!$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => BuildPourOutMessage(
+                match.Groups["amount"],
+                match.Groups["liquid"],
+                TranslateTarget(match.Groups["target"], spans),
+                spans)),
+        new(
+            "Fizzy",
+            new Regex(
+                "^It's fizzy\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (_, _) => "シュワシュワしている。"),
     ];
 
     internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
+    {
+        return TryTranslate(source, route, family, out translated);
+    }
+
+    internal static bool TryTranslateQueuedMessage(string source, string route, string family, out string translated)
     {
         return TryTranslate(source, route, family, out translated);
     }
@@ -140,19 +226,71 @@ internal static class LiquidVolumeFragmentTranslator
         return build(target);
     }
 
+    private static string BuildPourOutMessage(
+        Group amountGroup,
+        Group liquidGroup,
+        string target,
+        IReadOnlyList<ColorSpan> spans)
+    {
+        return string.Concat(
+            RestoreVisible(liquidGroup, spans),
+            ' ',
+            amountGroup.Value,
+            "ドラムが",
+            target,
+            "の全身にかかった！");
+    }
+
     private static string TranslateTarget(Group group, IReadOnlyList<ColorSpan> spans)
     {
         var restored = RestoreVisible(group, spans);
         var normalized = NormalizeTarget(group.Value);
         return string.Equals(normalized, group.Value.Trim(), StringComparison.Ordinal)
             ? restored
-            : ColorAwareTranslationComposer.RestoreCapture(normalized, spans, group).Trim();
+            : TranslateNormalizedTarget(group, spans, restored, normalized);
+    }
+
+    private static string TranslateNormalizedTarget(
+        Group group,
+        IReadOnlyList<ColorSpan> spans,
+        string restored,
+        string normalized)
+    {
+        var articleStripped = StringHelpers.StripLeadingEnglishArticle(
+            group.Value.Trim(),
+            includeCapitalizedDefiniteArticle: true);
+        if (string.Equals(normalized, articleStripped, StringComparison.Ordinal))
+        {
+            return StripLeadingEnglishArticlePreservingColors(restored);
+        }
+
+        return ColorAwareTranslationComposer.RestoreCapture(normalized, spans, group).Trim();
     }
 
     private static string RestoreVisible(Group group, IReadOnlyList<ColorSpan> spans)
     {
         var restored = ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group);
         return restored.Trim();
+    }
+
+    private static string StripLeadingEnglishArticlePreservingColors(string source)
+    {
+        var direct = StringHelpers.StripLeadingEnglishArticle(source, includeCapitalizedDefiniteArticle: true);
+        if (!string.Equals(direct, source, StringComparison.Ordinal))
+        {
+            return direct;
+        }
+
+        var visible = ColorAwareTranslationComposer.GetVisibleText(source);
+        var withoutArticle = StringHelpers.StripLeadingEnglishArticle(
+            visible,
+            includeCapitalizedDefiniteArticle: true);
+        if (string.Equals(withoutArticle, visible, StringComparison.Ordinal))
+        {
+            return source;
+        }
+
+        return ColorAwareTranslationComposer.TranslatePreservingColors(source, _ => withoutArticle);
     }
 
     private static string NormalizeTarget(string target)
