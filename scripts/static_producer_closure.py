@@ -3138,7 +3138,89 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _game_summary_tombstone_popup_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/GameSummaryTombstonePopupTranslationPatch.cs",
+        (
+            "GameSummaryTombstonePopupTranslationPatch",
+            "TryTranslatePopupMessage",
+            "SavedPattern",
+            "ErrorPattern",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("GameSummaryTombstonePopupTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/GameSummaryTombstonePopupTranslationPatchTests.cs",
+        (
+            "Patch_TranslatesTombstonePopup_WhenOwnerPatched",
+            "Patch_DoesNotTranslateTombstonePopup_WhenOwnerAbsent",
+            "Patch_StripsDirectMarkedTombstonePopup_WhenOwnerPatched",
+            "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+            "Your tombstone file was saved:",
+            "There was an error saving:",
+        ),
+    )
+    dictionary = EvidenceFile(
+        "Mods/QudJP/Localization/Dictionaries/ui-game-summary.ja.json",
+        (
+            "Your tombstone file was saved:\\n\\n{0}",
+            "There was an error saving: {0}",
+            "墓碑ファイルを保存しました",
+            "保存中にエラーが発生しました",
+        ),
+    )
+
+    return (
+        CoveredOwnerFamily(
+            family_id="Qud.UI/GameSummaryScreen.cs::Qud.UI.GameSummaryScreen.SaveTombstone",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/GameSummaryTombstonePopupTranslationPatch.cs",
+                    ("Qud.UI.GameSummaryScreen", "SaveTombstone"),
+                ),
+                patch,
+                pipeline,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "Qud.UI.GameSummaryScreen|SaveTombstone|System.Void",
+                    ),
+                ),
+                dictionary,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.UI/GameSummaryUI.cs::XRL.UI.GameSummaryUI.Show",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/GameSummaryTombstonePopupTranslationPatch.cs",
+                    ("XRL.UI.GameSummaryUI", "Show"),
+                ),
+                patch,
+                pipeline,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "XRL.UI.GameSummaryUI|Show|System.Void|System.Int32|System.String|System.String|System.String|System.String|System.Boolean",
+                    ),
+                ),
+                dictionary,
+            ),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
+    *_game_summary_tombstone_popup_families(),
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
         inventory_statuses=("owner_patch_required",),
