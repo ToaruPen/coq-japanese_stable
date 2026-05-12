@@ -99,6 +99,8 @@ public sealed class ConversationTakeItemPopupTranslationPatchTests
     public void Execute_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
         AssertPopupMessage(string.Empty, string.Empty);
+
+        Assert.That(TakeItemHitCount(), Is.Zero);
     }
 
     [Test]

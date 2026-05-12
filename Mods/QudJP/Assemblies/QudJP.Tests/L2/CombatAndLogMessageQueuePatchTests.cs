@@ -3761,6 +3761,13 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertFungalSporeInfectionQueuedMessage(string.Empty, string.Empty);
     }
 
+    [TestCase(nameof(DummyFungalSporeInfectionTarget.PaxFireEvent))]
+    [TestCase(nameof(DummyFungalSporeInfectionTarget.PuffFireEvent))]
+    public void FungalSporeInfectionSporeCloudRoutes_LeaveEmptyQueuedMessageUnchanged_WhenOwnerPatched(string methodName)
+    {
+        AssertFungalSporeInfectionQueuedMessage(methodName, string.Empty, string.Empty);
+    }
+
     [TestCase(nameof(DummyHealingTarget.HandleEvent))]
     [TestCase(nameof(DummyHealingTarget.FireEvent))]
     public void Healing_TranslatesInterruptedQueuedMessage_WhenOwnerPatched(string methodName)
@@ -4192,6 +4199,12 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void SystemStaticQuake_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
     {
         AssertSystemStaticQuakeQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void SystemStaticQuake_LeavesUnknownQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertSystemStaticQuakeQueuedMessage("The cavern walls rumble softly.", "The cavern walls rumble softly.");
     }
 
     [Test]
@@ -7562,9 +7575,13 @@ public sealed class CombatAndLogMessageQueuePatchTests
             {
                 _ = target.PuffFireEvent(new DummyGameEvent { ID = "BeforeApplyDamage" });
             }
-            else
+            else if (string.Equals(methodName, nameof(DummyFungalSporeInfectionTarget.FireEvent), StringComparison.Ordinal))
             {
                 _ = target.FireEvent(new DummyGameEvent { ID = "EndTurn" });
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(methodName), methodName, null);
             }
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));

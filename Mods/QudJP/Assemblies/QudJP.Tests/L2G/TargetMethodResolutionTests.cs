@@ -1331,6 +1331,11 @@ public sealed class TargetMethodResolutionTests
         "Qud.UI.GameSummaryScreen|SaveTombstone|System.Void",
         "XRL.UI.GameSummaryUI|Show|System.Void|System.Int32|System.String|System.String|System.String|System.String|System.Boolean",
     })]
+    [TestCase(typeof(FireSuppressionDischargeTranslationPatch), new[]
+    {
+        "XRL.World.Parts.FireSuppressionSystem|CheckFireSuppression|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Parts.CyberneticsFireSuppressionSystem|TurnTick|System.Void|System.Int64|System.Int32",
+    })]
     public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
     {
         var targetMethodsMethod = patchType.GetMethod("TargetMethods", BindingFlags.NonPublic | BindingFlags.Static);
