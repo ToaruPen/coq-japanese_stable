@@ -67,6 +67,82 @@ class CoveredOwnerFamily:
     evidence_files: tuple[EvidenceFile, ...]
 
 
+@dataclass(frozen=True)
+class OwnerPopupRouteEvidenceSpec:
+    """Shared evidence anchors for owner-popup route closure."""
+
+    patch_file: str
+    patch_type: str
+    test_file: str
+    positive_test: str
+    negative_test: str
+    direct_marker_test: str
+    empty_test: str
+
+
+@dataclass(frozen=True)
+class SifrahResultPopupFamilySpec:
+    """Shared metadata for Sifrah result popup closure families."""
+
+    source_file: str
+    type_name: str
+    evidence: OwnerPopupRouteEvidenceSpec
+    target_type_name: str
+    method_details: tuple[tuple[str, str], ...]
+
+
+def _owner_popup_route_evidence(
+    *,
+    spec: OwnerPopupRouteEvidenceSpec,
+    target_method_token: str,
+    full_signature: str,
+    patch_required_substrings: tuple[str, ...],
+) -> tuple[EvidenceFile, ...]:
+    return (
+        EvidenceFile(
+            spec.patch_file,
+            ("TryTranslatePopupMessage", *patch_required_substrings),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+            (f"{spec.patch_type}.TryTranslatePopupMessage",),
+        ),
+        EvidenceFile(
+            spec.test_file,
+            (
+                spec.positive_test,
+                spec.negative_test,
+                spec.direct_marker_test,
+                spec.empty_test,
+                target_method_token,
+            ),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+            (
+                "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                full_signature,
+            ),
+        ),
+    )
+
+
+def _sifrah_result_popup_families(spec: SifrahResultPopupFamilySpec) -> tuple[CoveredOwnerFamily, ...]:
+    return tuple(
+        CoveredOwnerFamily(
+            family_id=f"{spec.source_file}::{spec.type_name}.{method_name}",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=_owner_popup_route_evidence(
+                spec=spec.evidence,
+                target_method_token=f"nameof({spec.target_type_name}.{method_name})",
+                full_signature=f"{spec.type_name}|{method_name}|System.Void|XRL.World.GameObject",
+                patch_required_substrings=(method_name, detail),
+            ),
+        )
+        for method_name, detail in spec.method_details
+    )
+
+
 def _hacking_sifrah_result_families() -> tuple[CoveredOwnerFamily, ...]:
     target_sets = (
         (
@@ -4035,313 +4111,49 @@ COVERED_OWNER_FAMILIES: Final = (
             ),
         ),
     ),
-    CoveredOwnerFamily(
-        family_id="XRL.World/BeguilingSifrah.cs::XRL.World.BeguilingSifrah.ResultCriticalFailure",
-        inventory_statuses=("owner_patch_required",),
-        evidence_files=(
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/BeguilingSifrahTranslationPatch.cs",
-                ("TryTranslatePopupMessage", "ResultCriticalFailure", "CriticalFailure"),
+    *_sifrah_result_popup_families(
+        SifrahResultPopupFamilySpec(
+            source_file="XRL.World/BeguilingSifrah.cs",
+            type_name="XRL.World.BeguilingSifrah",
+            evidence=OwnerPopupRouteEvidenceSpec(
+                patch_file="Mods/QudJP/Assemblies/src/Patches/BeguilingSifrahTranslationPatch.cs",
+                patch_type="BeguilingSifrahTranslationPatch",
+                test_file="Mods/QudJP/Assemblies/QudJP.Tests/L2/BeguilingSifrahTranslationPatchTests.cs",
+                positive_test="Patch_TranslatesBeguilingResultPopups_WhenOwnerPatched",
+                negative_test="Patch_DoesNotTranslateBeguilingPopup_WhenOwnerAbsent",
+                direct_marker_test="Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                empty_test="Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
             ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
-                ("BeguilingSifrahTranslationPatch.TryTranslatePopupMessage",),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2/BeguilingSifrahTranslationPatchTests.cs",
-                (
-                    "Patch_TranslatesBeguilingResultPopups_WhenOwnerPatched",
-                    "Patch_DoesNotTranslateBeguilingPopup_WhenOwnerAbsent",
-                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
-                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
-                    "nameof(DummyBeguilingSifrahProducerTarget.ResultCriticalFailure)",
-                ),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
-                (
-                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
-                    "XRL.World.BeguilingSifrah|ResultCriticalFailure|System.Void|XRL.World.GameObject",
-                ),
+            target_type_name="DummyBeguilingSifrahProducerTarget",
+            method_details=(
+                ("ResultCriticalFailure", "CriticalFailure"),
+                ("ResultFailure", "Failure"),
+                ("ResultPartialSuccess", "PartialSuccess"),
+                ("ResultSuccess", "InterestedButUnable"),
+                ("ResultExceptionalSuccess", "InterestedButUnable"),
             ),
         ),
     ),
-    CoveredOwnerFamily(
-        family_id="XRL.World/BeguilingSifrah.cs::XRL.World.BeguilingSifrah.ResultFailure",
-        inventory_statuses=("owner_patch_required",),
-        evidence_files=(
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/BeguilingSifrahTranslationPatch.cs",
-                ("TryTranslatePopupMessage", "ResultFailure", "Failure"),
+    *_sifrah_result_popup_families(
+        SifrahResultPopupFamilySpec(
+            source_file="XRL.World/ProselytizationSifrah.cs",
+            type_name="XRL.World.ProselytizationSifrah",
+            evidence=OwnerPopupRouteEvidenceSpec(
+                patch_file="Mods/QudJP/Assemblies/src/Patches/ProselytizationSifrahTranslationPatch.cs",
+                patch_type="ProselytizationSifrahTranslationPatch",
+                test_file="Mods/QudJP/Assemblies/QudJP.Tests/L2/ProselytizationSifrahTranslationPatchTests.cs",
+                positive_test="Patch_TranslatesProselytizationResultPopups_WhenOwnerPatched",
+                negative_test="Patch_DoesNotTranslateProselytizationPopup_WhenOwnerAbsent",
+                direct_marker_test="Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                empty_test="Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
             ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
-                ("BeguilingSifrahTranslationPatch.TryTranslatePopupMessage",),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2/BeguilingSifrahTranslationPatchTests.cs",
-                (
-                    "Patch_TranslatesBeguilingResultPopups_WhenOwnerPatched",
-                    "Patch_DoesNotTranslateBeguilingPopup_WhenOwnerAbsent",
-                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
-                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
-                    "nameof(DummyBeguilingSifrahProducerTarget.ResultFailure)",
-                ),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
-                (
-                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
-                    "XRL.World.BeguilingSifrah|ResultFailure|System.Void|XRL.World.GameObject",
-                ),
-            ),
-        ),
-    ),
-    CoveredOwnerFamily(
-        family_id="XRL.World/BeguilingSifrah.cs::XRL.World.BeguilingSifrah.ResultPartialSuccess",
-        inventory_statuses=("owner_patch_required",),
-        evidence_files=(
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/BeguilingSifrahTranslationPatch.cs",
-                ("TryTranslatePopupMessage", "ResultPartialSuccess", "PartialSuccess"),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
-                ("BeguilingSifrahTranslationPatch.TryTranslatePopupMessage",),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2/BeguilingSifrahTranslationPatchTests.cs",
-                (
-                    "Patch_TranslatesBeguilingResultPopups_WhenOwnerPatched",
-                    "Patch_DoesNotTranslateBeguilingPopup_WhenOwnerAbsent",
-                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
-                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
-                    "nameof(DummyBeguilingSifrahProducerTarget.ResultPartialSuccess)",
-                ),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
-                (
-                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
-                    "XRL.World.BeguilingSifrah|ResultPartialSuccess|System.Void|XRL.World.GameObject",
-                ),
-            ),
-        ),
-    ),
-    CoveredOwnerFamily(
-        family_id="XRL.World/BeguilingSifrah.cs::XRL.World.BeguilingSifrah.ResultSuccess",
-        inventory_statuses=("owner_patch_required",),
-        evidence_files=(
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/BeguilingSifrahTranslationPatch.cs",
-                ("TryTranslatePopupMessage", "ResultSuccess", "InterestedButUnable"),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
-                ("BeguilingSifrahTranslationPatch.TryTranslatePopupMessage",),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2/BeguilingSifrahTranslationPatchTests.cs",
-                (
-                    "Patch_TranslatesBeguilingResultPopups_WhenOwnerPatched",
-                    "Patch_DoesNotTranslateBeguilingPopup_WhenOwnerAbsent",
-                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
-                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
-                    "nameof(DummyBeguilingSifrahProducerTarget.ResultSuccess)",
-                ),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
-                (
-                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
-                    "XRL.World.BeguilingSifrah|ResultSuccess|System.Void|XRL.World.GameObject",
-                ),
-            ),
-        ),
-    ),
-    CoveredOwnerFamily(
-        family_id="XRL.World/BeguilingSifrah.cs::XRL.World.BeguilingSifrah.ResultExceptionalSuccess",
-        inventory_statuses=("owner_patch_required",),
-        evidence_files=(
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/BeguilingSifrahTranslationPatch.cs",
-                ("TryTranslatePopupMessage", "ResultExceptionalSuccess", "InterestedButUnable"),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
-                ("BeguilingSifrahTranslationPatch.TryTranslatePopupMessage",),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2/BeguilingSifrahTranslationPatchTests.cs",
-                (
-                    "Patch_TranslatesBeguilingResultPopups_WhenOwnerPatched",
-                    "Patch_DoesNotTranslateBeguilingPopup_WhenOwnerAbsent",
-                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
-                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
-                    "nameof(DummyBeguilingSifrahProducerTarget.ResultExceptionalSuccess)",
-                ),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
-                (
-                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
-                    "XRL.World.BeguilingSifrah|ResultExceptionalSuccess|System.Void|XRL.World.GameObject",
-                ),
-            ),
-        ),
-    ),
-    CoveredOwnerFamily(
-        family_id="XRL.World/ProselytizationSifrah.cs::XRL.World.ProselytizationSifrah.ResultCriticalFailure",
-        inventory_statuses=("owner_patch_required",),
-        evidence_files=(
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/ProselytizationSifrahTranslationPatch.cs",
-                ("TryTranslatePopupMessage", "ResultCriticalFailure", "CriticalFailure"),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
-                ("ProselytizationSifrahTranslationPatch.TryTranslatePopupMessage",),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2/ProselytizationSifrahTranslationPatchTests.cs",
-                (
-                    "Patch_TranslatesProselytizationResultPopups_WhenOwnerPatched",
-                    "Patch_DoesNotTranslateProselytizationPopup_WhenOwnerAbsent",
-                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
-                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
-                    "nameof(DummyProselytizationSifrahProducerTarget.ResultCriticalFailure)",
-                ),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
-                (
-                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
-                    "XRL.World.ProselytizationSifrah|ResultCriticalFailure|System.Void|XRL.World.GameObject",
-                ),
-            ),
-        ),
-    ),
-    CoveredOwnerFamily(
-        family_id="XRL.World/ProselytizationSifrah.cs::XRL.World.ProselytizationSifrah.ResultFailure",
-        inventory_statuses=("owner_patch_required",),
-        evidence_files=(
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/ProselytizationSifrahTranslationPatch.cs",
-                ("TryTranslatePopupMessage", "ResultFailure", "Failure"),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
-                ("ProselytizationSifrahTranslationPatch.TryTranslatePopupMessage",),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2/ProselytizationSifrahTranslationPatchTests.cs",
-                (
-                    "Patch_TranslatesProselytizationResultPopups_WhenOwnerPatched",
-                    "Patch_DoesNotTranslateProselytizationPopup_WhenOwnerAbsent",
-                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
-                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
-                    "nameof(DummyProselytizationSifrahProducerTarget.ResultFailure)",
-                ),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
-                (
-                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
-                    "XRL.World.ProselytizationSifrah|ResultFailure|System.Void|XRL.World.GameObject",
-                ),
-            ),
-        ),
-    ),
-    CoveredOwnerFamily(
-        family_id="XRL.World/ProselytizationSifrah.cs::XRL.World.ProselytizationSifrah.ResultPartialSuccess",
-        inventory_statuses=("owner_patch_required",),
-        evidence_files=(
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/ProselytizationSifrahTranslationPatch.cs",
-                ("TryTranslatePopupMessage", "ResultPartialSuccess", "PartialSuccess"),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
-                ("ProselytizationSifrahTranslationPatch.TryTranslatePopupMessage",),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2/ProselytizationSifrahTranslationPatchTests.cs",
-                (
-                    "Patch_TranslatesProselytizationResultPopups_WhenOwnerPatched",
-                    "Patch_DoesNotTranslateProselytizationPopup_WhenOwnerAbsent",
-                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
-                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
-                    "nameof(DummyProselytizationSifrahProducerTarget.ResultPartialSuccess)",
-                ),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
-                (
-                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
-                    "XRL.World.ProselytizationSifrah|ResultPartialSuccess|System.Void|XRL.World.GameObject",
-                ),
-            ),
-        ),
-    ),
-    CoveredOwnerFamily(
-        family_id="XRL.World/ProselytizationSifrah.cs::XRL.World.ProselytizationSifrah.ResultSuccess",
-        inventory_statuses=("owner_patch_required",),
-        evidence_files=(
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/ProselytizationSifrahTranslationPatch.cs",
-                ("TryTranslatePopupMessage", "ResultSuccess", "SympatheticButUnable"),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
-                ("ProselytizationSifrahTranslationPatch.TryTranslatePopupMessage",),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2/ProselytizationSifrahTranslationPatchTests.cs",
-                (
-                    "Patch_TranslatesProselytizationResultPopups_WhenOwnerPatched",
-                    "Patch_DoesNotTranslateProselytizationPopup_WhenOwnerAbsent",
-                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
-                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
-                    "nameof(DummyProselytizationSifrahProducerTarget.ResultSuccess)",
-                ),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
-                (
-                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
-                    "XRL.World.ProselytizationSifrah|ResultSuccess|System.Void|XRL.World.GameObject",
-                ),
-            ),
-        ),
-    ),
-    CoveredOwnerFamily(
-        family_id="XRL.World/ProselytizationSifrah.cs::XRL.World.ProselytizationSifrah.ResultExceptionalSuccess",
-        inventory_statuses=("owner_patch_required",),
-        evidence_files=(
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/ProselytizationSifrahTranslationPatch.cs",
-                ("TryTranslatePopupMessage", "ResultExceptionalSuccess", "SympatheticButUnable"),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
-                ("ProselytizationSifrahTranslationPatch.TryTranslatePopupMessage",),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2/ProselytizationSifrahTranslationPatchTests.cs",
-                (
-                    "Patch_TranslatesProselytizationResultPopups_WhenOwnerPatched",
-                    "Patch_DoesNotTranslateProselytizationPopup_WhenOwnerAbsent",
-                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
-                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
-                    "nameof(DummyProselytizationSifrahProducerTarget.ResultExceptionalSuccess)",
-                ),
-            ),
-            EvidenceFile(
-                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
-                (
-                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
-                    "XRL.World.ProselytizationSifrah|ResultExceptionalSuccess|System.Void|XRL.World.GameObject",
-                ),
+            target_type_name="DummyProselytizationSifrahProducerTarget",
+            method_details=(
+                ("ResultCriticalFailure", "CriticalFailure"),
+                ("ResultFailure", "Failure"),
+                ("ResultPartialSuccess", "PartialSuccess"),
+                ("ResultSuccess", "SympatheticButUnable"),
+                ("ResultExceptionalSuccess", "SympatheticButUnable"),
             ),
         ),
     ),

@@ -1,5 +1,4 @@
 using System.Reflection;
-using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
 
@@ -56,134 +55,90 @@ public sealed class BeguilingSifrahTranslationPatchTests
         string expected,
         string detail)
     {
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
-        {
-            PatchPopupShow(harmony);
-            PatchOwner(harmony, RequireOwnerMethod(methodName));
-
-            var target = new DummyBeguilingSifrahProducerTarget
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(BeguilingSifrahTranslationPatch),
+            RequireOwnerMethod(methodName),
+            () =>
             {
-                PopupMessageToShow = source,
-            };
+                var target = new DummyBeguilingSifrahProducerTarget
+                {
+                    PopupMessageToShow = source,
+                };
 
-            InvokeOwnerMethod(target, methodName);
+                InvokeOwnerMethod(target, methodName);
 
-            Assert.Multiple(() =>
-            {
-                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
-                Assert.That(BeguilingHitCount(detail), Is.EqualTo(1));
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+                    Assert.That(BeguilingHitCount(detail), Is.EqualTo(1));
+                });
             });
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
     }
 
     [Test]
     public void Patch_DoesNotTranslateBeguilingPopup_WhenOwnerAbsent()
     {
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
-        {
-            PatchPopupShow(harmony);
-
-            const string source = "Your coquetry does not impress {{Y|砂漠の隠者}}.";
-            DummyPopupShow.Show(source);
-
-            Assert.Multiple(() =>
+        OwnerPopupRouteTestHarness.WithPatchedPopupOnly(
+            () =>
             {
-                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
-                Assert.That(BeguilingHitCount("Failure"), Is.Zero);
+                const string source = "Your coquetry does not impress {{Y|砂漠の隠者}}.";
+                DummyPopupShow.Show(source);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                    Assert.That(BeguilingHitCount("Failure"), Is.Zero);
+                });
             });
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
     }
 
     [Test]
     public void Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
     {
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
-        {
-            PatchPopupShow(harmony);
-            PatchOwner(harmony, RequireOwnerMethod(nameof(DummyBeguilingSifrahProducerTarget.ResultFailure)));
-
-            var source = MessageFrameTranslator.MarkDirectTranslation("Your coquetry does not impress {{Y|砂漠の隠者}}.");
-            var target = new DummyBeguilingSifrahProducerTarget
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(BeguilingSifrahTranslationPatch),
+            RequireOwnerMethod(nameof(DummyBeguilingSifrahProducerTarget.ResultFailure)),
+            () =>
             {
-                PopupMessageToShow = source,
-            };
+                var source = MessageFrameTranslator.MarkDirectTranslation("Your coquetry does not impress {{Y|砂漠の隠者}}.");
+                var target = new DummyBeguilingSifrahProducerTarget
+                {
+                    PopupMessageToShow = source,
+                };
 
-            target.ResultFailure(new DummyGameObject());
+                target.ResultFailure(new DummyGameObject());
 
-            Assert.Multiple(() =>
-            {
-                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("Your coquetry does not impress {{Y|砂漠の隠者}}."));
-                Assert.That(BeguilingHitCount("Failure"), Is.Zero);
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("Your coquetry does not impress {{Y|砂漠の隠者}}."));
+                    Assert.That(BeguilingHitCount("Failure"), Is.Zero);
+                });
             });
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
     }
 
     [Test]
     public void Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
-        {
-            PatchPopupShow(harmony);
-            PatchOwner(harmony, RequireOwnerMethod(nameof(DummyBeguilingSifrahProducerTarget.ResultFailure)));
-
-            var target = new DummyBeguilingSifrahProducerTarget();
-
-            target.ResultFailure(new DummyGameObject());
-
-            Assert.Multiple(() =>
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(BeguilingSifrahTranslationPatch),
+            RequireOwnerMethod(nameof(DummyBeguilingSifrahProducerTarget.ResultFailure)),
+            () =>
             {
-                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
-                Assert.That(BeguilingHitCount("Failure"), Is.Zero);
+                var target = new DummyBeguilingSifrahProducerTarget();
+
+                target.ResultFailure(new DummyGameObject());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
+                    Assert.That(BeguilingHitCount("Failure"), Is.Zero);
+                });
             });
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
-    }
-
-    private static void PatchPopupShow(Harmony harmony)
-    {
-        harmony.Patch(
-            original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
-            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
-    }
-
-    private static void PatchOwner(Harmony harmony, MethodInfo original)
-    {
-        harmony.Patch(
-            original: original,
-            prefix: new HarmonyMethod(RequireMethod(typeof(BeguilingSifrahTranslationPatch), nameof(BeguilingSifrahTranslationPatch.Prefix))),
-            finalizer: new HarmonyMethod(RequireMethod(typeof(BeguilingSifrahTranslationPatch), nameof(BeguilingSifrahTranslationPatch.Finalizer), typeof(Exception))));
     }
 
     private static MethodInfo RequireOwnerMethod(string methodName)
     {
-        return RequireMethod(typeof(DummyBeguilingSifrahProducerTarget), methodName, typeof(DummyGameObject));
+        return OwnerPopupRouteTestHarness.RequireMethod(typeof(DummyBeguilingSifrahProducerTarget), methodName, typeof(DummyGameObject));
     }
 
     private static void InvokeOwnerMethod(DummyBeguilingSifrahProducerTarget target, string methodName)
@@ -193,25 +148,6 @@ public sealed class BeguilingSifrahTranslationPatchTests
 
     private static int BeguilingHitCount(string detail)
     {
-        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
-            nameof(PopupShowTranslationPatch),
-            "Popup.ProducerText." + nameof(BeguilingSifrahTranslationPatch) + "." + detail);
-    }
-
-    private static MethodInfo RequireMethod(Type type, string methodName, params Type[] parameterTypes)
-    {
-        if (parameterTypes.Length == 0)
-        {
-            return type.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance)
-                   ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
-        }
-
-        return AccessTools.Method(type, methodName, parameterTypes)
-               ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
-    }
-
-    private static string CreateHarmonyId()
-    {
-        return $"qudjp.tests.{Guid.NewGuid():N}";
+        return OwnerPopupRouteTestHarness.RouteHitCount(typeof(BeguilingSifrahTranslationPatch), detail);
     }
 }
