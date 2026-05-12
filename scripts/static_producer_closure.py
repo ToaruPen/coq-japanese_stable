@@ -4941,6 +4941,42 @@ COVERED_OWNER_FAMILIES: Final = (
             ),
         ),
     ),
+    CoveredOwnerFamily(
+        family_id="Qud.UI/HighScoresScreen.cs::Qud.UI.HighScoresScreen.HandleDelete",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/HighScoresDeletePopupTranslationPatch.cs",
+                (
+                    "TryTranslatePopupMessage",
+                    "DeleteConfirmationPattern",
+                    "Qud.UI.HighScoresScreen",
+                    "HandleDelete",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("HighScoresDeletePopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/HighScoresDeletePopupTranslationPatchTests.cs",
+                (
+                    "HandleDelete_TranslatesDeleteConfirmationPopup_WhenOwnerPatched",
+                    "HandleDelete_DoesNotTranslateDeleteConfirmationPopup_WhenOwnerAbsent",
+                    "HandleDelete_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "HandleDelete_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "nameof(DummyHighScoresDeleteTarget.HandleDelete)",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "HighScoresDeletePopupTargetMethod_ResolvesExpectedFullSignature",
+                    "Qud.UI.HighScoresScreen|HandleDelete|System.Void",
+                ),
+            ),
+        ),
+    ),
     *_examiner_result_popup_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)

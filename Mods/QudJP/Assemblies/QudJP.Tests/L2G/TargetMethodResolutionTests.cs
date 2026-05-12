@@ -438,6 +438,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(ChairTranslationPatch), "SitDown", "XRL.World.Parts.Chair", "System.Boolean", new[] { "XRL.World.GameObject", "XRL.World.IEvent" })]
     [TestCase(typeof(StairsDownTranslationPatch), "HandleEvent", "XRL.World.Parts.StairsDown", "System.Boolean", new[] { "XRL.World.InventoryActionEvent" })]
     [TestCase(typeof(StairsUpTranslationPatch), "HandleEvent", "XRL.World.Parts.StairsUp", "System.Boolean", new[] { "XRL.World.InventoryActionEvent" })]
+    [TestCase(typeof(HighScoresDeletePopupTranslationPatch), "HandleDelete", "Qud.UI.HighScoresScreen", "System.Void", new string[0])]
     [TestCase(typeof(GameSummaryScreenMenuBarsTranslationPatch), "UpdateMenuBars", "Qud.UI.GameSummaryScreen", "System.Void", new string[0])]
     [TestCase(typeof(GameSummaryScreenShowTranslationPatch), "_ShowGameSummary", "Qud.UI.GameSummaryScreen", "System.Threading.Tasks.Task`1[[System.Boolean]]", new[] { "System.String", "System.String", "System.String", "System.Boolean" })]
     [TestCase(typeof(MainMenuRowTranslationPatch), "setData", "MainMenuRow", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
@@ -1383,6 +1384,18 @@ public sealed class TargetMethodResolutionTests
             Assert.That(FullMethodSignature(stairsDown!), Is.EqualTo("XRL.World.Parts.StairsDown|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent"));
             Assert.That(stairsUp, Is.Not.Null);
             Assert.That(FullMethodSignature(stairsUp!), Is.EqualTo("XRL.World.Parts.StairsUp|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent"));
+        });
+    }
+
+    [Test]
+    public void HighScoresDeletePopupTargetMethod_ResolvesExpectedFullSignature()
+    {
+        var method = InvokeTargetMethod(typeof(HighScoresDeletePopupTranslationPatch)) as MethodInfo;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(method, Is.Not.Null);
+            Assert.That(FullMethodSignature(method!), Is.EqualTo("Qud.UI.HighScoresScreen|HandleDelete|System.Void"));
         });
     }
 
