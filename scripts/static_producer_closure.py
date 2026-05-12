@@ -4941,6 +4941,44 @@ COVERED_OWNER_FAMILIES: Final = (
             ),
         ),
     ),
+    CoveredOwnerFamily(
+        family_id="XRL.World.Parts/DataDisk.cs::XRL.World.Parts.DataDisk.HandleEvent",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/DataDiskLearnPopupTranslationPatch.cs",
+                (
+                    "TryTranslatePopupMessage",
+                    "ItemModificationPattern",
+                    "BuildRecipePattern",
+                    "XRL.World.Parts.DataDisk",
+                    "HandleEvent",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("DataDiskLearnPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/DataDiskLearnPopupTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesItemModificationLearnPopup_WhenOwnerPatched",
+                    "Patch_TranslatesBuildRecipeLearnPopup_WhenOwnerPatched",
+                    "Patch_DoesNotTranslateDataDiskLearnPopup_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "nameof(DummyDataDiskProducerTarget.HandleEvent)",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "DataDiskLearnPopupTargetMethod_ResolvesExpectedFullSignature",
+                    "XRL.World.Parts.DataDisk|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+                ),
+            ),
+        ),
+    ),
     *_examiner_result_popup_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
