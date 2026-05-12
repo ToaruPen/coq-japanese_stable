@@ -45,6 +45,9 @@ jobs:
       - name: Install Node tool dependencies
         run: npm ci
 
+      - name: Add Node tool binaries to PATH
+        run: echo "$PWD/node_modules/.bin" >> "$GITHUB_PATH"
+
       - name: Validate release identity
         id: identity
         shell: bash

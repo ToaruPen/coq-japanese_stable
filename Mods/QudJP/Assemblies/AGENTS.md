@@ -2,23 +2,35 @@
 
 ## Why
 
-This area contains the shipped mod DLL and the automated tests that define Harmony patch behavior.
+This directory owns the shipped QudJP mod DLL and the tests that define C#
+patch behavior for Caves of Qud `1.0.4`.
+
+Most work here changes one of three contracts:
+
+- a Harmony target or upstream game signature
+- a translation, rendering, diagnostic, or cache behavior
+- the test harness that proves those behaviors without a live Unity runtime
 
 ## What
 
-- Main paths:
-  - `QudJP.csproj` for the `net48` mod DLL
-  - `QudJP.Tests/` for the `net10.0` test project
-  - `src/Patches/` for Harmony patch classes
-  - `src/` for translators, renderers, observability helpers, and shared utilities
-- Source of truth:
-  - patch behavior is defined by tests in `QudJP.Tests/`
-  - layer boundaries live in `docs/test-architecture.md`
-  - translation-route, ownership, runtime, and deployment rules live in `docs/RULES.md`
+- `QudJP.csproj`: `net48` mod DLL that ships with the mod.
+- `QudJP.Tests/`: `net10.0` test project and the source of truth for patch behavior.
+- `src/Patches/`: Harmony patch classes. Keep one patch class per file.
+- `src/`: translators, renderers, diagnostics, analyzers, and shared helpers.
+
+Canonical references:
+
+- `docs/test-architecture.md`: L1/L2/L2G/L3 boundaries and allowed test shapes.
+- `docs/RULES.md`: translation ownership, route decisions, fallback policy, diagnostics, markup, and route-contract test obligations.
+- `docs/workflows/runtime-evidence.md`: runtime logs, local mod sync, deployment checks, and decompiled-source tracing.
 
 ## How
 
-- Build and test:
+Start by identifying the contract being changed, then choose the narrowest proof
+layer from `docs/test-architecture.md`. Tests in `QudJP.Tests/` outrank stale
+notes or old investigations.
+
+Routine commands:
 
 ```bash
 just build
@@ -28,82 +40,65 @@ just test-l2
 just test-l2g
 ```
 
-- Run `just test-l1`, `just test-l2`, and `just test-l2g` sequentially. Parallel
-  local invocations can race on shared `ReferenceStubs`/NuGet restore outputs.
+Run `just test-l1`, `just test-l2`, and `just test-l2g` sequentially for local
+verification unless the task explicitly establishes isolated artifacts for a
+parallel run.
 
-- Prefer producer-owned or stable mid-pipeline fixes. Many sink and near-sink routes are intentionally observation-only.
-- Use `~/dev/coq-decompiled_stable/` to trace upstream producers, verify signatures, and investigate unclaimed routes.
-- When a patch reflects into upstream game members, verify the real method
-  signature in decompiled source before choosing `AccessTools.Method`
-  parameter types. C# optional arguments still appear as real parameters to
-  reflection, so a source call such as `RenderForUI()` may require resolving
-  `RenderForUI(string, bool)`. Add an L2G signature/contract test when this
-  reflection path controls runtime UI behavior.
-- For C# patch, translator, observability, or target-method changes, use structural search before editing or before finalizing the patch:
-  - use `just --list` to discover repo recipes when command routing is unclear
-  - use `just ast-search-cs '<pattern>' Mods/QudJP/Assemblies/src` to compare repo-owned call shapes
-  - use `just ast-search-cs '<pattern>'` with the default decompiled-source target when tracing upstream game producers
-- Optional examples: try patterns such as `DynamicTextObservability.RecordTransform($$$ARGS)`, `Popup.Show($$$ARGS)`, or the method/class name you are changing.
-- Use `just lsp-check` when the question is "does the repo-local C# language
-  server load this solution with the pinned SDK/tooling?" Run it after
-  `.sln`/`.csproj`/reference-stub/tool-manifest changes, when editor diagnostics
-  disagree with `dotnet build`, or before relying on language-server feedback in
-  a review. This is not a substitute for `just build`, `just test-l1`, `just
-  test-l2`, or `just test-l2g`; compiler/analyzer/test results remain the
-  behavior gate.
-- Codex has a repo-local `PostToolUse` hook at `.codex/hooks.json` that invokes
-  `.codex/hooks/lsp-check-after-tool.sh`. The Codex matcher is broad; the script
-  owns the real path/tool filtering. The hook intentionally does not run on
-  ordinary reads or shell-command reads; it triggers only for relevant C#
-  write-like tool use and applies a debounce so language-server checks do not
-  become a linear cost.
-- If structural search is intentionally skipped for C# route work, state the reason in the work note or PR summary.
-- Runtime diagnostics must route through `RuntimeDiagnostics`: use
-  `RuntimeDiagnostics.LogVerboseProbe(...)` for verbose runtime probes and
-  `RuntimeDiagnostics.LogImportant(...)` only for build, error, or
-  sink-required shipping signals. Direct probe log markers such as
-  `[QudJP] NewProbe/v1:`, `[QudJP] SinkObserve/v1:`,
-  `[QudJP] Translator: missing key`, and `no pattern for` are dev-only by
-  default and are rejected by the release DLL verifier when they remain in a
-  release artifact.
-- Dev-only probes that touch Unity, TMP, or reflection should fail closed:
-  catch probe-building exceptions inside the probe and return a no-op result so
-  observability cannot change visible translation behavior. When a probe depends
-  on `#if` guards, add L1 policy coverage for the caller guard and release
-  no-op branch.
-- Process-lifetime caches may cache only successful loads. Do not store an empty
-  result for file-missing, IO, XML/JSON parse, or other transient load failures;
-  log or surface the failure and leave the cache unset so a later runtime pass
-  can retry after deployment or file repair.
-- For `UnityEngine.Object`-derived coroutine hosts, components, transforms, or
-  UI objects, use `== null` / `!= null` when lifetime semantics matter. Pattern
-  null checks such as `is null` bypass Unity fake-null behavior.
-- Keep QJ004 as a narrow bypass guard, not a general C# logging or
-  format-string analyzer. It should detect known verbose probe markers that
-  are statically visible on direct logging calls. Do not expand it into
-  arbitrary format reconstruction, exception message inspection, or broad
-  Unity/System.Diagnostics logging API modeling unless the probe policy itself
-  changes.
-- When future probes need stronger guarantees, prefer tightening the
-  centralized `RuntimeDiagnostics` API, marker convention, release verifier, or
-  focused analyzer tests before adding broad static inference to QJ004.
-- For tooltip, TMP, or RTF display fixes:
-  - identify the upstream producer route before patching sinks; prefer
-    `Look.GenerateTooltipInformation(GameObject)` or another pre-render owner
-    when the UI route permits it
-  - preserve root contract tokens and markup as indivisible text boundaries:
-    Qud wrappers, `&`/`^` color codes, TMP/rich-text tags, `\x01`,
-    `=variable.name=`, `{0}`, and `{12:format}`
-  - prove both no-op fallback behavior and at least one route boundary with
-    tests; use L2G target-resolution coverage when the upstream game signature
-    is the contract
-  - verify both normal game-DLL builds/tests and the no-game Release build path
-    when a patch needs `#if HAS_GAME_DLL` fallback code
-- Constraints:
-  - one patch class per file in `src/Patches/`
-  - do not instantiate real game types in L1/L2 tests; use dummy targets with matching signatures
-  - L2G may use a minimal real game type invocation only for an upstream member
-    contract that cannot be proven by target/signature resolution and
-    DummyTarget behavior tests; follow `docs/test-architecture.md`
-  - runtime Harmony comes from the game; tests use HarmonyLib NuGet `2.4.2`
-  - producer or queue-gated translation patches must follow the route-contract test checklist in `docs/RULES.md`
+Use deterministic tooling before prompt-only reasoning for route and call-shape
+work:
+
+```bash
+just --list
+just ast-search-cs '<pattern>' Mods/QudJP/Assemblies/src
+just ast-search-cs '<pattern>'
+just lsp-check
+```
+
+`just ast-search-cs '<pattern>'` without a path searches the configured
+decompiled-source target. Use it with `~/dev/coq-decompiled_stable/` to trace
+upstream producers, verify signatures, and investigate unclaimed routes. Promote
+type-, receiver-, overload-, alias-, or inheritance-sensitive C# questions to
+the repo's Roslyn/static-analysis workflow described in the root `AGENTS.md`.
+
+When a patch reflects into upstream game members, verify the real signature in
+the decompiled source before choosing `AccessTools.Method` parameter types.
+C# optional arguments still appear as real reflection parameters. Add L2G
+signature or contract coverage when that reflection path controls runtime UI
+behavior.
+
+Route decisions follow `docs/RULES.md`:
+
+- prefer producer-owned or stable mid-pipeline fixes
+- treat most sink and near-sink routes as observation-only
+- do not hide dynamic or owner-routed bugs with broad dictionary entries
+- preserve Qud markup, TMP/rich-text tags, `\x01`, `=variable.name=`, and
+  numeric placeholders as indivisible contract tokens
+- prove no-op fallback behavior and at least one route boundary for tooltip,
+  TMP, RTF, producer, or queue-gated translation fixes
+
+Test boundaries follow `docs/test-architecture.md`:
+
+- L1 has no Harmony, Unity, or `Assembly-CSharp.dll` dependency.
+- L2 uses Harmony with dummy targets that match upstream signatures.
+- L2G may use the game DLL for target/signature proof.
+- L2G real game type instantiation is a narrow exception for upstream member
+  contracts that cannot be proven by target resolution plus dummy-target tests.
+- L3 runtime smoke evidence is manual and Unity-backed.
+
+Runtime diagnostics route through `RuntimeDiagnostics`. Verbose probes are
+dev-only by default; release artifacts reject direct probe markers documented in
+`docs/RULES.md`. Probes touching Unity, TMP, or reflection should fail closed so
+observability cannot change visible translation behavior.
+
+Process-lifetime caches cache only successful loads. File-missing, IO, XML/JSON
+parse, or other transient failures should leave the cache unset so a later
+runtime pass can retry after deployment or file repair.
+
+For `UnityEngine.Object`-derived coroutine hosts, components, transforms, or UI
+objects, `== null` and `!= null` preserve Unity fake-null lifetime semantics.
+Pattern checks such as `is null` do not.
+
+QJ004 is a narrow bypass guard for statically visible verbose probe markers on
+direct logging calls. Stronger future guarantees should tighten
+`RuntimeDiagnostics`, marker conventions, release verification, or focused
+analyzer tests before broadening QJ004 into a general logging analyzer.

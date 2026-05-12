@@ -22,16 +22,18 @@ def _tool_available(name: str) -> bool:
 def _run_agent_cycle(
     *args: str,
     python_bin: str | None = None,
+    override_path: str | None = None,
     without_dotfiles_root: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     env = {**os.environ}
-    env["PATH"] = f"{NODE_BIN}{os.pathsep}{env['PATH']}"
+    path = override_path if override_path is not None else env["PATH"]
+    env["PATH"] = f"{NODE_BIN}{os.pathsep}{path}"
     if python_bin is not None:
         env["PYTHON_BIN"] = python_bin
     if without_dotfiles_root:
         env.pop("DOTFILES_ROOT", None)
     return subprocess.run(  # noqa: S603 -- tests invoke the repo-local shell script via bash
-        ["bash", str(AGENT_CYCLE), *args],  # noqa: S607
+        ["/bin/bash", str(AGENT_CYCLE), *args],
         capture_output=True,
         text=True,
         cwd=REPO_ROOT,
@@ -94,3 +96,28 @@ def test_tool_check_allows_repo_local_render_without_dotfiles_root() -> None:
 
     assert completed.returncode == 0, completed.stderr
     assert "DOTFILES_ROOT not set" in completed.stdout
+
+
+def _write_executable_stub(bin_dir: Path, name: str) -> None:
+    stub = bin_dir / name
+    stub.write_text("#!/bin/sh\nprintf '%s version\\n' \"$0\"\n", encoding="utf-8")
+    stub.chmod(0o755)
+
+
+def test_tool_check_reports_missing_dotnet_before_restore(tmp_path: Path) -> None:
+    """tool-check should distinguish a missing dotnet executable from restore failure."""
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    for tool in ("just", "python3.12", "ast-grep"):
+        _write_executable_stub(bin_dir, tool)
+
+    completed = _run_agent_cycle(
+        "tool-check",
+        python_bin="python3.12",
+        override_path=str(bin_dir),
+        without_dotfiles_root=True,
+    )
+
+    assert completed.returncode == 1
+    assert "missing tool: dotnet" in completed.stderr
+    assert "dotnet tool restore failed" not in completed.stderr

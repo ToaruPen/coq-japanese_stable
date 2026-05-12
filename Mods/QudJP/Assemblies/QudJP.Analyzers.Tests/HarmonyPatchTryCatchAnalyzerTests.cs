@@ -60,6 +60,35 @@ public static class SamplePatch
     }
 
     [Test]
+    public async Task NoDiagnostic_WhenPatchMethodBodyUsesBareCatchAsync()
+    {
+        var source = """
+using System.Diagnostics;
+using HarmonyLib;
+""" + HarmonyStubs + """
+[HarmonyPatch]
+public static class SamplePatch
+{
+    public static bool Prefix(ref string __result)
+    {
+        try
+        {
+            __result = "ok";
+            return false;
+        }
+        catch
+        {
+            Trace.TraceError("QudJP: SamplePatch.Prefix failed");
+            return true;
+        }
+    }
+}
+""";
+
+        await VerifyCS.VerifyAnalyzerAsync(source).ConfigureAwait(false);
+    }
+
+    [Test]
     public async Task Diagnostic_WhenPatchMethodMissingTopLevelTryCatchAsync()
     {
         var source = """

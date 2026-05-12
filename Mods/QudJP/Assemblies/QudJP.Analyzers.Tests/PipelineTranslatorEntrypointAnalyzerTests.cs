@@ -72,6 +72,68 @@ internal static class SamplePatch
     }
 
     [Test]
+    public async Task NoDiagnostic_WhenEmptyCatchBlockProtectsTranslatorCallAsync()
+    {
+        const string source = """
+namespace QudJP.Patches;
+
+internal static class MessageQueueSemanticPipeline
+{
+    internal static bool TryTranslateQueuedMessage(ref string message, string? color)
+    {
+        try
+        {
+            return SamplePatch.TryTranslateQueuedMessage(ref message, color);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+}
+
+internal static class SamplePatch
+{
+    internal static bool TryTranslateQueuedMessage(ref string message, string? color) => false;
+}
+""";
+
+        await VerifyCS.VerifyAnalyzerAsync(source).ConfigureAwait(false);
+    }
+
+    [Test]
+    public async Task NoDiagnostic_WhenUsingExceptionAliasProtectsTranslatorCallAsync()
+    {
+        const string source = """
+using Exception = System.Exception;
+
+namespace QudJP.Patches;
+
+internal static class MessageQueueSemanticPipeline
+{
+    internal static bool TryTranslateQueuedMessage(ref string message, string? color)
+    {
+        try
+        {
+            return SamplePatch.TryTranslateQueuedMessage(ref message, color);
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+}
+
+internal static class SamplePatch
+{
+    internal static bool TryTranslateQueuedMessage(ref string message, string? color) => false;
+}
+""";
+
+        await VerifyCS.VerifyAnalyzerAsync(source).ConfigureAwait(false);
+    }
+
+    [Test]
     public async Task Diagnostic_WhenTranslatorCallIsInsideCatchBlockAsync()
     {
         const string source = """

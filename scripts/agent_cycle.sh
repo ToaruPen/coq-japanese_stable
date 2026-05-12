@@ -57,10 +57,14 @@ tool_check() {
   if ! ast_grep --version; then
     missing=1
   fi
-  if ! dotnet tool restore >/dev/null 2>&1; then
+  if ! command -v dotnet >/dev/null 2>&1; then
+    echo "missing tool: dotnet" >&2
+    missing=1
+  elif ! dotnet tool restore >/dev/null 2>&1; then
     echo "dotnet tool restore failed; csharp-ls diagnostics are unavailable." >&2
     missing=1
   elif ! dotnet tool run csharp-ls -- --version; then
+    echo "csharp-ls version check failed; csharp-ls diagnostics are unavailable." >&2
     missing=1
   fi
 
