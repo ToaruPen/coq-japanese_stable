@@ -62,6 +62,12 @@ public static class OldSaveContinueMenuPopupTranslationPatch
             return false;
         }
 
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return true;
+        }
+
         translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(source, family + "." + Context);
         return !string.Equals(translated, source, StringComparison.Ordinal);
     }

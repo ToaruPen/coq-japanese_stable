@@ -19,6 +19,9 @@ OWNER_ACTION_STATUSES: Final = frozenset({"owner_patch_required", "needs_family_
 HACKING_SIFRAH_RESULT_SIGNATURE_SUFFIX: Final = (
     "System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah"
 )
+CRIPPLE_APPLY_TARGET_METHOD_FULL_SIGNATURE: Final = (
+    "XRL.World.Effects.Cripple|Apply|System.Boolean|XRL.World.GameObject"
+)
 COMBAT_MELEE_ATTACK_SIGNATURE_PARTS: Final = (
     "XRL.World.Parts.Combat",
     "MeleeAttackWithWeaponInternal",
@@ -3223,11 +3226,8 @@ def _cripple_apply_family() -> tuple[CoveredOwnerFamily, ...]:
                 EvidenceFile(
                     "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
                     (
-                        "typeof(CrippleApplyTranslationPatch)",
-                        "XRL.World.Effects.Cripple",
-                        "Apply",
-                        "System.Boolean",
-                        "XRL.World.GameObject",
+                        "CrippleApplyTargetMethod_ResolvesExpectedFullSignature",
+                        CRIPPLE_APPLY_TARGET_METHOD_FULL_SIGNATURE,
                     ),
                 ),
             ),

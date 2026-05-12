@@ -64,19 +64,33 @@ public static class FloatingEquipmentPopupTranslationPatch
             return false;
         }
 
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        try
         {
-            translated = markedText;
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+            {
+                translated = markedText;
+                return true;
+            }
+
+            if (!TryTranslateCore(source, out translated))
+            {
+                return false;
+            }
+
+            DynamicTextObservability.RecordTransform(route, family + "." + GetFamilySuffix(source), source, translated);
             return true;
         }
-
-        if (!TryTranslateCore(source, out translated))
+        catch (Exception ex)
         {
+            translated = source;
+            Trace.TraceError(
+                "QudJP: {0}.TryTranslatePopupMessage failed for route '{1}', family '{2}': {3}",
+                Context,
+                route,
+                family,
+                ex);
             return false;
         }
-
-        DynamicTextObservability.RecordTransform(route, family + "." + GetFamilySuffix(source), source, translated);
-        return true;
     }
 
     private static void AddTarget(List<MethodBase> targets, string typeName, string methodName)

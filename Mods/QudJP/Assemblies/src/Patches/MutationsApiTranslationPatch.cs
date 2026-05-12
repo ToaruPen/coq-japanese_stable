@@ -121,13 +121,6 @@ public static class MutationsApiTranslationPatch
             return translated;
         }
 
-        var strippedTerm = termGroup.Value.Trim();
-        if (string.Equals(strippedTerm, "mutation", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(strippedTerm, "mutations", StringComparison.OrdinalIgnoreCase))
-        {
-            return ColorAwareTranslationComposer.RestoreCapture("突然変異", spans, termGroup).Trim();
-        }
-
         return StringHelpers.TryGetTranslationExactOrLowerAscii(termGroup.Value.Trim(), out translated)
             ? ColorAwareTranslationComposer.RestoreCapture(translated, spans, termGroup).Trim()
             : TranslateBuiltInMutationTerm(termGroup, spans, restored);
@@ -135,11 +128,11 @@ public static class MutationsApiTranslationPatch
 
     private static string TranslateBuiltInMutationTerm(Group termGroup, IReadOnlyList<ColorSpan> spans, string fallback)
     {
-        var translated = termGroup.Value.Trim() switch
-        {
-            "mutation" or "mutations" => "変異",
-            _ => null,
-        };
+        var strippedTerm = termGroup.Value.Trim();
+        var translated = string.Equals(strippedTerm, "mutation", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(strippedTerm, "mutations", StringComparison.OrdinalIgnoreCase)
+            ? "突然変異"
+            : null;
 
         return translated is null
             ? fallback

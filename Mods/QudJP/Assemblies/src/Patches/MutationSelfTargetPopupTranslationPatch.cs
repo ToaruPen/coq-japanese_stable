@@ -88,9 +88,7 @@ public static class MutationSelfTargetPopupTranslationPatch
         _ = family;
 
         if (!OwnerTranslationScope.IsActive(activeDepth)
-            || string.IsNullOrEmpty(source)
-            || !source.StartsWith("Are you sure you want to target ", StringComparison.Ordinal)
-            || !source.EndsWith("?", StringComparison.Ordinal))
+            || string.IsNullOrEmpty(source))
         {
             translated = source;
             return false;
@@ -100,6 +98,13 @@ public static class MutationSelfTargetPopupTranslationPatch
         {
             translated = markedText;
             return true;
+        }
+
+        if (!source.StartsWith("Are you sure you want to target ", StringComparison.Ordinal)
+            || !source.EndsWith("?", StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
         }
 
         var patternTranslated = MessagePatternTranslator.Translate(source, route);

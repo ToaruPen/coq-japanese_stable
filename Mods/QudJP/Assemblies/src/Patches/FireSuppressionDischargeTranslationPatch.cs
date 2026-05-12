@@ -97,8 +97,9 @@ public static class FireSuppressionDischargeTranslationPatch
             return false;
         }
 
-        DynamicTextObservability.RecordTransform("MessageQueue.AddPlayerMessage", Context + "." + detail, message, translated);
-        message = translated;
+        var markedTranslated = MessageFrameTranslator.MarkDirectTranslation(translated);
+        DynamicTextObservability.RecordTransform("MessageQueue.AddPlayerMessage", Context + "." + detail, message, markedTranslated);
+        message = markedTranslated;
         return true;
     }
 
@@ -252,6 +253,11 @@ public static class FireSuppressionDischargeTranslationPatch
     {
         var group = match.Groups[groupName];
         var restored = Restore(match, spans, groupName);
+        if (string.Equals(group.Value.Trim(), "it", StringComparison.OrdinalIgnoreCase))
+        {
+            return ColorAwareTranslationComposer.RestoreCapture("それ", spans, group).Trim();
+        }
+
         var normalized = StringHelpers.StripLeadingEnglishArticle(group.Value.Trim(), includeCapitalizedDefiniteArticle: true);
         if (string.Equals(normalized, group.Value.Trim(), StringComparison.Ordinal))
         {

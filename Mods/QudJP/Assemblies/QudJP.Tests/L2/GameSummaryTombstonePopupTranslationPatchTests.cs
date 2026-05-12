@@ -140,6 +140,120 @@ public sealed class GameSummaryTombstonePopupTranslationPatchTests
             });
     }
 
+    [Test]
+    public void Patch_LeavesMatchedPopupUnchanged_WhenDictionaryEntryMissing()
+    {
+        WriteDictionary((ErrorTemplate, "保存中にエラーが発生しました: {0}"));
+
+        RunWithOwnerAndPopupPatches(
+            nameof(DummyGameSummaryTombstoneProducer.ModernSaveTombstone),
+            () =>
+            {
+                var target = new DummyGameSummaryTombstoneProducer
+                {
+                    PopupMessageToShow = SavedMessage,
+                };
+
+                target.ModernSaveTombstone();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(SavedMessage));
+                    Assert.That(GetSavedHitCount(), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_PreservesColorTagsInTombstonePath_WhenOwnerPatched()
+    {
+        const string source = "Your tombstone file was saved:\n\n{{Y|/tmp/Qudman.txt}}";
+        const string expected = "墓碑ファイルを保存しました:\n\n{{Y|/tmp/Qudman.txt}}";
+
+        RunWithOwnerAndPopupPatches(
+            nameof(DummyGameSummaryTombstoneProducer.ModernSaveTombstone),
+            () =>
+            {
+                var target = new DummyGameSummaryTombstoneProducer
+                {
+                    PopupMessageToShow = source,
+                };
+
+                target.ModernSaveTombstone();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+                    Assert.That(GetSavedHitCount(), Is.EqualTo(1));
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_LeavesMatchedPopupUnchanged_WhenTemplateFormatFails()
+    {
+        WriteDictionary((SavedTemplate, "墓碑ファイルを保存しました: {0} {1}"));
+
+        RunWithOwnerAndPopupPatches(
+            nameof(DummyGameSummaryTombstoneProducer.ModernSaveTombstone),
+            () =>
+            {
+                var target = new DummyGameSummaryTombstoneProducer
+                {
+                    PopupMessageToShow = SavedMessage,
+                };
+
+                target.ModernSaveTombstone();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(SavedMessage));
+                    Assert.That(GetSavedHitCount(), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_RestoresOuterOwnerScopeAfterNestedOwnerPopup()
+    {
+        RunWithOwnerAndPopupPatches(
+            [
+                nameof(DummyGameSummaryTombstoneProducer.ModernSaveTombstone),
+                nameof(DummyGameSummaryTombstoneProducer.ClassicShow),
+            ],
+            () =>
+            {
+                var innerTarget = new DummyGameSummaryTombstoneProducer
+                {
+                    PopupMessageToShow = ErrorMessage,
+                };
+                var outerTarget = new DummyGameSummaryTombstoneProducer
+                {
+                    PopupMessageToShow = SavedMessage,
+                    BeforePopup = () =>
+                    {
+                        innerTarget.ClassicShow();
+
+                        Assert.Multiple(() =>
+                        {
+                            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(TranslatedErrorMessage));
+                            Assert.That(GetErrorHitCount(), Is.EqualTo(1));
+                            Assert.That(GetSavedHitCount(), Is.Zero);
+                        });
+                    },
+                };
+
+                outerTarget.ModernSaveTombstone();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(TranslatedSavedMessage));
+                    Assert.That(GetErrorHitCount(), Is.EqualTo(1));
+                    Assert.That(GetSavedHitCount(), Is.EqualTo(1));
+                });
+            });
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
@@ -171,12 +285,21 @@ public sealed class GameSummaryTombstonePopupTranslationPatchTests
 
     private static void RunWithOwnerAndPopupPatches(string ownerMethodName, Action action)
     {
+        RunWithOwnerAndPopupPatches([ownerMethodName], action);
+    }
+
+    private static void RunWithOwnerAndPopupPatches(string[] ownerMethodNames, Action action)
+    {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
 
         try
         {
-            PatchOwner(harmony, ownerMethodName);
+            foreach (var ownerMethodName in ownerMethodNames)
+            {
+                PatchOwner(harmony, ownerMethodName);
+            }
+
             PatchPopupShow(harmony);
             action();
         }
@@ -219,6 +342,13 @@ public sealed class GameSummaryTombstonePopupTranslationPatchTests
             "Popup.Show.GameSummaryTombstoneSaved");
     }
 
+    private static int GetErrorHitCount()
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupShowTranslationPatch),
+            "Popup.Show.GameSummaryTombstoneError");
+    }
+
     private void WriteDictionary(params (string key, string text)[] entries)
     {
         var builder = new StringBuilder();
@@ -249,15 +379,22 @@ public sealed class GameSummaryTombstonePopupTranslationPatchTests
     private sealed class DummyGameSummaryTombstoneProducer
     {
         public string PopupMessageToShow = string.Empty;
+        public Action? BeforePopup;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void ModernSaveTombstone()
         {
-            DummyPopupShow.Show(PopupMessageToShow);
+            BeforePopup?.Invoke();
+            ShowPopup();
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void ClassicShow()
+        {
+            DummyPopupShow.Show(PopupMessageToShow);
+        }
+
+        private void ShowPopup()
         {
             DummyPopupShow.Show(PopupMessageToShow);
         }

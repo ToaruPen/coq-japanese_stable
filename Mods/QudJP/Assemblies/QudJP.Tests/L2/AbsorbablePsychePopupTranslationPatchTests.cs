@@ -92,9 +92,53 @@ public sealed class AbsorbablePsychePopupTranslationPatchTests
     }
 
     [Test]
+    public void HandleEvent_LeavesUnknownPopupUnchanged_WhenOwnerPatched()
+    {
+        const string source = "You absorb a nameless psychic echo.";
+
+        AssertPopupMessage(source, source);
+
+        Assert.That(AbsorbablePsycheHitCount(), Is.Zero);
+    }
+
+    [Test]
     public void HandleEvent_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
         AssertPopupMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void HandleEvent_KeepsOuterOwnerScopeActive_WhenNestedScopeExits()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            AbsorbablePsychePopupTranslationPatch.Prefix();
+            try
+            {
+                AbsorbablePsychePopupTranslationPatch.Prefix();
+                AbsorbablePsychePopupTranslationPatch.Finalizer(null);
+
+                DummyPopupShow.Show("You encode the psyche of Esper Hunter and gain +{{C|1}} {{Y|Ego}}!");
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("Esper Hunterの精神を刻みつけ、自我が+{{C|1}}上昇した！"));
+                    Assert.That(AbsorbablePsycheHitCount(), Is.EqualTo(1));
+                });
+            }
+            finally
+            {
+                AbsorbablePsychePopupTranslationPatch.Finalizer(null);
+            }
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private static void AssertPopupMessage(string source, string expected)

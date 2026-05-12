@@ -65,10 +65,18 @@ public static class GritGateTerminalScreenMessageTranslationPatch
     {
         _ = color;
 
-        if (!OwnerTranslationScope.IsActive(activeDepth)
-            || string.IsNullOrEmpty(message)
-            || MessageFrameTranslator.TryStripDirectTranslationMarker(message, out _)
-            || !string.Equals(message, AlarmMessage, StringComparison.Ordinal))
+        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(message))
+        {
+            return false;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var markedText))
+        {
+            message = markedText;
+            return true;
+        }
+
+        if (!string.Equals(message, AlarmMessage, StringComparison.Ordinal))
         {
             return false;
         }

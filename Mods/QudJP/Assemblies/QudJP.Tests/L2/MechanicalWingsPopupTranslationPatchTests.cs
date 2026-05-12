@@ -120,6 +120,70 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
         });
     }
 
+    [Test]
+    public void Patch_LeavesUnknownPopupUnchanged_WhenOwnerPatched()
+    {
+        const string source = "The {{Y|mechanical wings}} are humming.";
+
+        RunWithOwnerAndPopupPatches(() =>
+        {
+            var target = new DummyMechanicalWingsProducer
+            {
+                PopupMessageToShow = source,
+            };
+
+            target.TryStartup();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                Assert.That(GetStartupHitCount(), Is.Zero);
+                Assert.That(GetUnresponsiveHitCount(), Is.Zero);
+            });
+        });
+    }
+
+    [Test]
+    public void Patch_RestoresOuterOwnerScopeAfterNestedOwnerPopup()
+    {
+        RunWithOwnerAndPopupPatches(
+            [
+                nameof(DummyMechanicalWingsProducer.TryStartup),
+                nameof(DummyMechanicalWingsProducer.TryNestedStartup),
+            ],
+            () =>
+            {
+                var innerTarget = new DummyMechanicalWingsProducer
+                {
+                    PopupMessageToShow = UnresponsiveSource,
+                };
+                var outerTarget = new DummyMechanicalWingsProducer
+                {
+                    PopupMessageToShow = StartupSource,
+                    BeforePopup = () =>
+                    {
+                        innerTarget.TryNestedStartup();
+
+                        Assert.Multiple(() =>
+                        {
+                            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(UnresponsiveTranslated));
+                            Assert.That(GetUnresponsiveHitCount(), Is.EqualTo(1));
+                            Assert.That(GetStartupHitCount(), Is.Zero);
+                        });
+                    },
+                };
+
+                outerTarget.TryStartup();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(StartupTranslated));
+                    Assert.That(GetUnresponsiveHitCount(), Is.EqualTo(1));
+                    Assert.That(GetStartupHitCount(), Is.EqualTo(1));
+                });
+            });
+    }
+
     private static string RepositoryDictionaryDirectory()
     {
         return Path.GetFullPath(
@@ -180,15 +244,24 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
 
     private static void RunWithOwnerAndPopupPatches(Action action)
     {
+        RunWithOwnerAndPopupPatches([nameof(DummyMechanicalWingsProducer.TryStartup)], action);
+    }
+
+    private static void RunWithOwnerAndPopupPatches(string[] ownerMethodNames, Action action)
+    {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
 
         try
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyMechanicalWingsProducer), nameof(DummyMechanicalWingsProducer.TryStartup)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(MechanicalWingsPopupTranslationPatch), nameof(MechanicalWingsPopupTranslationPatch.Prefix))),
-                finalizer: new HarmonyMethod(RequireMethod(typeof(MechanicalWingsPopupTranslationPatch), nameof(MechanicalWingsPopupTranslationPatch.Finalizer), typeof(Exception))));
+            foreach (var ownerMethodName in ownerMethodNames)
+            {
+                harmony.Patch(
+                    original: RequireMethod(typeof(DummyMechanicalWingsProducer), ownerMethodName),
+                    prefix: new HarmonyMethod(RequireMethod(typeof(MechanicalWingsPopupTranslationPatch), nameof(MechanicalWingsPopupTranslationPatch.Prefix))),
+                    finalizer: new HarmonyMethod(RequireMethod(typeof(MechanicalWingsPopupTranslationPatch), nameof(MechanicalWingsPopupTranslationPatch.Finalizer), typeof(Exception))));
+            }
+
             PatchPopupShow(harmony);
             action();
         }
@@ -212,12 +285,28 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
             "Popup.Show.MechanicalWingsStartup");
     }
 
+    private static int GetUnresponsiveHitCount()
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupShowTranslationPatch),
+            "Popup.Show.MechanicalWingsUnresponsive");
+    }
+
     private sealed class DummyMechanicalWingsProducer
     {
         public string PopupMessageToShow = string.Empty;
+        public Action? BeforePopup;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public bool TryStartup()
+        {
+            BeforePopup?.Invoke();
+            DummyPopupShow.ShowFail(PopupMessageToShow);
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool TryNestedStartup()
         {
             DummyPopupShow.ShowFail(PopupMessageToShow);
             return false;

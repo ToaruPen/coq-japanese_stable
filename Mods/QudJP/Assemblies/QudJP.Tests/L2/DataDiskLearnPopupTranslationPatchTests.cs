@@ -115,6 +115,27 @@ public sealed class DataDiskLearnPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_LeavesUnknownPopupUnchanged_WhenOwnerPatched()
+    {
+        WithPatchedDataDiskHandleEvent(() =>
+        {
+            var target = new DummyDataDiskProducerTarget
+            {
+                PopupMessageToShow = "You study the data disk but learn nothing new.",
+            };
+
+            _ = target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You study the data disk but learn nothing new."));
+                Assert.That(HitCount("ItemModification"), Is.Zero);
+                Assert.That(HitCount("BuildRecipe"), Is.Zero);
+            });
+        });
+    }
+
+    [Test]
     public void Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
         WithPatchedDataDiskHandleEvent(() =>
@@ -132,6 +153,41 @@ public sealed class DataDiskLearnPopupTranslationPatchTests
                 Assert.That(HitCount("BuildRecipe"), Is.Zero);
             });
         });
+    }
+
+    [Test]
+    public void Patch_KeepsOuterOwnerScopeActive_WhenNestedScopeExits()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DataDiskLearnPopupTranslationPatch.Prefix();
+            try
+            {
+                DataDiskLearnPopupTranslationPatch.Prefix();
+                DataDiskLearnPopupTranslationPatch.Finalizer(null);
+
+                DummyPopupShow.Show("You learn to build {{C|laser pistols}}.");
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{C|laser pistols}}を作成する方法を習得した。"));
+                    Assert.That(HitCount("BuildRecipe"), Is.EqualTo(1));
+                });
+            }
+            finally
+            {
+                DataDiskLearnPopupTranslationPatch.Finalizer(null);
+            }
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private static void WithPatchedDataDiskHandleEvent(Action assertion)

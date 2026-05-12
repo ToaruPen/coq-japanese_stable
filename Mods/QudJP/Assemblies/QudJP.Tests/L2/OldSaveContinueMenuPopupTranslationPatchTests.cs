@@ -118,6 +118,30 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_LeavesUnknownOldSavePopupUnchanged_WhenOwnerPatched()
+    {
+        const string source = "That save file comes from an unknown future save format revision.";
+
+        WithPatchedOwnerAndPopup(
+            nameof(DummyOldSaveContinueMenuProducer.MainMenuContinueMenu),
+            () =>
+            {
+                var target = new DummyOldSaveContinueMenuProducer
+                {
+                    PopupMessageToShow = source,
+                };
+
+                target.MainMenuContinueMenu();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowAsyncMessage, Is.EqualTo(source));
+                    Assert.That(HitCount(), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
     public void Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
         WithPatchedOwnerAndPopup(

@@ -156,6 +156,34 @@ public sealed class WaterRitualPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_LeavesUnknownEnglishPopupUnchanged_WhenOwnerPatched()
+    {
+        const string popupMethod = nameof(DummyPopupShow.Show);
+        const string source = "{{G|Tam}} shares an unknown water ritual secret.";
+
+        WithPatchedOwnerAndPopup(
+            nameof(DummyWaterRitualPopupProducerTarget.WaterRitualSkillPointHandleEvent),
+            popupMethod,
+            () =>
+            {
+                var target = new DummyWaterRitualPopupProducerTarget
+                {
+                    PopupMethod = popupMethod,
+                    PopupMessageToShow = source,
+                };
+
+                target.WaterRitualSkillPointHandleEvent();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                    Assert.That(HitCount("SkillPointIntro"), Is.Zero);
+                    Assert.That(HitCount("SkillPointGain"), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
     public void Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
         const string popupMethod = nameof(DummyPopupShow.Show);

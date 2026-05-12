@@ -116,6 +116,27 @@ public sealed class CudgelConkPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_LeavesUnknownPopupUnchanged_WhenOwnerPatched()
+    {
+        WithPatchedCudgelConk(nameof(DummyCudgelConkProducerTarget.ShowNoHeadPopup), () =>
+        {
+            var target = new DummyCudgelConkProducerTarget
+            {
+                PopupMessageToShow = "snapjaw is already unconscious.",
+            };
+
+            target.ShowNoHeadPopup();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("snapjaw is already unconscious."));
+                Assert.That(HitCount("NoHead"), Is.Zero);
+                Assert.That(HitCount("ConfirmSelfConk"), Is.Zero);
+            });
+        });
+    }
+
+    [Test]
     public void Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
         WithPatchedCudgelConk(nameof(DummyCudgelConkProducerTarget.ShowNoHeadPopup), () =>
@@ -133,6 +154,41 @@ public sealed class CudgelConkPopupTranslationPatchTests
                 Assert.That(HitCount("NoHead"), Is.Zero);
             });
         });
+    }
+
+    [Test]
+    public void Patch_KeepsOuterOwnerScopeActive_WhenNestedScopeExits()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShowFail(harmony);
+
+            CudgelConkPopupTranslationPatch.Prefix();
+            try
+            {
+                CudgelConkPopupTranslationPatch.Prefix();
+                CudgelConkPopupTranslationPatch.Finalizer(null);
+
+                DummyPopupShow.ShowFail("snapjaw doesn't have anything like a head to conk.");
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("snapjawには殴る頭のようなものがない。"));
+                    Assert.That(HitCount("NoHead"), Is.EqualTo(1));
+                });
+            }
+            finally
+            {
+                CudgelConkPopupTranslationPatch.Finalizer(null);
+            }
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private static void WithPatchedCudgelConk(string methodName, Action assertion)

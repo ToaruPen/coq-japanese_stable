@@ -83,6 +83,62 @@ public sealed class PickItemTakeAllPopupTranslationPatchTests
     }
 
     [Test]
+    public void TakeAll_LeavesUnknownMarkupPopupUnchanged_WhenOwnerPatched()
+    {
+        const string source = "Taking {{unknown|this object}} will put you over your weight limit. Are you sure you want to do it?";
+
+        AssertPopupMessage(source, source);
+
+        Assert.That(
+            DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                nameof(PopupShowTranslationPatch),
+                "Popup.Show." + nameof(PickItemTakeAllPopupTranslationPatch)),
+            Is.Zero);
+    }
+
+    [Test]
+    public void TakeAll_RestoresOuterOwnerScopeAfterNestedOwnerPopup()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowYesNo(harmony);
+            PatchOwner(harmony, RequireMethod(typeof(NestedPickItemTakeAllTarget), nameof(NestedPickItemTakeAllTarget.TakeAll)));
+
+            var innerTarget = new NestedPickItemTakeAllTarget
+            {
+                PopupMessageToShow = "Taking this object will put you over your weight limit. Are you sure you want to do it?",
+            };
+            var outerTarget = new NestedPickItemTakeAllTarget
+            {
+                PopupMessageToShow = "Taking these objects will put you over your weight limit. Are you sure you want to do it?",
+                BeforePopup = () =>
+                {
+                    innerTarget.TakeAll();
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo("これを取ると重量制限を超えます。本当に実行しますか？"));
+                        Assert.That(TakeAllHitCount(), Is.EqualTo(1));
+                    });
+                },
+            };
+
+            outerTarget.TakeAll();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo("これらを取ると重量制限を超えます。本当に実行しますか？"));
+                Assert.That(TakeAllHitCount(), Is.EqualTo(2));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void TakeAll_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
         AssertPopupMessage(string.Empty, string.Empty);
@@ -123,10 +179,17 @@ public sealed class PickItemTakeAllPopupTranslationPatchTests
 
     private static void PatchOwner(Harmony harmony)
     {
-        harmony.Patch(
-            original: RequireMethod(
+        PatchOwner(
+            harmony,
+            RequireMethod(
                 typeof(DummyPickItemTakeAllTarget),
-                nameof(DummyPickItemTakeAllTarget.TakeAll)),
+                nameof(DummyPickItemTakeAllTarget.TakeAll)));
+    }
+
+    private static void PatchOwner(Harmony harmony, MethodInfo original)
+    {
+        harmony.Patch(
+            original: original,
             prefix: new HarmonyMethod(RequireMethod(
                 typeof(PickItemTakeAllPopupTranslationPatch),
                 nameof(PickItemTakeAllPopupTranslationPatch.Prefix))),
@@ -157,5 +220,25 @@ public sealed class PickItemTakeAllPopupTranslationPatchTests
         return method!;
     }
 
+    private static int TakeAllHitCount()
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupShowTranslationPatch),
+            "Popup.Show." + nameof(PickItemTakeAllPopupTranslationPatch));
+    }
+
     private static string CreateHarmonyId() => $"qudjp.tests.{Guid.NewGuid():N}";
+
+    private sealed class NestedPickItemTakeAllTarget
+    {
+        public string PopupMessageToShow { get; set; } = string.Empty;
+
+        public Action? BeforePopup { get; set; }
+
+        public void TakeAll()
+        {
+            BeforePopup?.Invoke();
+            _ = DummyPopupShow.ShowYesNo(PopupMessageToShow);
+        }
+    }
 }

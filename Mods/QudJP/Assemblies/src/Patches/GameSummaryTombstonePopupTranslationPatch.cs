@@ -144,10 +144,20 @@ public static class GameSummaryTombstonePopupTranslationPatch
             return false;
         }
 
-        translated = string.Format(
-            CultureInfo.InvariantCulture,
-            template,
-            match.Groups["path"].Value);
+        try
+        {
+            translated = string.Format(
+                CultureInfo.InvariantCulture,
+                template,
+                match.Groups["path"].Value);
+        }
+        catch (FormatException ex)
+        {
+            Trace.TraceError("QudJP: {0}.{1} template format failed: {2}", Context, family, ex);
+            translated = source;
+            return false;
+        }
+
         DynamicTextObservability.RecordTransform(route, family, source, translated);
         return true;
     }

@@ -83,19 +83,83 @@ public sealed class GritGateTerminalKnowledgePopupTranslationPatchTests
         AssertPopupMessage(string.Empty, string.Empty);
     }
 
+    [Test]
+    public void Activate_LeavesUnknownPopupUnchanged_WhenOwnerPatched()
+    {
+        const string source = "Ereshkigal records a silence in the Thin World.";
+
+        AssertPopupMessage(source, source);
+
+        Assert.That(
+            DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                nameof(PopupShowTranslationPatch),
+                "Popup.Show." + nameof(GritGateTerminalKnowledgePopupTranslationPatch)),
+            Is.Zero);
+    }
+
+    [Test]
+    public void Activate_RestoresOuterOwnerScopeAfterNestedOwnerPopup()
+    {
+        const string innerSource = "Ereshkigal delivers insight from the Thin World:\n\nThe location of {{Y|Grit Gate}}";
+        const string innerExpected = "エレシュキガルは薄界からの洞察を授ける:\n\nThe location of {{Y|Grit Gate}}";
+        const string outerSource = "Ereshkigal delivers insight from the Thin World:\n\nThe location of {{Y|Bethesda Susa}}";
+        const string outerExpected = "エレシュキガルは薄界からの洞察を授ける:\n\nThe location of {{Y|Bethesda Susa}}";
+        var target = new DummyNestedGritGateTerminalKnowledgeTarget
+        {
+            InnerPopupMessageToShow = innerSource,
+            OuterPopupMessageToShow = outerSource,
+        };
+        target.BeforeOuterPopup = () =>
+        {
+            target.InnerActivate();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(innerExpected));
+                Assert.That(GetHitCount(), Is.EqualTo(1));
+            });
+        };
+
+        WithPatchedOwners(
+            [
+                RequireMethod(typeof(DummyNestedGritGateTerminalKnowledgeTarget), nameof(DummyNestedGritGateTerminalKnowledgeTarget.OuterActivate)),
+                RequireMethod(typeof(DummyNestedGritGateTerminalKnowledgeTarget), nameof(DummyNestedGritGateTerminalKnowledgeTarget.InnerActivate)),
+            ],
+            target.OuterActivate);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(outerExpected));
+            Assert.That(GetHitCount(), Is.EqualTo(2));
+        });
+    }
+
     private static void AssertPopupMessage(string source, string expected)
+    {
+        WithPatchedOwners(
+            [RequireMethod(typeof(DummyGritGateTerminalKnowledgeTarget), nameof(DummyGritGateTerminalKnowledgeTarget.Activate))],
+            () =>
+            {
+                DummyGritGateTerminalKnowledgeTarget.PopupMessageToShow = source;
+                DummyGritGateTerminalKnowledgeTarget.Activate();
+
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+            });
+    }
+
+    private static void WithPatchedOwners(MethodInfo[] ownerMethods, Action action)
     {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try
         {
             PatchPopupShow(harmony);
-            PatchOwner(harmony);
+            foreach (var ownerMethod in ownerMethods)
+            {
+                PatchOwner(harmony, ownerMethod);
+            }
 
-            DummyGritGateTerminalKnowledgeTarget.PopupMessageToShow = source;
-            DummyGritGateTerminalKnowledgeTarget.Activate();
-
-            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+            action();
         }
         finally
         {
@@ -119,12 +183,10 @@ public sealed class GritGateTerminalKnowledgePopupTranslationPatchTests
             prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
     }
 
-    private static void PatchOwner(Harmony harmony)
+    private static void PatchOwner(Harmony harmony, MethodInfo ownerMethod)
     {
         harmony.Patch(
-            original: RequireMethod(
-                typeof(DummyGritGateTerminalKnowledgeTarget),
-                nameof(DummyGritGateTerminalKnowledgeTarget.Activate)),
+            original: ownerMethod,
             prefix: new HarmonyMethod(RequireMethod(
                 typeof(GritGateTerminalKnowledgePopupTranslationPatch),
                 nameof(GritGateTerminalKnowledgePopupTranslationPatch.Prefix))),
@@ -156,4 +218,29 @@ public sealed class GritGateTerminalKnowledgePopupTranslationPatchTests
     }
 
     private static string CreateHarmonyId() => $"qudjp.tests.{Guid.NewGuid():N}";
+
+    private static int GetHitCount()
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupShowTranslationPatch),
+            "Popup.Show." + nameof(GritGateTerminalKnowledgePopupTranslationPatch));
+    }
+
+    private sealed class DummyNestedGritGateTerminalKnowledgeTarget
+    {
+        public string OuterPopupMessageToShow { get; init; } = string.Empty;
+        public string InnerPopupMessageToShow { get; init; } = string.Empty;
+        public Action? BeforeOuterPopup { get; set; }
+
+        public void OuterActivate()
+        {
+            BeforeOuterPopup?.Invoke();
+            DummyPopupShow.Show(OuterPopupMessageToShow);
+        }
+
+        public void InnerActivate()
+        {
+            DummyPopupShow.Show(InnerPopupMessageToShow);
+        }
+    }
 }

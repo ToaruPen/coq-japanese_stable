@@ -3683,9 +3683,12 @@ public sealed class CombatAndLogMessageQueuePatchTests
             PatchQueue(harmony);
 
             DummyMessageQueue.AddPlayerMessage("Your skin itches.", Capitalize: false);
-            DummyMessageQueue.AddPlayerMessage("Your left arm spews a cloud of spores.", Capitalize: false);
-            DummyMessageQueue.AddPlayerMessage("&yYour left arm spews a cloud of spores.", Capitalize: false);
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your skin itches."));
 
+            DummyMessageQueue.AddPlayerMessage("Your left arm spews a cloud of spores.", Capitalize: false);
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your left arm spews a cloud of spores."));
+
+            DummyMessageQueue.AddPlayerMessage("&yYour left arm spews a cloud of spores.", Capitalize: false);
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("&yYour left arm spews a cloud of spores."));
         }
         finally

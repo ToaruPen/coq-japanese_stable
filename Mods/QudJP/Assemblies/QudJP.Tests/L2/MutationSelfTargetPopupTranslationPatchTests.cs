@@ -100,6 +100,95 @@ public sealed class MutationSelfTargetPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_LeavesUnknownSelfTargetPopupUnchanged_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+        const string source = "Are you sure you want to target yourself now.";
+
+        WithPatchedOwnerAndPopup(
+            nameof(DummyMutationSelfTargetProducer.BreatherBaseCast),
+            () =>
+            {
+                var target = new DummyMutationSelfTargetProducer
+                {
+                    PopupMessageToShow = source,
+                };
+
+                target.BreatherBaseCast();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo(source));
+                    Assert.That(HitCount(), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_PreservesColorTagsInSelfTargetPopup_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        WithPatchedOwnerAndPopup(
+            nameof(DummyMutationSelfTargetProducer.BreatherBaseCast),
+            () =>
+            {
+                var target = new DummyMutationSelfTargetProducer
+                {
+                    PopupMessageToShow = "Are you sure you want to target {{Y|your clone}}?",
+                };
+
+                target.BreatherBaseCast();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo("{{Y|your clone}}を標的にしてもよいか？"));
+                    Assert.That(HitCount(), Is.EqualTo(1));
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_RestoresOuterOwnerScopeAfterNestedOwnerPopup()
+    {
+        UseRepositoryPatternDictionary();
+
+        WithPatchedOwnerAndPopup(
+            [
+                nameof(DummyMutationSelfTargetProducer.BreatherBaseCast),
+                nameof(DummyMutationSelfTargetProducer.FlamingRayCast),
+            ],
+            () =>
+            {
+                var innerTarget = new DummyMutationSelfTargetProducer
+                {
+                    PopupMessageToShow = "Are you sure you want to target yourself?",
+                };
+                var outerTarget = new DummyMutationSelfTargetProducer
+                {
+                    PopupMessageToShow = "Are you sure you want to target {{Y|your clone}}?",
+                    BeforePopup = () =>
+                    {
+                        innerTarget.FlamingRayCast();
+                        Assert.Multiple(() =>
+                        {
+                            Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo("yourselfを標的にしてもよいか？"));
+                            Assert.That(HitCount(), Is.EqualTo(1));
+                        });
+                    },
+                };
+
+                outerTarget.BreatherBaseCast();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo("{{Y|your clone}}を標的にしてもよいか？"));
+                    Assert.That(HitCount(), Is.EqualTo(2));
+                });
+            });
+    }
+
+    [Test]
     public void Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
         UseRepositoryPatternDictionary();
@@ -121,15 +210,23 @@ public sealed class MutationSelfTargetPopupTranslationPatchTests
 
     private static void WithPatchedOwnerAndPopup(string methodName, Action action)
     {
+        WithPatchedOwnerAndPopup([methodName], action);
+    }
+
+    private static void WithPatchedOwnerAndPopup(string[] methodNames, Action action)
+    {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
         var harmony = new Harmony(harmonyId);
         try
         {
             PatchPopup(harmony);
-            harmony.Patch(
-                original: RequireOwnerMethod(methodName),
-                prefix: new HarmonyMethod(RequireMethod(typeof(MutationSelfTargetPopupTranslationPatch), nameof(MutationSelfTargetPopupTranslationPatch.Prefix))),
-                finalizer: new HarmonyMethod(RequireMethod(typeof(MutationSelfTargetPopupTranslationPatch), nameof(MutationSelfTargetPopupTranslationPatch.Finalizer))));
+            foreach (var methodName in methodNames)
+            {
+                harmony.Patch(
+                    original: RequireOwnerMethod(methodName),
+                    prefix: new HarmonyMethod(RequireMethod(typeof(MutationSelfTargetPopupTranslationPatch), nameof(MutationSelfTargetPopupTranslationPatch.Prefix))),
+                    finalizer: new HarmonyMethod(RequireMethod(typeof(MutationSelfTargetPopupTranslationPatch), nameof(MutationSelfTargetPopupTranslationPatch.Finalizer))));
+            }
 
             action();
         }
@@ -206,6 +303,8 @@ public sealed class MutationSelfTargetPopupTranslationPatchTests
     {
         public string PopupMessageToShow { get; set; } = string.Empty;
 
+        public Action? BeforePopup { get; set; }
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         public bool BreatherBaseCast()
         {
@@ -232,6 +331,7 @@ public sealed class MutationSelfTargetPopupTranslationPatchTests
 
         private bool EmitPopup()
         {
+            BeforePopup?.Invoke();
             _ = DummyPopupShow.ShowYesNoCancel(PopupMessageToShow);
             return true;
         }

@@ -49,8 +49,8 @@ public sealed class FireSuppressionDischargeTranslationPatchTests
         "CyberneticsSelf")]
     [TestCase(
         nameof(DummyFireSuppressionDischargeProducer.TurnTick),
-        "{{G|snapjaw}}の {{Y|fire suppression system}} discharges 1 dram of {{C|gel}} all over it.",
-        "{{G|snapjaw}}の{{Y|fire suppression system}}が{{C|gel}} 1ドラムをitの全身に放出した。",
+        "{{G|snapjaw}}'s {{Y|fire suppression system}} discharges 1 dram of {{C|gel}} all over it.",
+        "{{G|snapjaw}}'s {{Y|fire suppression system}}が{{C|gel}} 1ドラムをそれの全身に放出した。",
         "CyberneticsTarget")]
     public void Patch_TranslatesFireSuppressionDischargeMessages_WhenOwnerPatched(
         string methodName,
@@ -69,7 +69,7 @@ public sealed class FireSuppressionDischargeTranslationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+                AssertMarkedDirectTranslation(DummyMessageQueue.LastMessage, expected);
                 Assert.That(HitCount(detail), Is.EqualTo(1));
             });
         });
@@ -110,6 +110,31 @@ public sealed class FireSuppressionDischargeTranslationPatchTests
                 {
                     Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("2 drams of {{C|gel}} discharges all over you."));
                     Assert.That(HitCount("FireSuppressionSelf"), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_LeavesUnknownMessageUnchanged_WhenOwnerPatched()
+    {
+        WithPatchedOwnerAndQueue(
+            nameof(DummyFireSuppressionDischargeProducer.CheckFireSuppression),
+            () =>
+            {
+                var target = new DummyFireSuppressionDischargeProducer
+                {
+                    QueuedMessageToSend = "The fire suppression system sputters.",
+                };
+
+                target.CheckFireSuppression(null);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("The fire suppression system sputters."));
+                    Assert.That(HitCount("FireSuppressionSelf"), Is.Zero);
+                    Assert.That(HitCount("FireSuppressionTarget"), Is.Zero);
+                    Assert.That(HitCount("CyberneticsSelf"), Is.Zero);
+                    Assert.That(HitCount("CyberneticsTarget"), Is.Zero);
                 });
             });
     }
@@ -190,6 +215,13 @@ public sealed class FireSuppressionDischargeTranslationPatchTests
         return DynamicTextObservability.GetRouteFamilyHitCountForTests(
             "MessageQueue.AddPlayerMessage",
             nameof(FireSuppressionDischargeTranslationPatch) + "." + detail);
+    }
+
+    private static void AssertMarkedDirectTranslation(string? actual, string expected)
+    {
+        Assert.That(actual, Is.EqualTo(MessageFrameTranslator.MarkDirectTranslation(expected)));
+        Assert.That(MessageFrameTranslator.TryStripDirectTranslationMarker(actual!, out var stripped), Is.True);
+        Assert.That(stripped, Is.EqualTo(expected));
     }
 
     private static MethodInfo RequireOwnerMethod(string methodName)

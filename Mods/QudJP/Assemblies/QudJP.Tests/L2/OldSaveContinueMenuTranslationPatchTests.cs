@@ -72,6 +72,48 @@ public sealed class OldSaveContinueMenuTranslationPatchTests
     }
 
     [Test]
+    public void Patch_RestoresOuterOwnerScopeAfterNestedOwnerPopup()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowAsync(harmony);
+            PatchOwner(harmony, RequireMethod(typeof(NestedOldSaveContinueMenuTarget), nameof(NestedOldSaveContinueMenuTarget.ContinueMenu)));
+
+            var innerTarget = new NestedOldSaveContinueMenuTarget
+            {
+                PopupMessageToSend = OldSaveSource,
+            };
+            var outerTarget = new NestedOldSaveContinueMenuTarget
+            {
+                PopupMessageToSend = OldSaveSource,
+                BeforePopup = () =>
+                {
+                    innerTarget.ContinueMenu();
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(DummyPopupShow.LastShowAsyncMessage, Is.EqualTo(OldSaveExpected));
+                        Assert.That(OwnerRouteHitCount(), Is.EqualTo(1));
+                    });
+                },
+            };
+
+            outerTarget.ContinueMenu();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowAsyncMessage, Is.EqualTo(OldSaveExpected));
+                Assert.That(OwnerRouteHitCount(), Is.EqualTo(2));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
         AssertOldSavePopup(
@@ -160,5 +202,18 @@ public sealed class OldSaveContinueMenuTranslationPatchTests
     private static string GetLocalizationRoot()
     {
         return Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../../../Localization"));
+    }
+
+    private sealed class NestedOldSaveContinueMenuTarget
+    {
+        public string PopupMessageToSend { get; set; } = string.Empty;
+
+        public Action? BeforePopup { get; set; }
+
+        public void ContinueMenu()
+        {
+            BeforePopup?.Invoke();
+            _ = DummyPopupShow.ShowAsync(PopupMessageToSend);
+        }
     }
 }

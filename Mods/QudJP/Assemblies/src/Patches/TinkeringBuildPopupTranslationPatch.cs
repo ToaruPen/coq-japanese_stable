@@ -135,8 +135,14 @@ public static class TinkeringBuildPopupTranslationPatch
             var rest = item.Substring(separator + 1);
             if (!IsIndefiniteArticle(count) && !string.IsNullOrWhiteSpace(rest))
             {
-                translated = $"{rest}を{TranslateCount(count)}個作った！";
-                return true;
+                if (TryTranslateCount(count, out var translatedCount))
+                {
+                    translated = $"{rest}を{translatedCount}個作った！";
+                    return true;
+                }
+
+                translated = source;
+                return false;
             }
         }
 
@@ -150,10 +156,11 @@ public static class TinkeringBuildPopupTranslationPatch
             || string.Equals(value, "an", StringComparison.Ordinal);
     }
 
-    private static string TranslateCount(string value)
+    private static bool TryTranslateCount(string value, out string translated)
     {
-        return value switch
+        translated = value switch
         {
+            "one" => "1",
             "two" => "2",
             "three" => "3",
             "four" => "4",
@@ -163,7 +170,21 @@ public static class TinkeringBuildPopupTranslationPatch
             "eight" => "8",
             "nine" => "9",
             "ten" => "10",
-            _ => value,
+            _ => IsAsciiDigits(value) ? value : string.Empty,
         };
+        return translated.Length > 0;
+    }
+
+    private static bool IsAsciiDigits(string value)
+    {
+        for (var index = 0; index < value.Length; index++)
+        {
+            if (value[index] < '0' || value[index] > '9')
+            {
+                return false;
+            }
+        }
+
+        return value.Length > 0;
     }
 }

@@ -122,6 +122,47 @@ public sealed class FloatingEquipmentPopupTranslationPatchTests
         });
     }
 
+    [Test]
+    public void Patch_RestoresOuterOwnerScopeAfterNestedOwnerPopup()
+    {
+        RunWithOwnerAndPopupPatches(
+            [
+                nameof(DummyFloatingEquipmentProducer.PoweredCheckFloating),
+                nameof(DummyFloatingEquipmentProducer.NestedCheckFloating),
+            ],
+            () =>
+            {
+                var innerTarget = new DummyFloatingEquipmentProducer
+                {
+                    PopupMessageToShow = FallSource,
+                };
+                var outerTarget = new DummyFloatingEquipmentProducer
+                {
+                    PopupMessageToShow = CeaseSource,
+                    BeforePopup = () =>
+                    {
+                        innerTarget.NestedCheckFloating();
+
+                        Assert.Multiple(() =>
+                        {
+                            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(FallTranslated));
+                            Assert.That(GetFallHitCount(), Is.EqualTo(1));
+                            Assert.That(GetCeaseHitCount(), Is.Zero);
+                        });
+                    },
+                };
+
+                outerTarget.PoweredCheckFloating();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(CeaseTranslated));
+                    Assert.That(GetFallHitCount(), Is.EqualTo(1));
+                    Assert.That(GetCeaseHitCount(), Is.EqualTo(1));
+                });
+            });
+    }
+
     private static string RepositoryDictionaryDirectory()
     {
         return Path.GetFullPath(
@@ -182,15 +223,24 @@ public sealed class FloatingEquipmentPopupTranslationPatchTests
 
     private static void RunWithOwnerAndPopupPatches(string methodName, Action action)
     {
+        RunWithOwnerAndPopupPatches([methodName], action);
+    }
+
+    private static void RunWithOwnerAndPopupPatches(string[] methodNames, Action action)
+    {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
 
         try
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyFloatingEquipmentProducer), methodName),
-                prefix: new HarmonyMethod(RequireMethod(typeof(FloatingEquipmentPopupTranslationPatch), nameof(FloatingEquipmentPopupTranslationPatch.Prefix))),
-                finalizer: new HarmonyMethod(RequireMethod(typeof(FloatingEquipmentPopupTranslationPatch), nameof(FloatingEquipmentPopupTranslationPatch.Finalizer), typeof(Exception))));
+            foreach (var methodName in methodNames)
+            {
+                harmony.Patch(
+                    original: RequireMethod(typeof(DummyFloatingEquipmentProducer), methodName),
+                    prefix: new HarmonyMethod(RequireMethod(typeof(FloatingEquipmentPopupTranslationPatch), nameof(FloatingEquipmentPopupTranslationPatch.Prefix))),
+                    finalizer: new HarmonyMethod(RequireMethod(typeof(FloatingEquipmentPopupTranslationPatch), nameof(FloatingEquipmentPopupTranslationPatch.Finalizer), typeof(Exception))));
+            }
+
             PatchPopupShow(harmony);
             action();
         }
@@ -225,18 +275,38 @@ public sealed class FloatingEquipmentPopupTranslationPatchTests
             "Popup.Show.FloatingEquipmentCease");
     }
 
+    private static int GetFallHitCount()
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupShowTranslationPatch),
+            "Popup.Show.FloatingEquipmentFall");
+    }
+
     private sealed class DummyFloatingEquipmentProducer
     {
         public string PopupMessageToShow = string.Empty;
+        public Action? BeforePopup;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void PoweredCheckFloating()
+        {
+            BeforePopup?.Invoke();
+            ShowPopup();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public void NestedCheckFloating()
         {
             DummyPopupShow.Show(PopupMessageToShow);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void MagnetizedCheckFloating()
+        {
+            DummyPopupShow.Show(PopupMessageToShow);
+        }
+
+        private void ShowPopup()
         {
             DummyPopupShow.Show(PopupMessageToShow);
         }

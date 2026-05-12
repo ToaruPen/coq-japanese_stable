@@ -128,6 +128,70 @@ public sealed class LocationFinderPopupTranslationPatchTests
         });
     }
 
+    [Test]
+    public void Patch_LeavesUnknownPopupUnchanged_WhenOwnerPatched()
+    {
+        const string source = "You found nothing of interest.";
+
+        RunWithOwnerAndPopupPatches(() =>
+        {
+            var target = new DummyLocationFinderProducer
+            {
+                PopupMessageToShow = source,
+            };
+
+            target.TriggerFind();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                Assert.That(GetDiscoverHitCount(), Is.Zero);
+                Assert.That(GetTravelHitCount(), Is.Zero);
+            });
+        });
+    }
+
+    [Test]
+    public void Patch_RestoresOuterOwnerScopeAfterNestedOwnerPopup()
+    {
+        RunWithOwnerAndPopupPatches(
+            [
+                nameof(DummyLocationFinderProducer.TriggerFind),
+                nameof(DummyLocationFinderProducer.TriggerNestedFind),
+            ],
+            () =>
+            {
+                var innerTarget = new DummyLocationFinderProducer
+                {
+                    PopupMessageToShow = TravelSource,
+                };
+                var outerTarget = new DummyLocationFinderProducer
+                {
+                    PopupMessageToShow = DiscoverSource,
+                    BeforePopup = () =>
+                    {
+                        innerTarget.TriggerNestedFind();
+
+                        Assert.Multiple(() =>
+                        {
+                            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(TravelTranslated));
+                            Assert.That(GetTravelHitCount(), Is.EqualTo(1));
+                            Assert.That(GetDiscoverHitCount(), Is.Zero);
+                        });
+                    },
+                };
+
+                outerTarget.TriggerFind();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(DiscoverTranslated));
+                    Assert.That(GetTravelHitCount(), Is.EqualTo(1));
+                    Assert.That(GetDiscoverHitCount(), Is.EqualTo(1));
+                });
+            });
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
@@ -159,15 +223,24 @@ public sealed class LocationFinderPopupTranslationPatchTests
 
     private static void RunWithOwnerAndPopupPatches(Action action)
     {
+        RunWithOwnerAndPopupPatches([nameof(DummyLocationFinderProducer.TriggerFind)], action);
+    }
+
+    private static void RunWithOwnerAndPopupPatches(string[] ownerMethodNames, Action action)
+    {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
 
         try
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyLocationFinderProducer), nameof(DummyLocationFinderProducer.TriggerFind)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(LocationFinderPopupTranslationPatch), nameof(LocationFinderPopupTranslationPatch.Prefix))),
-                finalizer: new HarmonyMethod(RequireMethod(typeof(LocationFinderPopupTranslationPatch), nameof(LocationFinderPopupTranslationPatch.Finalizer), typeof(Exception))));
+            foreach (var ownerMethodName in ownerMethodNames)
+            {
+                harmony.Patch(
+                    original: RequireMethod(typeof(DummyLocationFinderProducer), ownerMethodName),
+                    prefix: new HarmonyMethod(RequireMethod(typeof(LocationFinderPopupTranslationPatch), nameof(LocationFinderPopupTranslationPatch.Prefix))),
+                    finalizer: new HarmonyMethod(RequireMethod(typeof(LocationFinderPopupTranslationPatch), nameof(LocationFinderPopupTranslationPatch.Finalizer), typeof(Exception))));
+            }
+
             PatchPopupShow(harmony);
             action();
         }
@@ -189,6 +262,13 @@ public sealed class LocationFinderPopupTranslationPatchTests
         return DynamicTextObservability.GetRouteFamilyHitCountForTests(
             nameof(PopupShowTranslationPatch),
             "Popup.Show.LocationFinderDiscover");
+    }
+
+    private static int GetTravelHitCount()
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupShowTranslationPatch),
+            "Popup.Show.LocationFinderTravel");
     }
 
     private void WriteDictionary(params (string key, string text)[] entries)
@@ -221,9 +301,17 @@ public sealed class LocationFinderPopupTranslationPatchTests
     private sealed class DummyLocationFinderProducer
     {
         public string PopupMessageToShow = string.Empty;
+        public Action? BeforePopup;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void TriggerFind()
+        {
+            BeforePopup?.Invoke();
+            DummyPopupShow.Show(PopupMessageToShow);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public void TriggerNestedFind()
         {
             DummyPopupShow.Show(PopupMessageToShow);
         }

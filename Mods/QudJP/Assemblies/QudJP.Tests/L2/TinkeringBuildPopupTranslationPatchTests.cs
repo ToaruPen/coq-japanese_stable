@@ -81,6 +81,58 @@ public sealed class TinkeringBuildPopupTranslationPatchTests
     }
 
     [Test]
+    public void PerformUITinkerBuild_LeavesUnknownCountPopupUnchanged_WhenOwnerPatched()
+    {
+        const string source = "You tinker up several {{Y|freeze grenades}}!";
+
+        AssertPopupMessage(source, source);
+
+        Assert.That(TinkeringBuildHitCount(), Is.Zero);
+    }
+
+    [Test]
+    public void PerformUITinkerBuild_RestoresOuterOwnerScopeAfterNestedOwnerPopup()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(harmony, RequireMethod(typeof(NestedTinkeringBuildTarget), nameof(NestedTinkeringBuildTarget.PerformUITinkerBuild)));
+
+            var innerTarget = new NestedTinkeringBuildTarget
+            {
+                PopupMessageToShow = "You tinker up {{Y|a freeze grenade}}!",
+            };
+            var outerTarget = new NestedTinkeringBuildTarget
+            {
+                PopupMessageToShow = "You tinker up two {{Y|freeze grenades}}!",
+                BeforePopup = () =>
+                {
+                    innerTarget.PerformUITinkerBuild();
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{Y|a freeze grenade}}を作った！"));
+                        Assert.That(TinkeringBuildHitCount(), Is.EqualTo(1));
+                    });
+                },
+            };
+
+            outerTarget.PerformUITinkerBuild();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{Y|freeze grenades}}を2個作った！"));
+                Assert.That(TinkeringBuildHitCount(), Is.EqualTo(2));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void PerformUITinkerBuild_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
         AssertPopupMessage(string.Empty, string.Empty);
@@ -124,10 +176,17 @@ public sealed class TinkeringBuildPopupTranslationPatchTests
 
     private static void PatchOwner(Harmony harmony)
     {
-        harmony.Patch(
-            original: RequireMethod(
+        PatchOwner(
+            harmony,
+            RequireMethod(
                 typeof(DummyTinkeringBuildTarget),
-                nameof(DummyTinkeringBuildTarget.PerformUITinkerBuild)),
+                nameof(DummyTinkeringBuildTarget.PerformUITinkerBuild)));
+    }
+
+    private static void PatchOwner(Harmony harmony, MethodInfo original)
+    {
+        harmony.Patch(
+            original: original,
             prefix: new HarmonyMethod(RequireMethod(
                 typeof(TinkeringBuildPopupTranslationPatch),
                 nameof(TinkeringBuildPopupTranslationPatch.Prefix))),
@@ -166,4 +225,17 @@ public sealed class TinkeringBuildPopupTranslationPatchTests
     }
 
     private static string CreateHarmonyId() => $"qudjp.tests.{Guid.NewGuid():N}";
+
+    private sealed class NestedTinkeringBuildTarget
+    {
+        public string PopupMessageToShow { get; set; } = string.Empty;
+
+        public Action? BeforePopup { get; set; }
+
+        public void PerformUITinkerBuild()
+        {
+            BeforePopup?.Invoke();
+            DummyPopupShow.Show(PopupMessageToShow);
+        }
+    }
 }

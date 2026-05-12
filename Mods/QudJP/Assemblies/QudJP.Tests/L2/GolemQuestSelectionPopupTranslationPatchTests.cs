@@ -122,17 +122,91 @@ public sealed class GolemQuestSelectionPopupTranslationPatchTests
             });
     }
 
+    [Test]
+    public void Patch_LeavesUnknownPopupUnchanged_WhenOwnerPatched()
+    {
+        const string source = "There is no suitable golem material here.";
+
+        WithPatchedOwnerAndPopup(
+            nameof(DummyGolemQuestSelectionProducer.WishSpec),
+            () =>
+            {
+                var target = new DummyGolemQuestSelectionProducer
+                {
+                    PopupMessageToShow = source,
+                };
+
+                target.WishSpec();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                    Assert.That(HitCount("MissingBlueprint"), Is.Zero);
+                    Assert.That(HitCount("MissingRequirement"), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_RestoresOuterOwnerScopeAfterNestedOwnerPopup()
+    {
+        const string outerMethodName = nameof(DummyGolemQuestSelectionProducer.Pick);
+        const string innerMethodName = nameof(DummyGolemQuestSelectionProducer.NestedWishSpec);
+
+        WithPatchedOwnerAndPopup(
+            [outerMethodName, innerMethodName],
+            () =>
+            {
+                var innerTarget = new DummyGolemQuestSelectionProducer
+                {
+                    PopupMessageToShow = "No blueprint by ID '{{W|missing-body}}' found.",
+                };
+                var outerTarget = new DummyGolemQuestSelectionProducer
+                {
+                    PopupMessageToShow = "You have nothing that meets the requirement of the {{Y|armament}}.",
+                    BeforePopup = () =>
+                    {
+                        innerTarget.NestedWishSpec();
+
+                        Assert.Multiple(() =>
+                        {
+                            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("ID '{{W|missing-body}}' のブループリントが見つからない。"));
+                            Assert.That(HitCount("MissingBlueprint"), Is.EqualTo(1));
+                            Assert.That(HitCount("MissingRequirement"), Is.Zero);
+                        });
+                    },
+                };
+
+                InvokeOwnerMethod(outerTarget, outerMethodName);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{Y|armament}}の要件を満たすものを持っていない。"));
+                    Assert.That(HitCount("MissingBlueprint"), Is.EqualTo(1));
+                    Assert.That(HitCount("MissingRequirement"), Is.EqualTo(1));
+                });
+            });
+    }
+
     private static void WithPatchedOwnerAndPopup(string methodName, Action action)
+    {
+        WithPatchedOwnerAndPopup([methodName], action);
+    }
+
+    private static void WithPatchedOwnerAndPopup(string[] methodNames, Action action)
     {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
         var harmony = new Harmony(harmonyId);
         try
         {
             PatchPopup(harmony);
-            harmony.Patch(
-                original: RequireOwnerMethod(methodName),
-                prefix: new HarmonyMethod(RequireMethod(typeof(GolemQuestSelectionPopupTranslationPatch), nameof(GolemQuestSelectionPopupTranslationPatch.Prefix))),
-                finalizer: new HarmonyMethod(RequireMethod(typeof(GolemQuestSelectionPopupTranslationPatch), nameof(GolemQuestSelectionPopupTranslationPatch.Finalizer))));
+            foreach (var methodName in methodNames)
+            {
+                harmony.Patch(
+                    original: RequireOwnerMethod(methodName),
+                    prefix: new HarmonyMethod(RequireMethod(typeof(GolemQuestSelectionPopupTranslationPatch), nameof(GolemQuestSelectionPopupTranslationPatch.Prefix))),
+                    finalizer: new HarmonyMethod(RequireMethod(typeof(GolemQuestSelectionPopupTranslationPatch), nameof(GolemQuestSelectionPopupTranslationPatch.Finalizer))));
+            }
 
             action();
         }
@@ -192,15 +266,28 @@ public sealed class GolemQuestSelectionPopupTranslationPatchTests
     private sealed class DummyGolemQuestSelectionProducer
     {
         public string PopupMessageToShow { get; set; } = string.Empty;
+        public Action? BeforePopup { get; init; }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void WishSpec()
+        {
+            ShowPopup();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public void NestedWishSpec()
         {
             DummyPopupShow.ShowFail(PopupMessageToShow);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void Pick()
+        {
+            BeforePopup?.Invoke();
+            DummyPopupShow.ShowFail(PopupMessageToShow);
+        }
+
+        private void ShowPopup()
         {
             DummyPopupShow.ShowFail(PopupMessageToShow);
         }

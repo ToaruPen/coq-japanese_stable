@@ -94,6 +94,39 @@ public sealed class PoweredFloatingTranslationPatchTests
     }
 
     [Test]
+    public void CheckFloating_RestoresOuterOwnerScopeAfterNestedOwnerPopup()
+    {
+        var innerTarget = new NestedPoweredFloatingProducerTarget
+        {
+            PopupMessageToShow = MarkDoesFragment("The 装置 " + BuildVerbForm("cease"), "cease") + " floating near you.",
+        };
+        var outerTarget = new NestedPoweredFloatingProducerTarget
+        {
+            PopupMessageToShow = MarkDoesFragment("The 装置 " + BuildVerbForm("fall"), "fall") + " to the ground.",
+            BeforePopup = () =>
+            {
+                innerTarget.CheckFloating();
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("装置はあなたの近くで浮遊するのをやめた"));
+                    Assert.That(PoweredFloatingHitCount(), Is.EqualTo(1));
+                });
+            },
+        };
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(PoweredFloatingTranslationPatch),
+            OwnerPopupRouteTestHarness.RequireMethod(typeof(NestedPoweredFloatingProducerTarget), nameof(NestedPoweredFloatingProducerTarget.CheckFloating)),
+            outerTarget.CheckFloating);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("装置は地面に倒れた。"));
+            Assert.That(PoweredFloatingHitCount(), Is.EqualTo(2));
+        });
+    }
+
+    [Test]
     public void CheckFloating_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
         var target = new DummyPoweredFloatingProducerTarget();
@@ -144,5 +177,18 @@ public sealed class PoweredFloatingTranslationPatchTests
             "MessageFrames",
             "verbs.ja.json");
         MessageFrameTranslator.SetDictionaryPathForTests(repositoryDictionaryPath);
+    }
+
+    private sealed class NestedPoweredFloatingProducerTarget
+    {
+        public string PopupMessageToShow { get; set; } = string.Empty;
+
+        public Action? BeforePopup { get; set; }
+
+        public void CheckFloating()
+        {
+            BeforePopup?.Invoke();
+            DummyPopupShow.Show(PopupMessageToShow);
+        }
     }
 }

@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
 using QudJP.Tests.L1;
@@ -106,11 +107,53 @@ public sealed class ModMagnetizedTranslationPatchTests
         });
     }
 
+    [Test]
+    public void CheckFloating_RestoresOuterOwnerScopeAfterNestedOwnerPopup()
+    {
+        var innerTarget = new DummyNestedModMagnetizedProducerTarget
+        {
+            PopupMessageToShow = MarkDoesFragment("The 装置 falls") + " to the ground; you pick it up.",
+        };
+        var outerTarget = new DummyNestedModMagnetizedProducerTarget
+        {
+            PopupMessageToShow = MarkDoesFragment("The 装置 falls") + " to the ground.",
+            BeforePopup = () =>
+            {
+                innerTarget.NestedCheckFloating();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("装置は地面に落ちた。あなたはそれを拾った。"));
+                    Assert.That(ModMagnetizedHitCount(), Is.EqualTo(1));
+                });
+            },
+        };
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwners(
+            typeof(ModMagnetizedTranslationPatch),
+            [
+                RequireNestedOwnerMethod(nameof(DummyNestedModMagnetizedProducerTarget.CheckFloating)),
+                RequireNestedOwnerMethod(nameof(DummyNestedModMagnetizedProducerTarget.NestedCheckFloating)),
+            ],
+            outerTarget.CheckFloating);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("装置は地面に倒れた。"));
+            Assert.That(ModMagnetizedHitCount(), Is.EqualTo(2));
+        });
+    }
+
     private static MethodInfo RequireOwnerMethod()
     {
         return OwnerPopupRouteTestHarness.RequireMethod(
             typeof(DummyModMagnetizedProducerTarget),
             nameof(DummyModMagnetizedProducerTarget.CheckFloating));
+    }
+
+    private static MethodInfo RequireNestedOwnerMethod(string methodName)
+    {
+        return OwnerPopupRouteTestHarness.RequireMethod(typeof(DummyNestedModMagnetizedProducerTarget), methodName);
     }
 
     private static string MarkDoesFragment(string fragment)
@@ -135,5 +178,24 @@ public sealed class ModMagnetizedTranslationPatchTests
             "MessageFrames",
             "verbs.ja.json");
         MessageFrameTranslator.SetDictionaryPathForTests(repositoryDictionaryPath);
+    }
+
+    private sealed class DummyNestedModMagnetizedProducerTarget
+    {
+        public string PopupMessageToShow { get; init; } = string.Empty;
+        public Action? BeforePopup { get; init; }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public void CheckFloating()
+        {
+            BeforePopup?.Invoke();
+            DummyPopupShow.Show(PopupMessageToShow);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public void NestedCheckFloating()
+        {
+            DummyPopupShow.Show(PopupMessageToShow);
+        }
     }
 }

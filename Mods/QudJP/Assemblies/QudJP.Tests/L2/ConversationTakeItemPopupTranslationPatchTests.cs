@@ -87,6 +87,40 @@ public sealed class ConversationTakeItemPopupTranslationPatchTests
         AssertPopupMessage(string.Empty, string.Empty);
     }
 
+    [Test]
+    public void Execute_KeepsOuterOwnerScopeActive_WhenNestedScopeExits()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            ConversationTakeItemPopupTranslationPatch.Prefix();
+            try
+            {
+                ConversationTakeItemPopupTranslationPatch.Prefix();
+                ConversationTakeItemPopupTranslationPatch.Finalizer(null);
+
+                DummyPopupShow.Show("Q Girl takes {{Y|奇妙な小物}}.");
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("Q Girlは{{Y|奇妙な小物}}を受け取った。"));
+                    Assert.That(TakeItemHitCount(), Is.EqualTo(1));
+                });
+            }
+            finally
+            {
+                ConversationTakeItemPopupTranslationPatch.Finalizer(null);
+            }
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static void AssertPopupMessage(string source, string expected)
     {
         var harmonyId = CreateHarmonyId();

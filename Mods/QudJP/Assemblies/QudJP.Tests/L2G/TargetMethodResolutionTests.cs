@@ -327,6 +327,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(LoadingStatusTranslationPatch), "SetLoadingStatus", "XRL.UI.Loading", "System.Void", new[] { "System.String", "System.Boolean" })]
     [TestCase(typeof(PetEitherOrExplodeTranslationPatch), "explode", "XRL.World.Parts.PetEitherOr", "System.Void", new string[0])]
     [TestCase(typeof(ZoneWindChangeTranslationPatch), "WindChange", "XRL.World.Zone", "System.Void", new[] { "System.Int64" })]
+    [TestCase(typeof(CudgelConkPopupTranslationPatch), "PerformConk", "XRL.World.Parts.Skill.Cudgel_Conk", "System.Boolean", new string[0])]
     [TestCase(typeof(CrippleApplyTranslationPatch), "Apply", "XRL.World.Effects.Cripple", "System.Boolean", new[] { "XRL.World.GameObject" })]
     [TestCase(typeof(DoorAttemptOpenTranslationPatch), "AttemptOpen", "XRL.World.Parts.Door", "System.Boolean", new[]
     {
@@ -482,6 +483,17 @@ public sealed class TargetMethodResolutionTests
             var parameterTypes = Array.ConvertAll(methodInfo.GetParameters(), static parameter => NormalizeTypeName(parameter.ParameterType.FullName));
             Assert.That(parameterTypes, Is.EqualTo(expectedParameterTypes));
         });
+    }
+
+    [Test]
+    public void CrippleApplyTargetMethod_ResolvesExpectedFullSignature()
+    {
+        var targetMethod = InvokeTargetMethod(typeof(CrippleApplyTranslationPatch));
+
+        Assert.That(targetMethod, Is.Not.Null, "CrippleApplyTranslationPatch TargetMethod returned null.");
+        Assert.That(
+            FullMethodSignature(targetMethod!),
+            Is.EqualTo("XRL.World.Effects.Cripple|Apply|System.Boolean|XRL.World.GameObject"));
     }
 
 #if HAS_GAME_DLL && HAS_TMP
@@ -722,6 +734,7 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(DeployableInfrastructureTranslationPatch), new[]
     {
+        "XRL.World.GameObject",
         "XRL.World.GameObject|XRL.World.Cell|System.Boolean|System.Boolean",
     })]
     [TestCase(typeof(DesalinationPelletTranslationPatch), new[]

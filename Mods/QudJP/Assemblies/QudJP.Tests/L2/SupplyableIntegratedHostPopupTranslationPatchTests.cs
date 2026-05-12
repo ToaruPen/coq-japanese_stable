@@ -105,6 +105,64 @@ public sealed class SupplyableIntegratedHostPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_LeavesUnknownPopupUnchanged_WhenOwnerPatched()
+    {
+        const string source = "The {{Y|phase cannon}} needs a qualified operator.";
+
+        RunWithOwnerAndPopupPatches(() =>
+        {
+            var target = new DummySupplyableIntegratedHostProducer
+            {
+                PopupMessageToShow = source,
+            };
+
+            target.AttemptSupply();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                Assert.That(GetNoNeededSuppliesHitCount(), Is.Zero);
+                Assert.That(GetNoHeldSuppliesHitCount(), Is.Zero);
+            });
+        });
+    }
+
+    [Test]
+    public void Patch_RestoresOuterOwnerScopeAfterNestedOwnerPopup()
+    {
+        RunWithOwnerAndPopupPatches(() =>
+        {
+            var innerTarget = new DummySupplyableIntegratedHostProducer
+            {
+                PopupMessageToShow = NoHeldSuppliesSource,
+            };
+            var outerTarget = new DummySupplyableIntegratedHostProducer
+            {
+                PopupMessageToShow = NoNeededSuppliesSource,
+                BeforePopup = () =>
+                {
+                    innerTarget.AttemptSupply();
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(NoHeldSuppliesTranslated));
+                        Assert.That(GetNoHeldSuppliesHitCount(), Is.EqualTo(1));
+                        Assert.That(GetNoNeededSuppliesHitCount(), Is.Zero);
+                    });
+                },
+            };
+
+            outerTarget.AttemptSupply();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(NoNeededSuppliesTranslated));
+                Assert.That(GetNoHeldSuppliesHitCount(), Is.EqualTo(1));
+                Assert.That(GetNoNeededSuppliesHitCount(), Is.EqualTo(1));
+            });
+        });
+    }
+
+    [Test]
     public void Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
         RunWithOwnerAndPopupPatches(() =>
@@ -183,13 +241,23 @@ public sealed class SupplyableIntegratedHostPopupTranslationPatchTests
             "Popup.Show.SupplyableIntegratedHostNoNeededSupplies");
     }
 
+    private static int GetNoHeldSuppliesHitCount()
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupShowTranslationPatch),
+            "Popup.Show.SupplyableIntegratedHostNoHeldSupplies");
+    }
+
     private sealed class DummySupplyableIntegratedHostProducer
     {
         public string PopupMessageToShow = string.Empty;
 
+        public Action? BeforePopup { get; set; }
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         public bool AttemptSupply()
         {
+            BeforePopup?.Invoke();
             DummyPopupShow.Show(PopupMessageToShow);
             return true;
         }
