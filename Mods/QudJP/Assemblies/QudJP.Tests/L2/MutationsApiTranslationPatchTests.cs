@@ -106,6 +106,22 @@ public sealed class MutationsApiTranslationPatchTests
     }
 
     [Test]
+    public void TryTranslatePopupMessage_TranslatesBuiltInMutationTerm_WhenDictionaryMisses()
+    {
+        WriteDictionary();
+
+        var ok = TryTranslatePopupMessageDuringMutationPurchase(
+            "Are you sure you want to spend 4 mutation points to buy a new {{G|mutation}}?",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("本当に4ポイントを消費して新しい{{G|変異}}を購入しますか？"));
+        });
+    }
+
+    [Test]
     public void TryTranslatePopupMessage_ReturnsFalse_ForEmptyInput()
     {
         var ok = TryTranslatePopupMessageDuringMutationPurchase(string.Empty, out var translated);
