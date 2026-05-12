@@ -309,7 +309,7 @@ uv run python scripts/sync_mod.py \
 | `QJ001` | `[HarmonyPatch]` クラス内の `Prefix` / `Postfix` メソッドは、本体全体が単一の `try { } catch (Exception) { }` 文でなければならない (型無し `catch` は不可)。`TargetMethod` / `TargetMethods` は除外。 |
 | `QJ002` | メソッド呼び出しの戻り値に対する `??` null フォールバックの直前には `Trace.TraceWarning` / `Trace.TraceError` を置かなければならない (catch 内とテストコードは除外)。 |
 | `QJ003` | `Trace.TraceError` / `Trace.TraceWarning` の第 1 引数文字列は `"QudJP:"` で始まらなければならない。 |
-| `QJ005` | semantic pipeline entrypoint は他 patch の `TryTranslate*` を直接呼ばず、crash-safe helper または `try` / `catch (Exception)` 経由で呼ばなければならない。 |
+| `QJ005` | semantic pipeline entrypoint は他 patch の `TryTranslate*` を直接呼ばず、crash-safe helper または `Exception` を捕捉する `try` / `catch` (`catch (Exception)` または型省略 `catch`) 経由で呼ばなければならない。 |
 
 すべて `DiagnosticSeverity.Warning` で発行され、`<TreatWarningsAsErrors>true</TreatWarningsAsErrors>` によりビルドエラーになります。
 
