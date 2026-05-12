@@ -988,6 +988,50 @@ def _status_screen_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _grit_gate_terminal_knowledge_popup_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.UI/GritGateTerminalScreenKnowledge.cs::XRL.UI.GritGateTerminalScreenKnowledge.GritGateTerminalScreenKnowledge",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/GritGateTerminalKnowledgePopupTranslationPatch.cs",
+                    (
+                        "GritGateTerminalKnowledgePopupTranslationPatch",
+                        "TryTranslatePopupMessage",
+                        "Ereshkigal delivers insight from the Thin World",
+                        "Activate",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("GritGateTerminalKnowledgePopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/GritGateTerminalKnowledgePopupTranslationPatchTests.cs",
+                    (
+                        "Activate_TranslatesInsightPopup_WhenOwnerPatched",
+                        "Activate_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Activate_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Activate_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "nameof(DummyGritGateTerminalKnowledgeTarget.Activate)",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(GritGateTerminalKnowledgePopupTranslationPatch)",
+                        "XRL.UI/GritGateTerminalScreenKnowledge.cs::XRL.UI.GritGateTerminalScreenKnowledge.GritGateTerminalScreenKnowledge",
+                        "XRL.UI.GritGateTerminalScreenKnowledge",
+                        "GritGateTerminalScreenKnowledge",
+                        "Activate",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _campfire_preserve_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/CampfirePreserveTranslationPatch.cs",
@@ -3954,6 +3998,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_ability_manager_popup_families(),
     *_cooking_runtime_families(),
     *_status_screen_popup_families(),
+    *_grit_gate_terminal_knowledge_popup_family(),
     *_campfire_preserve_families(),
     *_reality_stabilized_event_families(),
     *_cybernetic_rejection_syndrome_families(),

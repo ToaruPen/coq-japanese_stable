@@ -441,6 +441,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(GameSummaryScreenMenuBarsTranslationPatch), "UpdateMenuBars", "Qud.UI.GameSummaryScreen", "System.Void", new string[0])]
     [TestCase(typeof(GameSummaryScreenShowTranslationPatch), "_ShowGameSummary", "Qud.UI.GameSummaryScreen", "System.Threading.Tasks.Task`1[[System.Boolean]]", new[] { "System.String", "System.String", "System.String", "System.Boolean" })]
     [TestCase(typeof(MainMenuRowTranslationPatch), "setData", "MainMenuRow", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
+    [TestCase(typeof(GritGateTerminalKnowledgePopupTranslationPatch), "Activate", "XRL.UI.GritGateTerminalScreenKnowledge", "System.Void", new string[0])]
     [TestCase(typeof(PickTargetWindowUpdateTranslationPatch), "Update", "Qud.UI.PickTargetWindow", "System.Void", new string[0])]
     [TestCase(typeof(GivesRepShortDescriptionTranslationPatch), "HandleEvent", "XRL.World.Parts.GivesRep", "System.Boolean", new[] { "XRL.World.GetShortDescriptionEvent" })]
     [TestCase(typeof(MutationsApiTranslationPatch), "BuyRandomMutation", "Qud.API.MutationsAPI", "System.Boolean", new[] { "XRL.World.GameObject", "System.Int32", "System.Boolean", "System.String" })]
@@ -1861,6 +1862,26 @@ public sealed class TargetMethodResolutionTests
         {
             Assert.That(method, Is.Not.Null, "GameObject.RenderForUI(string, bool) not found.");
             Assert.That(method?.ReturnType.FullName, Is.EqualTo("XRL.World.RenderEvent"));
+        });
+    }
+
+    [Test]
+    public void GritGateTerminalKnowledgePopupTargetMethod_ResolvesActivateForConstructorDelegateCallsite()
+    {
+        const string inventoryFamilyId =
+            "XRL.UI/GritGateTerminalScreenKnowledge.cs::XRL.UI.GritGateTerminalScreenKnowledge.GritGateTerminalScreenKnowledge";
+
+        var targetMethod = InvokeTargetMethod(typeof(GritGateTerminalKnowledgePopupTranslationPatch));
+        var methodInfo = targetMethod as MethodInfo;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inventoryFamilyId, Does.Contain("XRL.UI.GritGateTerminalScreenKnowledge.GritGateTerminalScreenKnowledge"));
+            Assert.That(methodInfo, Is.Not.Null);
+            Assert.That(methodInfo!.DeclaringType?.FullName, Is.EqualTo("XRL.UI.GritGateTerminalScreenKnowledge"));
+            Assert.That(methodInfo.Name, Is.EqualTo("Activate"));
+            Assert.That(NormalizeTypeName(methodInfo.ReturnType.FullName), Is.EqualTo("System.Void"));
+            Assert.That(methodInfo.GetParameters(), Is.Empty);
         });
     }
 #endif
