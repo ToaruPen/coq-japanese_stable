@@ -2261,6 +2261,53 @@ def _integrated_weapon_hosts_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _mechanical_wings_popup_families() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/MechanicalWings.cs::XRL.World.Parts.MechanicalWings.TryStartup",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MechanicalWingsPopupTranslationPatch.cs",
+                    (
+                        "MechanicalWingsPopupTranslationPatch",
+                        "TryTranslatePopupMessage",
+                        "MessageFrameTranslator.TryTranslateXDidY",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("MechanicalWingsPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/MechanicalWingsPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesMechanicalWingsStartupPopup_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_StripsDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "mechanical wings",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(MechanicalWingsPopupTranslationPatch)",
+                        "XRL.World.Parts.MechanicalWings|TryStartup|System.Boolean",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+                    (
+                        '"extra": "still starting up"',
+                        '"extra": "unresponsive"',
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _boost_statistic_families() -> tuple[CoveredOwnerFamily, ...]:
     common_evidence = (
         EvidenceFile(
@@ -3980,6 +4027,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_tonic_families(),
     *_xrl_game_families(),
     *_integrated_weapon_hosts_families(),
+    *_mechanical_wings_popup_families(),
     *_boost_statistic_families(),
     *_emboldened_families(),
     *_fungal_spore_infection_families(),
