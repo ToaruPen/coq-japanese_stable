@@ -35,6 +35,7 @@ internal static class PopupShowSemanticPipeline
         CyberneticsMedassistModuleTranslationPatch.TryTranslatePopupMessage,
         LiquidLoaderTranslationPatch.TryTranslatePopupMessage,
         LiquidVolumeTranslationPatch.TryTranslatePopupMessage,
+        LocationFinderPopupTranslationPatch.TryTranslatePopupMessage,
         MutatingTranslationPatch.TryTranslatePopupMessage,
         LightManipulationTranslationPatch.TryTranslatePopupMessage,
         AsleepOwnerTranslationPatch.TryTranslatePopupMessage,

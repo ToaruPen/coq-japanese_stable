@@ -3138,7 +3138,61 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _location_finder_popup_families() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/LocationFinder.cs::XRL.World.Parts.LocationFinder.TriggerFind",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/LocationFinderPopupTranslationPatch.cs",
+                    (
+                        "LocationFinderPopupTranslationPatch",
+                        "XRL.World.Parts.LocationFinder",
+                        "TriggerFind",
+                        "TryTranslatePopupMessage",
+                        "LocationFinderDiscover",
+                        "LocationFinderTravel",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("LocationFinderPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/LocationFinderPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesLocationFinderPopup_WhenOwnerPatched",
+                        "Patch_DoesNotRecordOwnerRoute_WhenOwnerAbsent",
+                        "Patch_StripsDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "You discover {{Y|some forgotten ruins}}!",
+                        "You traveled to {{Y|some forgotten ruins}}!",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "XRL.World.Parts.LocationFinder|TriggerFind|System.Void",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/world-parts.ja.json",
+                    (
+                        "You discover {0}!",
+                        "You traveled to {0}!",
+                        "{0}を発見した！",  # noqa: RUF001
+                        "{0}へ移動した！",  # noqa: RUF001
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
+    *_location_finder_popup_families(),
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
         inventory_statuses=("owner_patch_required",),
