@@ -3138,7 +3138,103 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _old_save_continue_menu_popup_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/OldSaveContinueMenuPopupTranslationPatch.cs",
+        (
+            "OldSaveContinueMenuPopupTranslationPatch",
+            "TryTranslatePopupMessage",
+            "TranslatePopupTextForProducerRoute",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("OldSaveContinueMenuPopupTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/OldSaveContinueMenuPopupTranslationPatchTests.cs",
+        (
+            "Patch_TranslatesOldSavePopup_WhenOwnerPatched",
+            "Patch_DoesNotRecordOwnerRoute_WhenOwnerAbsent",
+            "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+            "That save file looks like it's from an older save format revision (2.0.3). Sorry!",
+        ),
+    )
+    dictionary = EvidenceFile(
+        "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+        (
+            "That save file looks like it's from an older save format revision ({0}). Sorry!",
+            "このセーブデータは古いフォーマット（{0}）のようです。",  # noqa: RUF001
+        ),
+    )
+
+    return (
+        CoveredOwnerFamily(
+            family_id="Qud.UI/MainMenu.cs::Qud.UI.MainMenu.ContinueMenu",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "Qud.UI.MainMenu",
+                        "ContinueMenu",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    tests.path,
+                    (
+                        *tests.required_substrings,
+                        "nameof(DummyOldSaveContinueMenuProducer.MainMenuContinueMenu)",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(OldSaveContinueMenuPopupTranslationPatch)",
+                        "Qud.UI.MainMenu|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",
+                    ),
+                ),
+                dictionary,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="Qud.UI/SaveManagement.cs::Qud.UI.SaveManagement.ContinueMenu",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "Qud.UI.SaveManagement",
+                        "ContinueMenu",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    tests.path,
+                    (
+                        *tests.required_substrings,
+                        "nameof(DummyOldSaveContinueMenuProducer.SaveManagementContinueMenu)",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(OldSaveContinueMenuPopupTranslationPatch)",
+                        "Qud.UI.SaveManagement|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",
+                    ),
+                ),
+                dictionary,
+            ),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
+    *_old_save_continue_menu_popup_families(),
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
         inventory_statuses=("owner_patch_required",),
