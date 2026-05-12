@@ -121,6 +121,13 @@ public static class MutationsApiTranslationPatch
             return translated;
         }
 
+        var strippedTerm = termGroup.Value.Trim();
+        if (string.Equals(strippedTerm, "mutation", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(strippedTerm, "mutations", StringComparison.OrdinalIgnoreCase))
+        {
+            return ColorAwareTranslationComposer.RestoreCapture("突然変異", spans, termGroup).Trim();
+        }
+
         return StringHelpers.TryGetTranslationExactOrLowerAscii(termGroup.Value.Trim(), out translated)
             ? ColorAwareTranslationComposer.RestoreCapture(translated, spans, termGroup).Trim()
             : restored;

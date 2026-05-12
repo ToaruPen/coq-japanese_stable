@@ -988,6 +988,49 @@ def _status_screen_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _mutations_api_families() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="Qud.API/MutationsAPI.cs::Qud.API.MutationsAPI.BuyRandomMutation",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MutationsApiTranslationPatch.cs",
+                    (
+                        "MutationsApiTranslationPatch",
+                        "BuyPromptPattern",
+                        "mutation points to buy a new",
+                        "突然変異",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+                    ("MutationsApiTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/MutationsApiTranslationPatchTests.cs",
+                    (
+                        "BuyRandomMutation_TranslatesConfirmationMessage_WhenPatched",
+                        "BuyRandomMutation_PreservesColorTagsInConfirmationMessage_WhenPatched",
+                        "TryTranslatePopupMessage_TranslatesDefaultMutationTerm_WhenDictionaryMisses",
+                        "TryTranslatePopupMessage_ReturnsFalse_ForEmptyInput",
+                        "TryTranslatePopupMessage_ReturnsFalse_ForDirectTranslationMarker",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(MutationsApiTranslationPatch)",
+                        "Qud.API.MutationsAPI",
+                        "BuyRandomMutation",
+                        "XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _campfire_preserve_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/CampfirePreserveTranslationPatch.cs",
@@ -3954,6 +3997,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_ability_manager_popup_families(),
     *_cooking_runtime_families(),
     *_status_screen_popup_families(),
+    *_mutations_api_families(),
     *_campfire_preserve_families(),
     *_reality_stabilized_event_families(),
     *_cybernetic_rejection_syndrome_families(),
