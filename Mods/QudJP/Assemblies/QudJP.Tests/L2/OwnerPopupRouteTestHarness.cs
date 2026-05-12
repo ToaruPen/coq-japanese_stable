@@ -9,13 +9,22 @@ internal static class OwnerPopupRouteTestHarness
 {
     public static void WithPatchedPopupOwner(Type patchType, MethodInfo ownerMethod, Action action)
     {
+        WithPatchedPopupOwners(patchType, [ownerMethod], action);
+    }
+
+    public static void WithPatchedPopupOwners(Type patchType, MethodInfo[] ownerMethods, Action action)
+    {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
 
         try
         {
             PatchPopupShow(harmony);
-            PatchOwner(harmony, patchType, ownerMethod);
+            foreach (var ownerMethod in ownerMethods)
+            {
+                PatchOwner(harmony, patchType, ownerMethod);
+            }
+
             action();
         }
         finally
@@ -68,10 +77,14 @@ internal static class OwnerPopupRouteTestHarness
 
     private static void PatchOwner(Harmony harmony, Type patchType, MethodInfo original)
     {
+        var prefix = AccessTools.Method(patchType, "Prefix", [typeof(MethodBase)])
+                     ?? RequireMethod(patchType, "Prefix");
         harmony.Patch(
             original: original,
-            prefix: new HarmonyMethod(RequireMethod(patchType, "Prefix")),
-            finalizer: new HarmonyMethod(RequireMethod(patchType, "Finalizer", typeof(Exception))));
+            prefix: new HarmonyMethod(prefix),
+            finalizer: new HarmonyMethod(
+                AccessTools.Method(patchType, "Finalizer", [typeof(Exception)])
+                ?? RequireMethod(patchType, "Finalizer")));
     }
 
     private static string CreateHarmonyId()

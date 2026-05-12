@@ -250,7 +250,19 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [Test]
-    public void EnclosingPatch_TranslatesExtricatePopup_WhenPatched()
+    [TestCase(
+        nameof(DummyEnclosingProducerTarget.EnterEnclosure),
+        "You fail to get yourself into stasis pod.",
+        "stasis podに入れなかった。")]
+    [TestCase(
+        nameof(DummyEnclosingProducerTarget.ExitEnclosure),
+        "You extricate yourself from stasis pod.",
+        "stasis podから抜け出した。")]
+    [TestCase(
+        nameof(DummyEnclosingProducerTarget.EnclosureExitImpeded),
+        "You cannot do that while enclosed by stasis pod.",
+        "stasis podに閉じ込められている間はそれをできない。")]
+    public void EnclosingPatch_TranslatesOwnerPopup_WhenPatched(string methodName, string source, string expected)
     {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -260,22 +272,359 @@ public sealed class WorldPartsProducerTranslationPatchTests
             PatchPopupShow(harmony);
             PatchOwner(
                 harmony,
-                RequireMethod(
-                    typeof(DummyEnclosingProducerTarget),
-                    nameof(DummyEnclosingProducerTarget.ExitEnclosure),
-                    typeof(DummyGameObject),
-                    typeof(DummyGameEvent),
-                    typeof(DummyEnclosedEffect)),
+                EnclosingMethod(methodName),
                 typeof(EnclosingTranslationPatch));
 
             var target = new DummyEnclosingProducerTarget
             {
-                PopupMessageToShow = "You extricate yourself from stasis pod.",
+                PopupMessageToShow = source,
             };
 
-            _ = target.ExitEnclosure(new DummyGameObject(), new DummyGameEvent(), new DummyEnclosedEffect());
+            InvokeEnclosingMethod(target, methodName);
 
-            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("stasis podから抜け出した。"));
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [TestCase(
+        typeof(DummyStairsDownProducerTarget),
+        nameof(DummyStairsDownProducerTarget.HandleEvent),
+        typeof(StairsDownTranslationPatch),
+        "Use {{W|Shift+D}} to descend.",
+        "{{W|Shift+D}}で下に降りてください。")]
+    [TestCase(
+        typeof(DummyStairsUpProducerTarget),
+        nameof(DummyStairsUpProducerTarget.HandleEvent),
+        typeof(StairsUpTranslationPatch),
+        "Use {{W|Shift+U}} to ascend.",
+        "{{W|Shift+U}}で上に昇ってください。")]
+    public void StairsPatch_TranslatesInventoryActionPopup_WhenPatched(
+        Type targetType,
+        string methodName,
+        Type patchType,
+        string source,
+        string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(targetType, methodName, typeof(DummyInventoryActionEvent)),
+                patchType);
+
+            InvokeStairsHandleEvent(targetType, source);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void EnclosingPatch_TranslatesQueuedMessage_WhenPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                EnclosingMethod(nameof(DummyEnclosingProducerTarget.EnterEnclosure)),
+                typeof(EnclosingTranslationPatch));
+
+            var target = new DummyEnclosingProducerTarget
+            {
+                QueuedMessageToSend = "snapjaw tries to get itself into the stasis pod, but fails.",
+            };
+
+            _ = target.EnterEnclosure(new DummyGameObject(), new DummyGameEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("snapjawはそれ自身をthe stasis podの中に入れようとしたが、失敗した。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void EnclosingPatch_DoesNotTranslateOwnerPopup_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony);
+
+            var target = new DummyEnclosingProducerTarget
+            {
+                PopupMessageToShow = "You fail to get yourself into stasis pod.",
+            };
+
+            _ = target.EnterEnclosure(new DummyGameObject(), new DummyGameEvent());
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You fail to get yourself into stasis pod."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void EnclosingPatch_DoesNotTranslateQueuedMessage_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+
+            const string source = "snapjaw tries to get itself into the stasis pod, but fails.";
+            var target = new DummyEnclosingProducerTarget
+            {
+                QueuedMessageToSend = source,
+            };
+
+            _ = target.EnterEnclosure(new DummyGameObject(), new DummyGameEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void EnclosingPatch_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                EnclosingMethod(nameof(DummyEnclosingProducerTarget.EnterEnclosure)),
+                typeof(EnclosingTranslationPatch));
+
+            var source = MessageFrameTranslator.MarkDirectTranslation("snapjaw tries to get itself into the stasis pod, but fails.");
+            var target = new DummyEnclosingProducerTarget
+            {
+                QueuedMessageToSend = source,
+            };
+
+            _ = target.EnterEnclosure(new DummyGameObject(), new DummyGameEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void EnclosingPatch_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                EnclosingMethod(nameof(DummyEnclosingProducerTarget.EnterEnclosure)),
+                typeof(EnclosingTranslationPatch));
+
+            var target = new DummyEnclosingProducerTarget
+            {
+                QueuedMessageToSend = string.Empty,
+            };
+
+            _ = target.EnterEnclosure(new DummyGameObject(), new DummyGameEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.Empty);
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [TestCase(
+        nameof(DummyEnclosingProducerTarget.EnterEnclosure),
+        "You fail to get yourself into stasis pod.")]
+    [TestCase(
+        nameof(DummyEnclosingProducerTarget.EnclosureExitImpeded),
+        "You cannot do that while enclosed by stasis pod.")]
+    public void EnclosingPatch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched(string methodName, string source)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                EnclosingMethod(methodName),
+                typeof(EnclosingTranslationPatch));
+
+            var target = new DummyEnclosingProducerTarget
+            {
+                PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation(source),
+            };
+
+            InvokeEnclosingMethod(target, methodName);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [TestCase(nameof(DummyEnclosingProducerTarget.EnterEnclosure))]
+    [TestCase(nameof(DummyEnclosingProducerTarget.EnclosureExitImpeded))]
+    public void EnclosingPatch_LeavesEmptyPopupUnchanged_WhenOwnerPatched(string methodName)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                EnclosingMethod(methodName),
+                typeof(EnclosingTranslationPatch));
+
+            var target = new DummyEnclosingProducerTarget
+            {
+                PopupMessageToShow = string.Empty,
+            };
+
+            InvokeEnclosingMethod(target, methodName);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.Empty);
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [TestCase(
+        typeof(DummyStairsDownProducerTarget),
+        nameof(DummyStairsDownProducerTarget.HandleEvent),
+        typeof(StairsDownTranslationPatch),
+        "Use {{W|Shift+D}} to descend.")]
+    [TestCase(
+        typeof(DummyStairsUpProducerTarget),
+        nameof(DummyStairsUpProducerTarget.HandleEvent),
+        typeof(StairsUpTranslationPatch),
+        "Use {{W|Shift+U}} to ascend.")]
+    public void StairsPatch_DoesNotTranslateOwnerPopup_WhenOwnerAbsent(Type targetType, string methodName, Type patchType, string source)
+    {
+        _ = methodName;
+        _ = patchType;
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony);
+
+            InvokeStairsHandleEvent(targetType, source);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [TestCase(
+        typeof(DummyStairsDownProducerTarget),
+        nameof(DummyStairsDownProducerTarget.HandleEvent),
+        typeof(StairsDownTranslationPatch),
+        "Use {{W|Shift+D}} to descend.")]
+    [TestCase(
+        typeof(DummyStairsUpProducerTarget),
+        nameof(DummyStairsUpProducerTarget.HandleEvent),
+        typeof(StairsUpTranslationPatch),
+        "Use {{W|Shift+U}} to ascend.")]
+    public void StairsPatch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched(
+        Type targetType,
+        string methodName,
+        Type patchType,
+        string source)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(targetType, methodName, typeof(DummyInventoryActionEvent)),
+                patchType);
+
+            InvokeStairsHandleEvent(targetType, MessageFrameTranslator.MarkDirectTranslation(source));
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [TestCase(
+        typeof(DummyStairsDownProducerTarget),
+        nameof(DummyStairsDownProducerTarget.HandleEvent),
+        typeof(StairsDownTranslationPatch))]
+    [TestCase(
+        typeof(DummyStairsUpProducerTarget),
+        nameof(DummyStairsUpProducerTarget.HandleEvent),
+        typeof(StairsUpTranslationPatch))]
+    public void StairsPatch_LeavesEmptyPopupUnchanged_WhenOwnerPatched(Type targetType, string methodName, Type patchType)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(targetType, methodName, typeof(DummyInventoryActionEvent)),
+                patchType);
+
+            InvokeStairsHandleEvent(targetType, string.Empty);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.Empty);
         }
         finally
         {
@@ -782,6 +1131,76 @@ public sealed class WorldPartsProducerTranslationPatchTests
             original: original,
             prefix: new HarmonyMethod(RequireMethod(patchType, nameof(LiquidVolumeTranslationPatch.Prefix))),
             finalizer: new HarmonyMethod(RequireMethod(patchType, nameof(LiquidVolumeTranslationPatch.Finalizer), typeof(Exception))));
+    }
+
+    private static MethodInfo EnclosingMethod(string methodName)
+    {
+        return methodName switch
+        {
+            nameof(DummyEnclosingProducerTarget.EnterEnclosure) => RequireMethod(
+                typeof(DummyEnclosingProducerTarget),
+                methodName,
+                typeof(DummyGameObject),
+                typeof(DummyGameEvent)),
+            nameof(DummyEnclosingProducerTarget.ExitEnclosure) => RequireMethod(
+                typeof(DummyEnclosingProducerTarget),
+                methodName,
+                typeof(DummyGameObject),
+                typeof(DummyGameEvent),
+                typeof(DummyEnclosedEffect)),
+            nameof(DummyEnclosingProducerTarget.EnclosureExitImpeded) => RequireMethod(
+                typeof(DummyEnclosingProducerTarget),
+                methodName,
+                typeof(DummyGameObject),
+                typeof(bool),
+                typeof(DummyEnclosedEffect)),
+            _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, null),
+        };
+    }
+
+    private static void InvokeEnclosingMethod(DummyEnclosingProducerTarget target, string methodName)
+    {
+        switch (methodName)
+        {
+            case nameof(DummyEnclosingProducerTarget.EnterEnclosure):
+                _ = target.EnterEnclosure(new DummyGameObject(), new DummyGameEvent());
+                break;
+            case nameof(DummyEnclosingProducerTarget.ExitEnclosure):
+                _ = target.ExitEnclosure(new DummyGameObject(), new DummyGameEvent(), new DummyEnclosedEffect());
+                break;
+            case nameof(DummyEnclosingProducerTarget.EnclosureExitImpeded):
+                _ = target.EnclosureExitImpeded(new DummyGameObject(), showMessage: true, new DummyEnclosedEffect());
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(methodName), methodName, null);
+        }
+    }
+
+    private static void InvokeStairsHandleEvent(Type targetType, string source)
+    {
+        if (targetType == typeof(DummyStairsDownProducerTarget))
+        {
+            var target = new DummyStairsDownProducerTarget
+            {
+                PopupMessageToShow = source,
+            };
+
+            _ = target.HandleEvent(new DummyInventoryActionEvent());
+            return;
+        }
+
+        if (targetType == typeof(DummyStairsUpProducerTarget))
+        {
+            var target = new DummyStairsUpProducerTarget
+            {
+                PopupMessageToShow = source,
+            };
+
+            _ = target.HandleEvent(new DummyInventoryActionEvent());
+            return;
+        }
+
+        throw new ArgumentOutOfRangeException(nameof(targetType), targetType, null);
     }
 
     private void WritePatternDictionary(params (string pattern, string template)[] patterns)

@@ -147,6 +147,11 @@ public sealed class WorldPartsFragmentTranslatorTests
     [TestCase("You extricate yourself from stasis pod.", "stasis podから抜け出した。")]
     [TestCase("You extricate itself from stasis pod.", "stasis podからそれ自身を引き出した。")]
     [TestCase("You extricate snapjaw from stasis pod.", "stasis podからsnapjawを引き出した。")]
+    [TestCase("You are already in stasis pod.", "すでにstasis podの中にいる。")]
+    [TestCase("You fail to get yourself into stasis pod.", "stasis podに入れなかった。")]
+    [TestCase("You fail to get snapjaw into stasis pod.", "snapjawをstasis podの中に入れられなかった。")]
+    [TestCase("It is not stasis pod that you are enclosed by.", "閉じ込めているのはstasis podではない。")]
+    [TestCase("You cannot do that while enclosed by stasis pod.", "stasis podに閉じ込められている間はそれをできない。")]
     public void EnclosingTranslator_TranslatesExtricatePopup(string input, string expected)
     {
         AssertTranslated(
@@ -157,6 +162,7 @@ public sealed class WorldPartsFragmentTranslatorTests
     }
 
     [TestCase("You extricate {{r|snapjaw}} from {{C|stasis pod}}.", "{{C|stasis pod}}から{{r|snapjaw}}を引き出した。")]
+    [TestCase("You fail to get {{r|snapjaw}} into {{C|stasis pod}}.", "{{r|snapjaw}}を{{C|stasis pod}}の中に入れられなかった。")]
     public void EnclosingTranslator_PreservesColorTagsInExtricatePopup(string input, string expected)
     {
         AssertTranslated(
@@ -174,6 +180,68 @@ public sealed class WorldPartsFragmentTranslatorTests
         AssertPassthrough(
             EnclosingFragmentTranslator.TryTranslatePopupMessage,
             "Enclosing",
+            input);
+    }
+
+    [TestCase("snapjaw tries to get itself into the stasis pod, but fails.", "snapjawはそれ自身をthe stasis podの中に入れようとしたが、失敗した。")]
+    public void EnclosingTranslator_TranslatesQueuedFragments(string input, string expected)
+    {
+        var message = input;
+
+        var ok = EnclosingFragmentTranslator.TryTranslateQueuedMessage(
+            ref message,
+            null,
+            nameof(WorldPartsFragmentTranslatorTests),
+            "Enclosing");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(message, Is.EqualTo(expected));
+        });
+    }
+
+    [TestCase("Use {{W|Shift+D}} to descend.", "{{W|Shift+D}}で下に降りてください。")]
+    [TestCase("Use {{W|Shift+U}} to ascend.", "{{W|Shift+U}}で上に昇ってください。")]
+    public void StairsTranslator_TranslatesPopupFragments(string input, string expected)
+    {
+        if (input.Contains("descend", StringComparison.Ordinal))
+        {
+            AssertTranslated(
+                StairsDownFragmentTranslator.TryTranslatePopupMessage,
+                "StairsDown",
+                input,
+                expected);
+        }
+        else
+        {
+            AssertTranslated(
+                StairsUpFragmentTranslator.TryTranslatePopupMessage,
+                "StairsUp",
+                input,
+                expected);
+        }
+    }
+
+    [TestCase("")]
+    [TestCase("Use stairs to ascend.")]
+    [TestCase("\u0001Use {{W|Shift+D}} to descend.")]
+    public void StairsDownTranslator_ReturnsFalse_ForPassthroughPopupFragments(string input)
+    {
+        AssertPassthrough(
+            StairsDownFragmentTranslator.TryTranslatePopupMessage,
+            "StairsDown",
+            input);
+    }
+
+    [TestCase("")]
+    [TestCase("Use stairs to descend.")]
+    [TestCase("\u0001Use {{W|Shift+U}} to ascend.")]
+    public void StairsUpTranslator_ReturnsFalse_ForPassthroughPopupFragments(string input)
+    {
+        AssertPassthrough(
+            StairsUpFragmentTranslator.TryTranslatePopupMessage,
+            "StairsUp",
             input);
     }
 

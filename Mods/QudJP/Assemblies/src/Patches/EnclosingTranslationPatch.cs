@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using HarmonyLib;
@@ -13,8 +14,8 @@ public static class EnclosingTranslationPatch
     [ThreadStatic]
     private static int activeDepth;
 
-    [HarmonyTargetMethod]
-    private static MethodBase? TargetMethod()
+    [HarmonyTargetMethods]
+    private static IEnumerable<MethodBase> TargetMethods()
     {
         var targetType = AccessTools.TypeByName("XRL.World.Parts.Enclosing");
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
@@ -23,16 +24,38 @@ public static class EnclosingTranslationPatch
         if (targetType is null || gameObjectType is null || eventType is null || enclosedType is null)
         {
             Trace.TraceError("QudJP: EnclosingTranslationPatch failed to resolve Enclosing target types.");
-            return null;
+            yield break;
         }
 
-        var method = AccessTools.Method(targetType, "ExitEnclosure", [gameObjectType, eventType, enclosedType]);
-        if (method is null)
+        var enterEnclosure = AccessTools.Method(targetType, "EnterEnclosure", [gameObjectType, eventType]);
+        if (enterEnclosure is not null)
+        {
+            yield return enterEnclosure;
+        }
+        else
+        {
+            Trace.TraceError("QudJP: EnclosingTranslationPatch.EnterEnclosure(GameObject, IEvent) not found.");
+        }
+
+        var exitEnclosure = AccessTools.Method(targetType, "ExitEnclosure", [gameObjectType, eventType, enclosedType]);
+        if (exitEnclosure is not null)
+        {
+            yield return exitEnclosure;
+        }
+        else
         {
             Trace.TraceError("QudJP: EnclosingTranslationPatch.ExitEnclosure(GameObject, IEvent, Enclosed) not found.");
         }
 
-        return method;
+        var enclosureExitImpeded = AccessTools.Method(targetType, "EnclosureExitImpeded", [gameObjectType, typeof(bool), enclosedType]);
+        if (enclosureExitImpeded is not null)
+        {
+            yield return enclosureExitImpeded;
+        }
+        else
+        {
+            Trace.TraceError("QudJP: EnclosingTranslationPatch.EnclosureExitImpeded(GameObject, bool, Enclosed) not found.");
+        }
     }
 
     public static void Prefix()
@@ -73,5 +96,21 @@ public static class EnclosingTranslationPatch
         }
 
         return EnclosingFragmentTranslator.TryTranslatePopupMessage(source, route, family + "." + Context, out translated);
+    }
+
+    internal static bool TryTranslateQueuedMessage(ref string message, string? color)
+    {
+        _ = color;
+
+        if (activeDepth <= 0 || string.IsNullOrEmpty(message))
+        {
+            return false;
+        }
+
+        return EnclosingFragmentTranslator.TryTranslateQueuedMessage(
+            ref message,
+            color,
+            nameof(EnclosingTranslationPatch),
+            Context + ".Queued");
     }
 }

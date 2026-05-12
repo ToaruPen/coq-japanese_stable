@@ -19,6 +19,7 @@ internal static class PopupShowSemanticPipeline
         HackingSifrahResultTranslationPatch.TryTranslatePopupMessage,
         QuestLifecyclePopupTranslationPatch.TryTranslatePopupMessage,
         BodyTranslationPatch.TryTranslatePopupMessage,
+        SifrahPureOwnerPopupTranslationPatch.TryTranslatePopupMessage,
         ItemModdingSifrahTranslationPatch.TryTranslatePopupMessage,
         SunderMindTranslationPatch.TryTranslatePopupMessage,
         KeybindsScreenConflictTranslationPatch.TryTranslatePopupMessage,
@@ -35,6 +36,9 @@ internal static class PopupShowSemanticPipeline
         MutatingTranslationPatch.TryTranslatePopupMessage,
         LightManipulationTranslationPatch.TryTranslatePopupMessage,
         AsleepOwnerTranslationPatch.TryTranslatePopupMessage,
+        EnclosingTranslationPatch.TryTranslatePopupMessage,
+        StairsDownTranslationPatch.TryTranslatePopupMessage,
+        StairsUpTranslationPatch.TryTranslatePopupMessage,
         BeguilingTranslationPatch.TryTranslatePopupMessage,
         AscensionCableTranslationPatch.TryTranslatePopupMessage,
         CarapaceTranslationPatch.TryTranslatePopupMessage,
@@ -65,6 +69,11 @@ internal static class PopupShowSemanticPipeline
             {
                 return translated;
             }
+        }
+
+        if (SifrahPureOwnerPopupTranslationPatch.TryGetPureOwnerBatchPopupCandidateText(source, out var candidateText))
+        {
+            return candidateText;
         }
 
         return PopupTranslationPatch.TranslatePopupTextForProducerRoute(source, route);

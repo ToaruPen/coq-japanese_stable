@@ -74,6 +74,10 @@ public static class TradeUiPopupTranslationPatch
         "^You may repair (?<target>those|this) for (?<amount>\\d+) drams? of fresh water\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex RepairBrokenPattern = new(
+        "^(?<target>Those items aren't|That item isn't) broken!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex PlayerPonyUpQuestionPattern = new(
         "^You'll have to pony up (?<amount>\\d+) drams? of fresh water to even up the trade\\. Agreed\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -576,6 +580,11 @@ public static class TradeUiPopupTranslationPatch
             return true;
         }
 
+        if (TryTranslateRepairBrokenMessage(source, stripped, spans, out translated))
+        {
+            return true;
+        }
+
         if (TryTranslatePerformOfferTradeWaterMessage(source, stripped, spans, out translated))
         {
             return true;
@@ -765,6 +774,39 @@ public static class TradeUiPopupTranslationPatch
         return true;
     }
 
+    private static bool TryTranslateRepairBrokenMessage(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated)
+    {
+        var match = RepairBrokenPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var template = Translator.Translate("{0} isn't broken!");
+        if (string.Equals(template, "{0} isn't broken!", StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var visible = string.Format(
+            CultureInfo.InvariantCulture,
+            template,
+            TranslateRepairBrokenSubject(match.Groups["target"].Value));
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            visible,
+            spans,
+            stripped.Length);
+
+        DynamicTextObservability.RecordTransform(Context, "TradeUiPopup.RepairBroken", source, translated);
+        return true;
+    }
+
     private static string RestoreCapture(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
     {
         return ColorAwareTranslationComposer.RestoreCapture(
@@ -867,6 +909,16 @@ public static class TradeUiPopupTranslationPatch
             "this" => "これ",
             "those" => "それら",
             "one of those" => "そのうちの1つ",
+            _ => value.Trim(),
+        };
+    }
+
+    private static string TranslateRepairBrokenSubject(string value)
+    {
+        return value.Trim() switch
+        {
+            "That item isn't" => "その品",
+            "Those items aren't" => "それらの品",
             _ => value.Trim(),
         };
     }

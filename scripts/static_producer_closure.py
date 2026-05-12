@@ -501,6 +501,172 @@ def _item_modding_sifrah_result_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
+    targets = (
+        (
+            "XRL.World/BaetylOfferingSifrah.cs::XRL.World.BaetylOfferingSifrah.BaetylOfferingSifrah",
+            "BaetylOfferingSifrah",
+            "BaetylOfferingSifrah",
+            "BaetylOffering",
+            "XRL.World.BaetylOfferingSifrah",
+            "XRL.World.BaetylOfferingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32",
+        ),
+        (
+            "XRL.World/FormalWaterRitualSifrah.cs::XRL.World.FormalWaterRitualSifrah.FormalWaterRitualSifrah",
+            "FormalWaterRitualSifrah",
+            "FormalWaterRitualSifrah",
+            "FormalWaterRitual",
+            "XRL.World.FormalWaterRitualSifrah",
+            "XRL.World.FormalWaterRitualSifrah|.ctor|System.Void|XRL.World.GameObject",
+        ),
+        (
+            "XRL.World/HagglingSifrah.cs::XRL.World.HagglingSifrah.HagglingSifrah",
+            "HagglingSifrah",
+            "HagglingSifrah",
+            "Haggling",
+            "XRL.World.HagglingSifrah",
+            "XRL.World.HagglingSifrah|.ctor|System.Void|XRL.World.GameObject",
+        ),
+        (
+            "XRL.World/ItemModdingSifrah.cs::XRL.World.ItemModdingSifrah.ItemModdingSifrah",
+            "ItemModdingSifrah",
+            "ItemModdingSifrah",
+            "ItemModding",
+            "XRL.World.ItemModdingSifrah",
+            "XRL.World.ItemModdingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32",
+        ),
+        (
+            "XRL.World/ItemNamingSifrah.cs::XRL.World.ItemNamingSifrah.ItemNamingSifrah",
+            "ItemNamingSifrah",
+            "ItemNamingSifrah",
+            "ItemNaming",
+            "XRL.World.ItemNamingSifrah",
+            "XRL.World.ItemNamingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32",
+        ),
+        (
+            "XRL.World/ReverseEngineeringSifrah.cs::XRL.World.ReverseEngineeringSifrah.ReverseEngineeringSifrah",
+            "ReverseEngineeringSifrah",
+            "ReverseEngineeringSifrah",
+            "ReverseEngineering",
+            "XRL.World.ReverseEngineeringSifrah",
+            "XRL.World.ReverseEngineeringSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32|XRL.World.Tinkering.TinkerData",
+        ),
+        (
+            "XRL.World/ReverseEngineeringSifrah.cs::XRL.World.ReverseEngineeringSifrah.CheckEarlyExit",
+            "CheckEarlyExit",
+            "ReverseEngineeringCheckEarlyExit",
+            "ReverseEngineeringEarlyExit",
+            "XRL.World.ReverseEngineeringSifrah",
+            "XRL.World.ReverseEngineeringSifrah|CheckEarlyExit|System.Boolean|XRL.World.GameObject",
+        ),
+        (
+            "XRL.World/RitualSifrahTokenAttributeSacrifice.cs::XRL.World.RitualSifrahTokenAttributeSacrifice.CheckTokenUse",
+            "CheckTokenUse",
+            "RitualAttributeSacrificeCheckTokenUse",
+            "AttributeSacrifice",
+            "XRL.World.RitualSifrahTokenAttributeSacrifice",
+            "XRL.World.RitualSifrahTokenAttributeSacrifice|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        ),
+        (
+            "XRL.World/RitualSifrahTokenInvokeHigherBeing.cs::XRL.World.RitualSifrahTokenInvokeHigherBeing.CheckTokenUse",
+            "CheckTokenUse",
+            "RitualInvokeHigherBeingCheckTokenUse",
+            "InvokeHigherBeing",
+            "XRL.World.RitualSifrahTokenInvokeHigherBeing",
+            "XRL.World.RitualSifrahTokenInvokeHigherBeing|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        ),
+        (
+            "XRL.World/SocialSifrahTokenSecret.cs::XRL.World.SocialSifrahTokenSecret.CheckTokenUse",
+            "CheckTokenUse",
+            "SocialSecretCheckTokenUse",
+            "SocialSecret",
+            "XRL.World.SocialSifrahTokenSecret",
+            "XRL.World.SocialSifrahTokenSecret|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        ),
+        (
+            "XRL.World/TinkeringSifrahTokenBit.cs::XRL.World.TinkeringSifrahTokenBit.CheckTokenUse",
+            "CheckTokenUse",
+            "TinkeringBitCheckTokenUse",
+            "TinkeringBit",
+            "XRL.World.TinkeringSifrahTokenBit",
+            "XRL.World.TinkeringSifrahTokenBit|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        ),
+        (
+            "XRL.World/TinkeringSifrahTokenCharge.cs::XRL.World.TinkeringSifrahTokenCharge.CheckTokenUse",
+            "CheckTokenUse",
+            "TinkeringChargeCheckTokenUse",
+            "TinkeringCharge",
+            "XRL.World.TinkeringSifrahTokenCharge",
+            "XRL.World.TinkeringSifrahTokenCharge|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        ),
+        (
+            "XRL.World/TinkeringSifrahTokenComputePower.cs::XRL.World.TinkeringSifrahTokenComputePower.CheckTokenUse",
+            "CheckTokenUse",
+            "TinkeringComputePowerCheckTokenUse",
+            "TinkeringComputePower",
+            "XRL.World.TinkeringSifrahTokenComputePower",
+            "XRL.World.TinkeringSifrahTokenComputePower|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        ),
+        (
+            "XRL.World/TinkeringSifrahTokenLiquid.cs::XRL.World.TinkeringSifrahTokenLiquid.CheckTokenUse",
+            "CheckTokenUse",
+            "TinkeringLiquidCheckTokenUse",
+            "TinkeringLiquid",
+            "XRL.World.TinkeringSifrahTokenLiquid",
+            "XRL.World.TinkeringSifrahTokenLiquid|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        ),
+        (
+            "XRL/SifrahGame.cs::XRL.SifrahGame.MakeMoveForSlot",
+            "MakeMoveForSlot",
+            "SifrahGameMakeMoveForSlot",
+            "MakeMoveForSlot",
+            "XRL.SifrahGame",
+            "XRL.SifrahGame|MakeMoveForSlot|System.Boolean|System.Int32|XRL.World.GameObject",
+        ),
+    )
+
+    return tuple(
+        CoveredOwnerFamily(
+            family_id=family_id,
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SifrahPureOwnerPopupTranslationPatch.cs",
+                    (target_token, detail, "TryTranslatePopupMessage"),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    (
+                        "SifrahPureOwnerPopupTranslationPatch.TryTranslatePopupMessage",
+                        "SifrahPureOwnerPopupTranslationPatch.TryGetPureOwnerBatchPopupCandidateText",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SifrahPureOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSifrahPureOwnerPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslateSifrahPureOwnerPopup_WhenOwnerAbsent",
+                        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        f"nameof(DummySifrahPureOwnerPopupProducerTarget.{dummy_target_token})",
+                        detail,
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SifrahPureOwnerPopupTranslationPatch)",
+                        declaring_type,
+                        target_token,
+                        full_signature,
+                    ),
+                ),
+            ),
+        )
+        for family_id, target_token, dummy_target_token, detail, declaring_type, full_signature in targets
+    )
+
+
 def _sunder_mind_owner_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         ("CancelSunder", "XRL.World.Parts.Mutation.SunderMind|CancelSunder|System.Void"),
@@ -3351,6 +3517,155 @@ COVERED_OWNER_FAMILIES: Final = (
         ),
     ),
     CoveredOwnerFamily(
+        family_id="XRL.World.Parts/Enclosing.cs::XRL.World.Parts.Enclosing.EnterEnclosure",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/EnclosingTranslationPatch.cs",
+                ("EnterEnclosure", "TryTranslatePopupMessage", "TryTranslateQueuedMessage"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/EnclosingFragmentTranslator.cs",
+                ("FailToGetIntoPattern", "NpcFailToGetIntoPattern", "TryTranslateQueuedMessage"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("EnclosingTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("EnclosingTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldPartsProducerTranslationPatchTests.cs",
+                (
+                    "EnclosingPatch_TranslatesOwnerPopup_WhenPatched",
+                    "EnclosingPatch_TranslatesQueuedMessage_WhenPatched",
+                    "EnclosingPatch_DoesNotTranslateOwnerPopup_WhenOwnerAbsent",
+                    "EnclosingPatch_DoesNotTranslateQueuedMessage_WhenOwnerAbsent",
+                    "EnclosingPatch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "EnclosingPatch_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "EnclosingPatch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "EnclosingPatch_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                    "You fail to get yourself into stasis pod.",
+                    "snapjaw tries to get itself into the stasis pod, but fails.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(EnclosingTranslationPatch)",
+                    "XRL.World.Parts.Enclosing|EnterEnclosure|System.Boolean|XRL.World.GameObject|XRL.World.IEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
+        family_id="XRL.World.Parts/Enclosing.cs::XRL.World.Parts.Enclosing.EnclosureExitImpeded",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/EnclosingTranslationPatch.cs",
+                ("EnclosureExitImpeded", "TryTranslatePopupMessage"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/EnclosingFragmentTranslator.cs",
+                ("CannotWhileEnclosedPattern",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("EnclosingTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldPartsProducerTranslationPatchTests.cs",
+                (
+                    "EnclosingPatch_TranslatesOwnerPopup_WhenPatched",
+                    "EnclosingPatch_DoesNotTranslateOwnerPopup_WhenOwnerAbsent",
+                    "EnclosingPatch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "EnclosingPatch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "You cannot do that while enclosed by stasis pod.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(EnclosingTranslationPatch)",
+                    "XRL.World.Parts.Enclosing|EnclosureExitImpeded|System.Boolean|XRL.World.GameObject|System.Boolean|XRL.World.Effects.Enclosed",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
+        family_id="XRL.World.Parts/StairsDown.cs::XRL.World.Parts.StairsDown.HandleEvent",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/StairsDownTranslationPatch.cs",
+                ("HandleEvent", "TryTranslatePopupMessage"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/StairsFragmentTranslator.cs",
+                ("StairsDownFragmentTranslator", '"descend"', "UseCommandPattern"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("StairsDownTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldPartsProducerTranslationPatchTests.cs",
+                (
+                    "StairsPatch_TranslatesInventoryActionPopup_WhenPatched",
+                    "StairsPatch_DoesNotTranslateOwnerPopup_WhenOwnerAbsent",
+                    "StairsPatch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "StairsPatch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "Use {{W|Shift+D}} to descend.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(StairsDownTranslationPatch)",
+                    "XRL.World.Parts.StairsDown|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
+        family_id="XRL.World.Parts/StairsUp.cs::XRL.World.Parts.StairsUp.HandleEvent",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/StairsUpTranslationPatch.cs",
+                ("HandleEvent", "TryTranslatePopupMessage"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/StairsFragmentTranslator.cs",
+                ("StairsUpFragmentTranslator", '"ascend"', "UseCommandPattern"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("StairsUpTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldPartsProducerTranslationPatchTests.cs",
+                (
+                    "StairsPatch_TranslatesInventoryActionPopup_WhenPatched",
+                    "StairsPatch_DoesNotTranslateOwnerPopup_WhenOwnerAbsent",
+                    "StairsPatch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "StairsPatch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "Use {{W|Shift+U}} to ascend.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(StairsUpTranslationPatch)",
+                    "XRL.World.Parts.StairsUp|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
         family_id="XRL.World/ZoneManager.cs::XRL.World.ZoneManager.TryThawZone",
         inventory_statuses=("owner_patch_required",),
         evidence_files=(
@@ -3508,6 +3823,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_flight_families(),
     *_body_families(),
     *_item_modding_sifrah_result_families(),
+    *_sifrah_pure_owner_popup_families(),
     *_sunder_mind_owner_families(),
     *_keybinds_screen_conflict_families(),
     *_ability_manager_popup_families(),
@@ -3580,6 +3896,77 @@ COVERED_OWNER_FAMILIES: Final = (
             EvidenceFile(
                 "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
                 ("typeof(TradeUiPopupTranslationPatch)", "XRL.UI.Popup|Show|"),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
+        family_id="XRL.UI/TradeUI.cs::XRL.UI.TradeUI.TryRemove",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/TradeUiVendorPopupTranslationPatch.cs",
+                ("TradeUiVendorPopupTranslationPatch", "TryRemove", "TryTranslatePopupMessage"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+                ("TradeUiVendorPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs",
+                ("TryTranslateTradeUiPopupText", "TradeUiPopup.TryRemove"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/TradeUiPopupTranslationPatchTests.cs",
+                (
+                    "VendorOwnerPatch_TranslatesTryRemoveShowBlock_WhenOwnerPatched",
+                    "VendorOwnerPatch_DoesNotTranslateTryRemoveShowBlock_WhenOwnerAbsent",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(TradeUiVendorPopupTranslationPatch)",
+                    "XRL.UI.TradeUI|TryRemove|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.Collections.Generic.List`1[[XRL.World.GameObject]]|System.Collections.Generic.List`1[[XRL.World.GameObject]]|System.Boolean",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
+        family_id="XRL.UI/TradeUI.cs::XRL.UI.TradeUI.DoVendorRepair",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/TradeUiVendorPopupTranslationPatch.cs",
+                ("TradeUiVendorPopupTranslationPatch", "DoVendorRepair", "TryTranslatePopupMessage"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+                ("TradeUiVendorPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs",
+                (
+                    "TradeUiPopup.RepairTooComplex",
+                    "TradeUiPopup.RepairNeed",
+                    "TradeUiPopup.RepairQuestion",
+                    "TradeUiPopup.RepairBroken",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/TradeUiPopupTranslationPatchTests.cs",
+                (
+                    "VendorOwnerPatch_TranslatesRepairShowAndConfirmationPopups_WhenOwnerPatched",
+                    "VendorOwnerPatch_TranslatesRepairBrokenPopups_WhenOwnerPatched",
+                    "VendorOwnerPatch_DoesNotRetranslateDirectMarkedRepairPopup_WhenOwnerPatched",
+                    "VendorOwnerPatch_LeavesEmptyRepairPopupUnchanged_WhenOwnerPatched",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(TradeUiVendorPopupTranslationPatch)",
+                    "XRL.UI.TradeUI|DoVendorRepair|System.Void|XRL.World.GameObject|XRL.World.GameObject",
+                ),
             ),
         ),
     ),

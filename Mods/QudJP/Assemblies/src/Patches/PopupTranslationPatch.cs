@@ -408,6 +408,12 @@ public static class PopupTranslationPatch
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
 
+        if (TradeUiVendorPopupTranslationPatch.TryTranslatePopupMessage(source, route, family, out var tradeUiVendorTranslated))
+        {
+            translated = tradeUiVendorTranslated;
+            return true;
+        }
+
         if (DeathWrapperFamilyTranslator.TryTranslatePopup(stripped, spans, route, out var deathTranslated))
         {
             translated = deathTranslated;

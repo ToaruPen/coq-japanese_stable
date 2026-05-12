@@ -72,3 +72,26 @@ internal static class DummyTradeUiPopupTarget
         return 0;
     }
 }
+
+internal sealed class DummyTradeUiVendorPopupProducerTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    public bool UseConfirmationPopup { get; set; }
+
+    public void TryRemove()
+    {
+        DummyPopupTarget.ShowBlock(PopupMessageToShow);
+    }
+
+    public void DoVendorRepair()
+    {
+        if (UseConfirmationPopup)
+        {
+            _ = DummyPopupShow.ShowYesNo(PopupMessageToShow);
+            return;
+        }
+
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+}
