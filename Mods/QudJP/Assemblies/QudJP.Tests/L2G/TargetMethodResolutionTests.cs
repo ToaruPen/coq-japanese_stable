@@ -1278,6 +1278,14 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.LiquidVolume|Pour|System.Boolean|System.Boolean&|XRL.World.GameObject|XRL.World.Cell|System.Boolean|System.Boolean|System.Int32|System.Boolean",
         "XRL.World.Parts.LiquidVolume|PerformFill|System.Boolean|XRL.World.GameObject|System.Boolean&|System.Boolean",
     })]
+    [TestCase(typeof(CombatSkillMessageTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Skill.Tactics_Kickback|HandleEvent|System.Boolean|XRL.World.BeforeFireMissileWeaponsEvent",
+        "XRL.World.Parts.Skill.Axe_Cleave|PerformCleave|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|System.Int32|System.Int32|System.Nullable`1[[System.Int32]]",
+        "XRL.World.Parts.Skill.Endurance_ShakeItOff|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Skill.TenfoldPath_Ret|HandleEvent|System.Boolean|XRL.World.ApplyEffectEvent",
+        "XRL.World.Parts.Skill.TenfoldPath_Ret|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+    })]
     public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
     {
         var targetMethodsMethod = patchType.GetMethod("TargetMethods", BindingFlags.NonPublic | BindingFlags.Static);

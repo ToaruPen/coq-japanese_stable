@@ -29,6 +29,7 @@ internal static class MessageQueueSemanticPipeline
         MutatingTranslationPatch.TryTranslateQueuedMessage,
         QuillsTranslationPatch.TryTranslateQueuedMessage,
         LightManipulationTranslationPatch.TryTranslateQueuedMessage,
+        CombatSkillMessageTranslationPatch.TryTranslateQueuedMessage,
         LatchesOnTranslationPatch.TryTranslateQueuedMessage,
         AsleepOwnerTranslationPatch.TryTranslateQueuedMessage,
         EnclosingTranslationPatch.TryTranslateQueuedMessage,

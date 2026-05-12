@@ -2717,6 +2717,87 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [TestCase(
+        "You kick at {{G|phase spider}}, but the kick passes through {{G|it}}.",
+        "{{G|phase spider}}を蹴ろうとしたが、蹴りは{{G|it}}を通り抜けた。")]
+    [TestCase(
+        "snapjaw kicks at you, but the kick passes through you.",
+        "snapjawがあなたを蹴ろうとしたが、蹴りはあなたを通り抜けた。")]
+    [TestCase(
+        "snapjaw kicks at phase spider, but the kick passes through it.",
+        "snapjawがphase spiderを蹴ろうとしたが、蹴りはitを通り抜けた。")]
+    [TestCase(
+        "You kick at snapjaw, but snapjaw holds its ground.",
+        "snapjawを蹴ろうとしたが、snapjawは踏みとどまった。")]
+    [TestCase(
+        "snapjaw kicks at you, but you hold your ground.",
+        "snapjawがあなたを蹴ろうとしたが、あなたは踏みとどまった。")]
+    [TestCase(
+        "snapjaw kicks at {{G|glowfish}}, but {{G|glowfish}} holds its ground.",
+        "snapjawが{{G|glowfish}}を蹴ろうとしたが、{{G|glowfish}}は踏みとどまった。")]
+    [TestCase("You kick snapjaw backwards.", "snapjawを後ろへ蹴り飛ばした。")]
+    [TestCase("snapjaw kicks you backwards.", "snapjawがあなたを後ろへ蹴り飛ばした。")]
+    [TestCase("snapjaw kicks glowfish backwards.", "snapjawがglowfishを後ろへ蹴り飛ばした。")]
+    [TestCase(
+        "The momentum from your charge causes your {{Y|battle axe}} to cleave deeper through {{R|snapjaw's armor}}.",
+        "突撃の勢いで{{Y|battle axe}}が{{R|snapjaw's armor}}をさらに深く切り裂いた。")]
+    [TestCase("You cleave through snapjaw's armor.", "snapjaw's armorを切り裂いた。")]
+    [TestCase("snapjaw cleaves through your armor.", "snapjawがあなたのarmorを切り裂いた。")]
+    [TestCase("snapjaw cleaves through glowfish's armor.", "snapjawがglowfish's armorを切り裂いた。")]
+    [TestCase("You shook off the stun.", "スタンを振り払った。")]
+    [TestCase("You shook off the dazing.", "朦朧を振り払った。")]
+    [TestCase("The snapjaw shook off the stun.", "The snapjawはスタンを振り払った。")]
+    [TestCase("The snapjaw shook off the dazing.", "The snapjawは朦朧を振り払った。")]
+    [TestCase(
+        "A supernal force helps you shake off the effect!",
+        "超自然的な力が効果を振り払う助けとなった！")]
+    [TestCase(
+        "A supernal force helps you shake off being confused!",
+        "超自然的な力がconfused状態を振り払う助けとなった！")]
+    [TestCase(
+        "A supernal force helps you shake off a mental state!",
+        "超自然的な力が精神状態を振り払う助けとなった！")]
+    public void CombatSkillMessages_TranslateInventoriedQueuedShapes_WhenOwnerPatched(string source, string expected)
+    {
+        AssertCombatSkillQueuedMessage(source, expected);
+    }
+
+    [TestCase("snapjaw kicks at you, but the kick passes through you.")]
+    [TestCase("You cleave through snapjaw's armor.")]
+    [TestCase("You shook off the stun.")]
+    [TestCase("A supernal force helps you shake off the effect!")]
+    public void CombatSkillMessages_DoNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage(source, null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void CombatSkillMessages_DoNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertCombatSkillQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("You cleave through snapjaw's armor."),
+            "You cleave through snapjaw's armor.");
+    }
+
+    [Test]
+    public void CombatSkillMessages_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertCombatSkillQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [TestCase(
         nameof(DummyLatchesOnTarget.HandleEvent),
         "Since {{R|the hook}} is still latched onto {{G|the snapjaw}}, releasing {{R|it}} leaves {{R|it}} in {{G|its possession}}!",
         "{{G|the snapjaw}}",
@@ -7565,6 +7646,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
                 harmony,
                 RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.FireEvent), typeof(DummyEvent)),
                 patchType);
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.FireEvent(new DummyEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertCombatSkillQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.FireEvent), typeof(DummyEvent)),
+                typeof(CombatSkillMessageTranslationPatch));
 
             var target = new DummySimpleOwnerQueueTarget
             {

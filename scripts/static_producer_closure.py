@@ -3993,6 +3993,127 @@ COVERED_OWNER_FAMILIES: Final = (
     *_effect_static_message_families(),
     *_system_static_message_families(),
     CoveredOwnerFamily(
+        family_id="XRL.World.Parts.Skill/Tactics_Kickback.cs::XRL.World.Parts.Skill.Tactics_Kickback.HandleEvent",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/CombatSkillMessageTranslationPatch.cs",
+                ("Tactics_Kickback", "TryTranslateQueuedMessage", "KickPassesThroughYouPattern"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("CombatSkillMessageTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                (
+                    "CombatSkillMessages_TranslateInventoriedQueuedShapes_WhenOwnerPatched",
+                    "CombatSkillMessages_DoNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "CombatSkillMessages_DoNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "CombatSkillMessages_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                    "You kick at {{G|phase spider}}, but the kick passes through {{G|it}}.",
+                    "snapjaw kicks glowfish backwards.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(CombatSkillMessageTranslationPatch)",
+                    "XRL.World.Parts.Skill.Tactics_Kickback|HandleEvent|System.Boolean|XRL.World.BeforeFireMissileWeaponsEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
+        family_id="XRL.World.Parts.Skill/Axe_Cleave.cs::XRL.World.Parts.Skill.Axe_Cleave.PerformCleave",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/CombatSkillMessageTranslationPatch.cs",
+                ("Axe_Cleave", "ChargeCleavePattern", "ActorCleavesTargetPattern"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("CombatSkillMessageTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                (
+                    "CombatSkillMessages_TranslateInventoriedQueuedShapes_WhenOwnerPatched",
+                    "cleave deeper through {{R|snapjaw's armor}}.",
+                    "snapjaw cleaves through glowfish's armor.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(CombatSkillMessageTranslationPatch)",
+                    "XRL.World.Parts.Skill.Axe_Cleave|PerformCleave|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|System.Int32|System.Int32|System.Nullable`1[[System.Int32]]",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
+        family_id="XRL.World.Parts.Skill/Endurance_ShakeItOff.cs::XRL.World.Parts.Skill.Endurance_ShakeItOff.FireEvent",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/CombatSkillMessageTranslationPatch.cs",
+                ("Endurance_ShakeItOff", "ShookOffStunPattern", "ShookOffDazingPattern"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("CombatSkillMessageTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                (
+                    "CombatSkillMessages_TranslateInventoriedQueuedShapes_WhenOwnerPatched",
+                    "You shook off the stun.",
+                    "The snapjaw shook off the dazing.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(CombatSkillMessageTranslationPatch)",
+                    "XRL.World.Parts.Skill.Endurance_ShakeItOff|FireEvent|System.Boolean|XRL.World.Event",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
+        family_id="XRL.World.Parts.Skill/TenfoldPath_Ret.cs::XRL.World.Parts.Skill.TenfoldPath_Ret.HandleEvent",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/CombatSkillMessageTranslationPatch.cs",
+                ("TenfoldPath_Ret", "SupernalStatePattern", "A supernal force helps you shake off a mental state!"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("CombatSkillMessageTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                (
+                    "CombatSkillMessages_TranslateInventoriedQueuedShapes_WhenOwnerPatched",
+                    "A supernal force helps you shake off the effect!",
+                    "A supernal force helps you shake off being confused!",
+                    "A supernal force helps you shake off a mental state!",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(CombatSkillMessageTranslationPatch)",
+                    "XRL.World.Parts.Skill.TenfoldPath_Ret|HandleEvent|System.Boolean|XRL.World.ApplyEffectEvent",
+                    "XRL.World.Parts.Skill.TenfoldPath_Ret|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
         family_id="XRL.UI/TradeUI.cs::XRL.UI.TradeUI.PerformOffer",
         inventory_statuses=("needs_family_review",),
         evidence_files=(
