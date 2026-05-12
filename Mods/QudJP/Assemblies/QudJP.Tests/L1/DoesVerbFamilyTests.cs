@@ -92,11 +92,11 @@ public sealed class DoesVerbFamilyTests
     // Plain text
     [TestCase("The タレット can't hear you!", "タレットにはあなたの声が聞こえない！")]
     [TestCase("The 熊 does not have a consciousness you can make psychic contact with.", "熊には精神的に接触できる意識がない。")]
-    [TestCase("You don't penetrate the スナップジョー's armor!", "スナップジョーの防具を貫通できなかった！")]
+    [TestCase("You don't penetrate the スナップジョー's armor!", "スナップジョーの装甲を貫けなかった！")]
     [TestCase("You can't see!", "視界がない！")]
     [TestCase("The タレット doesn't have enough charge to function.", "タレットには機能するのに十分な充電がない")]
     // Color-wrapped (ConsequentialColor wraps full message)
-    [TestCase("{{r|You don't penetrate the スナップジョー's armor!}}", "{{r|スナップジョーの防具を貫通できなかった！}}")]
+    [TestCase("{{r|You don't penetrate the スナップジョー's armor!}}", "{{r|スナップジョーの装甲を貫けなかった！}}")]
     public void Translate_NegationLackFamily(string input, string expected)
     {
         AssertTranslated(input, expected);
@@ -236,11 +236,11 @@ public sealed class DoesVerbFamilyTests
 
     // --- Don't Penetrate Armor Family ---
 
-    [TestCase("The 熊 doesn't penetrate your armor with 爪! [3]", "熊は爪であなたの防具を貫通できなかった！ [3]")]
-    [TestCase("The 熊 doesn't penetrate your armor! [5]", "熊はあなたの防具を貫通できなかった！ [5]")]
-    [TestCase("The 熊 doesn't penetrate your armor.", "熊はあなたの防具を貫通できなかった")]
+    [TestCase("The 熊 doesn't penetrate your armor with 爪! [3]", "熊は爪であなたの装甲を貫けなかった！ [3]")]
+    [TestCase("The 熊 doesn't penetrate your armor! [5]", "熊はあなたの装甲を貫けなかった！ [5]")]
+    [TestCase("The 熊 doesn't penetrate your armor.", "熊はあなたの装甲を貫けなかった！")]
     // Color-wrapped
-    [TestCase("{{r|The 熊 doesn't penetrate your armor.}}", "{{r|熊はあなたの防具を貫通できなかった}}")]
+    [TestCase("{{r|The 熊 doesn't penetrate your armor.}}", "{{r|熊はあなたの装甲を貫けなかった！}}")]
     public void Translate_DontPenetrateArmorFamily(string input, string expected)
     {
         AssertTranslated(input, expected);

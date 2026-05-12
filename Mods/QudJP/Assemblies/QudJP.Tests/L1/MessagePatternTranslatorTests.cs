@@ -658,7 +658,7 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate(
             "The ウォーターヴァイン農家 doesn't penetrate your armor with his 鉄の蔓刈り斧! [7]");
 
-        Assert.That(translated, Is.EqualTo("ウォーターヴァイン農家は鉄の蔓刈り斧であなたの防具を貫通できなかった！ [7]"));
+        Assert.That(translated, Is.EqualTo("ウォーターヴァイン農家は鉄の蔓刈り斧であなたの装甲を貫けなかった！ [7]"));
     }
 
     [Test]

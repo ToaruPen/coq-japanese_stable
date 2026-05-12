@@ -137,14 +137,14 @@ def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> N
     inventory = load_inventory(TRACKED_INVENTORY)
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
 
-    assert "XRL.World.Parts/Combat.cs::XRL.World.Parts.Combat.MeleeAttackWithWeaponInternal" in queued_family_ids
+    assert "XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookFromIngredients" in queued_family_ids
 
 
 def test_owner_action_queue_groups_actionable_work_by_source_file() -> None:
     """Static producer work queue must expose class-file starting points."""
     inventory = load_inventory(TRACKED_INVENTORY)
     source_entries = owner_action_queue_by_file(inventory)
-    combat_entry = next(entry for entry in source_entries if entry["source_file"] == "XRL.World.Parts/Combat.cs")
+    campfire_entry = next(entry for entry in source_entries if entry["source_file"] == "XRL.World.Parts/Campfire.cs")
 
     assert source_entries == sorted(
         source_entries,
@@ -155,12 +155,12 @@ def test_owner_action_queue_groups_actionable_work_by_source_file() -> None:
             entry["source_file"],
         ),
     )
-    assert combat_entry["family_count"] > 0
-    assert combat_entry["text_argument_count"] > 0
+    assert campfire_entry["family_count"] > 0
+    assert campfire_entry["text_argument_count"] > 0
     assert any(
         family["producer_family_id"]
-        == "XRL.World.Parts/Combat.cs::XRL.World.Parts.Combat.MeleeAttackWithWeaponInternal"
-        for family in combat_entry["families"]
+        == "XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookFromIngredients"
+        for family in campfire_entry["families"]
     )
 
 

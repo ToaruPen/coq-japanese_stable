@@ -19,6 +19,24 @@ OWNER_ACTION_STATUSES: Final = frozenset({"owner_patch_required", "needs_family_
 HACKING_SIFRAH_RESULT_SIGNATURE_SUFFIX: Final = (
     "System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah"
 )
+COMBAT_MELEE_ATTACK_SIGNATURE_PARTS: Final = (
+    "XRL.World.Parts.Combat",
+    "MeleeAttackWithWeaponInternal",
+    "XRL.World.Parts.MeleeAttackResult",
+    "XRL.World.GameObject",
+    "XRL.World.GameObject",
+    "XRL.World.GameObject",
+    "XRL.World.Anatomy.BodyPart",
+    "System.String",
+    "System.Int32",
+    "System.Int32",
+    "System.Int32",
+    "System.Int32",
+    "System.Int32",
+    "System.Boolean",
+    "System.Boolean",
+)
+COMBAT_MELEE_ATTACK_FULL_SIGNATURE: Final = "|".join(COMBAT_MELEE_ATTACK_SIGNATURE_PARTS)
 OutputFormat = Literal["text", "json"]
 
 
@@ -3024,6 +3042,98 @@ COVERED_OWNER_FAMILIES: Final = (
             EvidenceFile(
                 "Mods/QudJP/Localization/Dictionaries/ui-messagelog-leaf.ja.json",
                 ("You cannot go that way.",),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
+        family_id="XRL.World.Parts/Combat.cs::XRL.World.Parts.Combat.HandleEvent",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/CombatTextSurfaceTranslationPatch.cs",
+                ("TryTranslateQueuedMessage", 'ShieldBlockDetail = "HandleEvent"', "IsShieldBlockMessage"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("CombatTextSurfaceTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                (
+                    "CombatGetDefenderHitDice_TranslatesInventoriedShapes_WithRepositoryPatterns",
+                    "You block with iron buckler! (+2 AV)",
+                    "You stagger Snapjaw Scavenger with your shield block!",
+                    "You are staggered by iron buckler's block!",
+                    "CombatTextSurface_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "CombatTextSurface_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "CombatTextSurface_LeavesEmptyMessagesUnchanged_WhenOwnerPatched",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(CombatTextSurfaceTranslationPatch)",
+                    "XRL.World.Parts.Combat|HandleEvent|System.Boolean|XRL.World.GetDefenderHitDiceEvent",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+                (
+                    "^You block with (.+?)!",
+                    "^You stagger (.+) with your shield block!$",
+                    "^You are staggered by (?:the )?(.+?)(?:'s|s'|の) block!$",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
+        family_id="XRL.World.Parts/Combat.cs::XRL.World.Parts.Combat.MeleeAttackWithWeaponInternal",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/CombatTextSurfaceTranslationPatch.cs",
+                (
+                    "TryTranslateQueuedMessage",
+                    'MeleeAttackDetail = "MeleeAttackWithWeaponInternal"',
+                    "IsMeleeAttackMessage",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("CombatTextSurfaceTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                (
+                    "CombatMeleeAttack_TranslatesInventoriedShapes_WithRepositoryPatterns",
+                    "You miss with your bronze dagger! [10 vs 14]",
+                    "Snapjaw Scavenger misses you with its bronze dagger! [10 vs 14]",
+                    "Your mental attack does not affect Snapjaw Scavenger.",
+                    "Snapjaw Scavenger fails to deal damage with its attack! [17]",
+                    "You don't penetrate Snapjaw Scavenger's armor.",
+                    "Snapjaw Scavenger doesn't penetrate your armor with its bronze dagger! [17]",
+                    "CombatTextSurface_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "CombatTextSurface_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "CombatTextSurface_LeavesEmptyMessagesUnchanged_WhenOwnerPatched",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(CombatTextSurfaceTranslationPatch)",
+                    COMBAT_MELEE_ATTACK_FULL_SIGNATURE,
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+                (
+                    "^You miss with your (.+?)[.!] ",
+                    "^(?:The )?(.+) misses you[.!]?$",
+                    "^Your mental attack does not affect (.+?)\\\\.$",
+                    "^You fail to deal damage with your attack! ",
+                    "^You don't penetrate (?:the )?(.+?)(?:'s|s'|の) armor[.!]?$",
+                    "^(?:The |the |[Aa]n? )?(.+?) (?:doesn't|don't) penetrate your armor",
+                ),
             ),
         ),
     ),
