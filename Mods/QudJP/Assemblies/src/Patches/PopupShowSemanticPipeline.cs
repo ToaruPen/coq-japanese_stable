@@ -27,6 +27,7 @@ internal static class PopupShowSemanticPipeline
         AbilityManagerPopupTranslationPatch.TryTranslatePopupMessage,
         RealityStabilizedEventTranslationPatch.TryTranslatePopupMessage,
         GeomagneticDiscTranslationPatch.TryTranslatePopupMessage,
+        CudgelConkPopupTranslationPatch.TryTranslatePopupMessage,
         CampfireCookAvailabilityTranslationPatch.TryTranslatePopupMessage,
         CampfirePreserveTranslationPatch.TryTranslatePopupMessage,
         CookingRuntimeTranslationPatch.TryTranslatePopupMessage,

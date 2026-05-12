@@ -4941,6 +4941,44 @@ COVERED_OWNER_FAMILIES: Final = (
             ),
         ),
     ),
+    CoveredOwnerFamily(
+        family_id="XRL.World.Parts.Skill/Cudgel_Conk.cs::XRL.World.Parts.Skill.Cudgel_Conk.PerformConk",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/CudgelConkPopupTranslationPatch.cs",
+                (
+                    "TryTranslatePopupMessage",
+                    "NoHeadPattern",
+                    "ConfirmSelfConkPattern",
+                    "XRL.World.Parts.Skill.Cudgel_Conk",
+                    "PerformConk",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("CudgelConkPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CudgelConkPopupTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesNoHeadPopup_WhenOwnerPatched",
+                    "Patch_TranslatesConfirmSelfConkPopup_WhenOwnerPatched",
+                    "Patch_DoesNotTranslateCudgelConkPopup_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "nameof(DummyCudgelConkProducerTarget.ShowNoHeadPopup)",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "CudgelConkPopupTargetMethod_ResolvesExpectedFullSignature",
+                    "XRL.World.Parts.Skill.Cudgel_Conk|PerformConk|System.Boolean",
+                ),
+            ),
+        ),
+    ),
     *_examiner_result_popup_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
