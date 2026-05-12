@@ -66,6 +66,13 @@ C# optional arguments still appear as real reflection parameters. Add L2G
 signature or contract coverage when that reflection path controls runtime UI
 behavior.
 
+When a Harmony owner scope stores more than a boolean active flag, such as a
+thread-static declaring type, member name, object identity, or route key, save
+and restore the previous values with Harmony `__state` or an explicit stack.
+An `activeDepth` counter alone is only safe for boolean scope gates; nested
+owner calls can otherwise overwrite the outer route context. Add an L2 nested
+owner-scope test when a patch introduces or changes that state.
+
 Route decisions follow `docs/RULES.md`:
 
 - prefer producer-owned or stable mid-pipeline fixes
