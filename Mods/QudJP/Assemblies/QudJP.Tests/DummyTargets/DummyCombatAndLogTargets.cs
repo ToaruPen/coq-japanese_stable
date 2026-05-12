@@ -1508,6 +1508,10 @@ internal sealed class DummyDeployableInfrastructureTarget
 {
     public string MessageToSend { get; set; } = string.Empty;
 
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public bool UseShowFail { get; set; }
+
     public string? ColorToSend { get; set; }
 
     public void DeployOne(DummyGameObject actor, DummyCell cell, bool active = true, bool message = false)
@@ -1517,6 +1521,21 @@ internal sealed class DummyDeployableInfrastructureTarget
         _ = active;
         _ = message;
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public bool AttemptDeploy(DummyGameObject actor)
+    {
+        _ = actor;
+        if (UseShowFail)
+        {
+            DummyPopupShow.ShowFail(PopupMessageToSend);
+        }
+        else
+        {
+            DummyPopupShow.Show(PopupMessageToSend);
+        }
+
+        return true;
     }
 }
 
