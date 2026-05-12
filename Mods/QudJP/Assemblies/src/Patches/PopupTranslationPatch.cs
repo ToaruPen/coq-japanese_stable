@@ -480,6 +480,12 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (ExaminerTranslationPatch.TryTranslatePopupMessage(source, route, family, out var examinerTranslated))
+        {
+            translated = examinerTranslated;
+            return true;
+        }
+
         if (MutationsApiTranslationPatch.TryTranslatePopupMessage(source, route, family, out var mutationTranslated))
         {
             translated = mutationTranslated;
