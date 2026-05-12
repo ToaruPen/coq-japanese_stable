@@ -942,6 +942,131 @@ def _cooking_runtime_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _water_ritual_popup_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/WaterRitualPopupTranslationPatch.cs",
+        (
+            "WaterRitualPopupTranslationPatch",
+            "TryTranslatePopupMessage",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("WaterRitualPopupTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests_common = (
+        "Patch_TranslatesWaterRitualOwnerPopups_WhenOwnerPatched",
+        "Patch_DoesNotTranslateWaterRitualPopup_WhenOwnerAbsent",
+        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+    )
+
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Conversations.Parts/WaterRitualBegin.cs::XRL.World.Conversations.Parts.WaterRitualBegin.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "WaterRitualBegin",
+                        "FormalRitualPromptPattern",
+                        "NotEnoughLiquidPattern",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/WaterRitualPopupTranslationPatchTests.cs",
+                    (
+                        *tests_common,
+                        "nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBeginHandleEvent)",
+                        "FormalRitualPrompt",
+                        "NotEnoughLiquid",
+                        "Do you want to play a game of Sifrah to perform the formal water ritual",
+                        "You don't have enough {{B|fresh water}} to begin the ritual.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(WaterRitualPopupTranslationPatch)",
+                        "XRL.World.Conversations.Parts.WaterRitualBegin|HandleEvent|System.Boolean|XRL.World.Conversations.EnterElementEvent",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Conversations.Parts/WaterRitualSkillPoint.cs::XRL.World.Conversations.Parts.WaterRitualSkillPoint.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "WaterRitualSkillPoint",
+                        "SkillPointIntroPattern",
+                        "SkillPointGainPattern",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/WaterRitualPopupTranslationPatchTests.cs",
+                    (
+                        *tests_common,
+                        "nameof(DummyWaterRitualPopupProducerTarget.WaterRitualSkillPointHandleEvent)",
+                        "SkillPointIntro",
+                        "SkillPointGain",
+                        "Talking to {{Y|the warden}} rouses in you an inert truth.",
+                        "You gained {{C|50}} skill points!",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(WaterRitualPopupTranslationPatch)",
+                        "XRL.World.Conversations.Parts.WaterRitualSkillPoint|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Conversations.Parts/WaterRitualTinkeringRecipe.cs::XRL.World.Conversations.Parts.WaterRitualTinkeringRecipe.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "WaterRitualTinkeringRecipe",
+                        "TinkeringModPattern",
+                        "TinkeringRecipePattern",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/WaterRitualPopupTranslationPatchTests.cs",
+                    (
+                        *tests_common,
+                        "nameof(DummyWaterRitualPopupProducerTarget.WaterRitualTinkeringRecipeHandleEvent)",
+                        "TinkeringMod",
+                        "TinkeringRecipe",
+                        "{{G|Hortensa}} teaches you to craft the item modification {{W|sturdy}}.",
+                        "{{G|Hortensa}} teaches you to craft {{W|spring-loaded boots}}.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(WaterRitualPopupTranslationPatch)",
+                        "XRL.World.Conversations.Parts.WaterRitualTinkeringRecipe|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _status_screen_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/StatusScreenPopupTranslationPatch.cs",
@@ -3953,6 +4078,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_keybinds_screen_conflict_families(),
     *_ability_manager_popup_families(),
     *_cooking_runtime_families(),
+    *_water_ritual_popup_families(),
     *_status_screen_popup_families(),
     *_campfire_preserve_families(),
     *_reality_stabilized_event_families(),

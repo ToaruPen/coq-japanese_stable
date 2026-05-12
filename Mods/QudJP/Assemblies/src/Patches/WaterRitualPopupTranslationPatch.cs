@@ -1,0 +1,246 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using HarmonyLib;
+
+namespace QudJP.Patches;
+
+[HarmonyPatch]
+public static class WaterRitualPopupTranslationPatch
+{
+    private const string Context = nameof(WaterRitualPopupTranslationPatch);
+
+    private static readonly Regex FormalRitualPromptPattern = new(
+        "^Do you want to play a game of Sifrah to perform the formal water ritual with (?<speaker>.+?)\\? The formal ritual can be much more impactful\\. If you do not play the game of Sifrah, the informal water ritual will consume 1 dram of (?<liquid>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex NotEnoughLiquidPattern = new(
+        "^You don't have enough (?<liquid>.+?) to begin the ritual\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex SkillPointIntroPattern = new(
+        "^Talking to (?<speaker>.+?) rouses in you an inert truth\\. You once wore the frock of a child\\. You poured salt through the cracks of your fingers, and you watched worlds form\\. Can it be all so simple still\\?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex SkillPointGainPattern = new(
+        "^You gained (?<points>.+?) skill points!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TinkeringModPattern = new(
+        "^(?<speaker>.+?) teaches? you to craft the item modification (?<mod>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TinkeringRecipePattern = new(
+        "^(?<speaker>.+?) teaches? you to craft (?<recipe>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    [ThreadStatic]
+    private static int activeDepth;
+
+    [HarmonyTargetMethods]
+    private static IEnumerable<MethodBase> TargetMethods()
+    {
+        var enterElementEventType = AccessTools.TypeByName("XRL.World.Conversations.EnterElementEvent");
+        var enteredElementEventType = AccessTools.TypeByName("XRL.World.Conversations.EnteredElementEvent");
+        if (enterElementEventType is null || enteredElementEventType is null)
+        {
+            Trace.TraceError("QudJP: {0} failed to resolve conversation event types.", Context);
+            yield break;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualBegin",
+                     "HandleEvent",
+                     [enterElementEventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualSkillPoint",
+                     "HandleEvent",
+                     [enteredElementEventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualTinkeringRecipe",
+                     "HandleEvent",
+                     [enteredElementEventType]))
+        {
+            yield return method;
+        }
+    }
+
+    public static void Prefix()
+    {
+        try
+        {
+            OwnerTranslationScope.Enter(ref activeDepth);
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
+        }
+    }
+
+    public static Exception? Finalizer(Exception? __exception)
+    {
+        try
+        {
+            OwnerTranslationScope.Exit(ref activeDepth);
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.Finalizer failed: {1}", Context, ex);
+        }
+
+        return __exception;
+    }
+
+    internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
+    {
+        _ = family;
+
+        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(source))
+        {
+            translated = source;
+            return false;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return true;
+        }
+
+        if (TryTranslateCore(source, out translated, out var detail))
+        {
+            DynamicTextObservability.RecordTransform(route, "Popup.ProducerText." + Context + "." + detail, source, translated);
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static IEnumerable<MethodBase> ResolveTarget(string typeName, string methodName, Type[] parameters)
+    {
+        var targetType = AccessTools.TypeByName(typeName);
+        if (targetType is null)
+        {
+            Trace.TraceError("QudJP: {0} target type not found: {1}", Context, typeName);
+            yield break;
+        }
+
+        var method = AccessTools.Method(targetType, methodName, parameters);
+        if (method is not null)
+        {
+            yield return method;
+            yield break;
+        }
+
+        Trace.TraceError("QudJP: {0}.{1}.{2} target not found.", Context, typeName, methodName);
+    }
+
+    private static bool TryTranslateCore(string source, out string translated, out string detail)
+    {
+        if (TryTranslatePattern(
+                FormalRitualPromptPattern,
+                source,
+                (match, spans) =>
+                    $"{Restore(match, spans, "speaker")}と正式な水の儀式を行うためにシフラーのゲームをプレイしますか？正式な儀式はより大きな影響をもたらすことがあります。シフラーをプレイしない場合、非正式な水の儀式は{Restore(match, spans, "liquid")}を1ドラム消費します。",
+                out translated))
+        {
+            detail = "FormalRitualPrompt";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                NotEnoughLiquidPattern,
+                source,
+                (match, spans) => $"儀式を始めるには{Restore(match, spans, "liquid")}が足りない。",
+                out translated))
+        {
+            detail = "NotEnoughLiquid";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                SkillPointIntroPattern,
+                source,
+                (match, spans) =>
+                    $"{Restore(match, spans, "speaker")}との会話が、あなたの内に眠る真実を呼び覚ました。あなたはかつて子供の上着をまとっていた。指の隙間から塩を注ぎ、世界が形作られるのを見ていた。今もなお、それほど単純でありうるのだろうか？",
+                out translated))
+        {
+            detail = "SkillPointIntro";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                SkillPointGainPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "points")}スキルポイントを得た！",
+                out translated))
+        {
+            detail = "SkillPointGain";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                TinkeringModPattern,
+                source,
+                (match, spans) =>
+                    $"{Restore(match, spans, "speaker")}がアイテム改造{Restore(match, spans, "mod")}の作り方を教えてくれた。",
+                out translated))
+        {
+            detail = "TinkeringMod";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                TinkeringRecipePattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "speaker")}が{Restore(match, spans, "recipe")}の作り方を教えてくれた。",
+                out translated))
+        {
+            detail = "TinkeringRecipe";
+            return true;
+        }
+
+        translated = source;
+        detail = string.Empty;
+        return false;
+    }
+
+    private static bool TryTranslatePattern(
+        Regex pattern,
+        string source,
+        Func<Match, IReadOnlyList<ColorSpan>, string> translate,
+        out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = pattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translate(match, spans),
+            spans,
+            stripped.Length,
+            source);
+        return true;
+    }
+
+    private static string Restore(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
+    {
+        var group = match.Groups[groupName];
+        return ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group).Trim();
+    }
+}

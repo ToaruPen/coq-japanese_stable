@@ -29,6 +29,7 @@ internal static class PopupShowSemanticPipeline
         GeomagneticDiscTranslationPatch.TryTranslatePopupMessage,
         CampfireCookAvailabilityTranslationPatch.TryTranslatePopupMessage,
         CampfirePreserveTranslationPatch.TryTranslatePopupMessage,
+        WaterRitualPopupTranslationPatch.TryTranslatePopupMessage,
         CookingRuntimeTranslationPatch.TryTranslatePopupMessage,
         StatusScreenPopupTranslationPatch.TryTranslatePopupMessage,
         TeleprojectorTranslationPatch.TryTranslatePopupMessage,
