@@ -408,6 +408,88 @@ internal sealed class DummyProselytizationSifrahProducerTarget
     }
 }
 
+internal sealed class DummyRebukingSifrahProducerTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ResultCriticalFailure(DummyGameObject contextObject)
+    {
+        ShowResultPopup(nameof(ResultCriticalFailure), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ResultPartialSuccess(DummyGameObject contextObject)
+    {
+        ShowResultPopup(nameof(ResultPartialSuccess), contextObject);
+    }
+
+    private void ShowResultPopup(string methodName, DummyGameObject contextObject)
+    {
+        _ = methodName;
+        _ = contextObject;
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+}
+
+internal sealed class DummyItemNamingProducerTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool Opportunity(
+        DummyGameObject owner,
+        DummyGameObject? kill = null,
+        DummyGameObject? influencedBy = null,
+        string? zoneId = null,
+        string opportunityType = "General",
+        int suppressedByAnyTypeForLevels = 0,
+        int suppressedBySameTypeForLevels = 0,
+        int suppressedBySameTypeOnlyIfAtLeast = 0,
+        int chanceToBypassSuppression = 0,
+        bool force = false)
+    {
+        _ = owner;
+        _ = kill;
+        _ = influencedBy;
+        _ = zoneId;
+        _ = opportunityType;
+        _ = suppressedByAnyTypeForLevels;
+        _ = suppressedBySameTypeForLevels;
+        _ = suppressedBySameTypeOnlyIfAtLeast;
+        _ = chanceToBypassSuppression;
+        _ = force;
+        DummyPopupShow.ShowYesNo(PopupMessageToShow);
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void CheckBestowals(
+        DummyGameObject owner,
+        DummyGameObject obj,
+        string? type,
+        string? element,
+        DummyGameObject? kill,
+        DummyGameObject? influencedBy,
+        string opportunityType,
+        out bool bestowalsPossible,
+        out int didBasicBestowals,
+        out bool didElementBestowal)
+    {
+        _ = owner;
+        _ = obj;
+        _ = type;
+        _ = element;
+        _ = kill;
+        _ = influencedBy;
+        _ = opportunityType;
+        bestowalsPossible = true;
+        didBasicBestowals = 1;
+        didElementBestowal = false;
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+}
+
 internal static class DummyMutationsApiTarget
 {
     public static string? FailureMessageToShow;

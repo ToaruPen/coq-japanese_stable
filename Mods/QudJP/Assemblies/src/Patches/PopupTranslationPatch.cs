@@ -341,6 +341,11 @@ public static class PopupTranslationPatch
             return markedText;
         }
 
+        if (ItemNamingTranslationPatch.TryTranslatePopupMessage(source, route, family, out var itemNamingOwnerTranslated))
+        {
+            return NormalizeProducerText(itemNamingOwnerTranslated);
+        }
+
         if (DoesVerbRouteTranslator.TryTranslateMarkedMessage(source, out var doesVerbTranslated))
         {
             DynamicTextObservability.RecordTransform(route, family + ".DoesVerb", source, doesVerbTranslated);
@@ -466,6 +471,12 @@ public static class PopupTranslationPatch
         if (ProselytizationSifrahTranslationPatch.TryTranslatePopupMessage(source, route, family, out var proselytizationSifrahTranslated))
         {
             translated = proselytizationSifrahTranslated;
+            return true;
+        }
+
+        if (RebukingSifrahTranslationPatch.TryTranslatePopupMessage(source, route, family, out var rebukingSifrahTranslated))
+        {
+            translated = rebukingSifrahTranslated;
             return true;
         }
 
