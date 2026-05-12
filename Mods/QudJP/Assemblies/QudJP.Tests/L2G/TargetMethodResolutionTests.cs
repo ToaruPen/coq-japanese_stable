@@ -1278,6 +1278,12 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.LiquidVolume|Pour|System.Boolean|System.Boolean&|XRL.World.GameObject|XRL.World.Cell|System.Boolean|System.Boolean|System.Int32|System.Boolean",
         "XRL.World.Parts.LiquidVolume|PerformFill|System.Boolean|XRL.World.GameObject|System.Boolean&|System.Boolean",
     })]
+    [TestCase(typeof(GolemQuestSelectionPopupTranslationPatch), new[]
+    {
+        "XRL.World.Quests.GolemQuest.GolemBodySelection|WishSpec|System.Void|System.String",
+        // Evidence anchor for the generic owner family: XRL.World.Quests.GolemQuest.GolemMaterialSelection.Pick.
+        "XRL.World.Quests.GolemQuest.GolemMaterialSelection`2|Pick|System.Void",
+    })]
     public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
     {
         var targetMethodsMethod = patchType.GetMethod("TargetMethods", BindingFlags.NonPublic | BindingFlags.Static);

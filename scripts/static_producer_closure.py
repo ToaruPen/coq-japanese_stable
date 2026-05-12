@@ -3052,6 +3052,98 @@ def _effect_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _golem_quest_selection_popup_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/GolemQuestSelectionPopupTranslationPatch.cs",
+        (
+            "GolemQuestSelectionPopupTranslationPatch",
+            "TryTranslatePopupMessage",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("GolemQuestSelectionPopupTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/GolemQuestSelectionPopupTranslationPatchTests.cs",
+        (
+            "Patch_TranslatesGolemSelectionPopups_WhenOwnerPatched",
+            "Patch_DoesNotTranslateGolemSelectionPopup_WhenOwnerAbsent",
+            "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+            "nameof(DummyGolemQuestSelectionProducer.WishSpec)",
+            "nameof(DummyGolemQuestSelectionProducer.Pick)",
+        ),
+    )
+
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Quests.GolemQuest/GolemBodySelection.cs::XRL.World.Quests.GolemQuest.GolemBodySelection.WishSpec",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "XRL.World.Quests.GolemQuest.GolemBodySelection",
+                        "WishSpec",
+                        "MissingBlueprintPattern",
+                        "MissingBlueprint",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    tests.path,
+                    (
+                        *tests.required_substrings,
+                        "No blueprint by ID '{{W|missing-body}}' found.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(GolemQuestSelectionPopupTranslationPatch)",
+                        "XRL.World.Quests.GolemQuest.GolemBodySelection|WishSpec|System.Void|System.String",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Quests.GolemQuest/GolemMaterialSelection.cs::XRL.World.Quests.GolemQuest.GolemMaterialSelection.Pick",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "XRL.World.Quests.GolemQuest.GolemMaterialSelection`2",
+                        "Pick",
+                        "MissingRequirementPattern",
+                        "MissingRequirement",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    tests.path,
+                    (
+                        *tests.required_substrings,
+                        "You have nothing that meets the requirement of the {{Y|armament}}.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(GolemQuestSelectionPopupTranslationPatch)",
+                        "XRL.World.Quests.GolemQuest.GolemMaterialSelection",
+                        "Pick",
+                        "XRL.World.Quests.GolemQuest.GolemMaterialSelection`2|Pick|System.Void",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
     tests = EvidenceFile(
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
@@ -3991,6 +4083,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_amnesia_families(),
     *_fixed_owner_queue_families(),
     *_effect_static_message_families(),
+    *_golem_quest_selection_popup_families(),
     *_system_static_message_families(),
     CoveredOwnerFamily(
         family_id="XRL.UI/TradeUI.cs::XRL.UI.TradeUI.PerformOffer",
