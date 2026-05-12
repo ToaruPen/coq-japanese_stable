@@ -585,6 +585,28 @@ internal sealed class DummyKeybindsScreenConflictTarget
     }
 }
 
+internal sealed class DummyOldSaveContinueMenuTarget
+{
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public Task<object?> MainMenuContinueMenu()
+    {
+        return ShowOldSavePopup(nameof(MainMenuContinueMenu));
+    }
+
+    public Task<object?> SaveManagementContinueMenu()
+    {
+        return ShowOldSavePopup(nameof(SaveManagementContinueMenu));
+    }
+
+    private async Task<object?> ShowOldSavePopup(string route)
+    {
+        _ = route;
+        await DummyPopupShow.ShowAsync(PopupMessageToSend).ConfigureAwait(false);
+        return null;
+    }
+}
+
 internal sealed class DummyRealityStabilizedEventTarget
 {
     public string MessageToSend { get; set; } = string.Empty;

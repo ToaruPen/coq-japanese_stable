@@ -4941,6 +4941,84 @@ COVERED_OWNER_FAMILIES: Final = (
             ),
         ),
     ),
+    CoveredOwnerFamily(
+        family_id="Qud.UI/MainMenu.cs::Qud.UI.MainMenu.ContinueMenu",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/OldSaveContinueMenuTranslationPatch.cs",
+                ("TryTranslatePopupMessage", "Qud.UI.MainMenu", "Qud.UI.SaveManagement"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("OldSaveContinueMenuTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                (
+                    "That save file looks like it's from an older save format revision ({0}). Sorry!",
+                    "このセーブデータは古いフォーマット",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/OldSaveContinueMenuTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesOldSavePopup_WhenOwnerPatched",
+                    "TryTranslatePopupMessage_DoesNotClaimOldSavePopup_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "nameof(DummyOldSaveContinueMenuTarget.MainMenuContinueMenu)",
+                    "nameof(DummyOldSaveContinueMenuTarget.SaveManagementContinueMenu)",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "Qud.UI.MainMenu|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
+        family_id="Qud.UI/SaveManagement.cs::Qud.UI.SaveManagement.ContinueMenu",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/OldSaveContinueMenuTranslationPatch.cs",
+                ("TryTranslatePopupMessage", "Qud.UI.MainMenu", "Qud.UI.SaveManagement"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("OldSaveContinueMenuTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                (
+                    "That save file looks like it's from an older save format revision ({0}). Sorry!",
+                    "このセーブデータは古いフォーマット",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/OldSaveContinueMenuTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesOldSavePopup_WhenOwnerPatched",
+                    "TryTranslatePopupMessage_DoesNotClaimOldSavePopup_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "nameof(DummyOldSaveContinueMenuTarget.MainMenuContinueMenu)",
+                    "nameof(DummyOldSaveContinueMenuTarget.SaveManagementContinueMenu)",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "Qud.UI.SaveManagement|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",
+                ),
+            ),
+        ),
+    ),
     *_examiner_result_popup_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
