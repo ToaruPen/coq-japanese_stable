@@ -112,6 +112,33 @@ public sealed class ExaminerTranslationPatchTests
     }
 
     [Test]
+    public void Patch_LeavesDirectMarkedNonMatchingEnglishPopupUnchanged_WhenOwnerPatched()
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(ExaminerTranslationPatch),
+            RequireOwnerMethod(nameof(DummyExaminerProducerTarget.ResultFailure)),
+            () =>
+            {
+                var source = MessageFrameTranslator.MarkDirectTranslation("You inspect {{C|奇妙な装置}} carefully.");
+                var target = new DummyExaminerProducerTarget
+                {
+                    PopupMessageToShow = source,
+                };
+
+                target.ResultFailure(new DummyGameObject());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You inspect {{C|奇妙な装置}} carefully."));
+                    Assert.That(ExaminerHitCount("Understand"), Is.Zero);
+                    Assert.That(ExaminerHitCount("DiscoverHidden"), Is.Zero);
+                    Assert.That(ExaminerHitCount("Puzzled"), Is.Zero);
+                    Assert.That(ExaminerHitCount("Broke"), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
     public void Patch_LeavesNonMatchingEnglishPopupUnchanged_WhenOwnerPatched()
     {
         OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
