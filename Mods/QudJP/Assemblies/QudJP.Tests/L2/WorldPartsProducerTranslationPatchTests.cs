@@ -255,6 +255,10 @@ public sealed class WorldPartsProducerTranslationPatchTests
         "You fail to get yourself into stasis pod.",
         "stasis podに入れなかった。")]
     [TestCase(
+        nameof(DummyEnclosingProducerTarget.ExitEnclosure),
+        "You extricate yourself from stasis pod.",
+        "stasis podから抜け出した。")]
+    [TestCase(
         nameof(DummyEnclosingProducerTarget.EnclosureExitImpeded),
         "You cannot do that while enclosed by stasis pod.",
         "stasis podに閉じ込められている間はそれをできない。")]

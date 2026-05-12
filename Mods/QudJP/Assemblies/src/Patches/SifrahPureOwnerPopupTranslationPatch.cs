@@ -540,9 +540,34 @@ public static class SifrahPureOwnerPopupTranslationPatch
         return true;
     }
 
-    private sealed record TargetConstructor(string TypeName, Type[] ParameterTypes);
+    private sealed class TargetConstructor
+    {
+        internal TargetConstructor(string typeName, Type[] parameterTypes)
+        {
+            TypeName = typeName;
+            ParameterTypes = parameterTypes;
+        }
 
-    private sealed record TargetMethod(string TypeName, string MethodName, Type[] ParameterTypes);
+        internal string TypeName { get; }
+
+        internal Type[] ParameterTypes { get; }
+    }
+
+    private sealed class TargetMethod
+    {
+        internal TargetMethod(string typeName, string methodName, Type[] parameterTypes)
+        {
+            TypeName = typeName;
+            MethodName = methodName;
+            ParameterTypes = parameterTypes;
+        }
+
+        internal string TypeName { get; }
+
+        internal string MethodName { get; }
+
+        internal Type[] ParameterTypes { get; }
+    }
 
     private static bool IsActiveOwner(string realType, string realMember, string dummyMember)
     {
