@@ -40,6 +40,39 @@ internal static class SamplePatch
     }
 
     [Test]
+    public async Task Diagnostic_WhenDifferentNamespaceUsesSamePipelineTypeNameAsync()
+    {
+        const string source = """
+namespace QudJP.Patches
+{
+    internal static class MessageQueueSemanticPipeline
+    {
+        internal static bool TryTranslateQueuedMessage(ref string message, string? color)
+        {
+            return {|#0:OtherNamespace.MessageQueueSemanticPipeline.TryTranslateQueuedMessage(ref message, color)|};
+        }
+    }
+}
+
+namespace OtherNamespace
+{
+    internal static class MessageQueueSemanticPipeline
+    {
+        internal static bool TryTranslateQueuedMessage(ref string message, string? color) => false;
+    }
+}
+""";
+
+        var expected = VerifyCS.Diagnostic(PipelineTranslatorEntrypointAnalyzer.DiagnosticId)
+            .WithLocation(0)
+            .WithArguments(
+                "TryTranslateQueuedMessage",
+                "OtherNamespace.MessageQueueSemanticPipeline.TryTranslateQueuedMessage(ref string, string?)");
+
+        await VerifyCS.VerifyAnalyzerAsync(source, expected).ConfigureAwait(false);
+    }
+
+    [Test]
     public async Task NoDiagnostic_WhenPipelineCallsTranslatorInsideExceptionCatchTryAsync()
     {
         const string source = """
@@ -131,6 +164,84 @@ internal static class SamplePatch
 """;
 
         await VerifyCS.VerifyAnalyzerAsync(source).ConfigureAwait(false);
+    }
+
+    [Test]
+    public async Task Diagnostic_WhenTryUsesFilteredExceptionCatchAsync()
+    {
+        const string source = """
+using System;
+
+namespace QudJP.Patches;
+
+internal static class MessageQueueSemanticPipeline
+{
+    internal static bool TryTranslateQueuedMessage(ref string message, string? color)
+    {
+        try
+        {
+            return {|#0:SamplePatch.TryTranslateQueuedMessage(ref message, color)|};
+        }
+        catch (Exception) when (message.Length > 0)
+        {
+            return false;
+        }
+    }
+}
+
+internal static class SamplePatch
+{
+    internal static bool TryTranslateQueuedMessage(ref string message, string? color) => false;
+}
+""";
+
+        var expected = VerifyCS.Diagnostic(PipelineTranslatorEntrypointAnalyzer.DiagnosticId)
+            .WithLocation(0)
+            .WithArguments(
+                "TryTranslateQueuedMessage",
+                "QudJP.Patches.SamplePatch.TryTranslateQueuedMessage(ref string, string?)");
+
+        await VerifyCS.VerifyAnalyzerAsync(source, expected).ConfigureAwait(false);
+    }
+
+    [Test]
+    public async Task Diagnostic_WhenTryCatchesNonSystemExceptionNamedExceptionAsync()
+    {
+        const string source = """
+namespace QudJP.Patches;
+
+internal static class MessageQueueSemanticPipeline
+{
+    internal static bool TryTranslateQueuedMessage(ref string message, string? color)
+    {
+        try
+        {
+            return {|#0:SamplePatch.TryTranslateQueuedMessage(ref message, color)|};
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+}
+
+internal sealed class Exception : System.Exception
+{
+}
+
+internal static class SamplePatch
+{
+    internal static bool TryTranslateQueuedMessage(ref string message, string? color) => false;
+}
+""";
+
+        var expected = VerifyCS.Diagnostic(PipelineTranslatorEntrypointAnalyzer.DiagnosticId)
+            .WithLocation(0)
+            .WithArguments(
+                "TryTranslateQueuedMessage",
+                "QudJP.Patches.SamplePatch.TryTranslateQueuedMessage(ref string, string?)");
+
+        await VerifyCS.VerifyAnalyzerAsync(source, expected).ConfigureAwait(false);
     }
 
     [Test]

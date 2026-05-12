@@ -66,6 +66,7 @@ def test_ci_python_lane_restores_repo_local_node_tools() -> None:
 
     assert "npm ci" in python_job
     assert node_bin_path_step in python_job
+    assert "pytest scripts/tests/" in python_job
     assert python_job.index("npm ci") < python_job.index(node_bin_path_step)
     assert python_job.index(node_bin_path_step) < python_job.index("pytest scripts/tests/")
     assert "npm install -g @ast-grep/cli" not in python_job

@@ -52,7 +52,12 @@ public sealed class PipelineTranslatorEntrypointAnalyzer : DiagnosticAnalyzer
         }
 
         var methodSymbol = context.SemanticModel.GetSymbolInfo(invocation, context.CancellationToken).Symbol as IMethodSymbol;
-        if (methodSymbol is null || IsSameContainingType(containingMethod, methodSymbol))
+        if (methodSymbol is null
+            || IsSameContainingType(
+                containingMethod,
+                methodSymbol,
+                context.SemanticModel,
+                context.CancellationToken))
         {
             return;
         }
@@ -80,14 +85,21 @@ public sealed class PipelineTranslatorEntrypointAnalyzer : DiagnosticAnalyzer
         };
     }
 
-    private static bool IsSameContainingType(MethodDeclarationSyntax containingMethod, IMethodSymbol methodSymbol)
+    private static bool IsSameContainingType(
+        MethodDeclarationSyntax containingMethod,
+        IMethodSymbol methodSymbol,
+        SemanticModel semanticModel,
+        CancellationToken cancellationToken)
     {
         if (containingMethod.Parent is not TypeDeclarationSyntax typeDeclaration)
         {
             return false;
         }
 
-        return methodSymbol.ContainingType?.Name == typeDeclaration.Identifier.ValueText;
+        var containingTypeSymbol = semanticModel.GetDeclaredSymbol(typeDeclaration, cancellationToken);
+        return containingTypeSymbol is not null
+            && methodSymbol.ContainingType is not null
+            && SymbolEqualityComparer.Default.Equals(methodSymbol.ContainingType, containingTypeSymbol);
     }
 
     private static bool IsInsideExceptionCatchTry(
@@ -119,6 +131,11 @@ public sealed class PipelineTranslatorEntrypointAnalyzer : DiagnosticAnalyzer
         SemanticModel semanticModel,
         CancellationToken cancellationToken)
     {
+        if (catchClause.Filter is not null)
+        {
+            return false;
+        }
+
         var declaration = catchClause.Declaration;
         if (declaration is null)
         {
@@ -126,18 +143,9 @@ public sealed class PipelineTranslatorEntrypointAnalyzer : DiagnosticAnalyzer
         }
 
         var typeSymbol = semanticModel.GetTypeInfo(declaration.Type, cancellationToken).Type;
-        return typeSymbol?.ToDisplayString() == "System.Exception"
-            || GetUnqualifiedName(declaration.Type) == "Exception";
-    }
-
-    private static string GetUnqualifiedName(TypeSyntax typeSyntax)
-    {
-        return typeSyntax switch
-        {
-            IdentifierNameSyntax identifier => identifier.Identifier.ValueText,
-            QualifiedNameSyntax qualified => qualified.Right.Identifier.ValueText,
-            AliasQualifiedNameSyntax aliasQualified => aliasQualified.Name.Identifier.ValueText,
-            _ => typeSyntax.ToString(),
-        };
+        var systemException = semanticModel.Compilation.GetTypeByMetadataName("System.Exception");
+        return typeSymbol is not null
+            && systemException is not null
+            && SymbolEqualityComparer.Default.Equals(typeSymbol, systemException);
     }
 }

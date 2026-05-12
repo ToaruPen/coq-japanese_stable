@@ -439,7 +439,7 @@ PR を出すと GitHub Actions (`.github/workflows/ci.yml`) が変更ファイ�
 
 - `Mods/QudJP/Assemblies/` 変更: `.NET SDK 8.0.x + 10.0.x` をインストールし、QudJP / QudJP.Tests を Release build します。build artifact を作成した後、C# テストは `L1` / `L2` / `L2G` の matrix job で並列実行します。L2G は `QudJP.Tests.csproj` の `<Exists('$(AssemblyCSharpPath)')>` 条件付き参照により、CI 環境に `Assembly-CSharp.dll` が存在しないため自動的にスキップされます。
 - `scripts/tools/` または Annals extractor のテスト / fixture 変更: `scripts/tools/**/*.csproj` を列挙し、見つかった tool projects をすべて Release build します。
-- `scripts/` (`scripts/tools/` を除く) / `.codex/hooks/**` / `.codex/hooks.json` / `dotnet-tools.json` / `package.json` / `package-lock.json` 変更: `npm ci` で Node tool dependencies を復元し、`ruff`、`pytest` をセットアップして `ruff check scripts/` と `pytest scripts/tests/` を実行します。この Python lane は QudJP C# test matrix を待たずに並列実行されます。
+- `scripts/` (`scripts/tools/` を除く) / `.codex/hooks/**` / `.codex/hooks.json` / `dotnet-tools.json` / `package.json` / `package-lock.json` / `CHANGELOG.md` / `Mods/QudJP/manifest.json` / `docs/release-notes/` 変更: `npm ci` で Node tool dependencies を復元し、`ruff`、`pytest` をセットアップして `ruff check scripts/` と `pytest scripts/tests/` を実行します。この Python lane は QudJP C# test matrix を待たずに並列実行されます。
 - `Mods/QudJP/Localization/` 変更: release-note fragment requirement、translation-token check、glossary consistency check を実行します。
 - `pyproject.toml` / `uv.lock` 変更: Python tooling 変更として `ruff check scripts/` と `pytest scripts/tests/` を実行します。
 - CI は同一 ref の古い実行を自動キャンセルし、NuGet / pip キャッシュを使います。branch protection 用の `build` job は最後に各 lane の結果を集約する互換チェックです。
