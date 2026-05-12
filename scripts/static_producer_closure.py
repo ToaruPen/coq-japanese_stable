@@ -19,6 +19,24 @@ OWNER_ACTION_STATUSES: Final = frozenset({"owner_patch_required", "needs_family_
 HACKING_SIFRAH_RESULT_SIGNATURE_SUFFIX: Final = (
     "System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah"
 )
+COMBAT_MELEE_ATTACK_SIGNATURE_PARTS: Final = (
+    "XRL.World.Parts.Combat",
+    "MeleeAttackWithWeaponInternal",
+    "XRL.World.Parts.MeleeAttackResult",
+    "XRL.World.GameObject",
+    "XRL.World.GameObject",
+    "XRL.World.GameObject",
+    "XRL.World.Anatomy.BodyPart",
+    "System.String",
+    "System.Int32",
+    "System.Int32",
+    "System.Int32",
+    "System.Int32",
+    "System.Int32",
+    "System.Boolean",
+    "System.Boolean",
+)
+COMBAT_MELEE_ATTACK_FULL_SIGNATURE: Final = "|".join(COMBAT_MELEE_ATTACK_SIGNATURE_PARTS)
 OutputFormat = Literal["text", "json"]
 
 
@@ -3103,7 +3121,7 @@ COVERED_OWNER_FAMILIES: Final = (
                 "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
                 (
                     "typeof(CombatTextSurfaceTranslationPatch)",
-                    "XRL.World.Parts.Combat|MeleeAttackWithWeaponInternal|XRL.World.Parts.MeleeAttackResult",
+                    COMBAT_MELEE_ATTACK_FULL_SIGNATURE,
                 ),
             ),
             EvidenceFile(

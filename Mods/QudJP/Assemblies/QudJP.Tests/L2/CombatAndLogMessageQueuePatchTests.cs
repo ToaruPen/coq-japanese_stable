@@ -5247,12 +5247,12 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("Your mental attack does not affect Snapjaw Scavenger.", "あなたの精神攻撃はSnapjaw Scavengerに効かない。")]
     [TestCase("You fail to deal damage with your attack! [17]", "あなたの攻撃はダメージを与えられなかった！ [17]")]
     [TestCase("Snapjaw Scavenger fails to deal damage with its attack! [17]", "Snapjaw Scavengerの攻撃はダメージを与えられなかった！ [17]")]
-    [TestCase("You don't penetrate Snapjaw Scavenger's armor.", "Snapjaw Scavengerの防具を貫通できなかった！")]
-    [TestCase("You don't penetrate Snapjaw Scavenger's armor with your bronze dagger. [17]", "bronze daggerではSnapjaw Scavengerの装甲を貫けない。[17]")]
-    [TestCase("You don't penetrate Snapjaw Scavenger's armor. [17]", "Snapjaw Scavengerの装甲を貫けない。[17]")]
-    [TestCase("Snapjaw Scavenger doesn't penetrate your armor.", "Snapjaw Scavengerはあなたの防具を貫通できなかった")]
-    [TestCase("Snapjaw Scavenger doesn't penetrate your armor with its bronze dagger! [17]", "Snapjaw Scavengerはbronze daggerであなたの防具を貫通できなかった！ [17]")]
-    [TestCase("Snapjaw Scavenger doesn't penetrate your armor! [17]", "Snapjaw Scavengerはあなたの防具を貫通できなかった！ [17]")]
+    [TestCase("You don't penetrate Snapjaw Scavenger's armor.", "Snapjaw Scavengerの装甲を貫けなかった！")]
+    [TestCase("You don't penetrate Snapjaw Scavenger's armor with your bronze dagger. [17]", "bronze daggerではSnapjaw Scavengerの装甲を貫けなかった！ [17]")]
+    [TestCase("You don't penetrate Snapjaw Scavenger's armor. [17]", "Snapjaw Scavengerの装甲を貫けなかった！ [17]")]
+    [TestCase("Snapjaw Scavenger doesn't penetrate your armor.", "Snapjaw Scavengerはあなたの装甲を貫けなかった！")]
+    [TestCase("Snapjaw Scavenger doesn't penetrate your armor with its bronze dagger! [17]", "Snapjaw Scavengerはbronze daggerであなたの装甲を貫けなかった！ [17]")]
+    [TestCase("Snapjaw Scavenger doesn't penetrate your armor! [17]", "Snapjaw Scavengerはあなたの装甲を貫けなかった！ [17]")]
     public void CombatMeleeAttack_TranslatesInventoriedShapes_WithRepositoryPatterns(string source, string expected)
     {
         AssertCombatMeleeAttackQueuedMessageWithRepositoryPatterns(source, expected);
@@ -5315,6 +5315,74 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertCombatMeleeAttackQueuedMessageWithRepositoryPatterns(
             "You block with iron buckler! (+2 AV)",
             "You block with iron buckler! (+2 AV)");
+    }
+
+    [Test]
+    public void CombatTextSurface_RestoresOuterOwnerRouteAfterNestedOwnerScope()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        var shieldOwner = RequireMethod(typeof(DummyCombatGetDefenderHitDiceTarget), nameof(DummyCombatGetDefenderHitDiceTarget.HandleEvent), typeof(DummyCombatGetDefenderHitDiceEvent));
+        var meleeOwner = RequireMethod(
+            typeof(DummyCombatMeleeAttackTarget),
+            nameof(DummyCombatMeleeAttackTarget.MeleeAttackWithWeaponInternal),
+            typeof(DummyGameObject),
+            typeof(DummyGameObject),
+            typeof(DummyGameObject),
+            typeof(DummyCombatBodyPart),
+            typeof(string),
+            typeof(int),
+            typeof(int),
+            typeof(int),
+            typeof(int),
+            typeof(int),
+            typeof(bool),
+            typeof(bool));
+
+        try
+        {
+            PatchQueue(harmony);
+
+            CombatTextSurfaceTranslationPatch.Prefix(shieldOwner);
+            try
+            {
+                DummyMessageQueue.AddPlayerMessage("You block with iron buckler! (+2 AV)", null, Capitalize: false);
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("iron bucklerで防御した！ (+2 AV)"));
+
+                CombatTextSurfaceTranslationPatch.Prefix(meleeOwner);
+                try
+                {
+                    DummyMessageQueue.AddPlayerMessage("You miss!", null, Capitalize: false);
+                    Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("攻撃は外れた！"));
+
+                    DummyMessageQueue.AddPlayerMessage("You block with iron buckler! (+2 AV)", null, Capitalize: false);
+                    Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You block with iron buckler! (+2 AV)"));
+                }
+                finally
+                {
+                    CombatTextSurfaceTranslationPatch.Finalizer(null);
+                }
+
+                DummyMessageQueue.AddPlayerMessage("You block with iron buckler! (+2 AV)", null, Capitalize: false);
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("iron bucklerで防御した！ (+2 AV)"));
+
+                DummyMessageQueue.AddPlayerMessage("You miss!", null, Capitalize: false);
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You miss!"));
+            }
+            finally
+            {
+                CombatTextSurfaceTranslationPatch.Finalizer(null);
+            }
+
+            DummyMessageQueue.AddPlayerMessage("You block with iron buckler! (+2 AV)", null, Capitalize: false);
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You block with iron buckler! (+2 AV)"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     [Test]

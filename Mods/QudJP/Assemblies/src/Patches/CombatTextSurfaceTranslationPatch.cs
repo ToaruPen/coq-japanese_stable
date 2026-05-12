@@ -134,19 +134,19 @@ public static class CombatTextSurfaceTranslationPatch
     {
         _ = color;
 
-        if ((!OwnerTranslationScope.IsActive(shieldBlockDepth) && !OwnerTranslationScope.IsActive(meleeAttackDepth))
-            || string.IsNullOrEmpty(message))
+        if (activeRoutes is not { Count: > 0 } || string.IsNullOrEmpty(message))
         {
             return false;
         }
 
+        var currentRoute = activeRoutes.Peek();
         var (strippedMessage, _) = ColorAwareTranslationComposer.Strip(message);
-        if (OwnerTranslationScope.IsActive(shieldBlockDepth) && IsShieldBlockMessage(strippedMessage))
+        if (currentRoute == OwnerRoute.ShieldBlock && IsShieldBlockMessage(strippedMessage))
         {
             return MessageLogProducerTranslationHelpers.TryPreparePatternMessage(ref message, Context, ShieldBlockDetail);
         }
 
-        if (OwnerTranslationScope.IsActive(meleeAttackDepth) && IsMeleeAttackMessage(strippedMessage))
+        if (currentRoute == OwnerRoute.MeleeAttack && IsMeleeAttackMessage(strippedMessage))
         {
             return MessageLogProducerTranslationHelpers.TryPreparePatternMessage(ref message, Context, MeleeAttackDetail);
         }
