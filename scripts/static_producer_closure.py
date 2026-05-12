@@ -3138,7 +3138,52 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _mutations_api_popup_families() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="Qud.API/MutationsAPI.cs::Qud.API.MutationsAPI.BuyRandomMutation",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MutationsApiTranslationPatch.cs",
+                    (
+                        "MutationsApiTranslationPatch",
+                        "BuyRandomMutation",
+                        "TryTranslatePopupMessage",
+                        "BuyPromptPattern",
+                        "TranslateBuiltInMutationTerm",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+                    ("MutationsApiTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/MutationsApiTranslationPatchTests.cs",
+                    (
+                        "BuyRandomMutation_TranslatesConfirmationMessage_WhenPatched",
+                        "BuyRandomMutation_PreservesColorTagsInConfirmationMessage_WhenPatched",
+                        "TryTranslatePopupMessage_TranslatesBuiltInMutationTerm_WhenDictionaryMisses",
+                        "TryTranslatePopupMessage_ReturnsFalse_ForEmptyInput",
+                        "TryTranslatePopupMessage_ReturnsFalse_ForDirectTranslationMarker",
+                        "Are you sure you want to spend 4 mutation points to buy a new {{G|mutation}}?",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(MutationsApiTranslationPatch)",
+                        "Qud.API.MutationsAPI",
+                        "BuyRandomMutation",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
+    *_mutations_api_popup_families(),
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
         inventory_statuses=("owner_patch_required",),

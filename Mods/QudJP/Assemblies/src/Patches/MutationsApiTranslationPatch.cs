@@ -123,6 +123,19 @@ public static class MutationsApiTranslationPatch
 
         return StringHelpers.TryGetTranslationExactOrLowerAscii(termGroup.Value.Trim(), out translated)
             ? ColorAwareTranslationComposer.RestoreCapture(translated, spans, termGroup).Trim()
-            : restored;
+            : TranslateBuiltInMutationTerm(termGroup, spans, restored);
+    }
+
+    private static string TranslateBuiltInMutationTerm(Group termGroup, IReadOnlyList<ColorSpan> spans, string fallback)
+    {
+        var translated = termGroup.Value.Trim() switch
+        {
+            "mutation" or "mutations" => "変異",
+            _ => null,
+        };
+
+        return translated is null
+            ? fallback
+            : ColorAwareTranslationComposer.RestoreCapture(translated, spans, termGroup).Trim();
     }
 }
