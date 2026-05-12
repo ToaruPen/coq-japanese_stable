@@ -3966,6 +3966,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("Checkpointing enabled")]
     [TestCase("You feel a sense of holiness here.")]
     [TestCase("&CA flash of insight overcomes you!")]
+    [TestCase("The ground shakes violently!")]
+    [TestCase("The ground shakes violently and loose rock falls from the ceiling!")]
     public void FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
     {
         var harmonyId = CreateHarmonyId();
@@ -4084,6 +4086,15 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void SystemStaticFireEvent_TranslatesFixedQueuedMessages_WhenOwnerPatched(string source, string expected)
     {
         AssertSystemStaticFireEventQueuedMessage(source, expected);
+    }
+
+    [TestCase("The ground shakes violently!", "地面が激しく揺れた！")]
+    [TestCase(
+        "The ground shakes violently and loose rock falls from the ceiling!",
+        "地面が激しく揺れ、天井から岩が崩れ落ちた！")]
+    public void SystemStaticQuake_TranslatesFixedQueuedMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertSystemStaticQuakeQueuedMessage(source, expected);
     }
 
     [Test]
@@ -7871,6 +7882,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
             };
 
             _ = target.FireEvent(new DummyEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertSystemStaticQuakeQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.Quake)),
+                typeof(SystemStaticMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.Quake();
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }
