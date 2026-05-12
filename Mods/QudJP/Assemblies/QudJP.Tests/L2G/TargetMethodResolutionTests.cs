@@ -690,6 +690,16 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.GameObject",
         "XRL.World.GameObject",
     })]
+    [TestCase(typeof(RebukingSifrahTranslationPatch), new[]
+    {
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+    })]
+    [TestCase(typeof(ItemNamingTranslationPatch), new[]
+    {
+        "XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|System.Int32|System.Int32|System.Int32|System.Int32|System.Boolean",
+        "XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|XRL.World.GameObject|XRL.World.GameObject|System.String|System.Boolean&|System.Int32&|System.Boolean&",
+    })]
     [TestCase(typeof(DeployableInfrastructureTranslationPatch), new[]
     {
         "XRL.World.GameObject|XRL.World.Cell|System.Boolean|System.Boolean",
@@ -1113,6 +1123,16 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.ProselytizationSifrah|ResultPartialSuccess|System.Void|XRL.World.GameObject",
         "XRL.World.ProselytizationSifrah|ResultSuccess|System.Void|XRL.World.GameObject",
         "XRL.World.ProselytizationSifrah|ResultExceptionalSuccess|System.Void|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(RebukingSifrahTranslationPatch), new[]
+    {
+        "XRL.World.RebukingSifrah|ResultCriticalFailure|System.Void|XRL.World.GameObject",
+        "XRL.World.RebukingSifrah|ResultPartialSuccess|System.Void|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(ItemNamingTranslationPatch), new[]
+    {
+        "XRL.World.Capabilities.ItemNaming|Opportunity|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|System.Int32|System.Int32|System.Int32|System.Int32|System.Boolean",
+        "XRL.World.Capabilities.ItemNaming|CheckBestowals|System.Void|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|XRL.World.GameObject|XRL.World.GameObject|System.String|System.Boolean&|System.Int32&|System.Boolean&",
     })]
     [TestCase(typeof(CookingEffectTranslationPatch), new[]
     {
