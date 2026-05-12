@@ -117,7 +117,7 @@ public sealed class MutationsApiTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(translated, Is.EqualTo("本当に4ポイントを消費して新しい{{G|変異}}を購入しますか？"));
+            Assert.That(translated, Is.EqualTo("本当に4ポイントを消費して新しい{{G|突然変異}}を購入しますか？"));
         });
     }
 
