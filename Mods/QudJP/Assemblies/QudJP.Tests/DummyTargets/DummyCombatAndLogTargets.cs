@@ -1322,6 +1322,24 @@ internal sealed class DummyFungalSporeInfectionTarget
     public bool FireEvent(DummyGameEvent e)
     {
         _ = e;
+        return EmitQueuedMessage("fungal");
+    }
+
+    public bool PaxFireEvent(DummyGameEvent e)
+    {
+        _ = e;
+        return EmitQueuedMessage("pax");
+    }
+
+    public bool PuffFireEvent(DummyGameEvent e)
+    {
+        _ = e;
+        return EmitQueuedMessage("puff");
+    }
+
+    private bool EmitQueuedMessage(string producer)
+    {
+        _ = producer;
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
         return true;
     }

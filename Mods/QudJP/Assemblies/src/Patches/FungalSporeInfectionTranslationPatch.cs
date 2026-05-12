@@ -16,6 +16,14 @@ public static class FungalSporeInfectionTranslationPatch
         "^You've contracted (?<infection>.+?) on your (?<part>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex YourSporeCloudPattern = new(
+        "^Your (?<part>.+?) spews? a cloud of spores\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex VisibleSubjectSporeCloudPattern = new(
+        "^(?<subject>.+?) (?<part>.+?) spews? a cloud of spores\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -24,6 +32,8 @@ public static class FungalSporeInfectionTranslationPatch
     {
         var targets = new List<MethodBase>();
         var targetType = AccessTools.TypeByName("XRL.World.Effects.FungalSporeInfection");
+        var paxType = AccessTools.TypeByName("XRL.World.Parts.PaxInfection");
+        var puffType = AccessTools.TypeByName("XRL.World.Parts.PuffInfection");
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
         var bodyPartType = AccessTools.TypeByName("XRL.World.Anatomy.BodyPart");
         var eventType = AccessTools.TypeByName("XRL.World.Event");
@@ -45,6 +55,8 @@ public static class FungalSporeInfectionTranslationPatch
         if (eventType is not null)
         {
             AddTarget(targets, targetType, "FireEvent", new[] { eventType });
+            AddTargetByTypeName(targets, paxType, "XRL.World.Parts.PaxInfection", "FireEvent", new[] { eventType });
+            AddTargetByTypeName(targets, puffType, "XRL.World.Parts.PuffInfection", "FireEvent", new[] { eventType });
         }
         else
         {
@@ -159,6 +171,22 @@ public static class FungalSporeInfectionTranslationPatch
         Trace.TraceError("QudJP: {0}.{1}.{2} target not found.", Context, targetType.FullName, methodName);
     }
 
+    private static void AddTargetByTypeName(
+        List<MethodBase> targets,
+        Type? targetType,
+        string typeName,
+        string methodName,
+        Type[] parameters)
+    {
+        if (targetType is null)
+        {
+            Trace.TraceError("QudJP: {0} target type not found: {1}.", Context, typeName);
+            return;
+        }
+
+        AddTarget(targets, targetType, methodName, parameters);
+    }
+
     private static bool TryTranslateQueuedCore(string source, out string translated)
     {
         if (string.Equals(source, "Your skin itches.", StringComparison.Ordinal))
@@ -167,8 +195,63 @@ public static class FungalSporeInfectionTranslationPatch
             return true;
         }
 
+        if (TryTranslateSporeCloud(source, out translated))
+        {
+            return true;
+        }
+
         translated = source;
         return false;
+    }
+
+    private static bool TryTranslateSporeCloud(string source, out string translated)
+    {
+        if (TryTranslateSporeCloudPattern(
+            YourSporeCloudPattern,
+            source,
+            (match, spans) => $"あなたの{Restore(match, spans, "part")}から胞子の雲が噴き出した。",
+            out translated))
+        {
+            return true;
+        }
+
+        return TryTranslateSporeCloudPattern(
+            VisibleSubjectSporeCloudPattern,
+            source,
+            (match, spans) => $"{JoinSubjectAndPart(Restore(match, spans, "subject"), Restore(match, spans, "part"))}から胞子の雲が噴き出した。",
+            out translated);
+    }
+
+    private static string JoinSubjectAndPart(string subject, string part)
+    {
+        if (part.Length >= 2 && part[0] == '&' && char.IsLetter(part[1]))
+        {
+            return subject + part.Substring(0, 2) + " " + part.Substring(2);
+        }
+
+        return subject + " " + part;
+    }
+
+    private static bool TryTranslateSporeCloudPattern(
+        Regex pattern,
+        string source,
+        Func<Match, IReadOnlyList<ColorSpan>, string> translate,
+        out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = pattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translate(match, spans),
+            spans,
+            stripped.Length,
+            source);
+        return true;
     }
 
     private static bool TryTranslatePopupCore(string source, out string translated)

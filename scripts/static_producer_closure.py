@@ -2434,6 +2434,76 @@ def _fungal_spore_infection_families() -> tuple[CoveredOwnerFamily, ...]:
                 ),
             ),
         ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/PaxInfection.cs::XRL.World.Parts.PaxInfection.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/FungalSporeInfectionTranslationPatch.cs",
+                    (
+                        "XRL.World.Parts.PaxInfection",
+                        "YourSporeCloudPattern",
+                        "VisibleSubjectSporeCloudPattern",
+                        "TryTranslateSporeCloud",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("FungalSporeInfectionTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "FungalSporeInfectionFireEvent_TranslatesSporeCloudQueuedMessages_WhenOwnerPatched",
+                        "nameof(DummyFungalSporeInfectionTarget.PaxFireEvent)",
+                        "FungalSporeInfectionFireEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "FungalSporeInfectionFireEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(FungalSporeInfectionTranslationPatch)",
+                        "XRL.World.Parts.PaxInfection|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/PuffInfection.cs::XRL.World.Parts.PuffInfection.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/FungalSporeInfectionTranslationPatch.cs",
+                    (
+                        "XRL.World.Parts.PuffInfection",
+                        "YourSporeCloudPattern",
+                        "VisibleSubjectSporeCloudPattern",
+                        "JoinSubjectAndPart",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("FungalSporeInfectionTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "FungalSporeInfectionFireEvent_TranslatesSporeCloudQueuedMessages_WhenOwnerPatched",
+                        "nameof(DummyFungalSporeInfectionTarget.PuffFireEvent)",
+                        "FungalSporeInfectionFireEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "snapjaw's&y right handから胞子の雲が噴き出した。",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(FungalSporeInfectionTranslationPatch)",
+                        "XRL.World.Parts.PuffInfection|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
+                ),
+            ),
+        ),
     )
 
 
