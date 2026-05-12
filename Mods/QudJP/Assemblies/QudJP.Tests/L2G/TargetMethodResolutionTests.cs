@@ -1292,6 +1292,13 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Conversations.Parts.WaterRitualSkillPoint|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
         "XRL.World.Conversations.Parts.WaterRitualTinkeringRecipe|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
     })]
+    [TestCase(typeof(MutationSelfTargetPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.BreatherBase|Cast|System.Boolean|XRL.World.Parts.Mutation.BreatherBase",
+        "XRL.World.Parts.Mutation.FlamingRay|Cast|System.Boolean|XRL.World.Parts.Mutation.FlamingRay|System.String",
+        "XRL.World.Parts.Mutation.FreezeBreath|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Mutation.FreezingRay|Cast|System.Boolean|XRL.World.Parts.Mutation.FreezingRay|System.String",
+    })]
     public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
     {
         var targetMethodsMethod = patchType.GetMethod("TargetMethods", BindingFlags.NonPublic | BindingFlags.Static);
