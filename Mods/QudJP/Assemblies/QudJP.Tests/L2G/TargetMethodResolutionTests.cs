@@ -325,7 +325,6 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(ModManagerUITranslationPatch), "OnSelect", "Qud.UI.ModManagerUI", "System.Void", new[] { "XRL.ModInfo" })]
     [TestCase(typeof(SelectableTextMenuItemProbePatch), "Update", "Qud.UI.SelectableTextMenuItem", "System.Void", new string[0])]
     [TestCase(typeof(LoadingStatusTranslationPatch), "SetLoadingStatus", "XRL.UI.Loading", "System.Void", new[] { "System.String", "System.Boolean" })]
-    [TestCase(typeof(CombatGetDefenderHitDiceTranslationPatch), "HandleEvent", "XRL.World.Parts.Combat", "System.Boolean", new[] { "XRL.World.GetDefenderHitDiceEvent" })]
     [TestCase(typeof(PetEitherOrExplodeTranslationPatch), "explode", "XRL.World.Parts.PetEitherOr", "System.Void", new string[0])]
     [TestCase(typeof(ZoneWindChangeTranslationPatch), "WindChange", "XRL.World.Zone", "System.Void", new[] { "System.Int64" })]
     [TestCase(typeof(CrippleApplyTranslationPatch), "Apply", "XRL.World.Effects.Cripple", "System.Boolean", new[] { "XRL.World.GameObject" })]
@@ -588,6 +587,11 @@ public sealed class TargetMethodResolutionTests
     {
         "System.String|XRL.World.GameObject|System.String|System.Boolean",
         "XRL.World.GameObject|System.String|System.Char|System.Boolean|System.Boolean|System.Boolean|XRL.World.GameObject|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
+    {
+        "XRL.World.GetDefenderHitDiceEvent",
+        "XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|XRL.World.Anatomy.BodyPart|System.String|System.Int32|System.Int32|System.Int32|System.Int32|System.Int32|System.Boolean|System.Boolean",
     })]
     [TestCase(typeof(BookScreenTranslationPatch), new[]
     {
@@ -1093,6 +1097,11 @@ public sealed class TargetMethodResolutionTests
         "XRL.CheckpointingSystem|CheckpointOn|System.Boolean",
         "XRL.HolyPlaceSystem|SetHolyZone|System.Void|XRL.World.Zone|XRL.World.Faction",
         "XRL.World.Parts.Mutation.HeightenedIntelligence|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Combat|HandleEvent|System.Boolean|XRL.World.GetDefenderHitDiceEvent",
+        "XRL.World.Parts.Combat|MeleeAttackWithWeaponInternal|XRL.World.Parts.MeleeAttackResult|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|XRL.World.Anatomy.BodyPart|System.String|System.Int32|System.Int32|System.Int32|System.Int32|System.Int32|System.Boolean|System.Boolean",
     })]
     [TestCase(typeof(RepairTranslationPatch), new[]
     {

@@ -699,6 +699,11 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^You don't penetrate (?:the )?(.+?)(?:'s|s'|の) armor[.!]?$",
+      "template": "{0}の防具を貫通できなかった！",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:can't|cannot) hear you!$",
       "template": "{0}にはあなたの声が聞こえない！",
       "route": "emit-message"
@@ -729,17 +734,17 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s'|の) armor!$",
+      "pattern": "^You do not penetrate (?:the |)?(.+?)(?:'s|s'|の) armor!$",
       "template": "{0}の防具を貫通できなかった！",
       "route": "emit-message"
     },
     {
-      "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s'|の) armor\\.$",
+      "pattern": "^You do not penetrate (?:the |)?(.+?)(?:'s|s'|の) armor\\.$",
       "template": "{0}の防具を貫通できなかった。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You (?:don't|do not) penetrate (?:the |)?(.+?)(?:'s|s'|の) armor$",
+      "pattern": "^You do not penetrate (?:the |)?(.+?)(?:'s|s'|の) armor$",
       "template": "{0}の防具を貫通できなかった",
       "route": "emit-message"
     },
