@@ -248,6 +248,14 @@ class TestRunSync:
             '#!/usr/bin/env bash\nexec arch -x86_64 "$HOME/game/CoQ"\n',
             encoding="utf-8",
         )
+        (source / "Install Native Apple Silicon Harmony.command").write_text(
+            "#!/usr/bin/env bash\nexit 0\n",
+            encoding="utf-8",
+        )
+        (source / "Restore Game Harmony.command").write_text(
+            "#!/usr/bin/env bash\nexit 0\n",
+            encoding="utf-8",
+        )
         (source / "src.cs").write_text("// do not copy", encoding="utf-8")
         destination.mkdir()
         (destination / "stale.txt").write_text("stale", encoding="utf-8")
@@ -260,6 +268,8 @@ class TestRunSync:
         assert (destination / "preview.png").exists()
         assert (destination / "Bootstrap.cs").exists()
         assert (destination / "Launch CavesOfQud (Rosetta).command").exists()
+        assert (destination / "Install Native Apple Silicon Harmony.command").exists()
+        assert (destination / "Restore Game Harmony.command").exists()
         assert (destination / "Assemblies" / "QudJP.dll").exists()
         assert (destination / "Localization" / "Creatures.jp.xml").exists()
         assert (destination / "Localization" / "ui.ja.json").exists()

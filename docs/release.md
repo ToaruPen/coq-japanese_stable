@@ -379,8 +379,10 @@ After Steam finishes processing the item:
      `Launch CavesOfQud (Rosetta).command`, Rosetta 2, Finder double-click use,
      the `CoQ.app` picker fallback, and a quote-free `arch -x86_64` launch
      example for advanced users. It should also say QudJP does not bundle or
-     overwrite `0Harmony.dll`, and mention the user-managed Harmony 2.4.2 game
-     DLL replacement path as an advanced native ARM64 workaround.
+     overwrite `0Harmony.dll` automatically, and mention the opt-in
+     `Install Native Apple Silicon Harmony.command` /
+     `Restore Game Harmony.command` helpers plus the user-managed Harmony 2.4.2
+     game DLL replacement path as an advanced native ARM64 workaround.
 2. Subscribe to the item from a clean Steam client state or unsubscribe and
    resubscribe if updating an existing item.
 3. Validate the downloaded Workshop item against the staged content:
@@ -398,6 +400,11 @@ After Steam finishes processing the item:
    is executable in the downloaded `QudJP` folder. The launcher should guide
    player-facing failures with macOS dialogs rather than requiring manual script
    edits.
+   Also confirm `Install Native Apple Silicon Harmony.command` and
+   `Restore Game Harmony.command` exist and are executable. They should be
+   opt-in only, create/consume the QudJP backup file, infer the game path from
+   Workshop or installed-mod location when possible, and offer a manual
+   `0Harmony.dll` file picker fallback.
    On the default macOS Steam library, the downloaded Workshop folder is usually
    `~/Library/Application Support/Steam/steamapps/workshop/content/333640/3718988020/`.
 4. Launch the game, enable only QudJP for the smoke pass, and restart.

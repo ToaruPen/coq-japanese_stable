@@ -22,6 +22,12 @@ VALID_RELEASE_DLL_MARKER_PAYLOAD = b"\0".join(
 )
 
 
+def _write_executable_member(zf: zipfile.ZipFile, name: str, payload: str) -> None:
+    info = zipfile.ZipInfo(name)
+    info.external_attr = 0o100755 << 16
+    zf.writestr(info, payload)
+
+
 def write_workshop_release_zip(
     path: Path,
     *,
@@ -39,9 +45,21 @@ def write_workshop_release_zip(
         zf.writestr("QudJP/LICENSE", "MIT License")
         zf.writestr("QudJP/NOTICE.md", "# NOTICE")
         zf.writestr("QudJP/Bootstrap.cs", "public static class Bootstrap {}")
-        launcher_info = zipfile.ZipInfo("QudJP/Launch CavesOfQud (Rosetta).command")
-        launcher_info.external_attr = 0o100755 << 16
-        zf.writestr(launcher_info, "#!/usr/bin/env bash\n")
+        _write_executable_member(
+            zf,
+            "QudJP/Launch CavesOfQud (Rosetta).command",
+            "#!/usr/bin/env bash\n",
+        )
+        _write_executable_member(
+            zf,
+            "QudJP/Install Native Apple Silicon Harmony.command",
+            "#!/usr/bin/env bash\n",
+        )
+        _write_executable_member(
+            zf,
+            "QudJP/Restore Game Harmony.command",
+            "#!/usr/bin/env bash\n",
+        )
         zf.writestr("QudJP/Assemblies/QudJP.dll", dll_payload)
         zf.writestr("QudJP/Localization/ui.json", "{}")
         zf.writestr("QudJP/Fonts/OFL.txt", "SIL Open Font License")
