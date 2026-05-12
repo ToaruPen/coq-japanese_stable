@@ -201,21 +201,80 @@ public sealed class WaterRitualPopupTranslationPatchTests
 
                 target.WaterRitualSkillPointHandleEvent();
 
-                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
+                    Assert.That(HitCount("SkillPointIntro"), Is.Zero);
+                    Assert.That(HitCount("SkillPointGain"), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_RestoresOuterOwnerScopeAfterNestedOwnerPopup()
+    {
+        const string popupMethod = nameof(DummyPopupShow.Show);
+
+        WithPatchedOwnerAndPopup(
+            [
+                nameof(DummyWaterRitualPopupProducerTarget.WaterRitualSkillPointHandleEvent),
+                nameof(DummyWaterRitualPopupProducerTarget.WaterRitualTinkeringRecipeHandleEvent),
+            ],
+            popupMethod,
+            () =>
+            {
+                var innerTarget = new DummyWaterRitualPopupProducerTarget
+                {
+                    PopupMethod = popupMethod,
+                    PopupMessageToShow = "{{G|Hortensa}} teaches you to craft {{W|spring-loaded boots}}.",
+                };
+                var outerTarget = new DummyWaterRitualPopupProducerTarget
+                {
+                    PopupMethod = popupMethod,
+                    PopupMessageToShow = "You gained {{C|50}} skill points!",
+                    BeforePopup = () =>
+                    {
+                        innerTarget.WaterRitualTinkeringRecipeHandleEvent();
+
+                        Assert.Multiple(() =>
+                        {
+                            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{G|Hortensa}}が{{W|spring-loaded boots}}の作り方を教えてくれた。"));
+                            Assert.That(HitCount("TinkeringRecipe"), Is.EqualTo(1));
+                            Assert.That(HitCount("SkillPointGain"), Is.Zero);
+                        });
+                    },
+                };
+
+                outerTarget.WaterRitualSkillPointHandleEvent();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{C|50}}スキルポイントを得た！"));
+                    Assert.That(HitCount("TinkeringRecipe"), Is.EqualTo(1));
+                    Assert.That(HitCount("SkillPointGain"), Is.EqualTo(1));
+                });
             });
     }
 
     private static void WithPatchedOwnerAndPopup(string methodName, string popupMethod, Action action)
+    {
+        WithPatchedOwnerAndPopup([methodName], popupMethod, action);
+    }
+
+    private static void WithPatchedOwnerAndPopup(string[] methodNames, string popupMethod, Action action)
     {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
         var harmony = new Harmony(harmonyId);
         try
         {
             PatchPopup(harmony, popupMethod);
-            harmony.Patch(
-                original: RequireOwnerMethod(methodName),
-                prefix: new HarmonyMethod(RequireMethod(typeof(WaterRitualPopupTranslationPatch), nameof(WaterRitualPopupTranslationPatch.Prefix))),
-                finalizer: new HarmonyMethod(RequireMethod(typeof(WaterRitualPopupTranslationPatch), nameof(WaterRitualPopupTranslationPatch.Finalizer))));
+            foreach (var methodName in methodNames)
+            {
+                harmony.Patch(
+                    original: RequireOwnerMethod(methodName),
+                    prefix: new HarmonyMethod(RequireMethod(typeof(WaterRitualPopupTranslationPatch), nameof(WaterRitualPopupTranslationPatch.Prefix))),
+                    finalizer: new HarmonyMethod(RequireMethod(typeof(WaterRitualPopupTranslationPatch), nameof(WaterRitualPopupTranslationPatch.Finalizer))));
+            }
 
             action();
         }
@@ -302,6 +361,8 @@ public sealed class WaterRitualPopupTranslationPatchTests
 
         public string PopupMethod { get; set; } = nameof(DummyPopupShow.Show);
 
+        public Action? BeforePopup { get; set; }
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         public bool WaterRitualBeginHandleEvent()
         {
@@ -326,6 +387,7 @@ public sealed class WaterRitualPopupTranslationPatchTests
         private void EmitPopup(string route)
         {
             _ = route;
+            BeforePopup?.Invoke();
             WaterRitualPopupTranslationPatchTests.InvokePopup(PopupMethod, PopupMessageToShow);
         }
     }

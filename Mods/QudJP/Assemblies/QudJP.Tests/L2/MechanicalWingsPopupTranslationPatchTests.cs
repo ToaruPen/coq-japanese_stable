@@ -116,7 +116,12 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
 
             target.TryStartup();
 
-            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
+                Assert.That(GetStartupHitCount(), Is.Zero);
+                Assert.That(GetUnresponsiveHitCount(), Is.Zero);
+            });
         });
     }
 
@@ -178,6 +183,15 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
                 Assert.Multiple(() =>
                 {
                     Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(StartupTranslated));
+                    Assert.That(GetUnresponsiveHitCount(), Is.EqualTo(1));
+                    Assert.That(GetStartupHitCount(), Is.EqualTo(1));
+                });
+
+                DummyPopupShow.ShowFail(StartupSource);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(StartupSource));
                     Assert.That(GetUnresponsiveHitCount(), Is.EqualTo(1));
                     Assert.That(GetStartupHitCount(), Is.EqualTo(1));
                 });

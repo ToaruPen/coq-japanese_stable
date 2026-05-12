@@ -100,6 +100,32 @@ public sealed class MutationSelfTargetPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_StripsDirectMarkedUnknownPopupBeforeShapeGuard_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+        const string unmarked = "This popup was already translated.";
+        var source = MessageFrameTranslator.MarkDirectTranslation(unmarked);
+
+        WithPatchedOwnerAndPopup(
+            nameof(DummyMutationSelfTargetProducer.BreatherBaseCast),
+            () =>
+            {
+                var target = new DummyMutationSelfTargetProducer
+                {
+                    PopupMessageToShow = source,
+                };
+
+                target.BreatherBaseCast();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo(unmarked));
+                    Assert.That(HitCount(), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
     public void Patch_LeavesUnknownSelfTargetPopupUnchanged_WhenOwnerPatched()
     {
         UseRepositoryPatternDictionary();

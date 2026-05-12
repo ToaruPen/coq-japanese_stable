@@ -118,7 +118,12 @@ public sealed class GolemQuestSelectionPopupTranslationPatchTests
 
                 target.WishSpec();
 
-                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
+                    Assert.That(HitCount("MissingBlueprint"), Is.Zero);
+                    Assert.That(HitCount("MissingRequirement"), Is.Zero);
+                });
             });
     }
 
@@ -182,6 +187,15 @@ public sealed class GolemQuestSelectionPopupTranslationPatchTests
                 Assert.Multiple(() =>
                 {
                     Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{Y|armament}}の要件を満たすものを持っていない。"));
+                    Assert.That(HitCount("MissingBlueprint"), Is.EqualTo(1));
+                    Assert.That(HitCount("MissingRequirement"), Is.EqualTo(1));
+                });
+
+                DummyPopupShow.ShowFail("You have nothing that meets the requirement of the {{Y|armament}}.");
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You have nothing that meets the requirement of the {{Y|armament}}."));
                     Assert.That(HitCount("MissingBlueprint"), Is.EqualTo(1));
                     Assert.That(HitCount("MissingRequirement"), Is.EqualTo(1));
                 });

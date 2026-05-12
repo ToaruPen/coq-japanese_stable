@@ -61,12 +61,26 @@ public sealed class ConversationTakeItemPopupTranslationPatchTests
 
             DummyPopupShow.Show(source);
 
-            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                Assert.That(TakeItemHitCount(), Is.Zero);
+            });
         }
         finally
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    [Test]
+    public void Execute_LeavesUnknownPopupUnchanged_WhenOwnerPatched()
+    {
+        const string source = "Q Girl studies {{Y|奇妙な小物}}.";
+
+        AssertPopupMessage(source, source);
+
+        Assert.That(TakeItemHitCount(), Is.Zero);
     }
 
     [Test]

@@ -50,7 +50,7 @@ public sealed class FireSuppressionDischargeTranslationPatchTests
     [TestCase(
         nameof(DummyFireSuppressionDischargeProducer.TurnTick),
         "{{G|snapjaw}}'s {{Y|fire suppression system}} discharges 1 dram of {{C|gel}} all over it.",
-        "{{G|snapjaw}}'s {{Y|fire suppression system}}が{{C|gel}} 1ドラムをそれの全身に放出した。",
+        "{{G|snapjaw}}の{{Y|fire suppression system}}が{{C|gel}} 1ドラムをそれの全身に放出した。",
         "CyberneticsTarget")]
     public void Patch_TranslatesFireSuppressionDischargeMessages_WhenOwnerPatched(
         string methodName,
@@ -157,17 +157,68 @@ public sealed class FireSuppressionDischargeTranslationPatchTests
             });
     }
 
+    [Test]
+    public void Patch_RestoresOuterOwnerScopeAfterNestedOwnerMessage()
+    {
+        WithPatchedOwnerAndQueue(
+            [
+                nameof(DummyFireSuppressionDischargeProducer.CheckFireSuppression),
+                nameof(DummyFireSuppressionDischargeProducer.TurnTick),
+            ],
+            () =>
+            {
+                var innerTarget = new DummyFireSuppressionDischargeProducer
+                {
+                    QueuedMessageToSend = "2 drams of {{C|gel}} discharges all over you.",
+                };
+                var outerTarget = new DummyFireSuppressionDischargeProducer
+                {
+                    QueuedMessageToSend = "Your {{Y|fire suppression system}} discharges 2 drams of {{C|gel}} all over you.",
+                    BeforeQueue = () =>
+                    {
+                        innerTarget.CheckFireSuppression(null);
+
+                        Assert.Multiple(() =>
+                        {
+                            AssertMarkedDirectTranslation(DummyMessageQueue.LastMessage, "{{C|gel}} 2ドラムがあなたの全身に放出された。");
+                            Assert.That(HitCount("FireSuppressionSelf"), Is.EqualTo(1));
+                            Assert.That(HitCount("CyberneticsSelf"), Is.Zero);
+                        });
+                    },
+                };
+
+                outerTarget.TurnTick(1, 1);
+
+                Assert.Multiple(() =>
+                {
+                    AssertMarkedDirectTranslation(
+                        DummyMessageQueue.LastMessage,
+                        "あなたの{{Y|fire suppression system}}が{{C|gel}} 2ドラムをあなたの全身に放出した。");
+                    Assert.That(HitCount("FireSuppressionSelf"), Is.EqualTo(1));
+                    Assert.That(HitCount("CyberneticsSelf"), Is.EqualTo(1));
+                });
+            });
+    }
+
     private static void WithPatchedOwnerAndQueue(string methodName, Action action)
+    {
+        WithPatchedOwnerAndQueue([methodName], action);
+    }
+
+    private static void WithPatchedOwnerAndQueue(string[] methodNames, Action action)
     {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
         var harmony = new Harmony(harmonyId);
         try
         {
             PatchQueue(harmony);
-            harmony.Patch(
-                original: RequireOwnerMethod(methodName),
-                prefix: new HarmonyMethod(RequireMethod(typeof(FireSuppressionDischargeTranslationPatch), nameof(FireSuppressionDischargeTranslationPatch.Prefix))),
-                finalizer: new HarmonyMethod(RequireMethod(typeof(FireSuppressionDischargeTranslationPatch), nameof(FireSuppressionDischargeTranslationPatch.Finalizer), typeof(Exception))));
+            foreach (var methodName in methodNames)
+            {
+                harmony.Patch(
+                    original: RequireOwnerMethod(methodName),
+                    prefix: new HarmonyMethod(RequireMethod(typeof(FireSuppressionDischargeTranslationPatch), nameof(FireSuppressionDischargeTranslationPatch.Prefix))),
+                    finalizer: new HarmonyMethod(RequireMethod(typeof(FireSuppressionDischargeTranslationPatch), nameof(FireSuppressionDischargeTranslationPatch.Finalizer), typeof(Exception))));
+            }
 
             action();
         }
@@ -256,10 +307,13 @@ public sealed class FireSuppressionDischargeTranslationPatchTests
     {
         public string QueuedMessageToSend { get; set; } = string.Empty;
 
+        public Action? BeforeQueue { get; set; }
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         public bool CheckFireSuppression(DummyGameObject? obj)
         {
             _ = obj;
+            BeforeQueue?.Invoke();
             DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, null, Capitalize: false);
             return true;
         }
@@ -269,6 +323,7 @@ public sealed class FireSuppressionDischargeTranslationPatchTests
         {
             _ = timeTick;
             _ = amount;
+            BeforeQueue?.Invoke();
             DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, null, Capitalize: false);
         }
     }

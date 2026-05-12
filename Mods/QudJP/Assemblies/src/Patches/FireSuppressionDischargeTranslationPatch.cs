@@ -246,7 +246,22 @@ public static class FireSuppressionDischargeTranslationPatch
     private static string RestoreOwner(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
     {
         var owner = Restore(match, spans, groupName);
-        return owner.EndsWith("の", StringComparison.Ordinal) ? owner : owner + " ";
+        if (owner.EndsWith("の", StringComparison.Ordinal))
+        {
+            return owner;
+        }
+
+        if (owner.EndsWith("'s", StringComparison.Ordinal))
+        {
+            return owner.Substring(0, owner.Length - 2) + "の";
+        }
+
+        if (owner.EndsWith("s'", StringComparison.Ordinal))
+        {
+            return owner.Substring(0, owner.Length - 1) + "の";
+        }
+
+        return owner + "の";
     }
 
     private static string RestoreTarget(Match match, IReadOnlyList<ColorSpan> spans, string groupName)

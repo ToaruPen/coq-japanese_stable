@@ -496,6 +496,17 @@ public sealed class TargetMethodResolutionTests
             Is.EqualTo("XRL.World.Effects.Cripple|Apply|System.Boolean|XRL.World.GameObject"));
     }
 
+    [Test]
+    public void CudgelConkPopupTargetMethod_ResolvesExpectedFullSignature()
+    {
+        var targetMethod = InvokeTargetMethod(typeof(CudgelConkPopupTranslationPatch));
+
+        Assert.That(targetMethod, Is.Not.Null, "CudgelConkPopupTranslationPatch TargetMethod returned null.");
+        Assert.That(
+            FullMethodSignature(targetMethod!),
+            Is.EqualTo("XRL.World.Parts.Skill.Cudgel_Conk|PerformConk|System.Boolean"));
+    }
+
 #if HAS_GAME_DLL && HAS_TMP
     [Test]
     public void SelectableTextMenuItemPopupIdParentRouteContractsResolve()
@@ -1314,6 +1325,11 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Mutation.FlamingRay|Cast|System.Boolean|XRL.World.Parts.Mutation.FlamingRay|System.String",
         "XRL.World.Parts.Mutation.FreezeBreath|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.Mutation.FreezingRay|Cast|System.Boolean|XRL.World.Parts.Mutation.FreezingRay|System.String",
+    })]
+    [TestCase(typeof(GameSummaryTombstonePopupTranslationPatch), new[]
+    {
+        "Qud.UI.GameSummaryScreen|SaveTombstone|System.Void",
+        "XRL.UI.GameSummaryUI|Show|System.Void|System.Int32|System.String|System.String|System.String|System.String|System.Boolean",
     })]
     public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
     {

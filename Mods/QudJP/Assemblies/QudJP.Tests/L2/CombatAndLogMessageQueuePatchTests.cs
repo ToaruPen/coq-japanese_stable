@@ -2797,6 +2797,48 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertCombatSkillQueuedMessage(string.Empty, string.Empty);
     }
 
+    [Test]
+    public void CombatSkillMessages_RestoresOuterOwnerScopeAfterNestedScopeExit()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            CombatSkillMessageTranslationPatch.Prefix();
+            try
+            {
+                CombatSkillMessageTranslationPatch.Prefix();
+                CombatSkillMessageTranslationPatch.Finalizer(null);
+
+                DummyMessageQueue.AddPlayerMessage("You cleave through snapjaw's armor.", null, Capitalize: false);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("snapjaw's armorを切り裂いた。"));
+                    Assert.That(CombatSkillHitCount(), Is.EqualTo(1));
+                });
+            }
+            finally
+            {
+                CombatSkillMessageTranslationPatch.Finalizer(null);
+            }
+
+            DummyMessageQueue.AddPlayerMessage("You cleave through snapjaw's armor.", null, Capitalize: false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You cleave through snapjaw's armor."));
+                Assert.That(CombatSkillHitCount(), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     [TestCase(
         nameof(DummyLatchesOnTarget.HandleEvent),
         "Since {{R|the hook}} is still latched onto {{G|the snapjaw}}, releasing {{R|it}} leaves {{R|it}} in {{G|its possession}}!",
@@ -4136,6 +4178,20 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void SystemStaticQuake_TranslatesFixedQueuedMessages_WhenOwnerPatched(string source, string expected)
     {
         AssertSystemStaticQuakeQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void SystemStaticQuake_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertSystemStaticQuakeQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("The ground shakes violently!"),
+            "The ground shakes violently!");
+    }
+
+    [Test]
+    public void SystemStaticQuake_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertSystemStaticQuakeQueuedMessage(string.Empty, string.Empty);
     }
 
     [Test]
@@ -7755,6 +7811,13 @@ public sealed class CombatAndLogMessageQueuePatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    private static int CombatSkillHitCount()
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            "MessageQueue.AddPlayerMessage",
+            nameof(CombatSkillMessageTranslationPatch));
     }
 
     private static void AssertSimpleApplyFearQueuedMessage(string message, string expected)
