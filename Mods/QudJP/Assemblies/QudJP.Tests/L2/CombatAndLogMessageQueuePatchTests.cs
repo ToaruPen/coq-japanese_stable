@@ -5119,31 +5119,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("You are staggered by iron buckler's block!", "iron bucklerの防御でよろめいた！")]
     public void CombatGetDefenderHitDice_TranslatesInventoriedShapes_WithRepositoryPatterns(string source, string expected)
     {
-        UseRepositoryPatternDictionary();
-
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-        try
-        {
-            PatchQueue(harmony);
-            PatchOwner(
-                harmony,
-                RequireMethod(typeof(DummyCombatGetDefenderHitDiceTarget), nameof(DummyCombatGetDefenderHitDiceTarget.HandleEvent), typeof(DummyCombatGetDefenderHitDiceEvent)),
-                typeof(CombatTextSurfaceTranslationPatch));
-
-            var target = new DummyCombatGetDefenderHitDiceTarget
-            {
-                MessageToSend = source,
-            };
-
-            target.HandleEvent(new DummyCombatGetDefenderHitDiceEvent());
-
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        AssertCombatShieldQueuedMessageWithRepositoryPatterns(source, expected);
     }
 
     [Test]
@@ -5388,6 +5364,9 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [Test]
     public void CombatTextSurface_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
     {
+        AssertCombatShieldQueuedMessageWithRepositoryPatterns(
+            MessageFrameTranslator.MarkDirectTranslation("You block with iron buckler! (+2 AV)"),
+            "You block with iron buckler! (+2 AV)");
         AssertCombatMeleeAttackQueuedMessageWithRepositoryPatterns(
             MessageFrameTranslator.MarkDirectTranslation("You miss!"),
             "You miss!");
@@ -5436,8 +5415,39 @@ public sealed class CombatAndLogMessageQueuePatchTests
             shieldTarget.HandleEvent(new DummyCombatGetDefenderHitDiceEvent());
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(string.Empty));
 
+            DummyMessageQueue.Reset();
+
             meleeTarget.MeleeAttackWithWeaponInternal(new DummyGameObject(), new DummyGameObject(), new DummyGameObject(), new DummyCombatBodyPart());
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(string.Empty));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private void AssertCombatShieldQueuedMessageWithRepositoryPatterns(string source, string expected)
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyCombatGetDefenderHitDiceTarget), nameof(DummyCombatGetDefenderHitDiceTarget.HandleEvent), typeof(DummyCombatGetDefenderHitDiceEvent)),
+                typeof(CombatTextSurfaceTranslationPatch));
+
+            var target = new DummyCombatGetDefenderHitDiceTarget
+            {
+                MessageToSend = source,
+            };
+
+            target.HandleEvent(new DummyCombatGetDefenderHitDiceEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }
         finally
         {
