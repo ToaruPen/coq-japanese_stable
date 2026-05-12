@@ -60,6 +60,7 @@ internal static class MessageQueueSemanticPipeline
         EffectStaticMessageTranslationPatch.TryTranslateQueuedMessage,
         SystemStaticMessageTranslationPatch.TryTranslateQueuedMessage,
         CombatTextSurfaceTranslationPatch.TryTranslateQueuedMessage,
+        GritGateTerminalScreenMessageTranslationPatch.TryTranslateQueuedMessage,
         DoorAttemptOpenTranslationPatch.TryTranslateQueuedMessage,
         GameObjectDieTranslationPatch.TryTranslateQueuedMessage,
         GameObjectRegeneraTranslationPatch.TryTranslateQueuedMessage,
