@@ -141,6 +141,10 @@ internal static class ColorRouteCatalog
                 new(
                     1,
                     "OldSaveContinueMenu is the owner-specific route for MainMenu/SaveManagement continue-menu old-save popups; it runs only inside that owner scope."),
+            ["Mods/QudJP/Assemblies/src/Patches/OldSaveContinueMenuTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] =
+                new(
+                    1,
+                    "Old-save ContinueMenu owner scope runs before the generic Popup.Show fallback; this call only handles the fixed old-save popup template."),
             ["Mods/QudJP/Assemblies/src/Patches/PopupAskNumberTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] =
                 new(
                     1,
@@ -240,6 +244,7 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/MessageLogProducerTranslationHelpers.cs|MessagePatternTranslator.Translate("] = 4,
             ["Mods/QudJP/Assemblies/src/Patches/OptionsLocalizationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/OldSaveContinueMenuPopupTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] = 1,
+            ["Mods/QudJP/Assemblies/src/Patches/OldSaveContinueMenuTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/PopupAskNumberTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/PopupAskStringTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/PopupGetPopupOptionTranslationPatch.cs|PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute("] = 1,

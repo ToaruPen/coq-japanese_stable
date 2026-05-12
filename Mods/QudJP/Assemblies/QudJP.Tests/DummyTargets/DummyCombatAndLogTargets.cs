@@ -585,6 +585,28 @@ internal sealed class DummyKeybindsScreenConflictTarget
     }
 }
 
+internal sealed class DummyOldSaveContinueMenuTarget
+{
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public Task<object?> MainMenuContinueMenu()
+    {
+        return ShowOldSavePopup(nameof(MainMenuContinueMenu));
+    }
+
+    public Task<object?> SaveManagementContinueMenu()
+    {
+        return ShowOldSavePopup(nameof(SaveManagementContinueMenu));
+    }
+
+    private async Task<object?> ShowOldSavePopup(string route)
+    {
+        _ = route;
+        await DummyPopupShow.ShowAsync(PopupMessageToSend).ConfigureAwait(false);
+        return null;
+    }
+}
+
 internal sealed class DummyRealityStabilizedEventTarget
 {
     public string MessageToSend { get; set; } = string.Empty;
@@ -1210,6 +1232,11 @@ internal sealed class DummySimpleOwnerQueueTarget
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
     }
 
+    public void Quake()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
     public static string StaticMessageToSend { get; set; } = string.Empty;
 
     public static string? StaticColorToSend { get; set; }
@@ -1322,6 +1349,24 @@ internal sealed class DummyFungalSporeInfectionTarget
     public bool FireEvent(DummyGameEvent e)
     {
         _ = e;
+        return EmitQueuedMessage("fungal");
+    }
+
+    public bool PaxFireEvent(DummyGameEvent e)
+    {
+        _ = e;
+        return EmitQueuedMessage("pax");
+    }
+
+    public bool PuffFireEvent(DummyGameEvent e)
+    {
+        _ = e;
+        return EmitQueuedMessage("puff");
+    }
+
+    private bool EmitQueuedMessage(string producer)
+    {
+        _ = producer;
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
         return true;
     }

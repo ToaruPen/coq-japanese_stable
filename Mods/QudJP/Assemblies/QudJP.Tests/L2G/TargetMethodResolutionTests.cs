@@ -1069,6 +1069,8 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Effects.FungalSporeInfection|ApplyFungalInfection|System.Boolean|XRL.World.GameObject|System.String|XRL.World.Anatomy.BodyPart",
         "XRL.World.Effects.FungalSporeInfection|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.PaxInfection|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.PuffInfection|FireEvent|System.Boolean|XRL.World.Event",
     })]
     [TestCase(typeof(HealingTranslationPatch), new[]
     {
@@ -1135,6 +1137,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.CheckpointingSystem|CheckpointOn|System.Boolean",
         "XRL.HolyPlaceSystem|SetHolyZone|System.Void|XRL.World.Zone|XRL.World.Faction",
         "XRL.World.Parts.Mutation.HeightenedIntelligence|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.TrembleEarthquakes|Quake|System.Void",
     })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
