@@ -4941,6 +4941,52 @@ COVERED_OWNER_FAMILIES: Final = (
             ),
         ),
     ),
+    CoveredOwnerFamily(
+        family_id="XRL.UI/GritGateTerminalScreenMessage.cs::XRL.UI.GritGateTerminalScreenMessage.GritGateTerminalScreenMessage",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/GritGateTerminalScreenMessageTranslationPatch.cs",
+                (
+                    "TryTranslateQueuedMessage",
+                    "AlarmMessage",
+                    "XRL.UI.GritGateTerminalScreenMessage",
+                    "Activate",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("GritGateTerminalScreenMessageTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/ui-messagelog-world.ja.json",
+                (
+                    "Alarms blare across the enclave.",
+                    "XRL.UI.GritGateTerminalScreenMessage",
+                    "防衛線に警報が鳴り響いた。",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/GritGateTerminalScreenMessageTranslationPatchTests.cs",
+                (
+                    "Activate_TranslatesConstructorDelegateAlarmMessage_WhenOwnerPatched",
+                    "Activate_DoesNotTranslateAlarmMessage_WhenOwnerAbsent",
+                    "Activate_DoesNotRetranslateDirectMarkedAlarmMessage_WhenOwnerPatched",
+                    "Activate_LeavesEmptyMessageUnchanged_WhenOwnerPatched",
+                    "nameof(DummyGritGateTerminalScreenMessageTarget.Activate)",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "GritGateTerminalScreenMessageTargetMethod_ResolvesExpectedFullSignature",
+                    "XRL.UI.GritGateTerminalScreenMessage|Activate|System.Void",
+                    "XRL.UI.GritGateTerminalScreenMessage",
+                    "GritGateTerminalScreenMessage",
+                ),
+            ),
+        ),
+    ),
     *_examiner_result_popup_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
