@@ -143,6 +143,38 @@ def _sifrah_result_popup_families(spec: SifrahResultPopupFamilySpec) -> tuple[Co
     )
 
 
+def _examiner_result_popup_families() -> tuple[CoveredOwnerFamily, ...]:
+    evidence = OwnerPopupRouteEvidenceSpec(
+        patch_file="Mods/QudJP/Assemblies/src/Patches/ExaminerTranslationPatch.cs",
+        patch_type="ExaminerTranslationPatch",
+        test_file="Mods/QudJP/Assemblies/QudJP.Tests/L2/ExaminerTranslationPatchTests.cs",
+        positive_test="Patch_TranslatesExaminerResultPopups_WhenOwnerPatched",
+        negative_test="Patch_DoesNotTranslateExaminerPopup_WhenOwnerAbsent",
+        direct_marker_test="Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+        empty_test="Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+    )
+    method_details = (
+        ("ResultSuccess", "Understand"),
+        ("ResultExceptionalSuccess", "DiscoverHidden"),
+        ("ResultFailure", "Puzzled"),
+        ("ResultFakeConfusionFailure", "Broke"),
+    )
+
+    return tuple(
+        CoveredOwnerFamily(
+            family_id=f"XRL.World.Parts/Examiner.cs::XRL.World.Parts.Examiner.{method_name}",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=_owner_popup_route_evidence(
+                spec=evidence,
+                target_method_token=f"nameof(DummyExaminerProducerTarget.{method_name})",
+                full_signature=f"XRL.World.Parts.Examiner|{method_name}|System.Void|XRL.World.GameObject",
+                patch_required_substrings=(method_name, detail),
+            ),
+        )
+        for method_name, detail in method_details
+    )
+
+
 def _hacking_sifrah_result_families() -> tuple[CoveredOwnerFamily, ...]:
     target_sets = (
         (
@@ -4287,6 +4319,7 @@ COVERED_OWNER_FAMILIES: Final = (
             ),
         ),
     ),
+    *_examiner_result_popup_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 

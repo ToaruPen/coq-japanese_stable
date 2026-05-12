@@ -432,6 +432,42 @@ internal sealed class DummyRebukingSifrahProducerTarget
     }
 }
 
+internal sealed class DummyExaminerProducerTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ResultSuccess(DummyGameObject actor)
+    {
+        ShowResultPopup(nameof(ResultSuccess), actor);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ResultExceptionalSuccess(DummyGameObject actor)
+    {
+        ShowResultPopup(nameof(ResultExceptionalSuccess), actor);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ResultFailure(DummyGameObject actor)
+    {
+        ShowResultPopup(nameof(ResultFailure), actor);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ResultFakeConfusionFailure(DummyGameObject actor)
+    {
+        ShowResultPopup(nameof(ResultFakeConfusionFailure), actor);
+    }
+
+    private void ShowResultPopup(string methodName, DummyGameObject actor)
+    {
+        _ = methodName;
+        _ = actor;
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+}
+
 internal sealed class DummyItemNamingProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
