@@ -91,6 +91,18 @@ L2G で upstream の実メンバー契約や実プロパティ経路そのもの
 - 色コード保持
 - 引数 rewrite / `__result` rewrite の挙動
 
+**スケーラビリティ制約**:
+- 既存の owner route や message-family mechanism に文字列例を追加するだけなら、
+  L2 で文字列ごとに Harmony patch/unpatch を増やさない。route boundary は
+  代表的な smoke case で固定し、網羅性は静的 inventory や data-contract coverage に寄せる。
+- 同じ owner patch、同じ queue/popup sink、同じ辞書 fixture を共有できる
+  repository-family regression は、1 回の Harmony patch setup にまとめて batch 実行する。
+  すべての source/expected pair は残し、失敗時に該当 case が分かる assertion
+  message を付ける。
+- 新規 L2 が必要な場合は、未知入力、空入力、markup、direct marker、
+  owner-absent など route contract の境界を少数の focused case で証明する。
+  既に別層で証明済みの pattern inventory を L2 に複製しない。
+
 **DummyTarget パターン**:
 
 ```csharp

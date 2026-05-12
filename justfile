@@ -68,6 +68,20 @@ test-l2g:
   test_dll="$artifacts_root/bin/QudJP.Tests/release/QudJP.Tests.dll"
   dotnet test "$test_dll" --filter "TestCategory=L2G"
 
+# Run all local C# test categories from one built test artifact.
+test-csharp:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  mkdir -p "{{dotnet_artifacts_root}}/test-csharp"
+  run_root="$(mktemp -d "{{dotnet_artifacts_root}}/test-csharp/run.XXXXXX")"
+  trap 'rm -rf "$run_root"' EXIT
+  mkdir -p "$run_root/a/b"
+  cp -R Mods/QudJP/Localization "$run_root/Localization"
+  artifacts_root="$run_root/a/b"
+  dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-dependencies --artifacts-path "$artifacts_root"
+  test_dll="$artifacts_root/bin/QudJP.Tests/release/QudJP.Tests.dll"
+  dotnet test "$test_dll"
+
 # Run Python static checks.
 python-check:
   ruff check scripts/
@@ -328,7 +342,7 @@ runtime-evidence-check: test-l1
   uv run pytest scripts/tests/test_triage_integration.py -q -k sample_log_smoke
 
 # Run the broad local verification gate.
-check: build test-l1 test-l2 test-l2g python-check python-test localization-check translation-token-check changelog-link-check markdown-report-check localization-coverage-map-check
+check: build test-csharp python-check python-test localization-check translation-token-check changelog-link-check markdown-report-check localization-coverage-map-check
 
 # Run the CI-like PR gate before pushing broad C#, script, or localization changes.
 pr-check base_ref="origin/main" head_ref="HEAD": ci-dotnet roslyn-build python-check python-test localization-check translation-token-check changelog-link-check localization-coverage-map-check
