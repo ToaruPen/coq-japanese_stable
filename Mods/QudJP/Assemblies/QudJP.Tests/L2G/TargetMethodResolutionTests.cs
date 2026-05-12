@@ -728,6 +728,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.InventoryActionEvent",
     })]
+    [TestCase(typeof(PoweredFloatingTranslationPatch), new[]
+    {
+        "XRL.World.Parts.PoweredFloating|CheckFloating|System.Void",
+    })]
     [TestCase(typeof(EnclosingTranslationPatch), new[]
     {
         "XRL.World.GameObject|XRL.World.IEvent",

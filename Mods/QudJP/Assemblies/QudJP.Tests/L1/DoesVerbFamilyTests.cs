@@ -508,6 +508,7 @@ public sealed class DoesVerbFamilyTests
     [TestCase("The 宝石 stops gleaming.", "宝石の輝きが消えた")]
     [TestCase("The 熊 shies away from you.", "熊はあなたから怯えて離れた")]
     [TestCase("The 装置 ceases floating near you.", "装置はあなたの近くで浮遊するのをやめた")]
+    [TestCase("The 装置 falls to the ground; you scoop it up.", "装置は地面に落ちた。あなたはそれをすくい上げた。")]
     [TestCase("The 装置 collapses under the pressure of normality and implodes.", "装置は正常性の圧力に耐えきれず崩壊し、内破した")]
     [TestCase("The 金属片 becomes magnetized!", "金属片は磁化された！")]
     [TestCase("The 熊 vomits everywhere!", "熊はあたりに嘔吐した！")]
