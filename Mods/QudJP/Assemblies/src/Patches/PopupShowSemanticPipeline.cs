@@ -18,6 +18,7 @@ internal static class PopupShowSemanticPipeline
         RealityStabilizedInterdictTranslationPatch.TryTranslatePopupMessage,
         HackingSifrahResultTranslationPatch.TryTranslatePopupMessage,
         QuestLifecyclePopupTranslationPatch.TryTranslatePopupMessage,
+        ConversationTakeItemPopupTranslationPatch.TryTranslatePopupMessage,
         BodyTranslationPatch.TryTranslatePopupMessage,
         SifrahTokenItemPopupTranslationPatch.TryTranslatePopupMessage,
         SifrahPureOwnerPopupTranslationPatch.TryTranslatePopupMessage,

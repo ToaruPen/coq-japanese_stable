@@ -321,6 +321,50 @@ def _quest_lifecycle_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _conversation_take_item_popup_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Conversations.Parts/TakeItem.cs::XRL.World.Conversations.Parts.TakeItem.Execute",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/ConversationTakeItemPopupTranslationPatch.cs",
+                    (
+                        "ConversationTakeItemPopupTranslationPatch",
+                        "TryTranslatePopupMessage",
+                        "You cannot give",
+                        " takes ",
+                        "Execute",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("ConversationTakeItemPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationTakeItemPopupTranslationPatchTests.cs",
+                    (
+                        "Execute_TranslatesCannotGivePopup_WhenOwnerPatched",
+                        "Execute_TranslatesTakeSuccessPopup_WhenOwnerPatched",
+                        "Execute_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Execute_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Execute_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "nameof(DummyConversationTakeItemTarget.Execute)",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(ConversationTakeItemPopupTranslationPatch)",
+                        '"XRL.World.Conversations.Parts.TakeItem"',
+                        '"Execute"',
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _flight_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         (
@@ -3945,6 +3989,7 @@ COVERED_OWNER_FAMILIES: Final = (
     ),
     *_hacking_sifrah_result_families(),
     *_quest_lifecycle_popup_families(),
+    *_conversation_take_item_popup_family(),
     *_flight_families(),
     *_body_families(),
     *_item_modding_sifrah_result_families(),

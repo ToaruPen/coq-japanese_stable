@@ -452,6 +452,7 @@ public sealed class TargetMethodResolutionTests
         "System.Boolean",
         "System.Boolean",
     })]
+    [TestCase(typeof(ConversationTakeItemPopupTranslationPatch), "Execute", "XRL.World.Conversations.Parts.TakeItem", "System.Boolean", new string[0])]
 #endif
 #if HAS_TMP
     [TestCase(typeof(TextMeshProUguiFontPatch), "OnEnable", "TMPro.TextMeshProUGUI", "System.Void", new string[0])]
