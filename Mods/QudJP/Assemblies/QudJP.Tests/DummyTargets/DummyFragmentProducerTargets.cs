@@ -419,6 +419,10 @@ internal sealed class DummySifrahPureOwnerPopupProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
 
+    public bool InvokeMakeMoveBeforeHagglingPopup { get; set; }
+
+    public string NestedPopupMessageToShow { get; set; } = string.Empty;
+
     [MethodImpl(MethodImplOptions.NoInlining)]
     public void BaetylOfferingSifrah(DummyGameObject contextObject)
     {
@@ -434,6 +438,14 @@ internal sealed class DummySifrahPureOwnerPopupProducerTarget
     [MethodImpl(MethodImplOptions.NoInlining)]
     public void HagglingSifrah(DummyGameObject contextObject)
     {
+        if (InvokeMakeMoveBeforeHagglingPopup)
+        {
+            var outerMessage = PopupMessageToShow;
+            PopupMessageToShow = NestedPopupMessageToShow;
+            SifrahGameMakeMoveForSlot(contextObject);
+            PopupMessageToShow = outerMessage;
+        }
+
         ShowPopup(nameof(HagglingSifrah), contextObject);
     }
 

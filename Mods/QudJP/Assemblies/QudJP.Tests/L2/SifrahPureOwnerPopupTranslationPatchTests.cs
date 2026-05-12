@@ -203,6 +203,35 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_RestoresOuterOwnerContext_AfterNestedOwnerPopup()
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwners(
+            typeof(SifrahPureOwnerPopupTranslationPatch),
+            [
+                RequireOwnerMethod(nameof(DummySifrahPureOwnerPopupProducerTarget.HagglingSifrah)),
+                RequireOwnerMethod(nameof(DummySifrahPureOwnerPopupProducerTarget.SifrahGameMakeMoveForSlot)),
+            ],
+            () =>
+            {
+                var target = new DummySifrahPureOwnerPopupProducerTarget
+                {
+                    InvokeMakeMoveBeforeHagglingPopup = true,
+                    NestedPopupMessageToShow = "You have already chosen the correct option for {{C|glyph sequence}}.",
+                    PopupMessageToShow = "You have no usable options to employ for haggling with {{G|商人}}, giving you no chance of success. You can remedy this situation by improving your Ego and social skills, or by obtaining items useful in social situations.",
+                };
+
+                target.HagglingSifrah(new DummyGameObject());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{G|商人}}と値段交渉するために使用できる選択肢がなく、成功する見込みがない。エゴや社交スキルを高めるか、社交的な状況に役立つアイテムを入手すれば、この状況を改善できる。"));
+                    Assert.That(HitCount("MakeMoveForSlotChosenCorrect"), Is.EqualTo(1));
+                    Assert.That(HitCount("Haggling"), Is.EqualTo(1));
+                });
+            });
+    }
+
+    [Test]
     public void Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
         OwnerPopupRouteTestHarness.WithPatchedPopupOwner(

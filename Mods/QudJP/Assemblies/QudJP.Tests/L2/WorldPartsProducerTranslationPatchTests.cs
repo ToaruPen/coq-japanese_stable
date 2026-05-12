@@ -369,7 +369,12 @@ public sealed class WorldPartsProducerTranslationPatchTests
         {
             PatchPopupShow(harmony);
 
-            DummyPopupShow.Show("You fail to get yourself into stasis pod.");
+            var target = new DummyEnclosingProducerTarget
+            {
+                PopupMessageToShow = "You fail to get yourself into stasis pod.",
+            };
+
+            _ = target.EnterEnclosure(new DummyGameObject(), new DummyGameEvent());
 
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You fail to get yourself into stasis pod."));
         }
@@ -390,7 +395,12 @@ public sealed class WorldPartsProducerTranslationPatchTests
             PatchQueue(harmony);
 
             const string source = "snapjaw tries to get itself into the stasis pod, but fails.";
-            DummyMessageQueue.AddPlayerMessage(source, null, Capitalize: false);
+            var target = new DummyEnclosingProducerTarget
+            {
+                QueuedMessageToSend = source,
+            };
+
+            _ = target.EnterEnclosure(new DummyGameObject(), new DummyGameEvent());
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
         }

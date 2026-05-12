@@ -231,27 +231,35 @@ public static class SifrahPureOwnerPopupTranslationPatch
         }
     }
 
-    public static void Prefix(MethodBase __originalMethod)
+    internal static void Prefix(MethodBase __originalMethod, out OwnerContextState? __state)
     {
         try
         {
+            __state = new OwnerContextState(activeDeclaringType, activeMemberName);
             activeDepth++;
             activeDeclaringType = __originalMethod.DeclaringType?.FullName;
             activeMemberName = __originalMethod.Name;
         }
         catch (Exception ex)
         {
+            __state = null;
             Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
         }
     }
 
-    public static Exception? Finalizer(Exception? __exception)
+    internal static Exception? Finalizer(Exception? __exception, OwnerContextState? __state)
     {
         try
         {
             if (activeDepth > 0)
             {
                 activeDepth--;
+            }
+
+            if (__state is not null)
+            {
+                activeDeclaringType = __state.PreviousDeclaringType;
+                activeMemberName = __state.PreviousMemberName;
             }
 
             if (activeDepth == 0)
@@ -525,9 +533,14 @@ public static class SifrahPureOwnerPopupTranslationPatch
         {
             group = match.Groups["value"];
         }
-        else
+        else if (match.Groups["amount"].Success)
         {
             group = match.Groups["amount"];
+        }
+        else
+        {
+            translated = source;
+            return false;
         }
 
         var target = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, spans, group).Trim();
@@ -538,6 +551,19 @@ public static class SifrahPureOwnerPopupTranslationPatch
             source);
         DynamicTextObservability.RecordTransform(route, "Popup.ProducerText." + Context + "." + detail, source, translated);
         return true;
+    }
+
+    internal sealed class OwnerContextState
+    {
+        internal OwnerContextState(string? previousDeclaringType, string? previousMemberName)
+        {
+            PreviousDeclaringType = previousDeclaringType;
+            PreviousMemberName = previousMemberName;
+        }
+
+        internal string? PreviousDeclaringType { get; }
+
+        internal string? PreviousMemberName { get; }
     }
 
     private sealed class TargetConstructor
