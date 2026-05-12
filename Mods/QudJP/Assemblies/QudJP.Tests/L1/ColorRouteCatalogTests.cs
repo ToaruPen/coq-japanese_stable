@@ -210,6 +210,7 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/AbilityBarButtonTextTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/GameObjectMoveTranslationPatch.cs|MessagePatternTranslator.Translate("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/GameObjectPerformThrowTranslationPatch.cs|MessagePatternTranslator.Translate("] = 1,
+            ["Mods/QudJP/Assemblies/src/Patches/MutationSelfTargetPopupTranslationPatch.cs|MessagePatternTranslator.Translate("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/GameSummaryTextTranslator.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 2,
             ["Mods/QudJP/Assemblies/src/Patches/GameSummaryTextTranslator.cs|JournalPatternTranslator.Translate("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/GameManagerUpdateSelectedAbilityPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,

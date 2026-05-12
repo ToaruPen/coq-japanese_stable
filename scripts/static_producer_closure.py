@@ -3052,6 +3052,115 @@ def _effect_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _mutation_self_target_popup_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MutationSelfTargetPopupTranslationPatch.cs",
+        (
+            "MutationSelfTargetPopupTranslationPatch",
+            "TryTranslatePopupMessage",
+            "SelfTargetConfirmation",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("MutationSelfTargetPopupTranslationPatch.TryTranslatePopupMessage",),
+    )
+    dictionary = EvidenceFile(
+        "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+        (
+            "^Are you sure you want to target (.+?)\\\\?$",
+            "{0}を標的にしてもよいか？",  # noqa: RUF001
+        ),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/MutationSelfTargetPopupTranslationPatchTests.cs",
+        (
+            "Patch_TranslatesSelfTargetPopup_WhenOwnerPatched",
+            "Patch_DoesNotClaimSelfTargetPopup_WhenOwnerAbsent",
+            "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+            "nameof(DummyMutationSelfTargetProducer.BreatherBaseCast)",
+            "nameof(DummyMutationSelfTargetProducer.FlamingRayCast)",
+            "nameof(DummyMutationSelfTargetProducer.FreezeBreathFireEvent)",
+            "nameof(DummyMutationSelfTargetProducer.FreezingRayCast)",
+        ),
+    )
+
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts.Mutation/BreatherBase.cs::XRL.World.Parts.Mutation.BreatherBase.Cast",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(patch.path, (*patch.required_substrings, "XRL.World.Parts.Mutation.BreatherBase", "Cast")),
+                pipeline,
+                dictionary,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(MutationSelfTargetPopupTranslationPatch)",
+                        "XRL.World.Parts.Mutation.BreatherBase|Cast|System.Boolean|XRL.World.Parts.Mutation.BreatherBase",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts.Mutation/FlamingRay.cs::XRL.World.Parts.Mutation.FlamingRay.Cast",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(patch.path, (*patch.required_substrings, "XRL.World.Parts.Mutation.FlamingRay", "Cast")),
+                pipeline,
+                dictionary,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(MutationSelfTargetPopupTranslationPatch)",
+                        "XRL.World.Parts.Mutation.FlamingRay|Cast|System.Boolean|XRL.World.Parts.Mutation.FlamingRay|System.String",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts.Mutation/FreezeBreath.cs::XRL.World.Parts.Mutation.FreezeBreath.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (*patch.required_substrings, "XRL.World.Parts.Mutation.FreezeBreath", "FireEvent"),
+                ),
+                pipeline,
+                dictionary,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(MutationSelfTargetPopupTranslationPatch)",
+                        "XRL.World.Parts.Mutation.FreezeBreath|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts.Mutation/FreezingRay.cs::XRL.World.Parts.Mutation.FreezingRay.Cast",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(patch.path, (*patch.required_substrings, "XRL.World.Parts.Mutation.FreezingRay", "Cast")),
+                pipeline,
+                dictionary,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(MutationSelfTargetPopupTranslationPatch)",
+                        "XRL.World.Parts.Mutation.FreezingRay|Cast|System.Boolean|XRL.World.Parts.Mutation.FreezingRay|System.String",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
     tests = EvidenceFile(
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
@@ -3991,6 +4100,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_amnesia_families(),
     *_fixed_owner_queue_families(),
     *_effect_static_message_families(),
+    *_mutation_self_target_popup_families(),
     *_system_static_message_families(),
     CoveredOwnerFamily(
         family_id="XRL.UI/TradeUI.cs::XRL.UI.TradeUI.PerformOffer",

@@ -1278,6 +1278,13 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.LiquidVolume|Pour|System.Boolean|System.Boolean&|XRL.World.GameObject|XRL.World.Cell|System.Boolean|System.Boolean|System.Int32|System.Boolean",
         "XRL.World.Parts.LiquidVolume|PerformFill|System.Boolean|XRL.World.GameObject|System.Boolean&|System.Boolean",
     })]
+    [TestCase(typeof(MutationSelfTargetPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.BreatherBase|Cast|System.Boolean|XRL.World.Parts.Mutation.BreatherBase",
+        "XRL.World.Parts.Mutation.FlamingRay|Cast|System.Boolean|XRL.World.Parts.Mutation.FlamingRay|System.String",
+        "XRL.World.Parts.Mutation.FreezeBreath|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Mutation.FreezingRay|Cast|System.Boolean|XRL.World.Parts.Mutation.FreezingRay|System.String",
+    })]
     public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
     {
         var targetMethodsMethod = patchType.GetMethod("TargetMethods", BindingFlags.NonPublic | BindingFlags.Static);
