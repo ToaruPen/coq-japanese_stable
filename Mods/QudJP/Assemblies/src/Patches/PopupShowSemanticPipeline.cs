@@ -33,6 +33,7 @@ internal static class PopupShowSemanticPipeline
         StatusScreenPopupTranslationPatch.TryTranslatePopupMessage,
         TeleprojectorTranslationPatch.TryTranslatePopupMessage,
         CyberneticsMedassistModuleTranslationPatch.TryTranslatePopupMessage,
+        DeployableInfrastructureTranslationPatch.TryTranslatePopupMessage,
         LiquidLoaderTranslationPatch.TryTranslatePopupMessage,
         LiquidVolumeTranslationPatch.TryTranslatePopupMessage,
         MutatingTranslationPatch.TryTranslatePopupMessage,

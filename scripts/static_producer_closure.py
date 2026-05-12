@@ -2261,6 +2261,49 @@ def _integrated_weapon_hosts_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _deployable_infrastructure_families() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/DeployableInfrastructure.cs::XRL.World.Parts.DeployableInfrastructure.AttemptDeploy",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/DeployableInfrastructureTranslationPatch.cs",
+                    (
+                        "AttemptDeploy",
+                        "TryTranslatePopupMessage",
+                        "TryTranslateNoUsefulWayPopup",
+                        "DoesVerbRouteTranslator.TryTranslatePlainSentence",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("DeployableInfrastructureTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/DeployableInfrastructurePopupTranslationPatchTests.cs",
+                    (
+                        "AttemptDeploy_TranslatesDeploySuccessPopup_WhenOwnerPatched",
+                        "AttemptDeploy_TranslatesNoUsefulWayPopup_WhenOwnerPatched",
+                        "AttemptDeploy_LeavesPopupUnchanged_WhenOwnerAbsent",
+                        "AttemptDeploy_StripsDirectMarkerWithoutRecordingTransform_WhenOwnerPatched",
+                        "AttemptDeploy_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "nameof(DummyDeployableInfrastructureTarget.AttemptDeploy)",
+                        "UseRepositoryVerbDictionary",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(DeployableInfrastructureTranslationPatch)",
+                        "XRL.World.Parts.DeployableInfrastructure|AttemptDeploy|System.Boolean|XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _boost_statistic_families() -> tuple[CoveredOwnerFamily, ...]:
     common_evidence = (
         EvidenceFile(
@@ -3980,6 +4023,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_tonic_families(),
     *_xrl_game_families(),
     *_integrated_weapon_hosts_families(),
+    *_deployable_infrastructure_families(),
     *_boost_statistic_families(),
     *_emboldened_families(),
     *_fungal_spore_infection_families(),
