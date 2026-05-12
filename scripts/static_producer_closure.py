@@ -3138,7 +3138,100 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _fire_suppression_discharge_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/FireSuppressionDischargeTranslationPatch.cs",
+        (
+            "FireSuppressionDischargeTranslationPatch",
+            "TryTranslateQueuedMessage",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("FireSuppressionDischargeTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/FireSuppressionDischargeTranslationPatchTests.cs",
+        (
+            "Patch_TranslatesFireSuppressionDischargeMessages_WhenOwnerPatched",
+            "Patch_DoesNotTranslateFireSuppressionDischargeMessage_WhenOwnerAbsent",
+            "Patch_DoesNotRetranslateDirectMarkedMessage_WhenOwnerPatched",
+            "Patch_LeavesEmptyMessageUnchanged_WhenOwnerPatched",
+        ),
+    )
+
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/FireSuppressionSystem.cs::XRL.World.Parts.FireSuppressionSystem.CheckFireSuppression",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "XRL.World.Parts.FireSuppressionSystem",
+                        "CheckFireSuppression",
+                        "FireSuppressionSelfPattern",
+                        "FireSuppressionTargetPattern",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    tests.path,
+                    (
+                        *tests.required_substrings,
+                        "nameof(DummyFireSuppressionDischargeProducer.CheckFireSuppression)",
+                        "2 drams of {{C|gel}} discharges all over you.",
+                        "1 dram of {{C|gel}} discharges all over the snapjaw.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(FireSuppressionDischargeTranslationPatch)",
+                        "XRL.World.Parts.FireSuppressionSystem|CheckFireSuppression|System.Boolean|XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/CyberneticsFireSuppressionSystem.cs::XRL.World.Parts.CyberneticsFireSuppressionSystem.TurnTick",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "XRL.World.Parts.CyberneticsFireSuppressionSystem",
+                        "TurnTick",
+                        "CyberneticsSelfPattern",
+                        "CyberneticsTargetPattern",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    tests.path,
+                    (
+                        *tests.required_substrings,
+                        "nameof(DummyFireSuppressionDischargeProducer.TurnTick)",
+                        "Your {{Y|fire suppression system}} discharges 2 drams of {{C|gel}} all over you.",
+                        "{{G|snapjaw}}の {{Y|fire suppression system}} discharges 1 dram of {{C|gel}} all over it.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(FireSuppressionDischargeTranslationPatch)",
+                        "XRL.World.Parts.CyberneticsFireSuppressionSystem|TurnTick|System.Void|System.Int64|System.Int32",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
+    *_fire_suppression_discharge_families(),
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
         inventory_statuses=("owner_patch_required",),
