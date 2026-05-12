@@ -68,6 +68,16 @@
       "key": "This game was played in {0} mode.",
       "context": "XRL.Core.XRLCore.GameSummary",
       "text": "このゲームは{0}モードでプレイされた。"
+    },
+    {
+      "key": "Your tombstone file was saved:\n\n{0}",
+      "context": "QudJP.GameSummary.TombstonePopup",
+      "text": "墓碑ファイルを保存しました:\n\n{0}"
+    },
+    {
+      "key": "There was an error saving: {0}",
+      "context": "QudJP.GameSummary.TombstonePopup",
+      "text": "保存中にエラーが発生しました: {0}"
     }
   ]
 }
