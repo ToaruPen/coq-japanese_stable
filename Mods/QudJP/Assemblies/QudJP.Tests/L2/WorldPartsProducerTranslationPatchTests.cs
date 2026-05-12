@@ -83,6 +83,42 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [Test]
+    public void LiquidVolumePatch_TranslatesPopupYesNoCancelMessage_WhenPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(
+                harmony,
+                nameof(DummyPopupShow.ShowYesNoCancel),
+                typeof(string),
+                typeof(string),
+                typeof(bool),
+                typeof(int));
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyLiquidVolumeProducerTarget), nameof(DummyLiquidVolumeProducerTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(LiquidVolumeTranslationPatch));
+
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                PopupMethod = nameof(DummyPopupShow.ShowYesNoCancel),
+                PopupMessageToShow = "The {{Y|canteen}} is not owned by you. Are you sure you want to pour from {{Y|it}}?",
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo("{{Y|canteen}}はあなたの所有物ではない。本当にそこから注ぎますか？"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void LiquidVolumePatch_TranslatesPopupBlockMessage_WhenPatched()
     {
         var harmonyId = CreateHarmonyId();
@@ -100,12 +136,208 @@ public sealed class WorldPartsProducerTranslationPatchTests
 
             var target = new DummyLiquidVolumeProducerTarget
             {
+                PopupMethod = nameof(DummyPopupTarget.ShowBlock),
                 PopupMessageToShow = "You are now {{B|hydrated}}.",
             };
 
             target.HandleEvent(new DummyInventoryActionEvent());
 
             Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("あなたは今、{{B|hydrated}}。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LiquidVolumePatch_TranslatesQueuedMessages_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyLiquidVolumeProducerTarget),
+                    nameof(DummyLiquidVolumeProducerTarget.Pour),
+                    typeof(bool).MakeByRefType(),
+                    typeof(DummyGameObject),
+                    typeof(DummyCell),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(int),
+                    typeof(bool)),
+                typeof(LiquidVolumeTranslationPatch));
+
+            var requestExit = false;
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                QueuedMessageToSend = "2 drams of {{C|water}} pours out all over snapjaw!",
+            };
+
+            target.Pour(ref requestExit, new DummyGameObject());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("{{C|water}} 2ドラムがsnapjawの全身にかかった！"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LiquidVolumePatch_DoesNotTranslatePopup_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(
+                harmony,
+                nameof(DummyPopupShow.ShowYesNoCancel),
+                typeof(string),
+                typeof(string),
+                typeof(bool),
+                typeof(int));
+
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                PopupMethod = nameof(DummyPopupShow.ShowYesNoCancel),
+                PopupMessageToShow = "The canteen is not owned by you. Are you sure you want to pour from it?",
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo(target.PopupMessageToShow));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LiquidVolumePatch_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                QueuedMessageToSend = "It's fizzy.",
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("It's fizzy."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LiquidVolumePatch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyLiquidVolumeProducerTarget),
+                    nameof(DummyLiquidVolumeProducerTarget.PerformFill),
+                    typeof(DummyGameObject),
+                    typeof(bool).MakeByRefType(),
+                    typeof(bool)),
+                typeof(LiquidVolumeTranslationPatch));
+
+            var requestExit = false;
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation("翻訳済みの液体メッセージ"),
+            };
+
+            target.PerformFill(new DummyGameObject(), ref requestExit);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("翻訳済みの液体メッセージ"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LiquidVolumePatch_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyLiquidVolumeProducerTarget), nameof(DummyLiquidVolumeProducerTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(LiquidVolumeTranslationPatch));
+
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                QueuedMessageToSend = MessageFrameTranslator.MarkDirectTranslation("翻訳済みの液体キューメッセージ"),
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("翻訳済みの液体キューメッセージ"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LiquidVolumePatch_LeavesEmptyMessagesUnchanged_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyLiquidVolumeProducerTarget), nameof(DummyLiquidVolumeProducerTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(LiquidVolumeTranslationPatch));
+
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                PopupMessageToShow = string.Empty,
+                QueuedMessageToSend = string.Empty,
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.Null);
+                Assert.That(DummyMessageQueue.LastMessage, Is.Empty);
+            });
         }
         finally
         {
@@ -259,6 +491,14 @@ public sealed class WorldPartsProducerTranslationPatchTests
         "You extricate yourself from stasis pod.",
         "stasis podから抜け出した。")]
     [TestCase(
+        nameof(DummyEnclosingProducerTarget.ExitEnclosure),
+        "It is not stasis pod that you are enclosed by.",
+        "閉じ込めているのはstasis podではない。")]
+    [TestCase(
+        nameof(DummyEnclosingProducerTarget.ExitEnclosure),
+        "You fail to extricate yourself from stasis pod!",
+        "stasis podから抜け出せなかった！")]
+    [TestCase(
         nameof(DummyEnclosingProducerTarget.EnclosureExitImpeded),
         "You cannot do that while enclosed by stasis pod.",
         "stasis podに閉じ込められている間はそれをできない。")]
@@ -331,7 +571,19 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [Test]
-    public void EnclosingPatch_TranslatesQueuedMessage_WhenPatched()
+    [TestCase(
+        nameof(DummyEnclosingProducerTarget.EnterEnclosure),
+        "snapjaw tries to get itself into the stasis pod, but fails.",
+        "snapjawはそれ自身をthe stasis podの中に入れようとしたが、失敗した。")]
+    [TestCase(
+        nameof(DummyEnclosingProducerTarget.ExitEnclosure),
+        "snapjaw tries to extricate itself from stasis pod, but fails!",
+        "snapjawはそれ自身をstasis podから引き出そうとしたが、失敗した！")]
+    [TestCase(
+        nameof(DummyEnclosingProducerTarget.ExitEnclosure),
+        "snapjaw extricates itself from stasis pod.",
+        "snapjawはそれ自身をstasis podから引き出した。")]
+    public void EnclosingPatch_TranslatesQueuedMessage_WhenPatched(string methodName, string source, string expected)
     {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -341,17 +593,17 @@ public sealed class WorldPartsProducerTranslationPatchTests
             PatchQueue(harmony);
             PatchOwner(
                 harmony,
-                EnclosingMethod(nameof(DummyEnclosingProducerTarget.EnterEnclosure)),
+                EnclosingMethod(methodName),
                 typeof(EnclosingTranslationPatch));
 
             var target = new DummyEnclosingProducerTarget
             {
-                QueuedMessageToSend = "snapjaw tries to get itself into the stasis pod, but fails.",
+                QueuedMessageToSend = source,
             };
 
-            _ = target.EnterEnclosure(new DummyGameObject(), new DummyGameEvent());
+            InvokeEnclosingMethod(target, methodName);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("snapjawはそれ自身をthe stasis podの中に入れようとしたが、失敗した。"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }
         finally
         {
@@ -411,7 +663,16 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [Test]
-    public void EnclosingPatch_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    [TestCase(
+        nameof(DummyEnclosingProducerTarget.EnterEnclosure),
+        "snapjaw tries to get itself into the stasis pod, but fails.")]
+    [TestCase(
+        nameof(DummyEnclosingProducerTarget.ExitEnclosure),
+        "snapjaw tries to extricate itself from stasis pod, but fails!")]
+    [TestCase(
+        nameof(DummyEnclosingProducerTarget.ExitEnclosure),
+        "snapjaw extricates itself from stasis pod.")]
+    public void EnclosingPatch_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched(string methodName, string source)
     {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -421,18 +682,18 @@ public sealed class WorldPartsProducerTranslationPatchTests
             PatchQueue(harmony);
             PatchOwner(
                 harmony,
-                EnclosingMethod(nameof(DummyEnclosingProducerTarget.EnterEnclosure)),
+                EnclosingMethod(methodName),
                 typeof(EnclosingTranslationPatch));
 
-            var source = MessageFrameTranslator.MarkDirectTranslation("snapjaw tries to get itself into the stasis pod, but fails.");
+            var markedSource = MessageFrameTranslator.MarkDirectTranslation(source);
             var target = new DummyEnclosingProducerTarget
             {
-                QueuedMessageToSend = source,
+                QueuedMessageToSend = markedSource,
             };
 
-            _ = target.EnterEnclosure(new DummyGameObject(), new DummyGameEvent());
+            InvokeEnclosingMethod(target, methodName);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(markedSource));
         }
         finally
         {
@@ -441,7 +702,9 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [Test]
-    public void EnclosingPatch_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    [TestCase(nameof(DummyEnclosingProducerTarget.EnterEnclosure))]
+    [TestCase(nameof(DummyEnclosingProducerTarget.ExitEnclosure))]
+    public void EnclosingPatch_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched(string methodName)
     {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -451,7 +714,7 @@ public sealed class WorldPartsProducerTranslationPatchTests
             PatchQueue(harmony);
             PatchOwner(
                 harmony,
-                EnclosingMethod(nameof(DummyEnclosingProducerTarget.EnterEnclosure)),
+                EnclosingMethod(methodName),
                 typeof(EnclosingTranslationPatch));
 
             var target = new DummyEnclosingProducerTarget
@@ -459,7 +722,7 @@ public sealed class WorldPartsProducerTranslationPatchTests
                 QueuedMessageToSend = string.Empty,
             };
 
-            _ = target.EnterEnclosure(new DummyGameObject(), new DummyGameEvent());
+            InvokeEnclosingMethod(target, methodName);
 
             Assert.That(DummyMessageQueue.LastMessage, Is.Empty);
         }
@@ -472,6 +735,12 @@ public sealed class WorldPartsProducerTranslationPatchTests
     [TestCase(
         nameof(DummyEnclosingProducerTarget.EnterEnclosure),
         "You fail to get yourself into stasis pod.")]
+    [TestCase(
+        nameof(DummyEnclosingProducerTarget.ExitEnclosure),
+        "You fail to extricate yourself from stasis pod!")]
+    [TestCase(
+        nameof(DummyEnclosingProducerTarget.ExitEnclosure),
+        "You extricate yourself from stasis pod.")]
     [TestCase(
         nameof(DummyEnclosingProducerTarget.EnclosureExitImpeded),
         "You cannot do that while enclosed by stasis pod.")]
@@ -504,6 +773,7 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [TestCase(nameof(DummyEnclosingProducerTarget.EnterEnclosure))]
+    [TestCase(nameof(DummyEnclosingProducerTarget.ExitEnclosure))]
     [TestCase(nameof(DummyEnclosingProducerTarget.EnclosureExitImpeded))]
     public void EnclosingPatch_LeavesEmptyPopupUnchanged_WhenOwnerPatched(string methodName)
     {
@@ -1106,8 +1376,13 @@ public sealed class WorldPartsProducerTranslationPatchTests
 
     private static void PatchPopupShow(Harmony harmony)
     {
+        PatchPopupShow(harmony, nameof(DummyPopupShow.Show));
+    }
+
+    private static void PatchPopupShow(Harmony harmony, string methodName, params Type[] parameters)
+    {
         harmony.Patch(
-            original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
+            original: RequireMethod(typeof(DummyPopupShow), methodName, parameters),
             prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
     }
 

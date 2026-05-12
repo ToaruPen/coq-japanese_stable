@@ -124,6 +124,11 @@
       "text": "{0}を{1}で充電できる。"
     },
     {
+      "key": "{0} does not have the skill to {1}.",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "{0}には{1}技能がない。"
+    },
+    {
       "key": "Trade could not be completed, {0} couldn't drop object: {1}",
       "context": "TradeUiPopupTranslationPatch",
       "text": "取引を完了できなかった。{0}は{1}を落とせなかった。"

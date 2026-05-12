@@ -4867,10 +4867,9 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
-    public void ZoneManagerSetActiveZoneMapNotes_TranslatesMapNotes_WhenPatched()
+    public void ZoneManagerSetActiveZoneMapNotes_TranslatesMapNotesUsingRepositoryPattern_WhenPatched()
     {
-        WritePatternDictionary(
-            ("^Notes: (.+)$", "注記: {0}"));
+        UseRepositoryPatternDictionary();
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);

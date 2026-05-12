@@ -59,6 +59,45 @@ public sealed class WorldPartsFragmentTranslatorTests
             expected);
     }
 
+    [TestCase("The canteen is not owned by you. Are you sure you want to pour from it?", "canteenはあなたの所有物ではない。本当にそこから注ぎますか？")]
+    [TestCase("Are you sure you want to drain the canteen?", "canteenを本当に排出しますか？")]
+    [TestCase("The canteen is not owned by you. Are you sure you want to take from it?", "canteenはあなたの所有物ではない。本当にそこから取りますか？")]
+    [TestCase("The canteen is not owned by you. Are you sure you want to collect from it?", "canteenはあなたの所有物ではない。本当にそこから集めますか？")]
+    [TestCase("You are able to collect 129 drams of {{C|water}}. Are you sure you want to?", "{{C|water}}を129ドラム集められる。本当にそうしますか？")]
+    [TestCase("The canteen is not owned by you. Are you sure you want to use {{C|water}} from it?", "canteenはあなたの所有物ではない。{{C|water}}を本当にそこから使いますか？")]
+    [TestCase("2 drams of {{C|water}} pours out all over you!", "{{C|water}} 2ドラムがあなたの全身にかかった！")]
+    public void LiquidVolumeTranslator_TranslatesInventoriedOwnerPopupFragments(string input, string expected)
+    {
+        AssertTranslated(
+            LiquidVolumeFragmentTranslator.TryTranslatePopupMessage,
+            "LiquidVolume",
+            input,
+            expected);
+    }
+
+    [TestCase("It's fizzy.", "シュワシュワしている。")]
+    [TestCase("2 drams of {{C|water}} pours out all over snapjaw!", "{{C|water}} 2ドラムがsnapjawの全身にかかった！")]
+    public void LiquidVolumeTranslator_TranslatesInventoriedOwnerQueuedFragments(string input, string expected)
+    {
+        AssertTranslated(
+            LiquidVolumeFragmentTranslator.TryTranslateQueuedMessage,
+            "LiquidVolume",
+            input,
+            expected);
+    }
+
+    [TestCase("")]
+    [TestCase("random garbage text")]
+    [TestCase("\u0001It's fizzy.")]
+    [TestCase("{{C|water}}\u0001something")]
+    public void LiquidVolumeTranslator_ReturnsFalse_ForPassthroughQueuedFragments(string input)
+    {
+        AssertPassthrough(
+            LiquidVolumeFragmentTranslator.TryTranslateQueuedMessage,
+            "LiquidVolume",
+            input);
+    }
+
     [TestCase("You drop desalination pellet into canteen.\n\nThe water is purified.", "desalination pelletをcanteenに入れた。\n\nThe water is purified.")]
     [TestCase("You drop {{Y|desalination pellet}} into {{W|canteen}}.\n\n{{g|The water is purified.}}", "{{Y|desalination pellet}}を{{W|canteen}}に入れた。\n\n{{g|The water is purified.}}")]
     public void DesalinationPelletTranslator_TranslatesCompositePopupPrefix(string input, string expected)

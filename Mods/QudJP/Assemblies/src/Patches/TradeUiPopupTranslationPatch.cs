@@ -130,6 +130,10 @@ public static class TradeUiPopupTranslationPatch
         "^You may recharge (?<target>.+?) for (?<amount>\\d+) drams? of fresh water\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex MissingTradeSkillPattern = new(
+        "^(?<trader>.+?) (?:don't|doesn't|do not|does not) have the skill to (?<action>identify artifacts|repair items|recharge items)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex TryRemovePattern = new(
         "^Trade could not be completed, (?<receiver>.+?) couldn't drop object: (?<item>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -264,6 +268,11 @@ public static class TradeUiPopupTranslationPatch
 
     internal static string TranslatePopupText(string source)
     {
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            return markedText;
+        }
+
         if (TryTranslateTradeUiPopupText(source, out var translated))
         {
             return translated;
@@ -628,6 +637,23 @@ public static class TradeUiPopupTranslationPatch
                 source,
                 stripped,
                 spans,
+                MissingTradeSkillPattern,
+                "{0} does not have the skill to {1}.",
+                "TradeUiPopup.MissingSkill",
+                match => new object[]
+                {
+                    NormalizeSubject(RestoreCapture(match, spans, "trader")),
+                    TranslateTradeSkillAction(match.Groups["action"], spans),
+                },
+                out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateTemplate(
+                source,
+                stripped,
+                spans,
                 TryRemovePattern,
                 "Trade could not be completed, {0} couldn't drop object: {1}",
                 "TradeUiPopup.TryRemove",
@@ -911,6 +937,19 @@ public static class TradeUiPopupTranslationPatch
             "one of those" => "そのうちの1つ",
             _ => value.Trim(),
         };
+    }
+
+    private static string TranslateTradeSkillAction(Group group, IReadOnlyList<ColorSpan> spans)
+    {
+        var translated = group.Value.Trim() switch
+        {
+            "identify artifacts" => "アーティファクトを鑑定する",
+            "repair items" => "アイテムを修理する",
+            "recharge items" => "アイテムを充電する",
+            _ => group.Value.Trim(),
+        };
+
+        return ColorAwareTranslationComposer.RestoreCapture(translated, spans, group).Trim();
     }
 
     private static string TranslateRepairBrokenSubject(string value)

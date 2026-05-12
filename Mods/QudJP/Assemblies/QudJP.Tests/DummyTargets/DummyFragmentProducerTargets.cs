@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -22,11 +23,16 @@ internal sealed class DummyLiquidVolumeProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
 
+    public string QueuedMessageToSend { get; set; } = string.Empty;
+
+    public string PopupMethod { get; set; } = nameof(DummyPopupShow.Show);
+
     [MethodImpl(MethodImplOptions.NoInlining)]
     public bool HandleEvent(DummyInventoryActionEvent e)
     {
         _ = e;
-        DummyPopupTarget.ShowBlock(PopupMessageToShow);
+        ShowConfiguredPopup();
+        AddConfiguredQueuedMessage();
         return true;
     }
 
@@ -47,7 +53,8 @@ internal sealed class DummyLiquidVolumeProducerTarget
         _ = pourAmount;
         _ = ownershipHandled;
         requestInterfaceExit = false;
-        DummyPopupShow.Show(PopupMessageToShow);
+        ShowConfiguredPopup();
+        AddConfiguredQueuedMessage();
         return true;
     }
 
@@ -57,8 +64,38 @@ internal sealed class DummyLiquidVolumeProducerTarget
         _ = actor;
         _ = ownershipHandled;
         requestInterfaceExit = false;
-        DummyPopupShow.Show(PopupMessageToShow);
+        ShowConfiguredPopup();
         return true;
+    }
+
+    private void ShowConfiguredPopup()
+    {
+        if (string.IsNullOrEmpty(PopupMessageToShow))
+        {
+            return;
+        }
+
+        if (string.Equals(PopupMethod, nameof(DummyPopupTarget.ShowBlock), StringComparison.Ordinal))
+        {
+            DummyPopupTarget.ShowBlock(PopupMessageToShow);
+            return;
+        }
+
+        if (string.Equals(PopupMethod, nameof(DummyPopupShow.ShowYesNoCancel), StringComparison.Ordinal))
+        {
+            DummyPopupShow.ShowYesNoCancel(PopupMessageToShow);
+            return;
+        }
+
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+
+    private void AddConfiguredQueuedMessage()
+    {
+        if (!string.IsNullOrEmpty(QueuedMessageToSend))
+        {
+            DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, null, Capitalize: false);
+        }
     }
 }
 
@@ -526,6 +563,33 @@ internal sealed class DummySifrahPureOwnerPopupProducerTarget
         _ = methodName;
         _ = contextObject;
         DummyPopupShow.Show(PopupMessageToShow);
+    }
+}
+
+internal sealed class DummySifrahTokenItemPopupProducerTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    public Action? BeforePopup { get; set; }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void SocialSifrahTokenGiftCheckTokenUse(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(SocialSifrahTokenGiftCheckTokenUse), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void SocialSifrahTokenItemCheckTokenUse(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(SocialSifrahTokenItemCheckTokenUse), contextObject);
+    }
+
+    private void ShowPopup(string methodName, DummyGameObject contextObject)
+    {
+        _ = methodName;
+        _ = contextObject;
+        BeforePopup?.Invoke();
+        DummyPopupShow.ShowFail(PopupMessageToShow);
     }
 }
 

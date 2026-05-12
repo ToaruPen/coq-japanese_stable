@@ -36,6 +36,7 @@ public sealed class ZoneManagerSetActiveZoneTranslationPatchTests
     {
         Translator.ResetForTests();
         MessagePatternTranslator.ResetForTests();
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
         DummyZoneWorldFactory.Reset();
         DummyZoneCalendar.Reset();
 
@@ -171,6 +172,67 @@ public sealed class ZoneManagerSetActiveZoneTranslationPatchTests
         }
     }
 
+    [Test]
+    public void PrefixAndPostfix_TranslatesNoTimeZoneBannerUsingRepositoryDictionary_WhenPatched()
+    {
+        UseRepositoryDictionaries();
+        DummyZoneWorldFactory.WorldId = "SaltDunes";
+        DummyZoneWorldFactory.ZoneId = "SaltDunes.11.22.1.1.10";
+        DummyZoneWorldFactory.ZoneDisplayNameValue = "slime bog";
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyZoneManagerSetActiveZoneTarget), nameof(DummyZoneManagerSetActiveZoneTarget.SetActiveZone)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(ZoneManagerSetActiveZoneTranslationPatch), nameof(ZoneManagerSetActiveZoneTranslationPatch.Prefix))),
+                postfix: new HarmonyMethod(RequireMethod(typeof(ZoneManagerSetActiveZoneTranslationPatch), nameof(ZoneManagerSetActiveZoneTranslationPatch.Postfix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(ZoneManagerSetActiveZoneMessageQueuePatch), nameof(ZoneManagerSetActiveZoneMessageQueuePatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(MessageLogPatch), nameof(MessageLogPatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+
+            var manager = new DummyZoneManagerSetActiveZoneTarget();
+            manager.SetActiveZone();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("ぬめり沼"));
+                Assert.That(DummyMessageQueue.LastColor, Is.EqualTo("C"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_PreservesZoneBannerMessage_WhenOwnerAbsent()
+    {
+        UseRepositoryDictionaries();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(ZoneManagerSetActiveZoneMessageQueuePatch), nameof(ZoneManagerSetActiveZoneMessageQueuePatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+
+            DummyMessageQueue.AddPlayerMessage("slime bog", "C", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("slime bog"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
@@ -222,5 +284,21 @@ public sealed class ZoneManagerSetActiveZoneTranslationPatchTests
         return value
             .Replace("\\", "\\\\", StringComparison.Ordinal)
             .Replace("\"", "\\\"", StringComparison.Ordinal);
+    }
+
+    private static void UseRepositoryDictionaries()
+    {
+        var localizationRoot = Path.GetFullPath(
+            Path.Combine(
+                TestContext.CurrentContext.TestDirectory,
+                "..",
+                "..",
+                "..",
+                "..",
+                "..",
+                "Localization"));
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
+        MessagePatternTranslator.SetPatternFileForTests(null);
     }
 }

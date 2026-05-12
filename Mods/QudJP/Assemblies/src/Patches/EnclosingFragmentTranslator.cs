@@ -21,6 +21,11 @@ internal static class EnclosingFragmentTranslator
             "^You fail to get (?<subject>.+?) into (?<container>.+?)\\.$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex FailToExtricatePattern =
+        new Regex(
+            "^You fail to extricate (?<subject>.+?) from (?<container>.+?)!$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex NotEnclosedByPattern =
         new Regex(
             "^It is not (?<container>.+?) that you are enclosed by\\.$",
@@ -34,6 +39,16 @@ internal static class EnclosingFragmentTranslator
     private static readonly Regex NpcFailToGetIntoPattern =
         new Regex(
             "^(?<actor>.+?)(?<tryVerb> tries| try) to get (?<pronoun>.+?) into (?<container>.+?), but(?<failVerb> fails| fail)\\.$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex NpcFailToExtricatePattern =
+        new Regex(
+            "^(?<actor>.+?)(?<tryVerb> tries| try) to extricate (?<pronoun>.+?) from (?<container>.+?), but(?<failVerb> fails| fail)!$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex NpcExtricatesPattern =
+        new Regex(
+            "^(?<actor>.+?)(?<verb> extricates| extricate) (?<pronoun>.+?) from (?<container>.+?)\\.$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
@@ -83,6 +98,18 @@ internal static class EnclosingFragmentTranslator
             return true;
         }
 
+        match = FailToExtricatePattern.Match(stripped);
+        if (match.Success)
+        {
+            var subject = TranslateSubject(match.Groups["subject"], spans);
+            var container = RestoreVisible(match.Groups["container"], spans);
+            translated = string.Equals(subject, "自分", StringComparison.Ordinal)
+                ? string.Concat(container, "から抜け出せなかった！")
+                : string.Concat(container, "から", subject, "を引き出せなかった！");
+            DynamicTextObservability.RecordTransform(route, family + ".FailToExtricate", source, translated);
+            return true;
+        }
+
         match = NotEnclosedByPattern.Match(stripped);
         if (match.Success)
         {
@@ -115,18 +142,42 @@ internal static class EnclosingFragmentTranslator
 
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(message);
         var match = NpcFailToGetIntoPattern.Match(stripped);
-        if (!match.Success)
+        if (match.Success)
         {
-            return false;
+            var actor = RestoreVisible(match.Groups["actor"], spans);
+            var pronoun = TranslateSubject(match.Groups["pronoun"], spans);
+            var container = RestoreVisible(match.Groups["container"], spans);
+            var translated = string.Concat(actor, "は", pronoun, "を", container, "の中に入れようとしたが、失敗した。");
+            DynamicTextObservability.RecordTransform(route, family + ".NpcFailToGetInto", message, translated);
+            message = translated;
+            return true;
         }
 
-        var actor = RestoreVisible(match.Groups["actor"], spans);
-        var pronoun = TranslateSubject(match.Groups["pronoun"], spans);
-        var container = RestoreVisible(match.Groups["container"], spans);
-        var translated = string.Concat(actor, "は", pronoun, "を", container, "の中に入れようとしたが、失敗した。");
-        DynamicTextObservability.RecordTransform(route, family + ".NpcFailToGetInto", message, translated);
-        message = translated;
-        return true;
+        match = NpcFailToExtricatePattern.Match(stripped);
+        if (match.Success)
+        {
+            var actor = RestoreVisible(match.Groups["actor"], spans);
+            var pronoun = TranslateSubject(match.Groups["pronoun"], spans);
+            var container = RestoreVisible(match.Groups["container"], spans);
+            var translated = string.Concat(actor, "は", pronoun, "を", container, "から引き出そうとしたが、失敗した！");
+            DynamicTextObservability.RecordTransform(route, family + ".NpcFailToExtricate", message, translated);
+            message = translated;
+            return true;
+        }
+
+        match = NpcExtricatesPattern.Match(stripped);
+        if (match.Success)
+        {
+            var actor = RestoreVisible(match.Groups["actor"], spans);
+            var pronoun = TranslateSubject(match.Groups["pronoun"], spans);
+            var container = RestoreVisible(match.Groups["container"], spans);
+            var translated = string.Concat(actor, "は", pronoun, "を", container, "から引き出した。");
+            DynamicTextObservability.RecordTransform(route, family + ".NpcExtricates", message, translated);
+            message = translated;
+            return true;
+        }
+
+        return false;
     }
 
     private static string TranslateSubject(Group group, IReadOnlyList<ColorSpan> spans)

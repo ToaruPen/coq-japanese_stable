@@ -3140,6 +3140,82 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
 
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
+        family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/LiquidVolumeTranslationPatch.cs",
+                ("TryTranslatePopupMessage", "TryTranslateQueuedMessage", '"Pour"'),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/LiquidVolumeFragmentTranslator.cs",
+                ("OwnershipPour", "PourOutSelf", "PourOutActor"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("LiquidVolumeTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("LiquidVolumeTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldPartsProducerTranslationPatchTests.cs",
+                (
+                    "LiquidVolumePatch_TranslatesPopupYesNoCancelMessage_WhenPatched",
+                    "LiquidVolumePatch_TranslatesPopupShowMessage_WhenPatched",
+                    "LiquidVolumePatch_TranslatesQueuedMessages_WhenOwnerPatched",
+                    "LiquidVolumePatch_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "LiquidVolumePatch_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "LiquidVolumePatch_LeavesEmptyMessagesUnchanged_WhenOwnerPatched",
+                    "nameof(DummyLiquidVolumeProducerTarget.Pour)",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(LiquidVolumeTranslationPatch)",
+                    "XRL.World.Parts.LiquidVolume|Pour|System.Boolean|System.Boolean&|XRL.World.GameObject|XRL.World.Cell|System.Boolean|System.Boolean|System.Int32|System.Boolean",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
+        family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.PerformFill",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/LiquidVolumeTranslationPatch.cs",
+                ("TryTranslatePopupMessage", '"PerformFill"'),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/LiquidVolumeFragmentTranslator.cs",
+                ("OwnershipTake", "EmptyFirst"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("LiquidVolumeTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldPartsProducerTranslationPatchTests.cs",
+                (
+                    "LiquidVolumePatch_TranslatesPopupShowMessage_WhenPatched",
+                    "LiquidVolumePatch_DoesNotTranslatePopup_WhenOwnerAbsent",
+                    "LiquidVolumePatch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "LiquidVolumePatch_LeavesEmptyMessagesUnchanged_WhenOwnerPatched",
+                    "nameof(DummyLiquidVolumeProducerTarget.PerformFill)",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(LiquidVolumeTranslationPatch)",
+                    "XRL.World.Parts.LiquidVolume|PerformFill|System.Boolean|XRL.World.GameObject|System.Boolean&|System.Boolean",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
         family_id="XRL.World/GameObject.cs::XRL.World.GameObject.Heal",
         inventory_statuses=("owner_patch_required",),
         evidence_files=(
@@ -3208,6 +3284,55 @@ COVERED_OWNER_FAMILIES: Final = (
             EvidenceFile(
                 "Mods/QudJP/Localization/Dictionaries/ui-messagelog-leaf.ja.json",
                 ("You cannot go that way.",),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
+        family_id="XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.EnterCell",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PhysicsEnterCellPassByTranslationPatch.cs",
+                ("PhysicsEnterCellPassByTranslationPatch", "PassByPrefix", "PreparePassByMessage"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueTranslationPatch.cs",
+                ("PrefixPhysicsEnterCellPassBy", "PhysicsEnterCellPassByTranslationPatch.Prefix"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/PhysicsEnterCellPassByTranslationPatchTests.cs",
+                (
+                    "AggregateMessageQueuePatch_TranslatesEnterCellPassByUsingRepositoryPattern_WhenPatched",
+                    "AggregateMessageQueuePatch_PreservesPrefixOrder_WhenPatched",
+                    "AggregateMessageQueuePatch_PassesThroughEmptyAndDirectMarkedMessages_WhenPatched",
+                    "Prefix_PassesThroughEnglishWhenPatternDoesNotMatch_WhenPatched",
+                    "DummyPhysicsEnterCellTarget",
+                    "string.Empty",
+                    "MessageFrameTranslator.MarkDirectTranslation",
+                    "You pass by ",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessageLogProducerTranslationHelpersTests.cs",
+                (
+                    "PreparePassByMessage_MarksTranslatedMessage",
+                    "PreparePassByMessage_PreservesColorTags",
+                    "PreparePassByMessage_PreservesDirectTranslationMarker",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "MovementExistingSeamProducerMethods_ResolveExpectedFullSignatures",
+                    "XRL.World.Parts.Physics|EnterCell|System.Boolean|XRL.World.Cell",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+                (
+                    "^You pass by a (.+?)[.!]?$",
+                    "^You pass by (.+?)[.!]?$",
+                ),
             ),
         ),
     ),

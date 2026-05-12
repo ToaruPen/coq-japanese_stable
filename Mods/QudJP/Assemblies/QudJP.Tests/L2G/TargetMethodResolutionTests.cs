@@ -632,7 +632,10 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(TradeUiVendorPopupTranslationPatch), new[]
     {
+        "XRL.World.GameObject|System.Single|XRL.UI.TradeUI+TradeScreenMode",
         "XRL.World.GameObject|XRL.World.GameObject|System.Collections.Generic.List`1[[XRL.World.GameObject]]|System.Collections.Generic.List`1[[XRL.World.GameObject]]|System.Boolean",
+        "XRL.World.GameObject|XRL.World.GameObject",
+        "XRL.World.GameObject|XRL.World.GameObject",
         "XRL.World.GameObject|XRL.World.GameObject",
     })]
     [TestCase(typeof(SteamWorkshopUploaderViewTranslationPatch), new string[0])]
@@ -899,6 +902,11 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.TinkeringSifrahTokenComputePower|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
         "XRL.World.TinkeringSifrahTokenLiquid|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
         "XRL.SifrahGame|MakeMoveForSlot|System.Boolean|System.Int32|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(SifrahTokenItemPopupTranslationPatch), new[]
+    {
+        "XRL.World.SocialSifrahTokenGift|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        "XRL.World.SocialSifrahTokenItem|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
     })]
     [TestCase(typeof(SunderMindTranslationPatch), new[]
     {
@@ -1264,6 +1272,12 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Enclosing|ExitEnclosure|System.Boolean|XRL.World.GameObject|XRL.World.IEvent|XRL.World.Effects.Enclosed",
         "XRL.World.Parts.Enclosing|EnclosureExitImpeded|System.Boolean|XRL.World.GameObject|System.Boolean|XRL.World.Effects.Enclosed",
     })]
+    [TestCase(typeof(LiquidVolumeTranslationPatch), new[]
+    {
+        "XRL.World.Parts.LiquidVolume|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.LiquidVolume|Pour|System.Boolean|System.Boolean&|XRL.World.GameObject|XRL.World.Cell|System.Boolean|System.Boolean|System.Int32|System.Boolean",
+        "XRL.World.Parts.LiquidVolume|PerformFill|System.Boolean|XRL.World.GameObject|System.Boolean&|System.Boolean",
+    })]
     public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
     {
         var targetMethodsMethod = patchType.GetMethod("TargetMethods", BindingFlags.NonPublic | BindingFlags.Static);
@@ -1291,6 +1305,8 @@ public sealed class TargetMethodResolutionTests
             ?? throw new InvalidOperationException("XRL.UI.TradeUI was not found.");
         var gameObjectType = Type.GetType("XRL.World.GameObject, Assembly-CSharp")
             ?? throw new InvalidOperationException("XRL.World.GameObject was not found.");
+        var tradeScreenModeType = Type.GetType("XRL.UI.TradeUI+TradeScreenMode, Assembly-CSharp")
+            ?? throw new InvalidOperationException("XRL.UI.TradeUI.TradeScreenMode was not found.");
         var listOfGameObjectType = typeof(List<>).MakeGenericType(gameObjectType);
 
         var tryRemove = tradeUiType.GetMethod(
@@ -1305,23 +1321,50 @@ public sealed class TargetMethodResolutionTests
             null,
             [gameObjectType, gameObjectType],
             null);
+        var showTradeScreen = tradeUiType.GetMethod(
+            "ShowTradeScreen",
+            BindingFlags.Public | BindingFlags.Static,
+            null,
+            [gameObjectType, typeof(float), tradeScreenModeType],
+            null);
+        var doVendorExamine = tradeUiType.GetMethod(
+            "DoVendorExamine",
+            BindingFlags.Public | BindingFlags.Static,
+            null,
+            [gameObjectType, gameObjectType],
+            null);
+        var doVendorRecharge = tradeUiType.GetMethod(
+            "DoVendorRecharge",
+            BindingFlags.Public | BindingFlags.Static,
+            null,
+            [gameObjectType, gameObjectType],
+            null);
 
         Assert.Multiple(() =>
         {
             Assert.That(tryRemove, Is.Not.Null, "XRL.UI.TradeUI.TryRemove signature changed.");
             Assert.That(doVendorRepair, Is.Not.Null, "XRL.UI.TradeUI.DoVendorRepair signature changed.");
+            Assert.That(showTradeScreen, Is.Not.Null, "XRL.UI.TradeUI.ShowTradeScreen signature changed.");
+            Assert.That(doVendorExamine, Is.Not.Null, "XRL.UI.TradeUI.DoVendorExamine signature changed.");
+            Assert.That(doVendorRecharge, Is.Not.Null, "XRL.UI.TradeUI.DoVendorRecharge signature changed.");
         });
 
         var actualSignatures = new[]
         {
+            FullMethodSignature(showTradeScreen!),
             FullMethodSignature(tryRemove!),
+            FullMethodSignature(doVendorExamine!),
             FullMethodSignature(doVendorRepair!),
+            FullMethodSignature(doVendorRecharge!),
         };
 
         Assert.That(actualSignatures, Is.EquivalentTo(new[]
         {
+            "XRL.UI.TradeUI|ShowTradeScreen|System.Void|XRL.World.GameObject|System.Single|XRL.UI.TradeUI+TradeScreenMode",
             "XRL.UI.TradeUI|TryRemove|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.Collections.Generic.List`1[[XRL.World.GameObject]]|System.Collections.Generic.List`1[[XRL.World.GameObject]]|System.Boolean",
+            "XRL.UI.TradeUI|DoVendorExamine|System.Void|XRL.World.GameObject|XRL.World.GameObject",
             "XRL.UI.TradeUI|DoVendorRepair|System.Void|XRL.World.GameObject|XRL.World.GameObject",
+            "XRL.UI.TradeUI|DoVendorRecharge|System.Boolean|XRL.World.GameObject|XRL.World.GameObject",
         }));
     }
 
@@ -1340,6 +1383,40 @@ public sealed class TargetMethodResolutionTests
             Assert.That(FullMethodSignature(stairsDown!), Is.EqualTo("XRL.World.Parts.StairsDown|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent"));
             Assert.That(stairsUp, Is.Not.Null);
             Assert.That(FullMethodSignature(stairsUp!), Is.EqualTo("XRL.World.Parts.StairsUp|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent"));
+        });
+    }
+
+    [Test]
+    public void MovementExistingSeamProducerMethods_ResolveExpectedFullSignatures()
+    {
+        var physicsType = Type.GetType("XRL.World.Parts.Physics, Assembly-CSharp")
+            ?? throw new InvalidOperationException("XRL.World.Parts.Physics was not found.");
+        var cellType = Type.GetType("XRL.World.Cell, Assembly-CSharp")
+            ?? throw new InvalidOperationException("XRL.World.Cell was not found.");
+        var zoneManagerType = Type.GetType("XRL.World.ZoneManager, Assembly-CSharp")
+            ?? throw new InvalidOperationException("XRL.World.ZoneManager was not found.");
+        var zoneType = Type.GetType("XRL.World.Zone, Assembly-CSharp")
+            ?? throw new InvalidOperationException("XRL.World.Zone was not found.");
+
+        var physicsEnterCell = physicsType.GetMethod(
+            "EnterCell",
+            BindingFlags.Public | BindingFlags.Instance,
+            null,
+            [cellType],
+            null);
+        var zoneManagerSetActiveZone = zoneManagerType.GetMethod(
+            "SetActiveZone",
+            BindingFlags.Public | BindingFlags.Instance,
+            null,
+            [zoneType],
+            null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(physicsEnterCell, Is.Not.Null, "XRL.World.Parts.Physics.EnterCell(Cell) signature changed.");
+            Assert.That(zoneManagerSetActiveZone, Is.Not.Null, "XRL.World.ZoneManager.SetActiveZone(Zone) signature changed.");
+            Assert.That(FullMethodSignature(physicsEnterCell!), Is.EqualTo("XRL.World.Parts.Physics|EnterCell|System.Boolean|XRL.World.Cell"));
+            Assert.That(FullMethodSignature(zoneManagerSetActiveZone!), Is.EqualTo("XRL.World.ZoneManager|SetActiveZone|XRL.World.Zone|XRL.World.Zone"));
         });
     }
 

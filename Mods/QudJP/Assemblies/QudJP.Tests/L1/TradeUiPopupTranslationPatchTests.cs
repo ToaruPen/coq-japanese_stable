@@ -141,6 +141,36 @@ public sealed class TradeUiPopupTranslationPatchTests
         "{0}を{1}で充電できる。",
         "変圧器を4ドラムの真水で充電できる。")]
     [TestCase(
+        "商人 does not have the skill to repair items.",
+        "{0} does not have the skill to {1}.",
+        "{0}には{1}技能がない。",
+        "商人にはアイテムを修理する技能がない。")]
+    [TestCase(
+        "商人 doesn't have the skill to recharge items.",
+        "{0} does not have the skill to {1}.",
+        "{0}には{1}技能がない。",
+        "商人にはアイテムを充電する技能がない。")]
+    [TestCase(
+        "Merchant does not have the skill to repair items.",
+        "{0} does not have the skill to {1}.",
+        "{0}には{1}技能がない。",
+        "Merchantにはアイテムを修理する技能がない。")]
+    [TestCase(
+        "",
+        "{0} does not have the skill to {1}.",
+        "{0}には{1}技能がない。",
+        "")]
+    [TestCase(
+        "\u0001Merchant does not have the skill to repair items.",
+        "{0} does not have the skill to {1}.",
+        "{0}には{1}技能がない。",
+        "Merchant does not have the skill to repair items.")]
+    [TestCase(
+        "商人 does not have the skill to {{Y|repair items}}.",
+        "{0} does not have the skill to {1}.",
+        "{0}には{1}技能がない。",
+        "商人には{{Y|アイテムを修理する}}技能がない。")]
+    [TestCase(
         "Trade could not be completed, you couldn't drop object: laser rifle",
         "Trade could not be completed, {0} couldn't drop object: {1}",
         "取引を完了できなかった。{0}は{1}を落とせなかった。",

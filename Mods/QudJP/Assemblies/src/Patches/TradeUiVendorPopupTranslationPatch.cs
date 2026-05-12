@@ -25,6 +25,27 @@ public static class TradeUiVendorPopupTranslationPatch
             yield break;
         }
 
+        var tradeScreenModeType = AccessTools.TypeByName("XRL.UI.TradeUI+TradeScreenMode");
+        if (tradeScreenModeType is not null)
+        {
+            var showTradeScreen = AccessTools.Method(
+                tradeUiType,
+                "ShowTradeScreen",
+                [gameObjectType, typeof(float), tradeScreenModeType]);
+            if (showTradeScreen is not null)
+            {
+                yield return showTradeScreen;
+            }
+            else
+            {
+                Trace.TraceError("QudJP: {0}.ShowTradeScreen(GameObject, float, TradeScreenMode) not found.", Context);
+            }
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0} failed to resolve TradeScreenMode.", Context);
+        }
+
         var gameObjectListType = typeof(List<>).MakeGenericType(gameObjectType);
         var tryRemove = AccessTools.Method(
             tradeUiType,
@@ -39,6 +60,16 @@ public static class TradeUiVendorPopupTranslationPatch
             Trace.TraceError("QudJP: {0}.TryRemove(...) not found.", Context);
         }
 
+        var doVendorExamine = AccessTools.Method(tradeUiType, "DoVendorExamine", [gameObjectType, gameObjectType]);
+        if (doVendorExamine is not null)
+        {
+            yield return doVendorExamine;
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0}.DoVendorExamine(GameObject, GameObject) not found.", Context);
+        }
+
         var doVendorRepair = AccessTools.Method(tradeUiType, "DoVendorRepair", [gameObjectType, gameObjectType]);
         if (doVendorRepair is not null)
         {
@@ -47,6 +78,16 @@ public static class TradeUiVendorPopupTranslationPatch
         else
         {
             Trace.TraceError("QudJP: {0}.DoVendorRepair(GameObject, GameObject) not found.", Context);
+        }
+
+        var doVendorRecharge = AccessTools.Method(tradeUiType, "DoVendorRecharge", [gameObjectType, gameObjectType]);
+        if (doVendorRecharge is not null)
+        {
+            yield return doVendorRecharge;
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0}.DoVendorRecharge(GameObject, GameObject) not found.", Context);
         }
     }
 
