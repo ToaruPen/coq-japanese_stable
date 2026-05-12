@@ -87,6 +87,14 @@ public sealed class TargetMethodResolutionTests
         "System.Boolean",
         "System.Boolean",
     })]
+    [TestCase(typeof(PickItemTakeAllPopupTranslationPatch), "TakeAll", "XRL.UI.PickItem", "System.Boolean", new[]
+    {
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "XRL.World.Cell",
+        "System.Collections.Generic.IList`1[[XRL.World.GameObject]]",
+        "System.Boolean&",
+    })]
     [TestCase(typeof(InventoryAndEquipmentStatusScreenTranslationPatch), "UpdateViewFromData", "Qud.UI.InventoryAndEquipmentStatusScreen", "System.Void", new string[0])]
     [TestCase(typeof(InventoryAndEquipmentStatusScreenShowRepairPatch), "ShowScreen", "Qud.UI.InventoryAndEquipmentStatusScreen", "XRL.UI.Framework.NavigationContext", new[] { "XRL.World.GameObject", "Qud.UI.StatusScreensScreen" })]
     [TestCase(typeof(InventoryLineTranslationPatch), "setData", "Qud.UI.InventoryLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]

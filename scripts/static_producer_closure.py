@@ -776,6 +776,48 @@ def _keybinds_screen_conflict_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _pick_item_take_all_popup_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.UI/PickItem.cs::XRL.UI.PickItem.TakeAll",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PickItemTakeAllPopupTranslationPatch.cs",
+                    (
+                        "PickItemTakeAllPopupTranslationPatch",
+                        "TryTranslatePopupMessage",
+                        "Taking all these objects will put you over your weight limit",
+                        "TakeAll",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("PickItemTakeAllPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PickItemTakeAllPopupTranslationPatchTests.cs",
+                    (
+                        "TakeAll_TranslatesOverweightConfirmationPopup_WhenOwnerPatched",
+                        "TakeAll_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "TakeAll_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "TakeAll_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "nameof(DummyPickItemTakeAllTarget.TakeAll)",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(PickItemTakeAllPopupTranslationPatch)",
+                        '"XRL.UI.PickItem"',
+                        '"TakeAll"',
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _ability_manager_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     pipeline = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
@@ -3951,6 +3993,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_sifrah_pure_owner_popup_families(),
     *_sunder_mind_owner_families(),
     *_keybinds_screen_conflict_families(),
+    *_pick_item_take_all_popup_family(),
     *_ability_manager_popup_families(),
     *_cooking_runtime_families(),
     *_status_screen_popup_families(),
