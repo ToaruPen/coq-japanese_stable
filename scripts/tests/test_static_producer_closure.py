@@ -137,14 +137,14 @@ def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> N
     inventory = load_inventory(TRACKED_INVENTORY)
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
 
-    assert "XRL.World.Parts/Combat.cs::XRL.World.Parts.Combat.MeleeAttackWithWeaponInternal" in queued_family_ids
+    assert "XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookFromIngredients" in queued_family_ids
 
 
 def test_owner_action_queue_groups_actionable_work_by_source_file() -> None:
     """Static producer work queue must expose class-file starting points."""
     inventory = load_inventory(TRACKED_INVENTORY)
     source_entries = owner_action_queue_by_file(inventory)
-    combat_entry = next(entry for entry in source_entries if entry["source_file"] == "XRL.World.Parts/Combat.cs")
+    campfire_entry = next(entry for entry in source_entries if entry["source_file"] == "XRL.World.Parts/Campfire.cs")
 
     assert source_entries == sorted(
         source_entries,
@@ -155,13 +155,72 @@ def test_owner_action_queue_groups_actionable_work_by_source_file() -> None:
             entry["source_file"],
         ),
     )
-    assert combat_entry["family_count"] > 0
-    assert combat_entry["text_argument_count"] > 0
+    assert campfire_entry["family_count"] > 0
+    assert campfire_entry["text_argument_count"] > 0
     assert any(
         family["producer_family_id"]
-        == "XRL.World.Parts/Combat.cs::XRL.World.Parts.Combat.MeleeAttackWithWeaponInternal"
-        for family in combat_entry["families"]
+        == "XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookFromIngredients"
+        for family in campfire_entry["families"]
     )
+
+
+def test_combat_handle_event_family_is_covered_by_owner_patch() -> None:
+    """Combat.HandleEvent (shield-block) must be registered as a covered owner-patch family."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    family_id = "XRL.World.Parts/Combat.cs::XRL.World.Parts.Combat.HandleEvent"
+
+    assert raw_families[family_id]["family_closure_status"] == "owner_patch_required"
+    assert family_closure_status(raw_families[family_id]) == COVERED_BY_OWNER_PATCH
+    assert family_id not in {
+        family["producer_family_id"]
+        for family in owner_action_queue(inventory)
+    }
+
+
+def test_combat_melee_attack_family_is_covered_by_owner_patch() -> None:
+    """Combat.MeleeAttackWithWeaponInternal must be registered as a covered owner-patch family."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    family_id = "XRL.World.Parts/Combat.cs::XRL.World.Parts.Combat.MeleeAttackWithWeaponInternal"
+
+    assert raw_families[family_id]["family_closure_status"] == "owner_patch_required"
+    assert family_closure_status(raw_families[family_id]) == COVERED_BY_OWNER_PATCH
+    assert family_id not in {
+        family["producer_family_id"]
+        for family in owner_action_queue(inventory)
+    }
+
+
+def test_combat_surface_families_share_single_patch_class() -> None:
+    """Both Combat owner families must reference the same consolidated patch class."""
+    handle_event_id = "XRL.World.Parts/Combat.cs::XRL.World.Parts.Combat.HandleEvent"
+    melee_attack_id = "XRL.World.Parts/Combat.cs::XRL.World.Parts.Combat.MeleeAttackWithWeaponInternal"
+
+    handle_event_family = next(
+        (f for f in COVERED_OWNER_FAMILIES if f.family_id == handle_event_id), None
+    )
+    melee_attack_family = next(
+        (f for f in COVERED_OWNER_FAMILIES if f.family_id == melee_attack_id), None
+    )
+
+    assert handle_event_family is not None
+    assert melee_attack_family is not None
+
+    handle_event_patch_paths = {
+        evidence.path
+        for evidence in handle_event_family.evidence_files
+        if "src/Patches/" in evidence.path
+    }
+    melee_attack_patch_paths = {
+        evidence.path
+        for evidence in melee_attack_family.evidence_files
+        if "src/Patches/" in evidence.path
+    }
+
+    # Both families must share the same consolidated patch file.
+    assert handle_event_patch_paths == melee_attack_patch_paths
+    assert any("CombatTextSurfaceTranslationPatch.cs" in path for path in handle_event_patch_paths)
 
 
 def test_owner_action_queue_text_summary_names_source_files_and_methods() -> None:

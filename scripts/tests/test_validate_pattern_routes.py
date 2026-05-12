@@ -1,6 +1,7 @@
 """Tests for the validate_pattern_routes module."""
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -12,7 +13,7 @@ _EXPECTED_MESSAGE_ROUTE_COUNTS = {
     "popup": 12,
     "journal": 0,
     "leaf": 0,
-    "emit-message": 302,
+    "emit-message": 303,
     "does-verb": 0,
     "message-log": 1,
     "description": 4,
@@ -165,10 +166,62 @@ def test_main_rejects_duplicate_expected_route_counts(tmp_path: Path, capsys: py
     assert "--expect-count for route 'emit-message' is duplicated" in captured.err
 
 
+def test_new_dont_penetrate_no_roll_pattern_is_in_repository() -> None:
+    """The new 'You don't penetrate...armor' (no roll) pattern must exist in the shipped dictionary."""
+    raw = json.loads(_REPOSITORY_MESSAGE_PATTERNS_PATH.read_text(encoding="utf-8"))
+    patterns = [entry["pattern"] for entry in raw["patterns"]]
+
+    assert "^You don't penetrate (?:the )?(.+?)(?:'s|s'|の) armor[.!]?$" in patterns
+
+
+def test_new_dont_penetrate_no_roll_pattern_is_classified_emit_message() -> None:
+    """The new 'You don't penetrate...armor' (no roll) pattern must have route 'emit-message'."""
+    raw = json.loads(_REPOSITORY_MESSAGE_PATTERNS_PATH.read_text(encoding="utf-8"))
+    target_pattern = "^You don't penetrate (?:the )?(.+?)(?:'s|s'|の) armor[.!]?$"
+    matching_entries = [
+        entry for entry in raw["patterns"] if entry.get("pattern") == target_pattern
+    ]
+
+    assert len(matching_entries) == 1
+    assert matching_entries[0]["route"] == "emit-message"
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "You don't penetrate Snapjaw Scavenger's armor.",
+        "You don't penetrate Snapjaw Scavenger's armor!",
+        "You don't penetrate Snapjaw Scavenger's armor",
+        "You don't penetrate the iron golem's armor.",
+        "You don't penetrate Snapjaw Scavengers' armor.",
+    ],
+)
+def test_new_dont_penetrate_no_roll_pattern_matches_expected_messages(message: str) -> None:
+    """The new 'You don't penetrate...armor' pattern must match messages without a roll value."""
+    pattern = re.compile("^You don't penetrate (?:the )?(.+?)(?:'s|s'|の) armor[.!]?$")
+
+    assert pattern.match(message) is not None, f"Pattern did not match: {message!r}"
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "You don't penetrate Snapjaw Scavenger's armor. [17]",
+        "You don't penetrate Snapjaw Scavenger's armor! [17]",
+        "You don't penetrate Snapjaw Scavenger's armor with your bronze dagger. [17]",
+    ],
+)
+def test_new_dont_penetrate_no_roll_pattern_does_not_match_roll_messages(message: str) -> None:
+    """The new 'You don't penetrate...armor' pattern must not match messages that include a roll."""
+    pattern = re.compile("^You don't penetrate (?:the )?(.+?)(?:'s|s'|の) armor[.!]?$")
+
+    assert pattern.match(message) is None, f"Pattern unexpectedly matched: {message!r}"
+
+
 def test_main_reports_successful_validation(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """CLI reports success and counts when all routes are present and valid."""
     path = tmp_path / "ok.json"
-    _write_patterns(
+
         path,
         [
             {"pattern": "^You hit (.+)$", "template": "x", "route": "emit-message"},
