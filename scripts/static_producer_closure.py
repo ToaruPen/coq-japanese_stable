@@ -3135,6 +3135,37 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
                 dictionary,
             ),
         ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/TrembleEarthquakes.cs::XRL.World.Parts.TrembleEarthquakes.Quake",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "SystemStaticQuake_TranslatesFixedQueuedMessages_WhenOwnerPatched",
+                        "FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "The ground shakes violently!",
+                        "The ground shakes violently and loose rock falls from the ceiling!",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SystemStaticMessageTranslationPatch)",
+                        "XRL.World.Parts.TrembleEarthquakes|Quake|System.Void",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/ui-messagelog-world.ja.json",
+                    (
+                        "The ground shakes violently!",
+                        "The ground shakes violently and loose rock falls from the ceiling!",
+                    ),
+                ),
+            ),
+        ),
     )
 
 

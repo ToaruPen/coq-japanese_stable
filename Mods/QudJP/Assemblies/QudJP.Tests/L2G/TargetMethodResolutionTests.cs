@@ -1135,6 +1135,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.CheckpointingSystem|CheckpointOn|System.Boolean",
         "XRL.HolyPlaceSystem|SetHolyZone|System.Void|XRL.World.Zone|XRL.World.Faction",
         "XRL.World.Parts.Mutation.HeightenedIntelligence|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.TrembleEarthquakes|Quake|System.Void",
     })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
