@@ -3177,6 +3177,64 @@ def _effect_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _cripple_apply_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Effects/Cripple.cs::XRL.World.Effects.Cripple.Apply",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/CrippleApplyTranslationPatch.cs",
+                    (
+                        "CrippleApplyTranslationPatch",
+                        "XRL.World.Effects.Cripple",
+                        "Apply",
+                        "TryTranslateQueuedMessage",
+                        "MessageLogProducerTranslationHelpers.TryPreparePatternMessage",
+                        "Cripple.Apply",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("CrippleApplyTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+                    (
+                        "^You are crippled for (.+?)!$",
+                        "{t0}のあいだ手足が不自由になった！",  # noqa: RUF001
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "CrippleApply_TranslatesDurationMessage_WhenPatched",
+                        "CrippleApply_LeavesUnknownOwnerMessageUnchanged_WhenPatched",
+                        "CrippleApply_LeavesEmptyMessageUnchanged_WhenPatched",
+                        "CrippleApply_PreservesColorTaggedDurationAndQueueColor_WhenPatched",
+                        "CrippleApply_DirectMarkerPassesThroughWithoutRetranslation_WhenPatched",
+                        "CrippleApply_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "MessageQueueSemanticPipeline_TranslatesActiveOwnerMessage",
+                        "MessageQueueSemanticPipeline_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "MessageQueueSemanticPipeline_DoesNotRetranslateDirectMarkedMessage",
+                        "nameof(DummyCrippleApplyTarget.Apply)",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(CrippleApplyTranslationPatch)",
+                        "XRL.World.Effects.Cripple",
+                        "Apply",
+                        "System.Boolean",
+                        "XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
     tests = EvidenceFile(
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
@@ -4117,6 +4175,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_amnesia_families(),
     *_fixed_owner_queue_families(),
     *_effect_static_message_families(),
+    *_cripple_apply_family(),
     *_system_static_message_families(),
     CoveredOwnerFamily(
         family_id="XRL.World.Parts.Skill/Tactics_Kickback.cs::XRL.World.Parts.Skill.Tactics_Kickback.HandleEvent",
