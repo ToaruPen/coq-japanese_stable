@@ -16,6 +16,7 @@ internal static class PopupShowSemanticPipeline
         GameObjectPerformThrowTranslationPatch.TryTranslatePopupMessage,
         MutationSelfTargetPopupTranslationPatch.TryTranslatePopupMessage,
         GameObjectPopupTranslationPatch.TryTranslatePopupMessage,
+        GolemQuestSelectionPopupTranslationPatch.TryTranslatePopupMessage,
         RealityStabilizedInterdictTranslationPatch.TryTranslatePopupMessage,
         HackingSifrahResultTranslationPatch.TryTranslatePopupMessage,
         QuestLifecyclePopupTranslationPatch.TryTranslatePopupMessage,
