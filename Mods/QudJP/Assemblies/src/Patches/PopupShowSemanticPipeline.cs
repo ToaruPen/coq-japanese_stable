@@ -41,6 +41,7 @@ internal static class PopupShowSemanticPipeline
         EnclosingTranslationPatch.TryTranslatePopupMessage,
         StairsDownTranslationPatch.TryTranslatePopupMessage,
         StairsUpTranslationPatch.TryTranslatePopupMessage,
+        AbsorbablePsychePopupTranslationPatch.TryTranslatePopupMessage,
         BeguilingTranslationPatch.TryTranslatePopupMessage,
         AscensionCableTranslationPatch.TryTranslatePopupMessage,
         CarapaceTranslationPatch.TryTranslatePopupMessage,

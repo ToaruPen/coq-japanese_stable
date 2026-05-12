@@ -458,6 +458,52 @@ def _body_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _absorbable_psyche_popup_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/AbsorbablePsyche.cs::XRL.World.Parts.AbsorbablePsyche.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/AbsorbablePsychePopupTranslationPatch.cs",
+                    (
+                        "AbsorbablePsychePopupTranslationPatch",
+                        "TryTranslatePopupMessage",
+                        "At the moment of victory",
+                        "You encode the psyche of",
+                        "You pause as the psyche of",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("AbsorbablePsychePopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/AbsorbablePsychePopupTranslationPatchTests.cs",
+                    (
+                        "HandleEvent_TranslatesConfirmationPopup_WhenOwnerPatched",
+                        "HandleEvent_TranslatesEncodePopup_WhenOwnerPatched",
+                        "HandleEvent_TranslatesRadiatePopup_WhenOwnerPatched",
+                        "HandleEvent_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "HandleEvent_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "HandleEvent_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "nameof(DummyAbsorbablePsycheTarget.HandleEvent)",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(AbsorbablePsychePopupTranslationPatch)",
+                        '"XRL.World.Parts.AbsorbablePsyche"',
+                        '"HandleEvent"',
+                        '"XRL.World.BeforeDeathRemovalEvent"',
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _item_modding_sifrah_result_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         ("ResultFailure", "XRL.World.ItemModdingSifrah|ResultFailure|System.Void|XRL.World.GameObject"),
@@ -3947,6 +3993,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_quest_lifecycle_popup_families(),
     *_flight_families(),
     *_body_families(),
+    *_absorbable_psyche_popup_family(),
     *_item_modding_sifrah_result_families(),
     *_sifrah_pure_owner_popup_families(),
     *_sunder_mind_owner_families(),
