@@ -3645,6 +3645,34 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertFungalSporeInfectionQueuedMessage("Your skin itches.", "肌がむずむずする。");
     }
 
+    [TestCase(
+        nameof(DummyFungalSporeInfectionTarget.PaxFireEvent),
+        "Your left arm spews a cloud of spores.",
+        "あなたのleft armから胞子の雲が噴き出した。")]
+    [TestCase(
+        nameof(DummyFungalSporeInfectionTarget.PaxFireEvent),
+        "Your left hands spew a cloud of spores.",
+        "あなたのleft handsから胞子の雲が噴き出した。")]
+    [TestCase(
+        nameof(DummyFungalSporeInfectionTarget.PaxFireEvent),
+        "snapjaw's right hand spews a cloud of spores.",
+        "snapjaw's right handから胞子の雲が噴き出した。")]
+    [TestCase(
+        nameof(DummyFungalSporeInfectionTarget.PuffFireEvent),
+        "&yYour left arm spews a cloud of spores.",
+        "&yあなたのleft armから胞子の雲が噴き出した。")]
+    [TestCase(
+        nameof(DummyFungalSporeInfectionTarget.PuffFireEvent),
+        "snapjaw's&y right hand spews a cloud of spores.",
+        "snapjaw's&y right handから胞子の雲が噴き出した。")]
+    public void FungalSporeInfectionFireEvent_TranslatesSporeCloudQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        AssertFungalSporeInfectionQueuedMessage(methodName, source, expected);
+    }
+
     [Test]
     public void FungalSporeInfectionFireEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
     {
@@ -3655,8 +3683,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
             PatchQueue(harmony);
 
             DummyMessageQueue.AddPlayerMessage("Your skin itches.", Capitalize: false);
+            DummyMessageQueue.AddPlayerMessage("Your left arm spews a cloud of spores.", Capitalize: false);
+            DummyMessageQueue.AddPlayerMessage("&yYour left arm spews a cloud of spores.", Capitalize: false);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your skin itches."));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("&yYour left arm spews a cloud of spores."));
         }
         finally
         {
@@ -3670,6 +3700,14 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertFungalSporeInfectionQueuedMessage(
             MessageFrameTranslator.MarkDirectTranslation("Your skin itches."),
             "Your skin itches.");
+        AssertFungalSporeInfectionQueuedMessage(
+            nameof(DummyFungalSporeInfectionTarget.PaxFireEvent),
+            MessageFrameTranslator.MarkDirectTranslation("Your left arm spews a cloud of spores."),
+            "Your left arm spews a cloud of spores.");
+        AssertFungalSporeInfectionQueuedMessage(
+            nameof(DummyFungalSporeInfectionTarget.PuffFireEvent),
+            MessageFrameTranslator.MarkDirectTranslation("&yYour left arm spews a cloud of spores."),
+            "&yYour left arm spews a cloud of spores.");
     }
 
     [Test]
@@ -7437,6 +7475,11 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
     private static void AssertFungalSporeInfectionQueuedMessage(string message, string expected)
     {
+        AssertFungalSporeInfectionQueuedMessage(nameof(DummyFungalSporeInfectionTarget.FireEvent), message, expected);
+    }
+
+    private static void AssertFungalSporeInfectionQueuedMessage(string methodName, string message, string expected)
+    {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try
@@ -7444,7 +7487,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
             PatchQueue(harmony);
             PatchOwner(
                 harmony,
-                RequireMethod(typeof(DummyFungalSporeInfectionTarget), nameof(DummyFungalSporeInfectionTarget.FireEvent), typeof(DummyGameEvent)),
+                RequireMethod(typeof(DummyFungalSporeInfectionTarget), methodName, typeof(DummyGameEvent)),
                 typeof(FungalSporeInfectionTranslationPatch));
 
             var target = new DummyFungalSporeInfectionTarget
@@ -7452,7 +7495,18 @@ public sealed class CombatAndLogMessageQueuePatchTests
                 MessageToSend = message,
             };
 
-            _ = target.FireEvent(new DummyGameEvent { ID = "EndTurn" });
+            if (string.Equals(methodName, nameof(DummyFungalSporeInfectionTarget.PaxFireEvent), StringComparison.Ordinal))
+            {
+                _ = target.PaxFireEvent(new DummyGameEvent { ID = "BeforeApplyDamage" });
+            }
+            else if (string.Equals(methodName, nameof(DummyFungalSporeInfectionTarget.PuffFireEvent), StringComparison.Ordinal))
+            {
+                _ = target.PuffFireEvent(new DummyGameEvent { ID = "BeforeApplyDamage" });
+            }
+            else
+            {
+                _ = target.FireEvent(new DummyGameEvent { ID = "EndTurn" });
+            }
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }
