@@ -1,73 +1,118 @@
+using System;
+using System.Diagnostics;
+
 namespace QudJP.Patches;
 
 internal static class MessageQueueSemanticPipeline
 {
+    private static readonly QueuedMessageTranslator[] Translators =
+    [
+        PhysicsApplyDischargeTranslationPatch.TryTranslateQueuedMessage,
+        AutoActTranslationPatch.TryTranslateQueuedMessage,
+        PhysicsObjectEnteringCellTranslationPatch.TryTranslateQueuedMessage,
+        CrippleApplyTranslationPatch.TryTranslateQueuedMessage,
+        GameObjectHealTranslationPatch.TryTranslateQueuedMessage,
+        ExperienceAwardXpTranslationPatch.TryTranslateQueuedMessage,
+        GameObjectMoveTranslationPatch.TryTranslateQueuedMessage,
+        GameObjectPerformThrowTranslationPatch.TryTranslateQueuedMessage,
+        GameObjectToggleActivatedAbilityTranslationPatch.TryTranslateQueuedMessage,
+        FlightTranslationPatch.TryTranslateQueuedMessage,
+        BodyTranslationPatch.TryTranslateQueuedMessage,
+        SunderMindTranslationPatch.TryTranslateQueuedMessage,
+        RealityStabilizedEventTranslationPatch.TryTranslateQueuedMessage,
+        CyberneticRejectionSyndromeTranslationPatch.TryTranslateQueuedMessage,
+        TombAnchorSystemTranslationPatch.TryTranslateQueuedMessage,
+        CyberneticsMedassistModuleTranslationPatch.TryTranslateQueuedMessage,
+        LiquidLoaderTranslationPatch.TryTranslateQueuedMessage,
+        TrollKingTranslationPatch.TryTranslateQueuedMessage,
+        MutatingTranslationPatch.TryTranslateQueuedMessage,
+        QuillsTranslationPatch.TryTranslateQueuedMessage,
+        LightManipulationTranslationPatch.TryTranslateQueuedMessage,
+        LatchesOnTranslationPatch.TryTranslateQueuedMessage,
+        AsleepOwnerTranslationPatch.TryTranslateQueuedMessage,
+        BuddingTranslationPatch.TryTranslateQueuedMessage,
+        BeguilingTranslationPatch.TryTranslateQueuedMessage,
+        SvardymSystemTranslationPatch.TryTranslateQueuedMessage,
+        PhasedTranslationPatch.TryTranslateQueuedMessage,
+        PersuasionRebukeRobotTranslationPatch.TryTranslateQueuedMessage,
+        TonicTranslationPatch.TryTranslateQueuedMessage,
+        XrlGameTranslationPatch.TryTranslateQueuedMessage,
+        BoostStatisticTranslationPatch.TryTranslateQueuedMessage,
+        EmboldenedTranslationPatch.TryTranslateQueuedMessage,
+        FungalSporeInfectionTranslationPatch.TryTranslateQueuedMessage,
+        HealingTranslationPatch.TryTranslateQueuedMessage,
+        StressedTranslationPatch.TryTranslateQueuedMessage,
+        MonochromeOnsetTranslationPatch.TryTranslateQueuedMessage,
+        IronshankOnsetTranslationPatch.TryTranslateQueuedMessage,
+        AdrenalControlTranslationPatch.TryTranslateQueuedMessage,
+        AmnesiaTranslationPatch.TryTranslateQueuedMessage,
+        BlinkingTicTranslationPatch.TryTranslateQueuedMessage,
+        BrittleBonesTranslationPatch.TryTranslateQueuedMessage,
+        ElectromagneticImpulseTranslationPatch.TryTranslateQueuedMessage,
+        FearAuraTranslationPatch.TryTranslateQueuedMessage,
+        CookingRuntimeTranslationPatch.TryTranslateQueuedMessage,
+        MeditatingTranslationPatch.TryTranslateQueuedMessage,
+        RegenerationTranslationPatch.TryTranslateQueuedMessage,
+        EffectStaticMessageTranslationPatch.TryTranslateQueuedMessage,
+        SystemStaticMessageTranslationPatch.TryTranslateQueuedMessage,
+        CombatGetDefenderHitDiceTranslationPatch.TryTranslateQueuedMessage,
+        DoorAttemptOpenTranslationPatch.TryTranslateQueuedMessage,
+        CombatMeleeAttackTranslationPatch.TryTranslateQueuedMessage,
+        GameObjectDieTranslationPatch.TryTranslateQueuedMessage,
+        GameObjectRegeneraTranslationPatch.TryTranslateQueuedMessage,
+        ClonelingVehicleTranslationPatch.TryTranslateQueuedMessage,
+        PetEitherOrExplodeTranslationPatch.TryTranslateQueuedMessage,
+        ZoneWindChangeTranslationPatch.TryTranslateQueuedMessage,
+        GameObjectSpotTranslationPatch.TryTranslateQueuedMessage,
+        XrlCoreLostSightTranslationPatch.TryTranslateQueuedMessage,
+        DeployableInfrastructureTranslationPatch.TryTranslateQueuedMessage,
+        PlayerDanceRitualTranslationPatch.TryTranslateQueuedMessage,
+        GameObjectEmitMessageTranslationPatch.TryTranslateQueuedMessage,
+        ZoneManagerTryThawZoneTranslationPatch.TryTranslateQueuedMessage,
+        ZoneManagerTickTranslationPatch.TryTranslateQueuedMessage,
+        ZoneManagerSetActiveZoneMapNotesTranslationPatch.TryTranslateQueuedMessage,
+        ZoneManagerGenerateZoneTranslationPatch.TryTranslateQueuedMessage,
+    ];
+
     internal static bool TryTranslateQueuedMessage(ref string message, string? color)
     {
-        return PhysicsApplyDischargeTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || AutoActTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || PhysicsObjectEnteringCellTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || CrippleApplyTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || GameObjectHealTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || ExperienceAwardXpTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || GameObjectMoveTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || GameObjectPerformThrowTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || GameObjectToggleActivatedAbilityTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || FlightTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || BodyTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || SunderMindTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || RealityStabilizedEventTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || CyberneticRejectionSyndromeTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || TombAnchorSystemTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || CyberneticsMedassistModuleTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || LiquidLoaderTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || TrollKingTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || MutatingTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || QuillsTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || LightManipulationTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || LatchesOnTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || AsleepOwnerTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || BuddingTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || BeguilingTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || SvardymSystemTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || PhasedTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || PersuasionRebukeRobotTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || TonicTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || XrlGameTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || BoostStatisticTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || EmboldenedTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || FungalSporeInfectionTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || HealingTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || StressedTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || MonochromeOnsetTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || IronshankOnsetTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || AdrenalControlTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || AmnesiaTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || BlinkingTicTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || BrittleBonesTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || ElectromagneticImpulseTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || FearAuraTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || CookingRuntimeTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || MeditatingTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || RegenerationTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || EffectStaticMessageTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || SystemStaticMessageTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || CombatGetDefenderHitDiceTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || DoorAttemptOpenTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || CombatMeleeAttackTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || GameObjectDieTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || GameObjectRegeneraTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || ClonelingVehicleTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || PetEitherOrExplodeTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || ZoneWindChangeTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || GameObjectSpotTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || XrlCoreLostSightTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || DeployableInfrastructureTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || PlayerDanceRitualTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || GameObjectEmitMessageTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || ZoneManagerTryThawZoneTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || ZoneManagerTickTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || ZoneManagerSetActiveZoneMapNotesTranslationPatch.TryTranslateQueuedMessage(ref message, color)
-            || ZoneManagerGenerateZoneTranslationPatch.TryTranslateQueuedMessage(ref message, color);
+        for (var index = 0; index < Translators.Length; index++)
+        {
+            if (TryTranslateQueuedMessageWithFallback(Translators[index], ref message, color))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
+
+    private static bool TryTranslateQueuedMessageWithFallback(
+        QueuedMessageTranslator translator,
+        ref string message,
+        string? color)
+    {
+        var source = message;
+
+        try
+        {
+            return translator(ref message, color);
+        }
+        catch (Exception ex)
+        {
+            message = source;
+            Trace.TraceError(
+                "QudJP: MessageQueueSemanticPipeline translator {0} failed: {1}",
+                FormatTranslatorName(translator),
+                ex);
+            return false;
+        }
+    }
+
+    private static string FormatTranslatorName(Delegate translator)
+    {
+        return translator.Method.DeclaringType?.FullName ?? translator.Method.Name;
+    }
+
+    private delegate bool QueuedMessageTranslator(ref string message, string? color);
 }

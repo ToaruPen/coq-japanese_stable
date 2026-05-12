@@ -41,9 +41,22 @@ just test-l2g
   reflection path controls runtime UI behavior.
 - For C# patch, translator, observability, or target-method changes, use structural search before editing or before finalizing the patch:
   - use `just --list` to discover repo recipes when command routing is unclear
-  - use `just sg-cs '<pattern>' Mods/QudJP/Assemblies/src` to compare repo-owned call shapes
-  - use `just sg-cs '<pattern>'` with the default decompiled-source target when tracing upstream game producers
+  - use `just ast-search-cs '<pattern>' Mods/QudJP/Assemblies/src` to compare repo-owned call shapes
+  - use `just ast-search-cs '<pattern>'` with the default decompiled-source target when tracing upstream game producers
 - Optional examples: try patterns such as `DynamicTextObservability.RecordTransform($$$ARGS)`, `Popup.Show($$$ARGS)`, or the method/class name you are changing.
+- Use `just lsp-check` when the question is "does the repo-local C# language
+  server load this solution with the pinned SDK/tooling?" Run it after
+  `.sln`/`.csproj`/reference-stub/tool-manifest changes, when editor diagnostics
+  disagree with `dotnet build`, or before relying on language-server feedback in
+  a review. This is not a substitute for `just build`, `just test-l1`, `just
+  test-l2`, or `just test-l2g`; compiler/analyzer/test results remain the
+  behavior gate.
+- Codex has a repo-local `PostToolUse` hook at `.codex/hooks.json` that invokes
+  `.codex/hooks/lsp-check-after-tool.sh`. The Codex matcher is broad; the script
+  owns the real path/tool filtering. The hook intentionally does not run on
+  ordinary reads or shell-command reads; it triggers only for relevant C#
+  write-like tool use and applies a debounce so language-server checks do not
+  become a linear cost.
 - If structural search is intentionally skipped for C# route work, state the reason in the work note or PR summary.
 - Runtime diagnostics must route through `RuntimeDiagnostics`: use
   `RuntimeDiagnostics.LogVerboseProbe(...)` for verbose runtime probes and
@@ -58,6 +71,10 @@ just test-l2g
   observability cannot change visible translation behavior. When a probe depends
   on `#if` guards, add L1 policy coverage for the caller guard and release
   no-op branch.
+- Process-lifetime caches may cache only successful loads. Do not store an empty
+  result for file-missing, IO, XML/JSON parse, or other transient load failures;
+  log or surface the failure and leave the cache unset so a later runtime pass
+  can retry after deployment or file repair.
 - For `UnityEngine.Object`-derived coroutine hosts, components, transforms, or
   UI objects, use `== null` / `!= null` when lifetime semantics matter. Pattern
   null checks such as `is null` bypass Unity fake-null behavior.

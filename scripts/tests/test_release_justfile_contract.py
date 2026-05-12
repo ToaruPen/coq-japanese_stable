@@ -63,3 +63,15 @@ def test_workshop_upload_preflight_recipe_uses_dedicated_verifier() -> None:
     assert "--content-folder" in recipe
     assert "--vdf" in recipe
     assert "--expected-version" in recipe
+
+
+def test_agent_tool_recipes_have_readable_primary_names() -> None:
+    """Agent-facing tool recipes should expose descriptive names, not only abbreviations."""
+    justfile = _justfile_text()
+
+    assert '\nast-search-cs pattern path="":' in justfile
+    assert '\nast-search-py pattern path="scripts":' in justfile
+    assert '\nlsp-check solution="Mods/QudJP/Assemblies/QudJP.sln":' in justfile
+    assert 'sg-cs pattern path="":' in justfile
+    assert "just ast-search-cs" in justfile
+    assert 'lsp-diagnostics solution="Mods/QudJP/Assemblies/QudJP.sln":' in justfile

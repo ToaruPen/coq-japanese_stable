@@ -86,7 +86,7 @@ jobs:
           if [[ "$run_all" == true ]] || matches '^scripts/tools/' || matches_annals_extractor_tests; then
             roslyn_tools=true
           fi
-          if [[ "$run_all" == true ]] || matches '^(pyproject\.toml|uv\.lock|CHANGELOG\.md|Mods/QudJP/manifest\.json|docs/release-notes/)' || matches_python_scripts; then
+          if [[ "$run_all" == true ]] || matches '^(\.codex/hooks/|\.codex/hooks\.json|pyproject\.toml|uv\.lock|dotnet-tools\.json|package(-lock)?\.json|CHANGELOG\.md|Mods/QudJP/manifest\.json|docs/release-notes/)' || matches_python_scripts; then
             python=true
           fi
           if [[ "$run_all" == true ]] || matches '^(Mods/QudJP/Localization/|scripts/(check_translation_tokens|check_glossary_consistency|validate_pattern_routes)\.py|scripts/(translation_token_duplicate_baseline|glossary_consistency_baseline)\.json|justfile$)'; then
@@ -244,8 +244,8 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
 
-      - name: Install ast-grep
-        run: npm install -g @ast-grep/cli
+      - name: Install Node tool dependencies
+        run: npm ci
 
       - name: Install Python test tools
         run: pip install hypothesis pytest ruff

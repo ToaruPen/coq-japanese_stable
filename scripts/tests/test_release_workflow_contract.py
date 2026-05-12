@@ -39,8 +39,9 @@ def test_release_workflow_installs_python_test_tooling() -> None:
     workflow = _workflow_text()
 
     assert "pip install hypothesis pytest ruff" in workflow
-    assert "npm install -g @ast-grep/cli" in workflow
-    assert workflow.index("npm install -g @ast-grep/cli") < workflow.index("pytest scripts/tests/")
+    assert "npm ci" in workflow
+    assert "npm install -g @ast-grep/cli" not in workflow
+    assert workflow.index("npm ci") < workflow.index("pytest scripts/tests/")
 
 
 def test_release_workflow_creates_draft_github_release_without_steam_upload() -> None:
