@@ -121,6 +121,16 @@ public sealed class TradeUiPopupTranslationPatchTests
         "{0}を{1}で修理できる。",
         "これを8ドラムの真水で修理できる。")]
     [TestCase(
+        "That item isn't broken!",
+        "{0} isn't broken!",
+        "{0}は壊れていない！",
+        "その品は壊れていない！")]
+    [TestCase(
+        "Those items aren't broken!",
+        "{0} isn't broken!",
+        "{0}は壊れていない！",
+        "それらの品は壊れていない！")]
+    [TestCase(
         "You need 4 drams of fresh water to charge one of those.",
         "You need {0} to charge {1}.",
         "{1}を充電するには{0}が必要だ。",

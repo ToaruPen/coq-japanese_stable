@@ -109,6 +109,11 @@
       "text": "{0}を{1}で修理できる。"
     },
     {
+      "key": "{0} isn't broken!",
+      "context": "TradeUiPopupTranslationPatch",
+      "text": "{0}は壊れていない！"
+    },
+    {
       "key": "You need {0} to charge {1}.",
       "context": "TradeUiPopupTranslationPatch",
       "text": "{1}を充電するには{0}が必要だ。"

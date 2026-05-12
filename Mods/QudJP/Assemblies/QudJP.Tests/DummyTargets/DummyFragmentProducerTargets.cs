@@ -231,12 +231,61 @@ internal sealed class DummyEnclosingProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
 
+    public string QueuedMessageToSend { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool EnterEnclosure(DummyGameObject who, DummyGameEvent? e = null)
+    {
+        _ = who;
+        _ = e;
+        DummyPopupShow.Show(PopupMessageToShow);
+        DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, null, Capitalize: false);
+        return true;
+    }
+
     [MethodImpl(MethodImplOptions.NoInlining)]
     public bool ExitEnclosure(DummyGameObject who, DummyGameEvent? e = null, DummyEnclosedEffect? enc = null)
     {
         _ = who;
         _ = e;
         _ = enc;
+        DummyPopupShow.Show(PopupMessageToShow);
+        DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, null, Capitalize: false);
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool EnclosureExitImpeded(DummyGameObject who, bool showMessage = false, DummyEnclosedEffect? effect = null)
+    {
+        _ = who;
+        _ = showMessage;
+        _ = effect;
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+}
+
+internal sealed class DummyStairsDownProducerTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool HandleEvent(DummyInventoryActionEvent e)
+    {
+        _ = e;
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+}
+
+internal sealed class DummyStairsUpProducerTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool HandleEvent(DummyInventoryActionEvent e)
+    {
+        _ = e;
         DummyPopupShow.Show(PopupMessageToShow);
         return true;
     }
@@ -359,6 +408,108 @@ internal sealed class DummyBeguilingSifrahProducerTarget
     }
 
     private void ShowResultPopup(string methodName, DummyGameObject contextObject)
+    {
+        _ = methodName;
+        _ = contextObject;
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+}
+
+internal sealed class DummySifrahPureOwnerPopupProducerTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void BaetylOfferingSifrah(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(BaetylOfferingSifrah), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void FormalWaterRitualSifrah(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(FormalWaterRitualSifrah), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void HagglingSifrah(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(HagglingSifrah), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ItemModdingSifrah(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(ItemModdingSifrah), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ItemNamingSifrah(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(ItemNamingSifrah), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ReverseEngineeringSifrah(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(ReverseEngineeringSifrah), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ReverseEngineeringCheckEarlyExit(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(ReverseEngineeringCheckEarlyExit), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void RitualAttributeSacrificeCheckTokenUse(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(RitualAttributeSacrificeCheckTokenUse), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void RitualInvokeHigherBeingCheckTokenUse(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(RitualInvokeHigherBeingCheckTokenUse), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void SocialSecretCheckTokenUse(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(SocialSecretCheckTokenUse), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void TinkeringBitCheckTokenUse(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(TinkeringBitCheckTokenUse), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void TinkeringChargeCheckTokenUse(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(TinkeringChargeCheckTokenUse), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void TinkeringComputePowerCheckTokenUse(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(TinkeringComputePowerCheckTokenUse), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void TinkeringLiquidCheckTokenUse(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(TinkeringLiquidCheckTokenUse), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void SifrahGameMakeMoveForSlot(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(SifrahGameMakeMoveForSlot), contextObject);
+    }
+
+    private void ShowPopup(string methodName, DummyGameObject contextObject)
     {
         _ = methodName;
         _ = contextObject;

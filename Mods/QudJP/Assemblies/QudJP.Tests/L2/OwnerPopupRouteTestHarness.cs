@@ -68,9 +68,11 @@ internal static class OwnerPopupRouteTestHarness
 
     private static void PatchOwner(Harmony harmony, Type patchType, MethodInfo original)
     {
+        var prefix = AccessTools.Method(patchType, "Prefix", [typeof(MethodBase)])
+                     ?? RequireMethod(patchType, "Prefix");
         harmony.Patch(
             original: original,
-            prefix: new HarmonyMethod(RequireMethod(patchType, "Prefix")),
+            prefix: new HarmonyMethod(prefix),
             finalizer: new HarmonyMethod(RequireMethod(patchType, "Finalizer", typeof(Exception))));
     }
 

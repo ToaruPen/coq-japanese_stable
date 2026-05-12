@@ -35,6 +35,8 @@ public sealed class TradeUiPopupTranslationPatchTests
         DynamicTextObservability.ResetForTests();
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", Utf8WithoutBom);
         DummyTradeUiPopupTarget.Reset();
+        DummyPopupShow.Reset();
+        DummyPopupTarget.Reset();
     }
 
     [TearDown]
@@ -251,6 +253,199 @@ public sealed class TradeUiPopupTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesDoVendorRepairBrokenMessages_WhenPatched()
+    {
+        WriteDictionary(("{0} isn't broken!", "{0}は壊れていない！"));
+
+        using var patch = PatchMethod(nameof(DummyTradeUiPopupTarget.Show));
+
+        DummyTradeUiPopupTarget.Show("{{R|That item isn't broken!}}");
+        var singular = DummyTradeUiPopupTarget.LastShowMessage;
+
+        DummyTradeUiPopupTarget.Show("Those items aren't broken!");
+        var plural = DummyTradeUiPopupTarget.LastShowMessage;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(singular, Is.EqualTo("{{R|その品は壊れていない！}}"));
+            Assert.That(plural, Is.EqualTo("それらの品は壊れていない！"));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.RepairBroken"), Is.EqualTo(2));
+        });
+    }
+
+    [Test]
+    public void Prefix_RecordsTryRemoveAndRepairOwnerTemplateRoutes_WhenPatched()
+    {
+        WriteDictionary(
+            ("Trade could not be completed, {0} couldn't drop object: {1}", "取引を完了できなかった。{0}は{1}を落とせなかった。"),
+            ("{0} are too complex for {1} to repair.", "{0}は{1}には複雑すぎて修理できない。"),
+            ("You need {0} to repair {1}.", "{1}を修理するには{0}が必要だ。"),
+            ("You may repair {0} for {1}.", "{0}を{1}で修理できる。"),
+            ("{0} isn't broken!", "{0}は壊れていない！"));
+
+        using var showPatch = PatchMethod(nameof(DummyTradeUiPopupTarget.Show));
+        using var showBlockPatch = PatchMethod(nameof(DummyTradeUiPopupTarget.ShowBlock));
+        using var showYesNoPatch = PatchMethod(nameof(DummyTradeUiPopupTarget.ShowYesNo));
+
+        _ = DummyTradeUiPopupTarget.ShowBlock("Trade could not be completed, you couldn't drop object: {{Y|laser rifle}}");
+        DummyTradeUiPopupTarget.Show("These items are too complex for {{G|商人}} to repair.");
+        DummyTradeUiPopupTarget.Show("You need {{C|8}} drams of fresh water to repair those.");
+        _ = DummyTradeUiPopupTarget.ShowYesNo("You may repair this for {{C|8}} drams of fresh water.");
+        DummyTradeUiPopupTarget.Show("That item isn't broken!");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyTradeUiPopupTarget.LastShowBlockMessage, Is.EqualTo("取引を完了できなかった。あなたは{{Y|laser rifle}}を落とせなかった。"));
+            Assert.That(DummyTradeUiPopupTarget.LastShowYesNoMessage, Is.EqualTo("これを{{C|8}}ドラムの真水で修理できる。"));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.TryRemove"), Is.EqualTo(1));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.RepairTooComplex"), Is.EqualTo(1));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.RepairNeed"), Is.EqualTo(1));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.RepairQuestion"), Is.EqualTo(1));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.RepairBroken"), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void VendorOwnerPatch_TranslatesTryRemoveShowBlock_WhenOwnerPatched()
+    {
+        WriteDictionary(
+            ("Trade could not be completed, {0} couldn't drop object: {1}", "取引を完了できなかった。{0}は{1}を落とせなかった。"));
+
+        using var popupPatch = PatchPopupTranslationShowBlock();
+        using var ownerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.TryRemove));
+        var target = new DummyTradeUiVendorPopupProducerTarget
+        {
+            PopupMessageToShow = "Trade could not be completed, you couldn't drop object: {{Y|laser rifle}}",
+        };
+
+        target.TryRemove();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("取引を完了できなかった。あなたは{{Y|laser rifle}}を落とせなかった。"));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.TryRemove"), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void VendorOwnerPatch_DoesNotTranslateTryRemoveShowBlock_WhenOwnerAbsent()
+    {
+        WriteDictionary(
+            ("Trade could not be completed, {0} couldn't drop object: {1}", "取引を完了できなかった。{0}は{1}を落とせなかった。"));
+
+        using var popupPatch = PatchPopupTranslationShowBlock();
+        const string source = "Trade could not be completed, you couldn't drop object: {{Y|laser rifle}}";
+
+        DummyPopupTarget.ShowBlock(source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo(source));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.TryRemove"), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void VendorOwnerPatch_TranslatesRepairShowAndConfirmationPopups_WhenOwnerPatched()
+    {
+        WriteDictionary(
+            ("{0} are too complex for {1} to repair.", "{0}は{1}には複雑すぎて修理できない。"),
+            ("You need {0} to repair {1}.", "{1}を修理するには{0}が必要だ。"),
+            ("You may repair {0} for {1}.", "{0}を{1}で修理できる。"));
+
+        using var showPatch = PatchPopupShow(nameof(DummyPopupShow.Show));
+        using var showYesNoPatch = PatchPopupShow(nameof(DummyPopupShow.ShowYesNo));
+        using var ownerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.DoVendorRepair));
+
+        var target = new DummyTradeUiVendorPopupProducerTarget
+        {
+            PopupMessageToShow = "These items are too complex for {{G|商人}} to repair.",
+        };
+        target.DoVendorRepair();
+        var tooComplex = DummyPopupShow.LastShowMessage;
+
+        target.PopupMessageToShow = "You need {{C|8}} drams of fresh water to repair those.";
+        target.DoVendorRepair();
+
+        target.PopupMessageToShow = "You may repair this for {{C|8}} drams of fresh water.";
+        target.UseConfirmationPopup = true;
+        target.DoVendorRepair();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(tooComplex, Is.EqualTo("これらの品は{{G|商人}}には複雑すぎて修理できない。"));
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("それらを修理するには{{C|8}}ドラムの真水が必要だ。"));
+            Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo("これを{{C|8}}ドラムの真水で修理できる。"));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.RepairTooComplex"), Is.EqualTo(1));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.RepairNeed"), Is.EqualTo(1));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.RepairQuestion"), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void VendorOwnerPatch_TranslatesRepairBrokenPopups_WhenOwnerPatched()
+    {
+        WriteDictionary(("{0} isn't broken!", "{0}は壊れていない！"));
+
+        using var showPatch = PatchPopupShow(nameof(DummyPopupShow.Show));
+        using var ownerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.DoVendorRepair));
+        var target = new DummyTradeUiVendorPopupProducerTarget
+        {
+            PopupMessageToShow = "{{R|That item isn't broken!}}",
+        };
+
+        target.DoVendorRepair();
+        var singular = DummyPopupShow.LastShowMessage;
+
+        target.PopupMessageToShow = "Those items aren't broken!";
+        target.DoVendorRepair();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(singular, Is.EqualTo("{{R|その品は壊れていない！}}"));
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("それらの品は壊れていない！"));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.RepairBroken"), Is.EqualTo(2));
+        });
+    }
+
+    [Test]
+    public void VendorOwnerPatch_DoesNotRetranslateDirectMarkedRepairPopup_WhenOwnerPatched()
+    {
+        WriteDictionary(("{0} isn't broken!", "{0}は壊れていない！"));
+
+        using var showPatch = PatchPopupShow(nameof(DummyPopupShow.Show));
+        using var ownerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.DoVendorRepair));
+        var target = new DummyTradeUiVendorPopupProducerTarget
+        {
+            PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation("That item isn't broken!"),
+        };
+
+        target.DoVendorRepair();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("That item isn't broken!"));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.RepairBroken"), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void VendorOwnerPatch_LeavesEmptyRepairPopupUnchanged_WhenOwnerPatched()
+    {
+        using var showPatch = PatchPopupShow(nameof(DummyPopupShow.Show));
+        using var ownerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.DoVendorRepair));
+        var target = new DummyTradeUiVendorPopupProducerTarget();
+
+        target.DoVendorRepair();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.RepairBroken"), Is.Zero);
+        });
+    }
+
+    [Test]
     public void Prefix_StripsRuntimeControlHeader_ForHasNothingToTrade()
     {
         using var patch = PatchMethod(nameof(DummyTradeUiPopupTarget.Show));
@@ -339,10 +534,48 @@ public sealed class TradeUiPopupTranslationPatchTests
         return new HarmonyPatchScope(harmony, harmonyId);
     }
 
+    private static IDisposable PatchPopupShow(string methodName)
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupShow), methodName),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+        return new HarmonyPatchScope(harmony, harmonyId);
+    }
+
+    private static IDisposable PatchPopupTranslationShowBlock()
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+        return new HarmonyPatchScope(harmony, harmonyId);
+    }
+
+    private static IDisposable PatchVendorOwner(string methodName)
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyTradeUiVendorPopupProducerTarget), methodName),
+            prefix: new HarmonyMethod(RequireMethod(typeof(TradeUiVendorPopupTranslationPatch), nameof(TradeUiVendorPopupTranslationPatch.Prefix))),
+            finalizer: new HarmonyMethod(RequireMethod(typeof(TradeUiVendorPopupTranslationPatch), nameof(TradeUiVendorPopupTranslationPatch.Finalizer))));
+        return new HarmonyPatchScope(harmony, harmonyId);
+    }
+
     private static MethodInfo RequireMethod(Type type, string methodName)
     {
         return AccessTools.Method(type, methodName)
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static int TradeUiPopupHitCount(string family)
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(TradeUiPopupTranslationPatch),
+            family);
     }
 
     private static string GetLocalizationRoot()

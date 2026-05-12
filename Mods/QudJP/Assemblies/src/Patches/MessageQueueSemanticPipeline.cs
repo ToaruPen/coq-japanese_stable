@@ -30,6 +30,7 @@ internal static class MessageQueueSemanticPipeline
         LightManipulationTranslationPatch.TryTranslateQueuedMessage,
         LatchesOnTranslationPatch.TryTranslateQueuedMessage,
         AsleepOwnerTranslationPatch.TryTranslateQueuedMessage,
+        EnclosingTranslationPatch.TryTranslateQueuedMessage,
         BuddingTranslationPatch.TryTranslateQueuedMessage,
         BeguilingTranslationPatch.TryTranslateQueuedMessage,
         SvardymSystemTranslationPatch.TryTranslateQueuedMessage,

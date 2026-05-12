@@ -436,7 +436,8 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(ZoneManagerGenerateZoneTranslationPatch), "GenerateZone", "XRL.World.ZoneManager", "System.Void", new[] { "System.String" })]
     [TestCase(typeof(BedTranslationPatch), "AttemptSleep", "XRL.World.Parts.Bed", "System.Void", new[] { "XRL.World.GameObject", "System.Boolean&", "System.Boolean&", "System.Boolean&" })]
     [TestCase(typeof(ChairTranslationPatch), "SitDown", "XRL.World.Parts.Chair", "System.Boolean", new[] { "XRL.World.GameObject", "XRL.World.IEvent" })]
-    [TestCase(typeof(EnclosingTranslationPatch), "ExitEnclosure", "XRL.World.Parts.Enclosing", "System.Boolean", new[] { "XRL.World.GameObject", "XRL.World.IEvent", "XRL.World.Effects.Enclosed" })]
+    [TestCase(typeof(StairsDownTranslationPatch), "HandleEvent", "XRL.World.Parts.StairsDown", "System.Boolean", new[] { "XRL.World.InventoryActionEvent" })]
+    [TestCase(typeof(StairsUpTranslationPatch), "HandleEvent", "XRL.World.Parts.StairsUp", "System.Boolean", new[] { "XRL.World.InventoryActionEvent" })]
     [TestCase(typeof(GameSummaryScreenMenuBarsTranslationPatch), "UpdateMenuBars", "Qud.UI.GameSummaryScreen", "System.Void", new string[0])]
     [TestCase(typeof(GameSummaryScreenShowTranslationPatch), "_ShowGameSummary", "Qud.UI.GameSummaryScreen", "System.Threading.Tasks.Task`1[[System.Boolean]]", new[] { "System.String", "System.String", "System.String", "System.Boolean" })]
     [TestCase(typeof(MainMenuRowTranslationPatch), "setData", "MainMenuRow", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
@@ -629,6 +630,11 @@ public sealed class TargetMethodResolutionTests
         "System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
         "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
     })]
+    [TestCase(typeof(TradeUiVendorPopupTranslationPatch), new[]
+    {
+        "XRL.World.GameObject|XRL.World.GameObject|System.Collections.Generic.List`1[[XRL.World.GameObject]]|System.Collections.Generic.List`1[[XRL.World.GameObject]]|System.Boolean",
+        "XRL.World.GameObject|XRL.World.GameObject",
+    })]
     [TestCase(typeof(SteamWorkshopUploaderViewTranslationPatch), new string[0])]
     [TestCase(typeof(ModInfoTranslationPatch), new[]
     {
@@ -718,6 +724,12 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(DesalinationPelletTranslationPatch), new[]
     {
         "XRL.World.InventoryActionEvent",
+    })]
+    [TestCase(typeof(EnclosingTranslationPatch), new[]
+    {
+        "XRL.World.GameObject|XRL.World.IEvent",
+        "XRL.World.GameObject|XRL.World.IEvent|XRL.World.Effects.Enclosed",
+        "XRL.World.GameObject|System.Boolean|XRL.World.Effects.Enclosed",
     })]
     [TestCase(typeof(ClonelingVehicleTranslationPatch), new[]
     {
@@ -869,6 +881,24 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.ItemModdingSifrah|ResultPartialSuccess|System.Void|XRL.World.GameObject",
         "XRL.World.ItemModdingSifrah|ResultSuccess|System.Void|XRL.World.GameObject",
         "XRL.World.ItemModdingSifrah|ResultCriticalSuccess|System.Void|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(SifrahPureOwnerPopupTranslationPatch), new[]
+    {
+        "XRL.World.BaetylOfferingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32",
+        "XRL.World.FormalWaterRitualSifrah|.ctor|System.Void|XRL.World.GameObject",
+        "XRL.World.HagglingSifrah|.ctor|System.Void|XRL.World.GameObject",
+        "XRL.World.ItemModdingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32",
+        "XRL.World.ItemNamingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32",
+        "XRL.World.ReverseEngineeringSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32|XRL.World.Tinkering.TinkerData",
+        "XRL.World.ReverseEngineeringSifrah|CheckEarlyExit|System.Boolean|XRL.World.GameObject",
+        "XRL.World.RitualSifrahTokenAttributeSacrifice|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        "XRL.World.RitualSifrahTokenInvokeHigherBeing|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        "XRL.World.SocialSifrahTokenSecret|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        "XRL.World.TinkeringSifrahTokenBit|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        "XRL.World.TinkeringSifrahTokenCharge|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        "XRL.World.TinkeringSifrahTokenComputePower|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        "XRL.World.TinkeringSifrahTokenLiquid|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        "XRL.SifrahGame|MakeMoveForSlot|System.Boolean|System.Int32|XRL.World.GameObject",
     })]
     [TestCase(typeof(SunderMindTranslationPatch), new[]
     {
@@ -1228,6 +1258,12 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Campfire|Preserve|System.Boolean",
         "XRL.World.Parts.Campfire|PreserveExotic|System.Boolean",
     })]
+    [TestCase(typeof(EnclosingTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Enclosing|EnterEnclosure|System.Boolean|XRL.World.GameObject|XRL.World.IEvent",
+        "XRL.World.Parts.Enclosing|ExitEnclosure|System.Boolean|XRL.World.GameObject|XRL.World.IEvent|XRL.World.Effects.Enclosed",
+        "XRL.World.Parts.Enclosing|EnclosureExitImpeded|System.Boolean|XRL.World.GameObject|System.Boolean|XRL.World.Effects.Enclosed",
+    })]
     public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
     {
         var targetMethodsMethod = patchType.GetMethod("TargetMethods", BindingFlags.NonPublic | BindingFlags.Static);
@@ -1239,13 +1275,72 @@ public sealed class TargetMethodResolutionTests
         var actualSignatures = new List<string>();
         foreach (var item in result!)
         {
-            if (item is MethodInfo methodInfo)
+            if (item is MethodBase methodBase)
             {
-                actualSignatures.Add(FullMethodSignature(methodInfo));
+                actualSignatures.Add(FullMethodSignature(methodBase));
             }
         }
 
         Assert.That(actualSignatures, Is.EquivalentTo(expectedSignatures));
+    }
+
+    [Test]
+    public void TradeUiVendorPopupProducerMethods_ResolveExpectedFullSignatures()
+    {
+        var tradeUiType = Type.GetType("XRL.UI.TradeUI, Assembly-CSharp")
+            ?? throw new InvalidOperationException("XRL.UI.TradeUI was not found.");
+        var gameObjectType = Type.GetType("XRL.World.GameObject, Assembly-CSharp")
+            ?? throw new InvalidOperationException("XRL.World.GameObject was not found.");
+        var listOfGameObjectType = typeof(List<>).MakeGenericType(gameObjectType);
+
+        var tryRemove = tradeUiType.GetMethod(
+            "TryRemove",
+            BindingFlags.NonPublic | BindingFlags.Static,
+            null,
+            [gameObjectType, gameObjectType, listOfGameObjectType, listOfGameObjectType, typeof(bool)],
+            null);
+        var doVendorRepair = tradeUiType.GetMethod(
+            "DoVendorRepair",
+            BindingFlags.Public | BindingFlags.Static,
+            null,
+            [gameObjectType, gameObjectType],
+            null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(tryRemove, Is.Not.Null, "XRL.UI.TradeUI.TryRemove signature changed.");
+            Assert.That(doVendorRepair, Is.Not.Null, "XRL.UI.TradeUI.DoVendorRepair signature changed.");
+        });
+
+        var actualSignatures = new[]
+        {
+            FullMethodSignature(tryRemove!),
+            FullMethodSignature(doVendorRepair!),
+        };
+
+        Assert.That(actualSignatures, Is.EquivalentTo(new[]
+        {
+            "XRL.UI.TradeUI|TryRemove|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.Collections.Generic.List`1[[XRL.World.GameObject]]|System.Collections.Generic.List`1[[XRL.World.GameObject]]|System.Boolean",
+            "XRL.UI.TradeUI|DoVendorRepair|System.Void|XRL.World.GameObject|XRL.World.GameObject",
+        }));
+    }
+
+    [Test]
+    public void MovementStateOwnerPatches_ResolveExpectedFullSignatures()
+    {
+        var signatures = ResolveTargetMethodSignatures(typeof(EnclosingTranslationPatch));
+        var stairsDown = InvokeTargetMethod(typeof(StairsDownTranslationPatch)) as MethodInfo;
+        var stairsUp = InvokeTargetMethod(typeof(StairsUpTranslationPatch)) as MethodInfo;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(signatures, Does.Contain("XRL.World.Parts.Enclosing|EnterEnclosure|System.Boolean|XRL.World.GameObject|XRL.World.IEvent"));
+            Assert.That(signatures, Does.Contain("XRL.World.Parts.Enclosing|EnclosureExitImpeded|System.Boolean|XRL.World.GameObject|System.Boolean|XRL.World.Effects.Enclosed"));
+            Assert.That(stairsDown, Is.Not.Null);
+            Assert.That(FullMethodSignature(stairsDown!), Is.EqualTo("XRL.World.Parts.StairsDown|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent"));
+            Assert.That(stairsUp, Is.Not.Null);
+            Assert.That(FullMethodSignature(stairsUp!), Is.EqualTo("XRL.World.Parts.StairsUp|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent"));
+        });
     }
 
 #if HAS_GAME_DLL
@@ -1335,33 +1430,40 @@ public sealed class TargetMethodResolutionTests
         var actualSignatures = new List<string>();
         foreach (var item in result!)
         {
-            if (item is not MethodInfo methodInfo)
+            if (item is not MethodBase methodBase)
             {
                 continue;
             }
 
-            Assert.That(
-                methodInfo.GetCustomAttribute<ObsoleteAttribute>(),
-                Is.Null,
-                $"{patchType.FullName} resolved obsolete popup method {methodInfo.DeclaringType?.FullName}.{methodInfo.Name}.");
+            if (methodBase is MethodInfo methodInfo)
+            {
+                Assert.That(
+                    methodInfo.GetCustomAttribute<ObsoleteAttribute>(),
+                    Is.Null,
+                    $"{patchType.FullName} resolved obsolete popup method {methodInfo.DeclaringType?.FullName}.{methodInfo.Name}.");
+            }
 
-            actualSignatures.Add(FullMethodSignature(methodInfo));
+            actualSignatures.Add(FullMethodSignature(methodBase));
         }
 
         Assert.That(actualSignatures, Is.EquivalentTo(expectedSignatures));
     }
 
-    private static string FullMethodSignature(MethodInfo methodInfo)
+    private static string FullMethodSignature(MethodBase methodBase)
     {
+        var returnType = methodBase is MethodInfo methodInfo
+            ? NormalizeTypeName(methodInfo.ReturnType.FullName)
+            : "System.Void";
+
         return string.Join(
             "|",
             new[]
             {
-                methodInfo.DeclaringType?.FullName ?? string.Empty,
-                methodInfo.Name,
-                NormalizeTypeName(methodInfo.ReturnType.FullName),
+                methodBase.DeclaringType?.FullName ?? string.Empty,
+                methodBase.Name,
+                returnType,
             }.Concat(Array.ConvertAll(
-                methodInfo.GetParameters(),
+                methodBase.GetParameters(),
                 static parameter => NormalizeTypeName(parameter.ParameterType.FullName))));
     }
 
