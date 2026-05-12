@@ -988,6 +988,50 @@ def _status_screen_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _tinkering_build_popup_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.UI/TinkeringScreen.cs::XRL.UI.TinkeringScreen.PerformUITinkerBuild",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/TinkeringBuildPopupTranslationPatch.cs",
+                    (
+                        "TinkeringBuildPopupTranslationPatch",
+                        "TryTranslatePopupMessage",
+                        "You don't have the required ingredient",
+                        "You tinker up",
+                        "PerformUITinkerBuild",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("TinkeringBuildPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/TinkeringBuildPopupTranslationPatchTests.cs",
+                    (
+                        "PerformUITinkerBuild_TranslatesMissingIngredientPopup_WhenOwnerPatched",
+                        "PerformUITinkerBuild_TranslatesSuccessPopups_WhenOwnerPatched",
+                        "PerformUITinkerBuild_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "PerformUITinkerBuild_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "PerformUITinkerBuild_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "nameof(DummyTinkeringBuildTarget.PerformUITinkerBuild)",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(TinkeringBuildPopupTranslationPatch)",
+                        '"XRL.UI.TinkeringScreen"',
+                        '"PerformUITinkerBuild"',
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _campfire_preserve_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/CampfirePreserveTranslationPatch.cs",
@@ -3953,6 +3997,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_keybinds_screen_conflict_families(),
     *_ability_manager_popup_families(),
     *_cooking_runtime_families(),
+    *_tinkering_build_popup_family(),
     *_status_screen_popup_families(),
     *_campfire_preserve_families(),
     *_reality_stabilized_event_families(),

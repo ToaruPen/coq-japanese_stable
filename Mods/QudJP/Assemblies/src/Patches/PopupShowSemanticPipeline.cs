@@ -30,6 +30,7 @@ internal static class PopupShowSemanticPipeline
         CampfireCookAvailabilityTranslationPatch.TryTranslatePopupMessage,
         CampfirePreserveTranslationPatch.TryTranslatePopupMessage,
         CookingRuntimeTranslationPatch.TryTranslatePopupMessage,
+        TinkeringBuildPopupTranslationPatch.TryTranslatePopupMessage,
         StatusScreenPopupTranslationPatch.TryTranslatePopupMessage,
         TeleprojectorTranslationPatch.TryTranslatePopupMessage,
         CyberneticsMedassistModuleTranslationPatch.TryTranslatePopupMessage,
