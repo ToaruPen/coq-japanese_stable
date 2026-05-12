@@ -728,6 +728,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.InventoryActionEvent",
     })]
+    [TestCase(typeof(ModMagnetizedTranslationPatch), new[]
+    {
+        "",
+    })]
     [TestCase(typeof(EnclosingTranslationPatch), new[]
     {
         "XRL.World.GameObject|XRL.World.IEvent",
@@ -1277,6 +1281,10 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.LiquidVolume|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.LiquidVolume|Pour|System.Boolean|System.Boolean&|XRL.World.GameObject|XRL.World.Cell|System.Boolean|System.Boolean|System.Int32|System.Boolean",
         "XRL.World.Parts.LiquidVolume|PerformFill|System.Boolean|XRL.World.GameObject|System.Boolean&|System.Boolean",
+    })]
+    [TestCase(typeof(ModMagnetizedTranslationPatch), new[]
+    {
+        "XRL.World.Parts.ModMagnetized|CheckFloating|System.Void",
     })]
     public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
     {

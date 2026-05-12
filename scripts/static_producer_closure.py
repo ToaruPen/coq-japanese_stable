@@ -2261,6 +2261,55 @@ def _integrated_weapon_hosts_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _mod_magnetized_families() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/ModMagnetized.cs::XRL.World.Parts.ModMagnetized.CheckFloating",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/ModMagnetizedTranslationPatch.cs",
+                    (
+                        "XRL.World.Parts.ModMagnetized",
+                        "CheckFloating",
+                        "TryTranslatePopupMessage",
+                        "DoesVerbRouteTranslator.TryTranslateMarkedMessage",
+                        "DoesVerbRouteTranslator.TryTranslatePlainSentence",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("ModMagnetizedTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L1/DoesVerbFamilyTests.cs",
+                    (
+                        "The 装置 falls to the ground; you pick it up.",
+                        "The 熊 falls to the ground.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ModMagnetizedTranslationPatchTests.cs",
+                    (
+                        "CheckFloating_TranslatesDoesVerbPopup_WhenOwnerPatched",
+                        "CheckFloating_LeavesPlainPopupUnchanged_WhenOwnerAbsent",
+                        "CheckFloating_StripsDirectMarkerWithoutRecordingTransform_WhenOwnerPatched",
+                        "CheckFloating_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "nameof(DummyModMagnetizedProducerTarget.CheckFloating)",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(ModMagnetizedTranslationPatch)",
+                        "XRL.World.Parts.ModMagnetized|CheckFloating|System.Void",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _boost_statistic_families() -> tuple[CoveredOwnerFamily, ...]:
     common_evidence = (
         EvidenceFile(
@@ -3980,6 +4029,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_tonic_families(),
     *_xrl_game_families(),
     *_integrated_weapon_hosts_families(),
+    *_mod_magnetized_families(),
     *_boost_statistic_families(),
     *_emboldened_families(),
     *_fungal_spore_infection_families(),

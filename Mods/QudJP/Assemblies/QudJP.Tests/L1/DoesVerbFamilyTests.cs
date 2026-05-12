@@ -507,6 +507,7 @@ public sealed class DoesVerbFamilyTests
     [TestCase("The 生物 atomizes and recombines into a 熊.", "生物は原子分解し、熊として再結合した")]
     [TestCase("The 宝石 stops gleaming.", "宝石の輝きが消えた")]
     [TestCase("The 熊 shies away from you.", "熊はあなたから怯えて離れた")]
+    [TestCase("The 装置 falls to the ground; you pick it up.", "装置は地面に落ちた。あなたはそれを拾った。")]
     [TestCase("The 装置 ceases floating near you.", "装置はあなたの近くで浮遊するのをやめた")]
     [TestCase("The 装置 collapses under the pressure of normality and implodes.", "装置は正常性の圧力に耐えきれず崩壊し、内破した")]
     [TestCase("The 金属片 becomes magnetized!", "金属片は磁化された！")]
