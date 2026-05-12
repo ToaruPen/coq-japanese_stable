@@ -2261,6 +2261,48 @@ def _integrated_weapon_hosts_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _supplyable_integrated_host_popup_families() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/SupplyableIntegratedHost.cs::XRL.World.Parts.SupplyableIntegratedHost.AttemptSupply",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SupplyableIntegratedHostPopupTranslationPatch.cs",
+                    (
+                        "SupplyableIntegratedHostPopupTranslationPatch",
+                        "TryTranslatePopupMessage",
+                        "NoNeededSuppliesPattern",
+                        "NoHeldSuppliesPattern",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SupplyableIntegratedHostPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SupplyableIntegratedHostPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSupplyableIntegratedHostPopup_WhenOwnerPatched",
+                        "needs no supplies",
+                        "You have no supplies that the",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_StripsDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SupplyableIntegratedHostPopupTranslationPatch)",
+                        "XRL.World.Parts.SupplyableIntegratedHost|AttemptSupply|System.Boolean|XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _boost_statistic_families() -> tuple[CoveredOwnerFamily, ...]:
     common_evidence = (
         EvidenceFile(
@@ -3980,6 +4022,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_tonic_families(),
     *_xrl_game_families(),
     *_integrated_weapon_hosts_families(),
+    *_supplyable_integrated_host_popup_families(),
     *_boost_statistic_families(),
     *_emboldened_families(),
     *_fungal_spore_infection_families(),
