@@ -66,6 +66,7 @@ internal static class MessageQueueSemanticPipeline
         PhasedTranslationPatch.TryTranslateQueuedMessage,
         PersuasionRebukeRobotTranslationPatch.TryTranslateQueuedMessage,
         TonicTranslationPatch.TryTranslateQueuedMessage,
+        TonicApplicatorTranslationPatch.TryTranslateQueuedMessage,
         XrlGameTranslationPatch.TryTranslateQueuedMessage,
         BoostStatisticTranslationPatch.TryTranslateQueuedMessage,
         EmboldenedTranslationPatch.TryTranslateQueuedMessage,

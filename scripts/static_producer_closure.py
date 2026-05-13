@@ -3314,6 +3314,61 @@ def _tonic_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _tonic_applicator_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/TonicApplicatorTranslationPatch.cs",
+        (
+            "TonicApplicatorTranslationPatch",
+            "LoveTonicApplicator",
+            "SphynxSalt_Tonic_Applicator",
+            "LoveNoEffectPattern",
+            "SphynxSaltApplyPattern",
+            "TryTranslateQueuedMessage",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("TonicApplicatorTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/TonicApplicatorTranslationPatchTests.cs",
+        (
+            "TonicApplicator_TranslatesQueuedMessage_WhenOwnerPatched",
+            "TonicApplicator_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+            "TonicApplicator_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "TonicApplicator_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "nameof(DummyTonicApplicatorTarget.LoveTonicFireEvent)",
+            "nameof(DummyTonicApplicatorTarget.SphynxSaltFireEvent)",
+            "looks you over and metabolizes the love tonic with no effect",
+            "applies {{C|a sphynx salt injector}}",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(TonicApplicatorTranslationPatch)",
+            "XRL.World.Parts.LoveTonicApplicator|FireEvent|System.Boolean|XRL.World.Event",
+            "XRL.World.Parts.SphynxSalt_Tonic_Applicator|FireEvent|System.Boolean|XRL.World.Event",
+        ),
+    )
+    evidence_files = (patch, pipeline, tests, target_tests)
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/LoveTonicApplicator.cs::XRL.World.Parts.LoveTonicApplicator.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=evidence_files,
+        ),
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Parts/SphynxSalt_Tonic_Applicator.cs::"
+                "XRL.World.Parts.SphynxSalt_Tonic_Applicator.FireEvent"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=evidence_files,
+        ),
+    )
+
+
 def _xrl_game_families() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -8168,6 +8223,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_persuasion_rebuke_robot_families(),
     *_nephal_properties_families(),
     *_tonic_families(),
+    *_tonic_applicator_families(),
     *_xrl_game_families(),
     *_integrated_weapon_hosts_families(),
     *_boost_statistic_families(),

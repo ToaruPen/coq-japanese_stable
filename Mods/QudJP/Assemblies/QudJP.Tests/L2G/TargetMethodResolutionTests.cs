@@ -1100,6 +1100,11 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.Tonic|FireEvent|System.Boolean|XRL.World.Event",
     })]
+    [TestCase(typeof(TonicApplicatorTranslationPatch), new[]
+    {
+        "XRL.World.Parts.LoveTonicApplicator|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.SphynxSalt_Tonic_Applicator|FireEvent|System.Boolean|XRL.World.Event",
+    })]
     [TestCase(typeof(XrlGameTranslationPatch), new[]
     {
         "XRL.XRLGame|FinishQuestStep|System.Boolean|XRL.World.Quest|System.String|System.Int32|System.Boolean|System.String",
