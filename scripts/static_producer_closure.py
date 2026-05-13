@@ -3351,6 +3351,9 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             "SystemStaticCheckpointOn_TranslatesFixedQueuedMessage_WhenOwnerPatched",
             "SystemStaticSetHolyZone_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "SystemStaticFireEvent_TranslatesFixedQueuedMessages_WhenOwnerPatched",
+            "SystemStaticQuake_TranslatesFixedQueuedMessages_WhenOwnerPatched",
+            "SystemStaticQuake_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "SystemStaticQuake_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
             "SystemStatic_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
             "SystemStatic_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
             "FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
@@ -3362,6 +3365,8 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             "Checkpointing enabled",
             "You feel a sense of holiness here.",
             "&CA flash of insight overcomes you!",
+            "The ground shakes violently!",
+            "The ground shakes violently and loose rock falls from the ceiling!",
         ),
     )
     pipeline = EvidenceFile(
@@ -3425,6 +3430,210 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
                     ),
                 ),
                 dictionary,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/TrembleEarthquakes.cs::XRL.World.Parts.TrembleEarthquakes.Quake",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SystemStaticMessageTranslationPatch)",
+                        "XRL.World.Parts.TrembleEarthquakes|Quake|System.Void",
+                    ),
+                ),
+                dictionary,
+            ),
+        ),
+    )
+
+
+def _existing_popup_owner_route_families() -> tuple[CoveredOwnerFamily, ...]:
+    mutations_api_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/MutationsApiTranslationPatchTests.cs",
+        (
+            "BuyRandomMutation_TranslatesConfirmationMessage_WhenPatched",
+            "BuyRandomMutation_PreservesColorTagsInConfirmationMessage_WhenPatched",
+            "TryTranslatePopupMessage_ReturnsFalse_ForEmptyInput",
+            "TryTranslatePopupMessage_ReturnsFalse_ForDirectTranslationMarker",
+        ),
+    )
+    high_scores_delete_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/HighScoresDeletePopupTranslationPatchTests.cs",
+        (
+            "HandleDelete_TranslatesDeleteConfirmationPopup_WhenOwnerPatched",
+            "HandleDelete_DoesNotTranslateDeleteConfirmationPopup_WhenOwnerAbsent",
+            "HandleDelete_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "HandleDelete_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+        ),
+    )
+    old_save_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/OldSaveContinueMenuPopupTranslationPatchTests.cs",
+        (
+            "Patch_TranslatesOldSavePopup_WhenOwnerPatched",
+            "Patch_DoesNotRecordOwnerRoute_WhenOwnerAbsent",
+            "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+        ),
+    )
+    golem_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/GolemQuestSelectionPopupTranslationPatchTests.cs",
+        (
+            "Patch_TranslatesGolemSelectionPopups_WhenOwnerPatched",
+            "Patch_DoesNotTranslateGolemSelectionPopup_WhenOwnerAbsent",
+            "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+        ),
+    )
+    popup_show_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        (
+            "OldSaveContinueMenuPopupTranslationPatch.TryTranslatePopupMessage",
+            "GolemQuestSelectionPopupTranslationPatch.TryTranslatePopupMessage",
+            "HighScoresDeletePopupTranslationPatch.TryTranslatePopupMessage",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="Qud.API/MutationsAPI.cs::Qud.API.MutationsAPI.BuyRandomMutation",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MutationsApiTranslationPatch.cs",
+                    ("MutationsApiTranslationPatch", "BuyRandomMutation", "BuyPromptPattern"),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+                    ("MutationsApiTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                mutations_api_tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "TargetMethod_ResolvesExpectedSignature",
+                        "Qud.API.MutationsAPI",
+                        "BuyRandomMutation",
+                        "System.Int32",
+                        "System.Boolean",
+                        "System.String",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="Qud.UI/HighScoresScreen.cs::Qud.UI.HighScoresScreen.HandleDelete",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/HighScoresDeletePopupTranslationPatch.cs",
+                    ("HighScoresDeletePopupTranslationPatch", "HandleDelete", "DeleteConfirmationPattern"),
+                ),
+                popup_show_pipeline,
+                high_scores_delete_tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "TargetMethod_ResolvesExpectedSignature",
+                        "Qud.UI.HighScoresScreen",
+                        "HandleDelete",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="Qud.UI/MainMenu.cs::Qud.UI.MainMenu.ContinueMenu",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/OldSaveContinueMenuPopupTranslationPatch.cs",
+                    ("OldSaveContinueMenuPopupTranslationPatch", "Qud.UI.MainMenu", "ContinueMenu"),
+                ),
+                popup_show_pipeline,
+                old_save_tests,
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                    ("That save file looks like it's from an older save format revision ({0}). Sorry!",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "Qud.UI.MainMenu|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="Qud.UI/SaveManagement.cs::Qud.UI.SaveManagement.ContinueMenu",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/OldSaveContinueMenuPopupTranslationPatch.cs",
+                    ("OldSaveContinueMenuPopupTranslationPatch", "Qud.UI.SaveManagement", "ContinueMenu"),
+                ),
+                popup_show_pipeline,
+                old_save_tests,
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                    ("That save file looks like it's from an older save format revision ({0}). Sorry!",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "Qud.UI.SaveManagement|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Quests.GolemQuest/GolemBodySelection.cs::"
+                "XRL.World.Quests.GolemQuest.GolemBodySelection.WishSpec"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/GolemQuestSelectionPopupTranslationPatch.cs",
+                    ("GolemQuestSelectionPopupTranslationPatch", "GolemBodySelection", "MissingBlueprintPattern"),
+                ),
+                popup_show_pipeline,
+                golem_tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "XRL.World.Quests.GolemQuest.GolemBodySelection|WishSpec|System.Void|System.String",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Quests.GolemQuest/GolemMaterialSelection.cs::"
+                "XRL.World.Quests.GolemQuest.GolemMaterialSelection.Pick"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/GolemQuestSelectionPopupTranslationPatch.cs",
+                    ("GolemQuestSelectionPopupTranslationPatch", "GolemMaterialSelection", "MissingRequirementPattern"),
+                ),
+                popup_show_pipeline,
+                golem_tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "XRL.World.Quests.GolemQuest.GolemMaterialSelection",
+                        "Pick",
+                        "XRL.World.Quests.GolemQuest.GolemMaterialSelection`2|Pick|System.Void",
+                    ),
+                ),
             ),
         ),
     )
@@ -4287,6 +4496,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_cripple_apply_family(),
     *_mutation_self_target_popup_families(),
     *_system_static_message_families(),
+    *_existing_popup_owner_route_families(),
     CoveredOwnerFamily(
         family_id="XRL.World.Parts.Skill/Tactics_Kickback.cs::XRL.World.Parts.Skill.Tactics_Kickback.HandleEvent",
         inventory_statuses=("owner_patch_required",),

@@ -445,6 +445,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(PickTargetWindowUpdateTranslationPatch), "Update", "Qud.UI.PickTargetWindow", "System.Void", new string[0])]
     [TestCase(typeof(GivesRepShortDescriptionTranslationPatch), "HandleEvent", "XRL.World.Parts.GivesRep", "System.Boolean", new[] { "XRL.World.GetShortDescriptionEvent" })]
     [TestCase(typeof(MutationsApiTranslationPatch), "BuyRandomMutation", "Qud.API.MutationsAPI", "System.Boolean", new[] { "XRL.World.GameObject", "System.Int32", "System.Boolean", "System.String" })]
+    [TestCase(typeof(HighScoresDeletePopupTranslationPatch), "HandleDelete", "Qud.UI.HighScoresScreen", "System.Void", new string[0])]
     [TestCase(typeof(ConversationPronounExchangeTranslationPatch), "PronounExchangeDescription", "XRL.World.Parts.ConversationScript", "System.String", new[]
     {
         "XRL.World.GameObject",
@@ -1330,6 +1331,16 @@ public sealed class TargetMethodResolutionTests
     {
         "Qud.UI.GameSummaryScreen|SaveTombstone|System.Void",
         "XRL.UI.GameSummaryUI|Show|System.Void|System.Int32|System.String|System.String|System.String|System.String|System.Boolean",
+    })]
+    [TestCase(typeof(OldSaveContinueMenuPopupTranslationPatch), new[]
+    {
+        "Qud.UI.MainMenu|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",
+        "Qud.UI.SaveManagement|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",
+    })]
+    [TestCase(typeof(GolemQuestSelectionPopupTranslationPatch), new[]
+    {
+        "XRL.World.Quests.GolemQuest.GolemBodySelection|WishSpec|System.Void|System.String",
+        "XRL.World.Quests.GolemQuest.GolemMaterialSelection`2|Pick|System.Void",
     })]
     [TestCase(typeof(FireSuppressionDischargeTranslationPatch), new[]
     {
