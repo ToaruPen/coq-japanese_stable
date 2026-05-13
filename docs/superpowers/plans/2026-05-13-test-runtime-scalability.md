@@ -285,6 +285,5 @@ Commit, push `codex/test-runtime-audit`, and open a draft PR summarizing scope, 
 
 Use `post-pr-convergence` after draft PR creation. Watch GitHub Actions, inspect failures or review comments, fix actionable issues, re-run focused checks locally, push updates, and continue until CI is green and no blocking requested changes remain.
 
-PR `#687` was created and the convergence loop handled GitHub Actions plus
-CodeRabbit feedback. CI is expected to be green after the final documentation
-status update lands.
+PR `#687` convergence result: GitHub Actions are green and CodeRabbit feedback
+is addressed.
