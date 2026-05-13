@@ -1197,6 +1197,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Tinkering.Disassembly|Continue|System.Boolean",
     })]
+    [TestCase(typeof(DanceRitualOpponentTranslationPatch), new[]
+    {
+        "XRL.World.Parts.DanceRitualOpponent|FireEvent|System.Boolean|XRL.World.Event",
+    })]
     [TestCase(typeof(SystemStaticMessageTranslationPatch), new[]
     {
         "XRL.CheckpointingSystem|CheckpointOn|System.Boolean",

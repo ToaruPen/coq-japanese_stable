@@ -6235,6 +6235,46 @@ def _disassembly_start_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _dance_ritual_opponent_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/DanceRitualOpponentTranslationPatch.cs",
+        (
+            "DanceRitualOpponentTranslationPatch",
+            "FireEvent",
+            "TryTranslatePopupMessage",
+            "BusyDancingPattern",
+        ),
+    )
+    popup_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("DanceRitualOpponentTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/DanceRitualOpponentTranslationPatchTests.cs",
+        (
+            "DanceRitualOpponentFireEvent_TranslatesBusyDancingPopup_WhenOwnerPatched",
+            "DanceRitualOpponentFireEvent_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+            "DanceRitualOpponentFireEvent_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "DanceRitualOpponentFireEvent_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "DummyDanceRitualOpponentTarget",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(DanceRitualOpponentTranslationPatch)",
+            "XRL.World.Parts.DanceRitualOpponent|FireEvent|System.Boolean|XRL.World.Event",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/DanceRitualOpponent.cs::XRL.World.Parts.DanceRitualOpponent.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, popup_pipeline, tests, target_tests),
+        ),
+    )
+
+
 def _tenfold_path_initiatory_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/TenfoldPathInitiatoryTranslationPatch.cs",
@@ -8969,6 +9009,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_mutation_infection_families(),
     *_mutation_action_failure_families(),
     *_disassembly_start_families(),
+    *_dance_ritual_opponent_families(),
     *_tenfold_path_initiatory_families(),
     *_power_entry_prerequisite_popup_families(),
     *_magnetic_pulse_families(),

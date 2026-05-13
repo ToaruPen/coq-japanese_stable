@@ -21,6 +21,7 @@ internal static class PopupShowSemanticPipeline
         RealityStabilizedInterdictTranslationPatch.TryTranslatePopupMessage,
         MutationActionFailureTranslationPatch.TryTranslatePopupMessage,
         DisassemblyStartTranslationPatch.TryTranslatePopupMessage,
+        DanceRitualOpponentTranslationPatch.TryTranslatePopupMessage,
         HackingSifrahResultTranslationPatch.TryTranslatePopupMessage,
         QuestLifecyclePopupTranslationPatch.TryTranslatePopupMessage,
         ConversationTakeItemPopupTranslationPatch.TryTranslatePopupMessage,
