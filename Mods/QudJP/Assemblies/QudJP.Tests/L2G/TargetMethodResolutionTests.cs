@@ -1344,6 +1344,13 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Conversations.Parts.WaterRitualSkillPoint|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
         "XRL.World.Conversations.Parts.WaterRitualTinkeringRecipe|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
         "XRL.World.Conversations.Parts.WaterRitualBuySecret|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+        "XRL.World.Conversations.Parts.IWaterRitualPart|UseReputation|System.Boolean|System.String",
+        "XRL.World.Conversations.Parts.WaterRitual|PerformRitual|System.Void",
+        "XRL.World.Conversations.Parts.WaterRitualBuyItem|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+        "XRL.World.Conversations.Parts.WaterRitualGainMutation|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+        "XRL.World.Conversations.Parts.WaterRitualJoinParty|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+        "XRL.World.Conversations.Parts.WaterRitualNephilimPacify|TryGiveCircle|System.Boolean",
+        "XRL.World.Conversations.Parts.WaterRitualSellSecret|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
     })]
     [TestCase(typeof(PopupPickSeveralTranslationPatch), new[]
     {

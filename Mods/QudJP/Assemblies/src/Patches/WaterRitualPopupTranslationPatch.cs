@@ -40,6 +40,34 @@ public static class WaterRitualPopupTranslationPatch
         "^(?<speaker>.+?) has no more secrets to share\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex ReputationTooLowPattern = new(
+        "^You don't have a high enough reputation with (?<faction>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex PerformRitualPattern = new(
+        "^You share your (?<liquid>.+?) with (?<speaker>.+?) and begin the water ritual\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex BuyItemGiftPattern = new(
+        "^(?<speaker>.+?) gifts? you (?<item>.+?)!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex GainMutationPattern = new(
+        "^Despite your genetic limitations, (?<speaker>.+?) teaches? you to improvise (?<mutation>.+?)!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex JoinPartyPattern = new(
+        "^(?<speaker>.+?) joins? you!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex NephilimCirclePattern = new(
+        "^You receive (?<item>.+?)!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex SellSecretNoMoreReputationPattern = new(
+        "^(?<speaker>.+?) can't grant you any more reputation\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -80,6 +108,62 @@ public static class WaterRitualPopupTranslationPatch
 
         foreach (var method in ResolveTarget(
                      "XRL.World.Conversations.Parts.WaterRitualBuySecret",
+                     "HandleEvent",
+                     [enteredElementEventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.IWaterRitualPart",
+                     "UseReputation",
+                     [typeof(string)]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitual",
+                     "PerformRitual",
+                     Type.EmptyTypes))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualBuyItem",
+                     "HandleEvent",
+                     [enteredElementEventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualGainMutation",
+                     "HandleEvent",
+                     [enteredElementEventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualJoinParty",
+                     "HandleEvent",
+                     [enteredElementEventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualNephilimPacify",
+                     "TryGiveCircle",
+                     Type.EmptyTypes))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualSellSecret",
                      "HandleEvent",
                      [enteredElementEventType]))
         {
@@ -230,6 +314,76 @@ public static class WaterRitualPopupTranslationPatch
                 out translated))
         {
             detail = "BuySecretNoMoreSecrets";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                ReputationTooLowPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "faction")}との評判が十分に高くない。",
+                out translated))
+        {
+            detail = "ReputationTooLow";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                PerformRitualPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "speaker")}と{Restore(match, spans, "liquid")}を分かち合い、水の儀式を始めた。",
+                out translated))
+        {
+            detail = "PerformRitual";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                BuyItemGiftPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "speaker")}が{Restore(match, spans, "item")}を贈ってくれた！",
+                out translated))
+        {
+            detail = "BuyItemGift";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                GainMutationPattern,
+                source,
+                (match, spans) => $"遺伝的な制限にもかかわらず、{Restore(match, spans, "speaker")}が{Restore(match, spans, "mutation")}を即興で扱う方法を教えてくれた！",
+                out translated))
+        {
+            detail = "GainMutation";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                JoinPartyPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "speaker")}が仲間に加わった！",
+                out translated))
+        {
+            detail = "JoinParty";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                NephilimCirclePattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "item")}を受け取った！",
+                out translated))
+        {
+            detail = "NephilimCircle";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                SellSecretNoMoreReputationPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "speaker")}はこれ以上評判を与えられない。",
+                out translated))
+        {
+            detail = "SellSecretNoMoreReputation";
             return true;
         }
 
