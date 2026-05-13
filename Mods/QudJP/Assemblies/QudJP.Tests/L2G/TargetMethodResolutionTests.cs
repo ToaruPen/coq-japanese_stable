@@ -1613,6 +1613,8 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.HologramInvulnerability|HandleEvent|System.Boolean|XRL.World.BeforeApplyDamageEvent",
         "XRL.World.Parts.Mutation.Decarbonizer|ShutDownTargeting|System.Boolean",
         "XRL.World.Parts.PetEitherOr|trigger|System.Void",
+        "XRL.World.Parts.ModPadded|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.MoteProperties|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
     })]
     [TestCase(typeof(GiantClamTeleportTranslationPatch), new[]
     {

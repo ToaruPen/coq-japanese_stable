@@ -407,6 +407,32 @@ internal sealed class DummyDecarbonizerProducerTarget
     }
 }
 
+internal sealed class DummyModPaddedProducerTarget
+{
+    public string QueuedMessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool FireEvent()
+    {
+        DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+}
+
+internal sealed class DummyMotePropertiesProducerTarget
+{
+    public string QueuedMessageToSend { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool HandleEvent()
+    {
+        DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, null, Capitalize: false);
+        return true;
+    }
+}
+
 internal sealed class DummyZoneWindChangeProducerTarget
 {
     public string QueuedMessageToSend { get; set; } = string.Empty;

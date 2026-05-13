@@ -123,7 +123,7 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Patches/FactionsStatusScreenTranslationPatch.cs:878:AddLocalizedSearchFragment"] = "Strips only to add searchable plain text beside the colored display text.",
             ["Mods/QudJP/Assemblies/src/Patches/FlightTranslationPatch.cs:95:TryTranslateQueuedMessage"] = "Delegates subject capture and whole-source wrapper restoration to matched flight branches.",
             ["Mods/QudJP/Assemblies/src/Patches/GameObjectStatPopupTranslationPatch.cs:111:TryTranslatePopupMessage"] = "Delegates dynamic amount and whole-source wrapper restoration to matched owner-route helpers.",
-            ["Mods/QudJP/Assemblies/src/Patches/GeneratedSubjectQueueTranslationPatch.cs:103:TryTranslateQueuedMessage"] = "Delegates capture and whole-source wrapper restoration to matched owner-route branches.",
+            ["Mods/QudJP/Assemblies/src/Patches/GeneratedSubjectQueueTranslationPatch.cs:144:TryTranslateQueuedMessage"] = "Delegates capture and whole-source wrapper restoration to matched owner-route branches.",
             ["Mods/QudJP/Assemblies/src/Patches/JournalNotificationTranslator.cs:20:TryTranslate"] = "Strips source colors so journal notification patterns can replace the full system sentence.",
             ["Mods/QudJP/Assemblies/src/Patches/LiquidVolumeFragmentTranslator.cs:204:TryTranslate"] = "Delegates capture restoration to helper calls in the matched branch.",
             ["Mods/QudJP/Assemblies/src/Patches/MainMenuLocalizationPatch.cs:207:TranslateProducerText"] = "Strips only for already-localized/direct-route checks before TranslatePreservingColors owns restoration.",

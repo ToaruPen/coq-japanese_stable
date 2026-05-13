@@ -21,6 +21,15 @@ public static class GeneratedSubjectQueueTranslationPatch
     private static readonly Regex StartsToFlickerPattern = CreatePattern(
         "^(?<subject>.+?) starts to flicker\\.$");
 
+    private static readonly Regex PaddingSoftenedPattern = CreatePattern(
+        "^(?<subject>.+?)(?:'s|') padding softened the blow\\.$");
+
+    private static readonly Regex YourPaddingSoftenedPattern = CreatePattern(
+        "^Your padding softened the blow\\.$");
+
+    private static readonly Regex DissipatesPattern = CreatePattern(
+        "^(?<subject>.+?) dissipates?\\.$");
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -28,6 +37,8 @@ public static class GeneratedSubjectQueueTranslationPatch
     private static IEnumerable<MethodBase> TargetMethods()
     {
         var beforeApplyDamageEventType = AccessTools.TypeByName("XRL.World.BeforeApplyDamageEvent");
+        var eventType = AccessTools.TypeByName("XRL.World.Event");
+        var endTurnEventType = AccessTools.TypeByName("XRL.World.EndTurnEvent");
         if (beforeApplyDamageEventType is null)
         {
             Trace.TraceError("QudJP: {0}.HologramInvulnerability.HandleEvent parameter type not found.", Context);
@@ -57,6 +68,36 @@ public static class GeneratedSubjectQueueTranslationPatch
                      Type.EmptyTypes))
         {
             yield return target;
+        }
+
+        if (eventType is null)
+        {
+            Trace.TraceError("QudJP: {0}.FireEvent parameter type not found.", Context);
+        }
+        else
+        {
+            foreach (var target in ResolveTarget(
+                         "XRL.World.Parts.ModPadded",
+                         "FireEvent",
+                         new[] { eventType }))
+            {
+                yield return target;
+            }
+        }
+
+        if (endTurnEventType is null)
+        {
+            Trace.TraceError("QudJP: {0}.MoteProperties.HandleEvent parameter type not found.", Context);
+        }
+        else
+        {
+            foreach (var target in ResolveTarget(
+                         "XRL.World.Parts.MoteProperties",
+                         "HandleEvent",
+                         new[] { endTurnEventType }))
+            {
+                yield return target;
+            }
         }
     }
 
@@ -163,6 +204,38 @@ public static class GeneratedSubjectQueueTranslationPatch
         {
             translated = RestoreWholeSourceBoundary(
                 $"{Capture(flickerMatch, spans, "subject", stripped.Length)}がちらつき始めた。",
+                spans,
+                stripped,
+                source);
+            return true;
+        }
+
+        var paddingMatch = PaddingSoftenedPattern.Match(stripped);
+        if (paddingMatch.Success)
+        {
+            translated = RestoreWholeSourceBoundary(
+                $"{Capture(paddingMatch, spans, "subject", stripped.Length)}の詰め物が衝撃を和らげた。",
+                spans,
+                stripped,
+                source);
+            return true;
+        }
+
+        if (YourPaddingSoftenedPattern.IsMatch(stripped))
+        {
+            translated = RestoreWholeSourceBoundary(
+                "あなたの詰め物が衝撃を和らげた。",
+                spans,
+                stripped,
+                source);
+            return true;
+        }
+
+        var dissipatesMatch = DissipatesPattern.Match(stripped);
+        if (dissipatesMatch.Success)
+        {
+            translated = RestoreWholeSourceBoundary(
+                $"{Capture(dissipatesMatch, spans, "subject", stripped.Length)}は霧散した。",
                 spans,
                 stripped,
                 source);

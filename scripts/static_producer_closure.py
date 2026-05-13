@@ -7636,9 +7636,14 @@ def _generated_subject_queue_families() -> tuple[CoveredOwnerFamily, ...]:
             "AttackPassesPattern",
             "MolecularCannonOfflinePattern",
             "StartsToFlickerPattern",
+            "PaddingSoftenedPattern",
+            "YourPaddingSoftenedPattern",
+            "DissipatesPattern",
             "HologramInvulnerability",
             "Decarbonizer",
             "PetEitherOr",
+            "ModPadded",
+            "MoteProperties",
         ),
     )
     pipeline = EvidenceFile(
@@ -7662,7 +7667,13 @@ def _generated_subject_queue_families() -> tuple[CoveredOwnerFamily, ...]:
             "XRL.World.Parts.HologramInvulnerability|HandleEvent|System.Boolean|XRL.World.BeforeApplyDamageEvent",
             "XRL.World.Parts.Mutation.Decarbonizer|ShutDownTargeting|System.Boolean",
             "XRL.World.Parts.PetEitherOr|trigger|System.Void",
+            "XRL.World.Parts.ModPadded|FireEvent|System.Boolean|XRL.World.Event",
+            "XRL.World.Parts.MoteProperties|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
         ),
+    )
+    mod_padded_expected = "{}{}".format(
+        "{{C|leather boots}}\u306e\u8a70\u3081\u7269",
+        "\u304c\u885d\u6483\u3092\u548c\u3089\u3052\u305f\u3002",
     )
     return (
         CoveredOwnerFamily(
@@ -7714,6 +7725,44 @@ def _generated_subject_queue_families() -> tuple[CoveredOwnerFamily, ...]:
                         "DummyPetEitherOrProducerTarget.trigger",
                         "{{Y|Either}} starts to flicker.",
                         "{{Y|Either}}\u304c\u3061\u3089\u3064\u304d\u59cb\u3081\u305f\u3002",
+                    ),
+                ),
+                target_tests,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/ModPadded.cs::XRL.World.Parts.ModPadded.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                EvidenceFile(
+                    tests.path,
+                    (
+                        *tests.required_substrings,
+                        "DummyModPaddedProducerTarget",
+                        "{{C|leather boots}}'s padding softened the blow.",
+                        mod_padded_expected,
+                        "Your padding softened the blow.",
+                        "\u3042\u306a\u305f\u306e\u8a70\u3081\u7269\u304c\u885d\u6483\u3092\u548c\u3089\u3052\u305f\u3002",
+                    ),
+                ),
+                target_tests,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/MoteProperties.cs::XRL.World.Parts.MoteProperties.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                EvidenceFile(
+                    tests.path,
+                    (
+                        *tests.required_substrings,
+                        "DummyMotePropertiesProducerTarget",
+                        "{{Y|Your glimmer mote}} dissipates.",
+                        "{{Y|Your glimmer mote}}\u306f\u9727\u6563\u3057\u305f\u3002",
                     ),
                 ),
                 target_tests,

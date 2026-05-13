@@ -1325,6 +1325,21 @@ public sealed class WorldPartsProducerTranslationPatchTests
         nameof(DummyPetEitherOrProducerTarget.trigger),
         "{{Y|Either}} starts to flicker.",
         "{{Y|Either}}がちらつき始めた。")]
+    [TestCase(
+        typeof(DummyModPaddedProducerTarget),
+        nameof(DummyModPaddedProducerTarget.FireEvent),
+        "{{C|leather boots}}'s padding softened the blow.",
+        "{{C|leather boots}}の詰め物が衝撃を和らげた。")]
+    [TestCase(
+        typeof(DummyModPaddedProducerTarget),
+        nameof(DummyModPaddedProducerTarget.FireEvent),
+        "Your padding softened the blow.",
+        "あなたの詰め物が衝撃を和らげた。")]
+    [TestCase(
+        typeof(DummyMotePropertiesProducerTarget),
+        nameof(DummyMotePropertiesProducerTarget.HandleEvent),
+        "{{Y|Your glimmer mote}} dissipates.",
+        "{{Y|Your glimmer mote}}は霧散した。")]
     public void GeneratedSubjectQueuePatch_TranslatesInventoriedMessages_WhenOwnerPatched(
         Type targetType,
         string methodName,
@@ -1791,6 +1806,28 @@ public sealed class WorldPartsProducerTranslationPatchTests
             };
 
             target.trigger();
+            return;
+        }
+
+        if (targetType == typeof(DummyModPaddedProducerTarget))
+        {
+            var target = new DummyModPaddedProducerTarget
+            {
+                QueuedMessageToSend = source,
+            };
+
+            _ = target.FireEvent();
+            return;
+        }
+
+        if (targetType == typeof(DummyMotePropertiesProducerTarget))
+        {
+            var target = new DummyMotePropertiesProducerTarget
+            {
+                QueuedMessageToSend = source,
+            };
+
+            _ = target.HandleEvent();
             return;
         }
 
