@@ -1236,6 +1236,11 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.Rules.Stat|RollDamagePenetrations|System.Int32|System.Int32|System.Int32|System.Int32",
     })]
+    [TestCase(typeof(BasePronounProviderCustomizePopupTranslationPatch), new[]
+    {
+        // Source owner: XRL.World.BasePronounProvider.CustomizeProcess(string); target is the async state machine.
+        "XRL.World.BasePronounProvider+<CustomizeProcess>d__121|MoveNext|System.Void",
+    })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
         "XRL.World.Parts.Combat|HandleEvent|System.Boolean|XRL.World.GetDefenderHitDiceEvent",

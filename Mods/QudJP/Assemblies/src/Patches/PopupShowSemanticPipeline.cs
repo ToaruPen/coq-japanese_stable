@@ -65,6 +65,7 @@ internal static class PopupShowSemanticPipeline
         MagneticPulseTranslationPatch.TryTranslatePopupMessage,
         PetGloamingTranslationPatch.TryTranslatePopupMessage,
         WindupTranslationPatch.TryTranslatePopupMessage,
+        BasePronounProviderCustomizePopupTranslationPatch.TryTranslatePopupMessage,
         LightManipulationTranslationPatch.TryTranslatePopupMessage,
         AsleepOwnerTranslationPatch.TryTranslatePopupMessage,
         EnclosingTranslationPatch.TryTranslatePopupMessage,

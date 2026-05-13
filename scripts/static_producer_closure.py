@@ -6384,6 +6384,51 @@ def _damage_penetration_debug_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _base_pronoun_provider_customize_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/BasePronounProviderCustomizePopupTranslationPatch.cs",
+        (
+            "BasePronounProviderCustomizePopupTranslationPatch",
+            "TryTranslatePopupMessage",
+            "CustomizeProcess",
+            "MoveNext",
+            "FullyPluralPattern",
+            "ConditionallyPluralPattern",
+            "PersonPattern",
+        ),
+    )
+    popup_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("BasePronounProviderCustomizePopupTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/BasePronounProviderCustomizePopupTranslationPatchTests.cs",
+        (
+            "BasePronounProviderCustomize_TranslatesPopupMessages_WhenOwnerPatched",
+            "BasePronounProviderCustomize_DoesNotTranslateTraffic_WhenOwnerAbsent",
+            "BasePronounProviderCustomize_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "BasePronounProviderCustomize_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "ResolveStateMachineMoveNext",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(BasePronounProviderCustomizePopupTranslationPatch)",
+            "XRL.World.BasePronounProvider",
+            "CustomizeProcess",
+            "XRL.World.BasePronounProvider+<CustomizeProcess>d__121|MoveNext|System.Void",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World/BasePronounProvider.cs::XRL.World.BasePronounProvider.CustomizeProcess",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, popup_pipeline, tests, target_tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -8347,6 +8392,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_pet_gloaming_families(),
     *_windup_families(),
     *_damage_penetration_debug_families(),
+    *_base_pronoun_provider_customize_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 
