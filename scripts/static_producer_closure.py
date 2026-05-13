@@ -3470,6 +3470,50 @@ def _blaze_tonic_remove_family() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _latched_onto_expired_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Effects/LatchedOnto.cs::XRL.World.Effects.LatchedOnto.Expired",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/LatchedOntoExpiredTranslationPatch.cs",
+                    (
+                        "LatchedOntoExpiredTranslationPatch",
+                        "TryTranslateReleaseMessage",
+                        "ReleasePlayerPattern",
+                        "ReleaseTargetPattern",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("LatchedOntoExpiredTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "LatchedOntoExpired_TranslatesReleaseQueuedMessages_WhenOwnerPatched",
+                        "LatchedOntoExpired_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                        "LatchedOntoExpired_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                        "FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "releases}} you.",
+                        "releases}} {{G|the snapjaw}}",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "TargetMethod_ResolvesExpectedSignature",
+                        "LatchedOntoExpiredTranslationPatch",
+                        "XRL.World.Effects.LatchedOnto",
+                        "Expired",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _cripple_apply_family() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -5055,6 +5099,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_stasis_attack_bounce_family(),
     *_effect_generated_message_families(),
     *_blaze_tonic_remove_family(),
+    *_latched_onto_expired_family(),
     *_cripple_apply_family(),
     *_mutation_self_target_popup_families(),
     *_system_static_message_families(),

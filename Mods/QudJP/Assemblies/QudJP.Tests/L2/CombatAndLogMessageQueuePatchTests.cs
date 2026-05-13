@@ -4068,6 +4068,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("You resist snapjaw's life drain!")]
     [TestCase("The 装置 was cracked.")]
     [TestCase("The {{blaze|blaze}} tonic burns out of your system.")]
+    [TestCase("{{R|The barbed hook}}{{R| releases}} you.")]
+    [TestCase("{{R|The barbed hook}}{{R| releases}} {{G|the snapjaw}}{{R|.}}")]
     [TestCase("1 turn remains until your berserker rage ends.")]
     [TestCase("2 turns remain until your berserker rage ends.")]
     [TestCase("1 turn remains until you stop demolishing.")]
@@ -4344,6 +4346,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void BlazeTonicRemove_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
     {
         AssertBlazeTonicRemoveQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        "{{R|The barbed hook}}{{R| releases}} you.",
+        "{{R|The barbed hook}}があなたを放した。")]
+    [TestCase(
+        "{{R|The barbed hook}}{{R| releases}} {{G|the snapjaw}}{{R|.}}",
+        "{{R|The barbed hook}}が{{G|the snapjaw}}を放した。")]
+    public void LatchedOntoExpired_TranslatesReleaseQueuedMessages_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertLatchedOntoExpiredQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void LatchedOntoExpired_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertLatchedOntoExpiredQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("{{R|The barbed hook}}{{R| releases}} you."),
+            "{{R|The barbed hook}}{{R| releases}} you.");
+    }
+
+    [Test]
+    public void LatchedOntoExpired_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertLatchedOntoExpiredQueuedMessage(string.Empty, string.Empty);
     }
 
     [Test]
@@ -8323,6 +8352,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
             };
 
             target.Remove(new DummyGameObject());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertLatchedOntoExpiredQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.Expired)),
+                typeof(LatchedOntoExpiredTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.Expired();
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }

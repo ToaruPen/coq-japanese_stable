@@ -1258,6 +1258,11 @@ internal sealed class DummySimpleOwnerQueueTarget
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
     }
 
+    public void Expired()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
     public static string StaticMessageToSend { get; set; } = string.Empty;
 
     public static string? StaticColorToSend { get; set; }
