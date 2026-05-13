@@ -68,6 +68,12 @@ public sealed class WaterRitualPopupTranslationPatchTests
         "{{G|Hortensa}} teaches you to craft {{W|spring-loaded boots}}.",
         "{{G|Hortensa}}が{{W|spring-loaded boots}}の作り方を教えてくれた。",
         "TinkeringRecipe")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "{{G|Tam}} has no more secrets to share.",
+        "{{G|Tam}}にはもう共有できる秘密がない。",
+        "BuySecretNoMoreSecrets")]
     public void Patch_TranslatesWaterRitualOwnerPopups_WhenOwnerPatched(
         string methodName,
         string popupMethod,
@@ -108,6 +114,11 @@ public sealed class WaterRitualPopupTranslationPatchTests
         nameof(DummyPopupShow.Show),
         "{{G|Hortensa}} teaches you to craft {{W|spring-loaded boots}}.",
         "TinkeringRecipe")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "{{G|Tam}} has no more secrets to share.",
+        "BuySecretNoMoreSecrets")]
     public void Patch_DoesNotTranslateWaterRitualPopup_WhenOwnerAbsent(
         string methodName,
         string popupMethod,
@@ -381,6 +392,13 @@ public sealed class WaterRitualPopupTranslationPatchTests
         public bool WaterRitualTinkeringRecipeHandleEvent()
         {
             EmitPopup(nameof(WaterRitualTinkeringRecipeHandleEvent));
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool WaterRitualBuySecretHandleEvent()
+        {
+            EmitPopup(nameof(WaterRitualBuySecretHandleEvent));
             return true;
         }
 

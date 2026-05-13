@@ -1067,6 +1067,38 @@ def _water_ritual_popup_families() -> tuple[CoveredOwnerFamily, ...]:
                 ),
             ),
         ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Conversations.Parts/WaterRitualBuySecret.cs::XRL.World.Conversations.Parts.WaterRitualBuySecret.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "WaterRitualBuySecret",
+                        "BuySecretNoMoreSecretsPattern",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/WaterRitualPopupTranslationPatchTests.cs",
+                    (
+                        *tests_common,
+                        "nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretHandleEvent)",
+                        "BuySecretNoMoreSecrets",
+                        "{{G|Tam}} has no more secrets to share.",
+                        "{{G|Tam}}にはもう共有できる秘密がない。",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(WaterRitualPopupTranslationPatch)",
+                        "XRL.World.Conversations.Parts.WaterRitualBuySecret|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+                    ),
+                ),
+            ),
+        ),
     )
 
 

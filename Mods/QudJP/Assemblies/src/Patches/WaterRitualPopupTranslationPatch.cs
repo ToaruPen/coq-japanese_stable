@@ -36,6 +36,10 @@ public static class WaterRitualPopupTranslationPatch
         "^(?<speaker>.+?) teaches? you to craft (?<recipe>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex BuySecretNoMoreSecretsPattern = new(
+        "^(?<speaker>.+?) has no more secrets to share\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -68,6 +72,14 @@ public static class WaterRitualPopupTranslationPatch
 
         foreach (var method in ResolveTarget(
                      "XRL.World.Conversations.Parts.WaterRitualTinkeringRecipe",
+                     "HandleEvent",
+                     [enteredElementEventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualBuySecret",
                      "HandleEvent",
                      [enteredElementEventType]))
         {
@@ -208,6 +220,16 @@ public static class WaterRitualPopupTranslationPatch
                 out translated))
         {
             detail = "TinkeringRecipe";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                BuySecretNoMoreSecretsPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "speaker")}にはもう共有できる秘密がない。",
+                out translated))
+        {
+            detail = "BuySecretNoMoreSecrets";
             return true;
         }
 
