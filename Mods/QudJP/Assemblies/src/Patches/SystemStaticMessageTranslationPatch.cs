@@ -31,6 +31,8 @@ public static class SystemStaticMessageTranslationPatch
         AddTarget(targets, "XRL.HolyPlaceSystem", "SetHolyZone", new[] { zoneType, factionType });
         AddTarget(targets, "XRL.World.Parts.Mutation.HeightenedIntelligence", "FireEvent", new[] { eventType });
         AddTarget(targets, "XRL.World.Parts.TrembleEarthquakes", "Quake", Type.EmptyTypes);
+        AddTarget(targets, "XRL.World.Parts.DoorSwitch", "FireEvent", new[] { eventType });
+        AddTarget(targets, "XRL.World.Parts.SpawningEggSac", "tickEgg", Type.EmptyTypes);
         return targets;
     }
 
@@ -81,6 +83,12 @@ public static class SystemStaticMessageTranslationPatch
             "&CA flash of insight overcomes you!" => "&Cひらめきがあなたを満たした！",
             "The ground shakes violently!" => "地面が激しく揺れた！",
             "The ground shakes violently and loose rock falls from the ceiling!" => "地面が激しく揺れ、天井から岩が崩れ落ちた！",
+            "The security door unlocks with a loud clank and swings open." => "頑丈なドアが大きな音とともに解錠され開いた。",
+            "The security door swings closed and locks with a loud clank." => "頑丈なドアが閉じて大きな音で施錠された。",
+            "Nothing seems to happen when you hit the switch." => "スイッチを押しても何も起こらない。",
+            "The membrane of the egg sac snots apart." => "卵嚢の膜がぐしゃりと裂けた。",
+            "The svardym eggs hatch." => "スヴァーディムの卵が孵化した。",
+            "The svardym egg hatches." => "スヴァーディムの卵が孵化した。",
             _ => null,
         };
         if (translated is null)

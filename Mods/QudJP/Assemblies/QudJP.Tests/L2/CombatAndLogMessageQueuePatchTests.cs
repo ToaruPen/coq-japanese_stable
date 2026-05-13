@@ -4099,6 +4099,12 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("&CA flash of insight overcomes you!")]
     [TestCase("The ground shakes violently!")]
     [TestCase("The ground shakes violently and loose rock falls from the ceiling!")]
+    [TestCase("The security door unlocks with a loud clank and swings open.")]
+    [TestCase("The security door swings closed and locks with a loud clank.")]
+    [TestCase("Nothing seems to happen when you hit the switch.")]
+    [TestCase("The membrane of the egg sac snots apart.")]
+    [TestCase("The svardym eggs hatch.")]
+    [TestCase("The svardym egg hatches.")]
     public void FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
     {
         var harmonyId = CreateHarmonyId();
@@ -4539,6 +4545,26 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void SystemStaticQuake_TranslatesFixedQueuedMessages_WhenOwnerPatched(string source, string expected)
     {
         AssertSystemStaticQuakeQueuedMessage(source, expected);
+    }
+
+    [TestCase("The security door unlocks with a loud clank and swings open.", "頑丈なドアが大きな音とともに解錠され開いた。")]
+    [TestCase("The security door swings closed and locks with a loud clank.", "頑丈なドアが閉じて大きな音で施錠された。")]
+    [TestCase("Nothing seems to happen when you hit the switch.", "スイッチを押しても何も起こらない。")]
+    public void SystemStaticDoorSwitchFireEvent_TranslatesFixedQueuedMessages_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertSystemStaticFireEventQueuedMessage(source, expected);
+    }
+
+    [TestCase("The membrane of the egg sac snots apart.", "卵嚢の膜がぐしゃりと裂けた。")]
+    [TestCase("The svardym eggs hatch.", "スヴァーディムの卵が孵化した。")]
+    [TestCase("The svardym egg hatches.", "スヴァーディムの卵が孵化した。")]
+    public void SystemStaticSpawningEggSacTickEgg_TranslatesFixedQueuedMessages_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertSystemStaticTickEggQueuedMessage(source, expected);
     }
 
     [Test]
@@ -8719,6 +8745,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
             };
 
             target.Quake();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertSystemStaticTickEggQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.tickEgg)),
+                typeof(SystemStaticMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.tickEgg();
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }

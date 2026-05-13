@@ -1184,6 +1184,8 @@ public sealed class TargetMethodResolutionTests
         "XRL.HolyPlaceSystem|SetHolyZone|System.Void|XRL.World.Zone|XRL.World.Faction",
         "XRL.World.Parts.Mutation.HeightenedIntelligence|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.TrembleEarthquakes|Quake|System.Void",
+        "XRL.World.Parts.DoorSwitch|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.SpawningEggSac|tickEgg|System.Void",
     })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {

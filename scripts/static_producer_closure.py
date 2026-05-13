@@ -4847,6 +4847,8 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             "SystemStaticSetHolyZone_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "SystemStaticFireEvent_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "SystemStaticQuake_TranslatesFixedQueuedMessages_WhenOwnerPatched",
+            "SystemStaticDoorSwitchFireEvent_TranslatesFixedQueuedMessages_WhenOwnerPatched",
+            "SystemStaticSpawningEggSacTickEgg_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "SystemStaticQuake_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
             "SystemStaticQuake_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
             "SystemStatic_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
@@ -4862,6 +4864,12 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             "&CA flash of insight overcomes you!",
             "The ground shakes violently!",
             "The ground shakes violently and loose rock falls from the ceiling!",
+            "The security door unlocks with a loud clank and swings open.",
+            "The security door swings closed and locks with a loud clank.",
+            "Nothing seems to happen when you hit the switch.",
+            "The membrane of the egg sac snots apart.",
+            "The svardym eggs hatch.",
+            "The svardym egg hatches.",
         ),
     )
     pipeline = EvidenceFile(
@@ -4939,6 +4947,40 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
                     (
                         "typeof(SystemStaticMessageTranslationPatch)",
                         "XRL.World.Parts.TrembleEarthquakes|Quake|System.Void",
+                    ),
+                ),
+                dictionary,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/DoorSwitch.cs::XRL.World.Parts.DoorSwitch.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SystemStaticMessageTranslationPatch)",
+                        "XRL.World.Parts.DoorSwitch|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
+                ),
+                dictionary,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/SpawningEggSac.cs::XRL.World.Parts.SpawningEggSac.tickEgg",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SystemStaticMessageTranslationPatch)",
+                        "XRL.World.Parts.SpawningEggSac|tickEgg|System.Void",
                     ),
                 ),
                 dictionary,
