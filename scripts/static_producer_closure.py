@@ -3937,6 +3937,54 @@ def _closure_only_popup_owner_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _tinkering_mod_popup_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.UI/TinkeringScreen.cs::XRL.UI.TinkeringScreen.PerformUITinkerMod",
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/TinkeringModPopupTranslationPatch.cs",
+                    (
+                        "TinkeringModPopupTranslationPatch",
+                        "PerformUITinkerMod",
+                        "TryTranslateCore",
+                        "DoesVerbRouteTranslator.TryTranslateMarkedMessage",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("TinkeringModPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/TinkeringModPopupTranslationPatchTests.cs",
+                    (
+                        "PerformUITinkerMod_TranslatesPopupMessages_WhenOwnerPatched",
+                        "PerformUITinkerMod_TranslatesSifrahPrompt_WhenOwnerPatched",
+                        "PerformUITinkerMod_TranslatesMarkedBestowalPopup_WhenOwnerPatched",
+                        "PerformUITinkerMod_DoesNotClaimPopupOnlyTraffic_WhenOwnerAbsent",
+                        "PerformUITinkerMod_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "PerformUITinkerMod_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "TargetMethod_ResolvesExpectedSignature",
+                        "XRL.UI.TinkeringScreen",
+                        "PerformUITinkerMod",
+                        "System.Collections.Generic.List`1[[XRL.World.GameObject]]",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+                    ('"verb": "seem"', '"extra": "to have taken on new qualities"'),
+                ),
+            ),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -4796,6 +4844,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_system_static_message_families(),
     *_existing_popup_owner_route_families(),
     *_closure_only_popup_owner_families(),
+    *_tinkering_mod_popup_family(),
     CoveredOwnerFamily(
         family_id="XRL.World.Parts.Skill/Tactics_Kickback.cs::XRL.World.Parts.Skill.Tactics_Kickback.HandleEvent",
         inventory_statuses=("owner_patch_required",),

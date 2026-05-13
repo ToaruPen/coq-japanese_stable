@@ -45,6 +45,7 @@ internal static class PopupShowSemanticPipeline
         GritGateTerminalKnowledgePopupTranslationPatch.TryTranslatePopupMessage,
         PickItemTakeAllPopupTranslationPatch.TryTranslatePopupMessage,
         TinkeringBuildPopupTranslationPatch.TryTranslatePopupMessage,
+        TinkeringModPopupTranslationPatch.TryTranslatePopupMessage,
         StatusScreenPopupTranslationPatch.TryTranslatePopupMessage,
         TeleprojectorTranslationPatch.TryTranslatePopupMessage,
         CyberneticsMedassistModuleTranslationPatch.TryTranslatePopupMessage,
