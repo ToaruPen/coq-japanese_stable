@@ -38,6 +38,7 @@ internal static class PopupShowSemanticPipeline
         CookingRuntimeTranslationPatch.TryTranslatePopupMessage,
         GameSummaryTombstonePopupTranslationPatch.TryTranslatePopupMessage,
         LocationFinderPopupTranslationPatch.TryTranslatePopupMessage,
+        MapRevealPopupTranslationPatch.TryTranslatePopupMessage,
         MechanicalWingsPopupTranslationPatch.TryTranslatePopupMessage,
         SupplyableIntegratedHostPopupTranslationPatch.TryTranslatePopupMessage,
         DataDiskLearnPopupTranslationPatch.TryTranslatePopupMessage,

@@ -1375,6 +1375,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.LocationFinder|TriggerFind|System.Void",
     })]
+    [TestCase(typeof(MapRevealPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.MapReveal|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+    })]
     [TestCase(typeof(SupplyableIntegratedHostPopupTranslationPatch), new[]
     {
         "XRL.World.Parts.SupplyableIntegratedHost|AttemptSupply|System.Boolean|XRL.World.GameObject",

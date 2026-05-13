@@ -4957,6 +4957,51 @@ def _cybernetics_wish_implant_popup_family() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _map_reveal_popup_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/MapReveal.cs::XRL.World.Parts.MapReveal.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MapRevealPopupTranslationPatch.cs",
+                    (
+                        "MapRevealPopupTranslationPatch",
+                        "HandleEvent",
+                        "OwnerConsumptionWarningPattern",
+                        "OrdinaryPaperPattern",
+                        "MapOfSurroundingsPattern",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("MapRevealPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/MapRevealPopupTranslationPatchTests.cs",
+                    (
+                        "HandleEvent_TranslatesInventoriedPopupMessages_WhenOwnerPatched",
+                        "HandleEvent_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "HandleEvent_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "HandleEvent_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "will consume",
+                        "ordinary piece of paper",
+                        "a map of your surroundings",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "typeof(MapRevealPopupTranslationPatch)",
+                        "XRL.World.Parts.MapReveal|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -6902,6 +6947,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_force_bubble_owner_families(),
     *_combat_skill_extension_owner_families(),
     *_cybernetics_wish_implant_popup_family(),
+    *_map_reveal_popup_family(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 
