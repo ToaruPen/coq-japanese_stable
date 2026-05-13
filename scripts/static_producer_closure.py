@@ -8204,6 +8204,46 @@ COVERED_OWNER_FAMILIES: Final = (
         ),
     ),
     CoveredOwnerFamily(
+        family_id="Qud.API/EquipmentAPI.cs::Qud.API.EquipmentAPI.TwiddleObject",
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/EquipmentApiTwiddleObjectTranslationPatch.cs",
+                (
+                    "EquipmentApiTwiddleObjectTranslationPatch",
+                    "TryTranslateTelekineticRange",
+                    "You cannot do that from here.",
+                    "out of your telekinetic range",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("EquipmentApiTwiddleObjectTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/EquipmentApiTwiddleObjectTranslationPatchTests.cs",
+                (
+                    "TwiddleObject_TranslatesUsabilityPopups_WhenOwnerScoped",
+                    "{{Y|telekinetic lever}} are out of your telekinetic range.",
+                    "{{Y|telekinetic lever}}はあなたの念動力の範囲外だ",
+                    "You cannot do that from here.",
+                    "ここからはそれはできない。",
+                    "TwiddleObject_DoesNotRetranslateDirectMarkedPopup_WhenOwnerScoped",
+                    "TwiddleObject_LeavesEmptyPopupUnchanged_WhenOwnerScoped",
+                    "TwiddleObject_LeavesUnsupportedPopupUnchanged_WhenOwnerScoped",
+                    "TwiddleObject_DoesNotClaimSupportedPopup_WhenOwnerAbsent",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(EquipmentApiTwiddleObjectTranslationPatch)",
+                    "Qud.API.EquipmentAPI|TwiddleObject|System.Void|XRL.World.GameObject|XRL.World.GameObject|System.Boolean&|XRL.World.InventoryAction&|System.Boolean|System.Boolean|System.Boolean",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
         family_id="XRL.World/GameObject.cs::XRL.World.GameObject.Heal",
         inventory_statuses=("owner_patch_required",),
         evidence_files=(

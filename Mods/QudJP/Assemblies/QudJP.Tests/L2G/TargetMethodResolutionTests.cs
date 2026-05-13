@@ -1025,6 +1025,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.EnergyCellSocket|AttemptReplaceCell|System.Boolean|XRL.World.GameObject|XRL.World.InventoryActionEvent|System.Int32|XRL.World.GameObject",
     })]
+    [TestCase(typeof(EquipmentApiTwiddleObjectTranslationPatch), new[]
+    {
+        "Qud.API.EquipmentAPI|TwiddleObject|System.Void|XRL.World.GameObject|XRL.World.GameObject|System.Boolean&|XRL.World.InventoryAction&|System.Boolean|System.Boolean|System.Boolean",
+    })]
     [TestCase(typeof(CampfireRemainsAttemptLightTranslationPatch), new[]
     {
         "XRL.World.Parts.CampfireRemains|AttemptLight|System.Void|XRL.World.GameObject",
