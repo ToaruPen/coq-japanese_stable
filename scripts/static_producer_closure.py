@@ -4935,6 +4935,53 @@ def _generated_queue_does_verb_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _auto_act_reset_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Capabilities/AutoAct.cs::XRL.World.Capabilities.AutoAct.ResetAutoexploreProperties",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/AutoActTranslationPatch.cs",
+                    (
+                        "AutoActTranslationPatch",
+                        "ResetAutoexploreProperties",
+                        "TryTranslateQueuedMessage",
+                        "TryPreparePatternMessage",
+                        "AutoAct",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("AutoActTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/AutoActTranslationPatchTests.cs",
+                    (
+                        "ResetAutoexploreProperties_TranslatesResetStatus_WithRepositoryPattern",
+                        "ResetAutoexploreProperties_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "ResetAutoexploreProperties_DoesNotRetranslateDirectMarkedMessage_WhenOwnerPatched",
+                        "ResetAutoexploreProperties_LeavesEmptyMessageUnchanged_WhenOwnerPatched",
+                        "Resetting AutoexploreAction_, AutoexploreSuppression on snapjaw",
+                        "snapjaw上のAutoexploreAction_, AutoexploreSuppressionをリセットした。",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(AutoActTranslationPatch)",
+                        "XRL.World.Capabilities.AutoAct|ResetAutoexploreProperties|System.Boolean",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+                    ("^Resetting (.+?) on (.+?)$",),
+                ),
+            ),
+        ),
+    )
+
+
 def _blaze_tonic_remove_family() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -9788,6 +9835,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_cloning_start_budded_clone_families(),
     *_hidden_render_families(),
     *_engraver_families(),
+    *_auto_act_reset_family(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 

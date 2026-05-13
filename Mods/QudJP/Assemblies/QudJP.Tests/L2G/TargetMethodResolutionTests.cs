@@ -1563,6 +1563,12 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.SupplyableIntegratedHost|AttemptSupply|System.Boolean|XRL.World.GameObject",
     })]
+    [TestCase(typeof(AutoActTranslationPatch), new[]
+    {
+        "XRL.World.Capabilities.AutoAct|Interrupt|System.Void|System.String|XRL.World.Cell|XRL.World.GameObject|System.Boolean",
+        "XRL.World.Capabilities.AutoAct|Interrupt|System.Void|XRL.World.GameObject|System.Boolean|System.Boolean",
+        "XRL.World.Capabilities.AutoAct|ResetAutoexploreProperties|System.Boolean",
+    })]
     [TestCase(typeof(ModMagnetizedTranslationPatch), new[]
     {
         "XRL.World.Parts.ModMagnetized|CheckFloating|System.Void",
