@@ -64,6 +64,7 @@ internal static class PopupShowSemanticPipeline
         PowerEntryRequirementPopupTranslationPatch.TryTranslatePopupMessage,
         MagneticPulseTranslationPatch.TryTranslatePopupMessage,
         PetGloamingTranslationPatch.TryTranslatePopupMessage,
+        WindupTranslationPatch.TryTranslatePopupMessage,
         LightManipulationTranslationPatch.TryTranslatePopupMessage,
         AsleepOwnerTranslationPatch.TryTranslatePopupMessage,
         EnclosingTranslationPatch.TryTranslatePopupMessage,

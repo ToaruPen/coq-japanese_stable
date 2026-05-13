@@ -6294,6 +6294,55 @@ def _pet_gloaming_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _windup_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/WindupTranslationPatch.cs",
+        (
+            "WindupTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "TryTranslatePopupMessage",
+            "HandleEvent",
+            "PlayerUnresponsivePattern",
+            "ObserverUnresponsivePattern",
+            "PlayerWindPattern",
+            "ObserverWindPattern",
+        ),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("WindupTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    popup_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("WindupTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/WindupTranslationPatchTests.cs",
+        (
+            "Windup_TranslatesPlayerPopups_WhenOwnerPatched",
+            "Windup_TranslatesObserverQueueMessages_WhenOwnerPatched",
+            "Windup_DoesNotTranslateTraffic_WhenOwnerAbsent",
+            "Windup_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "Windup_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "Windup_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(WindupTranslationPatch)",
+            "XRL.World.Parts.Windup|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/Windup.cs::XRL.World.Parts.Windup.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, popup_pipeline, tests, target_tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -8255,6 +8304,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_power_entry_prerequisite_popup_families(),
     *_magnetic_pulse_families(),
     *_pet_gloaming_families(),
+    *_windup_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 

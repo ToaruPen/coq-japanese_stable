@@ -1228,6 +1228,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.PetGloaming|FireEvent|System.Boolean|XRL.World.Event",
     })]
+    [TestCase(typeof(WindupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Windup|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+    })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
         "XRL.World.Parts.Combat|HandleEvent|System.Boolean|XRL.World.GetDefenderHitDiceEvent",
