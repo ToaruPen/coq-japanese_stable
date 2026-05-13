@@ -171,6 +171,8 @@ release-zip-check release_zip="":
       "QudJP/NOTICE.md",
       "QudJP/Bootstrap.cs",
       "QudJP/Launch CavesOfQud (Rosetta).command",
+      "QudJP/Install Native Apple Silicon Harmony.command",
+      "QudJP/Restore Game Harmony.command",
       "QudJP/Assemblies/QudJP.dll",
   }
   required_prefixes = {
