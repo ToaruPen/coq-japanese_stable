@@ -1193,6 +1193,10 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Mutation.ElectricalGeneration|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.Mutation.TeleportOther|FireEvent|System.Boolean|XRL.World.Event",
     })]
+    [TestCase(typeof(DisassemblyStartTranslationPatch), new[]
+    {
+        "XRL.World.Tinkering.Disassembly|Continue|System.Boolean",
+    })]
     [TestCase(typeof(SystemStaticMessageTranslationPatch), new[]
     {
         "XRL.CheckpointingSystem|CheckpointOn|System.Boolean",

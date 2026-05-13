@@ -6187,6 +6187,54 @@ def _mutation_action_failure_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _disassembly_start_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/DisassemblyStartTranslationPatch.cs",
+        (
+            "DisassemblyStartTranslationPatch",
+            "Continue",
+            "TryTranslateQueuedMessage",
+            "TryTranslatePopupMessage",
+            "ReverseEngineerPromptPattern",
+            "StartDisassemblingPattern",
+        ),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("DisassemblyStartTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    popup_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("DisassemblyStartTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/DisassemblyStartTranslationPatchTests.cs",
+        (
+            "DisassemblyContinue_TranslatesReverseEngineeringPrompt_WhenOwnerPatched",
+            "DisassemblyContinue_TranslatesStartDisassemblingMessage_WhenOwnerPatched",
+            "DisassemblyContinue_DoesNotTranslateTraffic_WhenOwnerAbsent",
+            "DisassemblyContinue_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "DisassemblyContinue_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "DisassemblyContinue_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "DummyDisassemblyStartTarget",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(DisassemblyStartTranslationPatch)",
+            "XRL.World.Tinkering.Disassembly|Continue|System.Boolean",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Tinkering/Disassembly.cs::XRL.World.Tinkering.Disassembly.Continue",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, popup_pipeline, tests, target_tests),
+        ),
+    )
+
+
 def _tenfold_path_initiatory_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/TenfoldPathInitiatoryTranslationPatch.cs",
@@ -8920,6 +8968,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_effect_mobility_block_families(),
     *_mutation_infection_families(),
     *_mutation_action_failure_families(),
+    *_disassembly_start_families(),
     *_tenfold_path_initiatory_families(),
     *_power_entry_prerequisite_popup_families(),
     *_magnetic_pulse_families(),

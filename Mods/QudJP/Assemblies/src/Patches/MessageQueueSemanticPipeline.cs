@@ -43,6 +43,7 @@ internal static class MessageQueueSemanticPipeline
         EngulfingTranslationPatch.TryTranslateQueuedMessage,
         TemporaryRealityStabilizeTranslationPatch.TryTranslateQueuedMessage,
         CloningStartBuddedCloneTranslationPatch.TryTranslateQueuedMessage,
+        DisassemblyStartTranslationPatch.TryTranslateQueuedMessage,
         HiddenRenderTranslationPatch.TryTranslateQueuedMessage,
         QuillsTranslationPatch.TryTranslateQueuedMessage,
         LightManipulationTranslationPatch.TryTranslateQueuedMessage,
