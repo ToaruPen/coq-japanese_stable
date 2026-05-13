@@ -4904,6 +4904,7 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             "SystemStaticDoorSwitchFireEvent_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "SystemStaticSpawningEggSacTickEgg_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "SystemStaticTeleportationCast_TranslatesFixedQueuedMessages_WhenOwnerPatched",
+            "SystemStaticCatacombsExitTeleporterHandleEvent_TranslatesFixedQueuedMessage_WhenOwnerPatched",
             "SystemStaticQuake_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
             "SystemStaticQuake_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
             "SystemStatic_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
@@ -4927,6 +4928,7 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             "The svardym egg hatches.",
             "You are shunted to another location!",
             "You teleport!",
+            "You are teleported to an exit.",
         ),
     )
     pipeline = EvidenceFile(
@@ -5055,6 +5057,23 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
                     (
                         "typeof(SystemStaticMessageTranslationPatch)",
                         "XRL.World.Parts.Mutation.Teleportation|Cast|System.Boolean|XRL.World.Parts.Mutation.Teleportation|System.String|XRL.World.IEvent|XRL.World.Cell|XRL.World.GameObject|System.Boolean|System.Int32",
+                    ),
+                ),
+                dictionary,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/CatacombsExitTeleporter.cs::XRL.World.Parts.CatacombsExitTeleporter.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SystemStaticMessageTranslationPatch)",
+                        "XRL.World.Parts.CatacombsExitTeleporter|HandleEvent|System.Boolean|XRL.World.ObjectEnteredCellEvent",
                     ),
                 ),
                 dictionary,

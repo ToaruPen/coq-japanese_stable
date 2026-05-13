@@ -1187,6 +1187,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.DoorSwitch|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.SpawningEggSac|tickEgg|System.Void",
         "XRL.World.Parts.Mutation.Teleportation|Cast|System.Boolean|XRL.World.Parts.Mutation.Teleportation|System.String|XRL.World.IEvent|XRL.World.Cell|XRL.World.GameObject|System.Boolean|System.Int32",
+        "XRL.World.Parts.CatacombsExitTeleporter|HandleEvent|System.Boolean|XRL.World.ObjectEnteredCellEvent",
     })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {

@@ -4108,6 +4108,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("The svardym egg hatches.")]
     [TestCase("You are shunted to another location!")]
     [TestCase("You teleport!")]
+    [TestCase("You are teleported to an exit.")]
     public void FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
     {
         var harmonyId = CreateHarmonyId();
@@ -4577,6 +4578,12 @@ public sealed class CombatAndLogMessageQueuePatchTests
         string expected)
     {
         AssertSystemStaticCastQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void SystemStaticCatacombsExitTeleporterHandleEvent_TranslatesFixedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertSystemStaticEnteredCellQueuedMessage("You are teleported to an exit.", "出口へ転送された。");
     }
 
     [Test]
@@ -8811,6 +8818,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
             };
 
             _ = target.Cast();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertSystemStaticEnteredCellQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.HandleEvent), typeof(DummyEnteredCellEvent)),
+                typeof(SystemStaticMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.HandleEvent(new DummyEnteredCellEvent());
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }

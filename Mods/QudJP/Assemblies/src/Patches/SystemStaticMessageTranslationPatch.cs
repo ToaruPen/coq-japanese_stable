@@ -25,6 +25,7 @@ public static class SystemStaticMessageTranslationPatch
         var iEventType = AccessTools.TypeByName("XRL.World.IEvent");
         var cellType = AccessTools.TypeByName("XRL.World.Cell");
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
+        var objectEnteredCellEventType = AccessTools.TypeByName("XRL.World.ObjectEnteredCellEvent");
         if (eventType is null || zoneType is null || factionType is null)
         {
             Trace.TraceError("QudJP: {0} target parameter types not found.", Context);
@@ -48,6 +49,14 @@ public static class SystemStaticMessageTranslationPatch
         else
         {
             Trace.TraceError("QudJP: {0}.Teleportation.Cast parameter type not found.", Context);
+        }
+        if (objectEnteredCellEventType is not null)
+        {
+            AddTarget(targets, "XRL.World.Parts.CatacombsExitTeleporter", "HandleEvent", new[] { objectEnteredCellEventType });
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0}.CatacombsExitTeleporter.HandleEvent parameter type not found.", Context);
         }
         return targets;
     }
@@ -107,6 +116,7 @@ public static class SystemStaticMessageTranslationPatch
             "The svardym egg hatches." => "スヴァーディムの卵が孵化した。",
             "You are shunted to another location!" => "別の場所へ弾き飛ばされた！",
             "You teleport!" => "テレポートした！",
+            "You are teleported to an exit." => "出口へ転送された。",
             _ => null,
         };
         if (translated is null)
