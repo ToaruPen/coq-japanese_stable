@@ -915,6 +915,7 @@ def _cooking_runtime_families() -> tuple[CoveredOwnerFamily, ...]:
     queue_family_ids = (
         "XRL.World.Effects/CookingDomainReflect_UnitReflectDamage.cs::XRL.World.Effects.CookingDomainReflect_UnitReflectDamage.FireEvent",
         "XRL.World.Effects/CookingDomainReflect_Reflect100_ProceduralCookingTriggeredAction_Effect.cs::XRL.World.Effects.CookingDomainReflect_Reflect100_ProceduralCookingTriggeredAction_Effect.FireEvent",
+        "XRL.World.Parts/ReflectDamage.cs::XRL.World.Parts.ReflectDamage.HandleEvent",
         "XRL.World.Effects/CookingDomainTeleport_UnitBlink.cs::XRL.World.Effects.CookingDomainTeleport_UnitBlink.FireEvent",
         "XRL.World.Effects/NoPhase_ProceduralCookingTriggeredAction_Effect.cs::XRL.World.Effects.NoPhase_ProceduralCookingTriggeredAction_Effect.FireEvent",
     )

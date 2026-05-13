@@ -52,6 +52,7 @@ public sealed class CookingRuntimeTranslationPatchTests
 
     [TestCase("You reflect 3 damage back at {{R|snapjaw}}&y.", "3ダメージを{{R|snapjaw}}へ反射した。")]
     [TestCase("{{G|snapjaw}}&y reflects 4 damage back at you.", "{{G|snapjaw}}は4ダメージをあなたへ反射した。")]
+    [TestCase("{{G|snapjaw}}&y reflects 5 damage back at {{R|glowfish}}&y.", "{{G|snapjaw}}は5ダメージを{{R|glowfish}}へ反射した。")]
     [TestCase("Fate intervenes and you deal no damage to {{R|glowfish}}&y.", "運命が介入し、あなたは{{R|glowfish}}にダメージを与えられなかった。")]
     [TestCase("Your phase remains stable.", "あなたの位相は安定したままだ。")]
     public void CookingQueuedMessage_TranslatesRuntimeMessages_WhenOwnerPatched(string source, string expected)
@@ -83,6 +84,12 @@ public sealed class CookingRuntimeTranslationPatchTests
     {
         AssertPopupMessage(MessageFrameTranslator.MarkDirectTranslation("You bounce."), "You bounce.");
         AssertQueuedMessage(MessageFrameTranslator.MarkDirectTranslation("Your phase remains stable."), null, "Your phase remains stable.");
+    }
+
+    [Test]
+    public void CookingQueuedMessage_PreservesMessageColor_WhenOwnerPatched()
+    {
+        AssertQueuedMessage("You reflect 3 damage back at {{R|snapjaw}}&y.", "G", "3ダメージを{{R|snapjaw}}へ反射した。");
     }
 
     [Test]
@@ -138,6 +145,7 @@ public sealed class CookingRuntimeTranslationPatchTests
             _ = target.FireQueuedEffect(new DummyGameEvent());
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+            Assert.That(DummyMessageQueue.LastColor, Is.EqualTo(color));
         }
         finally
         {
