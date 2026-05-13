@@ -1014,6 +1014,11 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.ModLiquidCooled|HandleEvent|System.Boolean|XRL.World.CommandReloadEvent",
         "XRL.World.Parts.ModLiquidCooled|FireEvent|System.Boolean|XRL.World.Event",
     })]
+    [TestCase(typeof(EnergyLoaderCannotTakeTranslationPatch), new[]
+    {
+        "XRL.World.Parts.ElectricalDischargeLoader|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.EnergyAmmoLoader|FireEvent|System.Boolean|XRL.World.Event",
+    })]
     [TestCase(typeof(TrollKingTranslationPatch), new[]
     {
         "XRL.World.Parts.TrollKing|CheckSpawn|System.Void|System.Int32",

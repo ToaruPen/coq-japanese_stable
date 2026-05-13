@@ -2427,6 +2427,54 @@ def _liquid_loader_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _energy_loader_cannot_take_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/EnergyLoaderCannotTakeTranslationPatch.cs",
+        (
+            "EnergyLoaderCannotTakeTranslationPatch",
+            "ElectricalDischargeLoader",
+            "EnergyAmmoLoader",
+            "TryTranslatePopupMessage",
+            "CannotTakePattern",
+        ),
+    )
+    popup_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("EnergyLoaderCannotTakeTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/EnergyLoaderCannotTakeTranslationPatchTests.cs",
+        (
+            "EnergyLoaderCannotTake_TranslatesPopup_WhenOwnerPatched",
+            "EnergyLoaderCannotTake_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+            "EnergyLoaderCannotTake_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "EnergyLoaderCannotTake_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "DummyEnergyLoaderCannotTakeTarget",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(EnergyLoaderCannotTakeTranslationPatch)",
+            "XRL.World.Parts.ElectricalDischargeLoader|FireEvent|System.Boolean|XRL.World.Event",
+            "XRL.World.Parts.EnergyAmmoLoader|FireEvent|System.Boolean|XRL.World.Event",
+        ),
+    )
+    evidence_files = (patch, popup_pipeline, tests, target_tests)
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/ElectricalDischargeLoader.cs::XRL.World.Parts.ElectricalDischargeLoader.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=evidence_files,
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/EnergyAmmoLoader.cs::XRL.World.Parts.EnergyAmmoLoader.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=evidence_files,
+        ),
+    )
+
+
 def _troll_king_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         ("CheckSpawn", "XRL.World.Parts.TrollKing|CheckSpawn|System.Void|System.Int32"),
@@ -7967,6 +8015,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_tomb_anchor_system_families(),
     *_cybernetics_medassist_module_families(),
     *_liquid_loader_families(),
+    *_energy_loader_cannot_take_families(),
     *_troll_king_families(),
     *_mutating_families(),
     *_quills_families(),
