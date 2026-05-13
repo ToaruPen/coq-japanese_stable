@@ -40,6 +40,19 @@ public sealed class EffectMobilityBlockTranslationPatchTests
         AssertPopupMessage(source, expected, showFail);
     }
 
+    [TestCase(
+        "You cannot do that while engulfed by {{B|salt kraken}}.",
+        "{{B|salt kraken}}に呑み込まれている間はできない。")]
+    [TestCase(
+        "You cannot do that while engulfed by the {{B|salt kraken}}.",
+        "{{B|salt kraken}}に呑み込まれている間はできない。")]
+    public void EffectMobilityBlock_TranslatesEngulfedPopup_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertPopupMessage(source, expected, showFail: false);
+    }
+
     [TestCase("You are immobilized&y!")]
     [TestCase("You are stuck!")]
     public void EffectMobilityBlock_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
@@ -64,10 +77,10 @@ public sealed class EffectMobilityBlockTranslationPatchTests
         }
     }
 
-    [Test]
-    public void EffectMobilityBlock_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    [TestCase("You are stuck!")]
+    [TestCase("You cannot do that while engulfed by {{B|salt kraken}}.")]
+    public void EffectMobilityBlock_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent(string source)
     {
-        const string source = "You are stuck!";
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try

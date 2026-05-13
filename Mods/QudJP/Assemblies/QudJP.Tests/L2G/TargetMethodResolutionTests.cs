@@ -1180,6 +1180,7 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(EffectMobilityBlockTranslationPatch), new[]
     {
+        "XRL.World.Effects.Engulfed|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Effects.Immobilized|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Effects.Stuck|FireEvent|System.Boolean|XRL.World.Event",
     })]

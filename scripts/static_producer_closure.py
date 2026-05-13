@@ -6034,6 +6034,8 @@ def _effect_mobility_block_families() -> tuple[CoveredOwnerFamily, ...]:
             "EffectMobilityBlockTranslationPatch",
             "TryTranslateQueuedMessage",
             "TryTranslatePopupMessage",
+            "Engulfed",
+            "EngulfedBlockPattern",
             "Immobilized",
             "Stuck",
             "MobilityBlockPattern",
@@ -6053,6 +6055,7 @@ def _effect_mobility_block_families() -> tuple[CoveredOwnerFamily, ...]:
         (
             "EffectMobilityBlock_TranslatesQueuedMobilityBlockMessages_WhenOwnerPatched",
             "EffectMobilityBlock_TranslatesPopupMobilityBlockMessages_WhenOwnerPatched",
+            "EffectMobilityBlock_TranslatesEngulfedPopup_WhenOwnerPatched",
             "EffectMobilityBlock_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
             "EffectMobilityBlock_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
             "EffectMobilityBlock_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
@@ -6064,12 +6067,18 @@ def _effect_mobility_block_families() -> tuple[CoveredOwnerFamily, ...]:
         "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
         (
             "typeof(EffectMobilityBlockTranslationPatch)",
+            "XRL.World.Effects.Engulfed|FireEvent|System.Boolean|XRL.World.Event",
             "XRL.World.Effects.Immobilized|FireEvent|System.Boolean|XRL.World.Event",
             "XRL.World.Effects.Stuck|FireEvent|System.Boolean|XRL.World.Event",
         ),
     )
     evidence_files = (patch, queue_pipeline, popup_pipeline, tests, target_tests)
     return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Effects/Engulfed.cs::XRL.World.Effects.Engulfed.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=evidence_files,
+        ),
         CoveredOwnerFamily(
             family_id="XRL.World.Effects/Immobilized.cs::XRL.World.Effects.Immobilized.FireEvent",
             inventory_statuses=("owner_patch_required",),

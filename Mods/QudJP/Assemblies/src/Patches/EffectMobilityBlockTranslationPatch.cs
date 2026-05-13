@@ -11,6 +11,9 @@ namespace QudJP.Patches;
 public static class EffectMobilityBlockTranslationPatch
 {
     private const string Context = nameof(EffectMobilityBlockTranslationPatch);
+    private static readonly Regex EngulfedBlockPattern = new(
+        "^You cannot do that while engulfed by (?:the |a |an |The |A |An )?(?<target>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex MobilityBlockPattern = new(
         "^You are (?<status>.+)!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -29,6 +32,7 @@ public static class EffectMobilityBlockTranslationPatch
             return targets;
         }
 
+        AddTarget(targets, "XRL.World.Effects.Engulfed", "FireEvent", new[] { eventType });
         AddTarget(targets, "XRL.World.Effects.Immobilized", "FireEvent", new[] { eventType });
         AddTarget(targets, "XRL.World.Effects.Stuck", "FireEvent", new[] { eventType });
         return targets;
@@ -108,6 +112,13 @@ public static class EffectMobilityBlockTranslationPatch
 
         var normalizedSource = source.Replace("&y!", "!");
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(normalizedSource);
+        var engulfedMatch = EngulfedBlockPattern.Match(stripped);
+        if (engulfedMatch.Success)
+        {
+            translated = $"{RestoreCapture(engulfedMatch, spans, "target")}に呑み込まれている間はできない。";
+            return true;
+        }
+
         var match = MobilityBlockPattern.Match(stripped);
         if (!match.Success)
         {
@@ -143,6 +154,12 @@ public static class EffectMobilityBlockTranslationPatch
                 suffix = string.Empty;
                 return false;
         }
+    }
+
+    private static string RestoreCapture(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
+    {
+        var group = match.Groups[groupName];
+        return ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, spans, group).Trim();
     }
 
     private static void AddTarget(List<MethodBase> targets, string typeName, string methodName, Type[] parameters)
