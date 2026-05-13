@@ -252,6 +252,8 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(XrlCoreLostSightTranslationPatch), "RenderBaseToBuffer", "XRL.Core.XRLCore", "System.Void", new[] { "ConsoleLib.Console.ScreenBuffer" })]
     [TestCase(typeof(XrlCoreHotloadConfigurationTranslationPatch), "HotloadConfiguration", "XRL.Core.XRLCore", "System.Void", new[] { "System.Boolean" })]
+    [TestCase(typeof(BrainThinkTranslationPatch), "Think", "XRL.World.Parts.Brain", "System.Void", new[] { "System.String" })]
+    [TestCase(typeof(BrainWriteFeelingSamplesPopupTranslationPatch), "WriteFeelingSamples", "XRL.World.Parts.Brain", "System.Void", new[] { "System.Boolean" })]
     [TestCase(typeof(ZoneManagerSetActiveZoneTranslationPatch), "SetActiveZone", "XRL.World.ZoneManager", "XRL.World.Zone", new[] { "XRL.World.Zone" })]
     [TestCase(typeof(JournalEntryDisplayTextPatch), "GetDisplayText", "Qud.API.IBaseJournalEntry", "System.String", new string[0])]
     [TestCase(typeof(JournalMapNoteDisplayTextPatch), "GetDisplayText", "Qud.API.JournalMapNote", "System.String", new string[0])]

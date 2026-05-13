@@ -3756,6 +3756,85 @@ def _xrl_core_owner_queue_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _brain_owner_surface_families() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/Brain.cs::XRL.World.Parts.Brain.Think",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/BrainThinkTranslationPatch.cs",
+                    (
+                        "BrainThinkTranslationPatch",
+                        "Think",
+                        "thinks: '",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("BrainThinkTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/BrainOwnerTranslationPatchTests.cs",
+                    (
+                        "Think_TranslatesQueuedThought_WhenOwnerPatched",
+                        "Think_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "Think_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                        "Think_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                        "snapjaw thinks: 'kill the intruder'",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "BrainThinkTranslationPatch",
+                        "Think",
+                        "XRL.World.Parts.Brain",
+                        "System.String",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/Brain.cs::XRL.World.Parts.Brain.WriteFeelingSamples",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/BrainWriteFeelingSamplesPopupTranslationPatch.cs",
+                    (
+                        "BrainWriteFeelingSamplesPopupTranslationPatch",
+                        "WriteFeelingSamples",
+                        "feelings written to",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("BrainWriteFeelingSamplesPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/BrainOwnerTranslationPatchTests.cs",
+                    (
+                        "WriteFeelingSamples_TranslatesPopup_WhenOwnerPatched",
+                        "WriteFeelingSamples_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "WriteFeelingSamples_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "WriteFeelingSamples_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "42 feelings written to AllFeelings.txt in /tmp/qud!",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "BrainWriteFeelingSamplesPopupTranslationPatch",
+                        "WriteFeelingSamples",
+                        "XRL.World.Parts.Brain",
+                        "System.Boolean",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _cripple_apply_family() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -5345,6 +5424,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_giant_clam_teleport_joppa_family(),
     *_single_callsite_owner_popup_families(),
     *_xrl_core_owner_queue_families(),
+    *_brain_owner_surface_families(),
     *_cripple_apply_family(),
     *_mutation_self_target_popup_families(),
     *_system_static_message_families(),

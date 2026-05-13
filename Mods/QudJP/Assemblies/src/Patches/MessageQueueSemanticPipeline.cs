@@ -75,6 +75,7 @@ internal static class MessageQueueSemanticPipeline
         GameObjectSpotTranslationPatch.TryTranslateQueuedMessage,
         XrlCoreHotloadConfigurationTranslationPatch.TryTranslateQueuedMessage,
         XrlCoreLostSightTranslationPatch.TryTranslateQueuedMessage,
+        BrainThinkTranslationPatch.TryTranslateQueuedMessage,
         DeployableInfrastructureTranslationPatch.TryTranslateQueuedMessage,
         PlayerDanceRitualTranslationPatch.TryTranslateQueuedMessage,
         GameObjectEmitMessageTranslationPatch.TryTranslateQueuedMessage,

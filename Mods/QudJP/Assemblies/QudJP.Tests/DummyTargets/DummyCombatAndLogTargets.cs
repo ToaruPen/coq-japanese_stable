@@ -1382,6 +1382,27 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
     }
 }
 
+internal sealed class DummyBrainOwnerTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public static string StaticPopupMessageToShow { get; set; } = string.Empty;
+
+    public void Think(string hrm)
+    {
+        _ = hrm;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public static void WriteFeelingSamples(bool level = false)
+    {
+        _ = level;
+        DummyPopupShow.Show(StaticPopupMessageToShow);
+    }
+}
+
 internal sealed class DummyBoostStatisticTarget
 {
     public string MessageToSend { get; set; } = string.Empty;
