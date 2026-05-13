@@ -6134,6 +6134,59 @@ def _mutation_infection_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _mutation_action_failure_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MutationActionFailureTranslationPatch.cs",
+        (
+            "MutationActionFailureTranslationPatch",
+            "ElectricalGeneration",
+            "TeleportOther",
+            "TryTranslatePopupMessage",
+            "ElectricalGenerationDrinkFailurePattern",
+            "TeleportOtherSelfTargetPattern",
+        ),
+    )
+    popup_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("MutationActionFailureTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/MutationActionFailureTranslationPatchTests.cs",
+        (
+            "ElectricalGenerationHandleEvent_TranslatesDrinkChargeFailurePopup_WhenOwnerPatched",
+            "TeleportOtherFireEvent_TranslatesSelfTargetFailurePopup_WhenOwnerPatched",
+            "MutationActionFailure_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+            "MutationActionFailure_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "MutationActionFailure_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "DummyMutationActionFailureTarget",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(MutationActionFailureTranslationPatch)",
+            "XRL.World.Parts.Mutation.ElectricalGeneration|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+            "XRL.World.Parts.Mutation.TeleportOther|FireEvent|System.Boolean|XRL.World.Event",
+        ),
+    )
+    evidence_files = (patch, popup_pipeline, tests, target_tests)
+    return (
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Parts.Mutation/ElectricalGeneration.cs::"
+                "XRL.World.Parts.Mutation.ElectricalGeneration.HandleEvent"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=evidence_files,
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts.Mutation/TeleportOther.cs::XRL.World.Parts.Mutation.TeleportOther.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=evidence_files,
+        ),
+    )
+
+
 def _tenfold_path_initiatory_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/TenfoldPathInitiatoryTranslationPatch.cs",
@@ -8866,6 +8919,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_on_eat_reward_message_families(),
     *_effect_mobility_block_families(),
     *_mutation_infection_families(),
+    *_mutation_action_failure_families(),
     *_tenfold_path_initiatory_families(),
     *_power_entry_prerequisite_popup_families(),
     *_magnetic_pulse_families(),

@@ -1188,6 +1188,11 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Effects.MutationInfection|FireEvent|System.Boolean|XRL.World.Event",
     })]
+    [TestCase(typeof(MutationActionFailureTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.ElectricalGeneration|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.Mutation.TeleportOther|FireEvent|System.Boolean|XRL.World.Event",
+    })]
     [TestCase(typeof(SystemStaticMessageTranslationPatch), new[]
     {
         "XRL.CheckpointingSystem|CheckpointOn|System.Boolean",
