@@ -437,6 +437,9 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(ZoneManagerGenerateZoneTranslationPatch), "GenerateZone", "XRL.World.ZoneManager", "System.Void", new[] { "System.String" })]
     [TestCase(typeof(BedTranslationPatch), "AttemptSleep", "XRL.World.Parts.Bed", "System.Void", new[] { "XRL.World.GameObject", "System.Boolean&", "System.Boolean&", "System.Boolean&" })]
     [TestCase(typeof(ChairTranslationPatch), "SitDown", "XRL.World.Parts.Chair", "System.Boolean", new[] { "XRL.World.GameObject", "XRL.World.IEvent" })]
+    [TestCase(typeof(TinkeringBuildPopupTranslationPatch), "PerformUITinkerBuild", "XRL.UI.TinkeringScreen", "System.Boolean", new[] { "XRL.World.GameObject", "XRL.World.Tinkering.TinkerData", "XRL.World.IEvent" })]
+    [TestCase(typeof(AbsorbablePsychePopupTranslationPatch), "HandleEvent", "XRL.World.Parts.AbsorbablePsyche", "System.Boolean", new[] { "XRL.World.BeforeDeathRemovalEvent" })]
+    [TestCase(typeof(DataDiskLearnPopupTranslationPatch), "HandleEvent", "XRL.World.Parts.DataDisk", "System.Boolean", new[] { "XRL.World.InventoryActionEvent" })]
     [TestCase(typeof(StairsDownTranslationPatch), "HandleEvent", "XRL.World.Parts.StairsDown", "System.Boolean", new[] { "XRL.World.InventoryActionEvent" })]
     [TestCase(typeof(StairsUpTranslationPatch), "HandleEvent", "XRL.World.Parts.StairsUp", "System.Boolean", new[] { "XRL.World.InventoryActionEvent" })]
     [TestCase(typeof(GameSummaryScreenMenuBarsTranslationPatch), "UpdateMenuBars", "Qud.UI.GameSummaryScreen", "System.Void", new string[0])]
@@ -1341,6 +1344,23 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Quests.GolemQuest.GolemBodySelection|WishSpec|System.Void|System.String",
         "XRL.World.Quests.GolemQuest.GolemMaterialSelection`2|Pick|System.Void",
+    })]
+    [TestCase(typeof(LocationFinderPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.LocationFinder|TriggerFind|System.Void",
+    })]
+    [TestCase(typeof(SupplyableIntegratedHostPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.SupplyableIntegratedHost|AttemptSupply|System.Boolean|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(ModMagnetizedTranslationPatch), new[]
+    {
+        "XRL.World.Parts.ModMagnetized|CheckFloating|System.Void",
+    })]
+    [TestCase(typeof(DeployableInfrastructureTranslationPatch), new[]
+    {
+        "XRL.World.Parts.DeployableInfrastructure|AttemptDeploy|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Parts.DeployableInfrastructure|DeployOne|System.Boolean|XRL.World.GameObject|XRL.World.Cell|System.Boolean|System.Boolean",
     })]
     [TestCase(typeof(FireSuppressionDischargeTranslationPatch), new[]
     {

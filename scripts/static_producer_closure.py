@@ -3639,6 +3639,227 @@ def _existing_popup_owner_route_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _closure_only_popup_owner_families() -> tuple[CoveredOwnerFamily, ...]:
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        (
+            "TinkeringBuildPopupTranslationPatch.TryTranslatePopupMessage",
+            "AbsorbablePsychePopupTranslationPatch.TryTranslatePopupMessage",
+            "DeployableInfrastructureTranslationPatch.TryTranslatePopupMessage",
+            "DataDiskLearnPopupTranslationPatch.TryTranslatePopupMessage",
+            "LocationFinderPopupTranslationPatch.TryTranslatePopupMessage",
+            "ModMagnetizedTranslationPatch.TryTranslatePopupMessage",
+            "SupplyableIntegratedHostPopupTranslationPatch.TryTranslatePopupMessage",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.UI/TinkeringScreen.cs::XRL.UI.TinkeringScreen.PerformUITinkerBuild",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/TinkeringBuildPopupTranslationPatch.cs",
+                    ("TinkeringBuildPopupTranslationPatch", "PerformUITinkerBuild", "TryTranslateTinkerUp"),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/TinkeringBuildPopupTranslationPatchTests.cs",
+                    (
+                        "PerformUITinkerBuild_TranslatesMissingIngredientPopup_WhenOwnerPatched",
+                        "PerformUITinkerBuild_TranslatesSuccessPopups_WhenOwnerPatched",
+                        "PerformUITinkerBuild_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "PerformUITinkerBuild_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "PerformUITinkerBuild_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    ("TargetMethod_ResolvesExpectedSignature", "XRL.UI.TinkeringScreen", "PerformUITinkerBuild"),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/AbsorbablePsyche.cs::XRL.World.Parts.AbsorbablePsyche.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/AbsorbablePsychePopupTranslationPatch.cs",
+                    ("AbsorbablePsychePopupTranslationPatch", "HandleEvent", "TryTranslateConfirmation"),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/AbsorbablePsychePopupTranslationPatchTests.cs",
+                    (
+                        "HandleEvent_TranslatesConfirmationPopup_WhenOwnerPatched",
+                        "HandleEvent_TranslatesEncodePopup_WhenOwnerPatched",
+                        "HandleEvent_TranslatesRadiatePopup_WhenOwnerPatched",
+                        "HandleEvent_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "HandleEvent_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "HandleEvent_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "TargetMethod_ResolvesExpectedSignature",
+                        "XRL.World.Parts.AbsorbablePsyche",
+                        "HandleEvent",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Parts/DeployableInfrastructure.cs::"
+                "XRL.World.Parts.DeployableInfrastructure.AttemptDeploy"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/DeployableInfrastructureTranslationPatch.cs",
+                    ("DeployableInfrastructureTranslationPatch", "AttemptDeploy", "NoUsefulWayPattern"),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/DeployableInfrastructurePopupTranslationPatchTests.cs",
+                    (
+                        "AttemptDeploy_TranslatesDeploySuccessPopup_WhenOwnerPatched",
+                        "AttemptDeploy_TranslatesNoUsefulWayPopup_WhenOwnerPatched",
+                        "AttemptDeploy_LeavesPopupUnchanged_WhenOwnerAbsent",
+                        "AttemptDeploy_StripsDirectMarkerWithoutRecordingTransform_WhenOwnerPatched",
+                        "AttemptDeploy_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "XRL.World.Parts.DeployableInfrastructure|AttemptDeploy|System.Boolean|XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/DataDisk.cs::XRL.World.Parts.DataDisk.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/DataDiskLearnPopupTranslationPatch.cs",
+                    (
+                        "DataDiskLearnPopupTranslationPatch",
+                        "HandleEvent",
+                        "ItemModificationPattern",
+                        "BuildRecipePattern",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/DataDiskLearnPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesItemModificationLearnPopup_WhenOwnerPatched",
+                        "Patch_TranslatesBuildRecipeLearnPopup_WhenOwnerPatched",
+                        "Patch_DoesNotTranslateDataDiskLearnPopup_WhenOwnerAbsent",
+                        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    ("TargetMethod_ResolvesExpectedSignature", "XRL.World.Parts.DataDisk", "HandleEvent"),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/LocationFinder.cs::XRL.World.Parts.LocationFinder.TriggerFind",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/LocationFinderPopupTranslationPatch.cs",
+                    ("LocationFinderPopupTranslationPatch", "TriggerFind", "DiscoverPattern", "TravelPattern"),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/LocationFinderPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesLocationFinderPopup_WhenOwnerPatched",
+                        "Patch_DoesNotRecordOwnerRoute_WhenOwnerAbsent",
+                        "Patch_StripsDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "XRL.World.Parts.LocationFinder|TriggerFind|System.Void",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/ModMagnetized.cs::XRL.World.Parts.ModMagnetized.CheckFloating",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/ModMagnetizedTranslationPatch.cs",
+                    (
+                        "ModMagnetizedTranslationPatch",
+                        "CheckFloating",
+                        "DoesVerbRouteTranslator.TryTranslateMarkedMessage",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ModMagnetizedTranslationPatchTests.cs",
+                    (
+                        "CheckFloating_TranslatesDoesVerbPopup_WhenOwnerPatched",
+                        "CheckFloating_LeavesPlainPopupUnchanged_WhenOwnerAbsent",
+                        "CheckFloating_StripsDirectMarkerWithoutRecordingTransform_WhenOwnerPatched",
+                        "CheckFloating_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "XRL.World.Parts.ModMagnetized|CheckFloating|System.Void",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Parts/SupplyableIntegratedHost.cs::"
+                "XRL.World.Parts.SupplyableIntegratedHost.AttemptSupply"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SupplyableIntegratedHostPopupTranslationPatch.cs",
+                    ("SupplyableIntegratedHostPopupTranslationPatch", "AttemptSupply", "NoNeededSuppliesPattern"),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SupplyableIntegratedHostPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSupplyableIntegratedHostPopup_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_StripsDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "XRL.World.Parts.SupplyableIntegratedHost|AttemptSupply|System.Boolean|XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -4497,6 +4718,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_mutation_self_target_popup_families(),
     *_system_static_message_families(),
     *_existing_popup_owner_route_families(),
+    *_closure_only_popup_owner_families(),
     CoveredOwnerFamily(
         family_id="XRL.World.Parts.Skill/Tactics_Kickback.cs::XRL.World.Parts.Skill.Tactics_Kickback.HandleEvent",
         inventory_statuses=("owner_patch_required",),
