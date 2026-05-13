@@ -3,6 +3,7 @@ using System.Text;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
+using QudJP.Tests.L1;
 
 namespace QudJP.Tests.L2;
 
@@ -9105,15 +9106,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
     private static void UseRepositoryPatternDictionary()
     {
-        var localizationRoot = Path.GetFullPath(
-            Path.Combine(
-                TestContext.CurrentContext.TestDirectory,
-                "..",
-                "..",
-                "..",
-                "..",
-                "..",
-                "Localization"));
+        var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
         LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
         Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
         MessagePatternTranslator.SetPatternFileForTests(null);

@@ -5758,6 +5758,47 @@ def _map_reveal_popup_family() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _experience_award_xp_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/Experience.cs::XRL.World.Parts.Experience.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/ExperienceAwardXpTranslationPatch.cs",
+                    ("ExperienceAwardXpTranslationPatch", "TryTranslateQueuedMessage", "Experience.HandleEvent"),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("ExperienceAwardXpTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "ExperienceAwardXp_TranslatesColorizedXpGain_WhenPatched",
+                        "ExperienceAwardXp_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "ExperienceAwardXp_DirectMarkerPassesThroughWithoutRetranslation_WhenPatched",
+                        "ExperienceAwardXp_LeavesEmptyMessageUnchanged_WhenPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(ExperienceAwardXpTranslationPatch)",
+                        '"HandleEvent"',
+                        '"XRL.World.Parts.Experience"',
+                        '"XRL.World.AwardXPEvent"',
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+                    ("^You gain (\\\\{\\\\{C\\\\|\\\\d+\\\\}\\\\}|\\\\d+) XP[.!]?$",),
+                ),
+            ),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -7711,6 +7752,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_mechanical_wings_popup_family(),
     *_fire_suppression_discharge_message_families(),
     *_cudgel_conk_popup_family(),
+    *_experience_award_xp_family(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 
