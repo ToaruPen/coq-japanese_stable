@@ -37,6 +37,7 @@ public static class SystemStaticMessageTranslationPatch
         AddTarget(targets, "XRL.World.Parts.Mutation.HeightenedIntelligence", "FireEvent", new[] { eventType });
         AddTarget(targets, "XRL.World.Parts.Mutation.HeightenedAgility", "FireEvent", new[] { eventType });
         AddTarget(targets, "XRL.World.Parts.Mutation.Metamorphosis", "FireEvent", new[] { eventType });
+        AddTarget(targets, "XRL.World.Parts.Mutation.QuantumJitters", "Sunder", Type.EmptyTypes);
         if (cellType is not null)
         {
             AddTarget(targets, "XRL.World.Parts.Mutation.SpacetimeVortex", "Vortex", new[] { cellType });
@@ -46,6 +47,7 @@ public static class SystemStaticMessageTranslationPatch
             Trace.TraceError("QudJP: {0}.SpacetimeVortex.Vortex parameter type not found.", Context);
         }
         AddTarget(targets, "XRL.World.Parts.TrembleEarthquakes", "Quake", Type.EmptyTypes);
+        AddTarget(targets, "XRL.World.Parts.WorldTeleporter", "FireEvent", new[] { eventType });
         AddTarget(targets, "XRL.World.Parts.DoorSwitch", "FireEvent", new[] { eventType });
         AddTarget(targets, "XRL.World.Parts.SpawningEggSac", "tickEgg", Type.EmptyTypes);
         if (teleportationType is not null && iEventType is not null && cellType is not null && gameObjectType is not null)
@@ -118,9 +120,11 @@ public static class SystemStaticMessageTranslationPatch
             "&CA flash of insight overcomes you!" => "&Cひらめきがあなたを満たした！",
             "You do that with ease." => "難なくやってのけた。",
             "That creature is of too high a level to duplicate!" => "そのクリーチャーは複製するには強すぎる！",
+            "Your focus slips, causing you to dent spacetime in the local region." => "集中が途切れ、この周囲の時空がへこむ。",
             "{{G|You sunder spacetime.}}" => "{{G|時空を切り裂いた。}}",
             "The ground shakes violently!" => "地面が激しく揺れた！",
             "The ground shakes violently and loose rock falls from the ceiling!" => "地面が激しく揺れ、天井から岩が崩れ落ちた！",
+            "You are sucked through the surface of the sphere!" => "球の表面に吸い込まれた！",
             "The security door unlocks with a loud clank and swings open." => "頑丈なドアが大きな音とともに解錠され開いた。",
             "The security door swings closed and locks with a loud clank." => "頑丈なドアが閉じて大きな音で施錠された。",
             "Nothing seems to happen when you hit the switch." => "スイッチを押しても何も起こらない。",

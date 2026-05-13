@@ -4901,6 +4901,8 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             "SystemStaticSetHolyZone_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "SystemStaticFireEvent_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "SystemStaticMutationFireEvent_TranslatesFixedQueuedMessages_WhenOwnerPatched",
+            "SystemStaticWorldTeleporterFireEvent_TranslatesFixedQueuedMessage_WhenOwnerPatched",
+            "SystemStaticQuantumJittersSunder_TranslatesFixedQueuedMessage_WhenOwnerPatched",
             "SystemStaticSpacetimeVortex_TranslatesFixedQueuedMessage_WhenOwnerPatched",
             "SystemStaticQuake_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "SystemStaticDoorSwitchFireEvent_TranslatesFixedQueuedMessages_WhenOwnerPatched",
@@ -4922,9 +4924,11 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             "&CA flash of insight overcomes you!",
             "You do that with ease.",
             "That creature is of too high a level to duplicate!",
+            "Your focus slips, causing you to dent spacetime in the local region.",
             "{{G|You sunder spacetime.}}",
             "The ground shakes violently!",
             "The ground shakes violently and loose rock falls from the ceiling!",
+            "You are sucked through the surface of the sphere!",
             "The security door unlocks with a loud clank and swings open.",
             "The security door swings closed and locks with a loud clank.",
             "Nothing seems to happen when you hit the switch.",
@@ -5060,6 +5064,26 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             ),
         ),
         CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Parts.Mutation/QuantumJitters.cs::"
+                "XRL.World.Parts.Mutation.QuantumJitters.Sunder"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SystemStaticMessageTranslationPatch)",
+                        "XRL.World.Parts.Mutation.QuantumJitters|Sunder|System.Void",
+                    ),
+                ),
+                dictionary,
+            ),
+        ),
+        CoveredOwnerFamily(
             family_id="XRL.World.Parts/TrembleEarthquakes.cs::XRL.World.Parts.TrembleEarthquakes.Quake",
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
@@ -5071,6 +5095,23 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
                     (
                         "typeof(SystemStaticMessageTranslationPatch)",
                         "XRL.World.Parts.TrembleEarthquakes|Quake|System.Void",
+                    ),
+                ),
+                dictionary,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/WorldTeleporter.cs::XRL.World.Parts.WorldTeleporter.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SystemStaticMessageTranslationPatch)",
+                        "XRL.World.Parts.WorldTeleporter|FireEvent|System.Boolean|XRL.World.Event",
                     ),
                 ),
                 dictionary,

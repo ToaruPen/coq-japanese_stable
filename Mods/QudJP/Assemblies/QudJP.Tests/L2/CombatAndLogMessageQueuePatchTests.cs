@@ -4161,6 +4161,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("You do that with ease.")]
     [TestCase("That creature is of too high a level to duplicate!")]
     [TestCase("{{G|You sunder spacetime.}}")]
+    [TestCase("You are sucked through the surface of the sphere!")]
+    [TestCase("Your focus slips, causing you to dent spacetime in the local region.")]
     public void FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
     {
         var harmonyId = CreateHarmonyId();
@@ -4601,6 +4603,22 @@ public sealed class CombatAndLogMessageQueuePatchTests
         string expected)
     {
         AssertSystemStaticFireEventQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void SystemStaticWorldTeleporterFireEvent_TranslatesFixedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertSystemStaticFireEventQueuedMessage(
+            "You are sucked through the surface of the sphere!",
+            "球の表面に吸い込まれた！");
+    }
+
+    [Test]
+    public void SystemStaticQuantumJittersSunder_TranslatesFixedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertSystemStaticSunderQueuedMessage(
+            "Your focus slips, causing you to dent spacetime in the local region.",
+            "集中が途切れ、この周囲の時空がへこむ。");
     }
 
     [TestCase("The ground shakes violently!", "地面が激しく揺れた！")]
@@ -8947,6 +8965,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
             };
 
             _ = target.HandleEvent(new DummyEnteredCellEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertSystemStaticSunderQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.Sunder)),
+                typeof(SystemStaticMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.Sunder();
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }
