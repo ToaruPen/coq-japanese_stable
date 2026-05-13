@@ -6727,6 +6727,53 @@ def _temporary_reality_stabilize_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _cloning_start_budded_clone_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/CloningStartBuddedCloneTranslationPatch.cs",
+        (
+            "CloningStartBuddedCloneTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "TryTranslatePopupMessage",
+            "StartBuddedClone",
+            "DetachPattern",
+        ),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("CloningStartBuddedCloneTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    popup_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("CloningStartBuddedCloneTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CloningStartBuddedCloneTranslationPatchTests.cs",
+        (
+            "CloningStartBuddedClone_TranslatesDetachPopup_WhenOwnerPatched",
+            "CloningStartBuddedClone_TranslatesDetachQueueMessage_WhenOwnerPatched",
+            "CloningStartBuddedClone_DoesNotTranslateTraffic_WhenOwnerAbsent",
+            "CloningStartBuddedClone_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "CloningStartBuddedClone_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "CloningStartBuddedClone_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "DummyCloningStartBuddedCloneTarget",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(CloningStartBuddedCloneTranslationPatch)",
+            "XRL.World.Capabilities.Cloning|StartBuddedClone|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Capabilities/Cloning.cs::XRL.World.Capabilities.Cloning.StartBuddedClone",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, popup_pipeline, tests, target_tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -8698,6 +8745,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_cybernetics_stasis_entangler_families(),
     *_engulfing_families(),
     *_temporary_reality_stabilize_families(),
+    *_cloning_start_budded_clone_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 

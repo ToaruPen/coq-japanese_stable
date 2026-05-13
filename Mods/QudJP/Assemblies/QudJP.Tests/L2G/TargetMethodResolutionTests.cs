@@ -1271,6 +1271,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.Temporary|HandleEvent|System.Boolean|XRL.World.RealityStabilizeEvent",
     })]
+    [TestCase(typeof(CloningStartBuddedCloneTranslationPatch), new[]
+    {
+        "XRL.World.Capabilities.Cloning|StartBuddedClone|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject",
+    })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
         "XRL.World.Parts.Combat|HandleEvent|System.Boolean|XRL.World.GetDefenderHitDiceEvent",

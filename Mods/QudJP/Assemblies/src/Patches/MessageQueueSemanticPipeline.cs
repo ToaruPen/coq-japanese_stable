@@ -42,6 +42,7 @@ internal static class MessageQueueSemanticPipeline
         CyberneticsStasisEntanglerTranslationPatch.TryTranslateQueuedMessage,
         EngulfingTranslationPatch.TryTranslateQueuedMessage,
         TemporaryRealityStabilizeTranslationPatch.TryTranslateQueuedMessage,
+        CloningStartBuddedCloneTranslationPatch.TryTranslateQueuedMessage,
         QuillsTranslationPatch.TryTranslateQueuedMessage,
         LightManipulationTranslationPatch.TryTranslateQueuedMessage,
         CombatSkillMessageTranslationPatch.TryTranslateQueuedMessage,
