@@ -1271,6 +1271,26 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_ReusesLoadedPatternFile_WhenSamePathIsSelectedAgain()
+    {
+        WritePatternDictionary(("^You hear (.+?)[.!]?$", "あなたは{0}を聞いた"));
+        _ = MessagePatternTranslator.Translate("You hear thunder.");
+        Assert.That(MessagePatternTranslator.LoadInvocationCount, Is.EqualTo(1));
+
+        MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
+        var translated = string.Empty;
+        var output = TestTraceHelper.CaptureTrace(() =>
+            translated = MessagePatternTranslator.Translate("You hear rain."));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("あなたはrainを聞いた"));
+            Assert.That(MessagePatternTranslator.LoadInvocationCount, Is.EqualTo(0));
+            Assert.That(output, Does.Not.Contain("loaded 1 pattern(s)"));
+        });
+    }
+
+    [Test]
     public void Translate_RepeatedMissingPatternsRemainMeasurable()
     {
         WritePatternDictionary(("^You equip (.+)[.!]?$", "{0}を装備した"));
@@ -1496,6 +1516,7 @@ public sealed class MessagePatternTranslatorTests
     private void WritePatternFile(string content)
     {
         File.WriteAllText(patternFilePath, content, Utf8WithoutBom);
+        MessagePatternTranslator.InvalidatePatternFileCacheForTests(patternFilePath);
     }
 
     private void WriteMutationsXml(params (string name, string displayName)[] entries)

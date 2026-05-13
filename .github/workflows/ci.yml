@@ -180,6 +180,16 @@ jobs:
         run: >
           dotnet test Mods/QudJP/Assemblies/QudJP.Tests/bin/Release/net10.0/QudJP.Tests.dll
           --filter "TestCategory=${{ matrix.category }}"
+          --logger "trx;LogFileName=qudjp-${{ matrix.category }}.trx"
+          --results-directory TestResults/qudjp-${{ matrix.category }}
+
+      - name: Upload QudJP ${{ matrix.category }} test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qudjp-test-results-${{ matrix.category }}
+          path: TestResults/qudjp-${{ matrix.category }}/*.trx
+          if-no-files-found: ignore
 
   roslyn-tools:
     runs-on: ubuntu-latest

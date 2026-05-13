@@ -42,7 +42,7 @@ convention = "google"
 quote-style = "double"
 
 [tool.pytest.ini_options]
-addopts = ["--durations=10"]
+addopts = ["--durations=20"]
 testpaths = ["scripts/tests"]
 markers = [
   "semantic_probe_real: optional real-source smoke tests for RoslynSemanticProbe",
