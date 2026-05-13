@@ -3812,6 +3812,15 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertFungalSporeInfectionQueuedMessage("Your skin itches.", "肌がむずむずする。");
     }
 
+    [Test]
+    public void GasFungalSporesApplyGas_TranslatesSkinItchesQueuedMessage_WhenOwnerPatched()
+    {
+        AssertFungalSporeInfectionQueuedMessage(
+            nameof(DummyFungalSporeInfectionTarget.ApplyGas),
+            "Your skin itches.",
+            "肌がむずむずする。");
+    }
+
     [TestCase(
         nameof(DummyFungalSporeInfectionTarget.PaxFireEvent),
         "Your left arm spews a cloud of spores.",
@@ -3981,6 +3990,15 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void MonochromeOnsetFireEvent_TranslatesQueuedMessages_WhenOwnerPatched(string source, string expected)
     {
         AssertMonochromeOnsetQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void MonochromePoisonOnDamageFireEvent_TranslatesVisionBlurQueuedMessage_WhenOwnerPatched()
+    {
+        AssertMonochromeOnsetQueuedMessage(
+            nameof(DummyGameObjectFireEventTarget.MonochromePoisonOnDamageFireEvent),
+            "Your vision blurs.",
+            "視界がぼやける。");
     }
 
     [Test]
@@ -8154,9 +8172,12 @@ public sealed class CombatAndLogMessageQueuePatchTests
         try
         {
             PatchQueue(harmony);
+            var targetMethod = string.Equals(methodName, nameof(DummyFungalSporeInfectionTarget.ApplyGas), StringComparison.Ordinal)
+                ? RequireMethod(typeof(DummyFungalSporeInfectionTarget), methodName, typeof(DummyGameObject))
+                : RequireMethod(typeof(DummyFungalSporeInfectionTarget), methodName, typeof(DummyGameEvent));
             PatchOwner(
                 harmony,
-                RequireMethod(typeof(DummyFungalSporeInfectionTarget), methodName, typeof(DummyGameEvent)),
+                targetMethod,
                 typeof(FungalSporeInfectionTranslationPatch));
 
             var target = new DummyFungalSporeInfectionTarget
@@ -8175,6 +8196,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
             else if (string.Equals(methodName, nameof(DummyFungalSporeInfectionTarget.FireEvent), StringComparison.Ordinal))
             {
                 _ = target.FireEvent(new DummyGameEvent { ID = "EndTurn" });
+            }
+            else if (string.Equals(methodName, nameof(DummyFungalSporeInfectionTarget.ApplyGas), StringComparison.Ordinal))
+            {
+                _ = target.ApplyGas(new DummyGameObject());
             }
             else
             {
@@ -8260,6 +8285,11 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
     private static void AssertMonochromeOnsetQueuedMessage(string message, string expected)
     {
+        AssertMonochromeOnsetQueuedMessage(nameof(DummyGameObjectFireEventTarget.FireEvent), message, expected);
+    }
+
+    private static void AssertMonochromeOnsetQueuedMessage(string methodName, string message, string expected)
+    {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try
@@ -8267,7 +8297,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
             PatchQueue(harmony);
             PatchOwner(
                 harmony,
-                RequireMethod(typeof(DummyGameObjectFireEventTarget), nameof(DummyGameObjectFireEventTarget.FireEvent), typeof(DummyGameEvent)),
+                RequireMethod(typeof(DummyGameObjectFireEventTarget), methodName, typeof(DummyGameEvent)),
                 typeof(MonochromeOnsetTranslationPatch));
 
             var target = new DummyGameObjectFireEventTarget
@@ -8275,7 +8305,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
                 MessageToSend = message,
             };
 
-            _ = target.FireEvent(new DummyGameEvent { ID = "EndTurn" });
+            _ = RequireMethod(typeof(DummyGameObjectFireEventTarget), methodName, typeof(DummyGameEvent))
+                .Invoke(target, new object[] { new DummyGameEvent { ID = "EndTurn" } });
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }

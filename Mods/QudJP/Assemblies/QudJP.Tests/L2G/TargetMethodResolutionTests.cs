@@ -1128,6 +1128,7 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Effects.FungalSporeInfection|ApplyFungalInfection|System.Boolean|XRL.World.GameObject|System.String|XRL.World.Anatomy.BodyPart",
         "XRL.World.Effects.FungalSporeInfection|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.GasFungalSpores|ApplyGas|System.Boolean|XRL.World.GameObject",
         "XRL.World.Parts.PaxInfection|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.PuffInfection|FireEvent|System.Boolean|XRL.World.Event",
     })]
@@ -1144,6 +1145,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(MonochromeOnsetTranslationPatch), new[]
     {
         "XRL.World.Effects.MonochromeOnset|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.MonochromePoisonOnDamage|FireEvent|System.Boolean|XRL.World.Event",
     })]
     [TestCase(typeof(IronshankOnsetTranslationPatch), new[]
     {

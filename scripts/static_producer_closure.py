@@ -3578,6 +3578,7 @@ def _fungal_spore_infection_families() -> tuple[CoveredOwnerFamily, ...]:
             "Mods/QudJP/Assemblies/src/Patches/FungalSporeInfectionTranslationPatch.cs",
             (
                 "FungalSporeInfectionTranslationPatch",
+                "GasFungalSpores",
                 "TryTranslatePopupMessage",
                 "TryTranslateQueuedMessage",
             ),
@@ -3635,6 +3636,33 @@ def _fungal_spore_infection_families() -> tuple[CoveredOwnerFamily, ...]:
                     (
                         "typeof(FungalSporeInfectionTranslationPatch)",
                         "XRL.World.Effects.FungalSporeInfection|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/GasFungalSpores.cs::XRL.World.Parts.GasFungalSpores.ApplyGas",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                *common_patch_evidence,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("FungalSporeInfectionTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "GasFungalSporesApplyGas_TranslatesSkinItchesQueuedMessage_WhenOwnerPatched",
+                        "FungalSporeInfectionFireEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "FungalSporeInfectionFireEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                        "FungalSporeInfectionFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(FungalSporeInfectionTranslationPatch)",
+                        "XRL.World.Parts.GasFungalSpores|ApplyGas|System.Boolean|XRL.World.GameObject",
                     ),
                 ),
             ),
@@ -3811,28 +3839,37 @@ def _stressed_families() -> tuple[CoveredOwnerFamily, ...]:
 
 
 def _monochrome_onset_families() -> tuple[CoveredOwnerFamily, ...]:
+    common_evidence = (
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/src/Patches/MonochromeOnsetTranslationPatch.cs",
+            ("MonochromeOnsetTranslationPatch", "MonochromePoisonOnDamage", "TryTranslateQueuedMessage"),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+            ("MonochromeOnsetTranslationPatch.TryTranslateQueuedMessage",),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+            (
+                "MonochromeOnsetFireEvent_TranslatesQueuedMessages_WhenOwnerPatched",
+                "MonochromePoisonOnDamageFireEvent_TranslatesVisionBlurQueuedMessage_WhenOwnerPatched",
+                "MonochromeOnsetFireEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                "MonochromeOnsetFireEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                "MonochromeOnsetFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+            ),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Localization/Dictionaries/ui-messagelog-world.ja.json",
+            ("You feel a bit better.", "Your vision blurs.", "Your vision clears up."),
+        ),
+    )
+
     return (
         CoveredOwnerFamily(
             family_id="XRL.World.Effects/MonochromeOnset.cs::XRL.World.Effects.MonochromeOnset.FireEvent",
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
-                EvidenceFile(
-                    "Mods/QudJP/Assemblies/src/Patches/MonochromeOnsetTranslationPatch.cs",
-                    ("MonochromeOnsetTranslationPatch", "TryTranslateQueuedMessage"),
-                ),
-                EvidenceFile(
-                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
-                    ("MonochromeOnsetTranslationPatch.TryTranslateQueuedMessage",),
-                ),
-                EvidenceFile(
-                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
-                    (
-                        "MonochromeOnsetFireEvent_TranslatesQueuedMessages_WhenOwnerPatched",
-                        "MonochromeOnsetFireEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
-                        "MonochromeOnsetFireEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
-                        "MonochromeOnsetFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
-                    ),
-                ),
+                *common_evidence,
                 EvidenceFile(
                     "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
                     (
@@ -3840,9 +3877,22 @@ def _monochrome_onset_families() -> tuple[CoveredOwnerFamily, ...]:
                         "XRL.World.Effects.MonochromeOnset|FireEvent|System.Boolean|XRL.World.Event",
                     ),
                 ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Parts/MonochromePoisonOnDamage.cs::"
+                "XRL.World.Parts.MonochromePoisonOnDamage.FireEvent"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                *common_evidence,
                 EvidenceFile(
-                    "Mods/QudJP/Localization/Dictionaries/ui-messagelog-world.ja.json",
-                    ("You feel a bit better.", "Your vision blurs.", "Your vision clears up."),
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(MonochromeOnsetTranslationPatch)",
+                        "XRL.World.Parts.MonochromePoisonOnDamage|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
                 ),
             ),
         ),

@@ -1513,6 +1513,12 @@ internal sealed class DummyFungalSporeInfectionTarget
         return EmitQueuedMessage("fungal");
     }
 
+    public bool ApplyGas(DummyGameObject obj)
+    {
+        _ = obj;
+        return EmitQueuedMessage(nameof(ApplyGas));
+    }
+
     public bool PaxFireEvent(DummyGameEvent e)
     {
         _ = e;
@@ -1658,6 +1664,14 @@ internal sealed class DummyGameObjectFireEventTarget
     public bool FireEvent(DummyGameEvent E)
     {
         _ = E;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public bool MonochromePoisonOnDamageFireEvent(DummyGameEvent E)
+    {
+        _ = E;
+        _ = nameof(MonochromePoisonOnDamageFireEvent);
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
         return true;
     }

@@ -19,6 +19,7 @@ public static class MonochromeOnsetTranslationPatch
     {
         var targets = new List<MethodBase>();
         var targetType = AccessTools.TypeByName("XRL.World.Effects.MonochromeOnset");
+        var poisonOnDamageType = AccessTools.TypeByName("XRL.World.Parts.MonochromePoisonOnDamage");
         var eventType = AccessTools.TypeByName("XRL.World.Event");
         if (targetType is null || eventType is null)
         {
@@ -27,6 +28,7 @@ public static class MonochromeOnsetTranslationPatch
         }
 
         AddTarget(targets, targetType, "FireEvent", new[] { eventType });
+        AddTargetByTypeName(targets, poisonOnDamageType, "XRL.World.Parts.MonochromePoisonOnDamage", "FireEvent", new[] { eventType });
         return targets;
     }
 
@@ -97,5 +99,21 @@ public static class MonochromeOnsetTranslationPatch
         }
 
         Trace.TraceError("QudJP: {0}.{1}.{2} target not found.", Context, targetType.FullName, methodName);
+    }
+
+    private static void AddTargetByTypeName(
+        List<MethodBase> targets,
+        Type? targetType,
+        string typeName,
+        string methodName,
+        Type[] parameters)
+    {
+        if (targetType is null)
+        {
+            Trace.TraceError("QudJP: {0} target type not found: {1}.", Context, typeName);
+            return;
+        }
+
+        AddTarget(targets, targetType, methodName, parameters);
     }
 }
