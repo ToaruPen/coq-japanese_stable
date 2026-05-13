@@ -1143,6 +1143,91 @@ def _popup_pick_several_family() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _grit_gate_terminal_owner_families() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.UI/GritGateTerminalScreenKnowledge.cs::XRL.UI.GritGateTerminalScreenKnowledge.GritGateTerminalScreenKnowledge",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/GritGateTerminalKnowledgePopupTranslationPatch.cs",
+                    (
+                        "GritGateTerminalKnowledgePopupTranslationPatch",
+                        "SourceHeader",
+                        "LocationPrefix",
+                        "TryTranslatePopupMessage",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("GritGateTerminalKnowledgePopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/GritGateTerminalKnowledgePopupTranslationPatchTests.cs",
+                    (
+                        "Activate_TranslatesInsightPopup_WhenOwnerPatched",
+                        "Activate_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Activate_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Activate_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "Ereshkigal delivers insight from the Thin World",
+                        "The location of {{Y|Bethesda Susa}}",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(GritGateTerminalKnowledgePopupTranslationPatch)",
+                        "XRL.UI.GritGateTerminalScreenKnowledge",
+                        "GritGateTerminalScreenKnowledge",
+                        '"Activate"',
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.UI/GritGateTerminalScreenMessage.cs::XRL.UI.GritGateTerminalScreenMessage.GritGateTerminalScreenMessage",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/GritGateTerminalScreenMessageTranslationPatch.cs",
+                    (
+                        "GritGateTerminalScreenMessageTranslationPatch",
+                        "AlarmMessage",
+                        "TryTranslateQueuedMessage",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("GritGateTerminalScreenMessageTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/GritGateTerminalScreenMessageTranslationPatchTests.cs",
+                    (
+                        "Activate_TranslatesConstructorDelegateAlarmMessage_WhenOwnerPatched",
+                        "Activate_DoesNotTranslateAlarmMessage_WhenOwnerAbsent",
+                        "Activate_DoesNotRetranslateDirectMarkedAlarmMessage_WhenOwnerPatched",
+                        "Activate_LeavesEmptyMessageUnchanged_WhenOwnerPatched",
+                        "Alarms blare across the enclave.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(GritGateTerminalScreenMessageTranslationPatch)",
+                        "XRL.UI.GritGateTerminalScreenMessage",
+                        "GritGateTerminalScreenMessage",
+                        '"Activate"',
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/ui-messagelog-world.ja.json",
+                    ("Alarms blare across the enclave.",),
+                ),
+            ),
+        ),
+    )
+
+
 def _status_screen_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/StatusScreenPopupTranslationPatch.cs",
@@ -5453,6 +5538,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_cooking_runtime_families(),
     *_water_ritual_popup_families(),
     *_popup_pick_several_family(),
+    *_grit_gate_terminal_owner_families(),
     *_status_screen_popup_families(),
     *_campfire_preserve_families(),
     *_reality_stabilized_event_families(),

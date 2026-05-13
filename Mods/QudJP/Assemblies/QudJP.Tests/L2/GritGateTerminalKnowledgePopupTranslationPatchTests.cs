@@ -30,7 +30,7 @@ public sealed class GritGateTerminalKnowledgePopupTranslationPatchTests
     public void Activate_TranslatesInsightPopup_WhenOwnerPatched()
     {
         const string source = "Ereshkigal delivers insight from the Thin World:\n\nThe location of {{Y|Bethesda Susa}}";
-        const string expected = "エレシュキガルは薄界からの洞察を授ける:\n\nThe location of {{Y|Bethesda Susa}}";
+        const string expected = "エレシュキガルは薄界からの洞察を授ける:\n\n{{Y|Bethesda Susa}}の場所";
 
         AssertPopupMessage(source, expected);
 
@@ -101,9 +101,9 @@ public sealed class GritGateTerminalKnowledgePopupTranslationPatchTests
     public void Activate_RestoresOuterOwnerScopeAfterNestedOwnerPopup()
     {
         const string innerSource = "Ereshkigal delivers insight from the Thin World:\n\nThe location of {{Y|Grit Gate}}";
-        const string innerExpected = "エレシュキガルは薄界からの洞察を授ける:\n\nThe location of {{Y|Grit Gate}}";
+        const string innerExpected = "エレシュキガルは薄界からの洞察を授ける:\n\n{{Y|Grit Gate}}の場所";
         const string outerSource = "Ereshkigal delivers insight from the Thin World:\n\nThe location of {{Y|Bethesda Susa}}";
-        const string outerExpected = "エレシュキガルは薄界からの洞察を授ける:\n\nThe location of {{Y|Bethesda Susa}}";
+        const string outerExpected = "エレシュキガルは薄界からの洞察を授ける:\n\n{{Y|Bethesda Susa}}の場所";
         var target = new DummyNestedGritGateTerminalKnowledgeTarget
         {
             InnerPopupMessageToShow = innerSource,

@@ -11,6 +11,7 @@ public static class GritGateTerminalKnowledgePopupTranslationPatch
     private const string Context = nameof(GritGateTerminalKnowledgePopupTranslationPatch);
     private const string SourceHeader = "Ereshkigal delivers insight from the Thin World:\n\n";
     private const string TranslatedHeader = "エレシュキガルは薄界からの洞察を授ける:\n\n";
+    private const string LocationPrefix = "The location of ";
 
     [ThreadStatic]
     private static int activeDepth;
@@ -94,8 +95,18 @@ public static class GritGateTerminalKnowledgePopupTranslationPatch
             return false;
         }
 
-        translated = TranslatedHeader + body;
+        translated = TranslatedHeader + TranslateBody(body);
         DynamicTextObservability.RecordTransform(route, family + "." + Context, source, translated);
         return true;
+    }
+
+    private static string TranslateBody(string body)
+    {
+        if (body.StartsWith(LocationPrefix, StringComparison.Ordinal))
+        {
+            return body.Substring(LocationPrefix.Length) + "の場所";
+        }
+
+        return body;
     }
 }
