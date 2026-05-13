@@ -1297,6 +1297,35 @@ internal sealed class DummySimpleOwnerQueueTarget
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
     }
 
+    public bool GelatenousPalmFireEvent(DummyEvent? eventObject = null)
+    {
+        _ = eventObject;
+        _ = nameof(GelatenousPalmFireEvent);
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public void GraveMossTrigger()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public bool QuantumRipplerHandleEvent(DummyEvent? eventObject = null)
+    {
+        _ = eventObject;
+        _ = nameof(QuantumRipplerHandleEvent);
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
+    public bool PerformReclamationOf(DummyGameObject? obj = null)
+    {
+        _ = obj;
+        _ = nameof(PerformReclamationOf);
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
     public bool TorchPropertiesHandleEvent(DummyEndTurnEvent? eventObject = null)
     {
         _ = eventObject;

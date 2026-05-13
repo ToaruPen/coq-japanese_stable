@@ -26,6 +26,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
         MessagePatternTranslator.ResetForTests();
+        MessageFrameTranslator.ResetForTests();
         QuestLifecyclePopupTranslationPatch.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
@@ -40,6 +41,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         Translator.ResetForTests();
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
         MessagePatternTranslator.ResetForTests();
+        MessageFrameTranslator.ResetForTests();
         QuestLifecyclePopupTranslationPatch.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
@@ -4470,6 +4472,65 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void EffectGeneratedApply_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
     {
         AssertEffectGeneratedApplyQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.GelatenousPalmFireEvent),
+        "The steel sword is lost in the goop!",
+        "steel swordは粘液の中に沈んだ！")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.GraveMossTrigger),
+        "The 苔 starts to fizz hungrily.",
+        "苔は飢えたように泡立ち始めた")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.QuantumRipplerHandleEvent),
+        "The 装置 collapses under the pressure of normality and implodes.",
+        "装置は正常性の圧力に耐えきれず崩壊し、内破した")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.PerformReclamationOf),
+        "The 回収装置 reclaims a 金属片.",
+        "回収装置は金属片を回収した。")]
+    public void WorldPartsGeneratedQueue_TranslatesDoesVerbMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        AssertWorldPartsGeneratedQueueMessage(methodName, source, expected);
+    }
+
+    [Test]
+    public void WorldPartsGeneratedQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        UseRepositoryMessageFrames();
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("The steel sword is lost in the goop.", null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("The steel sword is lost in the goop."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void WorldPartsGeneratedQueue_DoesNotRetranslateDirectMarkedMessage_WhenOwnerPatched()
+    {
+        AssertWorldPartsGeneratedQueueMessage(
+            nameof(DummySimpleOwnerQueueTarget.GelatenousPalmFireEvent),
+            MessageFrameTranslator.MarkDirectTranslation("The steel sword is lost in the goop!"),
+            "The steel sword is lost in the goop!");
+    }
+
+    [Test]
+    public void WorldPartsGeneratedQueue_LeavesEmptyMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertWorldPartsGeneratedQueueMessage(nameof(DummySimpleOwnerQueueTarget.GraveMossTrigger), string.Empty, string.Empty);
     }
 
     [TestCase(
@@ -9214,6 +9275,70 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
+    private static void AssertWorldPartsGeneratedQueueMessage(string methodName, string message, string expected)
+    {
+        UseRepositoryMessageFrames();
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                WorldPartsGeneratedQueueMethod(methodName),
+                typeof(WorldPartsGeneratedQueueTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = methodName switch
+            {
+                nameof(DummySimpleOwnerQueueTarget.GelatenousPalmFireEvent) => target.GelatenousPalmFireEvent(new DummyEvent()),
+                nameof(DummySimpleOwnerQueueTarget.GraveMossTrigger) => InvokeGraveMossTrigger(target),
+                nameof(DummySimpleOwnerQueueTarget.QuantumRipplerHandleEvent) => target.QuantumRipplerHandleEvent(new DummyEvent()),
+                nameof(DummySimpleOwnerQueueTarget.PerformReclamationOf) => target.PerformReclamationOf(new DummyGameObject()),
+                _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, null),
+            };
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static MethodInfo WorldPartsGeneratedQueueMethod(string methodName)
+    {
+        return methodName switch
+        {
+            nameof(DummySimpleOwnerQueueTarget.GelatenousPalmFireEvent) => RequireMethod(
+                typeof(DummySimpleOwnerQueueTarget),
+                nameof(DummySimpleOwnerQueueTarget.GelatenousPalmFireEvent),
+                typeof(DummyEvent)),
+            nameof(DummySimpleOwnerQueueTarget.GraveMossTrigger) => RequireMethod(
+                typeof(DummySimpleOwnerQueueTarget),
+                nameof(DummySimpleOwnerQueueTarget.GraveMossTrigger)),
+            nameof(DummySimpleOwnerQueueTarget.QuantumRipplerHandleEvent) => RequireMethod(
+                typeof(DummySimpleOwnerQueueTarget),
+                nameof(DummySimpleOwnerQueueTarget.QuantumRipplerHandleEvent),
+                typeof(DummyEvent)),
+            nameof(DummySimpleOwnerQueueTarget.PerformReclamationOf) => RequireMethod(
+                typeof(DummySimpleOwnerQueueTarget),
+                nameof(DummySimpleOwnerQueueTarget.PerformReclamationOf),
+                typeof(DummyGameObject)),
+            _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, null),
+        };
+    }
+
+    private static bool InvokeGraveMossTrigger(DummySimpleOwnerQueueTarget target)
+    {
+        target.GraveMossTrigger();
+        return true;
+    }
+
     private static void AssertTonicFireEventQueuedMessage(string message, string expected)
     {
         var harmonyId = CreateHarmonyId();
@@ -9504,5 +9629,17 @@ public sealed class CombatAndLogMessageQueuePatchTests
         LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
         Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
         MessagePatternTranslator.SetPatternFileForTests(null);
+    }
+
+    private static void UseRepositoryMessageFrames()
+    {
+        MessageFrameTranslator.SetDictionaryPathForTests(
+            Path.Combine(
+                TestProjectPaths.GetRepositoryRoot(),
+                "Mods",
+                "QudJP",
+                "Localization",
+                "MessageFrames",
+                "verbs.ja.json"));
     }
 }

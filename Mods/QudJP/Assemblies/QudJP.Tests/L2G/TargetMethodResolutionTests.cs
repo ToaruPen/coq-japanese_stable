@@ -1581,6 +1581,13 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Effects.LifeDrain|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
         "XRL.World.Effects.ShatteredArmor|Apply|System.Boolean|XRL.World.GameObject",
     })]
+    [TestCase(typeof(WorldPartsGeneratedQueueTranslationPatch), new[]
+    {
+        "XRL.World.Parts.GelatenousPalmProperties|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.GraveMoss|Trigger|System.Void",
+        "XRL.World.Parts.QuantumRippler|HandleEvent|System.Boolean|XRL.World.RealityStabilizeEvent",
+        "XRL.World.Parts.ReclamationCist|PerformReclamationOf|System.Boolean|XRL.World.GameObject",
+    })]
     [TestCase(typeof(GiantClamTeleportTranslationPatch), new[]
     {
         "XRL.World.Parts.GiantClamProperties|TeleportToClamWorld|System.Void|XRL.World.GameObject",

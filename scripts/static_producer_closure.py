@@ -4599,6 +4599,143 @@ def _effect_generated_message_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _world_parts_generated_queue_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/WorldPartsGeneratedQueueTranslationPatch.cs",
+        (
+            "WorldPartsGeneratedQueueTranslationPatch",
+            "DoesVerbRouteTranslator.TryTranslateMarkedMessage",
+            "DoesVerbRouteTranslator.TryTranslatePlainSentence",
+            "MessageFrameTranslator.TryStripDirectTranslationMarker",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("WorldPartsGeneratedQueueTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+        (
+            "WorldPartsGeneratedQueue_TranslatesDoesVerbMessages_WhenOwnerPatched",
+            "WorldPartsGeneratedQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+            "WorldPartsGeneratedQueue_DoesNotRetranslateDirectMarkedMessage_WhenOwnerPatched",
+            "WorldPartsGeneratedQueue_LeavesEmptyMessageUnchanged_WhenOwnerPatched",
+            "UseRepositoryMessageFrames",
+        ),
+    )
+    frames = EvidenceFile(
+        "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+        (
+            "lost in the goop",
+            "to fizz hungrily",
+            "under the pressure of normality and (?:implodes|implode)",
+            '"verb": "reclaim"',
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/GelatenousPalmProperties.cs::XRL.World.Parts.GelatenousPalmProperties.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "GelatenousPalmFireEvent",
+                        "The steel sword is lost in the goop!",
+                        "steel swordは粘液の中に沈んだ",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(WorldPartsGeneratedQueueTranslationPatch)",
+                        "XRL.World.Parts.GelatenousPalmProperties|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
+                ),
+                frames,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/GraveMoss.cs::XRL.World.Parts.GraveMoss.Trigger",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "GraveMossTrigger",
+                        "The 苔 starts to fizz hungrily.",
+                        "苔は飢えたように泡立ち始めた",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(WorldPartsGeneratedQueueTranslationPatch)",
+                        "XRL.World.Parts.GraveMoss|Trigger|System.Void",
+                    ),
+                ),
+                frames,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/QuantumRippler.cs::XRL.World.Parts.QuantumRippler.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "QuantumRipplerHandleEvent",
+                        "collapses under the pressure of normality and implodes",
+                        "装置は正常性の圧力に耐えきれず崩壊し、内破した",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(WorldPartsGeneratedQueueTranslationPatch)",
+                        "XRL.World.Parts.QuantumRippler|HandleEvent|System.Boolean|XRL.World.RealityStabilizeEvent",
+                    ),
+                ),
+                frames,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/ReclamationCist.cs::XRL.World.Parts.ReclamationCist.PerformReclamationOf",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "PerformReclamationOf",
+                        "The 回収装置 reclaims a 金属片.",
+                        "回収装置は金属片を回収した。",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(WorldPartsGeneratedQueueTranslationPatch)",
+                        "XRL.World.Parts.ReclamationCist|PerformReclamationOf|System.Boolean|XRL.World.GameObject",
+                    ),
+                ),
+                frames,
+            ),
+        ),
+    )
+
+
 def _blaze_tonic_remove_family() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -8330,6 +8467,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_effect_static_message_families(),
     *_stasis_attack_bounce_family(),
     *_effect_generated_message_families(),
+    *_world_parts_generated_queue_families(),
     *_blaze_tonic_remove_family(),
     *_latched_onto_expired_family(),
     *_giant_clam_teleport_joppa_family(),
