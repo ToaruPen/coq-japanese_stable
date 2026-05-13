@@ -1292,6 +1292,19 @@ internal sealed class DummySimpleOwnerQueueTarget
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
     }
 
+    public void TryGrowMushroom()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public bool TorchPropertiesHandleEvent(DummyEndTurnEvent? eventObject = null)
+    {
+        _ = eventObject;
+        _ = nameof(TorchPropertiesHandleEvent);
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
     public void TeleportToClamWorld(DummyGameObject? obj = null)
     {
         SendOwnerQueueMessage(nameof(TeleportToClamWorld), obj);

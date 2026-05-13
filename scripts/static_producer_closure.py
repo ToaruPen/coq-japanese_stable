@@ -5194,6 +5194,8 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             "SystemStaticQuake_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "SystemStaticDoorSwitchFireEvent_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "SystemStaticSpawningEggSacTickEgg_TranslatesFixedQueuedMessages_WhenOwnerPatched",
+            "SystemStaticLuminousInfectionTryGrowMushroom_TranslatesFixedQueuedMessage_WhenOwnerPatched",
+            "SystemStaticTorchPropertiesHandleEvent_TranslatesFixedQueuedMessage_WhenOwnerPatched",
             "SystemStaticTeleportationCast_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "SystemStaticCatacombsExitTeleporterHandleEvent_TranslatesFixedQueuedMessage_WhenOwnerPatched",
             "SystemStaticQuake_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
@@ -5222,6 +5224,7 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             "The membrane of the egg sac snots apart.",
             "The svardym eggs hatch.",
             "The svardym egg hatches.",
+            "Your torch burns out!",
             "You are shunted to another location!",
             "You teleport!",
             "You are teleported to an exit.",
@@ -5233,7 +5236,12 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
     )
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/SystemStaticMessageTranslationPatch.cs",
-        ("SystemStaticMessageTranslationPatch", "TryTranslateQueuedMessage"),
+        (
+            "SystemStaticMessageTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "You sprout a {{C|luminous hoarshroom}}.",
+            "Your torch burns out!",
+        ),
     )
     return (
         CoveredOwnerFamily(
@@ -5433,6 +5441,39 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
                     (
                         "typeof(SystemStaticMessageTranslationPatch)",
                         "XRL.World.Parts.SpawningEggSac|tickEgg|System.Void",
+                    ),
+                ),
+                dictionary,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/LuminousInfection.cs::XRL.World.Parts.LuminousInfection.TryGrowMushroom",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SystemStaticMessageTranslationPatch)",
+                        "XRL.World.Parts.LuminousInfection|TryGrowMushroom|System.Void",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/TorchProperties.cs::XRL.World.Parts.TorchProperties.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SystemStaticMessageTranslationPatch)",
+                        "XRL.World.Parts.TorchProperties|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
                     ),
                 ),
                 dictionary,

@@ -26,6 +26,7 @@ public static class SystemStaticMessageTranslationPatch
         var cellType = AccessTools.TypeByName("XRL.World.Cell");
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
         var objectEnteredCellEventType = AccessTools.TypeByName("XRL.World.ObjectEnteredCellEvent");
+        var endTurnEventType = AccessTools.TypeByName("XRL.World.EndTurnEvent");
         if (eventType is null || zoneType is null || factionType is null)
         {
             Trace.TraceError("QudJP: {0} target parameter types not found.", Context);
@@ -50,6 +51,15 @@ public static class SystemStaticMessageTranslationPatch
         AddTarget(targets, "XRL.World.Parts.WorldTeleporter", "FireEvent", new[] { eventType });
         AddTarget(targets, "XRL.World.Parts.DoorSwitch", "FireEvent", new[] { eventType });
         AddTarget(targets, "XRL.World.Parts.SpawningEggSac", "tickEgg", Type.EmptyTypes);
+        AddTarget(targets, "XRL.World.Parts.LuminousInfection", "TryGrowMushroom", Type.EmptyTypes);
+        if (endTurnEventType is not null)
+        {
+            AddTarget(targets, "XRL.World.Parts.TorchProperties", "HandleEvent", new[] { endTurnEventType });
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0}.TorchProperties.HandleEvent parameter type not found.", Context);
+        }
         if (teleportationType is not null && iEventType is not null && cellType is not null && gameObjectType is not null)
         {
             AddTarget(
@@ -131,6 +141,8 @@ public static class SystemStaticMessageTranslationPatch
             "The membrane of the egg sac snots apart." => "卵嚢の膜がぐしゃりと裂けた。",
             "The svardym eggs hatch." => "スヴァーディムの卵が孵化した。",
             "The svardym egg hatches." => "スヴァーディムの卵が孵化した。",
+            "You sprout a {{C|luminous hoarshroom}}." => "あなたに{{C|発光ホアシュルーム}}が生えた。",
+            "Your torch burns out!" => "たいまつが燃え尽きた！",
             "You are shunted to another location!" => "別の場所へ弾き飛ばされた！",
             "You teleport!" => "テレポートした！",
             "You are teleported to an exit." => "出口へ転送された。",

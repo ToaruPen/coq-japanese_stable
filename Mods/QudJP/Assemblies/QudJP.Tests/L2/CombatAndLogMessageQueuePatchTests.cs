@@ -4736,6 +4736,20 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void SystemStaticLuminousInfectionTryGrowMushroom_TranslatesFixedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertSystemStaticTryGrowMushroomQueuedMessage(
+            "You sprout a {{C|luminous hoarshroom}}.",
+            "あなたに{{C|発光ホアシュルーム}}が生えた。");
+    }
+
+    [Test]
+    public void SystemStaticTorchPropertiesHandleEvent_TranslatesFixedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertSystemStaticTorchPropertiesHandleEventQueuedMessage("Your torch burns out!", "たいまつが燃え尽きた！");
+    }
+
+    [Test]
     public void SystemStaticSpacetimeVortex_TranslatesFixedQueuedMessage_WhenOwnerPatched()
     {
         AssertSystemStaticVortexQueuedMessage("{{G|You sunder spacetime.}}", "{{G|時空を切り裂いた。}}");
@@ -9137,6 +9151,60 @@ public sealed class CombatAndLogMessageQueuePatchTests
             };
 
             target.Vortex();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertSystemStaticTryGrowMushroomQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.TryGrowMushroom)),
+                typeof(SystemStaticMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.TryGrowMushroom();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertSystemStaticTorchPropertiesHandleEventQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.TorchPropertiesHandleEvent), typeof(DummyEndTurnEvent)),
+                typeof(SystemStaticMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.TorchPropertiesHandleEvent(new DummyEndTurnEvent());
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }
