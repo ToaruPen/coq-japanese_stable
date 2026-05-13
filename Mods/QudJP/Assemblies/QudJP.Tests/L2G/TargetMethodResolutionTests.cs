@@ -1245,6 +1245,11 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.FugueOnStep|Activate|System.Boolean|XRL.World.GameObject",
     })]
+    [TestCase(typeof(MentalShieldTranslationPatch), new[]
+    {
+        "XRL.World.Parts.MentalShield|HandleEvent|System.Boolean|XRL.World.BeforeApplyDamageEvent",
+        "XRL.World.Parts.MentalShield|HandleEvent|System.Boolean|XRL.World.BeginMentalDefendEvent",
+    })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
         "XRL.World.Parts.Combat|HandleEvent|System.Boolean|XRL.World.GetDefenderHitDiceEvent",

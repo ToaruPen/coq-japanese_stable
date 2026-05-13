@@ -6469,6 +6469,50 @@ def _fugue_on_step_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _mental_shield_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MentalShieldTranslationPatch.cs",
+        (
+            "MentalShieldTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "HandleEvent",
+            "BeforeApplyDamageEvent",
+            "BeginMentalDefendEvent",
+            "NoEffectPattern",
+        ),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("MentalShieldTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/MentalShieldTranslationPatchTests.cs",
+        (
+            "MentalShield_TranslatesMentalAttackNoEffectMessage_WhenOwnerPatched",
+            "MentalShield_DoesNotTranslateTraffic_WhenOwnerAbsent",
+            "MentalShield_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "MentalShield_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "HandleBeforeApplyDamageEvent",
+            "HandleBeginMentalDefendEvent",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(MentalShieldTranslationPatch)",
+            "XRL.World.Parts.MentalShield|HandleEvent|System.Boolean|XRL.World.BeforeApplyDamageEvent",
+            "XRL.World.Parts.MentalShield|HandleEvent|System.Boolean|XRL.World.BeginMentalDefendEvent",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/MentalShield.cs::XRL.World.Parts.MentalShield.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, tests, target_tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -8434,6 +8478,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_damage_penetration_debug_families(),
     *_base_pronoun_provider_customize_families(),
     *_fugue_on_step_families(),
+    *_mental_shield_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 
