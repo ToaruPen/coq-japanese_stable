@@ -87,6 +87,10 @@ Test boundaries follow `docs/test-architecture.md`:
 
 - L1 has no Harmony, Unity, or `Assembly-CSharp.dll` dependency.
 - L2 uses Harmony with dummy targets that match upstream signatures.
+- L2 Harmony dummy targets must also survive Release optimization, because CI
+  runs the C# suite in Release. If a dummy original or sink is patched directly
+  by Harmony and the test calls it from nearby code, add `NoInlining` or an
+  equivalent harness boundary so JIT inlining cannot bypass the patch.
 - L2G may use the game DLL for target/signature proof.
 - L2G real game type instantiation is a narrow exception for upstream member
   contracts that cannot be proven by target resolution plus dummy-target tests.

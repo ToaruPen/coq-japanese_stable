@@ -57,6 +57,11 @@ split/deferred with a reason.
    - Query `docs/static-producer-inventory.json` for the exact
      `producer_family_id`.
    - Record all lines, target surfaces, closure statuses, and expressions.
+   - Before editing, check the current `origin/main` diff and any open or
+     recently merged issue-576 PRs for the same `producer_family_id`s. If the
+     family has already landed through another integration PR, treat the work
+     as verification or closeout instead of reimplementing it on the current
+     branch.
    - Inspect the matching decompiled source under `~/dev/coq-decompiled_stable/`.
    - Useful extraction commands:
 
@@ -140,6 +145,11 @@ split/deferred with a reason.
      ```
 
    - Run `just static-producer-check`.
+   - If `Mods/QudJP/Localization/` changed, run `just translation-token-check`
+     in addition to `just localization-check`. If duplicate source-key baseline
+     entries changed only because dictionary entry order or conflict state
+     changed, regenerate with `just translation-token-baseline`, inspect the
+     baseline diff, and rerun `just translation-token-check`.
    - Re-run the owner queue and report the family/count delta.
    - Mention any shapes that remain deferred rather than counting them as
      closed.
@@ -156,6 +166,9 @@ split/deferred with a reason.
 - Do not close a mixed `needs_family_review` family without first naming the
   deferred shapes.
 - Do not quote queue counts from memory; use current command output.
+- Do not rely on `just localization-check` as a substitute for
+  `just translation-token-check`; CI runs the token gate for localization
+  assets and can fail on duplicate-conflict baseline drift.
 
 ## Output
 
