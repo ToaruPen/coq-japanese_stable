@@ -2717,6 +2717,151 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [TestCase(
+        "You kick at {{G|phase spider}}, but the kick passes through {{G|it}}.",
+        "{{G|phase spider}}を蹴ろうとしたが、蹴りは{{G|it}}を通り抜けた。")]
+    [TestCase(
+        "snapjaw kicks at you, but the kick passes through you.",
+        "snapjawがあなたを蹴ろうとしたが、蹴りはあなたを通り抜けた。")]
+    [TestCase(
+        "snapjaw kicks at phase spider, but the kick passes through it.",
+        "snapjawがphase spiderを蹴ろうとしたが、蹴りはitを通り抜けた。")]
+    [TestCase(
+        "You kick at snapjaw, but snapjaw holds its ground.",
+        "snapjawを蹴ろうとしたが、snapjawは踏みとどまった。")]
+    [TestCase(
+        "snapjaw kicks at you, but you hold your ground.",
+        "snapjawがあなたを蹴ろうとしたが、あなたは踏みとどまった。")]
+    [TestCase(
+        "snapjaw kicks at {{G|glowfish}}, but {{G|glowfish}} holds its ground.",
+        "snapjawが{{G|glowfish}}を蹴ろうとしたが、{{G|glowfish}}は踏みとどまった。")]
+    [TestCase("You kick snapjaw backwards.", "snapjawを後ろへ蹴り飛ばした。")]
+    [TestCase("snapjaw kicks you backwards.", "snapjawがあなたを後ろへ蹴り飛ばした。")]
+    [TestCase("snapjaw kicks glowfish backwards.", "snapjawがglowfishを後ろへ蹴り飛ばした。")]
+    [TestCase(
+        "The momentum from your charge causes your {{Y|battle axe}} to cleave deeper through {{R|snapjaw's armor}}.",
+        "突撃の勢いで{{Y|battle axe}}が{{R|snapjaw's armor}}をさらに深く切り裂いた。")]
+    [TestCase("You cleave through snapjaw's armor.", "snapjaw's armorを切り裂いた。")]
+    [TestCase("snapjaw cleaves through your armor.", "snapjawがあなたのarmorを切り裂いた。")]
+    [TestCase("snapjaw cleaves through glowfish's armor.", "snapjawがglowfish's armorを切り裂いた。")]
+    [TestCase("You shook off the stun.", "スタンを振り払った。")]
+    [TestCase("You shook off the dazing.", "朦朧を振り払った。")]
+    [TestCase("The snapjaw shook off the stun.", "The snapjawはスタンを振り払った。")]
+    [TestCase("The snapjaw shook off the dazing.", "The snapjawは朦朧を振り払った。")]
+    [TestCase(
+        "A supernal force helps you shake off the effect!",
+        "超自然的な力が効果を振り払う助けとなった！")]
+    [TestCase(
+        "A supernal force helps you shake off being confused!",
+        "超自然的な力がconfused状態を振り払う助けとなった！")]
+    [TestCase(
+        "A supernal force helps you shake off a mental state!",
+        "超自然的な力が精神状態を振り払う助けとなった！")]
+    public void CombatSkillMessages_TranslateInventoriedQueuedShapes_WhenOwnerPatched(string source, string expected)
+    {
+        AssertCombatSkillQueuedMessage(source, expected);
+    }
+
+    [TestCase("snapjaw kicks at you, but the kick passes through you.")]
+    [TestCase("You cleave through snapjaw's armor.")]
+    [TestCase("You shook off the stun.")]
+    [TestCase("A supernal force helps you shake off the effect!")]
+    public void CombatSkillMessages_DoNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage(source, null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void CombatSkillMessages_LeavesUnknownQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertCombatSkillQueuedMessage("snapjaw prepares a fancy combat maneuver.", "snapjaw prepares a fancy combat maneuver.");
+    }
+
+    [Test]
+    public void CombatSkillMessages_HitCountIsZero_WhenUnknownMessageEncountered_WhenOwnerPatched()
+    {
+        AssertCombatSkillQueuedMessage("snapjaw unleashes a powerful attack.", "snapjaw unleashes a powerful attack.");
+
+        Assert.That(CombatSkillHitCount(), Is.Zero);
+    }
+
+    [Test]
+    public void CombatSkillMessages_HitCountIsZero_WhenEmptyMessageEncountered_WhenOwnerPatched()
+    {
+        AssertCombatSkillQueuedMessage(string.Empty, string.Empty);
+
+        Assert.That(CombatSkillHitCount(), Is.Zero);
+    }
+
+    [Test]
+    public void CombatSkillMessages_DoNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertCombatSkillQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("You cleave through snapjaw's armor."),
+            "You cleave through snapjaw's armor.");
+    }
+
+    [Test]
+    public void CombatSkillMessages_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertCombatSkillQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void CombatSkillMessages_RestoresOuterOwnerScopeAfterNestedScopeExit()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            CombatSkillMessageTranslationPatch.Prefix();
+            try
+            {
+                CombatSkillMessageTranslationPatch.Prefix();
+                CombatSkillMessageTranslationPatch.Finalizer(null);
+
+                DummyMessageQueue.AddPlayerMessage("You cleave through snapjaw's armor.", null, Capitalize: false);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("snapjaw's armorを切り裂いた。"));
+                    Assert.That(CombatSkillHitCount(), Is.EqualTo(1));
+                });
+            }
+            finally
+            {
+                CombatSkillMessageTranslationPatch.Finalizer(null);
+            }
+
+            DummyMessageQueue.AddPlayerMessage("You cleave through snapjaw's armor.", null, Capitalize: false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You cleave through snapjaw's armor."));
+                Assert.That(CombatSkillHitCount(), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [TestCase(
         nameof(DummyLatchesOnTarget.HandleEvent),
         "Since {{R|the hook}} is still latched onto {{G|the snapjaw}}, releasing {{R|it}} leaves {{R|it}} in {{G|its possession}}!",
         "{{G|the snapjaw}}",
@@ -3564,6 +3709,34 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertFungalSporeInfectionQueuedMessage("Your skin itches.", "肌がむずむずする。");
     }
 
+    [TestCase(
+        nameof(DummyFungalSporeInfectionTarget.PaxFireEvent),
+        "Your left arm spews a cloud of spores.",
+        "あなたのleft armから胞子の雲が噴き出した。")]
+    [TestCase(
+        nameof(DummyFungalSporeInfectionTarget.PaxFireEvent),
+        "Your left hands spew a cloud of spores.",
+        "あなたのleft handsから胞子の雲が噴き出した。")]
+    [TestCase(
+        nameof(DummyFungalSporeInfectionTarget.PaxFireEvent),
+        "snapjaw's right hand spews a cloud of spores.",
+        "snapjaw's right handから胞子の雲が噴き出した。")]
+    [TestCase(
+        nameof(DummyFungalSporeInfectionTarget.PuffFireEvent),
+        "&yYour left arm spews a cloud of spores.",
+        "&yあなたのleft armから胞子の雲が噴き出した。")]
+    [TestCase(
+        nameof(DummyFungalSporeInfectionTarget.PuffFireEvent),
+        "snapjaw's&y right hand spews a cloud of spores.",
+        "snapjaw's&y right handから胞子の雲が噴き出した。")]
+    public void FungalSporeInfectionFireEvent_TranslatesSporeCloudQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        AssertFungalSporeInfectionQueuedMessage(methodName, source, expected);
+    }
+
     [Test]
     public void FungalSporeInfectionFireEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
     {
@@ -3574,8 +3747,13 @@ public sealed class CombatAndLogMessageQueuePatchTests
             PatchQueue(harmony);
 
             DummyMessageQueue.AddPlayerMessage("Your skin itches.", Capitalize: false);
-
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your skin itches."));
+
+            DummyMessageQueue.AddPlayerMessage("Your left arm spews a cloud of spores.", Capitalize: false);
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your left arm spews a cloud of spores."));
+
+            DummyMessageQueue.AddPlayerMessage("&yYour left arm spews a cloud of spores.", Capitalize: false);
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("&yYour left arm spews a cloud of spores."));
         }
         finally
         {
@@ -3589,12 +3767,37 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertFungalSporeInfectionQueuedMessage(
             MessageFrameTranslator.MarkDirectTranslation("Your skin itches."),
             "Your skin itches.");
+        AssertFungalSporeInfectionQueuedMessage(
+            nameof(DummyFungalSporeInfectionTarget.PaxFireEvent),
+            MessageFrameTranslator.MarkDirectTranslation("Your left arm spews a cloud of spores."),
+            "Your left arm spews a cloud of spores.");
+        AssertFungalSporeInfectionQueuedMessage(
+            nameof(DummyFungalSporeInfectionTarget.PuffFireEvent),
+            MessageFrameTranslator.MarkDirectTranslation("&yYour left arm spews a cloud of spores."),
+            "&yYour left arm spews a cloud of spores.");
     }
 
     [Test]
     public void FungalSporeInfectionFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
     {
         AssertFungalSporeInfectionQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [TestCase(nameof(DummyFungalSporeInfectionTarget.PaxFireEvent))]
+    [TestCase(nameof(DummyFungalSporeInfectionTarget.PuffFireEvent))]
+    public void FungalSporeInfectionSporeCloudRoutes_LeaveEmptyQueuedMessageUnchanged_WhenOwnerPatched(string methodName)
+    {
+        AssertFungalSporeInfectionQueuedMessage(methodName, string.Empty, string.Empty);
+    }
+
+    [TestCase(nameof(DummyFungalSporeInfectionTarget.PaxFireEvent), "Your left arm begins to wither.")]
+    [TestCase(nameof(DummyFungalSporeInfectionTarget.PuffFireEvent), "Your left arm begins to wither.")]
+    [TestCase(nameof(DummyFungalSporeInfectionTarget.PaxFireEvent), "&yYour left arm begins to wither.")]
+    public void FungalSporeInfectionSporeCloudRoutes_LeaveUnknownQueuedMessageUnchanged_WhenOwnerPatched(
+        string methodName,
+        string source)
+    {
+        AssertFungalSporeInfectionQueuedMessage(methodName, source, source);
     }
 
     [TestCase(nameof(DummyHealingTarget.HandleEvent))]
@@ -3885,6 +4088,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("Checkpointing enabled")]
     [TestCase("You feel a sense of holiness here.")]
     [TestCase("&CA flash of insight overcomes you!")]
+    [TestCase("The ground shakes violently!")]
+    [TestCase("The ground shakes violently and loose rock falls from the ceiling!")]
     public void FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
     {
         var harmonyId = CreateHarmonyId();
@@ -4003,6 +4208,51 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void SystemStaticFireEvent_TranslatesFixedQueuedMessages_WhenOwnerPatched(string source, string expected)
     {
         AssertSystemStaticFireEventQueuedMessage(source, expected);
+    }
+
+    [TestCase("The ground shakes violently!", "地面が激しく揺れた！")]
+    [TestCase(
+        "The ground shakes violently and loose rock falls from the ceiling!",
+        "地面が激しく揺れ、天井から岩が崩れ落ちた！")]
+    public void SystemStaticQuake_TranslatesFixedQueuedMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertSystemStaticQuakeQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void SystemStaticQuake_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertSystemStaticQuakeQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("The ground shakes violently!"),
+            "The ground shakes violently!");
+    }
+
+    [Test]
+    public void SystemStaticQuake_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertSystemStaticQuakeQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void SystemStaticQuake_LeavesUnknownQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertSystemStaticQuakeQueuedMessage("The cavern walls rumble softly.", "The cavern walls rumble softly.");
+    }
+
+    [Test]
+    public void SystemStaticQuake_HitCountRemainsZero_WhenEmptyMessageEncountered_WhenOwnerPatched()
+    {
+        AssertSystemStaticQuakeQueuedMessage(string.Empty, string.Empty);
+
+        Assert.That(QuakeHitCount(), Is.Zero);
+    }
+
+    [Test]
+    public void SystemStaticQuake_HitCountRemainsZero_WhenUnknownMessageEncountered_WhenOwnerPatched()
+    {
+        AssertSystemStaticQuakeQueuedMessage("The cavern walls rumble softly.", "The cavern walls rumble softly.");
+
+        Assert.That(QuakeHitCount(), Is.Zero);
     }
 
     [Test]
@@ -7345,6 +7595,11 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
     private static void AssertFungalSporeInfectionQueuedMessage(string message, string expected)
     {
+        AssertFungalSporeInfectionQueuedMessage(nameof(DummyFungalSporeInfectionTarget.FireEvent), message, expected);
+    }
+
+    private static void AssertFungalSporeInfectionQueuedMessage(string methodName, string message, string expected)
+    {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try
@@ -7352,7 +7607,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
             PatchQueue(harmony);
             PatchOwner(
                 harmony,
-                RequireMethod(typeof(DummyFungalSporeInfectionTarget), nameof(DummyFungalSporeInfectionTarget.FireEvent), typeof(DummyGameEvent)),
+                RequireMethod(typeof(DummyFungalSporeInfectionTarget), methodName, typeof(DummyGameEvent)),
                 typeof(FungalSporeInfectionTranslationPatch));
 
             var target = new DummyFungalSporeInfectionTarget
@@ -7360,7 +7615,22 @@ public sealed class CombatAndLogMessageQueuePatchTests
                 MessageToSend = message,
             };
 
-            _ = target.FireEvent(new DummyGameEvent { ID = "EndTurn" });
+            if (string.Equals(methodName, nameof(DummyFungalSporeInfectionTarget.PaxFireEvent), StringComparison.Ordinal))
+            {
+                _ = target.PaxFireEvent(new DummyGameEvent { ID = "BeforeApplyDamage" });
+            }
+            else if (string.Equals(methodName, nameof(DummyFungalSporeInfectionTarget.PuffFireEvent), StringComparison.Ordinal))
+            {
+                _ = target.PuffFireEvent(new DummyGameEvent { ID = "BeforeApplyDamage" });
+            }
+            else if (string.Equals(methodName, nameof(DummyFungalSporeInfectionTarget.FireEvent), StringComparison.Ordinal))
+            {
+                _ = target.FireEvent(new DummyGameEvent { ID = "EndTurn" });
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(methodName), methodName, null);
+            }
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }
@@ -7581,6 +7851,40 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
+    private static void AssertCombatSkillQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.FireEvent), typeof(DummyEvent)),
+                typeof(CombatSkillMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.FireEvent(new DummyEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static int CombatSkillHitCount()
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            "MessageQueue.AddPlayerMessage",
+            nameof(CombatSkillMessageTranslationPatch));
+    }
+
     private static void AssertSimpleApplyFearQueuedMessage(string message, string expected)
     {
         var harmonyId = CreateHarmonyId();
@@ -7770,6 +8074,40 @@ public sealed class CombatAndLogMessageQueuePatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    private static void AssertSystemStaticQuakeQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.Quake)),
+                typeof(SystemStaticMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.Quake();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static int QuakeHitCount()
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            "MessageQueue.AddPlayerMessage",
+            nameof(SystemStaticMessageTranslationPatch));
     }
 
     private static void AssertTonicFireEventQueuedMessage(string message, string expected)
