@@ -74,6 +74,85 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_PreservesArmorStatSymbolTags_WhenTranslatingNameAndState()
+    {
+        WriteDictionary(("dromad waterskin", "ラクダの水袋"));
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("[empty]", "[空]"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "dromad waterskin {{b|\u0004}}0 {{K|\t}}0 [empty]",
+            nameof(GetDisplayNamePatch));
+        var alreadyLocalizedBase = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "ラクダの水袋 {{b|\u0004}}0 {{K|\t}}0 [empty]",
+            nameof(GetDisplayNamePatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("ラクダの水袋 {{b|\u0004}}0 {{K|\t}}0 [空]"));
+            Assert.That(alreadyLocalizedBase, Is.EqualTo("ラクダの水袋 {{b|\u0004}}0 {{K|\t}}0 [空]"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_PreservesArmorStatDisplayNameColorOwnership()
+    {
+        WriteDictionary(("dromad waterskin", "ラクダの水袋"));
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("bloody", "{{r|血まみれの}}"),
+            ("[empty]", "[空]"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "<color=#44ff88>dromad waterskin {{b|\u0004}}1 {{K|\t}}-2 [empty]</color>",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("<color=#44ff88>ラクダの水袋 {{b|\u0004}}1 {{K|\t}}-2 [空]</color>"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "{{C|dromad waterskin}} {{b|\u0004}}-1 {{K|\t}}2",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("{{C|ラクダの水袋}} {{b|\u0004}}-1 {{K|\t}}2"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "{{r|bloody}} dromad waterskin {{b|\u0004}}0 {{K|\t}}0 [empty]",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("{{r|血まみれの}} ラクダの水袋 {{b|\u0004}}0 {{K|\t}}0 [空]"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_PreservesCompactWeaponStatSymbolTags_WhenTranslatingName()
+    {
+        WriteDictionary(
+            ("bronze sword", "青銅の剣"),
+            ("throwing axe", "投げ斧"),
+            ("arc cannon", "アークキャノン"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "bronze sword {{c|\u001a}}5{{K|/7}} {{r|\u0003}}1d6",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("青銅の剣 {{c|\u001a}}5{{K|/7}} {{r|\u0003}}1d6"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "{{C|throwing axe {{c|\u001a}}÷+1 {{r|\u0003}}1d4}}",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("{{C|投げ斧 {{c|\u001a}}÷+1 {{r|\u0003}}1d4}}"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "arc cannon {{r|\u0003}}2d6",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("アークキャノン {{r|\u0003}}2d6"));
+        });
+    }
+
+    [Test]
     public void TranslatePreservingColors_UsesScopedStateTemplateLookup()
     {
         WriteDictionary(
