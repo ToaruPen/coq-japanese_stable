@@ -3103,6 +3103,11 @@
             "key": "You are cured of ironshank.",
             "context": "XRL.World.Effects.Ironshank",
             "text": "アイアンシャンクが治った。"
+        },
+        {
+            "key": "You traveled to {0}!",
+            "context": "XRL.World.Parts.XRL.World.Parts.LocationFinder",
+            "text": "{0}へ移動した！"
         }
     ]
 }

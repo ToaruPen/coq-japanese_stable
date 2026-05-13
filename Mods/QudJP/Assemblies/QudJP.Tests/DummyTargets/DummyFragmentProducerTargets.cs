@@ -328,6 +328,28 @@ internal sealed class DummyStairsUpProducerTarget
     }
 }
 
+internal sealed class DummyPoweredFloatingProducerTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void CheckFloating()
+    {
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+}
+
+internal sealed class DummyModMagnetizedProducerTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void CheckFloating()
+    {
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+}
+
 internal sealed class DummyGivesRepProducerTarget
 {
     public string PostfixTextToAppend { get; set; } = string.Empty;

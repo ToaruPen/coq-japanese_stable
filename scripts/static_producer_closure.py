@@ -19,6 +19,9 @@ OWNER_ACTION_STATUSES: Final = frozenset({"owner_patch_required", "needs_family_
 HACKING_SIFRAH_RESULT_SIGNATURE_SUFFIX: Final = (
     "System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah"
 )
+CRIPPLE_APPLY_TARGET_METHOD_FULL_SIGNATURE: Final = (
+    "XRL.World.Effects.Cripple|Apply|System.Boolean|XRL.World.GameObject"
+)
 COMBAT_MELEE_ATTACK_SIGNATURE_PARTS: Final = (
     "XRL.World.Parts.Combat",
     "MeleeAttackWithWeaponInternal",
@@ -939,6 +942,131 @@ def _cooking_runtime_families() -> tuple[CoveredOwnerFamily, ...]:
             ),
         )
         for family_id in queue_family_ids
+    )
+
+
+def _water_ritual_popup_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/WaterRitualPopupTranslationPatch.cs",
+        (
+            "WaterRitualPopupTranslationPatch",
+            "TryTranslatePopupMessage",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("WaterRitualPopupTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests_common = (
+        "Patch_TranslatesWaterRitualOwnerPopups_WhenOwnerPatched",
+        "Patch_DoesNotTranslateWaterRitualPopup_WhenOwnerAbsent",
+        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+    )
+
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Conversations.Parts/WaterRitualBegin.cs::XRL.World.Conversations.Parts.WaterRitualBegin.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "WaterRitualBegin",
+                        "FormalRitualPromptPattern",
+                        "NotEnoughLiquidPattern",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/WaterRitualPopupTranslationPatchTests.cs",
+                    (
+                        *tests_common,
+                        "nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBeginHandleEvent)",
+                        "FormalRitualPrompt",
+                        "NotEnoughLiquid",
+                        "Do you want to play a game of Sifrah to perform the formal water ritual",
+                        "You don't have enough {{B|fresh water}} to begin the ritual.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(WaterRitualPopupTranslationPatch)",
+                        "XRL.World.Conversations.Parts.WaterRitualBegin|HandleEvent|System.Boolean|XRL.World.Conversations.EnterElementEvent",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Conversations.Parts/WaterRitualSkillPoint.cs::XRL.World.Conversations.Parts.WaterRitualSkillPoint.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "WaterRitualSkillPoint",
+                        "SkillPointIntroPattern",
+                        "SkillPointGainPattern",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/WaterRitualPopupTranslationPatchTests.cs",
+                    (
+                        *tests_common,
+                        "nameof(DummyWaterRitualPopupProducerTarget.WaterRitualSkillPointHandleEvent)",
+                        "SkillPointIntro",
+                        "SkillPointGain",
+                        "Talking to {{Y|the warden}} rouses in you an inert truth.",
+                        "You gained {{C|50}} skill points!",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(WaterRitualPopupTranslationPatch)",
+                        "XRL.World.Conversations.Parts.WaterRitualSkillPoint|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Conversations.Parts/WaterRitualTinkeringRecipe.cs::XRL.World.Conversations.Parts.WaterRitualTinkeringRecipe.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "WaterRitualTinkeringRecipe",
+                        "TinkeringModPattern",
+                        "TinkeringRecipePattern",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/WaterRitualPopupTranslationPatchTests.cs",
+                    (
+                        *tests_common,
+                        "nameof(DummyWaterRitualPopupProducerTarget.WaterRitualTinkeringRecipeHandleEvent)",
+                        "TinkeringMod",
+                        "TinkeringRecipe",
+                        "{{G|Hortensa}} teaches you to craft the item modification {{W|sturdy}}.",
+                        "{{G|Hortensa}} teaches you to craft {{W|spring-loaded boots}}.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(WaterRitualPopupTranslationPatch)",
+                        "XRL.World.Conversations.Parts.WaterRitualTinkeringRecipe|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+                    ),
+                ),
+            ),
+        ),
     )
 
 
@@ -3052,6 +3180,170 @@ def _effect_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _cripple_apply_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Effects/Cripple.cs::XRL.World.Effects.Cripple.Apply",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/CrippleApplyTranslationPatch.cs",
+                    (
+                        "CrippleApplyTranslationPatch",
+                        "XRL.World.Effects.Cripple",
+                        "Apply",
+                        "TryTranslateQueuedMessage",
+                        "MessageLogProducerTranslationHelpers.TryPreparePatternMessage",
+                        "Cripple.Apply",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("CrippleApplyTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+                    (
+                        "^You are crippled for (.+?)!$",
+                        "{t0}のあいだ手足が不自由になった！",  # noqa: RUF001
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "CrippleApply_TranslatesDurationMessage_WhenPatched",
+                        "CrippleApply_LeavesUnknownOwnerMessageUnchanged_WhenPatched",
+                        "CrippleApply_LeavesEmptyMessageUnchanged_WhenPatched",
+                        "CrippleApply_PreservesColorTaggedDurationAndQueueColor_WhenPatched",
+                        "CrippleApply_DirectMarkerPassesThroughWithoutRetranslation_WhenPatched",
+                        "CrippleApply_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "MessageQueueSemanticPipeline_TranslatesActiveOwnerMessage",
+                        "MessageQueueSemanticPipeline_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "MessageQueueSemanticPipeline_DoesNotRetranslateDirectMarkedMessage",
+                        "nameof(DummyCrippleApplyTarget.Apply)",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "CrippleApplyTargetMethod_ResolvesExpectedFullSignature",
+                        CRIPPLE_APPLY_TARGET_METHOD_FULL_SIGNATURE,
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
+def _mutation_self_target_popup_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MutationSelfTargetPopupTranslationPatch.cs",
+        (
+            "MutationSelfTargetPopupTranslationPatch",
+            "TryTranslatePopupMessage",
+            "SelfTargetConfirmation",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("MutationSelfTargetPopupTranslationPatch.TryTranslatePopupMessage",),
+    )
+    dictionary = EvidenceFile(
+        "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+        (
+            "^Are you sure you want to target (.+?)\\\\?$",
+            "{0}を標的にしてもよいか？",  # noqa: RUF001
+        ),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/MutationSelfTargetPopupTranslationPatchTests.cs",
+        (
+            "Patch_TranslatesSelfTargetPopup_WhenOwnerPatched",
+            "Patch_DoesNotClaimSelfTargetPopup_WhenOwnerAbsent",
+            "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+            "nameof(DummyMutationSelfTargetProducer.BreatherBaseCast)",
+            "nameof(DummyMutationSelfTargetProducer.FlamingRayCast)",
+            "nameof(DummyMutationSelfTargetProducer.FreezeBreathFireEvent)",
+            "nameof(DummyMutationSelfTargetProducer.FreezingRayCast)",
+        ),
+    )
+
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts.Mutation/BreatherBase.cs::XRL.World.Parts.Mutation.BreatherBase.Cast",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(patch.path, (*patch.required_substrings, "XRL.World.Parts.Mutation.BreatherBase", "Cast")),
+                pipeline,
+                dictionary,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(MutationSelfTargetPopupTranslationPatch)",
+                        "XRL.World.Parts.Mutation.BreatherBase|Cast|System.Boolean|XRL.World.Parts.Mutation.BreatherBase",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts.Mutation/FlamingRay.cs::XRL.World.Parts.Mutation.FlamingRay.Cast",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(patch.path, (*patch.required_substrings, "XRL.World.Parts.Mutation.FlamingRay", "Cast")),
+                pipeline,
+                dictionary,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(MutationSelfTargetPopupTranslationPatch)",
+                        "XRL.World.Parts.Mutation.FlamingRay|Cast|System.Boolean|XRL.World.Parts.Mutation.FlamingRay|System.String",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts.Mutation/FreezeBreath.cs::XRL.World.Parts.Mutation.FreezeBreath.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (*patch.required_substrings, "XRL.World.Parts.Mutation.FreezeBreath", "FireEvent"),
+                ),
+                pipeline,
+                dictionary,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(MutationSelfTargetPopupTranslationPatch)",
+                        "XRL.World.Parts.Mutation.FreezeBreath|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts.Mutation/FreezingRay.cs::XRL.World.Parts.Mutation.FreezingRay.Cast",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(patch.path, (*patch.required_substrings, "XRL.World.Parts.Mutation.FreezingRay", "Cast")),
+                pipeline,
+                dictionary,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(MutationSelfTargetPopupTranslationPatch)",
+                        "XRL.World.Parts.Mutation.FreezingRay|Cast|System.Boolean|XRL.World.Parts.Mutation.FreezingRay|System.String",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
     tests = EvidenceFile(
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
@@ -3953,6 +4245,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_keybinds_screen_conflict_families(),
     *_ability_manager_popup_families(),
     *_cooking_runtime_families(),
+    *_water_ritual_popup_families(),
     *_status_screen_popup_families(),
     *_campfire_preserve_families(),
     *_reality_stabilized_event_families(),
@@ -3991,7 +4284,130 @@ COVERED_OWNER_FAMILIES: Final = (
     *_amnesia_families(),
     *_fixed_owner_queue_families(),
     *_effect_static_message_families(),
+    *_cripple_apply_family(),
+    *_mutation_self_target_popup_families(),
     *_system_static_message_families(),
+    CoveredOwnerFamily(
+        family_id="XRL.World.Parts.Skill/Tactics_Kickback.cs::XRL.World.Parts.Skill.Tactics_Kickback.HandleEvent",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/CombatSkillMessageTranslationPatch.cs",
+                ("Tactics_Kickback", "TryTranslateQueuedMessage", "KickPassesThroughYouPattern"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("CombatSkillMessageTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                (
+                    "CombatSkillMessages_TranslateInventoriedQueuedShapes_WhenOwnerPatched",
+                    "CombatSkillMessages_DoNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "CombatSkillMessages_DoNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "CombatSkillMessages_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                    "You kick at {{G|phase spider}}, but the kick passes through {{G|it}}.",
+                    "snapjaw kicks glowfish backwards.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(CombatSkillMessageTranslationPatch)",
+                    "XRL.World.Parts.Skill.Tactics_Kickback|HandleEvent|System.Boolean|XRL.World.BeforeFireMissileWeaponsEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
+        family_id="XRL.World.Parts.Skill/Axe_Cleave.cs::XRL.World.Parts.Skill.Axe_Cleave.PerformCleave",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/CombatSkillMessageTranslationPatch.cs",
+                ("Axe_Cleave", "ChargeCleavePattern", "ActorCleavesTargetPattern"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("CombatSkillMessageTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                (
+                    "CombatSkillMessages_TranslateInventoriedQueuedShapes_WhenOwnerPatched",
+                    "cleave deeper through {{R|snapjaw's armor}}.",
+                    "snapjaw cleaves through glowfish's armor.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(CombatSkillMessageTranslationPatch)",
+                    "XRL.World.Parts.Skill.Axe_Cleave|PerformCleave|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|System.Int32|System.Int32|System.Nullable`1[[System.Int32]]",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
+        family_id="XRL.World.Parts.Skill/Endurance_ShakeItOff.cs::XRL.World.Parts.Skill.Endurance_ShakeItOff.FireEvent",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/CombatSkillMessageTranslationPatch.cs",
+                ("Endurance_ShakeItOff", "ShookOffStunPattern", "ShookOffDazingPattern"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("CombatSkillMessageTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                (
+                    "CombatSkillMessages_TranslateInventoriedQueuedShapes_WhenOwnerPatched",
+                    "You shook off the stun.",
+                    "The snapjaw shook off the dazing.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(CombatSkillMessageTranslationPatch)",
+                    "XRL.World.Parts.Skill.Endurance_ShakeItOff|FireEvent|System.Boolean|XRL.World.Event",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
+        family_id="XRL.World.Parts.Skill/TenfoldPath_Ret.cs::XRL.World.Parts.Skill.TenfoldPath_Ret.HandleEvent",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/CombatSkillMessageTranslationPatch.cs",
+                ("TenfoldPath_Ret", "SupernalStatePattern", "A supernal force helps you shake off a mental state!"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("CombatSkillMessageTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                (
+                    "CombatSkillMessages_TranslateInventoriedQueuedShapes_WhenOwnerPatched",
+                    "A supernal force helps you shake off the effect!",
+                    "A supernal force helps you shake off being confused!",
+                    "A supernal force helps you shake off a mental state!",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(CombatSkillMessageTranslationPatch)",
+                    "XRL.World.Parts.Skill.TenfoldPath_Ret|HandleEvent|System.Boolean|XRL.World.ApplyEffectEvent",
+                    "XRL.World.Parts.Skill.TenfoldPath_Ret|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+                ),
+            ),
+        ),
+    ),
     CoveredOwnerFamily(
         family_id="XRL.UI/TradeUI.cs::XRL.UI.TradeUI.PerformOffer",
         inventory_statuses=("needs_family_review",),

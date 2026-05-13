@@ -30,6 +30,7 @@ public static class SystemStaticMessageTranslationPatch
         AddTarget(targets, "XRL.CheckpointingSystem", "CheckpointOn", Type.EmptyTypes);
         AddTarget(targets, "XRL.HolyPlaceSystem", "SetHolyZone", new[] { zoneType, factionType });
         AddTarget(targets, "XRL.World.Parts.Mutation.HeightenedIntelligence", "FireEvent", new[] { eventType });
+        AddTarget(targets, "XRL.World.Parts.TrembleEarthquakes", "Quake", Type.EmptyTypes);
         return targets;
     }
 
@@ -78,6 +79,8 @@ public static class SystemStaticMessageTranslationPatch
             "Checkpointing enabled" => "チェックポイント機能を有効化した。",
             "You feel a sense of holiness here." => "この場所には神聖さを感じる。",
             "&CA flash of insight overcomes you!" => "&Cひらめきがあなたを満たした！",
+            "The ground shakes violently!" => "地面が激しく揺れた！",
+            "The ground shakes violently and loose rock falls from the ceiling!" => "地面が激しく揺れ、天井から岩が崩れ落ちた！",
             _ => null,
         };
         if (translated is null)

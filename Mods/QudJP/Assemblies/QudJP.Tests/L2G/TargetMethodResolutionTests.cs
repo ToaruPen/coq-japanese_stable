@@ -327,6 +327,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(LoadingStatusTranslationPatch), "SetLoadingStatus", "XRL.UI.Loading", "System.Void", new[] { "System.String", "System.Boolean" })]
     [TestCase(typeof(PetEitherOrExplodeTranslationPatch), "explode", "XRL.World.Parts.PetEitherOr", "System.Void", new string[0])]
     [TestCase(typeof(ZoneWindChangeTranslationPatch), "WindChange", "XRL.World.Zone", "System.Void", new[] { "System.Int64" })]
+    [TestCase(typeof(CudgelConkPopupTranslationPatch), "PerformConk", "XRL.World.Parts.Skill.Cudgel_Conk", "System.Boolean", new string[0])]
     [TestCase(typeof(CrippleApplyTranslationPatch), "Apply", "XRL.World.Effects.Cripple", "System.Boolean", new[] { "XRL.World.GameObject" })]
     [TestCase(typeof(DoorAttemptOpenTranslationPatch), "AttemptOpen", "XRL.World.Parts.Door", "System.Boolean", new[]
     {
@@ -482,6 +483,28 @@ public sealed class TargetMethodResolutionTests
             var parameterTypes = Array.ConvertAll(methodInfo.GetParameters(), static parameter => NormalizeTypeName(parameter.ParameterType.FullName));
             Assert.That(parameterTypes, Is.EqualTo(expectedParameterTypes));
         });
+    }
+
+    [Test]
+    public void CrippleApplyTargetMethod_ResolvesExpectedFullSignature()
+    {
+        var targetMethod = InvokeTargetMethod(typeof(CrippleApplyTranslationPatch));
+
+        Assert.That(targetMethod, Is.Not.Null, "CrippleApplyTranslationPatch TargetMethod returned null.");
+        Assert.That(
+            FullMethodSignature(targetMethod!),
+            Is.EqualTo("XRL.World.Effects.Cripple|Apply|System.Boolean|XRL.World.GameObject"));
+    }
+
+    [Test]
+    public void CudgelConkPopupTargetMethod_ResolvesExpectedFullSignature()
+    {
+        var targetMethod = InvokeTargetMethod(typeof(CudgelConkPopupTranslationPatch));
+
+        Assert.That(targetMethod, Is.Not.Null, "CudgelConkPopupTranslationPatch TargetMethod returned null.");
+        Assert.That(
+            FullMethodSignature(targetMethod!),
+            Is.EqualTo("XRL.World.Parts.Skill.Cudgel_Conk|PerformConk|System.Boolean"));
     }
 
 #if HAS_GAME_DLL && HAS_TMP
@@ -722,6 +745,7 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(DeployableInfrastructureTranslationPatch), new[]
     {
+        "XRL.World.GameObject",
         "XRL.World.GameObject|XRL.World.Cell|System.Boolean|System.Boolean",
     })]
     [TestCase(typeof(DesalinationPelletTranslationPatch), new[]
@@ -1069,6 +1093,8 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Effects.FungalSporeInfection|ApplyFungalInfection|System.Boolean|XRL.World.GameObject|System.String|XRL.World.Anatomy.BodyPart",
         "XRL.World.Effects.FungalSporeInfection|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.PaxInfection|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.PuffInfection|FireEvent|System.Boolean|XRL.World.Event",
     })]
     [TestCase(typeof(HealingTranslationPatch), new[]
     {
@@ -1135,6 +1161,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.CheckpointingSystem|CheckpointOn|System.Boolean",
         "XRL.HolyPlaceSystem|SetHolyZone|System.Void|XRL.World.Zone|XRL.World.Faction",
         "XRL.World.Parts.Mutation.HeightenedIntelligence|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.TrembleEarthquakes|Quake|System.Void",
     })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
@@ -1277,6 +1304,37 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.LiquidVolume|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.LiquidVolume|Pour|System.Boolean|System.Boolean&|XRL.World.GameObject|XRL.World.Cell|System.Boolean|System.Boolean|System.Int32|System.Boolean",
         "XRL.World.Parts.LiquidVolume|PerformFill|System.Boolean|XRL.World.GameObject|System.Boolean&|System.Boolean",
+    })]
+    [TestCase(typeof(CombatSkillMessageTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Skill.Tactics_Kickback|HandleEvent|System.Boolean|XRL.World.BeforeFireMissileWeaponsEvent",
+        "XRL.World.Parts.Skill.Axe_Cleave|PerformCleave|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|System.Int32|System.Int32|System.Nullable`1[[System.Int32]]",
+        "XRL.World.Parts.Skill.Endurance_ShakeItOff|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Skill.TenfoldPath_Ret|HandleEvent|System.Boolean|XRL.World.ApplyEffectEvent",
+        "XRL.World.Parts.Skill.TenfoldPath_Ret|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+    })]
+    [TestCase(typeof(WaterRitualPopupTranslationPatch), new[]
+    {
+        "XRL.World.Conversations.Parts.WaterRitualBegin|HandleEvent|System.Boolean|XRL.World.Conversations.EnterElementEvent",
+        "XRL.World.Conversations.Parts.WaterRitualSkillPoint|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+        "XRL.World.Conversations.Parts.WaterRitualTinkeringRecipe|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+    })]
+    [TestCase(typeof(MutationSelfTargetPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.BreatherBase|Cast|System.Boolean|XRL.World.Parts.Mutation.BreatherBase",
+        "XRL.World.Parts.Mutation.FlamingRay|Cast|System.Boolean|XRL.World.Parts.Mutation.FlamingRay|System.String",
+        "XRL.World.Parts.Mutation.FreezeBreath|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Mutation.FreezingRay|Cast|System.Boolean|XRL.World.Parts.Mutation.FreezingRay|System.String",
+    })]
+    [TestCase(typeof(GameSummaryTombstonePopupTranslationPatch), new[]
+    {
+        "Qud.UI.GameSummaryScreen|SaveTombstone|System.Void",
+        "XRL.UI.GameSummaryUI|Show|System.Void|System.Int32|System.String|System.String|System.String|System.String|System.Boolean",
+    })]
+    [TestCase(typeof(FireSuppressionDischargeTranslationPatch), new[]
+    {
+        "XRL.World.Parts.FireSuppressionSystem|CheckFireSuppression|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Parts.CyberneticsFireSuppressionSystem|TurnTick|System.Void|System.Int64|System.Int32",
     })]
     public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
     {
