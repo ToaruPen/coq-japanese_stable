@@ -1209,6 +1209,12 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.MPOnEat|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.RefreshAllCooldownsOnEat|FireEvent|System.Boolean|XRL.World.Event",
     })]
+    [TestCase(typeof(TenfoldPathInitiatoryTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Skill.TenfoldPath_Ket|HandleEvent|System.Boolean|XRL.World.BeforeDieEvent",
+        "XRL.World.Parts.Skill.TenfoldPath_Vur|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Skill.TenfoldPath_Yis|AddSkill|System.Boolean|XRL.World.GameObject",
+    })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
         "XRL.World.Parts.Combat|HandleEvent|System.Boolean|XRL.World.GetDefenderHitDiceEvent",
