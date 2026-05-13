@@ -1352,6 +1352,24 @@ internal sealed class DummySimpleOwnerQueueTarget
         return true;
     }
 
+    public void FleeTakeAction()
+    {
+        _ = nameof(FleeTakeAction);
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public void InfiltratePerformInfiltrate()
+    {
+        _ = nameof(InfiltratePerformInfiltrate);
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public void TemperatureControllerConfigureTemperatureController()
+    {
+        _ = nameof(TemperatureControllerConfigureTemperatureController);
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
     public bool TorchPropertiesHandleEvent(DummyEndTurnEvent? eventObject = null)
     {
         _ = eventObject;

@@ -4982,6 +4982,124 @@ def _auto_act_reset_family() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _prefixed_owner_queue_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PrefixedOwnerQueueTranslationPatch.cs",
+        (
+            "PrefixedOwnerQueueTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "Translator.TryGetTranslation",
+            "You are fleeing from ",
+            "You are teleported by ",
+            "You set a target temperature of ",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("PrefixedOwnerQueueTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/PrefixedOwnerQueueTranslationPatchTests.cs",
+        (
+            "Patch_TranslatesPrefixedQueueMessages_WithRepositoryDictionaries",
+            "Patch_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+            "Patch_DoesNotRetranslateDirectMarkedMessage_WhenOwnerPatched",
+            "Patch_LeavesEmptyMessageUnchanged_WhenOwnerPatched",
+            "UseRepositoryDictionaries",
+        ),
+    )
+    dictionary = EvidenceFile(
+        "Mods/QudJP/Localization/Dictionaries/ui-messagelog-world.ja.json",
+        (
+            "You are fleeing from ",
+            "You are teleported by ",
+            "You set a target temperature of ",
+            "{target}から逃げ出している\uff01",
+            "{source}によって転送された。",
+            "目標温度を{temperature}に設定した。",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.AI.GoalHandlers/Flee.cs::XRL.World.AI.GoalHandlers.Flee.TakeAction",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                EvidenceFile(
+                    tests.path,
+                    (
+                        *tests.required_substrings,
+                        "FleeTakeAction",
+                        "You are fleeing from {{R|snapjaw}}!",
+                        "{{R|snapjaw}}から逃げ出している\uff01",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(PrefixedOwnerQueueTranslationPatch)",
+                        "XRL.World.AI.GoalHandlers.Flee|TakeAction|System.Void",
+                    ),
+                ),
+                dictionary,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts.Mutation/Infiltrate.cs::XRL.World.Parts.Mutation.Infiltrate.performInfiltrate",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                EvidenceFile(
+                    tests.path,
+                    (
+                        *tests.required_substrings,
+                        "InfiltratePerformInfiltrate",
+                        "You are teleported by {{Y|phase spider}}.",
+                        "{{Y|phase spider}}によって転送された。",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(PrefixedOwnerQueueTranslationPatch)",
+                        "XRL.World.Parts.Mutation.Infiltrate|performInfiltrate|System.Void|XRL.World.Cell|System.Boolean",
+                    ),
+                ),
+                dictionary,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/TemperatureController.cs::XRL.World.Parts.TemperatureController.ConfigureTemperatureController",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                EvidenceFile(
+                    tests.path,
+                    (
+                        *tests.required_substrings,
+                        "TemperatureControllerConfigureTemperatureController",
+                        "You set a target temperature of -500.",
+                        "You set a target temperature of .",
+                        "目標温度を-500に設定した。",
+                        "目標温度をに設定した。",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(PrefixedOwnerQueueTranslationPatch)",
+                        "XRL.World.Parts.TemperatureController|ConfigureTemperatureController|System.Void|XRL.World.GameObject|System.Boolean",
+                    ),
+                ),
+                dictionary,
+            ),
+        ),
+    )
+
+
 def _blaze_tonic_remove_family() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -9836,6 +9954,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_hidden_render_families(),
     *_engraver_families(),
     *_auto_act_reset_family(),
+    *_prefixed_owner_queue_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 

@@ -1569,6 +1569,12 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Capabilities.AutoAct|Interrupt|System.Void|XRL.World.GameObject|System.Boolean|System.Boolean",
         "XRL.World.Capabilities.AutoAct|ResetAutoexploreProperties|System.Boolean",
     })]
+    [TestCase(typeof(PrefixedOwnerQueueTranslationPatch), new[]
+    {
+        "XRL.World.AI.GoalHandlers.Flee|TakeAction|System.Void",
+        "XRL.World.Parts.Mutation.Infiltrate|performInfiltrate|System.Void|XRL.World.Cell|System.Boolean",
+        "XRL.World.Parts.TemperatureController|ConfigureTemperatureController|System.Void|XRL.World.GameObject|System.Boolean",
+    })]
     [TestCase(typeof(ModMagnetizedTranslationPatch), new[]
     {
         "XRL.World.Parts.ModMagnetized|CheckFloating|System.Void",
