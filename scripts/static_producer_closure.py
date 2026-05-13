@@ -6513,6 +6513,52 @@ def _mental_shield_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _tabula_rasae_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/TabulaRasaeTranslationPatch.cs",
+        (
+            "TabulaRasaeTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "HandleEvent",
+            "BeforeApplyDamageEvent",
+            "TookDamageEvent",
+            "NoEffectPattern",
+            "AdaptPattern",
+        ),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("TabulaRasaeTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/TabulaRasaeTranslationPatchTests.cs",
+        (
+            "TabulaRasae_TranslatesOwnerMessages_WhenOwnerPatched",
+            "TabulaRasae_TranslatesUnknownDamageAttribute_WithCapturedText",
+            "TabulaRasae_DoesNotTranslateTraffic_WhenOwnerAbsent",
+            "TabulaRasae_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "TabulaRasae_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "HandleBeforeApplyDamageEvent",
+            "HandleTookDamageEvent",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(TabulaRasaeTranslationPatch)",
+            "XRL.World.Parts.TabulaRasae|HandleEvent|System.Boolean|XRL.World.BeforeApplyDamageEvent",
+            "XRL.World.Parts.TabulaRasae|HandleEvent|System.Boolean|XRL.World.TookDamageEvent",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/TabulaRasae.cs::XRL.World.Parts.TabulaRasae.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, tests, target_tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -8479,6 +8525,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_base_pronoun_provider_customize_families(),
     *_fugue_on_step_families(),
     *_mental_shield_families(),
+    *_tabula_rasae_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 

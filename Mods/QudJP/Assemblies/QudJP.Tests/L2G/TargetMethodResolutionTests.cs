@@ -1250,6 +1250,11 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.MentalShield|HandleEvent|System.Boolean|XRL.World.BeforeApplyDamageEvent",
         "XRL.World.Parts.MentalShield|HandleEvent|System.Boolean|XRL.World.BeginMentalDefendEvent",
     })]
+    [TestCase(typeof(TabulaRasaeTranslationPatch), new[]
+    {
+        "XRL.World.Parts.TabulaRasae|HandleEvent|System.Boolean|XRL.World.BeforeApplyDamageEvent",
+        "XRL.World.Parts.TabulaRasae|HandleEvent|System.Boolean|XRL.World.TookDamageEvent",
+    })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
         "XRL.World.Parts.Combat|HandleEvent|System.Boolean|XRL.World.GetDefenderHitDiceEvent",
