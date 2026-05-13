@@ -46,8 +46,10 @@ public static class EffectStaticMessageTranslationPatch
         AddTarget(targets, "XRL.World.Effects.Berserk", "HandleEvent", new[] { beginTakeActionEventType });
         AddTarget(targets, "XRL.World.Effects.Cudgel_SmashingUp", "FireEvent", new[] { eventType });
         AddTarget(targets, "XRL.World.Effects.EmptyTheClips", "Apply", new[] { gameObjectType });
+        AddTarget(targets, "XRL.World.Effects.Exhausted", "Apply", new[] { gameObjectType });
         AddTarget(targets, "XRL.World.Effects.Flagging", "HandleEvent", new[] { beginTakeActionEventType });
         AddTarget(targets, "XRL.World.Effects.NocturnalApexed", "Apply", new[] { gameObjectType });
+        AddTarget(targets, "XRL.World.Effects.Paralyzed", "HandleEvent", new[] { beginTakeActionEventType });
         return targets;
     }
 
@@ -98,6 +100,8 @@ public static class EffectStaticMessageTranslationPatch
             "You feel stiff as a stone." => "石のように体がこわばる。",
             "You begin itching for a trigger." => "引き金を求めてうずうずしてきた。",
             "You start to prowl." => "うろつき始めた。",
+            "You are {{K|exhausted}}!" => "{{K|疲労困憊}}している！",
+            "You are {{C|paralyzed}}." => "{{C|麻痺}}している。",
             _ => null,
         };
         if (translated is null && !TryTranslateCountdownMessage(message, out translated))

@@ -3066,11 +3066,14 @@ def _effect_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
         (
             "EffectStaticApply_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "EffectStaticFireEvent_TranslatesFixedQueuedMessage_WhenOwnerPatched",
+            "EffectStaticBeginTakeAction_TranslatesFixedQueuedMessage_WhenOwnerPatched",
             "FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
             "EffectStaticApply_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
             "EffectStaticFireEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "EffectStaticBeginTakeAction_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
             "EffectStaticApply_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
             "EffectStaticFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+            "EffectStaticBeginTakeAction_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
         ),
     )
     dictionary = EvidenceFile(
@@ -3217,6 +3220,26 @@ def _effect_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             ),
         ),
         CoveredOwnerFamily(
+            family_id="XRL.World.Effects/Exhausted.cs::XRL.World.Effects.Exhausted.Apply",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                effect_tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    ("You are {{K|exhausted}}!", "疲労困憊"),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(EffectStaticMessageTranslationPatch)",
+                        "XRL.World.Effects.Exhausted|Apply|System.Boolean|XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
             family_id="XRL.World.Effects/Flagging.cs::XRL.World.Effects.Flagging.HandleEvent",
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
@@ -3252,6 +3275,26 @@ def _effect_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
                     ),
                 ),
                 dictionary,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Effects/Paralyzed.cs::XRL.World.Effects.Paralyzed.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                effect_tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    ("You are {{C|paralyzed}}.", "{{C|麻痺}}している。"),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(EffectStaticMessageTranslationPatch)",
+                        "XRL.World.Effects.Paralyzed|HandleEvent|System.Boolean|XRL.World.BeginTakeActionEvent",
+                    ),
+                ),
             ),
         ),
     )

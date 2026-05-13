@@ -4060,6 +4060,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("You feel stiff as a stone.")]
     [TestCase("You begin itching for a trigger.")]
     [TestCase("You start to prowl.")]
+    [TestCase("You are {{K|exhausted}}!")]
+    [TestCase("You are {{C|paralyzed}}.")]
     [TestCase("1 turn remains until your berserker rage ends.")]
     [TestCase("2 turns remain until your berserker rage ends.")]
     [TestCase("1 turn remains until you stop demolishing.")]
@@ -4134,6 +4136,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         "志と道を隔てていた障害が崩れ始める。")]
     [TestCase("You begin itching for a trigger.", "引き金を求めてうずうずしてきた。")]
     [TestCase("You start to prowl.", "うろつき始めた。")]
+    [TestCase("You are {{K|exhausted}}!", "{{K|疲労困憊}}している！")]
     public void EffectStaticApply_TranslatesFixedQueuedMessages_WhenOwnerPatched(string source, string expected)
     {
         AssertEffectStaticApplyQueuedMessage(source, expected);
@@ -4143,6 +4146,12 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void EffectStaticFireEvent_TranslatesFixedQueuedMessage_WhenOwnerPatched()
     {
         AssertEffectStaticFireEventQueuedMessage("You feel stiff as a stone.", "石のように体がこわばる。");
+    }
+
+    [Test]
+    public void EffectStaticBeginTakeAction_TranslatesFixedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectStaticBeginTakeActionQueuedMessage("You are {{C|paralyzed}}.", "{{C|麻痺}}している。");
     }
 
     [TestCase(
