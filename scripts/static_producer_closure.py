@@ -6559,6 +6559,48 @@ def _tabula_rasae_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _eat_memories_on_hit_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/EatMemoriesOnHitTranslationPatch.cs",
+        (
+            "EatMemoriesOnHitTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "EatMemories",
+            "ForgetPattern",
+            "StarvePattern",
+        ),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("EatMemoriesOnHitTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/EatMemoriesOnHitTranslationPatchTests.cs",
+        (
+            "EatMemoriesOnHit_TranslatesOwnerMessages_WhenOwnerPatched",
+            "EatMemoriesOnHit_DoesNotTranslateTraffic_WhenOwnerAbsent",
+            "EatMemoriesOnHit_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "EatMemoriesOnHit_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "DummyEatMemoriesOnHitTarget",
+            "EatMemories",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(EatMemoriesOnHitTranslationPatch)",
+            "XRL.World.Parts.EatMemoriesOnHit|EatMemories|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.String",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/EatMemoriesOnHit.cs::XRL.World.Parts.EatMemoriesOnHit.EatMemories",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, tests, target_tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -8526,6 +8568,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_fugue_on_step_families(),
     *_mental_shield_families(),
     *_tabula_rasae_families(),
+    *_eat_memories_on_hit_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 

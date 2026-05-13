@@ -1255,6 +1255,10 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.TabulaRasae|HandleEvent|System.Boolean|XRL.World.BeforeApplyDamageEvent",
         "XRL.World.Parts.TabulaRasae|HandleEvent|System.Boolean|XRL.World.TookDamageEvent",
     })]
+    [TestCase(typeof(EatMemoriesOnHitTranslationPatch), new[]
+    {
+        "XRL.World.Parts.EatMemoriesOnHit|EatMemories|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.String",
+    })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
         "XRL.World.Parts.Combat|HandleEvent|System.Boolean|XRL.World.GetDefenderHitDiceEvent",
