@@ -57,11 +57,15 @@ split/deferred with a reason.
    - Query `docs/static-producer-inventory.json` for the exact
      `producer_family_id`.
    - Record all lines, target surfaces, closure statuses, and expressions.
-   - Before editing, check the current `origin/main` diff and any open or
-     recently merged issue-576 PRs for the same `producer_family_id`s. If the
-     family has already landed through another integration PR, treat the work
-     as verification or closeout instead of reimplementing it on the current
-     branch.
+   - Before editing, check the current `origin/main` diff plus open issue-576
+     PRs and the most recent 10 merged PRs whose title, body, or commit messages
+     mention `issue-576`, `static producer`, `owner closure`, or the exact
+     `producer_family_id`. Use `gh pr list --search 'issue-576 static producer'
+     --state all --limit 10` as the starting point, then verify overlap by
+     finding the exact family id in the PR body, commit messages, or changed
+     `scripts/static_producer_closure.py` evidence. If the family has already
+     landed through another integration PR, treat the work as verification or
+     closeout instead of reimplementing it on the current branch.
    - Inspect the matching decompiled source under `~/dev/coq-decompiled_stable/`.
    - Useful extraction commands:
 
@@ -146,10 +150,22 @@ split/deferred with a reason.
 
    - Run `just static-producer-check`.
    - If `Mods/QudJP/Localization/` changed, run `just translation-token-check`
-     in addition to `just localization-check`. If duplicate source-key baseline
-     entries changed only because dictionary entry order or conflict state
-     changed, regenerate with `just translation-token-baseline`, inspect the
-     baseline diff, and rerun `just translation-token-check`.
+     in addition to `just localization-check`. If it reports duplicate-conflict
+     baseline drift, inspect the changed dictionary entries and baseline diff
+     before regenerating:
+
+     ```bash
+     git diff -- Mods/QudJP/Localization scripts/translation_token_duplicate_baseline.json
+     just translation-token-baseline
+     git diff -- scripts/translation_token_duplicate_baseline.json
+     just translation-token-check
+     ```
+
+     Regenerate only when the token issue output and baseline diff show the same
+     source strings/translations with shifted occurrence metadata, reordered
+     duplicate entries, or changed conflict occurrence locations caused by the
+     dictionary edit. Do not baseline away a new divergent translation, missing
+     markup token, changed source string, or newly introduced duplicate key.
    - Re-run the owner queue and report the family/count delta.
    - Mention any shapes that remain deferred rather than counting them as
      closed.
