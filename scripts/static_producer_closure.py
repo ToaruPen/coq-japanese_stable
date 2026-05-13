@@ -6774,6 +6774,47 @@ def _cloning_start_budded_clone_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _hidden_render_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/HiddenRenderTranslationPatch.cs",
+        (
+            "HiddenRenderTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "Reveal",
+            "RevealedPattern",
+        ),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("HiddenRenderTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/HiddenRenderTranslationPatchTests.cs",
+        (
+            "HiddenRender_TranslatesRevealMessages_WhenOwnerPatched",
+            "HiddenRender_DoesNotTranslateTraffic_WhenOwnerAbsent",
+            "HiddenRender_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "HiddenRender_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "DummyHiddenRenderTarget",
+            "Reveal",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(HiddenRenderTranslationPatch)",
+            "XRL.World.Parts.HiddenRender|Reveal|System.Void",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/HiddenRender.cs::XRL.World.Parts.HiddenRender.Reveal",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, tests, target_tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -8746,6 +8787,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_engulfing_families(),
     *_temporary_reality_stabilize_families(),
     *_cloning_start_budded_clone_families(),
+    *_hidden_render_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 
