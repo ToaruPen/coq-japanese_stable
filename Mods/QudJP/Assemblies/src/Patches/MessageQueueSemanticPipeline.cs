@@ -34,6 +34,7 @@ internal static class MessageQueueSemanticPipeline
         MagneticPulseTranslationPatch.TryTranslateQueuedMessage,
         PetGloamingTranslationPatch.TryTranslateQueuedMessage,
         WindupTranslationPatch.TryTranslateQueuedMessage,
+        DamagePenetrationDebugTranslationPatch.TryTranslateQueuedMessage,
         QuillsTranslationPatch.TryTranslateQueuedMessage,
         LightManipulationTranslationPatch.TryTranslateQueuedMessage,
         CombatSkillMessageTranslationPatch.TryTranslateQueuedMessage,

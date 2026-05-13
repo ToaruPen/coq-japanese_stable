@@ -6343,6 +6343,47 @@ def _windup_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _damage_penetration_debug_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/DamagePenetrationDebugTranslationPatch.cs",
+        (
+            "DamagePenetrationDebugTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "RollDamagePenetrations",
+            "PenetratedPattern",
+            "FailedPattern",
+            "BonusPattern",
+        ),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("DamagePenetrationDebugTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/DamagePenetrationDebugTranslationPatchTests.cs",
+        (
+            "DamagePenetrationDebug_TranslatesDebugMessages_WhenOwnerPatched",
+            "DamagePenetrationDebug_DoesNotTranslateTraffic_WhenOwnerAbsent",
+            "DamagePenetrationDebug_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "DamagePenetrationDebug_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(DamagePenetrationDebugTranslationPatch)",
+            "XRL.Rules.Stat|RollDamagePenetrations|System.Int32|System.Int32|System.Int32|System.Int32",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.Rules/Stat.cs::XRL.Rules.Stat.RollDamagePenetrations",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, tests, target_tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -8305,6 +8346,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_magnetic_pulse_families(),
     *_pet_gloaming_families(),
     *_windup_families(),
+    *_damage_penetration_debug_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 

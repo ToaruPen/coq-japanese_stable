@@ -1232,6 +1232,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.Windup|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
     })]
+    [TestCase(typeof(DamagePenetrationDebugTranslationPatch), new[]
+    {
+        "XRL.Rules.Stat|RollDamagePenetrations|System.Int32|System.Int32|System.Int32|System.Int32",
+    })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
         "XRL.World.Parts.Combat|HandleEvent|System.Boolean|XRL.World.GetDefenderHitDiceEvent",
