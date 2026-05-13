@@ -1582,8 +1582,12 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Effects.LifeDrain|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
         "XRL.World.Effects.ShatteredArmor|Apply|System.Boolean|XRL.World.GameObject",
     })]
-    [TestCase(typeof(WorldPartsGeneratedQueueTranslationPatch), new[]
+    [TestCase(typeof(GeneratedQueueDoesVerbTranslationPatch), new[]
     {
+        "XRL.World.AI.GoalHandlers.DropOffStolenGoods|MoveToDropoff|System.Void",
+        "XRL.World.AI.GoalHandlers.PaxKlanqMadness|TakeAction|System.Void",
+        "XRL.World.Anatomy.BodyPart|UnequipPartAndChildren|System.Void|System.Boolean|XRL.World.IInventory|System.Boolean",
+        "XRL.World.Parts.ExtradimensionalLoot|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.GelatenousPalmProperties|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.GraveMoss|Trigger|System.Void",
         "XRL.World.Parts.QuantumRippler|HandleEvent|System.Boolean|XRL.World.RealityStabilizeEvent",

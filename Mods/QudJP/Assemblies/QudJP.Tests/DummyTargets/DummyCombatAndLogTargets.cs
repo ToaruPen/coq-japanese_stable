@@ -1326,6 +1326,32 @@ internal sealed class DummySimpleOwnerQueueTarget
         return true;
     }
 
+    public void DropOffStolenGoodsMoveToDropoff()
+    {
+        _ = nameof(DropOffStolenGoodsMoveToDropoff);
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public void PaxKlanqMadnessTakeAction()
+    {
+        _ = nameof(PaxKlanqMadnessTakeAction);
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public void BodyPartUnequipPartAndChildren()
+    {
+        _ = nameof(BodyPartUnequipPartAndChildren);
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public bool ExtradimensionalLootFireEvent(DummyEvent? eventObject = null)
+    {
+        _ = eventObject;
+        _ = nameof(ExtradimensionalLootFireEvent);
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
     public bool TorchPropertiesHandleEvent(DummyEndTurnEvent? eventObject = null)
     {
         _ = eventObject;

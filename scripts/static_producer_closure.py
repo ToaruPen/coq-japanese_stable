@@ -4652,11 +4652,11 @@ def _effect_generated_message_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
-def _world_parts_generated_queue_families() -> tuple[CoveredOwnerFamily, ...]:
+def _generated_queue_does_verb_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
-        "Mods/QudJP/Assemblies/src/Patches/WorldPartsGeneratedQueueTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/GeneratedQueueDoesVerbTranslationPatch.cs",
         (
-            "WorldPartsGeneratedQueueTranslationPatch",
+            "GeneratedQueueDoesVerbTranslationPatch",
             "DoesVerbRouteTranslator.TryTranslateMarkedMessage",
             "DoesVerbRouteTranslator.TryTranslatePlainSentence",
             "MessageFrameTranslator.TryStripDirectTranslationMarker",
@@ -4664,15 +4664,16 @@ def _world_parts_generated_queue_families() -> tuple[CoveredOwnerFamily, ...]:
     )
     pipeline = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
-        ("WorldPartsGeneratedQueueTranslationPatch.TryTranslateQueuedMessage",),
+        ("GeneratedQueueDoesVerbTranslationPatch.TryTranslateQueuedMessage",),
     )
     tests = EvidenceFile(
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
         (
-            "WorldPartsGeneratedQueue_TranslatesDoesVerbMessages_WhenOwnerPatched",
-            "WorldPartsGeneratedQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
-            "WorldPartsGeneratedQueue_DoesNotRetranslateDirectMarkedMessage_WhenOwnerPatched",
-            "WorldPartsGeneratedQueue_LeavesEmptyMessageUnchanged_WhenOwnerPatched",
+            "GeneratedQueueDoesVerb_TranslatesDoesVerbMessages_WhenOwnerPatched",
+            "GeneratedQueueDoesVerb_TranslatesMarkedDoesVerbMessages_WhenOwnerPatched",
+            "GeneratedQueueDoesVerb_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+            "GeneratedQueueDoesVerb_DoesNotRetranslateDirectMarkedMessage_WhenOwnerPatched",
+            "GeneratedQueueDoesVerb_LeavesEmptyMessageUnchanged_WhenOwnerPatched",
             "UseRepositoryMessageFrames",
         ),
     )
@@ -4686,6 +4687,151 @@ def _world_parts_generated_queue_families() -> tuple[CoveredOwnerFamily, ...]:
         ),
     )
     return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.AI.GoalHandlers/DropOffStolenGoods.cs::XRL.World.AI.GoalHandlers.DropOffStolenGoods.MoveToDropoff",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "DropOffStolenGoods",
+                        "DropDownPattern",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        *tests.required_substrings,
+                        "DropOffStolenGoodsMoveToDropoff",
+                        "folded carbide dagger",
+                        "を{{y|shaft}}に落とした。",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(GeneratedQueueDoesVerbTranslationPatch)",
+                        "XRL.World.AI.GoalHandlers.DropOffStolenGoods|MoveToDropoff|System.Void",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+                    (
+                        '"verb": "drop"',
+                        '"extra": "{0} down {1}"',
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.AI.GoalHandlers/PaxKlanqMadness.cs::XRL.World.AI.GoalHandlers.PaxKlanqMadness.TakeAction",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "PaxKlanqMadness",
+                        "PaxKlanqPattern",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        *tests.required_substrings,
+                        "PaxKlanqMadnessTakeAction",
+                        "shouts {{O|KLANQ}}",
+                        "snapjawは{{O|KLANQ}}と叫んだ",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(GeneratedQueueDoesVerbTranslationPatch)",
+                        "XRL.World.AI.GoalHandlers.PaxKlanqMadness|TakeAction|System.Void",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+                    (
+                        '"verb": "shout"',
+                        "shouts? KLANQ",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Anatomy/BodyPart.cs::XRL.World.Anatomy.BodyPart.UnequipPartAndChildren",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        *tests.required_substrings,
+                        "BodyPartUnequipPartAndChildren",
+                        "Your {{Y|carbide dagger}} falls to the ground.",
+                        "Your {{Y|carbide dagger}}は地面に倒れた。",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(GeneratedQueueDoesVerbTranslationPatch)",
+                        "XRL.World.Anatomy.BodyPart|UnequipPartAndChildren|System.Void|System.Boolean|XRL.World.IInventory|System.Boolean",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+                    (
+                        '"verb": "fall"',
+                        '"extra": "to the ground"',
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/ExtradimensionalLoot.cs::XRL.World.Parts.ExtradimensionalLoot.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "ExtradimensionalLoot",
+                        "ExtradimensionalLootPattern",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        *tests.required_substrings,
+                        "ExtradimensionalLootFireEvent",
+                        "quantum tunnels and fully materializes in this dimension",
+                        "hunterは{{Y|eigenrifle}}を落とし、偶然にもそれは量子トンネルを通ってこの次元に完全実体化した。",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(GeneratedQueueDoesVerbTranslationPatch)",
+                        "XRL.World.Parts.ExtradimensionalLoot|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+                    (
+                        "by sheer chance",
+                        "quantum tunnel",
+                    ),
+                ),
+            ),
+        ),
         CoveredOwnerFamily(
             family_id="XRL.World.Parts/GelatenousPalmProperties.cs::XRL.World.Parts.GelatenousPalmProperties.FireEvent",
             inventory_statuses=("owner_patch_required",),
@@ -4704,7 +4850,7 @@ def _world_parts_generated_queue_families() -> tuple[CoveredOwnerFamily, ...]:
                 EvidenceFile(
                     "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
                     (
-                        "typeof(WorldPartsGeneratedQueueTranslationPatch)",
+                        "typeof(GeneratedQueueDoesVerbTranslationPatch)",
                         "XRL.World.Parts.GelatenousPalmProperties|FireEvent|System.Boolean|XRL.World.Event",
                     ),
                 ),
@@ -4729,7 +4875,7 @@ def _world_parts_generated_queue_families() -> tuple[CoveredOwnerFamily, ...]:
                 EvidenceFile(
                     "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
                     (
-                        "typeof(WorldPartsGeneratedQueueTranslationPatch)",
+                        "typeof(GeneratedQueueDoesVerbTranslationPatch)",
                         "XRL.World.Parts.GraveMoss|Trigger|System.Void",
                     ),
                 ),
@@ -4754,7 +4900,7 @@ def _world_parts_generated_queue_families() -> tuple[CoveredOwnerFamily, ...]:
                 EvidenceFile(
                     "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
                     (
-                        "typeof(WorldPartsGeneratedQueueTranslationPatch)",
+                        "typeof(GeneratedQueueDoesVerbTranslationPatch)",
                         "XRL.World.Parts.QuantumRippler|HandleEvent|System.Boolean|XRL.World.RealityStabilizeEvent",
                     ),
                 ),
@@ -4779,7 +4925,7 @@ def _world_parts_generated_queue_families() -> tuple[CoveredOwnerFamily, ...]:
                 EvidenceFile(
                     "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
                     (
-                        "typeof(WorldPartsGeneratedQueueTranslationPatch)",
+                        "typeof(GeneratedQueueDoesVerbTranslationPatch)",
                         "XRL.World.Parts.ReclamationCist|PerformReclamationOf|System.Boolean|XRL.World.GameObject",
                     ),
                 ),
@@ -8520,7 +8666,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_effect_static_message_families(),
     *_stasis_attack_bounce_family(),
     *_effect_generated_message_families(),
-    *_world_parts_generated_queue_families(),
+    *_generated_queue_does_verb_families(),
     *_blaze_tonic_remove_family(),
     *_latched_onto_expired_family(),
     *_giant_clam_teleport_joppa_family(),

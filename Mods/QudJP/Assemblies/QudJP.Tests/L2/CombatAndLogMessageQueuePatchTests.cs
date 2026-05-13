@@ -4490,16 +4490,73 @@ public sealed class CombatAndLogMessageQueuePatchTests
         nameof(DummySimpleOwnerQueueTarget.PerformReclamationOf),
         "The 回収装置 reclaims a 金属片.",
         "回収装置は金属片を回収した。")]
-    public void WorldPartsGeneratedQueue_TranslatesDoesVerbMessages_WhenOwnerPatched(
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.DropOffStolenGoodsMoveToDropoff),
+        "The snapjaw drops a {{Y|folded carbide dagger}} down the {{y|shaft}}.",
+        "{{Y|folded carbide dagger}}を{{y|shaft}}に落とした。")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.PaxKlanqMadnessTakeAction),
+        "The snapjaw shouts shouts {{O|KLANQ}}!",
+        "snapjawは{{O|KLANQ}}と叫んだ！")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.BodyPartUnequipPartAndChildren),
+        "Your {{Y|carbide dagger}} falls to the ground.",
+        "Your {{Y|carbide dagger}}は地面に倒れた。")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.ExtradimensionalLootFireEvent),
+        "The hunter drops an {{Y|eigenrifle}}, and by sheer chance it quantum tunnels and fully materializes in this dimension.",
+        "hunterは{{Y|eigenrifle}}を落とし、偶然にもそれは量子トンネルを通ってこの次元に完全実体化した。")]
+    public void GeneratedQueueDoesVerb_TranslatesDoesVerbMessages_WhenOwnerPatched(
         string methodName,
         string source,
         string expected)
     {
-        AssertWorldPartsGeneratedQueueMessage(methodName, source, expected);
+        AssertGeneratedQueueDoesVerbMessage(methodName, source, expected);
+    }
+
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.DropOffStolenGoodsMoveToDropoff),
+        "The snapjaw drops",
+        "drop",
+        "The snapjaw",
+        " a {{Y|folded carbide dagger}} down the {{y|shaft}}.",
+        "{{Y|folded carbide dagger}}を{{y|shaft}}に落とした。")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.PaxKlanqMadnessTakeAction),
+        "The snapjaw shouts",
+        "shout",
+        "The snapjaw",
+        " shouts {{O|KLANQ}}!",
+        "snapjawは{{O|KLANQ}}と叫んだ！")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.BodyPartUnequipPartAndChildren),
+        "Your {{Y|carbide dagger}} falls",
+        "fall",
+        "Your {{Y|carbide dagger}}",
+        " to the ground.",
+        "Your {{Y|carbide dagger}}は地面に倒れた。")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.ExtradimensionalLootFireEvent),
+        "The hunter drops",
+        "drop",
+        "The hunter",
+        " an {{Y|eigenrifle}}, and by sheer chance it quantum tunnels and fully materializes in this dimension.",
+        "hunterは{{Y|eigenrifle}}を落とし、偶然にもそれは量子トンネルを通ってこの次元に完全実体化した。")]
+    public void GeneratedQueueDoesVerb_TranslatesMarkedDoesVerbMessages_WhenOwnerPatched(
+        string methodName,
+        string fragment,
+        string verb,
+        string subject,
+        string tail,
+        string expected)
+    {
+        var source = DoesVerbRouteTranslator.MarkDoesFragment(fragment, verb, subject.Length, null) + tail;
+
+        AssertGeneratedQueueDoesVerbMessage(methodName, source, expected);
     }
 
     [Test]
-    public void WorldPartsGeneratedQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    public void GeneratedQueueDoesVerb_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
     {
         UseRepositoryMessageFrames();
         var harmonyId = CreateHarmonyId();
@@ -4519,18 +4576,18 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
-    public void WorldPartsGeneratedQueue_DoesNotRetranslateDirectMarkedMessage_WhenOwnerPatched()
+    public void GeneratedQueueDoesVerb_DoesNotRetranslateDirectMarkedMessage_WhenOwnerPatched()
     {
-        AssertWorldPartsGeneratedQueueMessage(
+        AssertGeneratedQueueDoesVerbMessage(
             nameof(DummySimpleOwnerQueueTarget.GelatenousPalmFireEvent),
             MessageFrameTranslator.MarkDirectTranslation("The steel sword is lost in the goop!"),
             "The steel sword is lost in the goop!");
     }
 
     [Test]
-    public void WorldPartsGeneratedQueue_LeavesEmptyMessageUnchanged_WhenOwnerPatched()
+    public void GeneratedQueueDoesVerb_LeavesEmptyMessageUnchanged_WhenOwnerPatched()
     {
-        AssertWorldPartsGeneratedQueueMessage(nameof(DummySimpleOwnerQueueTarget.GraveMossTrigger), string.Empty, string.Empty);
+        AssertGeneratedQueueDoesVerbMessage(nameof(DummySimpleOwnerQueueTarget.GraveMossTrigger), string.Empty, string.Empty);
     }
 
     [TestCase(
@@ -9275,7 +9332,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
-    private static void AssertWorldPartsGeneratedQueueMessage(string methodName, string message, string expected)
+    private static void AssertGeneratedQueueDoesVerbMessage(string methodName, string message, string expected)
     {
         UseRepositoryMessageFrames();
         var harmonyId = CreateHarmonyId();
@@ -9285,8 +9342,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
             PatchQueue(harmony);
             PatchOwner(
                 harmony,
-                WorldPartsGeneratedQueueMethod(methodName),
-                typeof(WorldPartsGeneratedQueueTranslationPatch));
+                GeneratedQueueDoesVerbMethod(methodName),
+                typeof(GeneratedQueueDoesVerbTranslationPatch));
 
             var target = new DummySimpleOwnerQueueTarget
             {
@@ -9299,6 +9356,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
                 nameof(DummySimpleOwnerQueueTarget.GraveMossTrigger) => InvokeGraveMossTrigger(target),
                 nameof(DummySimpleOwnerQueueTarget.QuantumRipplerHandleEvent) => target.QuantumRipplerHandleEvent(new DummyEvent()),
                 nameof(DummySimpleOwnerQueueTarget.PerformReclamationOf) => target.PerformReclamationOf(new DummyGameObject()),
+                nameof(DummySimpleOwnerQueueTarget.DropOffStolenGoodsMoveToDropoff) => InvokeDropOffStolenGoodsMoveToDropoff(target),
+                nameof(DummySimpleOwnerQueueTarget.PaxKlanqMadnessTakeAction) => InvokePaxKlanqMadnessTakeAction(target),
+                nameof(DummySimpleOwnerQueueTarget.BodyPartUnequipPartAndChildren) => InvokeBodyPartUnequipPartAndChildren(target),
+                nameof(DummySimpleOwnerQueueTarget.ExtradimensionalLootFireEvent) => target.ExtradimensionalLootFireEvent(new DummyEvent()),
                 _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, null),
             };
 
@@ -9310,7 +9371,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
-    private static MethodInfo WorldPartsGeneratedQueueMethod(string methodName)
+    private static MethodInfo GeneratedQueueDoesVerbMethod(string methodName)
     {
         return methodName switch
         {
@@ -9329,6 +9390,19 @@ public sealed class CombatAndLogMessageQueuePatchTests
                 typeof(DummySimpleOwnerQueueTarget),
                 nameof(DummySimpleOwnerQueueTarget.PerformReclamationOf),
                 typeof(DummyGameObject)),
+            nameof(DummySimpleOwnerQueueTarget.DropOffStolenGoodsMoveToDropoff) => RequireMethod(
+                typeof(DummySimpleOwnerQueueTarget),
+                nameof(DummySimpleOwnerQueueTarget.DropOffStolenGoodsMoveToDropoff)),
+            nameof(DummySimpleOwnerQueueTarget.PaxKlanqMadnessTakeAction) => RequireMethod(
+                typeof(DummySimpleOwnerQueueTarget),
+                nameof(DummySimpleOwnerQueueTarget.PaxKlanqMadnessTakeAction)),
+            nameof(DummySimpleOwnerQueueTarget.BodyPartUnequipPartAndChildren) => RequireMethod(
+                typeof(DummySimpleOwnerQueueTarget),
+                nameof(DummySimpleOwnerQueueTarget.BodyPartUnequipPartAndChildren)),
+            nameof(DummySimpleOwnerQueueTarget.ExtradimensionalLootFireEvent) => RequireMethod(
+                typeof(DummySimpleOwnerQueueTarget),
+                nameof(DummySimpleOwnerQueueTarget.ExtradimensionalLootFireEvent),
+                typeof(DummyEvent)),
             _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, null),
         };
     }
@@ -9336,6 +9410,24 @@ public sealed class CombatAndLogMessageQueuePatchTests
     private static bool InvokeGraveMossTrigger(DummySimpleOwnerQueueTarget target)
     {
         target.GraveMossTrigger();
+        return true;
+    }
+
+    private static bool InvokeDropOffStolenGoodsMoveToDropoff(DummySimpleOwnerQueueTarget target)
+    {
+        target.DropOffStolenGoodsMoveToDropoff();
+        return true;
+    }
+
+    private static bool InvokePaxKlanqMadnessTakeAction(DummySimpleOwnerQueueTarget target)
+    {
+        target.PaxKlanqMadnessTakeAction();
+        return true;
+    }
+
+    private static bool InvokeBodyPartUnequipPartAndChildren(DummySimpleOwnerQueueTarget target)
+    {
+        target.BodyPartUnequipPartAndChildren();
         return true;
     }
 
