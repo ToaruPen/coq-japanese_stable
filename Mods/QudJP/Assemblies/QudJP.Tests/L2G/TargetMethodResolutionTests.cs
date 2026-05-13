@@ -802,6 +802,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Event",
         "XRL.World.Event",
         "XRL.World.BeforeApplyDamageEvent",
+        "XRL.World.GameObject|XRL.World.GameObject|XRL.World.Damage",
         "XRL.World.GameObject|System.Boolean",
         "XRL.World.Conversations.EnteredElementEvent",
     })]
@@ -848,6 +849,7 @@ public sealed class TargetMethodResolutionTests
             "XRL.World.Effects.CookingDomainReflect_UnitReflectDamage|FireEvent|System.Void|XRL.World.Event",
             "XRL.World.Effects.CookingDomainReflect_Reflect100_ProceduralCookingTriggeredAction_Effect|FireEvent|System.Boolean|XRL.World.Event",
             "XRL.World.Parts.ReflectDamage|HandleEvent|System.Boolean|XRL.World.BeforeApplyDamageEvent",
+            "XRL.World.Parts.ModBlinkEscape|CheckBlinkEscape|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|XRL.World.Damage",
             "XRL.World.Effects.CookingDomainTeleport_UnitBlink|FireEvent|System.Void|XRL.World.Event",
             "XRL.World.Effects.NoPhase_ProceduralCookingTriggeredAction_Effect|FireEvent|System.Boolean|XRL.World.Event",
             "XRL.World.Skills.Cooking.CookingRecipe|ApplyEffectsTo|System.Boolean|XRL.World.GameObject|System.Boolean",

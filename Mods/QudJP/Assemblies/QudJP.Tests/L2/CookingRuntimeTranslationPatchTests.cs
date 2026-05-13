@@ -61,6 +61,16 @@ public sealed class CookingRuntimeTranslationPatchTests
     }
 
     [Test]
+    public void CookingQueuedMessage_TranslatesModBlinkEscapeFateIntervenes_WhenOwnerPatched()
+    {
+        AssertQueuedMessage(
+            nameof(DummyCookingRuntimeTarget.CheckBlinkEscape),
+            "Fate intervenes and you deal no damage to {{R|glowfish}}&y.",
+            "r",
+            "運命が介入し、あなたは{{R|glowfish}}にダメージを与えられなかった。");
+    }
+
+    [Test]
     public void CookingPopup_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
     {
         var harmonyId = CreateHarmonyId();
@@ -127,6 +137,15 @@ public sealed class CookingRuntimeTranslationPatchTests
 
     private static void AssertQueuedMessage(string source, string? color, string expected)
     {
+        AssertQueuedMessage(
+            nameof(DummyCookingRuntimeTarget.FireQueuedEffect),
+            source,
+            color,
+            expected);
+    }
+
+    private static void AssertQueuedMessage(string ownerMethodName, string source, string? color, string expected)
+    {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try
@@ -134,7 +153,7 @@ public sealed class CookingRuntimeTranslationPatchTests
             PatchQueue(harmony);
             PatchOwner(
                 harmony,
-                RequireMethod(typeof(DummyCookingRuntimeTarget), nameof(DummyCookingRuntimeTarget.FireQueuedEffect), typeof(DummyGameEvent)));
+                RequireMethod(typeof(DummyCookingRuntimeTarget), ownerMethodName, OwnerParameterTypes(ownerMethodName)));
 
             var target = new DummyCookingRuntimeTarget
             {
@@ -142,7 +161,14 @@ public sealed class CookingRuntimeTranslationPatchTests
                 ColorToSend = color,
             };
 
-            _ = target.FireQueuedEffect(new DummyGameEvent());
+            if (ownerMethodName == nameof(DummyCookingRuntimeTarget.FireQueuedEffect))
+            {
+                _ = target.FireQueuedEffect(new DummyGameEvent());
+            }
+            else
+            {
+                _ = target.CheckBlinkEscape();
+            }
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
             Assert.That(DummyMessageQueue.LastColor, Is.EqualTo(color));
@@ -151,6 +177,13 @@ public sealed class CookingRuntimeTranslationPatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    private static Type[] OwnerParameterTypes(string ownerMethodName)
+    {
+        return ownerMethodName == nameof(DummyCookingRuntimeTarget.FireQueuedEffect)
+            ? new[] { typeof(DummyGameEvent) }
+            : Type.EmptyTypes;
     }
 
     private static void PatchPopupShow(Harmony harmony)

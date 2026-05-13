@@ -66,6 +66,7 @@ public static class CookingRuntimeTranslationPatch
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
         var eventType = AccessTools.TypeByName("XRL.World.Event");
         var beforeApplyDamageEventType = AccessTools.TypeByName("XRL.World.BeforeApplyDamageEvent");
+        var damageType = AccessTools.TypeByName("XRL.World.Damage");
         if (gameObjectType is null || eventType is null)
         {
             Trace.TraceError("QudJP: {0} target parameter types not found.", Context);
@@ -99,6 +100,14 @@ public static class CookingRuntimeTranslationPatch
         else
         {
             Trace.TraceError("QudJP: {0} failed to resolve BeforeApplyDamageEvent.", Context);
+        }
+        if (damageType is not null)
+        {
+            AddTarget(targets, "XRL.World.Parts.ModBlinkEscape", "CheckBlinkEscape", new[] { gameObjectType, gameObjectType, damageType });
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0} failed to resolve Damage.", Context);
         }
         AddTarget(targets, "XRL.World.Effects.CookingDomainTeleport_UnitBlink", "FireEvent", new[] { eventType });
         AddTarget(targets, "XRL.World.Effects.NoPhase_ProceduralCookingTriggeredAction_Effect", "FireEvent", new[] { eventType });

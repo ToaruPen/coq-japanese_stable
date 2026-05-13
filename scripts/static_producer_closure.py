@@ -873,6 +873,7 @@ def _cooking_runtime_families() -> tuple[CoveredOwnerFamily, ...]:
             "CookingRuntimeTranslationPatch",
             "TryTranslatePopupMessage",
             "TryTranslateQueuedMessage",
+            "ModBlinkEscape",
         ),
     )
     tests = EvidenceFile(
@@ -881,6 +882,8 @@ def _cooking_runtime_families() -> tuple[CoveredOwnerFamily, ...]:
             "BasicCookingPopup_TranslatesRuntimeWellFedMessages_WhenOwnerPatched",
             "SpecialCookingPopup_TranslatesRuntimeMessages_WhenOwnerPatched",
             "CookingQueuedMessage_TranslatesRuntimeMessages_WhenOwnerPatched",
+            "CookingQueuedMessage_TranslatesModBlinkEscapeFateIntervenes_WhenOwnerPatched",
+            "CheckBlinkEscape",
             "CookingPopup_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
             "CookingRuntime_DoesNotRetranslateDirectMarkedMessages_WhenOwnerPatched",
             "CookingRuntime_LeavesEmptyMessagesUnchanged_WhenOwnerPatched",
@@ -916,6 +919,7 @@ def _cooking_runtime_families() -> tuple[CoveredOwnerFamily, ...]:
         "XRL.World.Effects/CookingDomainReflect_UnitReflectDamage.cs::XRL.World.Effects.CookingDomainReflect_UnitReflectDamage.FireEvent",
         "XRL.World.Effects/CookingDomainReflect_Reflect100_ProceduralCookingTriggeredAction_Effect.cs::XRL.World.Effects.CookingDomainReflect_Reflect100_ProceduralCookingTriggeredAction_Effect.FireEvent",
         "XRL.World.Parts/ReflectDamage.cs::XRL.World.Parts.ReflectDamage.HandleEvent",
+        "XRL.World.Parts/ModBlinkEscape.cs::XRL.World.Parts.ModBlinkEscape.CheckBlinkEscape",
         "XRL.World.Effects/CookingDomainTeleport_UnitBlink.cs::XRL.World.Effects.CookingDomainTeleport_UnitBlink.FireEvent",
         "XRL.World.Effects/NoPhase_ProceduralCookingTriggeredAction_Effect.cs::XRL.World.Effects.NoPhase_ProceduralCookingTriggeredAction_Effect.FireEvent",
     )
