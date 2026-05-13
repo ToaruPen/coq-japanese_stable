@@ -1483,6 +1483,67 @@ def _conversation_reward_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _game_summary_tombstone_popup_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/GameSummaryTombstonePopupTranslationPatch.cs",
+        (
+            "GameSummaryTombstonePopupTranslationPatch",
+            "TryTranslatePopupMessage",
+            "SavedPattern",
+            "ErrorPattern",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("GameSummaryTombstonePopupTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/GameSummaryTombstonePopupTranslationPatchTests.cs",
+        (
+            "Patch_TranslatesTombstonePopup_WhenOwnerPatched",
+            "Patch_DoesNotTranslateTombstonePopup_WhenOwnerAbsent",
+            "Patch_StripsDirectMarkedTombstonePopup_WhenOwnerPatched",
+            "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+            "Patch_LeavesMatchedPopupUnchanged_WhenDictionaryEntryMissing",
+            "Patch_PreservesColorTagsInTombstonePath_WhenOwnerPatched",
+            "Patch_RestoresOuterOwnerScopeAfterNestedOwnerPopup",
+            "nameof(DummyGameSummaryTombstoneProducer.ModernSaveTombstone)",
+            "nameof(DummyGameSummaryTombstoneProducer.ClassicShow)",
+            "墓碑ファイルを保存しました",
+            "保存中にエラーが発生しました",
+        ),
+    )
+    dictionary = EvidenceFile(
+        "Mods/QudJP/Localization/Dictionaries/ui-game-summary.ja.json",
+        (
+            "Your tombstone file was saved:\\n\\n{0}",
+            "There was an error saving: {0}",
+            "QudJP.GameSummary.TombstonePopup",
+        ),
+    )
+    l2g = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(GameSummaryTombstonePopupTranslationPatch)",
+            "Qud.UI.GameSummaryScreen|SaveTombstone|System.Void",
+            "XRL.UI.GameSummaryUI|Show|System.Void|System.Int32|System.String|System.String|System.String|System.String|System.Boolean",
+        ),
+    )
+
+    return (
+        CoveredOwnerFamily(
+            family_id="Qud.UI/GameSummaryScreen.cs::Qud.UI.GameSummaryScreen.SaveTombstone",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, pipeline, tests, dictionary, l2g),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.UI/GameSummaryUI.cs::XRL.UI.GameSummaryUI.Show",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, pipeline, tests, dictionary, l2g),
+        ),
+    )
+
+
 def _grit_gate_terminal_owner_families() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -7289,6 +7350,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_cybernetics_wish_implant_popup_family(),
     *_map_reveal_popup_family(),
     *_conversation_reward_popup_families(),
+    *_game_summary_tombstone_popup_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 
