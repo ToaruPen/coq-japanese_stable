@@ -1178,6 +1178,11 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Effects.NocturnalApexed|Apply|System.Boolean|XRL.World.GameObject",
         "XRL.World.Effects.Paralyzed|HandleEvent|System.Boolean|XRL.World.BeginTakeActionEvent",
     })]
+    [TestCase(typeof(EffectMobilityBlockTranslationPatch), new[]
+    {
+        "XRL.World.Effects.Immobilized|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Effects.Stuck|FireEvent|System.Boolean|XRL.World.Event",
+    })]
     [TestCase(typeof(SystemStaticMessageTranslationPatch), new[]
     {
         "XRL.CheckpointingSystem|CheckpointOn|System.Boolean",

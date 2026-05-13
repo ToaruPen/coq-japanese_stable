@@ -6027,6 +6027,62 @@ def _on_eat_reward_message_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _effect_mobility_block_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/EffectMobilityBlockTranslationPatch.cs",
+        (
+            "EffectMobilityBlockTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "TryTranslatePopupMessage",
+            "Immobilized",
+            "Stuck",
+            "MobilityBlockPattern",
+            "TryTranslateStatus",
+        ),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("EffectMobilityBlockTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    popup_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("EffectMobilityBlockTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/EffectMobilityBlockTranslationPatchTests.cs",
+        (
+            "EffectMobilityBlock_TranslatesQueuedMobilityBlockMessages_WhenOwnerPatched",
+            "EffectMobilityBlock_TranslatesPopupMobilityBlockMessages_WhenOwnerPatched",
+            "EffectMobilityBlock_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+            "EffectMobilityBlock_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+            "EffectMobilityBlock_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "EffectMobilityBlock_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "EffectMobilityBlock_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(EffectMobilityBlockTranslationPatch)",
+            "XRL.World.Effects.Immobilized|FireEvent|System.Boolean|XRL.World.Event",
+            "XRL.World.Effects.Stuck|FireEvent|System.Boolean|XRL.World.Event",
+        ),
+    )
+    evidence_files = (patch, queue_pipeline, popup_pipeline, tests, target_tests)
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Effects/Immobilized.cs::XRL.World.Effects.Immobilized.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=evidence_files,
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Effects/Stuck.cs::XRL.World.Effects.Stuck.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=evidence_files,
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -7983,6 +8039,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_experience_award_xp_family(),
     *_mutation_absorption_healing_families(),
     *_on_eat_reward_message_families(),
+    *_effect_mobility_block_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 

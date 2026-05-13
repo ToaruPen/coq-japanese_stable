@@ -75,6 +75,7 @@ internal static class PopupShowSemanticPipeline
         FloatingEquipmentPopupTranslationPatch.TryTranslatePopupMessage,
         PoweredFloatingTranslationPatch.TryTranslatePopupMessage,
         FungalSporeInfectionTranslationPatch.TryTranslatePopupMessage,
+        EffectMobilityBlockTranslationPatch.TryTranslatePopupMessage,
     ];
 
     internal static string TranslateMessage(string source, string route)
