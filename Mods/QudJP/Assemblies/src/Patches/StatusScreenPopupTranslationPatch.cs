@@ -404,11 +404,16 @@ public static class StatusScreenPopupTranslationPatch
         };
     }
 
-    private static string TranslateMutationName(string source)
+    internal static string TranslateMutationDisplayName(string source)
     {
         return ColorAwareTranslationComposer.TranslatePreservingColors(
             source,
             static visible => GetMutationDisplayNames().TryGetValue(visible, out var translated) ? translated : visible);
+    }
+
+    private static string TranslateMutationName(string source)
+    {
+        return TranslateMutationDisplayName(source);
     }
 
     private static Dictionary<string, string> GetMutationDisplayNames()

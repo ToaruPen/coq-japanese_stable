@@ -6092,6 +6092,48 @@ def _effect_mobility_block_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _mutation_infection_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MutationInfectionTranslationPatch.cs",
+        (
+            "MutationInfectionTranslationPatch",
+            "FireEvent",
+            "TryTranslatePopupMessage",
+            "GainedMutationPattern",
+            "TranslateMutationDisplayName",
+        ),
+    )
+    popup_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("MutationInfectionTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/MutationInfectionTranslationPatchTests.cs",
+        (
+            "MutationInfectionFireEvent_TranslatesGainedMutationPopup_WhenOwnerPatched",
+            "MutationInfectionFireEvent_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+            "MutationInfectionFireEvent_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "MutationInfectionFireEvent_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "DummyMutationInfectionTarget",
+            "FireEvent",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(MutationInfectionTranslationPatch)",
+            "XRL.World.Effects.MutationInfection|FireEvent|System.Boolean|XRL.World.Event",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Effects/MutationInfection.cs::XRL.World.Effects.MutationInfection.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, popup_pipeline, tests, target_tests),
+        ),
+    )
+
+
 def _tenfold_path_initiatory_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/TenfoldPathInitiatoryTranslationPatch.cs",
@@ -8823,6 +8865,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_mutation_absorption_healing_families(),
     *_on_eat_reward_message_families(),
     *_effect_mobility_block_families(),
+    *_mutation_infection_families(),
     *_tenfold_path_initiatory_families(),
     *_power_entry_prerequisite_popup_families(),
     *_magnetic_pulse_families(),

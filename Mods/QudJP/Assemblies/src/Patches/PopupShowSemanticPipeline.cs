@@ -72,6 +72,7 @@ internal static class PopupShowSemanticPipeline
         AsleepOwnerTranslationPatch.TryTranslatePopupMessage,
         EnclosingTranslationPatch.TryTranslatePopupMessage,
         ModMagnetizedTranslationPatch.TryTranslatePopupMessage,
+        MutationInfectionTranslationPatch.TryTranslatePopupMessage,
         StairsDownTranslationPatch.TryTranslatePopupMessage,
         StairsUpTranslationPatch.TryTranslatePopupMessage,
         AbsorbablePsychePopupTranslationPatch.TryTranslatePopupMessage,
