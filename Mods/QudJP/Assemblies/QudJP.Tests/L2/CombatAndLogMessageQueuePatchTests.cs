@@ -2784,6 +2784,12 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void CombatSkillMessages_LeavesUnknownQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertCombatSkillQueuedMessage("snapjaw prepares a fancy combat maneuver.", "snapjaw prepares a fancy combat maneuver.");
+    }
+
+    [Test]
     public void CombatSkillMessages_DoNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
     {
         AssertCombatSkillQueuedMessage(
