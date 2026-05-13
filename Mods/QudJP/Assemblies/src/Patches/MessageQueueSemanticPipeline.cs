@@ -25,6 +25,7 @@ internal static class MessageQueueSemanticPipeline
         TombAnchorSystemTranslationPatch.TryTranslateQueuedMessage,
         CyberneticsMedassistModuleTranslationPatch.TryTranslateQueuedMessage,
         LiquidLoaderTranslationPatch.TryTranslateQueuedMessage,
+        LiquidLeakMessageTranslationPatch.TryTranslateQueuedMessage,
         LiquidVolumeTranslationPatch.TryTranslateQueuedMessage,
         FireSuppressionDischargeTranslationPatch.TryTranslateQueuedMessage,
         TrollKingTranslationPatch.TryTranslateQueuedMessage,

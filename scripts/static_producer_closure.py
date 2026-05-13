@@ -2475,6 +2475,58 @@ def _energy_loader_cannot_take_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _liquid_leak_message_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/LiquidLeakMessageTranslationPatch.cs",
+        (
+            "LiquidLeakMessageTranslationPatch",
+            "LeakWhenBroken",
+            "LeaksFluid",
+            "LeakPattern",
+            "TryTranslateQueuedMessage",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("LiquidLeakMessageTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/LiquidLeakMessageTranslationPatchTests.cs",
+        (
+            "LiquidLeak_TranslatesQueuedMessage_WhenOwnerPatched",
+            "LiquidLeak_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+            "LiquidLeak_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "LiquidLeak_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "nameof(DummyLiquidLeakTarget.LeakWhenBrokenDistributeLiquid)",
+            "nameof(DummyLiquidLeakTarget.LeaksFluidDistributeLiquid)",
+            "The {{Y|broken canteen}} leaks 1 dram of {{B|water}}.",
+            "The {{Y|oozing vase}} leaks 2 drams of {{C|slime}}.",
+            "{{G|leaking pipes}} drip 2 drams of {{B|water}}.",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(LiquidLeakMessageTranslationPatch)",
+            "XRL.World.Parts.LeakWhenBroken|DistributeLiquid|System.Void|XRL.World.Parts.LiquidVolume",
+            "XRL.World.Parts.LeaksFluid|DistributeLiquid|System.Boolean",
+        ),
+    )
+    evidence_files = (patch, pipeline, tests, target_tests)
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/LeakWhenBroken.cs::XRL.World.Parts.LeakWhenBroken.DistributeLiquid",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=evidence_files,
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/LeaksFluid.cs::XRL.World.Parts.LeaksFluid.DistributeLiquid",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=evidence_files,
+        ),
+    )
+
+
 def _energy_cell_socket_access_family() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -8098,6 +8150,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_cybernetics_medassist_module_families(),
     *_liquid_loader_families(),
     *_energy_loader_cannot_take_families(),
+    *_liquid_leak_message_families(),
     *_energy_cell_socket_access_family(),
     *_campfire_remains_attempt_light_family(),
     *_troll_king_families(),
