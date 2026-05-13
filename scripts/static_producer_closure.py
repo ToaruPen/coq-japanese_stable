@@ -1735,6 +1735,53 @@ def _fire_suppression_discharge_message_families() -> tuple[CoveredOwnerFamily, 
     )
 
 
+def _cudgel_conk_popup_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts.Skill/Cudgel_Conk.cs::XRL.World.Parts.Skill.Cudgel_Conk.PerformConk",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/CudgelConkPopupTranslationPatch.cs",
+                    (
+                        "CudgelConkPopupTranslationPatch",
+                        "XRL.World.Parts.Skill.Cudgel_Conk",
+                        "PerformConk",
+                        "NoHeadPattern",
+                        "ConfirmSelfConkPattern",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("CudgelConkPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CudgelConkPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesNoHeadPopup_WhenOwnerPatched",
+                        "Patch_TranslatesConfirmSelfConkPopup_WhenOwnerPatched",
+                        "Patch_DoesNotTranslateCudgelConkPopup_WhenOwnerAbsent",
+                        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesUnknownPopupUnchanged_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "Patch_KeepsOuterOwnerScopeActive_WhenNestedScopeExits",
+                        "snapjaw doesn't have anything like a head to conk.",
+                        "Are you sure you want to conk yourself on {{C|the head}}?",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "CudgelConkPopupTargetMethod_ResolvesExpectedFullSignature",
+                        "typeof(CudgelConkPopupTranslationPatch)",
+                        "XRL.World.Parts.Skill.Cudgel_Conk|PerformConk|System.Boolean",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _grit_gate_terminal_owner_families() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -7546,6 +7593,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_conversation_take_item_popup_family(),
     *_mechanical_wings_popup_family(),
     *_fire_suppression_discharge_message_families(),
+    *_cudgel_conk_popup_family(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 
