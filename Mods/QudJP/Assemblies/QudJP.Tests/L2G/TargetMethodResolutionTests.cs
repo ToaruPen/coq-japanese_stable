@@ -1305,6 +1305,7 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.TabulaRasae|HandleEvent|System.Boolean|XRL.World.BeforeApplyDamageEvent",
         "XRL.World.Parts.TabulaRasae|HandleEvent|System.Boolean|XRL.World.TookDamageEvent",
+        "XRL.World.Parts.Mutation.Confusion|Confuse|System.Boolean|XRL.World.MentalAttackEvent|System.Boolean|System.Int32|System.Int32|System.Boolean",
     })]
     [TestCase(typeof(EatMemoriesOnHitTranslationPatch), new[]
     {

@@ -26,9 +26,11 @@ public static class TabulaRasaeTranslationPatch
     {
         var targets = new List<MethodBase>();
         var targetType = AccessTools.TypeByName("XRL.World.Parts.TabulaRasae");
+        var confusionType = AccessTools.TypeByName("XRL.World.Parts.Mutation.Confusion");
         var beforeApplyDamageEventType = AccessTools.TypeByName("XRL.World.BeforeApplyDamageEvent");
         var tookDamageEventType = AccessTools.TypeByName("XRL.World.TookDamageEvent");
-        if (targetType is null || beforeApplyDamageEventType is null || tookDamageEventType is null)
+        var mentalAttackEventType = AccessTools.TypeByName("XRL.World.MentalAttackEvent");
+        if (targetType is null || confusionType is null || beforeApplyDamageEventType is null || tookDamageEventType is null || mentalAttackEventType is null)
         {
             Trace.TraceError("QudJP: {0} target or event type not found.", Context);
             return targets;
@@ -36,6 +38,11 @@ public static class TabulaRasaeTranslationPatch
 
         AddTarget(targets, targetType, "HandleEvent", new[] { beforeApplyDamageEventType });
         AddTarget(targets, targetType, "HandleEvent", new[] { tookDamageEventType });
+        AddTarget(
+            targets,
+            confusionType,
+            "Confuse",
+            new[] { mentalAttackEventType, typeof(bool), typeof(int), typeof(int), typeof(bool) });
         return targets;
     }
 
@@ -95,7 +102,11 @@ public static class TabulaRasaeTranslationPatch
         var match = NoEffectPattern.Match(stripped);
         if (match.Success)
         {
-            translated = $"攻撃は{RestoreCapture(match, spans, "target")}に影響を与えない。";
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                $"攻撃は{RestoreCapture(match, spans, "target")}に影響を与えない。",
+                spans,
+                stripped.Length,
+                source);
             return true;
         }
 

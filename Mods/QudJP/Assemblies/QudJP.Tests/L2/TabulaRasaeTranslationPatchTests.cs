@@ -25,6 +25,10 @@ public sealed class TabulaRasaeTranslationPatchTests
         nameof(DummyTabulaRasaeTarget.HandleTookDamageEvent),
         "The Tabula Rasae adapt to heat damage.",
         "タブラ・ラサは熱ダメージに適応した。")]
+    [TestCase(
+        nameof(DummyTabulaRasaeTarget.ConfusionConfuse),
+        "{{R|Your attack does not affect snapjaw.}}",
+        "{{R|攻撃はsnapjawに影響を与えない。}}")]
     public void TabulaRasae_TranslatesOwnerMessages_WhenOwnerPatched(
         string methodName,
         string source,
@@ -136,6 +140,7 @@ public sealed class TabulaRasaeTranslationPatchTests
         {
             nameof(DummyTabulaRasaeTarget.HandleBeforeApplyDamageEvent) => DummyTabulaRasaeTarget.HandleBeforeApplyDamageEvent(),
             nameof(DummyTabulaRasaeTarget.HandleTookDamageEvent) => DummyTabulaRasaeTarget.HandleTookDamageEvent(),
+            nameof(DummyTabulaRasaeTarget.ConfusionConfuse) => DummyTabulaRasaeTarget.ConfusionConfuse(),
             _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unknown owner method."),
         };
     }
@@ -173,6 +178,13 @@ public sealed class TabulaRasaeTranslationPatchTests
         public static bool HandleTookDamageEvent()
         {
             _ = nameof(HandleTookDamageEvent);
+            return SendMessage();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static bool ConfusionConfuse()
+        {
+            _ = nameof(ConfusionConfuse);
             return SendMessage();
         }
 

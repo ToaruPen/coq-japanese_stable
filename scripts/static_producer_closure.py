@@ -7636,6 +7636,8 @@ def _tabula_rasae_families() -> tuple[CoveredOwnerFamily, ...]:
             "HandleEvent",
             "BeforeApplyDamageEvent",
             "TookDamageEvent",
+            "Confusion",
+            "Confuse",
             "NoEffectPattern",
             "AdaptPattern",
         ),
@@ -7654,6 +7656,9 @@ def _tabula_rasae_families() -> tuple[CoveredOwnerFamily, ...]:
             "TabulaRasae_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
             "HandleBeforeApplyDamageEvent",
             "HandleTookDamageEvent",
+            "ConfusionConfuse",
+            "{{R|Your attack does not affect snapjaw.}}",
+            "{{R|攻撃はsnapjawに影響を与えない。}}",
         ),
     )
     target_tests = EvidenceFile(
@@ -7662,11 +7667,17 @@ def _tabula_rasae_families() -> tuple[CoveredOwnerFamily, ...]:
             "typeof(TabulaRasaeTranslationPatch)",
             "XRL.World.Parts.TabulaRasae|HandleEvent|System.Boolean|XRL.World.BeforeApplyDamageEvent",
             "XRL.World.Parts.TabulaRasae|HandleEvent|System.Boolean|XRL.World.TookDamageEvent",
+            "XRL.World.Parts.Mutation.Confusion|Confuse|System.Boolean|XRL.World.MentalAttackEvent|System.Boolean|System.Int32|System.Int32|System.Boolean",
         ),
     )
     return (
         CoveredOwnerFamily(
             family_id="XRL.World.Parts/TabulaRasae.cs::XRL.World.Parts.TabulaRasae.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, tests, target_tests),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts.Mutation/Confusion.cs::XRL.World.Parts.Mutation.Confusion.Confuse",
             inventory_statuses=("owner_patch_required",),
             evidence_files=(patch, queue_pipeline, tests, target_tests),
         ),
