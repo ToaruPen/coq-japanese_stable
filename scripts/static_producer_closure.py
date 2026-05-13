@@ -4910,6 +4910,53 @@ def _combat_skill_extension_owner_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _cybernetics_wish_implant_popup_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Capabilities/Cybernetics.cs::XRL.World.Capabilities.Cybernetics.WishImplant",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/CyberneticsWishImplantPopupTranslationPatch.cs",
+                    (
+                        "WishImplant",
+                        "TryTranslatePopupMessage",
+                        "MissingBlueprintPattern",
+                        "NotCyberneticPattern",
+                        "MissingBodyPartPattern",
+                        "ImplantedPattern",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("CyberneticsWishImplantPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CyberneticsWishImplantPopupTranslationPatchTests.cs",
+                    (
+                        "WishImplant_TranslatesPopupMessages_WhenOwnerPatched",
+                        "WishImplant_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "WishImplant_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "WishImplant_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "No blueprint by the name 'cybertorso' could be found.",
+                        "Your {{Y|feet}} are implanted with {{G|motorized treads}}!",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "TargetMethod_ResolvesExpectedSignature",
+                        "typeof(CyberneticsWishImplantPopupTranslationPatch)",
+                        "XRL.World.Capabilities.Cybernetics",
+                        "WishImplant",
+                        "System.String",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -6854,6 +6901,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_examiner_result_popup_families(),
     *_force_bubble_owner_families(),
     *_combat_skill_extension_owner_families(),
+    *_cybernetics_wish_implant_popup_family(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 

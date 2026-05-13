@@ -44,6 +44,7 @@ internal static class PopupShowSemanticPipeline
         HighScoresDeletePopupTranslationPatch.TryTranslatePopupMessage,
         GritGateTerminalKnowledgePopupTranslationPatch.TryTranslatePopupMessage,
         PickItemTakeAllPopupTranslationPatch.TryTranslatePopupMessage,
+        CyberneticsWishImplantPopupTranslationPatch.TryTranslatePopupMessage,
         TinkeringBuildPopupTranslationPatch.TryTranslatePopupMessage,
         TinkeringModPopupTranslationPatch.TryTranslatePopupMessage,
         PopupPickSeveralTranslationPatch.TryTranslatePopupMessage,
