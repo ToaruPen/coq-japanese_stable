@@ -6147,6 +6147,57 @@ def _tenfold_path_initiatory_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _power_entry_prerequisite_popup_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PowerEntryRequirementPopupTranslationPatch.cs",
+        (
+            "PowerEntryRequirementPopupTranslationPatch",
+            "TryTranslatePopupMessage",
+            "XRL.World.Skills.PowerEntry",
+            "XRL.World.Skills.PowerEntryRequirement",
+            "AlreadyHaveSkillPattern",
+            "HaveEntryPattern",
+            "UntilHaveEntryPattern",
+            "AttributeRequirementPattern",
+        ),
+    )
+    popup_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("PowerEntryRequirementPopupTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/PowerEntryRequirementPopupTranslationPatchTests.cs",
+        (
+            "PowerEntry_TranslatesPrerequisitePopups_WhenOwnerPatched",
+            "PowerEntryRequirement_TranslatesAttributePrerequisitePopup_WhenOwnerPatched",
+            "PowerEntryRequirement_DoesNotTranslateTraffic_WhenOwnerAbsent",
+            "PowerEntryRequirement_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "PowerEntryRequirement_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(PowerEntryRequirementPopupTranslationPatch)",
+            "XRL.World.Skills.PowerEntry|MeetsRequirements|System.Boolean|XRL.World.GameObject|System.Boolean",
+            "XRL.World.Skills.PowerEntryRequirement|MeetsRequirement|System.Boolean|XRL.World.GameObject|System.Boolean",
+        ),
+    )
+    evidence_files = (patch, popup_pipeline, tests, target_tests)
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Skills/PowerEntry.cs::XRL.World.Skills.PowerEntry.MeetsRequirements",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=evidence_files,
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Skills/PowerEntryRequirement.cs::XRL.World.Skills.PowerEntryRequirement.MeetsRequirement",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=evidence_files,
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -8105,6 +8156,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_on_eat_reward_message_families(),
     *_effect_mobility_block_families(),
     *_tenfold_path_initiatory_families(),
+    *_power_entry_prerequisite_popup_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 
