@@ -1339,6 +1339,43 @@ internal sealed class DummyIntegratedWeaponHostsTarget
     }
 }
 
+internal sealed class DummyAxeDismember
+{
+    public string Name { get; set; } = string.Empty;
+}
+
+internal sealed class DummySingleCallsiteOwnerPopupTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    public static string StaticPopupMessageToShow { get; set; } = string.Empty;
+
+    public void CreateHolograms(DummyGameObject? who = null)
+    {
+        _ = who;
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+
+    public static bool HandleBaetylRewardWish(string spec)
+    {
+        _ = spec;
+        DummyPopupShow.Show(StaticPopupMessageToShow);
+        return true;
+    }
+
+    public static bool CastForceSuccess(
+        DummyGameObject attacker,
+        DummyAxeDismember? skill = null,
+        DummyGameObject? weapon = null)
+    {
+        _ = attacker;
+        _ = skill;
+        _ = weapon;
+        _ = DummyPopupShow.ShowYesNo(StaticPopupMessageToShow);
+        return true;
+    }
+}
+
 internal sealed class DummyBoostStatisticTarget
 {
     public string MessageToSend { get; set; } = string.Empty;
