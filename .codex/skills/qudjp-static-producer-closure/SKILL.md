@@ -5,8 +5,8 @@ description: Use in QudJP when closing issue-493 style static producer owner que
 
 # QudJP Static Producer Closure
 
-Use this skill to close one small batch from the `static_producer_messages_popups`
-lane in `docs/localization-coverage-map.json`.
+Use this skill to close one coherent semantic batch from the
+`static_producer_messages_popups` lane in `docs/localization-coverage-map.json`.
 
 This skill is not a general translation triage guide. Pair it with
 `qudjp-localization-triage` for route ownership decisions and
@@ -38,8 +38,18 @@ split/deferred with a reason.
 1. **Choose a batch from the queue.**
    - Run `just static-producer-owner-queue` or
      `uv run python scripts/static_producer_closure.py --format json --limit 0`.
-   - Prefer one producer family, or a small source-file batch whose families
-     share one owner/test pattern.
+   - Use a small calibration batch only when the route, owner seam, or test
+     contract is still uncertain. After one representative family proves the
+     pattern, widen the next PR to a semantic batch: families may span source
+     files when they share the same owner surface, handoff pipeline, target
+     resolution shape, dictionary/translator contract, and reusable test
+     harness.
+   - Do not create one-family PRs for repeated applications of the same proven
+     route/test pattern. The review unit should be the semantic contract being
+     proven, not the inventory row count.
+   - Keep batches narrow when they mix different owner surfaces, runtime-proof
+     needs, generated-text parsers, or closure-status policies. Split those by
+     the differing contract before implementation.
    - Avoid broad `needs_family_review` families until you can split the fixed,
      generated, runtime-required, and sink-observed shapes.
 
