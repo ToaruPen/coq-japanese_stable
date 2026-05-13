@@ -1023,6 +1023,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.EnergyCellSocket|AttemptReplaceCell|System.Boolean|XRL.World.GameObject|XRL.World.InventoryActionEvent|System.Int32|XRL.World.GameObject",
     })]
+    [TestCase(typeof(CampfireRemainsAttemptLightTranslationPatch), new[]
+    {
+        "XRL.World.Parts.CampfireRemains|AttemptLight|System.Void|XRL.World.GameObject",
+    })]
     [TestCase(typeof(TrollKingTranslationPatch), new[]
     {
         "XRL.World.Parts.TrollKing|CheckSpawn|System.Void|System.Int32",

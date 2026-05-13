@@ -2516,6 +2516,47 @@ def _energy_cell_socket_access_family() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _campfire_remains_attempt_light_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/CampfireRemains.cs::XRL.World.Parts.CampfireRemains.AttemptLight",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/CampfireRemainsAttemptLightTranslationPatch.cs",
+                    (
+                        "CampfireRemainsAttemptLightTranslationPatch",
+                        "AttemptLight",
+                        "ExtinguishingPoolPattern",
+                        "TryTranslatePopupMessage",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("CampfireRemainsAttemptLightTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CampfireRemainsAttemptLightTranslationPatchTests.cs",
+                    (
+                        "AttemptLight_TranslatesExtinguishingPoolPopup_WhenOwnerPatched",
+                        "AttemptLight_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "AttemptLight_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "AttemptLight_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+                        "DummyCampfireRemainsTarget",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(CampfireRemainsAttemptLightTranslationPatch)",
+                        "XRL.World.Parts.CampfireRemains|AttemptLight|System.Void|XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _troll_king_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         ("CheckSpawn", "XRL.World.Parts.TrollKing|CheckSpawn|System.Void|System.Int32"),
@@ -8058,6 +8099,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_liquid_loader_families(),
     *_energy_loader_cannot_take_families(),
     *_energy_cell_socket_access_family(),
+    *_campfire_remains_attempt_light_family(),
     *_troll_king_families(),
     *_mutating_families(),
     *_quills_families(),
