@@ -1544,6 +1544,49 @@ def _game_summary_tombstone_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _powered_floating_popup_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/PoweredFloating.cs::XRL.World.Parts.PoweredFloating.CheckFloating",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PoweredFloatingTranslationPatch.cs",
+                    (
+                        "PoweredFloatingTranslationPatch",
+                        "CheckFloating",
+                        "DoesVerbRouteTranslator.TryTranslateMarkedMessage",
+                        "DoesVerbRouteTranslator.TryTranslatePlainSentence",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("PoweredFloatingTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PoweredFloatingTranslationPatchTests.cs",
+                    (
+                        "CheckFloating_TranslatesDoesVerbPopup_WhenOwnerPatched",
+                        "CheckFloating_LeavesPlainPopupUnchanged_WhenOwnerAbsent",
+                        "CheckFloating_StripsDirectMarkerWithoutRecordingTransform_WhenOwnerPatched",
+                        "CheckFloating_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "cease",
+                        "fall",
+                        "to the ground; you scoop it up",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(PoweredFloatingTranslationPatch)",
+                        "XRL.World.Parts.PoweredFloating|CheckFloating|System.Void",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _grit_gate_terminal_owner_families() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -7351,6 +7394,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_map_reveal_popup_family(),
     *_conversation_reward_popup_families(),
     *_game_summary_tombstone_popup_families(),
+    *_powered_floating_popup_family(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 

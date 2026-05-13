@@ -1374,6 +1374,10 @@ public sealed class TargetMethodResolutionTests
         "Qud.UI.GameSummaryScreen|SaveTombstone|System.Void",
         "XRL.UI.GameSummaryUI|Show|System.Void|System.Int32|System.String|System.String|System.String|System.String|System.Boolean",
     })]
+    [TestCase(typeof(PoweredFloatingTranslationPatch), new[]
+    {
+        "XRL.World.Parts.PoweredFloating|CheckFloating|System.Void",
+    })]
     [TestCase(typeof(OldSaveContinueMenuPopupTranslationPatch), new[]
     {
         "Qud.UI.MainMenu|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",
