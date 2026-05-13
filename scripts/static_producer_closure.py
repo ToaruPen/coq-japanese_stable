@@ -6685,6 +6685,48 @@ def _engulfing_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _temporary_reality_stabilize_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/TemporaryRealityStabilizeTranslationPatch.cs",
+        (
+            "TemporaryRealityStabilizeTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "HandleEvent",
+            "RealityStabilizeEvent",
+            "WorldlinePattern",
+        ),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("TemporaryRealityStabilizeTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/TemporaryRealityStabilizeTranslationPatchTests.cs",
+        (
+            "TemporaryRealityStabilize_TranslatesWorldlineMessages_WhenOwnerPatched",
+            "TemporaryRealityStabilize_DoesNotTranslateTraffic_WhenOwnerAbsent",
+            "TemporaryRealityStabilize_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "TemporaryRealityStabilize_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "DummyTemporaryRealityStabilizeTarget",
+            "HandleEvent",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(TemporaryRealityStabilizeTranslationPatch)",
+            "XRL.World.Parts.Temporary|HandleEvent|System.Boolean|XRL.World.RealityStabilizeEvent",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/Temporary.cs::XRL.World.Parts.Temporary.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, tests, target_tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -8655,6 +8697,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_eat_memories_on_hit_families(),
     *_cybernetics_stasis_entangler_families(),
     *_engulfing_families(),
+    *_temporary_reality_stabilize_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 

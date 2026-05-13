@@ -41,6 +41,7 @@ internal static class MessageQueueSemanticPipeline
         EatMemoriesOnHitTranslationPatch.TryTranslateQueuedMessage,
         CyberneticsStasisEntanglerTranslationPatch.TryTranslateQueuedMessage,
         EngulfingTranslationPatch.TryTranslateQueuedMessage,
+        TemporaryRealityStabilizeTranslationPatch.TryTranslateQueuedMessage,
         QuillsTranslationPatch.TryTranslateQueuedMessage,
         LightManipulationTranslationPatch.TryTranslateQueuedMessage,
         CombatSkillMessageTranslationPatch.TryTranslateQueuedMessage,

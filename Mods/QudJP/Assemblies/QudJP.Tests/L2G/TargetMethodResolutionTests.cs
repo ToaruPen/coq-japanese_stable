@@ -1267,6 +1267,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.Engulfing|Engulf|System.Boolean|XRL.World.GameObject|XRL.World.Event",
     })]
+    [TestCase(typeof(TemporaryRealityStabilizeTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Temporary|HandleEvent|System.Boolean|XRL.World.RealityStabilizeEvent",
+    })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
         "XRL.World.Parts.Combat|HandleEvent|System.Boolean|XRL.World.GetDefenderHitDiceEvent",
