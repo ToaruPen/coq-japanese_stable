@@ -6643,6 +6643,48 @@ def _cybernetics_stasis_entangler_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _engulfing_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/EngulfingTranslationPatch.cs",
+        (
+            "EngulfingTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "Engulf",
+            "EngulfYouFailPattern",
+            "EngulfTargetFailPattern",
+        ),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("EngulfingTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/EngulfingTranslationPatchTests.cs",
+        (
+            "Engulfing_TranslatesEngulfFailureMessages_WhenOwnerPatched",
+            "Engulfing_DoesNotTranslateTraffic_WhenOwnerAbsent",
+            "Engulfing_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "Engulfing_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "DummyEngulfingTarget",
+            "Engulf",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(EngulfingTranslationPatch)",
+            "XRL.World.Parts.Engulfing|Engulf|System.Boolean|XRL.World.GameObject|XRL.World.Event",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/Engulfing.cs::XRL.World.Parts.Engulfing.Engulf",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, tests, target_tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -8612,6 +8654,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_tabula_rasae_families(),
     *_eat_memories_on_hit_families(),
     *_cybernetics_stasis_entangler_families(),
+    *_engulfing_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 
