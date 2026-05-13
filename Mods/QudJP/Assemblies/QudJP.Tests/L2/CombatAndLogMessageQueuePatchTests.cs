@@ -2757,6 +2757,20 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase(
         "A supernal force helps you shake off a mental state!",
         "超自然的な力が精神状態を振り払う助けとなった！")]
+    [TestCase("You backswing with {{Y|your cudgel}}.", "{{Y|your cudgel}}で返し打ちした。")]
+    [TestCase("The snapjaw backswings with {{Y|its cudgel}}.", "The snapjawが{{Y|its cudgel}}で返し打ちした。")]
+    [TestCase(
+        "You muster your will and shake off some of your confusion.",
+        "意志の力で混乱の一部を振り払った。")]
+    [TestCase(
+        "You muster your will and shake off your confusion.",
+        "意志の力で混乱を振り払った。")]
+    [TestCase("You lose sight of your mark.", "標的を見失った。")]
+    [TestCase("Your tracking of your mark has been disrupted.", "印付けの追跡が乱された。")]
+    [TestCase("The snapjaw resists your shield slam.", "The snapjawはあなたのシールドスラムに抵抗した。")]
+    [TestCase("You resist {{R|the snapjaw's shield slam}}.", "{{R|the snapjaw's shield slam}}に抵抗した。")]
+    [TestCase("You rejoinder with {{Y|your dagger}}.", "{{Y|your dagger}}で反撃した。")]
+    [TestCase("The snapjaw rejoinders with {{Y|its dagger}}.", "The snapjawが{{Y|its dagger}}で反撃した。")]
     public void CombatSkillMessages_TranslateInventoriedQueuedShapes_WhenOwnerPatched(string source, string expected)
     {
         AssertCombatSkillQueuedMessage(source, expected);
@@ -2766,6 +2780,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("You cleave through snapjaw's armor.")]
     [TestCase("You shook off the stun.")]
     [TestCase("A supernal force helps you shake off the effect!")]
+    [TestCase("You lose sight of your mark.")]
+    [TestCase("You rejoinder with {{Y|your dagger}}.")]
     public void CombatSkillMessages_DoNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
     {
         var harmonyId = CreateHarmonyId();

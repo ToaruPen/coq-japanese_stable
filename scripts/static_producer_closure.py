@@ -4817,6 +4817,99 @@ def _force_bubble_owner_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _combat_skill_extension_owner_families() -> tuple[CoveredOwnerFamily, ...]:
+    family_evidence = (
+        (
+            "XRL.World.Parts.Skill/Cudgel_Backswing.cs::XRL.World.Parts.Skill.Cudgel_Backswing.FireEvent",
+            ("Cudgel_Backswing", "BackswingPattern", "ActorBackswingPattern"),
+            (
+                "You backswing with {{Y|your cudgel}}.",
+                "The snapjaw backswings with {{Y|its cudgel}}.",
+            ),
+            "XRL.World.Parts.Skill.Cudgel_Backswing|FireEvent|System.Boolean|XRL.World.Event",
+        ),
+        (
+            "XRL.World.Parts.Skill/Discipline_IronMind.cs::XRL.World.Parts.Skill.Discipline_IronMind.FireEvent",
+            (
+                "Discipline_IronMind",
+                "You muster your will and shake off some of your confusion.",
+                "You muster your will and shake off your confusion.",
+            ),
+            (
+                "You muster your will and shake off some of your confusion.",
+                "You muster your will and shake off your confusion.",
+            ),
+            "XRL.World.Parts.Skill.Discipline_IronMind|FireEvent|System.Boolean|XRL.World.Event",
+        ),
+        (
+            "XRL.World.Parts.Skill/Rifle_DrawABead.cs::XRL.World.Parts.Skill.Rifle_DrawABead.ValidateMark",
+            (
+                "Rifle_DrawABead",
+                "You lose sight of your mark.",
+                "Your tracking of your mark has been disrupted.",
+            ),
+            (
+                "You lose sight of your mark.",
+                "Your tracking of your mark has been disrupted.",
+            ),
+            "XRL.World.Parts.Skill.Rifle_DrawABead|ValidateMark|System.Void",
+        ),
+        (
+            "XRL.World.Parts.Skill/Shield_Slam.cs::XRL.World.Parts.Skill.Shield_Slam.Slam",
+            ("Shield_Slam", "ActorResistsShieldSlamPattern", "YouResistShieldSlamPattern"),
+            (
+                "The snapjaw resists your shield slam.",
+                "You resist {{R|the snapjaw's shield slam}}.",
+            ),
+            "XRL.World.Parts.Skill.Shield_Slam|Slam|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|XRL.World.Cell|System.Boolean",
+        ),
+        (
+            "XRL.World.Parts.Skill/ShortBlades_Rejoinder.cs::XRL.World.Parts.Skill.ShortBlades_Rejoinder.FireEvent",
+            ("ShortBlades_Rejoinder", "RejoinderPattern", "ActorRejoinderPattern"),
+            (
+                "You rejoinder with {{Y|your dagger}}.",
+                "The snapjaw rejoinders with {{Y|its dagger}}.",
+            ),
+            "XRL.World.Parts.Skill.ShortBlades_Rejoinder|FireEvent|System.Boolean|XRL.World.Event",
+        ),
+    )
+
+    return tuple(
+        CoveredOwnerFamily(
+            family_id=family_id,
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/CombatSkillMessageTranslationPatch.cs",
+                    ("TryTranslateQueuedMessage", *patch_tokens),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("CombatSkillMessageTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "CombatSkillMessages_TranslateInventoriedQueuedShapes_WhenOwnerPatched",
+                        "CombatSkillMessages_DoNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "CombatSkillMessages_DoNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                        "CombatSkillMessages_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                        *test_tokens,
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(CombatSkillMessageTranslationPatch)",
+                        signature,
+                    ),
+                ),
+            ),
+        )
+        for family_id, patch_tokens, test_tokens, signature in family_evidence
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -6760,6 +6853,7 @@ COVERED_OWNER_FAMILIES: Final = (
     ),
     *_examiner_result_popup_families(),
     *_force_bubble_owner_families(),
+    *_combat_skill_extension_owner_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 
