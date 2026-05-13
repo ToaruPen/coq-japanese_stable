@@ -46,6 +46,7 @@ internal static class PopupShowSemanticPipeline
         PickItemTakeAllPopupTranslationPatch.TryTranslatePopupMessage,
         TinkeringBuildPopupTranslationPatch.TryTranslatePopupMessage,
         TinkeringModPopupTranslationPatch.TryTranslatePopupMessage,
+        PopupPickSeveralTranslationPatch.TryTranslatePopupMessage,
         SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage,
         BrainWriteFeelingSamplesPopupTranslationPatch.TryTranslatePopupMessage,
         StatusScreenPopupTranslationPatch.TryTranslatePopupMessage,

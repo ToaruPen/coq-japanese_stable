@@ -1102,6 +1102,47 @@ def _water_ritual_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _popup_pick_several_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.UI/Popup.cs::XRL.UI.Popup.PickSeveral",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupPickSeveralTranslationPatch.cs",
+                    (
+                        "PopupPickSeveralTranslationPatch",
+                        "PickSeveral",
+                        "SelectionLimitPattern",
+                        "TryTranslatePopupMessage",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("PopupPickSeveralTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupPickSeveralTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSelectionLimitPopup_WhenOwnerPatched",
+                        "Patch_DoesNotTranslateSelectionLimitPopup_WhenOwnerAbsent",
+                        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "You cannot select more than 3 options!",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(PopupPickSeveralTranslationPatch)",
+                        "XRL.UI.Popup|PickSeveral|System.Collections.Generic.List`1[[System.ValueTuple`2[[System.Int32],[System.Int32]]]]",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _status_screen_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/StatusScreenPopupTranslationPatch.cs",
@@ -5411,6 +5452,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_ability_manager_popup_families(),
     *_cooking_runtime_families(),
     *_water_ritual_popup_families(),
+    *_popup_pick_several_family(),
     *_status_screen_popup_families(),
     *_campfire_preserve_families(),
     *_reality_stabilized_event_families(),
