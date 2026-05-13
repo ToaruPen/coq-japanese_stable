@@ -319,14 +319,15 @@ class TestRunSync:
         assert json.loads((destination / "manifest.json").read_text(encoding="utf-8")) == {
             "Id": "QudJP",
             "Title": f"{SAMPLE_MOD_TITLE}{DEFAULT_DEV_TITLE_SUFFIX}",
-            "Version": f"{SAMPLE_RELEASE_VERSION}{DEFAULT_DEV_VERSION_SUFFIX}",
+            "Version": SAMPLE_RELEASE_VERSION,
         }
 
-    def test_python_fallback_dev_manifest_suffix_is_idempotent(
+    def test_python_fallback_custom_dev_version_suffix_is_idempotent(
         self,
         tmp_path: Path,
     ) -> None:
-        """Dev sync does not duplicate an existing destination-only suffix."""
+        """Dev sync does not duplicate an explicitly configured version suffix."""
+        custom_version_suffix = ".1"
         source = tmp_path / "source"
         destination = tmp_path / "dest"
         source.mkdir()
@@ -334,7 +335,7 @@ class TestRunSync:
             json.dumps(
                 {
                     "Title": f"{SAMPLE_MOD_TITLE}{DEFAULT_DEV_TITLE_SUFFIX}",
-                    "Version": f"{SAMPLE_RELEASE_VERSION}{DEFAULT_DEV_VERSION_SUFFIX}",
+                    "Version": f"{SAMPLE_RELEASE_VERSION}{custom_version_suffix}",
                 },
             ),
             encoding="utf-8",
@@ -344,13 +345,13 @@ class TestRunSync:
             run_sync(
                 source,
                 destination,
-                manifest_version_suffix=DEFAULT_DEV_VERSION_SUFFIX,
+                manifest_version_suffix=custom_version_suffix,
                 manifest_title_suffix=DEFAULT_DEV_TITLE_SUFFIX,
             )
 
         assert json.loads((destination / "manifest.json").read_text(encoding="utf-8")) == {
             "Title": f"{SAMPLE_MOD_TITLE}{DEFAULT_DEV_TITLE_SUFFIX}",
-            "Version": f"{SAMPLE_RELEASE_VERSION}{DEFAULT_DEV_VERSION_SUFFIX}",
+            "Version": f"{SAMPLE_RELEASE_VERSION}{custom_version_suffix}",
         }
 
     def test_python_fallback_requires_title_when_dev_title_suffix_is_set(
@@ -459,7 +460,7 @@ class TestRunSync:
 
         assert json.loads((destination / "manifest.json").read_text(encoding="utf-8")) == {
             "Title": f"{SAMPLE_MOD_TITLE}{DEFAULT_DEV_TITLE_SUFFIX}",
-            "Version": f"{SAMPLE_RELEASE_VERSION}{DEFAULT_DEV_VERSION_SUFFIX}",
+            "Version": SAMPLE_RELEASE_VERSION,
         }
 
     def test_rsync_dry_run_reports_dev_manifest_without_writing(

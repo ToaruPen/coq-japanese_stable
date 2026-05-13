@@ -48,7 +48,7 @@ _MACOS_HELPER_COMMANDS: tuple[Path, ...] = tuple(
 _LOCAL_ONLY_FILES: tuple[Path, ...] = (Path("workshop.json"),)
 _LOCALIZATION_ASSET_SUFFIXES = {".json", ".txt", ".xml"}
 _WINDOWS_DRIVE_PREFIX_LENGTH = 2
-DEFAULT_DEV_VERSION_SUFFIX = "-dev"
+DEFAULT_DEV_VERSION_SUFFIX = ""
 DEFAULT_DEV_TITLE_SUFFIX = " (local dev)"
 
 _MACOS_STABLE_REF_MODS_SUFFIX = (
@@ -513,7 +513,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--dev-version-suffix",
         default=DEFAULT_DEV_VERSION_SUFFIX,
-        help="Version suffix used with --dev. Defaults to -dev.",
+        help=(
+            "Version suffix used with --dev. Defaults to an empty suffix because "
+            "Caves of Qud rejects prerelease strings such as '-dev'."
+        ),
     )
     parser.add_argument(
         "--dev-title-suffix",
