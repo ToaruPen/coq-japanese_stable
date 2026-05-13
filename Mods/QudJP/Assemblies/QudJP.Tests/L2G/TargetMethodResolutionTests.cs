@@ -1374,6 +1374,11 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.FireSuppressionSystem|CheckFireSuppression|System.Boolean|XRL.World.GameObject",
         "XRL.World.Parts.CyberneticsFireSuppressionSystem|TurnTick|System.Void|System.Int64|System.Int32",
     })]
+    [TestCase(typeof(EffectGeneratedMessageTranslationPatch), new[]
+    {
+        "XRL.World.Effects.LifeDrain|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+        "XRL.World.Effects.ShatteredArmor|Apply|System.Boolean|XRL.World.GameObject",
+    })]
     public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
     {
         var targetMethodsMethod = patchType.GetMethod("TargetMethods", BindingFlags.NonPublic | BindingFlags.Static);

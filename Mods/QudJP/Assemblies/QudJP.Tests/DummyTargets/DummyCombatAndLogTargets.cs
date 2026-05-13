@@ -1206,6 +1206,13 @@ internal sealed class DummySimpleOwnerQueueTarget
         return true;
     }
 
+    public bool HandleEvent(DummyEndTurnEvent? eventObject = null)
+    {
+        _ = eventObject;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
     public bool HandleEvent(DummyBeforeApplyDamageEvent? eventObject = null)
     {
         _ = eventObject;

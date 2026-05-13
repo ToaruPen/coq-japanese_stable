@@ -3338,6 +3338,86 @@ def _stasis_attack_bounce_family() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _effect_generated_message_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/EffectGeneratedMessageTranslationPatch.cs",
+        (
+            "EffectGeneratedMessageTranslationPatch",
+            "TryTranslateGeneratedEffectMessage",
+            "DoesVerbRouteTranslator.TryTranslatePlainSentence",
+            "PossessiveLifeDrainPattern",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("EffectGeneratedMessageTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    effect_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+        (
+            "EffectGeneratedHandleEvent_TranslatesLifeDrainQueuedMessages_WhenOwnerPatched",
+            "EffectGeneratedApply_TranslatesShatteredArmorQueuedMessages_WhenOwnerPatched",
+            "EffectGeneratedHandleEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "EffectGeneratedApply_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "EffectGeneratedHandleEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+            "EffectGeneratedApply_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+            "FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+        ),
+    )
+
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Effects/LifeDrain.cs::XRL.World.Effects.LifeDrain.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                effect_tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "The 熊 resists your life drain!",
+                        "You resist snapjaw's life drain!",
+                        "EffectGeneratedHandleEvent_TranslatesLifeDrainQueuedMessages_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "typeof(EffectGeneratedMessageTranslationPatch)",
+                        "XRL.World.Effects.LifeDrain|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Effects/ShatteredArmor.cs::XRL.World.Effects.ShatteredArmor.Apply",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                effect_tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "The 装置 was cracked.",
+                        "装置にひびが入った",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "typeof(EffectGeneratedMessageTranslationPatch)",
+                        "XRL.World.Effects.ShatteredArmor|Apply|System.Boolean|XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _cripple_apply_family() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -4921,6 +5001,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_fixed_owner_queue_families(),
     *_effect_static_message_families(),
     *_stasis_attack_bounce_family(),
+    *_effect_generated_message_families(),
     *_cripple_apply_family(),
     *_mutation_self_target_popup_families(),
     *_system_static_message_families(),
