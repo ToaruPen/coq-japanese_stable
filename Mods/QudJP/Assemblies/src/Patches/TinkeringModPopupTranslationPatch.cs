@@ -148,7 +148,7 @@ public static class TinkeringModPopupTranslationPatch
         {
             var item = match.Groups["item"].Value;
             translated = item.StartsWith("Your ", StringComparison.Ordinal)
-                ? $"あなたの{item[5..]}は不安定すぎて工作に使えない。"
+                ? $"あなたの{item.Substring(5)}は不安定すぎて工作に使えない。"
                 : $"{item}は不安定すぎて工作に使えない。";
             detail = "UnstableIngredient";
             return true;
@@ -209,7 +209,7 @@ public static class TinkeringModPopupTranslationPatch
 
         var ingredient = source.Substring(
             MissingIngredientPrefix.Length,
-            source.Length - MissingIngredientPrefix.Length - 1).Replace(" or ", "または", StringComparison.Ordinal);
+            source.Length - MissingIngredientPrefix.Length - 1).Replace(" or ", "または");
         translated = $"必要な材料が足りない: {ingredient}！";
         return true;
     }

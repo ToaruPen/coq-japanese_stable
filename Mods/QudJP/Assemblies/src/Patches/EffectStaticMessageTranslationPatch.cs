@@ -148,12 +148,12 @@ public static class EffectStaticMessageTranslationPatch
 
         if (source.EndsWith(singularSuffix, StringComparison.Ordinal))
         {
-            return TryTranslateCardinal(source[..^singularSuffix.Length], out translatedCount);
+            return TryTranslateCardinal(source.Substring(0, source.Length - singularSuffix.Length), out translatedCount);
         }
 
         if (source.EndsWith(pluralSuffix, StringComparison.Ordinal))
         {
-            return TryTranslateCardinal(source[..^pluralSuffix.Length], out translatedCount);
+            return TryTranslateCardinal(source.Substring(0, source.Length - pluralSuffix.Length), out translatedCount);
         }
 
         translatedCount = string.Empty;

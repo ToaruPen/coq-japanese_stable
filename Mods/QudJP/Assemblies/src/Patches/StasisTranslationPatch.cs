@@ -115,7 +115,7 @@ public static class StasisTranslationPatch
     private static string TrimPossessive(string source)
     {
         return source.EndsWith("'s", StringComparison.Ordinal)
-            ? source[..^2]
+            ? source.Substring(0, source.Length - 2)
             : source;
     }
 }
