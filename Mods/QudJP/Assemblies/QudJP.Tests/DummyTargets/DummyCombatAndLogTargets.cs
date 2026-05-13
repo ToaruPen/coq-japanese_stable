@@ -1206,6 +1206,13 @@ internal sealed class DummySimpleOwnerQueueTarget
         return true;
     }
 
+    public bool HandleEvent(DummyBeforeApplyDamageEvent? eventObject = null)
+    {
+        _ = eventObject;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
     public bool Apply(DummyGameObject? obj = null)
     {
         _ = obj;
@@ -1248,6 +1255,8 @@ internal sealed class DummySimpleOwnerQueueTarget
 
     public static string? StaticColorToSend { get; set; }
 }
+
+internal sealed class DummyBeforeApplyDamageEvent;
 
 internal sealed class DummyQuest
 {

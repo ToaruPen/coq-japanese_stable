@@ -4062,6 +4062,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("You start to prowl.")]
     [TestCase("You are {{K|exhausted}}!")]
     [TestCase("You are {{C|paralyzed}}.")]
+    [TestCase("Your attack bounces harmlessly off of {{Y|stasis field}}.")]
+    [TestCase("snapjaw's attack bounces harmlessly off of {{Y|stasis field}}.")]
     [TestCase("1 turn remains until your berserker rage ends.")]
     [TestCase("2 turns remain until your berserker rage ends.")]
     [TestCase("1 turn remains until you stop demolishing.")]
@@ -4226,6 +4228,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void EffectStaticBeginTakeAction_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
     {
         AssertEffectStaticBeginTakeActionQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        "Your attack bounces harmlessly off of {{Y|stasis field}}.",
+        "あなたの攻撃は{{Y|stasis field}}に当たって無害に跳ね返った。")]
+    [TestCase(
+        "snapjaw's attack bounces harmlessly off of {{Y|stasis field}}.",
+        "snapjawの攻撃は{{Y|stasis field}}に当たって無害に跳ね返った。")]
+    public void StasisHandleEvent_TranslatesAttackBounceQueuedMessages_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertStasisQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void StasisHandleEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertStasisQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("Your attack bounces harmlessly off of {{Y|stasis field}}."),
+            "Your attack bounces harmlessly off of {{Y|stasis field}}.");
+    }
+
+    [Test]
+    public void StasisHandleEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertStasisQueuedMessage(string.Empty, string.Empty);
     }
 
     [Test]
@@ -8091,6 +8120,36 @@ public sealed class CombatAndLogMessageQueuePatchTests
             };
 
             _ = target.HandleEvent(new DummyBeginTakeActionEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertStasisQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummySimpleOwnerQueueTarget),
+                    nameof(DummySimpleOwnerQueueTarget.HandleEvent),
+                    typeof(DummyBeforeApplyDamageEvent)),
+                typeof(StasisTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.HandleEvent(new DummyBeforeApplyDamageEvent());
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }
