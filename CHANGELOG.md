@@ -10,6 +10,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.2.52] - 2026-05-13
+
+### Added
+
+- macOS Apple Silicon 環境で Harmony 2.4.2 の native ARM64 回避策を試すための上級者向け補助スクリプトと、QudJP が保持したバックアップからゲーム DLL を戻す復元スクリプトを追加しました。
+
+### Fixed
+
+- 戦闘スキル、火災鎮圧、ゴーレム選択、ロケーション検索、変異の自己対象確認、古いセーブデータの継続確認、Water Ritual、Trade UI などの自動生成ポップアップ・メッセージに日本語訳を追加しました。
+- 追加の静的生成テキストについて、実行時の文脈に応じた日本語訳が使われる経路を拡充しました。
+- 取引、充電状態、料理、ステータス画面、キャンプ保存、アビリティ管理画面の一部ポップアップ訳を修正しました。
+- 攻撃が対象の装甲を貫通しなかったときの戦闘ログ表示について、ロール値が表示されない経路でも日本語化されるようにしました。
+- ミサイル武器 UI の射撃・リロード表示を日本語化する際、Unity のレイアウト更新例外が起きることがある問題を修正しました。
+
+---
+
 ## [0.2.51] - 2026-05-10
 
 ### Changed
@@ -286,7 +302,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.2.51...HEAD
+[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.2.52...HEAD
+[0.2.52]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.52
 [0.2.51]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.51
 [0.2.50]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.50
 [0.2.46]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.46

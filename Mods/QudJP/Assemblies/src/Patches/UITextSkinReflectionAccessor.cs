@@ -73,4 +73,21 @@ internal static class UITextSkinReflectionAccessor
 
         return false;
     }
+
+    internal static bool SetCurrentTextField(object? uiTextSkin, string translated)
+    {
+        if (uiTextSkin is null)
+        {
+            return false;
+        }
+
+        var textField = AccessTools.Field(uiTextSkin.GetType(), "text");
+        if (textField?.FieldType != typeof(string))
+        {
+            return false;
+        }
+
+        textField.SetValue(uiTextSkin, translated);
+        return true;
+    }
 }

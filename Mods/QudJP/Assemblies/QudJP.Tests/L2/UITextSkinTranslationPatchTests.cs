@@ -506,10 +506,21 @@ public sealed class UITextSkinTranslationPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(fire.Text, Is.EqualTo("{{W|[F]}} 射撃"));
-            Assert.That(reload.Text, Is.EqualTo("{{W|[R]}} リロード"));
+            Assert.That(fire.text, Is.EqualTo("{{W|[F]}} 射撃"));
+            Assert.That(reload.text, Is.EqualTo("{{W|[R]}} リロード"));
+            Assert.That(fire.SetTextCallCount, Is.EqualTo(1));
+            Assert.That(reload.SetTextCallCount, Is.EqualTo(1));
             Assert.That(fire.ApplyCallCount, Is.EqualTo(0));
             Assert.That(reload.ApplyCallCount, Is.EqualTo(0));
+        });
+
+        fire.Apply();
+        reload.Apply();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(fire.Text, Is.EqualTo("{{W|[F]}} 射撃"));
+            Assert.That(reload.Text, Is.EqualTo("{{W|[R]}} リロード"));
         });
     }
 

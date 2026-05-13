@@ -76,6 +76,6 @@ public static class MissileWeaponAreaTranslationPatch
         }
 
         DynamicTextObservability.RecordTransform(Context, "MissileWeaponArea.HotkeyLabel", source, translated);
-        _ = UITextSkinReflectionAccessor.SetCurrentText(uiTextSkin, translated, Context);
+        _ = UITextSkinReflectionAccessor.SetCurrentTextField(uiTextSkin, translated);
     }
 }
