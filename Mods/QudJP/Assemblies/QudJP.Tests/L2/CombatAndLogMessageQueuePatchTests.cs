@@ -28,6 +28,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         QuestLifecyclePopupTranslationPatch.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        MessagePatternTranslator.InvalidatePatternFileCacheForTests(patternFilePath);
         DummyMessageQueue.Reset();
         DummyPopupShow.Reset();
     }
@@ -4580,47 +4581,52 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
-    [TestCase("You take 1 damage from bleeding.", "あなたは出血で1ダメージを受けた。")]
-    [TestCase("The ワニ hits (x1) for 2 damage with his 噛みつき. [18]", "ワニの噛みつきで2ダメージを受けた。(x1) [18]")]
-    [TestCase("The ワニ critically hits (x1) for 2 damage with his 噛みつき. [18]", "ワニの噛みつきが会心し、2ダメージを受けた。(x1) [18]")]
-    [TestCase("You hit glowfish for 3 damage.", "glowfishに3ダメージを与えた")]
-    [TestCase("You miss with your レンチ! [10 vs 10]", "レンチでの攻撃は外れた。[10 vs 10]")]
-    [TestCase("The タム fails to penetrate your armor [17]!", "タムはあなたの装甲を貫けなかった！ [17]")]
-    [TestCase("Your 鉛スラッグ fails to penetrate the フォームクリートの armor!", "あなたの鉛スラッグはフォームクリートの装甲を貫けなかった！")]
-    [TestCase("The ワニ cannot reach the スナップジョー.", "ワニはスナップジョーに届かない")]
-    [TestCase("Your attack passes through the ワニ!", "あなたの攻撃はワニをすり抜けた！")]
-    [TestCase("One of タムの wounds stops bleeding.", "タムの傷のひとつの出血が止まった。")]
-    [TestCase("The タム's nose begins to bleed.", "タムの鼻から血が流れ始めた")]
-    [TestCase("The タム's brain begins to hemorrhage.", "タムの脳から出血が始まった")]
-    [TestCase("The ウォーターヴァイン農家 misses you with his 鉄の蔓刈り斧! [3 vs 7]", "ウォーターヴァイン農家の鉄の蔓刈り斧は外れた。[3 vs 7]")]
-    [TestCase("Poisonous goo burns your eyes.", "有毒な粘液が目に染みた。")]
-    [TestCase("Putrid ooze splashes into your mouth. You gag at the awful taste.", "腐った軟泥が口に入った。ひどい味に吐き気を催した。")]
-    [TestCase("Brown sludge splashes into your mouth. You wince at the metallic taste.", "茶色い汚泥が口に入った。金属の味に顔をしかめた。")]
-    [TestCase("The liquids stop reacting.", "液体の反応が止まった")]
-    [TestCase("The reacting liquids congeal into a SoupSludge.", "反応した液体が凝固しSoupSludgeになった")]
-    [TestCase("The primordial soup nearby starts reacting with the water.", "nearbyの原初のスープがwaterと反応を始めた")]
-    [TestCase("You receive tinkering bits <{{|AB}}>.", "修理ビット<{{|AB}}>を受け取った。")]
-    [TestCase("You receive 奇妙な小物!", "奇妙な小物を受け取った")]
-    [TestCase("You make some progress disarming 地雷.", "地雷の解除が少し進んだ。")]
-    [TestCase("You reload your クローム・リボルバー with 鉛スラッグ x6.", "クローム・リボルバーに鉛スラッグ x6を装填した")]
-    [TestCase("You toggle {{c|Akimbo}} on.", "{{c|二挺拳銃}}をオンにした。")]
-    [TestCase("You toggle {{c|Akimbo}} off.", "{{c|二挺拳銃}}をオフにした。")]
-    [TestCase("An image of タム disappears.", "タムの映像が消えた。")]
-    [TestCase("The 熊's carapace loosens.", "熊の甲殻が緩んだ")]
-    [TestCase("熊の carapace loosens.", "熊の甲殻が緩んだ")]
-    [TestCase("The zealot mumbles inaudibly, encased in ice.", "氷に閉じ込められた狂信者が、聞き取れないほどに呟いた。")]
-    [TestCase("The infected crust of skin on 熊の left arm loosens and breaks away.", "熊の left armの感染した皮膚の痂皮が緩んで剥がれ落ちた。")]
-    [TestCase("You lose 3 HP.", "あなたは3HPを失った")]
-    [TestCase("You recover 5 HP.", "あなたは5HP回復した")]
-    [TestCase("You take 14 damage from 監視官イラメの freezing effect!", "監視官イラメの凍結効果で14ダメージを受けた！")]
-    [TestCase("You take 6 damage from ドリンクスの pyrokinesis!", "ドリンクスの熱念動で6ダメージを受けた！")]
-    [TestCase("The air here starts to shimmer with heat!", "このあたりの空気が熱で揺らめき始めた！")]
-    [TestCase("The air here ceases shimmering with heat.", "このあたりの空気の熱による揺らめきが収まった。")]
-    [TestCase("You harvest a ヴァインウェハー from the ウォーターヴァイン.", "ウォーターヴァインからヴァインウェハーを収穫した")]
-    [TestCase("カロク begins flying.", "カロクが飛翔し始めた。")]
-    [TestCase("シュウラシュウォレム harvests a スターアップル.", "シュウラシュウォレムはスターアップルを収穫した。")]
-    public void MessagingEmitMessage_TranslatesStableRepositoryFamilies_WhenPatched(string message, string expected)
+    [Test]
+    public void MessagingEmitMessage_TranslatesStableRepositoryFamilies_WhenPatched()
     {
+        var cases = new (string Message, string Expected)[]
+        {
+            ("You take 1 damage from bleeding.", "あなたは出血で1ダメージを受けた。"),
+            ("The ワニ hits (x1) for 2 damage with his 噛みつき. [18]", "ワニの噛みつきで2ダメージを受けた。(x1) [18]"),
+            ("The ワニ critically hits (x1) for 2 damage with his 噛みつき. [18]", "ワニの噛みつきが会心し、2ダメージを受けた。(x1) [18]"),
+            ("You hit glowfish for 3 damage.", "glowfishに3ダメージを与えた"),
+            ("You miss with your レンチ! [10 vs 10]", "レンチでの攻撃は外れた。[10 vs 10]"),
+            ("The タム fails to penetrate your armor [17]!", "タムはあなたの装甲を貫けなかった！ [17]"),
+            ("Your 鉛スラッグ fails to penetrate the フォームクリートの armor!", "あなたの鉛スラッグはフォームクリートの装甲を貫けなかった！"),
+            ("The ワニ cannot reach the スナップジョー.", "ワニはスナップジョーに届かない"),
+            ("Your attack passes through the ワニ!", "あなたの攻撃はワニをすり抜けた！"),
+            ("One of タムの wounds stops bleeding.", "タムの傷のひとつの出血が止まった。"),
+            ("The タム's nose begins to bleed.", "タムの鼻から血が流れ始めた"),
+            ("The タム's brain begins to hemorrhage.", "タムの脳から出血が始まった"),
+            ("The ウォーターヴァイン農家 misses you with his 鉄の蔓刈り斧! [3 vs 7]", "ウォーターヴァイン農家の鉄の蔓刈り斧は外れた。[3 vs 7]"),
+            ("Poisonous goo burns your eyes.", "有毒な粘液が目に染みた。"),
+            ("Putrid ooze splashes into your mouth. You gag at the awful taste.", "腐った軟泥が口に入った。ひどい味に吐き気を催した。"),
+            ("Brown sludge splashes into your mouth. You wince at the metallic taste.", "茶色い汚泥が口に入った。金属の味に顔をしかめた。"),
+            ("The liquids stop reacting.", "液体の反応が止まった"),
+            ("The reacting liquids congeal into a SoupSludge.", "反応した液体が凝固しSoupSludgeになった"),
+            ("The primordial soup nearby starts reacting with the water.", "nearbyの原初のスープがwaterと反応を始めた"),
+            ("You receive tinkering bits <{{|AB}}>.", "修理ビット<{{|AB}}>を受け取った。"),
+            ("You receive 奇妙な小物!", "奇妙な小物を受け取った"),
+            ("You make some progress disarming 地雷.", "地雷の解除が少し進んだ。"),
+            ("You reload your クローム・リボルバー with 鉛スラッグ x6.", "クローム・リボルバーに鉛スラッグ x6を装填した"),
+            ("You toggle {{c|Akimbo}} on.", "{{c|二挺拳銃}}をオンにした。"),
+            ("You toggle {{c|Akimbo}} off.", "{{c|二挺拳銃}}をオフにした。"),
+            ("An image of タム disappears.", "タムの映像が消えた。"),
+            ("The 熊's carapace loosens.", "熊の甲殻が緩んだ"),
+            ("熊の carapace loosens.", "熊の甲殻が緩んだ"),
+            ("The zealot mumbles inaudibly, encased in ice.", "氷に閉じ込められた狂信者が、聞き取れないほどに呟いた。"),
+            ("The infected crust of skin on 熊の left arm loosens and breaks away.", "熊の left armの感染した皮膚の痂皮が緩んで剥がれ落ちた。"),
+            ("You lose 3 HP.", "あなたは3HPを失った"),
+            ("You recover 5 HP.", "あなたは5HP回復した"),
+            ("You take 14 damage from 監視官イラメの freezing effect!", "監視官イラメの凍結効果で14ダメージを受けた！"),
+            ("You take 6 damage from ドリンクスの pyrokinesis!", "ドリンクスの熱念動で6ダメージを受けた！"),
+            ("The air here starts to shimmer with heat!", "このあたりの空気が熱で揺らめき始めた！"),
+            ("The air here ceases shimmering with heat.", "このあたりの空気の熱による揺らめきが収まった。"),
+            ("You harvest a ヴァインウェハー from the ウォーターヴァイン.", "ウォーターヴァインからヴァインウェハーを収穫した"),
+            ("カロク begins flying.", "カロクが飛翔し始めた。"),
+            ("シュウラシュウォレム harvests a スターアップル.", "シュウラシュウォレムはスターアップルを収穫した。"),
+        };
+
         UseRepositoryPatternDictionary();
 
         var harmonyId = CreateHarmonyId();
@@ -4643,10 +4649,17 @@ public sealed class CombatAndLogMessageQueuePatchTests
                     typeof(DummyGameObject)),
                 typeof(GameObjectEmitMessageTranslationPatch));
 
-            DummyMessagingEmitMessageTarget.MessageToSend = message;
-            DummyMessagingEmitMessageTarget.EmitMessage(new DummyGameObject(), "unused", 'W', false, false, false);
+            Assert.Multiple(() =>
+            {
+                foreach (var (message, expected) in cases)
+                {
+                    DummyMessageQueue.Reset();
+                    DummyMessagingEmitMessageTarget.MessageToSend = message;
+                    DummyMessagingEmitMessageTarget.EmitMessage(new DummyGameObject(), "unused", 'W', false, false, false);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+                    Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected), $"source: {message}");
+                }
+            });
         }
         finally
         {
@@ -5213,24 +5226,73 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
-    [TestCase("You miss!", "攻撃は外れた！")]
-    [TestCase("You miss with your bronze dagger! [10 vs 14]", "bronze daggerでの攻撃は外れた。[10 vs 14]")]
-    [TestCase("You miss! [10 vs 14]", "攻撃は外れた！ [10 vs 14]")]
-    [TestCase("Snapjaw Scavenger misses you!", "Snapjaw Scavengerの攻撃は外れた")]
-    [TestCase("Snapjaw Scavenger misses you with its bronze dagger! [10 vs 14]", "Snapjaw Scavengerのbronze daggerは外れた。[10 vs 14]")]
-    [TestCase("Snapjaw Scavenger misses you! [10 vs 14]", "Snapjaw Scavengerの攻撃は外れた！ [10 vs 14]")]
-    [TestCase("Your mental attack does not affect Snapjaw Scavenger.", "あなたの精神攻撃はSnapjaw Scavengerに効かない。")]
-    [TestCase("You fail to deal damage with your attack! [17]", "あなたの攻撃はダメージを与えられなかった！ [17]")]
-    [TestCase("Snapjaw Scavenger fails to deal damage with its attack! [17]", "Snapjaw Scavengerの攻撃はダメージを与えられなかった！ [17]")]
-    [TestCase("You don't penetrate Snapjaw Scavenger's armor.", "Snapjaw Scavengerの装甲を貫けなかった！")]
-    [TestCase("You don't penetrate Snapjaw Scavenger's armor with your bronze dagger. [17]", "bronze daggerではSnapjaw Scavengerの装甲を貫けなかった！ [17]")]
-    [TestCase("You don't penetrate Snapjaw Scavenger's armor. [17]", "Snapjaw Scavengerの装甲を貫けなかった！ [17]")]
-    [TestCase("Snapjaw Scavenger doesn't penetrate your armor.", "Snapjaw Scavengerはあなたの装甲を貫けなかった！")]
-    [TestCase("Snapjaw Scavenger doesn't penetrate your armor with its bronze dagger! [17]", "Snapjaw Scavengerはbronze daggerであなたの装甲を貫けなかった！ [17]")]
-    [TestCase("Snapjaw Scavenger doesn't penetrate your armor! [17]", "Snapjaw Scavengerはあなたの装甲を貫けなかった！ [17]")]
-    public void CombatMeleeAttack_TranslatesInventoriedShapes_WithRepositoryPatterns(string source, string expected)
+    [Test]
+    public void CombatMeleeAttack_TranslatesInventoriedShapes_WithRepositoryPatterns()
     {
-        AssertCombatMeleeAttackQueuedMessageWithRepositoryPatterns(source, expected);
+        var cases = new (string Source, string Expected)[]
+        {
+            ("You miss!", "攻撃は外れた！"),
+            ("You miss with your bronze dagger! [10 vs 14]", "bronze daggerでの攻撃は外れた。[10 vs 14]"),
+            ("You miss! [10 vs 14]", "攻撃は外れた！ [10 vs 14]"),
+            ("Snapjaw Scavenger misses you!", "Snapjaw Scavengerの攻撃は外れた"),
+            ("Snapjaw Scavenger misses you with its bronze dagger! [10 vs 14]", "Snapjaw Scavengerのbronze daggerは外れた。[10 vs 14]"),
+            ("Snapjaw Scavenger misses you! [10 vs 14]", "Snapjaw Scavengerの攻撃は外れた！ [10 vs 14]"),
+            ("Your mental attack does not affect Snapjaw Scavenger.", "あなたの精神攻撃はSnapjaw Scavengerに効かない。"),
+            ("You fail to deal damage with your attack! [17]", "あなたの攻撃はダメージを与えられなかった！ [17]"),
+            ("Snapjaw Scavenger fails to deal damage with its attack! [17]", "Snapjaw Scavengerの攻撃はダメージを与えられなかった！ [17]"),
+            ("You don't penetrate Snapjaw Scavenger's armor.", "Snapjaw Scavengerの装甲を貫けなかった！"),
+            ("You don't penetrate Snapjaw Scavenger's armor with your bronze dagger. [17]", "bronze daggerではSnapjaw Scavengerの装甲を貫けなかった！ [17]"),
+            ("You don't penetrate Snapjaw Scavenger's armor. [17]", "Snapjaw Scavengerの装甲を貫けなかった！ [17]"),
+            ("Snapjaw Scavenger doesn't penetrate your armor.", "Snapjaw Scavengerはあなたの装甲を貫けなかった！"),
+            ("Snapjaw Scavenger doesn't penetrate your armor with its bronze dagger! [17]", "Snapjaw Scavengerはbronze daggerであなたの装甲を貫けなかった！ [17]"),
+            ("Snapjaw Scavenger doesn't penetrate your armor! [17]", "Snapjaw Scavengerはあなたの装甲を貫けなかった！ [17]"),
+        };
+
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyCombatMeleeAttackTarget),
+                    nameof(DummyCombatMeleeAttackTarget.MeleeAttackWithWeaponInternal),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject),
+                    typeof(DummyCombatBodyPart),
+                    typeof(string),
+                    typeof(int),
+                    typeof(int),
+                    typeof(int),
+                    typeof(int),
+                    typeof(int),
+                    typeof(bool),
+                    typeof(bool)),
+                typeof(CombatTextSurfaceTranslationPatch));
+
+            var target = new DummyCombatMeleeAttackTarget();
+
+            Assert.Multiple(() =>
+            {
+                foreach (var (source, expected) in cases)
+                {
+                    DummyMessageQueue.Reset();
+                    target.MessageToSend = source;
+
+                    _ = target.MeleeAttackWithWeaponInternal(new DummyGameObject(), new DummyGameObject(), new DummyGameObject(), new DummyCombatBodyPart());
+
+                    Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected), $"source: {source}");
+                }
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     [Test]
@@ -8016,6 +8078,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         builder.AppendLine();
 
         File.WriteAllText(patternFilePath, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        MessagePatternTranslator.InvalidatePatternFileCacheForTests(patternFilePath);
     }
 
     private void WriteLeafDictionary(params (string key, string text)[] entries)

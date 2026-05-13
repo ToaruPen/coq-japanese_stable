@@ -17,6 +17,8 @@ internal static class MessagePatternTranslator
     private static readonly object SyncRoot = new object();
     private static readonly ConcurrentDictionary<string, Regex> RegexCache =
         new ConcurrentDictionary<string, Regex>(StringComparer.Ordinal);
+    private static readonly ConcurrentDictionary<string, CachedPatternFile> PatternFileCache =
+        new ConcurrentDictionary<string, CachedPatternFile>(StringComparer.Ordinal);
     private static readonly Regex JapaneseCharacterPattern =
         new Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly ConcurrentDictionary<string, int> MissingPatternCounts =
@@ -25,6 +27,7 @@ internal static class MessagePatternTranslator
         new ConcurrentDictionary<string, int>(StringComparer.Ordinal);
 
     private static List<MessagePatternDefinition>? loadedPatterns;
+    private static string? loadedPatternFilePath;
     private static Dictionary<string, string>? leafDictionary;
     private static string? patternFileOverride;
     private static string? leafFileOverride;
@@ -88,17 +91,50 @@ internal static class MessagePatternTranslator
         return TranslateStripped(stripped, spans);
     }
 
+    private sealed class CachedPatternFile
+    {
+        public CachedPatternFile(List<MessagePatternDefinition> patterns, string summary)
+        {
+            Patterns = patterns;
+            Summary = summary;
+        }
+
+        public List<MessagePatternDefinition> Patterns { get; }
+        public string Summary { get; }
+    }
+
     internal static void SetPatternFileForTests(string? filePath)
     {
         lock (SyncRoot)
         {
             patternFileOverride = filePath;
             loadedPatterns = null;
-            RegexCache.Clear();
+            loadedPatternFilePath = null;
             MissingPatternCounts.Clear();
             MissingRouteCounts.Clear();
             patternLoadSummary = "MessagePatternTranslator: pattern load summary unavailable.";
             Interlocked.Exchange(ref loadInvocationCount, 0);
+        }
+    }
+
+    // Required after a test rewrites the contents of a previously selected temp pattern file.
+    internal static void InvalidatePatternFileCacheForTests(string? filePath)
+    {
+        if (string.IsNullOrWhiteSpace(filePath))
+        {
+            return;
+        }
+
+        var canonicalPath = GetCanonicalPath(filePath!);
+        lock (SyncRoot)
+        {
+            PatternFileCache.TryRemove(canonicalPath, out _);
+            if (string.Equals(loadedPatternFilePath, canonicalPath, StringComparison.Ordinal))
+            {
+                loadedPatterns = null;
+                loadedPatternFilePath = null;
+                patternLoadSummary = "MessagePatternTranslator: pattern load summary unavailable.";
+            }
         }
     }
 
@@ -255,29 +291,39 @@ internal static class MessagePatternTranslator
 
     private static List<MessagePatternDefinition> GetLoadedPatterns()
     {
+        var patternFilePath = ResolvePatternFilePath();
         var cached = Volatile.Read(ref loadedPatterns);
-        if (cached is not null)
+        if (cached is not null
+            && string.Equals(Volatile.Read(ref loadedPatternFilePath), patternFilePath, StringComparison.Ordinal))
         {
             return cached;
         }
 
         lock (SyncRoot)
         {
-            if (loadedPatterns is null)
+            if (loadedPatterns is null
+                || !string.Equals(loadedPatternFilePath, patternFilePath, StringComparison.Ordinal))
             {
-                loadedPatterns = LoadPatterns();
+                loadedPatterns = LoadPatterns(patternFilePath);
+                loadedPatternFilePath = patternFilePath;
             }
 
             return loadedPatterns;
         }
     }
 
-    private static List<MessagePatternDefinition> LoadPatterns()
+    private static List<MessagePatternDefinition> LoadPatterns(string patternFilePath)
+    {
+        var cached = PatternFileCache.GetOrAdd(patternFilePath, LoadPatternFile);
+        patternLoadSummary = cached.Summary;
+        return cached.Patterns;
+    }
+
+    private static CachedPatternFile LoadPatternFile(string patternFilePath)
     {
         using var timing = RuntimeStartupTiming.Measure("message_pattern.load_patterns");
         Interlocked.Increment(ref loadInvocationCount);
 
-        var patternFilePath = ResolvePatternFilePath();
         if (!File.Exists(patternFilePath))
         {
             throw new FileNotFoundException(
@@ -319,23 +365,28 @@ internal static class MessagePatternTranslator
             definitions.Add(new MessagePatternDefinition(pattern, template));
         }
 
-        patternLoadSummary =
+        var summary =
             $"MessagePatternTranslator: loaded {definitions.Count} pattern(s) from '{patternFilePath}' " +
             $"({seenPatterns.Count} unique, {duplicatePatternCount} duplicate pattern(s) across {duplicatePatternCounts.Count} distinct pattern(s)).";
-        LogObservability($"[QudJP] {patternLoadSummary}");
+        LogObservability($"[QudJP] {summary}");
         LogDuplicatePatternSummary(duplicatePatternCounts);
 
-        return definitions;
+        return new CachedPatternFile(definitions, summary);
     }
 
     private static string ResolvePatternFilePath()
     {
         if (!string.IsNullOrWhiteSpace(patternFileOverride))
         {
-            return Path.GetFullPath(patternFileOverride);
+            return GetCanonicalPath(patternFileOverride!);
         }
 
-        return LocalizationAssetResolver.GetLocalizationPath("Dictionaries/messages.ja.json");
+        return GetCanonicalPath(LocalizationAssetResolver.GetLocalizationPath("Dictionaries/messages.ja.json")!);
+    }
+
+    private static string GetCanonicalPath(string path)
+    {
+        return Path.GetFullPath(path);
     }
 
     private static Regex GetCompiledRegex(string pattern)

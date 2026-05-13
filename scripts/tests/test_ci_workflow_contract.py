@@ -72,6 +72,21 @@ def test_ci_python_lane_restores_repo_local_node_tools() -> None:
     assert "npm install -g @ast-grep/cli" not in python_job
 
 
+def test_ci_qudjp_test_matrix_uploads_category_test_results() -> None:
+    """C# matrix legs should publish per-category TRX results for timing and failure review."""
+    workflow = _workflow_text()
+    job = _job_block(workflow, "qudjp-dotnet-test", "roslyn-tools")
+
+    assert '--logger "trx;LogFileName=qudjp-${{ matrix.category }}.trx"' in job
+    assert "--results-directory TestResults/qudjp-${{ matrix.category }}" in job
+    assert "Upload QudJP ${{ matrix.category }} test results" in job
+    assert "if: always()" in job
+    assert "uses: actions/upload-artifact@v4" in job
+    assert "name: qudjp-test-results-${{ matrix.category }}" in job
+    assert "path: TestResults/qudjp-${{ matrix.category }}/*.trx" in job
+    assert "if-no-files-found: ignore" in job
+
+
 def test_ci_package_lock_changes_trigger_python_tool_checks() -> None:
     """Node tool dependency changes must exercise the Python/agent tooling lane."""
     workflow = _workflow_text()

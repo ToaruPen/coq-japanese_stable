@@ -279,6 +279,14 @@ Producer or queue-gated patches that translate traffic before a generic sink mus
 
 If a route can emit articles, generated names, quantities, or placeholder-like fragments, include those emitted shapes in tests instead of replacing them with dictionary leaves.
 
+For additions to an already-proven route family, keep runtime coverage scalable.
+Prefer static inventory or data-contract coverage for the expanded string set,
+plus one L2 smoke case that proves the existing owner route still hands traffic
+to the shared translator. Do not add one new Harmony patch/unpatch test case for every newly claimed string.
+When many repository-backed examples must exercise
+the same owner route, batch the examples under one patch setup and preserve each
+source/expected pair with case-specific assertion messages.
+
 ## Repo constraints
 
 - Do not commit `Assembly-CSharp.dll` or other game binaries.
