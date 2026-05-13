@@ -6601,6 +6601,48 @@ def _eat_memories_on_hit_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _cybernetics_stasis_entangler_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/CyberneticsStasisEntanglerTranslationPatch.cs",
+        (
+            "CyberneticsStasisEntanglerTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "DeployToCells",
+            "AllAroundPattern",
+            "SeveralNearbyPattern",
+        ),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("CyberneticsStasisEntanglerTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CyberneticsStasisEntanglerTranslationPatchTests.cs",
+        (
+            "CyberneticsStasisEntangler_TranslatesDeployMessages_WhenOwnerPatched",
+            "CyberneticsStasisEntangler_DoesNotTranslateTraffic_WhenOwnerAbsent",
+            "CyberneticsStasisEntangler_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "CyberneticsStasisEntangler_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "DummyCyberneticsStasisEntanglerTarget",
+            "DeployToCells",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(CyberneticsStasisEntanglerTranslationPatch)",
+            "XRL.World.Parts.CyberneticsStasisEntangler|DeployToCells|XRL.World.GameObject|XRL.World.Zone|XRL.World.GameObject|XRL.World.GameObject|System.Int32|System.Int32",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/CyberneticsStasisEntangler.cs::XRL.World.Parts.CyberneticsStasisEntangler.DeployToCells",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, tests, target_tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -8569,6 +8611,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_mental_shield_families(),
     *_tabula_rasae_families(),
     *_eat_memories_on_hit_families(),
+    *_cybernetics_stasis_entangler_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 
