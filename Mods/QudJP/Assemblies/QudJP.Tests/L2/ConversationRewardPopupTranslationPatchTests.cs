@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
+using QudJP.Tests.L1;
 
 namespace QudJP.Tests.L2;
 
@@ -14,6 +15,16 @@ public sealed class ConversationRewardPopupTranslationPatchTests
     {
         DynamicTextObservability.ResetForTests();
         DummyPopupShow.Reset();
+        MessageFrameTranslator.ResetForTests();
+        MessagePatternTranslator.ResetForTests();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        MessageFrameTranslator.ResetForTests();
+        MessagePatternTranslator.ResetForTests();
     }
 
     [TestCase(
@@ -36,12 +47,28 @@ public sealed class ConversationRewardPopupTranslationPatchTests
         "You receive {{Y|an electrobow}} and {{C|three lead slugs}}!",
         "{{Y|an electrobow}} and {{C|three lead slugs}}を受け取った！",
         "ReceiveItem")]
+    [TestCase(
+        nameof(DummyConversationRewardProducer.LibrarianGiveBookHandleEvent),
+        "The 司書 provides some insightful commentary on 'The Corpus Choliys'.",
+        "司書は'The Corpus Choliys'について示唆に富む解説をしてくれた。",
+        "LibrarianCommentary")]
+    [TestCase(
+        nameof(DummyConversationRewardProducer.LibrarianGiveBookHandleEvent),
+        "You gain {{C|75}} XP.",
+        "あなたは経験値を{{C|75}}獲得した",
+        "LibrarianXp")]
     public void Patch_TranslatesConversationRewardPopups_WhenOwnerPatched(
         string methodName,
         string source,
         string expected,
         string detail)
     {
+        if (methodName == nameof(DummyConversationRewardProducer.LibrarianGiveBookHandleEvent))
+        {
+            UseRepositoryPatternDictionary();
+            UseRepositoryMessageFrames();
+        }
+
         RunWithOwnerAndPopupPatches(methodName, () =>
         {
             var target = new DummyConversationRewardProducer
@@ -55,6 +82,34 @@ public sealed class ConversationRewardPopupTranslationPatchTests
             {
                 Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
                 Assert.That(HitCount(detail), Is.EqualTo(1));
+            });
+        });
+    }
+
+    [Test]
+    public void Patch_TranslatesMarkedLibrarianCommentary_WhenOwnerPatched()
+    {
+        const string visiblePrefix = "The 司書 provides";
+        var source = DoesVerbRouteTranslator.MarkDoesFragment(visiblePrefix, "provide", "The 司書".Length, null)
+            + " some insightful commentary on 'The Corpus Choliys'.";
+
+        UseRepositoryMessageFrames();
+
+        RunWithOwnerAndPopupPatches(nameof(DummyConversationRewardProducer.LibrarianGiveBookHandleEvent), () =>
+        {
+            var target = new DummyConversationRewardProducer
+            {
+                PopupMessageToShow = source,
+            };
+
+            target.LibrarianGiveBookHandleEvent();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    DummyPopupShow.LastShowMessage,
+                    Is.EqualTo("司書は'The Corpus Choliys'について示唆に富む解説をしてくれた。"));
+                Assert.That(HitCount("LibrarianCommentary"), Is.EqualTo(1));
             });
         });
     }
@@ -175,11 +230,36 @@ public sealed class ConversationRewardPopupTranslationPatchTests
             return EmitPopup(nameof(ReceiveItemHandleEvent));
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool LibrarianGiveBookHandleEvent()
+        {
+            return EmitPopup(nameof(LibrarianGiveBookHandleEvent));
+        }
+
         private bool EmitPopup(string route)
         {
             _ = route;
             DummyPopupShow.Show(PopupMessageToShow);
             return true;
         }
+    }
+
+    private static void UseRepositoryPatternDictionary()
+    {
+        var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        MessagePatternTranslator.SetPatternFileForTests(null);
+    }
+
+    private static void UseRepositoryMessageFrames()
+    {
+        MessageFrameTranslator.SetDictionaryPathForTests(
+            Path.Combine(
+                TestProjectPaths.GetRepositoryRoot(),
+                "Mods",
+                "QudJP",
+                "Localization",
+                "MessageFrames",
+                "verbs.ja.json"));
     }
 }

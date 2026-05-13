@@ -1418,6 +1418,59 @@ def _conversation_reward_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             ),
         ),
         CoveredOwnerFamily(
+            family_id="XRL.World.Conversations.Parts/LibrarianGiveBook.cs::XRL.World.Conversations.Parts.LibrarianGiveBook.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "LibrarianGiveBook",
+                        "TryTranslateLibrarianCommentary",
+                        "TryTranslateLibrarianXp",
+                        "DoesVerbRouteTranslator.TryTranslateMarkedMessage",
+                        "DoesVerbRouteTranslator.TryTranslatePlainSentence",
+                        "MessagePatternTranslator.Translate",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationRewardPopupTranslationPatchTests.cs",
+                    (
+                        *tests_common,
+                        "nameof(DummyConversationRewardProducer.LibrarianGiveBookHandleEvent)",
+                        "LibrarianCommentary",
+                        "LibrarianXp",
+                        "Patch_TranslatesMarkedLibrarianCommentary_WhenOwnerPatched",
+                        "DoesVerbRouteTranslator.MarkDoesFragment",
+                        "some insightful commentary on",
+                        "司書は'The Corpus Choliys'について示唆に富む解説をしてくれた。",
+                        "You gain {{C|75}} XP.",
+                        "あなたは経験値を{{C|75}}獲得した",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(ConversationRewardPopupTranslationPatch)",
+                        "XRL.World.Conversations.Parts.LibrarianGiveBook|HandleEvent|System.Boolean|XRL.World.Conversations.EnterElementEvent",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+                    (
+                        "some insightful commentary on (.+)",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+                    (
+                        "^You gain (\\\\{\\\\{C\\\\|\\\\d+\\\\}\\\\}|\\\\d+) XP[.!]?$",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
             family_id="XRL.World.Conversations.Parts/PaxInfectLimb.cs::XRL.World.Conversations.Parts.PaxInfectLimb.InfectLimb",
             inventory_statuses=("owner_patch_required",),
             evidence_files=(

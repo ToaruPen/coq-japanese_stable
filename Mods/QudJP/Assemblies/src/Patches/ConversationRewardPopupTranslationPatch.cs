@@ -31,8 +31,9 @@ public static class ConversationRewardPopupTranslationPatch
     private static IEnumerable<MethodBase> TargetMethods()
     {
         var enteredElementEventType = AccessTools.TypeByName("XRL.World.Conversations.EnteredElementEvent");
+        var enterElementEventType = AccessTools.TypeByName("XRL.World.Conversations.EnterElementEvent");
         var bodyPartType = AccessTools.TypeByName("XRL.World.Anatomy.BodyPart");
-        if (enteredElementEventType is null || bodyPartType is null)
+        if (enteredElementEventType is null || enterElementEventType is null || bodyPartType is null)
         {
             Trace.TraceError("QudJP: {0} failed to resolve conversation reward target types.", Context);
             yield break;
@@ -42,6 +43,14 @@ public static class ConversationRewardPopupTranslationPatch
                      "XRL.World.Conversations.Parts.AddSlynthCandidate",
                      "HandleEvent",
                      [enteredElementEventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.LibrarianGiveBook",
+                     "HandleEvent",
+                     [enterElementEventType]))
         {
             yield return method;
         }
@@ -110,6 +119,8 @@ public static class ConversationRewardPopupTranslationPatch
         {
             var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
             return TryTranslateSlynthSanctuary(source, stripped, spans, route, out translated)
+                || TryTranslateLibrarianXp(source, route, out translated)
+                || TryTranslateLibrarianCommentary(source, route, out translated)
                 || TryTranslatePaxInfectLimb(source, stripped, spans, route, out translated)
                 || TryTranslateReceiveItem(source, stripped, spans, route, out translated);
         }
@@ -130,7 +141,7 @@ public static class ConversationRewardPopupTranslationPatch
             yield break;
         }
 
-        var method = AccessTools.Method(targetType, methodName, parameters);
+        var method = AccessTools.DeclaredMethod(targetType, methodName, parameters);
         if (method is not null)
         {
             yield return method;
@@ -160,6 +171,38 @@ public static class ConversationRewardPopupTranslationPatch
             spans,
             source);
         Record(route, "SlynthSanctuary", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateLibrarianCommentary(string source, string route, out string translated)
+    {
+        if (source.IndexOf(" some insightful commentary on ", StringComparison.Ordinal) < 0
+            || (!DoesVerbRouteTranslator.TryTranslateMarkedMessage(source, out translated)
+                && !DoesVerbRouteTranslator.TryTranslatePlainSentence(source, out translated)))
+        {
+            translated = source;
+            return false;
+        }
+
+        Record(route, "LibrarianCommentary", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateLibrarianXp(string source, string route, out string translated)
+    {
+        if (!source.StartsWith("You gain ", StringComparison.Ordinal) || source.IndexOf(" XP", StringComparison.Ordinal) < 0)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = MessagePatternTranslator.Translate(source, Context);
+        if (string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        Record(route, "LibrarianXp", source, translated);
         return true;
     }
 
