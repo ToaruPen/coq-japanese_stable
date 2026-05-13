@@ -1241,6 +1241,10 @@ public sealed class TargetMethodResolutionTests
         // Source owner: XRL.World.BasePronounProvider.CustomizeProcess(string); target is the async state machine.
         "XRL.World.BasePronounProvider+<CustomizeProcess>d__121|MoveNext|System.Void",
     })]
+    [TestCase(typeof(FugueOnStepTranslationPatch), new[]
+    {
+        "XRL.World.Parts.FugueOnStep|Activate|System.Boolean|XRL.World.GameObject",
+    })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
         "XRL.World.Parts.Combat|HandleEvent|System.Boolean|XRL.World.GetDefenderHitDiceEvent",

@@ -6429,6 +6429,46 @@ def _base_pronoun_provider_customize_families() -> tuple[CoveredOwnerFamily, ...
     )
 
 
+def _fugue_on_step_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/FugueOnStepTranslationPatch.cs",
+        (
+            "FugueOnStepTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "Activate",
+            "PlayerStepPattern",
+            "ObserverStepPattern",
+        ),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("FugueOnStepTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/FugueOnStepTranslationPatchTests.cs",
+        (
+            "FugueOnStep_TranslatesSpacetimeStepMessages_WhenOwnerPatched",
+            "FugueOnStep_DoesNotTranslateTraffic_WhenOwnerAbsent",
+            "FugueOnStep_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "FugueOnStep_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(FugueOnStepTranslationPatch)",
+            "XRL.World.Parts.FugueOnStep|Activate|System.Boolean|XRL.World.GameObject",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/FugueOnStep.cs::XRL.World.Parts.FugueOnStep.Activate",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, tests, target_tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -8393,6 +8433,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_windup_families(),
     *_damage_penetration_debug_families(),
     *_base_pronoun_provider_customize_families(),
+    *_fugue_on_step_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 
