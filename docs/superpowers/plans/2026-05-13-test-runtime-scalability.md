@@ -10,7 +10,7 @@
 
 ---
 
-### Task 1: Build-Once Local C# Test Entrypoint
+## Task 1: Build-Once Local C# Test Entrypoint
 
 **Files:**
 - Modify: `justfile`
@@ -51,7 +51,7 @@ Expected: PASS.
 Run: `/usr/bin/time -p just test-csharp`
 Expected: all C# tests pass. Current measured result after cache and batching work: 4297 passed in `real 32.46`.
 
-### Task 2: CI Test Result Visibility
+## Task 2: CI Test Result Visibility
 
 **Files:**
 - Modify: `.github/workflows/ci.yml`
@@ -89,7 +89,7 @@ Add TRX logger and `actions/upload-artifact@v4` for the C# matrix job.
 Run: `uv run pytest scripts/tests/test_ci_workflow_contract.py -q`
 Expected: PASS.
 
-### Task 3: Python Slow-Test Visibility
+## Task 3: Python Slow-Test Visibility
 
 **Files:**
 - Modify: `pyproject.toml`
@@ -103,7 +103,7 @@ Change pytest `addopts` from `--durations=10` to `--durations=20`.
 Run: `just python-test`
 Expected: PASS and slowest 20 durations printed. Current measured result: 1086 passed, 1 skipped in 37.16 seconds.
 
-### Task 4: Production Message Pattern Load Reuse
+## Task 4: Production Message Pattern Load Reuse
 
 **Files:**
 - Modify: `Mods/QudJP/Assemblies/src/Translation/MessagePatternTranslator.cs`
@@ -197,7 +197,7 @@ just test-l2
 
 Actual: PASS. Current measured results: `just test-l1` 2209 passed in `real 36.03`, `just test-l2` 1768 passed in `real 56.80`.
 
-### Task 5: Batch High-Cost L2 Repository-Family Tests
+## Task 5: Batch High-Cost L2 Repository-Family Tests
 
 **Files:**
 - Modify: `Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs`
@@ -221,7 +221,7 @@ Run a focused L2 command against the changed method names if possible, then run 
 
 Actual: PASS with fewer NUnit result rows and lower L2 runtime because repeated patch/unpatch setup has been removed.
 
-### Task 6: Scalable Test-Addition Rules
+## Task 6: Scalable Test-Addition Rules
 
 **Files:**
 - Modify: `docs/test-architecture.md`
@@ -253,7 +253,7 @@ Add L2 scalability guidance to `docs/test-architecture.md` and route-family addi
 Run: `uv run pytest scripts/tests/test_qudjp_dotnet_test_contracts.py::test_route_family_test_guidance_limits_l2_case_growth -q`
 Expected: PASS.
 
-### Task 7: Polishment, Draft PR, and PR Convergence
+## Task 7: Polishment, Draft PR, and PR Convergence
 
 **Files:**
 - Current diff only.
