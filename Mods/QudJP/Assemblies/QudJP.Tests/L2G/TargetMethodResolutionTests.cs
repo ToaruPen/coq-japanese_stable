@@ -1157,7 +1157,10 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Effects.AxonsDeflated|Apply|System.Boolean|XRL.World.GameObject",
         "XRL.World.Effects.AxonsInflated|Apply|System.Boolean|XRL.World.GameObject",
         "XRL.World.Effects.BasiliskPoison|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Effects.Berserk|HandleEvent|System.Boolean|XRL.World.BeginTakeActionEvent",
+        "XRL.World.Effects.Cudgel_SmashingUp|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Effects.EmptyTheClips|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Effects.Flagging|HandleEvent|System.Boolean|XRL.World.BeginTakeActionEvent",
         "XRL.World.Effects.NocturnalApexed|Apply|System.Boolean|XRL.World.GameObject",
     })]
     [TestCase(typeof(SystemStaticMessageTranslationPatch), new[]

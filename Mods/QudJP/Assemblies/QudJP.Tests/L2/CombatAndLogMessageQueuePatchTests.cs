@@ -4060,6 +4060,12 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("You feel stiff as a stone.")]
     [TestCase("You begin itching for a trigger.")]
     [TestCase("You start to prowl.")]
+    [TestCase("1 turn remains until your berserker rage ends.")]
+    [TestCase("2 turns remain until your berserker rage ends.")]
+    [TestCase("1 turn remains until you stop demolishing.")]
+    [TestCase("3 turns remain until you stop demolishing.")]
+    [TestCase("You're going to collapse from exhaustion in one round.")]
+    [TestCase("You're going to collapse from exhaustion in three rounds.")]
     [TestCase("Checkpointing enabled")]
     [TestCase("You feel a sense of holiness here.")]
     [TestCase("&CA flash of insight overcomes you!")]
@@ -4139,6 +4145,38 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertEffectStaticFireEventQueuedMessage("You feel stiff as a stone.", "石のように体がこわばる。");
     }
 
+    [TestCase(
+        "1 turn remains until your berserker rage ends.",
+        "バーサークの怒りが終わるまであと1ターン。")]
+    [TestCase(
+        "2 turns remain until your berserker rage ends.",
+        "バーサークの怒りが終わるまであと2ターン。")]
+    [TestCase(
+        "You're going to collapse from exhaustion in one round.",
+        "疲労で倒れるまであと1ラウンド。")]
+    [TestCase(
+        "You're going to collapse from exhaustion in three rounds.",
+        "疲労で倒れるまであと3ラウンド。")]
+    public void EffectStaticBeginTakeAction_TranslatesCountdownQueuedMessages_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertEffectStaticBeginTakeActionQueuedMessage(source, expected);
+    }
+
+    [TestCase(
+        "1 turn remains until you stop demolishing.",
+        "解体をやめるまであと1ターン。")]
+    [TestCase(
+        "3 turns remain until you stop demolishing.",
+        "解体をやめるまであと3ターン。")]
+    public void EffectStaticFireEvent_TranslatesCountdownQueuedMessages_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertEffectStaticFireEventQueuedMessage(source, expected);
+    }
+
     [Test]
     public void EffectStaticApply_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
     {
@@ -4156,6 +4194,14 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void EffectStaticBeginTakeAction_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectStaticBeginTakeActionQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("1 turn remains until your berserker rage ends."),
+            "1 turn remains until your berserker rage ends.");
+    }
+
+    [Test]
     public void EffectStaticApply_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
     {
         AssertEffectStaticApplyQueuedMessage(string.Empty, string.Empty);
@@ -4165,6 +4211,12 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void EffectStaticFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
     {
         AssertEffectStaticFireEventQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void EffectStaticBeginTakeAction_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertEffectStaticBeginTakeActionQueuedMessage(string.Empty, string.Empty);
     }
 
     [Test]
@@ -8003,6 +8055,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
             };
 
             _ = target.FireEvent(new DummyEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertEffectStaticBeginTakeActionQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.HandleEvent), typeof(DummyBeginTakeActionEvent)),
+                typeof(EffectStaticMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.HandleEvent(new DummyBeginTakeActionEvent());
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }

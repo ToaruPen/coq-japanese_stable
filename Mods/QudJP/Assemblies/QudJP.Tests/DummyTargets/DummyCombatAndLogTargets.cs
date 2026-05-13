@@ -1199,6 +1199,13 @@ internal sealed class DummySimpleOwnerQueueTarget
         return true;
     }
 
+    public bool HandleEvent(DummyBeginTakeActionEvent? eventObject = null)
+    {
+        _ = eventObject;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
     public bool Apply(DummyGameObject? obj = null)
     {
         _ = obj;

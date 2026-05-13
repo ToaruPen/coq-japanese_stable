@@ -3091,6 +3091,20 @@ def _effect_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
         "Mods/QudJP/Assemblies/src/Patches/EffectStaticMessageTranslationPatch.cs",
         ("EffectStaticMessageTranslationPatch", "TryTranslateQueuedMessage"),
     )
+    countdown_patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/EffectStaticMessageTranslationPatch.cs",
+        ("TryTranslateCountdownMessage", "TryTranslateTurnRemainder", "TryTranslateCardinal"),
+    )
+    countdown_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+        (
+            "EffectStaticBeginTakeAction_TranslatesCountdownQueuedMessages_WhenOwnerPatched",
+            "EffectStaticFireEvent_TranslatesCountdownQueuedMessages_WhenOwnerPatched",
+            "FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+            "EffectStaticBeginTakeAction_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "EffectStaticBeginTakeAction_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+        ),
+    )
     return (
         CoveredOwnerFamily(
             family_id="XRL.World.Effects/AxonsDeflated.cs::XRL.World.Effects.AxonsDeflated.Apply",
@@ -3144,6 +3158,48 @@ def _effect_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             ),
         ),
         CoveredOwnerFamily(
+            family_id="XRL.World.Effects/Berserk.cs::XRL.World.Effects.Berserk.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                countdown_patch,
+                pipeline,
+                countdown_tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    ("until your berserker rage ends", "バーサークの怒りが終わるまであと"),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(EffectStaticMessageTranslationPatch)",
+                        "XRL.World.Effects.Berserk|HandleEvent|System.Boolean|XRL.World.BeginTakeActionEvent",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Effects/Cudgel_SmashingUp.cs::XRL.World.Effects.Cudgel_SmashingUp.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                countdown_patch,
+                pipeline,
+                countdown_tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    ("until you stop demolishing", "解体をやめるまであと"),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(EffectStaticMessageTranslationPatch)",
+                        "XRL.World.Effects.Cudgel_SmashingUp|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
             family_id="XRL.World.Effects/EmptyTheClips.cs::XRL.World.Effects.EmptyTheClips.Apply",
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
@@ -3158,6 +3214,27 @@ def _effect_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
                     ),
                 ),
                 dictionary,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Effects/Flagging.cs::XRL.World.Effects.Flagging.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                countdown_patch,
+                pipeline,
+                countdown_tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    ("collapse from exhaustion", "疲労で倒れるまであと"),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(EffectStaticMessageTranslationPatch)",
+                        "XRL.World.Effects.Flagging|HandleEvent|System.Boolean|XRL.World.BeginTakeActionEvent",
+                    ),
+                ),
             ),
         ),
         CoveredOwnerFamily(
