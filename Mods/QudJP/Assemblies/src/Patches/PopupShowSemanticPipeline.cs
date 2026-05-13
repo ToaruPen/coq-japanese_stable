@@ -67,6 +67,7 @@ internal static class PopupShowSemanticPipeline
         WindupTranslationPatch.TryTranslatePopupMessage,
         BasePronounProviderCustomizePopupTranslationPatch.TryTranslatePopupMessage,
         CloningStartBuddedCloneTranslationPatch.TryTranslatePopupMessage,
+        EngraverTranslationPatch.TryTranslatePopupMessage,
         LightManipulationTranslationPatch.TryTranslatePopupMessage,
         AsleepOwnerTranslationPatch.TryTranslatePopupMessage,
         EnclosingTranslationPatch.TryTranslatePopupMessage,

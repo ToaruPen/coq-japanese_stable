@@ -1279,6 +1279,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.HiddenRender|Reveal|System.Void",
     })]
+    [TestCase(typeof(EngraverTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Engraver|AttemptEngrave|System.Boolean|XRL.World.GameObject",
+    })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
         "XRL.World.Parts.Combat|HandleEvent|System.Boolean|XRL.World.GetDefenderHitDiceEvent",
