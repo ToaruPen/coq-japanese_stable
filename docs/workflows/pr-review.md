@@ -39,6 +39,25 @@ If the active checkout has unrelated dirty work, either use a separate worktree
 or stage only explicit paths for the PR. Do not commit review fixes from an
 unrelated branch just because the patch applies cleanly.
 
+## Superseded PR Check
+
+Before fixing CI logs or reviewer comments, confirm the PR still owns a unique
+review slice against current `origin/main`. This check is especially important
+when several integration PRs are closing the same issue or route family.
+
+```bash
+git fetch origin main <head-branch> --prune
+gh pr view <number> --json state,headRefOid,baseRefOid,changedFiles,additions,deletions,latestReviews,statusCheckRollup
+git diff --stat origin/main...HEAD
+git log --oneline --left-right --cherry-pick origin/main...HEAD
+```
+
+If `main` already contains the implementation through another merged PR, stop
+normal CI/review patching. Rebase or reset the PR branch to the current base,
+verify the PR has zero changed files, and close it as superseded with a comment
+that names the merged PR or commit. Do not keep fixing stale CodeRabbit comments
+from a commit range that no longer represents unique branch work.
+
 ## Stacked PR Rebase
 
 When a PR was opened on top of another PR branch and the parent PR later lands
