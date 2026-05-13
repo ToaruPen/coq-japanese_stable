@@ -1378,6 +1378,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.PoweredFloating|CheckFloating|System.Void",
     })]
+    [TestCase(typeof(ConversationTakeItemPopupTranslationPatch), new[]
+    {
+        "XRL.World.Conversations.Parts.TakeItem|Execute|System.Boolean",
+    })]
     [TestCase(typeof(OldSaveContinueMenuPopupTranslationPatch), new[]
     {
         "Qud.UI.MainMenu|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",

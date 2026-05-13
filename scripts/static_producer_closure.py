@@ -1587,6 +1587,52 @@ def _powered_floating_popup_family() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _conversation_take_item_popup_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Conversations.Parts/TakeItem.cs::XRL.World.Conversations.Parts.TakeItem.Execute",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/ConversationTakeItemPopupTranslationPatch.cs",
+                    (
+                        "ConversationTakeItemPopupTranslationPatch",
+                        "TargetMethod",
+                        "XRL.World.Conversations.Parts.TakeItem",
+                        "TryTranslateCannotGive",
+                        "TryTranslateTakeSuccess",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("ConversationTakeItemPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationTakeItemPopupTranslationPatchTests.cs",
+                    (
+                        "Execute_TranslatesCannotGivePopup_WhenOwnerPatched",
+                        "Execute_TranslatesTakeSuccessPopup_WhenOwnerPatched",
+                        "Execute_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Execute_LeavesUnknownPopupUnchanged_WhenOwnerPatched",
+                        "Execute_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Execute_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "Execute_KeepsOuterOwnerScopeActive_WhenNestedScopeExits",
+                        "You cannot give {{Y|奇妙な小物}}!",
+                        "Q Girl takes {{Y|奇妙な小物}}.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(ConversationTakeItemPopupTranslationPatch)",
+                        "XRL.World.Conversations.Parts.TakeItem|Execute|System.Boolean",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _grit_gate_terminal_owner_families() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -7395,6 +7441,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_conversation_reward_popup_families(),
     *_game_summary_tombstone_popup_families(),
     *_powered_floating_popup_family(),
+    *_conversation_take_item_popup_family(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 
