@@ -1201,6 +1201,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.DanceRitualOpponent|FireEvent|System.Boolean|XRL.World.Event",
     })]
+    [TestCase(typeof(IExamineEventProcessIdentifyTranslationPatch), new[]
+    {
+        "XRL.World.IExamineEvent|ProcessIdentify|System.Boolean",
+    })]
     [TestCase(typeof(SystemStaticMessageTranslationPatch), new[]
     {
         "XRL.CheckpointingSystem|CheckpointOn|System.Boolean",

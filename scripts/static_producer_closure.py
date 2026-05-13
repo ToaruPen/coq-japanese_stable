@@ -6275,6 +6275,47 @@ def _dance_ritual_opponent_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _iexamine_process_identify_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/IExamineEventProcessIdentifyTranslationPatch.cs",
+        (
+            "IExamineEventProcessIdentifyTranslationPatch",
+            "ProcessIdentify",
+            "TryTranslatePopupMessage",
+            "IdentifyRealizationPattern",
+        ),
+    )
+    popup_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("IExamineEventProcessIdentifyTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/IExamineEventProcessIdentifyTranslationPatchTests.cs",
+        (
+            "ProcessIdentify_TranslatesVisibleItemIdentifyPopup_WhenOwnerPatched",
+            "ProcessIdentify_TranslatesDestroyedItemIdentifyPopup_WhenOwnerPatched",
+            "ProcessIdentify_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+            "ProcessIdentify_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "ProcessIdentify_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "DummyIExamineEventProcessIdentifyTarget",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(IExamineEventProcessIdentifyTranslationPatch)",
+            "XRL.World.IExamineEvent|ProcessIdentify|System.Boolean",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World/IExamineEvent.cs::XRL.World.IExamineEvent.ProcessIdentify",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, popup_pipeline, tests, target_tests),
+        ),
+    )
+
+
 def _tenfold_path_initiatory_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/TenfoldPathInitiatoryTranslationPatch.cs",
@@ -9010,6 +9051,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_mutation_action_failure_families(),
     *_disassembly_start_families(),
     *_dance_ritual_opponent_families(),
+    *_iexamine_process_identify_families(),
     *_tenfold_path_initiatory_families(),
     *_power_entry_prerequisite_popup_families(),
     *_magnetic_pulse_families(),
