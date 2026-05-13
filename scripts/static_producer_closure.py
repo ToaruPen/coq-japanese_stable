@@ -4900,6 +4900,8 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             "SystemStaticCheckpointOn_TranslatesFixedQueuedMessage_WhenOwnerPatched",
             "SystemStaticSetHolyZone_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "SystemStaticFireEvent_TranslatesFixedQueuedMessages_WhenOwnerPatched",
+            "SystemStaticMutationFireEvent_TranslatesFixedQueuedMessages_WhenOwnerPatched",
+            "SystemStaticSpacetimeVortex_TranslatesFixedQueuedMessage_WhenOwnerPatched",
             "SystemStaticQuake_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "SystemStaticDoorSwitchFireEvent_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "SystemStaticSpawningEggSacTickEgg_TranslatesFixedQueuedMessages_WhenOwnerPatched",
@@ -4918,6 +4920,9 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             "Checkpointing enabled",
             "You feel a sense of holiness here.",
             "&CA flash of insight overcomes you!",
+            "You do that with ease.",
+            "That creature is of too high a level to duplicate!",
+            "{{G|You sunder spacetime.}}",
             "The ground shakes violently!",
             "The ground shakes violently and loose rock falls from the ceiling!",
             "The security door unlocks with a loud clank and swings open.",
@@ -4989,6 +4994,66 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
                     (
                         "typeof(SystemStaticMessageTranslationPatch)",
                         "XRL.World.Parts.Mutation.HeightenedIntelligence|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
+                ),
+                dictionary,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Parts.Mutation/HeightenedAgility.cs::"
+                "XRL.World.Parts.Mutation.HeightenedAgility.FireEvent"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SystemStaticMessageTranslationPatch)",
+                        "XRL.World.Parts.Mutation.HeightenedAgility|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
+                ),
+                dictionary,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Parts.Mutation/Metamorphosis.cs::"
+                "XRL.World.Parts.Mutation.Metamorphosis.FireEvent"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SystemStaticMessageTranslationPatch)",
+                        "XRL.World.Parts.Mutation.Metamorphosis|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
+                ),
+                dictionary,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Parts.Mutation/SpacetimeVortex.cs::"
+                "XRL.World.Parts.Mutation.SpacetimeVortex.Vortex"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SystemStaticMessageTranslationPatch)",
+                        "XRL.World.Parts.Mutation.SpacetimeVortex|Vortex|System.Void|XRL.World.Cell",
                     ),
                 ),
                 dictionary,

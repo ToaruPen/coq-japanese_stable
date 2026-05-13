@@ -1282,6 +1282,11 @@ internal sealed class DummySimpleOwnerQueueTarget
         return true;
     }
 
+    public void Vortex()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
     public void TeleportToClamWorld(DummyGameObject? obj = null)
     {
         SendOwnerQueueMessage(nameof(TeleportToClamWorld), obj);

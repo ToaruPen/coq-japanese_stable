@@ -35,6 +35,16 @@ public static class SystemStaticMessageTranslationPatch
         AddTarget(targets, "XRL.CheckpointingSystem", "CheckpointOn", Type.EmptyTypes);
         AddTarget(targets, "XRL.HolyPlaceSystem", "SetHolyZone", new[] { zoneType, factionType });
         AddTarget(targets, "XRL.World.Parts.Mutation.HeightenedIntelligence", "FireEvent", new[] { eventType });
+        AddTarget(targets, "XRL.World.Parts.Mutation.HeightenedAgility", "FireEvent", new[] { eventType });
+        AddTarget(targets, "XRL.World.Parts.Mutation.Metamorphosis", "FireEvent", new[] { eventType });
+        if (cellType is not null)
+        {
+            AddTarget(targets, "XRL.World.Parts.Mutation.SpacetimeVortex", "Vortex", new[] { cellType });
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0}.SpacetimeVortex.Vortex parameter type not found.", Context);
+        }
         AddTarget(targets, "XRL.World.Parts.TrembleEarthquakes", "Quake", Type.EmptyTypes);
         AddTarget(targets, "XRL.World.Parts.DoorSwitch", "FireEvent", new[] { eventType });
         AddTarget(targets, "XRL.World.Parts.SpawningEggSac", "tickEgg", Type.EmptyTypes);
@@ -106,6 +116,9 @@ public static class SystemStaticMessageTranslationPatch
             "Checkpointing enabled" => "チェックポイント機能を有効化した。",
             "You feel a sense of holiness here." => "この場所には神聖さを感じる。",
             "&CA flash of insight overcomes you!" => "&Cひらめきがあなたを満たした！",
+            "You do that with ease." => "難なくやってのけた。",
+            "That creature is of too high a level to duplicate!" => "そのクリーチャーは複製するには強すぎる！",
+            "{{G|You sunder spacetime.}}" => "{{G|時空を切り裂いた。}}",
             "The ground shakes violently!" => "地面が激しく揺れた！",
             "The ground shakes violently and loose rock falls from the ceiling!" => "地面が激しく揺れ、天井から岩が崩れ落ちた！",
             "The security door unlocks with a loud clank and swings open." => "頑丈なドアが大きな音とともに解錠され開いた。",

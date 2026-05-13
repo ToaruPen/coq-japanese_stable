@@ -4109,6 +4109,9 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("You are shunted to another location!")]
     [TestCase("You teleport!")]
     [TestCase("You are teleported to an exit.")]
+    [TestCase("You do that with ease.")]
+    [TestCase("That creature is of too high a level to duplicate!")]
+    [TestCase("{{G|You sunder spacetime.}}")]
     public void FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
     {
         var harmonyId = CreateHarmonyId();
@@ -4542,6 +4545,15 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertSystemStaticFireEventQueuedMessage(source, expected);
     }
 
+    [TestCase("You do that with ease.", "難なくやってのけた。")]
+    [TestCase("That creature is of too high a level to duplicate!", "そのクリーチャーは複製するには強すぎる！")]
+    public void SystemStaticMutationFireEvent_TranslatesFixedQueuedMessages_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertSystemStaticFireEventQueuedMessage(source, expected);
+    }
+
     [TestCase("The ground shakes violently!", "地面が激しく揺れた！")]
     [TestCase(
         "The ground shakes violently and loose rock falls from the ceiling!",
@@ -4584,6 +4596,12 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void SystemStaticCatacombsExitTeleporterHandleEvent_TranslatesFixedQueuedMessage_WhenOwnerPatched()
     {
         AssertSystemStaticEnteredCellQueuedMessage("You are teleported to an exit.", "出口へ転送された。");
+    }
+
+    [Test]
+    public void SystemStaticSpacetimeVortex_TranslatesFixedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertSystemStaticVortexQueuedMessage("{{G|You sunder spacetime.}}", "{{G|時空を切り裂いた。}}");
     }
 
     [Test]
@@ -8845,6 +8863,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
             };
 
             _ = target.HandleEvent(new DummyEnteredCellEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertSystemStaticVortexQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.Vortex)),
+                typeof(SystemStaticMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.Vortex();
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }
