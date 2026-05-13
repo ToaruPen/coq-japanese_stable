@@ -3514,6 +3514,48 @@ def _latched_onto_expired_family() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _giant_clam_teleport_joppa_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/GiantClamProperties.cs::XRL.World.Parts.GiantClamProperties.TeleportJoppaWorld",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/GiantClamTeleportTranslationPatch.cs",
+                    (
+                        "GiantClamTeleportTranslationPatch",
+                        "TeleportJoppaWorld",
+                        "You hear a shloop and the world around you shifts.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("GiantClamTeleportTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "GiantClamTeleport_TranslatesShloopQueuedMessages_WhenOwnerPatched",
+                        "GiantClamTeleport_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                        "GiantClamTeleport_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                        "FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "TeleportJoppaWorld",
+                        "You hear a shloop and then a hitch. Nothing happens.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "GiantClamTeleportTranslationPatch",
+                        "XRL.World.Parts.GiantClamProperties|TeleportJoppaWorld|System.Void|XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _cripple_apply_family() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -5100,6 +5142,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_effect_generated_message_families(),
     *_blaze_tonic_remove_family(),
     *_latched_onto_expired_family(),
+    *_giant_clam_teleport_joppa_family(),
     *_cripple_apply_family(),
     *_mutation_self_target_popup_families(),
     *_system_static_message_families(),

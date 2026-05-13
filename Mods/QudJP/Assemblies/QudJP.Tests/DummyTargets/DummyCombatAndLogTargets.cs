@@ -1258,8 +1258,30 @@ internal sealed class DummySimpleOwnerQueueTarget
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
     }
 
+    public void TeleportToClamWorld(DummyGameObject? obj = null)
+    {
+        SendOwnerQueueMessage(nameof(TeleportToClamWorld), obj);
+    }
+
+    public void TeleportFromClamWorld(DummyGameObject? obj = null)
+    {
+        SendOwnerQueueMessage(nameof(TeleportFromClamWorld), obj);
+    }
+
+    public void TeleportJoppaWorld(DummyGameObject? obj = null)
+    {
+        SendOwnerQueueMessage(nameof(TeleportJoppaWorld), obj);
+    }
+
     public void Expired()
     {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    private void SendOwnerQueueMessage(string ownerMethodName, DummyGameObject? obj)
+    {
+        _ = ownerMethodName;
+        _ = obj;
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
     }
 

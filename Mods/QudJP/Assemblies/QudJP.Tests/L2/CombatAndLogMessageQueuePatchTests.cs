@@ -4070,6 +4070,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("The {{blaze|blaze}} tonic burns out of your system.")]
     [TestCase("{{R|The barbed hook}}{{R| releases}} you.")]
     [TestCase("{{R|The barbed hook}}{{R| releases}} {{G|the snapjaw}}{{R|.}}")]
+    [TestCase("You hear a shloop and then a hitch. Nothing happens.")]
+    [TestCase("You hear a shloop and the world around you shifts.")]
     [TestCase("1 turn remains until your berserker rage ends.")]
     [TestCase("2 turns remain until your berserker rage ends.")]
     [TestCase("1 turn remains until you stop demolishing.")]
@@ -4373,6 +4375,45 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void LatchedOntoExpired_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
     {
         AssertLatchedOntoExpiredQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.TeleportToClamWorld),
+        "You hear a shloop and then a hitch. Nothing happens.",
+        "シュループという音がして、それから引っかかるような音がした。何も起こらない。")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.TeleportFromClamWorld),
+        "You hear a shloop and then a hitch. Nothing happens.",
+        "シュループという音がして、それから引っかかるような音がした。何も起こらない。")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.TeleportJoppaWorld),
+        "You hear a shloop and then a hitch. Nothing happens.",
+        "シュループという音がして、それから引っかかるような音がした。何も起こらない。")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.TeleportJoppaWorld),
+        "You hear a shloop and the world around you shifts.",
+        "シュループという音がして、周囲の世界がずれた。")]
+    public void GiantClamTeleport_TranslatesShloopQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        AssertGiantClamTeleportQueuedMessage(methodName, source, expected);
+    }
+
+    [Test]
+    public void GiantClamTeleport_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertGiantClamTeleportQueuedMessage(
+            nameof(DummySimpleOwnerQueueTarget.TeleportJoppaWorld),
+            MessageFrameTranslator.MarkDirectTranslation("You hear a shloop and the world around you shifts."),
+            "You hear a shloop and the world around you shifts.");
+    }
+
+    [Test]
+    public void GiantClamTeleport_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertGiantClamTeleportQueuedMessage(nameof(DummySimpleOwnerQueueTarget.TeleportJoppaWorld), string.Empty, string.Empty);
     }
 
     [Test]
@@ -8386,6 +8427,57 @@ public sealed class CombatAndLogMessageQueuePatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    private static void AssertGiantClamTeleportQueuedMessage(string methodName, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), methodName, typeof(DummyGameObject)),
+                typeof(GiantClamTeleportTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = methodName switch
+            {
+                nameof(DummySimpleOwnerQueueTarget.TeleportToClamWorld) => InvokeTeleportToClamWorld(target),
+                nameof(DummySimpleOwnerQueueTarget.TeleportFromClamWorld) => InvokeTeleportFromClamWorld(target),
+                nameof(DummySimpleOwnerQueueTarget.TeleportJoppaWorld) => InvokeTeleportJoppaWorld(target),
+                _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected teleport method."),
+            };
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static bool InvokeTeleportToClamWorld(DummySimpleOwnerQueueTarget target)
+    {
+        target.TeleportToClamWorld(new DummyGameObject());
+        return true;
+    }
+
+    private static bool InvokeTeleportFromClamWorld(DummySimpleOwnerQueueTarget target)
+    {
+        target.TeleportFromClamWorld(new DummyGameObject());
+        return true;
+    }
+
+    private static bool InvokeTeleportJoppaWorld(DummySimpleOwnerQueueTarget target)
+    {
+        target.TeleportJoppaWorld(new DummyGameObject());
+        return true;
     }
 
     private static void AssertSystemStaticCheckpointQueuedMessage(string message, string expected)
