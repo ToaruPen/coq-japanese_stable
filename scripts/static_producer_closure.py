@@ -6246,6 +6246,54 @@ def _magnetic_pulse_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _pet_gloaming_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PetGloamingTranslationPatch.cs",
+        (
+            "PetGloamingTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "TryTranslatePopupMessage",
+            "AstralTetherPattern",
+            "WisdomRevealPattern",
+            "StopGleamingPattern",
+            "StartGleamingPattern",
+        ),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("PetGloamingTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    popup_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("PetGloamingTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/PetGloamingTranslationPatchTests.cs",
+        (
+            "PetGloaming_TranslatesQueuedStateMessages_WhenOwnerPatched",
+            "PetGloaming_TranslatesWisdomRevealPopup_WhenOwnerPatched",
+            "PetGloaming_DoesNotTranslateTraffic_WhenOwnerAbsent",
+            "PetGloaming_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "PetGloaming_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "PetGloaming_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(PetGloamingTranslationPatch)",
+            "XRL.World.Parts.PetGloaming|FireEvent|System.Boolean|XRL.World.Event",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/PetGloaming.cs::XRL.World.Parts.PetGloaming.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, popup_pipeline, tests, target_tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -8206,6 +8254,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_tenfold_path_initiatory_families(),
     *_power_entry_prerequisite_popup_families(),
     *_magnetic_pulse_families(),
+    *_pet_gloaming_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 

@@ -1224,6 +1224,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.Mutation.MagneticPulse|EmitMagneticPulse|System.Void|XRL.World.GameObject|System.Int32",
     })]
+    [TestCase(typeof(PetGloamingTranslationPatch), new[]
+    {
+        "XRL.World.Parts.PetGloaming|FireEvent|System.Boolean|XRL.World.Event",
+    })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
         "XRL.World.Parts.Combat|HandleEvent|System.Boolean|XRL.World.GetDefenderHitDiceEvent",

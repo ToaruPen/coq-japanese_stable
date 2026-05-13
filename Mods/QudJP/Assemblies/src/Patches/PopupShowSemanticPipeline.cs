@@ -63,6 +63,7 @@ internal static class PopupShowSemanticPipeline
         TenfoldPathInitiatoryTranslationPatch.TryTranslatePopupMessage,
         PowerEntryRequirementPopupTranslationPatch.TryTranslatePopupMessage,
         MagneticPulseTranslationPatch.TryTranslatePopupMessage,
+        PetGloamingTranslationPatch.TryTranslatePopupMessage,
         LightManipulationTranslationPatch.TryTranslatePopupMessage,
         AsleepOwnerTranslationPatch.TryTranslatePopupMessage,
         EnclosingTranslationPatch.TryTranslatePopupMessage,
