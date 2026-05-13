@@ -6316,6 +6316,54 @@ def _iexamine_process_identify_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _self_tear_explosion_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/SelfTearExplosionTranslationPatch.cs",
+        (
+            "SelfTearExplosionTranslationPatch",
+            "Clockwork",
+            "Flywheel",
+            "TryTranslateQueuedMessage",
+            "TearsItselfApartPattern",
+        ),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("SelfTearExplosionTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/SelfTearExplosionTranslationPatchTests.cs",
+        (
+            "SelfTearExplosion_TranslatesOwnerMessage_WhenOwnerPatched",
+            "SelfTearExplosion_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+            "SelfTearExplosion_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "SelfTearExplosion_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "DummySelfTearExplosionTarget",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(SelfTearExplosionTranslationPatch)",
+            "XRL.World.Parts.Clockwork|FireEvent|System.Boolean|XRL.World.Event",
+            "XRL.World.Parts.Flywheel|FireEvent|System.Boolean|XRL.World.Event",
+        ),
+    )
+    evidence_files = (patch, queue_pipeline, tests, target_tests)
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/Clockwork.cs::XRL.World.Parts.Clockwork.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=evidence_files,
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/Flywheel.cs::XRL.World.Parts.Flywheel.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=evidence_files,
+        ),
+    )
+
+
 def _tenfold_path_initiatory_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/TenfoldPathInitiatoryTranslationPatch.cs",
@@ -9052,6 +9100,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_disassembly_start_families(),
     *_dance_ritual_opponent_families(),
     *_iexamine_process_identify_families(),
+    *_self_tear_explosion_families(),
     *_tenfold_path_initiatory_families(),
     *_power_entry_prerequisite_popup_families(),
     *_magnetic_pulse_families(),

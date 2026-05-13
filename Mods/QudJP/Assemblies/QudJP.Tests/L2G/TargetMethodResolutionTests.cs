@@ -1205,6 +1205,11 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.IExamineEvent|ProcessIdentify|System.Boolean",
     })]
+    [TestCase(typeof(SelfTearExplosionTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Clockwork|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Flywheel|FireEvent|System.Boolean|XRL.World.Event",
+    })]
     [TestCase(typeof(SystemStaticMessageTranslationPatch), new[]
     {
         "XRL.CheckpointingSystem|CheckpointOn|System.Boolean",
