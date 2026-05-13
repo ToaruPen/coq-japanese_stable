@@ -772,6 +772,55 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
+    [TestCase("You are healed for 5 by the cold.", "冷気により5回復した。")]
+    [TestCase("You are healed for 12 by the heat.", "熱により12回復した。")]
+    public void MutationAbsorptionHealing_TranslatesGeneratedHealingMessage_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertMutationAbsorptionHealingQueuedMessage(source, expected, expectedColor: "C");
+    }
+
+    [TestCase("You are healed for 5 by the cold.")]
+    [TestCase("You are healed for 12 by the heat.")]
+    public void MutationAbsorptionHealing_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage(source, "C", Capitalize: false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+                Assert.That(DummyMessageQueue.LastColor, Is.EqualTo("C"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void MutationAbsorptionHealing_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertMutationAbsorptionHealingQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("You are healed for 5 by the cold."),
+            "You are healed for 5 by the cold.");
+    }
+
+    [TestCase("")]
+    [TestCase("You are healed for 5 by the acid.")]
+    [TestCase("You are healed by the cold.")]
+    public void MutationAbsorptionHealing_LeavesUnsupportedMessageUnchanged_WhenOwnerPatched(string source)
+    {
+        AssertMutationAbsorptionHealingQueuedMessage(source, source);
+    }
+
     [Test]
     public void GameObjectMove_TranslatesSingularStuckMessage_WhenPatched()
     {
@@ -8702,6 +8751,41 @@ public sealed class CombatAndLogMessageQueuePatchTests
         {
             DummySimpleOwnerQueueTarget.StaticMessageToSend = string.Empty;
             DummySimpleOwnerQueueTarget.StaticColorToSend = null;
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertMutationAbsorptionHealingQueuedMessage(
+        string message,
+        string expected,
+        string? expectedColor = null)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.FireEvent), typeof(DummyEvent)),
+                typeof(MutationAbsorptionHealingTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+                ColorToSend = expectedColor,
+            };
+
+            _ = target.FireEvent(new DummyEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+                Assert.That(DummyMessageQueue.LastColor, Is.EqualTo(expectedColor));
+            });
+        }
+        finally
+        {
             harmony.UnpatchAll(harmonyId);
         }
     }

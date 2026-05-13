@@ -1192,6 +1192,11 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Mutation.Teleportation|Cast|System.Boolean|XRL.World.Parts.Mutation.Teleportation|System.String|XRL.World.IEvent|XRL.World.Cell|XRL.World.GameObject|System.Boolean|System.Int32",
         "XRL.World.Parts.CatacombsExitTeleporter|HandleEvent|System.Boolean|XRL.World.ObjectEnteredCellEvent",
     })]
+    [TestCase(typeof(MutationAbsorptionHealingTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.ColdAbsorption|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Mutation.HeatAbsorption|FireEvent|System.Boolean|XRL.World.Event",
+    })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
         "XRL.World.Parts.Combat|HandleEvent|System.Boolean|XRL.World.GetDefenderHitDiceEvent",

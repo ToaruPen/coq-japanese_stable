@@ -5883,6 +5883,59 @@ def _experience_award_xp_family() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _mutation_absorption_healing_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MutationAbsorptionHealingTranslationPatch.cs",
+        (
+            "MutationAbsorptionHealingTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "ColdAbsorption",
+            "HeatAbsorption",
+            "You are healed for",
+            "by the (?<source>cold|heat)",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("MutationAbsorptionHealingTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+        (
+            "MutationAbsorptionHealing_TranslatesGeneratedHealingMessage_WhenOwnerPatched",
+            "MutationAbsorptionHealing_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+            "MutationAbsorptionHealing_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "MutationAbsorptionHealing_LeavesUnsupportedMessageUnchanged_WhenOwnerPatched",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(MutationAbsorptionHealingTranslationPatch)",
+            "XRL.World.Parts.Mutation.ColdAbsorption|FireEvent|System.Boolean|XRL.World.Event",
+            "XRL.World.Parts.Mutation.HeatAbsorption|FireEvent|System.Boolean|XRL.World.Event",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Parts.Mutation/ColdAbsorption.cs::"
+                "XRL.World.Parts.Mutation.ColdAbsorption.FireEvent"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, pipeline, tests, target_tests),
+        ),
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Parts.Mutation/HeatAbsorption.cs::"
+                "XRL.World.Parts.Mutation.HeatAbsorption.FireEvent"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, pipeline, tests, target_tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -7837,6 +7890,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_fire_suppression_discharge_message_families(),
     *_cudgel_conk_popup_family(),
     *_experience_award_xp_family(),
+    *_mutation_absorption_healing_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 

@@ -12,6 +12,7 @@ internal static class MessageQueueSemanticPipeline
         PhysicsObjectEnteringCellTranslationPatch.TryTranslateQueuedMessage,
         CrippleApplyTranslationPatch.TryTranslateQueuedMessage,
         GameObjectHealTranslationPatch.TryTranslateQueuedMessage,
+        MutationAbsorptionHealingTranslationPatch.TryTranslateQueuedMessage,
         ExperienceAwardXpTranslationPatch.TryTranslateQueuedMessage,
         GameObjectMoveTranslationPatch.TryTranslateQueuedMessage,
         GameObjectPerformThrowTranslationPatch.TryTranslateQueuedMessage,
