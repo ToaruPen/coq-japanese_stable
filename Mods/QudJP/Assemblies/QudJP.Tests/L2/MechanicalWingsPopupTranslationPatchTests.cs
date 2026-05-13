@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
+using QudJP.Tests.L1;
 
 namespace QudJP.Tests.L2;
 
@@ -200,31 +201,12 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
 
     private static string RepositoryDictionaryDirectory()
     {
-        return Path.GetFullPath(
-            Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "..",
-                "..",
-                "..",
-                "..",
-                "..",
-                "Localization",
-                "Dictionaries"));
+        return Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization", "Dictionaries");
     }
 
     private static string RepositoryMessageFramePath()
     {
-        return Path.GetFullPath(
-            Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "..",
-                "..",
-                "..",
-                "..",
-                "..",
-                "Localization",
-                "MessageFrames",
-                "verbs.ja.json"));
+        return Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization", "MessageFrames", "verbs.ja.json");
     }
 
     private static string CreateHarmonyId()

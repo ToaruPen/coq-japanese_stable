@@ -1382,6 +1382,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Conversations.Parts.TakeItem|Execute|System.Boolean",
     })]
+    [TestCase(typeof(MechanicalWingsPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.MechanicalWings|TryStartup|System.Boolean",
+    })]
     [TestCase(typeof(OldSaveContinueMenuPopupTranslationPatch), new[]
     {
         "Qud.UI.MainMenu|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",

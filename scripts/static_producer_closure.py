@@ -1633,6 +1633,51 @@ def _conversation_take_item_popup_family() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _mechanical_wings_popup_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/MechanicalWings.cs::XRL.World.Parts.MechanicalWings.TryStartup",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MechanicalWingsPopupTranslationPatch.cs",
+                    (
+                        "MechanicalWingsPopupTranslationPatch",
+                        "XRL.World.Parts.MechanicalWings",
+                        "TryStartup",
+                        "StatusPattern",
+                        "MessageFrameTranslator.TryTranslateXDidY",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("MechanicalWingsPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/MechanicalWingsPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesMechanicalWingsStartupPopup_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_StripsDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "Patch_LeavesUnknownPopupUnchanged_WhenOwnerPatched",
+                        "Patch_RestoresOuterOwnerScopeAfterNestedOwnerPopup",
+                        "The {{Y|mechanical wings}} are still starting up.",
+                        "The {{Y|mechanical wings}} are unresponsive.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(MechanicalWingsPopupTranslationPatch)",
+                        "XRL.World.Parts.MechanicalWings|TryStartup|System.Boolean",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _grit_gate_terminal_owner_families() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -7442,6 +7487,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_game_summary_tombstone_popup_families(),
     *_powered_floating_popup_family(),
     *_conversation_take_item_popup_family(),
+    *_mechanical_wings_popup_family(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 
