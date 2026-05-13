@@ -3418,6 +3418,58 @@ def _effect_generated_message_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _blaze_tonic_remove_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Effects/Blaze_Tonic.cs::XRL.World.Effects.Blaze_Tonic.Remove",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/BlazeTonicRemoveTranslationPatch.cs",
+                    (
+                        "BlazeTonicRemoveTranslationPatch",
+                        "TryTranslateBurnoutMessage",
+                        "BurnoutPattern",
+                        "Translator.Translate",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("BlazeTonicRemoveTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/world-effects-tonics.ja.json",
+                    (
+                        "{{blaze|blaze}} tonic",
+                        "{{blaze|ブレイズ}}トニック",
+                        "XRL.World.Effects.Blaze_Tonic.Description",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "BlazeTonicRemove_TranslatesBurnoutQueuedMessage_WhenOwnerPatched",
+                        "BlazeTonicRemove_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                        "BlazeTonicRemove_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                        "FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "The {{blaze|blaze}} tonic burns out of your system.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "TargetMethod_ResolvesExpectedSignature",
+                        "BlazeTonicRemoveTranslationPatch",
+                        "XRL.World.Effects.Blaze_Tonic",
+                        "Remove",
+                        "XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _cripple_apply_family() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -5002,6 +5054,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_effect_static_message_families(),
     *_stasis_attack_bounce_family(),
     *_effect_generated_message_families(),
+    *_blaze_tonic_remove_family(),
     *_cripple_apply_family(),
     *_mutation_self_target_popup_families(),
     *_system_static_message_families(),

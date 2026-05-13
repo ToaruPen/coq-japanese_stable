@@ -4067,6 +4067,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("The 熊 resists your life drain!")]
     [TestCase("You resist snapjaw's life drain!")]
     [TestCase("The 装置 was cracked.")]
+    [TestCase("The {{blaze|blaze}} tonic burns out of your system.")]
     [TestCase("1 turn remains until your berserker rage ends.")]
     [TestCase("2 turns remain until your berserker rage ends.")]
     [TestCase("1 turn remains until you stop demolishing.")]
@@ -4315,6 +4316,34 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void EffectGeneratedApply_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
     {
         AssertEffectGeneratedApplyQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        "The {{blaze|blaze}} tonic burns out of your system.",
+        "{{blaze|ブレイズ}}トニックが体内から燃え尽きた。")]
+    [TestCase(
+        "{{R|The {{blaze|blaze}} tonic burns out of your system.}}",
+        "{{R|{{blaze|ブレイズ}}トニックが体内から燃え尽きた。}}")]
+    public void BlazeTonicRemove_TranslatesBurnoutQueuedMessage_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        UseRepositoryPatternDictionary();
+        AssertBlazeTonicRemoveQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void BlazeTonicRemove_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertBlazeTonicRemoveQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("The {{blaze|blaze}} tonic burns out of your system."),
+            "The {{blaze|blaze}} tonic burns out of your system.");
+    }
+
+    [Test]
+    public void BlazeTonicRemove_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertBlazeTonicRemoveQueuedMessage(string.Empty, string.Empty);
     }
 
     [Test]
@@ -8267,6 +8296,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
             };
 
             _ = target.Apply(new DummyGameObject());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertBlazeTonicRemoveQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.Remove), typeof(DummyGameObject)),
+                typeof(BlazeTonicRemoveTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.Remove(new DummyGameObject());
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }

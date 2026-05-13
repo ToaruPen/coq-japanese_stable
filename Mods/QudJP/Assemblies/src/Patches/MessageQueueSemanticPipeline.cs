@@ -33,6 +33,7 @@ internal static class MessageQueueSemanticPipeline
         CombatSkillMessageTranslationPatch.TryTranslateQueuedMessage,
         StasisTranslationPatch.TryTranslateQueuedMessage,
         EffectGeneratedMessageTranslationPatch.TryTranslateQueuedMessage,
+        BlazeTonicRemoveTranslationPatch.TryTranslateQueuedMessage,
         LatchesOnTranslationPatch.TryTranslateQueuedMessage,
         AsleepOwnerTranslationPatch.TryTranslateQueuedMessage,
         EnclosingTranslationPatch.TryTranslateQueuedMessage,
