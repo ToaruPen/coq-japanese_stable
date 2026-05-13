@@ -445,6 +445,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(LatchedOntoExpiredTranslationPatch), "Expired", "XRL.World.Effects.LatchedOnto", "System.Void", new string[0])]
     [TestCase(typeof(TinkeringBuildPopupTranslationPatch), "PerformUITinkerBuild", "XRL.UI.TinkeringScreen", "System.Boolean", new[] { "XRL.World.GameObject", "XRL.World.Tinkering.TinkerData", "XRL.World.IEvent" })]
     [TestCase(typeof(TinkeringModPopupTranslationPatch), "PerformUITinkerMod", "XRL.UI.TinkeringScreen", "System.Boolean", new[] { "XRL.World.GameObject", "XRL.World.GameObject", "XRL.World.Tinkering.TinkerData", "XRL.World.Tinkering.BitCost", "XRL.World.IEvent", "System.Boolean&", "System.Collections.Generic.List`1[[XRL.World.GameObject]]" })]
+    [TestCase(typeof(PickItemTakeAllPopupTranslationPatch), "TakeAll", "XRL.UI.PickItem", "System.Boolean", new[] { "XRL.World.GameObject", "XRL.World.GameObject", "XRL.World.Cell", "System.Collections.Generic.IList`1[[XRL.World.GameObject]]", "System.Boolean&" })]
     [TestCase(typeof(AbsorbablePsychePopupTranslationPatch), "HandleEvent", "XRL.World.Parts.AbsorbablePsyche", "System.Boolean", new[] { "XRL.World.BeforeDeathRemovalEvent" })]
     [TestCase(typeof(DataDiskLearnPopupTranslationPatch), "HandleEvent", "XRL.World.Parts.DataDisk", "System.Boolean", new[] { "XRL.World.InventoryActionEvent" })]
     [TestCase(typeof(StairsDownTranslationPatch), "HandleEvent", "XRL.World.Parts.StairsDown", "System.Boolean", new[] { "XRL.World.InventoryActionEvent" })]

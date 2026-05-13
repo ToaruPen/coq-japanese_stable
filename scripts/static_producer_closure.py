@@ -1228,6 +1228,48 @@ def _grit_gate_terminal_owner_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _pick_item_take_all_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.UI/PickItem.cs::XRL.UI.PickItem.TakeAll",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PickItemTakeAllPopupTranslationPatch.cs",
+                    (
+                        "PickItemTakeAllPopupTranslationPatch",
+                        "TakeAll",
+                        "TryTranslatePopupMessage",
+                        "Taking all these objects will put you over your weight limit.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("PickItemTakeAllPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PickItemTakeAllPopupTranslationPatchTests.cs",
+                    (
+                        "TakeAll_TranslatesOverweightConfirmationPopup_WhenOwnerPatched",
+                        "TakeAll_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "TakeAll_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "TakeAll_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "Taking all these objects will put you over your weight limit.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(PickItemTakeAllPopupTranslationPatch)",
+                        "XRL.UI.PickItem",
+                        '"TakeAll"',
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _status_screen_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/StatusScreenPopupTranslationPatch.cs",
@@ -5539,6 +5581,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_water_ritual_popup_families(),
     *_popup_pick_several_family(),
     *_grit_gate_terminal_owner_families(),
+    *_pick_item_take_all_family(),
     *_status_screen_popup_families(),
     *_campfire_preserve_families(),
     *_reality_stabilized_event_families(),
