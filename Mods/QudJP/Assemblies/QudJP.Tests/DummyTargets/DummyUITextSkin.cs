@@ -6,12 +6,15 @@ internal sealed class DummyUITextSkin
 
     public string? text;
 
+    public int SetTextCallCount { get; private set; }
+
     public int ApplyCallCount { get; private set; }
 
     public DummyActiveObject gameObject = new DummyActiveObject();
 
     public void SetText(string text)
     {
+        SetTextCallCount++;
         Text = text;
         this.text = text;
     }

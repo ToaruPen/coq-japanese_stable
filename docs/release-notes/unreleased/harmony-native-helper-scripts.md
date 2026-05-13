@@ -1,3 +1,0 @@
-### Added
-
-- Added opt-in macOS helper scripts for advanced Apple Silicon users who want to try the Harmony 2.4.2 native ARM64 workaround, plus a restore helper to put the game DLL back from QudJP's backup.
