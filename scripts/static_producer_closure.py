@@ -5977,6 +5977,56 @@ def _mutation_absorption_healing_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _on_eat_reward_message_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/OnEatRewardMessageTranslationPatch.cs",
+        (
+            "OnEatRewardMessageTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "MPOnEat",
+            "RefreshAllCooldownsOnEat",
+            "MutationPointPattern",
+            "CooldownRefreshPattern",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("OnEatRewardMessageTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+        (
+            "OnEatReward_TranslatesGeneratedRewardMessages_WhenOwnerPatched",
+            "OnEatReward_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+            "OnEatReward_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "OnEatReward_LeavesUnsupportedMessageUnchanged_WhenOwnerPatched",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(OnEatRewardMessageTranslationPatch)",
+            "XRL.World.Parts.MPOnEat|FireEvent|System.Boolean|XRL.World.Event",
+            "XRL.World.Parts.RefreshAllCooldownsOnEat|FireEvent|System.Boolean|XRL.World.Event",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/MPOnEat.cs::XRL.World.Parts.MPOnEat.FireEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, pipeline, tests, target_tests),
+        ),
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Parts/RefreshAllCooldownsOnEat.cs::"
+                "XRL.World.Parts.RefreshAllCooldownsOnEat.FireEvent"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, pipeline, tests, target_tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -7932,6 +7982,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_cudgel_conk_popup_family(),
     *_experience_award_xp_family(),
     *_mutation_absorption_healing_families(),
+    *_on_eat_reward_message_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 

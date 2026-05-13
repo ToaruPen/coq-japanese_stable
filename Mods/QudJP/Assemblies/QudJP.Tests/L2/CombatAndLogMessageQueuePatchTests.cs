@@ -821,6 +821,58 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertMutationAbsorptionHealingQueuedMessage(source, source);
     }
 
+    [TestCase("You gain 1 mutation point!", "変異ポイントを1獲得した！")]
+    [TestCase("You gain 3 mutation points!", "変異ポイントを3獲得した！")]
+    [TestCase("You suddenly feel ready to use Sprint again.", "急にSprintを再使用できそうな気がしてきた。")]
+    [TestCase("You suddenly feel ready to use {{G|Phase}} again.", "急に{{G|Phase}}を再使用できそうな気がしてきた。")]
+    public void OnEatReward_TranslatesGeneratedRewardMessages_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertOnEatRewardQueuedMessage(source, expected, expectedColor: "G");
+    }
+
+    [TestCase("You gain 1 mutation point!")]
+    [TestCase("You gain 3 mutation points!")]
+    [TestCase("You suddenly feel ready to use Sprint again.")]
+    public void OnEatReward_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage(source, "G", Capitalize: false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+                Assert.That(DummyMessageQueue.LastColor, Is.EqualTo("G"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void OnEatReward_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertOnEatRewardQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("You gain 1 mutation point!"),
+            "You gain 1 mutation point!");
+    }
+
+    [TestCase("")]
+    [TestCase("You gain mutation points!")]
+    [TestCase("You suddenly feel ready again.")]
+    public void OnEatReward_LeavesUnsupportedMessageUnchanged_WhenOwnerPatched(string source)
+    {
+        AssertOnEatRewardQueuedMessage(source, source);
+    }
+
     [Test]
     public void GameObjectMove_TranslatesSingularStuckMessage_WhenPatched()
     {
@@ -8787,6 +8839,41 @@ public sealed class CombatAndLogMessageQueuePatchTests
                 harmony,
                 RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.FireEvent), typeof(DummyEvent)),
                 typeof(MutationAbsorptionHealingTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+                ColorToSend = expectedColor,
+            };
+
+            _ = target.FireEvent(new DummyEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+                Assert.That(DummyMessageQueue.LastColor, Is.EqualTo(expectedColor));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertOnEatRewardQueuedMessage(
+        string message,
+        string expected,
+        string? expectedColor = null)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.FireEvent), typeof(DummyEvent)),
+                typeof(OnEatRewardMessageTranslationPatch));
 
             var target = new DummySimpleOwnerQueueTarget
             {

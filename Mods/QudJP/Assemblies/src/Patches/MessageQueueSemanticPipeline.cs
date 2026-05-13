@@ -29,6 +29,7 @@ internal static class MessageQueueSemanticPipeline
         FireSuppressionDischargeTranslationPatch.TryTranslateQueuedMessage,
         TrollKingTranslationPatch.TryTranslateQueuedMessage,
         MutatingTranslationPatch.TryTranslateQueuedMessage,
+        OnEatRewardMessageTranslationPatch.TryTranslateQueuedMessage,
         QuillsTranslationPatch.TryTranslateQueuedMessage,
         LightManipulationTranslationPatch.TryTranslateQueuedMessage,
         CombatSkillMessageTranslationPatch.TryTranslateQueuedMessage,

@@ -1199,6 +1199,11 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Mutation.ColdAbsorption|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.Mutation.HeatAbsorption|FireEvent|System.Boolean|XRL.World.Event",
     })]
+    [TestCase(typeof(OnEatRewardMessageTranslationPatch), new[]
+    {
+        "XRL.World.Parts.MPOnEat|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.RefreshAllCooldownsOnEat|FireEvent|System.Boolean|XRL.World.Event",
+    })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
         "XRL.World.Parts.Combat|HandleEvent|System.Boolean|XRL.World.GetDefenderHitDiceEvent",
