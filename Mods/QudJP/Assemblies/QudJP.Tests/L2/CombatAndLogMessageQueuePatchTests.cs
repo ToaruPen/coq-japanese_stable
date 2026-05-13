@@ -4105,6 +4105,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("The membrane of the egg sac snots apart.")]
     [TestCase("The svardym eggs hatch.")]
     [TestCase("The svardym egg hatches.")]
+    [TestCase("You are shunted to another location!")]
+    [TestCase("You teleport!")]
     public void FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
     {
         var harmonyId = CreateHarmonyId();
@@ -4565,6 +4567,15 @@ public sealed class CombatAndLogMessageQueuePatchTests
         string expected)
     {
         AssertSystemStaticTickEggQueuedMessage(source, expected);
+    }
+
+    [TestCase("You are shunted to another location!", "別の場所へ弾き飛ばされた！")]
+    [TestCase("You teleport!", "テレポートした！")]
+    public void SystemStaticTeleportationCast_TranslatesFixedQueuedMessages_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertSystemStaticCastQueuedMessage(source, expected);
     }
 
     [Test]
@@ -8772,6 +8783,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
             };
 
             target.tickEgg();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertSystemStaticCastQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.Cast)),
+                typeof(SystemStaticMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.Cast();
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }

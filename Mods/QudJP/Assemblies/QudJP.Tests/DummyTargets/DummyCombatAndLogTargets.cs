@@ -1269,6 +1269,12 @@ internal sealed class DummySimpleOwnerQueueTarget
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
     }
 
+    public bool Cast()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
     public void TeleportToClamWorld(DummyGameObject? obj = null)
     {
         SendOwnerQueueMessage(nameof(TeleportToClamWorld), obj);

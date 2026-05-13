@@ -21,6 +21,10 @@ public static class SystemStaticMessageTranslationPatch
         var eventType = AccessTools.TypeByName("XRL.World.Event");
         var zoneType = AccessTools.TypeByName("XRL.World.Zone");
         var factionType = AccessTools.TypeByName("XRL.World.Faction");
+        var teleportationType = AccessTools.TypeByName("XRL.World.Parts.Mutation.Teleportation");
+        var iEventType = AccessTools.TypeByName("XRL.World.IEvent");
+        var cellType = AccessTools.TypeByName("XRL.World.Cell");
+        var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
         if (eventType is null || zoneType is null || factionType is null)
         {
             Trace.TraceError("QudJP: {0} target parameter types not found.", Context);
@@ -33,6 +37,18 @@ public static class SystemStaticMessageTranslationPatch
         AddTarget(targets, "XRL.World.Parts.TrembleEarthquakes", "Quake", Type.EmptyTypes);
         AddTarget(targets, "XRL.World.Parts.DoorSwitch", "FireEvent", new[] { eventType });
         AddTarget(targets, "XRL.World.Parts.SpawningEggSac", "tickEgg", Type.EmptyTypes);
+        if (teleportationType is not null && iEventType is not null && cellType is not null && gameObjectType is not null)
+        {
+            AddTarget(
+                targets,
+                "XRL.World.Parts.Mutation.Teleportation",
+                "Cast",
+                new[] { teleportationType, typeof(string), iEventType, cellType, gameObjectType, typeof(bool), typeof(int) });
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0}.Teleportation.Cast parameter type not found.", Context);
+        }
         return targets;
     }
 
@@ -89,6 +105,8 @@ public static class SystemStaticMessageTranslationPatch
             "The membrane of the egg sac snots apart." => "卵嚢の膜がぐしゃりと裂けた。",
             "The svardym eggs hatch." => "スヴァーディムの卵が孵化した。",
             "The svardym egg hatches." => "スヴァーディムの卵が孵化した。",
+            "You are shunted to another location!" => "別の場所へ弾き飛ばされた！",
+            "You teleport!" => "テレポートした！",
             _ => null,
         };
         if (translated is null)

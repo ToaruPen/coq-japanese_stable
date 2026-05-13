@@ -4903,6 +4903,7 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             "SystemStaticQuake_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "SystemStaticDoorSwitchFireEvent_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "SystemStaticSpawningEggSacTickEgg_TranslatesFixedQueuedMessages_WhenOwnerPatched",
+            "SystemStaticTeleportationCast_TranslatesFixedQueuedMessages_WhenOwnerPatched",
             "SystemStaticQuake_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
             "SystemStaticQuake_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
             "SystemStatic_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
@@ -4924,6 +4925,8 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             "The membrane of the egg sac snots apart.",
             "The svardym eggs hatch.",
             "The svardym egg hatches.",
+            "You are shunted to another location!",
+            "You teleport!",
         ),
     )
     pipeline = EvidenceFile(
@@ -5035,6 +5038,23 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
                     (
                         "typeof(SystemStaticMessageTranslationPatch)",
                         "XRL.World.Parts.SpawningEggSac|tickEgg|System.Void",
+                    ),
+                ),
+                dictionary,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts.Mutation/Teleportation.cs::XRL.World.Parts.Mutation.Teleportation.Cast",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                tests,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SystemStaticMessageTranslationPatch)",
+                        "XRL.World.Parts.Mutation.Teleportation|Cast|System.Boolean|XRL.World.Parts.Mutation.Teleportation|System.String|XRL.World.IEvent|XRL.World.Cell|XRL.World.GameObject|System.Boolean|System.Int32",
                     ),
                 ),
                 dictionary,
