@@ -1678,6 +1678,63 @@ def _mechanical_wings_popup_family() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _fire_suppression_discharge_message_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/FireSuppressionDischargeTranslationPatch.cs",
+        (
+            "FireSuppressionDischargeTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "FireSuppressionSelfPattern",
+            "FireSuppressionTargetPattern",
+            "CyberneticsSelfPattern",
+            "CyberneticsTargetPattern",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("FireSuppressionDischargeTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/FireSuppressionDischargeTranslationPatchTests.cs",
+        (
+            "Patch_TranslatesFireSuppressionDischargeMessages_WhenOwnerPatched",
+            "Patch_DoesNotTranslateFireSuppressionDischargeMessage_WhenOwnerAbsent",
+            "Patch_DoesNotRetranslateDirectMarkedMessage_WhenOwnerPatched",
+            "Patch_LeavesUnknownMessageUnchanged_WhenOwnerPatched",
+            "Patch_LeavesEmptyMessageUnchanged_WhenOwnerPatched",
+            "Patch_RestoresOuterOwnerScopeAfterNestedOwnerMessage",
+            "2 drams of {{C|gel}} discharges all over you.",
+            "1 dram of {{C|gel}} discharges all over the snapjaw.",
+            "Your {{Y|fire suppression system}} discharges 2 drams of {{C|gel}} all over you.",
+            "{{G|snapjaw}}'s {{Y|fire suppression system}} discharges 1 dram of {{C|gel}} all over it.",
+        ),
+    )
+    l2g = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(FireSuppressionDischargeTranslationPatch)",
+            "XRL.World.Parts.FireSuppressionSystem|CheckFireSuppression|System.Boolean|XRL.World.GameObject",
+            "XRL.World.Parts.CyberneticsFireSuppressionSystem|TurnTick|System.Void|System.Int64|System.Int32",
+        ),
+    )
+
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/FireSuppressionSystem.cs::XRL.World.Parts.FireSuppressionSystem.CheckFireSuppression",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, pipeline, tests, l2g),
+        ),
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Parts/CyberneticsFireSuppressionSystem.cs::"
+                "XRL.World.Parts.CyberneticsFireSuppressionSystem.TurnTick"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, pipeline, tests, l2g),
+        ),
+    )
+
+
 def _grit_gate_terminal_owner_families() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -7488,6 +7545,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_powered_floating_popup_family(),
     *_conversation_take_item_popup_family(),
     *_mechanical_wings_popup_family(),
+    *_fire_suppression_discharge_message_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 
