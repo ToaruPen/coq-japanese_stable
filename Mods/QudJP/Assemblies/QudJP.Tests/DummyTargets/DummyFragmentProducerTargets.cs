@@ -371,6 +371,40 @@ internal sealed class DummyPetEitherOrProducerTarget
     {
         DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, null, Capitalize: false);
     }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void trigger()
+    {
+        DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, null, Capitalize: false);
+    }
+}
+
+internal sealed class DummyHologramInvulnerabilityProducerTarget
+{
+    public string QueuedMessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool HandleEvent()
+    {
+        DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, ColorToSend, Capitalize: false);
+        return false;
+    }
+}
+
+internal sealed class DummyDecarbonizerProducerTarget
+{
+    public string QueuedMessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool ShutDownTargeting()
+    {
+        DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
 }
 
 internal sealed class DummyZoneWindChangeProducerTarget

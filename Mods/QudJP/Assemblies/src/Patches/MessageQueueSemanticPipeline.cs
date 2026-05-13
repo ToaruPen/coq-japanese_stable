@@ -54,6 +54,7 @@ internal static class MessageQueueSemanticPipeline
         StasisTranslationPatch.TryTranslateQueuedMessage,
         EffectMobilityBlockTranslationPatch.TryTranslateQueuedMessage,
         EffectGeneratedMessageTranslationPatch.TryTranslateQueuedMessage,
+        GeneratedSubjectQueueTranslationPatch.TryTranslateQueuedMessage,
         GeneratedQueueDoesVerbTranslationPatch.TryTranslateQueuedMessage,
         BlazeTonicRemoveTranslationPatch.TryTranslateQueuedMessage,
         LatchedOntoExpiredTranslationPatch.TryTranslateQueuedMessage,

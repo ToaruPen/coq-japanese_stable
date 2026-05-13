@@ -7627,6 +7627,101 @@ def _mental_shield_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _generated_subject_queue_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/GeneratedSubjectQueueTranslationPatch.cs",
+        (
+            "GeneratedSubjectQueueTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "AttackPassesPattern",
+            "MolecularCannonOfflinePattern",
+            "StartsToFlickerPattern",
+            "HologramInvulnerability",
+            "Decarbonizer",
+            "PetEitherOr",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("GeneratedSubjectQueueTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldPartsProducerTranslationPatchTests.cs",
+        (
+            "GeneratedSubjectQueuePatch_TranslatesInventoriedMessages_WhenOwnerPatched",
+            "GeneratedSubjectQueuePatch_PreservesWholeMessageColorBoundary_WhenOwnerPatched",
+            "GeneratedSubjectQueuePatch_DoesNotTranslateQueuedMessage_WhenOwnerPatchIsAbsent",
+            "GeneratedSubjectQueuePatch_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "GeneratedSubjectQueuePatch_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(GeneratedSubjectQueueTranslationPatch)",
+            "XRL.World.Parts.HologramInvulnerability|HandleEvent|System.Boolean|XRL.World.BeforeApplyDamageEvent",
+            "XRL.World.Parts.Mutation.Decarbonizer|ShutDownTargeting|System.Boolean",
+            "XRL.World.Parts.PetEitherOr|trigger|System.Void",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/HologramInvulnerability.cs::XRL.World.Parts.HologramInvulnerability.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                EvidenceFile(
+                    tests.path,
+                    (
+                        *tests.required_substrings,
+                        "DummyHologramInvulnerabilityProducerTarget",
+                        "glowfish's attack passes harmlessly through hologram.",
+                        "glowfish\u306e\u653b\u6483\u306fhologram\u3092\u7121\u5bb3\u306b\u901a\u308a\u629c\u3051\u305f\u3002",
+                    ),
+                ),
+                target_tests,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts.Mutation/Decarbonizer.cs::XRL.World.Parts.Mutation.Decarbonizer.ShutDownTargeting",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                EvidenceFile(
+                    tests.path,
+                    (
+                        *tests.required_substrings,
+                        "DummyDecarbonizerProducerTarget",
+                        "{{C|decarbonizer}}'s molecular cannon goes offline.",
+                        "{{C|decarbonizer}}\u306e\u5206\u5b50\u7832\u304c\u30aa\u30d5\u30e9\u30a4\u30f3\u306b\u306a\u3063\u305f\u3002",
+                    ),
+                ),
+                target_tests,
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/PetEitherOr.cs::XRL.World.Parts.PetEitherOr.trigger",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                patch,
+                pipeline,
+                EvidenceFile(
+                    tests.path,
+                    (
+                        *tests.required_substrings,
+                        "DummyPetEitherOrProducerTarget.trigger",
+                        "{{Y|Either}} starts to flicker.",
+                        "{{Y|Either}}\u304c\u3061\u3089\u3064\u304d\u59cb\u3081\u305f\u3002",
+                    ),
+                ),
+                target_tests,
+            ),
+        ),
+    )
+
+
 def _tabula_rasae_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/TabulaRasaeTranslationPatch.cs",
@@ -9970,6 +10065,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_engraver_families(),
     *_auto_act_reset_family(),
     *_prefixed_owner_queue_families(),
+    *_generated_subject_queue_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 

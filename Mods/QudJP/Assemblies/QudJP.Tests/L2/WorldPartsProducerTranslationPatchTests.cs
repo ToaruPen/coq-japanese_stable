@@ -1310,6 +1310,151 @@ public sealed class WorldPartsProducerTranslationPatchTests
         }
     }
 
+    [TestCase(
+        typeof(DummyHologramInvulnerabilityProducerTarget),
+        nameof(DummyHologramInvulnerabilityProducerTarget.HandleEvent),
+        "glowfish's attack passes harmlessly through hologram.",
+        "glowfishの攻撃はhologramを無害に通り抜けた。")]
+    [TestCase(
+        typeof(DummyDecarbonizerProducerTarget),
+        nameof(DummyDecarbonizerProducerTarget.ShutDownTargeting),
+        "{{C|decarbonizer}}'s molecular cannon goes offline.",
+        "{{C|decarbonizer}}の分子砲がオフラインになった。")]
+    [TestCase(
+        typeof(DummyPetEitherOrProducerTarget),
+        nameof(DummyPetEitherOrProducerTarget.trigger),
+        "{{Y|Either}} starts to flicker.",
+        "{{Y|Either}}がちらつき始めた。")]
+    public void GeneratedSubjectQueuePatch_TranslatesInventoriedMessages_WhenOwnerPatched(
+        Type targetType,
+        string methodName,
+        string source,
+        string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(targetType, methodName),
+                typeof(GeneratedSubjectQueueTranslationPatch));
+
+            InvokeGeneratedSubjectQueueTarget(targetType, methodName, source);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GeneratedSubjectQueuePatch_PreservesWholeMessageColorBoundary_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyHologramInvulnerabilityProducerTarget), nameof(DummyHologramInvulnerabilityProducerTarget.HandleEvent)),
+                typeof(GeneratedSubjectQueueTranslationPatch));
+
+            InvokeGeneratedSubjectQueueTarget(
+                typeof(DummyHologramInvulnerabilityProducerTarget),
+                nameof(DummyHologramInvulnerabilityProducerTarget.HandleEvent),
+                "{{R|glowfish's attack passes harmlessly through hologram.}}");
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("{{R|glowfishの攻撃はhologramを無害に通り抜けた。}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GeneratedSubjectQueuePatch_DoesNotTranslateQueuedMessage_WhenOwnerPatchIsAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+
+            const string source = "glowfish's attack passes harmlessly through hologram.";
+            DummyMessageQueue.AddPlayerMessage(source, null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GeneratedSubjectQueuePatch_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyPetEitherOrProducerTarget), nameof(DummyPetEitherOrProducerTarget.trigger)),
+                typeof(GeneratedSubjectQueueTranslationPatch));
+
+            var source = MessageFrameTranslator.MarkDirectTranslation("{{Y|Either}}がちらつき始めた。");
+            InvokeGeneratedSubjectQueueTarget(
+                typeof(DummyPetEitherOrProducerTarget),
+                nameof(DummyPetEitherOrProducerTarget.trigger),
+                source);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("{{Y|Either}}がちらつき始めた。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GeneratedSubjectQueuePatch_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyDecarbonizerProducerTarget), nameof(DummyDecarbonizerProducerTarget.ShutDownTargeting)),
+                typeof(GeneratedSubjectQueueTranslationPatch));
+
+            InvokeGeneratedSubjectQueueTarget(
+                typeof(DummyDecarbonizerProducerTarget),
+                nameof(DummyDecarbonizerProducerTarget.ShutDownTargeting),
+                string.Empty);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.Empty);
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     [TestCase("The wind changes direction.", "風向きが変わった。")]
     [TestCase("The wind becomes still.", "風が静まった。")]
     [TestCase("The wind changes direction from the north to the southeast.", "風向きが北から南東へ変わった。")]
@@ -1608,6 +1753,44 @@ public sealed class WorldPartsProducerTranslationPatchTests
             };
 
             _ = target.HandleEvent(new DummyInventoryActionEvent());
+            return;
+        }
+
+        throw new ArgumentOutOfRangeException(nameof(targetType), targetType, null);
+    }
+
+    private static void InvokeGeneratedSubjectQueueTarget(Type targetType, string methodName, string source)
+    {
+        if (targetType == typeof(DummyHologramInvulnerabilityProducerTarget))
+        {
+            var target = new DummyHologramInvulnerabilityProducerTarget
+            {
+                QueuedMessageToSend = source,
+            };
+
+            _ = target.HandleEvent();
+            return;
+        }
+
+        if (targetType == typeof(DummyDecarbonizerProducerTarget))
+        {
+            var target = new DummyDecarbonizerProducerTarget
+            {
+                QueuedMessageToSend = source,
+            };
+
+            _ = target.ShutDownTargeting();
+            return;
+        }
+
+        if (targetType == typeof(DummyPetEitherOrProducerTarget) && methodName == nameof(DummyPetEitherOrProducerTarget.trigger))
+        {
+            var target = new DummyPetEitherOrProducerTarget
+            {
+                QueuedMessageToSend = source,
+            };
+
+            target.trigger();
             return;
         }
 

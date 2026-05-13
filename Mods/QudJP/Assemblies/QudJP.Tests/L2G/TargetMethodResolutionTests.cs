@@ -1608,6 +1608,12 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.QuantumRippler|HandleEvent|System.Boolean|XRL.World.RealityStabilizeEvent",
         "XRL.World.Parts.ReclamationCist|PerformReclamationOf|System.Boolean|XRL.World.GameObject",
     })]
+    [TestCase(typeof(GeneratedSubjectQueueTranslationPatch), new[]
+    {
+        "XRL.World.Parts.HologramInvulnerability|HandleEvent|System.Boolean|XRL.World.BeforeApplyDamageEvent",
+        "XRL.World.Parts.Mutation.Decarbonizer|ShutDownTargeting|System.Boolean",
+        "XRL.World.Parts.PetEitherOr|trigger|System.Void",
+    })]
     [TestCase(typeof(GiantClamTeleportTranslationPatch), new[]
     {
         "XRL.World.Parts.GiantClamProperties|TeleportToClamWorld|System.Void|XRL.World.GameObject",
