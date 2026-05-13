@@ -3672,6 +3672,90 @@ def _single_callsite_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _xrl_core_owner_queue_families() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.Core/XRLCore.cs::XRL.Core.XRLCore.HotloadConfiguration",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/XrlCoreHotloadConfigurationTranslationPatch.cs",
+                    (
+                        "XrlCoreHotloadConfigurationTranslationPatch",
+                        "HotloadConfiguration",
+                        "Configuration hotloaded...",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("XrlCoreHotloadConfigurationTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldPartsProducerTranslationPatchTests.cs",
+                    (
+                        "XrlCoreHotloadConfigurationPatch_TranslatesQueuedMessage_WhenOwnerPatched",
+                        "XrlCoreHotloadConfigurationPatch_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "XrlCoreHotloadConfigurationPatch_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                        "XrlCoreHotloadConfigurationPatch_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                        "設定をホットロードした...",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "XrlCoreHotloadConfigurationTranslationPatch",
+                        "HotloadConfiguration",
+                        "XRL.Core.XRLCore",
+                        "System.Boolean",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.Core/XRLCore.cs::XRL.Core.XRLCore.RenderBaseToBuffer",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/XrlCoreLostSightTranslationPatch.cs",
+                    (
+                        "XrlCoreLostSightTranslationPatch",
+                        "RenderBaseToBuffer",
+                        "You have lost sight of ",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("XrlCoreLostSightTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldPartsProducerTranslationPatchTests.cs",
+                    (
+                        "XrlCoreLostSightPatch_RecordsOwnerRouteTransforms_WithoutMessageLogSinkObservation_WhenPatched",
+                        "You have lost sight of bloody Naruur.",
+                        "bloody Naruurを見失った。",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "XrlCoreLostSightTranslationPatch",
+                        "RenderBaseToBuffer",
+                        "XRL.Core.XRLCore",
+                        "ConsoleLib.Console.ScreenBuffer",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+                    (
+                        "^You have lost sight of (?:the )?(.+?)[.!]?$",
+                        "{0}を見失った。",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _cripple_apply_family() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -5260,6 +5344,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_latched_onto_expired_family(),
     *_giant_clam_teleport_joppa_family(),
     *_single_callsite_owner_popup_families(),
+    *_xrl_core_owner_queue_families(),
     *_cripple_apply_family(),
     *_mutation_self_target_popup_families(),
     *_system_static_message_families(),

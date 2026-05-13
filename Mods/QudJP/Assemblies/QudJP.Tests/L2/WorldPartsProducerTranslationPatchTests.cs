@@ -482,6 +482,142 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [Test]
+    public void XrlCoreHotloadConfigurationPatch_TranslatesQueuedMessage_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyXrlCoreRenderTarget), nameof(DummyXrlCoreRenderTarget.HotloadConfiguration), typeof(bool)),
+                typeof(XrlCoreHotloadConfigurationTranslationPatch));
+
+            var target = new DummyXrlCoreRenderTarget
+            {
+                MessageToSend = "Configuration hotloaded...",
+            };
+
+            target.HotloadConfiguration();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("設定をホットロードした..."));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(XrlCoreHotloadConfigurationTranslationPatch),
+                        "HotloadConfiguration"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void XrlCoreHotloadConfigurationPatch_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("Configuration hotloaded...", null, Capitalize: false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Configuration hotloaded..."));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(XrlCoreHotloadConfigurationTranslationPatch),
+                        "HotloadConfiguration"),
+                    Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void XrlCoreHotloadConfigurationPatch_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyXrlCoreRenderTarget), nameof(DummyXrlCoreRenderTarget.HotloadConfiguration), typeof(bool)),
+                typeof(XrlCoreHotloadConfigurationTranslationPatch));
+
+            var target = new DummyXrlCoreRenderTarget
+            {
+                MessageToSend = MessageFrameTranslator.MarkDirectTranslation("Configuration hotloaded..."),
+            };
+
+            target.HotloadConfiguration();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Configuration hotloaded..."));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(XrlCoreHotloadConfigurationTranslationPatch),
+                        "HotloadConfiguration"),
+                    Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void XrlCoreHotloadConfigurationPatch_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyXrlCoreRenderTarget), nameof(DummyXrlCoreRenderTarget.HotloadConfiguration), typeof(bool)),
+                typeof(XrlCoreHotloadConfigurationTranslationPatch));
+
+            var target = new DummyXrlCoreRenderTarget();
+
+            target.HotloadConfiguration();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.Empty);
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(XrlCoreHotloadConfigurationTranslationPatch),
+                        "HotloadConfiguration"),
+                    Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     [TestCase(
         nameof(DummyEnclosingProducerTarget.EnterEnclosure),
         "You fail to get yourself into stasis pod.",

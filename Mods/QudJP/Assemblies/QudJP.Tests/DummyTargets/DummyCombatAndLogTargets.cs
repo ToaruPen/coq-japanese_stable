@@ -298,6 +298,12 @@ internal sealed class DummyXrlCoreRenderTarget
 
     public string? ColorToSend { get; set; }
 
+    public void HotloadConfiguration(bool generateCorpusData = false)
+    {
+        _ = generateCorpusData;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
     public void RenderBaseToBuffer(DummyScreenBuffer buffer)
     {
         _ = buffer;
