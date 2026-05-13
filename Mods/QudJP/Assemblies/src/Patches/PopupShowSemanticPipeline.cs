@@ -24,6 +24,7 @@ internal static class PopupShowSemanticPipeline
         DanceRitualOpponentTranslationPatch.TryTranslatePopupMessage,
         IExamineEventProcessIdentifyTranslationPatch.TryTranslatePopupMessage,
         EnergyLoaderCannotTakeTranslationPatch.TryTranslatePopupMessage,
+        EnergyCellSocketAccessPopupTranslationPatch.TryTranslatePopupMessage,
         HackingSifrahResultTranslationPatch.TryTranslatePopupMessage,
         QuestLifecyclePopupTranslationPatch.TryTranslatePopupMessage,
         ConversationTakeItemPopupTranslationPatch.TryTranslatePopupMessage,

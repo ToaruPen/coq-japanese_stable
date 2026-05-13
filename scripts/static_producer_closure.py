@@ -2475,6 +2475,47 @@ def _energy_loader_cannot_take_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _energy_cell_socket_access_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/EnergyCellSocket.cs::XRL.World.Parts.EnergyCellSocket.AttemptReplaceCell",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/EnergyCellSocketAccessPopupTranslationPatch.cs",
+                    (
+                        "EnergyCellSocketAccessPopupTranslationPatch",
+                        "AttemptReplaceCell",
+                        "AccessEnergyCellPattern",
+                        "AccessEnergyCellOwnershipWarning",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("EnergyCellSocketAccessPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/EnergyCellSocketAccessPopupTranslationPatchTests.cs",
+                    (
+                        "AttemptReplaceCell_TranslatesAccessWarning_WhenOwnerPatched",
+                        "AttemptReplaceCell_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "AttemptReplaceCell_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "AttemptReplaceCell_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+                        "DummyEnergyCellSocketTarget",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(EnergyCellSocketAccessPopupTranslationPatch)",
+                        "XRL.World.Parts.EnergyCellSocket|AttemptReplaceCell|System.Boolean|XRL.World.GameObject|XRL.World.InventoryActionEvent|System.Int32|XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _troll_king_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         ("CheckSpawn", "XRL.World.Parts.TrollKing|CheckSpawn|System.Void|System.Int32"),
@@ -8016,6 +8057,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_cybernetics_medassist_module_families(),
     *_liquid_loader_families(),
     *_energy_loader_cannot_take_families(),
+    *_energy_cell_socket_access_family(),
     *_troll_king_families(),
     *_mutating_families(),
     *_quills_families(),
