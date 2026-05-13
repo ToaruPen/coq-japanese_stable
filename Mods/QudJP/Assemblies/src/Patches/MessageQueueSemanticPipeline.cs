@@ -36,6 +36,7 @@ internal static class MessageQueueSemanticPipeline
         BlazeTonicRemoveTranslationPatch.TryTranslateQueuedMessage,
         LatchedOntoExpiredTranslationPatch.TryTranslateQueuedMessage,
         GiantClamTeleportTranslationPatch.TryTranslateQueuedMessage,
+        ForceBubbleOwnerTranslationPatch.TryTranslateQueuedMessage,
         LatchesOnTranslationPatch.TryTranslateQueuedMessage,
         AsleepOwnerTranslationPatch.TryTranslateQueuedMessage,
         EnclosingTranslationPatch.TryTranslateQueuedMessage,

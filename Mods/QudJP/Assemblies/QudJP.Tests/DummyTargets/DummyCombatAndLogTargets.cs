@@ -1279,15 +1279,34 @@ internal sealed class DummySimpleOwnerQueueTarget
         SendOwnerQueueMessage(nameof(TeleportJoppaWorld), obj);
     }
 
+    public bool ActivateForceEmitter(DummyEvent? eventObject = null)
+    {
+        _ = eventObject;
+        SendOwnerQueueMessage(nameof(ActivateForceEmitter), eventObject);
+        return true;
+    }
+
+    public bool ActivateStopsvalinn(DummyEvent? eventObject = null)
+    {
+        _ = eventObject;
+        SendOwnerQueueMessage(nameof(ActivateStopsvalinn), eventObject);
+        return true;
+    }
+
+    public void DestroyBubble(bool validated = false)
+    {
+        SendOwnerQueueMessage(nameof(DestroyBubble), validated);
+    }
+
     public void Expired()
     {
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
     }
 
-    private void SendOwnerQueueMessage(string ownerMethodName, DummyGameObject? obj)
+    private void SendOwnerQueueMessage(string ownerMethodName, object? arg)
     {
         _ = ownerMethodName;
-        _ = obj;
+        _ = arg;
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
     }
 

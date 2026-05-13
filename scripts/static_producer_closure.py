@@ -4763,6 +4763,60 @@ def _tinkering_mod_popup_family() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _force_bubble_owner_families() -> tuple[CoveredOwnerFamily, ...]:
+    target_signatures = (
+        (
+            "XRL.World.Parts/ForceEmitter.cs::XRL.World.Parts.ForceEmitter.ActivateForceEmitter",
+            "ActivateForceEmitter",
+            "XRL.World.Parts.ForceEmitter|ActivateForceEmitter|System.Boolean|XRL.World.IEvent",
+        ),
+        (
+            "XRL.World.Parts/Stopsvaalinn.cs::XRL.World.Parts.Stopsvaalinn.ActivateStopsvalinn",
+            "ActivateStopsvalinn",
+            "XRL.World.Parts.Stopsvaalinn|ActivateStopsvalinn|System.Boolean|XRL.World.IEvent",
+        ),
+        (
+            "XRL.World.Parts.Mutation/ForceBubble.cs::XRL.World.Parts.Mutation.ForceBubble.DestroyBubble",
+            "DestroyBubble",
+            "XRL.World.Parts.Mutation.ForceBubble|DestroyBubble|System.Void|System.Boolean",
+        ),
+    )
+
+    return tuple(
+        CoveredOwnerFamily(
+            family_id=family_id,
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/ForceBubbleOwnerTranslationPatch.cs",
+                    (method_name, "TryTranslateQueuedMessage", "TryTranslateForceBubbleMessage"),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("ForceBubbleOwnerTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "ForceBubbleOwner_TranslatesForceBubbleQueuedMessages_WhenOwnerPatched",
+                        "ForceBubbleOwner_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "ForceBubbleOwner_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                        "ForceBubbleOwner_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(ForceBubbleOwnerTranslationPatch)",
+                        signature,
+                    ),
+                ),
+            ),
+        )
+        for family_id, method_name, signature in target_signatures
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -6705,6 +6759,7 @@ COVERED_OWNER_FAMILIES: Final = (
         ),
     ),
     *_examiner_result_popup_families(),
+    *_force_bubble_owner_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 

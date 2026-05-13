@@ -4416,6 +4416,88 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertGiantClamTeleportQueuedMessage(nameof(DummySimpleOwnerQueueTarget.TeleportJoppaWorld), string.Empty, string.Empty);
     }
 
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.ActivateForceEmitter),
+        "The {{B|force bubble}} snaps off.",
+        "{{B|フォースバブル}}が消えた。")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.ActivateForceEmitter),
+        "The {{B|force bubble}} around {{Y|the snapjaw}} snaps off.",
+        "{{Y|the snapjaw}}の周りの{{B|フォースバブル}}が消えた。")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.ActivateForceEmitter),
+        "{{G|A {{B|force bubble}} pops into being around you.}}",
+        "{{G|あなたの周りに{{B|フォースバブル}}が出現した。}}")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.ActivateForceEmitter),
+        "A {{B|force bubble}} pops into being around {{Y|the snapjaw}}.",
+        "{{Y|the snapjaw}}の周りに{{B|フォースバブル}}が出現した。")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.ActivateStopsvalinn),
+        "The {{R|force bubble}} snaps off.",
+        "{{R|フォースバブル}}が消えた。")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.ActivateStopsvalinn),
+        "The {{R|force bubble}} in front of {{Y|the snapjaw}} snaps off.",
+        "{{Y|the snapjaw}}の前の{{R|フォースバブル}}が消えた。")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.ActivateStopsvalinn),
+        "A {{R|force bubble}} pops into being in front of you!",
+        "あなたの前に{{R|フォースバブル}}が出現した！")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.ActivateStopsvalinn),
+        "A {{R|force bubble}} pops into being in front of {{Y|the snapjaw}}.",
+        "{{Y|the snapjaw}}の前に{{R|フォースバブル}}が出現した。")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.DestroyBubble),
+        "The {{B|force bubble}} snaps off.",
+        "{{B|フォースバブル}}が消えた。")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.DestroyBubble),
+        "The {{B|force bubble}} around {{Y|the snapjaw}} snaps off.",
+        "{{Y|the snapjaw}}の周りの{{B|フォースバブル}}が消えた。")]
+    public void ForceBubbleOwner_TranslatesForceBubbleQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        AssertForceBubbleOwnerQueuedMessage(methodName, source, expected);
+    }
+
+    [Test]
+    public void ForceBubbleOwner_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("A {{B|force bubble}} pops into being around you.", null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("A {{B|force bubble}} pops into being around you."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void ForceBubbleOwner_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertForceBubbleOwnerQueuedMessage(
+            nameof(DummySimpleOwnerQueueTarget.ActivateForceEmitter),
+            MessageFrameTranslator.MarkDirectTranslation("The {{B|force bubble}} snaps off."),
+            "The {{B|force bubble}} snaps off.");
+    }
+
+    [Test]
+    public void ForceBubbleOwner_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertForceBubbleOwnerQueuedMessage(nameof(DummySimpleOwnerQueueTarget.ActivateForceEmitter), string.Empty, string.Empty);
+    }
+
     [Test]
     public void SystemStaticCheckpointOn_TranslatesFixedQueuedMessage_WhenOwnerPatched()
     {
@@ -8477,6 +8559,45 @@ public sealed class CombatAndLogMessageQueuePatchTests
     private static bool InvokeTeleportJoppaWorld(DummySimpleOwnerQueueTarget target)
     {
         target.TeleportJoppaWorld(new DummyGameObject());
+        return true;
+    }
+
+    private static void AssertForceBubbleOwnerQueuedMessage(string methodName, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), methodName),
+                typeof(ForceBubbleOwnerTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = methodName switch
+            {
+                nameof(DummySimpleOwnerQueueTarget.ActivateForceEmitter) => target.ActivateForceEmitter(),
+                nameof(DummySimpleOwnerQueueTarget.ActivateStopsvalinn) => target.ActivateStopsvalinn(),
+                nameof(DummySimpleOwnerQueueTarget.DestroyBubble) => InvokeDestroyBubble(target),
+                _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected force bubble method."),
+            };
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static bool InvokeDestroyBubble(DummySimpleOwnerQueueTarget target)
+    {
+        target.DestroyBubble();
         return true;
     }
 
