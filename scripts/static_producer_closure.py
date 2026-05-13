@@ -1363,6 +1363,126 @@ def _popup_pick_several_family() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _conversation_reward_popup_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/ConversationRewardPopupTranslationPatch.cs",
+        (
+            "ConversationRewardPopupTranslationPatch",
+            "TryTranslatePopupMessage",
+        ),
+    )
+    pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("ConversationRewardPopupTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests_common = (
+        "Patch_TranslatesConversationRewardPopups_WhenOwnerPatched",
+        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+        "Patch_LeavesUnknownPopupUnchanged_WhenOwnerPatched",
+    )
+
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Conversations.Parts/AddSlynthCandidate.cs::XRL.World.Conversations.Parts.AddSlynthCandidate.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "AddSlynthCandidate",
+                        "SlynthSanctuaryPattern",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationRewardPopupTranslationPatchTests.cs",
+                    (
+                        *tests_common,
+                        "nameof(DummyConversationRewardProducer.AddSlynthCandidateHandleEvent)",
+                        "SlynthSanctuary",
+                        "now a sanctuary option for the slynth",
+                        "{{Y|Grit Gate}}がスリンスの聖域候補になった。",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(ConversationRewardPopupTranslationPatch)",
+                        "XRL.World.Conversations.Parts.AddSlynthCandidate|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Conversations.Parts/PaxInfectLimb.cs::XRL.World.Conversations.Parts.PaxInfectLimb.InfectLimb",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "PaxInfectLimb",
+                        "PaxInfectLimbPattern",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationRewardPopupTranslationPatchTests.cs",
+                    (
+                        *tests_common,
+                        "nameof(DummyConversationRewardProducer.PaxInfectLimbInfectLimb)",
+                        "PaxInfectLimb",
+                        "You've contracted",
+                        "left armに{{G|glowcrust}}を発症した。",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(ConversationRewardPopupTranslationPatch)",
+                        "XRL.World.Conversations.Parts.PaxInfectLimb|InfectLimb|System.Boolean|System.Collections.Generic.List`1[[XRL.World.Anatomy.BodyPart]]|XRL.World.Anatomy.BodyPart|System.String",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Conversations.Parts/ReceiveItem.cs::XRL.World.Conversations.Parts.ReceiveItem.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    patch.path,
+                    (
+                        *patch.required_substrings,
+                        "ReceiveItem",
+                        "ReceiveItemPattern",
+                    ),
+                ),
+                pipeline,
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationRewardPopupTranslationPatchTests.cs",
+                    (
+                        *tests_common,
+                        "nameof(DummyConversationRewardProducer.ReceiveItemHandleEvent)",
+                        "ReceiveItem",
+                        "You receive",
+                        "{{Y|an electrobow}} and {{C|three lead slugs}}を受け取った",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(ConversationRewardPopupTranslationPatch)",
+                        "XRL.World.Conversations.Parts.ReceiveItem|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _grit_gate_terminal_owner_families() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -7168,6 +7288,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_combat_skill_extension_owner_families(),
     *_cybernetics_wish_implant_popup_family(),
     *_map_reveal_popup_family(),
+    *_conversation_reward_popup_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 
