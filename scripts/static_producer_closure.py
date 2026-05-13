@@ -6198,6 +6198,54 @@ def _power_entry_prerequisite_popup_families() -> tuple[CoveredOwnerFamily, ...]
     )
 
 
+def _magnetic_pulse_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MagneticPulseTranslationPatch.cs",
+        (
+            "MagneticPulseTranslationPatch",
+            "TryTranslateQueuedMessage",
+            "TryTranslatePopupMessage",
+            "EmitMagneticPulse",
+            "CompanionRippedPattern",
+            "RippedFromPlayerPattern",
+            "PulledTowardPattern",
+        ),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("MagneticPulseTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    popup_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("MagneticPulseTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/MagneticPulseTranslationPatchTests.cs",
+        (
+            "MagneticPulse_TranslatesRippedEquipmentPopups_WhenOwnerPatched",
+            "MagneticPulse_TranslatesPulledQueueMessages_WhenOwnerPatched",
+            "MagneticPulse_DoesNotTranslateTraffic_WhenOwnerAbsent",
+            "MagneticPulse_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "MagneticPulse_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "MagneticPulse_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(MagneticPulseTranslationPatch)",
+            "XRL.World.Parts.Mutation.MagneticPulse|EmitMagneticPulse|System.Void|XRL.World.GameObject|System.Int32",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts.Mutation/MagneticPulse.cs::XRL.World.Parts.Mutation.MagneticPulse.EmitMagneticPulse",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, popup_pipeline, tests, target_tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -8157,6 +8205,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_effect_mobility_block_families(),
     *_tenfold_path_initiatory_families(),
     *_power_entry_prerequisite_popup_families(),
+    *_magnetic_pulse_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 

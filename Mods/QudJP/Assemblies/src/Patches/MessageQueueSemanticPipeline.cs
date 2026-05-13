@@ -31,6 +31,7 @@ internal static class MessageQueueSemanticPipeline
         MutatingTranslationPatch.TryTranslateQueuedMessage,
         OnEatRewardMessageTranslationPatch.TryTranslateQueuedMessage,
         TenfoldPathInitiatoryTranslationPatch.TryTranslateQueuedMessage,
+        MagneticPulseTranslationPatch.TryTranslateQueuedMessage,
         QuillsTranslationPatch.TryTranslateQueuedMessage,
         LightManipulationTranslationPatch.TryTranslateQueuedMessage,
         CombatSkillMessageTranslationPatch.TryTranslateQueuedMessage,

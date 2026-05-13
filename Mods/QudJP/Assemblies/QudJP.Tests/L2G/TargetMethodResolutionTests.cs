@@ -1220,6 +1220,10 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Skills.PowerEntry|MeetsRequirements|System.Boolean|XRL.World.GameObject|System.Boolean",
         "XRL.World.Skills.PowerEntryRequirement|MeetsRequirement|System.Boolean|XRL.World.GameObject|System.Boolean",
     })]
+    [TestCase(typeof(MagneticPulseTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.MagneticPulse|EmitMagneticPulse|System.Void|XRL.World.GameObject|System.Int32",
+    })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
         "XRL.World.Parts.Combat|HandleEvent|System.Boolean|XRL.World.GetDefenderHitDiceEvent",
