@@ -1157,6 +1157,54 @@ def _submersion_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     )
 
 
+def _tinkering_tinker1_recharge_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id=(
+                "XRL.World.Parts.Skill/Tinkering_Tinker1.cs::"
+                "XRL.World.Parts.Skill.Tinkering_Tinker1.Recharge"
+            ),
+            lines=(80, 92),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                    (
+                        "XRL.World.Parts.Skill.Tinkering_Tinker1",
+                        "TinkeringRechargeSuccessPattern",
+                        "TinkeringRechargeCannotPattern",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "nameof(DummySingleCallsiteOwnerPopupTarget.Recharge)",
+                        "You have partially recharged {{Y|the chem cell}}.",
+                        "{{Y|The chem cell}} can't be recharged that way.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SingleCallsiteOwnerPopupTranslationPatch)",
+                        "XRL.World.Parts.Skill.Tinkering_Tinker1|Recharge|System.Boolean|XRL.World.GameObject|XRL.World.IEvent",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                    ("That isn't an energy cell and does not have a rechargeable capacitor.",),
+                ),
+            ),
+        ),
+    )
+
+
 def _keybinds_screen_conflict_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         (
@@ -12356,6 +12404,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_axe_dismember_owner_callsites(),
     *_cudgel_smash_up_owner_callsites(),
     *_submersion_owner_callsites(),
+    *_tinkering_tinker1_recharge_owner_callsites(),
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
     CoveredOwnerCallsites(

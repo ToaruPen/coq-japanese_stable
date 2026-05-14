@@ -1644,6 +1644,14 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         return true;
     }
 
+    public bool Recharge(DummyGameObject? obj = null, DummyEvent? fromEvent = null)
+    {
+        _ = obj;
+        _ = fromEvent;
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
     public void AwardDynamicQuestRewardGameObject()
     {
         _ = nameof(AwardDynamicQuestRewardGameObject);

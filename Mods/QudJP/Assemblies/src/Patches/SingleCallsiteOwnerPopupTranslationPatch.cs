@@ -23,6 +23,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string FactionEncounterWishOwner = "XRL.World.ZoneBuilders.FactionEncounters|HandleFactionEncounterWish";
     private const string ProselytizeOwner = "XRL.World.Parts.Skill.Persuasion_Proselytize|AttemptProselytization";
     private const string TinkeringOwner = "XRL.World.Parts.Skill.Tinkering|LearnNewRecipe";
+    private const string TinkeringTinker1RechargeOwner = "XRL.World.Parts.Skill.Tinkering_Tinker1|Recharge";
     private const string GameUniqueOwner = "XRL.World.Parts.GameUnique|OnCreated";
     private const string GenocideCurioOwner = "XRL.World.Parts.GenocideCurio|HandleEvent";
     private const string GritGateMainframeOwner = "XRL.World.Parts.GritGateMainframeTerminal|HandleEvent";
@@ -79,6 +80,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static readonly Regex TinkeringLearnRecipePattern = new(
         "^You have a flash of insight and scribe (?<item>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TinkeringRechargeSuccessPattern = new(
+        "^You have (?<partial>partially )?recharged (?<item>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TinkeringRechargeCannotPattern = new(
+        "^(?<item>.+?) can't be recharged that way\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex GameUniqueWishConfirmationPattern = new(
@@ -201,6 +210,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         var targets = new List<MethodBase>();
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
         var eventType = AccessTools.TypeByName("XRL.World.Event");
+        var iEventType = AccessTools.TypeByName("XRL.World.IEvent");
         var commandEventType = AccessTools.TypeByName("XRL.World.CommandEvent");
         var beforeDeathRemovalEventType = AccessTools.TypeByName("XRL.World.BeforeDeathRemovalEvent");
         var beginConversationEventType = AccessTools.TypeByName("XRL.World.BeginConversationEvent");
@@ -214,6 +224,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         var cudgelSlamType = AccessTools.TypeByName("XRL.World.Parts.Skill.Cudgel_Slam");
         if (gameObjectType is null
             || eventType is null
+            || iEventType is null
             || commandEventType is null
             || beforeDeathRemovalEventType is null
             || beginConversationEventType is null
@@ -295,6 +306,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.Skill.Tinkering",
             "LearnNewRecipe",
             [gameObjectType, typeof(int), typeof(int)]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Skill.Tinkering_Tinker1",
+            "Recharge",
+            [gameObjectType, iEventType]);
         AddTarget(
             targets,
             "XRL.World.Parts.GameUnique",
@@ -575,6 +591,24 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             translated = $"ひらめきを得て{StringHelpers.StripLeadingEnglishArticle(match.Groups["item"].Value)}を記した。";
             detail = "TinkeringLearnRecipe";
+            return true;
+        }
+
+        match = TinkeringRechargeSuccessPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, TinkeringTinker1RechargeOwner))
+        {
+            translated = match.Groups["partial"].Success
+                ? $"{match.Groups["item"].Value}を部分的に充電した。"
+                : $"{match.Groups["item"].Value}を充電した。";
+            detail = "TinkeringRechargeSuccess";
+            return true;
+        }
+
+        match = TinkeringRechargeCannotPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, TinkeringTinker1RechargeOwner))
+        {
+            translated = $"{match.Groups["item"].Value}はその方法では充電できない。";
+            detail = "TinkeringRechargeCannot";
             return true;
         }
 

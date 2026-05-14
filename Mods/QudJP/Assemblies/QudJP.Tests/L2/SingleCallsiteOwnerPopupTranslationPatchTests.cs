@@ -93,6 +93,24 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "SubmersionTooShallow",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.Recharge),
+        "You have partially recharged {{Y|the chem cell}}.",
+        "{{Y|the chem cell}}を部分的に充電した。",
+        "TinkeringRechargeSuccess",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.Recharge),
+        "You have recharged {{Y|the chem cell}}.",
+        "{{Y|the chem cell}}を充電した。",
+        "TinkeringRechargeSuccess",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.Recharge),
+        "{{Y|The chem cell}} can't be recharged that way.",
+        "{{Y|The chem cell}}はその方法では充電できない。",
+        "TinkeringRechargeCannot",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.AwardDynamicQuestRewardGameObject),
         "You receive {{Y|the copper nugget}}.",
         "{{Y|the copper nugget}}を受け取った。",
@@ -368,6 +386,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         "{{B|the brackish pool}} is too shallow for you to submerge in.",
         "SubmersionTooShallow",
+        PopupMethod.Show)]
+    [TestCase(
+        "You have partially recharged {{Y|the chem cell}}.",
+        "TinkeringRechargeSuccess",
+        PopupMethod.Show)]
+    [TestCase(
+        "{{Y|The chem cell}} can't be recharged that way.",
+        "TinkeringRechargeCannot",
         PopupMethod.Show)]
     [TestCase(
         "You receive {{Y|the copper nugget}}.",
@@ -739,6 +765,8 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.World.Parts.Skill.Cudgel_Slam|Cast",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleSubmersionCommand) =>
                 "XRL.World.Parts.Skill.Submersion|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.Recharge) =>
+                "XRL.World.Parts.Skill.Tinkering_Tinker1|Recharge",
             nameof(DummySingleCallsiteOwnerPopupTarget.AwardDynamicQuestRewardGameObject) =>
                 "XRL.World.DynamicQuestRewardElement_GameObject|award",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleFactionEncounterWish) =>

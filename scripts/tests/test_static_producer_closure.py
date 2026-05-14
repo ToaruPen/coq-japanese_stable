@@ -687,6 +687,37 @@ def test_submersion_too_shallow_popup_is_split_from_fixed_popups() -> None:
     }
 
 
+def test_tinkering_tinker1_recharge_popups_are_split_from_fixed_popup() -> None:
+    """Tinkering_Tinker1.Recharge closes generated recharge popups without claiming fixed popup."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    family_id = (
+        "XRL.World.Parts.Skill/Tinkering_Tinker1.cs::"
+        "XRL.World.Parts.Skill.Tinkering_Tinker1.Recharge"
+    )
+    family_callsites = [
+        callsite
+        for callsite in inventory["callsites"]
+        if callsite["producer_family_id"] == family_id
+    ]
+
+    assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
+    assert family_closure_status(raw_families[family_id]) == "needs_family_review"
+    assert family_id not in covered_family_ids()
+    assert (family_id, 80) in covered_callsite_keys()
+    assert (family_id, 92) in covered_callsite_keys()
+    assert family_id not in queued_family_ids
+    assert {
+        (callsite["line"], callsite["target_surface"], callsite["closure_status"])
+        for callsite in family_callsites
+    } == {
+        (80, "Popup.Show*", "owner_patch_required"),
+        (88, "Popup.Show*", "messages_candidate"),
+        (92, "Popup.Show*", "owner_patch_required"),
+    }
+
+
 def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:
     """Uncovered high-volume owner families must stay actionable."""
     inventory = load_inventory(TRACKED_INVENTORY)
