@@ -1738,6 +1738,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.TinkerItem|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
     })]
+    [TestCase(typeof(KeyMappingUiTranslationPatch), new[]
+    {
+        "XRL.UI.KeyMappingUI|Show|XRL.UI.ScreenReturn",
+    })]
     [TestCase(typeof(SingleCallsiteOwnerPopupTranslationPatch), new[]
     {
         "XRL.World.Quests.AscensionSystem|BarathrumStartConversation|System.Void|XRL.World.GameObject",

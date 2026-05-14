@@ -46,6 +46,7 @@ internal static class PopupShowSemanticPipeline
         ShortBladesHobbleTranslationPatch.TryTranslatePopupMessage,
         FirefightingTranslationPatch.TryTranslatePopupMessage,
         TinkerItemTranslationPatch.TryTranslatePopupMessage,
+        KeyMappingUiTranslationPatch.TryTranslatePopupMessage,
         BodyTranslationPatch.TryTranslatePopupMessage,
         SifrahTokenItemPopupTranslationPatch.TryTranslatePopupMessage,
         SifrahPureOwnerPopupTranslationPatch.TryTranslatePopupMessage,

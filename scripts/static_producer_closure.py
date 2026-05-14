@@ -12491,6 +12491,53 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.UI/KeyMappingUI.cs::"
+            "XRL.UI.KeyMappingUI.Show"
+        ),
+        lines=(315, 318),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/KeyMappingUiTranslationPatch.cs",
+                (
+                    "KeyMappingUiTranslationPatch",
+                    "XRL.UI.KeyMappingUI",
+                    "Show",
+                    "LastBinding",
+                    "ClearBinding",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("KeyMappingUiTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/KeyMappingUiTranslationPatchTests.cs",
+                (
+                    "Show_TranslatesLastBindingPopup_WhenOwnerPatched",
+                    "Show_TranslatesClearBindingPrompt_WhenOwnerPatched",
+                    "Show_DoesNotClaimPopupOnlyTraffic_WhenOwnerAbsent",
+                    "Show_DoesNotRetranslateDirectMarkedShow_WhenOwnerPatched",
+                    "Show_DoesNotRetranslateDirectMarkedYesNo_WhenOwnerPatched",
+                    "Show_DoesNotClaimFixedOrEmptyPrompts_WhenOwnerPatched",
+                    "Can not remove the last binding for",
+                    "Are you sure you want to clear this binding for",
+                    "Are you sure you want to override your keymap with the default?",
+                    "Would you like to save your changes?",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(KeyMappingUiTranslationPatch)",
+                    "XRL.UI.KeyMappingUI|Show|XRL.UI.ScreenReturn",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World/SocialSifrahTokenGift.cs::"
             "XRL.World.SocialSifrahTokenGift.CheckTokenUse"
         ),
