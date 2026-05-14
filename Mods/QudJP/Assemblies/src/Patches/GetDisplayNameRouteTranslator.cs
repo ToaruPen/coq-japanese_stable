@@ -47,6 +47,10 @@ internal static class GetDisplayNameRouteTranslator
         new Regex(
             "^(?<modifier>\\{\\{[^|}]+\\|[A-Za-z][A-Za-z\\s\\-']*\\}\\}|\\[\\{\\{[^|}]+\\|[A-Za-z][A-Za-z\\s\\-']*\\}\\}\\])\\s+(?<rest>.+)$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex ParenthesizedColoredChargeStatusPattern =
+        new Regex(
+            "(?<prefix>\\()(?<status>\\{\\{[^|}]+\\|[^{}]+\\}\\})(?<suffix>\\))",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PrepositionalStateTemplatePattern =
         new Regex(
             "^(?<template>sitting on|lying on|enclosed in|engulfed by|auto-collecting) (?<target>.+)$",
@@ -107,6 +111,11 @@ internal static class GetDisplayNameRouteTranslator
 
         using var _ = Translator.PushLogContext(context);
 
+        if (TryTranslateParenthesizedColoredChargeStatus(source!, route, out var chargeStatusTranslation))
+        {
+            source = chargeStatusTranslation;
+        }
+
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         if (stripped.Length == 0)
         {
@@ -149,6 +158,38 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         return source!;
+    }
+
+    private static bool TryTranslateParenthesizedColoredChargeStatus(
+        string source,
+        string route,
+        out string translated)
+    {
+        var changed = false;
+        translated = ParenthesizedColoredChargeStatusPattern.Replace(
+            source,
+            match =>
+            {
+                var status = match.Groups["status"].Value;
+                if (!EnergyStorageChargeStatusTranslationPatch.TryTranslateChargeStatus(status, out var translatedStatus))
+                {
+                    return match.Value;
+                }
+
+                changed = true;
+                return match.Groups["prefix"].Value + translatedStatus + match.Groups["suffix"].Value;
+            });
+
+        if (changed)
+        {
+            DynamicTextObservability.RecordTransform(
+                route,
+                "DisplayName.ColoredChargeStatusSuffix",
+                source,
+                translated);
+        }
+
+        return changed;
     }
 
     private static bool TryTranslateDisplayNameRouteText(string source, string route, out string translated)
