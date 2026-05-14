@@ -12868,6 +12868,50 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts/VehicleSeat.cs::"
+            "XRL.World.Parts.VehicleSeat.AttemptPilot"
+        ),
+        lines=(55, 66),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/VehicleSeatTranslationPatch.cs",
+                (
+                    "VehicleSeatTranslationPatch",
+                    "XRL.World.Parts.VehicleSeat",
+                    "AttemptPilot",
+                    "VehicleSeatPilotConsoleConfirmation",
+                    "VehicleSeatPilotConsoleRequirement",
+                    "Accessing the pilot console requires",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("VehicleSeatTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/VehicleSeatTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesPilotConsoleRequirementPopup_WhenOwnerPatched",
+                    "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_DoesNotClaimFixedOrEmptyPopup_WhenOwnerPatched",
+                    "permanent insertion of {{Y|a cybernetic credit wedge}}",
+                    "Access diodes flash in the affirmative.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(VehicleSeatTranslationPatch)",
+                    "XRL.World.Parts.VehicleSeat|AttemptPilot|System.Boolean|XRL.World.GameObject",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World.Parts/Stomach.cs::"
             "XRL.World.Parts.Stomach.FireEvent"
         ),

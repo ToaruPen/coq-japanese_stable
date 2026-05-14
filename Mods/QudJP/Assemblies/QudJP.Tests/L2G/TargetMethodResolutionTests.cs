@@ -1773,6 +1773,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.RandomAltarBaetyl|BaetylWantsSacrifice|System.Void",
     })]
+    [TestCase(typeof(VehicleSeatTranslationPatch), new[]
+    {
+        "XRL.World.Parts.VehicleSeat|AttemptPilot|System.Boolean|XRL.World.GameObject",
+    })]
     [TestCase(typeof(StomachTranslationPatch), new[]
     {
         "XRL.World.Parts.Stomach|FireEvent|System.Boolean|XRL.World.Event",

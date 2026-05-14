@@ -35,6 +35,7 @@ internal static class PopupShowSemanticPipeline
         LevelerTranslationPatch.TryTranslatePopupMessage,
         AnimateObjectTranslationPatch.TryTranslatePopupMessage,
         RandomAltarBaetylTranslationPatch.TryTranslatePopupMessage,
+        VehicleSeatTranslationPatch.TryTranslatePopupMessage,
         HistoricEventRegionRevealPopupTranslationPatch.TryTranslatePopupMessage,
         JournalScreenPopupTranslationPatch.TryTranslatePopupMessage,
         ConversationScriptPopupTranslationPatch.TryTranslatePopupMessage,
