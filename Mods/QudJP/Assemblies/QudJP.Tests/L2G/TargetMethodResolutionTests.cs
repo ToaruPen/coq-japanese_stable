@@ -1538,6 +1538,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Conversations.Parts.WaterRitualSkillPoint|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
         "XRL.World.Conversations.Parts.WaterRitualTinkeringRecipe|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
         "XRL.World.Conversations.Parts.WaterRitualBuySecret|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+        "XRL.World.Conversations.Parts.WaterRitualBuySecret|RevealEntry|System.Void|Qud.API.IBaseJournalEntry",
         "XRL.World.Conversations.Parts.IWaterRitualPart|UseReputation|System.Boolean|System.String",
         "XRL.World.Conversations.Parts.WaterRitual|PerformRitual|System.Void",
         "XRL.World.Conversations.Parts.WaterRitualBuyItem|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",

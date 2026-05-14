@@ -75,6 +75,24 @@ public sealed class WaterRitualPopupTranslationPatchTests
         "{{G|Tam}}にはもう共有できる秘密がない。",
         "BuySecretNoMoreSecrets")]
     [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} shares a recipe with you.",
+        "{{G|Tam}}がレシピを共有してくれた。",
+        "BuySecretRecipe")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} shares the location of {{Y|the Rust Wells}}.",
+        "{{G|Tam}}が{{Y|the Rust Wells}}の場所を教えてくれた。",
+        "BuySecretLocation")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} shares an event from the life of a sultan with you.\n\n\"In 100 AR, a sultan found a chrome idol.\"",
+        "{{G|Tam}}がスルタンの生涯の出来事を共有してくれた。\n\n\"In 100 AR, a sultan found a chrome idol.\"",
+        "BuySecretSultanEvent")]
+    [TestCase(
         nameof(DummyWaterRitualPopupProducerTarget.IWaterRitualPartUseReputation),
         nameof(DummyPopupShow.Show),
         "You don't have a high enough reputation with {{Y|the Farmers' Guild}}.",
@@ -162,6 +180,11 @@ public sealed class WaterRitualPopupTranslationPatchTests
         "{{G|Tam}} has no more secrets to share.",
         "BuySecretNoMoreSecrets")]
     [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} shares a recipe with you.",
+        "BuySecretRecipe")]
+    [TestCase(
         nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuyItemHandleEvent),
         nameof(DummyPopupShow.Show),
         "{{G|Tam}} gifts you {{Y|the electrobow}}!",
@@ -219,6 +242,34 @@ public sealed class WaterRitualPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_DoesNotRetranslateDirectMarkedBuySecretRevealPopup_WhenOwnerPatched()
+    {
+        const string popupMethod = nameof(DummyPopupShow.Show);
+        const string unmarked = "{{G|Tam}} shares a recipe with you.";
+        var source = MessageFrameTranslator.MarkDirectTranslation(unmarked);
+
+        WithPatchedOwnerAndPopup(
+            nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+            popupMethod,
+            () =>
+            {
+                var target = new DummyWaterRitualPopupProducerTarget
+                {
+                    PopupMethod = popupMethod,
+                    PopupMessageToShow = source,
+                };
+
+                target.WaterRitualBuySecretRevealEntry();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(unmarked));
+                    Assert.That(HitCount("BuySecretRecipe"), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
     public void Patch_LeavesUnknownEnglishPopupUnchanged_WhenOwnerPatched()
     {
         const string popupMethod = nameof(DummyPopupShow.Show);
@@ -242,6 +293,35 @@ public sealed class WaterRitualPopupTranslationPatchTests
                     Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
                     Assert.That(HitCount("SkillPointIntro"), Is.Zero);
                     Assert.That(HitCount("SkillPointGain"), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_LeavesRuntimeBuySecretGossipPopupUnchanged_WhenOwnerPatched()
+    {
+        const string popupMethod = nameof(DummyPopupShow.Show);
+        const string source = "{{G|Tam}} shares some gossip with you.\n\n\"Listen well. A ruin lies beneath the dunes.\"";
+
+        WithPatchedOwnerAndPopup(
+            nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+            popupMethod,
+            () =>
+            {
+                var target = new DummyWaterRitualPopupProducerTarget
+                {
+                    PopupMethod = popupMethod,
+                    PopupMessageToShow = source,
+                };
+
+                target.WaterRitualBuySecretRevealEntry();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                    Assert.That(HitCount("BuySecretRecipe"), Is.Zero);
+                    Assert.That(HitCount("BuySecretLocation"), Is.Zero);
+                    Assert.That(HitCount("BuySecretSultanEvent"), Is.Zero);
                 });
             });
     }
@@ -454,6 +534,12 @@ public sealed class WaterRitualPopupTranslationPatchTests
         {
             EmitPopup(nameof(WaterRitualBuySecretHandleEvent));
             return true;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public void WaterRitualBuySecretRevealEntry()
+        {
+            EmitPopup(nameof(WaterRitualBuySecretRevealEntry));
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

@@ -40,6 +40,18 @@ public static class WaterRitualPopupTranslationPatch
         "^(?<speaker>.+?) has no more secrets to share\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex BuySecretRecipePattern = new(
+        "^(?<speaker>.+?) shares? a recipe with you\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex BuySecretLocationPattern = new(
+        "^(?<speaker>.+?) shares? the location of (?<location>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex BuySecretSultanEventPattern = new(
+        "^(?<speaker>.+?) shares? an event from the life of a sultan with you\\.\\n\\n\"(?<gospel>.+)\"$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+
     private static readonly Regex ReputationTooLowPattern = new(
         "^You don't have a high enough reputation with (?<faction>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -76,9 +88,10 @@ public static class WaterRitualPopupTranslationPatch
     {
         var enterElementEventType = AccessTools.TypeByName("XRL.World.Conversations.EnterElementEvent");
         var enteredElementEventType = AccessTools.TypeByName("XRL.World.Conversations.EnteredElementEvent");
-        if (enterElementEventType is null || enteredElementEventType is null)
+        var journalEntryType = AccessTools.TypeByName("Qud.API.IBaseJournalEntry");
+        if (enterElementEventType is null || enteredElementEventType is null || journalEntryType is null)
         {
-            Trace.TraceError("QudJP: {0} failed to resolve conversation event types.", Context);
+            Trace.TraceError("QudJP: {0} failed to resolve conversation event or journal entry types.", Context);
             yield break;
         }
 
@@ -110,6 +123,14 @@ public static class WaterRitualPopupTranslationPatch
                      "XRL.World.Conversations.Parts.WaterRitualBuySecret",
                      "HandleEvent",
                      [enteredElementEventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualBuySecret",
+                     "RevealEntry",
+                     [journalEntryType]))
         {
             yield return method;
         }
@@ -314,6 +335,37 @@ public static class WaterRitualPopupTranslationPatch
                 out translated))
         {
             detail = "BuySecretNoMoreSecrets";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                BuySecretRecipePattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "speaker")}がレシピを共有してくれた。",
+                out translated))
+        {
+            detail = "BuySecretRecipe";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                BuySecretLocationPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "speaker")}が{Restore(match, spans, "location")}の場所を教えてくれた。",
+                out translated))
+        {
+            detail = "BuySecretLocation";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                BuySecretSultanEventPattern,
+                source,
+                (match, spans) =>
+                    $"{Restore(match, spans, "speaker")}がスルタンの生涯の出来事を共有してくれた。\n\n\"{Restore(match, spans, "gospel")}\"",
+                out translated))
+        {
+            detail = "BuySecretSultanEvent";
             return true;
         }
 

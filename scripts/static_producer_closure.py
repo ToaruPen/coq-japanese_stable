@@ -11833,6 +11833,56 @@ COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVER
 COVERED_OWNER_CALLSITES: Final = (
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Conversations.Parts/WaterRitualBuySecret.cs::"
+            "XRL.World.Conversations.Parts.WaterRitualBuySecret.RevealEntry"
+        ),
+        lines=(51, 69, 75),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/WaterRitualPopupTranslationPatch.cs",
+                (
+                    "WaterRitualPopupTranslationPatch",
+                    "XRL.World.Conversations.Parts.WaterRitualBuySecret",
+                    "RevealEntry",
+                    "BuySecretRecipePattern",
+                    "BuySecretLocationPattern",
+                    "BuySecretSultanEventPattern",
+                    "BuySecretRecipe",
+                    "BuySecretLocation",
+                    "BuySecretSultanEvent",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("WaterRitualPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/WaterRitualPopupTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesWaterRitualOwnerPopups_WhenOwnerPatched",
+                    "Patch_DoesNotTranslateWaterRitualPopup_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedBuySecretRevealPopup_WhenOwnerPatched",
+                    "Patch_LeavesRuntimeBuySecretGossipPopupUnchanged_WhenOwnerPatched",
+                    "nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry)",
+                    "{{G|Tam}} shares a recipe with you.",
+                    "{{G|Tam}} shares the location of {{Y|the Rust Wells}}.",
+                    "{{G|Tam}} shares an event from the life of a sultan with you.",
+                    "{{G|Tam}} shares some gossip with you.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(WaterRitualPopupTranslationPatch)",
+                    "XRL.World.Conversations.Parts.WaterRitualBuySecret|RevealEntry|System.Void|Qud.API.IBaseJournalEntry",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World/ReverseEngineeringSifrah.cs::"
             "XRL.World.ReverseEngineeringSifrah.Finish"
         ),
