@@ -982,6 +982,11 @@ public sealed class TargetMethodResolutionTests
         "Qud.UI.AbilityManagerScreen+<HandleRebindAsync>d__47|MoveNext|System.Void",
         "Qud.UI.AbilityManagerScreen+<HandleRemoveBindAsync>d__48|MoveNext|System.Void",
     })]
+    [TestCase(typeof(CodeRedemptionPopupTranslationPatch), new[]
+    {
+        "CodeRedemptionManager+<redeemNoProgress>d__0|MoveNext|System.Void",
+        "CodeRedemptionManager+<>c__DisplayClass1_0+<<redeem>b__0>d|MoveNext|System.Void",
+    })]
     [TestCase(typeof(RealityStabilizedEventTranslationPatch), new[]
     {
         "XRL.World.Effects.RealityStabilized|TryContest|XRL.World.Effects.RealityStabilized+ContestResult|XRL.World.GameObject|System.Int32|System.Int32",

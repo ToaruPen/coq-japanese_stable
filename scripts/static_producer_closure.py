@@ -5859,6 +5859,60 @@ def _ability_manager_show_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]
     )
 
 
+def _code_redemption_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    evidence_files = (
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/src/Patches/CodeRedemptionPopupTranslationPatch.cs",
+            (
+                "CodeRedemptionPopupTranslationPatch",
+                "CodeRedemptionManager",
+                "redeemNoProgress",
+                "<redeem>b__0",
+                "ErrorDownloadingPetPattern",
+                "Error downloading pet:",
+                "CodeRedemptionPetDownloadError",
+            ),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+            ("CodeRedemptionPopupTranslationPatch.TryTranslatePopupMessage",),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CodeRedemptionPopupTranslationPatchTests.cs",
+            (
+                "Patch_TranslatesPetDownloadErrorPopup_WhenOwnerPatched",
+                "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                "Patch_DoesNotClaimFixedCodeRedemptionPopups_WhenOwnerPatched",
+                "Error downloading pet: System.Exception: boom",
+            ),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+            (
+                "typeof(CodeRedemptionPopupTranslationPatch)",
+                "CodeRedemptionManager+<redeemNoProgress>d__0|MoveNext|System.Void",
+                "CodeRedemptionManager+<>c__DisplayClass1_0+<<redeem>b__0>d|MoveNext|System.Void",
+            ),
+        ),
+    )
+    return (
+        CoveredOwnerCallsites(
+            family_id="CodeRedemptionManager.cs::CodeRedemptionManager.redeemNoProgress",
+            lines=(54,),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=evidence_files,
+        ),
+        CoveredOwnerCallsites(
+            family_id="CodeRedemptionManager.cs::CodeRedemptionManager.redeem",
+            lines=(113,),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=evidence_files,
+        ),
+    )
+
+
 def _single_fixed_queue_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     return (
         CoveredOwnerCallsites(
@@ -13243,6 +13297,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_generated_success_popup_callsites(),
     *_garbage_attempt_rifle_owner_callsites(),
     *_ability_manager_show_owner_callsites(),
+    *_code_redemption_owner_callsites(),
     *_single_fixed_queue_owner_callsites(),
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
