@@ -14529,6 +14529,51 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "Qud.UI/KeybindsScreen.cs::"
+            "Qud.UI.KeybindsScreen.HandleMenuOption"
+        ),
+        lines=(303, 306),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/KeyMappingUiTranslationPatch.cs",
+                (
+                    "KeyMappingUiTranslationPatch",
+                    "Qud.UI.KeybindsScreen",
+                    "HandleMenuOption",
+                    "ClearKeybindsBindingPattern",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("KeyMappingUiTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/KeyMappingUiTranslationPatchTests.cs",
+                (
+                    "HandleMenuOption_TranslatesLastBindingAsyncPopup_WhenOwnerPatched",
+                    "HandleMenuOption_TranslatesClearBindingAsyncPrompt_WhenOwnerPatched",
+                    "HandleMenuOption_DoesNotClaimAsyncPopupOnlyTraffic_WhenOwnerAbsent",
+                    "HandleMenuOption_DoesNotRetranslateDirectMarkedAsyncShow_WhenOwnerPatched",
+                    "HandleMenuOption_DoesNotRetranslateDirectMarkedAsyncYesNo_WhenOwnerPatched",
+                    "HandleMenuOption_DoesNotClaimFixedOrEmptyAsyncPrompts_WhenOwnerPatched",
+                    "Can not remove the last binding for {{C|Fire}}.",
+                    "Are you sure you want to clear the binding for {{C|Ctrl+F}}?",
+                    "Are you sure you want to override your keymap with the default?",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(KeyMappingUiTranslationPatch)",
+                    "Qud.UI.KeybindsScreen|HandleMenuOption|System.Void|XRL.UI.Framework.FrameworkDataElement",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World.Capabilities/PsychicGlimmer.cs::"
             "XRL.World.Capabilities.PsychicGlimmer.Update"
         ),

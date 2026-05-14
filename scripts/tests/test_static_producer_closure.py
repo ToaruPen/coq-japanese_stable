@@ -362,6 +362,21 @@ def test_single_mixed_owner_callsites_are_split_from_fixed_and_runtime_siblings(
         assert (family_id in queued_family_ids) is expected["queued"]
 
 
+def test_keybinds_menu_option_popups_are_split_from_fixed_restore_prompt() -> None:
+    """Keybind removal owner popups close without claiming the fixed restore-default prompt."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    callsite_keys = covered_callsite_keys()
+    family_id = "Qud.UI/KeybindsScreen.cs::Qud.UI.KeybindsScreen.HandleMenuOption"
+
+    assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
+    assert family_closure_status(raw_families[family_id]) == "needs_family_review"
+    assert family_id not in covered_family_ids()
+    assert {line for covered_family, line in callsite_keys if covered_family == family_id} == {303, 306}
+    assert family_id not in queued_family_ids
+
+
 def test_zone_manager_owner_queue_callsites_are_split_from_runtime_and_popup_shapes() -> None:
     """ZoneManager queue owner callsites must close without claiming runtime or popup shapes."""
     inventory = load_inventory(TRACKED_INVENTORY)

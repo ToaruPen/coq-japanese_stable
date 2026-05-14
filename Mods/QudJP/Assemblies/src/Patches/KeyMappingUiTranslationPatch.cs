@@ -20,6 +20,10 @@ public static class KeyMappingUiTranslationPatch
         "^Are you sure you want to clear this binding for (?<command>.+?)\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex ClearKeybindsBindingPattern = new(
+        "^Are you sure you want to clear the binding for (?<command>.+?)\\?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -29,22 +33,35 @@ public static class KeyMappingUiTranslationPatch
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
+        var targets = new List<MethodBase>();
         var keyMappingUiType = AccessTools.TypeByName("XRL.UI.KeyMappingUI");
         if (keyMappingUiType is null)
         {
             Trace.TraceError("QudJP: {0} target type not found.", Context);
-            yield break;
-        }
-
-        var show = AccessTools.Method(keyMappingUiType, "Show", Type.EmptyTypes);
-        if (show is not null)
-        {
-            yield return show;
         }
         else
         {
-            Trace.TraceError("QudJP: {0}.Show target not found.", Context);
+            AddTarget(targets, keyMappingUiType, "Show", Type.EmptyTypes);
         }
+
+        var keybindsScreenType = GameTypeResolver.FindType("Qud.UI.KeybindsScreen", "KeybindsScreen");
+        var frameworkDataElementType = GameTypeResolver.FindType(
+            "XRL.UI.Framework.FrameworkDataElement",
+            "FrameworkDataElement");
+        if (keybindsScreenType is null)
+        {
+            Trace.TraceError("QudJP: {0} KeybindsScreen target type not found.", Context);
+        }
+        else if (frameworkDataElementType is null)
+        {
+            Trace.TraceError("QudJP: {0} FrameworkDataElement target type not found.", Context);
+        }
+        else
+        {
+            AddTarget(targets, keybindsScreenType, "HandleMenuOption", [frameworkDataElementType]);
+        }
+
+        return targets;
     }
 
     public static void Prefix()
@@ -129,6 +146,14 @@ public static class KeyMappingUiTranslationPatch
             return true;
         }
 
+        match = ClearKeybindsBindingPattern.Match(stripped);
+        if (match.Success)
+        {
+            translated = RestoreCommand(match, spans) + "の割り当てを消去してよいか？";
+            detail = "ClearBinding";
+            return true;
+        }
+
         translated = stripped;
         detail = string.Empty;
         return false;
@@ -141,5 +166,17 @@ public static class KeyMappingUiTranslationPatch
             command.Value.Trim(),
             spans,
             command).Trim();
+    }
+
+    private static void AddTarget(List<MethodBase> targets, Type targetType, string methodName, Type[] parameterTypes)
+    {
+        var method = AccessTools.Method(targetType, methodName, parameterTypes);
+        if (method is not null)
+        {
+            targets.Add(method);
+            return;
+        }
+
+        Trace.TraceError("QudJP: {0}.{1}.{2} target not found.", Context, targetType.FullName, methodName);
     }
 }

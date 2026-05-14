@@ -1828,6 +1828,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(KeyMappingUiTranslationPatch), new[]
     {
         "XRL.UI.KeyMappingUI|Show|XRL.UI.ScreenReturn",
+        "Qud.UI.KeybindsScreen|HandleMenuOption|System.Void|XRL.UI.Framework.FrameworkDataElement",
     })]
     [TestCase(typeof(PsychicGlimmerTranslationPatch), new[]
     {
