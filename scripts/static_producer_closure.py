@@ -8955,6 +8955,63 @@ def _engraver_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _wish_command_queue_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/WishCommandQueueTranslationPatch.cs",
+        (
+            "WishCommandQueueTranslationPatch",
+            "SlynthQuestWish",
+            "ReclamationWishTimerPattern",
+            "ClearStatShifts",
+            "TryTranslateQueuedMessage",
+        ),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("WishCommandQueueTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/WishCommandQueueTranslationPatchTests.cs",
+        (
+            "WishCommandQueue_TranslatesOwnerMessages_WhenOwnerPatched",
+            "WishCommandQueue_PreservesQueuedMessageColor_WhenOwnerPatched",
+            "WishCommandQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+            "WishCommandQueue_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "WishCommandQueue_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(WishCommandQueueTranslationPatch)",
+            "XRL.World.Quests.LandingPadsSystem|SlynthQuestWish|System.Void|System.String",
+            "XRL.World.Quests.ReclamationSystem|WishTimer|System.Void",
+            "XRL.World.StatWishHandler|ClearStatShifts|System.Void",
+        ),
+    )
+    dictionary = EvidenceFile(
+        "Mods/QudJP/Localization/Dictionaries/ui-messagelog-world.ja.json",
+        ("No faction found by that name.",),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Quests/LandingPadsSystem.cs::XRL.World.Quests.LandingPadsSystem.SlynthQuestWish",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, dictionary, tests, target_tests),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Quests/ReclamationSystem.cs::XRL.World.Quests.ReclamationSystem.WishTimer",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, tests, target_tests),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World/StatWishHandler.cs::XRL.World.StatWishHandler.ClearStatShifts",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, tests, target_tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -11102,6 +11159,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_cloning_start_budded_clone_families(),
     *_hidden_render_families(),
     *_engraver_families(),
+    *_wish_command_queue_families(),
     *_auto_act_reset_family(),
     *_prefixed_owner_queue_families(),
     *_generated_subject_queue_families(),

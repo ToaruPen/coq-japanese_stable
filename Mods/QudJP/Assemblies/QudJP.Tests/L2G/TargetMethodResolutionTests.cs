@@ -1694,6 +1694,12 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Mutation.Precognition|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.Mutation.Precognition|OnBeforeDie|System.Boolean|XRL.World.GameObject|System.Guid|System.Guid|System.Int32&|System.Int32&|System.Int32&|System.Int64&|System.Boolean|System.Boolean|XRL.World.IPart",
     })]
+    [TestCase(typeof(WishCommandQueueTranslationPatch), new[]
+    {
+        "XRL.World.Quests.LandingPadsSystem|SlynthQuestWish|System.Void|System.String",
+        "XRL.World.Quests.ReclamationSystem|WishTimer|System.Void",
+        "XRL.World.StatWishHandler|ClearStatShifts|System.Void",
+    })]
     [TestCase(typeof(ForceBubbleOwnerTranslationPatch), new[]
     {
         "XRL.World.Parts.ForceEmitter|ActivateForceEmitter|System.Boolean|XRL.World.IEvent",
