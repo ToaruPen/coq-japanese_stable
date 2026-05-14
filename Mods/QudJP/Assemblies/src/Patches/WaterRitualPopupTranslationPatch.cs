@@ -68,6 +68,10 @@ public static class WaterRitualPopupTranslationPatch
         "^Despite your genetic limitations, (?<speaker>.+?) teaches? you to improvise (?<mutation>.+?)!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex RandomMutationIncompatiblePattern = new(
+        "^You can't gain (?<category>physical|mental) mutations\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex JoinPartyPattern = new(
         "^(?<speaker>.+?) joins? you!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -161,6 +165,14 @@ public static class WaterRitualPopupTranslationPatch
 
         foreach (var method in ResolveTarget(
                      "XRL.World.Conversations.Parts.WaterRitualGainMutation",
+                     "HandleEvent",
+                     [enteredElementEventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualRandomMutation",
                      "HandleEvent",
                      [enteredElementEventType]))
         {
@@ -410,6 +422,16 @@ public static class WaterRitualPopupTranslationPatch
         }
 
         if (TryTranslatePattern(
+                RandomMutationIncompatiblePattern,
+                source,
+                (match, _) => $"{TranslateMutationCategory(match.Groups["category"].Value)}変異は得られない。",
+                out translated))
+        {
+            detail = "RandomMutationIncompatible";
+            return true;
+        }
+
+        if (TryTranslatePattern(
                 JoinPartyPattern,
                 source,
                 (match, spans) => $"{Restore(match, spans, "speaker")}が仲間に加わった！",
@@ -442,6 +464,11 @@ public static class WaterRitualPopupTranslationPatch
         translated = source;
         detail = string.Empty;
         return false;
+    }
+
+    private static string TranslateMutationCategory(string category)
+    {
+        return string.Equals(category, "mental", StringComparison.OrdinalIgnoreCase) ? "精神" : "肉体";
     }
 
     private static bool TryTranslatePattern(

@@ -117,6 +117,18 @@ public sealed class WaterRitualPopupTranslationPatchTests
         "遺伝的な制限にもかかわらず、{{G|Tam}}が{{M|Wings}}を即興で扱う方法を教えてくれた！",
         "GainMutation")]
     [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "You can't gain physical mutations.",
+        "肉体変異は得られない。",
+        "RandomMutationIncompatible")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "You can't gain mental mutations.",
+        "精神変異は得られない。",
+        "RandomMutationIncompatible")]
+    [TestCase(
         nameof(DummyWaterRitualPopupProducerTarget.WaterRitualJoinPartyHandleEvent),
         nameof(DummyPopupShow.Show),
         "{{G|Tam}} joins you!",
@@ -214,6 +226,11 @@ public sealed class WaterRitualPopupTranslationPatchTests
         nameof(DummyPopupShow.Show),
         "Despite your genetic limitations, {{G|Tam}} teaches you to improvise {{M|Wings}}!",
         "GainMutation")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "You can't gain physical mutations.",
+        "RandomMutationIncompatible")]
     [TestCase(
         nameof(DummyWaterRitualPopupProducerTarget.WaterRitualJoinPartyHandleEvent),
         nameof(DummyPopupShow.Show),
@@ -330,6 +347,11 @@ public sealed class WaterRitualPopupTranslationPatchTests
         "Despite your genetic limitations, {{G|Tam}} teaches you to improvise {{M|Wings}}!",
         "GainMutation")]
     [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "You can't gain physical mutations.",
+        "RandomMutationIncompatible")]
+    [TestCase(
         nameof(DummyWaterRitualPopupProducerTarget.WaterRitualJoinPartyHandleEvent),
         nameof(DummyPopupShow.Show),
         "{{G|Tam}} joins you!",
@@ -418,6 +440,31 @@ public sealed class WaterRitualPopupTranslationPatchTests
                     Assert.That(HitCount("BuySecretRecipe"), Is.Zero);
                     Assert.That(HitCount("BuySecretLocation"), Is.Zero);
                     Assert.That(HitCount("BuySecretSultanEvent"), Is.Zero);
+                });
+            });
+    }
+
+    [TestCase("You can't be mutated.", nameof(DummyPopupShow.ShowFail))]
+    [TestCase("{{G|Tam}} shares an unfamiliar mutation lesson with you.", nameof(DummyPopupShow.Show))]
+    public void Patch_LeavesRandomMutationNonOwnerMessagesUnchanged_WhenOwnerPatched(string source, string popupMethod)
+    {
+        WithPatchedOwnerAndPopup(
+            nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
+            popupMethod,
+            () =>
+            {
+                var target = new DummyWaterRitualPopupProducerTarget
+                {
+                    PopupMethod = popupMethod,
+                    PopupMessageToShow = source,
+                };
+
+                target.WaterRitualRandomMutationHandleEvent();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(LastPopupMessage(popupMethod), Is.EqualTo(source));
+                    Assert.That(HitCount("RandomMutationIncompatible"), Is.Zero);
                 });
             });
     }
@@ -663,6 +710,13 @@ public sealed class WaterRitualPopupTranslationPatchTests
         public bool WaterRitualGainMutationHandleEvent()
         {
             EmitPopup(nameof(WaterRitualGainMutationHandleEvent));
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool WaterRitualRandomMutationHandleEvent()
+        {
+            EmitPopup(nameof(WaterRitualRandomMutationHandleEvent));
             return true;
         }
 

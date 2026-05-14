@@ -12241,6 +12241,54 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Conversations.Parts/WaterRitualRandomMutation.cs::"
+            "XRL.World.Conversations.Parts.WaterRitualRandomMutation.HandleEvent"
+        ),
+        lines=(92,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/WaterRitualPopupTranslationPatch.cs",
+                (
+                    "WaterRitualPopupTranslationPatch",
+                    "XRL.World.Conversations.Parts.WaterRitualRandomMutation",
+                    "RandomMutationIncompatiblePattern",
+                    "TranslateMutationCategory",
+                    "RandomMutationIncompatible",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("WaterRitualPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/WaterRitualPopupTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesWaterRitualOwnerPopups_WhenOwnerPatched",
+                    "Patch_DoesNotTranslateWaterRitualPopup_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedNewFamilyPopups_WhenOwnerPatched",
+                    "Patch_LeavesRandomMutationNonOwnerMessagesUnchanged_WhenOwnerPatched",
+                    "nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent)",
+                    "You can't gain physical mutations.",
+                    "You can't gain mental mutations.",
+                    "You can't be mutated.",
+                    "shares an unfamiliar mutation lesson",
+                    "肉体変異は得られない。",
+                    "精神変異は得られない。",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(WaterRitualPopupTranslationPatch)",
+                    "XRL.World.Conversations.Parts.WaterRitualRandomMutation|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World.Effects/RealityStabilized.cs::"
             "XRL.World.Effects.RealityStabilized.FailedToContest"
         ),

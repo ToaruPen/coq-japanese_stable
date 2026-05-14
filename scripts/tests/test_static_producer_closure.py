@@ -531,6 +531,48 @@ def test_give_resheph_secret_reward_popups_are_split_from_fixed_no_secret_popup(
     }
 
 
+def test_water_ritual_random_mutation_incompatible_popup_is_split_from_fixed_and_runtime_popups() -> None:
+    """WaterRitualRandomMutation closes incompatible-category popup without claiming fixed/runtime text."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    source_entries = owner_action_queue_by_file(inventory)
+    family_id = (
+        "XRL.World.Conversations.Parts/WaterRitualRandomMutation.cs::"
+        "XRL.World.Conversations.Parts.WaterRitualRandomMutation.HandleEvent"
+    )
+    family_callsites = [
+        callsite
+        for callsite in inventory["callsites"]
+        if callsite["producer_family_id"] == family_id
+    ]
+    queued_family = next(
+        family
+        for source_entry in source_entries
+        for family in source_entry["families"]
+        if family["producer_family_id"] == family_id
+    )
+
+    assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
+    assert family_closure_status(raw_families[family_id]) == "needs_family_review"
+    assert family_id not in covered_family_ids()
+    assert (family_id, 92) in covered_callsite_keys()
+    assert family_id in queued_family_ids
+    assert queued_family["representative_lines"] == [88, 98]
+    assert queued_family["closure_status_counts"] == {
+        "messages_candidate": 1,
+        "runtime_required": 1,
+    }
+    assert {
+        (callsite["line"], callsite["closure_status"])
+        for callsite in family_callsites
+    } == {
+        (88, "messages_candidate"),
+        (92, "owner_patch_required"),
+        (98, "runtime_required"),
+    }
+
+
 def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:
     """Uncovered high-volume owner families must stay actionable."""
     inventory = load_inventory(TRACKED_INVENTORY)
