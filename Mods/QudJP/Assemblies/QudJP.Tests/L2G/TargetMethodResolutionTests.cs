@@ -1759,7 +1759,12 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.ActivatedAbilityEntry|TrySendCommandEventOnPlayer|System.Void",
         "XRL.World.Parts.ElevatorSwitch|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock|System.Boolean|XRL.World.GameObject|System.Int32|XRL.World.GameObject|System.Int32",
+        "XRL.World.Effects.Monochrome|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Skill.Persuasion_RebukeRobot|AttemptRebuke|System.Boolean",
         "XRL.World.Parts.Skill.Snapjaw_Howl|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Effects.SphynxSalt_Tonic|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Parts.StairsDown|CheckPullDown|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Parts.ThiefBot|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Quests.WeirdwireConduitSystem|HandleEvent|System.Boolean|XRL.World.TookEvent",
     })]
     [TestCase(typeof(ForceBubbleOwnerTranslationPatch), new[]

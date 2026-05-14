@@ -13,7 +13,12 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
     private const string ActivatedAbilityEntryOwner = "XRL.World.Parts.ActivatedAbilityEntry|TrySendCommandEventOnPlayer";
     private const string ElevatorSwitchOwner = "XRL.World.Parts.ElevatorSwitch|FireEvent";
     private const string ModMorphogeneticOwner = "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock";
+    private const string MonochromeOwner = "XRL.World.Effects.Monochrome|FireEvent";
+    private const string PersuasionRebukeRobotAttemptOwner = "XRL.World.Parts.Skill.Persuasion_RebukeRobot|AttemptRebuke";
     private const string SnapjawHowlOwner = "XRL.World.Parts.Skill.Snapjaw_Howl|FireEvent";
+    private const string SphynxSaltTonicOwner = "XRL.World.Effects.SphynxSalt_Tonic|Apply";
+    private const string StairsDownOwner = "XRL.World.Parts.StairsDown|CheckPullDown";
+    private const string ThiefBotOwner = "XRL.World.Parts.ThiefBot|FireEvent";
     private const string WeirdwireConduitOwner = "XRL.World.Quests.WeirdwireConduitSystem|HandleEvent";
 
     [SetUp]
@@ -55,10 +60,40 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
         "「奇妙な電撃」が全身を駆け抜けた。",
         "ModMorphogeneticPainlessShock")]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.FireMonochromeEvent),
+        "Color starts to seep into the world.",
+        "世界に色が染み込んでいく。",
+        "MonochromeColorReturns")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.AttemptRebukeRobot),
+        "You cannot rebuke without a tongue.",
+        "舌がないと叱責できない。",
+        "PersuasionRebukeRobotMissingTongue")]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerQueueTarget.FireSnapjawHowlEvent),
         "You are frenzied by the howl!",
         "遠吠えに興奮させられた！",
         "SnapjawHowlFrenzy")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.ApplySphynxSaltTonic),
+        "You sense a subtle psychic disturbance.",
+        "かすかな精神的乱れを感じる。",
+        "SphynxSaltPsychicDisturbance")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.CheckPullDown),
+        "You fall downward!",
+        "下に落ちた！",
+        "StairsDownFallDownward")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.FireThiefBotEvent),
+        "the chrome idol's pincers pass through you harmlessly.",
+        "the chrome idolのハサミはあなたを傷つけることなくすり抜けた。",
+        "ThiefBotPincersPassThrough")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.FireThiefBotEvent),
+        "You avoid the chrome idol's pincers.",
+        "the chrome idolのハサミを避けた。",
+        "ThiefBotAvoidPincers")]
     [TestCase(
         nameof(DummySingleCallsiteOwnerQueueTarget.HandleWeirdwireTookEvent),
         "You now have 37 feet of copper wire.",
@@ -142,6 +177,36 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
             "A weird, painful shock reverberates through you.",
             "ModMorphogeneticPainfulShock",
             expectedHits: 0);
+        AssertOwnerQueuedMessage(
+            nameof(DummySingleCallsiteOwnerQueueTarget.ApplyMorphicShock),
+            "Color starts to seep into the world.",
+            "Color starts to seep into the world.",
+            "MonochromeColorReturns",
+            expectedHits: 0);
+        AssertOwnerQueuedMessage(
+            nameof(DummySingleCallsiteOwnerQueueTarget.FireMonochromeEvent),
+            "You cannot rebuke without a tongue.",
+            "You cannot rebuke without a tongue.",
+            "PersuasionRebukeRobotMissingTongue",
+            expectedHits: 0);
+        AssertOwnerQueuedMessage(
+            nameof(DummySingleCallsiteOwnerQueueTarget.AttemptRebukeRobot),
+            "You sense a subtle psychic disturbance.",
+            "You sense a subtle psychic disturbance.",
+            "SphynxSaltPsychicDisturbance",
+            expectedHits: 0);
+        AssertOwnerQueuedMessage(
+            nameof(DummySingleCallsiteOwnerQueueTarget.HandleWeirdwireTookEvent),
+            "You fall downward!",
+            "You fall downward!",
+            "StairsDownFallDownward",
+            expectedHits: 0);
+        AssertOwnerQueuedMessage(
+            nameof(DummySingleCallsiteOwnerQueueTarget.CheckPullDown),
+            "You avoid the chrome idol's pincers.",
+            "You avoid the chrome idol's pincers.",
+            "ThiefBotAvoidPincers",
+            expectedHits: 0);
     }
 
     [Test]
@@ -160,6 +225,8 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
     [TestCase("")]
     [TestCase("You now have copper wire.")]
     [TestCase("A weird shock reverberates nearby.")]
+    [TestCase("You fall upward!")]
+    [TestCase("the chrome idol's force field passes through you harmlessly.")]
     public void SingleCallsiteOwnerQueue_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched(string source)
     {
         AssertOwnerQueuedMessage(
@@ -272,7 +339,12 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
             nameof(DummySingleCallsiteOwnerQueueTarget.TrySendCommandEventOnPlayer) => CreateOwnerRouteFromKey(ActivatedAbilityEntryOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.FireElevatorSwitchEvent) => CreateOwnerRouteFromKey(ElevatorSwitchOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.ApplyMorphicShock) => CreateOwnerRouteFromKey(ModMorphogeneticOwner),
+            nameof(DummySingleCallsiteOwnerQueueTarget.FireMonochromeEvent) => CreateOwnerRouteFromKey(MonochromeOwner),
+            nameof(DummySingleCallsiteOwnerQueueTarget.AttemptRebukeRobot) => CreateOwnerRouteFromKey(PersuasionRebukeRobotAttemptOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.FireSnapjawHowlEvent) => CreateOwnerRouteFromKey(SnapjawHowlOwner),
+            nameof(DummySingleCallsiteOwnerQueueTarget.ApplySphynxSaltTonic) => CreateOwnerRouteFromKey(SphynxSaltTonicOwner),
+            nameof(DummySingleCallsiteOwnerQueueTarget.CheckPullDown) => CreateOwnerRouteFromKey(StairsDownOwner),
+            nameof(DummySingleCallsiteOwnerQueueTarget.FireThiefBotEvent) => CreateOwnerRouteFromKey(ThiefBotOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.HandleWeirdwireTookEvent) => CreateOwnerRouteFromKey(WeirdwireConduitOwner),
             _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected owner method."),
         };
@@ -294,7 +366,17 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
 
         public static bool ApplyMorphicShock() => true;
 
+        public static bool FireMonochromeEvent() => true;
+
+        public static bool AttemptRebukeRobot() => true;
+
         public static bool FireSnapjawHowlEvent() => true;
+
+        public static bool ApplySphynxSaltTonic() => true;
+
+        public static bool CheckPullDown() => true;
+
+        public static bool FireThiefBotEvent() => true;
 
         public static bool HandleWeirdwireTookEvent() => true;
     }

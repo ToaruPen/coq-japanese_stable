@@ -14,11 +14,24 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
     private const string ActivatedAbilityEntryOwner = "XRL.World.Parts.ActivatedAbilityEntry|TrySendCommandEventOnPlayer";
     private const string ElevatorSwitchOwner = "XRL.World.Parts.ElevatorSwitch|FireEvent";
     private const string ModMorphogeneticOwner = "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock";
+    private const string MonochromeOwner = "XRL.World.Effects.Monochrome|FireEvent";
+    private const string PersuasionRebukeRobotAttemptOwner = "XRL.World.Parts.Skill.Persuasion_RebukeRobot|AttemptRebuke";
     private const string SnapjawHowlOwner = "XRL.World.Parts.Skill.Snapjaw_Howl|FireEvent";
+    private const string SphynxSaltTonicOwner = "XRL.World.Effects.SphynxSalt_Tonic|Apply";
+    private const string StairsDownOwner = "XRL.World.Parts.StairsDown|CheckPullDown";
+    private const string ThiefBotOwner = "XRL.World.Parts.ThiefBot|FireEvent";
     private const string WeirdwireConduitOwner = "XRL.World.Quests.WeirdwireConduitSystem|HandleEvent";
 
     private static readonly Regex MorphogeneticShockPattern = new(
         "^A weird(?<painful>, painful)? shock reverberates through you\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ThiefBotAvoidPincersPattern = new(
+        "^You avoid (?<target>.+?)(?:'s|') pincers\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ThiefBotPincersPassThroughPattern = new(
+        "^(?<target>.+?)(?:'s|') pincers pass through you harmlessly\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex WeirdwireCopperWirePattern = new(
@@ -40,7 +53,12 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
         var eventType = FindAssemblyCSharpType("XRL.World.Event");
         var gameObjectType = FindAssemblyCSharpType("XRL.World.GameObject");
         var modMorphogeneticType = FindAssemblyCSharpType("XRL.World.Parts.ModMorphogenetic");
+        var monochromeType = FindAssemblyCSharpType("XRL.World.Effects.Monochrome");
+        var persuasionRebukeRobotType = FindAssemblyCSharpType("XRL.World.Parts.Skill.Persuasion_RebukeRobot");
         var snapjawHowlType = FindAssemblyCSharpType("XRL.World.Parts.Skill.Snapjaw_Howl");
+        var sphynxSaltTonicType = FindAssemblyCSharpType("XRL.World.Effects.SphynxSalt_Tonic");
+        var stairsDownType = FindAssemblyCSharpType("XRL.World.Parts.StairsDown");
+        var thiefBotType = FindAssemblyCSharpType("XRL.World.Parts.ThiefBot");
         var tookEventType = FindAssemblyCSharpType("XRL.World.TookEvent");
         var weirdwireConduitType = FindAssemblyCSharpType("XRL.World.Quests.WeirdwireConduitSystem");
         if (activatedAbilityEntryType is null
@@ -48,7 +66,12 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
             || eventType is null
             || gameObjectType is null
             || modMorphogeneticType is null
+            || monochromeType is null
+            || persuasionRebukeRobotType is null
             || snapjawHowlType is null
+            || sphynxSaltTonicType is null
+            || stairsDownType is null
+            || thiefBotType is null
             || tookEventType is null
             || weirdwireConduitType is null)
         {
@@ -73,7 +96,32 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
             [gameObjectType, typeof(int), gameObjectType, typeof(int)]);
         AddTarget(
             targets,
+            monochromeType,
+            "FireEvent",
+            [eventType]);
+        AddTarget(
+            targets,
+            persuasionRebukeRobotType,
+            "AttemptRebuke",
+            Type.EmptyTypes);
+        AddTarget(
+            targets,
             snapjawHowlType,
+            "FireEvent",
+            [eventType]);
+        AddTarget(
+            targets,
+            sphynxSaltTonicType,
+            "Apply",
+            [gameObjectType]);
+        AddTarget(
+            targets,
+            stairsDownType,
+            "CheckPullDown",
+            [gameObjectType]);
+        AddTarget(
+            targets,
+            thiefBotType,
             "FireEvent",
             [eventType]);
         AddTarget(
@@ -191,11 +239,59 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
             return true;
         }
 
+        if (string.Equals(source, "Color starts to seep into the world.", StringComparison.Ordinal)
+            && OwnerMatches(ownerKey, MonochromeOwner))
+        {
+            translated = "世界に色が染み込んでいく。";
+            detail = "MonochromeColorReturns";
+            return true;
+        }
+
+        if (string.Equals(source, "You cannot rebuke without a tongue.", StringComparison.Ordinal)
+            && OwnerMatches(ownerKey, PersuasionRebukeRobotAttemptOwner))
+        {
+            translated = "舌がないと叱責できない。";
+            detail = "PersuasionRebukeRobotMissingTongue";
+            return true;
+        }
+
         if (string.Equals(source, "You are frenzied by the howl!", StringComparison.Ordinal)
             && OwnerMatches(ownerKey, SnapjawHowlOwner))
         {
             translated = "遠吠えに興奮させられた！";
             detail = "SnapjawHowlFrenzy";
+            return true;
+        }
+
+        if (string.Equals(source, "You sense a subtle psychic disturbance.", StringComparison.Ordinal)
+            && OwnerMatches(ownerKey, SphynxSaltTonicOwner))
+        {
+            translated = "かすかな精神的乱れを感じる。";
+            detail = "SphynxSaltPsychicDisturbance";
+            return true;
+        }
+
+        if (string.Equals(source, "You fall downward!", StringComparison.Ordinal)
+            && OwnerMatches(ownerKey, StairsDownOwner))
+        {
+            translated = "下に落ちた！";
+            detail = "StairsDownFallDownward";
+            return true;
+        }
+
+        match = ThiefBotPincersPassThroughPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, ThiefBotOwner))
+        {
+            translated = match.Groups["target"].Value + "のハサミはあなたを傷つけることなくすり抜けた。";
+            detail = "ThiefBotPincersPassThrough";
+            return true;
+        }
+
+        match = ThiefBotAvoidPincersPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, ThiefBotOwner))
+        {
+            translated = match.Groups["target"].Value + "のハサミを避けた。";
+            detail = "ThiefBotAvoidPincers";
             return true;
         }
 
