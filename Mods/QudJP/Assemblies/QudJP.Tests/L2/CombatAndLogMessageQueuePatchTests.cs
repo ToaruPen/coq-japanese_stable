@@ -1940,6 +1940,18 @@ public sealed class CombatAndLogMessageQueuePatchTests
         "You feel a psychic whiff as {{G|glowfish}} pushes past resistance in the structure of spacetime.",
         "{{G|glowfish}}が時空構造の抵抗を押し通る、精神的なかすかな感触を覚えた。")]
     [TestCase(
+        nameof(DummyRealityStabilizedEventTarget.FailedToContest),
+        "You feel a psychic thud as {{G|glowfish}} pushes against the structure of spacetime and fails to break through.",
+        "{{G|glowfish}}が時空構造を押して突破に失敗した、精神的な鈍い衝撃を感じた。")]
+    [TestCase(
+        nameof(DummyRealityStabilizedEventTarget.FailedToContest),
+        "You feel a psychic thud as someone pushes against the structure of spacetime and fails to break through.",
+        "誰かが時空構造を押して突破に失敗した、精神的な鈍い衝撃を感じた。")]
+    [TestCase(
+        nameof(DummyRealityStabilizedEventTarget.FailedToContest),
+        "{{G|glowfish}} winces.",
+        "{{G|glowfish}}が顔をしかめた。")]
+    [TestCase(
         nameof(DummyRealityStabilizedEventTarget.ShortCircuitDevice),
         "{{G|phase cannon}} showers sparks everywhere.",
         "{{G|phase cannon}}があたり一面に火花を散らした。")]
@@ -1959,8 +1971,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
             "{{G|phase cannon}}が火花の雨を放った！");
     }
 
-    [Test]
-    public void RealityStabilizedEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    [TestCase("You feel a psychic whiff as glowfish pushes past resistance in the structure of spacetime.")]
+    [TestCase("You feel a psychic thud as glowfish pushes against the structure of spacetime and fails to break through.")]
+    [TestCase("glowfish winces.")]
+    public void RealityStabilizedEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
     {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -1968,14 +1982,13 @@ public sealed class CombatAndLogMessageQueuePatchTests
         {
             PatchQueue(harmony);
 
-            DummyMessageQueue.AddPlayerMessage(
-                "You feel a psychic whiff as glowfish pushes past resistance in the structure of spacetime.",
-                null,
-                Capitalize: false);
+            DummyMessageQueue.AddPlayerMessage(source, null, Capitalize: false);
 
-            Assert.That(
-                DummyMessageQueue.LastMessage,
-                Is.EqualTo("You feel a psychic whiff as glowfish pushes past resistance in the structure of spacetime."));
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+                Assert.That(DummyMessageQueue.LastColor, Is.Null);
+            });
         }
         finally
         {
@@ -7201,6 +7214,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
             if (string.Equals(methodName, nameof(DummyRealityStabilizedEventTarget.ShortCircuitDevice), StringComparison.Ordinal))
             {
                 target.ShortCircuitDevice(usePopup: false);
+            }
+            else if (string.Equals(methodName, nameof(DummyRealityStabilizedEventTarget.FailedToContest), StringComparison.Ordinal))
+            {
+                target.FailedToContest();
             }
             else
             {

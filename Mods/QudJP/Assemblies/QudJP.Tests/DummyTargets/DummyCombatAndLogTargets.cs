@@ -622,12 +622,20 @@ internal sealed class DummyRealityStabilizedEventTarget
 
     public string PopupMessageToSend { get; set; } = string.Empty;
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public bool TryContest()
     {
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
         return true;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void FailedToContest()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public void ShortCircuitDevice(bool usePopup)
     {
         if (usePopup)

@@ -11883,6 +11883,51 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Effects/RealityStabilized.cs::"
+            "XRL.World.Effects.RealityStabilized.FailedToContest"
+        ),
+        lines=(489, 493),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/RealityStabilizedEventTranslationPatch.cs",
+                (
+                    "RealityStabilizedEventTranslationPatch",
+                    "FailedToContest",
+                    "PsychicThudPattern",
+                    "WincePattern",
+                    "TryTranslateQueuedMessage",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("RealityStabilizedEventTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                (
+                    "RealityStabilizedEvent_TranslatesQueuedMessages_WhenOwnerPatched",
+                    "RealityStabilizedEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "RealityStabilizedEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "RealityStabilizedEvent_LeavesEmptyMessagesUnchanged_WhenOwnerPatched",
+                    "nameof(DummyRealityStabilizedEventTarget.FailedToContest)",
+                    "You feel a psychic thud as {{G|glowfish}} pushes against",
+                    "someone pushes against the structure of spacetime and fails to break through.",
+                    "{{G|glowfish}} winces.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(RealityStabilizedEventTranslationPatch)",
+                    "XRL.World.Effects.RealityStabilized|FailedToContest|System.Void|XRL.World.GameObject",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World/ReverseEngineeringSifrah.cs::"
             "XRL.World.ReverseEngineeringSifrah.Finish"
         ),
