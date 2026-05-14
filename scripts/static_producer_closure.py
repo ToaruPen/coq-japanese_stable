@@ -10644,6 +10644,47 @@ COVERED_OWNER_FAMILIES: Final = (
             ),
         ),
     ),
+    CoveredOwnerFamily(
+        family_id="SoundManager.cs::SoundManager.SetChannelTrack",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/SoundManagerSetChannelTrackTranslationPatch.cs",
+                (
+                    "TryTranslateQueuedMessage",
+                    "SoundLogTrackPattern",
+                    "SoundManager",
+                    "SetChannelTrack",
+                    "MoveNext",
+                    "Wasn't found",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("SoundManagerSetChannelTrackTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/SoundManagerSetChannelTrackTranslationPatchTests.cs",
+                (
+                    "SetChannelTrack_TranslatesSoundLogTrackMessage_WhenOwnerPatched",
+                    "SetChannelTrack_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "SetChannelTrack_DoesNotRetranslateDirectMarkedMessage_WhenOwnerPatched",
+                    "SetChannelTrack_LeavesEmptyMessageUnchanged_WhenOwnerPatched",
+                    "SetChannelTrack_LeavesDebugMissingTrackMessageUnchanged_WhenOwnerPatched",
+                    "nameof(DummySoundManagerTarget.SetChannelTrack)",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "SoundManager",
+                    "SetChannelTrack",
+                    "SoundManager+<SetChannelTrack>d__36|MoveNext|System.Void",
+                ),
+            ),
+        ),
+    ),
     *_examiner_result_popup_families(),
     *_force_bubble_owner_families(),
     *_combat_skill_extension_owner_families(),

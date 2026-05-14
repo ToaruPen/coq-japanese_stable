@@ -15,6 +15,7 @@ public sealed class TargetMethodResolutionTests
     {
 #if HAS_GAME_DLL
         _ = EnsureGameAssemblyLoaded();
+        _ = EnsureManagedAssemblyLoaded("UniTask");
         _ = EnsureManagedAssemblyLoaded("ZString");
         _ = EnsureManagedAssemblyLoaded("Unity.InputSystem");
 #endif
@@ -1298,6 +1299,10 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(DamagePenetrationDebugTranslationPatch), new[]
     {
         "XRL.Rules.Stat|RollDamagePenetrations|System.Int32|System.Int32|System.Int32|System.Int32",
+    })]
+    [TestCase(typeof(SoundManagerSetChannelTrackTranslationPatch), new[]
+    {
+        "SoundManager+<SetChannelTrack>d__36|MoveNext|System.Void",
     })]
     [TestCase(typeof(BasePronounProviderCustomizePopupTranslationPatch), new[]
     {

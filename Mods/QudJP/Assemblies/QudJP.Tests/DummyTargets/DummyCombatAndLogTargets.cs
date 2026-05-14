@@ -1637,6 +1637,26 @@ internal sealed class DummySurvivalCampTarget
     }
 }
 
+internal static class DummySoundManagerTarget
+{
+    public static string MessageToSend { get; set; } = string.Empty;
+
+    public static string? ColorToSend { get; set; }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public static async Task SetChannelTrack()
+    {
+        await Task.Yield();
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public static void Reset()
+    {
+        MessageToSend = string.Empty;
+        ColorToSend = null;
+    }
+}
+
 internal sealed class DummyBoostStatisticTarget
 {
     public string MessageToSend { get; set; } = string.Empty;
