@@ -11109,6 +11109,80 @@ COVERED_OWNER_FAMILIES: Final = (
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 COVERED_OWNER_CALLSITES: Final = (
     CoveredOwnerCallsites(
+        family_id="XRL.UI/JournalScreen.cs::XRL.UI.JournalScreen.HandleDelete",
+        lines=(462,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/JournalScreenPopupTranslationPatch.cs",
+                (
+                    "JournalScreenPopupTranslationPatch",
+                    "HandleDelete",
+                    "RecipeDeleteConfirmation",
+                    "TryTranslateRecipeDeleteConfirmation",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("JournalScreenPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/JournalScreenPopupTranslationPatchTests.cs",
+                (
+                    "HandleDelete_TranslatesRecipeDeleteConfirmation_WhenOwnerPatched",
+                    "TryTranslatePopupMessage_DoesNotClaimJournalScreenPopup_WhenOwnerAbsent",
+                    "JournalScreenPopup_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "JournalScreenPopup_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(JournalScreenPopupTranslationPatch)",
+                    "XRL.UI.JournalScreen|HandleDelete|System.Boolean|System.String|Qud.API.IBaseJournalEntry|XRL.World.GameObject",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id="XRL.UI/JournalScreen.cs::XRL.UI.JournalScreen.Show",
+        lines=(615, 620),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/JournalScreenPopupTranslationPatch.cs",
+                (
+                    "JournalScreenPopupTranslationPatch",
+                    "Show",
+                    "RenameLocation",
+                    "NameLocation",
+                    "TryTranslateLocationRename",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("JournalScreenPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/JournalScreenPopupTranslationPatchTests.cs",
+                (
+                    "Show_TranslatesLocationRenamePopups_WhenOwnerPatched",
+                    "TryTranslatePopupMessage_DoesNotClaimJournalScreenPopup_WhenOwnerAbsent",
+                    "JournalScreenPopup_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "JournalScreenPopup_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "Show_LeavesUnsupportedPopupUnchanged_WhenOwnerPatched",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(JournalScreenPopupTranslationPatch)",
+                    "XRL.UI.JournalScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
         family_id="XRL.UI/TradeUI.cs::XRL.UI.TradeUI.DoVendorExamine",
         lines=(1217, 1222, 1229, 1231, 1234, 1245),
         inventory_statuses=("needs_family_review",),

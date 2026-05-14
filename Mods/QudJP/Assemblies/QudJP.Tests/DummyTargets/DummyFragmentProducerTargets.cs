@@ -99,6 +99,24 @@ internal sealed class DummyLiquidVolumeProducerTarget
     }
 }
 
+internal sealed class DummyJournalScreenPopupProducerTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool HandleDelete()
+    {
+        _ = DummyPopupShow.ShowYesNo(PopupMessageToShow);
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void Show()
+    {
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+}
+
 internal sealed class DummyGameObjectStatPopupProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;

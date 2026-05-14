@@ -1674,6 +1674,11 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.GiantClamProperties|TeleportFromClamWorld|System.Void|XRL.World.GameObject",
         "XRL.World.Parts.GiantClamProperties|TeleportJoppaWorld|System.Void|XRL.World.GameObject",
     })]
+    [TestCase(typeof(JournalScreenPopupTranslationPatch), new[]
+    {
+        "XRL.UI.JournalScreen|HandleDelete|System.Boolean|System.String|Qud.API.IBaseJournalEntry|XRL.World.GameObject",
+        "XRL.UI.JournalScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
+    })]
     [TestCase(typeof(ForceBubbleOwnerTranslationPatch), new[]
     {
         "XRL.World.Parts.ForceEmitter|ActivateForceEmitter|System.Boolean|XRL.World.IEvent",

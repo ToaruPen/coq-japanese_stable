@@ -167,6 +167,25 @@ def test_trade_ui_vendor_owner_callsites_are_split_from_fixed_fallbacks() -> Non
     assert [family["member_name"] for family in trade_ui_entry["families"]] == ["ShowTradeScreen"]
 
 
+def test_journal_screen_popup_owner_callsites_are_split_from_fixed_fallbacks() -> None:
+    """JournalScreen popup owner callsites must close without claiming fixed fallback popups."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    journal_family_ids = {
+        "XRL.UI/JournalScreen.cs::XRL.UI.JournalScreen.HandleDelete",
+        "XRL.UI/JournalScreen.cs::XRL.UI.JournalScreen.Show",
+    }
+
+    for family_id in journal_family_ids:
+        assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
+        assert family_closure_status(raw_families[family_id]) == "needs_family_review"
+        assert family_id not in covered_family_ids()
+        assert family_id not in queued_family_ids
+
+    assert not any(entry["source_file"] == "XRL.UI/JournalScreen.cs" for entry in owner_action_queue_by_file(inventory))
+
+
 def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:
     """Uncovered high-volume owner families must stay actionable."""
     inventory = load_inventory(TRACKED_INVENTORY)

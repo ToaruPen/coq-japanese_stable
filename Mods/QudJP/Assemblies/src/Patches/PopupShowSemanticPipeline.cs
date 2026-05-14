@@ -31,6 +31,7 @@ internal static class PopupShowSemanticPipeline
         PointOfInterestNavigationPopupTranslationPatch.TryTranslatePopupMessage,
         RunStartRunningPopupTranslationPatch.TryTranslatePopupMessage,
         HistoricEventRegionRevealPopupTranslationPatch.TryTranslatePopupMessage,
+        JournalScreenPopupTranslationPatch.TryTranslatePopupMessage,
         RequiresPowerToEquipCheckEquipPopupTranslationPatch.TryTranslatePopupMessage,
         SurvivalCampAttemptCampPopupTranslationPatch.TryTranslatePopupMessage,
         HackingSifrahResultTranslationPatch.TryTranslatePopupMessage,
