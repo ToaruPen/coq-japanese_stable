@@ -5709,6 +5709,54 @@ def _run_start_running_popup_family() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _historic_event_region_reveal_popup_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="HistoryKit/HistoricEvent.cs::HistoryKit.HistoricEvent.PerformRegionReveal",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/HistoricEventRegionRevealPopupTranslationPatch.cs",
+                    (
+                        "HistoricEventRegionRevealPopupTranslationPatch",
+                        "HistoryKit.HistoricEvent",
+                        "PerformRegionReveal",
+                        "RegionRevealLocation",
+                        "JournalNotificationTranslator.TryTranslate",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("HistoricEventRegionRevealPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/HistoricEventRegionRevealPopupTranslationPatchTests.cs",
+                    (
+                        "PerformRegionReveal_TranslatesRegionRevealPopup_WhenOwnerPatched",
+                        "PerformRegionReveal_DoesNotClaimRegionRevealPopup_WhenOwnerAbsent",
+                        "PerformRegionReveal_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "PerformRegionReveal_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "PerformRegionReveal_LeavesUnsupportedPopupUnchanged_WhenOwnerPatched",
+                        "You discover the location of {{Y|Omonporch}}.",
+                        "{{Y|Omonporch}}の場所を発見した。",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(HistoricEventRegionRevealPopupTranslationPatch)",
+                        "HistoryKit.HistoricEvent|PerformRegionReveal|System.Void",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/journal-patterns.ja.json",
+                    ("^You discover the location of (.+?)[.!]?$",),
+                ),
+            ),
+        ),
+    )
+
+
 def _xrl_core_owner_queue_families() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -9388,6 +9436,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_single_callsite_owner_popup_families(),
     *_point_of_interest_navigation_popup_family(),
     *_run_start_running_popup_family(),
+    *_historic_event_region_reveal_popup_family(),
     *_xrl_core_owner_queue_families(),
     *_brain_owner_surface_families(),
     *_cripple_apply_family(),
