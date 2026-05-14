@@ -12584,6 +12584,88 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Effects/GlotrotOnset.cs::"
+            "XRL.World.Effects.GlotrotOnset.FireEvent"
+        ),
+        lines=(112, 122, 131),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/GlotrotOnsetTranslationPatch.cs",
+                (
+                    "GlotrotOnsetTranslationPatch",
+                    "XRL.World.Effects.GlotrotOnset",
+                    "FireEvent",
+                    "Your throat feels sore.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("GlotrotOnsetTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                (
+                    "GlotrotOnsetFireEvent_TranslatesQueuedMessages_WhenOwnerPatched",
+                    "GlotrotOnsetFireEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "GlotrotOnsetFireEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "GlotrotOnsetFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                    "Your throat feels sore.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(GlotrotOnsetTranslationPatch)",
+                    "XRL.World.Effects.GlotrotOnset|FireEvent|System.Boolean|XRL.World.Event",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
+            "XRL.World.Effects/Ironshank.cs::"
+            "XRL.World.Effects.Ironshank.FireEvent"
+        ),
+        lines=(160,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/IronshankTranslationPatch.cs",
+                (
+                    "IronshankTranslationPatch",
+                    "XRL.World.Effects.Ironshank",
+                    "FireEvent",
+                    "You feel the cartilage stretch as your leg bones grind together at the joints.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("IronshankTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                (
+                    "IronshankFireEvent_TranslatesCartilageQueuedMessage_WhenOwnerPatched",
+                    "IronshankFireEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "IronshankFireEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "IronshankFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                    "You feel the cartilage stretch as your leg bones grind together at the joints.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(IronshankTranslationPatch)",
+                    "XRL.World.Effects.Ironshank|FireEvent|System.Boolean|XRL.World.Event",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World/SocialSifrahTokenGift.cs::"
             "XRL.World.SocialSifrahTokenGift.CheckTokenUse"
         ),

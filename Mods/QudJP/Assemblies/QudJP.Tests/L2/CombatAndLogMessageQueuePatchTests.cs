@@ -4037,6 +4037,93 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [TestCase("You feel a bit better.", "少し気分が良くなった。")]
+    [TestCase("Your throat feels sore.", "喉がひりひりする。")]
+    [TestCase("You feel better.", "気分が良くなった。")]
+    public void GlotrotOnsetFireEvent_TranslatesQueuedMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertGlotrotOnsetQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void GlotrotOnsetFireEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("Your throat feels sore.", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your throat feels sore."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GlotrotOnsetFireEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertGlotrotOnsetQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("Your throat feels sore."),
+            "Your throat feels sore.");
+    }
+
+    [Test]
+    public void GlotrotOnsetFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertGlotrotOnsetQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void IronshankFireEvent_TranslatesCartilageQueuedMessage_WhenOwnerPatched()
+    {
+        AssertIronshankQueuedMessage(
+            "You feel the cartilage stretch as your leg bones grind together at the joints.",
+            "足の骨が軋み、軟骨が伸びるのを感じた。");
+    }
+
+    [Test]
+    public void IronshankFireEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage(
+                "You feel the cartilage stretch as your leg bones grind together at the joints.",
+                Capitalize: false);
+
+            Assert.That(
+                DummyMessageQueue.LastMessage,
+                Is.EqualTo("You feel the cartilage stretch as your leg bones grind together at the joints."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void IronshankFireEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertIronshankQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation(
+                "You feel the cartilage stretch as your leg bones grind together at the joints."),
+            "You feel the cartilage stretch as your leg bones grind together at the joints.");
+    }
+
+    [Test]
+    public void IronshankFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertIronshankQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [TestCase("You feel a bit better.", "少し気分が良くなった。")]
     [TestCase("Your legs ache at the joints.", "脚の関節が痛む。")]
     [TestCase("You feel better.", "気分が良くなった。")]
     public void IronshankOnsetFireEvent_TranslatesQueuedMessages_WhenOwnerPatched(string source, string expected)
@@ -8489,6 +8576,60 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
             _ = RequireMethod(typeof(DummyGameObjectFireEventTarget), methodName, typeof(DummyGameEvent))
                 .Invoke(target, new object[] { new DummyGameEvent { ID = "EndTurn" } });
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertGlotrotOnsetQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectFireEventTarget), nameof(DummyGameObjectFireEventTarget.FireEvent), typeof(DummyGameEvent)),
+                typeof(GlotrotOnsetTranslationPatch));
+
+            var target = new DummyGameObjectFireEventTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.FireEvent(new DummyGameEvent { ID = "EndTurn" });
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertIronshankQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectFireEventTarget), nameof(DummyGameObjectFireEventTarget.FireEvent), typeof(DummyGameEvent)),
+                typeof(IronshankTranslationPatch));
+
+            var target = new DummyGameObjectFireEventTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.FireEvent(new DummyGameEvent { ID = "EndTurn" });
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }

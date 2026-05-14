@@ -86,6 +86,8 @@ internal static class MessageQueueSemanticPipeline
         HealingTranslationPatch.TryTranslateQueuedMessage,
         StressedTranslationPatch.TryTranslateQueuedMessage,
         MonochromeOnsetTranslationPatch.TryTranslateQueuedMessage,
+        GlotrotOnsetTranslationPatch.TryTranslateQueuedMessage,
+        IronshankTranslationPatch.TryTranslateQueuedMessage,
         IronshankOnsetTranslationPatch.TryTranslateQueuedMessage,
         AdrenalControlTranslationPatch.TryTranslateQueuedMessage,
         AmnesiaTranslationPatch.TryTranslateQueuedMessage,

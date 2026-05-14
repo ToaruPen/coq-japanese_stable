@@ -1163,6 +1163,14 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Effects.MonochromeOnset|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.MonochromePoisonOnDamage|FireEvent|System.Boolean|XRL.World.Event",
     })]
+    [TestCase(typeof(GlotrotOnsetTranslationPatch), new[]
+    {
+        "XRL.World.Effects.GlotrotOnset|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(IronshankTranslationPatch), new[]
+    {
+        "XRL.World.Effects.Ironshank|FireEvent|System.Boolean|XRL.World.Event",
+    })]
     [TestCase(typeof(IronshankOnsetTranslationPatch), new[]
     {
         "XRL.World.Effects.IronshankOnset|FireEvent|System.Boolean|XRL.World.Event",
