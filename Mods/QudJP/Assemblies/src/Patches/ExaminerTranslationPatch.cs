@@ -24,6 +24,27 @@ public static class ExaminerTranslationPatch
     private static readonly Regex BrokePattern =
         new Regex("^You think you broke (?<target>.+?)\\.\\.\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex BrokenPattern =
+        new Regex("^Whatever (?<subject>.+?) (?:is|are), (?<state>.+?) broken\\.\\.\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex OwnedExaminePattern =
+        new Regex("^(?<owner>.+?)(?: ?(?:is|are)) not owned by you, and examining (?<target>.+?) risks damaging (?<riskTarget>.+?)\\. Are you sure you want to do so\\?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ContainerOwnedExaminePattern =
+        new Regex("^(?<container>.+?)(?: ?(?:is|are)) not owned by you, and examining (?<item>.+?) inside (?<inside>.+?) risks causing damage\\. Are you sure you want to do so\\?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly string[] EnglishArticlePrefixes =
+    [
+        "a ",
+        "an ",
+        "the ",
+        "some ",
+        "A ",
+        "An ",
+        "The ",
+        "Some ",
+    ];
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -32,10 +53,21 @@ public static class ExaminerTranslationPatch
     {
         var examinerType = AccessTools.TypeByName("XRL.World.Parts.Examiner");
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
-        if (examinerType is null || gameObjectType is null)
+        var inventoryActionEventType = AccessTools.TypeByName("XRL.World.InventoryActionEvent");
+        if (examinerType is null || gameObjectType is null || inventoryActionEventType is null)
         {
-            Trace.TraceError("QudJP: {0} failed to resolve Examiner or GameObject.", Context);
+            Trace.TraceError("QudJP: {0} failed to resolve Examiner, GameObject, or InventoryActionEvent.", Context);
             yield break;
+        }
+
+        var handleEvent = AccessTools.Method(examinerType, "HandleEvent", [inventoryActionEventType]);
+        if (handleEvent is not null)
+        {
+            yield return handleEvent;
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0}.HandleEvent(InventoryActionEvent) not found.", Context);
         }
 
         foreach (var methodName in new[]
@@ -44,6 +76,7 @@ public static class ExaminerTranslationPatch
                      "ResultExceptionalSuccess",
                      "ResultFailure",
                      "ResultFakeConfusionFailure",
+                     "ResultCriticalFailure",
                  })
         {
             var method = AccessTools.Method(examinerType, methodName, [gameObjectType]);
@@ -105,13 +138,89 @@ public static class ExaminerTranslationPatch
         if (TryTranslate(UnderstandPattern, static target => target + "を理解した。", source, stripped, spans, route, family, "Understand", out translated)
             || TryTranslate(DiscoverHiddenPattern, static target => target + "について隠されていたことを発見した！", source, stripped, spans, route, family, "DiscoverHidden", out translated)
             || TryTranslate(PuzzledPattern, static target => target + "のことがわからない。", source, stripped, spans, route, family, "Puzzled", out translated)
-            || TryTranslate(BrokePattern, static target => target + "を壊してしまった気がする。", source, stripped, spans, route, family, "Broke", out translated))
+            || TryTranslate(BrokePattern, static target => target + "を壊してしまった気がする。", source, stripped, spans, route, family, "Broke", out translated)
+            || TryTranslateBroken(source, stripped, spans, route, family, out translated)
+            || TryTranslateOwnedExamine(source, stripped, spans, route, family, out translated)
+            || TryTranslateContainerOwnedExamine(source, stripped, spans, route, family, out translated))
         {
             return true;
         }
 
         translated = source;
         return false;
+    }
+
+    private static bool TryTranslateBroken(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string family,
+        out string translated)
+    {
+        if (!BrokenPattern.IsMatch(stripped))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = RestoreWholeSourceBoundary("それが何であれ、壊れている...", stripped, spans);
+        Record(route, family, "Broken", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateOwnedExamine(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string family,
+        out string translated)
+    {
+        var match = OwnedExaminePattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = RestoreWholeSourceBoundary(
+            TranslateSubject(match, spans, "owner")
+            + "はあなたのものではない。調べると"
+            + TranslateObject(match, spans, "riskTarget")
+            + "を傷つけるおそれがある。それでもそうするか？",
+            stripped,
+            spans);
+        Record(route, family, "OwnedExamine", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateContainerOwnedExamine(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string family,
+        out string translated)
+    {
+        var match = ContainerOwnedExaminePattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = RestoreWholeSourceBoundary(
+            TranslateSubject(match, spans, "container")
+            + "はあなたのものではない。"
+            + TranslateObject(match, spans, "inside")
+            + "の中にある"
+            + TranslateObject(match, spans, "item")
+            + "を調べると損傷を引き起こすおそれがある。それでもそうするか？",
+            stripped,
+            spans);
+        Record(route, family, "ContainerOwnedExamine", source, translated);
+        return true;
     }
 
     private static bool TryTranslate(
@@ -144,6 +253,50 @@ public static class ExaminerTranslationPatch
             group.Value,
             spans,
             group).Trim();
+    }
+
+    private static string TranslateSubject(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
+    {
+        return TranslatePronounOrObject(RestoreCapture(match, spans, groupName));
+    }
+
+    private static string TranslateObject(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
+    {
+        return TranslatePronounOrObject(RestoreCaptureWithoutLeadingArticle(match, spans, groupName));
+    }
+
+    private static string RestoreCaptureWithoutLeadingArticle(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
+    {
+        var group = match.Groups[groupName];
+        var restored = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, spans, group).Trim();
+        return StripLeadingEnglishArticlePreservingMarkup(restored);
+    }
+
+    private static string StripLeadingEnglishArticlePreservingMarkup(string source)
+    {
+        var trimmed = source.Trim();
+        for (var i = 0; i < EnglishArticlePrefixes.Length; i++)
+        {
+            var article = EnglishArticlePrefixes[i];
+            if (trimmed.StartsWith(article, StringComparison.Ordinal))
+            {
+                return trimmed.Substring(article.Length);
+            }
+        }
+
+        return trimmed;
+    }
+
+    private static string TranslatePronounOrObject(string source)
+    {
+        return source.Trim() switch
+        {
+            "it" or "It" => "それ",
+            "them" or "Them" or "they" or "They" => "それら",
+            "him" or "Him" or "he" or "He" => "彼",
+            "her" or "Her" or "she" or "She" => "彼女",
+            var value => value,
+        };
     }
 
     private static string RestoreWholeSourceBoundary(

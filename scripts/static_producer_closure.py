@@ -12666,6 +12666,92 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts/Examiner.cs::"
+            "XRL.World.Parts.Examiner.HandleEvent"
+        ),
+        lines=(405, 428, 433),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/ExaminerTranslationPatch.cs",
+                (
+                    "ExaminerTranslationPatch",
+                    "XRL.World.Parts.Examiner",
+                    "HandleEvent",
+                    "BrokenPattern",
+                    "OwnedExaminePattern",
+                    "ContainerOwnedExaminePattern",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+                ("ExaminerTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/ExaminerTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesExaminerHandleEventPopups_WhenOwnerPatched",
+                    "Patch_DoesNotTranslateHandleEventPopup_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedHandleEventPopup_WhenOwnerPatched",
+                    "Whatever it is, it's broken...",
+                    "risks damaging",
+                    "risks causing damage",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(ExaminerTranslationPatch)",
+                    "XRL.World.Parts.Examiner|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
+            "XRL.World.Parts/Examiner.cs::"
+            "XRL.World.Parts.Examiner.ResultCriticalFailure"
+        ),
+        lines=(960,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/ExaminerTranslationPatch.cs",
+                (
+                    "ExaminerTranslationPatch",
+                    "XRL.World.Parts.Examiner",
+                    "ResultCriticalFailure",
+                    "PuzzledPattern",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+                ("ExaminerTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/ExaminerTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesExaminerResultPopups_WhenOwnerPatched",
+                    "Patch_DoesNotTranslateExaminerPopup_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "nameof(DummyExaminerProducerTarget.ResultCriticalFailure)",
+                    "You are puzzled by",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(ExaminerTranslationPatch)",
+                    "XRL.World.Parts.Examiner|ResultCriticalFailure|System.Void|XRL.World.GameObject",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World/SocialSifrahTokenGift.cs::"
             "XRL.World.SocialSifrahTokenGift.CheckTokenUse"
         ),

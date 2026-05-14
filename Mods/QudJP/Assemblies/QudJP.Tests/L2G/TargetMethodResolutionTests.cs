@@ -749,6 +749,8 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(ExaminerTranslationPatch), new[]
     {
+        "XRL.World.InventoryActionEvent",
+        "XRL.World.GameObject",
         "XRL.World.GameObject",
         "XRL.World.GameObject",
         "XRL.World.GameObject",
@@ -1417,10 +1419,12 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(ExaminerTranslationPatch), new[]
     {
+        "XRL.World.Parts.Examiner|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.Examiner|ResultSuccess|System.Void|XRL.World.GameObject",
         "XRL.World.Parts.Examiner|ResultExceptionalSuccess|System.Void|XRL.World.GameObject",
         "XRL.World.Parts.Examiner|ResultFailure|System.Void|XRL.World.GameObject",
         "XRL.World.Parts.Examiner|ResultFakeConfusionFailure|System.Void|XRL.World.GameObject",
+        "XRL.World.Parts.Examiner|ResultCriticalFailure|System.Void|XRL.World.GameObject",
     })]
     [TestCase(typeof(ItemNamingTranslationPatch), new[]
     {

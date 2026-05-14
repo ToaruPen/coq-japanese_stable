@@ -891,6 +891,28 @@ internal sealed class DummyExaminerProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
 
+    public string PopupMethod { get; set; } = nameof(DummyPopupShow.Show);
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool HandleEvent(DummyInventoryActionEvent e)
+    {
+        _ = e;
+        if (PopupMethod == nameof(DummyPopupShow.ShowFail))
+        {
+            DummyPopupShow.ShowFail(PopupMessageToShow);
+        }
+        else if (PopupMethod == nameof(DummyPopupShow.ShowYesNoCancel))
+        {
+            _ = DummyPopupShow.ShowYesNoCancel(PopupMessageToShow);
+        }
+        else
+        {
+            DummyPopupShow.Show(PopupMessageToShow);
+        }
+
+        return true;
+    }
+
     [MethodImpl(MethodImplOptions.NoInlining)]
     public void ResultSuccess(DummyGameObject actor)
     {
@@ -913,6 +935,12 @@ internal sealed class DummyExaminerProducerTarget
     public void ResultFakeConfusionFailure(DummyGameObject actor)
     {
         ShowResultPopup(nameof(ResultFakeConfusionFailure), actor);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ResultCriticalFailure(DummyGameObject actor)
+    {
+        ShowResultPopup(nameof(ResultCriticalFailure), actor);
     }
 
     private void ShowResultPopup(string methodName, DummyGameObject actor)
