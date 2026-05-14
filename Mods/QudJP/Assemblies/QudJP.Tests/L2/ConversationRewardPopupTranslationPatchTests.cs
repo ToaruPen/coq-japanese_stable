@@ -136,7 +136,7 @@ public sealed class ConversationRewardPopupTranslationPatchTests
     [Test]
     public void Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
     {
-        const string source = "You receive {{Y|an electrobow}}!";
+        const string source = "You receive {{Y|an electrobow}} and {{C|three lead slugs}}!";
 
         OwnerPopupRouteTestHarness.WithPatchedPopupOnly(
             () => DummyPopupShow.Show(source));
@@ -152,6 +152,29 @@ public sealed class ConversationRewardPopupTranslationPatchTests
     public void Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
     {
         const string source = "You've contracted {{G|glowcrust}} on your left arm.";
+        var marked = MessageFrameTranslator.MarkDirectTranslation(source);
+
+        RunWithOwnerAndPopupPatches(nameof(DummyConversationRewardProducer.PaxInfectLimbInfectLimb), () =>
+        {
+            var target = new DummyConversationRewardProducer
+            {
+                PopupMessageToShow = marked,
+            };
+
+            target.PaxInfectLimbInfectLimb();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                Assert.That(HitCount("PaxInfectLimb"), Is.Zero);
+            });
+        });
+    }
+
+    [Test]
+    public void Patch_LeavesUnknownDirectMarkedPopupUnchanged_WhenOwnerPatched()
+    {
+        const string source = "The conversation ends.";
         var marked = MessageFrameTranslator.MarkDirectTranslation(source);
 
         RunWithOwnerAndPopupPatches(nameof(DummyConversationRewardProducer.PaxInfectLimbInfectLimb), () =>

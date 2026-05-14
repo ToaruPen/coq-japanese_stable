@@ -197,6 +197,11 @@ public sealed class WaterRitualPopupTranslationPatchTests
         "{{G|Tam}} shares a recipe with you.",
         "BuySecretRecipe")]
     [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "{{G|Tam}} has no more secrets to share.",
+        "BuySecretNoMoreSecrets")]
+    [TestCase(
         nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
         nameof(DummyPopupShow.Show),
         "{{G|Tam}} shares the location of {{Y|the Rust Wells}}.",
@@ -216,6 +221,11 @@ public sealed class WaterRitualPopupTranslationPatchTests
         nameof(DummyPopupShow.Show),
         "You share your {{B|fresh water}} with {{G|Tam}} and begin the water ritual.",
         "PerformRitual")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuyItemHandleEvent),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} gifts you {{Y|the electrobow}}!",
+        "BuyItemGift")]
     [TestCase(
         nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuyItemHandleEvent),
         nameof(DummyPopupShow.Show),
@@ -361,6 +371,11 @@ public sealed class WaterRitualPopupTranslationPatchTests
         nameof(DummyPopupShow.Show),
         "You receive {{Y|an amulet}}!",
         "NephilimCircle")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualSellSecretHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "{{G|Tam}} can't grant you any more reputation.",
+        "SellSecretNoMoreReputation")]
     public void Patch_DoesNotRetranslateDirectMarkedNewFamilyPopups_WhenOwnerPatched(
         string methodName,
         string popupMethod,
