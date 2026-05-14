@@ -11,19 +11,25 @@ namespace QudJP.Patches;
 public static class SingleCallsiteOwnerPopupTranslationPatch
 {
     private const string Context = nameof(SingleCallsiteOwnerPopupTranslationPatch);
+    private const string AscensionBarathrumOwner = "XRL.World.Quests.AscensionSystem|BarathrumStartConversation";
     private const string DecoyHologramOwner = "XRL.World.Parts.DecoyHologramEmitter|CreateHolograms";
     private const string BaetylRewardWishOwner = "XRL.World.Parts.RandomAltarBaetyl|HandleBaetylRewardWish";
     private const string AxeDismemberOwner = "XRL.World.Parts.Skill.Axe_Dismember|CastForceSuccess";
+    private const string BiomeSurfaceDistributionOwner = "XRL.World.Biomes.BiomeManager|DisplaySurfaceDistribution";
     private const string CudgelSlamOwner = "XRL.World.Parts.Skill.Cudgel_Slam|Cast";
+    private const string DynamicQuestRewardGameObjectOwner = "XRL.World.DynamicQuestRewardElement_GameObject|award";
+    private const string FactionEncounterWishOwner = "XRL.World.ZoneBuilders.FactionEncounters|HandleFactionEncounterWish";
     private const string ProselytizeOwner = "XRL.World.Parts.Skill.Persuasion_Proselytize|AttemptProselytization";
     private const string TinkeringOwner = "XRL.World.Parts.Skill.Tinkering|LearnNewRecipe";
     private const string GameUniqueOwner = "XRL.World.Parts.GameUnique|OnCreated";
     private const string GenocideCurioOwner = "XRL.World.Parts.GenocideCurio|HandleEvent";
     private const string GritGateMainframeOwner = "XRL.World.Parts.GritGateMainframeTerminal|HandleEvent";
     private const string HindrenMysteryCriticalNpcOwner = "XRL.World.Parts.HindrenMysteryCriticalNPC|HandleEvent";
+    private const string KindrishReturnAwardOwner = "XRL.World.Parts.KindrishProperties|ReturnAward";
     private const string LiquidFueledPowerPlantOwner = "XRL.World.Parts.LiquidFueledPowerPlant|HandleEvent";
     private const string MakeFussOnTakenOwner = "XRL.World.Parts.MakeFussOnTaken|MakeFuss";
     private const string MutationPointsOnEatOwner = "XRL.World.Parts.MutationPointsOnEat|FireEvent";
+    private const string ReputationSetFactionRankOwner = "XRL.World.Reputation|SetFactionRank";
     private const string RecoilOnDeathOwner = "XRL.World.Parts.RecoilOnDeath|HandleEvent";
     private const string SpraybottleOwner = "XRL.World.Parts.Spraybottle|HandleEvent";
     private const string SpreadPaxOwner = "XRL.World.QuestManagers.SpreadPax|Finish";
@@ -38,6 +44,10 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static readonly Regex BaetylRewardWishPattern = new(
         "^Generated (?<item>.+?) as reward for (?<demand>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex BiomeNotFoundPattern = new(
+        "^No biome by name '(?<name>.+?)' found\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex AxeDismemberSelfPattern = new(
@@ -80,8 +90,16 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         "^Your genome destabilizes and you gain (?<amount>.+?) mutation (?<unit>point|points)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex NoFactionMembersPattern = new(
+        "^No members found for '(?<faction>.+?)'\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex RecoilOnDeathTransportPattern = new(
         "^Just before your demise, you are transported to safety! (?<object>.+?) (?<verb>disintegrates|disintegrate)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ReceiveObjectPattern = new(
+        "^You receive (?<object>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex SpraybottleCoveredPattern = new(
@@ -135,6 +153,16 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
         AddTarget(
             targets,
+            "XRL.World.Quests.AscensionSystem",
+            "BarathrumStartConversation",
+            [gameObjectType]);
+        AddTarget(
+            targets,
+            "XRL.World.Biomes.BiomeManager",
+            "DisplaySurfaceDistribution",
+            [typeof(string)]);
+        AddTarget(
+            targets,
             "XRL.World.Parts.DecoyHologramEmitter",
             "CreateHolograms",
             [gameObjectType]);
@@ -153,6 +181,16 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.Skill.Cudgel_Slam",
             "Cast",
             [gameObjectType, cudgelSlamType, typeof(string), gameObjectType, typeof(bool), typeof(int), typeof(string)]);
+        AddTarget(
+            targets,
+            "XRL.World.DynamicQuestRewardElement_GameObject",
+            "award",
+            Type.EmptyTypes);
+        AddTarget(
+            targets,
+            "XRL.World.ZoneBuilders.FactionEncounters",
+            "HandleFactionEncounterWish",
+            [typeof(Match)]);
         AddTarget(
             targets,
             "XRL.World.Parts.Skill.Persuasion_Proselytize",
@@ -185,6 +223,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             [beforeDeathRemovalEventType]);
         AddTarget(
             targets,
+            "XRL.World.Parts.KindrishProperties",
+            "ReturnAward",
+            Type.EmptyTypes);
+        AddTarget(
+            targets,
             "XRL.World.Parts.LiquidFueledPowerPlant",
             "HandleEvent",
             [endTurnEventType]);
@@ -198,6 +241,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.MutationPointsOnEat",
             "FireEvent",
             [eventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Reputation",
+            "SetFactionRank",
+            [typeof(string), typeof(string), typeof(bool), typeof(bool)]);
         AddTarget(
             targets,
             "XRL.World.Parts.RecoilOnDeath",
@@ -290,7 +338,23 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static bool TryTranslateCore(string source, string? ownerKey, out string translated, out string detail)
     {
-        var match = DecoyOutOfRangePattern.Match(source);
+        if (OwnerMatches(ownerKey, AscensionBarathrumOwner, DummySingleCallsiteOwner + "BarathrumStartConversation")
+            && source.EndsWith(" left your party.", StringComparison.Ordinal)
+            && DoesVerbRouteTranslator.TryTranslatePlainSentence(source, out translated))
+        {
+            detail = "AscensionBarathrumLeftParty";
+            return true;
+        }
+
+        var match = BiomeNotFoundPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, BiomeSurfaceDistributionOwner, DummySingleCallsiteOwner + "DisplaySurfaceDistribution"))
+        {
+            translated = $"'{match.Groups["name"].Value}'という名前のバイオームは見つからない。";
+            detail = "BiomeNotFound";
+            return true;
+        }
+
+        match = DecoyOutOfRangePattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, DecoyHologramOwner, DummySingleCallsiteOwner + "CreateHolograms"))
         {
             translated = $"範囲外だ（{NormalizeRange(match.Groups["range"].Value)}マス）。";
@@ -391,6 +455,36 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             translated = $"ゲノムが不安定化し、変異ポイントを{match.Groups["amount"].Value}得た。";
             detail = "MutationPointsOnEat";
+            return true;
+        }
+
+        match = NoFactionMembersPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, FactionEncounterWishOwner, DummySingleCallsiteOwner + "HandleFactionEncounterWish"))
+        {
+            translated = $"'{match.Groups["faction"].Value}'のメンバーは見つからない。";
+            detail = "FactionEncounterNoMembers";
+            return true;
+        }
+
+        match = ReceiveObjectPattern.Match(source);
+        if (match.Success
+            && OwnerMatches(
+                ownerKey,
+                DynamicQuestRewardGameObjectOwner,
+                KindrishReturnAwardOwner,
+                DummySingleCallsiteOwner + "AwardDynamicQuestRewardGameObject",
+                DummySingleCallsiteOwner + "ReturnKindrishAward"))
+        {
+            translated = $"{match.Groups["object"].Value}を受け取った。";
+            detail = "ReceiveObject";
+            return true;
+        }
+
+        if (OwnerMatches(ownerKey, ReputationSetFactionRankOwner, DummySingleCallsiteOwner + "SetFactionRank")
+            && source.StartsWith("You are promoted to the ", StringComparison.Ordinal)
+            && DoesVerbRouteTranslator.TryTranslatePlainSentence(source, out translated))
+        {
+            detail = "ReputationRankPromotion";
             return true;
         }
 

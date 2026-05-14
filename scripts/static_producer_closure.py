@@ -5411,6 +5411,52 @@ def _giant_clam_teleport_joppa_family() -> tuple[CoveredOwnerFamily, ...]:
 def _single_callsite_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Quests/AscensionSystem.cs::"
+                "XRL.World.Quests.AscensionSystem.BarathrumStartConversation"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                    (
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.Quests.AscensionSystem",
+                        "BarathrumStartConversation",
+                        "AscensionBarathrumLeftParty",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+                    ("left your party",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "Barathrum has left your party.",
+                        "AscensionBarathrumLeftParty",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.Quests.AscensionSystem|BarathrumStartConversation|System.Void|XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
             family_id="XRL.World.Parts/DecoyHologramEmitter.cs::XRL.World.Parts.DecoyHologramEmitter.CreateHolograms",
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
@@ -5444,6 +5490,90 @@ def _single_callsite_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
                         "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
                         "SingleCallsiteOwnerPopupTranslationPatch",
                         "XRL.World.Parts.DecoyHologramEmitter|CreateHolograms|XRL.World.Parts.ActivePartStatus|XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World/DynamicQuestRewardElement_GameObject.cs::"
+                "XRL.World.DynamicQuestRewardElement_GameObject.award"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                    (
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.DynamicQuestRewardElement_GameObject",
+                        "award",
+                        "ReceiveObject",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "You receive {{Y|the copper nugget}}.",
+                        "ReceiveObject",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.DynamicQuestRewardElement_GameObject|award|System.Void",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.ZoneBuilders/FactionEncounters.cs::"
+                "XRL.World.ZoneBuilders.FactionEncounters.HandleFactionEncounterWish"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                    (
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.ZoneBuilders.FactionEncounters",
+                        "HandleFactionEncounterWish",
+                        "FactionEncounterNoMembers",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "No members found for 'snapjaws'.",
+                        "FactionEncounterNoMembers",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.ZoneBuilders.FactionEncounters|HandleFactionEncounterWish|System.Boolean|System.Text.RegularExpressions.Match",
                     ),
                 ),
             ),
@@ -5789,6 +5919,45 @@ def _single_callsite_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             ),
         ),
         CoveredOwnerFamily(
+            family_id="XRL.World.Parts/KindrishProperties.cs::XRL.World.Parts.KindrishProperties.ReturnAward",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                    (
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.Parts.KindrishProperties",
+                        "ReturnAward",
+                        "ReceiveObject",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "You receive {{Y|a force bracelet}}.",
+                        "ReceiveObject",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.Parts.KindrishProperties|ReturnAward|System.Boolean",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
             family_id="XRL.World.Parts/LiquidFueledPowerPlant.cs::XRL.World.Parts.LiquidFueledPowerPlant.HandleEvent",
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
@@ -5904,6 +6073,49 @@ def _single_callsite_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
                         "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
                         "SingleCallsiteOwnerPopupTranslationPatch",
                         "XRL.World.Parts.MutationPointsOnEat|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World/Reputation.cs::XRL.World.Reputation.SetFactionRank",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                    (
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.Reputation",
+                        "SetFactionRank",
+                        "ReputationRankPromotion",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+                    ("promoted to the {0} of {1}",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "You are promoted to the Warden of the Barathrumites.",
+                        "ReputationRankPromotion",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.Reputation|SetFactionRank|System.Void|System.String|System.String|System.Boolean|System.Boolean",
                     ),
                 ),
             ),
@@ -11420,6 +11632,49 @@ COVERED_OWNER_FAMILIES: Final = (
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 COVERED_OWNER_CALLSITES: Final = (
+    CoveredOwnerCallsites(
+        family_id=(
+            "XRL.World.Biomes/BiomeManager.cs::"
+            "XRL.World.Biomes.BiomeManager.DisplaySurfaceDistribution"
+        ),
+        lines=(129,),
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                (
+                    "SingleCallsiteOwnerPopupTranslationPatch",
+                    "XRL.World.Biomes.BiomeManager",
+                    "DisplaySurfaceDistribution",
+                    "BiomeNotFound",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                    "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "No biome by name 'fungal' found.",
+                    "BiomeNotFound",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "SingleCallsiteOwnerPopupTranslationPatch",
+                    "XRL.World.Biomes.BiomeManager|DisplaySurfaceDistribution|System.Void|System.String",
+                ),
+            ),
+        ),
+    ),
     CoveredOwnerCallsites(
         family_id="XRL.World.Parts.Mutation/Precognition.cs::XRL.World.Parts.Mutation.Precognition.FireEvent",
         lines=(379, 386, 407),

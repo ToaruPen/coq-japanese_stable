@@ -353,6 +353,31 @@ def test_additional_single_callsite_owner_popup_families_are_closed_by_owner_pat
         assert family_id not in queued_family_ids
 
 
+def test_wish_reward_and_rank_single_callsite_popup_families_are_closed_by_owner_patch() -> None:
+    """Small single-callsite popup owner surfaces close without claiming debug-only siblings."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    full_family_ids = {
+        "XRL.World.Quests/AscensionSystem.cs::XRL.World.Quests.AscensionSystem.BarathrumStartConversation",
+        "XRL.World/DynamicQuestRewardElement_GameObject.cs::XRL.World.DynamicQuestRewardElement_GameObject.award",
+        "XRL.World.ZoneBuilders/FactionEncounters.cs::XRL.World.ZoneBuilders.FactionEncounters.HandleFactionEncounterWish",
+        "XRL.World.Parts/KindrishProperties.cs::XRL.World.Parts.KindrishProperties.ReturnAward",
+        "XRL.World/Reputation.cs::XRL.World.Reputation.SetFactionRank",
+    }
+    biome_family_id = "XRL.World.Biomes/BiomeManager.cs::XRL.World.Biomes.BiomeManager.DisplaySurfaceDistribution"
+
+    for family_id in full_family_ids:
+        assert raw_families[family_id]["family_closure_status"] == "owner_patch_required"
+        assert family_id in covered_family_ids()
+        assert family_id not in queued_family_ids
+
+    assert raw_families[biome_family_id]["family_closure_status"] == "owner_patch_required"
+    assert biome_family_id not in covered_family_ids()
+    assert (biome_family_id, 129) in covered_callsite_keys()
+    assert biome_family_id not in queued_family_ids
+
+
 def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:
     """Uncovered high-volume owner families must stay actionable."""
     inventory = load_inventory(TRACKED_INVENTORY)

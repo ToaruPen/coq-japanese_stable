@@ -1510,10 +1510,23 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
 
     public static string StaticPopupMessageToShow { get; set; } = string.Empty;
 
+    public void BarathrumStartConversation(DummyGameObject actor)
+    {
+        _ = actor;
+        _ = nameof(BarathrumStartConversation);
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+
     public void CreateHolograms(DummyGameObject? who = null)
     {
         _ = who;
         DummyPopupShow.Show(PopupMessageToShow);
+    }
+
+    public static void DisplaySurfaceDistribution(string value)
+    {
+        _ = value;
+        DummyPopupShow.Show(StaticPopupMessageToShow);
     }
 
     public static bool HandleBaetylRewardWish(string spec)
@@ -1552,6 +1565,19 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         _ = presetSlamPower;
         _ = impactDamageIncrement;
         _ = DummyPopupShow.ShowYesNo(StaticPopupMessageToShow);
+        return true;
+    }
+
+    public void AwardDynamicQuestRewardGameObject()
+    {
+        _ = nameof(AwardDynamicQuestRewardGameObject);
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+
+    public static bool HandleFactionEncounterWish(Match match)
+    {
+        _ = match;
+        DummyPopupShow.Show(StaticPopupMessageToShow);
         return true;
     }
 
@@ -1599,6 +1625,12 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         return true;
     }
 
+    public static bool ReturnKindrishAward()
+    {
+        DummyPopupShow.Show(StaticPopupMessageToShow);
+        return true;
+    }
+
     public bool HandleLiquidFueledPowerPlant(DummyEndTurnEvent? e = null)
     {
         _ = e;
@@ -1619,6 +1651,15 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         _ = nameof(FireMutationPointsOnEat);
         DummyPopupShow.Show(PopupMessageToShow);
         return true;
+    }
+
+    public void SetFactionRank(string factionName, string rank, bool message = false, bool capitalize = true)
+    {
+        _ = factionName;
+        _ = rank;
+        _ = message;
+        _ = capitalize;
+        DummyPopupShow.Show(PopupMessageToShow);
     }
 
     public bool HandleRecoilOnDeath(DummyBeforeDieEvent? e = null)

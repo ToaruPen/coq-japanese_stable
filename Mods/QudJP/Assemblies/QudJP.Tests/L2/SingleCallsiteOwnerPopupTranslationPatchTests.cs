@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.RegularExpressions;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
 
@@ -34,6 +35,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     }
 
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.BarathrumStartConversation),
+        "Barathrum has left your party.",
+        "Barathrumはパーティーを離れた",
+        "AscensionBarathrumLeftParty",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.DisplaySurfaceDistribution),
+        "No biome by name 'fungal' found.",
+        "'fungal'という名前のバイオームは見つからない。",
+        "BiomeNotFound",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms),
         "That is out of range (3 squares)",
         "範囲外だ（3マス）。",
@@ -63,6 +76,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "yourselfを叩きつけてもよいか？",
         "CudgelSlamSelfConfirmation",
         PopupMethod.ShowYesNo)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.AwardDynamicQuestRewardGameObject),
+        "You receive {{Y|the copper nugget}}.",
+        "{{Y|the copper nugget}}を受け取った。",
+        "ReceiveObject",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleFactionEncounterWish),
+        "No members found for 'snapjaws'.",
+        "'snapjaws'のメンバーは見つからない。",
+        "FactionEncounterNoMembers",
+        PopupMethod.Show)]
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.AttemptProselytization),
         "Argyve is already your follower. Do you want to proselytize him anyway?",
@@ -100,6 +125,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "HindrenMysteryCriticalNpcDeath",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.ReturnKindrishAward),
+        "You receive {{Y|a force bracelet}}.",
+        "{{Y|a force bracelet}}を受け取った。",
+        "ReceiveObject",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant),
         "Your flamethrower has consumed all of its oil.",
         "あなたのflamethrowerはits oilをすべて消費した。",
@@ -122,6 +153,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "Your genome destabilizes and you gain 3 mutation points.",
         "ゲノムが不安定化し、変異ポイントを3得た。",
         "MutationPointsOnEat",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.SetFactionRank),
+        "You are promoted to the Warden of the Barathrumites.",
+        "あなたはthe BarathrumitesのWardenに昇進した。",
+        "ReputationRankPromotion",
         PopupMethod.Show)]
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant),
@@ -194,6 +231,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     }
 
     [TestCase(
+        "Barathrum has left your party.",
+        "AscensionBarathrumLeftParty",
+        PopupMethod.Show)]
+    [TestCase(
+        "No biome by name 'fungal' found.",
+        "BiomeNotFound",
+        PopupMethod.Show)]
+    [TestCase(
         "That is out of range (3 squares)",
         "DecoyHologramOutOfRange",
         PopupMethod.Show)]
@@ -209,6 +254,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "Are you sure you want to slam yourself?",
         "CudgelSlamSelfConfirmation",
         PopupMethod.ShowYesNo)]
+    [TestCase(
+        "You receive {{Y|the copper nugget}}.",
+        "ReceiveObject",
+        PopupMethod.Show)]
+    [TestCase(
+        "No members found for 'snapjaws'.",
+        "FactionEncounterNoMembers",
+        PopupMethod.Show)]
     [TestCase(
         "Argyve is already your follower. Do you want to proselytize him anyway?",
         "ProselytizeFollowerConfirmation",
@@ -234,6 +287,10 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "HindrenMysteryCriticalNpcDeath",
         PopupMethod.Show)]
     [TestCase(
+        "You receive {{Y|a force bracelet}}.",
+        "ReceiveObject",
+        PopupMethod.Show)]
+    [TestCase(
         "Your flamethrower has consumed all of its oil.",
         "LiquidFueledPowerPlantEmpty",
         PopupMethod.Show)]
@@ -244,6 +301,10 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         "Your genome destabilizes and you gain 3 mutation points.",
         "MutationPointsOnEat",
+        PopupMethod.Show)]
+    [TestCase(
+        "You are promoted to the Warden of the Barathrumites.",
+        "ReputationRankPromotion",
         PopupMethod.Show)]
     [TestCase(
         "Just before your demise, you are transported to safety! {{Y|recoiler}} disintegrates.",
@@ -280,6 +341,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     }
 
     [TestCase(
+        "Barathrum has left your party.",
+        "AscensionBarathrumLeftParty")]
+    [TestCase(
+        "No biome by name 'fungal' found.",
+        "BiomeNotFound")]
+    [TestCase(
         "Argyve (NPC_Argyve) is considered unique, are you sure you want to create another?",
         "GameUniqueWishConfirmation")]
     [TestCase(
@@ -292,6 +359,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "The death of Kesehind means that the investigation can go no further.",
         "HindrenMysteryCriticalNpcDeath")]
     [TestCase(
+        "You receive {{Y|a force bracelet}}.",
+        "ReceiveObject")]
+    [TestCase(
+        "No members found for 'snapjaws'.",
+        "FactionEncounterNoMembers")]
+    [TestCase(
         "Your flamethrower has consumed all of its oil.",
         "LiquidFueledPowerPlantEmpty")]
     [TestCase(
@@ -300,6 +373,9 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         "Your genome destabilizes and you gain 3 mutation points.",
         "MutationPointsOnEat")]
+    [TestCase(
+        "You are promoted to the Warden of the Barathrumites.",
+        "ReputationRankPromotion")]
     [TestCase(
         "Just before your demise, you are transported to safety! {{Y|recoiler}} disintegrates.",
         "RecoilOnDeathTransport")]
@@ -377,6 +453,16 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     {
         return methodName switch
         {
+            nameof(DummySingleCallsiteOwnerPopupTarget.BarathrumStartConversation) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(DummyGameObject)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.DisplaySurfaceDistribution) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(string)),
             nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms) =>
                 OwnerPopupRouteTestHarness.RequireMethod(
                     typeof(DummySingleCallsiteOwnerPopupTarget),
@@ -405,6 +491,15 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                     typeof(bool),
                     typeof(int),
                     typeof(string)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.AwardDynamicQuestRewardGameObject) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName),
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleFactionEncounterWish) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(Match)),
             nameof(DummySingleCallsiteOwnerPopupTarget.AttemptProselytization) =>
                 OwnerPopupRouteTestHarness.RequireMethod(
                     typeof(DummySingleCallsiteOwnerPopupTarget),
@@ -434,6 +529,10 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                     typeof(DummySingleCallsiteOwnerPopupTarget),
                     methodName,
                     typeof(DummyBeforeDeathRemovalEvent)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.ReturnKindrishAward) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName),
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant) =>
                 OwnerPopupRouteTestHarness.RequireMethod(
                     typeof(DummySingleCallsiteOwnerPopupTarget),
@@ -449,6 +548,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                     typeof(DummySingleCallsiteOwnerPopupTarget),
                     methodName,
                     typeof(DummyEvent)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.SetFactionRank) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(string),
+                    typeof(string),
+                    typeof(bool),
+                    typeof(bool)),
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleRecoilOnDeath) =>
                 OwnerPopupRouteTestHarness.RequireMethod(
                     typeof(DummySingleCallsiteOwnerPopupTarget),
@@ -471,6 +578,16 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     {
         switch (methodName)
         {
+            case nameof(DummySingleCallsiteOwnerPopupTarget.BarathrumStartConversation):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.BarathrumStartConversation(new DummyGameObject());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.DisplaySurfaceDistribution):
+                DummySingleCallsiteOwnerPopupTarget.StaticPopupMessageToShow = message;
+                DummySingleCallsiteOwnerPopupTarget.DisplaySurfaceDistribution("fungal");
+                break;
             case nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms):
                 new DummySingleCallsiteOwnerPopupTarget
                 {
@@ -495,6 +612,17 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                     new DummyCudgelSlam(),
                     null,
                     new DummyGameObject());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.AwardDynamicQuestRewardGameObject):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.AwardDynamicQuestRewardGameObject();
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleFactionEncounterWish):
+                DummySingleCallsiteOwnerPopupTarget.StaticPopupMessageToShow = message;
+                _ = DummySingleCallsiteOwnerPopupTarget.HandleFactionEncounterWish(
+                    Regex.Match("factionencounter:snapjaws", "^factionencounter:(.*)$"));
                 break;
             case nameof(DummySingleCallsiteOwnerPopupTarget.AttemptProselytization):
                 new DummySingleCallsiteOwnerPopupTarget
@@ -530,6 +658,10 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                     PopupMessageToShow = message,
                 }.HandleHindrenMysteryCriticalNpc(new DummyBeforeDeathRemovalEvent());
                 break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.ReturnKindrishAward):
+                DummySingleCallsiteOwnerPopupTarget.StaticPopupMessageToShow = message;
+                _ = DummySingleCallsiteOwnerPopupTarget.ReturnKindrishAward();
+                break;
             case nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant):
                 new DummySingleCallsiteOwnerPopupTarget
                 {
@@ -547,6 +679,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 {
                     PopupMessageToShow = message,
                 }.FireMutationPointsOnEat(new DummyEvent());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.SetFactionRank):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.SetFactionRank("Barathrumites", "Warden", message: true);
                 break;
             case nameof(DummySingleCallsiteOwnerPopupTarget.HandleRecoilOnDeath):
                 new DummySingleCallsiteOwnerPopupTarget
