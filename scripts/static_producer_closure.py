@@ -12728,6 +12728,53 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts/Leveler.cs::"
+            "XRL.World.Parts.Leveler.RapidAdvancement"
+        ),
+        lines=(325, 342, 352),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/LevelerTranslationPatch.cs",
+                (
+                    "LevelerTranslationPatch",
+                    "XRL.World.Parts.Leveler",
+                    "RapidAdvancement",
+                    "LevelerBuyMutationPrompt",
+                    "LevelerRapidAdvancement",
+                    "LevelerNoPhysicalMutations",
+                    "Your genome enters an excited state!",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("LevelerTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/LevelerTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesRapidAdvancementPopup_WhenOwnerPatched",
+                    "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_DoesNotClaimFixedOrEmptyPopup_WhenOwnerPatched",
+                    "Would you like to spend {{rules|4}} mutation points",
+                    "You have rapidly advanced {{Y|Teleportation}} by 2 ranks to rank {{C|6}}!",
+                    "You have no physical mutations to rapidly advance!",
+                    "Your genome enters an excited state!",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(LevelerTranslationPatch)",
+                    "XRL.World.Parts.Leveler|RapidAdvancement|System.Void|System.Int32|XRL.World.GameObject",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World.Parts/Stomach.cs::"
             "XRL.World.Parts.Stomach.FireEvent"
         ),

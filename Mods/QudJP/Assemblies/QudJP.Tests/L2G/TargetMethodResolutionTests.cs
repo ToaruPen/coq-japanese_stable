@@ -1761,6 +1761,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.FabricateFromSelf|Activate|System.Boolean|System.Boolean",
     })]
+    [TestCase(typeof(LevelerTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Leveler|RapidAdvancement|System.Void|System.Int32|XRL.World.GameObject",
+    })]
     [TestCase(typeof(StomachTranslationPatch), new[]
     {
         "XRL.World.Parts.Stomach|FireEvent|System.Boolean|XRL.World.Event",
