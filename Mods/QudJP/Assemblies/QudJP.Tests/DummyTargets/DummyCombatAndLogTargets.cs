@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -1595,6 +1596,20 @@ internal sealed class DummyBrainOwnerTarget
     {
         _ = level;
         DummyPopupShow.Show(StaticPopupMessageToShow);
+    }
+}
+
+internal sealed class DummyKillGoalHandlerTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool TryMissileWeapon()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
     }
 }
 

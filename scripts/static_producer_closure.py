@@ -5757,6 +5757,52 @@ def _historic_event_region_reveal_popup_family() -> tuple[CoveredOwnerFamily, ..
     )
 
 
+def _kill_missile_weapon_chirp_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.AI.GoalHandlers/Kill.cs::XRL.World.AI.GoalHandlers.Kill.TryMissileWeapon",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/KillMissileWeaponChirpTranslationPatch.cs",
+                    (
+                        "KillMissileWeaponChirpTranslationPatch",
+                        "XRL.World.AI.GoalHandlers.Kill",
+                        "TryMissileWeapon",
+                        "Something chirps",
+                        "to the southwest",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("KillMissileWeaponChirpTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/KillMissileWeaponChirpTranslationPatchTests.cs",
+                    (
+                        "TryMissileWeapon_TranslatesAudibleChirpMessage_WhenOwnerPatched",
+                        "TryMissileWeapon_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "TryMissileWeapon_DoesNotRetranslateDirectMarkedMessage_WhenOwnerPatched",
+                        "TryMissileWeapon_LeavesEmptyMessageUnchanged_WhenOwnerPatched",
+                        "TryMissileWeapon_LeavesUnsupportedDirectionUnchanged_WhenOwnerPatched",
+                        "Something chirps here.",
+                        "Something chirps to the north.",
+                        "ここで何かが鳴いた。",
+                        "北側で何かが鳴いた。",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(KillMissileWeaponChirpTranslationPatch)",
+                        "XRL.World.AI.GoalHandlers.Kill|TryMissileWeapon|System.Boolean",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _xrl_core_owner_queue_families() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -9437,6 +9483,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_point_of_interest_navigation_popup_family(),
     *_run_start_running_popup_family(),
     *_historic_event_region_reveal_popup_family(),
+    *_kill_missile_weapon_chirp_family(),
     *_xrl_core_owner_queue_families(),
     *_brain_owner_surface_families(),
     *_cripple_apply_family(),

@@ -48,6 +48,7 @@ internal static class MessageQueueSemanticPipeline
         DisassemblyStartTranslationPatch.TryTranslateQueuedMessage,
         SelfTearExplosionTranslationPatch.TryTranslateQueuedMessage,
         HiddenRenderTranslationPatch.TryTranslateQueuedMessage,
+        KillMissileWeaponChirpTranslationPatch.TryTranslateQueuedMessage,
         QuillsTranslationPatch.TryTranslateQueuedMessage,
         LightManipulationTranslationPatch.TryTranslateQueuedMessage,
         CombatSkillMessageTranslationPatch.TryTranslateQueuedMessage,
