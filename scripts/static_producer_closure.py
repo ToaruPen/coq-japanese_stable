@@ -12350,6 +12350,52 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts/Stomach.cs::"
+            "XRL.World.Parts.Stomach.FireEvent"
+        ),
+        lines=(488, 512),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/StomachTranslationPatch.cs",
+                (
+                    "StomachTranslationPatch",
+                    "XRL.World.Parts.Stomach",
+                    "FireEvent",
+                    "StomachMoistureBody",
+                    "StomachMoistureThroat",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("StomachTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/StomachTranslationPatchTests.cs",
+                (
+                    "AddWater_TranslatesDehydrationQueueMessages_WhenOwnerPatched",
+                    "AddWater_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "AddWater_DoesNotRetranslateDirectMarkedQueueMessage_WhenOwnerPatched",
+                    "AddWater_DoesNotClaimFixedRuntimeOrEmptyQueueMessages_WhenOwnerPatched",
+                    "The moisture is sucked out of your body.",
+                    "The moisture is sucked out of your throat.",
+                    "You drank way too much!",
+                    "Ugh, you feel sick.",
+                    "StomachMoistureThroat",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(StomachTranslationPatch)",
+                    "XRL.World.Parts.Stomach|FireEvent|System.Boolean|XRL.World.Event",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World/SocialSifrahTokenGift.cs::"
             "XRL.World.SocialSifrahTokenGift.CheckTokenUse"
         ),
