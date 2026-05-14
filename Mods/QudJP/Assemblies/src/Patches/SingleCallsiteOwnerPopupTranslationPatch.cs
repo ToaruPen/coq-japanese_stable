@@ -60,6 +60,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string MagnetizedApplicatorOwner = "XRL.World.Parts.MagnetizedApplicator|HandleEvent";
     private const string MutationsWishMutationOwner = "XRL.World.Parts.Mutations|WishMutation";
     private const string NephalPropertiesHandleEventOwner = "XRL.World.Parts.NephalProperties|HandleEvent";
+    private const string PopulationManagerWishGenerateOwner = "XRL.PopulationManager|WishGenerate";
     private const string GameObjectFactoryBlueprintXmlOwner = "XRL.World.GameObjectFactory|HandleBlueprintXML";
     private const string XrlGameLoadGameOwner = "XRL.XRLGame|LoadGame";
 
@@ -269,6 +270,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static readonly Regex NephalPropertiesChordAbsorbedPattern = new(
         "^A sphere of light in the chord of (?<name>.+?) radiates away\\.\\n\\nYou feel it absorbed elsewhere\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex PopulationManagerInvalidCountPattern = new(
+        "^'(?<count>.+?)' is not a valid integer\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex PopulationManagerMissingTablePattern = new(
+        "^No table by the name '(?<table>.+?)' could be resolved\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex GameObjectFactoryMissingBlueprintPattern = new(
@@ -580,6 +589,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.NephalProperties",
             "HandleEvent",
             [beforeDeathRemovalEventType]);
+        AddTarget(
+            targets,
+            "XRL.PopulationManager",
+            "WishGenerate",
+            [typeof(string)]);
         AddTarget(
             targets,
             "XRL.World.GameObjectFactory",
@@ -1137,6 +1151,22 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             translated = $"{match.Groups["name"].Value}の調べの光球が放射されて消えた。\n\nそれがどこか別の場所に吸収されたのを感じた。";
             detail = "NephalPropertiesChordAbsorbed";
+            return true;
+        }
+
+        match = PopulationManagerInvalidCountPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, PopulationManagerWishGenerateOwner))
+        {
+            translated = $"'{match.Groups["count"].Value}'は有効な整数ではない。";
+            detail = "PopulationManagerInvalidCount";
+            return true;
+        }
+
+        match = PopulationManagerMissingTablePattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, PopulationManagerWishGenerateOwner))
+        {
+            translated = $"'{match.Groups["table"].Value}'という名前の population table は解決できない。";
+            detail = "PopulationManagerMissingTable";
             return true;
         }
 

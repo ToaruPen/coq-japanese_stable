@@ -446,6 +446,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "セーブデータが存在しない。（Saves/slot1）",
         "XrlGameMissingSave",
         PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishGeneratePopulation),
+        "'abc' is not a valid integer.",
+        "'abc'は有効な整数ではない。",
+        "PopulationManagerInvalidCount",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishGeneratePopulation),
+        "No table by the name 'JoppaVillagers' could be resolved.",
+        "'JoppaVillagers'という名前の population table は解決できない。",
+        "PopulationManagerMissingTable",
+        PopupMethod.Show)]
     public void Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched(
         string methodName,
         string source,
@@ -687,6 +699,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "No saved game exists. (Saves/slot1)",
         "XrlGameMissingSave",
         PopupMethod.Show)]
+    [TestCase(
+        "'abc' is not a valid integer.",
+        "PopulationManagerInvalidCount",
+        PopupMethod.Show)]
+    [TestCase(
+        "No table by the name 'JoppaVillagers' could be resolved.",
+        "PopulationManagerMissingTable",
+        PopupMethod.Show)]
     public void Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent(
         string source,
         string detail,
@@ -839,6 +859,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         "No saved game exists. (Saves/slot1)",
         "XrlGameMissingSave")]
+    [TestCase(
+        "'abc' is not a valid integer.",
+        "PopulationManagerInvalidCount")]
+    [TestCase(
+        "No table by the name 'JoppaVillagers' could be resolved.",
+        "PopulationManagerMissingTable")]
     public void Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner(
         string source,
         string detail)
@@ -931,6 +957,10 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation),
         "No mutation by the name 'Wings' and variant 'crystal' could be found.",
         "MutationWishDidYouMean")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishGeneratePopulation),
+        "The population 'JoppaVillagers' distributed as follows over 1000 generations;\nSnapjaw: 1.00000%",
+        "PopulationManagerMissingTable")]
     public void Patch_DoesNotClaimDeferredRuntimePopups_WhenOwnerPatched(
         string methodName,
         string source,
@@ -1096,6 +1126,8 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.World.GameObjectFactory|HandleBlueprintXML",
             nameof(DummySingleCallsiteOwnerPopupTarget.LoadGame) =>
                 "XRL.XRLGame|LoadGame",
+            nameof(DummySingleCallsiteOwnerPopupTarget.WishGeneratePopulation) =>
+                "XRL.PopulationManager|WishGenerate",
             _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected owner method."),
         };
     }

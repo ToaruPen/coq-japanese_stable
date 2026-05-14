@@ -1892,6 +1892,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.MagnetizedApplicator|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.Mutations|WishMutation|System.Void|System.String",
         "XRL.World.Parts.NephalProperties|HandleEvent|System.Boolean|XRL.World.BeforeDeathRemovalEvent",
+        "XRL.PopulationManager|WishGenerate|System.Void|System.String",
         "XRL.World.GameObjectFactory|HandleBlueprintXML|System.Void|System.String",
         "XRL.XRLGame|LoadGame|XRL.XRLGame|System.String|System.Boolean|System.Boolean|System.Collections.Generic.Dictionary`2[[System.String],[System.Object]]",
     })]

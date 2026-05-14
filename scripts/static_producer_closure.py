@@ -15254,6 +15254,49 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
+        family_id="XRL/PopulationManager.cs::XRL.PopulationManager.WishGenerate",
+        lines=(963, 971),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                (
+                    "SingleCallsiteOwnerPopupTranslationPatch",
+                    "XRL.PopulationManager",
+                    "WishGenerate",
+                    "PopulationManagerInvalidCount",
+                    "PopulationManagerMissingTable",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                    "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "Patch_DoesNotClaimDeferredRuntimePopups_WhenOwnerPatched",
+                    "WishGeneratePopulation",
+                    "PopulationManagerInvalidCount",
+                    "PopulationManagerMissingTable",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "SingleCallsiteOwnerPopupTranslationPatch",
+                    "XRL.PopulationManager|WishGenerate|System.Void|System.String",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
         family_id=(
             "XRL.World/GameObjectFactory.cs::"
             "XRL.World.GameObjectFactory.HandleBlueprintXML"

@@ -1997,6 +1997,12 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         DummyPopupShow.Show(StaticPopupMessageToShow);
         return null;
     }
+
+    public static void WishGeneratePopulation(string? value = null)
+    {
+        _ = value;
+        DummyPopupShow.Show(StaticPopupMessageToShow);
+    }
 }
 
 internal static class DummyPointOfInterestTarget
