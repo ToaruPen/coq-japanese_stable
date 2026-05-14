@@ -1336,6 +1336,13 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.Engulfing|Engulf|System.Boolean|XRL.World.GameObject|XRL.World.Event",
     })]
+    [TestCase(typeof(ClonelingVehicleTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Cloneling|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.Cloneling|AttemptCloning|System.Boolean",
+        "XRL.World.Parts.VehicleRepair|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.VehicleRecall|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+    })]
     [TestCase(typeof(TemporaryRealityStabilizeTranslationPatch), new[]
     {
         "XRL.World.Parts.Temporary|HandleEvent|System.Boolean|XRL.World.RealityStabilizeEvent",

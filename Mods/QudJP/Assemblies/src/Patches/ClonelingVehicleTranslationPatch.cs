@@ -14,6 +14,9 @@ public static class ClonelingVehicleTranslationPatch
     [ThreadStatic]
     private static int activeDepth;
 
+    [ThreadStatic]
+    private static int directMarkerPassThroughDepth;
+
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
@@ -50,6 +53,11 @@ public static class ClonelingVehicleTranslationPatch
             {
                 activeDepth--;
             }
+
+            if (activeDepth <= 0)
+            {
+                directMarkerPassThroughDepth = 0;
+            }
         }
         catch (Exception ex)
         {
@@ -65,6 +73,20 @@ public static class ClonelingVehicleTranslationPatch
         {
             translated = source;
             return false;
+        }
+
+        if (directMarkerPassThroughDepth > 0)
+        {
+            directMarkerPassThroughDepth--;
+            translated = source;
+            return true;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            directMarkerPassThroughDepth++;
+            translated = markedText;
+            return true;
         }
 
         return ClonelingVehicleFragmentTranslator.TryTranslatePopupMessage(source, route, family + "." + Context, out translated);

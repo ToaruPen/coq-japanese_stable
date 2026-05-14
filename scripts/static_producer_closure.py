@@ -10685,6 +10685,42 @@ COVERED_OWNER_FAMILIES: Final = (
             ),
         ),
     ),
+    CoveredOwnerFamily(
+        family_id="XRL.World.Parts/Cloneling.cs::XRL.World.Parts.Cloneling.HandleEvent",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/ClonelingVehicleTranslationPatch.cs",
+                ("TryTranslatePopupMessage", "XRL.World.Parts.Cloneling", "HandleEvent"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/ClonelingVehicleFragmentTranslator.cs",
+                ("OneDramPattern", "You do not have 1 dram of"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("ClonelingVehicleTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/ClonelingVehicleTranslationPatchClosureTests.cs",
+                (
+                    "ClonelingHandleEvent_TranslatesOneDramPopupFailure_WhenOwnerPatched",
+                    "ClonelingHandleEvent_DoesNotTranslateOneDramPopupFailure_WhenOwnerAbsent",
+                    "ClonelingHandleEvent_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "ClonelingHandleEvent_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "ClonelingHandleEvent_LeavesUnsupportedPopupUnchanged_WhenOwnerPatched",
+                    "nameof(DummyClonelingProducerTarget.HandleEvent)",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "XRL.World.Parts.Cloneling|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+                ),
+            ),
+        ),
+    ),
     *_examiner_result_popup_families(),
     *_force_bubble_owner_families(),
     *_combat_skill_extension_owner_families(),

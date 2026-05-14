@@ -165,7 +165,7 @@ internal sealed class DummyClonelingProducerTarget
     public bool HandleEvent(DummyInventoryActionEvent e)
     {
         _ = e;
-        DummyPopupShow.Show(PopupMessageToShow);
+        DummyPopupShow.ShowFail(PopupMessageToShow);
         return true;
     }
 
