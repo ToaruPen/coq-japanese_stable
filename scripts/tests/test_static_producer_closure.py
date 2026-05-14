@@ -473,6 +473,33 @@ def test_reverse_engineering_sifrah_finish_callsite_is_split_from_critical_failu
     )
 
 
+def test_pick_target_show_picker_range_failure_is_split_from_fixed_visibility_popups() -> None:
+    """PickTarget.ShowPicker closes generated range failure without claiming fixed visibility popups."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    family_id = "XRL.UI/PickTarget.cs::XRL.UI.PickTarget.ShowPicker"
+    family_callsites = [
+        callsite
+        for callsite in inventory["callsites"]
+        if callsite["producer_family_id"] == family_id
+    ]
+
+    assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
+    assert family_closure_status(raw_families[family_id]) == "needs_family_review"
+    assert family_id not in covered_family_ids()
+    assert (family_id, 850) in covered_callsite_keys()
+    assert family_id not in queued_family_ids
+    assert {
+        (callsite["line"], callsite["closure_status"])
+        for callsite in family_callsites
+    } == {
+        (850, "owner_patch_required"),
+        (854, "messages_candidate"),
+        (858, "messages_candidate"),
+    }
+
+
 def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:
     """Uncovered high-volume owner families must stay actionable."""
     inventory = load_inventory(TRACKED_INVENTORY)

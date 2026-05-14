@@ -8671,6 +8671,51 @@ def _mutation_generated_text_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     )
 
 
+def _pick_target_show_picker_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.UI/PickTarget.cs::XRL.UI.PickTarget.ShowPicker",
+            lines=(850,),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PickTargetShowPickerTranslationPatch.cs",
+                    (
+                        "PickTargetShowPickerTranslationPatch",
+                        "XRL.UI.PickTarget",
+                        "ShowPicker",
+                        "RangeFailurePattern",
+                        "TryTranslatePopupMessage",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("PickTargetShowPickerTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PickTargetShowPickerTranslationPatchTests.cs",
+                    (
+                        "ShowPicker_TranslatesRangeFailurePopup_WhenOwnerPatched",
+                        "ShowPicker_PreservesWholePopupColor_WhenOwnerPatched",
+                        "ShowPicker_DoesNotClaimPopupOnlyTraffic_WhenOwnerAbsent",
+                        "ShowPicker_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "ShowPicker_LeavesUnsupportedPopupsUnchanged_WhenOwnerPatched",
+                        "You may only select a visible square!",
+                        "You may only select an explored square!",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(PickTargetShowPickerTranslationPatch)",
+                        "XRL.UI.PickTarget|ShowPicker|XRL.World.Cell|XRL.UI.PickTarget+PickStyle",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _disassembly_start_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/DisassemblyStartTranslationPatch.cs",
@@ -12041,6 +12086,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_sifrah_pure_owner_popup_callsites(),
     *_giant_clam_shloop_hitch_callsites(),
     *_mutation_generated_text_callsites(),
+    *_pick_target_show_picker_callsites(),
     CoveredOwnerCallsites(
         family_id=(
             "XRL.World.Parts.Mutation/Carapace.cs::"

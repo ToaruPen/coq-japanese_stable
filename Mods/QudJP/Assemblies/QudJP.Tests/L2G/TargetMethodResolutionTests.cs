@@ -1256,6 +1256,10 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Mutation.PackRat|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.Mutation.Belcher|Cast|System.Boolean|XRL.World.Parts.Mutation.Belcher|System.String|System.Boolean|System.Boolean",
     })]
+    [TestCase(typeof(PickTargetShowPickerTranslationPatch), new[]
+    {
+        "XRL.UI.PickTarget|ShowPicker|XRL.World.Cell|XRL.UI.PickTarget+PickStyle|System.Int32|System.Int32|System.Int32|System.Int32|System.Boolean|XRL.World.AllowVis|System.Predicate`1[[XRL.World.GameObject]]|System.Predicate`1[[XRL.World.GameObject]]|XRL.World.GameObject|System.Nullable`1[[Genkit.Point2D]]|System.String|System.Boolean|System.Boolean",
+    })]
     [TestCase(typeof(DisassemblyStartTranslationPatch), new[]
     {
         "XRL.World.Tinkering.Disassembly|Continue|System.Boolean",
