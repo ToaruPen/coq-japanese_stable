@@ -20,6 +20,7 @@ internal static class PopupShowSemanticPipeline
         GolemQuestSelectionPopupTranslationPatch.TryTranslatePopupMessage,
         RealityStabilizedInterdictTranslationPatch.TryTranslatePopupMessage,
         MutationActionFailureTranslationPatch.TryTranslatePopupMessage,
+        TelekinesisTranslationPatch.TryTranslatePopupMessage,
         DisassemblyStartTranslationPatch.TryTranslatePopupMessage,
         DanceRitualOpponentTranslationPatch.TryTranslatePopupMessage,
         IExamineEventProcessIdentifyTranslationPatch.TryTranslatePopupMessage,

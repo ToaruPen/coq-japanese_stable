@@ -991,6 +991,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.Mutation.MassMind|FireEvent|System.Boolean|XRL.World.Event",
     })]
+    [TestCase(typeof(TelekinesisTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.Telekinesis|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+    })]
     [TestCase(typeof(CyberneticRejectionSyndromeTranslationPatch), new[]
     {
         "XRL.World.Effects.CyberneticRejectionSyndrome|Apply|System.Boolean|XRL.World.GameObject",

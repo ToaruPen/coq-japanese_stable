@@ -11974,6 +11974,52 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts.Mutation/Telekinesis.cs::"
+            "XRL.World.Parts.Mutation.Telekinesis.HandleEvent"
+        ),
+        lines=(194, 266),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/TelekinesisTranslationPatch.cs",
+                (
+                    "TelekinesisTranslationPatch",
+                    "XRL.World.Parts.Mutation.Telekinesis",
+                    "HandleEvent",
+                    "ObjectNotBudgePattern",
+                    "TryTranslatePopupMessage",
+                    'match.Groups["object"].Value, "You"',
+                    "StringComparison.Ordinal",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("TelekinesisTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/TelekinesisTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesObjectNotBudgePopup_WhenOwnerPatched",
+                    "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_LeavesUnsupportedPopupUnchanged_WhenOwnerPatched",
+                    "The {{Y|bronze dagger}} does not budge.",
+                    "{{Y|lead slugs}} do not budge.",
+                    "You do not budge.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(TelekinesisTranslationPatch)",
+                    "XRL.World.Parts.Mutation.Telekinesis|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World/ReverseEngineeringSifrah.cs::"
             "XRL.World.ReverseEngineeringSifrah.Finish"
         ),
