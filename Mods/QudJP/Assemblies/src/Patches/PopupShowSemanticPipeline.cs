@@ -43,6 +43,7 @@ internal static class PopupShowSemanticPipeline
         ConversationRewardPopupTranslationPatch.TryTranslatePopupMessage,
         EelSpawnTranslationPatch.TryTranslatePopupMessage,
         TeleporterPairTranslationPatch.TryTranslatePopupMessage,
+        ShortBladesHobbleTranslationPatch.TryTranslatePopupMessage,
         BodyTranslationPatch.TryTranslatePopupMessage,
         SifrahTokenItemPopupTranslationPatch.TryTranslatePopupMessage,
         SifrahPureOwnerPopupTranslationPatch.TryTranslatePopupMessage,

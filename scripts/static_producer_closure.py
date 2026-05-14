@@ -12292,6 +12292,64 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts.Skill/ShortBlades_Hobble.cs::"
+            "XRL.World.Parts.Skill.ShortBlades_Hobble.FireEvent"
+        ),
+        lines=(77, 81, 117),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/ShortBladesHobbleTranslationPatch.cs",
+                (
+                    "ShortBladesHobbleTranslationPatch",
+                    "XRL.World.Parts.Skill.ShortBlades_Hobble",
+                    "FireEvent",
+                    "PlayerFindsWeaknessPattern",
+                    "EnemyFindsWeaknessPattern",
+                    "SelfConfirmationPattern",
+                    "ShortBladesHobblePlayerFindsWeakness",
+                    "ShortBladesHobbleEnemyFindsWeakness",
+                    "ShortBladesHobbleSelfConfirmation",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("ShortBladesHobbleTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("ShortBladesHobbleTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/ShortBladesHobbleTranslationPatchTests.cs",
+                (
+                    "Hobble_TranslatesWeaknessQueuedMessages_WhenOwnerPatched",
+                    "Hobble_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "Hobble_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "Hobble_TranslatesSelfConfirmationPopup_WhenOwnerPatched",
+                    "Hobble_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "Hobble_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Hobble_DoesNotClaimFixedOrEmptyPopups_WhenOwnerPatched",
+                    "You find a weakness in the snapjaw's defenses.",
+                    "The snapjaw finds a weakness in your defenses.",
+                    "Are you sure you want to hobble yourself?",
+                    "You must have a short blade equipped in your primary hand to hobble.",
+                    "There's nothing there to hobble.",
+                    "ShortBladesHobbleSelfConfirmation",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(ShortBladesHobbleTranslationPatch)",
+                    "XRL.World.Parts.Skill.ShortBlades_Hobble|FireEvent|System.Boolean|XRL.World.Event",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World/SocialSifrahTokenGift.cs::"
             "XRL.World.SocialSifrahTokenGift.CheckTokenUse"
         ),

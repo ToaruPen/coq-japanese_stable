@@ -1722,6 +1722,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.TeleporterPair|AttemptTeleport|System.Boolean|XRL.World.GameObject|XRL.World.IEvent",
     })]
+    [TestCase(typeof(ShortBladesHobbleTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Skill.ShortBlades_Hobble|FireEvent|System.Boolean|XRL.World.Event",
+    })]
     [TestCase(typeof(SingleCallsiteOwnerPopupTranslationPatch), new[]
     {
         "XRL.World.Quests.AscensionSystem|BarathrumStartConversation|System.Void|XRL.World.GameObject",
