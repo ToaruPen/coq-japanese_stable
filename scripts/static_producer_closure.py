@@ -5894,6 +5894,62 @@ def _single_callsite_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _giant_clam_shloop_hitch_families() -> tuple[CoveredOwnerFamily, ...]:
+    evidence_by_method = {
+        "TeleportToClamWorld": (
+            "XRL.World.Parts.GiantClamProperties|TeleportToClamWorld|System.Void|XRL.World.GameObject"
+        ),
+        "TeleportFromClamWorld": (
+            "XRL.World.Parts.GiantClamProperties|TeleportFromClamWorld|System.Void|XRL.World.GameObject"
+        ),
+    }
+    families: list[CoveredOwnerFamily] = []
+    for method_name, full_signature in evidence_by_method.items():
+        families.append(
+            CoveredOwnerFamily(
+                family_id=(
+                    "XRL.World.Parts/GiantClamProperties.cs::"
+                    f"XRL.World.Parts.GiantClamProperties.{method_name}"
+                ),
+                inventory_statuses=("needs_family_review",),
+                evidence_files=(
+                    EvidenceFile(
+                        "Mods/QudJP/Assemblies/src/Patches/GiantClamTeleportTranslationPatch.cs",
+                        (
+                            "GiantClamTeleportTranslationPatch",
+                            method_name,
+                            "You hear a shloop and then a hitch. Nothing happens.",
+                        ),
+                    ),
+                    EvidenceFile(
+                        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                        ("GiantClamTeleportTranslationPatch.TryTranslateQueuedMessage",),
+                    ),
+                    EvidenceFile(
+                        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                        (
+                            "GiantClamTeleport_TranslatesShloopQueuedMessages_WhenOwnerPatched",
+                            "GiantClamTeleport_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                            "GiantClamTeleport_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                            "FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                            method_name,
+                            "You hear a shloop and then a hitch. Nothing happens.",
+                        ),
+                    ),
+                    EvidenceFile(
+                        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                        (
+                            "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                            "GiantClamTeleportTranslationPatch",
+                            full_signature,
+                        ),
+                    ),
+                ),
+            )
+        )
+    return tuple(families)
+
+
 def _point_of_interest_navigation_popup_family() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -9796,6 +9852,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_blaze_tonic_remove_family(),
     *_latched_onto_expired_family(),
     *_giant_clam_teleport_joppa_family(),
+    *_giant_clam_shloop_hitch_families(),
     *_single_callsite_owner_popup_families(),
     *_point_of_interest_navigation_popup_family(),
     *_run_start_running_popup_family(),
