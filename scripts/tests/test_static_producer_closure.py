@@ -653,6 +653,41 @@ def test_water_ritual_random_mutation_incompatible_popup_is_split_from_fixed_and
     }
 
 
+def test_psychometry_owner_popups_are_split_from_fixed_continue_prompt() -> None:
+    """Psychometry closes generated item popups without claiming fixed continuation prompts."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    family_id = "XRL.World.Parts.Mutation/Psychometry.cs::XRL.World.Parts.Mutation.Psychometry.HandleEvent"
+    family_callsites = [
+        callsite
+        for callsite in inventory["callsites"]
+        if callsite["producer_family_id"] == family_id
+    ]
+
+    assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
+    assert family_closure_status(raw_families[family_id]) == "needs_family_review"
+    assert family_id not in covered_family_ids()
+    assert {
+        (family_id, line)
+        for line in (168, 172, 181, 185, 191, 206)
+    }.issubset(covered_callsite_keys())
+    assert family_id not in queued_family_ids
+    assert {
+        (callsite["line"], callsite["target_surface"], callsite["closure_status"])
+        for callsite in family_callsites
+    } == {
+        (60, "Popup.Show*", "messages_candidate"),
+        (79, "Popup.Show*", "messages_candidate"),
+        (168, "Popup.Show*", "owner_patch_required"),
+        (172, "Popup.Show*", "owner_patch_required"),
+        (181, "Popup.Show*", "owner_patch_required"),
+        (185, "Popup.Show*", "owner_patch_required"),
+        (191, "Popup.Show*", "owner_patch_required"),
+        (206, "Popup.Show*", "owner_patch_required"),
+    }
+
+
 def test_sunder_mind_tick_head_explosion_queue_is_split_from_fixed_popups() -> None:
     """SunderMind.Tick closes generated head-explosion queue text without claiming fixed popups."""
     inventory = load_inventory(TRACKED_INVENTORY)

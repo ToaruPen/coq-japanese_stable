@@ -940,6 +940,105 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [TestCase(
+        "This artifact is too complex for you to decipher its function.",
+        "このアーティファクトは複雑すぎてあなたにはその機能を解読できない。")]
+    [TestCase(
+        "These artifacts are too complex for you to decipher their method of construction.",
+        "これらのアーティファクトは複雑すぎてあなたにはその製法を解読できない。")]
+    [TestCase(
+        "You flush with understanding of the artifact's past and determine it to be {{Y|weird artifact}}.",
+        "あなたはそのアーティファクトの過去を理解し、それが{{Y|weird artifact}}だと判明した。")]
+    [TestCase(
+        "You must disassemble {{G|phase cannon}} in order to unlock its secrets.",
+        "秘密を解き明かすには{{G|phase cannon}}を分解しなければならない。")]
+    [TestCase(
+        "You must learn the way of the Reverse Engineer and disassemble {{G|phase cannon}} in order to unlock its secrets.",
+        "秘密を解き明かすにはリバースエンジニアの道を学び、{{G|phase cannon}}を分解しなければならない。")]
+    [TestCase(
+        "{{R|You must disassemble {{G|phase cannon}} in order to unlock its secrets.}}",
+        "{{R|秘密を解き明かすには{{G|phase cannon}}を分解しなければならない。}}")]
+    [TestCase(
+        "You abide the memory of the {{Y|bronze dagger}}'s creation. You learn to build bronze daggers.",
+        "{{Y|bronze dagger}}の創造の記憶に身を委ねた。bronze daggersを作れるようになった。")]
+    public void PsychometryPatch_TranslatesOwnerPopups_WhenPatched(string source, string expected)
+    {
+        AssertPsychometryPopup(source, expected);
+    }
+
+    [Test]
+    public void PsychometryPatch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony, nameof(DummyPopupShow.ShowFail));
+
+            const string source = "You must disassemble phase cannon in order to unlock its secrets.";
+            DummyPopupShow.ShowFail(source);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void PsychometryPatch_DoesNotClaimFixedContinuePrompt_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony, nameof(DummyPopupShow.ShowYesNo));
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyPsychometryProducerTarget), nameof(DummyPsychometryProducerTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(PsychometryTranslationPatch));
+
+            var target = new DummyPsychometryProducerTarget
+            {
+                PopupMethod = nameof(DummyPopupShow.ShowYesNo),
+                PopupMessageToShow = "Do you want to continue despite being unable to use Psychometry?",
+            };
+
+            _ = target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo("Do you want to continue despite being unable to use Psychometry?"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        "Popup.ShowYesNo",
+                        "Popup.Show.PsychometryTranslationPatch"),
+                    Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void PsychometryPatch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertPsychometryPopup(
+            MessageFrameTranslator.MarkDirectTranslation("秘密を解き明かすにはphase cannonを分解しなければならない。"),
+            "秘密を解き明かすにはphase cannonを分解しなければならない。");
+    }
+
+    [Test]
+    public void PsychometryPatch_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        AssertPsychometryPopup(string.Empty, string.Empty);
+    }
+
+    [TestCase(
         typeof(DummyStairsDownProducerTarget),
         nameof(DummyStairsDownProducerTarget.HandleEvent),
         typeof(StairsDownTranslationPatch),
@@ -1744,6 +1843,34 @@ public sealed class WorldPartsProducerTranslationPatchTests
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(methodName), methodName, null);
+        }
+    }
+
+    private static void AssertPsychometryPopup(string source, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony, nameof(DummyPopupShow.ShowFail));
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyPsychometryProducerTarget), nameof(DummyPsychometryProducerTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(PsychometryTranslationPatch));
+
+            var target = new DummyPsychometryProducerTarget
+            {
+                PopupMessageToShow = source,
+            };
+
+            _ = target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
         }
     }
 

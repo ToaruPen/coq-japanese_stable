@@ -958,6 +958,33 @@ internal sealed class DummyExaminerProducerTarget
     }
 }
 
+internal sealed class DummyPsychometryProducerTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    public string PopupMethod { get; set; } = nameof(DummyPopupShow.ShowFail);
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool HandleEvent(DummyInventoryActionEvent e)
+    {
+        _ = e;
+        if (PopupMethod == nameof(DummyPopupShow.ShowFail))
+        {
+            DummyPopupShow.ShowFail(PopupMessageToShow);
+        }
+        else if (PopupMethod == nameof(DummyPopupShow.ShowYesNo))
+        {
+            _ = DummyPopupShow.ShowYesNo(PopupMessageToShow);
+        }
+        else
+        {
+            DummyPopupShow.Show(PopupMessageToShow);
+        }
+
+        return true;
+    }
+}
+
 internal sealed class DummyItemNamingProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;

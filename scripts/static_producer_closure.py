@@ -5922,6 +5922,55 @@ def _enclosing_exit_enclosure_owner_callsites() -> tuple[CoveredOwnerCallsites, 
     )
 
 
+def _psychometry_handle_event_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts.Mutation/Psychometry.cs::XRL.World.Parts.Mutation.Psychometry.HandleEvent",
+            lines=(168, 172, 181, 185, 191, 206),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PsychometryTranslationPatch.cs",
+                    (
+                        "PsychometryTranslationPatch",
+                        "XRL.World.Parts.Mutation.Psychometry",
+                        "HandleEvent",
+                        "InventoryActionEvent",
+                        "TooComplexPattern",
+                        "UnderstandingPattern",
+                        "MustDisassemblePattern",
+                        "MustLearnReverseEngineerPattern",
+                        "LearnBlueprintPattern",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("PsychometryTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldPartsProducerTranslationPatchTests.cs",
+                    (
+                        "PsychometryPatch_TranslatesOwnerPopups_WhenPatched",
+                        "PsychometryPatch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "PsychometryPatch_DoesNotClaimFixedContinuePrompt_WhenOwnerPatched",
+                        "PsychometryPatch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "PsychometryPatch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "This artifact is too complex for you to decipher its function.",
+                        "You abide the memory of the {{Y|bronze dagger}}'s creation.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(PsychometryTranslationPatch)",
+                        "XRL.World.Parts.Mutation.Psychometry|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _code_redemption_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     evidence_files = (
         EvidenceFile(
@@ -13408,6 +13457,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_garbage_attempt_rifle_owner_callsites(),
     *_ability_manager_show_owner_callsites(),
     *_enclosing_exit_enclosure_owner_callsites(),
+    *_psychometry_handle_event_owner_callsites(),
     *_code_redemption_owner_callsites(),
     *_skills_and_powers_select_node_owner_callsites(),
     *_single_fixed_queue_owner_callsites(),

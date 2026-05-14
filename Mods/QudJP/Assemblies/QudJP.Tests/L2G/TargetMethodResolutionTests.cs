@@ -1254,6 +1254,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Effects.MutationInfection|FireEvent|System.Boolean|XRL.World.Event",
     })]
+    [TestCase(typeof(PsychometryTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.Psychometry|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+    })]
     [TestCase(typeof(MutationActionFailureTranslationPatch), new[]
     {
         "XRL.World.Parts.Mutation.ElectricalGeneration|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
