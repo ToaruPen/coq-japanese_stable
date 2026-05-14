@@ -13,7 +13,6 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
     private const string Context = nameof(SingleCallsiteOwnerQueueTranslationPatch);
     private const string ModMorphogeneticOwner = "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock";
     private const string WeirdwireConduitOwner = "XRL.World.Quests.WeirdwireConduitSystem|HandleEvent";
-    private const string DummyOwner = "QudJP.Tests.L2.SingleCallsiteOwnerQueueTranslationPatchTests+DummySingleCallsiteOwnerQueueTarget|";
 
     private static readonly Regex MorphogeneticShockPattern = new(
         "^A weird(?<painful>, painful)? shock reverberates through you\\.$",
@@ -89,9 +88,19 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
 
     internal static bool TryTranslateQueuedMessage(ref string message, string? color)
     {
+        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(message))
+        {
+            return false;
+        }
+
+        return TryTranslateQueuedMessageForOwnerKey(ref message, color, CurrentOwnerKey());
+    }
+
+    internal static bool TryTranslateQueuedMessageForOwnerKey(ref string message, string? color, string? ownerKey)
+    {
         _ = color;
 
-        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(message))
+        if (string.IsNullOrEmpty(message))
         {
             return false;
         }
@@ -102,7 +111,7 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
             return true;
         }
 
-        if (!TryTranslateCore(message, CurrentOwnerKey(), out var translated, out var detail))
+        if (!TryTranslateCore(message, ownerKey, out var translated, out var detail))
         {
             return false;
         }
@@ -119,7 +128,7 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
     private static bool TryTranslateCore(string source, string? ownerKey, out string translated, out string detail)
     {
         var match = MorphogeneticShockPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, ModMorphogeneticOwner, DummyOwner + "ApplyMorphicShock"))
+        if (match.Success && OwnerMatches(ownerKey, ModMorphogeneticOwner))
         {
             if (match.Groups["painful"].Success)
             {
@@ -136,7 +145,7 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
         }
 
         match = WeirdwireCopperWirePattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, WeirdwireConduitOwner, DummyOwner + "HandleWeirdwireTookEvent"))
+        if (match.Success && OwnerMatches(ownerKey, WeirdwireConduitOwner))
         {
             translated = "銅線を" + match.Groups["length"].Value + "フィート持っている。";
             detail = "WeirdwireCopperWireTotal";

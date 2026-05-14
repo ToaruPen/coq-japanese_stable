@@ -241,6 +241,28 @@ public static class PopupShowTranslationPatch
         return shouldPassThrough;
     }
 
+    internal static bool TryTranslateDirectMarkedOwnerPopup(
+        string source,
+        ref string? passThroughText,
+        out string translated)
+    {
+        if (TryConsumeDirectMarkerPassThrough(source, ref passThroughText))
+        {
+            translated = source;
+            return true;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            passThroughText = markedText;
+            translated = markedText;
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
     private static bool IsDirectMarkedPopupWrapperCall(string source, MethodBase originalMethod)
     {
         return MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _)

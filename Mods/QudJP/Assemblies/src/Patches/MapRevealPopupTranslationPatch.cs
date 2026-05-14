@@ -13,8 +13,6 @@ public static class MapRevealPopupTranslationPatch
     private const string Context = nameof(MapRevealPopupTranslationPatch);
     private const string MapRevealOwner = "XRL.World.Parts.MapReveal|HandleEvent";
     private const string FactionDeedOwner = "XRL.World.Parts.FactionDeed|HandleEvent";
-    private const string DummyMapRevealOwner = "QudJP.Tests.L2.MapRevealPopupTranslationPatchTests+DummyMapRevealProducer|HandleEvent";
-    private const string DummyFactionDeedOwner = "QudJP.Tests.L2.MapRevealPopupTranslationPatchTests+DummyFactionDeedProducer|HandleEvent";
 
     private static readonly Regex OwnerConsumptionWarningPattern = new(
         "^(?<owner>.+?) (?:is|are) not owned by you, and using (?<target>.+?) will consume (?<consumed>.+?)\\. Are you sure you want to do so\\?$",
@@ -108,6 +106,22 @@ public static class MapRevealPopupTranslationPatch
             return false;
         }
 
+        return TryTranslatePopupMessageForOwnerKey(source, CurrentOwnerKey(), route, family, out translated);
+    }
+
+    internal static bool TryTranslatePopupMessageForOwnerKey(
+        string source,
+        string? ownerKey,
+        string route,
+        string family,
+        out string translated)
+    {
+        if (string.IsNullOrEmpty(source))
+        {
+            translated = source;
+            return false;
+        }
+
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
             translated = markedText;
@@ -117,7 +131,6 @@ public static class MapRevealPopupTranslationPatch
         try
         {
             var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
-            var ownerKey = CurrentOwnerKey();
             translated = source;
             return (IsDocumentOwner(ownerKey)
                     && (TryTranslateOwnerConsumptionWarning(source, stripped, spans, route, family, out translated)
@@ -221,12 +234,12 @@ public static class MapRevealPopupTranslationPatch
 
     private static bool IsDocumentOwner(string? ownerKey)
     {
-        return OwnerMatches(ownerKey, MapRevealOwner, FactionDeedOwner, DummyMapRevealOwner, DummyFactionDeedOwner);
+        return OwnerMatches(ownerKey, MapRevealOwner, FactionDeedOwner);
     }
 
     private static bool IsMapRevealOwner(string? ownerKey)
     {
-        return OwnerMatches(ownerKey, MapRevealOwner, DummyMapRevealOwner);
+        return OwnerMatches(ownerKey, MapRevealOwner);
     }
 
     private static bool OwnerMatches(string? actual, params string[] expected)

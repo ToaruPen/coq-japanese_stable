@@ -1,5 +1,3 @@
-using System.Reflection;
-using System.Text.RegularExpressions;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
 
@@ -317,19 +315,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         string detail,
         PopupMethod popupMethod)
     {
-        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
-            typeof(SingleCallsiteOwnerPopupTranslationPatch),
-            RequireOwnerMethod(methodName),
-            () =>
-            {
-                InvokeOwnerMethod(methodName, source);
-
-                Assert.Multiple(() =>
-                {
-                    Assert.That(GetLastPopupMessage(popupMethod), Is.EqualTo(expected));
-                    Assert.That(HitCount(detail), Is.EqualTo(1));
-                });
-            });
+        Assert.That(TryTranslateForOwner(methodName, source, out var translated), Is.True);
+        ShowPopup(translated, popupMethod);
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(expected));
+            Assert.That(GetLastPopupMessage(popupMethod), Is.EqualTo(expected));
+            Assert.That(HitCount(detail), Is.EqualTo(1));
+        });
     }
 
     [TestCase(
@@ -595,19 +588,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         string source,
         string detail)
     {
-        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
-            typeof(SingleCallsiteOwnerPopupTranslationPatch),
-            RequireOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms)),
-            () =>
-            {
-                InvokeOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms), source);
-
-                Assert.Multiple(() =>
-                {
-                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
-                    Assert.That(HitCount(detail), Is.Zero);
-                });
-            });
+        Assert.That(
+            TryTranslateForOwner(nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms), source, out var translated),
+            Is.False);
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(HitCount(detail), Is.Zero);
+        });
     }
 
     [Test]
@@ -616,37 +604,23 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         const string source = "Generated {{Y|folded carbide axe}} as reward for {{C|oil}}";
         var marked = MessageFrameTranslator.MarkDirectTranslation(source);
 
-        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
-            typeof(SingleCallsiteOwnerPopupTranslationPatch),
-            RequireOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.HandleBaetylRewardWish)),
-            () =>
-            {
-                InvokeOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.HandleBaetylRewardWish), marked);
-
-                Assert.Multiple(() =>
-                {
-                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
-                    Assert.That(HitCount("BaetylRewardWish"), Is.Zero);
-                });
-            });
+        Assert.That(TryTranslateForOwner(nameof(DummySingleCallsiteOwnerPopupTarget.HandleBaetylRewardWish), marked, out var translated), Is.True);
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(HitCount("BaetylRewardWish"), Is.Zero);
+        });
     }
 
     [Test]
     public void Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
-        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
-            typeof(SingleCallsiteOwnerPopupTranslationPatch),
-            RequireOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms)),
-            () =>
-            {
-                InvokeOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms), string.Empty);
-
-                Assert.Multiple(() =>
-                {
-                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
-                    Assert.That(HitCount("DecoyHologramOutOfRange"), Is.Zero);
-                });
-            });
+        Assert.That(TryTranslateForOwner(nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms), string.Empty, out var translated), Is.False);
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(string.Empty));
+            Assert.That(HitCount("DecoyHologramOutOfRange"), Is.Zero);
+        });
     }
 
     [Test]
@@ -654,40 +628,26 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     {
         const string source = "Ugh, you feel sick.";
 
-        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
-            typeof(SingleCallsiteOwnerPopupTranslationPatch),
-            RequireOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood)),
-            () =>
-            {
-                InvokeOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood), source);
-
-                Assert.Multiple(() =>
-                {
-                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
-                    Assert.That(HitCount("FoodConsumptionFrame"), Is.Zero);
-                });
-            });
+        Assert.That(TryTranslateForOwner(nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood), source, out var translated), Is.False);
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(HitCount("FoodConsumptionFrame"), Is.Zero);
+        });
     }
 
     [TestCase("You are covered in sticky goop!")]
     [TestCase("It's a {{Y|fix-it spray foam}}!")]
     public void Patch_DoesNotClaimFixitSprayFixedOrRuntimePopups_WhenFixitSprayOwnerPatched(string source)
     {
-        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
-            typeof(SingleCallsiteOwnerPopupTranslationPatch),
-            RequireOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.HandleFixitSpray)),
-            () =>
-            {
-                InvokeOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.HandleFixitSpray), source);
-
-                Assert.Multiple(() =>
-                {
-                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
-                    Assert.That(HitCount("FixitSprayPhasePassThrough"), Is.Zero);
-                    Assert.That(HitCount("FixitSprayLiquidMix"), Is.Zero);
-                    Assert.That(HitCount("FixitSprayCovered"), Is.Zero);
-                });
-            });
+        Assert.That(TryTranslateForOwner(nameof(DummySingleCallsiteOwnerPopupTarget.HandleFixitSpray), source, out var translated), Is.False);
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(HitCount("FixitSprayPhasePassThrough"), Is.Zero);
+            Assert.That(HitCount("FixitSprayLiquidMix"), Is.Zero);
+            Assert.That(HitCount("FixitSprayCovered"), Is.Zero);
+        });
     }
 
     [TestCase("The sprayer head won't move.")]
@@ -695,402 +655,13 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase("You can't animate an object that already has a brain.")]
     public void Patch_DoesNotClaimAnimatorSprayFixedPopups_WhenAnimatorSprayOwnerPatched(string source)
     {
-        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
-            typeof(SingleCallsiteOwnerPopupTranslationPatch),
-            RequireOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.HandleAnimatorSpray)),
-            () =>
-            {
-                InvokeOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.HandleAnimatorSpray), source);
-
-                Assert.Multiple(() =>
-                {
-                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
-                    Assert.That(HitCount("AnimatorSprayIdentified"), Is.Zero);
-                    Assert.That(HitCount("AnimatorSprayImbueLife"), Is.Zero);
-                });
-            });
-    }
-
-    private static MethodInfo RequireOwnerMethod(string methodName)
-    {
-        return methodName switch
+        Assert.That(TryTranslateForOwner(nameof(DummySingleCallsiteOwnerPopupTarget.HandleAnimatorSpray), source, out var translated), Is.False);
+        Assert.Multiple(() =>
         {
-            nameof(DummySingleCallsiteOwnerPopupTarget.BarathrumStartConversation) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(DummyGameObject)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.DisplaySurfaceDistribution) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(string)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.HandleBootEvent) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(string),
-                    typeof(DummyXrlGame),
-                    typeof(DummyEmbarkInfo),
-                    typeof(object)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(DummyGameObject)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.HandleBaetylRewardWish) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(string)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.CastForceSuccess) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(DummyGameObject),
-                    typeof(DummyAxeDismember),
-                    typeof(DummyGameObject)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.Cast) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(DummyGameObject),
-                    typeof(DummyCudgelSlam),
-                    typeof(string),
-                    typeof(DummyGameObject),
-                    typeof(bool),
-                    typeof(int),
-                    typeof(string)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.AwardDynamicQuestRewardGameObject) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName),
-            nameof(DummySingleCallsiteOwnerPopupTarget.HandleFactionEncounterWish) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(Match)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.AttemptProselytization) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName),
-            nameof(DummySingleCallsiteOwnerPopupTarget.LearnNewRecipe) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(DummyGameObject),
-                    typeof(int),
-                    typeof(int)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.OnCreated) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(string)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.HandleGenocideCurio) or
-            nameof(DummySingleCallsiteOwnerPopupTarget.HandleGritGateMainframeTerminal) or
-            nameof(DummySingleCallsiteOwnerPopupTarget.HandleFixitSpray) or
-            nameof(DummySingleCallsiteOwnerPopupTarget.HandleAnimatorSpray) or
-            nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpraybottle) or
-            nameof(DummySingleCallsiteOwnerPopupTarget.HandleSummoningCurio) or
-            nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood) or
-            nameof(DummySingleCallsiteOwnerPopupTarget.HandleTrainingBook) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(DummyInventoryActionEvent)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.HandleHindrenMysteryCriticalNpc) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(DummyBeforeDeathRemovalEvent)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.ReturnKindrishAward) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName),
-            nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(DummyEndTurnEvent)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.MakeFuss) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(DummyGameObject)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.FireMutationPointsOnEat) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(DummyEvent)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.FireEngulfingDescends) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(DummyEvent)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.ApplySpaceTimeVortex) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(DummyGameObject)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.SetFactionRank) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(string),
-                    typeof(string),
-                    typeof(bool),
-                    typeof(bool)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.ShowLooker) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(int),
-                    typeof(int),
-                    typeof(int)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.HandleRecoilOnDeath) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(DummyBeforeDieEvent)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.HandleMarkovBook) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(DummyInventoryActionEvent)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.FireMumblesInfection) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(DummyEvent)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.HandleToolboxBonus) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(DummyGetTinkeringBonusEvent),
-                    typeof(int),
-                    typeof(int)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.HandleWaterRitualRecord) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName,
-                    typeof(DummyBeginConversationEvent)),
-            nameof(DummySingleCallsiteOwnerPopupTarget.FinishSpreadPax) =>
-                OwnerPopupRouteTestHarness.RequireMethod(
-                    typeof(DummySingleCallsiteOwnerPopupTarget),
-                    methodName),
-            _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected owner method."),
-        };
-    }
-
-    private static void InvokeOwnerMethod(string methodName, string message)
-    {
-        switch (methodName)
-        {
-            case nameof(DummySingleCallsiteOwnerPopupTarget.BarathrumStartConversation):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.BarathrumStartConversation(new DummyGameObject());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.DisplaySurfaceDistribution):
-                DummySingleCallsiteOwnerPopupTarget.StaticPopupMessageToShow = message;
-                DummySingleCallsiteOwnerPopupTarget.DisplaySurfaceDistribution("fungal");
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleBootEvent):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.HandleBootEvent("BeforeBoot", new DummyXrlGame(), new DummyEmbarkInfo());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.CreateHolograms(new DummyGameObject());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleBaetylRewardWish):
-                DummySingleCallsiteOwnerPopupTarget.StaticPopupMessageToShow = message;
-                _ = DummySingleCallsiteOwnerPopupTarget.HandleBaetylRewardWish("@Melee Weapons {tier}R");
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.CastForceSuccess):
-                DummySingleCallsiteOwnerPopupTarget.StaticPopupMessageToShow = message;
-                _ = DummySingleCallsiteOwnerPopupTarget.CastForceSuccess(
-                    new DummyGameObject(),
-                    new DummyAxeDismember(),
-                    new DummyGameObject());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.Cast):
-                DummySingleCallsiteOwnerPopupTarget.StaticPopupMessageToShow = message;
-                _ = DummySingleCallsiteOwnerPopupTarget.Cast(
-                    new DummyGameObject(),
-                    new DummyCudgelSlam(),
-                    null,
-                    new DummyGameObject());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.AwardDynamicQuestRewardGameObject):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.AwardDynamicQuestRewardGameObject();
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleFactionEncounterWish):
-                DummySingleCallsiteOwnerPopupTarget.StaticPopupMessageToShow = message;
-                _ = DummySingleCallsiteOwnerPopupTarget.HandleFactionEncounterWish(
-                    Regex.Match("factionencounter:snapjaws", "^factionencounter:(.*)$"));
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.AttemptProselytization):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.AttemptProselytization();
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.LearnNewRecipe):
-                DummySingleCallsiteOwnerPopupTarget.StaticPopupMessageToShow = message;
-                DummySingleCallsiteOwnerPopupTarget.LearnNewRecipe(new DummyGameObject(), 1, 4);
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.OnCreated):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.OnCreated("Wish");
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleGenocideCurio):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.HandleGenocideCurio(new DummyInventoryActionEvent());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleGritGateMainframeTerminal):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.HandleGritGateMainframeTerminal(new DummyInventoryActionEvent());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleHindrenMysteryCriticalNpc):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.HandleHindrenMysteryCriticalNpc(new DummyBeforeDeathRemovalEvent());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.ReturnKindrishAward):
-                DummySingleCallsiteOwnerPopupTarget.StaticPopupMessageToShow = message;
-                _ = DummySingleCallsiteOwnerPopupTarget.ReturnKindrishAward();
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.HandleLiquidFueledPowerPlant(new DummyEndTurnEvent());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.MakeFuss):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.MakeFuss(new DummyGameObject());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.FireMutationPointsOnEat):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.FireMutationPointsOnEat(new DummyEvent());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.FireEngulfingDescends):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.FireEngulfingDescends(new DummyEvent());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.SetFactionRank):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.SetFactionRank("Barathrumites", "Warden", message: true);
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.ShowLooker):
-                DummySingleCallsiteOwnerPopupTarget.StaticPopupMessageToShow = message;
-                _ = DummySingleCallsiteOwnerPopupTarget.ShowLooker(80, 12, 34);
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleRecoilOnDeath):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.HandleRecoilOnDeath(new DummyBeforeDieEvent());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleMarkovBook):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.HandleMarkovBook(new DummyInventoryActionEvent());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.FireMumblesInfection):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.FireMumblesInfection(new DummyEvent());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpraybottle):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.HandleSpraybottle(new DummyInventoryActionEvent());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleFixitSpray):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.HandleFixitSpray(new DummyInventoryActionEvent());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleAnimatorSpray):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.HandleAnimatorSpray(new DummyInventoryActionEvent());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleSummoningCurio):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.HandleSummoningCurio(new DummyInventoryActionEvent());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.HandleFood(new DummyInventoryActionEvent());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.ApplySpaceTimeVortex):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.ApplySpaceTimeVortex(new DummyGameObject());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleTrainingBook):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.HandleTrainingBook(new DummyInventoryActionEvent());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleToolboxBonus):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.HandleToolboxBonus(new DummyGetTinkeringBonusEvent(), 2, 0);
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleWaterRitualRecord):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.HandleWaterRitualRecord(new DummyBeginConversationEvent());
-                break;
-            case nameof(DummySingleCallsiteOwnerPopupTarget.FinishSpreadPax):
-                new DummySingleCallsiteOwnerPopupTarget
-                {
-                    PopupMessageToShow = message,
-                }.FinishSpreadPax();
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected owner method.");
-        }
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(HitCount("AnimatorSprayIdentified"), Is.Zero);
+            Assert.That(HitCount("AnimatorSprayImbueLife"), Is.Zero);
+        });
     }
 
     private static void ShowPopup(string source, PopupMethod popupMethod)
@@ -1117,6 +688,94 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
             PopupMethod.ShowAsync => DummyPopupShow.LastShowAsyncMessage,
             PopupMethod.ShowYesNo => DummyPopupShow.LastShowYesNoMessage,
             _ => DummyPopupShow.LastShowMessage,
+        };
+    }
+
+    private static bool TryTranslateForOwner(string methodName, string source, out string translated)
+    {
+        return SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessageForOwnerKey(
+            source,
+            OwnerKeyForMethod(methodName),
+            nameof(PopupShowTranslationPatch),
+            "SingleCallsiteOwnerPopup",
+            out translated);
+    }
+
+    private static string OwnerKeyForMethod(string methodName)
+    {
+        return methodName switch
+        {
+            nameof(DummySingleCallsiteOwnerPopupTarget.BarathrumStartConversation) =>
+                "XRL.World.Quests.AscensionSystem|BarathrumStartConversation",
+            nameof(DummySingleCallsiteOwnerPopupTarget.DisplaySurfaceDistribution) =>
+                "XRL.World.Biomes.BiomeManager|DisplaySurfaceDistribution",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleBootEvent) =>
+                "XRL.CharacterBuilds.Qud.QudSpecificCharacterInitModule|handleBootEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms) =>
+                "XRL.World.Parts.DecoyHologramEmitter|CreateHolograms",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleBaetylRewardWish) =>
+                "XRL.World.Parts.RandomAltarBaetyl|HandleBaetylRewardWish",
+            nameof(DummySingleCallsiteOwnerPopupTarget.CastForceSuccess) =>
+                "XRL.World.Parts.Skill.Axe_Dismember|CastForceSuccess",
+            nameof(DummySingleCallsiteOwnerPopupTarget.Cast) =>
+                "XRL.World.Parts.Skill.Cudgel_Slam|Cast",
+            nameof(DummySingleCallsiteOwnerPopupTarget.AwardDynamicQuestRewardGameObject) =>
+                "XRL.World.DynamicQuestRewardElement_GameObject|award",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleFactionEncounterWish) =>
+                "XRL.World.ZoneBuilders.FactionEncounters|HandleFactionEncounterWish",
+            nameof(DummySingleCallsiteOwnerPopupTarget.AttemptProselytization) =>
+                "XRL.World.Parts.Skill.Persuasion_Proselytize|AttemptProselytization",
+            nameof(DummySingleCallsiteOwnerPopupTarget.LearnNewRecipe) =>
+                "XRL.World.Parts.Skill.Tinkering|LearnNewRecipe",
+            nameof(DummySingleCallsiteOwnerPopupTarget.OnCreated) =>
+                "XRL.World.Parts.GameUnique|OnCreated",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleGenocideCurio) =>
+                "XRL.World.Parts.GenocideCurio|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleGritGateMainframeTerminal) =>
+                "XRL.World.Parts.GritGateMainframeTerminal|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleHindrenMysteryCriticalNpc) =>
+                "XRL.World.Parts.HindrenMysteryCriticalNPC|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.ReturnKindrishAward) =>
+                "XRL.World.Parts.KindrishProperties|ReturnAward",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant) =>
+                "XRL.World.Parts.LiquidFueledPowerPlant|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.ShowLooker) =>
+                "XRL.UI.Look|ShowLooker",
+            nameof(DummySingleCallsiteOwnerPopupTarget.MakeFuss) =>
+                "XRL.World.Parts.MakeFussOnTaken|MakeFuss",
+            nameof(DummySingleCallsiteOwnerPopupTarget.FireMutationPointsOnEat) =>
+                "XRL.World.Parts.MutationPointsOnEat|FireEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.FireEngulfingDescends) =>
+                "XRL.World.Parts.EngulfingDescends|FireEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.SetFactionRank) =>
+                "XRL.World.Reputation|SetFactionRank",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleMarkovBook) =>
+                "XRL.World.Parts.MarkovBook|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.FireMumblesInfection) =>
+                "XRL.World.Parts.MumblesInfection|FireEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleToolboxBonus) =>
+                "XRL.World.Parts.Toolbox|HandleBonus",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleRecoilOnDeath) =>
+                "XRL.World.Parts.RecoilOnDeath|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpraybottle) =>
+                "XRL.World.Parts.Spraybottle|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleFixitSpray) =>
+                "XRL.World.Parts.FixitSpray|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleAnimatorSpray) =>
+                "XRL.World.Parts.AnimatorSpray|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleSummoningCurio) =>
+                "XRL.World.Parts.SummoningCurio|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood) =>
+                "XRL.World.Parts.Food|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.ApplySpaceTimeVortex) =>
+                "XRL.World.Parts.SpaceTimeVortex|ApplyVortex",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleWaterRitualRecord) =>
+                "XRL.World.Parts.WaterRitualRecord|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.FinishSpreadPax) =>
+                "XRL.World.QuestManagers.SpreadPax|Finish",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleTrainingBook) =>
+                "XRL.World.Parts.TrainingBook|HandleEvent",
+            _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected owner method."),
         };
     }
 

@@ -47,9 +47,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string TrainingBookOwner = "XRL.World.Parts.TrainingBook|HandleEvent";
     private const string WaterRitualRecordOwner = "XRL.World.Parts.WaterRitualRecord|HandleEvent";
 
-    private const string DummySingleCallsiteOwner = "QudJP.Tests.DummyTargets.DummySingleCallsiteOwnerPopupTarget|";
-
-    private static readonly Regex DecoyOutOfRangePattern = new(
+        private static readonly Regex DecoyOutOfRangePattern = new(
         "^That is out of range \\((?<range>.+?) (?<unit>squares?)\\)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -437,8 +435,24 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
     {
-        _ = family;
         if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(source))
+        {
+            translated = source;
+            return false;
+        }
+
+        return TryTranslatePopupMessageForOwnerKey(source, CurrentOwnerKey(), route, family, out translated);
+    }
+
+    internal static bool TryTranslatePopupMessageForOwnerKey(
+        string source,
+        string? ownerKey,
+        string route,
+        string family,
+        out string translated)
+    {
+        _ = family;
+        if (string.IsNullOrEmpty(source))
         {
             translated = source;
             return false;
@@ -450,7 +464,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             return true;
         }
 
-        if (TryTranslateCore(source, CurrentOwnerKey(), out translated, out var detail))
+        if (TryTranslateCore(source, ownerKey, out translated, out var detail))
         {
             DynamicTextObservability.RecordTransform(
                 route,
@@ -466,7 +480,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static bool TryTranslateCore(string source, string? ownerKey, out string translated, out string detail)
     {
-        if (OwnerMatches(ownerKey, AscensionBarathrumOwner, DummySingleCallsiteOwner + "BarathrumStartConversation")
+        if (OwnerMatches(ownerKey, AscensionBarathrumOwner)
             && source.EndsWith(" left your party.", StringComparison.Ordinal)
             && DoesVerbRouteTranslator.TryTranslatePlainSentence(source, out translated))
         {
@@ -475,7 +489,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         var match = BiomeNotFoundPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, BiomeSurfaceDistributionOwner, DummySingleCallsiteOwner + "DisplaySurfaceDistribution"))
+        if (match.Success && OwnerMatches(ownerKey, BiomeSurfaceDistributionOwner))
         {
             translated = $"'{match.Groups["name"].Value}'という名前のバイオームは見つからない。";
             detail = "BiomeNotFound";
@@ -483,7 +497,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = CharacterInitUnknownBlueprintPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, CharacterInitOwner, DummySingleCallsiteOwner + "HandleBootEvent"))
+        if (match.Success && OwnerMatches(ownerKey, CharacterInitOwner))
         {
             translated = $"プレイヤーの体を作成できない。不明なブループリント「{match.Groups["blueprint"].Value}」。";
             detail = "CharacterInitUnknownBlueprint";
@@ -491,7 +505,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = DecoyOutOfRangePattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, DecoyHologramOwner, DummySingleCallsiteOwner + "CreateHolograms"))
+        if (match.Success && OwnerMatches(ownerKey, DecoyHologramOwner))
         {
             translated = $"範囲外だ（{NormalizeRange(match.Groups["range"].Value)}マス）。";
             detail = "DecoyHologramOutOfRange";
@@ -499,7 +513,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = BaetylRewardWishPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, BaetylRewardWishOwner, DummySingleCallsiteOwner + "HandleBaetylRewardWish"))
+        if (match.Success && OwnerMatches(ownerKey, BaetylRewardWishOwner))
         {
             translated = $"{match.Groups["demand"].Value}の報酬として{match.Groups["item"].Value}を生成した。";
             detail = "BaetylRewardWish";
@@ -507,7 +521,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = AxeDismemberSelfPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, AxeDismemberOwner, DummySingleCallsiteOwner + "CastForceSuccess"))
+        if (match.Success && OwnerMatches(ownerKey, AxeDismemberOwner))
         {
             translated = $"{match.Groups["target"].Value}を切断してもよいか？";
             detail = "AxeDismemberSelfConfirmation";
@@ -515,14 +529,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = CudgelSlamSelfPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, CudgelSlamOwner, DummySingleCallsiteOwner + "Cast"))
+        if (match.Success && OwnerMatches(ownerKey, CudgelSlamOwner))
         {
             translated = $"{match.Groups["target"].Value}を叩きつけてもよいか？";
             detail = "CudgelSlamSelfConfirmation";
             return true;
         }
 
-        if (OwnerMatches(ownerKey, ProselytizeOwner, DummySingleCallsiteOwner + "AttemptProselytization")
+        if (OwnerMatches(ownerKey, ProselytizeOwner)
             && source.Contains(" already your follower. Do you want to proselytize ")
             && DoesVerbRouteTranslator.TryTranslatePlainSentence(source, out translated))
         {
@@ -531,7 +545,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = TinkeringLearnRecipePattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, TinkeringOwner, DummySingleCallsiteOwner + "LearnNewRecipe"))
+        if (match.Success && OwnerMatches(ownerKey, TinkeringOwner))
         {
             translated = $"ひらめきを得て{StringHelpers.StripLeadingEnglishArticle(match.Groups["item"].Value)}を記した。";
             detail = "TinkeringLearnRecipe";
@@ -539,7 +553,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = GameUniqueWishConfirmationPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, GameUniqueOwner, DummySingleCallsiteOwner + "OnCreated"))
+        if (match.Success && OwnerMatches(ownerKey, GameUniqueOwner))
         {
             translated = $"{match.Groups["object"].Value}（{match.Groups["blueprint"].Value}）は一意とみなされています。もう1つ作成しますか？";
             detail = "GameUniqueWishConfirmation";
@@ -547,7 +561,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = GenocideCurioActivationPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, GenocideCurioOwner, DummySingleCallsiteOwner + "HandleGenocideCurio"))
+        if (match.Success && OwnerMatches(ownerKey, GenocideCurioOwner))
         {
             translated = $"{match.Groups["item"].Value}を起動して空中に放り投げた。";
             detail = "GenocideCurioActivation";
@@ -555,7 +569,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = GritGateMainframeUnresponsivePattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, GritGateMainframeOwner, DummySingleCallsiteOwner + "HandleGritGateMainframeTerminal"))
+        if (match.Success && OwnerMatches(ownerKey, GritGateMainframeOwner))
         {
             translated = $"{match.Groups["object"].Value}は反応しない。";
             detail = "GritGateMainframeUnresponsive";
@@ -563,7 +577,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = HindrenMysteryCriticalNpcDeathPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, HindrenMysteryCriticalNpcOwner, DummySingleCallsiteOwner + "HandleHindrenMysteryCriticalNpc"))
+        if (match.Success && OwnerMatches(ownerKey, HindrenMysteryCriticalNpcOwner))
         {
             translated = $"{match.Groups["object"].Value}の死により、調査はこれ以上進められなくなった。";
             detail = "HindrenMysteryCriticalNpcDeath";
@@ -571,7 +585,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = LiquidFueledPowerPlantEmptyPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, LiquidFueledPowerPlantOwner, DummySingleCallsiteOwner + "HandleLiquidFueledPowerPlant"))
+        if (match.Success && OwnerMatches(ownerKey, LiquidFueledPowerPlantOwner))
         {
             translated = $"あなたの{match.Groups["object"].Value}は{match.Groups["fuel"].Value}をすべて消費した。";
             detail = "LiquidFueledPowerPlantEmpty";
@@ -579,7 +593,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = LookNavigationWeightPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, LookShowLookerOwner, DummySingleCallsiteOwner + "ShowLooker"))
+        if (match.Success && OwnerMatches(ownerKey, LookShowLookerOwner))
         {
             translated = $"{match.Groups["x"].Value}, {match.Groups["y"].Value}: ナビゲーション重み {match.Groups["weight"].Value}";
             detail = "LookNavigationWeight";
@@ -587,7 +601,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = MakeFussOnTakenPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, MakeFussOnTakenOwner, DummySingleCallsiteOwner + "MakeFuss"))
+        if (match.Success && OwnerMatches(ownerKey, MakeFussOnTakenOwner))
         {
             translated = $"{match.Groups["object"].Value}を{TranslateAcquisitionAction(match.Groups["action"].Value)}！";
             detail = "MakeFussOnTaken";
@@ -595,7 +609,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = MarkovBookExcerptPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, MarkovBookOwner, DummySingleCallsiteOwner + "HandleMarkovBook"))
+        if (match.Success && OwnerMatches(ownerKey, MarkovBookOwner))
         {
             translated = $"{match.Groups["title"].Value}から判読できる数少ない抜粋の1つを読んだ:\n\n「{match.Groups["excerpt"].Value}」";
             detail = "MarkovBookExcerpt";
@@ -603,7 +617,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = MumblesSecretPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, MumblesInfectionOwner, DummySingleCallsiteOwner + "FireMumblesInfection"))
+        if (match.Success && OwnerMatches(ownerKey, MumblesInfectionOwner))
         {
             translated = $"肌の口がはっきりとつぶやき始め、一兆の微生物の叡智を明かした:\n\n{match.Groups["text"].Value}";
             detail = "MumblesSecret";
@@ -611,7 +625,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = MutationPointsOnEatPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, MutationPointsOnEatOwner, DummySingleCallsiteOwner + "FireMutationPointsOnEat"))
+        if (match.Success && OwnerMatches(ownerKey, MutationPointsOnEatOwner))
         {
             translated = $"ゲノムが不安定化し、変異ポイントを{match.Groups["amount"].Value}得た。";
             detail = "MutationPointsOnEat";
@@ -619,7 +633,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = EngulfingDescendsPassengerFallPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, EngulfingDescendsOwner, DummySingleCallsiteOwner + "FireEngulfingDescends"))
+        if (match.Success && OwnerMatches(ownerKey, EngulfingDescendsOwner))
         {
             var subject = StringHelpers.StripLeadingEnglishArticle(match.Groups["object"].Value, includeCapitalizedDefiniteArticle: true);
             translated = $"{subject}があなたを飲み込んだまま床を溶かして下っていった！ あなたは下の階層へ落ちた。";
@@ -628,7 +642,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = NoFactionMembersPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, FactionEncounterWishOwner, DummySingleCallsiteOwner + "HandleFactionEncounterWish"))
+        if (match.Success && OwnerMatches(ownerKey, FactionEncounterWishOwner))
         {
             translated = $"'{match.Groups["faction"].Value}'のメンバーは見つからない。";
             detail = "FactionEncounterNoMembers";
@@ -640,16 +654,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             && OwnerMatches(
                 ownerKey,
                 DynamicQuestRewardGameObjectOwner,
-                KindrishReturnAwardOwner,
-                DummySingleCallsiteOwner + "AwardDynamicQuestRewardGameObject",
-                DummySingleCallsiteOwner + "ReturnKindrishAward"))
+                KindrishReturnAwardOwner))
         {
             translated = $"{match.Groups["object"].Value}を受け取った。";
             detail = "ReceiveObject";
             return true;
         }
 
-        if (OwnerMatches(ownerKey, ReputationSetFactionRankOwner, DummySingleCallsiteOwner + "SetFactionRank")
+        if (OwnerMatches(ownerKey, ReputationSetFactionRankOwner)
             && source.StartsWith("You are promoted to the ", StringComparison.Ordinal)
             && DoesVerbRouteTranslator.TryTranslatePlainSentence(source, out translated))
         {
@@ -658,7 +670,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = RecoilOnDeathTransportPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, RecoilOnDeathOwner, DummySingleCallsiteOwner + "HandleRecoilOnDeath"))
+        if (match.Success && OwnerMatches(ownerKey, RecoilOnDeathOwner))
         {
             translated = $"死の直前、あなたは安全な場所へ転送された！ {match.Groups["object"].Value}は崩壊した。";
             detail = "RecoilOnDeathTransport";
@@ -666,7 +678,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = SpraybottleCoveredPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, SpraybottleOwner, DummySingleCallsiteOwner + "HandleSpraybottle"))
+        if (match.Success && OwnerMatches(ownerKey, SpraybottleOwner))
         {
             translated = $"{match.Groups["object"].Value}は{match.Groups["liquid"].Value}に覆われた！";
             detail = "SpraybottleCovered";
@@ -674,7 +686,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = FixitSprayPhasePassThroughPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, FixitSprayOwner, DummySingleCallsiteOwner + "HandleFixitSpray"))
+        if (match.Success && OwnerMatches(ownerKey, FixitSprayOwner))
         {
             translated = $"ねばつく粘液が{match.Groups["object"].Value}を通り抜けた。";
             detail = "FixitSprayPhasePassThrough";
@@ -682,7 +694,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = FixitSprayLiquidMixPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, FixitSprayOwner, DummySingleCallsiteOwner + "HandleFixitSpray"))
+        if (match.Success && OwnerMatches(ownerKey, FixitSprayOwner))
         {
             translated = $"ねばつく粘液が{match.Groups["object"].Value}に混ざった。";
             detail = "FixitSprayLiquidMix";
@@ -693,7 +705,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         if (match.Success
             && !string.Equals(match.Groups["object"].Value, "You", StringComparison.Ordinal)
             && !string.Equals(match.Groups["object"].Value, "you", StringComparison.Ordinal)
-            && OwnerMatches(ownerKey, FixitSprayOwner, DummySingleCallsiteOwner + "HandleFixitSpray"))
+            && OwnerMatches(ownerKey, FixitSprayOwner))
         {
             translated = $"{match.Groups["object"].Value}はべとべとの粘液に覆われた！";
             detail = "FixitSprayCovered";
@@ -701,7 +713,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = AnimatorSprayIdentifiedPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, AnimatorSprayOwner, DummySingleCallsiteOwner + "HandleAnimatorSpray"))
+        if (match.Success && OwnerMatches(ownerKey, AnimatorSprayOwner))
         {
             var item = StringHelpers.StripLeadingEnglishArticle(match.Groups["item"].Value, includeCapitalizedDefiniteArticle: true);
             translated = $"{item}だ！";
@@ -710,7 +722,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = AnimatorSprayImbueLifePattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, AnimatorSprayOwner, DummySingleCallsiteOwner + "HandleAnimatorSpray"))
+        if (match.Success && OwnerMatches(ownerKey, AnimatorSprayOwner))
         {
             translated = $"{match.Groups["object"].Value}に命を吹き込んだ。";
             detail = "AnimatorSprayImbueLife";
@@ -718,7 +730,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = SummoningCurioActivationPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, SummoningCurioOwner, DummySingleCallsiteOwner + "HandleSummoningCurio"))
+        if (match.Success && OwnerMatches(ownerKey, SummoningCurioOwner))
         {
             translated = $"キュリオを起動して地面に投げた。小さなポリゴンの群れが噴出し、完全な形をした{match.Groups["creature"].Value}へと融合した。";
             detail = "SummoningCurioActivation";
@@ -726,7 +738,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = FoodConsumptionFramePattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, FoodOwner, DummySingleCallsiteOwner + "HandleFood"))
+        if (match.Success && OwnerMatches(ownerKey, FoodOwner))
         {
             var food = StringHelpers.StripLeadingEnglishArticle(match.Groups["food"].Value, includeCapitalizedDefiniteArticle: true);
             var foodStatus = TranslateFoodOrWaterStatus(match.Groups["foodStatus"].Value);
@@ -738,7 +750,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
         match = SpaceTimeVortexCompanionSuckedPattern.Match(source);
         if (match.Success
-            && OwnerMatches(ownerKey, SpaceTimeVortexOwner, DummySingleCallsiteOwner + "ApplySpaceTimeVortex")
+            && OwnerMatches(ownerKey, SpaceTimeVortexOwner)
             && TryTranslateDirectionPhrase(match.Groups["direction"].Value, out var direction))
         {
             var vortex = StringHelpers.StripLeadingEnglishArticle(match.Groups["vortex"].Value, includeCapitalizedDefiniteArticle: true);
@@ -748,7 +760,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = SpreadPaxCurePattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, SpreadPaxOwner, DummySingleCallsiteOwner + "FinishSpreadPax"))
+        if (match.Success && OwnerMatches(ownerKey, SpreadPaxOwner))
         {
             translated = $"あなたの{match.Groups["location"].Value}の感染した皮殻が緩み、剥がれ落ちた。";
             detail = "SpreadPaxCure";
@@ -756,7 +768,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = TrainingBookAttributeIncreasePattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, TrainingBookOwner, DummySingleCallsiteOwner + "HandleTrainingBook"))
+        if (match.Success && OwnerMatches(ownerKey, TrainingBookOwner))
         {
             translated = $"あなたの{match.Groups["attribute"].Value}が{match.Groups["amount"].Value}上昇した！";
             detail = "TrainingBookAttributeIncrease";
@@ -764,7 +776,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = ToolboxInoperativeConfirmationPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, ToolboxOwner, DummySingleCallsiteOwner + "HandleToolboxBonus"))
+        if (match.Success && OwnerMatches(ownerKey, ToolboxOwner))
         {
             translated = $"{match.Groups["object"].Value}は{TranslateToolboxStatus(match.Groups["status"].Value)}。{TranslateToolboxContinuation(match.Groups["tail"].Value)}続けますか？";
             detail = "ToolboxInoperativeConfirmation";
@@ -772,7 +784,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = WaterRitualRecordBotheredPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, WaterRitualRecordOwner, DummySingleCallsiteOwner + "HandleWaterRitualRecord"))
+        if (match.Success && OwnerMatches(ownerKey, WaterRitualRecordOwner))
         {
             translated = $"{match.Groups["object"].Value}にまた迷惑をかけた。";
             detail = "WaterRitualRecordBothered";

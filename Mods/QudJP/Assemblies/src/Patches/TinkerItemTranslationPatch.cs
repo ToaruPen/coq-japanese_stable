@@ -96,16 +96,8 @@ public static class TinkerItemTranslationPatch
             return false;
         }
 
-        if (PopupShowTranslationPatch.TryConsumeDirectMarkerPassThrough(source, ref directMarkerPassThroughText))
+        if (PopupShowTranslationPatch.TryTranslateDirectMarkedOwnerPopup(source, ref directMarkerPassThroughText, out translated))
         {
-            translated = source;
-            return true;
-        }
-
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
-        {
-            directMarkerPassThroughText = markedText;
-            translated = markedText;
             return true;
         }
 

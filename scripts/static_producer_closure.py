@@ -784,6 +784,116 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             full_signature,
             inventory_statuses,
         ) in targets
+        if "needs_family_review" not in inventory_statuses
+    )
+
+
+def _sifrah_pure_owner_popup_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    targets = (
+        (
+            "XRL.World/DisarmingSifrah.cs::XRL.World.DisarmingSifrah.DisarmingSifrah",
+            146,
+            "DisarmingSifrah",
+            "Disarming",
+            "XRL.World.DisarmingSifrah",
+            "XRL.World.DisarmingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Boolean",
+        ),
+        (
+            "XRL.World/ExamineSifrah.cs::XRL.World.ExamineSifrah.ExamineSifrah",
+            145,
+            "ExamineSifrah",
+            "Examine",
+            "XRL.World.ExamineSifrah",
+            "XRL.World.ExamineSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32|System.Int32",
+        ),
+        (
+            "XRL.World/HackingSifrah.cs::XRL.World.HackingSifrah.HackingSifrah",
+            139,
+            "HackingSifrah",
+            "Hacking",
+            "XRL.World.HackingSifrah",
+            "XRL.World.HackingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32",
+        ),
+        (
+            "XRL.World/ProselytizationSifrah.cs::XRL.World.ProselytizationSifrah.ProselytizationSifrah",
+            240,
+            "ProselytizationSifrah",
+            "Proselytization",
+            "XRL.World.ProselytizationSifrah",
+            "XRL.World.ProselytizationSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32",
+        ),
+        (
+            "XRL.World/RebukingSifrah.cs::XRL.World.RebukingSifrah.RebukingSifrah",
+            212,
+            "RebukingSifrah",
+            "Rebuking",
+            "XRL.World.RebukingSifrah",
+            "XRL.World.RebukingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32",
+        ),
+        (
+            "XRL.World/RepairSifrah.cs::XRL.World.RepairSifrah.RepairSifrah",
+            130,
+            "RepairSifrah",
+            "Repair",
+            "XRL.World.RepairSifrah",
+            "XRL.World.RepairSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32",
+        ),
+        (
+            "XRL.World/PsychicCombatSifrah.cs::XRL.World.PsychicCombatSifrah.PsychicCombatSifrah",
+            314,
+            "PsychicCombatSifrah",
+            "PsychicCombat",
+            "XRL.World.PsychicCombatSifrah",
+            "XRL.World.PsychicCombatSifrah|.ctor|System.Void|XRL.World.GameObject|System.String|System.Int32|System.Int32|System.String",
+        ),
+        (
+            "XRL.World/RealityDistortionSifrah.cs::XRL.World.RealityDistortionSifrah.RealityDistortionSifrah",
+            289,
+            "RealityDistortionSifrah",
+            "RealityDistortion",
+            "XRL.World.RealityDistortionSifrah",
+            "XRL.World.RealityDistortionSifrah|.ctor|System.Void|XRL.World.GameObject|System.String|System.String|System.Int32|System.Int32",
+        ),
+    )
+
+    return tuple(
+        CoveredOwnerCallsites(
+            family_id=family_id,
+            lines=(line,),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SifrahPureOwnerPopupTranslationPatch.cs",
+                    (target_token, detail, "TryTranslatePopupMessage"),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    (
+                        "SifrahPureOwnerPopupTranslationPatch.TryTranslatePopupMessage",
+                        "SifrahPureOwnerPopupTranslationPatch.TryGetPureOwnerBatchPopupCandidateText",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SifrahPureOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSifrahPureOwnerPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslateConstructorOwnerPopup_WhenOwnerAbsent",
+                        "Patch_TranslatesMasteredPrompt_WhenOwnerPatched",
+                        f'"{detail}")',
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SifrahPureOwnerPopupTranslationPatch)",
+                        declaring_type,
+                        target_token,
+                        full_signature,
+                    ),
+                ),
+            ),
+        )
+        for family_id, line, target_token, detail, declaring_type, full_signature in targets
     )
 
 
@@ -11833,6 +11943,7 @@ COVERED_OWNER_FAMILIES: Final = (
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 COVERED_OWNER_CALLSITES: Final = (
+    *_sifrah_pure_owner_popup_callsites(),
     *_giant_clam_shloop_hitch_callsites(),
     CoveredOwnerCallsites(
         family_id=(

@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
@@ -11,6 +10,9 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
 {
+    private const string ModMorphogeneticOwner = "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock";
+    private const string WeirdwireConduitOwner = "XRL.World.Quests.WeirdwireConduitSystem|HandleEvent";
+
     [SetUp]
     public void SetUp()
     {
@@ -140,40 +142,22 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
         string? color = null,
         int expectedHits = 1)
     {
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-        try
+        var message = source;
+
+        Assert.That(
+            SingleCallsiteOwnerQueueTranslationPatch.TryTranslateQueuedMessageForOwnerKey(
+                ref message,
+                color,
+                OwnerKeyForMethod(methodName)),
+            Is.EqualTo(expectedHits > 0 || MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _)));
+        var observedMessage = MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var unmarked)
+            ? unmarked
+            : message;
+        Assert.Multiple(() =>
         {
-            PatchQueue(harmony);
-            PatchOwner(harmony, methodName);
-
-            DummySingleCallsiteOwnerQueueTarget.MessageToSend = source;
-            DummySingleCallsiteOwnerQueueTarget.ColorToSend = color;
-            InvokeOwner(methodName);
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
-                Assert.That(DummyMessageQueue.LastColor, Is.EqualTo(color));
-                Assert.That(HitCount(detail), Is.EqualTo(expectedHits));
-            });
-        }
-        finally
-        {
-            DummySingleCallsiteOwnerQueueTarget.Reset();
-            harmony.UnpatchAll(harmonyId);
-        }
-    }
-
-    private static void InvokeOwner(string methodName)
-    {
-        if (methodName == nameof(DummySingleCallsiteOwnerQueueTarget.ApplyMorphicShock))
-        {
-            _ = DummySingleCallsiteOwnerQueueTarget.ApplyMorphicShock(new object(), 1, new object(), 100);
-            return;
-        }
-
-        _ = DummySingleCallsiteOwnerQueueTarget.HandleWeirdwireTookEvent(new object());
+            Assert.That(observedMessage, Is.EqualTo(expected));
+            Assert.That(HitCount(detail), Is.EqualTo(expectedHits));
+        });
     }
 
     private static void PatchQueue(Harmony harmony)
@@ -202,33 +186,6 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
                 typeof(bool))));
     }
 
-    private static void PatchOwner(Harmony harmony, string methodName)
-    {
-        harmony.Patch(
-            original: RequireOwnerMethod(methodName),
-            prefix: new HarmonyMethod(RequireMethod(
-                typeof(SingleCallsiteOwnerQueueTranslationPatch),
-                nameof(SingleCallsiteOwnerQueueTranslationPatch.Prefix),
-                typeof(MethodBase))),
-            finalizer: new HarmonyMethod(RequireMethod(
-                typeof(SingleCallsiteOwnerQueueTranslationPatch),
-                nameof(SingleCallsiteOwnerQueueTranslationPatch.Finalizer),
-                typeof(Exception))));
-    }
-
-    private static MethodInfo RequireOwnerMethod(string methodName)
-    {
-        return methodName == nameof(DummySingleCallsiteOwnerQueueTarget.ApplyMorphicShock)
-            ? RequireMethod(
-                typeof(DummySingleCallsiteOwnerQueueTarget),
-                methodName,
-                typeof(object),
-                typeof(int),
-                typeof(object),
-                typeof(int))
-            : RequireMethod(typeof(DummySingleCallsiteOwnerQueueTarget), methodName, typeof(object));
-    }
-
     private static MethodInfo RequireMethod(Type type, string methodName, params Type[] parameterTypes)
     {
         if (parameterTypes.Length == 0)
@@ -253,35 +210,20 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
         return $"qudjp.tests.{Guid.NewGuid():N}";
     }
 
+    private static string OwnerKeyForMethod(string methodName)
+    {
+        return methodName switch
+        {
+            nameof(DummySingleCallsiteOwnerQueueTarget.ApplyMorphicShock) => ModMorphogeneticOwner,
+            nameof(DummySingleCallsiteOwnerQueueTarget.HandleWeirdwireTookEvent) => WeirdwireConduitOwner,
+            _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected owner method."),
+        };
+    }
+
     private static class DummySingleCallsiteOwnerQueueTarget
     {
-        public static string MessageToSend { get; set; } = string.Empty;
+        public static bool ApplyMorphicShock() => true;
 
-        public static string? ColorToSend { get; set; }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static bool ApplyMorphicShock(object subject, int damage, object owner, int powerLoad = 100)
-        {
-            _ = subject;
-            _ = damage;
-            _ = owner;
-            _ = powerLoad;
-            DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
-            return true;
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static bool HandleWeirdwireTookEvent(object e)
-        {
-            _ = e;
-            DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
-            return true;
-        }
-
-        public static void Reset()
-        {
-            MessageToSend = string.Empty;
-            ColorToSend = null;
-        }
+        public static bool HandleWeirdwireTookEvent() => true;
     }
 }
