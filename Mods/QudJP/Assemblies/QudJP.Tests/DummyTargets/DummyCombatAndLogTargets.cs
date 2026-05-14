@@ -1554,6 +1554,18 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
     }
 }
 
+internal static class DummyPointOfInterestTarget
+{
+    public static string PopupMessageToShow { get; set; } = string.Empty;
+
+    public static bool NavigateTo(DummyGameObject observer)
+    {
+        _ = observer;
+        DummyPopupShow.ShowFail(PopupMessageToShow);
+        return false;
+    }
+}
+
 internal sealed class DummyBrainOwnerTarget
 {
     public string MessageToSend { get; set; } = string.Empty;

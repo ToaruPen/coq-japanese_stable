@@ -1532,6 +1532,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.UI.ConversationUI|CheckLost|System.Void",
     })]
+    [TestCase(typeof(PointOfInterestNavigationPopupTranslationPatch), new[]
+    {
+        "XRL.World.PointOfInterest|NavigateTo|System.Boolean|XRL.World.GameObject",
+    })]
     [TestCase(typeof(PopupPickSeveralTranslationPatch), new[]
     {
         "XRL.UI.Popup|PickSeveral|System.Collections.Generic.List`1[[System.ValueTuple`2[[System.Int32],[System.Int32]]]]|System.String|System.String|System.String|System.String|System.Collections.Generic.IReadOnlyList`1[[System.String]]|System.Collections.Generic.IReadOnlyList`1[[System.Char]]|System.Collections.Generic.IReadOnlyList`1[[System.Int32]]|System.Collections.Generic.IReadOnlyList`1[[ConsoleLib.Console.IRenderable]]|XRL.World.GameObject|ConsoleLib.Console.IRenderable|System.Action`1[[System.Int32]]|System.Int32|System.Int32|System.Int32|System.Int32|System.Int32|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean",

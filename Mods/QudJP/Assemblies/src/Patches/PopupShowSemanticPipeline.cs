@@ -27,6 +27,7 @@ internal static class PopupShowSemanticPipeline
         EnergyCellSocketAccessPopupTranslationPatch.TryTranslatePopupMessage,
         EquipmentApiTwiddleObjectTranslationPatch.TryTranslatePopupMessage,
         CampfireRemainsAttemptLightTranslationPatch.TryTranslatePopupMessage,
+        PointOfInterestNavigationPopupTranslationPatch.TryTranslatePopupMessage,
         HackingSifrahResultTranslationPatch.TryTranslatePopupMessage,
         QuestLifecyclePopupTranslationPatch.TryTranslatePopupMessage,
         ConversationTakeItemPopupTranslationPatch.TryTranslatePopupMessage,

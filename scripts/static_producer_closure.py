@@ -5621,6 +5621,50 @@ def _single_callsite_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _point_of_interest_navigation_popup_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World/PointOfInterest.cs::XRL.World.PointOfInterest.NavigateTo",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PointOfInterestNavigationPopupTranslationPatch.cs",
+                    (
+                        "PointOfInterestNavigationPopupTranslationPatch",
+                        "XRL.World.PointOfInterest",
+                        "NavigateTo",
+                        "AlreadyAtPointOfInterest",
+                        "NoPointOfInterestLocation",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("PointOfInterestNavigationPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PointOfInterestNavigationPopupTranslationPatchTests.cs",
+                    (
+                        "NavigateTo_TranslatesNavigationFailurePopups_WhenOwnerPatched",
+                        "NavigateTo_DoesNotTranslateNavigationFailurePopup_WhenOwnerAbsent",
+                        "NavigateTo_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "NavigateTo_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "NavigateTo_LeavesUnsupportedPopupUnchanged_WhenOwnerPatched",
+                        "You are already at {{Y|rust well}}.",
+                        "Somehow there seems to be no location for {{Y|forgotten ruins}}.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(PointOfInterestNavigationPopupTranslationPatch)",
+                        "XRL.World.PointOfInterest|NavigateTo|System.Boolean|XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _xrl_core_owner_queue_families() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -9298,6 +9342,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_latched_onto_expired_family(),
     *_giant_clam_teleport_joppa_family(),
     *_single_callsite_owner_popup_families(),
+    *_point_of_interest_navigation_popup_family(),
     *_xrl_core_owner_queue_families(),
     *_brain_owner_surface_families(),
     *_cripple_apply_family(),
