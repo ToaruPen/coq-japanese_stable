@@ -40,6 +40,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string SpraybottleOwner = "XRL.World.Parts.Spraybottle|HandleEvent";
     private const string FixitSprayOwner = "XRL.World.Parts.FixitSpray|HandleEvent";
     private const string AnimatorSprayOwner = "XRL.World.Parts.AnimatorSpray|HandleEvent";
+    private const string SubmersionOwner = "XRL.World.Parts.Skill.Submersion|HandleEvent";
     private const string SummoningCurioOwner = "XRL.World.Parts.SummoningCurio|HandleEvent";
     private const string FoodOwner = "XRL.World.Parts.Food|HandleEvent";
     private const string SpaceTimeVortexOwner = "XRL.World.Parts.SpaceTimeVortex|ApplyVortex";
@@ -70,6 +71,10 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static readonly Regex CudgelSlamSelfPattern = new(
         "^Are you sure you want to slam (?<target>.+?)\\?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex SubmersionTooShallowPattern = new(
+        "^(?<liquid>.+?) (?:is|are) too shallow for you to submerge in\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex TinkeringLearnRecipePattern = new(
@@ -196,6 +201,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         var targets = new List<MethodBase>();
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
         var eventType = AccessTools.TypeByName("XRL.World.Event");
+        var commandEventType = AccessTools.TypeByName("XRL.World.CommandEvent");
         var beforeDeathRemovalEventType = AccessTools.TypeByName("XRL.World.BeforeDeathRemovalEvent");
         var beginConversationEventType = AccessTools.TypeByName("XRL.World.BeginConversationEvent");
         var embarkInfoType = AccessTools.TypeByName("XRL.CharacterBuilds.EmbarkInfo");
@@ -208,6 +214,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         var cudgelSlamType = AccessTools.TypeByName("XRL.World.Parts.Skill.Cudgel_Slam");
         if (gameObjectType is null
             || eventType is null
+            || commandEventType is null
             || beforeDeathRemovalEventType is null
             || beginConversationEventType is null
             || embarkInfoType is null
@@ -263,6 +270,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.Skill.Cudgel_Slam",
             "Cast",
             [gameObjectType, cudgelSlamType, typeof(string), gameObjectType, typeof(bool), typeof(int), typeof(string)]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Skill.Submersion",
+            "HandleEvent",
+            [commandEventType]);
         AddTarget(
             targets,
             "XRL.World.DynamicQuestRewardElement_GameObject",
@@ -539,6 +551,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             translated = $"{match.Groups["target"].Value}を叩きつけてもよいか？";
             detail = "CudgelSlamSelfConfirmation";
+            return true;
+        }
+
+        match = SubmersionTooShallowPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, SubmersionOwner))
+        {
+            translated = $"{match.Groups["liquid"].Value}は浅すぎて潜れない。";
+            detail = "SubmersionTooShallow";
             return true;
         }
 

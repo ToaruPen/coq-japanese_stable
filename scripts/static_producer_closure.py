@@ -1106,6 +1106,57 @@ def _cudgel_smash_up_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     )
 
 
+def _submersion_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id=(
+                "XRL.World.Parts.Skill/Submersion.cs::"
+                "XRL.World.Parts.Skill.Submersion.HandleEvent"
+            ),
+            lines=(62,),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                    (
+                        "XRL.World.Parts.Skill.Submersion",
+                        "SubmersionTooShallowPattern",
+                        "SubmersionTooShallow",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "nameof(DummySingleCallsiteOwnerPopupTarget.HandleSubmersionCommand)",
+                        "{{B|the brackish pool}} is too shallow for you to submerge in.",
+                        "{{B|the brackish pool}}は浅すぎて潜れない。",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SingleCallsiteOwnerPopupTranslationPatch)",
+                        "XRL.World.Parts.Skill.Submersion|HandleEvent|System.Boolean|XRL.World.CommandEvent",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                    (
+                        "There is nothing for you to submerge in here.",
+                        "You cannot do that right now.",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _keybinds_screen_conflict_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         (
@@ -12304,6 +12355,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_sunder_mind_owner_callsites(),
     *_axe_dismember_owner_callsites(),
     *_cudgel_smash_up_owner_callsites(),
+    *_submersion_owner_callsites(),
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
     CoveredOwnerCallsites(

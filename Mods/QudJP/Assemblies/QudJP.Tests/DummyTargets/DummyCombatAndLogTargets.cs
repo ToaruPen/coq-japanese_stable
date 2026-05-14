@@ -1637,6 +1637,13 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         return true;
     }
 
+    public bool HandleSubmersionCommand(DummyCommandEvent? commandEvent = null)
+    {
+        _ = commandEvent;
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
     public void AwardDynamicQuestRewardGameObject()
     {
         _ = nameof(AwardDynamicQuestRewardGameObject);

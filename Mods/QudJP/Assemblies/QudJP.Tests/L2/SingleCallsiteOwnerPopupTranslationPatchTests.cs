@@ -87,6 +87,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "CudgelSlamSelfConfirmation",
         PopupMethod.ShowYesNo)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleSubmersionCommand),
+        "{{B|the brackish pool}} is too shallow for you to submerge in.",
+        "{{B|the brackish pool}}は浅すぎて潜れない。",
+        "SubmersionTooShallow",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.AwardDynamicQuestRewardGameObject),
         "You receive {{Y|the copper nugget}}.",
         "{{Y|the copper nugget}}を受け取った。",
@@ -359,6 +365,10 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "Are you sure you want to slam yourself?",
         "CudgelSlamSelfConfirmation",
         PopupMethod.ShowYesNo)]
+    [TestCase(
+        "{{B|the brackish pool}} is too shallow for you to submerge in.",
+        "SubmersionTooShallow",
+        PopupMethod.Show)]
     [TestCase(
         "You receive {{Y|the copper nugget}}.",
         "ReceiveObject",
@@ -727,6 +737,8 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.World.Parts.Skill.Axe_Dismember|Cast",
             nameof(DummySingleCallsiteOwnerPopupTarget.Cast) =>
                 "XRL.World.Parts.Skill.Cudgel_Slam|Cast",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleSubmersionCommand) =>
+                "XRL.World.Parts.Skill.Submersion|HandleEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.AwardDynamicQuestRewardGameObject) =>
                 "XRL.World.DynamicQuestRewardElement_GameObject|award",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleFactionEncounterWish) =>

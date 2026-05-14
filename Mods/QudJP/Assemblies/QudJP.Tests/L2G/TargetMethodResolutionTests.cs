@@ -1822,6 +1822,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Skill.Axe_Dismember|CastForceSuccess|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Skill.Axe_Dismember|XRL.World.GameObject",
         "XRL.World.Parts.Skill.Axe_Dismember|Cast|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Skill.Axe_Dismember|XRL.World.GameObject",
         "XRL.World.Parts.Skill.Cudgel_Slam|Cast|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Skill.Cudgel_Slam|System.String|XRL.World.GameObject|System.Boolean|System.Int32|System.String",
+        "XRL.World.Parts.Skill.Submersion|HandleEvent|System.Boolean|XRL.World.CommandEvent",
         "XRL.World.DynamicQuestRewardElement_GameObject|award|System.Void",
         "XRL.World.ZoneBuilders.FactionEncounters|HandleFactionEncounterWish|System.Boolean|System.Text.RegularExpressions.Match",
         "XRL.World.Parts.Skill.Persuasion_Proselytize|AttemptProselytization|System.Boolean",
