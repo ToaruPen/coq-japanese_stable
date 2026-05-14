@@ -889,6 +889,21 @@ internal sealed class DummyBeforeDeathRemovalEvent
     public string Id { get; set; } = nameof(DummyBeforeDeathRemovalEvent);
 }
 
+internal sealed class DummyEmbarkInfo
+{
+    public string Id { get; set; } = nameof(DummyEmbarkInfo);
+}
+
+internal sealed class DummyGetTinkeringBonusEvent
+{
+    public string Id { get; set; } = nameof(DummyGetTinkeringBonusEvent);
+}
+
+internal sealed class DummyXrlGame
+{
+    public string Id { get; set; } = nameof(DummyXrlGame);
+}
+
 internal sealed class DummyBeginConversationEvent
 {
     public string Id { get; set; } = nameof(DummyBeginConversationEvent);
@@ -1510,6 +1525,16 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
 
     public static string StaticPopupMessageToShow { get; set; } = string.Empty;
 
+    public object? HandleBootEvent(string id, DummyXrlGame game, DummyEmbarkInfo info, object? element = null)
+    {
+        _ = id;
+        _ = game;
+        _ = info;
+        _ = element;
+        DummyPopupShow.ShowAsync(PopupMessageToShow).GetAwaiter().GetResult();
+        return null;
+    }
+
     public void BarathrumStartConversation(DummyGameObject actor)
     {
         _ = actor;
@@ -1631,6 +1656,15 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         return true;
     }
 
+    public static object? ShowLooker(int range, int startX, int startY)
+    {
+        _ = range;
+        _ = startX;
+        _ = startY;
+        DummyPopupShow.Show(StaticPopupMessageToShow);
+        return null;
+    }
+
     public bool HandleLiquidFueledPowerPlant(DummyEndTurnEvent? e = null)
     {
         _ = e;
@@ -1649,6 +1683,22 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
     {
         _ = e;
         _ = nameof(FireMutationPointsOnEat);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    public bool HandleMarkovBook(DummyInventoryActionEvent? e = null)
+    {
+        _ = e;
+        _ = nameof(HandleMarkovBook);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    public bool FireMumblesInfection(DummyEvent? e = null)
+    {
+        _ = e;
+        _ = nameof(FireMumblesInfection);
         DummyPopupShow.Show(PopupMessageToShow);
         return true;
     }
@@ -1683,6 +1733,15 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         _ = e;
         _ = nameof(HandleTrainingBook);
         DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    public bool HandleToolboxBonus(DummyGetTinkeringBonusEvent e, int poweredBonus, int unpoweredBonus)
+    {
+        _ = e;
+        _ = poweredBonus;
+        _ = unpoweredBonus;
+        _ = DummyPopupShow.ShowYesNo(PopupMessageToShow);
         return true;
     }
 

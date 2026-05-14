@@ -74,6 +74,9 @@ internal static class OwnerPopupRouteTestHarness
             original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
             prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
         harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowAsync)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+        harmony.Patch(
             original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowFail)),
             prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
         harmony.Patch(

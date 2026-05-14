@@ -47,6 +47,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "BiomeNotFound",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleBootEvent),
+        "Error creating player body. Unknown blueprint \"OddBody\"",
+        "プレイヤーの体を作成できない。不明なブループリント「OddBody」。",
+        "CharacterInitUnknownBlueprint",
+        PopupMethod.ShowAsync)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms),
         "That is out of range (3 squares)",
         "範囲外だ（3マス）。",
@@ -131,6 +137,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "ReceiveObject",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.ShowLooker),
+        "12, 34: 56",
+        "12, 34: ナビゲーション重み 56",
+        "LookNavigationWeight",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant),
         "Your flamethrower has consumed all of its oil.",
         "あなたのflamethrowerはits oilをすべて消費した。",
@@ -160,6 +172,36 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "あなたはthe BarathrumitesのWardenに昇進した。",
         "ReputationRankPromotion",
         PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleMarkovBook),
+        "You read one of the few legible excerpts from {{Y|Chrome Dreams}}:\n\n\"The chrome road remembers you.\"",
+        "{{Y|Chrome Dreams}}から判読できる数少ない抜粋の1つを読んだ:\n\n「The chrome road remembers you.」",
+        "MarkovBookExcerpt",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.FireMumblesInfection),
+        "The mouths on your skin begin to mumble coherently, revealing the wisdom of a trillion microbes:\n\nThe location of Red Rock",
+        "肌の口がはっきりとつぶやき始め、一兆の微生物の叡智を明かした:\n\nThe location of Red Rock",
+        "MumblesSecret",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleToolboxBonus),
+        "Your toolbox is unpowered. Do you want to continue without its benefits?",
+        "Your toolboxは電力が供給されていない。利点なしで続けますか？",
+        "ToolboxInoperativeConfirmation",
+        PopupMethod.ShowYesNo)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleToolboxBonus),
+        "Your toolbox is still starting up. Do you want to continue without its full benefits?",
+        "Your toolboxはまだ起動中だ。完全な利点なしで続けますか？",
+        "ToolboxInoperativeConfirmation",
+        PopupMethod.ShowYesNo)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleToolboxBonus),
+        "Your toolbox is unpowered. Do you want to continue, using it without power?",
+        "Your toolboxは電力が供給されていない。電力なしで使用して続けますか？",
+        "ToolboxInoperativeConfirmation",
+        PopupMethod.ShowYesNo)]
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant),
         "Your fuel cells have consumed all of their blood.",
@@ -239,6 +281,10 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "BiomeNotFound",
         PopupMethod.Show)]
     [TestCase(
+        "Error creating player body. Unknown blueprint \"OddBody\"",
+        "CharacterInitUnknownBlueprint",
+        PopupMethod.ShowAsync)]
+    [TestCase(
         "That is out of range (3 squares)",
         "DecoyHologramOutOfRange",
         PopupMethod.Show)]
@@ -291,6 +337,10 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "ReceiveObject",
         PopupMethod.Show)]
     [TestCase(
+        "12, 34: 56",
+        "LookNavigationWeight",
+        PopupMethod.Show)]
+    [TestCase(
         "Your flamethrower has consumed all of its oil.",
         "LiquidFueledPowerPlantEmpty",
         PopupMethod.Show)]
@@ -306,6 +356,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "You are promoted to the Warden of the Barathrumites.",
         "ReputationRankPromotion",
         PopupMethod.Show)]
+    [TestCase(
+        "You read one of the few legible excerpts from {{Y|Chrome Dreams}}:\n\n\"The chrome road remembers you.\"",
+        "MarkovBookExcerpt",
+        PopupMethod.Show)]
+    [TestCase(
+        "The mouths on your skin begin to mumble coherently, revealing the wisdom of a trillion microbes:\n\nThe location of Red Rock",
+        "MumblesSecret",
+        PopupMethod.Show)]
+    [TestCase(
+        "Your toolbox is unpowered. Do you want to continue without its benefits?",
+        "ToolboxInoperativeConfirmation",
+        PopupMethod.ShowYesNo)]
     [TestCase(
         "Just before your demise, you are transported to safety! {{Y|recoiler}} disintegrates.",
         "RecoilOnDeathTransport",
@@ -347,6 +409,9 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "No biome by name 'fungal' found.",
         "BiomeNotFound")]
     [TestCase(
+        "Error creating player body. Unknown blueprint \"OddBody\"",
+        "CharacterInitUnknownBlueprint")]
+    [TestCase(
         "Argyve (NPC_Argyve) is considered unique, are you sure you want to create another?",
         "GameUniqueWishConfirmation")]
     [TestCase(
@@ -365,6 +430,9 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "No members found for 'snapjaws'.",
         "FactionEncounterNoMembers")]
     [TestCase(
+        "12, 34: 56",
+        "LookNavigationWeight")]
+    [TestCase(
         "Your flamethrower has consumed all of its oil.",
         "LiquidFueledPowerPlantEmpty")]
     [TestCase(
@@ -376,6 +444,15 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         "You are promoted to the Warden of the Barathrumites.",
         "ReputationRankPromotion")]
+    [TestCase(
+        "You read one of the few legible excerpts from {{Y|Chrome Dreams}}:\n\n\"The chrome road remembers you.\"",
+        "MarkovBookExcerpt")]
+    [TestCase(
+        "The mouths on your skin begin to mumble coherently, revealing the wisdom of a trillion microbes:\n\nThe location of Red Rock",
+        "MumblesSecret")]
+    [TestCase(
+        "Your toolbox is unpowered. Do you want to continue without its benefits?",
+        "ToolboxInoperativeConfirmation")]
     [TestCase(
         "Just before your demise, you are transported to safety! {{Y|recoiler}} disintegrates.",
         "RecoilOnDeathTransport")]
@@ -463,6 +540,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                     typeof(DummySingleCallsiteOwnerPopupTarget),
                     methodName,
                     typeof(string)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleBootEvent) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(string),
+                    typeof(DummyXrlGame),
+                    typeof(DummyEmbarkInfo),
+                    typeof(object)),
             nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms) =>
                 OwnerPopupRouteTestHarness.RequireMethod(
                     typeof(DummySingleCallsiteOwnerPopupTarget),
@@ -556,11 +641,35 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                     typeof(string),
                     typeof(bool),
                     typeof(bool)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.ShowLooker) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(int),
+                    typeof(int),
+                    typeof(int)),
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleRecoilOnDeath) =>
                 OwnerPopupRouteTestHarness.RequireMethod(
                     typeof(DummySingleCallsiteOwnerPopupTarget),
                     methodName,
                     typeof(DummyBeforeDieEvent)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleMarkovBook) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(DummyInventoryActionEvent)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.FireMumblesInfection) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(DummyEvent)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleToolboxBonus) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(DummyGetTinkeringBonusEvent),
+                    typeof(int),
+                    typeof(int)),
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleWaterRitualRecord) =>
                 OwnerPopupRouteTestHarness.RequireMethod(
                     typeof(DummySingleCallsiteOwnerPopupTarget),
@@ -587,6 +696,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
             case nameof(DummySingleCallsiteOwnerPopupTarget.DisplaySurfaceDistribution):
                 DummySingleCallsiteOwnerPopupTarget.StaticPopupMessageToShow = message;
                 DummySingleCallsiteOwnerPopupTarget.DisplaySurfaceDistribution("fungal");
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleBootEvent):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.HandleBootEvent("BeforeBoot", new DummyXrlGame(), new DummyEmbarkInfo());
                 break;
             case nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms):
                 new DummySingleCallsiteOwnerPopupTarget
@@ -686,11 +801,27 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                     PopupMessageToShow = message,
                 }.SetFactionRank("Barathrumites", "Warden", message: true);
                 break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.ShowLooker):
+                DummySingleCallsiteOwnerPopupTarget.StaticPopupMessageToShow = message;
+                _ = DummySingleCallsiteOwnerPopupTarget.ShowLooker(80, 12, 34);
+                break;
             case nameof(DummySingleCallsiteOwnerPopupTarget.HandleRecoilOnDeath):
                 new DummySingleCallsiteOwnerPopupTarget
                 {
                     PopupMessageToShow = message,
                 }.HandleRecoilOnDeath(new DummyBeforeDieEvent());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleMarkovBook):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.HandleMarkovBook(new DummyInventoryActionEvent());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.FireMumblesInfection):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.FireMumblesInfection(new DummyEvent());
                 break;
             case nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpraybottle):
                 new DummySingleCallsiteOwnerPopupTarget
@@ -703,6 +834,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 {
                     PopupMessageToShow = message,
                 }.HandleTrainingBook(new DummyInventoryActionEvent());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleToolboxBonus):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.HandleToolboxBonus(new DummyGetTinkeringBonusEvent(), 2, 0);
                 break;
             case nameof(DummySingleCallsiteOwnerPopupTarget.HandleWaterRitualRecord):
                 new DummySingleCallsiteOwnerPopupTarget
@@ -723,6 +860,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
 
     private static void ShowPopup(string source, PopupMethod popupMethod)
     {
+        if (popupMethod == PopupMethod.ShowAsync)
+        {
+            DummyPopupShow.ShowAsync(source).GetAwaiter().GetResult();
+            return;
+        }
+
         if (popupMethod == PopupMethod.ShowYesNo)
         {
             _ = DummyPopupShow.ShowYesNo(source);
@@ -734,9 +877,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
 
     private static string? GetLastPopupMessage(PopupMethod popupMethod)
     {
-        return popupMethod == PopupMethod.ShowYesNo
-            ? DummyPopupShow.LastShowYesNoMessage
-            : DummyPopupShow.LastShowMessage;
+        return popupMethod switch
+        {
+            PopupMethod.ShowAsync => DummyPopupShow.LastShowAsyncMessage,
+            PopupMethod.ShowYesNo => DummyPopupShow.LastShowYesNoMessage,
+            _ => DummyPopupShow.LastShowMessage,
+        };
     }
 
     private static int HitCount(string detail)
@@ -747,6 +893,7 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     public enum PopupMethod
     {
         Show,
+        ShowAsync,
         ShowYesNo,
     }
 }

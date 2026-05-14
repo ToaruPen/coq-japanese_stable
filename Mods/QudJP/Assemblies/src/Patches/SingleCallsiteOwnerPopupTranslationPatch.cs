@@ -12,6 +12,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 {
     private const string Context = nameof(SingleCallsiteOwnerPopupTranslationPatch);
     private const string AscensionBarathrumOwner = "XRL.World.Quests.AscensionSystem|BarathrumStartConversation";
+    private const string CharacterInitOwner = "XRL.CharacterBuilds.Qud.QudSpecificCharacterInitModule|handleBootEvent";
     private const string DecoyHologramOwner = "XRL.World.Parts.DecoyHologramEmitter|CreateHolograms";
     private const string BaetylRewardWishOwner = "XRL.World.Parts.RandomAltarBaetyl|HandleBaetylRewardWish";
     private const string AxeDismemberOwner = "XRL.World.Parts.Skill.Axe_Dismember|CastForceSuccess";
@@ -27,12 +28,16 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string HindrenMysteryCriticalNpcOwner = "XRL.World.Parts.HindrenMysteryCriticalNPC|HandleEvent";
     private const string KindrishReturnAwardOwner = "XRL.World.Parts.KindrishProperties|ReturnAward";
     private const string LiquidFueledPowerPlantOwner = "XRL.World.Parts.LiquidFueledPowerPlant|HandleEvent";
+    private const string LookShowLookerOwner = "XRL.UI.Look|ShowLooker";
     private const string MakeFussOnTakenOwner = "XRL.World.Parts.MakeFussOnTaken|MakeFuss";
+    private const string MarkovBookOwner = "XRL.World.Parts.MarkovBook|HandleEvent";
+    private const string MumblesInfectionOwner = "XRL.World.Parts.MumblesInfection|FireEvent";
     private const string MutationPointsOnEatOwner = "XRL.World.Parts.MutationPointsOnEat|FireEvent";
     private const string ReputationSetFactionRankOwner = "XRL.World.Reputation|SetFactionRank";
     private const string RecoilOnDeathOwner = "XRL.World.Parts.RecoilOnDeath|HandleEvent";
     private const string SpraybottleOwner = "XRL.World.Parts.Spraybottle|HandleEvent";
     private const string SpreadPaxOwner = "XRL.World.QuestManagers.SpreadPax|Finish";
+    private const string ToolboxOwner = "XRL.World.Parts.Toolbox|HandleBonus";
     private const string TrainingBookOwner = "XRL.World.Parts.TrainingBook|HandleEvent";
     private const string WaterRitualRecordOwner = "XRL.World.Parts.WaterRitualRecord|HandleEvent";
 
@@ -48,6 +53,10 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static readonly Regex BiomeNotFoundPattern = new(
         "^No biome by name '(?<name>.+?)' found\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CharacterInitUnknownBlueprintPattern = new(
+        "^Error creating player body\\. Unknown blueprint \"(?<blueprint>.+?)\"$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex AxeDismemberSelfPattern = new(
@@ -86,6 +95,18 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         "^You have (?<action>.+?) (?<object>.+?)!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex LookNavigationWeightPattern = new(
+        "^(?<x>-?\\d+), (?<y>-?\\d+): (?<weight>.+?)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex MarkovBookExcerptPattern = new(
+        "^You read one of the few legible excerpts from (?<title>.+?):\\n\\n\"(?<excerpt>[\\s\\S]+)\"$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex MumblesSecretPattern = new(
+        "^The mouths on your skin begin to mumble coherently, revealing the wisdom of a trillion microbes:\\n\\n(?<text>[\\s\\S]+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex MutationPointsOnEatPattern = new(
         "^Your genome destabilizes and you gain (?<amount>.+?) mutation (?<unit>point|points)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -114,6 +135,10 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         "^Your (?<attribute>.+?) is increased by (?<amount>.+?)!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex ToolboxInoperativeConfirmationPattern = new(
+        "^(?<object>.+?) (?<verb>is|are) (?<status>unpowered|still starting up|inoperative)\\. Do you want to continue(?<tail> without .+? benefits|, using .+? without power)\\?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex WaterRitualRecordBotheredPattern = new(
         "^You bothered (?<object>.+?) again\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -132,7 +157,10 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         var eventType = AccessTools.TypeByName("XRL.World.Event");
         var beforeDeathRemovalEventType = AccessTools.TypeByName("XRL.World.BeforeDeathRemovalEvent");
         var beginConversationEventType = AccessTools.TypeByName("XRL.World.BeginConversationEvent");
+        var embarkInfoType = AccessTools.TypeByName("XRL.CharacterBuilds.EmbarkInfo");
+        var getTinkeringBonusEventType = AccessTools.TypeByName("XRL.World.GetTinkeringBonusEvent");
         var inventoryActionEventType = AccessTools.TypeByName("XRL.World.InventoryActionEvent");
+        var xrlGameType = AccessTools.TypeByName("XRL.XRLGame");
         var endTurnEventType = AccessTools.TypeByName("XRL.World.EndTurnEvent");
         var beforeDieEventType = AccessTools.TypeByName("XRL.World.BeforeDieEvent");
         var axeDismemberType = AccessTools.TypeByName("XRL.World.Parts.Skill.Axe_Dismember");
@@ -141,7 +169,10 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             || eventType is null
             || beforeDeathRemovalEventType is null
             || beginConversationEventType is null
+            || embarkInfoType is null
+            || getTinkeringBonusEventType is null
             || inventoryActionEventType is null
+            || xrlGameType is null
             || endTurnEventType is null
             || beforeDieEventType is null
             || axeDismemberType is null
@@ -156,6 +187,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Quests.AscensionSystem",
             "BarathrumStartConversation",
             [gameObjectType]);
+        AddTarget(
+            targets,
+            "XRL.CharacterBuilds.Qud.QudSpecificCharacterInitModule",
+            "handleBootEvent",
+            [typeof(string), xrlGameType, embarkInfoType, typeof(object)]);
         AddTarget(
             targets,
             "XRL.World.Biomes.BiomeManager",
@@ -233,9 +269,24 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             [endTurnEventType]);
         AddTarget(
             targets,
+            "XRL.UI.Look",
+            "ShowLooker",
+            [typeof(int), typeof(int), typeof(int)]);
+        AddTarget(
+            targets,
             "XRL.World.Parts.MakeFussOnTaken",
             "MakeFuss",
             [gameObjectType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.MarkovBook",
+            "HandleEvent",
+            [inventoryActionEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.MumblesInfection",
+            "FireEvent",
+            [eventType]);
         AddTarget(
             targets,
             "XRL.World.Parts.MutationPointsOnEat",
@@ -271,6 +322,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.QuestManagers.SpreadPax",
             "Finish",
             Type.EmptyTypes);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Toolbox",
+            "HandleBonus",
+            [getTinkeringBonusEventType, typeof(int), typeof(int)]);
         return targets;
     }
 
@@ -351,6 +407,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             translated = $"'{match.Groups["name"].Value}'という名前のバイオームは見つからない。";
             detail = "BiomeNotFound";
+            return true;
+        }
+
+        match = CharacterInitUnknownBlueprintPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, CharacterInitOwner, DummySingleCallsiteOwner + "HandleBootEvent"))
+        {
+            translated = $"プレイヤーの体を作成できない。不明なブループリント「{match.Groups["blueprint"].Value}」。";
+            detail = "CharacterInitUnknownBlueprint";
             return true;
         }
 
@@ -442,11 +506,35 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             return true;
         }
 
+        match = LookNavigationWeightPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, LookShowLookerOwner, DummySingleCallsiteOwner + "ShowLooker"))
+        {
+            translated = $"{match.Groups["x"].Value}, {match.Groups["y"].Value}: ナビゲーション重み {match.Groups["weight"].Value}";
+            detail = "LookNavigationWeight";
+            return true;
+        }
+
         match = MakeFussOnTakenPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, MakeFussOnTakenOwner, DummySingleCallsiteOwner + "MakeFuss"))
         {
             translated = $"{match.Groups["object"].Value}を{TranslateAcquisitionAction(match.Groups["action"].Value)}！";
             detail = "MakeFussOnTaken";
+            return true;
+        }
+
+        match = MarkovBookExcerptPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, MarkovBookOwner, DummySingleCallsiteOwner + "HandleMarkovBook"))
+        {
+            translated = $"{match.Groups["title"].Value}から判読できる数少ない抜粋の1つを読んだ:\n\n「{match.Groups["excerpt"].Value}」";
+            detail = "MarkovBookExcerpt";
+            return true;
+        }
+
+        match = MumblesSecretPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, MumblesInfectionOwner, DummySingleCallsiteOwner + "FireMumblesInfection"))
+        {
+            translated = $"肌の口がはっきりとつぶやき始め、一兆の微生物の叡智を明かした:\n\n{match.Groups["text"].Value}";
+            detail = "MumblesSecret";
             return true;
         }
 
@@ -520,6 +608,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             return true;
         }
 
+        match = ToolboxInoperativeConfirmationPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, ToolboxOwner, DummySingleCallsiteOwner + "HandleToolboxBonus"))
+        {
+            translated = $"{match.Groups["object"].Value}は{TranslateToolboxStatus(match.Groups["status"].Value)}。{TranslateToolboxContinuation(match.Groups["tail"].Value)}続けますか？";
+            detail = "ToolboxInoperativeConfirmation";
+            return true;
+        }
+
         match = WaterRitualRecordBotheredPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, WaterRitualRecordOwner, DummySingleCallsiteOwner + "HandleWaterRitualRecord"))
         {
@@ -590,6 +686,38 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "recovered" => "取り戻した",
             _ => source.Trim(),
         };
+    }
+
+    private static string TranslateToolboxStatus(string source)
+    {
+        return source.Trim() switch
+        {
+            "unpowered" => "電力が供給されていない",
+            "still starting up" => "まだ起動中だ",
+            "inoperative" => "動作していない",
+            _ => source.Trim(),
+        };
+    }
+
+    private static string TranslateToolboxContinuation(string source)
+    {
+        var trimmed = source.Trim();
+        if (trimmed.Contains("full benefits"))
+        {
+            return "完全な利点なしで";
+        }
+
+        if (trimmed.Contains("benefits"))
+        {
+            return "利点なしで";
+        }
+
+        if (trimmed.Contains("without power"))
+        {
+            return "電力なしで使用して";
+        }
+
+        return trimmed + " ";
     }
 
     private static void AddTarget(List<MethodBase> targets, string typeName, string methodName, Type[] parameters)
