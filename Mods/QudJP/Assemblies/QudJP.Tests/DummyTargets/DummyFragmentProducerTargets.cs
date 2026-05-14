@@ -571,6 +571,24 @@ internal sealed class DummySifrahPureOwnerPopupProducerTarget
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
+    public void DisarmingSifrah(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(DisarmingSifrah), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ExamineSifrah(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(ExamineSifrah), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void HackingSifrah(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(HackingSifrah), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public void ProselytizationSifrah(DummyGameObject contextObject)
     {
         ShowPopup(nameof(ProselytizationSifrah), contextObject);
@@ -604,6 +622,18 @@ internal sealed class DummySifrahPureOwnerPopupProducerTarget
     public void RepairSifrah(DummyGameObject contextObject)
     {
         ShowPopup(nameof(RepairSifrah), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void PsychicCombatSifrah(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(PsychicCombatSifrah), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void RealityDistortionSifrah(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(RealityDistortionSifrah), contextObject);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]

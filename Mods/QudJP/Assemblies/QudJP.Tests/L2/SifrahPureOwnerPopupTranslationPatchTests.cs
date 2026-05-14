@@ -50,6 +50,21 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
         "{{G|商人}}と値段交渉するために使用できる選択肢がなく、成功する見込みがない。エゴや社交スキルを高めるか、社交的な状況に役立つアイテムを入手すれば、この状況を改善できる。",
         "Haggling")]
     [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.DisarmingSifrah),
+        "You have no usable options to employ for disarming {{R|罠}}, giving you no chance of success. You can remedy this situation by improving your Intelligence and tinkering skills, or by obtaining items useful for tinkering.",
+        "{{R|罠}}を解除するために使用できる選択肢がなく、成功する見込みがない。知性や工作スキルを高めるか、工作に役立つアイテムを入手すれば、この状況を改善できる。",
+        "Disarming")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.ExamineSifrah),
+        "You have no usable options to employ for examining {{Y|謎めいた装置}}, giving you no chance of success. You can remedy this situation by improving your Intelligence and tinkering skills, or by obtaining items useful for tinkering.",
+        "{{Y|謎めいた装置}}を調査するために使用できる選択肢がなく、成功する見込みがない。知性や工作スキルを高めるか、工作に役立つアイテムを入手すれば、この状況を改善できる。",
+        "Examine")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.HackingSifrah),
+        "You have no usable options to employ for hacking {{C|古い端末}}, giving you no chance of success. You can remedy this situation by improving your Intelligence and tinkering skills, or by obtaining items useful for tinkering.",
+        "{{C|古い端末}}をハッキングするために使用できる選択肢がなく、成功する見込みがない。知性や工作スキルを高めるか、工作に役立つアイテムを入手すれば、この状況を改善できる。",
+        "Hacking")]
+    [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.ProselytizationSifrah),
         "You have no usable options to employ for proselytizing {{Y|砂漠の隠者}}, giving you no chance of success. You can remedy this situation by improving your Ego and social skills, or by obtaining items useful in social situations.",
         "{{Y|砂漠の隠者}}を布教するために使用できる選択肢がなく、成功する見込みがない。エゴや社交スキルを高めるか、社交的な状況に役立つアイテムを入手すれば、この状況を改善できる。",
@@ -79,6 +94,16 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
         "You have no usable options to employ for repairing {{W|壊れたタレット}}, giving you no chance of success. You can remedy this situation by improving your Intelligence and tinkering skills, or by obtaining items useful for tinkering.",
         "{{W|壊れたタレット}}を修理するために使用できる選択肢がなく、成功する見込みがない。知性や工作スキルを高めるか、工作に役立つアイテムを入手すれば、この状況を改善できる。",
         "Repair")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.PsychicCombatSifrah),
+        "You have no usable options to employ for {{M|精神戦}}, giving you no chance of performing well. You can remedy this situation by improving your Ego, Willpower, Intelligence, and esoteric skills.",
+        "{{M|精神戦}}に使用できる選択肢がなく、うまく行う見込みがない。エゴ、意志力、知性、秘教系スキルを高めれば、この状況を改善できる。",
+        "PsychicCombat")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.RealityDistortionSifrah),
+        "You have no usable options to employ for {{Y|現実の歪曲}}, giving you no chance of performing well. You can remedy this situation by improving your Ego, Willpower, Intelligence, and esoteric skills.",
+        "{{Y|現実の歪曲}}に使用できる選択肢がなく、うまく行う見込みがない。エゴ、意志力、知性、秘教系スキルを高めれば、この状況を改善できる。",
+        "RealityDistortion")]
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.ReverseEngineeringCheckEarlyExit),
         "Exiting will still disassemble {{Y|奇妙な小物}}, and will result in an attempt at reverse engineering as matters stand. Do you still want to exit?",
@@ -167,6 +192,18 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
     }
 
     [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.DisarmingSifrah),
+        "You have mastered disarming operations of this complexity. Do you want to perform detailed disarming anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed.",
+        "この難度での解除作業は熟達済みだ。それでも詳細に解除を試みるか？『いいえ』なら、自動で成功する。")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.ExamineSifrah),
+        "You have mastered examining artifacts of this complexity. Do you want to perform detailed examination anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the examination.",
+        "この難度での遺物調査は熟達済みだ。それでも詳細に遺物調査を試みるか？『いいえ』なら、可能なら自動で成功する。")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.HackingSifrah),
+        "You have mastered hacks of this complexity. Do you want to perform a detailed hack anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the hack.",
+        "この難度でのハッキングは熟達済みだ。それでも詳細なハッキングを試みるか？『いいえ』なら、可能なら自動で成功する。")]
+    [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.ProselytizationSifrah),
         "You have mastered proselytization at this level of discourse. Do you want to perform detailed proselytization anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at proselytization if that is possible.",
         "このレベルの布教は熟達済みだ。それでも詳細な布教を試みるか？『いいえ』なら、可能なら布教が自動で成功する。")]
@@ -178,6 +215,14 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
         nameof(DummySifrahPureOwnerPopupProducerTarget.RepairSifrah),
         "You have mastered repairs of this complexity. Do you want to perform detailed repairs anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the repairs.",
         "この難度での修理は熟達済みだ。それでも詳細な修理を試みるか？『いいえ』なら、可能なら修理が自動で成功する。")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.PsychicCombatSifrah),
+        "You have mastered psychic combat at this level of difficulty. Do you want to guide the process in detail anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically receive the results of strong but unexceptional performance.",
+        "この難度での精神戦闘は習熟済みだ。卓越した成功率を狙って詳細な手順を自ら指揮する？「いいえ」を選ぶと、平凡でも堅実な結果が自動的に得られる。")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.RealityDistortionSifrah),
+        "You have mastered reality distortion at this level of difficulty. Do you want to guide the process in detail anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically receive the results of strong but unexceptional performance.",
+        "この難度での現実歪曲は熟達済みだ。それでも詳細に制御するか？『いいえ』なら、強いが平凡な結果を自動で得る。")]
     public void Patch_TranslatesMasteredPrompt_WhenOwnerPatched(
         string methodName,
         string source,
@@ -217,19 +262,35 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
             });
     }
 
-    [Test]
-    public void Patch_DoesNotTranslateConstructorOwnerPopup_WhenOwnerAbsent()
+    [TestCase(
+        "You have no usable options to employ for disarming {{R|罠}}, giving you no chance of success. You can remedy this situation by improving your Intelligence and tinkering skills, or by obtaining items useful for tinkering.",
+        "Disarming")]
+    [TestCase(
+        "You have no usable options to employ for hacking {{C|古い端末}}, giving you no chance of success. You can remedy this situation by improving your Intelligence and tinkering skills, or by obtaining items useful for tinkering.",
+        "Hacking")]
+    [TestCase(
+        "You have no usable options to employ for examining {{Y|謎めいた装置}}, giving you no chance of success. You can remedy this situation by improving your Intelligence and tinkering skills, or by obtaining items useful for tinkering.",
+        "Examine")]
+    [TestCase(
+        "You have no usable options to employ for proselytizing {{Y|砂漠の隠者}}, giving you no chance of success. You can remedy this situation by improving your Ego and social skills, or by obtaining items useful in social situations.",
+        "Proselytization")]
+    [TestCase(
+        "You have no usable options to employ for {{M|精神戦}}, giving you no chance of performing well. You can remedy this situation by improving your Ego, Willpower, Intelligence, and esoteric skills.",
+        "PsychicCombat")]
+    [TestCase(
+        "You have no usable options to employ for {{Y|現実の歪曲}}, giving you no chance of performing well. You can remedy this situation by improving your Ego, Willpower, Intelligence, and esoteric skills.",
+        "RealityDistortion")]
+    public void Patch_DoesNotTranslateConstructorOwnerPopup_WhenOwnerAbsent(string source, string detail)
     {
         OwnerPopupRouteTestHarness.WithPatchedPopupOnly(
             () =>
             {
-                const string source = "You have no usable options to employ for proselytizing {{Y|砂漠の隠者}}, giving you no chance of success. You can remedy this situation by improving your Ego and social skills, or by obtaining items useful in social situations.";
-                DummyPopupShow.Show(source);
+                DummyPopupShow.ShowFail(source);
 
                 Assert.Multiple(() =>
                 {
                     Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
-                    Assert.That(HitCount("Proselytization"), Is.Zero);
+                    Assert.That(HitCount(detail), Is.Zero);
                 });
             });
     }
@@ -344,8 +405,13 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
     private static string PopupMethodForPureOwnerPopup(string methodName)
     {
         return methodName is nameof(DummySifrahPureOwnerPopupProducerTarget.ProselytizationSifrah)
+            or nameof(DummySifrahPureOwnerPopupProducerTarget.DisarmingSifrah)
+            or nameof(DummySifrahPureOwnerPopupProducerTarget.ExamineSifrah)
+            or nameof(DummySifrahPureOwnerPopupProducerTarget.HackingSifrah)
             or nameof(DummySifrahPureOwnerPopupProducerTarget.RebukingSifrah)
             or nameof(DummySifrahPureOwnerPopupProducerTarget.RepairSifrah)
+            or nameof(DummySifrahPureOwnerPopupProducerTarget.PsychicCombatSifrah)
+            or nameof(DummySifrahPureOwnerPopupProducerTarget.RealityDistortionSifrah)
             ? nameof(DummyPopupShow.ShowFail)
             : nameof(DummyPopupShow.Show);
     }

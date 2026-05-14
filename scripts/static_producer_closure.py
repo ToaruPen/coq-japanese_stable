@@ -534,6 +534,33 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             ("owner_patch_required",),
         ),
         (
+            "XRL.World/DisarmingSifrah.cs::XRL.World.DisarmingSifrah.DisarmingSifrah",
+            "DisarmingSifrah",
+            "DisarmingSifrah",
+            "Disarming",
+            "XRL.World.DisarmingSifrah",
+            "XRL.World.DisarmingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Boolean",
+            ("needs_family_review",),
+        ),
+        (
+            "XRL.World/ExamineSifrah.cs::XRL.World.ExamineSifrah.ExamineSifrah",
+            "ExamineSifrah",
+            "ExamineSifrah",
+            "Examine",
+            "XRL.World.ExamineSifrah",
+            "XRL.World.ExamineSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32|System.Int32",
+            ("needs_family_review",),
+        ),
+        (
+            "XRL.World/HackingSifrah.cs::XRL.World.HackingSifrah.HackingSifrah",
+            "HackingSifrah",
+            "HackingSifrah",
+            "Hacking",
+            "XRL.World.HackingSifrah",
+            "XRL.World.HackingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32",
+            ("needs_family_review",),
+        ),
+        (
             "XRL.World/ProselytizationSifrah.cs::XRL.World.ProselytizationSifrah.ProselytizationSifrah",
             "ProselytizationSifrah",
             "ProselytizationSifrah",
@@ -576,6 +603,24 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             "Repair",
             "XRL.World.RepairSifrah",
             "XRL.World.RepairSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32",
+            ("needs_family_review",),
+        ),
+        (
+            "XRL.World/PsychicCombatSifrah.cs::XRL.World.PsychicCombatSifrah.PsychicCombatSifrah",
+            "PsychicCombatSifrah",
+            "PsychicCombatSifrah",
+            "PsychicCombat",
+            "XRL.World.PsychicCombatSifrah",
+            "XRL.World.PsychicCombatSifrah|.ctor|System.Void|XRL.World.GameObject|System.String|System.Int32|System.Int32|System.String",
+            ("needs_family_review",),
+        ),
+        (
+            "XRL.World/RealityDistortionSifrah.cs::XRL.World.RealityDistortionSifrah.RealityDistortionSifrah",
+            "RealityDistortionSifrah",
+            "RealityDistortionSifrah",
+            "RealityDistortion",
+            "XRL.World.RealityDistortionSifrah",
+            "XRL.World.RealityDistortionSifrah|.ctor|System.Void|XRL.World.GameObject|System.String|System.String|System.Int32|System.Int32",
             ("needs_family_review",),
         ),
         (
@@ -698,6 +743,7 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
                         (
                             "Patch_DoesNotTranslateConstructorOwnerPopup_WhenOwnerAbsent",
                             "Patch_TranslatesMasteredPrompt_WhenOwnerPatched",
+                            f'"{detail}")',
                         )
                         if "needs_family_review" in inventory_statuses
                         else ()
