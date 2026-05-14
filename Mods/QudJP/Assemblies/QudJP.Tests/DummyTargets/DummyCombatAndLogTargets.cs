@@ -1566,6 +1566,17 @@ internal static class DummyPointOfInterestTarget
     }
 }
 
+internal sealed class DummyRunTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    public bool StartRunning()
+    {
+        DummyPopupShow.ShowFail(PopupMessageToShow);
+        return false;
+    }
+}
+
 internal sealed class DummyBrainOwnerTarget
 {
     public string MessageToSend { get; set; } = string.Empty;

@@ -5665,6 +5665,50 @@ def _point_of_interest_navigation_popup_family() -> tuple[CoveredOwnerFamily, ..
     )
 
 
+def _run_start_running_popup_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/Run.cs::XRL.World.Parts.Run.StartRunning",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/RunStartRunningPopupTranslationPatch.cs",
+                    (
+                        "RunStartRunningPopupTranslationPatch",
+                        "XRL.World.Parts.Run",
+                        "StartRunning",
+                        "WorldMapMovementMode",
+                        "power skate",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("RunStartRunningPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/RunStartRunningPopupTranslationPatchTests.cs",
+                    (
+                        "StartRunning_TranslatesWorldMapMovementModePopup_WhenOwnerPatched",
+                        "StartRunning_DoesNotTranslateWorldMapMovementModePopup_WhenOwnerAbsent",
+                        "StartRunning_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "StartRunning_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "StartRunning_LeavesUnsupportedPopupUnchanged_WhenOwnerPatched",
+                        "You cannot run on the world map.",
+                        "You cannot power skate on the world map.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(RunStartRunningPopupTranslationPatch)",
+                        "XRL.World.Parts.Run|StartRunning|System.Boolean",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _xrl_core_owner_queue_families() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -9343,6 +9387,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_giant_clam_teleport_joppa_family(),
     *_single_callsite_owner_popup_families(),
     *_point_of_interest_navigation_popup_family(),
+    *_run_start_running_popup_family(),
     *_xrl_core_owner_queue_families(),
     *_brain_owner_surface_families(),
     *_cripple_apply_family(),
