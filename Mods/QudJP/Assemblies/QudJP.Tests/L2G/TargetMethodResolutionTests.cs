@@ -1615,6 +1615,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(MapRevealPopupTranslationPatch), new[]
     {
         "XRL.World.Parts.MapReveal|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.FactionDeed|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
     })]
     [TestCase(typeof(SupplyableIntegratedHostPopupTranslationPatch), new[]
     {

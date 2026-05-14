@@ -11,6 +11,10 @@ namespace QudJP.Patches;
 public static class MapRevealPopupTranslationPatch
 {
     private const string Context = nameof(MapRevealPopupTranslationPatch);
+    private const string MapRevealOwner = "XRL.World.Parts.MapReveal|HandleEvent";
+    private const string FactionDeedOwner = "XRL.World.Parts.FactionDeed|HandleEvent";
+    private const string DummyMapRevealOwner = "QudJP.Tests.L2.MapRevealPopupTranslationPatchTests+DummyMapRevealProducer|HandleEvent";
+    private const string DummyFactionDeedOwner = "QudJP.Tests.L2.MapRevealPopupTranslationPatchTests+DummyFactionDeedProducer|HandleEvent";
 
     private static readonly Regex OwnerConsumptionWarningPattern = new(
         "^(?<owner>.+?) (?:is|are) not owned by you, and using (?<target>.+?) will consume (?<consumed>.+?)\\. Are you sure you want to do so\\?$",
@@ -27,32 +31,49 @@ public static class MapRevealPopupTranslationPatch
     [ThreadStatic]
     private static int activeDepth;
 
+    [ThreadStatic]
+    private static Stack<string>? ownerStack;
+
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
-        var targetType = GameTypeResolver.FindType("XRL.World.Parts.MapReveal", "MapReveal");
+        var mapRevealType = GameTypeResolver.FindType("XRL.World.Parts.MapReveal", "MapReveal");
+        var factionDeedType = GameTypeResolver.FindType("XRL.World.Parts.FactionDeed", "FactionDeed");
         var inventoryActionEventType = GameTypeResolver.FindType("XRL.World.InventoryActionEvent", "InventoryActionEvent");
-        if (targetType is null || inventoryActionEventType is null)
+        if (mapRevealType is null || factionDeedType is null || inventoryActionEventType is null)
         {
-            Trace.TraceError("QudJP: {0} failed to resolve MapReveal or InventoryActionEvent.", Context);
+            Trace.TraceError("QudJP: {0} failed to resolve MapReveal, FactionDeed, or InventoryActionEvent.", Context);
             yield break;
         }
 
-        var method = AccessTools.Method(targetType, "HandleEvent", [inventoryActionEventType]);
-        if (method is null)
+        var mapRevealMethod = AccessTools.Method(mapRevealType, "HandleEvent", [inventoryActionEventType]);
+        if (mapRevealMethod is null)
         {
             Trace.TraceError("QudJP: {0}.HandleEvent(InventoryActionEvent) target not found.", Context);
-            yield break;
+        }
+        else
+        {
+            yield return mapRevealMethod;
         }
 
-        yield return method;
+        var factionDeedMethod = AccessTools.Method(factionDeedType, "HandleEvent", [inventoryActionEventType]);
+        if (factionDeedMethod is null)
+        {
+            Trace.TraceError("QudJP: {0}.FactionDeed.HandleEvent(InventoryActionEvent) target not found.", Context);
+        }
+        else
+        {
+            yield return factionDeedMethod;
+        }
     }
 
-    public static void Prefix()
+    public static void Prefix(MethodBase __originalMethod)
     {
         try
         {
             OwnerTranslationScope.Enter(ref activeDepth);
+            ownerStack ??= new Stack<string>();
+            ownerStack.Push(FormatOwnerKey(__originalMethod));
         }
         catch (Exception ex)
         {
@@ -64,6 +85,11 @@ public static class MapRevealPopupTranslationPatch
     {
         try
         {
+            if (ownerStack is { Count: > 0 })
+            {
+                _ = ownerStack.Pop();
+            }
+
             OwnerTranslationScope.Exit(ref activeDepth);
         }
         catch (Exception ex)
@@ -91,9 +117,13 @@ public static class MapRevealPopupTranslationPatch
         try
         {
             var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
-            return TryTranslateOwnerConsumptionWarning(source, stripped, spans, route, family, out translated)
-                || TryTranslateOrdinaryPaper(source, stripped, spans, route, family, out translated)
-                || TryTranslateMapOfSurroundings(source, stripped, spans, route, family, out translated);
+            var ownerKey = CurrentOwnerKey();
+            translated = source;
+            return (IsDocumentOwner(ownerKey)
+                    && (TryTranslateOwnerConsumptionWarning(source, stripped, spans, route, family, out translated)
+                        || TryTranslateOrdinaryPaper(source, stripped, spans, route, family, out translated)))
+                || (IsMapRevealOwner(ownerKey)
+                    && TryTranslateMapOfSurroundings(source, stripped, spans, route, family, out translated));
         }
         catch (Exception ex)
         {
@@ -182,6 +212,44 @@ public static class MapRevealPopupTranslationPatch
             source);
         Record(route, family, "MapOfSurroundings", source, translated);
         return true;
+    }
+
+    private static string? CurrentOwnerKey()
+    {
+        return ownerStack is { Count: > 0 } ? ownerStack.Peek() : null;
+    }
+
+    private static bool IsDocumentOwner(string? ownerKey)
+    {
+        return OwnerMatches(ownerKey, MapRevealOwner, FactionDeedOwner, DummyMapRevealOwner, DummyFactionDeedOwner);
+    }
+
+    private static bool IsMapRevealOwner(string? ownerKey)
+    {
+        return OwnerMatches(ownerKey, MapRevealOwner, DummyMapRevealOwner);
+    }
+
+    private static bool OwnerMatches(string? actual, params string[] expected)
+    {
+        if (string.IsNullOrEmpty(actual))
+        {
+            return false;
+        }
+
+        for (var index = 0; index < expected.Length; index++)
+        {
+            if (string.Equals(actual, expected[index], StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static string FormatOwnerKey(MethodBase method)
+    {
+        return (method.DeclaringType?.FullName ?? string.Empty) + "|" + method.Name;
     }
 
     private static string RestoreCapture(Match match, IReadOnlyList<ColorSpan> spans, string groupName)

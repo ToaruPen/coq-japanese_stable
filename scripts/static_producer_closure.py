@@ -12096,6 +12096,53 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts/FactionDeed.cs::"
+            "XRL.World.Parts.FactionDeed.HandleEvent"
+        ),
+        lines=(72, 77, 83),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MapRevealPopupTranslationPatch.cs",
+                (
+                    "MapRevealPopupTranslationPatch",
+                    "XRL.World.Parts.FactionDeed",
+                    "FactionDeedOwner",
+                    "OwnerConsumptionWarningPattern",
+                    "OrdinaryPaperPattern",
+                    "IsDocumentOwner",
+                    "IsMapRevealOwner",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("MapRevealPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/MapRevealPopupTranslationPatchTests.cs",
+                (
+                    "FactionDeedHandleEvent_TranslatesSharedDocumentPopupMessages_WhenOwnerPatched",
+                    "FactionDeedHandleEvent_DoesNotClaimFixedNarrativeOrMapSpecificPopups_WhenOwnerPatched",
+                    "HandleEvent_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "HandleEvent_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "HandleEvent_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "ancient deed",
+                    "Annals of Qud",
+                    "It's a map of your surroundings!",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(MapRevealPopupTranslationPatch)",
+                    "XRL.World.Parts.FactionDeed|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World/SocialSifrahTokenGift.cs::"
             "XRL.World.SocialSifrahTokenGift.CheckTokenUse"
         ),

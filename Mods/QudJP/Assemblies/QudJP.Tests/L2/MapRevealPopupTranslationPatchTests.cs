@@ -63,6 +63,45 @@ public sealed class MapRevealPopupTranslationPatchTests
                 Assert.That(LastPopupMessage(surface), Is.EqualTo(expected));
                 Assert.That(RouteHitCount(expectedDetail), Is.EqualTo(1));
             });
+            });
+    }
+
+    [TestCase(
+        PopupSurface.YesNoCancel,
+        "{{Y|ancient deed}} is not owned by you, and using {{Y|it}} will consume {{Y|it}}. Are you sure you want to do so?",
+        "{{Y|ancient deed}}はあなたのものではなく、{{Y|it}}を使うと{{Y|it}}は消費される。本当に行うか？",
+        "OwnerConsumptionWarning")]
+    [TestCase(
+        PopupSurface.YesNoCancel,
+        "{{C|satchel}} are not owned by you, and using {{Y|the deed}} will consume {{Y|it}}. Are you sure you want to do so?",
+        "{{C|satchel}}はあなたのものではなく、{{Y|the deed}}を使うと{{Y|it}}は消費される。本当に行うか？",
+        "OwnerConsumptionWarning")]
+    [TestCase(
+        PopupSurface.Show,
+        "{{Y|ancient deed}} seems to be behaving as nothing more than an ordinary piece of paper.",
+        "{{Y|ancient deed}}は普通の紙切れとしてしか振る舞っていないようだ。",
+        "OrdinaryPaper")]
+    public void FactionDeedHandleEvent_TranslatesSharedDocumentPopupMessages_WhenOwnerPatched(
+        PopupSurface surface,
+        string source,
+        string expected,
+        string expectedDetail)
+    {
+        RunWithFactionDeedOwnerAndPopupPatches(() =>
+        {
+            var target = new DummyFactionDeedProducer
+            {
+                PopupMessageToShow = source,
+                PopupSurface = surface,
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(LastPopupMessage(surface), Is.EqualTo(expected));
+                Assert.That(RouteHitCount(expectedDetail), Is.EqualTo(1));
+            });
         });
     }
 
@@ -144,6 +183,33 @@ public sealed class MapRevealPopupTranslationPatchTests
                 Assert.That(RouteHitCount("OrdinaryPaper"), Is.Zero);
                 Assert.That(RouteHitCount("MapOfSurroundings"), Is.Zero);
             });
+            });
+    }
+
+    [TestCase(PopupSurface.Show, "The operation fails.")]
+    [TestCase(PopupSurface.Show, "You add the following entry into the {{K|Annals of Qud}}.\n\n\"On the 1st of Ubu Ut, {{Y|Ereshkigal}} became admired by {{M|the Barathrumites}} for saving their village.\"")]
+    [TestCase(PopupSurface.Show, "It's a map of your surroundings!")]
+    public void FactionDeedHandleEvent_DoesNotClaimFixedNarrativeOrMapSpecificPopups_WhenOwnerPatched(
+        PopupSurface surface,
+        string source)
+    {
+        RunWithFactionDeedOwnerAndPopupPatches(() =>
+        {
+            var target = new DummyFactionDeedProducer
+            {
+                PopupMessageToShow = source,
+                PopupSurface = surface,
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(LastPopupMessage(surface), Is.EqualTo(source));
+                Assert.That(RouteHitCount("OwnerConsumptionWarning"), Is.Zero);
+                Assert.That(RouteHitCount("OrdinaryPaper"), Is.Zero);
+                Assert.That(RouteHitCount("MapOfSurroundings"), Is.Zero);
+            });
         });
     }
 
@@ -154,6 +220,17 @@ public sealed class MapRevealPopupTranslationPatchTests
             OwnerPopupRouteTestHarness.RequireMethod(
                 typeof(DummyMapRevealProducer),
                 nameof(DummyMapRevealProducer.HandleEvent),
+                typeof(DummyInventoryActionEvent)),
+            action);
+    }
+
+    private static void RunWithFactionDeedOwnerAndPopupPatches(Action action)
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(MapRevealPopupTranslationPatch),
+            OwnerPopupRouteTestHarness.RequireMethod(
+                typeof(DummyFactionDeedProducer),
+                nameof(DummyFactionDeedProducer.HandleEvent),
                 typeof(DummyInventoryActionEvent)),
             action);
     }
@@ -182,6 +259,29 @@ public sealed class MapRevealPopupTranslationPatchTests
     private sealed class DummyInventoryActionEvent;
 
     private sealed class DummyMapRevealProducer
+    {
+        public string PopupMessageToShow = string.Empty;
+        public PopupSurface PopupSurface;
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool HandleEvent(DummyInventoryActionEvent e)
+        {
+            _ = e;
+
+            if (PopupSurface == PopupSurface.YesNoCancel)
+            {
+                DummyPopupShow.ShowYesNoCancel(PopupMessageToShow);
+            }
+            else
+            {
+                DummyPopupShow.Show(PopupMessageToShow);
+            }
+
+            return true;
+        }
+    }
+
+    private sealed class DummyFactionDeedProducer
     {
         public string PopupMessageToShow = string.Empty;
         public PopupSurface PopupSurface;
