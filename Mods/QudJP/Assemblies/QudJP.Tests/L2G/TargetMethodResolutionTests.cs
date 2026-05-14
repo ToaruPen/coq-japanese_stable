@@ -759,6 +759,7 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|System.Int32|System.Int32|System.Int32|System.Int32|System.Boolean",
         "XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|XRL.World.GameObject|XRL.World.GameObject|System.String|System.Boolean&|System.Int32&|System.Boolean&",
+        "XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|System.String|System.String|System.Boolean|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.String|System.Boolean|System.Int32|System.Boolean",
     })]
     [TestCase(typeof(DeployableInfrastructureTranslationPatch), new[]
     {
@@ -1459,6 +1460,7 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Capabilities.ItemNaming|Opportunity|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|System.Int32|System.Int32|System.Int32|System.Int32|System.Boolean",
         "XRL.World.Capabilities.ItemNaming|CheckBestowals|System.Void|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|XRL.World.GameObject|XRL.World.GameObject|System.String|System.Boolean&|System.Int32&|System.Boolean&",
+        "XRL.World.Capabilities.ItemNaming|NameItem|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|System.String|System.String|System.Boolean|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.String|System.Boolean|System.Int32|System.Boolean",
     })]
     [TestCase(typeof(CookingEffectTranslationPatch), new[]
     {

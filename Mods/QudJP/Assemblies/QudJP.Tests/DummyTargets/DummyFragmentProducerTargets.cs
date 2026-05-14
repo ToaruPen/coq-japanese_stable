@@ -1014,6 +1014,41 @@ internal sealed class DummyItemNamingProducerTarget
         didElementBestowal = false;
         DummyPopupShow.Show(PopupMessageToShow);
     }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool NameItem(
+        DummyGameObject obj,
+        DummyGameObject owner,
+        string name,
+        string? color = null,
+        string? element = null,
+        string? type = null,
+        bool useAnsify = false,
+        bool canBestow = false,
+        DummyGameObject? kill = null,
+        DummyGameObject? influencedBy = null,
+        string opportunityType = "General",
+        bool bestowalsChecked = false,
+        int didBasicBestowals = 0,
+        bool didElementBestowal = false)
+    {
+        _ = obj;
+        _ = owner;
+        _ = name;
+        _ = color;
+        _ = element;
+        _ = type;
+        _ = useAnsify;
+        _ = canBestow;
+        _ = kill;
+        _ = influencedBy;
+        _ = opportunityType;
+        _ = bestowalsChecked;
+        _ = didBasicBestowals;
+        _ = didElementBestowal;
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
 }
 
 internal static class DummyMutationsApiTarget

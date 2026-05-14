@@ -13029,6 +13029,41 @@ COVERED_OWNER_FAMILIES: Final = (
             ),
         ),
     ),
+    CoveredOwnerCallsites(
+        family_id=(
+            "XRL.World.Capabilities/ItemNaming.cs::"
+            "XRL.World.Capabilities.ItemNaming.NameItem"
+        ),
+        lines=(544,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/ItemNamingTranslationPatch.cs",
+                ("TryTranslatePopupMessage", "NameItemPattern", "NameItem"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+                ("ItemNamingTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/ItemNamingTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesNameItemPopup_WhenOwnerPatched",
+                    "Patch_DoesNotClaimNameItemPopup_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedNameItemPopup_WhenOwnerPatched",
+                    "Patch_DoesNotClaimColorPickerPrompt_WhenOwnerPatched",
+                    "You select the name",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "XRL.World.Capabilities.ItemNaming|NameItem|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|System.String|System.String|System.Boolean|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.String|System.Boolean|System.Int32|System.Boolean",
+                ),
+            ),
+        ),
+    ),
     CoveredOwnerFamily(
         family_id="XRL.World.Parts.Skill/Survival_Camp.cs::XRL.World.Parts.Skill.Survival_Camp.AttemptCamp",
         inventory_statuses=("owner_patch_required",),

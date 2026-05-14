@@ -90,6 +90,43 @@ public sealed class ItemNamingTranslationPatchTests
     }
 
     [Test]
+    public void Patch_TranslatesNameItemPopup_WhenOwnerPatched()
+    {
+        var target = new DummyItemNamingProducerTarget
+        {
+            PopupMessageToShow = "You name {{Y|銅の短剣}} '{{C|暁}}'.",
+        };
+
+        WithPatchedOwner(
+            () => InvokeNameItem(target));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("あなたは{{Y|銅の短剣}}に「{{C|暁}}」と名付けた。"));
+            Assert.That(ItemNamingHitCount("NameItem"), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void Patch_DoesNotClaimColorPickerPrompt_WhenOwnerPatched()
+    {
+        const string source = "You select the name '{{C|暁}}' for {{Y|銅の短剣}}. Choose a color for it.";
+        var target = new DummyItemNamingProducerTarget
+        {
+            PopupMessageToShow = source,
+        };
+
+        WithPatchedOwner(
+            () => InvokeNameItem(target));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+            Assert.That(ItemNamingHitCount("NameItem"), Is.Zero);
+        });
+    }
+
+    [Test]
     public void Patch_DoesNotClaimMarkedCheckBestowalsPopup_WhenOwnerAbsent()
     {
         var doesFragment = DoesVerbRouteTranslator.MarkDoesFragment(
@@ -118,6 +155,14 @@ public sealed class ItemNamingTranslationPatchTests
     }
 
     [Test]
+    public void Patch_DoesNotClaimNameItemPopup_WhenOwnerAbsent()
+    {
+        PatchPopupShowOnly(() => DummyPopupShow.Show("You name {{Y|銅の短剣}} '{{C|暁}}'."));
+
+        Assert.That(ItemNamingHitCount("NameItem"), Is.Zero);
+    }
+
+    [Test]
     public void Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
     {
         var source = MessageFrameTranslator.MarkDirectTranslation(
@@ -136,6 +181,25 @@ public sealed class ItemNamingTranslationPatchTests
                 DummyPopupShow.LastShowYesNoMessage,
                 Is.EqualTo("You swell with the inspiration to name your {{Y|銅の短剣}}. Do you wish to?"));
             Assert.That(ItemNamingHitCount("Opportunity"), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void Patch_DoesNotRetranslateDirectMarkedNameItemPopup_WhenOwnerPatched()
+    {
+        var source = MessageFrameTranslator.MarkDirectTranslation("You name {{Y|銅の短剣}} '{{C|暁}}'.");
+        var target = new DummyItemNamingProducerTarget
+        {
+            PopupMessageToShow = source,
+        };
+
+        WithPatchedOwner(
+            () => InvokeNameItem(target));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You name {{Y|銅の短剣}} '{{C|暁}}'."));
+            Assert.That(ItemNamingHitCount("NameItem"), Is.Zero);
         });
     }
 
@@ -217,19 +281,45 @@ public sealed class ItemNamingTranslationPatchTests
                 typeof(bool));
         }
 
-        return RequireMethod(
-            typeof(DummyItemNamingProducerTarget),
-            methodName,
-            typeof(DummyGameObject),
-            typeof(DummyGameObject),
-            typeof(string),
-            typeof(string),
-            typeof(DummyGameObject),
-            typeof(DummyGameObject),
-            typeof(string),
-            typeof(bool).MakeByRefType(),
-            typeof(int).MakeByRefType(),
-            typeof(bool).MakeByRefType());
+        if (string.Equals(methodName, nameof(DummyItemNamingProducerTarget.CheckBestowals), StringComparison.Ordinal))
+        {
+            return RequireMethod(
+                typeof(DummyItemNamingProducerTarget),
+                methodName,
+                typeof(DummyGameObject),
+                typeof(DummyGameObject),
+                typeof(string),
+                typeof(string),
+                typeof(DummyGameObject),
+                typeof(DummyGameObject),
+                typeof(string),
+                typeof(bool).MakeByRefType(),
+                typeof(int).MakeByRefType(),
+                typeof(bool).MakeByRefType());
+        }
+
+        if (string.Equals(methodName, nameof(DummyItemNamingProducerTarget.NameItem), StringComparison.Ordinal))
+        {
+            return RequireMethod(
+                typeof(DummyItemNamingProducerTarget),
+                methodName,
+                typeof(DummyGameObject),
+                typeof(DummyGameObject),
+                typeof(string),
+                typeof(string),
+                typeof(string),
+                typeof(string),
+                typeof(bool),
+                typeof(bool),
+                typeof(DummyGameObject),
+                typeof(DummyGameObject),
+                typeof(string),
+                typeof(bool),
+                typeof(int),
+                typeof(bool));
+        }
+
+        throw new InvalidOperationException($"Unhandled item naming owner method: {methodName}");
     }
 
     private static void InvokeOpportunity(DummyItemNamingProducerTarget target)
@@ -246,6 +336,29 @@ public sealed class ItemNamingTranslationPatchTests
                 0,
                 0,
                 0,
+                0,
+                false,
+            });
+    }
+
+    private static void InvokeNameItem(DummyItemNamingProducerTarget target)
+    {
+        _ = RequireOwnerMethod(nameof(DummyItemNamingProducerTarget.NameItem)).Invoke(
+            target,
+            new object?[]
+            {
+                new DummyGameObject(),
+                new DummyGameObject(),
+                "暁",
+                "C",
+                null,
+                null,
+                false,
+                false,
+                null,
+                null,
+                "General",
+                false,
                 0,
                 false,
             });
