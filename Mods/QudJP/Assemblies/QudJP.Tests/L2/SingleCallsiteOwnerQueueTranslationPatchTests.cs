@@ -12,6 +12,7 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
 {
     private const string ActivatedAbilityEntryOwner = "XRL.World.Parts.ActivatedAbilityEntry|TrySendCommandEventOnPlayer";
     private const string ElevatorSwitchOwner = "XRL.World.Parts.ElevatorSwitch|FireEvent";
+    private const string FetchesOwner = "XRL.World.Parts.Fetches|HandleEvent";
     private const string ModMorphogeneticOwner = "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock";
     private const string MonochromeOwner = "XRL.World.Effects.Monochrome|FireEvent";
     private const string PersuasionRebukeRobotAttemptOwner = "XRL.World.Parts.Skill.Persuasion_RebukeRobot|AttemptRebuke";
@@ -19,6 +20,7 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
     private const string SphynxSaltTonicOwner = "XRL.World.Effects.SphynxSalt_Tonic|Apply";
     private const string StairsDownOwner = "XRL.World.Parts.StairsDown|CheckPullDown";
     private const string ThiefBotOwner = "XRL.World.Parts.ThiefBot|FireEvent";
+    private const string TonicHandleEventOwner = "XRL.World.Parts.Tonic|HandleEvent";
     private const string WeirdwireConduitOwner = "XRL.World.Quests.WeirdwireConduitSystem|HandleEvent";
 
     [SetUp]
@@ -94,6 +96,21 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
         "You avoid the chrome idol's pincers.",
         "the chrome idolのハサミを避けた。",
         "ThiefBotAvoidPincers")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.HandleFetchesEvent),
+        "the dog runs off to fetch {{Y|a salve tonic}}!",
+        "the dogは{{Y|a salve tonic}}を取りに走り去った！",
+        "FetchesRunsOffToFetch")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.HandleTonicEvent),
+        "the goat eats {{Y|a salve tonic}}.",
+        "the goatは{{Y|a salve tonic}}を食べた。",
+        "TonicVisibleConsume")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.HandleTonicEvent),
+        "the goat applies {{Y|a shade oil injector}}.",
+        "the goatは{{Y|a shade oil injector}}を使用した。",
+        "TonicVisibleConsume")]
     [TestCase(
         nameof(DummySingleCallsiteOwnerQueueTarget.HandleWeirdwireTookEvent),
         "You now have 37 feet of copper wire.",
@@ -202,6 +219,18 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
             "StairsDownFallDownward",
             expectedHits: 0);
         AssertOwnerQueuedMessage(
+            nameof(DummySingleCallsiteOwnerQueueTarget.HandleWeirdwireTookEvent),
+            "the dog runs off to fetch {{Y|a salve tonic}}!",
+            "the dog runs off to fetch {{Y|a salve tonic}}!",
+            "FetchesRunsOffToFetch",
+            expectedHits: 0);
+        AssertOwnerQueuedMessage(
+            nameof(DummySingleCallsiteOwnerQueueTarget.HandleWeirdwireTookEvent),
+            "the goat eats {{Y|a salve tonic}}.",
+            "the goat eats {{Y|a salve tonic}}.",
+            "TonicVisibleConsume",
+            expectedHits: 0);
+        AssertOwnerQueuedMessage(
             nameof(DummySingleCallsiteOwnerQueueTarget.CheckPullDown),
             "You avoid the chrome idol's pincers.",
             "You avoid the chrome idol's pincers.",
@@ -234,6 +263,27 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
             source,
             source,
             "WeirdwireCopperWireTotal",
+            expectedHits: 0);
+    }
+
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.HandleFetchesEvent),
+        "the dog sniffs the air.",
+        "FetchesRunsOffToFetch")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.HandleTonicEvent),
+        "The tonic hums in your hand.",
+        "TonicVisibleConsume")]
+    public void SingleCallsiteOwnerQueue_DoesNotClaimDeferredRuntimeMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string detail)
+    {
+        AssertOwnerQueuedMessage(
+            methodName,
+            source,
+            source,
+            detail,
             expectedHits: 0);
     }
 
@@ -338,6 +388,7 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
         {
             nameof(DummySingleCallsiteOwnerQueueTarget.TrySendCommandEventOnPlayer) => CreateOwnerRouteFromKey(ActivatedAbilityEntryOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.FireElevatorSwitchEvent) => CreateOwnerRouteFromKey(ElevatorSwitchOwner),
+            nameof(DummySingleCallsiteOwnerQueueTarget.HandleFetchesEvent) => CreateOwnerRouteFromKey(FetchesOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.ApplyMorphicShock) => CreateOwnerRouteFromKey(ModMorphogeneticOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.FireMonochromeEvent) => CreateOwnerRouteFromKey(MonochromeOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.AttemptRebukeRobot) => CreateOwnerRouteFromKey(PersuasionRebukeRobotAttemptOwner),
@@ -345,6 +396,7 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
             nameof(DummySingleCallsiteOwnerQueueTarget.ApplySphynxSaltTonic) => CreateOwnerRouteFromKey(SphynxSaltTonicOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.CheckPullDown) => CreateOwnerRouteFromKey(StairsDownOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.FireThiefBotEvent) => CreateOwnerRouteFromKey(ThiefBotOwner),
+            nameof(DummySingleCallsiteOwnerQueueTarget.HandleTonicEvent) => CreateOwnerRouteFromKey(TonicHandleEventOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.HandleWeirdwireTookEvent) => CreateOwnerRouteFromKey(WeirdwireConduitOwner),
             _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected owner method."),
         };
@@ -364,6 +416,8 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
 
         public static bool FireElevatorSwitchEvent() => true;
 
+        public static bool HandleFetchesEvent() => true;
+
         public static bool ApplyMorphicShock() => true;
 
         public static bool FireMonochromeEvent() => true;
@@ -377,6 +431,8 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
         public static bool CheckPullDown() => true;
 
         public static bool FireThiefBotEvent() => true;
+
+        public static bool HandleTonicEvent() => true;
 
         public static bool HandleWeirdwireTookEvent() => true;
     }

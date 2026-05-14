@@ -13,6 +13,7 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
     private const string Context = nameof(SingleCallsiteOwnerQueueTranslationPatch);
     private const string ActivatedAbilityEntryOwner = "XRL.World.Parts.ActivatedAbilityEntry|TrySendCommandEventOnPlayer";
     private const string ElevatorSwitchOwner = "XRL.World.Parts.ElevatorSwitch|FireEvent";
+    private const string FetchesOwner = "XRL.World.Parts.Fetches|HandleEvent";
     private const string ModMorphogeneticOwner = "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock";
     private const string MonochromeOwner = "XRL.World.Effects.Monochrome|FireEvent";
     private const string PersuasionRebukeRobotAttemptOwner = "XRL.World.Parts.Skill.Persuasion_RebukeRobot|AttemptRebuke";
@@ -20,6 +21,7 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
     private const string SphynxSaltTonicOwner = "XRL.World.Effects.SphynxSalt_Tonic|Apply";
     private const string StairsDownOwner = "XRL.World.Parts.StairsDown|CheckPullDown";
     private const string ThiefBotOwner = "XRL.World.Parts.ThiefBot|FireEvent";
+    private const string TonicHandleEventOwner = "XRL.World.Parts.Tonic|HandleEvent";
     private const string WeirdwireConduitOwner = "XRL.World.Quests.WeirdwireConduitSystem|HandleEvent";
 
     private static readonly Regex MorphogeneticShockPattern = new(
@@ -28,6 +30,14 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
 
     private static readonly Regex ThiefBotAvoidPincersPattern = new(
         "^You avoid (?<target>.+?)(?:'s|') pincers\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex FetchesRunsOffToFetchPattern = new(
+        "^(?<actor>.+?) (?:runs|run) off to fetch (?<object>.+?)!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TonicVisibleConsumePattern = new(
+        "^(?<actor>.+?) (?<verb>eats|eat|applies|apply) (?<object>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex ThiefBotPincersPassThroughPattern = new(
@@ -49,9 +59,12 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
     {
         var targets = new List<MethodBase>();
         var activatedAbilityEntryType = FindAssemblyCSharpType("XRL.World.Parts.ActivatedAbilityEntry");
+        var aiBoredEventType = FindAssemblyCSharpType("XRL.World.AIBoredEvent");
         var elevatorSwitchType = FindAssemblyCSharpType("XRL.World.Parts.ElevatorSwitch");
         var eventType = FindAssemblyCSharpType("XRL.World.Event");
+        var fetchesType = FindAssemblyCSharpType("XRL.World.Parts.Fetches");
         var gameObjectType = FindAssemblyCSharpType("XRL.World.GameObject");
+        var inventoryActionEventType = FindAssemblyCSharpType("XRL.World.InventoryActionEvent");
         var modMorphogeneticType = FindAssemblyCSharpType("XRL.World.Parts.ModMorphogenetic");
         var monochromeType = FindAssemblyCSharpType("XRL.World.Effects.Monochrome");
         var persuasionRebukeRobotType = FindAssemblyCSharpType("XRL.World.Parts.Skill.Persuasion_RebukeRobot");
@@ -60,11 +73,15 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
         var stairsDownType = FindAssemblyCSharpType("XRL.World.Parts.StairsDown");
         var thiefBotType = FindAssemblyCSharpType("XRL.World.Parts.ThiefBot");
         var tookEventType = FindAssemblyCSharpType("XRL.World.TookEvent");
+        var tonicType = FindAssemblyCSharpType("XRL.World.Parts.Tonic");
         var weirdwireConduitType = FindAssemblyCSharpType("XRL.World.Quests.WeirdwireConduitSystem");
         if (activatedAbilityEntryType is null
+            || aiBoredEventType is null
             || elevatorSwitchType is null
             || eventType is null
+            || fetchesType is null
             || gameObjectType is null
+            || inventoryActionEventType is null
             || modMorphogeneticType is null
             || monochromeType is null
             || persuasionRebukeRobotType is null
@@ -73,6 +90,7 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
             || stairsDownType is null
             || thiefBotType is null
             || tookEventType is null
+            || tonicType is null
             || weirdwireConduitType is null)
         {
             Trace.TraceError("QudJP: {0} target types not found.", Context);
@@ -89,6 +107,11 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
             elevatorSwitchType,
             "FireEvent",
             [eventType]);
+        AddTarget(
+            targets,
+            fetchesType,
+            "HandleEvent",
+            [aiBoredEventType]);
         AddTarget(
             targets,
             modMorphogeneticType,
@@ -124,6 +147,11 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
             thiefBotType,
             "FireEvent",
             [eventType]);
+        AddTarget(
+            targets,
+            tonicType,
+            "HandleEvent",
+            [inventoryActionEventType]);
         AddTarget(
             targets,
             weirdwireConduitType,
@@ -295,6 +323,25 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
             return true;
         }
 
+        match = FetchesRunsOffToFetchPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, FetchesOwner))
+        {
+            translated = match.Groups["actor"].Value + "は" + match.Groups["object"].Value + "を取りに走り去った！";
+            detail = "FetchesRunsOffToFetch";
+            return true;
+        }
+
+        match = TonicVisibleConsumePattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, TonicHandleEventOwner))
+        {
+            translated = match.Groups["actor"].Value
+                + "は"
+                + match.Groups["object"].Value
+                + TranslateTonicVisibleVerb(match.Groups["verb"].Value);
+            detail = "TonicVisibleConsume";
+            return true;
+        }
+
         match = WeirdwireCopperWirePattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, WeirdwireConduitOwner))
         {
@@ -346,6 +393,16 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
         }
 
         Trace.TraceError("QudJP: {0}.{1}.{2} target not found.", Context, targetType.FullName, methodName);
+    }
+
+    private static string TranslateTonicVisibleVerb(string source)
+    {
+        return source switch
+        {
+            "eats" or "eat" => "を食べた。",
+            "applies" or "apply" => "を使用した。",
+            _ => "を使用した。",
+        };
     }
 
     private static Type? FindAssemblyCSharpType(string fullTypeName)
