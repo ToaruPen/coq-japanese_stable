@@ -12822,6 +12822,52 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts/RandomAltarBaetyl.cs::"
+            "XRL.World.Parts.RandomAltarBaetyl.BaetylWantsSacrifice"
+        ),
+        lines=(800,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/RandomAltarBaetylTranslationPatch.cs",
+                (
+                    "RandomAltarBaetylTranslationPatch",
+                    "XRL.World.Parts.RandomAltarBaetyl",
+                    "BaetylWantsSacrifice",
+                    "RandomAltarBaetylRewardPopup",
+                    "I ACCEPT YOUR OFFERING!",
+                    "The sparking baetyl gives you",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("RandomAltarBaetylTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/RandomAltarBaetylTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesRewardPopup_WhenOwnerPatched",
+                    "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_DoesNotClaimFixedRuntimeOrEmptyPopup_WhenOwnerPatched",
+                    "I ACCEPT YOUR OFFERING!",
+                    "The sparking baetyl gives you {{Y|a carbide dagger}}!",
+                    "I AM SATED, MORTAL. BEGONE.",
+                    "PETTY MORTAL! BRING ME",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(RandomAltarBaetylTranslationPatch)",
+                    "XRL.World.Parts.RandomAltarBaetyl|BaetylWantsSacrifice|System.Void",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World.Parts/Stomach.cs::"
             "XRL.World.Parts.Stomach.FireEvent"
         ),

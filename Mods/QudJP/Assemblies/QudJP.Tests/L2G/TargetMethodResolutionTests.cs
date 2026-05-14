@@ -1769,6 +1769,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.AnimateObject|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
     })]
+    [TestCase(typeof(RandomAltarBaetylTranslationPatch), new[]
+    {
+        "XRL.World.Parts.RandomAltarBaetyl|BaetylWantsSacrifice|System.Void",
+    })]
     [TestCase(typeof(StomachTranslationPatch), new[]
     {
         "XRL.World.Parts.Stomach|FireEvent|System.Boolean|XRL.World.Event",
