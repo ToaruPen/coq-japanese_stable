@@ -39,6 +39,7 @@ internal static class MessageQueueSemanticPipeline
         DamagePenetrationDebugTranslationPatch.TryTranslateQueuedMessage,
         SoundManagerSetChannelTrackTranslationPatch.TryTranslateQueuedMessage,
         TerrainTravelTranslationPatch.TryTranslateQueuedMessage,
+        PrecognitionTranslationPatch.TryTranslateQueuedMessage,
         FugueOnStepTranslationPatch.TryTranslateQueuedMessage,
         MentalShieldTranslationPatch.TryTranslateQueuedMessage,
         TabulaRasaeTranslationPatch.TryTranslateQueuedMessage,

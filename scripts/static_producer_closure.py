@@ -11109,6 +11109,93 @@ COVERED_OWNER_FAMILIES: Final = (
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 COVERED_OWNER_CALLSITES: Final = (
     CoveredOwnerCallsites(
+        family_id="XRL.World.Parts.Mutation/Precognition.cs::XRL.World.Parts.Mutation.Precognition.FireEvent",
+        lines=(379, 386, 407),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PrecognitionTranslationPatch.cs",
+                (
+                    "PrecognitionTranslationPatch",
+                    "FireEvent",
+                    "PeerIntoFuture",
+                    "PsychicDisturbance",
+                    "FocusReturns",
+                    "TryTranslateQueuedMessage",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("PrecognitionTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/ui-messagelog-world.ja.json",
+                (
+                    "You peer into the future.",
+                    "You sense a subtle psychic disturbance.",
+                    "Your focus returns to the present.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/PrecognitionTranslationPatchTests.cs",
+                (
+                    "Precognition_TranslatesOwnerQueuedMessages_WhenOwnerPatched",
+                    "Precognition_PreservesQueuedMessageColor_WhenOwnerPatched",
+                    "Precognition_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "Precognition_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "Precognition_LeavesPopupAndUnsupportedMessagesUnchanged_WhenOwnerPatched",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(PrecognitionTranslationPatch)",
+                    "XRL.World.Parts.Mutation.Precognition|FireEvent|System.Boolean|XRL.World.Event",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id="XRL.World.Parts.Mutation/Precognition.cs::XRL.World.Parts.Mutation.Precognition.OnBeforeDie",
+        lines=(448,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PrecognitionTranslationPatch.cs",
+                (
+                    "PrecognitionTranslationPatch",
+                    "OnBeforeDie",
+                    "FocusReturns",
+                    "TryTranslateQueuedMessage",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("PrecognitionTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/ui-messagelog-world.ja.json",
+                ("Your focus returns to the present.",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/PrecognitionTranslationPatchTests.cs",
+                (
+                    "Precognition_TranslatesOwnerQueuedMessages_WhenOwnerPatched",
+                    "Precognition_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "Precognition_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "Precognition_LeavesPopupAndUnsupportedMessagesUnchanged_WhenOwnerPatched",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(PrecognitionTranslationPatch)",
+                    "XRL.World.Parts.Mutation.Precognition|OnBeforeDie|System.Boolean|XRL.World.GameObject|System.Guid|System.Guid|System.Int32&|System.Int32&|System.Int32&|System.Int64&|System.Boolean|System.Boolean|XRL.World.IPart",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
         family_id="XRL.World.Parts/TerrainTravel.cs::XRL.World.Parts.TerrainTravel.HandleEvent",
         lines=(93, 109, 115),
         inventory_statuses=("needs_family_review",),

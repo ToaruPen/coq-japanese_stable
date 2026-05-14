@@ -1689,6 +1689,11 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.TerrainTravel|HandleEvent|System.Boolean|XRL.World.ObjectEnteredCellEvent",
         "XRL.World.Parts.TerrainTravel|HandleLeavingCell|System.Boolean|XRL.World.GameObject|System.Int32&",
     })]
+    [TestCase(typeof(PrecognitionTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.Precognition|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Mutation.Precognition|OnBeforeDie|System.Boolean|XRL.World.GameObject|System.Guid|System.Guid|System.Int32&|System.Int32&|System.Int32&|System.Int64&|System.Boolean|System.Boolean|XRL.World.IPart",
+    })]
     [TestCase(typeof(ForceBubbleOwnerTranslationPatch), new[]
     {
         "XRL.World.Parts.ForceEmitter|ActivateForceEmitter|System.Boolean|XRL.World.IEvent",
