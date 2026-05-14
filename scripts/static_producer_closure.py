@@ -12189,6 +12189,63 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts/EelSpawn.cs::"
+            "XRL.World.Parts.EelSpawn.HandleEvent"
+        ),
+        lines=(57, 64, 71),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/EelSpawnTranslationPatch.cs",
+                (
+                    "EelSpawnTranslationPatch",
+                    "XRL.World.Parts.EelSpawn",
+                    "HandleEvent",
+                    "CannotReachPattern",
+                    "PassesThroughPattern",
+                    "WrapPopupPattern",
+                    "EelSpawnCannotReach",
+                    "EelSpawnPassesThrough",
+                    "EelSpawnWrap",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("EelSpawnTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("EelSpawnTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/EelSpawnTranslationPatchTests.cs",
+                (
+                    "HandleEvent_TranslatesWrapQueuedMessages_WhenOwnerPatched",
+                    "HandleEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "HandleEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "HandleEvent_TranslatesWrapPopup_WhenOwnerPatched",
+                    "HandleEvent_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "HandleEvent_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "HandleEvent_DoesNotClaimFixedBalancePopups_WhenOwnerPatched",
+                    "A sewage eel tries to wrap itself around you, but cannot reach!",
+                    "A sewage eel tries to wrap itself around your feet, but passes through you!",
+                    "A sewage eel wraps itself around you!",
+                    "You maintain your balance and kick the eel away.",
+                    "EelSpawnWrap",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(EelSpawnTranslationPatch)",
+                    "XRL.World.Parts.EelSpawn|HandleEvent|System.Boolean|XRL.World.ObjectEnteredCellEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World/SocialSifrahTokenGift.cs::"
             "XRL.World.SocialSifrahTokenGift.CheckTokenUse"
         ),

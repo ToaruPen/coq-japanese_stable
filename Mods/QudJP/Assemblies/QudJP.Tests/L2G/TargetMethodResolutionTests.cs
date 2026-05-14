@@ -1714,6 +1714,10 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Stopsvaalinn|ActivateStopsvalinn|System.Boolean|XRL.World.IEvent",
         "XRL.World.Parts.Mutation.ForceBubble|DestroyBubble|System.Void|System.Boolean",
     })]
+    [TestCase(typeof(EelSpawnTranslationPatch), new[]
+    {
+        "XRL.World.Parts.EelSpawn|HandleEvent|System.Boolean|XRL.World.ObjectEnteredCellEvent",
+    })]
     [TestCase(typeof(SingleCallsiteOwnerPopupTranslationPatch), new[]
     {
         "XRL.World.Quests.AscensionSystem|BarathrumStartConversation|System.Void|XRL.World.GameObject",

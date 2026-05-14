@@ -41,6 +41,7 @@ internal static class PopupShowSemanticPipeline
         ConversationTakeItemPopupTranslationPatch.TryTranslatePopupMessage,
         ConversationCheckLostPopupTranslationPatch.TryTranslatePopupMessage,
         ConversationRewardPopupTranslationPatch.TryTranslatePopupMessage,
+        EelSpawnTranslationPatch.TryTranslatePopupMessage,
         BodyTranslationPatch.TryTranslatePopupMessage,
         SifrahTokenItemPopupTranslationPatch.TryTranslatePopupMessage,
         SifrahPureOwnerPopupTranslationPatch.TryTranslatePopupMessage,
