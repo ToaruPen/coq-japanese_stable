@@ -307,7 +307,11 @@ public sealed class PlayerDanceRitualTranslationPatchTests
     {
         harmony.Patch(
             original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(bool), typeof(bool), typeof(bool)),
-            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix), typeof(string).MakeByRefType())));
+            prefix: new HarmonyMethod(RequireMethod(
+                typeof(PopupShowTranslationPatch),
+                nameof(PopupShowTranslationPatch.Prefix),
+                typeof(string).MakeByRefType(),
+                typeof(MethodBase))));
     }
 
     private static void PatchQueue(Harmony harmony)

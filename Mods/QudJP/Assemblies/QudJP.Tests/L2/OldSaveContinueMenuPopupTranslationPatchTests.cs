@@ -207,7 +207,11 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
                 typeof(bool),
                 typeof(bool),
                 typeof(bool)),
-            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix), typeof(string).MakeByRefType())));
+            prefix: new HarmonyMethod(RequireMethod(
+                typeof(PopupShowTranslationPatch),
+                nameof(PopupShowTranslationPatch.Prefix),
+                typeof(string).MakeByRefType(),
+                typeof(MethodBase))));
 
         harmony.Patch(
             original: RequireMethod(
@@ -219,7 +223,11 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
                 typeof(bool),
                 typeof(bool),
                 typeof(bool)),
-            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix), typeof(string).MakeByRefType())));
+            prefix: new HarmonyMethod(RequireMethod(
+                typeof(PopupShowTranslationPatch),
+                nameof(PopupShowTranslationPatch.Prefix),
+                typeof(string).MakeByRefType(),
+                typeof(MethodBase))));
     }
 
     private static void InvokeOwnerMethod(DummyOldSaveContinueMenuProducer target, string methodName)

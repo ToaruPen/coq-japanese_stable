@@ -4701,6 +4701,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
         "The snapjaw shouts shouts {{O|KLANQ}}!",
         "snapjawは{{O|KLANQ}}と叫んだ！")]
     [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.PaxKlanqMadnessTakeAction),
+        "{{R|The snapjaw shouts shouts {{O|KLANQ}}!}}",
+        "{{R|snapjawは{{O|KLANQ}}と叫んだ！}}")]
+    [TestCase(
         nameof(DummySimpleOwnerQueueTarget.BodyPartUnequipPartAndChildren),
         "Your {{Y|carbide dagger}} falls to the ground.",
         "Your {{Y|carbide dagger}}は地面に倒れた。")]

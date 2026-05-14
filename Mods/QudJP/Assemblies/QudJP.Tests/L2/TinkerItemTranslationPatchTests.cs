@@ -160,6 +160,27 @@ public sealed class TinkerItemTranslationPatchTests
     }
 
     [Test]
+    public void HandleEvent_DirectMarkerPassThroughDoesNotLeakToNextPopup_WhenOwnerPatched()
+    {
+        WithPatchedOwner(() =>
+        {
+            new DummyTinkerItemProducer
+            {
+                PopupMethod = nameof(DummyPopupShow.ShowFail),
+                MessageToShow = MessageFrameTranslator.MarkDirectTranslation(
+                    "You cannot seem to affect the phase cannon in any way."),
+                SecondMessageToShow = "You cannot seem to affect the phase cannon in any way.",
+            }.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("phase cannonにはどうやっても影響を与えられそうにない。"));
+                Assert.That(HitCount("CannotAffect"), Is.EqualTo(1));
+            });
+        });
+    }
+
+    [Test]
     public void HandleEvent_DoesNotRetranslateDirectMarkedConfirmation_WhenOwnerPatched()
     {
         const string source = "Are you sure you want to disassemble the bronze dagger?";
@@ -230,6 +251,7 @@ public sealed class TinkerItemTranslationPatchTests
     private sealed class DummyTinkerItemProducer
     {
         public string MessageToShow { get; set; } = string.Empty;
+        public string SecondMessageToShow { get; set; } = string.Empty;
         public string PopupMethod { get; set; } = nameof(DummyPopupShow.ShowFail);
 
         public void HandleEvent(DummyInventoryActionEvent e)
@@ -238,10 +260,19 @@ public sealed class TinkerItemTranslationPatchTests
             if (PopupMethod == nameof(DummyPopupShow.ShowYesNoCancel))
             {
                 DummyPopupShow.ShowYesNoCancel(MessageToShow);
+                if (!string.IsNullOrEmpty(SecondMessageToShow))
+                {
+                    DummyPopupShow.ShowYesNoCancel(SecondMessageToShow);
+                }
+
                 return;
             }
 
             DummyPopupShow.ShowFail(MessageToShow);
+            if (!string.IsNullOrEmpty(SecondMessageToShow))
+            {
+                DummyPopupShow.ShowFail(SecondMessageToShow);
+            }
         }
     }
 

@@ -121,6 +121,8 @@ internal sealed class DummyConversationScriptPopupProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
 
+    public string SecondPopupMessageToShow { get; set; } = string.Empty;
+
     [MethodImpl(MethodImplOptions.NoInlining)]
     public bool IsPhysicalConversationPossible()
     {
@@ -137,6 +139,11 @@ internal sealed class DummyConversationScriptPopupProducerTarget
     {
         _ = physical;
         DummyPopupShow.ShowFail(PopupMessageToShow);
+        if (!string.IsNullOrEmpty(SecondPopupMessageToShow))
+        {
+            DummyPopupShow.ShowFail(SecondPopupMessageToShow);
+        }
+
         return false;
     }
 }

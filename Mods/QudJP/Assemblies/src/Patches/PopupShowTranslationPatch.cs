@@ -16,6 +16,11 @@ public static class PopupShowTranslationPatch
 {
     private const string Context = nameof(PopupShowTranslationPatch);
 
+    [ThreadStatic]
+    private static int pendingDirectMarkerWrapperDepth;
+
+    internal static bool IsNestedPopupCall => pendingDirectMarkerWrapperDepth > 0;
+
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
@@ -179,7 +184,7 @@ public static class PopupShowTranslationPatch
         return targets;
     }
 
-    public static void Prefix(ref string __0)
+    public static void Prefix(ref string __0, MethodBase __originalMethod)
     {
         try
         {
@@ -188,11 +193,57 @@ public static class PopupShowTranslationPatch
                 return;
             }
 
+            var expectsNestedDirectMarkerPassThrough = IsDirectMarkedPopupWrapperCall(__0, __originalMethod);
             __0 = PopupShowSemanticPipeline.TranslateMessage(__0, Context);
+            if (expectsNestedDirectMarkerPassThrough)
+            {
+                pendingDirectMarkerWrapperDepth++;
+            }
         }
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
         }
+    }
+
+    public static Exception? Finalizer(Exception? __exception)
+    {
+        try
+        {
+            if (pendingDirectMarkerWrapperDepth > 0)
+            {
+                pendingDirectMarkerWrapperDepth--;
+            }
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.Finalizer failed: {1}", Context, ex);
+        }
+
+        return __exception;
+    }
+
+    internal static bool TryConsumeDirectMarkerPassThrough(string source, ref string? passThroughText)
+    {
+        if (passThroughText is null)
+        {
+            return false;
+        }
+
+        var shouldPassThrough = false;
+        if (pendingDirectMarkerWrapperDepth > 0)
+        {
+            pendingDirectMarkerWrapperDepth--;
+            shouldPassThrough = string.Equals(source, passThroughText, StringComparison.Ordinal);
+        }
+
+        passThroughText = null;
+        return shouldPassThrough;
+    }
+
+    private static bool IsDirectMarkedPopupWrapperCall(string source, MethodBase originalMethod)
+    {
+        return MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _)
+            && string.Equals(originalMethod.Name, "ShowFail", StringComparison.Ordinal);
     }
 }

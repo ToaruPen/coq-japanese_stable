@@ -212,6 +212,36 @@ internal static class ColorAwareTranslationComposer
         return RestoreLeadingAmpersandColor(source, restored);
     }
 
+    internal static IReadOnlyList<ColorSpan> WithoutTrueWholeSourceBoundarySpans(
+        IReadOnlyList<ColorSpan> spans,
+        int sourceLength)
+    {
+        var wholeSourcePairs = ExtractTrueWholeBoundaryPairs(spans, sourceStart: 0, sourceLength);
+        if (wholeSourcePairs.Count == 0)
+        {
+            return spans;
+        }
+
+        var excludedOrders = new HashSet<int>();
+        for (var pairIndex = 0; pairIndex < wholeSourcePairs.Count; pairIndex++)
+        {
+            var pair = wholeSourcePairs[pairIndex];
+            _ = excludedOrders.Add(pair.OpeningOrder);
+            _ = excludedOrders.Add(pair.ClosingOrder);
+        }
+
+        var filtered = new List<ColorSpan>(spans.Count - excludedOrders.Count);
+        for (var index = 0; index < spans.Count; index++)
+        {
+            if (!excludedOrders.Contains(index))
+            {
+                filtered.Add(spans[index]);
+            }
+        }
+
+        return filtered;
+    }
+
     internal static string RestoreWholeSliceBoundaryWrappersPreservingTranslatedOwnership(
         string translatedValue,
         IReadOnlyList<ColorSpan>? spans,

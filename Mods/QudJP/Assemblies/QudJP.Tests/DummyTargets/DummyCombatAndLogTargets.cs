@@ -1842,9 +1842,16 @@ internal sealed class DummyRunTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
 
+    public string SecondPopupMessageToShow { get; set; } = string.Empty;
+
     public bool StartRunning()
     {
         DummyPopupShow.ShowFail(PopupMessageToShow);
+        if (!string.IsNullOrEmpty(SecondPopupMessageToShow))
+        {
+            DummyPopupShow.ShowFail(SecondPopupMessageToShow);
+        }
+
         return false;
     }
 }

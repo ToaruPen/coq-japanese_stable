@@ -148,6 +148,34 @@ public sealed class ConversationScriptPopupTranslationPatchTests
             expectedHits: 0);
     }
 
+    [Test]
+    public void ConversationScriptPopup_DirectMarkerPassThroughDoesNotLeakToNextPopup_WhenOwnerPatched()
+    {
+        const string directSource = "You can't seem to make out what the merchant is saying.";
+        const string nextSource = "The merchant refuses to speak to you.";
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(ConversationScriptPopupTranslationPatch),
+            RequireOwnerMethod(nameof(DummyConversationScriptPopupProducerTarget.IsPhysicalConversationPossible)),
+            () =>
+            {
+                var target = new DummyConversationScriptPopupProducerTarget
+                {
+                    PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation(directSource),
+                    SecondPopupMessageToShow = nextSource,
+                };
+
+                _ = target.IsPhysicalConversationPossible();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("merchantはあなたと話そうとしない。"));
+                    Assert.That(HitCount("MakeOutSpeech"), Is.Zero);
+                    Assert.That(HitCount("RefuseToSpeak"), Is.EqualTo(1));
+                });
+            });
+    }
+
     [TestCase(nameof(DummyConversationScriptPopupProducerTarget.IsPhysicalConversationPossible), "MakeOutSpeech")]
     [TestCase(nameof(DummyConversationScriptPopupProducerTarget.IsMentalConversationPossible), "SenseNothing")]
     public void ConversationScriptPopup_LeavesEmptyPopupUnchanged_WhenOwnerPatched(string methodName, string detail)

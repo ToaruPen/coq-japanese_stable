@@ -264,40 +264,8 @@ public static class GeneratedSubjectQueueTranslationPatch
         var group = match.Groups[groupName];
         return ColorAwareTranslationComposer.RestoreCapture(
             group.Value,
-            WithoutWholeSourceBoundarySpans(spans, sourceLength),
+            ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, sourceLength),
             group).Trim();
-    }
-
-    private static IReadOnlyList<ColorSpan> WithoutWholeSourceBoundarySpans(IReadOnlyList<ColorSpan> spans, int sourceLength)
-    {
-        var hasWholeSourceBoundary = false;
-        for (var index = 0; index < spans.Count; index++)
-        {
-            if (spans[index].Index == sourceLength)
-            {
-                hasWholeSourceBoundary = true;
-                break;
-            }
-        }
-
-        if (!hasWholeSourceBoundary)
-        {
-            return spans;
-        }
-
-        var filtered = new List<ColorSpan>();
-        for (var index = 0; index < spans.Count; index++)
-        {
-            var span = spans[index];
-            if (span.Index == 0 || span.Index == sourceLength)
-            {
-                continue;
-            }
-
-            filtered.Add(span);
-        }
-
-        return filtered;
     }
 
     private static Regex CreatePattern(string pattern)

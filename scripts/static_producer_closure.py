@@ -6519,23 +6519,26 @@ def _single_callsite_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
-def _giant_clam_shloop_hitch_families() -> tuple[CoveredOwnerFamily, ...]:
+def _giant_clam_shloop_hitch_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     evidence_by_method = {
         "TeleportToClamWorld": (
+            143,
             "XRL.World.Parts.GiantClamProperties|TeleportToClamWorld|System.Void|XRL.World.GameObject"
         ),
         "TeleportFromClamWorld": (
+            180,
             "XRL.World.Parts.GiantClamProperties|TeleportFromClamWorld|System.Void|XRL.World.GameObject"
         ),
     }
-    families: list[CoveredOwnerFamily] = []
-    for method_name, full_signature in evidence_by_method.items():
-        families.append(
-            CoveredOwnerFamily(
+    callsites: list[CoveredOwnerCallsites] = []
+    for method_name, (line, full_signature) in evidence_by_method.items():
+        callsites.append(
+            CoveredOwnerCallsites(
                 family_id=(
                     "XRL.World.Parts/GiantClamProperties.cs::"
                     f"XRL.World.Parts.GiantClamProperties.{method_name}"
                 ),
+                lines=(line,),
                 inventory_statuses=("needs_family_review",),
                 evidence_files=(
                     EvidenceFile(
@@ -6572,7 +6575,7 @@ def _giant_clam_shloop_hitch_families() -> tuple[CoveredOwnerFamily, ...]:
                 ),
             )
         )
-    return tuple(families)
+    return tuple(callsites)
 
 
 def _point_of_interest_navigation_popup_family() -> tuple[CoveredOwnerFamily, ...]:
@@ -10584,7 +10587,6 @@ COVERED_OWNER_FAMILIES: Final = (
     *_blaze_tonic_remove_family(),
     *_latched_onto_expired_family(),
     *_giant_clam_teleport_joppa_family(),
-    *_giant_clam_shloop_hitch_families(),
     *_single_callsite_owner_popup_families(),
     *_point_of_interest_navigation_popup_family(),
     *_run_start_running_popup_family(),
@@ -11831,6 +11833,7 @@ COVERED_OWNER_FAMILIES: Final = (
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 COVERED_OWNER_CALLSITES: Final = (
+    *_giant_clam_shloop_hitch_callsites(),
     CoveredOwnerCallsites(
         family_id=(
             "XRL.World.Parts.Mutation/Carapace.cs::"

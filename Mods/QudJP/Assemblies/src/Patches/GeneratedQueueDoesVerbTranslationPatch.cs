@@ -126,9 +126,9 @@ public static class GeneratedQueueDoesVerbTranslationPatch
 
         var sourceWithoutLeadingDoesMarker = StripLeadingDoesMarker(message);
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(sourceWithoutLeadingDoesMarker);
-        if (TryTranslateDropDown(stripped, spans, out var generatedTranslated)
-            || TryTranslatePaxKlanq(stripped, spans, out generatedTranslated)
-            || TryTranslateExtradimensionalLoot(stripped, spans, out generatedTranslated))
+        if (TryTranslateDropDown(stripped, spans, sourceWithoutLeadingDoesMarker, out var generatedTranslated)
+            || TryTranslatePaxKlanq(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated)
+            || TryTranslateExtradimensionalLoot(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated))
         {
             DynamicTextObservability.RecordTransform("MessageQueue.AddPlayerMessage", Context, message, generatedTranslated);
             message = generatedTranslated;
@@ -178,7 +178,11 @@ public static class GeneratedQueueDoesVerbTranslationPatch
             : source.Substring(markerEnd + 1);
     }
 
-    private static bool TryTranslateDropDown(string stripped, IReadOnlyList<ColorSpan> spans, out string translated)
+    private static bool TryTranslateDropDown(
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string source,
+        out string translated)
     {
         var match = DropDownPattern.Match(stripped);
         if (!match.Success)
@@ -187,13 +191,20 @@ public static class GeneratedQueueDoesVerbTranslationPatch
             return false;
         }
 
-        translated =
+        translated = RestoreWholeSourceBoundary(
             $"{StripLeadingArticle(RestoreCapture(match, spans, "item"))}を"
-            + $"{StripLeadingArticle(RestoreCapture(match, spans, "target"))}に落とした。";
+            + $"{StripLeadingArticle(RestoreCapture(match, spans, "target"))}に落とした。",
+            spans,
+            stripped,
+            source);
         return true;
     }
 
-    private static bool TryTranslatePaxKlanq(string stripped, IReadOnlyList<ColorSpan> spans, out string translated)
+    private static bool TryTranslatePaxKlanq(
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string source,
+        out string translated)
     {
         var match = PaxKlanqPattern.Match(stripped);
         if (!match.Success)
@@ -202,11 +213,19 @@ public static class GeneratedQueueDoesVerbTranslationPatch
             return false;
         }
 
-        translated = $"{NormalizeSubject(RestoreCapture(match, spans, "subject"))}は{RestoreCapture(match, spans, "cry")}と叫んだ！";
+        translated = RestoreWholeSourceBoundary(
+            $"{NormalizeSubject(RestoreCapture(match, spans, "subject"))}は{RestoreCapture(match, spans, "cry")}と叫んだ！",
+            spans,
+            stripped,
+            source);
         return true;
     }
 
-    private static bool TryTranslateExtradimensionalLoot(string stripped, IReadOnlyList<ColorSpan> spans, out string translated)
+    private static bool TryTranslateExtradimensionalLoot(
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string source,
+        out string translated)
     {
         var match = ExtradimensionalLootPattern.Match(stripped);
         if (!match.Success)
@@ -215,17 +234,36 @@ public static class GeneratedQueueDoesVerbTranslationPatch
             return false;
         }
 
-        translated =
+        translated = RestoreWholeSourceBoundary(
             $"{NormalizeSubject(RestoreCapture(match, spans, "subject"))}は"
             + $"{StripLeadingArticle(RestoreCapture(match, spans, "item"))}を落とし、"
-            + "偶然にもそれは量子トンネルを通ってこの次元に完全実体化した。";
+            + "偶然にもそれは量子トンネルを通ってこの次元に完全実体化した。",
+            spans,
+            stripped,
+            source);
         return true;
     }
 
     private static string RestoreCapture(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
     {
         var group = match.Groups[groupName];
-        return ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, spans, group).Trim();
+        return ColorAwareTranslationComposer.MarkupAwareRestoreCapture(
+            group.Value,
+            ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, match.Value.Length),
+            group).Trim();
+    }
+
+    private static string RestoreWholeSourceBoundary(
+        string visible,
+        IReadOnlyList<ColorSpan> spans,
+        string stripped,
+        string source)
+    {
+        return ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            visible,
+            spans,
+            stripped.Length,
+            source);
     }
 
     private static string NormalizeSubject(string value)

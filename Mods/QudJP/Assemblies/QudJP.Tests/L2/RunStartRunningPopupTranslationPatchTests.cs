@@ -64,6 +64,30 @@ public sealed class RunStartRunningPopupTranslationPatchTests
     }
 
     [Test]
+    public void StartRunning_DirectMarkerPassThroughDoesNotLeakToNextPopup_WhenOwnerPatched()
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(RunStartRunningPopupTranslationPatch),
+            RequireOwnerMethod(),
+            () =>
+            {
+                var target = new DummyRunTarget
+                {
+                    PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation("You cannot run on the world map."),
+                    SecondPopupMessageToShow = "You cannot run on the world map.",
+                };
+
+                _ = target.StartRunning();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("ワールドマップでは走ることはできない。"));
+                    Assert.That(HitCount(), Is.EqualTo(1));
+                });
+            });
+    }
+
+    [Test]
     public void StartRunning_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
         AssertOwnerPopup(string.Empty, string.Empty, expectedHits: 0);

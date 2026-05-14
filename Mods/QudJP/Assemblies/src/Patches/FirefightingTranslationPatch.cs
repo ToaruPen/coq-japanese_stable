@@ -20,7 +20,7 @@ public static class FirefightingTranslationPatch
     private static int activeDepth;
 
     [ThreadStatic]
-    private static int directMarkerPassThroughDepth;
+    private static string? directMarkerPassThroughText;
 
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
@@ -66,7 +66,7 @@ public static class FirefightingTranslationPatch
             OwnerTranslationScope.Exit(ref activeDepth);
             if (!OwnerTranslationScope.IsActive(activeDepth))
             {
-                directMarkerPassThroughDepth = 0;
+                directMarkerPassThroughText = null;
             }
         }
         catch (Exception ex)
@@ -87,16 +87,15 @@ public static class FirefightingTranslationPatch
             return false;
         }
 
-        if (directMarkerPassThroughDepth > 0)
+        if (PopupShowTranslationPatch.TryConsumeDirectMarkerPassThrough(source, ref directMarkerPassThroughText))
         {
-            directMarkerPassThroughDepth--;
             translated = source;
             return true;
         }
 
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
-            directMarkerPassThroughDepth++;
+            directMarkerPassThroughText = markedText;
             translated = markedText;
             return true;
         }
