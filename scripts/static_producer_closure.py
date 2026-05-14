@@ -12246,6 +12246,52 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts/TeleporterPair.cs::"
+            "XRL.World.Parts.TeleporterPair.AttemptTeleport"
+        ),
+        lines=(201,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/TeleporterPairTranslationPatch.cs",
+                (
+                    "TeleporterPairTranslationPatch",
+                    "XRL.World.Parts.TeleporterPair",
+                    "AttemptTeleport",
+                    "CooldownPattern",
+                    "TeleporterPairCooldown",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("TeleporterPairTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/TeleporterPairTranslationPatchTests.cs",
+                (
+                    "AttemptTeleport_TranslatesCooldownPopup_WhenOwnerPatched",
+                    "AttemptTeleport_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "AttemptTeleport_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "AttemptTeleport_DoesNotClaimFixedOrEmptyPopups_WhenOwnerPatched",
+                    "You must wait 1 turn before using this again.",
+                    "You must wait 3 turns before using these again.",
+                    "Nothing happens.",
+                    "You can't teleport with hostiles nearby!",
+                    "TeleporterPairCooldown",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(TeleporterPairTranslationPatch)",
+                    "XRL.World.Parts.TeleporterPair|AttemptTeleport|System.Boolean|XRL.World.GameObject|XRL.World.IEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World/SocialSifrahTokenGift.cs::"
             "XRL.World.SocialSifrahTokenGift.CheckTokenUse"
         ),
