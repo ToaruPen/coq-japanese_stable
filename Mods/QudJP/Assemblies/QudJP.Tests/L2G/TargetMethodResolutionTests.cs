@@ -987,6 +987,10 @@ public sealed class TargetMethodResolutionTests
         "CodeRedemptionManager+<redeemNoProgress>d__0|MoveNext|System.Void",
         "CodeRedemptionManager+<>c__DisplayClass1_0+<<redeem>b__0>d|MoveNext|System.Void",
     })]
+    [TestCase(typeof(SkillsAndPowersSelectNodePopupTranslationPatch), new[]
+    {
+        "XRL.UI.SkillsAndPowersScreen|SelectNode|System.Void|XRL.UI.SPNode|XRL.World.GameObject",
+    })]
     [TestCase(typeof(RealityStabilizedEventTranslationPatch), new[]
     {
         "XRL.World.Effects.RealityStabilized|TryContest|XRL.World.Effects.RealityStabilized+ContestResult|XRL.World.GameObject|System.Int32|System.Int32",

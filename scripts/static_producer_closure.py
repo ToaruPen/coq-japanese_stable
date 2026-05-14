@@ -5913,6 +5913,53 @@ def _code_redemption_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     )
 
 
+def _skills_and_powers_select_node_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.UI/SkillsAndPowersScreen.cs::XRL.UI.SkillsAndPowersScreen.SelectNode",
+            lines=(179, 183, 187, 199, 212),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SkillsAndPowersSelectNodePopupTranslationPatch.cs",
+                    (
+                        "SkillsAndPowersSelectNodePopupTranslationPatch",
+                        "XRL.UI.SkillsAndPowersScreen",
+                        "SelectNode",
+                        "AlreadyHavePattern",
+                        "InitiationRequiredPattern",
+                        "NotEnoughSkillPointsPattern",
+                        "NoImplementationPattern",
+                        "BuyConfirmationPattern",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SkillsAndPowersSelectNodePopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SkillsAndPowersSelectNodePopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSelectNodePopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "Patch_DoesNotClaimFixedRequiredSkillPrompt_WhenOwnerPatched",
+                        "Are you sure you want to buy Long Blade for {{C|150}} sp?",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SkillsAndPowersSelectNodePopupTranslationPatch)",
+                        "XRL.UI.SkillsAndPowersScreen|SelectNode|System.Void|XRL.UI.SPNode|XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _single_fixed_queue_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     return (
         CoveredOwnerCallsites(
@@ -13298,6 +13345,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_garbage_attempt_rifle_owner_callsites(),
     *_ability_manager_show_owner_callsites(),
     *_code_redemption_owner_callsites(),
+    *_skills_and_powers_select_node_owner_callsites(),
     *_single_fixed_queue_owner_callsites(),
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),

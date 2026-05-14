@@ -65,6 +65,7 @@ internal static class PopupShowSemanticPipeline
         SunderMindTranslationPatch.TryTranslatePopupMessage,
         KeybindsScreenConflictTranslationPatch.TryTranslatePopupMessage,
         AbilityManagerPopupTranslationPatch.TryTranslatePopupMessage,
+        SkillsAndPowersSelectNodePopupTranslationPatch.TryTranslatePopupMessage,
         RealityStabilizedEventTranslationPatch.TryTranslatePopupMessage,
         GeomagneticDiscTranslationPatch.TryTranslatePopupMessage,
         CampfireCookAvailabilityTranslationPatch.TryTranslatePopupMessage,
