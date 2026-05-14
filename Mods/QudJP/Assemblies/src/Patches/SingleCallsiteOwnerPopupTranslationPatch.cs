@@ -38,6 +38,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string RecoilOnDeathOwner = "XRL.World.Parts.RecoilOnDeath|HandleEvent";
     private const string SpraybottleOwner = "XRL.World.Parts.Spraybottle|HandleEvent";
     private const string SummoningCurioOwner = "XRL.World.Parts.SummoningCurio|HandleEvent";
+    private const string FoodOwner = "XRL.World.Parts.Food|HandleEvent";
     private const string SpaceTimeVortexOwner = "XRL.World.Parts.SpaceTimeVortex|ApplyVortex";
     private const string SpreadPaxOwner = "XRL.World.QuestManagers.SpreadPax|Finish";
     private const string ToolboxOwner = "XRL.World.Parts.Toolbox|HandleBonus";
@@ -136,6 +137,10 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static readonly Regex SummoningCurioActivationPattern = new(
         "^You activate the curio and toss it on the ground\\. It erupts into a throng of tiny polygons, which amalgamate into a fully formed (?<creature>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex FoodConsumptionFramePattern = new(
+        "^You eat (?<food>.+?)\\.\\n(?<message>[\\s\\S]*?)You are now \\{\\{\\|(?<foodStatus>(?:\\{\\{[^|}]*\\|[^{}]*\\}\\}|[^{}]+))\\}\\} and \\{\\{\\|(?<waterStatus>(?:\\{\\{[^|}]*\\|[^{}]*\\}\\}|[^{}]+))\\}\\}\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex SpaceTimeVortexCompanionSuckedPattern = new(
@@ -330,6 +335,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         AddTarget(
             targets,
             "XRL.World.Parts.SummoningCurio",
+            "HandleEvent",
+            [inventoryActionEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Food",
             "HandleEvent",
             [inventoryActionEventType]);
         AddTarget(
@@ -639,6 +649,17 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             return true;
         }
 
+        match = FoodConsumptionFramePattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, FoodOwner, DummySingleCallsiteOwner + "HandleFood"))
+        {
+            var food = StringHelpers.StripLeadingEnglishArticle(match.Groups["food"].Value, includeCapitalizedDefiniteArticle: true);
+            var foodStatus = TranslateFoodOrWaterStatus(match.Groups["foodStatus"].Value);
+            var waterStatus = TranslateFoodOrWaterStatus(match.Groups["waterStatus"].Value);
+            translated = $"{food}を食べた。\n{match.Groups["message"].Value}現在、{{{{|{foodStatus}}}}}、{{{{|{waterStatus}}}}}だ。";
+            detail = "FoodConsumptionFrame";
+            return true;
+        }
+
         match = SpaceTimeVortexCompanionSuckedPattern.Match(source);
         if (match.Success
             && OwnerMatches(ownerKey, SpaceTimeVortexOwner, DummySingleCallsiteOwner + "ApplySpaceTimeVortex")
@@ -798,6 +819,33 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             _ => string.Empty,
         };
         return translated.Length > 0;
+    }
+
+    private static string TranslateFoodOrWaterStatus(string source)
+    {
+        return ColorAwareTranslationComposer.TranslatePreservingColors(source, TranslateFoodOrWaterStatusVisible);
+    }
+
+    private static string TranslateFoodOrWaterStatusVisible(string source)
+    {
+        return source switch
+        {
+            "Sated" => "満腹",
+            "Hungry" => "空腹",
+            "Wilted!" => "枯れた！",
+            "Famished!" => "飢餓！",
+            "Quenched" => "潤っている",
+            "Thirsty" => "喉が渇いた",
+            "Parched" => "乾き",
+            "Dehydrated!" => "脱水！",
+            "Desiccated!" => "干からびた！",
+            "Dry" => "乾き",
+            "Moist" => "潤い",
+            "Wet" => "濡れ",
+            "Soaked" => "びしょ濡れ",
+            "Tumescent" => "膨満",
+            _ => source,
+        };
     }
 
     private static void AddTarget(List<MethodBase> targets, string typeName, string methodName, Type[] parameters)

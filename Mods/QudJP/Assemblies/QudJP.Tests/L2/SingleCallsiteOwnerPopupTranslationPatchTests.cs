@@ -245,6 +245,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "SummoningCurioActivation",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood),
+        "You eat the {{Y|jerky}}.\n塩辛い。\nYou are now {{|{{g|Sated}}}} and {{|{{g|Quenched}}}}.",
+        "{{Y|jerky}}を食べた。\n塩辛い。\n現在、{{|{{g|満腹}}}}、{{|{{g|潤っている}}}}だ。",
+        "FoodConsumptionFrame",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood),
+        "You eat {{Y|raw meat}}.\nYou are now {{|{{W|Hungry}}}} and {{|{{Y|Thirsty}}}}.",
+        "{{Y|raw meat}}を食べた。\n現在、{{|{{W|空腹}}}}、{{|{{Y|喉が渇いた}}}}だ。",
+        "FoodConsumptionFrame",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.ApplySpaceTimeVortex),
         "Your companion, {{G|Q Girl}},has been sucked into the space-time vortex to the east!",
         "あなたの仲間である{{G|Q Girl}}は東側のspace-time vortexに吸い込まれた！",
@@ -403,6 +415,10 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "SummoningCurioActivation",
         PopupMethod.Show)]
     [TestCase(
+        "You eat the {{Y|jerky}}.\n塩辛い。\nYou are now {{|{{g|Sated}}}} and {{|{{g|Quenched}}}}.",
+        "FoodConsumptionFrame",
+        PopupMethod.Show)]
+    [TestCase(
         "Your companion, {{G|Q Girl}},has been sucked into the space-time vortex to the east!",
         "SpaceTimeVortexCompanionSucked",
         PopupMethod.Show)]
@@ -496,6 +512,9 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "You activate the curio and toss it on the ground. It erupts into a throng of tiny polygons, which amalgamate into a fully formed {{Y|polygonal snapjaw}}.",
         "SummoningCurioActivation")]
     [TestCase(
+        "You eat the {{Y|jerky}}.\n塩辛い。\nYou are now {{|{{g|Sated}}}} and {{|{{g|Quenched}}}}.",
+        "FoodConsumptionFrame")]
+    [TestCase(
         "Your companion, {{G|Q Girl}},has been sucked into the space-time vortex to the east!",
         "SpaceTimeVortexCompanionSucked")]
     [TestCase(
@@ -561,6 +580,26 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 {
                     Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
                     Assert.That(HitCount("DecoyHologramOutOfRange"), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_DoesNotClaimFoodSicknessPopup_WhenFoodOwnerPatched()
+    {
+        const string source = "Ugh, you feel sick.";
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(SingleCallsiteOwnerPopupTranslationPatch),
+            RequireOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood)),
+            () =>
+            {
+                InvokeOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood), source);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                    Assert.That(HitCount("FoodConsumptionFrame"), Is.Zero);
                 });
             });
     }
@@ -644,6 +683,7 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleGritGateMainframeTerminal) or
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpraybottle) or
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleSummoningCurio) or
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood) or
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleTrainingBook) =>
                 OwnerPopupRouteTestHarness.RequireMethod(
                     typeof(DummySingleCallsiteOwnerPopupTarget),
@@ -890,6 +930,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 {
                     PopupMessageToShow = message,
                 }.HandleSummoningCurio(new DummyInventoryActionEvent());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.HandleFood(new DummyInventoryActionEvent());
                 break;
             case nameof(DummySingleCallsiteOwnerPopupTarget.ApplySpaceTimeVortex):
                 new DummySingleCallsiteOwnerPopupTarget

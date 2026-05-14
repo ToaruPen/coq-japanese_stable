@@ -1744,6 +1744,14 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         return true;
     }
 
+    public bool HandleFood(DummyInventoryActionEvent? e = null)
+    {
+        _ = e;
+        _ = nameof(HandleFood);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
     public bool ApplySpaceTimeVortex(DummyGameObject target)
     {
         _ = target;
