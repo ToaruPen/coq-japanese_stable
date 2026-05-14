@@ -68,6 +68,7 @@ internal static class PopupShowSemanticPipeline
         SkillsAndPowersSelectNodePopupTranslationPatch.TryTranslatePopupMessage,
         RealityStabilizedEventTranslationPatch.TryTranslatePopupMessage,
         GeomagneticDiscTranslationPatch.TryTranslatePopupMessage,
+        CampfireNostrumsTranslationPatch.TryTranslatePopupMessage,
         CampfireCookAvailabilityTranslationPatch.TryTranslatePopupMessage,
         CampfirePreserveTranslationPatch.TryTranslatePopupMessage,
         WaterRitualPopupTranslationPatch.TryTranslatePopupMessage,

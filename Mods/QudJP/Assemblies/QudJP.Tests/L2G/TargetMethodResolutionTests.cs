@@ -1022,6 +1022,11 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.Campfire|Cook|System.Boolean",
     })]
+    [TestCase(typeof(CampfireNostrumsTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Campfire|NostrumsStopBleeding|System.Void",
+        "XRL.World.Parts.Campfire|NostrumsTreatPoison|System.Void",
+    })]
     [TestCase(typeof(TeleprojectorTranslationPatch), new[]
     {
         "XRL.World.Parts.Teleprojector|HandleEvent|System.Boolean|XRL.World.BootSequenceDoneEvent",

@@ -2918,6 +2918,64 @@ def _campfire_preserve_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _campfire_nostrums_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    evidence_files = (
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/src/Patches/CampfireNostrumsTranslationPatch.cs",
+            (
+                "CampfireNostrumsTranslationPatch",
+                "NostrumsStopBleeding",
+                "NostrumsTreatPoison",
+                "StaunchPassThroughPattern",
+                "PoisonTooStrongYouAndTargetPattern",
+                "TryTranslatePopupMessage",
+            ),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+            ("CampfireNostrumsTranslationPatch.TryTranslatePopupMessage",),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CampfireNostrumsTranslationPatchTests.cs",
+            (
+                "Patch_TranslatesCampfireNostrumsPopups_WhenOwnerPatched",
+                "Patch_DoesNotRecordCampfireNostrumsRoute_WhenOwnerAbsent",
+                "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                "nameof(DummyCampfireNostrumsTarget.NostrumsStopBleeding)",
+                "nameof(DummyCampfireNostrumsTarget.NostrumsTreatPoison)",
+                "You try to staunch the wounds of {{C|salt kraken}}, but your limbs pass through them.",
+                "You cure the poisons coursing through",
+                "{{Y|witchwood bark}}",
+                "The poison affecting you and {{G|snapjaw}} is too strong to be cured by your nostrums.",
+                "Neither you nor {{M|Eskhind}} are poisoned.",
+            ),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+            (
+                "typeof(CampfireNostrumsTranslationPatch)",
+                "XRL.World.Parts.Campfire|NostrumsStopBleeding|System.Void",
+                "XRL.World.Parts.Campfire|NostrumsTreatPoison|System.Void",
+            ),
+        ),
+    )
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.NostrumsStopBleeding",
+            lines=(1589, 1593, 1606, 1615, 1635, 1647),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=evidence_files,
+        ),
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.NostrumsTreatPoison",
+            lines=(1685, 1695, 1700, 1707, 1712, 1730, 1739, 1748),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=evidence_files,
+        ),
+    )
+
+
 def _reality_stabilized_event_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         (
@@ -13642,6 +13700,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_single_fixed_queue_owner_callsites(),
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
+    *_campfire_nostrums_owner_callsites(),
     CoveredOwnerCallsites(
         family_id=(
             "XRL.World.Parts.Mutation/Carapace.cs::"
