@@ -105,6 +105,29 @@ public sealed class ShortBladesHobbleTranslationPatchTests
         });
     }
 
+    [Test]
+    public void Hobble_DoesNotClaimNonMatchingQueuedMessage_WhenOwnerPatched()
+    {
+        const string source = "There is no clear weakness to exploit.";
+
+        WithPatchedOwnerAndQueue(() =>
+        {
+            new DummyShortBladesHobbleProducer
+            {
+                QueuedMessageToSend = source,
+                ColorToSend = "yellow",
+            }.FireEvent(new DummyShortBladesEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+                Assert.That(DummyMessageQueue.LastColor, Is.EqualTo("yellow"));
+                Assert.That(QueueHitCount("ShortBladesHobblePlayerFindsWeakness"), Is.Zero);
+                Assert.That(QueueHitCount("ShortBladesHobbleEnemyFindsWeakness"), Is.Zero);
+            });
+        });
+    }
+
     [TestCase(
         "Are you sure you want to hobble yourself?",
         "自分自身を足止めしてもよいか？")]

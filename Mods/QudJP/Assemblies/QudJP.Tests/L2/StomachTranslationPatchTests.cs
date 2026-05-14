@@ -108,6 +108,27 @@ public sealed class StomachTranslationPatchTests
         });
     }
 
+    [Test]
+    public void AddWater_DoesNotRetranslateUnknownDirectMarkedQueueMessage_WhenOwnerPatched()
+    {
+        const string source = "The stomach gurgles in an unfamiliar way.";
+
+        WithPatchedOwnerAndQueue(() =>
+        {
+            new DummyStomachProducer
+            {
+                MessageToSend = MessageFrameTranslator.MarkDirectTranslation(source),
+            }.FireEvent(new DummyStomachEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+                Assert.That(HitCount("StomachMoistureBody"), Is.Zero);
+                Assert.That(HitCount("StomachMoistureThroat"), Is.Zero);
+            });
+        });
+    }
+
     [TestCase("")]
     [TestCase("You drank way too much!")]
     [TestCase("Ugh, you feel sick.")]

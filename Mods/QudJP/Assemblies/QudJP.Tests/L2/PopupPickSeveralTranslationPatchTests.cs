@@ -94,6 +94,29 @@ public sealed class PopupPickSeveralTranslationPatchTests
     }
 
     [Test]
+    public void Patch_PassesThroughUnsupportedDirectMarkedPopup_WhenOwnerPatched()
+    {
+        const string unmarked = "You can select as many options as you want.";
+        var source = MessageFrameTranslator.MarkDirectTranslation(unmarked);
+
+        WithPatchedOwnerAndPopup(() =>
+        {
+            var target = new DummyPopupPickSeveralProducerTarget
+            {
+                PopupMessageToShow = source,
+            };
+
+            target.PickSeveral();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(unmarked));
+                Assert.That(HitCount("SelectionLimit"), Is.Zero);
+            });
+        });
+    }
+
+    [Test]
     public void Patch_LeavesUnsupportedEnglishPopupUnchanged_WhenOwnerPatched()
     {
         const string source = "You can select as many options as you want.";

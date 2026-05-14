@@ -144,6 +144,28 @@ public sealed class MutationGeneratedTextTranslationPatchTests
             expectedHits: 0);
     }
 
+    [Test]
+    public void Patch_PassesThroughUnknownDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertOwnerPopup(
+            LifeDrainOwner,
+            MessageFrameTranslator.MarkDirectTranslation("Unknown mutation popup payload."),
+            "Unknown mutation popup payload.",
+            "LifeDrainInvalidTarget",
+            expectedHits: 0);
+    }
+
+    [Test]
+    public void Patch_PassesThroughUnknownDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertOwnerQueuedMessage(
+            PackRatOwner,
+            MessageFrameTranslator.MarkDirectTranslation("Unknown mutation queue payload."),
+            "Unknown mutation queue payload.",
+            "PackRatCollectMoreJunk",
+            expectedHits: 0);
+    }
+
     [TestCase(LifeDrainOwner, "You can syphon vim from {{Y|snapjaw}}.")]
     [TestCase(PackRatOwner, "You must wait three more turns to work up the willpower to drop something!")]
     [TestCase(BelcherOwner, "That is out of range! (nearby)")]

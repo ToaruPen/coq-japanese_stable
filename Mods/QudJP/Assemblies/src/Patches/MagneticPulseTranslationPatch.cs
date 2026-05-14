@@ -12,7 +12,7 @@ public static class MagneticPulseTranslationPatch
 {
     private const string Context = nameof(MagneticPulseTranslationPatch);
     private static readonly Regex CompanionRippedPattern = new(
-        "^Your companion, (?<companion>.+?),(?:have|has) had (?:the |a |an )?(?<item>.+?) ripped from (?<possessive>.+?) body!$",
+        "^Your companion, (?<companion>.+?),\\s*(?:have|has) had (?:the |a |an )?(?<item>.+?) ripped from (?<possessive>.+?) body!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex RippedFromPlayerPattern = new(
         "^(?:The |the |A |a |An |an )?(?<subject>.+?) (?:is|are) ripped from your body!$",

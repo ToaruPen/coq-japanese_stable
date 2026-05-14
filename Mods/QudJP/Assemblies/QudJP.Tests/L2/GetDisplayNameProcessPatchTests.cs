@@ -617,6 +617,9 @@ public sealed class GetDisplayNameProcessPatchTests
     [TestCase("W", "Used", "使用済み")]
     [TestCase("g", "Fresh", "残量多")]
     [TestCase("G", "Full", "満充電")]
+    [TestCase("C", "Unknown", "Unknown")]
+    [TestCase("M", "", "")]
+    [TestCase("Y", "\u0001Low", "Low")]
     public void Postfix_TranslatesColoredChargeStateSuffix_WhenPatched(
         string color,
         string state,

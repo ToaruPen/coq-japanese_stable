@@ -865,7 +865,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
     {
         AssertOnEatRewardQueuedMessage(
             MessageFrameTranslator.MarkDirectTranslation("You gain 1 mutation point!"),
-            "You gain 1 mutation point!");
+            "You gain 1 mutation point!",
+            expectedColor: "G");
     }
 
     [TestCase("")]
@@ -9994,7 +9995,11 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
             target.TryThawZone("JoppaWorld.1.1.1.1.10", out _);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+                Assert.That(DummyMessageQueue.LastColor, Is.EqualTo(color));
+            });
         }
         finally
         {
@@ -10022,7 +10027,11 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
             target.Tick(allowFreeze: true);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+                Assert.That(DummyMessageQueue.LastColor, Is.EqualTo(color));
+            });
         }
         finally
         {
@@ -10050,7 +10059,11 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
             target.GenerateZone("JoppaWorld.1.1.1.1.10");
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+                Assert.That(DummyMessageQueue.LastColor, Is.EqualTo(color));
+            });
         }
         finally
         {

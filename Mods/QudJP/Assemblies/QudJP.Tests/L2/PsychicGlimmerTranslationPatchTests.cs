@@ -46,6 +46,8 @@ public sealed class PsychicGlimmerTranslationPatchTests
             {
                 Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(WatchedExpected));
                 Assert.That(HitCount("Watched"), Is.EqualTo(1));
+                Assert.That(HitCount("ConcealSelf"), Is.Zero);
+                Assert.That(HitCount("ConcealFromWatchers"), Is.Zero);
             });
         });
     }
@@ -74,6 +76,16 @@ public sealed class PsychicGlimmerTranslationPatchTests
             {
                 Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
                 Assert.That(HitCount(detail), Is.EqualTo(1));
+                Assert.That(HitCount("Watched"), Is.Zero);
+                if (!string.Equals(detail, "ConcealSelf", StringComparison.Ordinal))
+                {
+                    Assert.That(HitCount("ConcealSelf"), Is.Zero);
+                }
+
+                if (!string.Equals(detail, "ConcealFromWatchers", StringComparison.Ordinal))
+                {
+                    Assert.That(HitCount("ConcealFromWatchers"), Is.Zero);
+                }
             });
         });
     }
@@ -105,6 +117,28 @@ public sealed class PsychicGlimmerTranslationPatchTests
             {
                 Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(WatchedSource));
                 Assert.That(HitCount("Watched"), Is.Zero);
+            });
+        });
+    }
+
+    [Test]
+    public void Update_PassesThroughUnknownDirectMarkedPopup_WhenOwnerPatched()
+    {
+        const string source = "{{K|The watcher blinks and says nothing.}}";
+
+        WithPatchedOwner(() =>
+        {
+            new DummyPsychicGlimmerProducer
+            {
+                MessageToShow = MessageFrameTranslator.MarkDirectTranslation(source),
+            }.Update(new DummyGameObject());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                Assert.That(HitCount("Watched"), Is.Zero);
+                Assert.That(HitCount("ConcealSelf"), Is.Zero);
+                Assert.That(HitCount("ConcealFromWatchers"), Is.Zero);
             });
         });
     }

@@ -98,6 +98,12 @@ public sealed class MapRevealPopupTranslationPatchTests
     public void HandleEvent_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
         AssertOwnerPopup(MapRevealOwner, string.Empty, string.Empty);
+        Assert.Multiple(() =>
+        {
+            Assert.That(RouteHitCount("OwnerConsumptionWarning"), Is.Zero);
+            Assert.That(RouteHitCount("OrdinaryPaper"), Is.Zero);
+            Assert.That(RouteHitCount("MapOfSurroundings"), Is.Zero);
+        });
     }
 
     [Test]

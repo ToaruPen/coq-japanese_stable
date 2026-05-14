@@ -97,6 +97,27 @@ public sealed class ShortBladesShankTranslationPatchTests
         });
     }
 
+    [Test]
+    public void Shank_DoesNotClaimNonMatchingQueuedMessage_WhenOwnerPatched()
+    {
+        const string source = "There's nothing there you can shank.";
+
+        WithPatchedOwnerAndQueue(() =>
+        {
+            DummyShortBladesShankProducer.QueuedMessageToSend = source;
+            DummyShortBladesShankProducer.ColorToSend = "red";
+
+            DummyShortBladesShankProducer.Cast(new DummyGameObject());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+                Assert.That(DummyMessageQueue.LastColor, Is.EqualTo("red"));
+                Assert.That(QueueHitCount("ShortBladesShankAttempt"), Is.Zero);
+            });
+        });
+    }
+
     [TestCase(
         "Are you sure you want to shank yourself?",
         "自分自身の急所を突きますか？")]

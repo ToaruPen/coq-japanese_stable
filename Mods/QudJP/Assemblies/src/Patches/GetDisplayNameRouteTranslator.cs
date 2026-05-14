@@ -49,7 +49,7 @@ internal static class GetDisplayNameRouteTranslator
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex ParenthesizedColoredChargeStatusPattern =
         new Regex(
-            "(?<prefix>\\()(?<status>\\{\\{[^|}]+\\|[^{}]+\\}\\})(?<suffix>\\))",
+            "(?<prefix>\\()(?<status>\\{\\{[^|}]+\\|[^{}]*\\}\\})(?<suffix>\\))",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PrepositionalStateTemplatePattern =
         new Regex(
@@ -110,6 +110,11 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         using var _ = Translator.PushLogContext(context);
+
+        if (TryHandleParenthesizedColoredChargeStatusFallback(source!, route, out var chargeStatusFallback))
+        {
+            return chargeStatusFallback;
+        }
 
         if (TryTranslateParenthesizedColoredChargeStatus(source!, route, out var chargeStatusTranslation))
         {
@@ -190,6 +195,46 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         return changed;
+    }
+
+    private static bool TryHandleParenthesizedColoredChargeStatusFallback(
+        string source,
+        string route,
+        out string translated)
+    {
+        var changed = false;
+        var matchedFallback = false;
+        translated = ParenthesizedColoredChargeStatusPattern.Replace(
+            source,
+            match =>
+            {
+                var status = match.Groups["status"].Value;
+                if (MessageFrameTranslator.TryStripDirectTranslationMarker(status, out var markedStatus))
+                {
+                    changed = true;
+                    matchedFallback = true;
+                    return match.Groups["prefix"].Value + markedStatus + match.Groups["suffix"].Value;
+                }
+
+                if (EnergyStorageChargeStatusTranslationPatch.TryTranslateChargeStatus(status, out _))
+                {
+                    return match.Value;
+                }
+
+                matchedFallback = true;
+                return match.Value;
+            });
+
+        if (changed)
+        {
+            DynamicTextObservability.RecordTransform(
+                route,
+                "DisplayName.ColoredChargeStatusSuffix",
+                source,
+                translated);
+        }
+
+        return matchedFallback;
     }
 
     private static bool TryTranslateDisplayNameRouteText(string source, string route, out string translated)

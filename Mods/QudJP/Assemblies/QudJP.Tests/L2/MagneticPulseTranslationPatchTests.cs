@@ -36,7 +36,7 @@ public sealed class MagneticPulseTranslationPatchTests
         "The {{Y|steel boots}} are ripped from your body!",
         "{{Y|steel boots}}があなたの体から引き剥がされた！")]
     [TestCase(
-        "Your companion, {{Y|Q Girl}},has had a {{C|steel sword}} ripped from her body!",
+        "Your companion, {{Y|Q Girl}}, has had a {{C|steel sword}} ripped from her body!",
         "{{Y|Q Girl}}の体から{{C|steel sword}}が引き剥がされた！")]
     public void MagneticPulse_TranslatesRippedEquipmentPopups_WhenOwnerPatched(
         string source,
@@ -98,6 +98,18 @@ public sealed class MagneticPulseTranslationPatchTests
         AssertPopupMessage(
             MessageFrameTranslator.MarkDirectTranslation("The steel boots are ripped from your body!"),
             "The steel boots are ripped from your body!");
+    }
+
+    [Test]
+    public void MagneticPulse_PassesThroughUnknownDirectMarkedTraffic_WhenOwnerPatched()
+    {
+        AssertQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("The magnetic field wobbles oddly."),
+            "The magnetic field wobbles oddly.",
+            expectedColor: "white");
+        AssertPopupMessage(
+            MessageFrameTranslator.MarkDirectTranslation("The pulse fades before anything moves."),
+            "The pulse fades before anything moves.");
     }
 
     [TestCase("")]
