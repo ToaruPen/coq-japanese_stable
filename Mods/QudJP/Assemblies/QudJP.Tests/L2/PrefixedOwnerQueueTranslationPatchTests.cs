@@ -90,6 +90,14 @@ public sealed class PrefixedOwnerQueueTranslationPatchTests
             string.Empty);
     }
 
+    [Test]
+    public void Patch_LeavesUntranslatedEnglishFallback_WhenOwnerPatched()
+    {
+        const string source = "You hear a distant roar.";
+
+        AssertOwnerQueuedMessage(nameof(DummySimpleOwnerQueueTarget.FleeTakeAction), source, source);
+    }
+
     private static void AssertOwnerQueuedMessage(string ownerMethodName, string source, string expected)
     {
         var harmonyId = CreateHarmonyId();

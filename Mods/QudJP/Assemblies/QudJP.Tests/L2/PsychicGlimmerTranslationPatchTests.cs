@@ -122,6 +122,7 @@ public sealed class PsychicGlimmerTranslationPatchTests
 
             Assert.Multiple(() =>
             {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
                 Assert.That(HitCount("Watched"), Is.Zero);
                 Assert.That(HitCount("ConcealSelf"), Is.Zero);
                 Assert.That(HitCount("ConcealFromWatchers"), Is.Zero);

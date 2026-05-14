@@ -73,6 +73,17 @@ public sealed class TelekinesisTranslationPatchTests
             expectedHits: 0);
     }
 
+    [Test]
+    public void Patch_LeavesDirectMarkedUnsupportedPopupUnchanged_WhenOwnerPatched()
+    {
+        const string unmarked = "You do not budge.";
+
+        AssertTelekinesisPopup(
+            MessageFrameTranslator.MarkDirectTranslation(unmarked),
+            unmarked,
+            expectedHits: 0);
+    }
+
     [TestCase("")]
     [TestCase("You do not budge.")]
     public void Patch_LeavesUnsupportedPopupUnchanged_WhenOwnerPatched(string source)

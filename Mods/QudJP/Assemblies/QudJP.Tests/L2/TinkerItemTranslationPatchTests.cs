@@ -216,6 +216,7 @@ public sealed class TinkerItemTranslationPatchTests
 
             Assert.Multiple(() =>
             {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
                 Assert.That(HitCount("CannotAffect"), Is.Zero);
                 Assert.That(HitCount("OwnedItemDisassembly"), Is.Zero);
                 Assert.That(HitCount("DisassemblyConfirmation"), Is.Zero);

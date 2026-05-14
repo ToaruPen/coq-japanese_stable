@@ -12,7 +12,7 @@ public static class MagneticPulseTranslationPatch
 {
     private const string Context = nameof(MagneticPulseTranslationPatch);
     private static readonly Regex CompanionRippedPattern = new(
-        "^Your companion, (?<companion>.+?),(?:have|has) had (?<item>.+?) ripped from (?<possessive>.+?) body!$",
+        "^Your companion, (?<companion>.+?),(?:have|has) had (?:the |a |an )?(?<item>.+?) ripped from (?<possessive>.+?) body!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex RippedFromPlayerPattern = new(
         "^(?:The |the |A |a |An |an )?(?<subject>.+?) (?:is|are) ripped from your body!$",
@@ -173,7 +173,7 @@ public static class MagneticPulseTranslationPatch
         var target = string.Equals(match.Groups["target"].Value, "something", StringComparison.Ordinal)
             ? "何か"
             : RestoreCapture(match, spans, "target");
-        translated = $"{RestoreCapture(match, spans, "subject")}は{target}に引き寄せられた";
+        translated = $"{RestoreCapture(match, spans, "subject")}は{target}に引き寄せられた。";
         return true;
     }
 

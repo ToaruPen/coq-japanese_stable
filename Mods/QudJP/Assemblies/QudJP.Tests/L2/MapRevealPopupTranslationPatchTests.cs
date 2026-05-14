@@ -87,17 +87,9 @@ public sealed class MapRevealPopupTranslationPatchTests
         const string source = "{{Y|ancient map}} seems to be behaving as nothing more than an ordinary piece of paper.";
         var marked = MessageFrameTranslator.MarkDirectTranslation(source);
 
-        Assert.That(
-            MapRevealPopupTranslationPatch.TryTranslatePopupMessageForOwnerKey(
-                marked,
-                MapRevealOwner,
-                nameof(PopupShowTranslationPatch),
-                "MapRevealPopup",
-                out var translated),
-            Is.True);
+        AssertOwnerPopup(MapRevealOwner, marked, source);
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Is.EqualTo(source));
             Assert.That(RouteHitCount("OrdinaryPaper"), Is.Zero);
         });
     }
@@ -105,15 +97,7 @@ public sealed class MapRevealPopupTranslationPatchTests
     [Test]
     public void HandleEvent_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
-        Assert.That(
-            MapRevealPopupTranslationPatch.TryTranslatePopupMessageForOwnerKey(
-                string.Empty,
-                MapRevealOwner,
-                nameof(PopupShowTranslationPatch),
-                "MapRevealPopup",
-                out var translated),
-            Is.False);
-        Assert.That(translated, Is.EqualTo(string.Empty));
+        AssertOwnerPopup(MapRevealOwner, string.Empty, string.Empty);
     }
 
     [Test]
@@ -121,17 +105,9 @@ public sealed class MapRevealPopupTranslationPatchTests
     {
         const string source = "The map remains inscrutable.";
 
-        Assert.That(
-            MapRevealPopupTranslationPatch.TryTranslatePopupMessageForOwnerKey(
-                source,
-                MapRevealOwner,
-                nameof(PopupShowTranslationPatch),
-                "MapRevealPopup",
-                out var translated),
-            Is.False);
+        AssertOwnerPopup(MapRevealOwner, source, source);
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Is.EqualTo(source));
             Assert.That(RouteHitCount("OwnerConsumptionWarning"), Is.Zero);
             Assert.That(RouteHitCount("OrdinaryPaper"), Is.Zero);
             Assert.That(RouteHitCount("MapOfSurroundings"), Is.Zero);
@@ -144,17 +120,9 @@ public sealed class MapRevealPopupTranslationPatchTests
     public void FactionDeedHandleEvent_DoesNotClaimFixedNarrativeOrMapSpecificPopups_WhenOwnerPatched(
         string source)
     {
-        Assert.That(
-            MapRevealPopupTranslationPatch.TryTranslatePopupMessageForOwnerKey(
-                source,
-                FactionDeedOwner,
-                nameof(PopupShowTranslationPatch),
-                "MapRevealPopup",
-                out var translated),
-            Is.False);
+        AssertOwnerPopup(FactionDeedOwner, source, source);
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Is.EqualTo(source));
             Assert.That(RouteHitCount("OwnerConsumptionWarning"), Is.Zero);
             Assert.That(RouteHitCount("OrdinaryPaper"), Is.Zero);
             Assert.That(RouteHitCount("MapOfSurroundings"), Is.Zero);
@@ -163,23 +131,33 @@ public sealed class MapRevealPopupTranslationPatchTests
 
     private static void AssertOwnerTranslation(string ownerKey, string source, string expected, string expectedDetail)
     {
-        Assert.That(
-            MapRevealPopupTranslationPatch.TryTranslatePopupMessageForOwnerKey(
-                source,
-                ownerKey,
-                nameof(PopupShowTranslationPatch),
-                "MapRevealPopup",
-                out var translated),
-            Is.True);
-        Assert.Multiple(() =>
-        {
-            Assert.That(translated, Is.EqualTo(expected));
-            Assert.That(RouteHitCount(expectedDetail), Is.EqualTo(1));
-        });
+        AssertOwnerPopup(ownerKey, source, expected);
+        Assert.That(RouteHitCount(expectedDetail), Is.EqualTo(1));
+    }
+
+    private static void AssertOwnerPopup(string ownerKey, string source, string expected)
+    {
+        var ownerRoute = CreateOwnerRouteFromKey(ownerKey);
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(MapRevealPopupTranslationPatch),
+            ownerRoute.Method,
+            () =>
+            {
+                ownerRoute.Invoke(() => DummyPopupShow.Show(source));
+
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+            });
     }
 
     private static int RouteHitCount(string detail)
     {
         return OwnerPopupRouteTestHarness.RouteHitCount(typeof(MapRevealPopupTranslationPatch), detail);
+    }
+
+    private static DynamicOwnerRouteMethod CreateOwnerRouteFromKey(string ownerKey)
+    {
+        var separator = ownerKey.LastIndexOf('|');
+        return DynamicOwnerRouteMethod.Create(ownerKey[..separator], ownerKey[(separator + 1)..]);
     }
 }

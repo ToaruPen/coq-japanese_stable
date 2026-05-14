@@ -183,7 +183,11 @@ public sealed class ShortBladesHobbleTranslationPatchTests
                     PopupMessageToShow = source,
                 }.FireEvent(new DummyShortBladesEvent());
 
-                Assert.That(PopupHitCount("ShortBladesHobbleSelfConfirmation"), Is.Zero);
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo(source));
+                    Assert.That(PopupHitCount("ShortBladesHobbleSelfConfirmation"), Is.Zero);
+                });
             });
     }
 
@@ -294,10 +298,7 @@ public sealed class ShortBladesHobbleTranslationPatchTests
                 DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, ColorToSend, Capitalize: false);
             }
 
-            if (!string.IsNullOrEmpty(PopupMessageToShow))
-            {
-                DummyPopupShow.ShowYesNo(PopupMessageToShow);
-            }
+            DummyPopupShow.ShowYesNo(PopupMessageToShow);
         }
     }
 

@@ -42,6 +42,13 @@ public sealed class KillMissileWeaponChirpTranslationPatchTests
         AssertOwnerQueuedMessage("Something chirps to the east.", "東側で何かが鳴いた。", "Y");
     }
 
+    [TestCase("{{W|Something chirps to the north.}}", "{{W|北側で何かが鳴いた。}}")]
+    [TestCase("&YSomething chirps here.", "&Yここで何かが鳴いた。")]
+    public void TryMissileWeapon_PreservesInlineColorTags_WhenOwnerPatched(string source, string expected)
+    {
+        AssertOwnerQueuedMessage(source, expected, "Y");
+    }
+
     [Test]
     public void TryMissileWeapon_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
     {

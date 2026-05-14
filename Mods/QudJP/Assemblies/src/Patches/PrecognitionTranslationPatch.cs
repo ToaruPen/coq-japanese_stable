@@ -125,14 +125,15 @@ public static class PrecognitionTranslationPatch
         out string translated,
         out string detail)
     {
-        var context = source switch
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var context = stripped switch
         {
             "You peer into the future." => PrecognitionContext,
             "You sense a subtle psychic disturbance." => GenericEffectContext,
             "Your focus returns to the present." => PrecognitionContext,
             _ => null,
         };
-        detail = source switch
+        detail = stripped switch
         {
             "You peer into the future." => "PeerIntoFuture",
             "You sense a subtle psychic disturbance." => "PsychicDisturbance",
@@ -147,17 +148,17 @@ public static class PrecognitionTranslationPatch
         }
 
         var dictionaryTranslation = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContextOnly(
-            source,
+            stripped,
             context,
             DictionaryFile);
         if (string.IsNullOrEmpty(dictionaryTranslation)
-            || string.Equals(dictionaryTranslation, source, StringComparison.Ordinal))
+            || string.Equals(dictionaryTranslation, stripped, StringComparison.Ordinal))
         {
             translated = source;
             return false;
         }
 
-        translated = dictionaryTranslation!;
+        translated = ColorAwareTranslationComposer.RestoreRelative(dictionaryTranslation!, spans, stripped.Length);
         return !string.Equals(translated, source, StringComparison.Ordinal);
     }
 }

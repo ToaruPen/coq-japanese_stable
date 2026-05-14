@@ -58,6 +58,14 @@ public sealed class EngraverTranslationPatchTests
             "You engrave a tiny spiral on your right hand.");
     }
 
+    [Test]
+    public void EngraverAttemptEngrave_LeavesUnsupportedDirectMarkedPopupUnchanged_WhenOwnerPatched()
+    {
+        const string source = "You tattoo the mark of death on your right hand.";
+
+        AssertPopupMessage(MessageFrameTranslator.MarkDirectTranslation(source), source);
+    }
+
     [TestCase("")]
     [TestCase("You tattoo the mark of death on your right hand.")]
     [TestCase("You engrave a tiny spiral.")]

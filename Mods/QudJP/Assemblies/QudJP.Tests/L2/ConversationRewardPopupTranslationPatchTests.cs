@@ -164,7 +164,11 @@ public sealed class ConversationRewardPopupTranslationPatchTests
 
             target.ReceiveItemHandleEvent();
 
-            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
+                Assert.That(HitCount("ReceiveItem"), Is.Zero);
+            });
         });
     }
 

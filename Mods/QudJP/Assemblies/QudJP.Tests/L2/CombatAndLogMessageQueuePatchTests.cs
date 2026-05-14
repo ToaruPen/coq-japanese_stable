@@ -31,7 +31,6 @@ public sealed class CombatAndLogMessageQueuePatchTests
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         MessagePatternTranslator.InvalidatePatternFileCacheForTests(patternFilePath);
-        UseRepositoryMessageFrames();
         DummyMessageQueue.Reset();
         DummyPopupShow.Reset();
     }
@@ -813,7 +812,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
     {
         AssertMutationAbsorptionHealingQueuedMessage(
             MessageFrameTranslator.MarkDirectTranslation("You are healed for 5 by the cold."),
-            "You are healed for 5 by the cold.");
+            "You are healed for 5 by the cold.",
+            expectedColor: "C");
     }
 
     [TestCase("")]
@@ -9121,6 +9121,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
     private static void AssertEffectGeneratedHandleEventQueuedMessage(string message, string expected)
     {
+        UseRepositoryMessageFrames();
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try
@@ -9151,6 +9152,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
     private static void AssertEffectGeneratedApplyQueuedMessage(string message, string expected)
     {
+        UseRepositoryMessageFrames();
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try

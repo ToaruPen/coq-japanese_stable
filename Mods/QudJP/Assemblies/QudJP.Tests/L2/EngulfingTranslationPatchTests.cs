@@ -42,7 +42,11 @@ public sealed class EngulfingTranslationPatchTests
 
             DummyMessageQueue.AddPlayerMessage(source, "white", Capitalize: false);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+                Assert.That(DummyMessageQueue.LastColor, Is.EqualTo("white"));
+            });
         }
         finally
         {

@@ -142,22 +142,27 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
         string? color = null,
         int expectedHits = 1)
     {
-        var message = source;
-
-        Assert.That(
-            SingleCallsiteOwnerQueueTranslationPatch.TryTranslateQueuedMessageForOwnerKey(
-                ref message,
-                color,
-                OwnerKeyForMethod(methodName)),
-            Is.EqualTo(expectedHits > 0 || MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _)));
-        var observedMessage = MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var unmarked)
-            ? unmarked
-            : message;
-        Assert.Multiple(() =>
+        var ownerRoute = CreateOwnerRoute(methodName);
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
         {
-            Assert.That(observedMessage, Is.EqualTo(expected));
-            Assert.That(HitCount(detail), Is.EqualTo(expectedHits));
-        });
+            PatchQueue(harmony);
+            PatchOwner(harmony, ownerRoute.Method);
+
+            ownerRoute.Invoke(() => DummyMessageQueue.AddPlayerMessage(source, color, Capitalize: false));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+                Assert.That(DummyMessageQueue.LastColor, Is.EqualTo(color));
+                Assert.That(HitCount(detail), Is.EqualTo(expectedHits));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private static void PatchQueue(Harmony harmony)
@@ -186,6 +191,20 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
                 typeof(bool))));
     }
 
+    private static void PatchOwner(Harmony harmony, MethodInfo ownerMethod)
+    {
+        harmony.Patch(
+            original: ownerMethod,
+            prefix: new HarmonyMethod(RequireMethod(
+                typeof(SingleCallsiteOwnerQueueTranslationPatch),
+                nameof(SingleCallsiteOwnerQueueTranslationPatch.Prefix),
+                typeof(MethodBase))),
+            finalizer: new HarmonyMethod(RequireMethod(
+                typeof(SingleCallsiteOwnerQueueTranslationPatch),
+                nameof(SingleCallsiteOwnerQueueTranslationPatch.Finalizer),
+                typeof(Exception))));
+    }
+
     private static MethodInfo RequireMethod(Type type, string methodName, params Type[] parameterTypes)
     {
         if (parameterTypes.Length == 0)
@@ -210,14 +229,20 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
         return $"qudjp.tests.{Guid.NewGuid():N}";
     }
 
-    private static string OwnerKeyForMethod(string methodName)
+    private static DynamicOwnerRouteMethod CreateOwnerRoute(string methodName)
     {
         return methodName switch
         {
-            nameof(DummySingleCallsiteOwnerQueueTarget.ApplyMorphicShock) => ModMorphogeneticOwner,
-            nameof(DummySingleCallsiteOwnerQueueTarget.HandleWeirdwireTookEvent) => WeirdwireConduitOwner,
+            nameof(DummySingleCallsiteOwnerQueueTarget.ApplyMorphicShock) => CreateOwnerRouteFromKey(ModMorphogeneticOwner),
+            nameof(DummySingleCallsiteOwnerQueueTarget.HandleWeirdwireTookEvent) => CreateOwnerRouteFromKey(WeirdwireConduitOwner),
             _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected owner method."),
         };
+    }
+
+    private static DynamicOwnerRouteMethod CreateOwnerRouteFromKey(string ownerKey)
+    {
+        var separator = ownerKey.LastIndexOf('|');
+        return DynamicOwnerRouteMethod.Create(ownerKey[..separator], ownerKey[(separator + 1)..]);
     }
 
     private static class DummySingleCallsiteOwnerQueueTarget

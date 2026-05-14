@@ -94,6 +94,49 @@ public sealed class PopupPickSeveralTranslationPatchTests
     }
 
     [Test]
+    public void Patch_LeavesUnsupportedEnglishPopupUnchanged_WhenOwnerPatched()
+    {
+        const string source = "You can select as many options as you want.";
+
+        WithPatchedOwnerAndPopup(() =>
+        {
+            var target = new DummyPopupPickSeveralProducerTarget
+            {
+                PopupMessageToShow = source,
+            };
+
+            target.PickSeveral();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                Assert.That(HitCount("SelectionLimit"), Is.Zero);
+            });
+        });
+    }
+
+    [TestCase("{{W|You cannot select more than 3 options!}}", "{{W|選択肢は3個までしか選べない！}}")]
+    [TestCase("&GYou cannot select more than three options!", "&G選択肢は3個までしか選べない！")]
+    public void Patch_PreservesColorTags_WhenOwnerPatched(string source, string expected)
+    {
+        WithPatchedOwnerAndPopup(() =>
+        {
+            var target = new DummyPopupPickSeveralProducerTarget
+            {
+                PopupMessageToShow = source,
+            };
+
+            target.PickSeveral();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+                Assert.That(HitCount("SelectionLimit"), Is.EqualTo(1));
+            });
+        });
+    }
+
+    [Test]
     public void Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
         WithPatchedOwnerAndPopup(() =>

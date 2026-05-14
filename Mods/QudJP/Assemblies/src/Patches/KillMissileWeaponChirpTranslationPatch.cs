@@ -100,7 +100,10 @@ public static class KillMissileWeaponChirpTranslationPatch
             return false;
         }
 
-        translated = $"{direction}で何かが鳴いた。";
+        translated = ColorAwareTranslationComposer.RestoreRelative(
+            $"{direction}で何かが鳴いた。",
+            spans,
+            stripped.Length);
         return true;
     }
 

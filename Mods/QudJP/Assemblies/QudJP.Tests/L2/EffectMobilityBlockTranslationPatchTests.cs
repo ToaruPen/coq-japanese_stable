@@ -77,17 +77,26 @@ public sealed class EffectMobilityBlockTranslationPatchTests
         }
     }
 
-    [TestCase("You are stuck!")]
-    [TestCase("You cannot do that while engulfed by {{B|salt kraken}}.")]
-    public void EffectMobilityBlock_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent(string source)
+    [TestCase("You are stuck!", false)]
+    [TestCase("You cannot do that while engulfed by {{B|salt kraken}}.", false)]
+    [TestCase("You are {{|immobilized}}!", true)]
+    public void EffectMobilityBlock_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent(string source, bool showFail)
     {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try
         {
             PatchPopupShow(harmony);
+            PatchPopupShowFail(harmony);
 
-            DummyPopupShow.Show(source);
+            if (showFail)
+            {
+                DummyPopupShow.ShowFail(source);
+            }
+            else
+            {
+                DummyPopupShow.Show(source);
+            }
 
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
         }

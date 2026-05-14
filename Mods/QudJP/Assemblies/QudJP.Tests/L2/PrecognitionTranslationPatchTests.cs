@@ -46,6 +46,16 @@ public sealed class PrecognitionTranslationPatchTests
         "PsychicDisturbance")]
     [TestCase(
         nameof(DummyPrecognitionProducerTarget.FireEvent),
+        "{{W|You peer into the future.}}",
+        "{{W|未来を覗き込んだ。}}",
+        "PeerIntoFuture")]
+    [TestCase(
+        nameof(DummyPrecognitionProducerTarget.OnBeforeDie),
+        "&GYour focus returns to the present.",
+        "&G意識が現在に引き戻された。",
+        "FocusReturns")]
+    [TestCase(
+        nameof(DummyPrecognitionProducerTarget.FireEvent),
         "Your focus returns to the present.",
         "意識が現在に引き戻された。",
         "FocusReturns")]
@@ -103,6 +113,19 @@ public sealed class PrecognitionTranslationPatchTests
     public void Precognition_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
     {
         const string source = "You peer into the future.";
+
+        AssertOwnerQueuedMessage(
+            nameof(DummyPrecognitionProducerTarget.FireEvent),
+            MessageFrameTranslator.MarkDirectTranslation(source),
+            source,
+            "PeerIntoFuture",
+            expectedHits: 0);
+    }
+
+    [Test]
+    public void Precognition_LeavesUnknownDirectMarkedQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        const string source = "You glimpse a future that is not written.";
 
         AssertOwnerQueuedMessage(
             nameof(DummyPrecognitionProducerTarget.FireEvent),

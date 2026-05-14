@@ -14,7 +14,23 @@ public sealed class TabulaRasaeTranslationPatchTests
     [SetUp]
     public void SetUp()
     {
+        Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
+        DynamicTextObservability.ResetForTests();
+        SinkObservation.ResetForTests();
+        MessageFrameTranslator.ResetForTests();
         DummyMessageQueue.Reset();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        DummyMessageQueue.Reset();
+        MessageFrameTranslator.ResetForTests();
+        SinkObservation.ResetForTests();
+        DynamicTextObservability.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
+        Translator.ResetForTests();
     }
 
     [TestCase(

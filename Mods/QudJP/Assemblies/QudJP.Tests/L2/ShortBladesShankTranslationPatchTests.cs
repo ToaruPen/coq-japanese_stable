@@ -173,7 +173,11 @@ public sealed class ShortBladesShankTranslationPatchTests
 
                 DummyShortBladesShankProducer.Cast(new DummyGameObject());
 
-                Assert.That(PopupHitCount("ShortBladesShankSelfConfirmation"), Is.Zero);
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo(source));
+                    Assert.That(PopupHitCount("ShortBladesShankSelfConfirmation"), Is.Zero);
+                });
             });
     }
 
@@ -298,10 +302,7 @@ public sealed class ShortBladesShankTranslationPatchTests
                 DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, ColorToSend, Capitalize: false);
             }
 
-            if (!string.IsNullOrEmpty(PopupMessageToShow))
-            {
-                DummyPopupShow.ShowYesNo(PopupMessageToShow);
-            }
+            DummyPopupShow.ShowYesNo(PopupMessageToShow);
         }
     }
 }

@@ -22,6 +22,10 @@ public sealed class SelfTearExplosionTranslationPatchTests
         "The {{Y|clockwork beetle}}'s clockwork tears itself apart!",
         "{{Y|clockwork beetle}}のclockworkが自壊した！")]
     [TestCase(
+        nameof(DummySelfTearExplosionTarget.ClockworkFireEvent),
+        "The {{Y|clockwork beetle}}'s {{W|clockwork}} tears itself apart!",
+        "{{Y|clockwork beetle}}の{{W|clockwork}}が自壊した！")]
+    [TestCase(
         nameof(DummySelfTearExplosionTarget.FlywheelFireEvent),
         "The {{Y|gyrocopter}}'s flywheel tears itself apart!",
         "{{Y|gyrocopter}}のflywheelが自壊した！")]
@@ -45,7 +49,11 @@ public sealed class SelfTearExplosionTranslationPatchTests
 
             DummyMessageQueue.AddPlayerMessage(source, "R", Capitalize: false);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+                Assert.That(DummyMessageQueue.LastColor, Is.EqualTo("R"));
+            });
         }
         finally
         {

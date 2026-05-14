@@ -185,10 +185,45 @@ public sealed class WaterRitualPopupTranslationPatchTests
         "{{G|Tam}} shares a recipe with you.",
         "BuySecretRecipe")]
     [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} shares the location of {{Y|the Rust Wells}}.",
+        "BuySecretLocation")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} shares an event from the life of a sultan with you.\n\n\"In 100 AR, a sultan found a chrome idol.\"",
+        "BuySecretSultanEvent")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.IWaterRitualPartUseReputation),
+        nameof(DummyPopupShow.Show),
+        "You don't have a high enough reputation with {{Y|the Farmers' Guild}}.",
+        "ReputationTooLow")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualPerformRitual),
+        nameof(DummyPopupShow.Show),
+        "You share your {{B|fresh water}} with {{G|Tam}} and begin the water ritual.",
+        "PerformRitual")]
+    [TestCase(
         nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuyItemHandleEvent),
         nameof(DummyPopupShow.Show),
         "{{G|Tam}} gifts you {{Y|the electrobow}}!",
         "BuyItemGift")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualGainMutationHandleEvent),
+        nameof(DummyPopupShow.Show),
+        "Despite your genetic limitations, {{G|Tam}} teaches you to improvise {{M|Wings}}!",
+        "GainMutation")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualJoinPartyHandleEvent),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} joins you!",
+        "JoinParty")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualNephilimPacifyTryGiveCircle),
+        nameof(DummyPopupShow.Show),
+        "You receive {{Y|an amulet}}!",
+        "NephilimCircle")]
     [TestCase(
         nameof(DummyWaterRitualPopupProducerTarget.WaterRitualSellSecretHandleEvent),
         nameof(DummyPopupShow.ShowFail),
@@ -267,6 +302,67 @@ public sealed class WaterRitualPopupTranslationPatchTests
                     Assert.That(HitCount("BuySecretRecipe"), Is.Zero);
                 });
             });
+    }
+
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} shares the location of {{Y|the Rust Wells}}.",
+        "BuySecretLocation")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} shares an event from the life of a sultan with you.\n\n\"In 100 AR, a sultan found a chrome idol.\"",
+        "BuySecretSultanEvent")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.IWaterRitualPartUseReputation),
+        nameof(DummyPopupShow.Show),
+        "You don't have a high enough reputation with {{Y|the Farmers' Guild}}.",
+        "ReputationTooLow")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualPerformRitual),
+        nameof(DummyPopupShow.Show),
+        "You share your {{B|fresh water}} with {{G|Tam}} and begin the water ritual.",
+        "PerformRitual")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualGainMutationHandleEvent),
+        nameof(DummyPopupShow.Show),
+        "Despite your genetic limitations, {{G|Tam}} teaches you to improvise {{M|Wings}}!",
+        "GainMutation")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualJoinPartyHandleEvent),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} joins you!",
+        "JoinParty")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualNephilimPacifyTryGiveCircle),
+        nameof(DummyPopupShow.Show),
+        "You receive {{Y|an amulet}}!",
+        "NephilimCircle")]
+    public void Patch_DoesNotRetranslateDirectMarkedNewFamilyPopups_WhenOwnerPatched(
+        string methodName,
+        string popupMethod,
+        string unmarked,
+        string detail)
+    {
+        var source = MessageFrameTranslator.MarkDirectTranslation(unmarked);
+
+        WithPatchedOwnerAndPopup(methodName, popupMethod, () =>
+        {
+            var target = new DummyWaterRitualPopupProducerTarget
+            {
+                PopupMethod = popupMethod,
+                PopupMessageToShow = source,
+            };
+
+            InvokeOwnerMethod(target, methodName);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(LastPopupMessage(popupMethod), Is.EqualTo(unmarked));
+                Assert.That(HitCount(detail), Is.Zero);
+            });
+        });
     }
 
     [Test]

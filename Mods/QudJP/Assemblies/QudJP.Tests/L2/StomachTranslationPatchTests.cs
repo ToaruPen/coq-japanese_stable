@@ -31,8 +31,16 @@ public sealed class StomachTranslationPatchTests
         "体から水分が吸い出された。",
         "StomachMoistureBody")]
     [TestCase(
+        "{{W|The moisture is sucked out of your body.}}",
+        "{{W|体から水分が吸い出された。}}",
+        "StomachMoistureBody")]
+    [TestCase(
         "The moisture is sucked out of your throat.",
         "喉から水分が吸い出された。",
+        "StomachMoistureThroat")]
+    [TestCase(
+        "&YThe moisture is sucked out of your throat.",
+        "&Y喉から水分が吸い出された。",
         "StomachMoistureThroat")]
     public void AddWater_TranslatesDehydrationQueueMessages_WhenOwnerPatched(
         string source,

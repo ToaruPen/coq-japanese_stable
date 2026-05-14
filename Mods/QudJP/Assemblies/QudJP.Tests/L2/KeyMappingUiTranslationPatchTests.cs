@@ -147,6 +147,7 @@ public sealed class KeyMappingUiTranslationPatchTests
 
             Assert.Multiple(() =>
             {
+                Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo(source));
                 Assert.That(HitCount("LastBinding"), Is.Zero);
                 Assert.That(HitCount("ClearBinding"), Is.Zero);
             });

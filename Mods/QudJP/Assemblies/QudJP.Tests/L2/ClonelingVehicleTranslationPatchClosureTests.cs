@@ -37,7 +37,7 @@ public sealed class ClonelingVehicleTranslationPatchClosureTests
         string source,
         string expected)
     {
-        AssertOwnerPopup(source, expected);
+        AssertOwnerPopup(source, expected, expectedHits: 1);
     }
 
     [Test]
@@ -50,6 +50,7 @@ public sealed class ClonelingVehicleTranslationPatchClosureTests
         Assert.Multiple(() =>
         {
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+            Assert.That(HitCount(), Is.Zero);
         });
     }
 
@@ -58,13 +59,13 @@ public sealed class ClonelingVehicleTranslationPatchClosureTests
     {
         const string source = "You do not have 1 dram of cloning draught.";
 
-        AssertOwnerPopup(MessageFrameTranslator.MarkDirectTranslation(source), source);
+        AssertOwnerPopup(MessageFrameTranslator.MarkDirectTranslation(source), source, expectedHits: 0);
     }
 
     [Test]
     public void ClonelingHandleEvent_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
-        AssertOwnerPopup(string.Empty, string.Empty);
+        AssertOwnerPopup(string.Empty, string.Empty, expectedHits: 0);
     }
 
     [Test]
@@ -72,10 +73,10 @@ public sealed class ClonelingVehicleTranslationPatchClosureTests
     {
         const string source = "You do not have enough cloning draught.";
 
-        AssertOwnerPopup(source, source);
+        AssertOwnerPopup(source, source, expectedHits: 0);
     }
 
-    private static void AssertOwnerPopup(string source, string expected)
+    private static void AssertOwnerPopup(string source, string expected, int expectedHits)
     {
         OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
             typeof(ClonelingVehicleTranslationPatch),
@@ -87,10 +88,11 @@ public sealed class ClonelingVehicleTranslationPatchClosureTests
                 target.HandleEvent(new DummyInventoryActionEvent());
 
                 Assert.Multiple(() =>
-                {
-                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
-                });
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+                Assert.That(HitCount(), Is.EqualTo(expectedHits));
             });
+        });
     }
 
     private static MethodInfo RequireOwnerMethod()
@@ -101,4 +103,10 @@ public sealed class ClonelingVehicleTranslationPatchClosureTests
             typeof(DummyInventoryActionEvent));
     }
 
+    private static int HitCount()
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupShowTranslationPatch),
+            "Popup.Show." + nameof(ClonelingVehicleTranslationPatch));
+    }
 }

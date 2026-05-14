@@ -93,16 +93,17 @@ public static class StomachTranslationPatch
 
     private static bool TryTranslate(string source, out string translated, out string detail)
     {
-        if (string.Equals(source, "The moisture is sucked out of your body.", StringComparison.Ordinal))
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (string.Equals(stripped, "The moisture is sucked out of your body.", StringComparison.Ordinal))
         {
-            translated = "体から水分が吸い出された。";
+            translated = ColorAwareTranslationComposer.RestoreRelative("体から水分が吸い出された。", spans, stripped.Length);
             detail = "StomachMoistureBody";
             return true;
         }
 
-        if (string.Equals(source, "The moisture is sucked out of your throat.", StringComparison.Ordinal))
+        if (string.Equals(stripped, "The moisture is sucked out of your throat.", StringComparison.Ordinal))
         {
-            translated = "喉から水分が吸い出された。";
+            translated = ColorAwareTranslationComposer.RestoreRelative("喉から水分が吸い出された。", spans, stripped.Length);
             detail = "StomachMoistureThroat";
             return true;
         }

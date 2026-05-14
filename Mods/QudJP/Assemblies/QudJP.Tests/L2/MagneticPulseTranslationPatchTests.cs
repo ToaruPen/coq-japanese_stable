@@ -37,7 +37,7 @@ public sealed class MagneticPulseTranslationPatchTests
         "{{Y|steel boots}}があなたの体から引き剥がされた！")]
     [TestCase(
         "Your companion, {{Y|Q Girl}},has had a {{C|steel sword}} ripped from her body!",
-        "{{Y|Q Girl}}の体からa {{C|steel sword}}が引き剥がされた！")]
+        "{{Y|Q Girl}}の体から{{C|steel sword}}が引き剥がされた！")]
     public void MagneticPulse_TranslatesRippedEquipmentPopups_WhenOwnerPatched(
         string source,
         string expected)
@@ -47,10 +47,10 @@ public sealed class MagneticPulseTranslationPatchTests
 
     [TestCase(
         "The {{Y|steel sword}} is pulled toward {{M|the magnet}}.",
-        "{{Y|steel sword}}は{{M|the magnet}}に引き寄せられた")]
+        "{{Y|steel sword}}は{{M|the magnet}}に引き寄せられた。")]
     [TestCase(
         "The {{Y|steel sword}} is pulled toward something.",
-        "{{Y|steel sword}}は何かに引き寄せられた")]
+        "{{Y|steel sword}}は何かに引き寄せられた。")]
     public void MagneticPulse_TranslatesPulledQueueMessages_WhenOwnerPatched(
         string source,
         string expected)
