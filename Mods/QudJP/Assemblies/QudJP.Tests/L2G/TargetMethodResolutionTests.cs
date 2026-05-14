@@ -1548,6 +1548,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.RequiresPowerToEquip|CheckEquip|System.Void",
     })]
+    [TestCase(typeof(SurvivalCampAttemptCampPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Skill.Survival_Camp|AttemptCamp|System.Boolean|XRL.World.GameObject",
+    })]
     [TestCase(typeof(KillMissileWeaponChirpTranslationPatch), new[]
     {
         "XRL.World.AI.GoalHandlers.Kill|TryMissileWeapon|System.Boolean",

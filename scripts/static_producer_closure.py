@@ -10607,6 +10607,43 @@ COVERED_OWNER_FAMILIES: Final = (
             ),
         ),
     ),
+    CoveredOwnerFamily(
+        family_id="XRL.World.Parts.Skill/Survival_Camp.cs::XRL.World.Parts.Skill.Survival_Camp.AttemptCamp",
+        inventory_statuses=("owner_patch_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/SurvivalCampAttemptCampPopupTranslationPatch.cs",
+                (
+                    "TryTranslatePopupMessage",
+                    "ExistingCampfireNavigationPattern",
+                    "XRL.World.Parts.Skill.Survival_Camp",
+                    "AttemptCamp",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("SurvivalCampAttemptCampPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/SurvivalCampAttemptCampPopupTranslationPatchTests.cs",
+                (
+                    "AttemptCamp_TranslatesExistingCampfireNavigationPrompt_WhenOwnerPatched",
+                    "AttemptCamp_DoesNotClaimExistingCampfireNavigationPrompt_WhenOwnerAbsent",
+                    "AttemptCamp_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "AttemptCamp_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "AttemptCamp_LeavesUnsupportedPopupUnchanged_WhenOwnerPatched",
+                    "nameof(DummySurvivalCampTarget.AttemptCamp)",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "XRL.World.Parts.Skill.Survival_Camp|AttemptCamp|System.Boolean|XRL.World.GameObject",
+                ),
+            ),
+        ),
+    ),
     *_examiner_result_popup_families(),
     *_force_bubble_owner_families(),
     *_combat_skill_extension_owner_families(),

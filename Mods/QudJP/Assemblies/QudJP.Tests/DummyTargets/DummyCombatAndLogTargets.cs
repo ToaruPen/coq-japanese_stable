@@ -1624,6 +1624,19 @@ internal sealed class DummyRequiresPowerToEquipTarget
     }
 }
 
+internal sealed class DummySurvivalCampTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool AttemptCamp(DummyGameObject actor)
+    {
+        _ = actor;
+        _ = DummyPopupShow.ShowYesNoCancel(PopupMessageToShow);
+        return false;
+    }
+}
+
 internal sealed class DummyBoostStatisticTarget
 {
     public string MessageToSend { get; set; } = string.Empty;

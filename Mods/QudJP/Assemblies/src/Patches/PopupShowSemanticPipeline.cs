@@ -31,6 +31,7 @@ internal static class PopupShowSemanticPipeline
         RunStartRunningPopupTranslationPatch.TryTranslatePopupMessage,
         HistoricEventRegionRevealPopupTranslationPatch.TryTranslatePopupMessage,
         RequiresPowerToEquipCheckEquipPopupTranslationPatch.TryTranslatePopupMessage,
+        SurvivalCampAttemptCampPopupTranslationPatch.TryTranslatePopupMessage,
         HackingSifrahResultTranslationPatch.TryTranslatePopupMessage,
         QuestLifecyclePopupTranslationPatch.TryTranslatePopupMessage,
         ConversationTakeItemPopupTranslationPatch.TryTranslatePopupMessage,
