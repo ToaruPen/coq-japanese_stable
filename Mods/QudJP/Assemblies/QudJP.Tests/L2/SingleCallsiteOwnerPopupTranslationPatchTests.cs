@@ -167,6 +167,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "MutationPointsOnEat",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.FireEngulfingDescends),
+        "the {{r|gelatinous wedge}}&y engulfing you melts through the floor! You fall to the level below.",
+        "{{r|gelatinous wedge}}があなたを飲み込んだまま床を溶かして下っていった！ あなたは下の階層へ落ちた。",
+        "EngulfingDescendsPassengerFall",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.SetFactionRank),
         "You are promoted to the Warden of the Barathrumites.",
         "あなたはthe BarathrumitesのWardenに昇進した。",
@@ -231,6 +237,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "{{Y|the snapjaw}} is covered in oil!",
         "{{Y|the snapjaw}}はoilに覆われた！",
         "SpraybottleCovered",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleSummoningCurio),
+        "You activate the curio and toss it on the ground. It erupts into a throng of tiny polygons, which amalgamate into a fully formed {{Y|polygonal snapjaw}}.",
+        "キュリオを起動して地面に投げた。小さなポリゴンの群れが噴出し、完全な形をした{{Y|polygonal snapjaw}}へと融合した。",
+        "SummoningCurioActivation",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.ApplySpaceTimeVortex),
+        "Your companion, {{G|Q Girl}},has been sucked into the space-time vortex to the east!",
+        "あなたの仲間である{{G|Q Girl}}は東側のspace-time vortexに吸い込まれた！",
+        "SpaceTimeVortexCompanionSucked",
         PopupMethod.Show)]
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleWaterRitualRecord),
@@ -353,6 +371,10 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "MutationPointsOnEat",
         PopupMethod.Show)]
     [TestCase(
+        "the {{r|gelatinous wedge}}&y engulfing you melts through the floor! You fall to the level below.",
+        "EngulfingDescendsPassengerFall",
+        PopupMethod.Show)]
+    [TestCase(
         "You are promoted to the Warden of the Barathrumites.",
         "ReputationRankPromotion",
         PopupMethod.Show)]
@@ -375,6 +397,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         "you are covered in slime!",
         "SpraybottleCovered",
+        PopupMethod.Show)]
+    [TestCase(
+        "You activate the curio and toss it on the ground. It erupts into a throng of tiny polygons, which amalgamate into a fully formed {{Y|polygonal snapjaw}}.",
+        "SummoningCurioActivation",
+        PopupMethod.Show)]
+    [TestCase(
+        "Your companion, {{G|Q Girl}},has been sucked into the space-time vortex to the east!",
+        "SpaceTimeVortexCompanionSucked",
         PopupMethod.Show)]
     [TestCase(
         "You bothered {{G|Yurl}} again.",
@@ -442,6 +472,9 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "Your genome destabilizes and you gain 3 mutation points.",
         "MutationPointsOnEat")]
     [TestCase(
+        "the {{r|gelatinous wedge}}&y engulfing you melts through the floor! You fall to the level below.",
+        "EngulfingDescendsPassengerFall")]
+    [TestCase(
         "You are promoted to the Warden of the Barathrumites.",
         "ReputationRankPromotion")]
     [TestCase(
@@ -459,6 +492,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         "you are covered in slime!",
         "SpraybottleCovered")]
+    [TestCase(
+        "You activate the curio and toss it on the ground. It erupts into a throng of tiny polygons, which amalgamate into a fully formed {{Y|polygonal snapjaw}}.",
+        "SummoningCurioActivation")]
+    [TestCase(
+        "Your companion, {{G|Q Girl}},has been sucked into the space-time vortex to the east!",
+        "SpaceTimeVortexCompanionSucked")]
     [TestCase(
         "You bothered {{G|Yurl}} again.",
         "WaterRitualRecordBothered")]
@@ -604,6 +643,7 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleGenocideCurio) or
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleGritGateMainframeTerminal) or
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpraybottle) or
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleSummoningCurio) or
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleTrainingBook) =>
                 OwnerPopupRouteTestHarness.RequireMethod(
                     typeof(DummySingleCallsiteOwnerPopupTarget),
@@ -633,6 +673,16 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                     typeof(DummySingleCallsiteOwnerPopupTarget),
                     methodName,
                     typeof(DummyEvent)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.FireEngulfingDescends) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(DummyEvent)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.ApplySpaceTimeVortex) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(DummyGameObject)),
             nameof(DummySingleCallsiteOwnerPopupTarget.SetFactionRank) =>
                 OwnerPopupRouteTestHarness.RequireMethod(
                     typeof(DummySingleCallsiteOwnerPopupTarget),
@@ -795,6 +845,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                     PopupMessageToShow = message,
                 }.FireMutationPointsOnEat(new DummyEvent());
                 break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.FireEngulfingDescends):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.FireEngulfingDescends(new DummyEvent());
+                break;
             case nameof(DummySingleCallsiteOwnerPopupTarget.SetFactionRank):
                 new DummySingleCallsiteOwnerPopupTarget
                 {
@@ -828,6 +884,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 {
                     PopupMessageToShow = message,
                 }.HandleSpraybottle(new DummyInventoryActionEvent());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleSummoningCurio):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.HandleSummoningCurio(new DummyInventoryActionEvent());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.ApplySpaceTimeVortex):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.ApplySpaceTimeVortex(new DummyGameObject());
                 break;
             case nameof(DummySingleCallsiteOwnerPopupTarget.HandleTrainingBook):
                 new DummySingleCallsiteOwnerPopupTarget

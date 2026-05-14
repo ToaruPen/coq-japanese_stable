@@ -1687,6 +1687,14 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         return true;
     }
 
+    public bool FireEngulfingDescends(DummyEvent? e = null)
+    {
+        _ = e;
+        _ = nameof(FireEngulfingDescends);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
     public bool HandleMarkovBook(DummyInventoryActionEvent? e = null)
     {
         _ = e;
@@ -1724,6 +1732,21 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
     {
         _ = e;
         _ = nameof(HandleSpraybottle);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    public bool HandleSummoningCurio(DummyInventoryActionEvent? e = null)
+    {
+        _ = e;
+        _ = nameof(HandleSummoningCurio);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    public bool ApplySpaceTimeVortex(DummyGameObject target)
+    {
+        _ = target;
         DummyPopupShow.Show(PopupMessageToShow);
         return true;
     }

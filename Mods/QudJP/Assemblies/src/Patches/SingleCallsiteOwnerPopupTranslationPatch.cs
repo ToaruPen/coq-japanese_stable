@@ -33,9 +33,12 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string MarkovBookOwner = "XRL.World.Parts.MarkovBook|HandleEvent";
     private const string MumblesInfectionOwner = "XRL.World.Parts.MumblesInfection|FireEvent";
     private const string MutationPointsOnEatOwner = "XRL.World.Parts.MutationPointsOnEat|FireEvent";
+    private const string EngulfingDescendsOwner = "XRL.World.Parts.EngulfingDescends|FireEvent";
     private const string ReputationSetFactionRankOwner = "XRL.World.Reputation|SetFactionRank";
     private const string RecoilOnDeathOwner = "XRL.World.Parts.RecoilOnDeath|HandleEvent";
     private const string SpraybottleOwner = "XRL.World.Parts.Spraybottle|HandleEvent";
+    private const string SummoningCurioOwner = "XRL.World.Parts.SummoningCurio|HandleEvent";
+    private const string SpaceTimeVortexOwner = "XRL.World.Parts.SpaceTimeVortex|ApplyVortex";
     private const string SpreadPaxOwner = "XRL.World.QuestManagers.SpreadPax|Finish";
     private const string ToolboxOwner = "XRL.World.Parts.Toolbox|HandleBonus";
     private const string TrainingBookOwner = "XRL.World.Parts.TrainingBook|HandleEvent";
@@ -111,6 +114,10 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         "^Your genome destabilizes and you gain (?<amount>.+?) mutation (?<unit>point|points)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex EngulfingDescendsPassengerFallPattern = new(
+        "^(?<object>.+?)&y engulfing you melts through the floor! You fall to the level below\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex NoFactionMembersPattern = new(
         "^No members found for '(?<faction>.+?)'\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -125,6 +132,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static readonly Regex SpraybottleCoveredPattern = new(
         "^(?<object>.+?) (?<verb>is|are) covered in (?<liquid>.+?)!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex SummoningCurioActivationPattern = new(
+        "^You activate the curio and toss it on the ground\\. It erupts into a throng of tiny polygons, which amalgamate into a fully formed (?<creature>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex SpaceTimeVortexCompanionSuckedPattern = new(
+        "^Your companion, (?<companion>.+?),(?<verb>have|has) been sucked into (?<vortex>.+?) (?<direction>to the north|to the south|to the east|to the west|to the northeast|to the northwest|to the southeast|to the southwest|nearby|above|below|here|somewhere)!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex SpreadPaxCurePattern = new(
@@ -294,6 +309,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             [eventType]);
         AddTarget(
             targets,
+            "XRL.World.Parts.EngulfingDescends",
+            "FireEvent",
+            [eventType]);
+        AddTarget(
+            targets,
             "XRL.World.Reputation",
             "SetFactionRank",
             [typeof(string), typeof(string), typeof(bool), typeof(bool)]);
@@ -307,6 +327,16 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.Spraybottle",
             "HandleEvent",
             [inventoryActionEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.SummoningCurio",
+            "HandleEvent",
+            [inventoryActionEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.SpaceTimeVortex",
+            "ApplyVortex",
+            [gameObjectType]);
         AddTarget(
             targets,
             "XRL.World.Parts.TrainingBook",
@@ -546,6 +576,15 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             return true;
         }
 
+        match = EngulfingDescendsPassengerFallPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, EngulfingDescendsOwner, DummySingleCallsiteOwner + "FireEngulfingDescends"))
+        {
+            var subject = StringHelpers.StripLeadingEnglishArticle(match.Groups["object"].Value, includeCapitalizedDefiniteArticle: true);
+            translated = $"{subject}があなたを飲み込んだまま床を溶かして下っていった！ あなたは下の階層へ落ちた。";
+            detail = "EngulfingDescendsPassengerFall";
+            return true;
+        }
+
         match = NoFactionMembersPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, FactionEncounterWishOwner, DummySingleCallsiteOwner + "HandleFactionEncounterWish"))
         {
@@ -589,6 +628,25 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             translated = $"{match.Groups["object"].Value}は{match.Groups["liquid"].Value}に覆われた！";
             detail = "SpraybottleCovered";
+            return true;
+        }
+
+        match = SummoningCurioActivationPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, SummoningCurioOwner, DummySingleCallsiteOwner + "HandleSummoningCurio"))
+        {
+            translated = $"キュリオを起動して地面に投げた。小さなポリゴンの群れが噴出し、完全な形をした{match.Groups["creature"].Value}へと融合した。";
+            detail = "SummoningCurioActivation";
+            return true;
+        }
+
+        match = SpaceTimeVortexCompanionSuckedPattern.Match(source);
+        if (match.Success
+            && OwnerMatches(ownerKey, SpaceTimeVortexOwner, DummySingleCallsiteOwner + "ApplySpaceTimeVortex")
+            && TryTranslateDirectionPhrase(match.Groups["direction"].Value, out var direction))
+        {
+            var vortex = StringHelpers.StripLeadingEnglishArticle(match.Groups["vortex"].Value, includeCapitalizedDefiniteArticle: true);
+            translated = $"あなたの仲間である{match.Groups["companion"].Value}は{direction}の{vortex}に吸い込まれた！";
+            detail = "SpaceTimeVortexCompanionSucked";
             return true;
         }
 
@@ -718,6 +776,28 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         return trimmed + " ";
+    }
+
+    private static bool TryTranslateDirectionPhrase(string source, out string translated)
+    {
+        translated = source switch
+        {
+            "to the north" => "北側",
+            "to the south" => "南側",
+            "to the east" => "東側",
+            "to the west" => "西側",
+            "to the northeast" => "北東側",
+            "to the northwest" => "北西側",
+            "to the southeast" => "南東側",
+            "to the southwest" => "南西側",
+            "nearby" => "近く",
+            "above" => "上方",
+            "below" => "下方",
+            "here" => "ここ",
+            "somewhere" => "どこか",
+            _ => string.Empty,
+        };
+        return translated.Length > 0;
     }
 
     private static void AddTarget(List<MethodBase> targets, string typeName, string methodName, Type[] parameters)
