@@ -4,7 +4,9 @@ from pathlib import Path
 
 from scripts.static_producer_closure import (
     COVERED_BY_OWNER_PATCH,
+    COVERED_OWNER_CALLSITES,
     COVERED_OWNER_FAMILIES,
+    covered_callsite_keys,
     covered_family_ids,
     family_closure_status,
     format_owner_action_queue,
@@ -23,6 +25,18 @@ def test_covered_owner_registry_has_unique_family_ids() -> None:
     family_ids = [family.family_id for family in COVERED_OWNER_FAMILIES]
 
     assert len(family_ids) == len(set(family_ids))
+
+
+def test_covered_owner_callsite_registry_has_unique_line_keys() -> None:
+    """Covered mixed-family callsite registry entries must be unique."""
+    expected_keys = [
+        (covered.family_id, line)
+        for covered in COVERED_OWNER_CALLSITES
+        for line in covered.lines
+    ]
+
+    assert len(expected_keys) == len(set(expected_keys))
+    assert covered_callsite_keys() == frozenset(expected_keys)
 
 
 def test_covered_owner_families_have_current_source_and_test_evidence() -> None:
@@ -130,6 +144,27 @@ def test_game_object_heal_owner_family_is_closed_by_current_owner_tests() -> Non
         family["producer_family_id"]
         for family in owner_action_queue(inventory)
     }
+
+
+def test_trade_ui_vendor_owner_callsites_are_split_from_fixed_fallbacks() -> None:
+    """Mixed TradeUI vendor families must close owner callsites without full-family over-closure."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    source_entries = owner_action_queue_by_file(inventory)
+    trade_ui_entry = next(entry for entry in source_entries if entry["source_file"] == "XRL.UI/TradeUI.cs")
+    examine_id = "XRL.UI/TradeUI.cs::XRL.UI.TradeUI.DoVendorExamine"
+    recharge_id = "XRL.UI/TradeUI.cs::XRL.UI.TradeUI.DoVendorRecharge"
+
+    assert raw_families[examine_id]["family_closure_status"] == "needs_family_review"
+    assert raw_families[recharge_id]["family_closure_status"] == "needs_family_review"
+    assert family_closure_status(raw_families[examine_id]) == "needs_family_review"
+    assert family_closure_status(raw_families[recharge_id]) == "needs_family_review"
+    assert examine_id not in covered_family_ids()
+    assert recharge_id not in covered_family_ids()
+    assert examine_id not in queued_family_ids
+    assert recharge_id not in queued_family_ids
+    assert [family["member_name"] for family in trade_ui_entry["families"]] == ["ShowTradeScreen"]
 
 
 def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:

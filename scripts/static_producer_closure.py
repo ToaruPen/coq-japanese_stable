@@ -10,12 +10,13 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final, Literal, TypedDict, cast
 
 if TYPE_CHECKING:
-    from scripts.scan_static_producer_inventory import FamilyPayload, InventoryPayload
+    from scripts.scan_static_producer_inventory import CallsitePayload, FamilyPayload, InventoryPayload
 
 REPO_ROOT: Final = Path(__file__).resolve().parents[1]
 DEFAULT_INVENTORY_PATH: Final = REPO_ROOT / "docs" / "static-producer-inventory.json"
 COVERED_BY_OWNER_PATCH: Final = "covered_by_owner_patch"
 OWNER_ACTION_STATUSES: Final = frozenset({"owner_patch_required", "needs_family_review"})
+OWNER_ACTION_CALLSITE_STATUSES: Final = frozenset({"owner_patch_required", "runtime_required", "needs_family_review"})
 HACKING_SIFRAH_RESULT_SIGNATURE_SUFFIX: Final = (
     "System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah"
 )
@@ -84,6 +85,16 @@ class CoveredOwnerFamily:
     """A producer family that is closed by current owner-patch tests."""
 
     family_id: str
+    inventory_statuses: tuple[str, ...]
+    evidence_files: tuple[EvidenceFile, ...]
+
+
+@dataclass(frozen=True)
+class CoveredOwnerCallsites:
+    """Inventory callsites within a mixed family that are closed by current owner-patch tests."""
+
+    family_id: str
+    lines: tuple[int, ...]
     inventory_statuses: tuple[str, ...]
     evidence_files: tuple[EvidenceFile, ...]
 
@@ -11096,6 +11107,115 @@ COVERED_OWNER_FAMILIES: Final = (
     *_generated_subject_queue_families(),
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
+COVERED_OWNER_CALLSITES: Final = (
+    CoveredOwnerCallsites(
+        family_id="XRL.UI/TradeUI.cs::XRL.UI.TradeUI.DoVendorExamine",
+        lines=(1217, 1222, 1229, 1231, 1234, 1245),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/TradeUiVendorPopupTranslationPatch.cs",
+                ("TradeUiVendorPopupTranslationPatch", "DoVendorExamine", "TryTranslatePopupMessage"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+                ("TradeUiVendorPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs",
+                (
+                    "TradeUiPopup.Explanation",
+                    "TradeUiPopup.IdentifyTooComplex",
+                    "TradeUiPopup.IdentifyRequiredDrams",
+                    "TradeUiPopup.IdentifyQuestion",
+                    "TradeUiPopup.IdentifyResult",
+                    "TradeUiPopup.MissingSkill",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/ui-trade.ja.json",
+                (
+                    "You can't understand {0} explanation.",
+                    "This item is too complex for {0} to identify.",
+                    "You do not have the required {0} to identify this item.",
+                    "You may identify this for {0}.",
+                    "{0} identifies {1} as {2}.",
+                    "{0} does not have the skill to {1}.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/TradeUiPopupTranslationPatchTests.cs",
+                (
+                    "VendorOwnerPatch_TranslatesDoVendorExamineOwnerPopups_WhenOwnerPatched",
+                    "VendorOwnerPatch_LeavesEmptyNewVendorOwnerPopupUnchanged_WhenOwnerPatched",
+                    "VendorOwnerPatch_DoesNotTranslateNewVendorOwnerPopups_WhenOwnerAbsent",
+                    "VendorOwnerPatch_DoesNotRetranslateDirectMarkedNewVendorOwnerPopups_WhenOwnerPatched",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "TradeUiVendorPopupProducerMethods_ResolveExpectedFullSignatures",
+                    "XRL.UI.TradeUI|DoVendorExamine|System.Void|XRL.World.GameObject|XRL.World.GameObject",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id="XRL.UI/TradeUI.cs::XRL.UI.TradeUI.DoVendorRecharge",
+        lines=(1575, 1578, 1604),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/TradeUiVendorPopupTranslationPatch.cs",
+                ("TradeUiVendorPopupTranslationPatch", "DoVendorRecharge", "TryTranslatePopupMessage"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+                ("TradeUiVendorPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs",
+                (
+                    "TradeUiPopup.RechargeNeed",
+                    "TradeUiPopup.RechargeQuestion",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/ui-trade.ja.json",
+                (
+                    "You need {0} to charge {1}.",
+                    "You may recharge {0} for {1}.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+                ("fully charged",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/TradeUiPopupTranslationPatchTests.cs",
+                (
+                    "VendorOwnerPatch_TranslatesDoVendorRechargeOwnerPopups_WhenOwnerPatched",
+                    "VendorOwnerPatch_LeavesEmptyNewVendorOwnerPopupUnchanged_WhenOwnerPatched",
+                    "VendorOwnerPatch_DoesNotTranslateNewVendorOwnerPopups_WhenOwnerAbsent",
+                    "VendorOwnerPatch_DoesNotRetranslateDirectMarkedNewVendorOwnerPopups_WhenOwnerPatched",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "TradeUiVendorPopupProducerMethods_ResolveExpectedFullSignatures",
+                    "XRL.UI.TradeUI|DoVendorRecharge|System.Boolean|XRL.World.GameObject|XRL.World.GameObject",
+                ),
+            ),
+        ),
+    ),
+)
+COVERED_OWNER_CALLSITE_KEYS: Final = frozenset(
+    (covered.family_id, line)
+    for covered in COVERED_OWNER_CALLSITES
+    for line in covered.lines
+)
 
 
 def load_inventory(path: Path) -> InventoryPayload:
@@ -11106,6 +11226,11 @@ def load_inventory(path: Path) -> InventoryPayload:
 def covered_family_ids() -> frozenset[str]:
     """Return family ids that current tests close as owner-patch covered."""
     return COVERED_OWNER_FAMILY_IDS
+
+
+def covered_callsite_keys() -> frozenset[tuple[str, int]]:
+    """Return mixed-family callsites that current tests close as owner-patch covered."""
+    return COVERED_OWNER_CALLSITE_KEYS
 
 
 def family_closure_status(family: FamilyPayload) -> str:
@@ -11120,14 +11245,14 @@ def owner_action_queue(inventory: InventoryPayload) -> list[FamilyPayload]:
     return [
         family
         for family in inventory["families"]
-        if family_closure_status(family) in OWNER_ACTION_STATUSES
+        if _family_has_owner_action_remaining(inventory, family)
     ]
 
 
 def owner_action_queue_entries(inventory: InventoryPayload) -> list[OwnerActionQueueEntry]:
     """Return actionable owner work as method-level queue entries."""
     return sorted(
-        (_owner_action_queue_entry(family) for family in owner_action_queue(inventory)),
+        (_owner_action_queue_entry(inventory, family) for family in owner_action_queue(inventory)),
         key=lambda entry: (
             entry["source_file"],
             entry["member_start_line"],
@@ -11233,18 +11358,92 @@ def validate_covered_owner_families(
             actual = family["family_closure_status"]
             errors.append(f"{covered.family_id}: expected raw inventory status in [{expected}], got {actual}")
 
-        for evidence in covered.evidence_files:
-            path = repo_root / evidence.path
-            if not path.is_file():
-                errors.append(f"{covered.family_id}: evidence file missing: {evidence.path}")
-                continue
+        errors.extend(_validate_evidence_files(covered.family_id, covered.evidence_files, repo_root))
 
-            text = path.read_text(encoding="utf-8")
-            errors.extend(
-                f"{covered.family_id}: {evidence.path} missing {required!r}"
-                for required in evidence.required_substrings
-                if required not in text
+    errors.extend(_validate_covered_owner_callsites(inventory, families, repo_root))
+
+    return errors
+
+
+def _validate_covered_owner_callsites(
+    inventory: InventoryPayload,
+    families: dict[str, FamilyPayload],
+    repo_root: Path,
+) -> list[str]:
+    errors: list[str] = []
+    callsites_by_family: dict[str, list[CallsitePayload]] = {}
+    for callsite in inventory["callsites"]:
+        callsites_by_family.setdefault(callsite["producer_family_id"], []).append(callsite)
+
+    seen_callsite_keys: set[tuple[str, int]] = set()
+    for covered in COVERED_OWNER_CALLSITES:
+        family = families.get(covered.family_id)
+        if family is None:
+            errors.append(f"covered callsite family missing from inventory: {covered.family_id}")
+            continue
+
+        if family["family_closure_status"] not in covered.inventory_statuses:
+            expected = ", ".join(covered.inventory_statuses)
+            actual = family["family_closure_status"]
+            errors.append(f"{covered.family_id}: expected raw inventory status in [{expected}], got {actual}")
+
+        errors.extend(
+            _validate_covered_owner_callsite_lines(
+                covered,
+                callsites_by_family.get(covered.family_id, []),
+                seen_callsite_keys,
             )
+        )
+        errors.extend(_validate_evidence_files(covered.family_id, covered.evidence_files, repo_root))
+
+    return errors
+
+
+def _validate_covered_owner_callsite_lines(
+    covered: CoveredOwnerCallsites,
+    family_callsites: list[CallsitePayload],
+    seen_callsite_keys: set[tuple[str, int]],
+) -> list[str]:
+    errors: list[str] = []
+    indexed_callsites = {callsite["line"]: callsite for callsite in family_callsites}
+    for line in covered.lines:
+        key = (covered.family_id, line)
+        if key in seen_callsite_keys:
+            errors.append(f"duplicate covered callsite: {covered.family_id}:{line}")
+            continue
+
+        seen_callsite_keys.add(key)
+        callsite = indexed_callsites.get(line)
+        if callsite is None:
+            errors.append(f"covered callsite missing from inventory: {covered.family_id}:{line}")
+            continue
+
+        if callsite["closure_status"] != "owner_patch_required":
+            errors.append(
+                f"{covered.family_id}:{line}: expected owner_patch_required callsite, got {callsite['closure_status']}"
+            )
+
+    return errors
+
+
+def _validate_evidence_files(
+    owner_id: str,
+    evidence_files: tuple[EvidenceFile, ...],
+    repo_root: Path,
+) -> list[str]:
+    errors: list[str] = []
+    for evidence in evidence_files:
+        path = repo_root / evidence.path
+        if not path.is_file():
+            errors.append(f"{owner_id}: evidence file missing: {evidence.path}")
+            continue
+
+        text = path.read_text(encoding="utf-8")
+        errors.extend(
+            f"{owner_id}: {evidence.path} missing {required!r}"
+            for required in evidence.required_substrings
+            if required not in text
+        )
 
     return errors
 
@@ -11284,7 +11483,23 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
-def _owner_action_queue_entry(family: FamilyPayload) -> OwnerActionQueueEntry:
+def _owner_action_queue_entry(inventory: InventoryPayload, family: FamilyPayload) -> OwnerActionQueueEntry:
+    callsites = _remaining_family_callsite_records(inventory, family)
+    if not _family_has_partial_callsite_coverage(family["producer_family_id"]):
+        return {
+            "source_file": family["file"],
+            "producer_family_id": family["producer_family_id"],
+            "type_name": family["type_name"],
+            "member_name": family["member_name"],
+            "member_start_line": family["member_start_line"],
+            "family_closure_status": family_closure_status(family),
+            "callsite_count": family["callsite_count"],
+            "text_argument_count": family["text_argument_count"],
+            "surface_counts": dict(family["surface_counts"]),
+            "closure_status_counts": dict(family["closure_status_counts"]),
+            "representative_lines": [call["line"] for call in family["representative_calls"]],
+        }
+
     return {
         "source_file": family["file"],
         "producer_family_id": family["producer_family_id"],
@@ -11292,12 +11507,60 @@ def _owner_action_queue_entry(family: FamilyPayload) -> OwnerActionQueueEntry:
         "member_name": family["member_name"],
         "member_start_line": family["member_start_line"],
         "family_closure_status": family_closure_status(family),
-        "callsite_count": family["callsite_count"],
-        "text_argument_count": family["text_argument_count"],
-        "surface_counts": dict(family["surface_counts"]),
-        "closure_status_counts": dict(family["closure_status_counts"]),
-        "representative_lines": [call["line"] for call in family["representative_calls"]],
+        "callsite_count": len(callsites),
+        "text_argument_count": sum(len(call["text_arguments"]) for call in callsites),
+        "surface_counts": _callsite_counter(callsites, "target_surface"),
+        "closure_status_counts": _callsite_counter(callsites, "closure_status"),
+        "representative_lines": [call["line"] for call in sorted(callsites, key=lambda call: call["line"])[:3]],
     }
+
+
+def _family_has_partial_callsite_coverage(family_id: str) -> bool:
+    return any(covered.family_id == family_id for covered in COVERED_OWNER_CALLSITES)
+
+
+def _family_callsite_records(inventory: InventoryPayload, family: FamilyPayload) -> list[CallsitePayload]:
+    family_id = family["producer_family_id"]
+    return [call for call in inventory["callsites"] if call["producer_family_id"] == family_id]
+
+
+def _remaining_family_callsite_records(inventory: InventoryPayload, family: FamilyPayload) -> list[CallsitePayload]:
+    if family["producer_family_id"] in covered_family_ids():
+        return []
+
+    if not _family_has_partial_callsite_coverage(family["producer_family_id"]):
+        return _family_callsite_records(inventory, family)
+
+    return [
+        call
+        for call in _family_callsite_records(inventory, family)
+        if (call["producer_family_id"], call["line"]) not in covered_callsite_keys()
+    ]
+
+
+def _family_has_owner_action_remaining(inventory: InventoryPayload, family: FamilyPayload) -> bool:
+    status = family_closure_status(family)
+    if status not in OWNER_ACTION_STATUSES:
+        return False
+
+    if not _family_has_partial_callsite_coverage(family["producer_family_id"]):
+        return True
+
+    return any(
+        call["closure_status"] in OWNER_ACTION_CALLSITE_STATUSES
+        for call in _remaining_family_callsite_records(inventory, family)
+    )
+
+
+def _callsite_counter(
+    callsites: list[CallsitePayload],
+    key: Literal["target_surface", "closure_status"],
+) -> dict[str, int]:
+    counter: dict[str, int] = {}
+    for call in callsites:
+        value = call[key]
+        counter[value] = counter.get(value, 0) + 1
+    return counter
 
 
 def _source_file_queue_entry(

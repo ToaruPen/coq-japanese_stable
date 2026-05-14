@@ -501,13 +501,7 @@ public sealed class TradeUiPopupTranslationPatchTests
     [Test]
     public void VendorOwnerPatch_TranslatesDoVendorExamineOwnerPopups_WhenOwnerPatched()
     {
-        WriteDictionary(
-            ("You can't understand {0} explanation.", "{0}説明は理解できない。"),
-            ("This item is too complex for {0} to identify.", "この品は{0}には複雑すぎて鑑定できない。"),
-            ("You do not have the required {0} to identify this item.", "この品を鑑定するのに必要な{0}が足りない。"),
-            ("You may identify this for {0}.", "これを{0}で鑑定できる。"),
-            ("{0} identifies {1} as {2}.", "{0}は{1}を{2}だと鑑定した。"),
-            ("{0} does not have the skill to {1}.", "{0}には{1}技能がない。"));
+        UseRepositoryDictionaries();
 
         using var showPatch = PatchPopupShow(nameof(DummyPopupShow.Show));
         using var showYesNoPatch = PatchPopupShow(nameof(DummyPopupShow.ShowYesNo));
@@ -564,10 +558,8 @@ public sealed class TradeUiPopupTranslationPatchTests
     [Test]
     public void VendorOwnerPatch_TranslatesDoVendorRechargeOwnerPopups_WhenOwnerPatched()
     {
+        UseRepositoryDictionaries();
         UseRepositoryVerbDictionary();
-        WriteDictionary(
-            ("You need {0} to charge {1}.", "{1}を充電するには{0}が必要だ。"),
-            ("You may recharge {0} for {1}.", "{0}を{1}で充電できる。"));
 
         using var showPatch = PatchPopupShow(nameof(DummyPopupShow.Show));
         using var showYesNoPatch = PatchPopupShow(nameof(DummyPopupShow.ShowYesNo));
@@ -602,6 +594,63 @@ public sealed class TradeUiPopupTranslationPatchTests
             Assert.That(fullyCharged, Is.EqualTo("変圧器は完全に充電された！"));
             Assert.That(TradeUiPopupHitCount("TradeUiPopup.RechargeNeed"), Is.EqualTo(1));
             Assert.That(TradeUiPopupHitCount("TradeUiPopup.RechargeQuestion"), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void VendorOwnerPatch_TranslatesFixedVendorPopupFallbacks_WithRepositoryDictionaries()
+    {
+        UseRepositoryDictionaries();
+
+        using var showPatch = PatchPopupShow(nameof(DummyPopupShow.Show));
+        using var examineOwnerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.DoVendorExamine));
+        using var rechargeOwnerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.DoVendorRecharge));
+
+        var target = new DummyTradeUiVendorPopupProducerTarget
+        {
+            PopupMessageToShow = "You already understand this item.",
+            UseShowFailPopup = true,
+        };
+        target.DoVendorExamine();
+        var alreadyUnderstand = DummyPopupShow.LastShowMessage;
+
+        target.UseShowFailPopup = false;
+        target.PopupMessageToShow = "That item has no cell or rechargeable capacitor in it.";
+        _ = target.DoVendorRecharge();
+        var noCell = DummyPopupShow.LastShowMessage;
+
+        target.PopupMessageToShow = "That item cannot be recharged this way.";
+        _ = target.DoVendorRecharge();
+        var cannotRecharge = DummyPopupShow.LastShowMessage;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(alreadyUnderstand, Is.EqualTo("このアイテムはすでに理解している。"));
+            Assert.That(noCell, Is.EqualTo("そのアイテムには電池も充電可能なコンデンサもない。"));
+            Assert.That(cannotRecharge, Is.EqualTo("そのアイテムはこの方法では再充電できない。"));
+        });
+    }
+
+    [TestCase(
+        nameof(DummyTradeUiVendorPopupProducerTarget.DoVendorExamine),
+        "TradeUiPopup.IdentifyTooComplex")]
+    [TestCase(
+        nameof(DummyTradeUiVendorPopupProducerTarget.DoVendorRecharge),
+        "TradeUiPopup.RechargeNeed")]
+    public void VendorOwnerPatch_LeavesEmptyNewVendorOwnerPopupUnchanged_WhenOwnerPatched(
+        string methodName,
+        string detail)
+    {
+        using var showPatch = PatchPopupShow(nameof(DummyPopupShow.Show));
+        using var ownerPatch = PatchVendorOwner(methodName);
+        var target = new DummyTradeUiVendorPopupProducerTarget();
+
+        InvokeVendorMethod(target, methodName);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
+            Assert.That(TradeUiPopupHitCount(detail), Is.Zero);
         });
     }
 
@@ -832,6 +881,11 @@ public sealed class TradeUiPopupTranslationPatchTests
     {
         MessageFrameTranslator.SetDictionaryPathForTests(
             Path.Combine(GetLocalizationRoot(), "MessageFrames", "verbs.ja.json"));
+    }
+
+    private static void UseRepositoryDictionaries()
+    {
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(GetLocalizationRoot(), "Dictionaries"));
     }
 
     // To-do: consolidate these JSON test helpers once the shared usage reaches 3+ files.
