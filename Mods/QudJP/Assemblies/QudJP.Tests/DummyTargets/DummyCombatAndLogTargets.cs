@@ -1483,6 +1483,11 @@ internal sealed class DummyAxeDismember
     public string Name { get; set; } = string.Empty;
 }
 
+internal sealed class DummyCudgelSlam
+{
+    public string Name { get; set; } = string.Empty;
+}
+
 internal sealed class DummySingleCallsiteOwnerPopupTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
@@ -1512,6 +1517,40 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         _ = weapon;
         _ = DummyPopupShow.ShowYesNo(StaticPopupMessageToShow);
         return true;
+    }
+
+    public static bool Cast(
+        DummyGameObject attacker,
+        DummyCudgelSlam? skill = null,
+        string? slamDir = null,
+        DummyGameObject? target = null,
+        bool requireWeapon = true,
+        int presetSlamPower = int.MinValue,
+        string? impactDamageIncrement = null)
+    {
+        _ = attacker;
+        _ = skill;
+        _ = slamDir;
+        _ = target;
+        _ = requireWeapon;
+        _ = presetSlamPower;
+        _ = impactDamageIncrement;
+        _ = DummyPopupShow.ShowYesNo(StaticPopupMessageToShow);
+        return true;
+    }
+
+    public bool AttemptProselytization()
+    {
+        _ = DummyPopupShow.ShowYesNo(PopupMessageToShow);
+        return true;
+    }
+
+    public static void LearnNewRecipe(DummyGameObject actor, int minTier, int maxTier)
+    {
+        _ = actor;
+        _ = minTier;
+        _ = maxTier;
+        DummyPopupShow.Show(StaticPopupMessageToShow);
     }
 }
 

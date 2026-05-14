@@ -14,6 +14,13 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     {
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
+        MessageFrameTranslator.SetDictionaryPathForTests(Path.Combine(
+            QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "MessageFrames",
+            "verbs.ja.json"));
         DummyPopupShow.Reset();
         DummySingleCallsiteOwnerPopupTarget.StaticPopupMessageToShow = string.Empty;
     }
@@ -50,6 +57,24 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "yourselfを切断してもよいか？",
         "AxeDismemberSelfConfirmation",
         PopupMethod.ShowYesNo)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.Cast),
+        "Are you sure you want to slam yourself?",
+        "yourselfを叩きつけてもよいか？",
+        "CudgelSlamSelfConfirmation",
+        PopupMethod.ShowYesNo)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.AttemptProselytization),
+        "Argyve is already your follower. Do you want to proselytize him anyway?",
+        "Argyveはすでにあなたの仲間だ。それでも勧誘するか？",
+        "ProselytizeFollowerConfirmation",
+        PopupMethod.ShowYesNo)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.LearnNewRecipe),
+        "You have a flash of insight and scribe a {{Y|laser pistol schematic}}.",
+        "ひらめきを得て{{Y|laser pistol schematic}}を記した。",
+        "TinkeringLearnRecipe",
+        PopupMethod.Show)]
     public void Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched(
         string methodName,
         string source,
@@ -84,6 +109,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "Are you sure you want to dismember yourself?",
         "AxeDismemberSelfConfirmation",
         PopupMethod.ShowYesNo)]
+    [TestCase(
+        "Are you sure you want to slam yourself?",
+        "CudgelSlamSelfConfirmation",
+        PopupMethod.ShowYesNo)]
+    [TestCase(
+        "Argyve is already your follower. Do you want to proselytize him anyway?",
+        "ProselytizeFollowerConfirmation",
+        PopupMethod.ShowYesNo)]
+    [TestCase(
+        "You have a flash of insight and scribe a {{Y|laser pistol schematic}}.",
+        "TinkeringLearnRecipe",
+        PopupMethod.Show)]
     public void Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent(
         string source,
         string detail,
@@ -158,6 +195,28 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                     typeof(DummyGameObject),
                     typeof(DummyAxeDismember),
                     typeof(DummyGameObject)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.Cast) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(DummyGameObject),
+                    typeof(DummyCudgelSlam),
+                    typeof(string),
+                    typeof(DummyGameObject),
+                    typeof(bool),
+                    typeof(int),
+                    typeof(string)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.AttemptProselytization) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName),
+            nameof(DummySingleCallsiteOwnerPopupTarget.LearnNewRecipe) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(DummyGameObject),
+                    typeof(int),
+                    typeof(int)),
             _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected owner method."),
         };
     }
@@ -182,6 +241,24 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                     new DummyGameObject(),
                     new DummyAxeDismember(),
                     new DummyGameObject());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.Cast):
+                DummySingleCallsiteOwnerPopupTarget.StaticPopupMessageToShow = message;
+                _ = DummySingleCallsiteOwnerPopupTarget.Cast(
+                    new DummyGameObject(),
+                    new DummyCudgelSlam(),
+                    null,
+                    new DummyGameObject());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.AttemptProselytization):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.AttemptProselytization();
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.LearnNewRecipe):
+                DummySingleCallsiteOwnerPopupTarget.StaticPopupMessageToShow = message;
+                DummySingleCallsiteOwnerPopupTarget.LearnNewRecipe(new DummyGameObject(), 1, 4);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected owner method.");

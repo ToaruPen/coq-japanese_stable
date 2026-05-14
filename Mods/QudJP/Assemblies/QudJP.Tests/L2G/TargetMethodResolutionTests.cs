@@ -1649,6 +1649,9 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.DecoyHologramEmitter|CreateHolograms|XRL.World.Parts.ActivePartStatus|XRL.World.GameObject",
         "XRL.World.Parts.RandomAltarBaetyl|HandleBaetylRewardWish|System.Boolean|System.String",
         "XRL.World.Parts.Skill.Axe_Dismember|CastForceSuccess|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Skill.Axe_Dismember|XRL.World.GameObject",
+        "XRL.World.Parts.Skill.Cudgel_Slam|Cast|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Skill.Cudgel_Slam|System.String|XRL.World.GameObject|System.Boolean|System.Int32|System.String",
+        "XRL.World.Parts.Skill.Persuasion_Proselytize|AttemptProselytization|System.Boolean",
+        "XRL.World.Parts.Skill.Tinkering|LearnNewRecipe|System.Void|XRL.World.GameObject|System.Int32|System.Int32",
     })]
     public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
     {

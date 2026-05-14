@@ -24,6 +24,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         "^Are you sure you want to dismember (?<target>.+?)\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex CudgelSlamSelfPattern = new(
+        "^Are you sure you want to slam (?<target>.+?)\\?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TinkeringLearnRecipePattern = new(
+        "^You have a flash of insight and scribe (?<item>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -33,7 +41,8 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         var targets = new List<MethodBase>();
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
         var axeDismemberType = AccessTools.TypeByName("XRL.World.Parts.Skill.Axe_Dismember");
-        if (gameObjectType is null || axeDismemberType is null)
+        var cudgelSlamType = AccessTools.TypeByName("XRL.World.Parts.Skill.Cudgel_Slam");
+        if (gameObjectType is null || axeDismemberType is null || cudgelSlamType is null)
         {
             Trace.TraceError("QudJP: {0} target parameter types not found.", Context);
             return targets;
@@ -54,6 +63,21 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.Skill.Axe_Dismember",
             "CastForceSuccess",
             [gameObjectType, axeDismemberType, gameObjectType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Skill.Cudgel_Slam",
+            "Cast",
+            [gameObjectType, cudgelSlamType, typeof(string), gameObjectType, typeof(bool), typeof(int), typeof(string)]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Skill.Persuasion_Proselytize",
+            "AttemptProselytization",
+            Type.EmptyTypes);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Skill.Tinkering",
+            "LearnNewRecipe",
+            [gameObjectType, typeof(int), typeof(int)]);
         return targets;
     }
 
@@ -135,6 +159,29 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             translated = $"{match.Groups["target"].Value}を切断してもよいか？";
             detail = "AxeDismemberSelfConfirmation";
+            return true;
+        }
+
+        match = CudgelSlamSelfPattern.Match(source);
+        if (match.Success)
+        {
+            translated = $"{match.Groups["target"].Value}を叩きつけてもよいか？";
+            detail = "CudgelSlamSelfConfirmation";
+            return true;
+        }
+
+        if (source.Contains(" already your follower. Do you want to proselytize ")
+            && DoesVerbRouteTranslator.TryTranslatePlainSentence(source, out translated))
+        {
+            detail = "ProselytizeFollowerConfirmation";
+            return true;
+        }
+
+        match = TinkeringLearnRecipePattern.Match(source);
+        if (match.Success)
+        {
+            translated = $"ひらめきを得て{StringHelpers.StripLeadingEnglishArticle(match.Groups["item"].Value)}を記した。";
+            detail = "TinkeringLearnRecipe";
             return true;
         }
 
