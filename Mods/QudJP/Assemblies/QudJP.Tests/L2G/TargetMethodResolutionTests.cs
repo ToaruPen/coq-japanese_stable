@@ -1392,6 +1392,14 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.Engraver|AttemptEngrave|System.Boolean|XRL.World.GameObject",
     })]
+    [TestCase(typeof(TattooGunTranslationPatch), new[]
+    {
+        "XRL.World.Parts.TattooGun|AttemptTattoo|System.Boolean|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(BrainBrineCurseTranslationPatch), new[]
+    {
+        "XRL.World.Effects.BrainBrineCurse|GainChoice|System.Void|System.String",
+    })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
         "XRL.World.Parts.Combat|HandleEvent|System.Boolean|XRL.World.GetDefenderHitDiceEvent",

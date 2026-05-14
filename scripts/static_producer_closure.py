@@ -10369,6 +10369,91 @@ def _engraver_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _generated_success_popup_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    tattoo_patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/TattooGunTranslationPatch.cs",
+        (
+            "TattooGunTranslationPatch",
+            "XRL.World.Parts.TattooGun",
+            "AttemptTattoo",
+            "MarkOfDeathPattern",
+            "TattooPattern",
+            "SuccessPopup",
+        ),
+    )
+    brain_brine_patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/BrainBrineCurseTranslationPatch.cs",
+        (
+            "BrainBrineCurseTranslationPatch",
+            "XRL.World.Effects.BrainBrineCurse",
+            "GainChoice",
+            "SkillPattern",
+            "MutationPattern",
+            "DefectPattern",
+            "RewardPopup",
+        ),
+    )
+    popup_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        (
+            "TattooGunTranslationPatch.TryTranslatePopupMessage",
+            "BrainBrineCurseTranslationPatch.TryTranslatePopupMessage",
+        ),
+    )
+    tattoo_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/TattooGunTranslationPatchTests.cs",
+        (
+            "TattooGunAttemptTattoo_TranslatesSuccessPopups_WhenOwnerPatched",
+            "TattooGunAttemptTattoo_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+            "TattooGunAttemptTattoo_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "TattooGunAttemptTattoo_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "You tattoo the mark of death on your right hand.",
+            "You tattoo {{W|a tiny spiral}} on {{Y|Issachari rifler}}'s left arm.",
+        ),
+    )
+    brain_brine_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/BrainBrineCurseTranslationPatchTests.cs",
+        (
+            "BrainBrineCurseGainChoice_TranslatesRewardPopups_WhenOwnerPatched",
+            "BrainBrineCurseGainChoice_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+            "BrainBrineCurseGainChoice_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "BrainBrineCurseGainChoice_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "You learn the skill {{C|Long Blade Proficiency}}!",
+            "You gained the mutation {{G|Light Manipulation}}!",
+            "You gained the defect {{R|Albino}}!",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(TattooGunTranslationPatch)",
+            "XRL.World.Parts.TattooGun|AttemptTattoo|System.Boolean|XRL.World.GameObject",
+            "typeof(BrainBrineCurseTranslationPatch)",
+            "XRL.World.Effects.BrainBrineCurse|GainChoice|System.Void|System.String",
+        ),
+    )
+    return (
+        CoveredOwnerCallsites(
+            family_id=(
+                "XRL.World.Parts/TattooGun.cs::"
+                "XRL.World.Parts.TattooGun.AttemptTattoo"
+            ),
+            lines=(203, 208),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(tattoo_patch, popup_pipeline, tattoo_tests, target_tests),
+        ),
+        CoveredOwnerCallsites(
+            family_id=(
+                "XRL.World.Effects/BrainBrineCurse.cs::"
+                "XRL.World.Effects.BrainBrineCurse.GainChoice"
+            ),
+            lines=(64, 96, 109),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(brain_brine_patch, popup_pipeline, brain_brine_tests, target_tests),
+        ),
+    )
+
+
 def _wish_command_queue_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/WishCommandQueueTranslationPatch.cs",
@@ -12643,6 +12728,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_imodification_wish_modify_owner_callsites(),
     *_neutron_flux_containment_owner_callsites(),
     *_polygel_handle_event_owner_callsites(),
+    *_generated_success_popup_callsites(),
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
     CoveredOwnerCallsites(

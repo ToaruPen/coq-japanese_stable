@@ -107,6 +107,7 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Patches/BasePronounProviderCustomizePopupTranslationPatch.cs:97:TryTranslateCustomizePopup"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/BedChairFragmentTranslator.cs:120:TryTranslate"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/BeguilingSifrahTranslationPatch.cs:105:TryTranslatePopupMessage"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
+            ["Mods/QudJP/Assemblies/src/Patches/BrainBrineCurseTranslationPatch.cs:93:TryTranslatePopupMessage"] = "Audited Strip call: name colors are restored through the local MarkupAwareRestoreCapture helper.",
             ["Mods/QudJP/Assemblies/src/Patches/CampfirePreserveTranslationPatch.cs:139:TranslatePreservedLine"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/CampfireRemainsAttemptLightTranslationPatch.cs:84:TryTranslatePopupMessage"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/ClonelingVehicleFragmentTranslator.cs:56:TryTranslate"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
@@ -191,6 +192,7 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Patches/SoundManagerSetChannelTrackTranslationPatch.cs:104:TryTranslateSoundLogTrack"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/StatusScreenPopupTranslationPatch.cs:114:TryTranslatePopupMessage"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/SurvivalCampAttemptCampPopupTranslationPatch.cs:107:TryTranslateExistingCampfireNavigation"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
+            ["Mods/QudJP/Assemblies/src/Patches/TattooGunTranslationPatch.cs:105:TryTranslateTattooMessage"] = "Audited Strip call: target/tattoo colors are restored through the local MarkupAwareRestoreCapture helper.",
             ["Mods/QudJP/Assemblies/src/Patches/TemporaryRealityStabilizeTranslationPatch.cs:96:TryTranslateWorldlineMessage"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/TinkerItemTranslationPatch.cs:104:TryTranslatePopupMessage"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs:1020:ShouldSkipMessagePatternTranslation"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
@@ -236,6 +238,7 @@ public sealed class ColorTagAllowlistCoverageTests
     private static readonly string[] MarkupAwareCaptureOwnerFiles =
     {
         "Mods/QudJP/Assemblies/src/Patches/BasePronounProviderCustomizePopupTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/BrainBrineCurseTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/CampfireCookAvailabilityTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/CampfireRemainsAttemptLightTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/CloningStartBuddedCloneTranslationPatch.cs",
@@ -273,6 +276,7 @@ public sealed class ColorTagAllowlistCoverageTests
         "Mods/QudJP/Assemblies/src/Patches/SoundManagerSetChannelTrackTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/SurvivalCampAttemptCampPopupTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/TabulaRasaeTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/TattooGunTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/TemporaryRealityStabilizeTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/TenfoldPathInitiatoryTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/TinkerItemTranslationPatch.cs",
