@@ -4843,6 +4843,51 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [TestCase(
+        "You must wait {{C|7 turns}} to use that ability again.",
+        "その能力を再び使うには{{C|7 turns}}待つ必要がある。")]
+    public void AbilityManagerShow_TranslatesCooldownQueuedMessage_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertAbilityManagerShowQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void AbilityManagerShow_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("You must wait {{C|7 turns}} to use that ability again.", null, Capitalize: false);
+
+            Assert.That(
+                DummyMessageQueue.LastMessage,
+                Is.EqualTo("You must wait {{C|7 turns}} to use that ability again."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void AbilityManagerShow_DoesNotRetranslateDirectMarkedMessage_WhenOwnerPatched()
+    {
+        AssertAbilityManagerShowQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("その能力はまだ使えない。"),
+            "その能力はまだ使えない。");
+    }
+
+    [Test]
+    public void AbilityManagerShow_LeavesEmptyMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertAbilityManagerShowQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [TestCase(
         "The {{blaze|blaze}} tonic burns out of your system.",
         "{{blaze|ブレイズ}}トニックが体内から燃え尽きた。")]
     [TestCase(
@@ -9839,6 +9884,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
     {
         target.BodyPartUnequipPartAndChildren();
         return true;
+    }
+
+    private static void AssertAbilityManagerShowQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.AbilityManagerShow)),
+                typeof(AbilityManagerShowTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.AbilityManagerShow();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private static void AssertTonicFireEventQueuedMessage(string message, string expected)

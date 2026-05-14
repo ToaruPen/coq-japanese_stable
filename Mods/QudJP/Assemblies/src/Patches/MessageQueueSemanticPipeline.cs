@@ -118,6 +118,7 @@ internal static class MessageQueueSemanticPipeline
         BrainThinkTranslationPatch.TryTranslateQueuedMessage,
         DeployableInfrastructureTranslationPatch.TryTranslateQueuedMessage,
         PlayerDanceRitualTranslationPatch.TryTranslateQueuedMessage,
+        AbilityManagerShowTranslationPatch.TryTranslateQueuedMessage,
         GameObjectEmitMessageTranslationPatch.TryTranslateQueuedMessage,
         ZoneManagerTryThawZoneTranslationPatch.TryTranslateQueuedMessage,
         ZoneManagerTickTranslationPatch.TryTranslateQueuedMessage,

@@ -5815,6 +5815,50 @@ def _garbage_attempt_rifle_owner_callsites() -> tuple[CoveredOwnerCallsites, ...
     )
 
 
+def _ability_manager_show_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.UI/AbilityManager.cs::XRL.UI.AbilityManager.Show",
+            lines=(479,),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/AbilityManagerShowTranslationPatch.cs",
+                    (
+                        "AbilityManagerShowTranslationPatch",
+                        "XRL.UI.AbilityManager",
+                        "Show",
+                        "CooldownPattern",
+                        "You must wait ",
+                        "to use that ability again",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("AbilityManagerShowTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "AbilityManagerShow_TranslatesCooldownQueuedMessage_WhenOwnerPatched",
+                        "AbilityManagerShow_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "AbilityManagerShow_DoesNotRetranslateDirectMarkedMessage_WhenOwnerPatched",
+                        "AbilityManagerShow_LeavesEmptyMessageUnchanged_WhenOwnerPatched",
+                        "You must wait {{C|7 turns}} to use that ability again.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(AbilityManagerShowTranslationPatch)",
+                        "XRL.UI.AbilityManager|Show|System.String|XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _auto_act_reset_family() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -12783,6 +12827,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_polygel_handle_event_owner_callsites(),
     *_generated_success_popup_callsites(),
     *_garbage_attempt_rifle_owner_callsites(),
+    *_ability_manager_show_owner_callsites(),
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
     CoveredOwnerCallsites(

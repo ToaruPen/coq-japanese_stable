@@ -1421,6 +1421,13 @@ internal sealed class DummySimpleOwnerQueueTarget
         return true;
     }
 
+    public string AbilityManagerShow()
+    {
+        _ = nameof(AbilityManagerShow);
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return string.Empty;
+    }
+
     public void FleeTakeAction()
     {
         _ = nameof(FleeTakeAction);
