@@ -417,6 +417,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "MagnetizedApplicatorCrumbles",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleCursedCellSocket),
+        "{{Y|The chem cell}} locks firmly into the socket, preventing removal.",
+        "{{Y|The chem cell}}はソケットにしっかりとはまり、取り外せなくなった。",
+        "CursedCellSocketLocks",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleNephalPropertiesBeforeDeathRemoval),
+        "A sphere of light in the chord of Saad Amus radiates away.\n\nYou feel it absorbed elsewhere.",
+        "Saad Amusの調べの光球が放射されて消えた。\n\nそれがどこか別の場所に吸収されたのを感じた。",
+        "NephalPropertiesChordAbsorbed",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation),
         "Did you mean Light Manipulation?",
         "「Light Manipulation」のことか？",
@@ -656,6 +668,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "MagnetizedApplicatorCrumbles",
         PopupMethod.Show)]
     [TestCase(
+        "{{Y|The chem cell}} locks firmly into the socket, preventing removal.",
+        "CursedCellSocketLocks",
+        PopupMethod.Show)]
+    [TestCase(
+        "A sphere of light in the chord of Saad Amus radiates away.\n\nYou feel it absorbed elsewhere.",
+        "NephalPropertiesChordAbsorbed",
+        PopupMethod.Show)]
+    [TestCase(
         "Did you mean Light Manipulation?",
         "MutationWishDidYouMean",
         PopupMethod.ShowYesNo)]
@@ -804,6 +824,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         "{{Y|The geomagnetic disc}} loses its magnetic charge and crumbles to powder.",
         "MagnetizedApplicatorCrumbles")]
+    [TestCase(
+        "{{Y|The chem cell}} locks firmly into the socket, preventing removal.",
+        "CursedCellSocketLocks")]
+    [TestCase(
+        "A sphere of light in the chord of Saad Amus radiates away.\n\nYou feel it absorbed elsewhere.",
+        "NephalPropertiesChordAbsorbed")]
     [TestCase(
         "Did you mean Light Manipulation?",
         "MutationWishDidYouMean")]
@@ -1060,6 +1086,10 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.World.Parts.DestroyOnUnequip|HandleEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleMagnetizedApplicator) =>
                 "XRL.World.Parts.MagnetizedApplicator|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleCursedCellSocket) =>
+                "XRL.World.Parts.CursedCellSocket|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleNephalPropertiesBeforeDeathRemoval) =>
+                "XRL.World.Parts.NephalProperties|HandleEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation) =>
                 "XRL.World.Parts.Mutations|WishMutation",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleBlueprintXML) =>

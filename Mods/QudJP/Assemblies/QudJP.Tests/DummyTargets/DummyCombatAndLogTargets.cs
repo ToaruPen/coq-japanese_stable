@@ -908,6 +908,11 @@ internal sealed class DummyBeforeDeathRemovalEvent
     public string Id { get; set; } = nameof(DummyBeforeDeathRemovalEvent);
 }
 
+internal sealed class DummyCellChangedEvent
+{
+    public string Id { get; set; } = nameof(DummyCellChangedEvent);
+}
+
 internal sealed class DummyEmbarkInfo
 {
     public string Id { get; set; } = nameof(DummyEmbarkInfo);
@@ -1947,6 +1952,20 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
     }
 
     public bool HandleMagnetizedApplicator(DummyInventoryActionEvent? e = null)
+    {
+        _ = e;
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    public bool HandleCursedCellSocket(DummyCellChangedEvent? e = null)
+    {
+        _ = e;
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    public bool HandleNephalPropertiesBeforeDeathRemoval(DummyBeforeDeathRemovalEvent? e = null)
     {
         _ = e;
         DummyPopupShow.Show(PopupMessageToShow);

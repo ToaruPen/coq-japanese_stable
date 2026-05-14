@@ -55,9 +55,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string ToolboxOwner = "XRL.World.Parts.Toolbox|HandleBonus";
     private const string TrainingBookOwner = "XRL.World.Parts.TrainingBook|HandleEvent";
     private const string WaterRitualRecordOwner = "XRL.World.Parts.WaterRitualRecord|HandleEvent";
+    private const string CursedCellSocketOwner = "XRL.World.Parts.CursedCellSocket|HandleEvent";
     private const string DestroyOnUnequipOwner = "XRL.World.Parts.DestroyOnUnequip|HandleEvent";
     private const string MagnetizedApplicatorOwner = "XRL.World.Parts.MagnetizedApplicator|HandleEvent";
     private const string MutationsWishMutationOwner = "XRL.World.Parts.Mutations|WishMutation";
+    private const string NephalPropertiesHandleEventOwner = "XRL.World.Parts.NephalProperties|HandleEvent";
     private const string GameObjectFactoryBlueprintXmlOwner = "XRL.World.GameObjectFactory|HandleBlueprintXML";
     private const string XrlGameLoadGameOwner = "XRL.XRLGame|LoadGame";
 
@@ -249,6 +251,10 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         "^You bothered (?<object>.+?) again\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex CursedCellSocketLocksPattern = new(
+        "^(?<object>.+?) (?:locks|lock) firmly into the socket, preventing removal\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex DestroyOnUnequipConfirmationPattern = new(
         "^(?<object>.+?) will be destroyed if (?<clause>.+?) unequipped\\. Do you want to continue\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -259,6 +265,10 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static readonly Regex MutationWishDidYouMeanPattern = new(
         "^Did you mean (?<mutation>.+?)\\?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex NephalPropertiesChordAbsorbedPattern = new(
+        "^A sphere of light in the chord of (?<name>.+?) radiates away\\.\\n\\nYou feel it absorbed elsewhere\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex GameObjectFactoryMissingBlueprintPattern = new(
@@ -291,6 +301,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         var xrlGameType = AccessTools.TypeByName("XRL.XRLGame");
         var endTurnEventType = AccessTools.TypeByName("XRL.World.EndTurnEvent");
         var beforeDieEventType = AccessTools.TypeByName("XRL.World.BeforeDieEvent");
+        var cellChangedEventType = AccessTools.TypeByName("XRL.World.CellChangedEvent");
         var neutronFluxPourExplodesEventType = AccessTools.TypeByName("XRL.World.NeutronFluxPourExplodesEvent");
         var beginTakeActionEventType = AccessTools.TypeByName("XRL.World.BeginTakeActionEvent");
         var beginBeingUnequippedEventType = AccessTools.TypeByName("XRL.World.BeginBeingUnequippedEvent");
@@ -308,6 +319,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             || xrlGameType is null
             || endTurnEventType is null
             || beforeDieEventType is null
+            || cellChangedEventType is null
             || neutronFluxPourExplodesEventType is null
             || beginTakeActionEventType is null
             || beginBeingUnequippedEventType is null
@@ -535,6 +547,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             [beginConversationEventType]);
         AddTarget(
             targets,
+            "XRL.World.Parts.CursedCellSocket",
+            "HandleEvent",
+            [cellChangedEventType]);
+        AddTarget(
+            targets,
             "XRL.World.QuestManagers.SpreadPax",
             "Finish",
             Type.EmptyTypes);
@@ -558,6 +575,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.Mutations",
             "WishMutation",
             [typeof(string)]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.NephalProperties",
+            "HandleEvent",
+            [beforeDeathRemovalEventType]);
         AddTarget(
             targets,
             "XRL.World.GameObjectFactory",
@@ -1078,6 +1100,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             return true;
         }
 
+        match = CursedCellSocketLocksPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, CursedCellSocketOwner))
+        {
+            translated = $"{match.Groups["object"].Value}はソケットにしっかりとはまり、取り外せなくなった。";
+            detail = "CursedCellSocketLocks";
+            return true;
+        }
+
         match = DestroyOnUnequipConfirmationPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, DestroyOnUnequipOwner))
         {
@@ -1099,6 +1129,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             translated = $"「{match.Groups["mutation"].Value}」のことか？";
             detail = "MutationWishDidYouMean";
+            return true;
+        }
+
+        match = NephalPropertiesChordAbsorbedPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, NephalPropertiesHandleEventOwner))
+        {
+            translated = $"{match.Groups["name"].Value}の調べの光球が放射されて消えた。\n\nそれがどこか別の場所に吸収されたのを感じた。";
+            detail = "NephalPropertiesChordAbsorbed";
             return true;
         }
 

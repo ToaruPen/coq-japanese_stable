@@ -14959,6 +14959,49 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts/CursedCellSocket.cs::"
+            "XRL.World.Parts.CursedCellSocket.HandleEvent"
+        ),
+        lines=(58,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                (
+                    "SingleCallsiteOwnerPopupTranslationPatch",
+                    "XRL.World.Parts.CursedCellSocket",
+                    "HandleEvent",
+                    "CursedCellSocketLocks",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                    "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "HandleCursedCellSocket",
+                    "CursedCellSocketLocks",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "SingleCallsiteOwnerPopupTranslationPatch",
+                    "XRL.World.Parts.CursedCellSocket|HandleEvent|System.Boolean|XRL.World.CellChangedEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World.Parts/DestroyOnUnequip.cs::"
             "XRL.World.Parts.DestroyOnUnequip.HandleEvent"
         ),
@@ -15081,6 +15124,49 @@ COVERED_OWNER_CALLSITES: Final = (
                     "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
                     "SingleCallsiteOwnerPopupTranslationPatch",
                     "XRL.World.Parts.Mutations|WishMutation|System.Void|System.String",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
+            "XRL.World.Parts/NephalProperties.cs::"
+            "XRL.World.Parts.NephalProperties.HandleEvent"
+        ),
+        lines=(173,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                (
+                    "SingleCallsiteOwnerPopupTranslationPatch",
+                    "XRL.World.Parts.NephalProperties",
+                    "HandleEvent",
+                    "NephalPropertiesChordAbsorbed",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                    "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "HandleNephalPropertiesBeforeDeathRemoval",
+                    "NephalPropertiesChordAbsorbed",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "SingleCallsiteOwnerPopupTranslationPatch",
+                    "XRL.World.Parts.NephalProperties|HandleEvent|System.Boolean|XRL.World.BeforeDeathRemovalEvent",
                 ),
             ),
         ),
