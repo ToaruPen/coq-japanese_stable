@@ -213,6 +213,31 @@ def test_conversation_script_popup_owner_callsites_are_split_from_fixed_and_runt
     ]
 
 
+def test_terrain_travel_owner_callsites_are_split_from_runtime_and_fixed_popups() -> None:
+    """TerrainTravel owner callsites must close without claiming runtime encounter or fixed lost popups."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    source_entries = owner_action_queue_by_file(inventory)
+    terrain_family_ids = {
+        "XRL.World.Parts/TerrainTravel.cs::XRL.World.Parts.TerrainTravel.HandleEvent",
+        "XRL.World.Parts/TerrainTravel.cs::XRL.World.Parts.TerrainTravel.HandleLeavingCell",
+    }
+
+    for family_id in terrain_family_ids:
+        assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
+        assert family_closure_status(raw_families[family_id]) == "needs_family_review"
+        assert family_id not in covered_family_ids()
+
+    assert "XRL.World.Parts/TerrainTravel.cs::XRL.World.Parts.TerrainTravel.HandleEvent" in queued_family_ids
+    assert "XRL.World.Parts/TerrainTravel.cs::XRL.World.Parts.TerrainTravel.HandleLeavingCell" not in queued_family_ids
+    terrain_entry = next(
+        entry for entry in source_entries if entry["source_file"] == "XRL.World.Parts/TerrainTravel.cs"
+    )
+    assert terrain_entry["callsite_count"] == 2
+    assert [family["member_name"] for family in terrain_entry["families"]] == ["HandleEvent"]
+
+
 def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:
     """Uncovered high-volume owner families must stay actionable."""
     inventory = load_inventory(TRACKED_INVENTORY)

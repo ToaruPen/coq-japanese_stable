@@ -11109,6 +11109,88 @@ COVERED_OWNER_FAMILIES: Final = (
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 COVERED_OWNER_CALLSITES: Final = (
     CoveredOwnerCallsites(
+        family_id="XRL.World.Parts/TerrainTravel.cs::XRL.World.Parts.TerrainTravel.HandleEvent",
+        lines=(93, 109, 115),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/TerrainTravelTranslationPatch.cs",
+                (
+                    "TerrainTravelTranslationPatch",
+                    "HandleEvent",
+                    "BaseEncounterChance",
+                    "ModifiedEncounterChance",
+                    "TriggeredEncounterChance",
+                    "TryTranslateQueuedMessage",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("TerrainTravelTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/TerrainTravelTranslationPatchTests.cs",
+                (
+                    "TerrainTravel_TranslatesDebugQueuedMessages_WhenOwnerPatched",
+                    "TerrainTravel_PreservesQueuedMessageColor_WhenOwnerPatched",
+                    "TerrainTravel_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "TerrainTravel_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "TerrainTravel_LeavesUnsupportedQueuedMessageUnchanged_WhenOwnerPatched",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(TerrainTravelTranslationPatch)",
+                    "XRL.World.Parts.TerrainTravel|HandleEvent|System.Boolean|XRL.World.ObjectEnteredCellEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id="XRL.World.Parts/TerrainTravel.cs::XRL.World.Parts.TerrainTravel.HandleLeavingCell",
+        lines=(186, 216, 258),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/TerrainTravelTranslationPatch.cs",
+                (
+                    "TerrainTravelTranslationPatch",
+                    "HandleLeavingCell",
+                    "GetLostChance",
+                    "TravelSpeed",
+                    "HpWarningStopTravel",
+                    "TryTranslatePopupMessage",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("TerrainTravelTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("TerrainTravelTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/TerrainTravelTranslationPatchTests.cs",
+                (
+                    "TerrainTravel_TranslatesDebugQueuedMessages_WhenOwnerPatched",
+                    "TerrainTravel_TranslatesHpWarningPopup_WhenOwnerPatched",
+                    "TerrainTravel_DoesNotClaimEncounterRuntimePopup_WhenOwnerPatched",
+                    "TerrainTravel_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "TerrainTravel_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(TerrainTravelTranslationPatch)",
+                    "XRL.World.Parts.TerrainTravel|HandleLeavingCell|System.Boolean|XRL.World.GameObject|System.Int32&",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
         family_id="XRL.World.Parts/ConversationScript.cs::XRL.World.Parts.ConversationScript.IsPhysicalConversationPossible",
         lines=(265, 281, 297, 305, 313, 327),
         inventory_statuses=("needs_family_review",),

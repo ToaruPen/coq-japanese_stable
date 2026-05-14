@@ -141,6 +141,42 @@ internal sealed class DummyConversationScriptPopupProducerTarget
     }
 }
 
+internal sealed class DummyTerrainTravelProducerTarget
+{
+    public string QueuedMessageToSend { get; set; } = string.Empty;
+
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool HandleEvent(DummyInventoryActionEvent e)
+    {
+        _ = e;
+        AddConfiguredQueuedMessage();
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool HandleLeavingCell(object gameObject, ref int totalSegments)
+    {
+        _ = gameObject;
+        totalSegments = 0;
+        AddConfiguredQueuedMessage();
+        _ = DummyPopupShow.ShowYesNo(PopupMessageToShow);
+
+        return true;
+    }
+
+    private void AddConfiguredQueuedMessage()
+    {
+        if (!string.IsNullOrEmpty(QueuedMessageToSend))
+        {
+            DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, ColorToSend, Capitalize: false);
+        }
+    }
+}
+
 internal sealed class DummyGameObjectStatPopupProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
