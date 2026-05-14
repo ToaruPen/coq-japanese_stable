@@ -404,6 +404,36 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "あなたのStrengthが{{G|1}}上昇した！",
         "TrainingBookAttributeIncrease",
         PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleDestroyOnUnequip),
+        "{{Y|The light mote}} will be destroyed if it is unequipped. Do you want to continue?",
+        "{{Y|The light mote}}は外すと破壊される。続けますか？",
+        "DestroyOnUnequipConfirmation",
+        PopupMethod.ShowYesNoCancel)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleMagnetizedApplicator),
+        "{{Y|The geomagnetic disc}} loses its magnetic charge and crumbles to powder.",
+        "{{Y|The geomagnetic disc}}は磁荷を失い、粉々に崩れた。",
+        "MagnetizedApplicatorCrumbles",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation),
+        "Did you mean Light Manipulation?",
+        "「Light Manipulation」のことか？",
+        "MutationWishDidYouMean",
+        PopupMethod.ShowYesNo)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleBlueprintXML),
+        "No blueprint named \"Chrome Idol\" found.",
+        "「Chrome Idol」というブループリントは見つからない。",
+        "GameObjectFactoryMissingBlueprint",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.LoadGame),
+        "No saved game exists. (Saves/slot1)",
+        "セーブデータが存在しない。（Saves/slot1）",
+        "XrlGameMissingSave",
+        PopupMethod.Show)]
     public void Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched(
         string methodName,
         string source,
@@ -617,6 +647,26 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "Your Strength is increased by {{G|1}}!",
         "TrainingBookAttributeIncrease",
         PopupMethod.Show)]
+    [TestCase(
+        "{{Y|The light mote}} will be destroyed if it is unequipped. Do you want to continue?",
+        "DestroyOnUnequipConfirmation",
+        PopupMethod.ShowYesNoCancel)]
+    [TestCase(
+        "{{Y|The geomagnetic disc}} loses its magnetic charge and crumbles to powder.",
+        "MagnetizedApplicatorCrumbles",
+        PopupMethod.Show)]
+    [TestCase(
+        "Did you mean Light Manipulation?",
+        "MutationWishDidYouMean",
+        PopupMethod.ShowYesNo)]
+    [TestCase(
+        "No blueprint named \"Chrome Idol\" found.",
+        "GameObjectFactoryMissingBlueprint",
+        PopupMethod.Show)]
+    [TestCase(
+        "No saved game exists. (Saves/slot1)",
+        "XrlGameMissingSave",
+        PopupMethod.Show)]
     public void Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent(
         string source,
         string detail,
@@ -748,6 +798,21 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         "Your Strength is increased by {{G|1}}!",
         "TrainingBookAttributeIncrease")]
+    [TestCase(
+        "{{Y|The light mote}} will be destroyed if it is unequipped. Do you want to continue?",
+        "DestroyOnUnequipConfirmation")]
+    [TestCase(
+        "{{Y|The geomagnetic disc}} loses its magnetic charge and crumbles to powder.",
+        "MagnetizedApplicatorCrumbles")]
+    [TestCase(
+        "Did you mean Light Manipulation?",
+        "MutationWishDidYouMean")]
+    [TestCase(
+        "No blueprint named \"Chrome Idol\" found.",
+        "GameObjectFactoryMissingBlueprint")]
+    [TestCase(
+        "No saved game exists. (Saves/slot1)",
+        "XrlGameMissingSave")]
     public void Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner(
         string source,
         string detail)
@@ -828,6 +893,31 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         });
     }
 
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleMagnetizedApplicator),
+        "{{Y|The steel boots}} become magnetized!",
+        "MagnetizedApplicatorCrumbles")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation),
+        "No mutation by the name 'Light Manipulations' could be found.",
+        "MutationWishDidYouMean")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation),
+        "No mutation by the name 'Wings' and variant 'crystal' could be found.",
+        "MutationWishDidYouMean")]
+    public void Patch_DoesNotClaimDeferredRuntimePopups_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string guardedDetail)
+    {
+        Assert.That(TryTranslateForOwner(methodName, source, out var translated), Is.False);
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(HitCount(guardedDetail), Is.Zero);
+        });
+    }
+
     private static void ShowPopup(string source, PopupMethod popupMethod)
     {
         if (popupMethod == PopupMethod.ShowAsync)
@@ -842,6 +932,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
             return;
         }
 
+        if (popupMethod == PopupMethod.ShowYesNoCancel)
+        {
+            _ = DummyPopupShow.ShowYesNoCancel(source);
+            return;
+        }
+
         DummyPopupShow.Show(source);
     }
 
@@ -851,6 +947,7 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         {
             PopupMethod.ShowAsync => DummyPopupShow.LastShowAsyncMessage,
             PopupMethod.ShowYesNo => DummyPopupShow.LastShowYesNoMessage,
+            PopupMethod.ShowYesNoCancel => DummyPopupShow.LastShowYesNoCancelMessage,
             _ => DummyPopupShow.LastShowMessage,
         };
     }
@@ -959,6 +1056,16 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.World.QuestManagers.SpreadPax|Finish",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleTrainingBook) =>
                 "XRL.World.Parts.TrainingBook|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleDestroyOnUnequip) =>
+                "XRL.World.Parts.DestroyOnUnequip|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleMagnetizedApplicator) =>
+                "XRL.World.Parts.MagnetizedApplicator|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation) =>
+                "XRL.World.Parts.Mutations|WishMutation",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleBlueprintXML) =>
+                "XRL.World.GameObjectFactory|HandleBlueprintXML",
+            nameof(DummySingleCallsiteOwnerPopupTarget.LoadGame) =>
+                "XRL.XRLGame|LoadGame",
             _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected owner method."),
         };
     }
@@ -973,5 +1080,6 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         Show,
         ShowAsync,
         ShowYesNo,
+        ShowYesNoCancel,
     }
 }

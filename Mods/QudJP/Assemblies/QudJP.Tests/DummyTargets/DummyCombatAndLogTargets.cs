@@ -1015,6 +1015,11 @@ internal sealed class DummyUnequippedEvent
     public string Id { get; set; } = nameof(DummyUnequippedEvent);
 }
 
+internal sealed class DummyBeginBeingUnequippedEvent
+{
+    public string Id { get; set; } = nameof(DummyBeginBeingUnequippedEvent);
+}
+
 internal sealed class DummyAsleepOwnerTarget
 {
     public string MessageToSend { get; set; } = string.Empty;
@@ -1932,6 +1937,46 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
     public void FinishSpreadPax()
     {
         DummyPopupShow.Show(PopupMessageToShow);
+    }
+
+    public bool HandleDestroyOnUnequip(DummyBeginBeingUnequippedEvent? e = null)
+    {
+        _ = e;
+        _ = DummyPopupShow.ShowYesNoCancel(PopupMessageToShow);
+        return true;
+    }
+
+    public bool HandleMagnetizedApplicator(DummyInventoryActionEvent? e = null)
+    {
+        _ = e;
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    public static void WishMutation(string? argument = null)
+    {
+        _ = argument;
+        _ = DummyPopupShow.ShowYesNo(StaticPopupMessageToShow);
+    }
+
+    public static void HandleBlueprintXML(string? bpname = null)
+    {
+        _ = bpname;
+        DummyPopupShow.Show(StaticPopupMessageToShow);
+    }
+
+    public static DummyXrlGame? LoadGame(
+        string path,
+        bool session = false,
+        bool showPopup = false,
+        Dictionary<string, object>? gameState = null)
+    {
+        _ = path;
+        _ = session;
+        _ = showPopup;
+        _ = gameState;
+        DummyPopupShow.Show(StaticPopupMessageToShow);
+        return null;
     }
 }
 

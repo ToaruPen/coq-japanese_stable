@@ -55,6 +55,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string ToolboxOwner = "XRL.World.Parts.Toolbox|HandleBonus";
     private const string TrainingBookOwner = "XRL.World.Parts.TrainingBook|HandleEvent";
     private const string WaterRitualRecordOwner = "XRL.World.Parts.WaterRitualRecord|HandleEvent";
+    private const string DestroyOnUnequipOwner = "XRL.World.Parts.DestroyOnUnequip|HandleEvent";
+    private const string MagnetizedApplicatorOwner = "XRL.World.Parts.MagnetizedApplicator|HandleEvent";
+    private const string MutationsWishMutationOwner = "XRL.World.Parts.Mutations|WishMutation";
+    private const string GameObjectFactoryBlueprintXmlOwner = "XRL.World.GameObjectFactory|HandleBlueprintXML";
+    private const string XrlGameLoadGameOwner = "XRL.XRLGame|LoadGame";
 
     private static readonly Regex DecoyOutOfRangePattern = new(
         "^That is out of range \\((?<range>.+?) (?<unit>squares?)\\)$",
@@ -244,6 +249,26 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         "^You bothered (?<object>.+?) again\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex DestroyOnUnequipConfirmationPattern = new(
+        "^(?<object>.+?) will be destroyed if (?<clause>.+?) unequipped\\. Do you want to continue\\?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex MagnetizedApplicatorCrumblesPattern = new(
+        "^(?<object>.+?) (?:loses|lose) its magnetic charge and crumbles to powder\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex MutationWishDidYouMeanPattern = new(
+        "^Did you mean (?<mutation>.+?)\\?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex GameObjectFactoryMissingBlueprintPattern = new(
+        "^No blueprint named \"(?<blueprint>.+?)\" found\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex XrlGameMissingSavePattern = new(
+        "^No saved game exists\\. \\((?<path>.+?)\\)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -268,6 +293,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         var beforeDieEventType = AccessTools.TypeByName("XRL.World.BeforeDieEvent");
         var neutronFluxPourExplodesEventType = AccessTools.TypeByName("XRL.World.NeutronFluxPourExplodesEvent");
         var beginTakeActionEventType = AccessTools.TypeByName("XRL.World.BeginTakeActionEvent");
+        var beginBeingUnequippedEventType = AccessTools.TypeByName("XRL.World.BeginBeingUnequippedEvent");
         var axeDismemberType = AccessTools.TypeByName("XRL.World.Parts.Skill.Axe_Dismember");
         var cudgelSlamType = AccessTools.TypeByName("XRL.World.Parts.Skill.Cudgel_Slam");
         if (gameObjectType is null
@@ -284,6 +310,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             || beforeDieEventType is null
             || neutronFluxPourExplodesEventType is null
             || beginTakeActionEventType is null
+            || beginBeingUnequippedEventType is null
             || axeDismemberType is null
             || cudgelSlamType is null)
         {
@@ -516,6 +543,31 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.Toolbox",
             "HandleBonus",
             [getTinkeringBonusEventType, typeof(int), typeof(int)]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.DestroyOnUnequip",
+            "HandleEvent",
+            [beginBeingUnequippedEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.MagnetizedApplicator",
+            "HandleEvent",
+            [inventoryActionEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Mutations",
+            "WishMutation",
+            [typeof(string)]);
+        AddTarget(
+            targets,
+            "XRL.World.GameObjectFactory",
+            "HandleBlueprintXML",
+            [typeof(string)]);
+        AddTarget(
+            targets,
+            "XRL.XRLGame",
+            "LoadGame",
+            [typeof(string), typeof(bool), typeof(bool), typeof(Dictionary<string, object>)]);
         return targets;
     }
 
@@ -1023,6 +1075,46 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             translated = $"{match.Groups["object"].Value}にまた迷惑をかけた。";
             detail = "WaterRitualRecordBothered";
+            return true;
+        }
+
+        match = DestroyOnUnequipConfirmationPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, DestroyOnUnequipOwner))
+        {
+            translated = $"{match.Groups["object"].Value}は外すと破壊される。続けますか？";
+            detail = "DestroyOnUnequipConfirmation";
+            return true;
+        }
+
+        match = MagnetizedApplicatorCrumblesPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, MagnetizedApplicatorOwner))
+        {
+            translated = $"{match.Groups["object"].Value}は磁荷を失い、粉々に崩れた。";
+            detail = "MagnetizedApplicatorCrumbles";
+            return true;
+        }
+
+        match = MutationWishDidYouMeanPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, MutationsWishMutationOwner))
+        {
+            translated = $"「{match.Groups["mutation"].Value}」のことか？";
+            detail = "MutationWishDidYouMean";
+            return true;
+        }
+
+        match = GameObjectFactoryMissingBlueprintPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, GameObjectFactoryBlueprintXmlOwner))
+        {
+            translated = $"「{match.Groups["blueprint"].Value}」というブループリントは見つからない。";
+            detail = "GameObjectFactoryMissingBlueprint";
+            return true;
+        }
+
+        match = XrlGameMissingSavePattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, XrlGameLoadGameOwner))
+        {
+            translated = $"セーブデータが存在しない。（{match.Groups["path"].Value}）";
+            detail = "XrlGameMissingSave";
             return true;
         }
 
