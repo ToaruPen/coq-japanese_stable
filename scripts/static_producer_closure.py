@@ -12440,6 +12440,57 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts/TinkerItem.cs::"
+            "XRL.World.Parts.TinkerItem.HandleEvent"
+        ),
+        lines=(343, 348, 365, 372),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/TinkerItemTranslationPatch.cs",
+                (
+                    "TinkerItemTranslationPatch",
+                    "XRL.World.Parts.TinkerItem",
+                    "HandleEvent",
+                    "CannotAffect",
+                    "OwnedItemDisassembly",
+                    "DisassemblyConfirmation",
+                    "ContainerOwnedDisassembly",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("TinkerItemTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/TinkerItemTranslationPatchTests.cs",
+                (
+                    "HandleEvent_TranslatesCannotAffectPopup_WhenOwnerPatched",
+                    "HandleEvent_TranslatesOwnedItemDisassemblyPrompt_WhenOwnerPatched",
+                    "HandleEvent_TranslatesDisassemblyConfirmation_WhenOwnerPatched",
+                    "HandleEvent_TranslatesContainerOwnedDisassemblyPrompt_WhenOwnerPatched",
+                    "HandleEvent_DoesNotClaimPopupOnlyTraffic_WhenOwnerAbsent",
+                    "HandleEvent_DoesNotRetranslateDirectMarkedShowFail_WhenOwnerPatched",
+                    "HandleEvent_DoesNotRetranslateDirectMarkedConfirmation_WhenOwnerPatched",
+                    "HandleEvent_DoesNotClaimFixedOrOutOfScopePopups_WhenOwnerPatched",
+                    "You cannot use disassemble all with hostiles nearby.",
+                    "You cannot seem to affect",
+                    "Are you sure you want to disassemble",
+                    "ContainerOwnedDisassembly",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(TinkerItemTranslationPatch)",
+                    "XRL.World.Parts.TinkerItem|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World/SocialSifrahTokenGift.cs::"
             "XRL.World.SocialSifrahTokenGift.CheckTokenUse"
         ),

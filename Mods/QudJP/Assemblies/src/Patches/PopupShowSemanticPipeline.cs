@@ -45,6 +45,7 @@ internal static class PopupShowSemanticPipeline
         TeleporterPairTranslationPatch.TryTranslatePopupMessage,
         ShortBladesHobbleTranslationPatch.TryTranslatePopupMessage,
         FirefightingTranslationPatch.TryTranslatePopupMessage,
+        TinkerItemTranslationPatch.TryTranslatePopupMessage,
         BodyTranslationPatch.TryTranslatePopupMessage,
         SifrahTokenItemPopupTranslationPatch.TryTranslatePopupMessage,
         SifrahPureOwnerPopupTranslationPatch.TryTranslatePopupMessage,

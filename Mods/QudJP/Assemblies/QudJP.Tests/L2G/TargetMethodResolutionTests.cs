@@ -1734,6 +1734,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Capabilities.Firefighting|AttemptFirefightingCore|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.Int32|System.Boolean|System.Boolean",
     })]
+    [TestCase(typeof(TinkerItemTranslationPatch), new[]
+    {
+        "XRL.World.Parts.TinkerItem|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+    })]
     [TestCase(typeof(SingleCallsiteOwnerPopupTranslationPatch), new[]
     {
         "XRL.World.Quests.AscensionSystem|BarathrumStartConversation|System.Void|XRL.World.GameObject",
