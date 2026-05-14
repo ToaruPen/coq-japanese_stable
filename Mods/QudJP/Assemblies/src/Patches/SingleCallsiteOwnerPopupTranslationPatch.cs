@@ -20,10 +20,15 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string GameUniqueOwner = "XRL.World.Parts.GameUnique|OnCreated";
     private const string GenocideCurioOwner = "XRL.World.Parts.GenocideCurio|HandleEvent";
     private const string GritGateMainframeOwner = "XRL.World.Parts.GritGateMainframeTerminal|HandleEvent";
+    private const string HindrenMysteryCriticalNpcOwner = "XRL.World.Parts.HindrenMysteryCriticalNPC|HandleEvent";
     private const string LiquidFueledPowerPlantOwner = "XRL.World.Parts.LiquidFueledPowerPlant|HandleEvent";
+    private const string MakeFussOnTakenOwner = "XRL.World.Parts.MakeFussOnTaken|MakeFuss";
+    private const string MutationPointsOnEatOwner = "XRL.World.Parts.MutationPointsOnEat|FireEvent";
     private const string RecoilOnDeathOwner = "XRL.World.Parts.RecoilOnDeath|HandleEvent";
     private const string SpraybottleOwner = "XRL.World.Parts.Spraybottle|HandleEvent";
+    private const string SpreadPaxOwner = "XRL.World.QuestManagers.SpreadPax|Finish";
     private const string TrainingBookOwner = "XRL.World.Parts.TrainingBook|HandleEvent";
+    private const string WaterRitualRecordOwner = "XRL.World.Parts.WaterRitualRecord|HandleEvent";
 
     private const string DummySingleCallsiteOwner = "QudJP.Tests.DummyTargets.DummySingleCallsiteOwnerPopupTarget|";
 
@@ -59,8 +64,20 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         "^(?<object>.+?) is unresponsive\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex HindrenMysteryCriticalNpcDeathPattern = new(
+        "^The death of (?<object>.+?) means that the investigation can go no further\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex LiquidFueledPowerPlantEmptyPattern = new(
         "^Your (?<object>.+?) (?<verb>has|have) consumed all of (?<fuel>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex MakeFussOnTakenPattern = new(
+        "^You have (?<action>.+?) (?<object>.+?)!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex MutationPointsOnEatPattern = new(
+        "^Your genome destabilizes and you gain (?<amount>.+?) mutation (?<unit>point|points)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex RecoilOnDeathTransportPattern = new(
@@ -71,8 +88,16 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         "^(?<object>.+?) (?<verb>is|are) covered in (?<liquid>.+?)!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex SpreadPaxCurePattern = new(
+        "^The infected crust of skin on your (?<location>.+?) loosens and breaks away\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex TrainingBookAttributeIncreasePattern = new(
         "^Your (?<attribute>.+?) is increased by (?<amount>.+?)!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex WaterRitualRecordBotheredPattern = new(
+        "^You bothered (?<object>.+?) again\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [ThreadStatic]
@@ -86,12 +111,18 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     {
         var targets = new List<MethodBase>();
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
+        var eventType = AccessTools.TypeByName("XRL.World.Event");
+        var beforeDeathRemovalEventType = AccessTools.TypeByName("XRL.World.BeforeDeathRemovalEvent");
+        var beginConversationEventType = AccessTools.TypeByName("XRL.World.BeginConversationEvent");
         var inventoryActionEventType = AccessTools.TypeByName("XRL.World.InventoryActionEvent");
         var endTurnEventType = AccessTools.TypeByName("XRL.World.EndTurnEvent");
         var beforeDieEventType = AccessTools.TypeByName("XRL.World.BeforeDieEvent");
         var axeDismemberType = AccessTools.TypeByName("XRL.World.Parts.Skill.Axe_Dismember");
         var cudgelSlamType = AccessTools.TypeByName("XRL.World.Parts.Skill.Cudgel_Slam");
         if (gameObjectType is null
+            || eventType is null
+            || beforeDeathRemovalEventType is null
+            || beginConversationEventType is null
             || inventoryActionEventType is null
             || endTurnEventType is null
             || beforeDieEventType is null
@@ -149,9 +180,24 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             [inventoryActionEventType]);
         AddTarget(
             targets,
+            "XRL.World.Parts.HindrenMysteryCriticalNPC",
+            "HandleEvent",
+            [beforeDeathRemovalEventType]);
+        AddTarget(
+            targets,
             "XRL.World.Parts.LiquidFueledPowerPlant",
             "HandleEvent",
             [endTurnEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.MakeFussOnTaken",
+            "MakeFuss",
+            [gameObjectType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.MutationPointsOnEat",
+            "FireEvent",
+            [eventType]);
         AddTarget(
             targets,
             "XRL.World.Parts.RecoilOnDeath",
@@ -167,6 +213,16 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.TrainingBook",
             "HandleEvent",
             [inventoryActionEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.WaterRitualRecord",
+            "HandleEvent",
+            [beginConversationEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.QuestManagers.SpreadPax",
+            "Finish",
+            Type.EmptyTypes);
         return targets;
     }
 
@@ -306,11 +362,35 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             return true;
         }
 
+        match = HindrenMysteryCriticalNpcDeathPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, HindrenMysteryCriticalNpcOwner, DummySingleCallsiteOwner + "HandleHindrenMysteryCriticalNpc"))
+        {
+            translated = $"{match.Groups["object"].Value}の死により、調査はこれ以上進められなくなった。";
+            detail = "HindrenMysteryCriticalNpcDeath";
+            return true;
+        }
+
         match = LiquidFueledPowerPlantEmptyPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, LiquidFueledPowerPlantOwner, DummySingleCallsiteOwner + "HandleLiquidFueledPowerPlant"))
         {
             translated = $"あなたの{match.Groups["object"].Value}は{match.Groups["fuel"].Value}をすべて消費した。";
             detail = "LiquidFueledPowerPlantEmpty";
+            return true;
+        }
+
+        match = MakeFussOnTakenPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, MakeFussOnTakenOwner, DummySingleCallsiteOwner + "MakeFuss"))
+        {
+            translated = $"{match.Groups["object"].Value}を{TranslateAcquisitionAction(match.Groups["action"].Value)}！";
+            detail = "MakeFussOnTaken";
+            return true;
+        }
+
+        match = MutationPointsOnEatPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, MutationPointsOnEatOwner, DummySingleCallsiteOwner + "FireMutationPointsOnEat"))
+        {
+            translated = $"ゲノムが不安定化し、変異ポイントを{match.Groups["amount"].Value}得た。";
+            detail = "MutationPointsOnEat";
             return true;
         }
 
@@ -330,11 +410,27 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             return true;
         }
 
+        match = SpreadPaxCurePattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, SpreadPaxOwner, DummySingleCallsiteOwner + "FinishSpreadPax"))
+        {
+            translated = $"あなたの{match.Groups["location"].Value}の感染した皮殻が緩み、剥がれ落ちた。";
+            detail = "SpreadPaxCure";
+            return true;
+        }
+
         match = TrainingBookAttributeIncreasePattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, TrainingBookOwner, DummySingleCallsiteOwner + "HandleTrainingBook"))
         {
             translated = $"あなたの{match.Groups["attribute"].Value}が{match.Groups["amount"].Value}上昇した！";
             detail = "TrainingBookAttributeIncrease";
+            return true;
+        }
+
+        match = WaterRitualRecordBotheredPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, WaterRitualRecordOwner, DummySingleCallsiteOwner + "HandleWaterRitualRecord"))
+        {
+            translated = $"{match.Groups["object"].Value}にまた迷惑をかけた。";
+            detail = "WaterRitualRecordBothered";
             return true;
         }
 
@@ -388,6 +484,17 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "nine" => "9",
             "ten" => "10",
             _ => trimmed,
+        };
+    }
+
+    private static string TranslateAcquisitionAction(string source)
+    {
+        return source.Trim() switch
+        {
+            "found" => "見つけた",
+            "taken" => "取った",
+            "recovered" => "取り戻した",
+            _ => source.Trim(),
         };
     }
 

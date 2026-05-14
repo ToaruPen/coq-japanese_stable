@@ -884,6 +884,16 @@ internal sealed class DummyBeforeDieEvent
     public string Id { get; set; } = nameof(DummyBeforeDieEvent);
 }
 
+internal sealed class DummyBeforeDeathRemovalEvent
+{
+    public string Id { get; set; } = nameof(DummyBeforeDeathRemovalEvent);
+}
+
+internal sealed class DummyBeginConversationEvent
+{
+    public string Id { get; set; } = nameof(DummyBeginConversationEvent);
+}
+
 internal sealed class DummyQuillsTarget
 {
     public string MessageToSend { get; set; } = string.Empty;
@@ -1581,10 +1591,32 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         return true;
     }
 
+    public bool HandleHindrenMysteryCriticalNpc(DummyBeforeDeathRemovalEvent? e = null)
+    {
+        _ = e;
+        _ = nameof(HandleHindrenMysteryCriticalNpc);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
     public bool HandleLiquidFueledPowerPlant(DummyEndTurnEvent? e = null)
     {
         _ = e;
         _ = nameof(HandleLiquidFueledPowerPlant);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    public void MakeFuss(DummyGameObject actor)
+    {
+        _ = actor;
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+
+    public bool FireMutationPointsOnEat(DummyEvent? e = null)
+    {
+        _ = e;
+        _ = nameof(FireMutationPointsOnEat);
         DummyPopupShow.Show(PopupMessageToShow);
         return true;
     }
@@ -1611,6 +1643,19 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         _ = nameof(HandleTrainingBook);
         DummyPopupShow.Show(PopupMessageToShow);
         return true;
+    }
+
+    public bool HandleWaterRitualRecord(DummyBeginConversationEvent? e = null)
+    {
+        _ = e;
+        _ = nameof(HandleWaterRitualRecord);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    public void FinishSpreadPax()
+    {
+        DummyPopupShow.Show(PopupMessageToShow);
     }
 }
 

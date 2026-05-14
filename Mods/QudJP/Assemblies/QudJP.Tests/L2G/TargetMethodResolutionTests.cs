@@ -1722,10 +1722,15 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.GameUnique|OnCreated|System.Void|System.String",
         "XRL.World.Parts.GenocideCurio|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.GritGateMainframeTerminal|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.HindrenMysteryCriticalNPC|HandleEvent|System.Boolean|XRL.World.BeforeDeathRemovalEvent",
         "XRL.World.Parts.LiquidFueledPowerPlant|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+        "XRL.World.Parts.MakeFussOnTaken|MakeFuss|System.Void|XRL.World.GameObject",
+        "XRL.World.Parts.MutationPointsOnEat|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.RecoilOnDeath|HandleEvent|System.Boolean|XRL.World.BeforeDieEvent",
         "XRL.World.Parts.Spraybottle|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.TrainingBook|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.WaterRitualRecord|HandleEvent|System.Boolean|XRL.World.BeginConversationEvent",
+        "XRL.World.QuestManagers.SpreadPax|Finish|System.Void",
     })]
     public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
     {

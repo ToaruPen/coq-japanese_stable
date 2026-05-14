@@ -5747,6 +5747,48 @@ def _single_callsite_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             ),
         ),
         CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Parts/HindrenMysteryCriticalNPC.cs::"
+                "XRL.World.Parts.HindrenMysteryCriticalNPC.HandleEvent"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                    (
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.Parts.HindrenMysteryCriticalNPC",
+                        "HandleEvent",
+                        "HindrenMysteryCriticalNpcDeath",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "The death of Kesehind means that the investigation can go no further.",
+                        "HindrenMysteryCriticalNpcDeath",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.Parts.HindrenMysteryCriticalNPC|HandleEvent|System.Boolean|XRL.World.BeforeDeathRemovalEvent",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
             family_id="XRL.World.Parts/LiquidFueledPowerPlant.cs::XRL.World.Parts.LiquidFueledPowerPlant.HandleEvent",
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
@@ -5781,6 +5823,87 @@ def _single_callsite_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
                         "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
                         "SingleCallsiteOwnerPopupTranslationPatch",
                         "XRL.World.Parts.LiquidFueledPowerPlant|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/MakeFussOnTaken.cs::XRL.World.Parts.MakeFussOnTaken.MakeFuss",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                    (
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.Parts.MakeFussOnTaken",
+                        "MakeFuss",
+                        "MakeFussOnTaken",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "You have found {{Y|Kindrish}}!",
+                        "MakeFussOnTaken",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.Parts.MakeFussOnTaken|MakeFuss|System.Void|XRL.World.GameObject",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Parts/MutationPointsOnEat.cs::"
+                "XRL.World.Parts.MutationPointsOnEat.FireEvent"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                    (
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.Parts.MutationPointsOnEat",
+                        "FireEvent",
+                        "MutationPointsOnEat",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "Your genome destabilizes and you gain 3 mutation points.",
+                        "MutationPointsOnEat",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.Parts.MutationPointsOnEat|FireEvent|System.Boolean|XRL.World.Event",
                     ),
                 ),
             ),
@@ -5864,6 +5987,45 @@ def _single_callsite_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             ),
         ),
         CoveredOwnerFamily(
+            family_id="XRL.World.QuestManagers/SpreadPax.cs::XRL.World.QuestManagers.SpreadPax.Finish",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                    (
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.QuestManagers.SpreadPax",
+                        "Finish",
+                        "SpreadPaxCure",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "The infected crust of skin on your third arm loosens and breaks away.",
+                        "SpreadPaxCure",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.QuestManagers.SpreadPax|Finish|System.Void",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
             family_id="XRL.World.Parts/TrainingBook.cs::XRL.World.Parts.TrainingBook.HandleEvent",
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
@@ -5898,6 +6060,48 @@ def _single_callsite_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
                         "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
                         "SingleCallsiteOwnerPopupTranslationPatch",
                         "XRL.World.Parts.TrainingBook|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Parts/WaterRitualRecord.cs::"
+                "XRL.World.Parts.WaterRitualRecord.HandleEvent"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                    (
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.Parts.WaterRitualRecord",
+                        "HandleEvent",
+                        "WaterRitualRecordBothered",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "You bothered {{G|Yurl}} again.",
+                        "WaterRitualRecordBothered",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.Parts.WaterRitualRecord|HandleEvent|System.Boolean|XRL.World.BeginConversationEvent",
                     ),
                 ),
             ),

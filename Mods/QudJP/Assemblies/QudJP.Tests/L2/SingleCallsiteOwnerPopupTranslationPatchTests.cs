@@ -94,10 +94,34 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "GritGateMainframeUnresponsive",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleHindrenMysteryCriticalNpc),
+        "The death of Kesehind means that the investigation can go no further.",
+        "Kesehindの死により、調査はこれ以上進められなくなった。",
+        "HindrenMysteryCriticalNpcDeath",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant),
         "Your flamethrower has consumed all of its oil.",
         "あなたのflamethrowerはits oilをすべて消費した。",
         "LiquidFueledPowerPlantEmpty",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.MakeFuss),
+        "You have found {{Y|Kindrish}}!",
+        "{{Y|Kindrish}}を見つけた！",
+        "MakeFussOnTaken",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.FireMutationPointsOnEat),
+        "Your genome destabilizes and you gain 1 mutation point.",
+        "ゲノムが不安定化し、変異ポイントを1得た。",
+        "MutationPointsOnEat",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.FireMutationPointsOnEat),
+        "Your genome destabilizes and you gain 3 mutation points.",
+        "ゲノムが不安定化し、変異ポイントを3得た。",
+        "MutationPointsOnEat",
         PopupMethod.Show)]
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant),
@@ -128,6 +152,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "{{Y|the snapjaw}} is covered in oil!",
         "{{Y|the snapjaw}}はoilに覆われた！",
         "SpraybottleCovered",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleWaterRitualRecord),
+        "You bothered {{G|Yurl}} again.",
+        "{{G|Yurl}}にまた迷惑をかけた。",
+        "WaterRitualRecordBothered",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.FinishSpreadPax),
+        "The infected crust of skin on your third arm loosens and breaks away.",
+        "あなたのthird armの感染した皮殻が緩み、剥がれ落ちた。",
+        "SpreadPaxCure",
         PopupMethod.Show)]
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleTrainingBook),
@@ -194,8 +230,20 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "GritGateMainframeUnresponsive",
         PopupMethod.Show)]
     [TestCase(
+        "The death of Kesehind means that the investigation can go no further.",
+        "HindrenMysteryCriticalNpcDeath",
+        PopupMethod.Show)]
+    [TestCase(
         "Your flamethrower has consumed all of its oil.",
         "LiquidFueledPowerPlantEmpty",
+        PopupMethod.Show)]
+    [TestCase(
+        "You have found {{Y|Kindrish}}!",
+        "MakeFussOnTaken",
+        PopupMethod.Show)]
+    [TestCase(
+        "Your genome destabilizes and you gain 3 mutation points.",
+        "MutationPointsOnEat",
         PopupMethod.Show)]
     [TestCase(
         "Just before your demise, you are transported to safety! {{Y|recoiler}} disintegrates.",
@@ -204,6 +252,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         "you are covered in slime!",
         "SpraybottleCovered",
+        PopupMethod.Show)]
+    [TestCase(
+        "You bothered {{G|Yurl}} again.",
+        "WaterRitualRecordBothered",
+        PopupMethod.Show)]
+    [TestCase(
+        "The infected crust of skin on your third arm loosens and breaks away.",
+        "SpreadPaxCure",
         PopupMethod.Show)]
     [TestCase(
         "Your Strength is increased by {{G|1}}!",
@@ -233,14 +289,29 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "The mainframe is unresponsive.",
         "GritGateMainframeUnresponsive")]
     [TestCase(
+        "The death of Kesehind means that the investigation can go no further.",
+        "HindrenMysteryCriticalNpcDeath")]
+    [TestCase(
         "Your flamethrower has consumed all of its oil.",
         "LiquidFueledPowerPlantEmpty")]
+    [TestCase(
+        "You have found {{Y|Kindrish}}!",
+        "MakeFussOnTaken")]
+    [TestCase(
+        "Your genome destabilizes and you gain 3 mutation points.",
+        "MutationPointsOnEat")]
     [TestCase(
         "Just before your demise, you are transported to safety! {{Y|recoiler}} disintegrates.",
         "RecoilOnDeathTransport")]
     [TestCase(
         "you are covered in slime!",
         "SpraybottleCovered")]
+    [TestCase(
+        "You bothered {{G|Yurl}} again.",
+        "WaterRitualRecordBothered")]
+    [TestCase(
+        "The infected crust of skin on your third arm loosens and breaks away.",
+        "SpreadPaxCure")]
     [TestCase(
         "Your Strength is increased by {{G|1}}!",
         "TrainingBookAttributeIncrease")]
@@ -358,16 +429,40 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                     typeof(DummySingleCallsiteOwnerPopupTarget),
                     methodName,
                     typeof(DummyInventoryActionEvent)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleHindrenMysteryCriticalNpc) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(DummyBeforeDeathRemovalEvent)),
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant) =>
                 OwnerPopupRouteTestHarness.RequireMethod(
                     typeof(DummySingleCallsiteOwnerPopupTarget),
                     methodName,
                     typeof(DummyEndTurnEvent)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.MakeFuss) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(DummyGameObject)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.FireMutationPointsOnEat) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(DummyEvent)),
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleRecoilOnDeath) =>
                 OwnerPopupRouteTestHarness.RequireMethod(
                     typeof(DummySingleCallsiteOwnerPopupTarget),
                     methodName,
                     typeof(DummyBeforeDieEvent)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleWaterRitualRecord) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(DummyBeginConversationEvent)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.FinishSpreadPax) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName),
             _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected owner method."),
         };
     }
@@ -429,11 +524,29 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                     PopupMessageToShow = message,
                 }.HandleGritGateMainframeTerminal(new DummyInventoryActionEvent());
                 break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleHindrenMysteryCriticalNpc):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.HandleHindrenMysteryCriticalNpc(new DummyBeforeDeathRemovalEvent());
+                break;
             case nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant):
                 new DummySingleCallsiteOwnerPopupTarget
                 {
                     PopupMessageToShow = message,
                 }.HandleLiquidFueledPowerPlant(new DummyEndTurnEvent());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.MakeFuss):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.MakeFuss(new DummyGameObject());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.FireMutationPointsOnEat):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.FireMutationPointsOnEat(new DummyEvent());
                 break;
             case nameof(DummySingleCallsiteOwnerPopupTarget.HandleRecoilOnDeath):
                 new DummySingleCallsiteOwnerPopupTarget
@@ -452,6 +565,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 {
                     PopupMessageToShow = message,
                 }.HandleTrainingBook(new DummyInventoryActionEvent());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleWaterRitualRecord):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.HandleWaterRitualRecord(new DummyBeginConversationEvent());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.FinishSpreadPax):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.FinishSpreadPax();
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected owner method.");

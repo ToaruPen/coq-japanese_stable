@@ -334,6 +334,25 @@ def test_zone_manager_owner_queue_callsites_are_split_from_runtime_and_popup_sha
     ]
 
 
+def test_additional_single_callsite_owner_popup_families_are_closed_by_owner_patch() -> None:
+    """Single Popup.Show owner surfaces close only with owner-keyed popup route evidence."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    family_ids = {
+        "XRL.World.Parts/HindrenMysteryCriticalNPC.cs::XRL.World.Parts.HindrenMysteryCriticalNPC.HandleEvent",
+        "XRL.World.Parts/MakeFussOnTaken.cs::XRL.World.Parts.MakeFussOnTaken.MakeFuss",
+        "XRL.World.Parts/MutationPointsOnEat.cs::XRL.World.Parts.MutationPointsOnEat.FireEvent",
+        "XRL.World.Parts/WaterRitualRecord.cs::XRL.World.Parts.WaterRitualRecord.HandleEvent",
+        "XRL.World.QuestManagers/SpreadPax.cs::XRL.World.QuestManagers.SpreadPax.Finish",
+    }
+
+    for family_id in family_ids:
+        assert raw_families[family_id]["family_closure_status"] == "owner_patch_required"
+        assert family_id in covered_family_ids()
+        assert family_id not in queued_family_ids
+
+
 def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:
     """Uncovered high-volume owner families must stay actionable."""
     inventory = load_inventory(TRACKED_INVENTORY)
