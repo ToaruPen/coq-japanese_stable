@@ -1414,6 +1414,13 @@ internal sealed class DummySimpleOwnerQueueTarget
         return true;
     }
 
+    public bool GarbageAttemptRifle()
+    {
+        _ = nameof(GarbageAttemptRifle);
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
     public void FleeTakeAction()
     {
         _ = nameof(FleeTakeAction);

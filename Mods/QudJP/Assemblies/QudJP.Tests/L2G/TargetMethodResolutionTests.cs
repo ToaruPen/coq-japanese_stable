@@ -1706,6 +1706,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.ExtradimensionalLoot|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.GelatenousPalmProperties|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.GraveMoss|Trigger|System.Void",
+        "XRL.World.Parts.Garbage|AttemptRifle|System.Boolean|XRL.World.GameObject|System.Boolean|XRL.World.Cell|System.Collections.Generic.List`1[[XRL.World.GameObject]]",
         "XRL.World.Parts.QuantumRippler|HandleEvent|System.Boolean|XRL.World.RealityStabilizeEvent",
         "XRL.World.Parts.ReclamationCist|PerformReclamationOf|System.Boolean|XRL.World.GameObject",
     })]

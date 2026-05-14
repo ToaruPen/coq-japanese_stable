@@ -4750,6 +4750,14 @@ public sealed class CombatAndLogMessageQueuePatchTests
         nameof(DummySimpleOwnerQueueTarget.ExtradimensionalLootFireEvent),
         "The hunter drops an {{Y|eigenrifle}}, and by sheer chance it quantum tunnels and fully materializes in this dimension.",
         "hunterは{{Y|eigenrifle}}を落とし、偶然にもそれは量子トンネルを通ってこの次元に完全実体化した。")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.GarbageAttemptRifle),
+        "The 熊 rifles through the ゴミ山.",
+        "熊はゴミ山を漁った")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.GarbageAttemptRifle),
+        "Somebody rifles through the ゴミ山.",
+        "誰かがゴミ山を漁った")]
     public void GeneratedQueueDoesVerb_TranslatesDoesVerbMessages_WhenOwnerPatched(
         string methodName,
         string source,
@@ -9758,6 +9766,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
                 nameof(DummySimpleOwnerQueueTarget.PaxKlanqMadnessTakeAction) => InvokePaxKlanqMadnessTakeAction(target),
                 nameof(DummySimpleOwnerQueueTarget.BodyPartUnequipPartAndChildren) => InvokeBodyPartUnequipPartAndChildren(target),
                 nameof(DummySimpleOwnerQueueTarget.ExtradimensionalLootFireEvent) => target.ExtradimensionalLootFireEvent(new DummyEvent()),
+                nameof(DummySimpleOwnerQueueTarget.GarbageAttemptRifle) => target.GarbageAttemptRifle(),
                 _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, null),
             };
 
@@ -9801,6 +9810,9 @@ public sealed class CombatAndLogMessageQueuePatchTests
                 typeof(DummySimpleOwnerQueueTarget),
                 nameof(DummySimpleOwnerQueueTarget.ExtradimensionalLootFireEvent),
                 typeof(DummyEvent)),
+            nameof(DummySimpleOwnerQueueTarget.GarbageAttemptRifle) => RequireMethod(
+                typeof(DummySimpleOwnerQueueTarget),
+                nameof(DummySimpleOwnerQueueTarget.GarbageAttemptRifle)),
             _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, null),
         };
     }

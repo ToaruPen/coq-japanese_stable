@@ -24,6 +24,10 @@ public static class GeneratedQueueDoesVerbTranslationPatch
         "^(?<subject>.+?) drops? (?<item>.+?), and by sheer chance (?:it|he|she|they) quantum tunnel(?:s)? and fully materialize(?:s)? in this dimension\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex SomebodyRiflesThroughPattern = new(
+        "^Somebody rifles through (?<target>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -31,10 +35,11 @@ public static class GeneratedQueueDoesVerbTranslationPatch
     private static IEnumerable<MethodBase> TargetMethods()
     {
         var eventType = AccessTools.TypeByName("XRL.World.Event");
+        var cellType = AccessTools.TypeByName("XRL.World.Cell");
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
         var inventoryType = AccessTools.TypeByName("XRL.World.IInventory");
         var realityStabilizeEventType = AccessTools.TypeByName("XRL.World.RealityStabilizeEvent");
-        if (eventType is null || gameObjectType is null || inventoryType is null || realityStabilizeEventType is null)
+        if (eventType is null || cellType is null || gameObjectType is null || inventoryType is null || realityStabilizeEventType is null)
         {
             Trace.TraceError("QudJP: {0} target parameter types not found.", Context);
             yield break;
@@ -69,6 +74,14 @@ public static class GeneratedQueueDoesVerbTranslationPatch
         }
 
         foreach (var target in ResolveTarget("XRL.World.Parts.GraveMoss", "Trigger", Type.EmptyTypes))
+        {
+            yield return target;
+        }
+
+        foreach (var target in ResolveTarget(
+                     "XRL.World.Parts.Garbage",
+                     "AttemptRifle",
+                     new[] { gameObjectType, typeof(bool), cellType, typeof(List<>).MakeGenericType(gameObjectType) }))
         {
             yield return target;
         }
@@ -128,7 +141,8 @@ public static class GeneratedQueueDoesVerbTranslationPatch
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(sourceWithoutLeadingDoesMarker);
         if (TryTranslateDropDown(stripped, spans, sourceWithoutLeadingDoesMarker, out var generatedTranslated)
             || TryTranslatePaxKlanq(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated)
-            || TryTranslateExtradimensionalLoot(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated))
+            || TryTranslateExtradimensionalLoot(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated)
+            || TryTranslateSomebodyRiflesThrough(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated))
         {
             DynamicTextObservability.RecordTransform("MessageQueue.AddPlayerMessage", Context, message, generatedTranslated);
             message = generatedTranslated;
@@ -238,6 +252,27 @@ public static class GeneratedQueueDoesVerbTranslationPatch
             $"{NormalizeSubject(RestoreCapture(match, spans, "subject"))}は"
             + $"{StripLeadingArticle(RestoreCapture(match, spans, "item"))}を落とし、"
             + "偶然にもそれは量子トンネルを通ってこの次元に完全実体化した。",
+            spans,
+            stripped,
+            source);
+        return true;
+    }
+
+    private static bool TryTranslateSomebodyRiflesThrough(
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string source,
+        out string translated)
+    {
+        var match = SomebodyRiflesThroughPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = string.Empty;
+            return false;
+        }
+
+        translated = RestoreWholeSourceBoundary(
+            $"誰かが{StripLeadingArticle(RestoreCapture(match, spans, "target"))}を漁った",
             spans,
             stripped,
             source);

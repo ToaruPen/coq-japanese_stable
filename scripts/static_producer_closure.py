@@ -5762,6 +5762,59 @@ def _generated_queue_does_verb_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _garbage_attempt_rifle_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts/Garbage.cs::XRL.World.Parts.Garbage.AttemptRifle",
+            lines=(197, 201),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/GeneratedQueueDoesVerbTranslationPatch.cs",
+                    (
+                        "GeneratedQueueDoesVerbTranslationPatch",
+                        "XRL.World.Parts.Garbage",
+                        "AttemptRifle",
+                        "SomebodyRiflesThroughPattern",
+                        "DoesVerbRouteTranslator.TryTranslateMarkedMessage",
+                        "DoesVerbRouteTranslator.TryTranslatePlainSentence",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("GeneratedQueueDoesVerbTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "GeneratedQueueDoesVerb_TranslatesDoesVerbMessages_WhenOwnerPatched",
+                        "GeneratedQueueDoesVerb_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "GeneratedQueueDoesVerb_DoesNotRetranslateDirectMarkedMessage_WhenOwnerPatched",
+                        "GeneratedQueueDoesVerb_LeavesEmptyMessageUnchanged_WhenOwnerPatched",
+                        "GarbageAttemptRifle",
+                        "The 熊 rifles through the ゴミ山.",
+                        "Somebody rifles through the ゴミ山.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(GeneratedQueueDoesVerbTranslationPatch)",
+                        "XRL.World.Parts.Garbage|AttemptRifle|System.Boolean|XRL.World.GameObject|System.Boolean|XRL.World.Cell|System.Collections.Generic.List`1[[XRL.World.GameObject]]",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+                    (
+                        '"verb": "rifle"',
+                        '"extra": "through {0}"',
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _auto_act_reset_family() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -12729,6 +12782,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_neutron_flux_containment_owner_callsites(),
     *_polygel_handle_event_owner_callsites(),
     *_generated_success_popup_callsites(),
+    *_garbage_attempt_rifle_owner_callsites(),
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
     CoveredOwnerCallsites(
