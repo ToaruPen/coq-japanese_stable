@@ -12775,6 +12775,53 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts/AnimateObject.cs::"
+            "XRL.World.Parts.AnimateObject.HandleEvent"
+        ),
+        lines=(79, 88),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/AnimateObjectTranslationPatch.cs",
+                (
+                    "AnimateObjectTranslationPatch",
+                    "XRL.World.Parts.AnimateObject",
+                    "HandleEvent",
+                    "InventoryActionEvent",
+                    "AnimateObjectUnresponsive",
+                    "AnimateObjectImbueLife",
+                    "with life",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("AnimateObjectTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/AnimateObjectTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesAnimateObjectPopup_WhenOwnerPatched",
+                    "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_DoesNotClaimFixedOrEmptyPopup_WhenOwnerPatched",
+                    "The {{Y|nano-neuro animator}} is unresponsive.",
+                    "You imbue the {{Y|chair}} with life.",
+                    "There's nothing viable to animate here.",
+                    "You can't animate an object that already has a brain.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(AnimateObjectTranslationPatch)",
+                    "XRL.World.Parts.AnimateObject|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World.Parts/Stomach.cs::"
             "XRL.World.Parts.Stomach.FireEvent"
         ),
