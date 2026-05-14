@@ -950,6 +950,61 @@ def _sunder_mind_owner_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _sunder_mind_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts.Mutation/SunderMind.cs::XRL.World.Parts.Mutation.SunderMind.Tick",
+            lines=(279,),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SunderMindTranslationPatch.cs",
+                    (
+                        "SunderMindTranslationPatch",
+                        "Tick",
+                        "HeadExplodesPattern",
+                        "TryTranslateQueuedMessage",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("SunderMindTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SunderMindTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "SunderMind_TranslatesQueuedMessages_WhenOwnerPatched",
+                        "SunderMind_LeavesFixedTickPopupsUnchanged_WhenOwnerPatched",
+                        "nameof(DummySunderMindTarget.Tick)",
+                        "{{G|glowfish}}'s head explodes!",
+                        "{{G|glowfish}}の頭が爆発した",
+                        "Your head explodes!",
+                        "Your sense of self is pulled apart by what feels like a billion years of geologic pressure.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SunderMindTranslationPatch)",
+                        "XRL.World.Parts.Mutation.SunderMind|Tick|System.Void",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                    (
+                        "Your head explodes!",
+                        "Your sense of self is pulled apart by what feels like a billion years of geologic pressure.",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _keybinds_screen_conflict_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         (
@@ -12145,6 +12200,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_sifrah_pure_owner_popup_callsites(),
     *_giant_clam_shloop_hitch_callsites(),
     *_conversation_reward_popup_callsites(),
+    *_sunder_mind_owner_callsites(),
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
     CoveredOwnerCallsites(

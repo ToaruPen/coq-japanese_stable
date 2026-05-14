@@ -968,6 +968,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Mutation.SunderMind|CancelSunder|System.Void",
         "XRL.World.Parts.Mutation.SunderMind|BeginSunder|System.Void|XRL.World.GameObject",
         "XRL.World.Parts.Mutation.SunderMind|PenetrationFailure|System.Void|XRL.World.GameObject",
+        "XRL.World.Parts.Mutation.SunderMind|Tick|System.Void",
     })]
     [TestCase(typeof(KeybindsScreenConflictTranslationPatch), new[]
     {

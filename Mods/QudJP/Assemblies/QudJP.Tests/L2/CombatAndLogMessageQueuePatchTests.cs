@@ -1780,6 +1780,11 @@ public sealed class CombatAndLogMessageQueuePatchTests
         "Your attack fails to penetrate {{G|glowfish}}'s mental defenses.",
         "r",
         "{{G|glowfish}}'s mental defensesを突破できなかった。")]
+    [TestCase(
+        nameof(DummySunderMindTarget.Tick),
+        "{{G|glowfish}}'s head explodes!",
+        null,
+        "{{G|glowfish}}の頭が爆発した！")]
     public void SunderMind_TranslatesQueuedMessages_WhenOwnerPatched(
         string methodName,
         string source,
@@ -1868,6 +1873,35 @@ public sealed class CombatAndLogMessageQueuePatchTests
     {
         AssertSunderMindQueuedMessage(nameof(DummySunderMindTarget.CancelSunder), string.Empty, null, string.Empty);
         AssertSunderMindBeginSunderPopup(string.Empty, string.Empty);
+    }
+
+    [TestCase("Your head explodes!")]
+    [TestCase("Your sense of self is pulled apart by what feels like a billion years of geologic pressure.")]
+    public void SunderMind_LeavesFixedTickPopupsUnchanged_WhenOwnerPatched(string source)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySunderMindTarget), nameof(DummySunderMindTarget.Tick)),
+                typeof(SunderMindTranslationPatch));
+
+            var target = new DummySunderMindTarget
+            {
+                PopupMessageToSend = source,
+            };
+
+            target.Tick();
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     [TestCase(

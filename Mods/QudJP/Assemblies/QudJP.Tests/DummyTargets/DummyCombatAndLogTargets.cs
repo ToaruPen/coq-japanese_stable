@@ -562,6 +562,17 @@ internal sealed class DummySunderMindTarget
     {
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
     }
+
+    public void Tick()
+    {
+        if (!string.IsNullOrEmpty(MessageToSend))
+        {
+            DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+            return;
+        }
+
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
 }
 
 internal sealed class DummyKeybindsScreenConflictTarget

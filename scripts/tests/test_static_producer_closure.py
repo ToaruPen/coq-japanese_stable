@@ -573,6 +573,33 @@ def test_water_ritual_random_mutation_incompatible_popup_is_split_from_fixed_and
     }
 
 
+def test_sunder_mind_tick_head_explosion_queue_is_split_from_fixed_popups() -> None:
+    """SunderMind.Tick closes generated head-explosion queue text without claiming fixed popups."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    family_id = "XRL.World.Parts.Mutation/SunderMind.cs::XRL.World.Parts.Mutation.SunderMind.Tick"
+    family_callsites = [
+        callsite
+        for callsite in inventory["callsites"]
+        if callsite["producer_family_id"] == family_id
+    ]
+
+    assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
+    assert family_closure_status(raw_families[family_id]) == "needs_family_review"
+    assert family_id not in covered_family_ids()
+    assert (family_id, 279) in covered_callsite_keys()
+    assert family_id not in queued_family_ids
+    assert {
+        (callsite["line"], callsite["target_surface"], callsite["closure_status"])
+        for callsite in family_callsites
+    } == {
+        (273, "Popup.Show*", "messages_candidate"),
+        (274, "Popup.Show*", "messages_candidate"),
+        (279, "AddPlayerMessage", "owner_patch_required"),
+    }
+
+
 def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:
     """Uncovered high-volume owner families must stay actionable."""
     inventory = load_inventory(TRACKED_INVENTORY)

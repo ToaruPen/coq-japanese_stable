@@ -28,6 +28,10 @@ public static class SunderMindTranslationPatch
         "^Your attack fails to penetrate (?<defenses>.+)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex HeadExplodesPattern = new(
+        "^(?<owner>.+?)'s head explodes!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -46,6 +50,7 @@ public static class SunderMindTranslationPatch
         AddTarget(targets, targetType, "CancelSunder", Type.EmptyTypes);
         AddTarget(targets, targetType, "BeginSunder", new[] { gameObjectType });
         AddTarget(targets, targetType, "PenetrationFailure", new[] { gameObjectType });
+        AddTarget(targets, targetType, "Tick", Type.EmptyTypes);
         return targets;
     }
 
@@ -156,6 +161,11 @@ public static class SunderMindTranslationPatch
                 PenetrationFailurePattern,
                 source,
                 (match, spans) => $"{Restore(match, spans, "defenses")}を突破できなかった。",
+                out translated)
+            || TryTranslatePattern(
+                HeadExplodesPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "owner")}の頭が爆発した！",
                 out translated);
     }
 
