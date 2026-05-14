@@ -11832,6 +11832,94 @@ COVERED_OWNER_FAMILIES: Final = (
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 COVERED_OWNER_CALLSITES: Final = (
     CoveredOwnerCallsites(
+        family_id=(
+            "XRL.World/SocialSifrahTokenGift.cs::"
+            "XRL.World.SocialSifrahTokenGift.CheckTokenUse"
+        ),
+        lines=(120, 124),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/SifrahTokenItemPopupTranslationPatch.cs",
+                (
+                    "SifrahTokenItemPopupTranslationPatch",
+                    "XRL.World.SocialSifrahTokenGift",
+                    "CheckTokenUse",
+                    "SocialSifrahTokenGiftAnyMore",
+                    "SocialSifrahTokenGiftHaveNone",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("SifrahTokenItemPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/SifrahTokenItemPopupTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesSifrahTokenItemPopups_WhenOwnerPatched",
+                    "Patch_DoesNotTranslateSifrahTokenItemPopup_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "Patch_DefersFixedKindOfItemMessage_WhenOwnerPatched",
+                    "SocialSifrahTokenGiftAnyMore",
+                    "SocialSifrahTokenGiftHaveNone",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "SifrahTokenItemPopupTranslationPatch",
+                    "XRL.World.SocialSifrahTokenGift|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
+            "XRL.World/SocialSifrahTokenItem.cs::"
+            "XRL.World.SocialSifrahTokenItem.CheckTokenUse"
+        ),
+        lines=(115, 119),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/SifrahTokenItemPopupTranslationPatch.cs",
+                (
+                    "SifrahTokenItemPopupTranslationPatch",
+                    "XRL.World.SocialSifrahTokenItem",
+                    "CheckTokenUse",
+                    "SocialSifrahTokenItemAnyMore",
+                    "SocialSifrahTokenItemHaveNone",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("SifrahTokenItemPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/SifrahTokenItemPopupTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesSifrahTokenItemPopups_WhenOwnerPatched",
+                    "Patch_DoesNotTranslateSifrahTokenItemPopup_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "Patch_DefersFixedKindOfItemMessage_WhenOwnerPatched",
+                    "SocialSifrahTokenItemAnyMore",
+                    "SocialSifrahTokenItemHaveNone",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "SifrahTokenItemPopupTranslationPatch",
+                    "XRL.World.SocialSifrahTokenItem|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
         family_id="XRL.Core/XRLCore.cs::XRL.Core.XRLCore.SaveManagement",
         lines=(3962,),
         inventory_statuses=("needs_family_review",),

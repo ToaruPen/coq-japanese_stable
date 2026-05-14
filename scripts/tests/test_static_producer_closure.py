@@ -427,6 +427,37 @@ def test_xrlcore_old_save_popup_callsite_is_split_from_fixed_save_management_pop
     assert "PlayerTurn" in [family["member_name"] for family in xrlcore_entry["families"]]
 
 
+def test_sifrah_token_item_owner_callsites_are_split_from_fixed_kind_message() -> None:
+    """Sifrah token item checks close generated item names while deferring the fixed kind message."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    source_entries = owner_action_queue_by_file(inventory)
+    gift_family_id = "XRL.World/SocialSifrahTokenGift.cs::XRL.World.SocialSifrahTokenGift.CheckTokenUse"
+    item_family_id = "XRL.World/SocialSifrahTokenItem.cs::XRL.World.SocialSifrahTokenItem.CheckTokenUse"
+
+    assert raw_families[gift_family_id]["family_closure_status"] == "needs_family_review"
+    assert raw_families[item_family_id]["family_closure_status"] == "needs_family_review"
+
+    for family_id in (gift_family_id, item_family_id):
+        assert family_closure_status(raw_families[family_id]) == "needs_family_review"
+        assert family_id not in covered_family_ids()
+        assert family_id not in queued_family_ids
+
+    assert (gift_family_id, 120) in covered_callsite_keys()
+    assert (gift_family_id, 124) in covered_callsite_keys()
+    assert (item_family_id, 115) in covered_callsite_keys()
+    assert (item_family_id, 119) in covered_callsite_keys()
+    assert all(
+        entry["source_file"]
+        not in {
+            "XRL.World/SocialSifrahTokenGift.cs",
+            "XRL.World/SocialSifrahTokenItem.cs",
+        }
+        for entry in source_entries
+    )
+
+
 def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:
     """Uncovered high-volume owner families must stay actionable."""
     inventory = load_inventory(TRACKED_INVENTORY)
