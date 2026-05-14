@@ -41,6 +41,7 @@ internal static class MessageQueueSemanticPipeline
         SoundManagerSetChannelTrackTranslationPatch.TryTranslateQueuedMessage,
         TerrainTravelTranslationPatch.TryTranslateQueuedMessage,
         EelSpawnTranslationPatch.TryTranslateQueuedMessage,
+        FabricateFromSelfTranslationPatch.TryTranslateQueuedMessage,
         ShortBladesHobbleTranslationPatch.TryTranslateQueuedMessage,
         ShortBladesShankTranslationPatch.TryTranslateQueuedMessage,
         StomachTranslationPatch.TryTranslateQueuedMessage,

@@ -1757,6 +1757,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.DecoyHologramEmitter|ActivateHologramBracelet|System.Boolean|XRL.World.GameObject|XRL.World.IEvent",
     })]
+    [TestCase(typeof(FabricateFromSelfTranslationPatch), new[]
+    {
+        "XRL.World.Parts.FabricateFromSelf|Activate|System.Boolean|System.Boolean",
+    })]
     [TestCase(typeof(StomachTranslationPatch), new[]
     {
         "XRL.World.Parts.Stomach|FireEvent|System.Boolean|XRL.World.Event",

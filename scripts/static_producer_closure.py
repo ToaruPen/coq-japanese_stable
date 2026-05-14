@@ -12682,6 +12682,52 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts/FabricateFromSelf.cs::"
+            "XRL.World.Parts.FabricateFromSelf.Activate"
+        ),
+        lines=(321,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/FabricateFromSelfTranslationPatch.cs",
+                (
+                    "FabricateFromSelfTranslationPatch",
+                    "XRL.World.Parts.FabricateFromSelf",
+                    "Activate",
+                    "FabricationPattern",
+                    "FabricateFromSelfActivate",
+                    "the substance of your body",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("FabricateFromSelfTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/FabricateFromSelfTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesFabricationQueuedMessage_WhenOwnerPatched",
+                    "Patch_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "Patch_DoesNotClaimFixedOrEmptyMessage_WhenOwnerPatched",
+                    "You fabricate a lead slug from the substance of your body.",
+                    "The chromeling fabricates 20 HE Missiles from debris and scraps.",
+                    "Nothing happens.",
+                    "Your health is too weak to do that.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(FabricateFromSelfTranslationPatch)",
+                    "XRL.World.Parts.FabricateFromSelf|Activate|System.Boolean|System.Boolean",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World.Parts/Stomach.cs::"
             "XRL.World.Parts.Stomach.FireEvent"
         ),
