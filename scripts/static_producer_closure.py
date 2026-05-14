@@ -11833,6 +11833,48 @@ COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVER
 COVERED_OWNER_CALLSITES: Final = (
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World/ReverseEngineeringSifrah.cs::"
+            "XRL.World.ReverseEngineeringSifrah.Finish"
+        ),
+        lines=(202,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/SifrahPureOwnerPopupTranslationPatch.cs",
+                (
+                    "SifrahPureOwnerPopupTranslationPatch",
+                    "XRL.World.ReverseEngineeringSifrah",
+                    "Finish",
+                    "ReverseEngineeringFinish",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("SifrahPureOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/SifrahPureOwnerPopupTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesSifrahPureOwnerPopups_WhenOwnerPatched",
+                    "Patch_DoesNotTranslateSifrahPureOwnerPopup_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "Patch_DoesNotClaimReverseEngineeringCriticalFailurePopup_WhenFinishOwnerPatched",
+                    "ReverseEngineeringFinish",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "SifrahPureOwnerPopupTranslationPatch",
+                    "XRL.World.ReverseEngineeringSifrah|Finish|System.Void|XRL.World.GameObject",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World/SocialSifrahTokenGift.cs::"
             "XRL.World.SocialSifrahTokenGift.CheckTokenUse"
         ),

@@ -68,6 +68,10 @@ public static class SifrahPureOwnerPopupTranslationPatch
         "^Exiting will still disassemble (?<target>.+), and will result in an attempt at reverse engineering as matters stand\\. Do you still want to exit\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex ReverseEngineeringFailurePattern = new(
+        "^You fail to reverse engineer (?<target>.+)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex AttributeSacrificePattern = new(
         "^Your (?<value>.+) is too depleted to do that\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -220,6 +224,7 @@ public static class SifrahPureOwnerPopupTranslationPatch
         foreach (var target in new[]
                  {
                      new TargetMethod("XRL.World.ReverseEngineeringSifrah", "CheckEarlyExit", [gameObjectType]),
+                     new TargetMethod("XRL.World.ReverseEngineeringSifrah", "Finish", [gameObjectType]),
                      new TargetMethod(
                          "XRL.World.RitualSifrahTokenAttributeSacrifice",
                          "CheckTokenUse",
@@ -489,6 +494,17 @@ public static class SifrahPureOwnerPopupTranslationPatch
                    family,
                    "ReverseEngineeringEarlyExit",
                    target => "終了しても" + target + "は分解され、現状のままリバースエンジニアリングを試みることになる。それでも終了する？",
+                   out translated)
+               || IsActiveOwner("XRL.World.ReverseEngineeringSifrah", "Finish", "ReverseEngineeringFinish")
+               && TryTranslate(
+                   ReverseEngineeringFailurePattern,
+                   source,
+                   stripped,
+                   spans,
+                   route,
+                   family,
+                   "ReverseEngineeringFinish",
+                   target => target + "のリバースエンジニアリングに失敗した。",
                    out translated)
                || IsActiveOwner("XRL.World.RitualSifrahTokenAttributeSacrifice", "CheckTokenUse", "RitualAttributeSacrificeCheckTokenUse")
                && TryTranslate(

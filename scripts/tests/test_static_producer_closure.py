@@ -458,6 +458,25 @@ def test_sifrah_token_item_owner_callsites_are_split_from_fixed_kind_message() -
     )
 
 
+def test_reverse_engineering_sifrah_finish_callsite_is_split_from_critical_failure_popup() -> None:
+    """ReverseEngineeringSifrah.Finish closes the failure owner popup without claiming critical failure."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    source_entries = owner_action_queue_by_file(inventory)
+    family_id = "XRL.World/ReverseEngineeringSifrah.cs::XRL.World.ReverseEngineeringSifrah.Finish"
+
+    assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
+    assert family_closure_status(raw_families[family_id]) == "needs_family_review"
+    assert family_id not in covered_family_ids()
+    assert (family_id, 202) in covered_callsite_keys()
+    assert family_id not in queued_family_ids
+    assert not any(
+        entry["source_file"] == "XRL.World/ReverseEngineeringSifrah.cs"
+        for entry in source_entries
+    )
+
+
 def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:
     """Uncovered high-volume owner families must stay actionable."""
     inventory = load_inventory(TRACKED_INVENTORY)

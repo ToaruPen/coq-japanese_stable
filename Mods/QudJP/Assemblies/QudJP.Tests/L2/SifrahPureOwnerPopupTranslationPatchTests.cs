@@ -110,6 +110,11 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
         "終了しても{{Y|奇妙な小物}}は分解され、現状のままリバースエンジニアリングを試みることになる。それでも終了する？",
         "ReverseEngineeringEarlyExit")]
     [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.ReverseEngineeringFinish),
+        "You fail to reverse engineer {{Y|奇妙な小物}}.",
+        "{{Y|奇妙な小物}}のリバースエンジニアリングに失敗した。",
+        "ReverseEngineeringFinish")]
+    [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.RitualAttributeSacrificeCheckTokenUse),
         "Your Strength is too depleted to do that.",
         "Strengthが消耗しすぎているため、それはできない。",
@@ -334,6 +339,31 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
                 {
                     Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You have no usable options to employ for haggling with {{G|商人}}, giving you no chance of success. You can remedy this situation by improving your Ego and social skills, or by obtaining items useful in social situations."));
                     Assert.That(HitCount("Haggling"), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_DoesNotClaimReverseEngineeringCriticalFailurePopup_WhenFinishOwnerPatched()
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(SifrahPureOwnerPopupTranslationPatch),
+            RequireOwnerMethod(nameof(DummySifrahPureOwnerPopupProducerTarget.ReverseEngineeringFinish)),
+            () =>
+            {
+                const string source = "You think you've made a terrible mistake...";
+                const string expected = "とんでもない間違いをした気がする...";
+                var target = new DummySifrahPureOwnerPopupProducerTarget
+                {
+                    PopupMessageToShow = source,
+                };
+
+                target.ReverseEngineeringFinish(new DummyGameObject());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+                    Assert.That(HitCount("ReverseEngineeringFinish"), Is.Zero);
                 });
             });
     }

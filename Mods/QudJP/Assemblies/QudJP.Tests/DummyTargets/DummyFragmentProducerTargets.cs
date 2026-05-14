@@ -721,6 +721,12 @@ internal sealed class DummySifrahPureOwnerPopupProducerTarget
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ReverseEngineeringFinish(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(ReverseEngineeringFinish), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public void RitualAttributeSacrificeCheckTokenUse(DummyGameObject contextObject)
     {
         ShowPopup(nameof(RitualAttributeSacrificeCheckTokenUse), contextObject);
