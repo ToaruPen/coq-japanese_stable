@@ -458,7 +458,6 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(PickTargetWindowUpdateTranslationPatch), "Update", "Qud.UI.PickTargetWindow", "System.Void", new string[0])]
     [TestCase(typeof(GivesRepShortDescriptionTranslationPatch), "HandleEvent", "XRL.World.Parts.GivesRep", "System.Boolean", new[] { "XRL.World.GetShortDescriptionEvent" })]
     [TestCase(typeof(MutationsApiTranslationPatch), "BuyRandomMutation", "Qud.API.MutationsAPI", "System.Boolean", new[] { "XRL.World.GameObject", "System.Int32", "System.Boolean", "System.String" })]
-    [TestCase(typeof(HighScoresDeletePopupTranslationPatch), "HandleDelete", "Qud.UI.HighScoresScreen", "System.Void", new string[0])]
     [TestCase(typeof(GritGateTerminalKnowledgePopupTranslationPatch), "Activate", "XRL.UI.GritGateTerminalScreenKnowledge", "System.Void", new string[0])]
     [TestCase(typeof(GritGateTerminalScreenMessageTranslationPatch), "Activate", "XRL.UI.GritGateTerminalScreenMessage", "System.Void", new string[0])]
     [TestCase(typeof(ConversationPronounExchangeTranslationPatch), "PronounExchangeDescription", "XRL.World.Parts.ConversationScript", "System.String", new[]
@@ -1833,6 +1832,11 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(PsychicGlimmerTranslationPatch), new[]
     {
         "XRL.World.Capabilities.PsychicGlimmer|Update|System.Void|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(HighScoresDeletePopupTranslationPatch), new[]
+    {
+        "Qud.UI.HighScoresScreen|HandleDelete|System.Void",
+        "XRL.Core.Scores|Show|XRL.XRLGame",
     })]
     [TestCase(typeof(SingleCallsiteOwnerPopupTranslationPatch), new[]
     {

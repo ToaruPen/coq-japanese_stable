@@ -8530,7 +8530,9 @@ def _existing_popup_owner_route_families() -> tuple[CoveredOwnerFamily, ...]:
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/HighScoresDeletePopupTranslationPatchTests.cs",
         (
             "HandleDelete_TranslatesDeleteConfirmationPopup_WhenOwnerPatched",
+            "ScoresShow_TranslatesDeleteConfirmationPopup_WhenOwnerPatched",
             "HandleDelete_DoesNotTranslateDeleteConfirmationPopup_WhenOwnerAbsent",
+            "ScoresShow_DoesNotTranslateDeleteConfirmationPopup_WhenOwnerAbsent",
             "HandleDelete_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
             "HandleDelete_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
         ),
@@ -8602,9 +8604,10 @@ def _existing_popup_owner_route_families() -> tuple[CoveredOwnerFamily, ...]:
                 EvidenceFile(
                     "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
                     (
-                        "TargetMethod_ResolvesExpectedSignature",
+                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "HighScoresDeletePopupTranslationPatch",
                         "Qud.UI.HighScoresScreen",
-                        "HandleDelete",
+                        "Qud.UI.HighScoresScreen|HandleDelete|System.Void",
                     ),
                 ),
             ),
@@ -15161,6 +15164,44 @@ COVERED_OWNER_CALLSITES: Final = (
                     "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
                     "SingleCallsiteOwnerPopupTranslationPatch",
                     "XRL.XRLGame|LoadGame|XRL.XRLGame|System.String|System.Boolean|System.Boolean|System.Collections.Generic.Dictionary`2[[System.String],[System.Object]]",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id="XRL.Core/Scores.cs::XRL.Core.Scores.Show",
+        lines=(267,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/HighScoresDeletePopupTranslationPatch.cs",
+                (
+                    "HighScoresDeletePopupTranslationPatch",
+                    "XRL.Core.Scores",
+                    "Show",
+                    "DeleteConfirmationPattern",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("HighScoresDeletePopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/HighScoresDeletePopupTranslationPatchTests.cs",
+                (
+                    "ScoresShow_TranslatesDeleteConfirmationPopup_WhenOwnerPatched",
+                    "ScoresShow_DoesNotTranslateDeleteConfirmationPopup_WhenOwnerAbsent",
+                    "HandleDelete_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "HandleDelete_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "ShowScores",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "HighScoresDeletePopupTranslationPatch",
+                    "XRL.Core.Scores|Show|XRL.XRLGame",
                 ),
             ),
         ),

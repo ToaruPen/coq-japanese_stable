@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -19,23 +20,31 @@ public static class HighScoresDeletePopupTranslationPatch
     [ThreadStatic]
     private static int activeDepth;
 
-    [HarmonyTargetMethod]
-    private static MethodBase? TargetMethod()
+    [HarmonyTargetMethods]
+    private static IEnumerable<MethodBase> TargetMethods()
     {
-        var targetType = GameTypeResolver.FindType("Qud.UI.HighScoresScreen", "HighScoresScreen");
+        var targets = new List<MethodBase>();
+        AddTarget(targets, GameTypeResolver.FindType("Qud.UI.HighScoresScreen", "HighScoresScreen"), "HandleDelete");
+        AddTarget(targets, AccessTools.TypeByName("XRL.Core.Scores"), "Show");
+        return targets;
+    }
+
+    private static void AddTarget(List<MethodBase> targets, Type? targetType, string methodName)
+    {
         if (targetType is null)
         {
-            Trace.TraceError("QudJP: {0} failed to resolve target type.", Context);
-            return null;
+            Trace.TraceError("QudJP: {0}.{1} target type not found.", Context, methodName);
+            return;
         }
 
-        var method = AccessTools.Method(targetType, "HandleDelete", Type.EmptyTypes);
+        var method = AccessTools.Method(targetType, methodName, Type.EmptyTypes);
         if (method is null)
         {
-            Trace.TraceError("QudJP: {0}.HandleDelete() not found.", Context);
+            Trace.TraceError("QudJP: {0}.{1}.{2} not found.", Context, targetType.FullName, methodName);
+            return;
         }
 
-        return method;
+        targets.Add(method);
     }
 
     public static void Prefix()
