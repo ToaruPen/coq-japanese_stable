@@ -45,16 +45,18 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string SpraybottleOwner = "XRL.World.Parts.Spraybottle|HandleEvent";
     private const string FixitSprayOwner = "XRL.World.Parts.FixitSpray|HandleEvent";
     private const string AnimatorSprayOwner = "XRL.World.Parts.AnimatorSpray|HandleEvent";
+    private const string StairsDownCheckPullDownOwner = "XRL.World.Parts.StairsDown|CheckPullDown";
     private const string SubmersionOwner = "XRL.World.Parts.Skill.Submersion|HandleEvent";
     private const string SummoningCurioOwner = "XRL.World.Parts.SummoningCurio|HandleEvent";
     private const string FoodOwner = "XRL.World.Parts.Food|HandleEvent";
+    private const string ScriptCallToArmsOwner = "XRL.World.ZoneParts.ScriptCallToArms|ShowWarning";
     private const string SpaceTimeVortexOwner = "XRL.World.Parts.SpaceTimeVortex|ApplyVortex";
     private const string SpreadPaxOwner = "XRL.World.QuestManagers.SpreadPax|Finish";
     private const string ToolboxOwner = "XRL.World.Parts.Toolbox|HandleBonus";
     private const string TrainingBookOwner = "XRL.World.Parts.TrainingBook|HandleEvent";
     private const string WaterRitualRecordOwner = "XRL.World.Parts.WaterRitualRecord|HandleEvent";
 
-        private static readonly Regex DecoyOutOfRangePattern = new(
+    private static readonly Regex DecoyOutOfRangePattern = new(
         "^That is out of range \\((?<range>.+?) (?<unit>squares?)\\)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -216,6 +218,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static readonly Regex SpaceTimeVortexCompanionSuckedPattern = new(
         "^Your companion, (?<companion>.+?),(?<verb>have|has) been sucked into (?<vortex>.+?) (?<direction>to the north|to the south|to the east|to the west|to the northeast|to the northwest|to the southeast|to the southwest|nearby|above|below|here|somewhere)!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex StairsDownCompanionFellPattern = new(
+        "^Your companion, (?<companion>.+?),(?<verb>have|has) fallen (?<preposition>.+?) (?<stairs>.+?) (?<direction>to the north|to the south|to the east|to the west|to the northeast|to the northwest|to the southeast|to the southwest|nearby|above|below|here|somewhere)!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ScriptCallToArmsOthoYellsPattern = new(
+        "^Otho yells, '\\{\\{W\\|(?<name>.+?)! Come back here!\\}\\}'$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex SpreadPaxCurePattern = new(
@@ -476,6 +486,16 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.SpaceTimeVortex",
             "ApplyVortex",
             [gameObjectType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.StairsDown",
+            "CheckPullDown",
+            [gameObjectType]);
+        AddTarget(
+            targets,
+            "XRL.World.ZoneParts.ScriptCallToArms",
+            "ShowWarning",
+            Type.EmptyTypes);
         AddTarget(
             targets,
             "XRL.World.Parts.TrainingBook",
@@ -953,6 +973,27 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             return true;
         }
 
+        match = StairsDownCompanionFellPattern.Match(source);
+        if (match.Success
+            && OwnerMatches(ownerKey, StairsDownCheckPullDownOwner)
+            && TryTranslateDirectionPhrase(match.Groups["direction"].Value, out var fallDirection))
+        {
+            var companion = match.Groups["companion"].Value;
+            var stairs = match.Groups["stairs"].Value;
+            var fallPreposition = TranslateFallPreposition(match.Groups["preposition"].Value);
+            translated = $"あなたの仲間である{companion}は{fallDirection}にある{stairs}の{fallPreposition}落ちた！";
+            detail = "StairsDownCompanionFell";
+            return true;
+        }
+
+        match = ScriptCallToArmsOthoYellsPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, ScriptCallToArmsOwner))
+        {
+            translated = $"オソが叫ぶ。「{{{{W|{match.Groups["name"].Value}！戻ってこい！}}}}」";
+            detail = "ScriptCallToArmsOthoYells";
+            return true;
+        }
+
         match = SpreadPaxCurePattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, SpreadPaxOwner))
         {
@@ -1079,6 +1120,17 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         return trimmed + " ";
+    }
+
+    private static string TranslateFallPreposition(string source)
+    {
+        return source.Trim() switch
+        {
+            "down" => "下へ",
+            "into" => "中へ",
+            "through" => "通り抜けて",
+            _ => source.Trim() + " ",
+        };
     }
 
     private static bool TryTranslateDirectionPhrase(string source, out string translated)

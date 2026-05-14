@@ -375,6 +375,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "SpaceTimeVortexCompanionSucked",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.CheckPullDown),
+        "Your companion, {{G|Q Girl}},has fallen down {{Y|the deep shaft}} to the east!",
+        "あなたの仲間である{{G|Q Girl}}は東側にある{{Y|the deep shaft}}の下へ落ちた！",
+        "StairsDownCompanionFell",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.ShowScriptCallToArmsWarning),
+        "Otho yells, '{{W|Argyve! Come back here!}}'",
+        "オソが叫ぶ。「{{W|Argyve！戻ってこい！}}」",
+        "ScriptCallToArmsOthoYells",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleWaterRitualRecord),
         "You bothered {{G|Yurl}} again.",
         "{{G|Yurl}}にまた迷惑をかけた。",
@@ -722,6 +734,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "Your companion, {{G|Q Girl}},has been sucked into the space-time vortex to the east!",
         "SpaceTimeVortexCompanionSucked")]
     [TestCase(
+        "Your companion, {{G|Q Girl}},has fallen down {{Y|the deep shaft}} to the east!",
+        "StairsDownCompanionFell")]
+    [TestCase(
+        "Otho yells, '{{W|Argyve! Come back here!}}'",
+        "ScriptCallToArmsOthoYells")]
+    [TestCase(
         "You bothered {{G|Yurl}} again.",
         "WaterRitualRecordBothered")]
     [TestCase(
@@ -931,6 +949,10 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.World.Parts.Food|HandleEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.ApplySpaceTimeVortex) =>
                 "XRL.World.Parts.SpaceTimeVortex|ApplyVortex",
+            nameof(DummySingleCallsiteOwnerPopupTarget.CheckPullDown) =>
+                "XRL.World.Parts.StairsDown|CheckPullDown",
+            nameof(DummySingleCallsiteOwnerPopupTarget.ShowScriptCallToArmsWarning) =>
+                "XRL.World.ZoneParts.ScriptCallToArms|ShowWarning",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleWaterRitualRecord) =>
                 "XRL.World.Parts.WaterRitualRecord|HandleEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.FinishSpreadPax) =>

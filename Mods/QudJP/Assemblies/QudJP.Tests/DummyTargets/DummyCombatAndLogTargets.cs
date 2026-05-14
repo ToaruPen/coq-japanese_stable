@@ -1890,6 +1890,20 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         return true;
     }
 
+    public bool CheckPullDown(DummyGameObject target)
+    {
+        _ = target;
+        _ = nameof(CheckPullDown);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    public void ShowScriptCallToArmsWarning()
+    {
+        _ = nameof(ShowScriptCallToArmsWarning);
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+
     public bool HandleTrainingBook(DummyInventoryActionEvent? e = null)
     {
         _ = e;

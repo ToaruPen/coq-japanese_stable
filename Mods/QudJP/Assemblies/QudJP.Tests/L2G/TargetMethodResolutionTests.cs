@@ -1874,6 +1874,8 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.SummoningCurio|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.Food|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.SpaceTimeVortex|ApplyVortex|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Parts.StairsDown|CheckPullDown|System.Boolean|XRL.World.GameObject",
+        "XRL.World.ZoneParts.ScriptCallToArms|ShowWarning|System.Void",
         "XRL.World.Parts.TrainingBook|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.WaterRitualRecord|HandleEvent|System.Boolean|XRL.World.BeginConversationEvent",
         "XRL.World.QuestManagers.SpreadPax|Finish|System.Void",

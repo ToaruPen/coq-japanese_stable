@@ -13576,6 +13576,92 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts/StairsDown.cs::"
+            "XRL.World.Parts.StairsDown.CheckPullDown"
+        ),
+        lines=(372,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                (
+                    "SingleCallsiteOwnerPopupTranslationPatch",
+                    "XRL.World.Parts.StairsDown",
+                    "CheckPullDown",
+                    "StairsDownCompanionFell",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                    "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "Your companion, {{G|Q Girl}},has fallen down",
+                    "StairsDownCompanionFell",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "SingleCallsiteOwnerPopupTranslationPatch",
+                    "XRL.World.Parts.StairsDown|CheckPullDown|System.Boolean|XRL.World.GameObject",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
+            "XRL.World.ZoneParts/ScriptCallToArms.cs::"
+            "XRL.World.ZoneParts.ScriptCallToArms.ShowWarning"
+        ),
+        lines=(547,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                (
+                    "SingleCallsiteOwnerPopupTranslationPatch",
+                    "XRL.World.ZoneParts.ScriptCallToArms",
+                    "ShowWarning",
+                    "ScriptCallToArmsOthoYells",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                    "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "Otho yells, '{{W|Argyve! Come back here!}}'",
+                    "ScriptCallToArmsOthoYells",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "SingleCallsiteOwnerPopupTranslationPatch",
+                    "XRL.World.ZoneParts.ScriptCallToArms|ShowWarning|System.Void",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World.Parts/Food.cs::"
             "XRL.World.Parts.Food.HandleEvent"
         ),
