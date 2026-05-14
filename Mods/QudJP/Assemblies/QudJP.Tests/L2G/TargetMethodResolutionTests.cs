@@ -1688,6 +1688,13 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Skill.Cudgel_Slam|Cast|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Skill.Cudgel_Slam|System.String|XRL.World.GameObject|System.Boolean|System.Int32|System.String",
         "XRL.World.Parts.Skill.Persuasion_Proselytize|AttemptProselytization|System.Boolean",
         "XRL.World.Parts.Skill.Tinkering|LearnNewRecipe|System.Void|XRL.World.GameObject|System.Int32|System.Int32",
+        "XRL.World.Parts.GameUnique|OnCreated|System.Void|System.String",
+        "XRL.World.Parts.GenocideCurio|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.GritGateMainframeTerminal|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.LiquidFueledPowerPlant|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+        "XRL.World.Parts.RecoilOnDeath|HandleEvent|System.Boolean|XRL.World.BeforeDieEvent",
+        "XRL.World.Parts.Spraybottle|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.TrainingBook|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
     })]
     public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
     {

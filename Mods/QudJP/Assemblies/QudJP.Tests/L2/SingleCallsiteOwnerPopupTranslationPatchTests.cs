@@ -75,6 +75,66 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "ひらめきを得て{{Y|laser pistol schematic}}を記した。",
         "TinkeringLearnRecipe",
         PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.OnCreated),
+        "Argyve (NPC_Argyve) is considered unique, are you sure you want to create another?",
+        "Argyve（NPC_Argyve）は一意とみなされています。もう1つ作成しますか？",
+        "GameUniqueWishConfirmation",
+        PopupMethod.ShowYesNo)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleGenocideCurio),
+        "You activate {{Y|the chrome idol}} and toss it into the air.",
+        "{{Y|the chrome idol}}を起動して空中に放り投げた。",
+        "GenocideCurioActivation",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleGritGateMainframeTerminal),
+        "The mainframe is unresponsive.",
+        "The mainframeは反応しない。",
+        "GritGateMainframeUnresponsive",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant),
+        "Your flamethrower has consumed all of its oil.",
+        "あなたのflamethrowerはits oilをすべて消費した。",
+        "LiquidFueledPowerPlantEmpty",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant),
+        "Your fuel cells have consumed all of their blood.",
+        "あなたのfuel cellsはtheir bloodをすべて消費した。",
+        "LiquidFueledPowerPlantEmpty",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleRecoilOnDeath),
+        "Just before your demise, you are transported to safety! {{Y|recoiler}} disintegrates.",
+        "死の直前、あなたは安全な場所へ転送された！ {{Y|recoiler}}は崩壊した。",
+        "RecoilOnDeathTransport",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleRecoilOnDeath),
+        "Just before your demise, you are transported to safety! {{Y|recoilers}} disintegrate.",
+        "死の直前、あなたは安全な場所へ転送された！ {{Y|recoilers}}は崩壊した。",
+        "RecoilOnDeathTransport",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpraybottle),
+        "you are covered in slime!",
+        "youはslimeに覆われた！",
+        "SpraybottleCovered",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpraybottle),
+        "{{Y|the snapjaw}} is covered in oil!",
+        "{{Y|the snapjaw}}はoilに覆われた！",
+        "SpraybottleCovered",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleTrainingBook),
+        "Your Strength is increased by {{G|1}}!",
+        "あなたのStrengthが{{G|1}}上昇した！",
+        "TrainingBookAttributeIncrease",
+        PopupMethod.Show)]
     public void Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched(
         string methodName,
         string source,
@@ -121,6 +181,34 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "You have a flash of insight and scribe a {{Y|laser pistol schematic}}.",
         "TinkeringLearnRecipe",
         PopupMethod.Show)]
+    [TestCase(
+        "Argyve (NPC_Argyve) is considered unique, are you sure you want to create another?",
+        "GameUniqueWishConfirmation",
+        PopupMethod.ShowYesNo)]
+    [TestCase(
+        "You activate {{Y|the chrome idol}} and toss it into the air.",
+        "GenocideCurioActivation",
+        PopupMethod.Show)]
+    [TestCase(
+        "The mainframe is unresponsive.",
+        "GritGateMainframeUnresponsive",
+        PopupMethod.Show)]
+    [TestCase(
+        "Your flamethrower has consumed all of its oil.",
+        "LiquidFueledPowerPlantEmpty",
+        PopupMethod.Show)]
+    [TestCase(
+        "Just before your demise, you are transported to safety! {{Y|recoiler}} disintegrates.",
+        "RecoilOnDeathTransport",
+        PopupMethod.Show)]
+    [TestCase(
+        "you are covered in slime!",
+        "SpraybottleCovered",
+        PopupMethod.Show)]
+    [TestCase(
+        "Your Strength is increased by {{G|1}}!",
+        "TrainingBookAttributeIncrease",
+        PopupMethod.Show)]
     public void Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent(
         string source,
         string detail,
@@ -133,6 +221,46 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
             Assert.That(GetLastPopupMessage(popupMethod), Is.EqualTo(source));
             Assert.That(HitCount(detail), Is.Zero);
         });
+    }
+
+    [TestCase(
+        "Argyve (NPC_Argyve) is considered unique, are you sure you want to create another?",
+        "GameUniqueWishConfirmation")]
+    [TestCase(
+        "You activate {{Y|the chrome idol}} and toss it into the air.",
+        "GenocideCurioActivation")]
+    [TestCase(
+        "The mainframe is unresponsive.",
+        "GritGateMainframeUnresponsive")]
+    [TestCase(
+        "Your flamethrower has consumed all of its oil.",
+        "LiquidFueledPowerPlantEmpty")]
+    [TestCase(
+        "Just before your demise, you are transported to safety! {{Y|recoiler}} disintegrates.",
+        "RecoilOnDeathTransport")]
+    [TestCase(
+        "you are covered in slime!",
+        "SpraybottleCovered")]
+    [TestCase(
+        "Your Strength is increased by {{G|1}}!",
+        "TrainingBookAttributeIncrease")]
+    public void Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner(
+        string source,
+        string detail)
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(SingleCallsiteOwnerPopupTranslationPatch),
+            RequireOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms)),
+            () =>
+            {
+                InvokeOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms), source);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                    Assert.That(HitCount(detail), Is.Zero);
+                });
+            });
     }
 
     [Test]
@@ -217,6 +345,29 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                     typeof(DummyGameObject),
                     typeof(int),
                     typeof(int)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.OnCreated) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(string)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleGenocideCurio) or
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleGritGateMainframeTerminal) or
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpraybottle) or
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleTrainingBook) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(DummyInventoryActionEvent)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(DummyEndTurnEvent)),
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleRecoilOnDeath) =>
+                OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(DummySingleCallsiteOwnerPopupTarget),
+                    methodName,
+                    typeof(DummyBeforeDieEvent)),
             _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected owner method."),
         };
     }
@@ -259,6 +410,48 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
             case nameof(DummySingleCallsiteOwnerPopupTarget.LearnNewRecipe):
                 DummySingleCallsiteOwnerPopupTarget.StaticPopupMessageToShow = message;
                 DummySingleCallsiteOwnerPopupTarget.LearnNewRecipe(new DummyGameObject(), 1, 4);
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.OnCreated):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.OnCreated("Wish");
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleGenocideCurio):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.HandleGenocideCurio(new DummyInventoryActionEvent());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleGritGateMainframeTerminal):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.HandleGritGateMainframeTerminal(new DummyInventoryActionEvent());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.HandleLiquidFueledPowerPlant(new DummyEndTurnEvent());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleRecoilOnDeath):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.HandleRecoilOnDeath(new DummyBeforeDieEvent());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpraybottle):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.HandleSpraybottle(new DummyInventoryActionEvent());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleTrainingBook):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.HandleTrainingBook(new DummyInventoryActionEvent());
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected owner method.");

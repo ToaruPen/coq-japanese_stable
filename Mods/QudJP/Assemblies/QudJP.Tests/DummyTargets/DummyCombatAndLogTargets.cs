@@ -879,6 +879,11 @@ internal sealed class DummyEndTurnEvent
     public string Id { get; set; } = nameof(DummyEndTurnEvent);
 }
 
+internal sealed class DummyBeforeDieEvent
+{
+    public string Id { get; set; } = nameof(DummyBeforeDieEvent);
+}
+
 internal sealed class DummyQuillsTarget
 {
     public string MessageToSend { get; set; } = string.Empty;
@@ -1552,6 +1557,60 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         _ = minTier;
         _ = maxTier;
         DummyPopupShow.Show(StaticPopupMessageToShow);
+    }
+
+    public void OnCreated(string? context = null)
+    {
+        _ = context;
+        _ = DummyPopupShow.ShowYesNo(PopupMessageToShow);
+    }
+
+    public bool HandleGenocideCurio(DummyInventoryActionEvent? e = null)
+    {
+        _ = e;
+        _ = nameof(HandleGenocideCurio);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    public bool HandleGritGateMainframeTerminal(DummyInventoryActionEvent? e = null)
+    {
+        _ = e;
+        _ = nameof(HandleGritGateMainframeTerminal);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    public bool HandleLiquidFueledPowerPlant(DummyEndTurnEvent? e = null)
+    {
+        _ = e;
+        _ = nameof(HandleLiquidFueledPowerPlant);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    public bool HandleRecoilOnDeath(DummyBeforeDieEvent? e = null)
+    {
+        _ = e;
+        _ = nameof(HandleRecoilOnDeath);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    public bool HandleSpraybottle(DummyInventoryActionEvent? e = null)
+    {
+        _ = e;
+        _ = nameof(HandleSpraybottle);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    public bool HandleTrainingBook(DummyInventoryActionEvent? e = null)
+    {
+        _ = e;
+        _ = nameof(HandleTrainingBook);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
     }
 }
 
