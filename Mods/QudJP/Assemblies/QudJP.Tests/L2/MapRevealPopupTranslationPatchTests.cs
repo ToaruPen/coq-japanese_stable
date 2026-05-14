@@ -10,6 +10,8 @@ public sealed class MapRevealPopupTranslationPatchTests
 {
     private const string MapRevealOwner = "XRL.World.Parts.MapReveal|HandleEvent";
     private const string FactionDeedOwner = "XRL.World.Parts.FactionDeed|HandleEvent";
+    private const string FactionDeedAnnalsEntrySource =
+        "You add the following entry into the {{K|Annals of Qud}}.\n\n\"On the 1st of Ubu Ut, {{Y|Ereshkigal}} became admired by {{M|the Barathrumites}} for saving their village.\"";
 
     [SetUp]
     public void SetUp()
@@ -64,6 +66,32 @@ public sealed class MapRevealPopupTranslationPatchTests
         string expectedDetail)
     {
         AssertOwnerTranslation(FactionDeedOwner, source, expected, expectedDetail);
+    }
+
+    [TestCase(
+        "You add the following entry into the {{K|Annals of Qud}}.\n\n\"On the 1st of Ubu Ut, {{Y|Ereshkigal}} became admired by {{M|the Barathrumites}} for saving their village.\"",
+        "{{K|クッド年代記}}に次の項目を追加した。\n\n「Ubu Utの1st、{{Y|Ereshkigal}}はsaving their villageにより{{M|the Barathrumites}}から敬愛されるようになった。」")]
+    [TestCase(
+        "You add the following entry into the {{K|Annals of Qud}}.\n\n\"On the 2nd of Tuum Ut, {{Y|Ereshkigal}} became despised by {{M|the Barathrumites}} for betraying their village.\"",
+        "{{K|クッド年代記}}に次の項目を追加した。\n\n「Tuum Utの2nd、{{Y|Ereshkigal}}はbetraying their villageにより{{M|the Barathrumites}}から嫌悪されるようになった。」")]
+    public void FactionDeedHandleEvent_TranslatesAnnalsEntryPopup_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertOwnerTranslation(FactionDeedOwner, source, expected, "FactionDeedAnnalsEntry");
+    }
+
+    [Test]
+    public void FactionDeedHandleEvent_DoesNotTranslateAnnalsEntry_WhenOwnerAbsent()
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOnly(
+            () => DummyPopupShow.Show(FactionDeedAnnalsEntrySource));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(FactionDeedAnnalsEntrySource));
+            Assert.That(RouteHitCount("FactionDeedAnnalsEntry"), Is.Zero);
+        });
     }
 
     [Test]
@@ -121,7 +149,6 @@ public sealed class MapRevealPopupTranslationPatchTests
     }
 
     [TestCase("The operation fails.")]
-    [TestCase("You add the following entry into the {{K|Annals of Qud}}.\n\n\"On the 1st of Ubu Ut, {{Y|Ereshkigal}} became admired by {{M|the Barathrumites}} for saving their village.\"")]
     [TestCase("It's a map of your surroundings!")]
     public void FactionDeedHandleEvent_DoesNotClaimFixedNarrativeOrMapSpecificPopups_WhenOwnerPatched(
         string source)

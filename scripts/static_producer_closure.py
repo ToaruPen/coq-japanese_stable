@@ -13888,7 +13888,7 @@ COVERED_OWNER_CALLSITES: Final = (
             "XRL.World.Parts/FactionDeed.cs::"
             "XRL.World.Parts.FactionDeed.HandleEvent"
         ),
-        lines=(72, 77, 83),
+        lines=(72, 77, 83, 142),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
             EvidenceFile(
@@ -13899,8 +13899,10 @@ COVERED_OWNER_CALLSITES: Final = (
                     "FactionDeedOwner",
                     "OwnerConsumptionWarningPattern",
                     "OrdinaryPaperPattern",
+                    "FactionDeedAnnalsEntryPattern",
                     "IsDocumentOwner",
                     "IsMapRevealOwner",
+                    "IsFactionDeedOwner",
                 ),
             ),
             EvidenceFile(
@@ -13911,12 +13913,15 @@ COVERED_OWNER_CALLSITES: Final = (
                 "Mods/QudJP/Assemblies/QudJP.Tests/L2/MapRevealPopupTranslationPatchTests.cs",
                 (
                     "FactionDeedHandleEvent_TranslatesSharedDocumentPopupMessages_WhenOwnerPatched",
+                    "FactionDeedHandleEvent_TranslatesAnnalsEntryPopup_WhenOwnerPatched",
+                    "FactionDeedHandleEvent_DoesNotTranslateAnnalsEntry_WhenOwnerAbsent",
                     "FactionDeedHandleEvent_DoesNotClaimFixedNarrativeOrMapSpecificPopups_WhenOwnerPatched",
                     "HandleEvent_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
                     "HandleEvent_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
                     "HandleEvent_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
                     "ancient deed",
                     "Annals of Qud",
+                    "クッド年代記",
                     "It's a map of your surroundings!",
                 ),
             ),

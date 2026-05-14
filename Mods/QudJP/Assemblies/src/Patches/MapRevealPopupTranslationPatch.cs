@@ -26,6 +26,12 @@ public static class MapRevealPopupTranslationPatch
         "^(?:It's|They're|You're|It is|They are|You are|(?<subject>.+?) (?:is|are)) a map of your surroundings!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex FactionDeedAnnalsEntryPattern = new(
+        "^You add the following entry into the Annals of Qud\\.\\n\\n\""
+        + "On the (?<day>.+?) of (?<month>.+?), (?<player>.+?) became "
+        + "(?<standing>admired|despised) by (?<faction>.+?) for (?<reason>.+?)\\.\"$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -135,6 +141,8 @@ public static class MapRevealPopupTranslationPatch
             return (IsDocumentOwner(ownerKey)
                     && (TryTranslateOwnerConsumptionWarning(source, stripped, spans, route, family, out translated)
                         || TryTranslateOrdinaryPaper(source, stripped, spans, route, family, out translated)))
+                || (IsFactionDeedOwner(ownerKey)
+                    && TryTranslateFactionDeedAnnalsEntry(source, stripped, spans, route, family, out translated))
                 || (IsMapRevealOwner(ownerKey)
                     && TryTranslateMapOfSurroundings(source, stripped, spans, route, family, out translated));
         }
@@ -227,6 +235,46 @@ public static class MapRevealPopupTranslationPatch
         return true;
     }
 
+    private static bool TryTranslateFactionDeedAnnalsEntry(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string family,
+        out string translated)
+    {
+        var match = FactionDeedAnnalsEntryPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var standing = string.Equals(match.Groups["standing"].Value, "admired", StringComparison.Ordinal)
+            ? "敬愛"
+            : "嫌悪";
+        translated = RestoreWholeSourceBoundary(
+            string.Concat(
+                "{{K|クッド年代記}}に次の項目を追加した。\n\n「",
+                RestoreCapture(match, spans, "month"),
+                "の",
+                RestoreCapture(match, spans, "day"),
+                "、",
+                RestoreCapture(match, spans, "player"),
+                "は",
+                RestoreCapture(match, spans, "reason"),
+                "により",
+                RestoreCapture(match, spans, "faction"),
+                "から",
+                standing,
+                "されるようになった。」"),
+            stripped,
+            spans,
+            source);
+        Record(route, family, "FactionDeedAnnalsEntry", source, translated);
+        return true;
+    }
+
     private static string? CurrentOwnerKey()
     {
         return ownerStack is { Count: > 0 } ? ownerStack.Peek() : null;
@@ -240,6 +288,11 @@ public static class MapRevealPopupTranslationPatch
     private static bool IsMapRevealOwner(string? ownerKey)
     {
         return OwnerMatches(ownerKey, MapRevealOwner);
+    }
+
+    private static bool IsFactionDeedOwner(string? ownerKey)
+    {
+        return OwnerMatches(ownerKey, FactionDeedOwner);
     }
 
     private static bool OwnerMatches(string? actual, params string[] expected)
