@@ -1612,7 +1612,7 @@ def _conversation_reward_popup_families() -> tuple[CoveredOwnerFamily, ...]:
         "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
         "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
         "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
-        "Patch_LeavesUnknownPopupUnchanged_WhenOwnerPatched",
+        "Patch_LeavesUnsupportedPopupUnchanged_WhenOwnerPatched",
     )
 
     return (
@@ -1658,7 +1658,7 @@ def _conversation_reward_popup_families() -> tuple[CoveredOwnerFamily, ...]:
                         *patch.required_substrings,
                         "LibrarianGiveBook",
                         "TryTranslateLibrarianCommentary",
-                        "TryTranslateLibrarianXp",
+                        "TryTranslateConversationXp",
                         "DoesVerbRouteTranslator.TryTranslateMarkedMessage",
                         "DoesVerbRouteTranslator.TryTranslatePlainSentence",
                         "MessagePatternTranslator.Translate",
@@ -1671,7 +1671,7 @@ def _conversation_reward_popup_families() -> tuple[CoveredOwnerFamily, ...]:
                         *tests_common,
                         "nameof(DummyConversationRewardProducer.LibrarianGiveBookHandleEvent)",
                         "LibrarianCommentary",
-                        "LibrarianXp",
+                        "ConversationXp",
                         "Patch_TranslatesMarkedLibrarianCommentary_WhenOwnerPatched",
                         "DoesVerbRouteTranslator.MarkDoesFragment",
                         "some insightful commentary on",
@@ -1762,6 +1762,65 @@ def _conversation_reward_popup_families() -> tuple[CoveredOwnerFamily, ...]:
                         "typeof(ConversationRewardPopupTranslationPatch)",
                         "XRL.World.Conversations.Parts.ReceiveItem|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
                     ),
+                ),
+            ),
+        ),
+    )
+
+
+def _conversation_reward_popup_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id=(
+                "XRL.World.Conversations.Parts/GiveReshephSecret.cs::"
+                "XRL.World.Conversations.Parts.GiveReshephSecret.HandleEvent"
+            ),
+            lines=(54, 55),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/ConversationRewardPopupTranslationPatch.cs",
+                    (
+                        "ConversationRewardPopupTranslationPatch",
+                        "GiveReshephSecret",
+                        "ReshephSecretInsightPattern",
+                        "TryTranslateReshephSecretInsight",
+                        "TryTranslateConversationXp",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("ConversationRewardPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationRewardPopupTranslationPatchTests.cs",
+                    (
+                        "nameof(DummyConversationRewardProducer.GiveReshephSecretHandleEvent)",
+                        "ReshephSecretInsight",
+                        "ConversationXp",
+                        "You muse over the secret with",
+                        "You muse over the secrets with",
+                        "You gain {{C|325}} XP.",
+                        "{{G|Tszappur}}と秘密について思索し、いくらかの洞察を得た。",
+                        "You do not have any unshared secrets about the life of Resheph.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(ConversationRewardPopupTranslationPatch)",
+                        "XRL.World.Conversations.Parts.GiveReshephSecret|HandleEvent|System.Boolean|XRL.World.Conversations.EnterElementEvent",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+                    (
+                        "^You gain (\\\\{\\\\{C\\\\|\\\\d+\\\\}\\\\}|\\\\d+) XP[.!]?$",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                    ("You do not have any unshared secrets about the life of Resheph.",),
                 ),
             ),
         ),
@@ -12085,6 +12144,7 @@ COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVER
 COVERED_OWNER_CALLSITES: Final = (
     *_sifrah_pure_owner_popup_callsites(),
     *_giant_clam_shloop_hitch_callsites(),
+    *_conversation_reward_popup_callsites(),
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
     CoveredOwnerCallsites(

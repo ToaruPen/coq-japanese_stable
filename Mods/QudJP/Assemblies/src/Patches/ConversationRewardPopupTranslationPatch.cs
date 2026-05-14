@@ -24,6 +24,10 @@ public static class ConversationRewardPopupTranslationPatch
         "^You receive (?<items>.+?)!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex ReshephSecretInsightPattern = new(
+        "^You muse over the secrets? with (?<speaker>.+?) and gain some insight\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -49,6 +53,14 @@ public static class ConversationRewardPopupTranslationPatch
 
         foreach (var method in ResolveTarget(
                      "XRL.World.Conversations.Parts.LibrarianGiveBook",
+                     "HandleEvent",
+                     [enterElementEventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.GiveReshephSecret",
                      "HandleEvent",
                      [enterElementEventType]))
         {
@@ -119,8 +131,9 @@ public static class ConversationRewardPopupTranslationPatch
         {
             var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
             return TryTranslateSlynthSanctuary(source, stripped, spans, route, out translated)
-                || TryTranslateLibrarianXp(source, route, out translated)
+                || TryTranslateConversationXp(source, route, out translated)
                 || TryTranslateLibrarianCommentary(source, route, out translated)
+                || TryTranslateReshephSecretInsight(source, stripped, spans, route, out translated)
                 || TryTranslatePaxInfectLimb(source, stripped, spans, route, out translated)
                 || TryTranslateReceiveItem(source, stripped, spans, route, out translated);
         }
@@ -188,7 +201,7 @@ public static class ConversationRewardPopupTranslationPatch
         return true;
     }
 
-    private static bool TryTranslateLibrarianXp(string source, string route, out string translated)
+    private static bool TryTranslateConversationXp(string source, string route, out string translated)
     {
         if (!source.StartsWith("You gain ", StringComparison.Ordinal) || source.IndexOf(" XP", StringComparison.Ordinal) < 0)
         {
@@ -202,7 +215,30 @@ public static class ConversationRewardPopupTranslationPatch
             return false;
         }
 
-        Record(route, "LibrarianXp", source, translated);
+        Record(route, "ConversationXp", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateReshephSecretInsight(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        out string translated)
+    {
+        var match = ReshephSecretInsightPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = RestoreWholeSourceBoundary(
+            Restore(match, spans, "speaker") + "と秘密について思索し、いくらかの洞察を得た。",
+            stripped,
+            spans,
+            source);
+        Record(route, "ReshephSecretInsight", source, translated);
         return true;
     }
 

@@ -500,6 +500,37 @@ def test_pick_target_show_picker_range_failure_is_split_from_fixed_visibility_po
     }
 
 
+def test_give_resheph_secret_reward_popups_are_split_from_fixed_no_secret_popup() -> None:
+    """GiveReshephSecret.HandleEvent closes reward popups without claiming fixed no-secret text."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    family_id = (
+        "XRL.World.Conversations.Parts/GiveReshephSecret.cs::"
+        "XRL.World.Conversations.Parts.GiveReshephSecret.HandleEvent"
+    )
+    family_callsites = [
+        callsite
+        for callsite in inventory["callsites"]
+        if callsite["producer_family_id"] == family_id
+    ]
+
+    assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
+    assert family_closure_status(raw_families[family_id]) == "needs_family_review"
+    assert family_id not in covered_family_ids()
+    assert (family_id, 54) in covered_callsite_keys()
+    assert (family_id, 55) in covered_callsite_keys()
+    assert family_id not in queued_family_ids
+    assert {
+        (callsite["line"], callsite["closure_status"])
+        for callsite in family_callsites
+    } == {
+        (38, "messages_candidate"),
+        (54, "owner_patch_required"),
+        (55, "owner_patch_required"),
+    }
+
+
 def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:
     """Uncovered high-volume owner families must stay actionable."""
     inventory = load_inventory(TRACKED_INVENTORY)

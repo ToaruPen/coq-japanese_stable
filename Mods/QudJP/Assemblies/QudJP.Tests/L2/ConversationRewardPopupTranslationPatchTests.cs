@@ -56,7 +56,22 @@ public sealed class ConversationRewardPopupTranslationPatchTests
         nameof(DummyConversationRewardProducer.LibrarianGiveBookHandleEvent),
         "You gain {{C|75}} XP.",
         "あなたは経験値を{{C|75}}獲得した",
-        "LibrarianXp")]
+        "ConversationXp")]
+    [TestCase(
+        nameof(DummyConversationRewardProducer.GiveReshephSecretHandleEvent),
+        "You muse over the secret with {{G|Tszappur}} and gain some insight.",
+        "{{G|Tszappur}}と秘密について思索し、いくらかの洞察を得た。",
+        "ReshephSecretInsight")]
+    [TestCase(
+        nameof(DummyConversationRewardProducer.GiveReshephSecretHandleEvent),
+        "You muse over the secrets with the Earl of Omonporch and gain some insight.",
+        "the Earl of Omonporchと秘密について思索し、いくらかの洞察を得た。",
+        "ReshephSecretInsight")]
+    [TestCase(
+        nameof(DummyConversationRewardProducer.GiveReshephSecretHandleEvent),
+        "You gain {{C|325}} XP.",
+        "あなたは経験値を{{C|325}}獲得した",
+        "ConversationXp")]
     public void Patch_TranslatesConversationRewardPopups_WhenOwnerPatched(
         string methodName,
         string source,
@@ -67,6 +82,10 @@ public sealed class ConversationRewardPopupTranslationPatchTests
         {
             UseRepositoryPatternDictionary();
             UseRepositoryMessageFrames();
+        }
+        else if (detail == "ConversationXp")
+        {
+            UseRepositoryPatternDictionary();
         }
 
         RunWithOwnerAndPopupPatches(methodName, () =>
@@ -172,11 +191,10 @@ public sealed class ConversationRewardPopupTranslationPatchTests
         });
     }
 
-    [Test]
-    public void Patch_LeavesUnknownPopupUnchanged_WhenOwnerPatched()
+    [TestCase("The conversation ends.")]
+    [TestCase("You do not have any unshared secrets about the life of Resheph.")]
+    public void Patch_LeavesUnsupportedPopupUnchanged_WhenOwnerPatched(string source)
     {
-        const string source = "The conversation ends.";
-
         RunWithOwnerAndPopupPatches(nameof(DummyConversationRewardProducer.ReceiveItemHandleEvent), () =>
         {
             var target = new DummyConversationRewardProducer
@@ -190,6 +208,8 @@ public sealed class ConversationRewardPopupTranslationPatchTests
             {
                 Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
                 Assert.That(HitCount("ReceiveItem"), Is.Zero);
+                Assert.That(HitCount("ReshephSecretInsight"), Is.Zero);
+                Assert.That(HitCount("ConversationXp"), Is.Zero);
             });
         });
     }
@@ -238,6 +258,12 @@ public sealed class ConversationRewardPopupTranslationPatchTests
         public bool LibrarianGiveBookHandleEvent()
         {
             return EmitPopup(nameof(LibrarianGiveBookHandleEvent));
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool GiveReshephSecretHandleEvent()
+        {
+            return EmitPopup(nameof(GiveReshephSecretHandleEvent));
         }
 
         private bool EmitPopup(string route)
