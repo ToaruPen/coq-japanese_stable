@@ -2498,9 +2498,17 @@ internal sealed class DummyZoneManagerGenerateZoneTarget
 
     public string? ColorToSend { get; set; }
 
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public void GenerateZone(string zoneId)
     {
         _ = zoneId;
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+
+        if (!string.IsNullOrEmpty(PopupMessageToShow))
+        {
+            DummyPopupShow.ShowYesNo(PopupMessageToShow);
+        }
     }
 }

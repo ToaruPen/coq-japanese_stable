@@ -15892,7 +15892,7 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id="XRL.World/ZoneManager.cs::XRL.World.ZoneManager.GenerateZone",
-        lines=(3286,),
+        lines=(3286, 3570),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
             EvidenceFile(
@@ -15902,7 +15902,14 @@ COVERED_OWNER_CALLSITES: Final = (
                     "GenerateZone",
                     "Zone build failure:",
                     "TryTranslateQueuedMessage",
+                    "ReportIssuePrefix",
+                    "TryTranslatePopupMessage",
+                    "このゾーンの構築中に問題が発生した。",
                 ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("ZoneManagerGenerateZoneTranslationPatch.TryTranslatePopupMessage",),
             ),
             EvidenceFile(
                 "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
@@ -15922,11 +15929,23 @@ COVERED_OWNER_CALLSITES: Final = (
                 ),
             ),
             EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/ZoneManagerGenerateZoneTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesReportIssueConfirmation_WhenOwnerPatched",
+                    "Patch_DoesNotTranslateReportIssueConfirmation_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_DoesNotClaimOtherGenerateZoneShapes_WhenOwnerPatched",
+                    "This zone isn't building properly. Do you want to force it to stop and build immediately?",
+                ),
+            ),
+            EvidenceFile(
                 "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
                 (
                     "typeof(ZoneManagerGenerateZoneTranslationPatch)",
                     "GenerateZone",
                     "XRL.World.ZoneManager",
+                    "System.Void",
+                    "System.String",
                 ),
             ),
         ),

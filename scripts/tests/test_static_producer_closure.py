@@ -377,43 +377,40 @@ def test_keybinds_menu_option_popups_are_split_from_fixed_restore_prompt() -> No
     assert family_id not in queued_family_ids
 
 
-def test_zone_manager_owner_queue_callsites_are_split_from_runtime_and_popup_shapes() -> None:
-    """ZoneManager queue owner callsites must close without claiming runtime or popup shapes."""
+def test_zone_manager_owner_callsites_are_split_from_runtime_and_fixed_popup_shapes() -> None:
+    """ZoneManager owner callsites close without claiming runtime or fixed popup shapes."""
     inventory = load_inventory(TRACKED_INVENTORY)
     raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    callsite_keys = covered_callsite_keys()
     source_entries = owner_action_queue_by_file(inventory)
-    zone_manager_family_ids = {
-        "XRL.World/ZoneManager.cs::XRL.World.ZoneManager.SetActiveZone",
-        "XRL.World/ZoneManager.cs::XRL.World.ZoneManager.GenerateZone",
-    }
+    set_active_zone_family_id = "XRL.World/ZoneManager.cs::XRL.World.ZoneManager.SetActiveZone"
+    generate_zone_family_id = "XRL.World/ZoneManager.cs::XRL.World.ZoneManager.GenerateZone"
 
-    for family_id in zone_manager_family_ids:
+    for family_id in (set_active_zone_family_id, generate_zone_family_id):
         assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
         assert family_closure_status(raw_families[family_id]) == "needs_family_review"
         assert family_id not in covered_family_ids()
-        assert family_id in queued_family_ids
+
+    assert set_active_zone_family_id in queued_family_ids
+    assert generate_zone_family_id not in queued_family_ids
+    assert {
+        line for covered_family, line in callsite_keys if covered_family == generate_zone_family_id
+    } == {3286, 3570}
 
     zone_manager_entry = next(
         entry for entry in source_entries if entry["source_file"] == "XRL.World/ZoneManager.cs"
     )
-    assert zone_manager_entry["callsite_count"] == 4
-    assert [family["member_name"] for family in zone_manager_entry["families"]] == [
-        "SetActiveZone",
-        "GenerateZone",
-    ]
+    assert zone_manager_entry["callsite_count"] == 2
+    assert [family["member_name"] for family in zone_manager_entry["families"]] == ["SetActiveZone"]
     assert [
         family["representative_lines"] for family in zone_manager_entry["families"]
-    ] == [[1889, 1912], [3213, 3570]]
+    ] == [[1889, 1912]]
     assert [
         family["closure_status_counts"] for family in zone_manager_entry["families"]
-    ] == [
-        {"runtime_required": 2},
-        {"messages_candidate": 1, "owner_patch_required": 1},
-    ]
+    ] == [{"runtime_required": 2}]
     assert [family["surface_counts"] for family in zone_manager_entry["families"]] == [
         {"AddPlayerMessage": 2},
-        {"Popup.Show*": 2},
     ]
 
 
