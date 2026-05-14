@@ -16,6 +16,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string DecoyHologramOwner = "XRL.World.Parts.DecoyHologramEmitter|CreateHolograms";
     private const string BaetylRewardWishOwner = "XRL.World.Parts.RandomAltarBaetyl|HandleBaetylRewardWish";
     private const string AxeDismemberOwner = "XRL.World.Parts.Skill.Axe_Dismember|CastForceSuccess";
+    private const string AxeDismemberCastOwner = "XRL.World.Parts.Skill.Axe_Dismember|Cast";
     private const string BiomeSurfaceDistributionOwner = "XRL.World.Biomes.BiomeManager|DisplaySurfaceDistribution";
     private const string CudgelSlamOwner = "XRL.World.Parts.Skill.Cudgel_Slam|Cast";
     private const string DynamicQuestRewardGameObjectOwner = "XRL.World.DynamicQuestRewardElement_GameObject|award";
@@ -251,6 +252,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             targets,
             "XRL.World.Parts.Skill.Axe_Dismember",
             "CastForceSuccess",
+            [gameObjectType, axeDismemberType, gameObjectType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Skill.Axe_Dismember",
+            "Cast",
             [gameObjectType, axeDismemberType, gameObjectType]);
         AddTarget(
             targets,
@@ -521,7 +527,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         match = AxeDismemberSelfPattern.Match(source);
-        if (match.Success && OwnerMatches(ownerKey, AxeDismemberOwner))
+        if (match.Success && OwnerMatches(ownerKey, AxeDismemberOwner, AxeDismemberCastOwner))
         {
             translated = $"{match.Groups["target"].Value}を切断してもよいか？";
             detail = "AxeDismemberSelfConfirmation";

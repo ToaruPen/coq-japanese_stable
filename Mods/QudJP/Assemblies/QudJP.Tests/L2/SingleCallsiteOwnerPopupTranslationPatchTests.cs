@@ -75,6 +75,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "AxeDismemberSelfConfirmation",
         PopupMethod.ShowYesNo)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.CastDismember),
+        "Are you sure you want to dismember yourself?",
+        "yourselfを切断してもよいか？",
+        "AxeDismemberSelfConfirmation",
+        PopupMethod.ShowYesNo)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.Cast),
         "Are you sure you want to slam yourself?",
         "yourselfを叩きつけてもよいか？",
@@ -717,6 +723,8 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.World.Parts.RandomAltarBaetyl|HandleBaetylRewardWish",
             nameof(DummySingleCallsiteOwnerPopupTarget.CastForceSuccess) =>
                 "XRL.World.Parts.Skill.Axe_Dismember|CastForceSuccess",
+            nameof(DummySingleCallsiteOwnerPopupTarget.CastDismember) =>
+                "XRL.World.Parts.Skill.Axe_Dismember|Cast",
             nameof(DummySingleCallsiteOwnerPopupTarget.Cast) =>
                 "XRL.World.Parts.Skill.Cudgel_Slam|Cast",
             nameof(DummySingleCallsiteOwnerPopupTarget.AwardDynamicQuestRewardGameObject) =>

@@ -1005,6 +1005,57 @@ def _sunder_mind_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     )
 
 
+def _axe_dismember_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id=(
+                "XRL.World.Parts.Skill/Axe_Dismember.cs::"
+                "XRL.World.Parts.Skill.Axe_Dismember.Cast"
+            ),
+            lines=(250,),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                    (
+                        "SingleCallsiteOwnerPopupTranslationPatch",
+                        "XRL.World.Parts.Skill.Axe_Dismember",
+                        "AxeDismemberCastOwner",
+                        "AxeDismemberSelfConfirmation",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                        "nameof(DummySingleCallsiteOwnerPopupTarget.CastDismember)",
+                        "Are you sure you want to dismember yourself?",
+                        "AxeDismemberSelfConfirmation",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SingleCallsiteOwnerPopupTranslationPatch)",
+                        "XRL.World.Parts.Skill.Axe_Dismember|Cast|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Skill.Axe_Dismember|XRL.World.GameObject",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                    (
+                        "There's nothing there you can dismember.",
+                        "There's nothing there to dismember.",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _keybinds_screen_conflict_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         (
@@ -12201,6 +12252,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_giant_clam_shloop_hitch_callsites(),
     *_conversation_reward_popup_callsites(),
     *_sunder_mind_owner_callsites(),
+    *_axe_dismember_owner_callsites(),
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
     CoveredOwnerCallsites(

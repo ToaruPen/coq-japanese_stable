@@ -1604,6 +1604,19 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         return true;
     }
 
+    public static bool CastDismember(
+        DummyGameObject attacker,
+        DummyAxeDismember? skill = null,
+        DummyGameObject? weapon = null)
+    {
+        _ = nameof(CastDismember);
+        _ = attacker;
+        _ = skill;
+        _ = weapon;
+        _ = DummyPopupShow.ShowYesNo(StaticPopupMessageToShow);
+        return true;
+    }
+
     public static bool Cast(
         DummyGameObject attacker,
         DummyCudgelSlam? skill = null,
