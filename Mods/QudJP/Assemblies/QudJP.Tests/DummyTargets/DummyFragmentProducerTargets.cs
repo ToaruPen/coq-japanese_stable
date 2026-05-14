@@ -117,6 +117,30 @@ internal sealed class DummyJournalScreenPopupProducerTarget
     }
 }
 
+internal sealed class DummyConversationScriptPopupProducerTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool IsPhysicalConversationPossible()
+    {
+        return ShowConfiguredPopup(physical: true);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool IsMentalConversationPossible()
+    {
+        return ShowConfiguredPopup(physical: false);
+    }
+
+    private bool ShowConfiguredPopup(bool physical)
+    {
+        _ = physical;
+        DummyPopupShow.ShowFail(PopupMessageToShow);
+        return false;
+    }
+}
+
 internal sealed class DummyGameObjectStatPopupProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;

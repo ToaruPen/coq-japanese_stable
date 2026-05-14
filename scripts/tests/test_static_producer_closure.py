@@ -186,6 +186,33 @@ def test_journal_screen_popup_owner_callsites_are_split_from_fixed_fallbacks() -
     assert not any(entry["source_file"] == "XRL.UI/JournalScreen.cs" for entry in owner_action_queue_by_file(inventory))
 
 
+def test_conversation_script_popup_owner_callsites_are_split_from_fixed_and_runtime_fallbacks() -> None:
+    """ConversationScript popup owner callsites must close without claiming fixed or runtime popups."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    source_entries = owner_action_queue_by_file(inventory)
+    conversation_family_ids = {
+        "XRL.World.Parts/ConversationScript.cs::XRL.World.Parts.ConversationScript.IsPhysicalConversationPossible",
+        "XRL.World.Parts/ConversationScript.cs::XRL.World.Parts.ConversationScript.IsMentalConversationPossible",
+    }
+
+    for family_id in conversation_family_ids:
+        assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
+        assert family_closure_status(raw_families[family_id]) == "needs_family_review"
+        assert family_id not in covered_family_ids()
+        assert family_id in queued_family_ids
+
+    conversation_entry = next(
+        entry for entry in source_entries if entry["source_file"] == "XRL.World.Parts/ConversationScript.cs"
+    )
+    assert conversation_entry["callsite_count"] == 6
+    assert [family["member_name"] for family in conversation_entry["families"]] == [
+        "IsPhysicalConversationPossible",
+        "IsMentalConversationPossible",
+    ]
+
+
 def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:
     """Uncovered high-volume owner families must stay actionable."""
     inventory = load_inventory(TRACKED_INVENTORY)

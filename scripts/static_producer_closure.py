@@ -11109,6 +11109,93 @@ COVERED_OWNER_FAMILIES: Final = (
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 COVERED_OWNER_CALLSITES: Final = (
     CoveredOwnerCallsites(
+        family_id="XRL.World.Parts/ConversationScript.cs::XRL.World.Parts.ConversationScript.IsPhysicalConversationPossible",
+        lines=(265, 281, 297, 305, 313, 327),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/ConversationScriptPopupTranslationPatch.cs",
+                (
+                    "ConversationScriptPopupTranslationPatch",
+                    "IsPhysicalConversationPossible",
+                    "MakeOutSpeech",
+                    "UtterlyUnresponsive",
+                    "RefuseToSpeak",
+                    "TooBusyCombat",
+                    "TooBusyOnFire",
+                    "EngageConversation",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("ConversationScriptPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+                (
+                    "engaged in hand-to-hand combat and (?:is|are) too busy to have a conversation with you",
+                    "on fire and (?:is|are) too busy to (?:trade|have a conversation) with you",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationScriptPopupTranslationPatchTests.cs",
+                (
+                    "PhysicalConversation_TranslatesOwnerPopupShapes_WhenOwnerPatched",
+                    "TryTranslatePopupMessage_DoesNotClaimConversationPopup_WhenOwnerAbsent",
+                    "ConversationScriptPopup_DoesNotRetranslateDirectMarkedShowFail_WhenOwnerPatched",
+                    "ConversationScriptPopup_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "PhysicalConversation_LeavesFixedCandidatePopupUnclaimed_WhenOwnerPatched",
+                    "PhysicalConversation_LeavesRuntimeFailurePopupUnchanged_WhenOwnerPatched",
+                    "PhysicalConversation_PreservesWholeSourceColorWrapper_WhenOwnerPatched",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(ConversationScriptPopupTranslationPatch)",
+                    "XRL.World.Parts.ConversationScript|IsPhysicalConversationPossible|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.Boolean|System.Boolean|System.Boolean|System.Int32",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id="XRL.World.Parts/ConversationScript.cs::XRL.World.Parts.ConversationScript.IsMentalConversationPossible",
+        lines=(355, 371, 385),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/ConversationScriptPopupTranslationPatch.cs",
+                (
+                    "ConversationScriptPopupTranslationPatch",
+                    "IsMentalConversationPossible",
+                    "SenseNothing",
+                    "SenseHostility",
+                    "MakeContact",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("ConversationScriptPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationScriptPopupTranslationPatchTests.cs",
+                (
+                    "MentalConversation_TranslatesOwnerPopupShapes_WhenOwnerPatched",
+                    "TryTranslatePopupMessage_DoesNotClaimConversationPopup_WhenOwnerAbsent",
+                    "ConversationScriptPopup_DoesNotRetranslateDirectMarkedShowFail_WhenOwnerPatched",
+                    "ConversationScriptPopup_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(ConversationScriptPopupTranslationPatch)",
+                    "XRL.World.Parts.ConversationScript|IsMentalConversationPossible|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.Boolean|System.Boolean|System.Int32",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
         family_id="XRL.UI/JournalScreen.cs::XRL.UI.JournalScreen.HandleDelete",
         lines=(462,),
         inventory_statuses=("needs_family_review",),
