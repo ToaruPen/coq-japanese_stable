@@ -209,7 +209,7 @@ internal static class GetDisplayNameRouteTranslator
             match =>
             {
                 var status = match.Groups["status"].Value;
-                if (MessageFrameTranslator.TryStripDirectTranslationMarker(status, out var markedStatus))
+                if (TryStripDirectTranslationMarkerFromChargeStatus(status, out var markedStatus))
                 {
                     changed = true;
                     matchedFallback = true;
@@ -235,6 +235,34 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         return matchedFallback;
+    }
+
+    private static bool TryStripDirectTranslationMarkerFromChargeStatus(string status, out string stripped)
+    {
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(status, out stripped))
+        {
+            return true;
+        }
+
+        var separator = status.IndexOf('|');
+        if (!status.StartsWith("{{", StringComparison.Ordinal)
+            || !status.EndsWith("}}", StringComparison.Ordinal)
+            || separator <= 2
+            || separator >= status.Length - 2)
+        {
+            stripped = status;
+            return false;
+        }
+
+        var inner = status.Substring(separator + 1, status.Length - separator - 3);
+        if (!MessageFrameTranslator.TryStripDirectTranslationMarker(inner, out var strippedInner))
+        {
+            stripped = status;
+            return false;
+        }
+
+        stripped = status.Substring(0, separator + 1) + strippedInner + "}}";
+        return true;
     }
 
     private static bool TryTranslateDisplayNameRouteText(string source, string route, out string translated)
