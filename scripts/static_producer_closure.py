@@ -5971,6 +5971,57 @@ def _psychometry_handle_event_owner_callsites() -> tuple[CoveredOwnerCallsites, 
     )
 
 
+def _spindle_negotiation_fire_event_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts/SpindleNegotiation.cs::XRL.World.Parts.SpindleNegotiation.FireEvent",
+            lines=(225, 228, 229, 259, 260, 294),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SpindleNegotiationTranslationPatch.cs",
+                    (
+                        "SpindleNegotiationTranslationPatch",
+                        "XRL.World.Parts.SpindleNegotiation",
+                        "FireEvent",
+                        "DelegateGratitudePattern",
+                        "DelegateGivesHeirloomPattern",
+                        "DelegateBetrayedPattern",
+                        "ChaosSpielAccusationPattern",
+                        "ChaosSpielOpinionChangedPattern",
+                        "CouncilConvenesPattern",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SpindleNegotiationTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SpindleNegotiationTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSpindleNegotiationPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "Patch_DoesNotClaimFixedSpindlePopups_WhenOwnerPatched",
+                        "The delegate for {{C|the Fellowship of Wardens}} says",
+                        "The delegate for {{C|the Fellowship of Wardens}} gives you",
+                        "You yell, 'I cannot believe {{C|the Fellowship of Wardens}} don't despise",
+                        "The council will be convened! Come back in 3 days.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SpindleNegotiationTranslationPatch)",
+                        "XRL.World.Parts.SpindleNegotiation|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _code_redemption_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     evidence_files = (
         EvidenceFile(
@@ -13458,6 +13509,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_ability_manager_show_owner_callsites(),
     *_enclosing_exit_enclosure_owner_callsites(),
     *_psychometry_handle_event_owner_callsites(),
+    *_spindle_negotiation_fire_event_owner_callsites(),
     *_code_redemption_owner_callsites(),
     *_skills_and_powers_select_node_owner_callsites(),
     *_single_fixed_queue_owner_callsites(),
