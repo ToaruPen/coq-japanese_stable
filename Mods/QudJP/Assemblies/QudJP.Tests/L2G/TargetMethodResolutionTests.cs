@@ -1742,6 +1742,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.UI.KeyMappingUI|Show|XRL.UI.ScreenReturn",
     })]
+    [TestCase(typeof(PsychicGlimmerTranslationPatch), new[]
+    {
+        "XRL.World.Capabilities.PsychicGlimmer|Update|System.Void|XRL.World.GameObject",
+    })]
     [TestCase(typeof(SingleCallsiteOwnerPopupTranslationPatch), new[]
     {
         "XRL.World.Quests.AscensionSystem|BarathrumStartConversation|System.Void|XRL.World.GameObject",

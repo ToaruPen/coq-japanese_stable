@@ -12538,6 +12538,52 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Capabilities/PsychicGlimmer.cs::"
+            "XRL.World.Capabilities.PsychicGlimmer.Update"
+        ),
+        lines=(30, 44, 58),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PsychicGlimmerTranslationPatch.cs",
+                (
+                    "PsychicGlimmerTranslationPatch",
+                    "XRL.World.Capabilities.PsychicGlimmer",
+                    "Update",
+                    "Watched",
+                    "ConcealSelf",
+                    "ConcealFromWatchers",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("PsychicGlimmerTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/PsychicGlimmerTranslationPatchTests.cs",
+                (
+                    "Update_TranslatesWatchedPopup_WhenOwnerPatched",
+                    "Update_TranslatesConcealmentPopups_WhenOwnerPatched",
+                    "Update_DoesNotClaimPopupOnlyTraffic_WhenOwnerAbsent",
+                    "Update_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Update_DoesNotClaimFixedOrEmptyPopups_WhenOwnerPatched",
+                    "You are being watched.",
+                    "You've discovered a way to conceal",
+                    "What you understood to be the psychic sea was only a pond.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(PsychicGlimmerTranslationPatch)",
+                    "XRL.World.Capabilities.PsychicGlimmer|Update|System.Void|XRL.World.GameObject",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World/SocialSifrahTokenGift.cs::"
             "XRL.World.SocialSifrahTokenGift.CheckTokenUse"
         ),
