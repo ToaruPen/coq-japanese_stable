@@ -12396,6 +12396,50 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Capabilities/Firefighting.cs::"
+            "XRL.World.Capabilities.Firefighting.AttemptFirefightingCore"
+        ),
+        lines=(80,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/FirefightingTranslationPatch.cs",
+                (
+                    "FirefightingTranslationPatch",
+                    "XRL.World.Capabilities.Firefighting",
+                    "AttemptFirefightingCore",
+                    "CannotReachSubject",
+                    "You cannot reach ",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("FirefightingTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/FirefightingTranslationPatchTests.cs",
+                (
+                    "AttemptFirefightingCore_TranslatesCannotReachPopup_WhenOwnerPatched",
+                    "AttemptFirefightingCore_DoesNotClaimPopupOnlyTraffic_WhenOwnerAbsent",
+                    "AttemptFirefightingCore_DoesNotRetranslateDirectMarkedShowFail_WhenOwnerPatched",
+                    "AttemptFirefightingCore_DoesNotClaimFixedOrEmptyPopups_WhenOwnerPatched",
+                    "You cannot reach the 熊!",
+                    "You have no hands to beat at the flames with!",
+                    "CannotReachSubject",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(FirefightingTranslationPatch)",
+                    "XRL.World.Capabilities.Firefighting|AttemptFirefightingCore|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.Int32|System.Boolean|System.Boolean",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World/SocialSifrahTokenGift.cs::"
             "XRL.World.SocialSifrahTokenGift.CheckTokenUse"
         ),

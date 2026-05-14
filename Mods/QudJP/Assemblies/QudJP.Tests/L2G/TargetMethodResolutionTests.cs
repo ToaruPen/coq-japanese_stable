@@ -1730,6 +1730,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.Stomach|FireEvent|System.Boolean|XRL.World.Event",
     })]
+    [TestCase(typeof(FirefightingTranslationPatch), new[]
+    {
+        "XRL.World.Capabilities.Firefighting|AttemptFirefightingCore|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.Int32|System.Boolean|System.Boolean",
+    })]
     [TestCase(typeof(SingleCallsiteOwnerPopupTranslationPatch), new[]
     {
         "XRL.World.Quests.AscensionSystem|BarathrumStartConversation|System.Void|XRL.World.GameObject",
