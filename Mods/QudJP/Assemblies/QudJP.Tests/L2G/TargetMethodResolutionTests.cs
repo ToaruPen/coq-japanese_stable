@@ -1525,6 +1525,7 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.UI.StatusScreen|BuyStat|System.Void|XRL.World.GameObject|System.String",
         "XRL.UI.StatusScreen|BuyRandomMutation|System.Boolean|XRL.World.GameObject",
+        "XRL.UI.StatusScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
     })]
     [TestCase(typeof(CampfirePreserveTranslationPatch), new[]
     {

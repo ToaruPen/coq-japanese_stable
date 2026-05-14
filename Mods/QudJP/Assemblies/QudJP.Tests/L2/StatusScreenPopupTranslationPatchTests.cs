@@ -13,6 +13,8 @@ public sealed class StatusScreenPopupTranslationPatchTests
     [SetUp]
     public void SetUp()
     {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
+        DynamicTextObservability.ResetForTests();
         LocalizationAssetResolver.SetLocalizationRootForTests(GetLocalizationRoot());
         StatusScreenPopupTranslationPatch.ResetForTests();
         DummyPopupShow.Reset();
@@ -24,6 +26,8 @@ public sealed class StatusScreenPopupTranslationPatchTests
     {
         StatusScreenPopupTranslationPatch.ResetForTests();
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
+        DynamicTextObservability.ResetForTests();
     }
 
     [TestCase(
@@ -71,6 +75,36 @@ public sealed class StatusScreenPopupTranslationPatchTests
     }
 
     [Test]
+    public void Show_TranslatesPsychicGlimmerDebugPopup_WhenOwnerPatched()
+    {
+        AssertPopupMessage(
+            ownerMethod: RequireMethod(typeof(DummyStatusScreenPopupTarget), nameof(DummyStatusScreenPopupTarget.Show), typeof(DummyGameObject)),
+            "TODOJASON GLIMMER={{C|42}}",
+            "TODOJASON サイキック・グリマー={{C|42}}");
+
+        Assert.That(StatusScreenPopupHitCount(), Is.EqualTo(1));
+    }
+
+    [Test]
+    public void Show_DoesNotClaimRuntimePsychicGlimmerDescription_WhenOwnerPatched()
+    {
+        const string source =
+            "{{K|What you understood to be the psychic sea was only a pond. There are other watchers now, countless in number, beyond the gulf of materiality. Points of light glimmer in all directions, but what are directions on a space that cannot be ordered? All you know now is of an aether vaster than the very mathematics that describe it. And you are not nor will you ever be again alone.}}";
+        const string expectedFallback =
+            "{{K|あなたが理解していたものは、広大な海ではなくただの池だった。今や見張る者はさらにいる。物質の彼方に無数にいるのだ。光の点が四方八方で瞬くが、秩序づけられない空間における方角とは何だろう？ いま知るのは、それを記述する数学ですら及ばないほど広大なエーテルのことだけだ。そしてあなたは、もう二度と独りではない。}}";
+
+        var translated = TranslatePopupMessage(
+            ownerMethod: RequireMethod(typeof(DummyStatusScreenPopupTarget), nameof(DummyStatusScreenPopupTarget.Show), typeof(DummyGameObject)),
+            source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(expectedFallback));
+            Assert.That(StatusScreenPopupHitCount(), Is.Zero);
+        });
+    }
+
+    [Test]
     public void TryTranslatePopupMessage_TranslatesGainedMutation_WhenOwnerScopeIsActive()
     {
         StatusScreenPopupTranslationPatch.Prefix();
@@ -114,6 +148,25 @@ public sealed class StatusScreenPopupTranslationPatchTests
     }
 
     [Test]
+    public void StatusScreenPopup_DoesNotTranslatePsychicGlimmerPopup_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("TODOJASON GLIMMER={{C|42}}");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("TODOJASON GLIMMER={{C|42}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void StatusScreenPopup_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
     {
         AssertPopupMessage(
@@ -133,6 +186,11 @@ public sealed class StatusScreenPopupTranslationPatchTests
 
     private static void AssertPopupMessage(MethodInfo ownerMethod, string source, string expected)
     {
+        Assert.That(TranslatePopupMessage(ownerMethod, source), Is.EqualTo(expected));
+    }
+
+    private static string TranslatePopupMessage(MethodInfo ownerMethod, string source)
+    {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try
@@ -143,7 +201,7 @@ public sealed class StatusScreenPopupTranslationPatchTests
             DummyStatusScreenPopupTarget.MessageToSend = source;
             _ = ownerMethod.Invoke(null, CreateOwnerArguments(ownerMethod));
 
-            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+            return DummyPopupShow.LastShowMessage ?? string.Empty;
         }
         finally
         {
@@ -157,6 +215,7 @@ public sealed class StatusScreenPopupTranslationPatchTests
         {
             nameof(DummyStatusScreenPopupTarget.BuyStat) => new object[] { new DummyGameObject(), "Strength" },
             nameof(DummyStatusScreenPopupTarget.BuyRandomMutation) => new object[] { new DummyGameObject() },
+            nameof(DummyStatusScreenPopupTarget.Show) => new object[] { new DummyGameObject() },
             _ => Array.Empty<object>(),
         };
     }
@@ -207,6 +266,13 @@ public sealed class StatusScreenPopupTranslationPatchTests
     }
 
     private static string CreateHarmonyId() => $"qudjp.tests.{Guid.NewGuid():N}";
+
+    private static int StatusScreenPopupHitCount()
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupShowTranslationPatch),
+            "Popup.Show.StatusScreenPopupTranslationPatch");
+    }
 
     private static string GetLocalizationRoot()
     {

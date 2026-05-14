@@ -14663,6 +14663,45 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
+        family_id="XRL.UI/StatusScreen.cs::XRL.UI.StatusScreen.Show",
+        lines=(421,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/StatusScreenPopupTranslationPatch.cs",
+                (
+                    "StatusScreenPopupTranslationPatch",
+                    "XRL.UI.StatusScreen",
+                    '"Show"',
+                    "TODOJASON GLIMMER=",
+                    "TryTranslatePsychicGlimmerDebug",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("StatusScreenPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/StatusScreenPopupTranslationPatchTests.cs",
+                (
+                    "Show_TranslatesPsychicGlimmerDebugPopup_WhenOwnerPatched",
+                    "Show_DoesNotClaimRuntimePsychicGlimmerDescription_WhenOwnerPatched",
+                    "StatusScreenPopup_DoesNotTranslatePsychicGlimmerPopup_WhenOwnerAbsent",
+                    "TODOJASON GLIMMER=",
+                    "What you understood to be the psychic sea",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(StatusScreenPopupTranslationPatch)",
+                    "XRL.UI.StatusScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
         family_id=(
             "XRL.World.Capabilities/PsychicGlimmer.cs::"
             "XRL.World.Capabilities.PsychicGlimmer.Update"
