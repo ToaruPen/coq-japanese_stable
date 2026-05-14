@@ -1659,6 +1659,12 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         DummyPopupShow.Show(PopupMessageToShow);
     }
 
+    public static void WishModify(string? argument = null)
+    {
+        _ = argument;
+        DummyPopupShow.Show(StaticPopupMessageToShow);
+    }
+
     public void AwardDynamicQuestRewardGameObject()
     {
         _ = nameof(AwardDynamicQuestRewardGameObject);

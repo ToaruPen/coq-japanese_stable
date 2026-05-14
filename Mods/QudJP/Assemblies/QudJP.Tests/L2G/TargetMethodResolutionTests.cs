@@ -1834,6 +1834,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.GenocideCurio|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.GritGateMainframeTerminal|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.HindrenMysteryCriticalNPC|HandleEvent|System.Boolean|XRL.World.BeforeDeathRemovalEvent",
+        "XRL.World.Parts.IModification|WishModify|System.Void|System.String",
         "XRL.World.Parts.KindrishProperties|ReturnAward|System.Boolean",
         "XRL.World.Parts.LiquidFueledPowerPlant|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
         "XRL.UI.Look|ShowLooker|XRL.World.Cell|System.Int32|System.Int32|System.Int32",

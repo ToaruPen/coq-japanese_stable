@@ -177,6 +177,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "HindrenMysteryCriticalNpcDeath",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishModify),
+        "No modification by the name 'freezing' could be found.",
+        "'freezing'という改造は見つからない。",
+        "IModificationMissingModification",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishModify),
+        "No blueprint by the name 'chrome chair' could be found.",
+        "'chrome chair'というブループリントは見つからない。",
+        "IModificationMissingBlueprint",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.ReturnKindrishAward),
         "You receive {{Y|a force bracelet}}.",
         "{{Y|a force bracelet}}を受け取った。",
@@ -454,6 +466,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "HindrenMysteryCriticalNpcDeath",
         PopupMethod.Show)]
     [TestCase(
+        "No modification by the name 'freezing' could be found.",
+        "IModificationMissingModification",
+        PopupMethod.Show)]
+    [TestCase(
+        "No blueprint by the name 'chrome chair' could be found.",
+        "IModificationMissingBlueprint",
+        PopupMethod.Show)]
+    [TestCase(
         "You receive {{Y|a force bracelet}}.",
         "ReceiveObject",
         PopupMethod.Show)]
@@ -580,6 +600,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         "The death of Kesehind means that the investigation can go no further.",
         "HindrenMysteryCriticalNpcDeath")]
+    [TestCase(
+        "No modification by the name 'freezing' could be found.",
+        "IModificationMissingModification")]
+    [TestCase(
+        "No blueprint by the name 'chrome chair' could be found.",
+        "IModificationMissingBlueprint")]
     [TestCase(
         "You receive {{Y|a force bracelet}}.",
         "ReceiveObject")]
@@ -811,6 +837,8 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.World.Parts.GritGateMainframeTerminal|HandleEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleHindrenMysteryCriticalNpc) =>
                 "XRL.World.Parts.HindrenMysteryCriticalNPC|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.WishModify) =>
+                "XRL.World.Parts.IModification|WishModify",
             nameof(DummySingleCallsiteOwnerPopupTarget.ReturnKindrishAward) =>
                 "XRL.World.Parts.KindrishProperties|ReturnAward",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant) =>

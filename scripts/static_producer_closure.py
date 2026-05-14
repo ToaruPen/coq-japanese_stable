@@ -1299,6 +1299,52 @@ def _elevator_switch_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     )
 
 
+def _imodification_wish_modify_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts/IModification.cs::XRL.World.Parts.IModification.WishModify",
+            lines=(254, 260),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                    (
+                        "XRL.World.Parts.IModification",
+                        "IModificationMissingModificationPattern",
+                        "IModificationMissingBlueprintPattern",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                        "nameof(DummySingleCallsiteOwnerPopupTarget.WishModify)",
+                        "No modification by the name 'freezing' could be found.",
+                        "No blueprint by the name 'chrome chair' could be found.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SingleCallsiteOwnerPopupTranslationPatch)",
+                        "XRL.World.Parts.IModification|WishModify|System.Void|System.String",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                    ("No modification specified.",),
+                ),
+            ),
+        ),
+    )
+
+
 def _keybinds_screen_conflict_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         (
@@ -12501,6 +12547,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_tinkering_tinker1_recharge_owner_callsites(),
     *_container_attempt_open_owner_callsites(),
     *_elevator_switch_owner_callsites(),
+    *_imodification_wish_modify_owner_callsites(),
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
     CoveredOwnerCallsites(

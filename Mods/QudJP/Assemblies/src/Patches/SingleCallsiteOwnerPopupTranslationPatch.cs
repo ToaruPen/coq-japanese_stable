@@ -29,6 +29,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string GenocideCurioOwner = "XRL.World.Parts.GenocideCurio|HandleEvent";
     private const string GritGateMainframeOwner = "XRL.World.Parts.GritGateMainframeTerminal|HandleEvent";
     private const string HindrenMysteryCriticalNpcOwner = "XRL.World.Parts.HindrenMysteryCriticalNPC|HandleEvent";
+    private const string IModificationWishModifyOwner = "XRL.World.Parts.IModification|WishModify";
     private const string KindrishReturnAwardOwner = "XRL.World.Parts.KindrishProperties|ReturnAward";
     private const string LiquidFueledPowerPlantOwner = "XRL.World.Parts.LiquidFueledPowerPlant|HandleEvent";
     private const string LookShowLookerOwner = "XRL.UI.Look|ShowLooker";
@@ -113,6 +114,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static readonly Regex HindrenMysteryCriticalNpcDeathPattern = new(
         "^The death of (?<object>.+?) means that the investigation can go no further\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex IModificationMissingModificationPattern = new(
+        "^No modification by the name '(?<name>.+?)' could be found\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex IModificationMissingBlueprintPattern = new(
+        "^No blueprint by the name '(?<name>.+?)' could be found\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex LiquidFueledPowerPlantEmptyPattern = new(
@@ -345,6 +354,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.HindrenMysteryCriticalNPC",
             "HandleEvent",
             [beforeDeathRemovalEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.IModification",
+            "WishModify",
+            [typeof(string)]);
         AddTarget(
             targets,
             "XRL.World.Parts.KindrishProperties",
@@ -676,6 +690,22 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             translated = $"{match.Groups["object"].Value}の死により、調査はこれ以上進められなくなった。";
             detail = "HindrenMysteryCriticalNpcDeath";
+            return true;
+        }
+
+        match = IModificationMissingModificationPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, IModificationWishModifyOwner))
+        {
+            translated = $"'{match.Groups["name"].Value}'という改造は見つからない。";
+            detail = "IModificationMissingModification";
+            return true;
+        }
+
+        match = IModificationMissingBlueprintPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, IModificationWishModifyOwner))
+        {
+            translated = $"'{match.Groups["name"].Value}'というブループリントは見つからない。";
+            detail = "IModificationMissingBlueprint";
             return true;
         }
 
