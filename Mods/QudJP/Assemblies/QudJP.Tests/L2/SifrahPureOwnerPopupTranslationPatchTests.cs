@@ -12,6 +12,10 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
     [SetUp]
     public void SetUp()
     {
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(GetLocalizationRoot(), "Dictionaries"));
+        LocalizationAssetResolver.SetLocalizationRootForTests(GetLocalizationRoot());
+        MessagePatternTranslator.ResetForTests();
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
@@ -21,9 +25,13 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
     [TearDown]
     public void TearDown()
     {
+        Translator.ResetForTests();
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        MessagePatternTranslator.ResetForTests();
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
+        DummyPopupShow.Reset();
     }
 
     [TestCase(
@@ -42,6 +50,16 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
         "{{G|商人}}と値段交渉するために使用できる選択肢がなく、成功する見込みがない。エゴや社交スキルを高めるか、社交的な状況に役立つアイテムを入手すれば、この状況を改善できる。",
         "Haggling")]
     [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.ProselytizationSifrah),
+        "You have no usable options to employ for proselytizing {{Y|砂漠の隠者}}, giving you no chance of success. You can remedy this situation by improving your Ego and social skills, or by obtaining items useful in social situations.",
+        "{{Y|砂漠の隠者}}を布教するために使用できる選択肢がなく、成功する見込みがない。エゴや社交スキルを高めるか、社交的な状況に役立つアイテムを入手すれば、この状況を改善できる。",
+        "Proselytization")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.RebukingSifrah),
+        "You have no usable options to employ for rebuking {{C|眠れる機械}}, giving you no chance of success. You can remedy this situation by improving your Ego and social skills, by implanting appropriate cybernetics, or by obtaining items useful in social situations.",
+        "{{C|眠れる機械}}を叱責するために使用できる選択肢がなく、成功する見込みがない。エゴや社交スキルを高めるか、適切なサイバネティクスを埋め込むか、社交的な状況に役立つアイテムを入手すれば、この状況を改善できる。",
+        "Rebuking")]
+    [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.ItemModdingSifrah),
         "You have no usable options to employ for modding {{W|古びたライフル}}, giving you no chance of success. You can remedy this situation by improving your Intelligence and tinkering skills, or by obtaining items useful for tinkering.",
         "{{W|古びたライフル}}を改造するために使用できる選択肢がなく、成功する見込みがない。知性や工作スキルを高めるか、工作に役立つアイテムを入手すれば、この状況を改善できる。",
@@ -56,6 +74,11 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
         "You have no usable options to employ for reverse engineering {{Y|奇妙な小物}}, giving you no chance of success. You can remedy this situation by improving your Intelligence and tinkering skills, or by obtaining items useful for tinkering.",
         "{{Y|奇妙な小物}}をリバースエンジニアリングするために使用できる選択肢がなく、成功する見込みがない。知性や工作スキルを高めるか、工作に役立つアイテムを入手すれば、この状況を改善できる。",
         "ReverseEngineering")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.RepairSifrah),
+        "You have no usable options to employ for repairing {{W|壊れたタレット}}, giving you no chance of success. You can remedy this situation by improving your Intelligence and tinkering skills, or by obtaining items useful for tinkering.",
+        "{{W|壊れたタレット}}を修理するために使用できる選択肢がなく、成功する見込みがない。知性や工作スキルを高めるか、工作に役立つアイテムを入手すれば、この状況を改善できる。",
+        "Repair")]
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.ReverseEngineeringCheckEarlyExit),
         "Exiting will still disassemble {{Y|奇妙な小物}}, and will result in an attempt at reverse engineering as matters stand. Do you still want to exit?",
@@ -129,6 +152,7 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
             {
                 var target = new DummySifrahPureOwnerPopupProducerTarget
                 {
+                    PopupMethod = PopupMethodForPureOwnerPopup(methodName),
                     PopupMessageToShow = source,
                 };
 
@@ -142,6 +166,40 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
             });
     }
 
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.ProselytizationSifrah),
+        "You have mastered proselytization at this level of discourse. Do you want to perform detailed proselytization anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at proselytization if that is possible.",
+        "このレベルの布教は熟達済みだ。それでも詳細な布教を試みるか？『いいえ』なら、可能なら布教が自動で成功する。")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.RebukingSifrah),
+        "You have mastered rebuking robots of this grade. Do you want to perform a detailed rebuke anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed t the rebuke if that is possible.",
+        "この難度でのロボット叱責は熟達済みだ。それでも詳細な叱責を試みるか？『いいえ』なら、可能なら叱責が自動で成功する。")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.RepairSifrah),
+        "You have mastered repairs of this complexity. Do you want to perform detailed repairs anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the repairs.",
+        "この難度での修理は熟達済みだ。それでも詳細な修理を試みるか？『いいえ』なら、可能なら修理が自動で成功する。")]
+    public void Patch_TranslatesMasteredPrompt_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(SifrahPureOwnerPopupTranslationPatch),
+            RequireOwnerMethod(methodName),
+            () =>
+            {
+                var target = new DummySifrahPureOwnerPopupProducerTarget
+                {
+                    PopupMethod = nameof(DummyPopupShow.ShowYesNoCancel),
+                    PopupMessageToShow = source,
+                };
+
+                InvokeOwnerMethod(target, methodName);
+
+                Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo(expected));
+            });
+    }
+
     [Test]
     public void Patch_DoesNotTranslateSifrahPureOwnerPopup_WhenOwnerAbsent()
     {
@@ -149,12 +207,29 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
             () =>
             {
                 const string source = "You have already chosen the correct option for {{C|glyph sequence}}.";
-                DummyPopupShow.Show(source);
+                DummyPopupShow.ShowFail(source);
 
                 Assert.Multiple(() =>
                 {
                     Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
                     Assert.That(HitCount("MakeMoveForSlotChosenCorrect"), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_DoesNotTranslateConstructorOwnerPopup_WhenOwnerAbsent()
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOnly(
+            () =>
+            {
+                const string source = "You have no usable options to employ for proselytizing {{Y|砂漠の隠者}}, giving you no chance of success. You can remedy this situation by improving your Ego and social skills, or by obtaining items useful in social situations.";
+                DummyPopupShow.Show(source);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                    Assert.That(HitCount("Proselytization"), Is.Zero);
                 });
             });
     }
@@ -264,5 +339,20 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
     private static int HitCount(string detail)
     {
         return OwnerPopupRouteTestHarness.RouteHitCount(typeof(SifrahPureOwnerPopupTranslationPatch), detail);
+    }
+
+    private static string PopupMethodForPureOwnerPopup(string methodName)
+    {
+        return methodName is nameof(DummySifrahPureOwnerPopupProducerTarget.ProselytizationSifrah)
+            or nameof(DummySifrahPureOwnerPopupProducerTarget.RebukingSifrah)
+            or nameof(DummySifrahPureOwnerPopupProducerTarget.RepairSifrah)
+            ? nameof(DummyPopupShow.ShowFail)
+            : nameof(DummyPopupShow.Show);
+    }
+
+    private static string GetLocalizationRoot()
+    {
+        return Path.GetFullPath(
+            Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../../../Localization"));
     }
 }

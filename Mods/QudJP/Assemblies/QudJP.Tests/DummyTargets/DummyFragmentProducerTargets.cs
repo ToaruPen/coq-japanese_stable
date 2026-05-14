@@ -538,6 +538,8 @@ internal sealed class DummySifrahPureOwnerPopupProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
 
+    public string PopupMethod { get; set; } = nameof(DummyPopupShow.Show);
+
     public bool InvokeMakeMoveBeforeHagglingPopup { get; set; }
 
     public string NestedPopupMessageToShow { get; set; } = string.Empty;
@@ -569,6 +571,18 @@ internal sealed class DummySifrahPureOwnerPopupProducerTarget
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ProselytizationSifrah(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(ProselytizationSifrah), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void RebukingSifrah(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(RebukingSifrah), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public void ItemModdingSifrah(DummyGameObject contextObject)
     {
         ShowPopup(nameof(ItemModdingSifrah), contextObject);
@@ -584,6 +598,12 @@ internal sealed class DummySifrahPureOwnerPopupProducerTarget
     public void ReverseEngineeringSifrah(DummyGameObject contextObject)
     {
         ShowPopup(nameof(ReverseEngineeringSifrah), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void RepairSifrah(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(RepairSifrah), contextObject);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -644,6 +664,18 @@ internal sealed class DummySifrahPureOwnerPopupProducerTarget
     {
         _ = methodName;
         _ = contextObject;
+        if (PopupMethod == nameof(DummyPopupShow.ShowYesNoCancel))
+        {
+            _ = DummyPopupShow.ShowYesNoCancel(PopupMessageToShow);
+            return;
+        }
+
+        if (PopupMethod == nameof(DummyPopupShow.ShowFail))
+        {
+            DummyPopupShow.ShowFail(PopupMessageToShow);
+            return;
+        }
+
         DummyPopupShow.Show(PopupMessageToShow);
     }
 }

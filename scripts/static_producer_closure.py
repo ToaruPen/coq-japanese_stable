@@ -513,6 +513,7 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             "BaetylOffering",
             "XRL.World.BaetylOfferingSifrah",
             "XRL.World.BaetylOfferingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32",
+            ("owner_patch_required",),
         ),
         (
             "XRL.World/FormalWaterRitualSifrah.cs::XRL.World.FormalWaterRitualSifrah.FormalWaterRitualSifrah",
@@ -521,6 +522,7 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             "FormalWaterRitual",
             "XRL.World.FormalWaterRitualSifrah",
             "XRL.World.FormalWaterRitualSifrah|.ctor|System.Void|XRL.World.GameObject",
+            ("owner_patch_required",),
         ),
         (
             "XRL.World/HagglingSifrah.cs::XRL.World.HagglingSifrah.HagglingSifrah",
@@ -529,6 +531,25 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             "Haggling",
             "XRL.World.HagglingSifrah",
             "XRL.World.HagglingSifrah|.ctor|System.Void|XRL.World.GameObject",
+            ("owner_patch_required",),
+        ),
+        (
+            "XRL.World/ProselytizationSifrah.cs::XRL.World.ProselytizationSifrah.ProselytizationSifrah",
+            "ProselytizationSifrah",
+            "ProselytizationSifrah",
+            "Proselytization",
+            "XRL.World.ProselytizationSifrah",
+            "XRL.World.ProselytizationSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32",
+            ("needs_family_review",),
+        ),
+        (
+            "XRL.World/RebukingSifrah.cs::XRL.World.RebukingSifrah.RebukingSifrah",
+            "RebukingSifrah",
+            "RebukingSifrah",
+            "Rebuking",
+            "XRL.World.RebukingSifrah",
+            "XRL.World.RebukingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32",
+            ("needs_family_review",),
         ),
         (
             "XRL.World/ItemModdingSifrah.cs::XRL.World.ItemModdingSifrah.ItemModdingSifrah",
@@ -537,6 +558,7 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             "ItemModding",
             "XRL.World.ItemModdingSifrah",
             "XRL.World.ItemModdingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32",
+            ("owner_patch_required",),
         ),
         (
             "XRL.World/ItemNamingSifrah.cs::XRL.World.ItemNamingSifrah.ItemNamingSifrah",
@@ -545,6 +567,16 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             "ItemNaming",
             "XRL.World.ItemNamingSifrah",
             "XRL.World.ItemNamingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32",
+            ("owner_patch_required",),
+        ),
+        (
+            "XRL.World/RepairSifrah.cs::XRL.World.RepairSifrah.RepairSifrah",
+            "RepairSifrah",
+            "RepairSifrah",
+            "Repair",
+            "XRL.World.RepairSifrah",
+            "XRL.World.RepairSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32",
+            ("needs_family_review",),
         ),
         (
             "XRL.World/ReverseEngineeringSifrah.cs::XRL.World.ReverseEngineeringSifrah.ReverseEngineeringSifrah",
@@ -553,6 +585,7 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             "ReverseEngineering",
             "XRL.World.ReverseEngineeringSifrah",
             "XRL.World.ReverseEngineeringSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32|XRL.World.Tinkering.TinkerData",
+            ("owner_patch_required",),
         ),
         (
             "XRL.World/ReverseEngineeringSifrah.cs::XRL.World.ReverseEngineeringSifrah.CheckEarlyExit",
@@ -561,6 +594,7 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             "ReverseEngineeringEarlyExit",
             "XRL.World.ReverseEngineeringSifrah",
             "XRL.World.ReverseEngineeringSifrah|CheckEarlyExit|System.Boolean|XRL.World.GameObject",
+            ("owner_patch_required",),
         ),
         (
             "XRL.World/RitualSifrahTokenAttributeSacrifice.cs::XRL.World.RitualSifrahTokenAttributeSacrifice.CheckTokenUse",
@@ -569,6 +603,7 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             "AttributeSacrifice",
             "XRL.World.RitualSifrahTokenAttributeSacrifice",
             "XRL.World.RitualSifrahTokenAttributeSacrifice|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+            ("owner_patch_required",),
         ),
         (
             "XRL.World/RitualSifrahTokenInvokeHigherBeing.cs::XRL.World.RitualSifrahTokenInvokeHigherBeing.CheckTokenUse",
@@ -577,6 +612,7 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             "InvokeHigherBeing",
             "XRL.World.RitualSifrahTokenInvokeHigherBeing",
             "XRL.World.RitualSifrahTokenInvokeHigherBeing|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+            ("owner_patch_required",),
         ),
         (
             "XRL.World/SocialSifrahTokenSecret.cs::XRL.World.SocialSifrahTokenSecret.CheckTokenUse",
@@ -585,6 +621,7 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             "SocialSecret",
             "XRL.World.SocialSifrahTokenSecret",
             "XRL.World.SocialSifrahTokenSecret|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+            ("owner_patch_required",),
         ),
         (
             "XRL.World/TinkeringSifrahTokenBit.cs::XRL.World.TinkeringSifrahTokenBit.CheckTokenUse",
@@ -593,6 +630,7 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             "TinkeringBit",
             "XRL.World.TinkeringSifrahTokenBit",
             "XRL.World.TinkeringSifrahTokenBit|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+            ("owner_patch_required",),
         ),
         (
             "XRL.World/TinkeringSifrahTokenCharge.cs::XRL.World.TinkeringSifrahTokenCharge.CheckTokenUse",
@@ -601,6 +639,7 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             "TinkeringCharge",
             "XRL.World.TinkeringSifrahTokenCharge",
             "XRL.World.TinkeringSifrahTokenCharge|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+            ("owner_patch_required",),
         ),
         (
             "XRL.World/TinkeringSifrahTokenComputePower.cs::XRL.World.TinkeringSifrahTokenComputePower.CheckTokenUse",
@@ -609,6 +648,7 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             "TinkeringComputePower",
             "XRL.World.TinkeringSifrahTokenComputePower",
             "XRL.World.TinkeringSifrahTokenComputePower|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+            ("owner_patch_required",),
         ),
         (
             "XRL.World/TinkeringSifrahTokenLiquid.cs::XRL.World.TinkeringSifrahTokenLiquid.CheckTokenUse",
@@ -617,6 +657,7 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             "TinkeringLiquid",
             "XRL.World.TinkeringSifrahTokenLiquid",
             "XRL.World.TinkeringSifrahTokenLiquid|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+            ("owner_patch_required",),
         ),
         (
             "XRL/SifrahGame.cs::XRL.SifrahGame.MakeMoveForSlot",
@@ -625,13 +666,14 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             "MakeMoveForSlot",
             "XRL.SifrahGame",
             "XRL.SifrahGame|MakeMoveForSlot|System.Boolean|System.Int32|XRL.World.GameObject",
+            ("owner_patch_required",),
         ),
     )
 
     return tuple(
         CoveredOwnerFamily(
             family_id=family_id,
-            inventory_statuses=("owner_patch_required",),
+            inventory_statuses=inventory_statuses,
             evidence_files=(
                 EvidenceFile(
                     "Mods/QudJP/Assemblies/src/Patches/SifrahPureOwnerPopupTranslationPatch.cs",
@@ -651,6 +693,16 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
                         "Patch_DoesNotTranslateSifrahPureOwnerPopup_WhenOwnerAbsent",
                         "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
                         "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    )
+                    + (
+                        (
+                            "Patch_DoesNotTranslateConstructorOwnerPopup_WhenOwnerAbsent",
+                            "Patch_TranslatesMasteredPrompt_WhenOwnerPatched",
+                        )
+                        if "needs_family_review" in inventory_statuses
+                        else ()
+                    )
+                    + (
                         f"nameof(DummySifrahPureOwnerPopupProducerTarget.{dummy_target_token})",
                         detail,
                     ),
@@ -666,7 +718,15 @@ def _sifrah_pure_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
                 ),
             ),
         )
-        for family_id, target_token, dummy_target_token, detail, declaring_type, full_signature in targets
+        for (
+            family_id,
+            target_token,
+            dummy_target_token,
+            detail,
+            declaring_type,
+            full_signature,
+            inventory_statuses,
+        ) in targets
     )
 
 
