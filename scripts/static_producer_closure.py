@@ -5859,6 +5859,69 @@ def _ability_manager_show_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]
     )
 
 
+def _enclosing_exit_enclosure_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts/Enclosing.cs::XRL.World.Parts.Enclosing.ExitEnclosure",
+            lines=(859, 870, 874, 893, 897),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/EnclosingTranslationPatch.cs",
+                    (
+                        "ExitEnclosure",
+                        "TryTranslatePopupMessage",
+                        "TryTranslateQueuedMessage",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/EnclosingFragmentTranslator.cs",
+                    (
+                        "NotEnclosedByPattern",
+                        "FailToExtricatePattern",
+                        "ExtricatePattern",
+                        "NpcFailToExtricatePattern",
+                        "NpcExtricatesPattern",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("EnclosingTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("EnclosingTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldPartsProducerTranslationPatchTests.cs",
+                    (
+                        "EnclosingPatch_TranslatesOwnerPopup_WhenPatched",
+                        "EnclosingPatch_TranslatesQueuedMessage_WhenPatched",
+                        "EnclosingPatch_DoesNotTranslateOwnerPopup_WhenOwnerAbsent",
+                        "EnclosingPatch_DoesNotTranslateQueuedMessage_WhenOwnerAbsent",
+                        "EnclosingPatch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "EnclosingPatch_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                        "EnclosingPatch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "EnclosingPatch_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                        "It is not stasis pod that you are enclosed by.",
+                        "You fail to extricate yourself from stasis pod!",
+                        "You extricate yourself from stasis pod.",
+                        "snapjaw tries to extricate itself from stasis pod, but fails!",
+                        "snapjaw extricates itself from stasis pod.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(EnclosingTranslationPatch)",
+                        "XRL.World.Parts.Enclosing|ExitEnclosure|System.Boolean|XRL.World.GameObject|XRL.World.IEvent|XRL.World.Effects.Enclosed",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _code_redemption_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     evidence_files = (
         EvidenceFile(
@@ -13344,6 +13407,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_generated_success_popup_callsites(),
     *_garbage_attempt_rifle_owner_callsites(),
     *_ability_manager_show_owner_callsites(),
+    *_enclosing_exit_enclosure_owner_callsites(),
     *_code_redemption_owner_callsites(),
     *_skills_and_powers_select_node_owner_callsites(),
     *_single_fixed_queue_owner_callsites(),
