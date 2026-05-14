@@ -5803,6 +5803,50 @@ def _kill_missile_weapon_chirp_family() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _requires_power_to_equip_check_equip_popup_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/RequiresPowerToEquip.cs::XRL.World.Parts.RequiresPowerToEquip.CheckEquip",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/RequiresPowerToEquipCheckEquipPopupTranslationPatch.cs",
+                    (
+                        "RequiresPowerToEquipCheckEquipPopupTranslationPatch",
+                        "XRL.World.Parts.RequiresPowerToEquip",
+                        "CheckEquip",
+                        "PowerLossUnequip",
+                        "operating; you unequip",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("RequiresPowerToEquipCheckEquipPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/RequiresPowerToEquipCheckEquipPopupTranslationPatchTests.cs",
+                    (
+                        "CheckEquip_TranslatesPowerLossUnequipPopup_WhenOwnerPatched",
+                        "CheckEquip_DoesNotClaimPowerLossUnequipPopup_WhenOwnerAbsent",
+                        "CheckEquip_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "CheckEquip_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "CheckEquip_LeavesUnsupportedPopupUnchanged_WhenOwnerPatched",
+                        "Your {{Y|floating glowsphere}} stops operating; you unequip it.",
+                        "{{Y|floating glowsphere}}は動作を停止した。あなたはそれを外した。",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(RequiresPowerToEquipCheckEquipPopupTranslationPatch)",
+                        "XRL.World.Parts.RequiresPowerToEquip|CheckEquip|System.Void",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _xrl_core_owner_queue_families() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -9484,6 +9528,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_run_start_running_popup_family(),
     *_historic_event_region_reveal_popup_family(),
     *_kill_missile_weapon_chirp_family(),
+    *_requires_power_to_equip_check_equip_popup_family(),
     *_xrl_core_owner_queue_families(),
     *_brain_owner_surface_families(),
     *_cripple_apply_family(),

@@ -1613,6 +1613,17 @@ internal sealed class DummyKillGoalHandlerTarget
     }
 }
 
+internal sealed class DummyRequiresPowerToEquipTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void CheckEquip()
+    {
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+}
+
 internal sealed class DummyBoostStatisticTarget
 {
     public string MessageToSend { get; set; } = string.Empty;

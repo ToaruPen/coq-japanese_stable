@@ -1544,6 +1544,10 @@ public sealed class TargetMethodResolutionTests
     {
         "HistoryKit.HistoricEvent|PerformRegionReveal|System.Void",
     })]
+    [TestCase(typeof(RequiresPowerToEquipCheckEquipPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.RequiresPowerToEquip|CheckEquip|System.Void",
+    })]
     [TestCase(typeof(KillMissileWeaponChirpTranslationPatch), new[]
     {
         "XRL.World.AI.GoalHandlers.Kill|TryMissileWeapon|System.Boolean",
