@@ -1744,6 +1744,14 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         return true;
     }
 
+    public bool HandleAnimatorSpray(DummyInventoryActionEvent? e = null)
+    {
+        _ = e;
+        _ = nameof(HandleAnimatorSpray);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
     public bool HandleSummoningCurio(DummyInventoryActionEvent? e = null)
     {
         _ = e;

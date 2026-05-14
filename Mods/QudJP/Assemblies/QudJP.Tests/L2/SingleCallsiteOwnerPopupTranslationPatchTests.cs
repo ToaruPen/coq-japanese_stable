@@ -257,6 +257,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "FixitSprayCovered",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleAnimatorSpray),
+        "It's a {{Y|spray-a-brain}}!",
+        "{{Y|spray-a-brain}}だ！",
+        "AnimatorSprayIdentified",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleAnimatorSpray),
+        "You imbue {{Y|chair}} with life.",
+        "{{Y|chair}}に命を吹き込んだ。",
+        "AnimatorSprayImbueLife",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleSummoningCurio),
         "You activate the curio and toss it on the ground. It erupts into a throng of tiny polygons, which amalgamate into a fully formed {{Y|polygonal snapjaw}}.",
         "キュリオを起動して地面に投げた。小さなポリゴンの群れが噴出し、完全な形をした{{Y|polygonal snapjaw}}へと融合した。",
@@ -441,6 +453,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "FixitSprayCovered",
         PopupMethod.Show)]
     [TestCase(
+        "It's a {{Y|spray-a-brain}}!",
+        "AnimatorSprayIdentified",
+        PopupMethod.Show)]
+    [TestCase(
+        "You imbue {{Y|chair}} with life.",
+        "AnimatorSprayImbueLife",
+        PopupMethod.Show)]
+    [TestCase(
         "You activate the curio and toss it on the ground. It erupts into a throng of tiny polygons, which amalgamate into a fully formed {{Y|polygonal snapjaw}}.",
         "SummoningCurioActivation",
         PopupMethod.Show)]
@@ -547,6 +567,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         "{{Y|broken chair}} is covered in sticky goop!",
         "FixitSprayCovered")]
+    [TestCase(
+        "It's a {{Y|spray-a-brain}}!",
+        "AnimatorSprayIdentified")]
+    [TestCase(
+        "You imbue {{Y|chair}} with life.",
+        "AnimatorSprayImbueLife")]
     [TestCase(
         "You activate the curio and toss it on the ground. It erupts into a throng of tiny polygons, which amalgamate into a fully formed {{Y|polygonal snapjaw}}.",
         "SummoningCurioActivation")]
@@ -664,6 +690,27 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
             });
     }
 
+    [TestCase("The sprayer head won't move.")]
+    [TestCase("There's nothing viable to animate here.")]
+    [TestCase("You can't animate an object that already has a brain.")]
+    public void Patch_DoesNotClaimAnimatorSprayFixedPopups_WhenAnimatorSprayOwnerPatched(string source)
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(SingleCallsiteOwnerPopupTranslationPatch),
+            RequireOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.HandleAnimatorSpray)),
+            () =>
+            {
+                InvokeOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.HandleAnimatorSpray), source);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                    Assert.That(HitCount("AnimatorSprayIdentified"), Is.Zero);
+                    Assert.That(HitCount("AnimatorSprayImbueLife"), Is.Zero);
+                });
+            });
+    }
+
     private static MethodInfo RequireOwnerMethod(string methodName)
     {
         return methodName switch
@@ -742,6 +789,7 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleGenocideCurio) or
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleGritGateMainframeTerminal) or
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleFixitSpray) or
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleAnimatorSpray) or
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpraybottle) or
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleSummoningCurio) or
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood) or
@@ -991,6 +1039,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 {
                     PopupMessageToShow = message,
                 }.HandleFixitSpray(new DummyInventoryActionEvent());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleAnimatorSpray):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.HandleAnimatorSpray(new DummyInventoryActionEvent());
                 break;
             case nameof(DummySingleCallsiteOwnerPopupTarget.HandleSummoningCurio):
                 new DummySingleCallsiteOwnerPopupTarget

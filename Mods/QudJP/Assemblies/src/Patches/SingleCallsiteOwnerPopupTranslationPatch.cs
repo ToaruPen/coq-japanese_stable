@@ -38,6 +38,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string RecoilOnDeathOwner = "XRL.World.Parts.RecoilOnDeath|HandleEvent";
     private const string SpraybottleOwner = "XRL.World.Parts.Spraybottle|HandleEvent";
     private const string FixitSprayOwner = "XRL.World.Parts.FixitSpray|HandleEvent";
+    private const string AnimatorSprayOwner = "XRL.World.Parts.AnimatorSpray|HandleEvent";
     private const string SummoningCurioOwner = "XRL.World.Parts.SummoningCurio|HandleEvent";
     private const string FoodOwner = "XRL.World.Parts.Food|HandleEvent";
     private const string SpaceTimeVortexOwner = "XRL.World.Parts.SpaceTimeVortex|ApplyVortex";
@@ -146,6 +147,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static readonly Regex FixitSprayCoveredPattern = new(
         "^(?<object>.+?) (?<verb>is|are) covered in sticky goop!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex AnimatorSprayIdentifiedPattern = new(
+        "^(?:It's|They're|You're|It is|They are|You are) (?<item>.+?)!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex AnimatorSprayImbueLifePattern = new(
+        "^You imbue (?<object>.+?) with life\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex SummoningCurioActivationPattern = new(
@@ -348,6 +357,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         AddTarget(
             targets,
             "XRL.World.Parts.FixitSpray",
+            "HandleEvent",
+            [inventoryActionEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.AnimatorSpray",
             "HandleEvent",
             [inventoryActionEventType]);
         AddTarget(
@@ -683,6 +697,23 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             translated = $"{match.Groups["object"].Value}はべとべとの粘液に覆われた！";
             detail = "FixitSprayCovered";
+            return true;
+        }
+
+        match = AnimatorSprayIdentifiedPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, AnimatorSprayOwner, DummySingleCallsiteOwner + "HandleAnimatorSpray"))
+        {
+            var item = StringHelpers.StripLeadingEnglishArticle(match.Groups["item"].Value, includeCapitalizedDefiniteArticle: true);
+            translated = $"{item}だ！";
+            detail = "AnimatorSprayIdentified";
+            return true;
+        }
+
+        match = AnimatorSprayImbueLifePattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, AnimatorSprayOwner, DummySingleCallsiteOwner + "HandleAnimatorSpray"))
+        {
+            translated = $"{match.Groups["object"].Value}に命を吹き込んだ。";
+            detail = "AnimatorSprayImbueLife";
             return true;
         }
 

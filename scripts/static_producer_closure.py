@@ -12096,6 +12096,52 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts/AnimatorSpray.cs::"
+            "XRL.World.Parts.AnimatorSpray.HandleEvent"
+        ),
+        lines=(46, 88),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                (
+                    "SingleCallsiteOwnerPopupTranslationPatch",
+                    "XRL.World.Parts.AnimatorSpray",
+                    "HandleEvent",
+                    "AnimatorSprayIdentified",
+                    "AnimatorSprayImbueLife",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                    "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "Patch_DoesNotClaimAnimatorSprayFixedPopups_WhenAnimatorSprayOwnerPatched",
+                    "It's a {{Y|spray-a-brain}}!",
+                    "You imbue {{Y|chair}} with life.",
+                    "AnimatorSprayImbueLife",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "SingleCallsiteOwnerPopupTranslationPatch",
+                    "XRL.World.Parts.AnimatorSpray|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World.Parts/FactionDeed.cs::"
             "XRL.World.Parts.FactionDeed.HandleEvent"
         ),
