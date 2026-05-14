@@ -1665,6 +1665,28 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         DummyPopupShow.Show(StaticPopupMessageToShow);
     }
 
+    public bool HandleNeutronFluxPourExplodesEvent(DummyEvent? eventArgs = null)
+    {
+        _ = eventArgs;
+        _ = DummyPopupShow.ShowYesNo(PopupMessageToShow);
+        return true;
+    }
+
+    public bool HandleNeutronFluxBeginTakeActionEvent(DummyEvent? eventArgs = null)
+    {
+        _ = eventArgs;
+        if (PopupMessageToShow.Contains("stop travelling?", StringComparison.Ordinal))
+        {
+            _ = DummyPopupShow.ShowYesNo(PopupMessageToShow);
+        }
+        else
+        {
+            DummyPopupShow.Show(PopupMessageToShow);
+        }
+
+        return true;
+    }
+
     public void AwardDynamicQuestRewardGameObject()
     {
         _ = nameof(AwardDynamicQuestRewardGameObject);

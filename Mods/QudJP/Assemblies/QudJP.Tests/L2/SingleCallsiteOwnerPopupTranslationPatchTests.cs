@@ -207,6 +207,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "LiquidFueledPowerPlantEmpty",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleNeutronFluxPourExplodesEvent),
+        "There's no magnetic containment inside {{Y|the glass bottle}}. Pour anyway?",
+        "{{Y|the glass bottle}}の中には磁気封じ込めがない。それでも注ぐか？",
+        "NeutronFluxNoContainment",
+        PopupMethod.ShowYesNo)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleNeutronFluxBeginTakeActionEvent),
+        "{{Y|The flask}} beeps loudly and flashes a warning glyph. Do you want to stop travelling?",
+        "{{Y|The flask}}が大きくビープ音を鳴らし、警告グリフを点滅させる。移動をやめるか？",
+        "NeutronFluxWarningGlyph",
+        PopupMethod.ShowYesNo)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.MakeFuss),
         "You have found {{Y|Kindrish}}!",
         "{{Y|Kindrish}}を見つけた！",
@@ -486,6 +498,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "LiquidFueledPowerPlantEmpty",
         PopupMethod.Show)]
     [TestCase(
+        "There's no magnetic containment inside {{Y|the glass bottle}}. Pour anyway?",
+        "NeutronFluxNoContainment",
+        PopupMethod.ShowYesNo)]
+    [TestCase(
+        "{{Y|The flask}} beeps loudly and flashes a warning glyph. Do you want to stop travelling?",
+        "NeutronFluxWarningGlyph",
+        PopupMethod.ShowYesNo)]
+    [TestCase(
         "You have found {{Y|Kindrish}}!",
         "MakeFussOnTaken",
         PopupMethod.Show)]
@@ -618,6 +638,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         "Your flamethrower has consumed all of its oil.",
         "LiquidFueledPowerPlantEmpty")]
+    [TestCase(
+        "There's no magnetic containment inside {{Y|the glass bottle}}. Pour anyway?",
+        "NeutronFluxNoContainment")]
+    [TestCase(
+        "{{Y|The flask}} beeps loudly and flashes a warning glyph. Do you want to stop travelling?",
+        "NeutronFluxWarningGlyph")]
     [TestCase(
         "You have found {{Y|Kindrish}}!",
         "MakeFussOnTaken")]
@@ -843,6 +869,10 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.World.Parts.KindrishProperties|ReturnAward",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleLiquidFueledPowerPlant) =>
                 "XRL.World.Parts.LiquidFueledPowerPlant|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleNeutronFluxPourExplodesEvent) =>
+                "XRL.World.Parts.NeutronFluxContainment|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleNeutronFluxBeginTakeActionEvent) =>
+                "XRL.World.Parts.NeutronFluxContainment|HandleEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.ShowLooker) =>
                 "XRL.UI.Look|ShowLooker",
             nameof(DummySingleCallsiteOwnerPopupTarget.MakeFuss) =>

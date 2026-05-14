@@ -801,6 +801,38 @@ def test_imodification_wish_modify_popups_are_split_from_fixed_popup() -> None:
     }
 
 
+def test_neutron_flux_containment_popups_are_split_from_runtime_warning() -> None:
+    """NeutronFluxContainment.HandleEvent closes owner popups but leaves runtime warning queued."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    family_id = (
+        "XRL.World.Parts/NeutronFluxContainment.cs::"
+        "XRL.World.Parts.NeutronFluxContainment.HandleEvent"
+    )
+    family_callsites = [
+        callsite
+        for callsite in inventory["callsites"]
+        if callsite["producer_family_id"] == family_id
+    ]
+
+    assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
+    assert family_closure_status(raw_families[family_id]) == "needs_family_review"
+    assert family_id not in covered_family_ids()
+    assert (family_id, 63) in covered_callsite_keys()
+    assert (family_id, 91) in covered_callsite_keys()
+    assert (family_id, 99) not in covered_callsite_keys()
+    assert family_id in queued_family_ids
+    assert {
+        (callsite["line"], callsite["target_surface"], callsite["closure_status"])
+        for callsite in family_callsites
+    } == {
+        (63, "Popup.Show*", "owner_patch_required"),
+        (91, "Popup.Show*", "owner_patch_required"),
+        (99, "Popup.Show*", "runtime_required"),
+    }
+
+
 def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:
     """Uncovered high-volume owner families must stay actionable."""
     inventory = load_inventory(TRACKED_INVENTORY)

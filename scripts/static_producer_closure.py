@@ -1345,6 +1345,53 @@ def _imodification_wish_modify_owner_callsites() -> tuple[CoveredOwnerCallsites,
     )
 
 
+def _neutron_flux_containment_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id=(
+                "XRL.World.Parts/NeutronFluxContainment.cs::"
+                "XRL.World.Parts.NeutronFluxContainment.HandleEvent"
+            ),
+            lines=(63, 91),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                    (
+                        "XRL.World.Parts.NeutronFluxContainment",
+                        "NeutronFluxNoContainmentPattern",
+                        "NeutronFluxWarningGlyphPattern",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                        "nameof(DummySingleCallsiteOwnerPopupTarget.HandleNeutronFluxPourExplodesEvent)",
+                        "nameof(DummySingleCallsiteOwnerPopupTarget.HandleNeutronFluxBeginTakeActionEvent)",
+                        "There's no magnetic containment inside {{Y|the glass bottle}}. Pour anyway?",
+                        "{{Y|The flask}} beeps loudly and flashes a warning glyph. Do you want to stop travelling?",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SingleCallsiteOwnerPopupTranslationPatch)",
+                        "XRL.World.Parts.NeutronFluxContainment|HandleEvent|System.Boolean|XRL.World.NeutronFluxPourExplodesEvent",
+                        "XRL.World.Parts.NeutronFluxContainment|HandleEvent|System.Boolean|XRL.World.BeginTakeActionEvent",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _keybinds_screen_conflict_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         (
@@ -12548,6 +12595,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_container_attempt_open_owner_callsites(),
     *_elevator_switch_owner_callsites(),
     *_imodification_wish_modify_owner_callsites(),
+    *_neutron_flux_containment_owner_callsites(),
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
     CoveredOwnerCallsites(

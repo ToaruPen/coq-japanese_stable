@@ -36,6 +36,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string MakeFussOnTakenOwner = "XRL.World.Parts.MakeFussOnTaken|MakeFuss";
     private const string MarkovBookOwner = "XRL.World.Parts.MarkovBook|HandleEvent";
     private const string MumblesInfectionOwner = "XRL.World.Parts.MumblesInfection|FireEvent";
+    private const string NeutronFluxContainmentOwner = "XRL.World.Parts.NeutronFluxContainment|HandleEvent";
     private const string MutationPointsOnEatOwner = "XRL.World.Parts.MutationPointsOnEat|FireEvent";
     private const string EngulfingDescendsOwner = "XRL.World.Parts.EngulfingDescends|FireEvent";
     private const string ReputationSetFactionRankOwner = "XRL.World.Reputation|SetFactionRank";
@@ -126,6 +127,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static readonly Regex LiquidFueledPowerPlantEmptyPattern = new(
         "^Your (?<object>.+?) (?<verb>has|have) consumed all of (?<fuel>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex NeutronFluxNoContainmentPattern = new(
+        "^There's no magnetic containment inside (?<object>.+?)\\. Pour anyway\\?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex NeutronFluxWarningGlyphPattern = new(
+        "^(?<object>.+?) (?:beeps|beep) loudly and (?:flashes|flash) a warning glyph\\. Do you want to stop travelling\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex MakeFussOnTakenPattern = new(
@@ -238,6 +247,8 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         var xrlGameType = AccessTools.TypeByName("XRL.XRLGame");
         var endTurnEventType = AccessTools.TypeByName("XRL.World.EndTurnEvent");
         var beforeDieEventType = AccessTools.TypeByName("XRL.World.BeforeDieEvent");
+        var neutronFluxPourExplodesEventType = AccessTools.TypeByName("XRL.World.NeutronFluxPourExplodesEvent");
+        var beginTakeActionEventType = AccessTools.TypeByName("XRL.World.BeginTakeActionEvent");
         var axeDismemberType = AccessTools.TypeByName("XRL.World.Parts.Skill.Axe_Dismember");
         var cudgelSlamType = AccessTools.TypeByName("XRL.World.Parts.Skill.Cudgel_Slam");
         if (gameObjectType is null
@@ -252,6 +263,8 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             || xrlGameType is null
             || endTurnEventType is null
             || beforeDieEventType is null
+            || neutronFluxPourExplodesEventType is null
+            || beginTakeActionEventType is null
             || axeDismemberType is null
             || cudgelSlamType is null)
         {
@@ -369,6 +382,16 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.LiquidFueledPowerPlant",
             "HandleEvent",
             [endTurnEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.NeutronFluxContainment",
+            "HandleEvent",
+            [neutronFluxPourExplodesEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.NeutronFluxContainment",
+            "HandleEvent",
+            [beginTakeActionEventType]);
         AddTarget(
             targets,
             "XRL.UI.Look",
@@ -714,6 +737,22 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             translated = $"あなたの{match.Groups["object"].Value}は{match.Groups["fuel"].Value}をすべて消費した。";
             detail = "LiquidFueledPowerPlantEmpty";
+            return true;
+        }
+
+        match = NeutronFluxNoContainmentPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, NeutronFluxContainmentOwner))
+        {
+            translated = $"{match.Groups["object"].Value}の中には磁気封じ込めがない。それでも注ぐか？";
+            detail = "NeutronFluxNoContainment";
+            return true;
+        }
+
+        match = NeutronFluxWarningGlyphPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, NeutronFluxContainmentOwner))
+        {
+            translated = $"{match.Groups["object"].Value}が大きくビープ音を鳴らし、警告グリフを点滅させる。移動をやめるか？";
+            detail = "NeutronFluxWarningGlyph";
             return true;
         }
 
