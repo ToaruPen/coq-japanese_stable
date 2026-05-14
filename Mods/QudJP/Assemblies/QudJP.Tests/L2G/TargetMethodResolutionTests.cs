@@ -1249,6 +1249,13 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Mutation.ElectricalGeneration|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.Mutation.TeleportOther|FireEvent|System.Boolean|XRL.World.Event",
     })]
+    [TestCase(typeof(MutationGeneratedTextTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.PhotosyntheticSkin|HandleEvent|System.Boolean|XRL.World.CommandEvent",
+        "XRL.World.Parts.Mutation.LifeDrain|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Mutation.PackRat|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Mutation.Belcher|Cast|System.Boolean|XRL.World.Parts.Mutation.Belcher|System.String|System.Boolean|System.Boolean",
+    })]
     [TestCase(typeof(DisassemblyStartTranslationPatch), new[]
     {
         "XRL.World.Tinkering.Disassembly|Continue|System.Boolean",

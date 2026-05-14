@@ -8577,6 +8577,100 @@ def _mutation_action_failure_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _mutation_generated_text_evidence() -> tuple[EvidenceFile, ...]:
+    return (
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/src/Patches/MutationGeneratedTextTranslationPatch.cs",
+            (
+                "MutationGeneratedTextTranslationPatch",
+                "PhotosyntheticSkin",
+                "LifeDrain",
+                "PackRat",
+                "Belcher",
+                "TryTranslatePopupMessage",
+                "TryTranslateQueuedMessage",
+                "PhotosyntheticMetabolizePattern",
+                "LifeDrainInvalidTargetPattern",
+                "PackRatDropCooldownPattern",
+                "BelcherOutOfRangePattern",
+                "PackRatCollectMoreJunkPattern",
+            ),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+            ("MutationGeneratedTextTranslationPatch.TryTranslatePopupMessage",),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+            ("MutationGeneratedTextTranslationPatch.TryTranslateQueuedMessage",),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/MutationGeneratedTextTranslationPatchTests.cs",
+            (
+                "Patch_TranslatesMutationGeneratedOwnerPopups_WhenOwnerPatched",
+                "Patch_TranslatesPackRatGeneratedQueueMessage_WhenOwnerPatched",
+                "Patch_DoesNotClaimPopupOnlyGeneratedTraffic_WhenOwnerAbsent",
+                "Patch_DoesNotClaimQueueOnlyGeneratedTraffic_WhenOwnerAbsent",
+                "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                "Patch_DoesNotRetranslateDirectMarkedQueueMessage_WhenOwnerPatched",
+                "Patch_LeavesUnsupportedPopupsUnchanged_WhenOwnerPatched",
+                "Patch_LeavesUnsupportedQueuedMessagesUnchanged_WhenOwnerPatched",
+                "XRL.World.Parts.Mutation.PhotosyntheticSkin|HandleEvent",
+                "XRL.World.Parts.Mutation.LifeDrain|FireEvent",
+                "XRL.World.Parts.Mutation.PackRat|FireEvent",
+                "XRL.World.Parts.Mutation.Belcher|Cast",
+            ),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+            (
+                "typeof(MutationGeneratedTextTranslationPatch)",
+                "XRL.World.Parts.Mutation.PhotosyntheticSkin|HandleEvent|System.Boolean|XRL.World.CommandEvent",
+                "XRL.World.Parts.Mutation.LifeDrain|FireEvent|System.Boolean|XRL.World.Event",
+                "XRL.World.Parts.Mutation.PackRat|FireEvent|System.Boolean|XRL.World.Event",
+                "XRL.World.Parts.Mutation.Belcher|Cast|System.Boolean|XRL.World.Parts.Mutation.Belcher|System.String|System.Boolean|System.Boolean",
+            ),
+        ),
+    )
+
+
+def _mutation_generated_text_families() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id=(
+                "XRL.World.Parts.Mutation/PhotosyntheticSkin.cs::"
+                "XRL.World.Parts.Mutation.PhotosyntheticSkin.HandleEvent"
+            ),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=_mutation_generated_text_evidence(),
+        ),
+    )
+
+
+def _mutation_generated_text_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    evidence_files = _mutation_generated_text_evidence()
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts.Mutation/LifeDrain.cs::XRL.World.Parts.Mutation.LifeDrain.FireEvent",
+            lines=(96, 112),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=evidence_files,
+        ),
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts.Mutation/PackRat.cs::XRL.World.Parts.Mutation.PackRat.FireEvent",
+            lines=(55, 90),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=evidence_files,
+        ),
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts.Mutation/Belcher.cs::XRL.World.Parts.Mutation.Belcher.Cast",
+            lines=(160,),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=evidence_files,
+        ),
+    )
+
+
 def _disassembly_start_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/DisassemblyStartTranslationPatch.cs",
@@ -11914,6 +12008,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_effect_mobility_block_families(),
     *_mutation_infection_families(),
     *_mutation_action_failure_families(),
+    *_mutation_generated_text_families(),
     *_disassembly_start_families(),
     *_dance_ritual_opponent_families(),
     *_iexamine_process_identify_families(),
@@ -11945,6 +12040,7 @@ COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVER
 COVERED_OWNER_CALLSITES: Final = (
     *_sifrah_pure_owner_popup_callsites(),
     *_giant_clam_shloop_hitch_callsites(),
+    *_mutation_generated_text_callsites(),
     CoveredOwnerCallsites(
         family_id=(
             "XRL.World.Parts.Mutation/Carapace.cs::"
