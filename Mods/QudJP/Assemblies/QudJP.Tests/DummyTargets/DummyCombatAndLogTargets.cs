@@ -2003,6 +2003,26 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         _ = value;
         DummyPopupShow.Show(StaticPopupMessageToShow);
     }
+
+    public static void TransitToThinWorld(DummyGameObject sender, bool express = false)
+    {
+        _ = sender;
+        _ = express;
+        if (StaticPopupMessageToShow.Contains("Entombed in the burial chamber", StringComparison.Ordinal))
+        {
+            DummyPopupShow.ShowSpace(StaticPopupMessageToShow);
+            return;
+        }
+
+        DummyPopupShow.Show(StaticPopupMessageToShow);
+    }
+
+    public bool HandlePlayerMuralEndTurn(DummyEndTurnEvent? e = null)
+    {
+        _ = e;
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
 }
 
 internal static class DummyPointOfInterestTarget

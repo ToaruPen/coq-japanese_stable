@@ -1915,6 +1915,8 @@ public sealed class TargetMethodResolutionTests
         "XRL.PopulationManager|WishGenerate|System.Void|System.String",
         "XRL.World.GameObjectFactory|HandleBlueprintXML|System.Void|System.String",
         "XRL.XRLGame|LoadGame|XRL.XRLGame|System.String|System.Boolean|System.Boolean|System.Collections.Generic.Dictionary`2[[System.String],[System.Object]]",
+        "XRL.World.Parts.ThinWorld|TransitToThinWorld|System.Void|XRL.World.GameObject|System.Boolean",
+        "XRL.World.Parts.PlayerMuralController|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
     })]
     public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
     {

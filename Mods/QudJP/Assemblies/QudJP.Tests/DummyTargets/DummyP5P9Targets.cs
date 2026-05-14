@@ -36,6 +36,7 @@ internal static class DummyPopupShow
     public static string? LastShowKeybindAsyncMessage;
     public static string? LastShowYesNoAsyncMessage;
     public static string? LastShowYesNoCancelAsyncMessage;
+    public static string? LastShowSpaceMessage;
 
     public static void Show(
         string Message,
@@ -109,6 +110,24 @@ internal static class DummyPopupShow
         Show(Message, CopyScrap: CopyScrap, Capitalize: Capitalize, DimBackground: DimBackground);
     }
 
+    public static void ShowSpace(
+        string Message,
+        string? Title = null,
+        string? Sound = null,
+        object? Icon = null,
+        bool CopyScrap = true,
+        bool Capitalize = true,
+        string? Intro = null)
+    {
+        _ = Title;
+        _ = Sound;
+        _ = Icon;
+        _ = CopyScrap;
+        _ = Capitalize;
+        _ = Intro;
+        LastShowSpaceMessage = Message;
+    }
+
     public static void Reset()
     {
         LastShowMessage = null;
@@ -118,5 +137,6 @@ internal static class DummyPopupShow
         LastShowKeybindAsyncMessage = null;
         LastShowYesNoAsyncMessage = null;
         LastShowYesNoCancelAsyncMessage = null;
+        LastShowSpaceMessage = null;
     }
 }

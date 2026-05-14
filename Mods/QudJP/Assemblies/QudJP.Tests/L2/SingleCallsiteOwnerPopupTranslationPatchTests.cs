@@ -458,6 +458,30 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "'JoppaVillagers'という名前の population table は解決できない。",
         "PopulationManagerMissingTable",
         PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.TransitToThinWorld),
+        "The colossal lid slams shut. Darkness engulfs you.",
+        "巨大な蓋が閉じた。闇があなたを飲み込んだ。",
+        "ThinWorldLidSlams",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.TransitToThinWorld),
+        "You died.\n\nEntombed in the burial chamber of Resheph, the Last Sultan.",
+        "あなたは死んだ。\n\n最後のスルタン、レシェフの埋葬室に葬られた。",
+        "ThinWorldEntombed",
+        PopupMethod.ShowSpace)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandlePlayerMuralEndTurn),
+        "Herododicus says '&WI'm finished, Moloch! Praise Hosh Resheph, all who canter in this House!&Y'",
+        "ヘロドディクスが言う。「&W終わりました、モロク！ Hosh・レシェフを讃えよ、この館を駆ける者たちよ！&Y」",
+        "PlayerMuralReshephDisguiseDone",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandlePlayerMuralEndTurn),
+        "Herododicus says '&WI'm done!&Y'",
+        "ヘロドディクスが言う。「&W終わった！&Y」",
+        "PlayerMuralDone",
+        PopupMethod.Show)]
     public void Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched(
         string methodName,
         string source,
@@ -994,6 +1018,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
             return;
         }
 
+        if (popupMethod == PopupMethod.ShowSpace)
+        {
+            DummyPopupShow.ShowSpace(source);
+            return;
+        }
+
         DummyPopupShow.Show(source);
     }
 
@@ -1004,6 +1034,7 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
             PopupMethod.ShowAsync => DummyPopupShow.LastShowAsyncMessage,
             PopupMethod.ShowYesNo => DummyPopupShow.LastShowYesNoMessage,
             PopupMethod.ShowYesNoCancel => DummyPopupShow.LastShowYesNoCancelMessage,
+            PopupMethod.ShowSpace => DummyPopupShow.LastShowSpaceMessage,
             _ => DummyPopupShow.LastShowMessage,
         };
     }
@@ -1128,6 +1159,10 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.XRLGame|LoadGame",
             nameof(DummySingleCallsiteOwnerPopupTarget.WishGeneratePopulation) =>
                 "XRL.PopulationManager|WishGenerate",
+            nameof(DummySingleCallsiteOwnerPopupTarget.TransitToThinWorld) =>
+                "XRL.World.Parts.ThinWorld|TransitToThinWorld",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandlePlayerMuralEndTurn) =>
+                "XRL.World.Parts.PlayerMuralController|HandleEvent",
             _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected owner method."),
         };
     }
@@ -1143,5 +1178,6 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         ShowAsync,
         ShowYesNo,
         ShowYesNoCancel,
+        ShowSpace,
     }
 }

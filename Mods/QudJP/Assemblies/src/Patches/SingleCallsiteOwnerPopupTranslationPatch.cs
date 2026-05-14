@@ -63,6 +63,8 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string PopulationManagerWishGenerateOwner = "XRL.PopulationManager|WishGenerate";
     private const string GameObjectFactoryBlueprintXmlOwner = "XRL.World.GameObjectFactory|HandleBlueprintXML";
     private const string XrlGameLoadGameOwner = "XRL.XRLGame|LoadGame";
+    private const string ThinWorldTransitOwner = "XRL.World.Parts.ThinWorld|TransitToThinWorld";
+    private const string PlayerMuralControllerOwner = "XRL.World.Parts.PlayerMuralController|HandleEvent";
 
     private static readonly Regex DecoyOutOfRangePattern = new(
         "^That is out of range \\((?<range>.+?) (?<unit>squares?)\\)$",
@@ -286,6 +288,10 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static readonly Regex XrlGameMissingSavePattern = new(
         "^No saved game exists\\. \\((?<path>.+?)\\)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex PlayerMuralReshephDisguiseDonePattern = new(
+        "^Herododicus says '&WI'm finished, Moloch! Praise (?<name>.+?) Resheph, all who canter in this House!&Y'$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [ThreadStatic]
@@ -604,6 +610,16 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.XRLGame",
             "LoadGame",
             [typeof(string), typeof(bool), typeof(bool), typeof(Dictionary<string, object>)]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.ThinWorld",
+            "TransitToThinWorld",
+            [gameObjectType, typeof(bool)]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.PlayerMuralController",
+            "HandleEvent",
+            [endTurnEventType]);
         return targets;
     }
 
@@ -1183,6 +1199,39 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             translated = $"セーブデータが存在しない。（{match.Groups["path"].Value}）";
             detail = "XrlGameMissingSave";
+            return true;
+        }
+
+        if (OwnerMatches(ownerKey, ThinWorldTransitOwner))
+        {
+            if (source == "The colossal lid slams shut. Darkness engulfs you.")
+            {
+                translated = "巨大な蓋が閉じた。闇があなたを飲み込んだ。";
+                detail = "ThinWorldLidSlams";
+                return true;
+            }
+
+            if (source == "You died.\n\nEntombed in the burial chamber of Resheph, the Last Sultan.")
+            {
+                translated = "あなたは死んだ。\n\n最後のスルタン、レシェフの埋葬室に葬られた。";
+                detail = "ThinWorldEntombed";
+                return true;
+            }
+        }
+
+        if (source == "Herododicus says '&WI'm done!&Y'"
+            && OwnerMatches(ownerKey, PlayerMuralControllerOwner))
+        {
+            translated = "ヘロドディクスが言う。「&W終わった！&Y」";
+            detail = "PlayerMuralDone";
+            return true;
+        }
+
+        match = PlayerMuralReshephDisguiseDonePattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, PlayerMuralControllerOwner))
+        {
+            translated = $"ヘロドディクスが言う。「&W終わりました、モロク！ {match.Groups["name"].Value}・レシェフを讃えよ、この館を駆ける者たちよ！&Y」";
+            detail = "PlayerMuralReshephDisguiseDone";
             return true;
         }
 
