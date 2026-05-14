@@ -31,6 +31,7 @@ internal static class PopupShowSemanticPipeline
         ClonelingVehicleTranslationPatch.TryTranslatePopupMessage,
         PointOfInterestNavigationPopupTranslationPatch.TryTranslatePopupMessage,
         RunStartRunningPopupTranslationPatch.TryTranslatePopupMessage,
+        DecoyHologramEmitterActivateTranslationPatch.TryTranslatePopupMessage,
         HistoricEventRegionRevealPopupTranslationPatch.TryTranslatePopupMessage,
         JournalScreenPopupTranslationPatch.TryTranslatePopupMessage,
         ConversationScriptPopupTranslationPatch.TryTranslatePopupMessage,

@@ -12633,6 +12633,55 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts/DecoyHologramEmitter.cs::"
+            "XRL.World.Parts.DecoyHologramEmitter.ActivateHologramBracelet"
+        ),
+        lines=(411, 418, 421),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/DecoyHologramEmitterActivateTranslationPatch.cs",
+                (
+                    "DecoyHologramEmitterActivateTranslationPatch",
+                    "XRL.World.Parts.DecoyHologramEmitter",
+                    "ActivateHologramBracelet",
+                    "StillStartingPattern",
+                    "InsufficientChargePattern",
+                    "UnresponsivePattern",
+                    "DecoyHologramStillStarting",
+                    "DecoyHologramInsufficientCharge",
+                    "DecoyHologramUnresponsive",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("DecoyHologramEmitterActivateTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/DecoyHologramEmitterActivateTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesActivationPopup_WhenOwnerPatched",
+                    "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_DoesNotClaimFixedOrEmptyPopup_WhenOwnerPatched",
+                    "The {{Y|hologram bracelet}} is still starting up.",
+                    "{{Y|tri-hologram bracelet}} does not have enough charge to sustain the hologram.",
+                    "The {{Y|hologram bracelet}} is unresponsive.",
+                    "You cannot do that on the world map.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(DecoyHologramEmitterActivateTranslationPatch)",
+                    "XRL.World.Parts.DecoyHologramEmitter|ActivateHologramBracelet|System.Boolean|XRL.World.GameObject|XRL.World.IEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World.Parts/Stomach.cs::"
             "XRL.World.Parts.Stomach.FireEvent"
         ),

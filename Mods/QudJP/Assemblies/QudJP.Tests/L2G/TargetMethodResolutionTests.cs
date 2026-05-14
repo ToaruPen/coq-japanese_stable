@@ -1753,6 +1753,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.Skill.ShortBlades_Shank|Cast|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Skill.ShortBlades_Shank|XRL.World.GameObject",
     })]
+    [TestCase(typeof(DecoyHologramEmitterActivateTranslationPatch), new[]
+    {
+        "XRL.World.Parts.DecoyHologramEmitter|ActivateHologramBracelet|System.Boolean|XRL.World.GameObject|XRL.World.IEvent",
+    })]
     [TestCase(typeof(StomachTranslationPatch), new[]
     {
         "XRL.World.Parts.Stomach|FireEvent|System.Boolean|XRL.World.Event",
