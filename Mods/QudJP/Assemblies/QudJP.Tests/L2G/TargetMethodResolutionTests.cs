@@ -909,6 +909,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Quest|ShowFailPopup|System.Void",
         "XRL.World.Quest|ShowFailStepPopup|System.Void|XRL.World.QuestStep",
         "XRL.World.Quest|ShowFinishPopup|System.Void",
+        "XRL.World.Quest|ShowFinishStepPopup|System.Void|XRL.World.QuestStep",
     })]
     [TestCase(typeof(FlightTranslationPatch), new[]
     {

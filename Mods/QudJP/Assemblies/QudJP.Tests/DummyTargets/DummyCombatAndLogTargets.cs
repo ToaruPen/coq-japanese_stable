@@ -423,6 +423,8 @@ internal sealed class DummyQuestLifecyclePopupTarget
 {
     public string PopupMessageToSend { get; set; } = string.Empty;
 
+    public int StepXpToSend { get; set; }
+
     public void ShowStartPopup()
     {
         DummyPopupShow.Show(PopupMessageToSend);
@@ -441,6 +443,27 @@ internal sealed class DummyQuestLifecyclePopupTarget
     public void ShowFinishPopup()
     {
         DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    public void ShowFinishStepPopup()
+    {
+        var text = PopupMessageToSend;
+        if (StepXpToSend > 0)
+        {
+            DummyPopupTarget.ShowBlock(
+                text + "\nYou gain {{C|" + StepXpToSend + "}} XP!",
+                null,
+                "Sounds/UI/ui_notification",
+                CopyScrap: true,
+                Capitalize: true,
+                DimBackground: true,
+                LogMessage: false);
+            DummyMessageQueue.AddPlayerMessage(text);
+        }
+        else
+        {
+            DummyPopupTarget.ShowBlock(text);
+        }
     }
 }
 

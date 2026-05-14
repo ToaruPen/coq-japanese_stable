@@ -33,6 +33,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         MessagePatternTranslator.InvalidatePatternFileCacheForTests(patternFilePath);
         DummyMessageQueue.Reset();
         DummyPopupShow.Reset();
+        DummyPopupTarget.Reset();
     }
 
     [TearDown]
@@ -1565,6 +1566,112 @@ public sealed class CombatAndLogMessageQueuePatchTests
             nameof(DummyQuestLifecyclePopupTarget.ShowStartPopup),
             string.Empty,
             string.Empty);
+    }
+
+    [Test]
+    public void QuestLifecycleFinishStep_TranslatesShowBlockAndQueue_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowBlock(harmony);
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyQuestLifecyclePopupTarget), nameof(DummyQuestLifecyclePopupTarget.ShowFinishStepPopup)),
+                typeof(QuestLifecyclePopupTranslationPatch));
+
+            var target = new DummyQuestLifecyclePopupTarget
+            {
+                PopupMessageToSend = "You have finished the step, {{R|Travel to Red Rock}}, of the quest {{W|What's Eating the Watervine?}}!",
+                StepXpToSend = 75,
+            };
+
+            target.ShowFinishStepPopup();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    DummyPopupTarget.LastShowBlockMessage,
+                    Is.EqualTo("クエスト「{{W|What's Eating the Watervine?}}」のステップ「{{R|ジョッパから北へ2パラサング進み、レッドロックへ向かう。}}」を完了した！\nあなたは経験値を{{C|75}}獲得した"));
+                Assert.That(
+                    DummyMessageQueue.LastMessage,
+                    Is.EqualTo("クエスト「{{W|What's Eating the Watervine?}}」のステップ「{{R|ジョッパから北へ2パラサング進み、レッドロックへ向かう。}}」を完了した！"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void QuestLifecycleFinishStep_TranslatesShowBlockWithoutXp_WhenOwnerPatched()
+    {
+        AssertQuestLifecycleFinishStepShowBlock(
+            "You have finished the step, {{R|Travel to Red Rock}}, of the quest {{W|What's Eating the Watervine?}}!",
+            0,
+            "クエスト「{{W|What's Eating the Watervine?}}」のステップ「{{R|ジョッパから北へ2パラサング進み、レッドロックへ向かう。}}」を完了した！");
+    }
+
+    [Test]
+    public void QuestLifecycleFinishStep_DoesNotTranslateShowBlockOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowBlock(harmony);
+
+            DummyPopupTarget.ShowBlock("You have finished the step, Travel to Red Rock, of the quest What's Eating the Watervine?!");
+
+            Assert.That(
+                DummyPopupTarget.LastShowBlockMessage,
+                Is.EqualTo("You have finished the step, Travel to Red Rock, of the quest What's Eating the Watervine?!"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void QuestLifecycleFinishStep_DoesNotTranslateQueuedTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("You have finished the step, Travel to Red Rock, of the quest What's Eating the Watervine?!");
+
+            Assert.That(
+                DummyMessageQueue.LastMessage,
+                Is.EqualTo("You have finished the step, Travel to Red Rock, of the quest What's Eating the Watervine?!"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void QuestLifecycleFinishStep_DoesNotRetranslateDirectMarkedShowBlock_WhenOwnerPatched()
+    {
+        AssertQuestLifecycleFinishStepShowBlock(
+            MessageFrameTranslator.MarkDirectTranslation("You have finished the step, Travel to Red Rock, of the quest What's Eating the Watervine?!"),
+            0,
+            "You have finished the step, Travel to Red Rock, of the quest What's Eating the Watervine?!");
+    }
+
+    [Test]
+    public void QuestLifecycleFinishStep_LeavesEmptyShowBlockUnchanged_WhenOwnerPatched()
+    {
+        AssertQuestLifecycleFinishStepShowBlock(string.Empty, 0, string.Empty);
     }
 
     [TestCase(nameof(DummyFlightTarget.StartFlying), "You begin flying!", null, "飛行を開始した！")]
@@ -7146,6 +7253,36 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
+    private static void AssertQuestLifecycleFinishStepShowBlock(string message, int stepXp, string expected)
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowBlock(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyQuestLifecyclePopupTarget), nameof(DummyQuestLifecyclePopupTarget.ShowFinishStepPopup)),
+                typeof(QuestLifecyclePopupTranslationPatch));
+
+            var target = new DummyQuestLifecyclePopupTarget
+            {
+                PopupMessageToSend = message,
+                StepXpToSend = stepXp,
+            };
+
+            target.ShowFinishStepPopup();
+
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static void AssertFlightMessage(string methodName, string message, string? color, string expected)
     {
         var harmonyId = CreateHarmonyId();
@@ -10123,6 +10260,13 @@ public sealed class CombatAndLogMessageQueuePatchTests
         harmony.Patch(
             original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
             prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+    }
+
+    private static void PatchPopupShowBlock(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
     }
 
     private static void PatchPopupShowAsync(Harmony harmony)

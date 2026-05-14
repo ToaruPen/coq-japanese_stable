@@ -294,45 +294,82 @@ def _hacking_sifrah_result_families() -> tuple[CoveredOwnerFamily, ...]:
 
 def _quest_lifecycle_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
-        ("ShowStartPopup", "XRL.World.Quest|ShowStartPopup|System.Void"),
-        ("ShowFailPopup", "XRL.World.Quest|ShowFailPopup|System.Void"),
-        ("ShowFailStepPopup", "XRL.World.Quest|ShowFailStepPopup|System.Void|XRL.World.QuestStep"),
-        ("ShowFinishPopup", "XRL.World.Quest|ShowFinishPopup|System.Void"),
+        ("ShowStartPopup", "XRL.World.Quest|ShowStartPopup|System.Void", ("owner_patch_required",)),
+        ("ShowFailPopup", "XRL.World.Quest|ShowFailPopup|System.Void", ("owner_patch_required",)),
+        (
+            "ShowFailStepPopup",
+            "XRL.World.Quest|ShowFailStepPopup|System.Void|XRL.World.QuestStep",
+            ("owner_patch_required",),
+        ),
+        ("ShowFinishPopup", "XRL.World.Quest|ShowFinishPopup|System.Void", ("owner_patch_required",)),
+        (
+            "ShowFinishStepPopup",
+            "XRL.World.Quest|ShowFinishStepPopup|System.Void|XRL.World.QuestStep",
+            ("owner_patch_required", "needs_family_review"),
+        ),
     )
 
-    return tuple(
-        CoveredOwnerFamily(
-            family_id=f"XRL.World/Quest.cs::XRL.World.Quest.{method_name}",
-            inventory_statuses=("owner_patch_required",),
-            evidence_files=(
-                EvidenceFile(
-                    "Mods/QudJP/Assemblies/src/Patches/QuestLifecyclePopupTranslationPatch.cs",
-                    (method_name, "TryTranslatePopupMessage"),
-                ),
-                EvidenceFile(
-                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
-                    ("QuestLifecyclePopupTranslationPatch.TryTranslatePopupMessage",),
-                ),
-                EvidenceFile(
-                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
-                    (
-                        "QuestLifecyclePopup_TranslatesPopupMessages_WhenOwnerPatched",
-                        "QuestLifecyclePopup_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
-                        "QuestLifecyclePopup_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
-                        "QuestLifecyclePopup_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
-                    ),
-                ),
-                EvidenceFile(
-                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
-                    (
-                        "typeof(QuestLifecyclePopupTranslationPatch)",
-                        signature,
-                    ),
+    families: list[CoveredOwnerFamily] = []
+    for method_name, signature, inventory_statuses in target_signatures:
+        evidence_files = [
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/QuestLifecyclePopupTranslationPatch.cs",
+                (method_name, "TryTranslatePopupMessage"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("QuestLifecyclePopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                (
+                    "QuestLifecyclePopup_TranslatesPopupMessages_WhenOwnerPatched",
+                    "QuestLifecyclePopup_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "QuestLifecyclePopup_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "QuestLifecyclePopup_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
                 ),
             ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(QuestLifecyclePopupTranslationPatch)",
+                    signature,
+                ),
+            ),
+        ]
+        if method_name == "ShowFinishStepPopup":
+            evidence_files.extend(
+                [
+                    EvidenceFile(
+                        "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+                        ("QuestLifecyclePopupTranslationPatch.TryTranslatePopupMessage",),
+                    ),
+                    EvidenceFile(
+                        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                        ("QuestLifecyclePopupTranslationPatch.TryTranslateQueuedMessage",),
+                    ),
+                    EvidenceFile(
+                        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                        (
+                            "QuestLifecycleFinishStep_TranslatesShowBlockAndQueue_WhenOwnerPatched",
+                            "QuestLifecycleFinishStep_DoesNotTranslateShowBlockOnlyTraffic_WhenOwnerAbsent",
+                            "QuestLifecycleFinishStep_DoesNotTranslateQueuedTraffic_WhenOwnerAbsent",
+                            "QuestLifecycleFinishStep_DoesNotRetranslateDirectMarkedShowBlock_WhenOwnerPatched",
+                            "QuestLifecycleFinishStep_LeavesEmptyShowBlockUnchanged_WhenOwnerPatched",
+                        ),
+                    ),
+                ]
+            )
+
+        families.append(
+            CoveredOwnerFamily(
+                family_id=f"XRL.World/Quest.cs::XRL.World.Quest.{method_name}",
+                inventory_statuses=inventory_statuses,
+                evidence_files=tuple(evidence_files),
+            )
         )
-        for method_name, signature in target_signatures
-    )
+
+    return tuple(families)
 
 
 def _flight_families() -> tuple[CoveredOwnerFamily, ...]:

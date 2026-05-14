@@ -124,6 +124,7 @@ internal static class MessageQueueSemanticPipeline
         ZoneManagerTickTranslationPatch.TryTranslateQueuedMessage,
         ZoneManagerSetActiveZoneMapNotesTranslationPatch.TryTranslateQueuedMessage,
         ZoneManagerGenerateZoneTranslationPatch.TryTranslateQueuedMessage,
+        QuestLifecyclePopupTranslationPatch.TryTranslateQueuedMessage,
     ];
 
     internal static bool TryTranslateQueuedMessage(ref string message, string? color)

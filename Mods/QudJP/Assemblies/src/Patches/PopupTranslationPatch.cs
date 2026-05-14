@@ -414,6 +414,12 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (QuestLifecyclePopupTranslationPatch.TryTranslatePopupMessage(source, route, family, out var questLifecycleTranslated))
+        {
+            translated = questLifecycleTranslated;
+            return true;
+        }
+
         if (DeathWrapperFamilyTranslator.TryTranslatePopup(stripped, spans, route, out var deathTranslated))
         {
             translated = deathTranslated;
