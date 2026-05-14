@@ -294,6 +294,46 @@ def test_single_callsite_owner_queue_families_are_closed_by_owner_patch() -> Non
         assert family_id not in queued_family_ids
 
 
+def test_zone_manager_owner_queue_callsites_are_split_from_runtime_and_popup_shapes() -> None:
+    """ZoneManager queue owner callsites must close without claiming runtime or popup shapes."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    source_entries = owner_action_queue_by_file(inventory)
+    zone_manager_family_ids = {
+        "XRL.World/ZoneManager.cs::XRL.World.ZoneManager.SetActiveZone",
+        "XRL.World/ZoneManager.cs::XRL.World.ZoneManager.GenerateZone",
+    }
+
+    for family_id in zone_manager_family_ids:
+        assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
+        assert family_closure_status(raw_families[family_id]) == "needs_family_review"
+        assert family_id not in covered_family_ids()
+        assert family_id in queued_family_ids
+
+    zone_manager_entry = next(
+        entry for entry in source_entries if entry["source_file"] == "XRL.World/ZoneManager.cs"
+    )
+    assert zone_manager_entry["callsite_count"] == 4
+    assert [family["member_name"] for family in zone_manager_entry["families"]] == [
+        "SetActiveZone",
+        "GenerateZone",
+    ]
+    assert [
+        family["representative_lines"] for family in zone_manager_entry["families"]
+    ] == [[1889, 1912], [3213, 3570]]
+    assert [
+        family["closure_status_counts"] for family in zone_manager_entry["families"]
+    ] == [
+        {"runtime_required": 2},
+        {"messages_candidate": 1, "owner_patch_required": 1},
+    ]
+    assert [family["surface_counts"] for family in zone_manager_entry["families"]] == [
+        {"AddPlayerMessage": 2},
+        {"Popup.Show*": 2},
+    ]
+
+
 def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:
     """Uncovered high-volume owner families must stay actionable."""
     inventory = load_inventory(TRACKED_INVENTORY)

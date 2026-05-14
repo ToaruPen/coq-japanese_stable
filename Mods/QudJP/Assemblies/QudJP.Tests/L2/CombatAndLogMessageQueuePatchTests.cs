@@ -5859,6 +5859,56 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void ZoneManagerGenerateZone_TranslatesBuildFailure_WithRepositoryPattern()
+    {
+        UseRepositoryPatternDictionary();
+
+        AssertZoneManagerGenerateZoneMessage(
+            "Zone build failure:<none>",
+            "R",
+            "ゾーン構築失敗:<none>");
+    }
+
+    [Test]
+    public void ZoneManagerGenerateZone_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("Zone build failure:<none>", "R", Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Zone build failure:<none>"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void ZoneManagerGenerateZone_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        AssertZoneManagerGenerateZoneMessage(
+            MessageFrameTranslator.MarkDirectTranslation("Zone build failure:<none>"),
+            "R",
+            "Zone build failure:<none>");
+    }
+
+    [Test]
+    public void ZoneManagerGenerateZone_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+        AssertZoneManagerGenerateZoneMessage(string.Empty, "R", string.Empty);
+    }
+
+    [Test]
     public void CombatGetDefenderHitDice_TranslatesShieldBlockMessage_WhenPatched()
     {
         WritePatternDictionary(
@@ -9539,6 +9589,34 @@ public sealed class CombatAndLogMessageQueuePatchTests
             };
 
             target.Tick(allowFreeze: true);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertZoneManagerGenerateZoneMessage(string message, string? color, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyZoneManagerGenerateZoneTarget), nameof(DummyZoneManagerGenerateZoneTarget.GenerateZone), typeof(string)),
+                typeof(ZoneManagerGenerateZoneTranslationPatch));
+
+            var target = new DummyZoneManagerGenerateZoneTarget
+            {
+                MessageToSend = message,
+                ColorToSend = color,
+            };
+
+            target.GenerateZone("JoppaWorld.1.1.1.1.10");
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }

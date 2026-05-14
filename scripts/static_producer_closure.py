@@ -11648,6 +11648,88 @@ COVERED_OWNER_CALLSITES: Final = (
             ),
         ),
     ),
+    CoveredOwnerCallsites(
+        family_id="XRL.World/ZoneManager.cs::XRL.World.ZoneManager.SetActiveZone",
+        lines=(1885,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/ZoneManagerSetActiveZoneTranslationPatch.cs",
+                (
+                    "ZoneManagerSetActiveZoneTranslationPatch",
+                    "SetActiveZone",
+                    "PrepareZoneBannerMessage",
+                    "TryTranslateQueuedMessage",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/ZoneManagerSetActiveZoneMessageQueuePatch.cs",
+                ("ZoneManagerSetActiveZoneTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/ui-zone-display.ja.json",
+                ("slime bog",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/ZoneManagerSetActiveZoneTranslationPatchTests.cs",
+                (
+                    "PrefixAndPostfix_TranslateZoneBannerBeforeMessageLogSink_WhenPatched",
+                    "PrefixAndPostfix_TranslatesNoTimeZoneBannerUsingRepositoryDictionary_WhenPatched",
+                    "Prefix_PreservesZoneBannerMessage_WhenOwnerAbsent",
+                    "Prefix_DoesNotRetranslateDirectMarkedZoneBanner_WhenOwnerPatched",
+                    "Prefix_LeavesEmptyZoneBannerUnchanged_WhenOwnerPatched",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(ZoneManagerSetActiveZoneTranslationPatch)",
+                    "XRL.World.ZoneManager|SetActiveZone|XRL.World.Zone|XRL.World.Zone",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id="XRL.World/ZoneManager.cs::XRL.World.ZoneManager.GenerateZone",
+        lines=(3286,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/ZoneManagerGenerateZoneTranslationPatch.cs",
+                (
+                    "ZoneManagerGenerateZoneTranslationPatch",
+                    "GenerateZone",
+                    "Zone build failure:",
+                    "TryTranslateQueuedMessage",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("ZoneManagerGenerateZoneTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+                ("^Zone build failure:(.+)$", "ゾーン構築失敗:{0}"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                (
+                    "ZoneManagerGenerateZone_TranslatesBuildFailure_WithRepositoryPattern",
+                    "ZoneManagerGenerateZone_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "ZoneManagerGenerateZone_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "ZoneManagerGenerateZone_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(ZoneManagerGenerateZoneTranslationPatch)",
+                    "GenerateZone",
+                    "XRL.World.ZoneManager",
+                ),
+            ),
+        ),
+    ),
 )
 COVERED_OWNER_CALLSITE_KEYS: Final = frozenset(
     (covered.family_id, line)
