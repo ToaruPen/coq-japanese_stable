@@ -11833,6 +11833,48 @@ COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVER
 COVERED_OWNER_CALLSITES: Final = (
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts.Mutation/Carapace.cs::"
+            "XRL.World.Parts.Mutation.Carapace.Loosen"
+        ),
+        lines=(217, 226),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/CarapaceTranslationPatch.cs",
+                (
+                    "XRL.World.Parts.Mutation.Carapace",
+                    "Loosen",
+                    "LoosenOwnCarapacePattern",
+                    "LoosenCarapaceObjectPattern",
+                    "TryTranslatePopupMessage",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("CarapaceTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                (
+                    "CarapaceLoosen_TranslatesPopupMessages_WhenOwnerPatched",
+                    "CarapaceLoosen_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "CarapaceLoosen_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "CarapaceLoosen_LeavesUnsupportedPopupUnchanged_WhenOwnerPatched",
+                    "Your carapace loosens. Your AV decreases by {{R|3}}.",
+                    "Your carapace loosens.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(CarapaceTranslationPatch)",
+                    "XRL.World.Parts.Mutation.Carapace|Loosen|System.Void|System.Boolean",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World.Conversations.Parts/WaterRitualBuySecret.cs::"
             "XRL.World.Conversations.Parts.WaterRitualBuySecret.RevealEntry"
         ),

@@ -1141,6 +1141,18 @@ internal sealed class DummyCarapaceTarget
     public void Tighten(bool message = false)
     {
         _ = message;
+        ShowPopup(nameof(Tighten));
+    }
+
+    public void Loosen(bool message = false)
+    {
+        _ = message;
+        ShowPopup(nameof(Loosen));
+    }
+
+    private void ShowPopup(string route)
+    {
+        _ = route;
         DummyPopupShow.Show(PopupMessageToSend);
     }
 }

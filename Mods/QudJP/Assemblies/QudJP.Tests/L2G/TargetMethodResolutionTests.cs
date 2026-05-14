@@ -1103,6 +1103,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(CarapaceTranslationPatch), new[]
     {
         "XRL.World.Parts.Mutation.Carapace|Tighten|System.Void|System.Boolean",
+        "XRL.World.Parts.Mutation.Carapace|Loosen|System.Void|System.Boolean",
     })]
     [TestCase(typeof(SvardymSystemTranslationPatch), new[]
     {

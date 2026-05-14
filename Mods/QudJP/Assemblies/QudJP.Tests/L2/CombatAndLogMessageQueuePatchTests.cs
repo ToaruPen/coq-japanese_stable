@@ -3467,6 +3467,53 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [TestCase(
+        "Your carapace loosens. Your AV decreases by {{R|3}}.",
+        "甲羅が緩んだ。AVが{{R|3}}低下する。")]
+    [TestCase(
+        "{{W|your shell}} loosens. Your AV decreases by {{R|2}}.",
+        "{{W|your shell}}が緩んだ。AVが{{R|2}}低下する。")]
+    public void CarapaceLoosen_TranslatesPopupMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertCarapaceLoosenPopup(source, expected);
+    }
+
+    [Test]
+    public void CarapaceLoosen_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show("Your carapace loosens. Your AV decreases by {{R|3}}.");
+
+            Assert.That(
+                DummyPopupShow.LastShowMessage,
+                Is.EqualTo("Your carapace loosens. Your AV decreases by {{R|3}}."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void CarapaceLoosen_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertCarapaceLoosenPopup(
+            MessageFrameTranslator.MarkDirectTranslation("Your carapace loosens. Your AV decreases by {{R|3}}."),
+            "Your carapace loosens. Your AV decreases by {{R|3}}.");
+    }
+
+    [TestCase("")]
+    [TestCase("Your carapace loosens.")]
+    public void CarapaceLoosen_LeavesUnsupportedPopupUnchanged_WhenOwnerPatched(string source)
+    {
+        AssertCarapaceLoosenPopup(source, source);
+    }
+
+    [TestCase(
         nameof(DummySvardymSystemTarget.BeginStorm),
         "Your hear a swelling thpthp sound.",
         "thpthpという音が大きくなっていくのが聞こえる。")]
@@ -8207,6 +8254,16 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
     private static void AssertCarapaceTightenPopup(string message, string expected)
     {
+        AssertCarapacePopup(nameof(DummyCarapaceTarget.Tighten), message, expected);
+    }
+
+    private static void AssertCarapaceLoosenPopup(string message, string expected)
+    {
+        AssertCarapacePopup(nameof(DummyCarapaceTarget.Loosen), message, expected);
+    }
+
+    private static void AssertCarapacePopup(string methodName, string message, string expected)
+    {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try
@@ -8214,7 +8271,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
             PatchPopupShow(harmony);
             PatchOwner(
                 harmony,
-                RequireMethod(typeof(DummyCarapaceTarget), nameof(DummyCarapaceTarget.Tighten), typeof(bool)),
+                RequireMethod(typeof(DummyCarapaceTarget), methodName, typeof(bool)),
                 typeof(CarapaceTranslationPatch));
 
             var target = new DummyCarapaceTarget
@@ -8222,7 +8279,14 @@ public sealed class CombatAndLogMessageQueuePatchTests
                 PopupMessageToSend = message,
             };
 
-            target.Tighten(message: true);
+            if (string.Equals(methodName, nameof(DummyCarapaceTarget.Tighten), StringComparison.Ordinal))
+            {
+                target.Tighten(message: true);
+            }
+            else
+            {
+                target.Loosen(message: true);
+            }
 
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
         }
