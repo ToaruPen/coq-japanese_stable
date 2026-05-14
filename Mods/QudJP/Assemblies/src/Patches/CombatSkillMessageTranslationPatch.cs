@@ -80,6 +80,10 @@ public static class CombatSkillMessageTranslationPatch
         "^You backswing with (?<weapon>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex CudgelSmashUpPreparePattern = new(
+        "^You prepare (?<weapon>.+?) for demolition\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex ActorBackswingPattern = new(
         "^(?<actor>.+?) backswings? with (?<weapon>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -149,6 +153,14 @@ public static class CombatSkillMessageTranslationPatch
 
         foreach (var method in ResolveTargets(
                      "XRL.World.Parts.Skill.Cudgel_Backswing",
+                     "FireEvent",
+                     [eventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTargets(
+                     "XRL.World.Parts.Skill.Cudgel_SmashUp",
                      "FireEvent",
                      [eventType]))
         {
@@ -364,6 +376,11 @@ public static class CombatSkillMessageTranslationPatch
                 BackswingPattern,
                 source,
                 (match, spans) => $"{Restore(match, spans, "weapon")}で返し打ちした。",
+                out translated)
+            || TryTranslatePattern(
+                CudgelSmashUpPreparePattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "weapon")}を破壊のために構えた。",
                 out translated)
             || TryTranslatePattern(
                 ActorBackswingPattern,

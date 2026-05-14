@@ -2964,6 +2964,9 @@ public sealed class CombatAndLogMessageQueuePatchTests
         "A supernal force helps you shake off a mental state!",
         "超自然的な力が精神状態を振り払う助けとなった！")]
     [TestCase("You backswing with {{Y|your cudgel}}.", "{{Y|your cudgel}}で返し打ちした。")]
+    [TestCase(
+        "{{G|You prepare {{Y|your cudgel}} for demolition.}}",
+        "{{G|{{Y|your cudgel}}を破壊のために構えた。}}")]
     [TestCase("The snapjaw backswings with {{Y|its cudgel}}.", "The snapjawが{{Y|its cudgel}}で返し打ちした。")]
     [TestCase(
         "You muster your will and shake off some of your confusion.",
@@ -2987,6 +2990,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("You shook off the stun.")]
     [TestCase("A supernal force helps you shake off the effect!")]
     [TestCase("You lose sight of your mark.")]
+    [TestCase("{{G|You prepare {{Y|your cudgel}} for demolition.}}")]
     [TestCase("You rejoinder with {{Y|your dagger}}.")]
     public void CombatSkillMessages_DoNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
     {

@@ -1056,6 +1056,56 @@ def _axe_dismember_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     )
 
 
+def _cudgel_smash_up_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id=(
+                "XRL.World.Parts.Skill/Cudgel_SmashUp.cs::"
+                "XRL.World.Parts.Skill.Cudgel_SmashUp.FireEvent"
+            ),
+            lines=(95,),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/CombatSkillMessageTranslationPatch.cs",
+                    (
+                        "XRL.World.Parts.Skill.Cudgel_SmashUp",
+                        "CudgelSmashUpPreparePattern",
+                        "TryTranslateQueuedMessage",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("CombatSkillMessageTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "CombatSkillMessages_TranslateInventoriedQueuedShapes_WhenOwnerPatched",
+                        "CombatSkillMessages_DoNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "{{G|You prepare {{Y|your cudgel}} for demolition.}}",
+                        "{{G|{{Y|your cudgel}}を破壊のために構えた。}}",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(CombatSkillMessageTranslationPatch)",
+                        "XRL.World.Parts.Skill.Cudgel_SmashUp|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                    (
+                        "You must have a cudgel equipped in your primary hand to demolish things.",
+                        "You can't Demolish until Slam is off cooldown.",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _keybinds_screen_conflict_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         (
@@ -12253,6 +12303,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_conversation_reward_popup_callsites(),
     *_sunder_mind_owner_callsites(),
     *_axe_dismember_owner_callsites(),
+    *_cudgel_smash_up_owner_callsites(),
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
     CoveredOwnerCallsites(
