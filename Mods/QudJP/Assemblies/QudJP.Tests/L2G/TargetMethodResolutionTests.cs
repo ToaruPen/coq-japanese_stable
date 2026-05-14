@@ -1817,6 +1817,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Quests.AscensionSystem|BarathrumStartConversation|System.Void|XRL.World.GameObject",
         "XRL.CharacterBuilds.Qud.QudSpecificCharacterInitModule|handleBootEvent|System.Object|System.String|XRL.XRLGame|XRL.CharacterBuilds.EmbarkInfo|System.Object",
         "XRL.World.Biomes.BiomeManager|DisplaySurfaceDistribution|System.Void|System.String",
+        "XRL.World.Parts.Container|AttemptOpen|System.Void|XRL.World.GameObject|XRL.World.IEvent",
         "XRL.World.Parts.DecoyHologramEmitter|CreateHolograms|XRL.World.Parts.ActivePartStatus|XRL.World.GameObject",
         "XRL.World.Parts.RandomAltarBaetyl|HandleBaetylRewardWish|System.Boolean|System.String",
         "XRL.World.Parts.Skill.Axe_Dismember|CastForceSuccess|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Skill.Axe_Dismember|XRL.World.GameObject",

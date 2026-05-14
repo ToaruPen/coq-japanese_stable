@@ -1652,6 +1652,13 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         return true;
     }
 
+    public void AttemptOpenContainer(DummyGameObject? actor = null, DummyEvent? parentEvent = null)
+    {
+        _ = actor;
+        _ = parentEvent;
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+
     public void AwardDynamicQuestRewardGameObject()
     {
         _ = nameof(AwardDynamicQuestRewardGameObject);

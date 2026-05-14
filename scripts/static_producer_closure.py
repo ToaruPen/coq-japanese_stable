@@ -1205,6 +1205,52 @@ def _tinkering_tinker1_recharge_owner_callsites() -> tuple[CoveredOwnerCallsites
     )
 
 
+def _container_attempt_open_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts/Container.cs::XRL.World.Parts.Container.AttemptOpen",
+            lines=(113, 132),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                    (
+                        "XRL.World.Parts.Container",
+                        "ContainerCannotTradePattern",
+                        "ContainerEmptyStorePattern",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "nameof(DummySingleCallsiteOwnerPopupTarget.AttemptOpenContainer)",
+                        "You cannot trade with {{Y|the snapjaw scavenger}}.",
+                        "There's nothing in that. Would you like to store an item?",
+                        "There's nothing on that. Would you like to store an item?",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SingleCallsiteOwnerPopupTranslationPatch)",
+                        "XRL.World.Parts.Container|AttemptOpen|System.Void|XRL.World.GameObject|XRL.World.IEvent",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                    ("That is not owned by you. Are you sure you want to open it?",),
+                ),
+            ),
+        ),
+    )
+
+
 def _keybinds_screen_conflict_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         (
@@ -12405,6 +12451,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_cudgel_smash_up_owner_callsites(),
     *_submersion_owner_callsites(),
     *_tinkering_tinker1_recharge_owner_callsites(),
+    *_container_attempt_open_owner_callsites(),
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
     CoveredOwnerCallsites(

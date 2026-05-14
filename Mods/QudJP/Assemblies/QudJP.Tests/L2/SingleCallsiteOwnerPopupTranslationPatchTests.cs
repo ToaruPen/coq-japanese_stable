@@ -111,6 +111,24 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "TinkeringRechargeCannot",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.AttemptOpenContainer),
+        "You cannot trade with {{Y|the snapjaw scavenger}}.",
+        "{{Y|the snapjaw scavenger}}とは取引できない。",
+        "ContainerCannotTrade",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.AttemptOpenContainer),
+        "There's nothing in that. Would you like to store an item?",
+        "その中には何も入っていない。アイテムを預けるか？",
+        "ContainerEmptyStore",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.AttemptOpenContainer),
+        "There's nothing on that. Would you like to store an item?",
+        "そこには何も置かれていない。アイテムを預けるか？",
+        "ContainerEmptyStore",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.AwardDynamicQuestRewardGameObject),
         "You receive {{Y|the copper nugget}}.",
         "{{Y|the copper nugget}}を受け取った。",
@@ -394,6 +412,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         "{{Y|The chem cell}} can't be recharged that way.",
         "TinkeringRechargeCannot",
+        PopupMethod.Show)]
+    [TestCase(
+        "You cannot trade with {{Y|the snapjaw scavenger}}.",
+        "ContainerCannotTrade",
+        PopupMethod.Show)]
+    [TestCase(
+        "There's nothing in that. Would you like to store an item?",
+        "ContainerEmptyStore",
         PopupMethod.Show)]
     [TestCase(
         "You receive {{Y|the copper nugget}}.",
@@ -767,6 +793,8 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.World.Parts.Skill.Submersion|HandleEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.Recharge) =>
                 "XRL.World.Parts.Skill.Tinkering_Tinker1|Recharge",
+            nameof(DummySingleCallsiteOwnerPopupTarget.AttemptOpenContainer) =>
+                "XRL.World.Parts.Container|AttemptOpen",
             nameof(DummySingleCallsiteOwnerPopupTarget.AwardDynamicQuestRewardGameObject) =>
                 "XRL.World.DynamicQuestRewardElement_GameObject|award",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleFactionEncounterWish) =>

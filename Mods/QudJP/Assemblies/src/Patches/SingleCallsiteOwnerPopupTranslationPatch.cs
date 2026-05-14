@@ -13,6 +13,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string Context = nameof(SingleCallsiteOwnerPopupTranslationPatch);
     private const string AscensionBarathrumOwner = "XRL.World.Quests.AscensionSystem|BarathrumStartConversation";
     private const string CharacterInitOwner = "XRL.CharacterBuilds.Qud.QudSpecificCharacterInitModule|handleBootEvent";
+    private const string ContainerAttemptOpenOwner = "XRL.World.Parts.Container|AttemptOpen";
     private const string DecoyHologramOwner = "XRL.World.Parts.DecoyHologramEmitter|CreateHolograms";
     private const string BaetylRewardWishOwner = "XRL.World.Parts.RandomAltarBaetyl|HandleBaetylRewardWish";
     private const string AxeDismemberOwner = "XRL.World.Parts.Skill.Axe_Dismember|CastForceSuccess";
@@ -64,6 +65,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static readonly Regex CharacterInitUnknownBlueprintPattern = new(
         "^Error creating player body\\. Unknown blueprint \"(?<blueprint>.+?)\"$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ContainerCannotTradePattern = new(
+        "^You cannot trade with (?<object>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ContainerEmptyStorePattern = new(
+        "^There's nothing (?<preposition>.+?) that\\. Would you like to store an item\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex AxeDismemberSelfPattern = new(
@@ -256,6 +265,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Biomes.BiomeManager",
             "DisplaySurfaceDistribution",
             [typeof(string)]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Container",
+            "AttemptOpen",
+            [gameObjectType, iEventType]);
         AddTarget(
             targets,
             "XRL.World.Parts.DecoyHologramEmitter",
@@ -567,6 +581,27 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             translated = $"{match.Groups["target"].Value}を叩きつけてもよいか？";
             detail = "CudgelSlamSelfConfirmation";
+            return true;
+        }
+
+        match = ContainerCannotTradePattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, ContainerAttemptOpenOwner))
+        {
+            translated = $"{match.Groups["object"].Value}とは取引できない。";
+            detail = "ContainerCannotTrade";
+            return true;
+        }
+
+        match = ContainerEmptyStorePattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, ContainerAttemptOpenOwner))
+        {
+            translated = match.Groups["preposition"].Value switch
+            {
+                "in" => "その中には何も入っていない。アイテムを預けるか？",
+                "on" => "そこには何も置かれていない。アイテムを預けるか？",
+                _ => "そこには何もない。アイテムを預けるか？",
+            };
+            detail = "ContainerEmptyStore";
             return true;
         }
 
