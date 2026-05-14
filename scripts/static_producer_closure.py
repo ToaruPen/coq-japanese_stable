@@ -10007,6 +10007,7 @@ def _mutation_generated_text_evidence() -> tuple[EvidenceFile, ...]:
                 "LifeDrainInvalidTargetPattern",
                 "PackRatDropCooldownPattern",
                 "BelcherOutOfRangePattern",
+                "BelcherResultPattern",
                 "PackRatCollectMoreJunkPattern",
             ),
         ),
@@ -10023,6 +10024,7 @@ def _mutation_generated_text_evidence() -> tuple[EvidenceFile, ...]:
             (
                 "Patch_TranslatesMutationGeneratedOwnerPopups_WhenOwnerPatched",
                 "Patch_TranslatesPackRatGeneratedQueueMessage_WhenOwnerPatched",
+                "Patch_TranslatesBelcherGeneratedQueueMessage_WhenOwnerPatched",
                 "Patch_DoesNotClaimPopupOnlyGeneratedTraffic_WhenOwnerAbsent",
                 "Patch_DoesNotClaimQueueOnlyGeneratedTraffic_WhenOwnerAbsent",
                 "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
@@ -10058,6 +10060,11 @@ def _mutation_generated_text_families() -> tuple[CoveredOwnerFamily, ...]:
             inventory_statuses=("owner_patch_required",),
             evidence_files=_mutation_generated_text_evidence(),
         ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts.Mutation/Belcher.cs::XRL.World.Parts.Mutation.Belcher.Cast",
+            inventory_statuses=("needs_family_review",),
+            evidence_files=_mutation_generated_text_evidence(),
+        ),
     )
 
 
@@ -10073,12 +10080,6 @@ def _mutation_generated_text_callsites() -> tuple[CoveredOwnerCallsites, ...]:
         CoveredOwnerCallsites(
             family_id="XRL.World.Parts.Mutation/PackRat.cs::XRL.World.Parts.Mutation.PackRat.FireEvent",
             lines=(55, 90),
-            inventory_statuses=("needs_family_review",),
-            evidence_files=evidence_files,
-        ),
-        CoveredOwnerCallsites(
-            family_id="XRL.World.Parts.Mutation/Belcher.cs::XRL.World.Parts.Mutation.Belcher.Cast",
-            lines=(160,),
             inventory_statuses=("needs_family_review",),
             evidence_files=evidence_files,
         ),

@@ -29,6 +29,9 @@ public static class MutationGeneratedTextTranslationPatch
     private static readonly Regex BelcherOutOfRangePattern = new(
         "^That is out of range! \\((?<range>\\d+) squares?\\)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex BelcherResultPattern = new(
+        "^(?:(?<you>You)|(?<subject>.+?)) (?:belches|belch) forth (?<objects>.+?)(?<punct>[.!])$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PackRatCollectMoreJunkPattern = new(
         "^You must collect more junk! \\(minimum: (?<weight>\\d+) lbs\\.\\)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -231,9 +234,32 @@ public static class MutationGeneratedTextTranslationPatch
             return true;
         }
 
+        match = BelcherResultPattern.Match(stripped);
+        if (match.Success && OwnerMatches(ownerKey, BelcherCastOwner))
+        {
+            translated = TranslateBelcherResult(source, stripped, spans, match);
+            detail = "BelcherResult";
+            return true;
+        }
+
         translated = source;
         detail = string.Empty;
         return false;
+    }
+
+    private static string TranslateBelcherResult(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        Match match)
+    {
+        var subject = match.Groups["you"].Success
+            ? "あなた"
+            : RestoreCapture(match, spans, "subject").Trim();
+        var objects = RestoreCapture(match, spans, "objects").Trim();
+        var punctuation = string.Equals(match.Groups["punct"].Value, "!", StringComparison.Ordinal) ? "！" : "。";
+        var translated = subject + "は" + objects + "を吐き出した" + punctuation;
+        return RestoreWholeSourceBoundaryWrappers(translated, spans, stripped.Length, source);
     }
 
     private static string TranslateLifeDrainTarget(Match match, IReadOnlyList<ColorSpan> spans)

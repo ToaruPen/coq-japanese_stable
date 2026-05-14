@@ -75,6 +75,20 @@ public sealed class MutationGeneratedTextTranslationPatchTests
             expectedHits: 1);
     }
 
+    [TestCase("You belch forth a quartz urchin.", "あなたはa quartz urchinを吐き出した。")]
+    [TestCase("You belch forth {{G|a quartz urchin}}.", "あなたは{{G|a quartz urchin}}を吐き出した。")]
+    [TestCase("{{Y|You belch forth a quartz urchin!}}", "{{Y|あなたはa quartz urchinを吐き出した！}}")]
+    [TestCase("The urchin belcher belches forth 2 quartz urchins.", "The urchin belcherは2 quartz urchinsを吐き出した。")]
+    public void Patch_TranslatesBelcherGeneratedQueueMessage_WhenOwnerPatched(string source, string expected)
+    {
+        AssertOwnerQueuedMessage(
+            BelcherOwner,
+            source,
+            expected,
+            "BelcherResult",
+            expectedHits: 1);
+    }
+
     [Test]
     public void Patch_DoesNotClaimPopupOnlyGeneratedTraffic_WhenOwnerAbsent()
     {
@@ -99,8 +113,9 @@ public sealed class MutationGeneratedTextTranslationPatchTests
         }
     }
 
-    [Test]
-    public void Patch_DoesNotClaimQueueOnlyGeneratedTraffic_WhenOwnerAbsent()
+    [TestCase("&RYou must collect more junk! (minimum: 90 lbs.)", "PackRatCollectMoreJunk")]
+    [TestCase("You belch forth a quartz urchin.", "BelcherResult")]
+    public void Patch_DoesNotClaimQueueOnlyGeneratedTraffic_WhenOwnerAbsent(string source, string detail)
     {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -108,12 +123,12 @@ public sealed class MutationGeneratedTextTranslationPatchTests
         {
             PatchQueue(harmony);
 
-            DummyMessageQueue.AddPlayerMessage("&RYou must collect more junk! (minimum: 90 lbs.)", Capitalize: false);
+            DummyMessageQueue.AddPlayerMessage(source, Capitalize: false);
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("&RYou must collect more junk! (minimum: 90 lbs.)"));
-                Assert.That(QueueHitCount("PackRatCollectMoreJunk"), Is.EqualTo(0));
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+                Assert.That(QueueHitCount(detail), Is.EqualTo(0));
             });
         }
         finally
@@ -133,14 +148,18 @@ public sealed class MutationGeneratedTextTranslationPatchTests
             expectedHits: 0);
     }
 
-    [Test]
-    public void Patch_DoesNotRetranslateDirectMarkedQueueMessage_WhenOwnerPatched()
+    [TestCase(PackRatOwner, "&RYou must collect more junk! (minimum: 90 lbs.)", "PackRatCollectMoreJunk")]
+    [TestCase(BelcherOwner, "You belch forth a quartz urchin.", "BelcherResult")]
+    public void Patch_DoesNotRetranslateDirectMarkedQueueMessage_WhenOwnerPatched(
+        string ownerKey,
+        string source,
+        string detail)
     {
         AssertOwnerQueuedMessage(
-            PackRatOwner,
-            MessageFrameTranslator.MarkDirectTranslation("&RYou must collect more junk! (minimum: 90 lbs.)"),
-            "&RYou must collect more junk! (minimum: 90 lbs.)",
-            "PackRatCollectMoreJunk",
+            ownerKey,
+            MessageFrameTranslator.MarkDirectTranslation(source),
+            source,
+            detail,
             expectedHits: 0);
     }
 
@@ -176,11 +195,15 @@ public sealed class MutationGeneratedTextTranslationPatchTests
         AssertOwnerPopup(ownerKey, source, source, "Unsupported", expectedHits: 0);
     }
 
-    [TestCase("")]
-    [TestCase("You must collect more junk soon.")]
-    public void Patch_LeavesUnsupportedQueuedMessagesUnchanged_WhenOwnerPatched(string source)
+    [TestCase(PackRatOwner, "", "PackRatCollectMoreJunk")]
+    [TestCase(PackRatOwner, "You must collect more junk soon.", "PackRatCollectMoreJunk")]
+    [TestCase(BelcherOwner, "You spit forth a quartz urchin.", "BelcherResult")]
+    public void Patch_LeavesUnsupportedQueuedMessagesUnchanged_WhenOwnerPatched(
+        string ownerKey,
+        string source,
+        string detail)
     {
-        AssertOwnerQueuedMessage(PackRatOwner, source, source, "PackRatCollectMoreJunk", expectedHits: 0);
+        AssertOwnerQueuedMessage(ownerKey, source, source, detail, expectedHits: 0);
     }
 
     private static void AssertOwnerPopup(
