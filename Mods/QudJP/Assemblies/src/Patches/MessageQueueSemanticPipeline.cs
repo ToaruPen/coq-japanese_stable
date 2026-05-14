@@ -41,6 +41,7 @@ internal static class MessageQueueSemanticPipeline
         TerrainTravelTranslationPatch.TryTranslateQueuedMessage,
         PrecognitionTranslationPatch.TryTranslateQueuedMessage,
         WishCommandQueueTranslationPatch.TryTranslateQueuedMessage,
+        SingleCallsiteOwnerQueueTranslationPatch.TryTranslateQueuedMessage,
         FugueOnStepTranslationPatch.TryTranslateQueuedMessage,
         MentalShieldTranslationPatch.TryTranslateQueuedMessage,
         TabulaRasaeTranslationPatch.TryTranslateQueuedMessage,

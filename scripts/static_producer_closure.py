@@ -9012,6 +9012,55 @@ def _wish_command_queue_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _single_callsite_owner_queue_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerQueueTranslationPatch.cs",
+        (
+            "SingleCallsiteOwnerQueueTranslationPatch",
+            "ModMorphogeneticOwner",
+            "WeirdwireConduitOwner",
+            "MorphogeneticShockPattern",
+            "WeirdwireCopperWirePattern",
+            "TryTranslateQueuedMessage",
+        ),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("SingleCallsiteOwnerQueueTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerQueueTranslationPatchTests.cs",
+        (
+            "SingleCallsiteOwnerQueue_TranslatesOwnerMessages_WhenOwnerPatched",
+            "SingleCallsiteOwnerQueue_PreservesQueuedMessageColor_WhenOwnerPatched",
+            "SingleCallsiteOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+            "SingleCallsiteOwnerQueue_DoesNotTranslateWrongOwnerMessage_WhenOwnerPatched",
+            "SingleCallsiteOwnerQueue_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "SingleCallsiteOwnerQueue_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(SingleCallsiteOwnerQueueTranslationPatch)",
+            "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock|System.Boolean|XRL.World.GameObject|System.Int32|XRL.World.GameObject|System.Int32",
+            "XRL.World.Quests.WeirdwireConduitSystem|HandleEvent|System.Boolean|XRL.World.TookEvent",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/ModMorphogenetic.cs::XRL.World.Parts.ModMorphogenetic.ApplyMorphicShock",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, tests, target_tests),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Quests/WeirdwireConduitSystem.cs::XRL.World.Quests.WeirdwireConduitSystem.HandleEvent",
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, tests, target_tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -11160,6 +11209,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_hidden_render_families(),
     *_engraver_families(),
     *_wish_command_queue_families(),
+    *_single_callsite_owner_queue_families(),
     *_auto_act_reset_family(),
     *_prefixed_owner_queue_families(),
     *_generated_subject_queue_families(),

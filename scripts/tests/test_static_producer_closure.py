@@ -278,6 +278,22 @@ def test_wish_command_queue_families_are_closed_by_owner_patch() -> None:
         assert family_id not in queued_family_ids
 
 
+def test_single_callsite_owner_queue_families_are_closed_by_owner_patch() -> None:
+    """Single-callsite owner queue messages are closed only by owner-keyed route evidence."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    family_ids = {
+        "XRL.World.Parts/ModMorphogenetic.cs::XRL.World.Parts.ModMorphogenetic.ApplyMorphicShock",
+        "XRL.World.Quests/WeirdwireConduitSystem.cs::XRL.World.Quests.WeirdwireConduitSystem.HandleEvent",
+    }
+
+    for family_id in family_ids:
+        assert raw_families[family_id]["family_closure_status"] == "owner_patch_required"
+        assert family_id in covered_family_ids()
+        assert family_id not in queued_family_ids
+
+
 def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:
     """Uncovered high-volume owner families must stay actionable."""
     inventory = load_inventory(TRACKED_INVENTORY)

@@ -1700,6 +1700,11 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Quests.ReclamationSystem|WishTimer|System.Void",
         "XRL.World.StatWishHandler|ClearStatShifts|System.Void",
     })]
+    [TestCase(typeof(SingleCallsiteOwnerQueueTranslationPatch), new[]
+    {
+        "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock|System.Boolean|XRL.World.GameObject|System.Int32|XRL.World.GameObject|System.Int32",
+        "XRL.World.Quests.WeirdwireConduitSystem|HandleEvent|System.Boolean|XRL.World.TookEvent",
+    })]
     [TestCase(typeof(ForceBubbleOwnerTranslationPatch), new[]
     {
         "XRL.World.Parts.ForceEmitter|ActivateForceEmitter|System.Boolean|XRL.World.IEvent",
