@@ -37,6 +37,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string ReputationSetFactionRankOwner = "XRL.World.Reputation|SetFactionRank";
     private const string RecoilOnDeathOwner = "XRL.World.Parts.RecoilOnDeath|HandleEvent";
     private const string SpraybottleOwner = "XRL.World.Parts.Spraybottle|HandleEvent";
+    private const string FixitSprayOwner = "XRL.World.Parts.FixitSpray|HandleEvent";
     private const string SummoningCurioOwner = "XRL.World.Parts.SummoningCurio|HandleEvent";
     private const string FoodOwner = "XRL.World.Parts.Food|HandleEvent";
     private const string SpaceTimeVortexOwner = "XRL.World.Parts.SpaceTimeVortex|ApplyVortex";
@@ -133,6 +134,18 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static readonly Regex SpraybottleCoveredPattern = new(
         "^(?<object>.+?) (?<verb>is|are) covered in (?<liquid>.+?)!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex FixitSprayPhasePassThroughPattern = new(
+        "^Some sticky goop passes through (?<object>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex FixitSprayLiquidMixPattern = new(
+        "^Some sticky goop mixes in with (?<object>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex FixitSprayCoveredPattern = new(
+        "^(?<object>.+?) (?<verb>is|are) covered in sticky goop!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex SummoningCurioActivationPattern = new(
@@ -330,6 +343,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         AddTarget(
             targets,
             "XRL.World.Parts.Spraybottle",
+            "HandleEvent",
+            [inventoryActionEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.FixitSpray",
             "HandleEvent",
             [inventoryActionEventType]);
         AddTarget(
@@ -638,6 +656,33 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             translated = $"{match.Groups["object"].Value}は{match.Groups["liquid"].Value}に覆われた！";
             detail = "SpraybottleCovered";
+            return true;
+        }
+
+        match = FixitSprayPhasePassThroughPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, FixitSprayOwner, DummySingleCallsiteOwner + "HandleFixitSpray"))
+        {
+            translated = $"ねばつく粘液が{match.Groups["object"].Value}を通り抜けた。";
+            detail = "FixitSprayPhasePassThrough";
+            return true;
+        }
+
+        match = FixitSprayLiquidMixPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, FixitSprayOwner, DummySingleCallsiteOwner + "HandleFixitSpray"))
+        {
+            translated = $"ねばつく粘液が{match.Groups["object"].Value}に混ざった。";
+            detail = "FixitSprayLiquidMix";
+            return true;
+        }
+
+        match = FixitSprayCoveredPattern.Match(source);
+        if (match.Success
+            && !string.Equals(match.Groups["object"].Value, "You", StringComparison.Ordinal)
+            && !string.Equals(match.Groups["object"].Value, "you", StringComparison.Ordinal)
+            && OwnerMatches(ownerKey, FixitSprayOwner, DummySingleCallsiteOwner + "HandleFixitSpray"))
+        {
+            translated = $"{match.Groups["object"].Value}はべとべとの粘液に覆われた！";
+            detail = "FixitSprayCovered";
             return true;
         }
 

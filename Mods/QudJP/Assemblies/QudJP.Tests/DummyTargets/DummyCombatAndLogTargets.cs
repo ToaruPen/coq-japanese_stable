@@ -1736,6 +1736,14 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         return true;
     }
 
+    public bool HandleFixitSpray(DummyInventoryActionEvent? e = null)
+    {
+        _ = e;
+        _ = nameof(HandleFixitSpray);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
     public bool HandleSummoningCurio(DummyInventoryActionEvent? e = null)
     {
         _ = e;

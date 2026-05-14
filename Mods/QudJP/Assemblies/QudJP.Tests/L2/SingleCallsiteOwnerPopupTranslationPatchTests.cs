@@ -239,6 +239,24 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "SpraybottleCovered",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleFixitSpray),
+        "Some sticky goop passes through {{Y|phase spider}}.",
+        "ねばつく粘液が{{Y|phase spider}}を通り抜けた。",
+        "FixitSprayPhasePassThrough",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleFixitSpray),
+        "Some sticky goop mixes in with {{Y|oil pool}}.",
+        "ねばつく粘液が{{Y|oil pool}}に混ざった。",
+        "FixitSprayLiquidMix",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleFixitSpray),
+        "{{Y|broken chair}} is covered in sticky goop!",
+        "{{Y|broken chair}}はべとべとの粘液に覆われた！",
+        "FixitSprayCovered",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleSummoningCurio),
         "You activate the curio and toss it on the ground. It erupts into a throng of tiny polygons, which amalgamate into a fully formed {{Y|polygonal snapjaw}}.",
         "キュリオを起動して地面に投げた。小さなポリゴンの群れが噴出し、完全な形をした{{Y|polygonal snapjaw}}へと融合した。",
@@ -411,6 +429,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "SpraybottleCovered",
         PopupMethod.Show)]
     [TestCase(
+        "Some sticky goop passes through {{Y|phase spider}}.",
+        "FixitSprayPhasePassThrough",
+        PopupMethod.Show)]
+    [TestCase(
+        "Some sticky goop mixes in with {{Y|oil pool}}.",
+        "FixitSprayLiquidMix",
+        PopupMethod.Show)]
+    [TestCase(
+        "{{Y|broken chair}} is covered in sticky goop!",
+        "FixitSprayCovered",
+        PopupMethod.Show)]
+    [TestCase(
         "You activate the curio and toss it on the ground. It erupts into a throng of tiny polygons, which amalgamate into a fully formed {{Y|polygonal snapjaw}}.",
         "SummoningCurioActivation",
         PopupMethod.Show)]
@@ -509,6 +539,15 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "you are covered in slime!",
         "SpraybottleCovered")]
     [TestCase(
+        "Some sticky goop passes through {{Y|phase spider}}.",
+        "FixitSprayPhasePassThrough")]
+    [TestCase(
+        "Some sticky goop mixes in with {{Y|oil pool}}.",
+        "FixitSprayLiquidMix")]
+    [TestCase(
+        "{{Y|broken chair}} is covered in sticky goop!",
+        "FixitSprayCovered")]
+    [TestCase(
         "You activate the curio and toss it on the ground. It erupts into a throng of tiny polygons, which amalgamate into a fully formed {{Y|polygonal snapjaw}}.",
         "SummoningCurioActivation")]
     [TestCase(
@@ -604,6 +643,27 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
             });
     }
 
+    [TestCase("You are covered in sticky goop!")]
+    [TestCase("It's a {{Y|fix-it spray foam}}!")]
+    public void Patch_DoesNotClaimFixitSprayFixedOrRuntimePopups_WhenFixitSprayOwnerPatched(string source)
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(SingleCallsiteOwnerPopupTranslationPatch),
+            RequireOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.HandleFixitSpray)),
+            () =>
+            {
+                InvokeOwnerMethod(nameof(DummySingleCallsiteOwnerPopupTarget.HandleFixitSpray), source);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                    Assert.That(HitCount("FixitSprayPhasePassThrough"), Is.Zero);
+                    Assert.That(HitCount("FixitSprayLiquidMix"), Is.Zero);
+                    Assert.That(HitCount("FixitSprayCovered"), Is.Zero);
+                });
+            });
+    }
+
     private static MethodInfo RequireOwnerMethod(string methodName)
     {
         return methodName switch
@@ -681,6 +741,7 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                     typeof(string)),
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleGenocideCurio) or
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleGritGateMainframeTerminal) or
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleFixitSpray) or
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpraybottle) or
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleSummoningCurio) or
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood) or
@@ -924,6 +985,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 {
                     PopupMessageToShow = message,
                 }.HandleSpraybottle(new DummyInventoryActionEvent());
+                break;
+            case nameof(DummySingleCallsiteOwnerPopupTarget.HandleFixitSpray):
+                new DummySingleCallsiteOwnerPopupTarget
+                {
+                    PopupMessageToShow = message,
+                }.HandleFixitSpray(new DummyInventoryActionEvent());
                 break;
             case nameof(DummySingleCallsiteOwnerPopupTarget.HandleSummoningCurio):
                 new DummySingleCallsiteOwnerPopupTarget

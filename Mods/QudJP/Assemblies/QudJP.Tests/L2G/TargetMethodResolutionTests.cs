@@ -1741,6 +1741,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Reputation|SetFactionRank|System.Void|System.String|System.String|System.Boolean|System.Boolean",
         "XRL.World.Parts.RecoilOnDeath|HandleEvent|System.Boolean|XRL.World.BeforeDieEvent",
         "XRL.World.Parts.Spraybottle|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.FixitSpray|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.SummoningCurio|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.Food|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.SpaceTimeVortex|ApplyVortex|System.Boolean|XRL.World.GameObject",
