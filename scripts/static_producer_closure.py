@@ -1251,6 +1251,54 @@ def _container_attempt_open_owner_callsites() -> tuple[CoveredOwnerCallsites, ..
     )
 
 
+def _elevator_switch_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts/ElevatorSwitch.cs::XRL.World.Parts.ElevatorSwitch.FireEvent",
+            lines=(58,),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerQueueTranslationPatch.cs",
+                    (
+                        "XRL.World.Parts.ElevatorSwitch",
+                        "ElevatorSwitchOwner",
+                        "ElevatorSwitchNothingHappens",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerQueueTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerQueueTranslationPatchTests.cs",
+                    (
+                        "SingleCallsiteOwnerQueue_TranslatesOwnerMessages_WhenOwnerPatched",
+                        "SingleCallsiteOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "SingleCallsiteOwnerQueue_DoesNotTranslateWrongOwnerMessage_WhenOwnerPatched",
+                        "nameof(DummySingleCallsiteOwnerQueueTarget.FireElevatorSwitchEvent)",
+                        "Nothing seems to happen when you hit the switch.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SingleCallsiteOwnerQueueTranslationPatch)",
+                        "XRL.World.Parts.ElevatorSwitch|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                    (
+                        "The chrome platform begins to hum as it ascends into the darkness.",
+                        "The chrome platform begins to hum as it descends into the darkness.",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _keybinds_screen_conflict_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         (
@@ -12452,6 +12500,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_submersion_owner_callsites(),
     *_tinkering_tinker1_recharge_owner_callsites(),
     *_container_attempt_open_owner_callsites(),
+    *_elevator_switch_owner_callsites(),
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
     CoveredOwnerCallsites(

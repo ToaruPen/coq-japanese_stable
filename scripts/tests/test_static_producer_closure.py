@@ -746,6 +746,33 @@ def test_container_attempt_open_popups_are_split_from_fixed_popup() -> None:
     }
 
 
+def test_elevator_switch_queue_message_is_split_from_fixed_popups() -> None:
+    """ElevatorSwitch.FireEvent closes queue message without claiming fixed popups."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    family_id = "XRL.World.Parts/ElevatorSwitch.cs::XRL.World.Parts.ElevatorSwitch.FireEvent"
+    family_callsites = [
+        callsite
+        for callsite in inventory["callsites"]
+        if callsite["producer_family_id"] == family_id
+    ]
+
+    assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
+    assert family_closure_status(raw_families[family_id]) == "needs_family_review"
+    assert family_id not in covered_family_ids()
+    assert (family_id, 58) in covered_callsite_keys()
+    assert family_id not in queued_family_ids
+    assert {
+        (callsite["line"], callsite["target_surface"], callsite["closure_status"])
+        for callsite in family_callsites
+    } == {
+        (49, "Popup.Show*", "messages_candidate"),
+        (53, "Popup.Show*", "messages_candidate"),
+        (58, "AddPlayerMessage", "owner_patch_required"),
+    }
+
+
 def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:
     """Uncovered high-volume owner families must stay actionable."""
     inventory = load_inventory(TRACKED_INVENTORY)

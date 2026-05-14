@@ -1743,6 +1743,7 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(SingleCallsiteOwnerQueueTranslationPatch), new[]
     {
+        "XRL.World.Parts.ElevatorSwitch|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock|System.Boolean|XRL.World.GameObject|System.Int32|XRL.World.GameObject|System.Int32",
         "XRL.World.Quests.WeirdwireConduitSystem|HandleEvent|System.Boolean|XRL.World.TookEvent",
     })]

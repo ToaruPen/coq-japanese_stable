@@ -10,6 +10,7 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
 {
+    private const string ElevatorSwitchOwner = "XRL.World.Parts.ElevatorSwitch|FireEvent";
     private const string ModMorphogeneticOwner = "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock";
     private const string WeirdwireConduitOwner = "XRL.World.Quests.WeirdwireConduitSystem|HandleEvent";
 
@@ -31,6 +32,11 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
         DynamicTextObservability.ResetForTests();
     }
 
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.FireElevatorSwitchEvent),
+        "Nothing seems to happen when you hit the switch.",
+        "スイッチを押しても何も起こらない。",
+        "ElevatorSwitchNothingHappens")]
     [TestCase(
         nameof(DummySingleCallsiteOwnerQueueTarget.ApplyMorphicShock),
         "A weird, painful shock reverberates through you.",
@@ -94,6 +100,12 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
     [Test]
     public void SingleCallsiteOwnerQueue_DoesNotTranslateWrongOwnerMessage_WhenOwnerPatched()
     {
+        AssertOwnerQueuedMessage(
+            nameof(DummySingleCallsiteOwnerQueueTarget.ApplyMorphicShock),
+            "Nothing seems to happen when you hit the switch.",
+            "Nothing seems to happen when you hit the switch.",
+            "ElevatorSwitchNothingHappens",
+            expectedHits: 0);
         AssertOwnerQueuedMessage(
             nameof(DummySingleCallsiteOwnerQueueTarget.ApplyMorphicShock),
             "You now have 37 feet of copper wire.",
@@ -233,6 +245,7 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
     {
         return methodName switch
         {
+            nameof(DummySingleCallsiteOwnerQueueTarget.FireElevatorSwitchEvent) => CreateOwnerRouteFromKey(ElevatorSwitchOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.ApplyMorphicShock) => CreateOwnerRouteFromKey(ModMorphogeneticOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.HandleWeirdwireTookEvent) => CreateOwnerRouteFromKey(WeirdwireConduitOwner),
             _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected owner method."),
@@ -247,6 +260,8 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
 
     private static class DummySingleCallsiteOwnerQueueTarget
     {
+        public static bool FireElevatorSwitchEvent() => true;
+
         public static bool ApplyMorphicShock() => true;
 
         public static bool HandleWeirdwireTookEvent() => true;

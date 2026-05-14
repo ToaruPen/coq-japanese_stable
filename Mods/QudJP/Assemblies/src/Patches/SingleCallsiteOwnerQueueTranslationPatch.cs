@@ -11,6 +11,7 @@ namespace QudJP.Patches;
 public static class SingleCallsiteOwnerQueueTranslationPatch
 {
     private const string Context = nameof(SingleCallsiteOwnerQueueTranslationPatch);
+    private const string ElevatorSwitchOwner = "XRL.World.Parts.ElevatorSwitch|FireEvent";
     private const string ModMorphogeneticOwner = "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock";
     private const string WeirdwireConduitOwner = "XRL.World.Quests.WeirdwireConduitSystem|HandleEvent";
 
@@ -32,22 +33,36 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
     private static IEnumerable<MethodBase> TargetMethods()
     {
         var targets = new List<MethodBase>();
-        var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
-        var tookEventType = AccessTools.TypeByName("XRL.World.TookEvent");
-        if (gameObjectType is null || tookEventType is null)
+        var elevatorSwitchType = FindAssemblyCSharpType("XRL.World.Parts.ElevatorSwitch");
+        var eventType = FindAssemblyCSharpType("XRL.World.Event");
+        var gameObjectType = FindAssemblyCSharpType("XRL.World.GameObject");
+        var modMorphogeneticType = FindAssemblyCSharpType("XRL.World.Parts.ModMorphogenetic");
+        var tookEventType = FindAssemblyCSharpType("XRL.World.TookEvent");
+        var weirdwireConduitType = FindAssemblyCSharpType("XRL.World.Quests.WeirdwireConduitSystem");
+        if (elevatorSwitchType is null
+            || eventType is null
+            || gameObjectType is null
+            || modMorphogeneticType is null
+            || tookEventType is null
+            || weirdwireConduitType is null)
         {
-            Trace.TraceError("QudJP: {0} target parameter types not found.", Context);
+            Trace.TraceError("QudJP: {0} target types not found.", Context);
             return targets;
         }
 
         AddTarget(
             targets,
-            "XRL.World.Parts.ModMorphogenetic",
+            elevatorSwitchType,
+            "FireEvent",
+            [eventType]);
+        AddTarget(
+            targets,
+            modMorphogeneticType,
             "ApplyMorphicShock",
             [gameObjectType, typeof(int), gameObjectType, typeof(int)]);
         AddTarget(
             targets,
-            "XRL.World.Quests.WeirdwireConduitSystem",
+            weirdwireConduitType,
             "HandleEvent",
             [tookEventType]);
         return targets;
@@ -127,6 +142,14 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
 
     private static bool TryTranslateCore(string source, string? ownerKey, out string translated, out string detail)
     {
+        if (string.Equals(source, "Nothing seems to happen when you hit the switch.", StringComparison.Ordinal)
+            && OwnerMatches(ownerKey, ElevatorSwitchOwner))
+        {
+            translated = "スイッチを押しても何も起こらない。";
+            detail = "ElevatorSwitchNothingHappens";
+            return true;
+        }
+
         var match = MorphogeneticShockPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, ModMorphogeneticOwner))
         {
@@ -185,15 +208,8 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
         return (method.DeclaringType?.FullName ?? string.Empty) + "|" + method.Name;
     }
 
-    private static void AddTarget(List<MethodBase> targets, string typeName, string methodName, Type[] parameters)
+    private static void AddTarget(List<MethodBase> targets, Type targetType, string methodName, Type[] parameters)
     {
-        var targetType = AccessTools.TypeByName(typeName);
-        if (targetType is null)
-        {
-            Trace.TraceError("QudJP: {0} target type {1} not found.", Context, typeName);
-            return;
-        }
-
         var method = AccessTools.Method(targetType, methodName, parameters);
         if (method is not null)
         {
@@ -201,6 +217,25 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
             return;
         }
 
-        Trace.TraceError("QudJP: {0}.{1}.{2} target not found.", Context, typeName, methodName);
+        Trace.TraceError("QudJP: {0}.{1}.{2} target not found.", Context, targetType.FullName, methodName);
+    }
+
+    private static Type? FindAssemblyCSharpType(string fullTypeName)
+    {
+        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            if (!string.Equals(assembly.GetName().Name, "Assembly-CSharp", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            var type = assembly.GetType(fullTypeName, throwOnError: false);
+            if (type is not null)
+            {
+                return type;
+            }
+        }
+
+        return Type.GetType(fullTypeName + ", Assembly-CSharp", throwOnError: false);
     }
 }
