@@ -987,6 +987,10 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Effects.RealityStabilized|FailedToContest|System.Void|XRL.World.GameObject",
         "XRL.World.Effects.RealityStabilized|ShortCircuitDevice|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.Event",
     })]
+    [TestCase(typeof(MassMindTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.MassMind|FireEvent|System.Boolean|XRL.World.Event",
+    })]
     [TestCase(typeof(CyberneticRejectionSyndromeTranslationPatch), new[]
     {
         "XRL.World.Effects.CyberneticRejectionSyndrome|Apply|System.Boolean|XRL.World.GameObject",

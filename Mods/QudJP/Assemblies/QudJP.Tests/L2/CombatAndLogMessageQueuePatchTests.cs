@@ -1988,6 +1988,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
             {
                 Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
                 Assert.That(DummyMessageQueue.LastColor, Is.Null);
+                Assert.That(DummyMessageQueue.LastCapitalize, Is.False);
             });
         }
         finally
@@ -2038,6 +2039,59 @@ public sealed class CombatAndLogMessageQueuePatchTests
     {
         AssertRealityStabilizedEventQueuedMessage(nameof(DummyRealityStabilizedEventTarget.TryContest), string.Empty, string.Empty);
         AssertRealityStabilizedEventPopup(string.Empty, string.Empty);
+    }
+
+    [TestCase(
+        "You feel a small ripple in space and time.",
+        "時空に小さな波紋を感じた。")]
+    [TestCase(
+        "{{R|Someone reaches through the aggregate mind and exhausts your power!}}",
+        "{{R|誰かが集合精神を通じて手を伸ばし、あなたの力を消耗させた！}}")]
+    [TestCase(
+        "{{G|You innervate your mind at someone's expense.}}",
+        "{{G|誰かを犠牲にして精神を活性化した。}}")]
+    public void MassMind_TranslatesQueuedMessages_WhenOwnerPatched(string source, string expected)
+    {
+        AssertMassMindQueuedMessage(source, expected);
+    }
+
+    [TestCase("You feel a small ripple in space and time.")]
+    [TestCase("{{R|Someone reaches through the aggregate mind and exhausts your power!}}")]
+    [TestCase("{{G|You innervate your mind at someone's expense.}}")]
+    public void MassMind_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage(source, null, Capitalize: false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+                Assert.That(DummyMessageQueue.LastColor, Is.Null);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void MassMind_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertMassMindQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("You feel a small ripple in space and time."),
+            "You feel a small ripple in space and time.");
+    }
+
+    [Test]
+    public void MassMind_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertMassMindQueuedMessage(string.Empty, string.Empty);
     }
 
     [TestCase(
@@ -7252,6 +7306,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
             target.ShortCircuitDevice(usePopup: true);
 
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertMassMindQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.FireEvent), typeof(DummyEvent)),
+                typeof(MassMindTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.FireEvent(new DummyEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }
         finally
         {

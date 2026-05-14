@@ -11928,6 +11928,52 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts.Mutation/MassMind.cs::"
+            "XRL.World.Parts.Mutation.MassMind.FireEvent"
+        ),
+        lines=(84, 96, 110),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MassMindTranslationPatch.cs",
+                (
+                    "MassMindTranslationPatch",
+                    "XRL.World.Parts.Mutation.MassMind",
+                    "FireEvent",
+                    "TryTranslateQueuedMessage",
+                    "You feel a small ripple in space and time.",
+                    "Someone reaches through the aggregate mind and exhausts your power!",
+                    "You innervate your mind at someone's expense.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("MassMindTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                (
+                    "MassMind_TranslatesQueuedMessages_WhenOwnerPatched",
+                    "MassMind_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "MassMind_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "MassMind_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                    "You feel a small ripple in space and time.",
+                    "{{R|Someone reaches through the aggregate mind and exhausts your power!}}",
+                    "{{G|You innervate your mind at someone's expense.}}",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(MassMindTranslationPatch)",
+                    "XRL.World.Parts.Mutation.MassMind|FireEvent|System.Boolean|XRL.World.Event",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World/ReverseEngineeringSifrah.cs::"
             "XRL.World.ReverseEngineeringSifrah.Finish"
         ),

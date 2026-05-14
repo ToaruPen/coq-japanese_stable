@@ -22,6 +22,7 @@ internal static class MessageQueueSemanticPipeline
         BodyTranslationPatch.TryTranslateQueuedMessage,
         SunderMindTranslationPatch.TryTranslateQueuedMessage,
         RealityStabilizedEventTranslationPatch.TryTranslateQueuedMessage,
+        MassMindTranslationPatch.TryTranslateQueuedMessage,
         CyberneticRejectionSyndromeTranslationPatch.TryTranslateQueuedMessage,
         TombAnchorSystemTranslationPatch.TryTranslateQueuedMessage,
         CyberneticsMedassistModuleTranslationPatch.TryTranslateQueuedMessage,
