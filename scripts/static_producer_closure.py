@@ -7490,6 +7490,7 @@ def _existing_popup_owner_route_families() -> tuple[CoveredOwnerFamily, ...]:
             "Patch_DoesNotRecordOwnerRoute_WhenOwnerAbsent",
             "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
             "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+            "XrlCoreSaveManagement",
         ),
     )
     golem_tests = EvidenceFile(
@@ -11830,6 +11831,43 @@ COVERED_OWNER_FAMILIES: Final = (
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 COVERED_OWNER_CALLSITES: Final = (
+    CoveredOwnerCallsites(
+        family_id="XRL.Core/XRLCore.cs::XRL.Core.XRLCore.SaveManagement",
+        lines=(3962,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/OldSaveContinueMenuPopupTranslationPatch.cs",
+                ("OldSaveContinueMenuPopupTranslationPatch", "XRL.Core.XRLCore", "SaveManagement"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("OldSaveContinueMenuPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/OldSaveContinueMenuPopupTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesOldSavePopup_WhenOwnerPatched",
+                    "Patch_DoesNotRecordOwnerRoute_WhenOwnerAbsent",
+                    "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                    "XrlCoreSaveManagement",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                ("That save file looks like it's from an older save format revision ({0}). Sorry!",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "OldSaveContinueMenuPopupTranslationPatch",
+                    "XRL.Core.XRLCore|SaveManagement|XRL.XRLGame",
+                ),
+            ),
+        ),
+    ),
     CoveredOwnerCallsites(
         family_id=(
             "XRL.World.Biomes/BiomeManager.cs::"

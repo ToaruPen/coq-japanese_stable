@@ -1600,6 +1600,7 @@ public sealed class TargetMethodResolutionTests
     {
         "Qud.UI.MainMenu|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",
         "Qud.UI.SaveManagement|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",
+        "XRL.Core.XRLCore|SaveManagement|XRL.XRLGame",
     })]
     [TestCase(typeof(GolemQuestSelectionPopupTranslationPatch), new[]
     {

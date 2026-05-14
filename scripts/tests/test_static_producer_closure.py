@@ -408,6 +408,25 @@ def test_remaining_pure_single_callsite_owner_popup_families_are_closed_by_owner
     assert deferred_family_id in queued_family_ids
 
 
+def test_xrlcore_old_save_popup_callsite_is_split_from_fixed_save_management_popups() -> None:
+    """XRLCore.SaveManagement closes the old-save owner popup without claiming fixed save prompts."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
+    source_entries = owner_action_queue_by_file(inventory)
+    family_id = "XRL.Core/XRLCore.cs::XRL.Core.XRLCore.SaveManagement"
+
+    assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
+    assert family_closure_status(raw_families[family_id]) == "needs_family_review"
+    assert family_id not in covered_family_ids()
+    assert (family_id, 3962) in covered_callsite_keys()
+    assert family_id not in queued_family_ids
+
+    xrlcore_entry = next(entry for entry in source_entries if entry["source_file"] == "XRL.Core/XRLCore.cs")
+    assert "SaveManagement" not in [family["member_name"] for family in xrlcore_entry["families"]]
+    assert "PlayerTurn" in [family["member_name"] for family in xrlcore_entry["families"]]
+
+
 def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:
     """Uncovered high-volume owner families must stay actionable."""
     inventory = load_inventory(TRACKED_INVENTORY)

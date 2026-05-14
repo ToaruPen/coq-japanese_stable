@@ -59,6 +59,7 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
 
     [TestCase(nameof(DummyOldSaveContinueMenuProducer.MainMenuContinueMenu))]
     [TestCase(nameof(DummyOldSaveContinueMenuProducer.SaveManagementContinueMenu))]
+    [TestCase(nameof(DummyOldSaveContinueMenuProducer.XrlCoreSaveManagement))]
     public void Patch_TranslatesOldSavePopup_WhenOwnerPatched(string methodName)
     {
         WithPatchedOwnerAndPopup(methodName, () =>
@@ -72,7 +73,7 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyPopupShow.LastShowAsyncMessage, Is.EqualTo(TranslatedOldSaveMessage));
+                Assert.That(LastPopupMessage(methodName), Is.EqualTo(TranslatedOldSaveMessage));
                 Assert.That(HitCount(), Is.EqualTo(1));
             });
         });
@@ -84,79 +85,78 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
         WithPatchedPopupOnly(() =>
         {
             _ = DummyPopupShow.ShowAsync(OldSaveMessage);
+            DummyPopupShow.Show(OldSaveMessage);
 
             Assert.Multiple(() =>
             {
                 Assert.That(DummyPopupShow.LastShowAsyncMessage, Is.EqualTo(TranslatedOldSaveMessage));
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(TranslatedOldSaveMessage));
                 Assert.That(HitCount(), Is.Zero);
             });
         });
     }
 
-    [Test]
-    public void Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    [TestCase(nameof(DummyOldSaveContinueMenuProducer.MainMenuContinueMenu))]
+    [TestCase(nameof(DummyOldSaveContinueMenuProducer.XrlCoreSaveManagement))]
+    public void Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched(string methodName)
     {
         var source = MessageFrameTranslator.MarkDirectTranslation(OldSaveMessage);
 
-        WithPatchedOwnerAndPopup(
-            nameof(DummyOldSaveContinueMenuProducer.MainMenuContinueMenu),
-            () =>
+        WithPatchedOwnerAndPopup(methodName, () =>
+        {
+            var target = new DummyOldSaveContinueMenuProducer
             {
-                var target = new DummyOldSaveContinueMenuProducer
-                {
-                    PopupMessageToShow = source,
-                };
+                PopupMessageToShow = source,
+            };
 
-                target.MainMenuContinueMenu();
+            InvokeOwnerMethod(target, methodName);
 
-                Assert.Multiple(() =>
-                {
-                    Assert.That(DummyPopupShow.LastShowAsyncMessage, Is.EqualTo(OldSaveMessage));
-                    Assert.That(HitCount(), Is.Zero);
-                });
+            Assert.Multiple(() =>
+            {
+                Assert.That(LastPopupMessage(methodName), Is.EqualTo(OldSaveMessage));
+                Assert.That(HitCount(), Is.Zero);
             });
+        });
     }
 
-    [Test]
-    public void Patch_LeavesUnknownOldSavePopupUnchanged_WhenOwnerPatched()
+    [TestCase(nameof(DummyOldSaveContinueMenuProducer.MainMenuContinueMenu))]
+    [TestCase(nameof(DummyOldSaveContinueMenuProducer.XrlCoreSaveManagement))]
+    public void Patch_LeavesUnknownOldSavePopupUnchanged_WhenOwnerPatched(string methodName)
     {
         const string source = "That save file comes from an unknown future save format revision.";
 
-        WithPatchedOwnerAndPopup(
-            nameof(DummyOldSaveContinueMenuProducer.MainMenuContinueMenu),
-            () =>
+        WithPatchedOwnerAndPopup(methodName, () =>
+        {
+            var target = new DummyOldSaveContinueMenuProducer
             {
-                var target = new DummyOldSaveContinueMenuProducer
-                {
-                    PopupMessageToShow = source,
-                };
+                PopupMessageToShow = source,
+            };
 
-                target.MainMenuContinueMenu();
+            InvokeOwnerMethod(target, methodName);
 
-                Assert.Multiple(() =>
-                {
-                    Assert.That(DummyPopupShow.LastShowAsyncMessage, Is.EqualTo(source));
-                    Assert.That(HitCount(), Is.Zero);
-                });
+            Assert.Multiple(() =>
+            {
+                Assert.That(LastPopupMessage(methodName), Is.EqualTo(source));
+                Assert.That(HitCount(), Is.Zero);
             });
+        });
     }
 
-    [Test]
-    public void Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    [TestCase(nameof(DummyOldSaveContinueMenuProducer.MainMenuContinueMenu))]
+    [TestCase(nameof(DummyOldSaveContinueMenuProducer.XrlCoreSaveManagement))]
+    public void Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched(string methodName)
     {
-        WithPatchedOwnerAndPopup(
-            nameof(DummyOldSaveContinueMenuProducer.MainMenuContinueMenu),
-            () =>
+        WithPatchedOwnerAndPopup(methodName, () =>
+        {
+            var target = new DummyOldSaveContinueMenuProducer
             {
-                var target = new DummyOldSaveContinueMenuProducer
-                {
-                    PopupMessageToShow = string.Empty,
-                };
+                PopupMessageToShow = string.Empty,
+            };
 
-                target.MainMenuContinueMenu();
+            InvokeOwnerMethod(target, methodName);
 
-                Assert.That(DummyPopupShow.LastShowAsyncMessage, Is.EqualTo(string.Empty));
-            });
+            Assert.That(LastPopupMessage(methodName), Is.EqualTo(string.Empty));
+        });
     }
 
     private static void WithPatchedOwnerAndPopup(string methodName, Action action)
@@ -165,7 +165,7 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
         var harmony = new Harmony(harmonyId);
         try
         {
-            PatchPopupShowAsync(harmony);
+            PatchPopupShowMethods(harmony);
             harmony.Patch(
                 original: RequireOwnerMethod(methodName),
                 prefix: new HarmonyMethod(RequireMethod(typeof(OldSaveContinueMenuPopupTranslationPatch), nameof(OldSaveContinueMenuPopupTranslationPatch.Prefix))),
@@ -185,7 +185,7 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
         var harmony = new Harmony(harmonyId);
         try
         {
-            PatchPopupShowAsync(harmony);
+            PatchPopupShowMethods(harmony);
             action();
         }
         finally
@@ -194,8 +194,21 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
         }
     }
 
-    private static void PatchPopupShowAsync(Harmony harmony)
+    private static void PatchPopupShowMethods(Harmony harmony)
     {
+        harmony.Patch(
+            original: RequireMethod(
+                typeof(DummyPopupShow),
+                nameof(DummyPopupShow.Show),
+                typeof(string),
+                typeof(string),
+                typeof(string),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix), typeof(string).MakeByRefType())));
+
         harmony.Patch(
             original: RequireMethod(
                 typeof(DummyPopupShow),
@@ -211,6 +224,12 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
 
     private static void InvokeOwnerMethod(DummyOldSaveContinueMenuProducer target, string methodName)
     {
+        if (string.Equals(methodName, nameof(DummyOldSaveContinueMenuProducer.XrlCoreSaveManagement), StringComparison.Ordinal))
+        {
+            target.XrlCoreSaveManagement();
+            return;
+        }
+
         if (string.Equals(methodName, nameof(DummyOldSaveContinueMenuProducer.SaveManagementContinueMenu), StringComparison.Ordinal))
         {
             target.SaveManagementContinueMenu();
@@ -218,6 +237,13 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
         }
 
         target.MainMenuContinueMenu();
+    }
+
+    private static string? LastPopupMessage(string methodName)
+    {
+        return string.Equals(methodName, nameof(DummyOldSaveContinueMenuProducer.XrlCoreSaveManagement), StringComparison.Ordinal)
+            ? DummyPopupShow.LastShowMessage
+            : DummyPopupShow.LastShowAsyncMessage;
     }
 
     private static int HitCount()
@@ -295,6 +321,12 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
         public void SaveManagementContinueMenu()
         {
             _ = DummyPopupShow.ShowAsync(PopupMessageToShow);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public void XrlCoreSaveManagement()
+        {
+            DummyPopupShow.Show(PopupMessageToShow);
         }
     }
 }
