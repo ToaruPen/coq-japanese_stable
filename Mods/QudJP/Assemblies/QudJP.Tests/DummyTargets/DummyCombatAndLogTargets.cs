@@ -1687,6 +1687,13 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         return true;
     }
 
+    public bool HandlePolygelInventoryActionEvent(DummyInventoryActionEvent? eventArgs = null)
+    {
+        _ = eventArgs;
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
     public void AwardDynamicQuestRewardGameObject()
     {
         _ = nameof(AwardDynamicQuestRewardGameObject);

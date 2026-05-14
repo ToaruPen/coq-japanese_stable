@@ -37,6 +37,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string MarkovBookOwner = "XRL.World.Parts.MarkovBook|HandleEvent";
     private const string MumblesInfectionOwner = "XRL.World.Parts.MumblesInfection|FireEvent";
     private const string NeutronFluxContainmentOwner = "XRL.World.Parts.NeutronFluxContainment|HandleEvent";
+    private const string PolygelOwner = "XRL.World.Parts.Polygel|HandleEvent";
     private const string MutationPointsOnEatOwner = "XRL.World.Parts.MutationPointsOnEat|FireEvent";
     private const string EngulfingDescendsOwner = "XRL.World.Parts.EngulfingDescends|FireEvent";
     private const string ReputationSetFactionRankOwner = "XRL.World.Reputation|SetFactionRank";
@@ -135,6 +136,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static readonly Regex NeutronFluxWarningGlyphPattern = new(
         "^(?<object>.+?) (?:beeps|beep) loudly and (?:flashes|flash) a warning glyph\\. Do you want to stop travelling\\?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex PolygelIdentifiedPattern = new(
+        "^It's a (?<object>.+?)!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex PolygelMorphsPattern = new(
+        "^The polygel morphs into another (?<object>.+?)!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex MakeFussOnTakenPattern = new(
@@ -392,6 +401,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.NeutronFluxContainment",
             "HandleEvent",
             [beginTakeActionEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Polygel",
+            "HandleEvent",
+            [inventoryActionEventType]);
         AddTarget(
             targets,
             "XRL.UI.Look",
@@ -753,6 +767,22 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             translated = $"{match.Groups["object"].Value}が大きくビープ音を鳴らし、警告グリフを点滅させる。移動をやめるか？";
             detail = "NeutronFluxWarningGlyph";
+            return true;
+        }
+
+        match = PolygelIdentifiedPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, PolygelOwner))
+        {
+            translated = $"{match.Groups["object"].Value}だ！";
+            detail = "PolygelIdentified";
+            return true;
+        }
+
+        match = PolygelMorphsPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, PolygelOwner))
+        {
+            translated = $"ポリジェルがもう1つの{match.Groups["object"].Value}へと変形した！";
+            detail = "PolygelMorphs";
             return true;
         }
 

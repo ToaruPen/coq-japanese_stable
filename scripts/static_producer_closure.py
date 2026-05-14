@@ -1392,6 +1392,52 @@ def _neutron_flux_containment_owner_callsites() -> tuple[CoveredOwnerCallsites, 
     )
 
 
+def _polygel_handle_event_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts/Polygel.cs::XRL.World.Parts.Polygel.HandleEvent",
+            lines=(83, 100),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                    (
+                        "XRL.World.Parts.Polygel",
+                        "PolygelIdentifiedPattern",
+                        "PolygelMorphsPattern",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                    (
+                        "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                        "Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                        "nameof(DummySingleCallsiteOwnerPopupTarget.HandlePolygelInventoryActionEvent)",
+                        "It's a {{Y|metamorphic polygel}}!",
+                        "The polygel morphs into another {{Y|phase cannon}}!",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SingleCallsiteOwnerPopupTranslationPatch)",
+                        "XRL.World.Parts.Polygel|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                    ("A loud buzz is emitted. The unauthorized glyph flashes on the side of the applicator.",),
+                ),
+            ),
+        ),
+    )
+
+
 def _keybinds_screen_conflict_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         (
@@ -12596,6 +12642,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_elevator_switch_owner_callsites(),
     *_imodification_wish_modify_owner_callsites(),
     *_neutron_flux_containment_owner_callsites(),
+    *_polygel_handle_event_owner_callsites(),
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
     CoveredOwnerCallsites(

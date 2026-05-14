@@ -219,6 +219,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "NeutronFluxWarningGlyph",
         PopupMethod.ShowYesNo)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandlePolygelInventoryActionEvent),
+        "It's a {{Y|metamorphic polygel}}!",
+        "{{Y|metamorphic polygel}}だ！",
+        "PolygelIdentified",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandlePolygelInventoryActionEvent),
+        "The polygel morphs into another {{Y|phase cannon}}!",
+        "ポリジェルがもう1つの{{Y|phase cannon}}へと変形した！",
+        "PolygelMorphs",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.MakeFuss),
         "You have found {{Y|Kindrish}}!",
         "{{Y|Kindrish}}を見つけた！",
@@ -506,6 +518,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "NeutronFluxWarningGlyph",
         PopupMethod.ShowYesNo)]
     [TestCase(
+        "It's a {{Y|metamorphic polygel}}!",
+        "PolygelIdentified",
+        PopupMethod.Show)]
+    [TestCase(
+        "The polygel morphs into another {{Y|phase cannon}}!",
+        "PolygelMorphs",
+        PopupMethod.Show)]
+    [TestCase(
         "You have found {{Y|Kindrish}}!",
         "MakeFussOnTaken",
         PopupMethod.Show)]
@@ -644,6 +664,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         "{{Y|The flask}} beeps loudly and flashes a warning glyph. Do you want to stop travelling?",
         "NeutronFluxWarningGlyph")]
+    [TestCase(
+        "It's a {{Y|metamorphic polygel}}!",
+        "PolygelIdentified")]
+    [TestCase(
+        "The polygel morphs into another {{Y|phase cannon}}!",
+        "PolygelMorphs")]
     [TestCase(
         "You have found {{Y|Kindrish}}!",
         "MakeFussOnTaken")]
@@ -873,6 +899,8 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.World.Parts.NeutronFluxContainment|HandleEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleNeutronFluxBeginTakeActionEvent) =>
                 "XRL.World.Parts.NeutronFluxContainment|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandlePolygelInventoryActionEvent) =>
+                "XRL.World.Parts.Polygel|HandleEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.ShowLooker) =>
                 "XRL.UI.Look|ShowLooker",
             nameof(DummySingleCallsiteOwnerPopupTarget.MakeFuss) =>
