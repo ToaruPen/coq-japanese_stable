@@ -9,9 +9,16 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class ConversationScriptPopupTranslationPatchTests
 {
+    private string tempDirectory = null!;
+
     [SetUp]
     public void SetUp()
     {
+        tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-conversation-script-l2", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDirectory);
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         MessageFrameTranslator.SetDictionaryPathForTests(Path.Combine(
@@ -32,6 +39,13 @@ public sealed class ConversationScriptPopupTranslationPatchTests
         SinkObservation.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
+        Translator.ResetForTests();
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
+
+        if (Directory.Exists(tempDirectory))
+        {
+            Directory.Delete(tempDirectory, recursive: true);
+        }
     }
 
     [TestCase(

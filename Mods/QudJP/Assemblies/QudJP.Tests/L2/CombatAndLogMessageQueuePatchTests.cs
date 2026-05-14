@@ -31,6 +31,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         MessagePatternTranslator.InvalidatePatternFileCacheForTests(patternFilePath);
+        UseRepositoryMessageFrames();
         DummyMessageQueue.Reset();
         DummyPopupShow.Reset();
     }
