@@ -5859,6 +5859,97 @@ def _ability_manager_show_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]
     )
 
 
+def _single_fixed_queue_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id=(
+                "XRL.World.Parts/ActivatedAbilityEntry.cs::"
+                "XRL.World.Parts.ActivatedAbilityEntry.TrySendCommandEventOnPlayer"
+            ),
+            lines=(547,),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerQueueTranslationPatch.cs",
+                    (
+                        "ActivatedAbilityEntryOwner",
+                        "XRL.World.Parts.ActivatedAbilityEntry",
+                        "TrySendCommandEventOnPlayer",
+                        "You cannot do that on the world map.",
+                        "ActivatedAbilityEntryWorldMapBlock",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerQueueTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerQueueTranslationPatchTests.cs",
+                    (
+                        "SingleCallsiteOwnerQueue_TranslatesOwnerMessages_WhenOwnerPatched",
+                        "SingleCallsiteOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "SingleCallsiteOwnerQueue_DoesNotTranslateWrongOwnerMessage_WhenOwnerPatched",
+                        "SingleCallsiteOwnerQueue_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                        "SingleCallsiteOwnerQueue_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+                        "TrySendCommandEventOnPlayer",
+                        "ActivatedAbilityEntryWorldMapBlock",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SingleCallsiteOwnerQueueTranslationPatch)",
+                        "XRL.World.Parts.ActivatedAbilityEntry|TrySendCommandEventOnPlayer|System.Void",
+                    ),
+                ),
+            ),
+        ),
+        CoveredOwnerCallsites(
+            family_id=(
+                "XRL.World.Parts.Skill/Snapjaw_Howl.cs::"
+                "XRL.World.Parts.Skill.Snapjaw_Howl.FireEvent"
+            ),
+            lines=(81,),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerQueueTranslationPatch.cs",
+                    (
+                        "SnapjawHowlOwner",
+                        "XRL.World.Parts.Skill.Snapjaw_Howl",
+                        "FireEvent",
+                        "You are frenzied by the howl!",
+                        "SnapjawHowlFrenzy",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("SingleCallsiteOwnerQueueTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerQueueTranslationPatchTests.cs",
+                    (
+                        "SingleCallsiteOwnerQueue_TranslatesOwnerMessages_WhenOwnerPatched",
+                        "SingleCallsiteOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "SingleCallsiteOwnerQueue_DoesNotTranslateWrongOwnerMessage_WhenOwnerPatched",
+                        "SingleCallsiteOwnerQueue_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                        "SingleCallsiteOwnerQueue_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+                        "FireSnapjawHowlEvent",
+                        "SnapjawHowlFrenzy",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(SingleCallsiteOwnerQueueTranslationPatch)",
+                        "XRL.World.Parts.Skill.Snapjaw_Howl|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _auto_act_reset_family() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -12828,6 +12919,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_generated_success_popup_callsites(),
     *_garbage_attempt_rifle_owner_callsites(),
     *_ability_manager_show_owner_callsites(),
+    *_single_fixed_queue_owner_callsites(),
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
     CoveredOwnerCallsites(

@@ -11,8 +11,10 @@ namespace QudJP.Patches;
 public static class SingleCallsiteOwnerQueueTranslationPatch
 {
     private const string Context = nameof(SingleCallsiteOwnerQueueTranslationPatch);
+    private const string ActivatedAbilityEntryOwner = "XRL.World.Parts.ActivatedAbilityEntry|TrySendCommandEventOnPlayer";
     private const string ElevatorSwitchOwner = "XRL.World.Parts.ElevatorSwitch|FireEvent";
     private const string ModMorphogeneticOwner = "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock";
+    private const string SnapjawHowlOwner = "XRL.World.Parts.Skill.Snapjaw_Howl|FireEvent";
     private const string WeirdwireConduitOwner = "XRL.World.Quests.WeirdwireConduitSystem|HandleEvent";
 
     private static readonly Regex MorphogeneticShockPattern = new(
@@ -33,16 +35,20 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
     private static IEnumerable<MethodBase> TargetMethods()
     {
         var targets = new List<MethodBase>();
+        var activatedAbilityEntryType = FindAssemblyCSharpType("XRL.World.Parts.ActivatedAbilityEntry");
         var elevatorSwitchType = FindAssemblyCSharpType("XRL.World.Parts.ElevatorSwitch");
         var eventType = FindAssemblyCSharpType("XRL.World.Event");
         var gameObjectType = FindAssemblyCSharpType("XRL.World.GameObject");
         var modMorphogeneticType = FindAssemblyCSharpType("XRL.World.Parts.ModMorphogenetic");
+        var snapjawHowlType = FindAssemblyCSharpType("XRL.World.Parts.Skill.Snapjaw_Howl");
         var tookEventType = FindAssemblyCSharpType("XRL.World.TookEvent");
         var weirdwireConduitType = FindAssemblyCSharpType("XRL.World.Quests.WeirdwireConduitSystem");
-        if (elevatorSwitchType is null
+        if (activatedAbilityEntryType is null
+            || elevatorSwitchType is null
             || eventType is null
             || gameObjectType is null
             || modMorphogeneticType is null
+            || snapjawHowlType is null
             || tookEventType is null
             || weirdwireConduitType is null)
         {
@@ -50,6 +56,11 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
             return targets;
         }
 
+        AddTarget(
+            targets,
+            activatedAbilityEntryType,
+            "TrySendCommandEventOnPlayer",
+            Type.EmptyTypes);
         AddTarget(
             targets,
             elevatorSwitchType,
@@ -60,6 +71,11 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
             modMorphogeneticType,
             "ApplyMorphicShock",
             [gameObjectType, typeof(int), gameObjectType, typeof(int)]);
+        AddTarget(
+            targets,
+            snapjawHowlType,
+            "FireEvent",
+            [eventType]);
         AddTarget(
             targets,
             weirdwireConduitType,
@@ -142,6 +158,14 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
 
     private static bool TryTranslateCore(string source, string? ownerKey, out string translated, out string detail)
     {
+        if (string.Equals(source, "You cannot do that on the world map.", StringComparison.Ordinal)
+            && OwnerMatches(ownerKey, ActivatedAbilityEntryOwner))
+        {
+            translated = "ワールドマップではそれはできない。";
+            detail = "ActivatedAbilityEntryWorldMapBlock";
+            return true;
+        }
+
         if (string.Equals(source, "Nothing seems to happen when you hit the switch.", StringComparison.Ordinal)
             && OwnerMatches(ownerKey, ElevatorSwitchOwner))
         {
@@ -164,6 +188,14 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
                 detail = "ModMorphogeneticPainlessShock";
             }
 
+            return true;
+        }
+
+        if (string.Equals(source, "You are frenzied by the howl!", StringComparison.Ordinal)
+            && OwnerMatches(ownerKey, SnapjawHowlOwner))
+        {
+            translated = "遠吠えに興奮させられた！";
+            detail = "SnapjawHowlFrenzy";
             return true;
         }
 

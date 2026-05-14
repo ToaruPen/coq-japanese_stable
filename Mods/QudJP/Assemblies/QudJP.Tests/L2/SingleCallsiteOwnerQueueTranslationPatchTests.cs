@@ -10,8 +10,10 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
 {
+    private const string ActivatedAbilityEntryOwner = "XRL.World.Parts.ActivatedAbilityEntry|TrySendCommandEventOnPlayer";
     private const string ElevatorSwitchOwner = "XRL.World.Parts.ElevatorSwitch|FireEvent";
     private const string ModMorphogeneticOwner = "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock";
+    private const string SnapjawHowlOwner = "XRL.World.Parts.Skill.Snapjaw_Howl|FireEvent";
     private const string WeirdwireConduitOwner = "XRL.World.Quests.WeirdwireConduitSystem|HandleEvent";
 
     [SetUp]
@@ -33,6 +35,11 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
     }
 
     [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.TrySendCommandEventOnPlayer),
+        "You cannot do that on the world map.",
+        "ワールドマップではそれはできない。",
+        "ActivatedAbilityEntryWorldMapBlock")]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerQueueTarget.FireElevatorSwitchEvent),
         "Nothing seems to happen when you hit the switch.",
         "スイッチを押しても何も起こらない。",
@@ -47,6 +54,11 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
         "A weird shock reverberates through you.",
         "「奇妙な電撃」が全身を駆け抜けた。",
         "ModMorphogeneticPainlessShock")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.FireSnapjawHowlEvent),
+        "You are frenzied by the howl!",
+        "遠吠えに興奮させられた！",
+        "SnapjawHowlFrenzy")]
     [TestCase(
         nameof(DummySingleCallsiteOwnerQueueTarget.HandleWeirdwireTookEvent),
         "You now have 37 feet of copper wire.",
@@ -105,6 +117,18 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
             "Nothing seems to happen when you hit the switch.",
             "Nothing seems to happen when you hit the switch.",
             "ElevatorSwitchNothingHappens",
+            expectedHits: 0);
+        AssertOwnerQueuedMessage(
+            nameof(DummySingleCallsiteOwnerQueueTarget.ApplyMorphicShock),
+            "You cannot do that on the world map.",
+            "You cannot do that on the world map.",
+            "ActivatedAbilityEntryWorldMapBlock",
+            expectedHits: 0);
+        AssertOwnerQueuedMessage(
+            nameof(DummySingleCallsiteOwnerQueueTarget.HandleWeirdwireTookEvent),
+            "You are frenzied by the howl!",
+            "You are frenzied by the howl!",
+            "SnapjawHowlFrenzy",
             expectedHits: 0);
         AssertOwnerQueuedMessage(
             nameof(DummySingleCallsiteOwnerQueueTarget.ApplyMorphicShock),
@@ -245,8 +269,10 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
     {
         return methodName switch
         {
+            nameof(DummySingleCallsiteOwnerQueueTarget.TrySendCommandEventOnPlayer) => CreateOwnerRouteFromKey(ActivatedAbilityEntryOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.FireElevatorSwitchEvent) => CreateOwnerRouteFromKey(ElevatorSwitchOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.ApplyMorphicShock) => CreateOwnerRouteFromKey(ModMorphogeneticOwner),
+            nameof(DummySingleCallsiteOwnerQueueTarget.FireSnapjawHowlEvent) => CreateOwnerRouteFromKey(SnapjawHowlOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.HandleWeirdwireTookEvent) => CreateOwnerRouteFromKey(WeirdwireConduitOwner),
             _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unexpected owner method."),
         };
@@ -260,9 +286,15 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
 
     private static class DummySingleCallsiteOwnerQueueTarget
     {
+        public static void TrySendCommandEventOnPlayer()
+        {
+        }
+
         public static bool FireElevatorSwitchEvent() => true;
 
         public static bool ApplyMorphicShock() => true;
+
+        public static bool FireSnapjawHowlEvent() => true;
 
         public static bool HandleWeirdwireTookEvent() => true;
     }
