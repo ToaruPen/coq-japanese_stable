@@ -1749,6 +1749,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.Skill.ShortBlades_Hobble|FireEvent|System.Boolean|XRL.World.Event",
     })]
+    [TestCase(typeof(ShortBladesShankTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Skill.ShortBlades_Shank|Cast|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Skill.ShortBlades_Shank|XRL.World.GameObject",
+    })]
     [TestCase(typeof(StomachTranslationPatch), new[]
     {
         "XRL.World.Parts.Stomach|FireEvent|System.Boolean|XRL.World.Event",

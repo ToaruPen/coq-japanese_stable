@@ -12579,6 +12579,60 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts.Skill/ShortBlades_Shank.cs::"
+            "XRL.World.Parts.Skill.ShortBlades_Shank.Cast"
+        ),
+        lines=(85, 93),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/ShortBladesShankTranslationPatch.cs",
+                (
+                    "ShortBladesShankTranslationPatch",
+                    "XRL.World.Parts.Skill.ShortBlades_Shank",
+                    "Cast",
+                    "ShankAttemptPattern",
+                    "SelfConfirmationPattern",
+                    "ShortBladesShankAttempt",
+                    "ShortBladesShankSelfConfirmation",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("ShortBladesShankTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("ShortBladesShankTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/ShortBladesShankTranslationPatchTests.cs",
+                (
+                    "Shank_TranslatesAttemptQueuedMessage_WhenOwnerPatched",
+                    "Shank_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "Shank_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                    "Shank_TranslatesSelfConfirmationPopup_WhenOwnerPatched",
+                    "Shank_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "Shank_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                    "Shank_DoesNotClaimFixedOrEmptyPopups_WhenOwnerPatched",
+                    "You attempt to take advantage of the snapjaw's misfortune and shank them.",
+                    "Are you sure you want to shank yourself?",
+                    "There's nothing there you can shank.",
+                    "There's nothing there to shank.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(ShortBladesShankTranslationPatch)",
+                    "XRL.World.Parts.Skill.ShortBlades_Shank|Cast|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Skill.ShortBlades_Shank|XRL.World.GameObject",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World.Parts/Stomach.cs::"
             "XRL.World.Parts.Stomach.FireEvent"
         ),

@@ -42,6 +42,7 @@ internal static class MessageQueueSemanticPipeline
         TerrainTravelTranslationPatch.TryTranslateQueuedMessage,
         EelSpawnTranslationPatch.TryTranslateQueuedMessage,
         ShortBladesHobbleTranslationPatch.TryTranslateQueuedMessage,
+        ShortBladesShankTranslationPatch.TryTranslateQueuedMessage,
         StomachTranslationPatch.TryTranslateQueuedMessage,
         PrecognitionTranslationPatch.TryTranslateQueuedMessage,
         WishCommandQueueTranslationPatch.TryTranslateQueuedMessage,
