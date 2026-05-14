@@ -1797,6 +1797,55 @@ def _conversation_take_item_popup_family() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _conversation_check_lost_popup_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.UI/ConversationUI.cs::XRL.UI.ConversationUI.CheckLost",
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/ConversationCheckLostPopupTranslationPatch.cs",
+                    (
+                        "ConversationCheckLostPopupTranslationPatch",
+                        "XRL.UI.ConversationUI",
+                        "CheckLost",
+                        "ListenerNoLongerLostSource",
+                        "SpeakerNoLongerLost",
+                        "TryTranslatePopupMessage",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("ConversationCheckLostPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationCheckLostPopupTranslationPatchTests.cs",
+                    (
+                        "CheckLost_TranslatesLostRecoveryPopups_WhenOwnerPatched",
+                        "CheckLost_TranslatesMarkedSpeakerLostRecoveryPopup_WhenOwnerPatched",
+                        "CheckLost_TranslatesMarkedPluralSpeakerLostRecoveryPopup_WhenOwnerPatched",
+                        "CheckLost_DoesNotClaimLostRecoveryPopup_WhenOwnerAbsent",
+                        "CheckLost_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "CheckLost_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "CheckLost_LeavesUnsupportedPopupUnchanged_WhenOwnerPatched",
+                        "You ask about your location and are no longer lost.",
+                        "Argyve asks about his location and is no longer lost.",
+                        "The villagers ask",
+                        "about their location and are no longer lost.",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(ConversationCheckLostPopupTranslationPatch)",
+                        "XRL.UI.ConversationUI|CheckLost|System.Void",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _mechanical_wings_popup_family() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
@@ -10227,6 +10276,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_conversation_reward_popup_families(),
     *_game_summary_tombstone_popup_families(),
     *_powered_floating_popup_family(),
+    *_conversation_check_lost_popup_family(),
     *_conversation_take_item_popup_family(),
     *_mechanical_wings_popup_family(),
     *_fire_suppression_discharge_message_families(),

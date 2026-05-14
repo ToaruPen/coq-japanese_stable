@@ -23,3 +23,14 @@ internal static class DummyConversationTakeItemTarget
         return true;
     }
 }
+
+internal static class DummyConversationCheckLostTarget
+{
+    public static string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public static void CheckLost()
+    {
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+}
