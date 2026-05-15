@@ -20,6 +20,14 @@ public static class CarapaceTranslationPatch
         "^You tighten (?<target>.+?)\\. Your AV increases by (?<amount>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex LoosenOwnCarapacePattern = new(
+        "^Your carapace loosens\\. Your AV decreases by (?<amount>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex LoosenCarapaceObjectPattern = new(
+        "^(?<target>.+?) loosens\\. Your AV decreases by (?<amount>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -35,6 +43,7 @@ public static class CarapaceTranslationPatch
         }
 
         AddTarget(targets, targetType, "Tighten", new[] { typeof(bool) });
+        AddTarget(targets, targetType, "Loosen", new[] { typeof(bool) });
         return targets;
     }
 
@@ -114,6 +123,17 @@ public static class CarapaceTranslationPatch
                 source,
                 (match, spans) =>
                     $"{Restore(match, spans, "target")}を引き締めた。AVが{Restore(match, spans, "amount")}増加する。",
+                out translated)
+            || TryTranslatePattern(
+                LoosenOwnCarapacePattern,
+                source,
+                (match, spans) => $"甲羅が緩んだ。AVが{Restore(match, spans, "amount")}低下する。",
+                out translated)
+            || TryTranslatePattern(
+                LoosenCarapaceObjectPattern,
+                source,
+                (match, spans) =>
+                    $"{Restore(match, spans, "target")}が緩んだ。AVが{Restore(match, spans, "amount")}低下する。",
                 out translated);
     }
 

@@ -3,6 +3,7 @@ using System.Text;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
+using QudJP.Tests.L1;
 
 namespace QudJP.Tests.L2;
 
@@ -23,6 +24,7 @@ public sealed class AutoActTranslationPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
         MessagePatternTranslator.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
         DummyMessageQueue.Reset();
@@ -32,6 +34,7 @@ public sealed class AutoActTranslationPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
         MessagePatternTranslator.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
@@ -130,6 +133,73 @@ public sealed class AutoActTranslationPatchTests
         }
     }
 
+    [Test]
+    public void ResetAutoexploreProperties_TranslatesResetStatus_WithRepositoryPattern()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchAutoActResetTarget(harmony);
+            PatchMessageQueue(harmony);
+
+            var target = new DummyAutoActResetTarget
+            {
+                MessageToSend = "Resetting AutoexploreAction_, AutoexploreSuppression on snapjaw",
+            };
+
+            _ = target.ResetAutoexploreProperties();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("snapjaw上のAutoexploreAction_, AutoexploreSuppressionをリセットした。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void ResetAutoexploreProperties_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchMessageQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage(
+                "Resetting AutoexploreAction_, AutoexploreSuppression on snapjaw",
+                null,
+                Capitalize: false);
+
+            Assert.That(
+                DummyMessageQueue.LastMessage,
+                Is.EqualTo("Resetting AutoexploreAction_, AutoexploreSuppression on snapjaw"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void ResetAutoexploreProperties_DoesNotRetranslateDirectMarkedMessage_WhenOwnerPatched()
+    {
+        AssertResetMessage(
+            MessageFrameTranslator.MarkDirectTranslation("Resetting AutoexploreAction_, AutoexploreSuppression on snapjaw"),
+            "Resetting AutoexploreAction_, AutoexploreSuppression on snapjaw");
+    }
+
+    [Test]
+    public void ResetAutoexploreProperties_LeavesEmptyMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertResetMessage(string.Empty, string.Empty);
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.autoact.{Guid.NewGuid():N}";
@@ -179,6 +249,32 @@ public sealed class AutoActTranslationPatchTests
             original: RequireMethod(typeof(DummyAutoActResetTarget), nameof(DummyAutoActResetTarget.ResetAutoexploreProperties)),
             prefix: new HarmonyMethod(RequireMethod(typeof(AutoActTranslationPatch), nameof(AutoActTranslationPatch.Prefix))),
             finalizer: new HarmonyMethod(RequireMethod(typeof(AutoActTranslationPatch), nameof(AutoActTranslationPatch.Finalizer), typeof(Exception))));
+    }
+
+    private static void AssertResetMessage(string source, string expected)
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchAutoActResetTarget(harmony);
+            PatchMessageQueue(harmony);
+
+            var target = new DummyAutoActResetTarget
+            {
+                MessageToSend = source,
+            };
+
+            _ = target.ResetAutoexploreProperties();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private void WriteDictionary(params (string key, string text)[] entries)
@@ -237,6 +333,14 @@ public sealed class AutoActTranslationPatchTests
             patternFilePath,
             builder.ToString(),
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private static void UseRepositoryPatternDictionary()
+    {
+        var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
+        MessagePatternTranslator.SetPatternFileForTests(null);
     }
 
     private static string EscapeJson(string value)

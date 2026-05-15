@@ -414,6 +414,18 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (QuestLifecyclePopupTranslationPatch.TryTranslatePopupMessage(source, route, family, out var questLifecycleTranslated))
+        {
+            translated = questLifecycleTranslated;
+            return true;
+        }
+
+        if (MetricsManagerLogErrorTranslationPatch.TryTranslatePopupMessage(source, route, family, out var metricsManagerLogErrorTranslated))
+        {
+            translated = metricsManagerLogErrorTranslated;
+            return true;
+        }
+
         if (DeathWrapperFamilyTranslator.TryTranslatePopup(stripped, spans, route, out var deathTranslated))
         {
             translated = deathTranslated;
@@ -1379,6 +1391,20 @@ public static class PopupTranslationPatch
         IReadOnlyList<ColorSpan> spans,
         out string translated)
     {
+        if (!TryTranslatePhysicsAttackConfirmText(source, spans, out translated))
+        {
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(route, family, source, translated);
+        return true;
+    }
+
+    internal static bool TryTranslatePhysicsAttackConfirmText(
+        string source,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated)
+    {
         var match = PhysicsAttackConfirmPattern.Match(source);
         if (!match.Success)
         {
@@ -1401,7 +1427,6 @@ public static class PopupTranslationPatch
             translated = ColorAwareTranslationComposer.Restore(translated, boundarySpans);
         }
 
-        DynamicTextObservability.RecordTransform(route, family, source, translated);
         return true;
     }
 

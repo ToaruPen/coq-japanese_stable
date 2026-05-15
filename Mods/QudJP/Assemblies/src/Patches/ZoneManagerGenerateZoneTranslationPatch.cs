@@ -9,6 +9,8 @@ namespace QudJP.Patches;
 public static class ZoneManagerGenerateZoneTranslationPatch
 {
     private const string Context = nameof(ZoneManagerGenerateZoneTranslationPatch);
+    private const string ReportIssuePrefix = "There was an issue building this zone. Automatically report it to us? ";
+    private const string TranslatedReportIssuePrefix = "このゾーンの構築中に問題が発生した。自動的に報告しますか？ ";
 
     [ThreadStatic]
     private static int activeDepth;
@@ -69,5 +71,36 @@ public static class ZoneManagerGenerateZoneTranslationPatch
             && !string.IsNullOrEmpty(message)
             && message.StartsWith("Zone build failure:", StringComparison.Ordinal)
             && MessageLogProducerTranslationHelpers.TryPreparePatternMessage(ref message, Context, "GenerateZone");
+    }
+
+    internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
+    {
+        _ = family;
+
+        if (activeDepth <= 0 || string.IsNullOrEmpty(source))
+        {
+            translated = source;
+            return false;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return true;
+        }
+
+        if (!source.StartsWith(ReportIssuePrefix, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = TranslatedReportIssuePrefix + source.Substring(ReportIssuePrefix.Length);
+        DynamicTextObservability.RecordTransform(
+            route,
+            "Popup.ProducerText." + Context + ".GenerateZoneReportIssuePopup",
+            source,
+            translated);
+        return true;
     }
 }

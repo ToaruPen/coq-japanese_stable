@@ -27,6 +27,10 @@ public static class QuestLifecyclePopupTranslationPatch
         "^You have failed the step, (?<step>.+), of the quest (?<quest>.+)!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex QuestStepFinishedPattern = new(
+        "^You have finished the step, (?<step>.+?), of the quest (?<quest>.+?)!(?:\nYou gain (?<xp>.+?) XP!)?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex QuestCompletedPattern = new(
         "^You have completed the quest (?<quest>.+)!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -54,10 +58,12 @@ public static class QuestLifecyclePopupTranslationPatch
         if (questStepType is not null)
         {
             AddTarget(targets, questType, "ShowFailStepPopup", new[] { questStepType });
+            AddTarget(targets, questType, "ShowFinishStepPopup", new[] { questStepType });
         }
         else
         {
             Trace.TraceError("QudJP: {0}.ShowFailStepPopup QuestStep target type not found.", Context);
+            Trace.TraceError("QudJP: {0}.ShowFinishStepPopup QuestStep target type not found.", Context);
         }
 
         AddTarget(targets, questType, "ShowFinishPopup", Type.EmptyTypes);
@@ -113,6 +119,7 @@ public static class QuestLifecyclePopupTranslationPatch
             if (TryTranslateQuestReceived(source, stripped, spans, route, family, out translated)
                 || TryTranslateQuestFailed(source, stripped, spans, route, family, out translated)
                 || TryTranslateQuestStepFailed(source, stripped, spans, route, family, out translated)
+                || TryTranslateQuestStepFinished(source, stripped, spans, route, family, out translated)
                 || TryTranslateQuestCompleted(source, stripped, spans, route, family, out translated))
             {
                 return true;
@@ -125,6 +132,38 @@ public static class QuestLifecyclePopupTranslationPatch
         {
             Trace.TraceError("QudJP: {0}.TryTranslatePopupMessage failed: {1}", Context, ex);
             translated = source;
+            return false;
+        }
+    }
+
+    internal static bool TryTranslateQueuedMessage(ref string message, string? color)
+    {
+        _ = color;
+
+        try
+        {
+            if (activeDepth <= 0
+                || string.IsNullOrEmpty(message)
+                || MessageFrameTranslator.TryStripDirectTranslationMarker(message, out _))
+            {
+                return false;
+            }
+
+            if (!TryTranslatePopupMessage(
+                    message,
+                    nameof(MessageQueueSemanticPipeline),
+                    "MessageQueue.QuestLifecycle",
+                    out var translated))
+            {
+                return false;
+            }
+
+            message = MessageFrameTranslator.MarkDirectTranslation(translated);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.TryTranslateQueuedMessage failed: {1}", Context, ex);
             return false;
         }
     }
@@ -201,6 +240,35 @@ public static class QuestLifecyclePopupTranslationPatch
             out translated);
     }
 
+    private static bool TryTranslateQuestStepFinished(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string family,
+        out string translated)
+    {
+        return TryTranslateQuestPattern(
+            QuestStepFinishedPattern,
+            source,
+            stripped,
+            spans,
+            route,
+            family,
+            "StepFinished",
+            match =>
+            {
+                var result = $"クエスト「{RestoreQuest(match, spans)}」のステップ「{RestoreStep(match, spans)}」を完了した！";
+                if (!match.Groups["xp"].Success)
+                {
+                    return result;
+                }
+
+                return result + "\nあなたは経験値を" + RestoreXp(match, spans) + "獲得した";
+            },
+            out translated);
+    }
+
     private static bool TryTranslateQuestCompleted(
         string source,
         string stripped,
@@ -262,6 +330,12 @@ public static class QuestLifecyclePopupTranslationPatch
             spans,
             group).Trim();
         return TranslateQuestStepPreservingColors(step);
+    }
+
+    private static string RestoreXp(Match match, IReadOnlyList<ColorSpan> spans)
+    {
+        var group = match.Groups["xp"];
+        return ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group).Trim();
     }
 
     private static string TranslateQuestStepPreservingColors(string step)

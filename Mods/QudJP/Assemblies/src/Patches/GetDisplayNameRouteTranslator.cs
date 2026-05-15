@@ -47,6 +47,10 @@ internal static class GetDisplayNameRouteTranslator
         new Regex(
             "^(?<modifier>\\{\\{[^|}]+\\|[A-Za-z][A-Za-z\\s\\-']*\\}\\}|\\[\\{\\{[^|}]+\\|[A-Za-z][A-Za-z\\s\\-']*\\}\\}\\])\\s+(?<rest>.+)$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex ParenthesizedColoredChargeStatusPattern =
+        new Regex(
+            "(?<prefix>\\()(?<status>\\{\\{[^|}]+\\|[^{}]*\\}\\})(?<suffix>\\))",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PrepositionalStateTemplatePattern =
         new Regex(
             "^(?<template>sitting on|lying on|enclosed in|engulfed by|auto-collecting) (?<target>.+)$",
@@ -107,6 +111,16 @@ internal static class GetDisplayNameRouteTranslator
 
         using var _ = Translator.PushLogContext(context);
 
+        if (TryHandleParenthesizedColoredChargeStatusFallback(source!, route, out var chargeStatusFallback))
+        {
+            return chargeStatusFallback;
+        }
+
+        if (TryTranslateParenthesizedColoredChargeStatus(source!, route, out var chargeStatusTranslation))
+        {
+            source = chargeStatusTranslation;
+        }
+
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         if (stripped.Length == 0)
         {
@@ -149,6 +163,106 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         return source!;
+    }
+
+    private static bool TryTranslateParenthesizedColoredChargeStatus(
+        string source,
+        string route,
+        out string translated)
+    {
+        var changed = false;
+        translated = ParenthesizedColoredChargeStatusPattern.Replace(
+            source,
+            match =>
+            {
+                var status = match.Groups["status"].Value;
+                if (!EnergyStorageChargeStatusTranslationPatch.TryTranslateChargeStatus(status, out var translatedStatus))
+                {
+                    return match.Value;
+                }
+
+                changed = true;
+                return match.Groups["prefix"].Value + translatedStatus + match.Groups["suffix"].Value;
+            });
+
+        if (changed)
+        {
+            DynamicTextObservability.RecordTransform(
+                route,
+                "DisplayName.ColoredChargeStatusSuffix",
+                source,
+                translated);
+        }
+
+        return changed;
+    }
+
+    private static bool TryHandleParenthesizedColoredChargeStatusFallback(
+        string source,
+        string route,
+        out string translated)
+    {
+        var changed = false;
+        var matchedFallback = false;
+        translated = ParenthesizedColoredChargeStatusPattern.Replace(
+            source,
+            match =>
+            {
+                var status = match.Groups["status"].Value;
+                if (TryStripDirectTranslationMarkerFromChargeStatus(status, out var markedStatus))
+                {
+                    changed = true;
+                    matchedFallback = true;
+                    return match.Groups["prefix"].Value + markedStatus + match.Groups["suffix"].Value;
+                }
+
+                if (EnergyStorageChargeStatusTranslationPatch.TryTranslateChargeStatus(status, out _))
+                {
+                    return match.Value;
+                }
+
+                matchedFallback = true;
+                return match.Value;
+            });
+
+        if (changed)
+        {
+            DynamicTextObservability.RecordTransform(
+                route,
+                "DisplayName.ColoredChargeStatusSuffix",
+                source,
+                translated);
+        }
+
+        return matchedFallback;
+    }
+
+    private static bool TryStripDirectTranslationMarkerFromChargeStatus(string status, out string stripped)
+    {
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(status, out stripped))
+        {
+            return true;
+        }
+
+        var separator = status.IndexOf('|');
+        if (!status.StartsWith("{{", StringComparison.Ordinal)
+            || !status.EndsWith("}}", StringComparison.Ordinal)
+            || separator <= 2
+            || separator >= status.Length - 2)
+        {
+            stripped = status;
+            return false;
+        }
+
+        var inner = status.Substring(separator + 1, status.Length - separator - 3);
+        if (!MessageFrameTranslator.TryStripDirectTranslationMarker(inner, out var strippedInner))
+        {
+            stripped = status;
+            return false;
+        }
+
+        stripped = status.Substring(0, separator + 1) + strippedInner + "}}";
+        return true;
     }
 
     private static bool TryTranslateDisplayNameRouteText(string source, string route, out string translated)

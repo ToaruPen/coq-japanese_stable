@@ -15,6 +15,7 @@ public sealed class TargetMethodResolutionTests
     {
 #if HAS_GAME_DLL
         _ = EnsureGameAssemblyLoaded();
+        _ = EnsureManagedAssemblyLoaded("UniTask");
         _ = EnsureManagedAssemblyLoaded("ZString");
         _ = EnsureManagedAssemblyLoaded("Unity.InputSystem");
 #endif
@@ -251,6 +252,10 @@ public sealed class TargetMethodResolutionTests
         "System.String",
     })]
     [TestCase(typeof(XrlCoreLostSightTranslationPatch), "RenderBaseToBuffer", "XRL.Core.XRLCore", "System.Void", new[] { "ConsoleLib.Console.ScreenBuffer" })]
+    [TestCase(typeof(XrlCoreHotloadConfigurationTranslationPatch), "HotloadConfiguration", "XRL.Core.XRLCore", "System.Void", new[] { "System.Boolean" })]
+    [TestCase(typeof(BrainThinkTranslationPatch), "Think", "XRL.World.Parts.Brain", "System.Void", new[] { "System.String" })]
+    [TestCase(typeof(BrainWriteFeelingSamplesPopupTranslationPatch), "WriteFeelingSamples", "XRL.World.Parts.Brain", "System.Void", new[] { "System.Boolean" })]
+    [TestCase(typeof(CyberneticsWishImplantPopupTranslationPatch), "WishImplant", "XRL.World.Capabilities.Cybernetics", "System.Void", new[] { "System.String" })]
     [TestCase(typeof(ZoneManagerSetActiveZoneTranslationPatch), "SetActiveZone", "XRL.World.ZoneManager", "XRL.World.Zone", new[] { "XRL.World.Zone" })]
     [TestCase(typeof(JournalEntryDisplayTextPatch), "GetDisplayText", "Qud.API.IBaseJournalEntry", "System.String", new string[0])]
     [TestCase(typeof(JournalMapNoteDisplayTextPatch), "GetDisplayText", "Qud.API.JournalMapNote", "System.String", new string[0])]
@@ -437,6 +442,16 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(ZoneManagerGenerateZoneTranslationPatch), "GenerateZone", "XRL.World.ZoneManager", "System.Void", new[] { "System.String" })]
     [TestCase(typeof(BedTranslationPatch), "AttemptSleep", "XRL.World.Parts.Bed", "System.Void", new[] { "XRL.World.GameObject", "System.Boolean&", "System.Boolean&", "System.Boolean&" })]
     [TestCase(typeof(ChairTranslationPatch), "SitDown", "XRL.World.Parts.Chair", "System.Boolean", new[] { "XRL.World.GameObject", "XRL.World.IEvent" })]
+    [TestCase(typeof(StasisTranslationPatch), "HandleEvent", "XRL.World.Effects.Stasis", "System.Boolean", new[] { "XRL.World.BeforeApplyDamageEvent" })]
+    [TestCase(typeof(BlazeTonicRemoveTranslationPatch), "Remove", "XRL.World.Effects.Blaze_Tonic", "System.Void", new[] { "XRL.World.GameObject" })]
+    [TestCase(typeof(LatchedOntoExpiredTranslationPatch), "Expired", "XRL.World.Effects.LatchedOnto", "System.Void", new string[0])]
+    [TestCase(typeof(TinkeringBuildPopupTranslationPatch), "PerformUITinkerBuild", "XRL.UI.TinkeringScreen", "System.Boolean", new[] { "XRL.World.GameObject", "XRL.World.Tinkering.TinkerData", "XRL.World.IEvent" })]
+    [TestCase(typeof(TinkeringModPopupTranslationPatch), "PerformUITinkerMod", "XRL.UI.TinkeringScreen", "System.Boolean", new[] { "XRL.World.GameObject", "XRL.World.GameObject", "XRL.World.Tinkering.TinkerData", "XRL.World.Tinkering.BitCost", "XRL.World.IEvent", "System.Boolean&", "System.Collections.Generic.List`1[[XRL.World.GameObject]]" })]
+    [TestCase(typeof(PickItemTakeAllPopupTranslationPatch), "TakeAll", "XRL.UI.PickItem", "System.Boolean", new[] { "XRL.World.GameObject", "XRL.World.GameObject", "XRL.World.Cell", "System.Collections.Generic.IList`1[[XRL.World.GameObject]]", "System.Boolean&" })]
+    [TestCase(typeof(AbsorbablePsychePopupTranslationPatch), "HandleEvent", "XRL.World.Parts.AbsorbablePsyche", "System.Boolean", new[] { "XRL.World.BeforeDeathRemovalEvent" })]
+    [TestCase(typeof(DataDiskLearnPopupTranslationPatch), "HandleEvent", "XRL.World.Parts.DataDisk", "System.Boolean", new[] { "XRL.World.InventoryActionEvent" })]
+    [TestCase(typeof(PhysicsInventoryActionPopupTranslationPatch), "HandleEvent", "XRL.World.Parts.Physics", "System.Boolean", new[] { "XRL.World.InventoryActionEvent" })]
+    [TestCase(typeof(CampfireCookFromIngredientsTranslationPatch), "CookFromIngredients", "XRL.World.Parts.Campfire", "System.Boolean", new[] { "System.Boolean" })]
     [TestCase(typeof(StairsDownTranslationPatch), "HandleEvent", "XRL.World.Parts.StairsDown", "System.Boolean", new[] { "XRL.World.InventoryActionEvent" })]
     [TestCase(typeof(StairsUpTranslationPatch), "HandleEvent", "XRL.World.Parts.StairsUp", "System.Boolean", new[] { "XRL.World.InventoryActionEvent" })]
     [TestCase(typeof(GameSummaryScreenMenuBarsTranslationPatch), "UpdateMenuBars", "Qud.UI.GameSummaryScreen", "System.Void", new string[0])]
@@ -445,6 +460,8 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(PickTargetWindowUpdateTranslationPatch), "Update", "Qud.UI.PickTargetWindow", "System.Void", new string[0])]
     [TestCase(typeof(GivesRepShortDescriptionTranslationPatch), "HandleEvent", "XRL.World.Parts.GivesRep", "System.Boolean", new[] { "XRL.World.GetShortDescriptionEvent" })]
     [TestCase(typeof(MutationsApiTranslationPatch), "BuyRandomMutation", "Qud.API.MutationsAPI", "System.Boolean", new[] { "XRL.World.GameObject", "System.Int32", "System.Boolean", "System.String" })]
+    [TestCase(typeof(GritGateTerminalKnowledgePopupTranslationPatch), "Activate", "XRL.UI.GritGateTerminalScreenKnowledge", "System.Void", new string[0])]
+    [TestCase(typeof(GritGateTerminalScreenMessageTranslationPatch), "Activate", "XRL.UI.GritGateTerminalScreenMessage", "System.Void", new string[0])]
     [TestCase(typeof(ConversationPronounExchangeTranslationPatch), "PronounExchangeDescription", "XRL.World.Parts.ConversationScript", "System.String", new[]
     {
         "XRL.World.GameObject",
@@ -733,6 +750,8 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(ExaminerTranslationPatch), new[]
     {
+        "XRL.World.InventoryActionEvent",
+        "XRL.World.GameObject",
         "XRL.World.GameObject",
         "XRL.World.GameObject",
         "XRL.World.GameObject",
@@ -742,6 +761,7 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|System.Int32|System.Int32|System.Int32|System.Int32|System.Boolean",
         "XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|XRL.World.GameObject|XRL.World.GameObject|System.String|System.Boolean&|System.Int32&|System.Boolean&",
+        "XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|System.String|System.String|System.Boolean|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.String|System.Boolean|System.Int32|System.Boolean",
     })]
     [TestCase(typeof(DeployableInfrastructureTranslationPatch), new[]
     {
@@ -786,6 +806,8 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Event",
         "XRL.World.Event",
         "XRL.World.Event",
+        "XRL.World.BeforeApplyDamageEvent",
+        "XRL.World.GameObject|XRL.World.GameObject|XRL.World.Damage",
         "XRL.World.GameObject|System.Boolean",
         "XRL.World.Conversations.EnteredElementEvent",
     })]
@@ -831,6 +853,8 @@ public sealed class TargetMethodResolutionTests
             "XRL.World.Effects.CookingDomainSpecial_UnitSlogTransform|ApplyTo|System.Void|XRL.World.GameObject",
             "XRL.World.Effects.CookingDomainReflect_UnitReflectDamage|FireEvent|System.Void|XRL.World.Event",
             "XRL.World.Effects.CookingDomainReflect_Reflect100_ProceduralCookingTriggeredAction_Effect|FireEvent|System.Boolean|XRL.World.Event",
+            "XRL.World.Parts.ReflectDamage|HandleEvent|System.Boolean|XRL.World.BeforeApplyDamageEvent",
+            "XRL.World.Parts.ModBlinkEscape|CheckBlinkEscape|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|XRL.World.Damage",
             "XRL.World.Effects.CookingDomainTeleport_UnitBlink|FireEvent|System.Void|XRL.World.Event",
             "XRL.World.Effects.NoPhase_ProceduralCookingTriggeredAction_Effect|FireEvent|System.Boolean|XRL.World.Event",
             "XRL.World.Skills.Cooking.CookingRecipe|ApplyEffectsTo|System.Boolean|XRL.World.GameObject|System.Boolean",
@@ -887,6 +911,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Quest|ShowFailPopup|System.Void",
         "XRL.World.Quest|ShowFailStepPopup|System.Void|XRL.World.QuestStep",
         "XRL.World.Quest|ShowFinishPopup|System.Void",
+        "XRL.World.Quest|ShowFinishStepPopup|System.Void|XRL.World.QuestStep",
     })]
     [TestCase(typeof(FlightTranslationPatch), new[]
     {
@@ -914,10 +939,19 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.BaetylOfferingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32",
         "XRL.World.FormalWaterRitualSifrah|.ctor|System.Void|XRL.World.GameObject",
         "XRL.World.HagglingSifrah|.ctor|System.Void|XRL.World.GameObject",
+        "XRL.World.DisarmingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Boolean",
+        "XRL.World.ExamineSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32|System.Int32",
+        "XRL.World.HackingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32",
+        "XRL.World.ProselytizationSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32",
+        "XRL.World.RebukingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32",
         "XRL.World.ItemModdingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32",
         "XRL.World.ItemNamingSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32",
+        "XRL.World.RepairSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32",
+        "XRL.World.PsychicCombatSifrah|.ctor|System.Void|XRL.World.GameObject|System.String|System.Int32|System.Int32|System.String",
+        "XRL.World.RealityDistortionSifrah|.ctor|System.Void|XRL.World.GameObject|System.String|System.String|System.Int32|System.Int32",
         "XRL.World.ReverseEngineeringSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32|XRL.World.Tinkering.TinkerData",
         "XRL.World.ReverseEngineeringSifrah|CheckEarlyExit|System.Boolean|XRL.World.GameObject",
+        "XRL.World.ReverseEngineeringSifrah|Finish|System.Void|XRL.World.GameObject",
         "XRL.World.RitualSifrahTokenAttributeSacrifice|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
         "XRL.World.RitualSifrahTokenInvokeHigherBeing|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
         "XRL.World.SocialSifrahTokenSecret|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
@@ -937,6 +971,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Mutation.SunderMind|CancelSunder|System.Void",
         "XRL.World.Parts.Mutation.SunderMind|BeginSunder|System.Void|XRL.World.GameObject",
         "XRL.World.Parts.Mutation.SunderMind|PenetrationFailure|System.Void|XRL.World.GameObject",
+        "XRL.World.Parts.Mutation.SunderMind|Tick|System.Void",
     })]
     [TestCase(typeof(KeybindsScreenConflictTranslationPatch), new[]
     {
@@ -950,10 +985,28 @@ public sealed class TargetMethodResolutionTests
         "Qud.UI.AbilityManagerScreen+<HandleRebindAsync>d__47|MoveNext|System.Void",
         "Qud.UI.AbilityManagerScreen+<HandleRemoveBindAsync>d__48|MoveNext|System.Void",
     })]
+    [TestCase(typeof(CodeRedemptionPopupTranslationPatch), new[]
+    {
+        "CodeRedemptionManager+<redeemNoProgress>d__0|MoveNext|System.Void",
+        "CodeRedemptionManager+<>c__DisplayClass1_0+<<redeem>b__0>d|MoveNext|System.Void",
+    })]
+    [TestCase(typeof(SkillsAndPowersSelectNodePopupTranslationPatch), new[]
+    {
+        "XRL.UI.SkillsAndPowersScreen|SelectNode|System.Void|XRL.UI.SPNode|XRL.World.GameObject",
+    })]
     [TestCase(typeof(RealityStabilizedEventTranslationPatch), new[]
     {
         "XRL.World.Effects.RealityStabilized|TryContest|XRL.World.Effects.RealityStabilized+ContestResult|XRL.World.GameObject|System.Int32|System.Int32",
+        "XRL.World.Effects.RealityStabilized|FailedToContest|System.Void|XRL.World.GameObject",
         "XRL.World.Effects.RealityStabilized|ShortCircuitDevice|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.Event",
+    })]
+    [TestCase(typeof(MassMindTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.MassMind|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(TelekinesisTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.Telekinesis|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
     })]
     [TestCase(typeof(CyberneticRejectionSyndromeTranslationPatch), new[]
     {
@@ -970,6 +1023,13 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(CampfireCookAvailabilityTranslationPatch), new[]
     {
         "XRL.World.Parts.Campfire|Cook|System.Boolean",
+    })]
+    [TestCase(typeof(CampfireNostrumsTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Campfire|NostrumsStopBleeding|System.Void",
+        "XRL.World.Parts.Campfire|NostrumsTreatPoison|System.Void",
+        "XRL.World.Parts.Campfire|NostrumsTreatIllness|System.Void",
+        "XRL.World.Parts.Campfire|NostrumsTreatDiseaseOnset|System.Void",
     })]
     [TestCase(typeof(TeleprojectorTranslationPatch), new[]
     {
@@ -996,6 +1056,23 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.LiquidAmmoLoader|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.ModLiquidCooled|HandleEvent|System.Boolean|XRL.World.CommandReloadEvent",
         "XRL.World.Parts.ModLiquidCooled|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(EnergyLoaderCannotTakeTranslationPatch), new[]
+    {
+        "XRL.World.Parts.ElectricalDischargeLoader|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.EnergyAmmoLoader|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(EnergyCellSocketAccessPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.EnergyCellSocket|AttemptReplaceCell|System.Boolean|XRL.World.GameObject|XRL.World.InventoryActionEvent|System.Int32|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(EquipmentApiTwiddleObjectTranslationPatch), new[]
+    {
+        "Qud.API.EquipmentAPI|TwiddleObject|System.Void|XRL.World.GameObject|XRL.World.GameObject|System.Boolean&|XRL.World.InventoryAction&|System.Boolean|System.Boolean|System.Boolean",
+    })]
+    [TestCase(typeof(CampfireRemainsAttemptLightTranslationPatch), new[]
+    {
+        "XRL.World.Parts.CampfireRemains|AttemptLight|System.Void|XRL.World.GameObject",
     })]
     [TestCase(typeof(TrollKingTranslationPatch), new[]
     {
@@ -1046,6 +1123,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(CarapaceTranslationPatch), new[]
     {
         "XRL.World.Parts.Mutation.Carapace|Tighten|System.Void|System.Boolean",
+        "XRL.World.Parts.Mutation.Carapace|Loosen|System.Void|System.Boolean",
     })]
     [TestCase(typeof(SvardymSystemTranslationPatch), new[]
     {
@@ -1070,6 +1148,11 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.Tonic|FireEvent|System.Boolean|XRL.World.Event",
     })]
+    [TestCase(typeof(TonicApplicatorTranslationPatch), new[]
+    {
+        "XRL.World.Parts.LoveTonicApplicator|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.SphynxSalt_Tonic_Applicator|FireEvent|System.Boolean|XRL.World.Event",
+    })]
     [TestCase(typeof(XrlGameTranslationPatch), new[]
     {
         "XRL.XRLGame|FinishQuestStep|System.Boolean|XRL.World.Quest|System.String|System.Int32|System.Boolean|System.String",
@@ -1093,6 +1176,7 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Effects.FungalSporeInfection|ApplyFungalInfection|System.Boolean|XRL.World.GameObject|System.String|XRL.World.Anatomy.BodyPart",
         "XRL.World.Effects.FungalSporeInfection|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.GasFungalSpores|ApplyGas|System.Boolean|XRL.World.GameObject",
         "XRL.World.Parts.PaxInfection|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.PuffInfection|FireEvent|System.Boolean|XRL.World.Event",
     })]
@@ -1109,6 +1193,15 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(MonochromeOnsetTranslationPatch), new[]
     {
         "XRL.World.Effects.MonochromeOnset|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.MonochromePoisonOnDamage|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(GlotrotOnsetTranslationPatch), new[]
+    {
+        "XRL.World.Effects.GlotrotOnset|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(IronshankTranslationPatch), new[]
+    {
+        "XRL.World.Effects.Ironshank|FireEvent|System.Boolean|XRL.World.Event",
     })]
     [TestCase(typeof(IronshankOnsetTranslationPatch), new[]
     {
@@ -1153,15 +1246,186 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Effects.AxonsDeflated|Apply|System.Boolean|XRL.World.GameObject",
         "XRL.World.Effects.AxonsInflated|Apply|System.Boolean|XRL.World.GameObject",
         "XRL.World.Effects.BasiliskPoison|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Effects.Berserk|HandleEvent|System.Boolean|XRL.World.BeginTakeActionEvent",
+        "XRL.World.Effects.Cudgel_SmashingUp|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Effects.EmptyTheClips|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Effects.Exhausted|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Effects.Flagging|HandleEvent|System.Boolean|XRL.World.BeginTakeActionEvent",
         "XRL.World.Effects.NocturnalApexed|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Effects.Paralyzed|HandleEvent|System.Boolean|XRL.World.BeginTakeActionEvent",
+    })]
+    [TestCase(typeof(EffectMobilityBlockTranslationPatch), new[]
+    {
+        "XRL.World.Effects.Engulfed|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Effects.Immobilized|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Effects.Stuck|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(MutationInfectionTranslationPatch), new[]
+    {
+        "XRL.World.Effects.MutationInfection|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(PsychometryTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.Psychometry|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+    })]
+    [TestCase(typeof(SpindleNegotiationTranslationPatch), new[]
+    {
+        "XRL.World.Parts.SpindleNegotiation|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(MutationActionFailureTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.ElectricalGeneration|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.Mutation.TeleportOther|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(MutationGeneratedTextTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.PhotosyntheticSkin|HandleEvent|System.Boolean|XRL.World.CommandEvent",
+        "XRL.World.Parts.Mutation.LifeDrain|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Mutation.PackRat|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Mutation.Belcher|Cast|System.Boolean|XRL.World.Parts.Mutation.Belcher|System.String|System.Boolean|System.Boolean",
+    })]
+    [TestCase(typeof(PickTargetShowPickerTranslationPatch), new[]
+    {
+        "XRL.UI.PickTarget|ShowPicker|XRL.World.Cell|XRL.UI.PickTarget+PickStyle|System.Int32|System.Int32|System.Int32|System.Int32|System.Boolean|XRL.World.AllowVis|System.Predicate`1[[XRL.World.GameObject]]|System.Predicate`1[[XRL.World.GameObject]]|XRL.World.GameObject|System.Nullable`1[[Genkit.Point2D]]|System.String|System.Boolean|System.Boolean",
+    })]
+    [TestCase(typeof(DisassemblyStartTranslationPatch), new[]
+    {
+        "XRL.World.Tinkering.Disassembly|Continue|System.Boolean",
+    })]
+    [TestCase(typeof(DanceRitualOpponentTranslationPatch), new[]
+    {
+        "XRL.World.Parts.DanceRitualOpponent|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(IExamineEventProcessIdentifyTranslationPatch), new[]
+    {
+        "XRL.World.IExamineEvent|ProcessIdentify|System.Boolean",
+    })]
+    [TestCase(typeof(SelfTearExplosionTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Clockwork|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Flywheel|FireEvent|System.Boolean|XRL.World.Event",
     })]
     [TestCase(typeof(SystemStaticMessageTranslationPatch), new[]
     {
         "XRL.CheckpointingSystem|CheckpointOn|System.Boolean",
         "XRL.HolyPlaceSystem|SetHolyZone|System.Void|XRL.World.Zone|XRL.World.Faction",
         "XRL.World.Parts.Mutation.HeightenedIntelligence|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Mutation.HeightenedAgility|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Mutation.Metamorphosis|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Mutation.QuantumJitters|Sunder|System.Void",
+        "XRL.World.Parts.Mutation.SpacetimeVortex|Vortex|System.Void|XRL.World.Cell",
         "XRL.World.Parts.TrembleEarthquakes|Quake|System.Void",
+        "XRL.World.Parts.WorldTeleporter|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.DoorSwitch|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.SpawningEggSac|tickEgg|System.Void",
+        "XRL.World.Parts.LuminousInfection|TryGrowMushroom|System.Void",
+        "XRL.World.Parts.TorchProperties|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+        "XRL.World.Parts.Mutation.Teleportation|Cast|System.Boolean|XRL.World.Parts.Mutation.Teleportation|System.String|XRL.World.IEvent|XRL.World.Cell|XRL.World.GameObject|System.Boolean|System.Int32",
+        "XRL.World.Parts.CatacombsExitTeleporter|HandleEvent|System.Boolean|XRL.World.ObjectEnteredCellEvent",
+    })]
+    [TestCase(typeof(MutationAbsorptionHealingTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.ColdAbsorption|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Mutation.HeatAbsorption|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(OnEatRewardMessageTranslationPatch), new[]
+    {
+        "XRL.World.Parts.MPOnEat|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.RefreshAllCooldownsOnEat|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(TenfoldPathInitiatoryTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Skill.TenfoldPath_Ket|HandleEvent|System.Boolean|XRL.World.BeforeDieEvent",
+        "XRL.World.Parts.Skill.TenfoldPath_Vur|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Skill.TenfoldPath_Yis|AddSkill|System.Boolean|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(PowerEntryRequirementPopupTranslationPatch), new[]
+    {
+        "XRL.World.Skills.PowerEntry|MeetsRequirements|System.Boolean|XRL.World.GameObject|System.Boolean",
+        "XRL.World.Skills.PowerEntryRequirement|MeetsRequirement|System.Boolean|XRL.World.GameObject|System.Boolean",
+    })]
+    [TestCase(typeof(MagneticPulseTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.MagneticPulse|EmitMagneticPulse|System.Void|XRL.World.GameObject|System.Int32",
+    })]
+    [TestCase(typeof(PetGloamingTranslationPatch), new[]
+    {
+        "XRL.World.Parts.PetGloaming|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(WindupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Windup|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+    })]
+    [TestCase(typeof(DamagePenetrationDebugTranslationPatch), new[]
+    {
+        "XRL.Rules.Stat|RollDamagePenetrations|System.Int32|System.Int32|System.Int32|System.Int32",
+    })]
+    [TestCase(typeof(SoundManagerSetChannelTrackTranslationPatch), new[]
+    {
+        "SoundManager+<SetChannelTrack>d__36|MoveNext|System.Void",
+    })]
+    [TestCase(typeof(BasePronounProviderCustomizePopupTranslationPatch), new[]
+    {
+        // Source owner: XRL.World.BasePronounProvider.CustomizeProcess(string); target is the async state machine.
+        "XRL.World.BasePronounProvider+<CustomizeProcess>d__121|MoveNext|System.Void",
+    })]
+    [TestCase(typeof(FugueOnStepTranslationPatch), new[]
+    {
+        "XRL.World.Parts.FugueOnStep|Activate|System.Boolean|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(MentalShieldTranslationPatch), new[]
+    {
+        "XRL.World.Parts.MentalShield|HandleEvent|System.Boolean|XRL.World.BeforeApplyDamageEvent",
+        "XRL.World.Parts.MentalShield|HandleEvent|System.Boolean|XRL.World.BeginMentalDefendEvent",
+    })]
+    [TestCase(typeof(TabulaRasaeTranslationPatch), new[]
+    {
+        "XRL.World.Parts.TabulaRasae|HandleEvent|System.Boolean|XRL.World.BeforeApplyDamageEvent",
+        "XRL.World.Parts.TabulaRasae|HandleEvent|System.Boolean|XRL.World.TookDamageEvent",
+        "XRL.World.Parts.Mutation.Confusion|Confuse|System.Boolean|XRL.World.MentalAttackEvent|System.Boolean|System.Int32|System.Int32|System.Boolean",
+    })]
+    [TestCase(typeof(EatMemoriesOnHitTranslationPatch), new[]
+    {
+        "XRL.World.Parts.EatMemoriesOnHit|EatMemories|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.String",
+    })]
+    [TestCase(typeof(CyberneticsStasisEntanglerTranslationPatch), new[]
+    {
+        "XRL.World.Parts.CyberneticsStasisEntangler|DeployToCells|XRL.World.GameObject|XRL.World.Zone|XRL.World.GameObject|XRL.World.GameObject|System.Int32|System.Int32",
+    })]
+    [TestCase(typeof(EngulfingTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Engulfing|Engulf|System.Boolean|XRL.World.GameObject|XRL.World.Event",
+    })]
+    [TestCase(typeof(ClonelingVehicleTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Cloneling|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.Cloneling|AttemptCloning|System.Boolean",
+        "XRL.World.Parts.VehicleRepair|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.VehicleRecall|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+    })]
+    [TestCase(typeof(TemporaryRealityStabilizeTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Temporary|HandleEvent|System.Boolean|XRL.World.RealityStabilizeEvent",
+    })]
+    [TestCase(typeof(CloningStartBuddedCloneTranslationPatch), new[]
+    {
+        "XRL.World.Capabilities.Cloning|StartBuddedClone|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(HiddenRenderTranslationPatch), new[]
+    {
+        "XRL.World.Parts.HiddenRender|Reveal|System.Void",
+    })]
+    [TestCase(typeof(EngraverTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Engraver|AttemptEngrave|System.Boolean|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(TattooGunTranslationPatch), new[]
+    {
+        "XRL.World.Parts.TattooGun|AttemptTattoo|System.Boolean|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(BrainBrineCurseTranslationPatch), new[]
+    {
+        "XRL.World.Effects.BrainBrineCurse|GainChoice|System.Void|System.String",
     })]
     [TestCase(typeof(CombatTextSurfaceTranslationPatch), new[]
     {
@@ -1212,15 +1476,18 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(ExaminerTranslationPatch), new[]
     {
+        "XRL.World.Parts.Examiner|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.Examiner|ResultSuccess|System.Void|XRL.World.GameObject",
         "XRL.World.Parts.Examiner|ResultExceptionalSuccess|System.Void|XRL.World.GameObject",
         "XRL.World.Parts.Examiner|ResultFailure|System.Void|XRL.World.GameObject",
         "XRL.World.Parts.Examiner|ResultFakeConfusionFailure|System.Void|XRL.World.GameObject",
+        "XRL.World.Parts.Examiner|ResultCriticalFailure|System.Void|XRL.World.GameObject",
     })]
     [TestCase(typeof(ItemNamingTranslationPatch), new[]
     {
         "XRL.World.Capabilities.ItemNaming|Opportunity|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|System.Int32|System.Int32|System.Int32|System.Int32|System.Boolean",
         "XRL.World.Capabilities.ItemNaming|CheckBestowals|System.Void|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|XRL.World.GameObject|XRL.World.GameObject|System.String|System.Boolean&|System.Int32&|System.Boolean&",
+        "XRL.World.Capabilities.ItemNaming|NameItem|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|System.String|System.String|System.Boolean|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.String|System.Boolean|System.Int32|System.Boolean",
     })]
     [TestCase(typeof(CookingEffectTranslationPatch), new[]
     {
@@ -1287,6 +1554,7 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.UI.StatusScreen|BuyStat|System.Void|XRL.World.GameObject|System.String",
         "XRL.UI.StatusScreen|BuyRandomMutation|System.Boolean|XRL.World.GameObject",
+        "XRL.UI.StatusScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
     })]
     [TestCase(typeof(CampfirePreserveTranslationPatch), new[]
     {
@@ -1305,6 +1573,11 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.LiquidVolume|Pour|System.Boolean|System.Boolean&|XRL.World.GameObject|XRL.World.Cell|System.Boolean|System.Boolean|System.Int32|System.Boolean",
         "XRL.World.Parts.LiquidVolume|PerformFill|System.Boolean|XRL.World.GameObject|System.Boolean&|System.Boolean",
     })]
+    [TestCase(typeof(LiquidLeakMessageTranslationPatch), new[]
+    {
+        "XRL.World.Parts.LeakWhenBroken|DistributeLiquid|System.Void|XRL.World.Parts.LiquidVolume",
+        "XRL.World.Parts.LeaksFluid|DistributeLiquid|System.Boolean",
+    })]
     [TestCase(typeof(CombatSkillMessageTranslationPatch), new[]
     {
         "XRL.World.Parts.Skill.Tactics_Kickback|HandleEvent|System.Boolean|XRL.World.BeforeFireMissileWeaponsEvent",
@@ -1312,12 +1585,72 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Skill.Endurance_ShakeItOff|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.Skill.TenfoldPath_Ret|HandleEvent|System.Boolean|XRL.World.ApplyEffectEvent",
         "XRL.World.Parts.Skill.TenfoldPath_Ret|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+        "XRL.World.Parts.Skill.Cudgel_Backswing|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Skill.Cudgel_SmashUp|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Skill.Discipline_IronMind|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Skill.Rifle_DrawABead|ValidateMark|System.Void",
+        "XRL.World.Parts.Skill.Shield_Slam|Slam|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|XRL.World.Cell|System.Boolean",
+        "XRL.World.Parts.Skill.ShortBlades_Rejoinder|FireEvent|System.Boolean|XRL.World.Event",
     })]
     [TestCase(typeof(WaterRitualPopupTranslationPatch), new[]
     {
         "XRL.World.Conversations.Parts.WaterRitualBegin|HandleEvent|System.Boolean|XRL.World.Conversations.EnterElementEvent",
         "XRL.World.Conversations.Parts.WaterRitualSkillPoint|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
         "XRL.World.Conversations.Parts.WaterRitualTinkeringRecipe|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+        "XRL.World.Conversations.Parts.WaterRitualBuySecret|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+        "XRL.World.Conversations.Parts.WaterRitualBuySecret|RevealEntry|System.Void|Qud.API.IBaseJournalEntry",
+        "XRL.World.Conversations.Parts.IWaterRitualPart|UseReputation|System.Boolean|System.String",
+        "XRL.World.Conversations.Parts.WaterRitual|PerformRitual|System.Void",
+        "XRL.World.Conversations.Parts.WaterRitualBuyItem|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+        "XRL.World.Conversations.Parts.WaterRitualGainMutation|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+        "XRL.World.Conversations.Parts.WaterRitualRandomMutation|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+        "XRL.World.Conversations.Parts.WaterRitualJoinParty|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+        "XRL.World.Conversations.Parts.WaterRitualNephilimPacify|TryGiveCircle|System.Boolean",
+        "XRL.World.Conversations.Parts.WaterRitualSellSecret|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+    })]
+    [TestCase(typeof(ConversationRewardPopupTranslationPatch), new[]
+    {
+        "XRL.World.Conversations.Parts.AddSlynthCandidate|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+        "XRL.World.Conversations.Parts.GiveReshephSecret|HandleEvent|System.Boolean|XRL.World.Conversations.EnterElementEvent",
+        "XRL.World.Conversations.Parts.LibrarianGiveBook|HandleEvent|System.Boolean|XRL.World.Conversations.EnterElementEvent",
+        "XRL.World.Conversations.Parts.PaxInfectLimb|InfectLimb|System.Boolean|System.Collections.Generic.List`1[[XRL.World.Anatomy.BodyPart]]|XRL.World.Anatomy.BodyPart|System.String",
+        "XRL.World.Conversations.Parts.ReceiveItem|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
+    })]
+    [TestCase(typeof(ConversationCheckLostPopupTranslationPatch), new[]
+    {
+        "XRL.UI.ConversationUI|CheckLost|System.Void",
+    })]
+    [TestCase(typeof(PointOfInterestNavigationPopupTranslationPatch), new[]
+    {
+        "XRL.World.PointOfInterest|NavigateTo|System.Boolean|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(RunStartRunningPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Run|StartRunning|System.Boolean",
+    })]
+    [TestCase(typeof(HistoricEventRegionRevealPopupTranslationPatch), new[]
+    {
+        "HistoryKit.HistoricEvent|PerformRegionReveal|System.Void",
+    })]
+    [TestCase(typeof(RequiresPowerToEquipCheckEquipPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.RequiresPowerToEquip|CheckEquip|System.Void",
+    })]
+    [TestCase(typeof(SurvivalCampAttemptCampPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Skill.Survival_Camp|AttemptCamp|System.Boolean|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(KillMissileWeaponChirpTranslationPatch), new[]
+    {
+        "XRL.World.AI.GoalHandlers.Kill|TryMissileWeapon|System.Boolean",
+    })]
+    [TestCase(typeof(AbilityManagerShowTranslationPatch), new[]
+    {
+        "XRL.UI.AbilityManager|Show|System.String|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(PopupPickSeveralTranslationPatch), new[]
+    {
+        "XRL.UI.Popup|PickSeveral|System.Collections.Generic.List`1[[System.ValueTuple`2[[System.Int32],[System.Int32]]]]|System.String|System.String|System.String|System.String|System.Collections.Generic.IReadOnlyList`1[[System.String]]|System.Collections.Generic.IReadOnlyList`1[[System.Char]]|System.Collections.Generic.IReadOnlyList`1[[System.Int32]]|System.Collections.Generic.IReadOnlyList`1[[ConsoleLib.Console.IRenderable]]|XRL.World.GameObject|ConsoleLib.Console.IRenderable|System.Action`1[[System.Int32]]|System.Int32|System.Int32|System.Int32|System.Int32|System.Int32|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean",
     })]
     [TestCase(typeof(MutationSelfTargetPopupTranslationPatch), new[]
     {
@@ -1331,10 +1664,296 @@ public sealed class TargetMethodResolutionTests
         "Qud.UI.GameSummaryScreen|SaveTombstone|System.Void",
         "XRL.UI.GameSummaryUI|Show|System.Void|System.Int32|System.String|System.String|System.String|System.String|System.Boolean",
     })]
+    [TestCase(typeof(PoweredFloatingTranslationPatch), new[]
+    {
+        "XRL.World.Parts.PoweredFloating|CheckFloating|System.Void",
+    })]
+    [TestCase(typeof(ConversationTakeItemPopupTranslationPatch), new[]
+    {
+        "XRL.World.Conversations.Parts.TakeItem|Execute|System.Boolean",
+    })]
+    [TestCase(typeof(MechanicalWingsPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.MechanicalWings|TryStartup|System.Boolean",
+    })]
+    [TestCase(typeof(OldSaveContinueMenuPopupTranslationPatch), new[]
+    {
+        "Qud.UI.MainMenu|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",
+        "Qud.UI.SaveManagement|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",
+        "XRL.Core.XRLCore|SaveManagement|XRL.XRLGame",
+    })]
+    [TestCase(typeof(GolemQuestSelectionPopupTranslationPatch), new[]
+    {
+        "XRL.World.Quests.GolemQuest.GolemBodySelection|WishSpec|System.Void|System.String",
+        "XRL.World.Quests.GolemQuest.GolemMaterialSelection`2|Pick|System.Void",
+    })]
+    [TestCase(typeof(LocationFinderPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.LocationFinder|TriggerFind|System.Void",
+    })]
+    [TestCase(typeof(MapRevealPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.MapReveal|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.FactionDeed|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+    })]
+    [TestCase(typeof(SupplyableIntegratedHostPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.SupplyableIntegratedHost|AttemptSupply|System.Boolean|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(AutoActTranslationPatch), new[]
+    {
+        "XRL.World.Capabilities.AutoAct|Interrupt|System.Void|System.String|XRL.World.Cell|XRL.World.GameObject|System.Boolean",
+        "XRL.World.Capabilities.AutoAct|Interrupt|System.Void|XRL.World.GameObject|System.Boolean|System.Boolean",
+        "XRL.World.Capabilities.AutoAct|ResetAutoexploreProperties|System.Boolean",
+    })]
+    [TestCase(typeof(ActionManagerRunSegmentTranslationPatch), new[]
+    {
+        "XRL.Core.ActionManager|RunSegment|System.Void",
+    })]
+    [TestCase(typeof(MetricsManagerLogErrorTranslationPatch), new[]
+    {
+        "MetricsManager|LogError|System.Void|System.String",
+        "MetricsManager|LogError|System.Void|System.String|System.String",
+        "MetricsManager|LogError|System.Void|System.String|System.Exception",
+    })]
+    [TestCase(typeof(PrefixedOwnerQueueTranslationPatch), new[]
+    {
+        "XRL.World.AI.GoalHandlers.Flee|TakeAction|System.Void",
+        "XRL.World.Parts.Mutation.Infiltrate|performInfiltrate|System.Void|XRL.World.Cell|System.Boolean",
+        "XRL.World.Parts.TemperatureController|ConfigureTemperatureController|System.Void|XRL.World.GameObject|System.Boolean",
+    })]
+    [TestCase(typeof(ModMagnetizedTranslationPatch), new[]
+    {
+        "XRL.World.Parts.ModMagnetized|CheckFloating|System.Void",
+    })]
+    [TestCase(typeof(DeployableInfrastructureTranslationPatch), new[]
+    {
+        "XRL.World.Parts.DeployableInfrastructure|AttemptDeploy|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Parts.DeployableInfrastructure|DeployOne|System.Boolean|XRL.World.GameObject|XRL.World.Cell|System.Boolean|System.Boolean",
+    })]
     [TestCase(typeof(FireSuppressionDischargeTranslationPatch), new[]
     {
         "XRL.World.Parts.FireSuppressionSystem|CheckFireSuppression|System.Boolean|XRL.World.GameObject",
         "XRL.World.Parts.CyberneticsFireSuppressionSystem|TurnTick|System.Void|System.Int64|System.Int32",
+    })]
+    [TestCase(typeof(EffectGeneratedMessageTranslationPatch), new[]
+    {
+        "XRL.World.Effects.LifeDrain|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+        "XRL.World.Effects.ShatteredArmor|Apply|System.Boolean|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(GeneratedQueueDoesVerbTranslationPatch), new[]
+    {
+        "XRL.World.AI.GoalHandlers.DropOffStolenGoods|MoveToDropoff|System.Void",
+        "XRL.World.AI.GoalHandlers.PaxKlanqMadness|TakeAction|System.Void",
+        "XRL.World.Anatomy.BodyPart|UnequipPartAndChildren|System.Void|System.Boolean|XRL.World.IInventory|System.Boolean",
+        "XRL.World.Parts.ExtradimensionalLoot|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.GelatenousPalmProperties|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.GraveMoss|Trigger|System.Void",
+        "XRL.World.Parts.Garbage|AttemptRifle|System.Boolean|XRL.World.GameObject|System.Boolean|XRL.World.Cell|System.Collections.Generic.List`1[[XRL.World.GameObject]]",
+        "XRL.World.Parts.QuantumRippler|HandleEvent|System.Boolean|XRL.World.RealityStabilizeEvent",
+        "XRL.World.Parts.ReclamationCist|PerformReclamationOf|System.Boolean|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(GeneratedSubjectQueueTranslationPatch), new[]
+    {
+        "XRL.World.Parts.HologramInvulnerability|HandleEvent|System.Boolean|XRL.World.BeforeApplyDamageEvent",
+        "XRL.World.Parts.Mutation.Decarbonizer|ShutDownTargeting|System.Boolean",
+        "XRL.World.Parts.PetEitherOr|trigger|System.Void",
+        "XRL.World.Parts.ModPadded|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.MoteProperties|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+    })]
+    [TestCase(typeof(GiantClamTeleportTranslationPatch), new[]
+    {
+        "XRL.World.Parts.GiantClamProperties|TeleportToClamWorld|System.Void|XRL.World.GameObject",
+        "XRL.World.Parts.GiantClamProperties|TeleportFromClamWorld|System.Void|XRL.World.GameObject",
+        "XRL.World.Parts.GiantClamProperties|TeleportJoppaWorld|System.Void|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(JournalScreenPopupTranslationPatch), new[]
+    {
+        "XRL.UI.JournalScreen|HandleDelete|System.Boolean|System.String|Qud.API.IBaseJournalEntry|XRL.World.GameObject",
+        "XRL.UI.JournalScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(ConversationScriptPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.ConversationScript|IsPhysicalConversationPossible|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.Boolean|System.Boolean|System.Boolean|System.Int32",
+        "XRL.World.Parts.ConversationScript|IsMentalConversationPossible|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.Boolean|System.Boolean|System.Int32",
+    })]
+    [TestCase(typeof(InventoryFireEventTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Inventory|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(TerrainTravelTranslationPatch), new[]
+    {
+        "XRL.World.Parts.TerrainTravel|HandleEvent|System.Boolean|XRL.World.ObjectEnteredCellEvent",
+        "XRL.World.Parts.TerrainTravel|HandleLeavingCell|System.Boolean|XRL.World.GameObject|System.Int32&",
+    })]
+    [TestCase(typeof(PrecognitionTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.Precognition|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Mutation.Precognition|OnBeforeDie|System.Boolean|XRL.World.GameObject|System.Guid|System.Guid|System.Int32&|System.Int32&|System.Int32&|System.Int64&|System.Boolean|System.Boolean|XRL.World.IPart",
+    })]
+    [TestCase(typeof(WishCommandQueueTranslationPatch), new[]
+    {
+        "XRL.World.Quests.LandingPadsSystem|SlynthQuestWish|System.Void|System.String",
+        "XRL.World.Quests.ReclamationSystem|WishTimer|System.Void",
+        "XRL.World.StatWishHandler|ClearStatShifts|System.Void",
+    })]
+    [TestCase(typeof(SingleCallsiteOwnerQueueTranslationPatch), new[]
+    {
+        "XRL.World.Parts.ActivatedAbilityEntry|TrySendCommandEventOnPlayer|System.Void",
+        "XRL.World.Parts.ElevatorSwitch|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Fetches|HandleEvent|System.Boolean|XRL.World.AIBoredEvent",
+        "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock|System.Boolean|XRL.World.GameObject|System.Int32|XRL.World.GameObject|System.Int32",
+        "XRL.World.Effects.Monochrome|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Skill.Persuasion_RebukeRobot|AttemptRebuke|System.Boolean",
+        "XRL.World.Parts.Skill.Snapjaw_Howl|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Effects.SphynxSalt_Tonic|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Parts.StairsDown|CheckPullDown|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Parts.ThiefBot|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Tonic|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Quests.WeirdwireConduitSystem|HandleEvent|System.Boolean|XRL.World.TookEvent",
+    })]
+    [TestCase(typeof(ForceBubbleOwnerTranslationPatch), new[]
+    {
+        "XRL.World.Parts.ForceEmitter|ActivateForceEmitter|System.Boolean|XRL.World.IEvent",
+        "XRL.World.Parts.Stopsvaalinn|ActivateStopsvalinn|System.Boolean|XRL.World.IEvent",
+        "XRL.World.Parts.Mutation.ForceBubble|DestroyBubble|System.Void|System.Boolean",
+    })]
+    [TestCase(typeof(EelSpawnTranslationPatch), new[]
+    {
+        "XRL.World.Parts.EelSpawn|HandleEvent|System.Boolean|XRL.World.ObjectEnteredCellEvent",
+    })]
+    [TestCase(typeof(TeleporterPairTranslationPatch), new[]
+    {
+        "XRL.World.Parts.TeleporterPair|AttemptTeleport|System.Boolean|XRL.World.GameObject|XRL.World.IEvent",
+    })]
+    [TestCase(typeof(ITeleporterTranslationPatch), new[]
+    {
+        "XRL.World.Parts.ITeleporter|AttemptTeleport|System.Boolean|XRL.World.GameObject|XRL.World.IEvent",
+    })]
+    [TestCase(typeof(ShortBladesHobbleTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Skill.ShortBlades_Hobble|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(ShortBladesShankTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Skill.ShortBlades_Shank|Cast|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Skill.ShortBlades_Shank|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(DecoyHologramEmitterActivateTranslationPatch), new[]
+    {
+        "XRL.World.Parts.DecoyHologramEmitter|ActivateHologramBracelet|System.Boolean|XRL.World.GameObject|XRL.World.IEvent",
+    })]
+    [TestCase(typeof(FabricateFromSelfTranslationPatch), new[]
+    {
+        "XRL.World.Parts.FabricateFromSelf|Activate|System.Boolean|System.Boolean",
+    })]
+    [TestCase(typeof(LevelerTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Leveler|RapidAdvancement|System.Void|System.Int32|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(AnimateObjectTranslationPatch), new[]
+    {
+        "XRL.World.Parts.AnimateObject|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+    })]
+    [TestCase(typeof(RandomAltarBaetylTranslationPatch), new[]
+    {
+        "XRL.World.Parts.RandomAltarBaetyl|BaetylWantsSacrifice|System.Void",
+    })]
+    [TestCase(typeof(VehicleSeatTranslationPatch), new[]
+    {
+        "XRL.World.Parts.VehicleSeat|AttemptPilot|System.Boolean|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(StomachTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Stomach|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(FirefightingTranslationPatch), new[]
+    {
+        "XRL.World.Capabilities.Firefighting|AttemptFirefightingCore|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.Int32|System.Boolean|System.Boolean",
+    })]
+    [TestCase(typeof(TinkerItemTranslationPatch), new[]
+    {
+        "XRL.World.Parts.TinkerItem|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+    })]
+    [TestCase(typeof(KeyMappingUiTranslationPatch), new[]
+    {
+        "XRL.UI.KeyMappingUI|Show|XRL.UI.ScreenReturn",
+        "Qud.UI.KeybindsScreen|HandleMenuOption|System.Void|XRL.UI.Framework.FrameworkDataElement",
+    })]
+    [TestCase(typeof(PsychicGlimmerTranslationPatch), new[]
+    {
+        "XRL.World.Capabilities.PsychicGlimmer|Update|System.Void|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(HighScoresDeletePopupTranslationPatch), new[]
+    {
+        "Qud.UI.HighScoresScreen|HandleDelete|System.Void",
+        "XRL.Core.Scores|Show|XRL.XRLGame",
+    })]
+    [TestCase(typeof(LongBladesCoreTranslationPatch), new[]
+    {
+        "XRL.World.Parts.LongBladesCore|FireEvent|System.Boolean|XRL.World.Event",
+    })]
+    [TestCase(typeof(XrlCorePlayerTurnTranslationPatch), new[]
+    {
+        "XRL.Core.XRLCore|PlayerTurn|System.Void",
+    })]
+    [TestCase(typeof(SingleCallsiteOwnerPopupTranslationPatch), new[]
+    {
+        "XRL.World.Quests.AscensionSystem|BarathrumStartConversation|System.Void|XRL.World.GameObject",
+        "XRL.CharacterBuilds.Qud.QudSpecificCharacterInitModule|handleBootEvent|System.Object|System.String|XRL.XRLGame|XRL.CharacterBuilds.EmbarkInfo|System.Object",
+        "XRL.World.Biomes.BiomeManager|DisplaySurfaceDistribution|System.Void|System.String",
+        "XRL.World.Parts.Container|AttemptOpen|System.Void|XRL.World.GameObject|XRL.World.IEvent",
+        "XRL.World.Parts.DecoyHologramEmitter|CreateHolograms|XRL.World.Parts.ActivePartStatus|XRL.World.GameObject",
+        "XRL.World.Parts.RandomAltarBaetyl|HandleBaetylRewardWish|System.Boolean|System.String",
+        "XRL.World.Parts.Skill.Axe_Dismember|CastForceSuccess|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Skill.Axe_Dismember|XRL.World.GameObject",
+        "XRL.World.Parts.Skill.Axe_Dismember|Cast|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Skill.Axe_Dismember|XRL.World.GameObject",
+        "XRL.World.Parts.Skill.Cudgel_Slam|Cast|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Skill.Cudgel_Slam|System.String|XRL.World.GameObject|System.Boolean|System.Int32|System.String",
+        "XRL.World.Parts.Skill.Submersion|HandleEvent|System.Boolean|XRL.World.CommandEvent",
+        "XRL.World.Parts.Skill.Tinkering_Tinker1|Recharge|System.Boolean|XRL.World.GameObject|XRL.World.IEvent",
+        "XRL.World.DynamicQuestRewardElement_GameObject|award|System.Void",
+        "XRL.World.ZoneBuilders.FactionEncounters|HandleFactionEncounterWish|System.Boolean|System.Text.RegularExpressions.Match",
+        "XRL.World.Parts.Skill.Persuasion_Proselytize|AttemptProselytization|System.Boolean",
+        "XRL.World.Parts.Skill.Tinkering|LearnNewRecipe|System.Void|XRL.World.GameObject|System.Int32|System.Int32",
+        "XRL.World.Parts.GameUnique|OnCreated|System.Void|System.String",
+        "XRL.World.Parts.GenocideCurio|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.GritGateMainframeTerminal|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.HindrenMysteryCriticalNPC|HandleEvent|System.Boolean|XRL.World.BeforeDeathRemovalEvent",
+        "XRL.World.Parts.IModification|WishModify|System.Void|System.String",
+        "XRL.World.Parts.KindrishProperties|ReturnAward|System.Boolean",
+        "XRL.World.Parts.LiquidFueledPowerPlant|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+        "XRL.World.Parts.NeutronFluxContainment|HandleEvent|System.Boolean|XRL.World.NeutronFluxPourExplodesEvent",
+        "XRL.World.Parts.NeutronFluxContainment|HandleEvent|System.Boolean|XRL.World.BeginTakeActionEvent",
+        "XRL.World.Parts.Polygel|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.UI.Look|ShowLooker|XRL.World.Cell|System.Int32|System.Int32|System.Int32",
+        "XRL.World.Parts.MakeFussOnTaken|MakeFuss|System.Void|XRL.World.GameObject",
+        "XRL.World.Parts.MarkovBook|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.MumblesInfection|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.MutationPointsOnEat|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.EngulfingDescends|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Reputation|SetFactionRank|System.Void|System.String|System.String|System.Boolean|System.Boolean",
+        "XRL.World.Parts.RecoilOnDeath|HandleEvent|System.Boolean|XRL.World.BeforeDieEvent",
+        "XRL.World.Parts.Spraybottle|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.FixitSpray|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.AnimatorSpray|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.SummoningCurio|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.Food|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.SpaceTimeVortex|ApplyVortex|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Parts.StairsDown|CheckPullDown|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Parts.Physics|ProcessTargetedMove|System.Boolean|XRL.World.Cell|System.String|System.String|System.String|System.Nullable`1[[System.Int32]]|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.String|System.String|XRL.World.GameObject",
+        "XRL.World.ZoneParts.ScriptCallToArms|ShowWarning|System.Void",
+        "XRL.World.Parts.TrainingBook|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.WaterRitualRecord|HandleEvent|System.Boolean|XRL.World.BeginConversationEvent",
+        "XRL.World.Parts.CursedCellSocket|HandleEvent|System.Boolean|XRL.World.CellChangedEvent",
+        "XRL.World.QuestManagers.SpreadPax|Finish|System.Void",
+        "XRL.World.Parts.Toolbox|HandleBonus|System.Boolean|XRL.World.GetTinkeringBonusEvent|System.Int32|System.Int32",
+        "XRL.World.Parts.DestroyOnUnequip|HandleEvent|System.Boolean|XRL.World.BeginBeingUnequippedEvent",
+        "XRL.World.Parts.MagnetizedApplicator|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.Mutations|WishMutation|System.Void|System.String",
+        "XRL.World.Parts.NephalProperties|HandleEvent|System.Boolean|XRL.World.BeforeDeathRemovalEvent",
+        "XRL.PopulationManager|WishGenerate|System.Void|System.String",
+        "XRL.World.GameObjectFactory|HandleBlueprintXML|System.Void|System.String",
+        "XRL.XRLGame|LoadGame|XRL.XRLGame|System.String|System.Boolean|System.Boolean|System.Collections.Generic.Dictionary`2[[System.String],[System.Object]]",
+        "XRL.World.Parts.ThinWorld|TransitToThinWorld|System.Void|XRL.World.GameObject|System.Boolean",
+        "XRL.World.Parts.PlayerMuralController|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
     })]
     public void OwnerProducerTargetMethods_ResolveExpectedFullSignatures(Type patchType, string[] expectedSignatures)
     {

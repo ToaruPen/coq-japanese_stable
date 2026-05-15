@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Threading;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
@@ -70,9 +71,24 @@ internal static class OwnerPopupRouteTestHarness
 
     private static void PatchPopupShow(Harmony harmony)
     {
+        PatchPopupSurface(harmony, RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)));
+        PatchPopupSurface(harmony, RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowAsync)));
+        PatchPopupSurface(harmony, RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowFail)));
+        PatchPopupSurface(
+            harmony,
+            RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowKeybindAsync), typeof(string), typeof(CancellationToken)));
+        PatchPopupSurface(harmony, RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNo)));
+        PatchPopupSurface(harmony, RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNoAsync), typeof(string)));
+        PatchPopupSurface(harmony, RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNoCancel)));
+        PatchPopupSurface(harmony, RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNoCancelAsync), typeof(string)));
+    }
+
+    private static void PatchPopupSurface(Harmony harmony, MethodInfo original)
+    {
         harmony.Patch(
-            original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
-            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+            original: original,
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))),
+            finalizer: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Finalizer))));
     }
 
     private static void PatchOwner(Harmony harmony, Type patchType, MethodInfo original)

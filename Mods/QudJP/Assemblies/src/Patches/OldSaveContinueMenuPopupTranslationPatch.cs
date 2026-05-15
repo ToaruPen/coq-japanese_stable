@@ -26,6 +26,11 @@ public static class OldSaveContinueMenuPopupTranslationPatch
         {
             yield return method;
         }
+
+        foreach (var method in ResolveTarget("XRL.Core.XRLCore", "SaveManagement"))
+        {
+            yield return method;
+        }
     }
 
     public static void Prefix()

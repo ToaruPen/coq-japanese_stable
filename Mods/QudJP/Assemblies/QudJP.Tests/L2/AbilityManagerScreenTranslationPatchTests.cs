@@ -575,7 +575,11 @@ public sealed class AbilityManagerScreenTranslationPatchTests
     {
         harmony.Patch(
             original: original,
-            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix), typeof(string).MakeByRefType())));
+            prefix: new HarmonyMethod(RequireMethod(
+                typeof(PopupShowTranslationPatch),
+                nameof(PopupShowTranslationPatch.Prefix),
+                typeof(string).MakeByRefType(),
+                typeof(MethodBase))));
     }
 
     private static MethodInfo? ResolveStateMachineMoveNext(MethodInfo sourceMethod)

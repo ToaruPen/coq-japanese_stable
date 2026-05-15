@@ -74,3 +74,13 @@ internal sealed class DummyHistoricEvent
 {
     public Dictionary<string, string> EventProperties { get; } = new(StringComparer.Ordinal);
 }
+
+internal sealed class DummyHistoricEventRegionRevealTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    public void PerformRegionReveal()
+    {
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+}

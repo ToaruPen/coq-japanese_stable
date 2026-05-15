@@ -16,6 +16,14 @@ public static class RealityStabilizedEventTranslationPatch
         "^You feel a psychic whiff as (?<actor>.+?) pushes? past resistance in the structure of spacetime\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex PsychicThudPattern = new(
+        "^You feel a psychic thud as (?<actor>.+?) pushes? against the structure of spacetime and fails? to break through\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex WincePattern = new(
+        "^(?<actor>.+?) winces?\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex ShowerSparksPattern = new(
         "^(?<device>.+?) showers? sparks everywhere\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -41,6 +49,7 @@ public static class RealityStabilizedEventTranslationPatch
         }
 
         AddTarget(targets, targetType, "TryContest", new[] { gameObjectType, typeof(int), typeof(int) });
+        AddTarget(targets, targetType, "FailedToContest", new[] { gameObjectType });
         AddTarget(targets, targetType, "ShortCircuitDevice", new[] { gameObjectType, gameObjectType, eventType });
         return targets;
     }
@@ -138,6 +147,16 @@ public static class RealityStabilizedEventTranslationPatch
             actor => $"{actor}が時空構造の抵抗を押し通る、精神的なかすかな感触を覚えた。",
             out translated)
             || TryTranslatePattern(
+                PsychicThudPattern,
+                source,
+                actor => $"{TranslateFailedContestActor(actor)}が時空構造を押して突破に失敗した、精神的な鈍い衝撃を感じた。",
+                out translated)
+            || TryTranslatePattern(
+                WincePattern,
+                source,
+                actor => $"{actor}が顔をしかめた。",
+                out translated)
+            || TryTranslatePattern(
                 ShowerSparksPattern,
                 source,
                 device => $"{device}があたり一面に火花を散らした。",
@@ -167,5 +186,10 @@ public static class RealityStabilizedEventTranslationPatch
             stripped.Length,
             source);
         return true;
+    }
+
+    private static string TranslateFailedContestActor(string actor)
+    {
+        return string.Equals(actor, "someone", StringComparison.Ordinal) ? "誰か" : actor;
     }
 }

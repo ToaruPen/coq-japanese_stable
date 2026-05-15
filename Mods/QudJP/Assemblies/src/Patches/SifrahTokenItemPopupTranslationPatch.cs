@@ -34,6 +34,9 @@ public static class SifrahTokenItemPopupTranslationPatch
     [ThreadStatic]
     private static string? activeMemberName;
 
+    [ThreadStatic]
+    private static string? directMarkerPassThroughText;
+
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
@@ -107,6 +110,7 @@ public static class SifrahTokenItemPopupTranslationPatch
             {
                 activeDeclaringType = null;
                 activeMemberName = null;
+                directMarkerPassThroughText = null;
             }
         }
         catch (Exception ex)
@@ -125,9 +129,8 @@ public static class SifrahTokenItemPopupTranslationPatch
             return false;
         }
 
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        if (PopupShowTranslationPatch.TryTranslateDirectMarkedOwnerPopup(source, ref directMarkerPassThroughText, out translated))
         {
-            translated = markedText;
             return true;
         }
 

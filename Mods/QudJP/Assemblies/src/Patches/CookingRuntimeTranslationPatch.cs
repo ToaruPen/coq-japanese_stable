@@ -65,6 +65,8 @@ public static class CookingRuntimeTranslationPatch
         var targets = new List<MethodBase>();
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
         var eventType = AccessTools.TypeByName("XRL.World.Event");
+        var beforeApplyDamageEventType = AccessTools.TypeByName("XRL.World.BeforeApplyDamageEvent");
+        var damageType = AccessTools.TypeByName("XRL.World.Damage");
         if (gameObjectType is null || eventType is null)
         {
             Trace.TraceError("QudJP: {0} target parameter types not found.", Context);
@@ -91,6 +93,22 @@ public static class CookingRuntimeTranslationPatch
         AddTarget(targets, "XRL.World.Effects.CookingDomainSpecial_UnitSlogTransform", "ApplyTo", new[] { gameObjectType });
         AddTarget(targets, "XRL.World.Effects.CookingDomainReflect_UnitReflectDamage", "FireEvent", new[] { eventType });
         AddTarget(targets, "XRL.World.Effects.CookingDomainReflect_Reflect100_ProceduralCookingTriggeredAction_Effect", "FireEvent", new[] { eventType });
+        if (beforeApplyDamageEventType is not null)
+        {
+            AddTarget(targets, "XRL.World.Parts.ReflectDamage", "HandleEvent", new[] { beforeApplyDamageEventType });
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0} failed to resolve BeforeApplyDamageEvent.", Context);
+        }
+        if (damageType is not null)
+        {
+            AddTarget(targets, "XRL.World.Parts.ModBlinkEscape", "CheckBlinkEscape", new[] { gameObjectType, gameObjectType, damageType });
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0} failed to resolve Damage.", Context);
+        }
         AddTarget(targets, "XRL.World.Effects.CookingDomainTeleport_UnitBlink", "FireEvent", new[] { eventType });
         AddTarget(targets, "XRL.World.Effects.NoPhase_ProceduralCookingTriggeredAction_Effect", "FireEvent", new[] { eventType });
         AddTarget(targets, "XRL.World.Skills.Cooking.CookingRecipe", "ApplyEffectsTo", new[] { gameObjectType, typeof(bool) });
@@ -241,7 +259,7 @@ public static class CookingRuntimeTranslationPatch
             out translated);
     }
 
-    private static bool TryTranslateMetabolizeMealPopup(string source, out string translated)
+    internal static bool TryTranslateMetabolizeMealPopup(string source, out string translated)
     {
         return TryTranslatePattern(
             MetabolizeMealPattern,

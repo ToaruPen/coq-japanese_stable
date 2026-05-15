@@ -68,6 +68,84 @@ public sealed class WaterRitualPopupTranslationPatchTests
         "{{G|Hortensa}} teaches you to craft {{W|spring-loaded boots}}.",
         "{{G|Hortensa}}が{{W|spring-loaded boots}}の作り方を教えてくれた。",
         "TinkeringRecipe")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "{{G|Tam}} has no more secrets to share.",
+        "{{G|Tam}}にはもう共有できる秘密がない。",
+        "BuySecretNoMoreSecrets")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} shares a recipe with you.",
+        "{{G|Tam}}がレシピを共有してくれた。",
+        "BuySecretRecipe")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} shares the location of {{Y|the Rust Wells}}.",
+        "{{G|Tam}}が{{Y|the Rust Wells}}の場所を教えてくれた。",
+        "BuySecretLocation")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} shares an event from the life of a sultan with you.\n\n\"In 100 AR, a sultan found a chrome idol.\"",
+        "{{G|Tam}}がスルタンの生涯の出来事を共有してくれた。\n\n\"In 100 AR, a sultan found a chrome idol.\"",
+        "BuySecretSultanEvent")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.IWaterRitualPartUseReputation),
+        nameof(DummyPopupShow.Show),
+        "You don't have a high enough reputation with {{Y|the Farmers' Guild}}.",
+        "{{Y|the Farmers' Guild}}との評判が十分に高くない。",
+        "ReputationTooLow")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualPerformRitual),
+        nameof(DummyPopupShow.Show),
+        "You share your {{B|fresh water}} with {{G|Tam}} and begin the water ritual.",
+        "{{G|Tam}}と{{B|fresh water}}を分かち合い、水の儀式を始めた。",
+        "PerformRitual")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuyItemHandleEvent),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} gifts you {{Y|the electrobow}}!",
+        "{{G|Tam}}が{{Y|the electrobow}}を贈ってくれた！",
+        "BuyItemGift")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualGainMutationHandleEvent),
+        nameof(DummyPopupShow.Show),
+        "Despite your genetic limitations, {{G|Tam}} teaches you to improvise {{M|Wings}}!",
+        "遺伝的な制限にもかかわらず、{{G|Tam}}が{{M|Wings}}を即興で扱う方法を教えてくれた！",
+        "GainMutation")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "You can't gain physical mutations.",
+        "肉体変異は得られない。",
+        "RandomMutationIncompatible")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "You can't gain mental mutations.",
+        "精神変異は得られない。",
+        "RandomMutationIncompatible")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualJoinPartyHandleEvent),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} joins you!",
+        "{{G|Tam}}が仲間に加わった！",
+        "JoinParty")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualNephilimPacifyTryGiveCircle),
+        nameof(DummyPopupShow.Show),
+        "You receive {{Y|an amulet}}!",
+        "{{Y|an amulet}}を受け取った！",
+        "NephilimCircle")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualSellSecretHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "{{G|Tam}} can't grant you any more reputation.",
+        "{{G|Tam}}はこれ以上評判を与えられない。",
+        "SellSecretNoMoreReputation")]
     public void Patch_TranslatesWaterRitualOwnerPopups_WhenOwnerPatched(
         string methodName,
         string popupMethod,
@@ -108,6 +186,76 @@ public sealed class WaterRitualPopupTranslationPatchTests
         nameof(DummyPopupShow.Show),
         "{{G|Hortensa}} teaches you to craft {{W|spring-loaded boots}}.",
         "TinkeringRecipe")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "{{G|Tam}} has no more secrets to share.",
+        "BuySecretNoMoreSecrets")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} shares a recipe with you.",
+        "BuySecretRecipe")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "{{G|Tam}} has no more secrets to share.",
+        "BuySecretNoMoreSecrets")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} shares the location of {{Y|the Rust Wells}}.",
+        "BuySecretLocation")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} shares an event from the life of a sultan with you.\n\n\"In 100 AR, a sultan found a chrome idol.\"",
+        "BuySecretSultanEvent")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.IWaterRitualPartUseReputation),
+        nameof(DummyPopupShow.Show),
+        "You don't have a high enough reputation with {{Y|the Farmers' Guild}}.",
+        "ReputationTooLow")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualPerformRitual),
+        nameof(DummyPopupShow.Show),
+        "You share your {{B|fresh water}} with {{G|Tam}} and begin the water ritual.",
+        "PerformRitual")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuyItemHandleEvent),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} gifts you {{Y|the electrobow}}!",
+        "BuyItemGift")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuyItemHandleEvent),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} gifts you {{Y|the electrobow}}!",
+        "BuyItemGift")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualGainMutationHandleEvent),
+        nameof(DummyPopupShow.Show),
+        "Despite your genetic limitations, {{G|Tam}} teaches you to improvise {{M|Wings}}!",
+        "GainMutation")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "You can't gain physical mutations.",
+        "RandomMutationIncompatible")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualJoinPartyHandleEvent),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} joins you!",
+        "JoinParty")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualNephilimPacifyTryGiveCircle),
+        nameof(DummyPopupShow.Show),
+        "You receive {{Y|an amulet}}!",
+        "NephilimCircle")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualSellSecretHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "{{G|Tam}} can't grant you any more reputation.",
+        "SellSecretNoMoreReputation")]
     public void Patch_DoesNotTranslateWaterRitualPopup_WhenOwnerAbsent(
         string methodName,
         string popupMethod,
@@ -156,6 +304,105 @@ public sealed class WaterRitualPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_DoesNotRetranslateDirectMarkedBuySecretRevealPopup_WhenOwnerPatched()
+    {
+        const string popupMethod = nameof(DummyPopupShow.Show);
+        const string unmarked = "{{G|Tam}} shares a recipe with you.";
+        var source = MessageFrameTranslator.MarkDirectTranslation(unmarked);
+
+        WithPatchedOwnerAndPopup(
+            nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+            popupMethod,
+            () =>
+            {
+                var target = new DummyWaterRitualPopupProducerTarget
+                {
+                    PopupMethod = popupMethod,
+                    PopupMessageToShow = source,
+                };
+
+                target.WaterRitualBuySecretRevealEntry();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(unmarked));
+                    Assert.That(HitCount("BuySecretRecipe"), Is.Zero);
+                });
+            });
+    }
+
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} shares the location of {{Y|the Rust Wells}}.",
+        "BuySecretLocation")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} shares an event from the life of a sultan with you.\n\n\"In 100 AR, a sultan found a chrome idol.\"",
+        "BuySecretSultanEvent")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.IWaterRitualPartUseReputation),
+        nameof(DummyPopupShow.Show),
+        "You don't have a high enough reputation with {{Y|the Farmers' Guild}}.",
+        "ReputationTooLow")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualPerformRitual),
+        nameof(DummyPopupShow.Show),
+        "You share your {{B|fresh water}} with {{G|Tam}} and begin the water ritual.",
+        "PerformRitual")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualGainMutationHandleEvent),
+        nameof(DummyPopupShow.Show),
+        "Despite your genetic limitations, {{G|Tam}} teaches you to improvise {{M|Wings}}!",
+        "GainMutation")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "You can't gain physical mutations.",
+        "RandomMutationIncompatible")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualJoinPartyHandleEvent),
+        nameof(DummyPopupShow.Show),
+        "{{G|Tam}} joins you!",
+        "JoinParty")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualNephilimPacifyTryGiveCircle),
+        nameof(DummyPopupShow.Show),
+        "You receive {{Y|an amulet}}!",
+        "NephilimCircle")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualSellSecretHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "{{G|Tam}} can't grant you any more reputation.",
+        "SellSecretNoMoreReputation")]
+    public void Patch_DoesNotRetranslateDirectMarkedNewFamilyPopups_WhenOwnerPatched(
+        string methodName,
+        string popupMethod,
+        string unmarked,
+        string detail)
+    {
+        var source = MessageFrameTranslator.MarkDirectTranslation(unmarked);
+
+        WithPatchedOwnerAndPopup(methodName, popupMethod, () =>
+        {
+            var target = new DummyWaterRitualPopupProducerTarget
+            {
+                PopupMethod = popupMethod,
+                PopupMessageToShow = source,
+            };
+
+            InvokeOwnerMethod(target, methodName);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(LastPopupMessage(popupMethod), Is.EqualTo(unmarked));
+                Assert.That(HitCount(detail), Is.Zero);
+            });
+        });
+    }
+
+    [Test]
     public void Patch_LeavesUnknownEnglishPopupUnchanged_WhenOwnerPatched()
     {
         const string popupMethod = nameof(DummyPopupShow.Show);
@@ -179,6 +426,60 @@ public sealed class WaterRitualPopupTranslationPatchTests
                     Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
                     Assert.That(HitCount("SkillPointIntro"), Is.Zero);
                     Assert.That(HitCount("SkillPointGain"), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_LeavesRuntimeBuySecretGossipPopupUnchanged_WhenOwnerPatched()
+    {
+        const string popupMethod = nameof(DummyPopupShow.Show);
+        const string source = "{{G|Tam}} shares some gossip with you.\n\n\"Listen well. A ruin lies beneath the dunes.\"";
+
+        WithPatchedOwnerAndPopup(
+            nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+            popupMethod,
+            () =>
+            {
+                var target = new DummyWaterRitualPopupProducerTarget
+                {
+                    PopupMethod = popupMethod,
+                    PopupMessageToShow = source,
+                };
+
+                target.WaterRitualBuySecretRevealEntry();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                    Assert.That(HitCount("BuySecretRecipe"), Is.Zero);
+                    Assert.That(HitCount("BuySecretLocation"), Is.Zero);
+                    Assert.That(HitCount("BuySecretSultanEvent"), Is.Zero);
+                });
+            });
+    }
+
+    [TestCase("You can't be mutated.", nameof(DummyPopupShow.ShowFail))]
+    [TestCase("{{G|Tam}} shares an unfamiliar mutation lesson with you.", nameof(DummyPopupShow.Show))]
+    public void Patch_LeavesRandomMutationNonOwnerMessagesUnchanged_WhenOwnerPatched(string source, string popupMethod)
+    {
+        WithPatchedOwnerAndPopup(
+            nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
+            popupMethod,
+            () =>
+            {
+                var target = new DummyWaterRitualPopupProducerTarget
+                {
+                    PopupMethod = popupMethod,
+                    PopupMessageToShow = source,
+                };
+
+                target.WaterRitualRandomMutationHandleEvent();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(LastPopupMessage(popupMethod), Is.EqualTo(source));
+                    Assert.That(HitCount("RandomMutationIncompatible"), Is.Zero);
                 });
             });
     }
@@ -308,7 +609,9 @@ public sealed class WaterRitualPopupTranslationPatchTests
 
     private static void InvokeOwnerMethod(DummyWaterRitualPopupProducerTarget target, string methodName)
     {
-        _ = RequireOwnerMethod(methodName).Invoke(target, null);
+        var method = RequireOwnerMethod(methodName);
+        var arguments = method.GetParameters().Length == 0 ? null : new object[] { "WaterRitualUse" };
+        _ = method.Invoke(target, arguments);
     }
 
     private static void InvokePopup(string popupMethod, string source)
@@ -381,6 +684,75 @@ public sealed class WaterRitualPopupTranslationPatchTests
         public bool WaterRitualTinkeringRecipeHandleEvent()
         {
             EmitPopup(nameof(WaterRitualTinkeringRecipeHandleEvent));
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool WaterRitualBuySecretHandleEvent()
+        {
+            EmitPopup(nameof(WaterRitualBuySecretHandleEvent));
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public void WaterRitualBuySecretRevealEntry()
+        {
+            EmitPopup(nameof(WaterRitualBuySecretRevealEntry));
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool IWaterRitualPartUseReputation(string type = "WaterRitualUse")
+        {
+            _ = type;
+            EmitPopup(nameof(IWaterRitualPartUseReputation));
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public void WaterRitualPerformRitual()
+        {
+            EmitPopup(nameof(WaterRitualPerformRitual));
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool WaterRitualBuyItemHandleEvent()
+        {
+            EmitPopup(nameof(WaterRitualBuyItemHandleEvent));
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool WaterRitualGainMutationHandleEvent()
+        {
+            EmitPopup(nameof(WaterRitualGainMutationHandleEvent));
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool WaterRitualRandomMutationHandleEvent()
+        {
+            EmitPopup(nameof(WaterRitualRandomMutationHandleEvent));
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool WaterRitualJoinPartyHandleEvent()
+        {
+            EmitPopup(nameof(WaterRitualJoinPartyHandleEvent));
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool WaterRitualNephilimPacifyTryGiveCircle()
+        {
+            EmitPopup(nameof(WaterRitualNephilimPacifyTryGiveCircle));
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool WaterRitualSellSecretHandleEvent()
+        {
+            EmitPopup(nameof(WaterRitualSellSecretHandleEvent));
             return true;
         }
 

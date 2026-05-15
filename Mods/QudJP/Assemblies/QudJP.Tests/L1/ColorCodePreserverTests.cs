@@ -202,6 +202,18 @@ public sealed class ColorCodePreserverTests
     }
 
     [Test]
+    public void WithoutTrueWholeSourceBoundarySpans_RemovesOnlyWholeWrapperPair()
+    {
+        const string input = "{{R|The snapjaw shouts shouts {{O|KLANQ!}}}}";
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(input);
+
+        var filtered = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, stripped.Length);
+        var restored = ColorAwareTranslationComposer.Restore(stripped, filtered);
+
+        Assert.That(restored, Is.EqualTo("The snapjaw shouts shouts {{O|KLANQ!}}"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_PreservesTerminalSingleCharacterWrapper()
     {
         var translated = ColorAwareTranslationComposer.TranslatePreservingColors(

@@ -44,6 +44,11 @@ public sealed class ExaminerTranslationPatchTests
         "You think you broke {{G|謎の装置}}...",
         "{{G|謎の装置}}を壊してしまった気がする。",
         "Broke")]
+    [TestCase(
+        nameof(DummyExaminerProducerTarget.ResultCriticalFailure),
+        "You are puzzled by {{R|ひび割れた銃}}.",
+        "{{R|ひび割れた銃}}のことがわからない。",
+        "Puzzled")]
     public void Patch_TranslatesExaminerResultPopups_WhenOwnerPatched(
         string methodName,
         string source,
@@ -66,6 +71,95 @@ public sealed class ExaminerTranslationPatchTests
                 {
                     Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
                     Assert.That(ExaminerHitCount(detail), Is.EqualTo(1));
+                });
+            });
+    }
+
+    [TestCase(
+        nameof(DummyPopupShow.ShowFail),
+        "Whatever it is, it's broken...",
+        "それが何であれ、壊れている...",
+        "Broken")]
+    [TestCase(
+        nameof(DummyPopupShow.ShowYesNoCancel),
+        "{{Y|奇妙な装置}} is not owned by you, and examining it risks damaging it. Are you sure you want to do so?",
+        "{{Y|奇妙な装置}}はあなたのものではない。調べるとそれを傷つけるおそれがある。それでもそうするか？",
+        "OwnedExamine")]
+    [TestCase(
+        nameof(DummyPopupShow.ShowYesNoCancel),
+        "{{Y|箱}} is not owned by you, and examining a {{C|奇妙な装置}} inside it risks causing damage. Are you sure you want to do so?",
+        "{{Y|箱}}はあなたのものではない。それの中にある{{C|奇妙な装置}}を調べると損傷を引き起こすおそれがある。それでもそうするか？",
+        "ContainerOwnedExamine")]
+    public void Patch_TranslatesExaminerHandleEventPopups_WhenOwnerPatched(
+        string popupMethod,
+        string source,
+        string expected,
+        string detail)
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(ExaminerTranslationPatch),
+            RequireOwnerMethod(nameof(DummyExaminerProducerTarget.HandleEvent)),
+            () =>
+            {
+                var target = new DummyExaminerProducerTarget
+                {
+                    PopupMessageToShow = source,
+                    PopupMethod = popupMethod,
+                };
+
+                _ = target.HandleEvent(new DummyInventoryActionEvent());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(LastPopupMessage(popupMethod), Is.EqualTo(expected));
+                    Assert.That(ExaminerHitCount(detail), Is.EqualTo(1));
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_DoesNotTranslateHandleEventPopup_WhenOwnerAbsent()
+    {
+        const string source =
+            "{{Y|奇妙な装置}} is not owned by you, and examining it risks damaging it. Are you sure you want to do so?";
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOnly(
+            () =>
+            {
+                _ = DummyPopupShow.ShowYesNoCancel(source);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo(source));
+                    Assert.That(ExaminerHitCount("OwnedExamine"), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_DoesNotRetranslateDirectMarkedHandleEventPopup_WhenOwnerPatched()
+    {
+        const string unmarked =
+            "{{Y|奇妙な装置}} is not owned by you, and examining it risks damaging it. Are you sure you want to do so?";
+        var source = MessageFrameTranslator.MarkDirectTranslation(unmarked);
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(ExaminerTranslationPatch),
+            RequireOwnerMethod(nameof(DummyExaminerProducerTarget.HandleEvent)),
+            () =>
+            {
+                var target = new DummyExaminerProducerTarget
+                {
+                    PopupMessageToShow = source,
+                    PopupMethod = nameof(DummyPopupShow.ShowYesNoCancel),
+                };
+
+                _ = target.HandleEvent(new DummyInventoryActionEvent());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo(unmarked));
+                    Assert.That(ExaminerHitCount("OwnedExamine"), Is.Zero);
                 });
             });
     }
@@ -187,6 +281,14 @@ public sealed class ExaminerTranslationPatchTests
 
     private static MethodInfo RequireOwnerMethod(string methodName)
     {
+        if (methodName == nameof(DummyExaminerProducerTarget.HandleEvent))
+        {
+            return OwnerPopupRouteTestHarness.RequireMethod(
+                typeof(DummyExaminerProducerTarget),
+                methodName,
+                typeof(DummyInventoryActionEvent));
+        }
+
         return OwnerPopupRouteTestHarness.RequireMethod(typeof(DummyExaminerProducerTarget), methodName, typeof(DummyGameObject));
     }
 
@@ -198,5 +300,12 @@ public sealed class ExaminerTranslationPatchTests
     private static int ExaminerHitCount(string detail)
     {
         return OwnerPopupRouteTestHarness.RouteHitCount(typeof(ExaminerTranslationPatch), detail);
+    }
+
+    private static string? LastPopupMessage(string popupMethod)
+    {
+        return popupMethod == nameof(DummyPopupShow.ShowYesNoCancel)
+            ? DummyPopupShow.LastShowYesNoCancelMessage
+            : DummyPopupShow.LastShowMessage;
     }
 }

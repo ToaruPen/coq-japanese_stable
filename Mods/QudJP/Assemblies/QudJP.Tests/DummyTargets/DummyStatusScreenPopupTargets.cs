@@ -21,4 +21,11 @@ internal static class DummyStatusScreenPopupTarget
         DummyPopupShow.Show(MessageToSend);
         return true;
     }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public static void Show(DummyGameObject go)
+    {
+        _ = go;
+        DummyPopupShow.Show(MessageToSend);
+    }
 }

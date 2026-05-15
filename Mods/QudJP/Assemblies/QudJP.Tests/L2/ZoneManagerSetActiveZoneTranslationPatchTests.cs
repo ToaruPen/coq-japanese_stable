@@ -233,6 +233,58 @@ public sealed class ZoneManagerSetActiveZoneTranslationPatchTests
         }
     }
 
+    [Test]
+    public void Prefix_DoesNotRetranslateDirectMarkedZoneBanner_WhenOwnerPatched()
+    {
+        UseRepositoryDictionaries();
+
+        AssertQueuedMessageUnderOwner(
+            MessageFrameTranslator.MarkDirectTranslation("slime bog, 06:00"),
+            "C",
+            "slime bog, 06:00");
+    }
+
+    [Test]
+    public void Prefix_LeavesEmptyZoneBannerUnchanged_WhenOwnerPatched()
+    {
+        UseRepositoryDictionaries();
+
+        AssertQueuedMessageUnderOwner(string.Empty, "C", string.Empty);
+    }
+
+    private static void AssertQueuedMessageUnderOwner(string message, string? color, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyZoneManagerMapNotesTarget), nameof(DummyZoneManagerMapNotesTarget.SetActiveZone), typeof(DummyZone)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(ZoneManagerSetActiveZoneTranslationPatch), nameof(ZoneManagerSetActiveZoneTranslationPatch.Prefix))),
+                postfix: new HarmonyMethod(RequireMethod(typeof(ZoneManagerSetActiveZoneTranslationPatch), nameof(ZoneManagerSetActiveZoneTranslationPatch.Postfix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(ZoneManagerSetActiveZoneMessageQueuePatch), nameof(ZoneManagerSetActiveZoneMessageQueuePatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(MessageLogPatch), nameof(MessageLogPatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+
+            var target = new DummyZoneManagerMapNotesTarget
+            {
+                MessageToSend = message,
+                ColorToSend = color,
+            };
+
+            target.SetActiveZone(new DummyZone());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

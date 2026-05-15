@@ -32,6 +32,7 @@ public static class FungalSporeInfectionTranslationPatch
     {
         var targets = new List<MethodBase>();
         var targetType = AccessTools.TypeByName("XRL.World.Effects.FungalSporeInfection");
+        var gasFungalSporesType = AccessTools.TypeByName("XRL.World.Parts.GasFungalSpores");
         var paxType = AccessTools.TypeByName("XRL.World.Parts.PaxInfection");
         var puffType = AccessTools.TypeByName("XRL.World.Parts.PuffInfection");
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
@@ -50,6 +51,11 @@ public static class FungalSporeInfectionTranslationPatch
         else
         {
             Trace.TraceError("QudJP: {0}.ApplyFungalInfection parameter type not found.", Context);
+        }
+
+        if (gameObjectType is not null)
+        {
+            AddTargetByTypeName(targets, gasFungalSporesType, "XRL.World.Parts.GasFungalSpores", "ApplyGas", new[] { gameObjectType });
         }
 
         if (eventType is not null)

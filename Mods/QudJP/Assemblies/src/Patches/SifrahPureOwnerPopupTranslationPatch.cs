@@ -24,6 +24,26 @@ public static class SifrahPureOwnerPopupTranslationPatch
         "^You have no usable options to employ for haggling with (?<target>.+), giving you no chance of success\\. You can remedy this situation by improving your Ego and social skills, or by obtaining items useful in social situations\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex DisarmingPattern = new(
+        "^You have no usable options to employ for disarming (?<target>.+), giving you no chance of success\\. You can remedy this situation by improving your Intelligence and tinkering skills, or by obtaining items useful for tinkering\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ExaminePattern = new(
+        "^You have no usable options to employ for examining (?<target>.+), giving you no chance of success\\. You can remedy this situation by improving your Intelligence and tinkering skills, or by obtaining items useful for tinkering\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex HackingPattern = new(
+        "^You have no usable options to employ for hacking (?<target>.+), giving you no chance of success\\. You can remedy this situation by improving your Intelligence and tinkering skills, or by obtaining items useful for tinkering\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ProselytizationPattern = new(
+        "^You have no usable options to employ for proselytizing (?<target>.+), giving you no chance of success\\. You can remedy this situation by improving your Ego and social skills, or by obtaining items useful in social situations\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex RebukingPattern = new(
+        "^You have no usable options to employ for rebuking (?<target>.+), giving you no chance of success\\. You can remedy this situation by improving your Ego and social skills, by implanting appropriate cybernetics, or by obtaining items useful in social situations\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex ItemModdingPattern = new(
         "^You have no usable options to employ for modding (?<target>.+), giving you no chance of success\\. You can remedy this situation by improving your Intelligence and tinkering skills, or by obtaining items useful for tinkering\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -36,8 +56,20 @@ public static class SifrahPureOwnerPopupTranslationPatch
         "^You have no usable options to employ for reverse engineering (?<target>.+), giving you no chance of success\\. You can remedy this situation by improving your Intelligence and tinkering skills, or by obtaining items useful for tinkering\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex RepairPattern = new(
+        "^You have no usable options to employ for repairing (?<target>.+), giving you no chance of success\\. You can remedy this situation by improving your Intelligence and tinkering skills, or by obtaining items useful for tinkering\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex EsotericChallengePattern = new(
+        "^You have no usable options to employ for (?<target>.+), giving you no chance of performing well\\. You can remedy this situation by improving your Ego, Willpower, Intelligence, and esoteric skills\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex ReverseEngineeringEarlyExitPattern = new(
         "^Exiting will still disassemble (?<target>.+), and will result in an attempt at reverse engineering as matters stand\\. Do you still want to exit\\?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ReverseEngineeringFailurePattern = new(
+        "^You fail to reverse engineer (?<target>.+)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex AttributeSacrificePattern = new(
@@ -89,9 +121,16 @@ public static class SifrahPureOwnerPopupTranslationPatch
         BaetylOfferingPattern,
         FormalWaterRitualPattern,
         HagglingPattern,
+        DisarmingPattern,
+        ExaminePattern,
+        HackingPattern,
+        ProselytizationPattern,
+        RebukingPattern,
         ItemModdingPattern,
         ItemNamingPattern,
         ReverseEngineeringPattern,
+        RepairPattern,
+        EsotericChallengePattern,
         ReverseEngineeringEarlyExitPattern,
         TinkeringChargeWithGenerationPattern,
         TinkeringChargePattern,
@@ -121,6 +160,8 @@ public static class SifrahPureOwnerPopupTranslationPatch
         }
 
         var intType = typeof(int);
+        var boolType = typeof(bool);
+        var stringType = typeof(string);
         var tinkerDataType = AccessTools.TypeByName("XRL.World.Tinkering.TinkerData");
         var sifrahGameType = AccessTools.TypeByName("XRL.SifrahGame");
         var sifrahSlotType = AccessTools.TypeByName("XRL.SifrahSlot");
@@ -135,8 +176,16 @@ public static class SifrahPureOwnerPopupTranslationPatch
                      new TargetConstructor("XRL.World.BaetylOfferingSifrah", [gameObjectType, intType, intType]),
                      new TargetConstructor("XRL.World.FormalWaterRitualSifrah", [gameObjectType]),
                      new TargetConstructor("XRL.World.HagglingSifrah", [gameObjectType]),
+                     new TargetConstructor("XRL.World.DisarmingSifrah", [gameObjectType, intType, intType, boolType]),
+                     new TargetConstructor("XRL.World.ExamineSifrah", [gameObjectType, intType, intType, intType, intType]),
+                     new TargetConstructor("XRL.World.HackingSifrah", [gameObjectType, intType, intType, intType]),
+                     new TargetConstructor("XRL.World.ProselytizationSifrah", [gameObjectType, intType, intType]),
+                     new TargetConstructor("XRL.World.RebukingSifrah", [gameObjectType, intType, intType]),
                      new TargetConstructor("XRL.World.ItemModdingSifrah", [gameObjectType, intType, intType, intType]),
                      new TargetConstructor("XRL.World.ItemNamingSifrah", [gameObjectType, intType, intType]),
+                     new TargetConstructor("XRL.World.RepairSifrah", [gameObjectType, intType, intType, intType]),
+                     new TargetConstructor("XRL.World.PsychicCombatSifrah", [gameObjectType, stringType, intType, intType, stringType]),
+                     new TargetConstructor("XRL.World.RealityDistortionSifrah", [gameObjectType, stringType, stringType, intType, intType]),
                      new TargetConstructor(
                          "XRL.World.ReverseEngineeringSifrah",
                          [
@@ -175,6 +224,7 @@ public static class SifrahPureOwnerPopupTranslationPatch
         foreach (var target in new[]
                  {
                      new TargetMethod("XRL.World.ReverseEngineeringSifrah", "CheckEarlyExit", [gameObjectType]),
+                     new TargetMethod("XRL.World.ReverseEngineeringSifrah", "Finish", [gameObjectType]),
                      new TargetMethod(
                          "XRL.World.RitualSifrahTokenAttributeSacrifice",
                          "CheckTokenUse",
@@ -322,6 +372,56 @@ public static class SifrahPureOwnerPopupTranslationPatch
                    target => target + "と値段交渉するために使用できる選択肢がなく、成功する見込みがない。エゴや社交スキルを高めるか、社交的な状況に役立つアイテムを入手すれば、この状況を改善できる。",
                    out translated)
                || TryTranslate(
+                   DisarmingPattern,
+                   source,
+                   stripped,
+                   spans,
+                   route,
+                   family,
+                   "Disarming",
+                   target => target + "を解除するために使用できる選択肢がなく、成功する見込みがない。知性や工作スキルを高めるか、工作に役立つアイテムを入手すれば、この状況を改善できる。",
+                   out translated)
+               || TryTranslate(
+                   ExaminePattern,
+                   source,
+                   stripped,
+                   spans,
+                   route,
+                   family,
+                   "Examine",
+                   target => target + "を調査するために使用できる選択肢がなく、成功する見込みがない。知性や工作スキルを高めるか、工作に役立つアイテムを入手すれば、この状況を改善できる。",
+                   out translated)
+               || TryTranslate(
+                   HackingPattern,
+                   source,
+                   stripped,
+                   spans,
+                   route,
+                   family,
+                   "Hacking",
+                   target => target + "をハッキングするために使用できる選択肢がなく、成功する見込みがない。知性や工作スキルを高めるか、工作に役立つアイテムを入手すれば、この状況を改善できる。",
+                   out translated)
+               || TryTranslate(
+                   ProselytizationPattern,
+                   source,
+                   stripped,
+                   spans,
+                   route,
+                   family,
+                   "Proselytization",
+                   target => target + "を布教するために使用できる選択肢がなく、成功する見込みがない。エゴや社交スキルを高めるか、社交的な状況に役立つアイテムを入手すれば、この状況を改善できる。",
+                   out translated)
+               || TryTranslate(
+                   RebukingPattern,
+                   source,
+                   stripped,
+                   spans,
+                   route,
+                   family,
+                   "Rebuking",
+                   target => target + "を叱責するために使用できる選択肢がなく、成功する見込みがない。エゴや社交スキルを高めるか、適切なサイバネティクスを埋め込むか、社交的な状況に役立つアイテムを入手すれば、この状況を改善できる。",
+                   out translated)
+               || TryTranslate(
                    ItemModdingPattern,
                    source,
                    stripped,
@@ -340,6 +440,38 @@ public static class SifrahPureOwnerPopupTranslationPatch
                    family,
                    "ItemNaming",
                    target => target + "に儀式的に名付けるために使用できる選択肢がなく、うまく行う見込みがない。エゴ、意志力、秘教系スキルを高めるか、儀式に役立つアイテムを入手すれば、この状況を改善できる。",
+                   out translated)
+               || TryTranslate(
+                   RepairPattern,
+                   source,
+                   stripped,
+                   spans,
+                   route,
+                   family,
+                   "Repair",
+                   target => target + "を修理するために使用できる選択肢がなく、成功する見込みがない。知性や工作スキルを高めるか、工作に役立つアイテムを入手すれば、この状況を改善できる。",
+                   out translated)
+               || IsActiveOwner("XRL.World.PsychicCombatSifrah", ".ctor", "PsychicCombatSifrah")
+               && TryTranslate(
+                   EsotericChallengePattern,
+                   source,
+                   stripped,
+                   spans,
+                   route,
+                   family,
+                   "PsychicCombat",
+                   target => target + "に使用できる選択肢がなく、うまく行う見込みがない。エゴ、意志力、知性、秘教系スキルを高めれば、この状況を改善できる。",
+                   out translated)
+               || IsActiveOwner("XRL.World.RealityDistortionSifrah", ".ctor", "RealityDistortionSifrah")
+               && TryTranslate(
+                   EsotericChallengePattern,
+                   source,
+                   stripped,
+                   spans,
+                   route,
+                   family,
+                   "RealityDistortion",
+                   target => target + "に使用できる選択肢がなく、うまく行う見込みがない。エゴ、意志力、知性、秘教系スキルを高めれば、この状況を改善できる。",
                    out translated)
                || IsActiveOwner("XRL.World.ReverseEngineeringSifrah", ".ctor", "ReverseEngineeringSifrah")
                && TryTranslate(
@@ -362,6 +494,17 @@ public static class SifrahPureOwnerPopupTranslationPatch
                    family,
                    "ReverseEngineeringEarlyExit",
                    target => "終了しても" + target + "は分解され、現状のままリバースエンジニアリングを試みることになる。それでも終了する？",
+                   out translated)
+               || IsActiveOwner("XRL.World.ReverseEngineeringSifrah", "Finish", "ReverseEngineeringFinish")
+               && TryTranslate(
+                   ReverseEngineeringFailurePattern,
+                   source,
+                   stripped,
+                   spans,
+                   route,
+                   family,
+                   "ReverseEngineeringFinish",
+                   target => target + "のリバースエンジニアリングに失敗した。",
                    out translated)
                || IsActiveOwner("XRL.World.RitualSifrahTokenAttributeSacrifice", "CheckTokenUse", "RitualAttributeSacrificeCheckTokenUse")
                && TryTranslate(

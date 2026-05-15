@@ -448,10 +448,7 @@ public sealed class TradeUiPopupTranslationPatchTests
     [Test]
     public void VendorOwnerPatch_TranslatesShowTradeScreenOwnerPopups_WhenOwnerPatched()
     {
-        WriteDictionary(
-            ("{0} cannot carry things.", "{0}は物を運べない。"),
-            ("{0} will not trade with you until you pay {1} the {2} you owe {3}. Do you want to give it to {4} now?", "{0}は、あなたが{3}に借りている{2}を{1}に支払うまで取引してくれない。今すぐそれを{4}に渡しますか？"),
-            ("{0} does not have the skill to {1}.", "{0}には{1}技能がない。"));
+        UseRepositoryDictionaries();
 
         using var showPatch = PatchPopupShow(nameof(DummyPopupShow.Show));
         using var showYesNoPatch = PatchPopupShow(nameof(DummyPopupShow.ShowYesNo));
@@ -465,7 +462,25 @@ public sealed class TradeUiPopupTranslationPatchTests
         target.ShowTradeScreen();
         var cannotCarry = DummyPopupShow.LastShowMessage;
 
+        target.PopupMessageToShow = "商人 engaged in melee combat and is too busy to trade with you.";
+        target.ShowTradeScreen();
+        var engagedInMelee = DummyPopupShow.LastShowMessage;
+
+        target.PopupMessageToShow = "商人 on fire and is too busy to trade with you.";
+        target.ShowTradeScreen();
+        var onFire = DummyPopupShow.LastShowMessage;
+
         target.UseShowFailPopup = false;
+        target.PopupMessageToShow = "The {{G|商人}} will not trade with you until you pay 彼 the {{C|5}} drams of {{B|fresh water}} you owe 彼.";
+        target.ShowTradeScreen();
+        var waterDebt = DummyPopupShow.LastShowMessage;
+
+        target.UseConfirmationPopup = true;
+        target.PopupMessageToShow = "The {{G|商人}} will not trade with you until you pay 彼 the {{C|5}} drams of {{B|fresh water}} you owe 彼. Do you want to give 彼 your {{C|2}} drams now?";
+        target.ShowTradeScreen();
+        var waterDebtGiveYourDrams = DummyPopupShow.LastShowYesNoMessage;
+
+        target.UseConfirmationPopup = false;
         target.PopupMessageToShow = "\u0002have\u001F16\u001F20\u001F\u0003The {{G|ウォーターヴァイン農家}} has nothing to trade.";
         target.ShowTradeScreen();
         var hasNothing = DummyPopupShow.LastShowMessage;
@@ -473,7 +488,7 @@ public sealed class TradeUiPopupTranslationPatchTests
         target.UseConfirmationPopup = true;
         target.PopupMessageToShow = "The {{G|商人}} will not trade with you until you pay 彼 the {{C|5}} drams of {{B|fresh water}} you owe 彼. Do you want to give it to 彼 now?";
         target.ShowTradeScreen();
-        var waterDebt = DummyPopupShow.LastShowYesNoMessage;
+        var waterDebtGiveIt = DummyPopupShow.LastShowYesNoMessage;
 
         target.UseConfirmationPopup = false;
         target.PopupMessageToShow = "商人 does not have the skill to repair items.";
@@ -487,11 +502,19 @@ public sealed class TradeUiPopupTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(cannotCarry, Is.EqualTo("商人は物を運べない。"));
+            Assert.That(engagedInMelee, Is.EqualTo("商人は近接戦闘中で、あなたと取引している暇がない。"));
+            Assert.That(onFire, Is.EqualTo("商人は燃えていて、あなたと取引している暇がない。"));
+            Assert.That(waterDebt, Is.EqualTo("{{G|商人}}は、あなたが彼に借りている{{C|5}}ドラムの{{B|真水}}を彼に支払うまで取引してくれない。"));
+            Assert.That(waterDebtGiveYourDrams, Is.EqualTo("{{G|商人}}は、あなたが彼に借りている{{C|5}}ドラムの{{B|真水}}を彼に支払うまで取引してくれない。今すぐあなたの{{C|2}}ドラムを彼に渡しますか？"));
             Assert.That(hasNothing, Is.EqualTo("{{G|ウォーターヴァイン農家}}には取引するものがない"));
-            Assert.That(waterDebt, Is.EqualTo("{{G|商人}}は、あなたが彼に借りている{{C|5}}ドラムの{{B|真水}}を彼に支払うまで取引してくれない。今すぐそれを彼に渡しますか？"));
+            Assert.That(waterDebtGiveIt, Is.EqualTo("{{G|商人}}は、あなたが彼に借りている{{C|5}}ドラムの{{B|真水}}を彼に支払うまで取引してくれない。今すぐそれを彼に渡しますか？"));
             Assert.That(repairSkill, Is.EqualTo("商人にはアイテムを修理する技能がない。"));
             Assert.That(rechargeSkill, Is.EqualTo("商人にはアイテムを充電する技能がない。"));
             Assert.That(TradeUiPopupHitCount("TradeUiPopup.CannotCarry"), Is.EqualTo(1));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.EngagedInMelee"), Is.EqualTo(1));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.OnFire"), Is.EqualTo(1));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.WaterDebt"), Is.EqualTo(1));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.WaterDebtGiveYourDrams"), Is.EqualTo(1));
             Assert.That(TradeUiPopupHitCount("TradeUiPopup.HasNothingToTrade"), Is.EqualTo(1));
             Assert.That(TradeUiPopupHitCount("TradeUiPopup.WaterDebtGiveIt"), Is.EqualTo(1));
             Assert.That(TradeUiPopupHitCount("TradeUiPopup.MissingSkill"), Is.EqualTo(2));
@@ -501,13 +524,7 @@ public sealed class TradeUiPopupTranslationPatchTests
     [Test]
     public void VendorOwnerPatch_TranslatesDoVendorExamineOwnerPopups_WhenOwnerPatched()
     {
-        WriteDictionary(
-            ("You can't understand {0} explanation.", "{0}説明は理解できない。"),
-            ("This item is too complex for {0} to identify.", "この品は{0}には複雑すぎて鑑定できない。"),
-            ("You do not have the required {0} to identify this item.", "この品を鑑定するのに必要な{0}が足りない。"),
-            ("You may identify this for {0}.", "これを{0}で鑑定できる。"),
-            ("{0} identifies {1} as {2}.", "{0}は{1}を{2}だと鑑定した。"),
-            ("{0} does not have the skill to {1}.", "{0}には{1}技能がない。"));
+        UseRepositoryDictionaries();
 
         using var showPatch = PatchPopupShow(nameof(DummyPopupShow.Show));
         using var showYesNoPatch = PatchPopupShow(nameof(DummyPopupShow.ShowYesNo));
@@ -564,10 +581,8 @@ public sealed class TradeUiPopupTranslationPatchTests
     [Test]
     public void VendorOwnerPatch_TranslatesDoVendorRechargeOwnerPopups_WhenOwnerPatched()
     {
+        UseRepositoryDictionaries();
         UseRepositoryVerbDictionary();
-        WriteDictionary(
-            ("You need {0} to charge {1}.", "{1}を充電するには{0}が必要だ。"),
-            ("You may recharge {0} for {1}.", "{0}を{1}で充電できる。"));
 
         using var showPatch = PatchPopupShow(nameof(DummyPopupShow.Show));
         using var showYesNoPatch = PatchPopupShow(nameof(DummyPopupShow.ShowYesNo));
@@ -602,6 +617,66 @@ public sealed class TradeUiPopupTranslationPatchTests
             Assert.That(fullyCharged, Is.EqualTo("変圧器は完全に充電された！"));
             Assert.That(TradeUiPopupHitCount("TradeUiPopup.RechargeNeed"), Is.EqualTo(1));
             Assert.That(TradeUiPopupHitCount("TradeUiPopup.RechargeQuestion"), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void VendorOwnerPatch_TranslatesFixedVendorPopupFallbacks_WithRepositoryDictionaries()
+    {
+        UseRepositoryDictionaries();
+
+        using var showPatch = PatchPopupShow(nameof(DummyPopupShow.Show));
+        using var examineOwnerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.DoVendorExamine));
+        using var rechargeOwnerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.DoVendorRecharge));
+
+        var target = new DummyTradeUiVendorPopupProducerTarget
+        {
+            PopupMessageToShow = "You already understand this item.",
+            UseShowFailPopup = true,
+        };
+        target.DoVendorExamine();
+        var alreadyUnderstand = DummyPopupShow.LastShowMessage;
+
+        target.UseShowFailPopup = false;
+        target.PopupMessageToShow = "That item has no cell or rechargeable capacitor in it.";
+        _ = target.DoVendorRecharge();
+        var noCell = DummyPopupShow.LastShowMessage;
+
+        target.PopupMessageToShow = "That item cannot be recharged this way.";
+        _ = target.DoVendorRecharge();
+        var cannotRecharge = DummyPopupShow.LastShowMessage;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(alreadyUnderstand, Is.EqualTo("このアイテムはすでに理解している。"));
+            Assert.That(noCell, Is.EqualTo("そのアイテムには電池も充電可能なコンデンサもない。"));
+            Assert.That(cannotRecharge, Is.EqualTo("そのアイテムはこの方法では再充電できない。"));
+        });
+    }
+
+    [TestCase(
+        nameof(DummyTradeUiVendorPopupProducerTarget.ShowTradeScreen),
+        "TradeUiPopup.CannotCarry")]
+    [TestCase(
+        nameof(DummyTradeUiVendorPopupProducerTarget.DoVendorExamine),
+        "TradeUiPopup.IdentifyTooComplex")]
+    [TestCase(
+        nameof(DummyTradeUiVendorPopupProducerTarget.DoVendorRecharge),
+        "TradeUiPopup.RechargeNeed")]
+    public void VendorOwnerPatch_LeavesEmptyNewVendorOwnerPopupUnchanged_WhenOwnerPatched(
+        string methodName,
+        string detail)
+    {
+        using var showPatch = PatchPopupShow(nameof(DummyPopupShow.Show));
+        using var ownerPatch = PatchVendorOwner(methodName);
+        var target = new DummyTradeUiVendorPopupProducerTarget();
+
+        InvokeVendorMethod(target, methodName);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
+            Assert.That(TradeUiPopupHitCount(detail), Is.Zero);
         });
     }
 
@@ -832,6 +907,11 @@ public sealed class TradeUiPopupTranslationPatchTests
     {
         MessageFrameTranslator.SetDictionaryPathForTests(
             Path.Combine(GetLocalizationRoot(), "MessageFrames", "verbs.ja.json"));
+    }
+
+    private static void UseRepositoryDictionaries()
+    {
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(GetLocalizationRoot(), "Dictionaries"));
     }
 
     // To-do: consolidate these JSON test helpers once the shared usage reaches 3+ files.

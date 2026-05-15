@@ -611,6 +611,29 @@ public sealed class GetDisplayNameProcessPatchTests
         });
     }
 
+    [TestCase("K", "Drained", "空")]
+    [TestCase("r", "Very Low", "残量ごく少")]
+    [TestCase("R", "Low", "残量少")]
+    [TestCase("W", "Used", "使用済み")]
+    [TestCase("g", "Fresh", "残量多")]
+    [TestCase("G", "Full", "満充電")]
+    [TestCase("C", "Unknown", "Unknown")]
+    [TestCase("M", "", "")]
+    [TestCase("Y", "\u0001Low", "Low")]
+    public void Postfix_TranslatesColoredChargeStateSuffix_WhenPatched(
+        string color,
+        string state,
+        string expectedState)
+    {
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor($"{{{{c|ケムセル}}}} {{{{y|({{{{{color}|{state}}}}})}}}}");
+
+            Assert.That(result, Is.EqualTo($"{{{{c|ケムセル}}}} {{{{y|({{{{{color}|{expectedState}}}}})}}}}"));
+        });
+    }
+
     [Test]
     public void Postfix_TranslatesJapaneseEntry_WhenPatched()
     {

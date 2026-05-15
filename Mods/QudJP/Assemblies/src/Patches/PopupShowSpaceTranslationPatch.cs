@@ -60,12 +60,12 @@ public static class PopupShowSpaceTranslationPatch
 
             if (__args[0] is string message && !string.IsNullOrEmpty(message))
             {
-                __args[0] = PopupTranslationPatch.TranslatePopupTextForProducerRoute(message, Context);
+                __args[0] = PopupShowSemanticPipeline.TranslateMessage(message, Context);
             }
 
             if (__args.Length > 1 && __args[1] is string title && !string.IsNullOrEmpty(title))
             {
-                __args[1] = PopupTranslationPatch.TranslatePopupTextForProducerRoute(title, Context);
+                __args[1] = PopupShowSemanticPipeline.TranslateMessage(title, Context);
             }
         }
         catch (Exception ex)

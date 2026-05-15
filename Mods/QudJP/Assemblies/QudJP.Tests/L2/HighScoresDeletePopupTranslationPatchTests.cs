@@ -51,6 +51,26 @@ public sealed class HighScoresDeletePopupTranslationPatchTests
     }
 
     [Test]
+    public void ScoresShow_TranslatesDeleteConfirmationPopup_WhenOwnerPatched()
+    {
+        WithPatchedScoresShow(() =>
+        {
+            var target = new DummyHighScoresDeleteTarget
+            {
+                PopupMessageToShow = "Are you sure you want to delete this?\n\n{{W|Marizah}} died in 12,345 turns",
+            };
+
+            target.ShowScores();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo("本当にこれを削除しますか？\n\n{{W|Marizah}} died in 12,345 turns"));
+                Assert.That(HitCount(), Is.EqualTo(1));
+            });
+        });
+    }
+
+    [Test]
     public void HandleDelete_DoesNotTranslateDeleteConfirmationPopup_WhenOwnerAbsent()
     {
         var harmonyId = CreateHarmonyId();
@@ -67,6 +87,30 @@ public sealed class HighScoresDeletePopupTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(DummyPopupShow.LastShowYesNoAsyncMessage, Is.EqualTo("Are you sure you want to delete this?\n\nMarizah died in 12,345 turns"));
+                Assert.That(HitCount(), Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void ScoresShow_DoesNotTranslateDeleteConfirmationPopup_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShowYesNo(harmony);
+
+            _ = DummyPopupShow.ShowYesNo("Are you sure you want to delete this?\n\nMarizah died in 12,345 turns");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo("Are you sure you want to delete this?\n\nMarizah died in 12,345 turns"));
                 Assert.That(HitCount(), Is.Zero);
             });
         }
@@ -209,10 +253,38 @@ public sealed class HighScoresDeletePopupTranslationPatchTests
         }
     }
 
+    private static void WithPatchedScoresShow(Action assertion)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShowYesNo(harmony);
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyHighScoresDeleteTarget), nameof(DummyHighScoresDeleteTarget.ShowScores)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(HighScoresDeletePopupTranslationPatch), nameof(HighScoresDeletePopupTranslationPatch.Prefix))),
+                finalizer: new HarmonyMethod(RequireMethod(typeof(HighScoresDeletePopupTranslationPatch), nameof(HighScoresDeletePopupTranslationPatch.Finalizer), typeof(Exception))));
+
+            assertion();
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static void PatchPopupShowYesNoAsync(Harmony harmony)
     {
         harmony.Patch(
             original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNoAsync)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+    }
+
+    private static void PatchPopupShowYesNo(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNo)),
             prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
     }
 
@@ -256,6 +328,12 @@ public sealed class HighScoresDeletePopupTranslationPatchTests
         public void HandleNestedDelete()
         {
             _ = DummyPopupShow.ShowYesNoAsync(PopupMessageToShow).GetAwaiter().GetResult();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public void ShowScores()
+        {
+            _ = DummyPopupShow.ShowYesNo(PopupMessageToShow);
         }
     }
 }

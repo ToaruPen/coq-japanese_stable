@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using HarmonyLib;
@@ -15,23 +16,24 @@ public static class ConversationTakeItemPopupTranslationPatch
     [ThreadStatic]
     private static int activeDepth;
 
-    [HarmonyTargetMethod]
-    private static MethodBase? TargetMethod()
+    [HarmonyTargetMethods]
+    private static IEnumerable<MethodBase> TargetMethods()
     {
         var targetType = AccessTools.TypeByName("XRL.World.Conversations.Parts.TakeItem");
         if (targetType is null)
         {
             Trace.TraceError("QudJP: {0} target type not found.", Context);
-            return null;
+            yield break;
         }
 
         var method = AccessTools.Method(targetType, "Execute", Type.EmptyTypes);
         if (method is null)
         {
             Trace.TraceError("QudJP: {0}.Execute() not found.", Context);
+            yield break;
         }
 
-        return method;
+        yield return method;
     }
 
     public static void Prefix()

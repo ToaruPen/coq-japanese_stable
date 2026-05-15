@@ -36,6 +36,54 @@ public static class WaterRitualPopupTranslationPatch
         "^(?<speaker>.+?) teaches? you to craft (?<recipe>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex BuySecretNoMoreSecretsPattern = new(
+        "^(?<speaker>.+?) has no more secrets to share\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex BuySecretRecipePattern = new(
+        "^(?<speaker>.+?) shares? a recipe with you\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex BuySecretLocationPattern = new(
+        "^(?<speaker>.+?) shares? the location of (?<location>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex BuySecretSultanEventPattern = new(
+        "^(?<speaker>.+?) shares? an event from the life of a sultan with you\\.\\n\\n\"(?<gospel>.+)\"$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+
+    private static readonly Regex ReputationTooLowPattern = new(
+        "^You don't have a high enough reputation with (?<faction>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex PerformRitualPattern = new(
+        "^You share your (?<liquid>.+?) with (?<speaker>.+?) and begin the water ritual\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex BuyItemGiftPattern = new(
+        "^(?<speaker>.+?) gifts? you (?<item>.+?)!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex GainMutationPattern = new(
+        "^Despite your genetic limitations, (?<speaker>.+?) teaches? you to improvise (?<mutation>.+?)!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex RandomMutationIncompatiblePattern = new(
+        "^You can't gain (?<category>physical|mental) mutations\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex JoinPartyPattern = new(
+        "^(?<speaker>.+?) joins? you!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex NephilimCirclePattern = new(
+        "^You receive (?<item>.+?)!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex SellSecretNoMoreReputationPattern = new(
+        "^(?<speaker>.+?) can't grant you any more reputation\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -44,9 +92,10 @@ public static class WaterRitualPopupTranslationPatch
     {
         var enterElementEventType = AccessTools.TypeByName("XRL.World.Conversations.EnterElementEvent");
         var enteredElementEventType = AccessTools.TypeByName("XRL.World.Conversations.EnteredElementEvent");
-        if (enterElementEventType is null || enteredElementEventType is null)
+        var journalEntryType = AccessTools.TypeByName("Qud.API.IBaseJournalEntry");
+        if (enterElementEventType is null || enteredElementEventType is null || journalEntryType is null)
         {
-            Trace.TraceError("QudJP: {0} failed to resolve conversation event types.", Context);
+            Trace.TraceError("QudJP: {0} failed to resolve conversation event or journal entry types.", Context);
             yield break;
         }
 
@@ -68,6 +117,86 @@ public static class WaterRitualPopupTranslationPatch
 
         foreach (var method in ResolveTarget(
                      "XRL.World.Conversations.Parts.WaterRitualTinkeringRecipe",
+                     "HandleEvent",
+                     [enteredElementEventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualBuySecret",
+                     "HandleEvent",
+                     [enteredElementEventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualBuySecret",
+                     "RevealEntry",
+                     [journalEntryType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.IWaterRitualPart",
+                     "UseReputation",
+                     [typeof(string)]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitual",
+                     "PerformRitual",
+                     Type.EmptyTypes))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualBuyItem",
+                     "HandleEvent",
+                     [enteredElementEventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualGainMutation",
+                     "HandleEvent",
+                     [enteredElementEventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualRandomMutation",
+                     "HandleEvent",
+                     [enteredElementEventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualJoinParty",
+                     "HandleEvent",
+                     [enteredElementEventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualNephilimPacify",
+                     "TryGiveCircle",
+                     Type.EmptyTypes))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.World.Conversations.Parts.WaterRitualSellSecret",
                      "HandleEvent",
                      [enteredElementEventType]))
         {
@@ -211,9 +340,135 @@ public static class WaterRitualPopupTranslationPatch
             return true;
         }
 
+        if (TryTranslatePattern(
+                BuySecretNoMoreSecretsPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "speaker")}にはもう共有できる秘密がない。",
+                out translated))
+        {
+            detail = "BuySecretNoMoreSecrets";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                BuySecretRecipePattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "speaker")}がレシピを共有してくれた。",
+                out translated))
+        {
+            detail = "BuySecretRecipe";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                BuySecretLocationPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "speaker")}が{Restore(match, spans, "location")}の場所を教えてくれた。",
+                out translated))
+        {
+            detail = "BuySecretLocation";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                BuySecretSultanEventPattern,
+                source,
+                (match, spans) =>
+                    $"{Restore(match, spans, "speaker")}がスルタンの生涯の出来事を共有してくれた。\n\n\"{Restore(match, spans, "gospel")}\"",
+                out translated))
+        {
+            detail = "BuySecretSultanEvent";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                ReputationTooLowPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "faction")}との評判が十分に高くない。",
+                out translated))
+        {
+            detail = "ReputationTooLow";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                PerformRitualPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "speaker")}と{Restore(match, spans, "liquid")}を分かち合い、水の儀式を始めた。",
+                out translated))
+        {
+            detail = "PerformRitual";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                BuyItemGiftPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "speaker")}が{Restore(match, spans, "item")}を贈ってくれた！",
+                out translated))
+        {
+            detail = "BuyItemGift";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                GainMutationPattern,
+                source,
+                (match, spans) => $"遺伝的な制限にもかかわらず、{Restore(match, spans, "speaker")}が{Restore(match, spans, "mutation")}を即興で扱う方法を教えてくれた！",
+                out translated))
+        {
+            detail = "GainMutation";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                RandomMutationIncompatiblePattern,
+                source,
+                (match, _) => $"{TranslateMutationCategory(match.Groups["category"].Value)}変異は得られない。",
+                out translated))
+        {
+            detail = "RandomMutationIncompatible";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                JoinPartyPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "speaker")}が仲間に加わった！",
+                out translated))
+        {
+            detail = "JoinParty";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                NephilimCirclePattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "item")}を受け取った！",
+                out translated))
+        {
+            detail = "NephilimCircle";
+            return true;
+        }
+
+        if (TryTranslatePattern(
+                SellSecretNoMoreReputationPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "speaker")}はこれ以上評判を与えられない。",
+                out translated))
+        {
+            detail = "SellSecretNoMoreReputation";
+            return true;
+        }
+
         translated = source;
         detail = string.Empty;
         return false;
+    }
+
+    private static string TranslateMutationCategory(string category)
+    {
+        return string.Equals(category, "mental", StringComparison.OrdinalIgnoreCase) ? "精神" : "肉体";
     }
 
     private static bool TryTranslatePattern(

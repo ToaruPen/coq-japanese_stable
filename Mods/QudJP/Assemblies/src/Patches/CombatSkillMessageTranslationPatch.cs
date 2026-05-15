@@ -76,6 +76,34 @@ public static class CombatSkillMessageTranslationPatch
         "^A supernal force helps you shake off being (?<state>.+?)!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex BackswingPattern = new(
+        "^You backswing with (?<weapon>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CudgelSmashUpPreparePattern = new(
+        "^You prepare (?<weapon>.+?) for demolition\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ActorBackswingPattern = new(
+        "^(?<actor>.+?) backswings? with (?<weapon>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ActorResistsShieldSlamPattern = new(
+        "^(?<actor>.+?) resists? your shield slam\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex YouResistShieldSlamPattern = new(
+        "^You resist (?<slam>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex RejoinderPattern = new(
+        "^You rejoinder with (?<weapon>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ActorRejoinderPattern = new(
+        "^(?<actor>.+?) rejoinders? with (?<weapon>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -84,11 +112,13 @@ public static class CombatSkillMessageTranslationPatch
     {
         var eventType = AccessTools.TypeByName("XRL.World.Event");
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
+        var cellType = AccessTools.TypeByName("XRL.World.Cell");
         var beforeFireMissileWeaponsEventType = AccessTools.TypeByName("XRL.World.BeforeFireMissileWeaponsEvent");
         var applyEffectEventType = AccessTools.TypeByName("XRL.World.ApplyEffectEvent");
         var endTurnEventType = AccessTools.TypeByName("XRL.World.EndTurnEvent");
         if (eventType is null
             || gameObjectType is null
+            || cellType is null
             || beforeFireMissileWeaponsEventType is null
             || applyEffectEventType is null
             || endTurnEventType is null)
@@ -115,6 +145,54 @@ public static class CombatSkillMessageTranslationPatch
 
         foreach (var method in ResolveTargets(
                      "XRL.World.Parts.Skill.Endurance_ShakeItOff",
+                     "FireEvent",
+                     [eventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTargets(
+                     "XRL.World.Parts.Skill.Cudgel_Backswing",
+                     "FireEvent",
+                     [eventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTargets(
+                     "XRL.World.Parts.Skill.Cudgel_SmashUp",
+                     "FireEvent",
+                     [eventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTargets(
+                     "XRL.World.Parts.Skill.Discipline_IronMind",
+                     "FireEvent",
+                     [eventType]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTargets(
+                     "XRL.World.Parts.Skill.Rifle_DrawABead",
+                     "ValidateMark",
+                     Type.EmptyTypes))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTargets(
+                     "XRL.World.Parts.Skill.Shield_Slam",
+                     "Slam",
+                     [gameObjectType, gameObjectType, cellType, typeof(bool)]))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTargets(
+                     "XRL.World.Parts.Skill.ShortBlades_Rejoinder",
                      "FireEvent",
                      [eventType]))
         {
@@ -293,6 +371,41 @@ public static class CombatSkillMessageTranslationPatch
                 SupernalStatePattern,
                 source,
                 (match, spans) => $"超自然的な力が{Restore(match, spans, "state")}状態を振り払う助けとなった！",
+                out translated)
+            || TryTranslatePattern(
+                BackswingPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "weapon")}で返し打ちした。",
+                out translated)
+            || TryTranslatePattern(
+                CudgelSmashUpPreparePattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "weapon")}を破壊のために構えた。",
+                out translated)
+            || TryTranslatePattern(
+                ActorBackswingPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "actor")}が{Restore(match, spans, "weapon")}で返し打ちした。",
+                out translated)
+            || TryTranslatePattern(
+                ActorResistsShieldSlamPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "actor")}はあなたのシールドスラムに抵抗した。",
+                out translated)
+            || TryTranslatePattern(
+                YouResistShieldSlamPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "slam")}に抵抗した。",
+                out translated)
+            || TryTranslatePattern(
+                RejoinderPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "weapon")}で反撃した。",
+                out translated)
+            || TryTranslatePattern(
+                ActorRejoinderPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "actor")}が{Restore(match, spans, "weapon")}で反撃した。",
                 out translated);
     }
 
@@ -304,6 +417,10 @@ public static class CombatSkillMessageTranslationPatch
             "You shook off the dazing." => "朦朧を振り払った。",
             "A supernal force helps you shake off the effect!" => "超自然的な力が効果を振り払う助けとなった！",
             "A supernal force helps you shake off a mental state!" => "超自然的な力が精神状態を振り払う助けとなった！",
+            "You muster your will and shake off some of your confusion." => "意志の力で混乱の一部を振り払った。",
+            "You muster your will and shake off your confusion." => "意志の力で混乱を振り払った。",
+            "You lose sight of your mark." => "標的を見失った。",
+            "Your tracking of your mark has been disrupted." => "印付けの追跡が乱された。",
             _ => string.Empty,
         };
         return translated.Length > 0;

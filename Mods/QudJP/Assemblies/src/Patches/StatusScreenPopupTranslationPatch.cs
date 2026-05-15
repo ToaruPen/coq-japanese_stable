@@ -39,6 +39,10 @@ public static class StatusScreenPopupTranslationPatch
         "^You have all available (?<term>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex PsychicGlimmerDebugPattern = new(
+        "^TODOJASON GLIMMER=(?<value>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly object SyncRoot = new();
     private static Dictionary<string, string>? mutationDisplayNames;
 
@@ -59,6 +63,7 @@ public static class StatusScreenPopupTranslationPatch
 
         AddTarget(targets, statusScreenType, "BuyStat", new[] { gameObjectType, typeof(string) });
         AddTarget(targets, statusScreenType, "BuyRandomMutation", new[] { gameObjectType });
+        AddTarget(targets, statusScreenType, "Show", new[] { gameObjectType });
         return targets;
     }
 
@@ -155,6 +160,11 @@ public static class StatusScreenPopupTranslationPatch
         }
 
         if (TryTranslateAllAvailableMutationTerm(source, stripped, spans, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslatePsychicGlimmerDebug(source, stripped, spans, out translated))
         {
             return true;
         }
@@ -361,6 +371,27 @@ public static class StatusScreenPopupTranslationPatch
         return true;
     }
 
+    private static bool TryTranslatePsychicGlimmerDebug(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated)
+    {
+        var match = PsychicGlimmerDebugPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = RestoreWhole(
+            $"TODOJASON サイキック・グリマー={Restore(match, spans, "value")}",
+            source,
+            stripped,
+            spans);
+        return true;
+    }
+
     private static string Restore(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
     {
         var group = match.Groups[groupName];
@@ -404,11 +435,16 @@ public static class StatusScreenPopupTranslationPatch
         };
     }
 
-    private static string TranslateMutationName(string source)
+    internal static string TranslateMutationDisplayName(string source)
     {
         return ColorAwareTranslationComposer.TranslatePreservingColors(
             source,
             static visible => GetMutationDisplayNames().TryGetValue(visible, out var translated) ? translated : visible);
+    }
+
+    private static string TranslateMutationName(string source)
+    {
+        return TranslateMutationDisplayName(source);
     }
 
     private static Dictionary<string, string> GetMutationDisplayNames()

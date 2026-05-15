@@ -20,4 +20,10 @@ internal sealed class DummyCookingRuntimeTarget
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
         return true;
     }
+
+    public bool CheckBlinkEscape()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
 }

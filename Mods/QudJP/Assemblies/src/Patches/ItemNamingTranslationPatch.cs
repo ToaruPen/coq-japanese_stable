@@ -15,6 +15,9 @@ public static class ItemNamingTranslationPatch
     private static readonly Regex OpportunityPattern =
         new Regex("^You swell with the inspiration to name your (?<item>.+?)\\. Do you wish to\\?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex NameItemPattern =
+        new Regex("^You name (?<item>.+?) '(?<name>.+)'\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -75,6 +78,34 @@ public static class ItemNamingTranslationPatch
         else
         {
             Trace.TraceError("QudJP: {0}.CheckBestowals(...) not found.", Context);
+        }
+
+        var nameItem = AccessTools.Method(
+            itemNamingType,
+            "NameItem",
+            [
+                gameObjectType,
+                gameObjectType,
+                typeof(string),
+                typeof(string),
+                typeof(string),
+                typeof(string),
+                typeof(bool),
+                typeof(bool),
+                gameObjectType,
+                gameObjectType,
+                typeof(string),
+                typeof(bool),
+                typeof(int),
+                typeof(bool),
+            ]);
+        if (nameItem is not null)
+        {
+            yield return nameItem;
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0}.NameItem(...) not found.", Context);
         }
     }
 
@@ -141,6 +172,25 @@ public static class ItemNamingTranslationPatch
                 spans,
                 stripped.Length);
             Record(route, family, "Opportunity", source, translated);
+            return true;
+        }
+
+        match = NameItemPattern.Match(stripped);
+        if (match.Success)
+        {
+            var item = ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
+                match.Groups["item"].Value,
+                spans,
+                match.Groups["item"]).Trim();
+            var name = ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
+                match.Groups["name"].Value,
+                spans,
+                match.Groups["name"]).Trim();
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                "あなたは" + item + "に「" + name + "」と名付けた。",
+                spans,
+                stripped.Length);
+            Record(route, family, "NameItem", source, translated);
             return true;
         }
 
