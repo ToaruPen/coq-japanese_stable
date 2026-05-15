@@ -3051,6 +3051,63 @@ def _physics_handle_event_object_entering_cell_callsites() -> tuple[CoveredOwner
     )
 
 
+def _physics_handle_event_inventory_action_popup_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.HandleEvent",
+            lines=(2754, 2773, 2786),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PhysicsInventoryActionPopupTranslationPatch.cs",
+                    (
+                        "PhysicsInventoryActionPopupTranslationPatch",
+                        "XRL.World.InventoryActionEvent",
+                        "TryTranslatePopupMessage",
+                        "LiquidVolumeFragmentTranslator.TryTranslatePopupMessage",
+                        "NoCleaningLiquidPattern",
+                        "TryTranslatePhysicsAttackConfirmText",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("PhysicsInventoryActionPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/LiquidVolumeFragmentTranslator.cs",
+                    ("OwnershipPour", "Are you sure you want to pour from"),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+                    ("TryTranslatePhysicsAttackConfirmText",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PhysicsInventoryActionPopupTranslationPatchTests.cs",
+                    (
+                        "HandleEvent_TranslatesPhysicsInventoryActionPopups_WhenOwnerPatched",
+                        "HandleEvent_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "HandleEvent_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "HandleEvent_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "HandleEvent_DoesNotClaimDeferredFixedOrRuntimePopups_WhenOwnerPatched",
+                        "Are you sure you want to pour from",
+                        "You don't have any",
+                        "Do you really want to attack",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "TargetMethod_ResolvesExpectedSignature",
+                        "typeof(PhysicsInventoryActionPopupTranslationPatch)",
+                        "XRL.World.Parts.Physics",
+                        "XRL.World.InventoryActionEvent",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _reality_stabilized_event_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         (
@@ -13777,6 +13834,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_pick_target_show_picker_callsites(),
     *_campfire_nostrums_owner_callsites(),
     *_physics_handle_event_object_entering_cell_callsites(),
+    *_physics_handle_event_inventory_action_popup_callsites(),
     CoveredOwnerCallsites(
         family_id=(
             "XRL.World.Parts.Mutation/Carapace.cs::"
