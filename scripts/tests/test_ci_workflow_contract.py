@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
+
+from scripts.tests.test_validate_pattern_routes import _EXPECTED_MESSAGE_ROUTE_COUNTS
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -115,3 +118,16 @@ def test_ci_installs_just_without_apt_update() -> None:
 
     assert "uses: extractions/setup-just@v3" in workflow
     assert "sudo apt-get update" not in workflow
+
+
+def test_ci_message_pattern_route_counts_match_python_contract() -> None:
+    """CI and repository tests must enforce the same message-pattern route inventory."""
+    workflow = _workflow_text()
+    localization_job = _job_block(workflow, "localization", "justfile")
+    matches = re.findall(r"--expect-count ([\w-]+)=(\d+)", localization_job)
+    observed: dict[str, int] = {}
+    for route, count in matches:
+        assert route not in observed, f"duplicate --expect-count for route: {route}"
+        observed[route] = int(count)
+
+    assert observed == _EXPECTED_MESSAGE_ROUTE_COUNTS
