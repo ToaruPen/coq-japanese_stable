@@ -11888,6 +11888,59 @@ def _single_callsite_owner_queue_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _long_blades_core_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id=(
+                "XRL.World.Parts/LongBladesCore.cs::"
+                "XRL.World.Parts.LongBladesCore.FireEvent"
+            ),
+            lines=(341, 443, 475, 488, 492, 550, 587, 591, 628, 632, 656, 660, 739),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/LongBladesCoreTranslationPatch.cs",
+                    (
+                        "LongBladesCoreTranslationPatch",
+                        "TryTranslatePopupMessage",
+                        "TryTranslateQueuedMessage",
+                        "AggressiveLungeBlocked",
+                        "GuardDownCountdown",
+                        "DefensiveSwipeObserver",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("LongBladesCoreTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("LongBladesCoreTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/LongBladesCoreTranslationPatchTests.cs",
+                    (
+                        "OwnerRoute_TranslatesOwnerPopups_WhenOwnerPatched",
+                        "OwnerRoute_TranslatesOwnerQueuedMessages_WhenOwnerPatched",
+                        "OwnerRoute_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "OwnerRoute_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "OwnerRoute_DoesNotClaimEmptyOrUnsupportedQueuedMessages_WhenOwnerPatched",
+                        "OwnerRoute_DoesNotRetranslateDirectMarkedMessages_WhenOwnerPatched",
+                        "OwnerRoute_DoesNotClaimFixedPopups_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(LongBladesCoreTranslationPatch)",
+                        "XRL.World.Parts.LongBladesCore|FireEvent|System.Boolean|XRL.World.Event",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -14110,6 +14163,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_liquid_volume_handle_event_owner_callsites(),
     *_action_manager_run_segment_owner_callsites(),
     *_metrics_manager_log_error_owner_callsites(),
+    *_long_blades_core_owner_callsites(),
     CoveredOwnerCallsites(
         family_id=(
             "XRL.World.Parts.Mutation/Carapace.cs::"

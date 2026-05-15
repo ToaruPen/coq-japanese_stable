@@ -52,6 +52,7 @@ internal static class PopupShowSemanticPipeline
         EelSpawnTranslationPatch.TryTranslatePopupMessage,
         TeleporterPairTranslationPatch.TryTranslatePopupMessage,
         ITeleporterTranslationPatch.TryTranslatePopupMessage,
+        LongBladesCoreTranslationPatch.TryTranslatePopupMessage,
         ShortBladesHobbleTranslationPatch.TryTranslatePopupMessage,
         ShortBladesShankTranslationPatch.TryTranslatePopupMessage,
         FirefightingTranslationPatch.TryTranslatePopupMessage,

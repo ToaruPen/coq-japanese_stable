@@ -1888,6 +1888,10 @@ public sealed class TargetMethodResolutionTests
         "Qud.UI.HighScoresScreen|HandleDelete|System.Void",
         "XRL.Core.Scores|Show|XRL.XRLGame",
     })]
+    [TestCase(typeof(LongBladesCoreTranslationPatch), new[]
+    {
+        "XRL.World.Parts.LongBladesCore|FireEvent|System.Boolean|XRL.World.Event",
+    })]
     [TestCase(typeof(SingleCallsiteOwnerPopupTranslationPatch), new[]
     {
         "XRL.World.Quests.AscensionSystem|BarathrumStartConversation|System.Void|XRL.World.GameObject",
