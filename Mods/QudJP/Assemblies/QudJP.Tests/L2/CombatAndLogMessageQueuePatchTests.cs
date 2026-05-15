@@ -113,29 +113,9 @@ public sealed class CombatAndLogMessageQueuePatchTests
         WritePatternDictionary(
             ("^The way is blocked by (?:the |a |an |some )?(.+?)[.!]?$", "{0}に道を塞がれている。"));
 
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-        try
-        {
-            PatchQueue(harmony);
-            PatchOwner(
-                harmony,
-                RequireMethod(typeof(DummyPhysicsObjectEnteringCellTarget), nameof(DummyPhysicsObjectEnteringCellTarget.HandleEvent), typeof(DummyObjectEnteringCellEvent)),
-                typeof(PhysicsObjectEnteringCellTranslationPatch));
-
-            var target = new DummyPhysicsObjectEnteringCellTarget
-            {
-                MessageToSend = "The way is blocked by an chrome pyramid.",
-            };
-
-            target.HandleEvent(new DummyObjectEnteringCellEvent());
-
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("chrome pyramidに道を塞がれている。"));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        AssertPhysicsObjectEnteringCellQueuedMessage(
+            "The way is blocked by an chrome pyramid.",
+            "chrome pyramidに道を塞がれている。");
     }
 
     [Test]
@@ -144,29 +124,63 @@ public sealed class CombatAndLogMessageQueuePatchTests
         WritePatternDictionary(
             ("^OUCH! You collide with (?:the |a |an |some )?(.+?)[.]$", "{0}にぶつかった！"));
 
+        AssertPhysicsObjectEnteringCellQueuedMessage(
+            "OUCH! You collide with a chrome pyramid.",
+            "chrome pyramidにぶつかった！");
+    }
+
+    [TestCase(
+        "The way is blocked by an chrome pyramid.",
+        "chrome pyramidに道を塞がれている。")]
+    [TestCase(
+        "{{Y|the shale wall}} are too difficult to traverse via the world map. You'll have to find your way on the surface.",
+        "{{Y|shale wall}}はワールドマップでは通り抜けられないほど険しい。地表から道を探す必要がある。")]
+    public void PhysicsObjectEnteringCell_TranslatesInventoriedQueuedShapes_WithRepositoryPatterns(
+        string source,
+        string expected)
+    {
+        UseRepositoryPatternDictionary();
+
+        AssertPhysicsObjectEnteringCellQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void PhysicsObjectEnteringCell_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        UseRepositoryPatternDictionary();
+
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try
         {
             PatchQueue(harmony);
-            PatchOwner(
-                harmony,
-                RequireMethod(typeof(DummyPhysicsObjectEnteringCellTarget), nameof(DummyPhysicsObjectEnteringCellTarget.HandleEvent), typeof(DummyObjectEnteringCellEvent)),
-                typeof(PhysicsObjectEnteringCellTranslationPatch));
 
-            var target = new DummyPhysicsObjectEnteringCellTarget
-            {
-                MessageToSend = "OUCH! You collide with a chrome pyramid.",
-            };
+            DummyMessageQueue.AddPlayerMessage("The way is blocked by an chrome pyramid.", null, Capitalize: false);
 
-            target.HandleEvent(new DummyObjectEnteringCellEvent());
-
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("chrome pyramidにぶつかった！"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("The way is blocked by an chrome pyramid."));
         }
         finally
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    [Test]
+    public void PhysicsObjectEnteringCell_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        AssertPhysicsObjectEnteringCellQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("The way is blocked by an chrome pyramid."),
+            "The way is blocked by an chrome pyramid.");
+    }
+
+    [Test]
+    public void PhysicsObjectEnteringCell_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        AssertPhysicsObjectEnteringCellQueuedMessage(string.Empty, string.Empty);
     }
 
     [Test]
@@ -10291,6 +10305,36 @@ public sealed class CombatAndLogMessageQueuePatchTests
         harmony.Patch(
             original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
             prefix: new HarmonyMethod(RequireMethod(typeof(MessageLogPatch), nameof(MessageLogPatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+    }
+
+    private static void AssertPhysicsObjectEnteringCellQueuedMessage(string source, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyPhysicsObjectEnteringCellTarget),
+                    nameof(DummyPhysicsObjectEnteringCellTarget.HandleEvent),
+                    typeof(DummyObjectEnteringCellEvent)),
+                typeof(PhysicsObjectEnteringCellTranslationPatch));
+
+            var target = new DummyPhysicsObjectEnteringCellTarget
+            {
+                MessageToSend = source,
+            };
+
+            target.HandleEvent(new DummyObjectEnteringCellEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private static void PatchOwner(Harmony harmony, MethodInfo original, Type patchType)

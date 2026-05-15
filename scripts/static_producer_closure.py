@@ -3000,6 +3000,57 @@ def _campfire_nostrums_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     )
 
 
+def _physics_handle_event_object_entering_cell_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.HandleEvent",
+            lines=(2593, 2598),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PhysicsObjectEnteringCellTranslationPatch.cs",
+                    (
+                        "PhysicsObjectEnteringCellTranslationPatch",
+                        "XRL.World.ObjectEnteringCellEvent",
+                        "TryTranslateQueuedMessage",
+                        "ObjectEnteringCell",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("PhysicsObjectEnteringCellTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "PhysicsObjectEnteringCell_TranslatesInventoriedQueuedShapes_WithRepositoryPatterns",
+                        "PhysicsObjectEnteringCell_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "PhysicsObjectEnteringCell_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                        "PhysicsObjectEnteringCell_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                        "The way is blocked by an chrome pyramid.",
+                        "too difficult to traverse via the world map",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(PhysicsObjectEnteringCellTranslationPatch)",
+                        "XRL.World.Parts.Physics",
+                        "XRL.World.ObjectEnteringCellEvent",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+                    (
+                        "The way is blocked by",
+                        "too difficult to traverse via the world map",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _reality_stabilized_event_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         (
@@ -13725,6 +13776,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
     *_campfire_nostrums_owner_callsites(),
+    *_physics_handle_event_object_entering_cell_callsites(),
     CoveredOwnerCallsites(
         family_id=(
             "XRL.World.Parts.Mutation/Carapace.cs::"
