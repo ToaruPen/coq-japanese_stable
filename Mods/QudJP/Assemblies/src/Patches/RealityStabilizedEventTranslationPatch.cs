@@ -32,6 +32,14 @@ public static class RealityStabilizedEventTranslationPatch
         "^(?<device>.+?) emits? a shower of sparks!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex OptionToContestSifrahPattern = new(
+        "^(?<intro>A normality lattice prevents you from altering spacetime in (?:(?:both your local region and the local region you're trying to interact with)|(?:the|that) local region)\\.) You can try to push through at some risk\\. Your feeling is that success would be (?<difficulty>almost impossible|challenging|moderately difficult|easy|very easy)\\. Do you want to try\\?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex OptionToContestChancePattern = new(
+        "^(?<intro>A normality lattice prevents you from altering spacetime in (?:(?:both your local region and the local region you're trying to interact with)|(?:the|that) local region)\\.) You can try to push through at some risk\\. You estimate (?<estimate>less than a|about a) (?<percent>\\d+%)(?:[A-Za-z])? chance of success\\. Do you want to try\\?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private const string NormalityLatticePopup =
         "You try to push through the normality lattice, but it snaps back into place.";
 
@@ -59,6 +67,7 @@ public static class RealityStabilizedEventTranslationPatch
         }
 
         AddTarget(targets, targetType, "TryContest", new[] { gameObjectType, typeof(int), typeof(int) });
+        AddTarget(targets, targetType, "OptionToContest", new[] { gameObjectType, typeof(int), typeof(bool) });
         AddTarget(targets, targetType, "FailedToContest", new[] { gameObjectType });
         AddTarget(targets, targetType, "ShortCircuitDevice", new[] { gameObjectType, gameObjectType, eventType });
         return targets;
@@ -128,7 +137,8 @@ public static class RealityStabilizedEventTranslationPatch
             return true;
         }
 
-        if (TryTranslateNormalityLatticePopup(source, out translated))
+        if (TryTranslateOptionToContestPopup(source, out translated)
+            || TryTranslateNormalityLatticePopup(source, out translated))
         {
             DynamicTextObservability.RecordTransform(route, family + "." + Context, source, translated);
             return true;
@@ -141,6 +151,40 @@ public static class RealityStabilizedEventTranslationPatch
 
         DynamicTextObservability.RecordTransform(route, family + "." + Context, source, translated);
         return true;
+    }
+
+    private static bool TryTranslateOptionToContestPopup(string source, out string translated)
+    {
+        if (TryTranslatePattern(
+                OptionToContestSifrahPattern,
+                source,
+                (match, spans) =>
+                    TranslateOptionToContestIntro(Restore(match, spans, "intro"))
+                    + "危険を冒して押し通ることはできる。成功は"
+                    + TranslateOptionToContestDifficulty(Restore(match, spans, "difficulty"))
+                    + "だと感じる。試しますか？",
+                out translated)
+            || TryTranslatePattern(
+                OptionToContestChancePattern,
+                source,
+                (match, spans) =>
+                {
+                    var chance = Restore(match, spans, "percent");
+                    var estimate = Restore(match, spans, "estimate") == "less than a"
+                        ? chance + "未満"
+                        : "約" + chance;
+                    return TranslateOptionToContestIntro(Restore(match, spans, "intro"))
+                        + "危険を冒して押し通ることはできる。成功率は"
+                        + estimate
+                        + "と見積もっている。試しますか？";
+                },
+                out translated))
+        {
+            return true;
+        }
+
+        translated = source;
+        return false;
     }
 
     private static bool TryTranslateNormalityLatticePopup(string source, out string translated)
@@ -230,6 +274,61 @@ public static class RealityStabilizedEventTranslationPatch
             stripped.Length,
             source);
         return true;
+    }
+
+    private static bool TryTranslatePattern(
+        Regex pattern,
+        string source,
+        Func<Match, IReadOnlyList<ColorSpan>, string> translate,
+        out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = pattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translate(match, spans),
+            spans,
+            stripped.Length,
+            source);
+        return true;
+    }
+
+    private static string Restore(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
+    {
+        var group = match.Groups[groupName];
+        return ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group).Trim();
+    }
+
+    private static string TranslateOptionToContestIntro(string intro)
+    {
+        return intro switch
+        {
+            "A normality lattice prevents you from altering spacetime in both your local region and the local region you're trying to interact with." =>
+                "ノーマリティ格子により、あなたは自分の局所領域と干渉しようとしている局所領域の両方で時空を変えられない。",
+            "A normality lattice prevents you from altering spacetime in the local region." =>
+                "ノーマリティ格子により、あなたはこの局所領域で時空を変えられない。",
+            "A normality lattice prevents you from altering spacetime in that local region." =>
+                "ノーマリティ格子により、あなたはその局所領域で時空を変えられない。",
+            _ => intro,
+        };
+    }
+
+    private static string TranslateOptionToContestDifficulty(string difficulty)
+    {
+        return difficulty switch
+        {
+            "almost impossible" => "ほぼ不可能",
+            "challenging" => "困難",
+            "moderately difficult" => "やや困難",
+            "easy" => "簡単",
+            "very easy" => "とても簡単",
+            _ => difficulty,
+        };
     }
 
     private static string TranslateFailedContestActor(string actor)

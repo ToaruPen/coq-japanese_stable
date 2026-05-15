@@ -1910,6 +1910,56 @@ public sealed class CombatAndLogMessageQueuePatchTests
         "{{G|glowfish}}'s head explodes!",
         null,
         "{{G|glowfish}}の頭が爆発した！")]
+    [TestCase(
+        nameof(DummySunderMindTarget.Tick),
+        "Your head explodes!",
+        null,
+        "あなたの頭が爆発した！")]
+    [TestCase(
+        nameof(DummySunderMindTarget.Tick),
+        "{{r|You sunder {{G|glowfish}}'s mind{{R|(x2)}} for 5 damage!}}",
+        null,
+        "{{r|あなたは{{G|glowfish}}の精神を{{R|(x2)}}破壊し、5ダメージを与えた！}}")]
+    [TestCase(
+        nameof(DummySunderMindTarget.Tick),
+        "{{r|glowfish sunders your mind{{R|(x1)}} for 3 damage!}}",
+        null,
+        "{{r|glowfishはあなたの精神を{{R|(x1)}}破壊し、3ダメージを与えた！}}")]
+    [TestCase(
+        nameof(DummySunderMindTarget.Tick),
+        "{{G|glowfish}} sunders your mind{{R|(x1)}} for {{C|3}} damage!",
+        null,
+        "{{G|glowfish}}はあなたの精神を{{R|(x1)}}破壊し、{{C|3}}ダメージを与えた！")]
+    [TestCase(
+        nameof(DummySunderMindTarget.Nosebleed),
+        "{{G|glowfish}}'s nose begins to bleed.",
+        null,
+        "{{G|glowfish}}の鼻血が出始めた。")]
+    [TestCase(
+        nameof(DummySunderMindTarget.Nosebleed),
+        "Your nose begins to bleed.",
+        null,
+        "あなたの鼻血が出始めた。")]
+    [TestCase(
+        nameof(DummySunderMindTarget.Nosebleed),
+        "{{G|chrome idol}}'s core begins to leak.",
+        null,
+        "{{G|chrome idol}}のコアが漏れ始めた。")]
+    [TestCase(
+        nameof(DummySunderMindTarget.Nosebleed),
+        "Your core begins to leak.",
+        null,
+        "あなたのコアが漏れ始めた。")]
+    [TestCase(
+        nameof(DummySunderMindTarget.Nosebleed),
+        "{{G|glowfish}}'s brain begins to hemorrhage.",
+        null,
+        "{{G|glowfish}}の脳が出血し始めた。")]
+    [TestCase(
+        nameof(DummySunderMindTarget.Nosebleed),
+        "Your brain begins to hemorrhage.",
+        null,
+        "あなたの脳が出血し始めた。")]
     public void SunderMind_TranslatesQueuedMessages_WhenOwnerPatched(
         string methodName,
         string source,
@@ -2030,6 +2080,137 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [TestCase(
+        nameof(DummyLiquidWarmStaticTarget.GlitchSkills),
+        "{{W|{{G|glowfish}}'s mind starts to fluctuate in and out of coherence.}}",
+        "{{W|{{G|glowfish}}の精神が一貫性を失って揺らぎ始めた。}}")]
+    [TestCase(
+        nameof(DummyLiquidWarmStaticTarget.GlitchSkills),
+        "{{W|Your mind starts to fluctuate in and out of coherence.}}",
+        "{{W|あなたの精神が一貫性を失って揺らぎ始めた。}}")]
+    [TestCase(
+        nameof(DummyLiquidWarmStaticTarget.GlitchMutations),
+        "{{W|{{G|glowfish}}'s genome fluctuates and genes start turning on and off at random.}}",
+        "{{W|{{G|glowfish}}のゲノムが揺らぎ、遺伝子が無作為にオンオフし始めた。}}")]
+    [TestCase(
+        nameof(DummyLiquidWarmStaticTarget.GlitchMutations),
+        "{{W|Your genome fluctuates and genes start turning on and off at random.}}",
+        "{{W|あなたのゲノムが揺らぎ、遺伝子が無作為にオンオフし始めた。}}")]
+    public void LiquidWarmStatic_TranslatesQueuedMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        AssertLiquidWarmStaticQueuedMessage(methodName, source, expected);
+    }
+
+    [TestCase(
+        nameof(DummyLiquidWarmStaticTarget.GlitchSkills),
+        "{{G|glowfish}}'s knowledge of {{rules|Long Blade}} distorts into knowledge of {{rules|Cudgel}}.",
+        "{{G|glowfish}}の{{rules|Long Blade}}の知識が{{rules|Cudgel}}の知識へ歪んだ。")]
+    [TestCase(
+        nameof(DummyLiquidWarmStaticTarget.GlitchSkills),
+        "Your knowledge of {{rules|Long Blade}} distorts into knowledge of {{rules|Cudgel}}.",
+        "あなたの{{rules|Long Blade}}の知識が{{rules|Cudgel}}の知識へ歪んだ。")]
+    [TestCase(
+        nameof(DummyLiquidWarmStaticTarget.GlitchMutations),
+        "{{G|glowfish}}'s mutation {{rules|Spinnerets}} transmutes into the mutation {{rules|Light Manipulation}}.",
+        "{{G|glowfish}}の変異{{rules|Spinnerets}}が変異{{rules|Light Manipulation}}へ変質した。")]
+    [TestCase(
+        nameof(DummyLiquidWarmStaticTarget.GlitchMutations),
+        "Your mutation {{rules|Spinnerets}} transmutes into the mutation {{rules|Light Manipulation}}.",
+        "あなたの変異{{rules|Spinnerets}}が変異{{rules|Light Manipulation}}へ変質した。")]
+    public void LiquidWarmStatic_TranslatesPopupMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        AssertLiquidWarmStaticPopupMessage(methodName, source, expected);
+    }
+
+    [Test]
+    public void LiquidWarmStatic_TranslatesMultilinePopupMessage_WhenOwnerPatched()
+    {
+        AssertLiquidWarmStaticPopupMessage(
+            nameof(DummyLiquidWarmStaticTarget.GlitchSkills),
+            "{{G|glowfish}}'s knowledge of {{rules|Long Blade}} distorts into knowledge of {{rules|Cudgel}}.\n"
+            + "{{G|glowfish}}'s knowledge of {{rules|Axe}} distorts into knowledge of {{rules|Short Blade}}.",
+            "{{G|glowfish}}の{{rules|Long Blade}}の知識が{{rules|Cudgel}}の知識へ歪んだ。\n"
+            + "{{G|glowfish}}の{{rules|Axe}}の知識が{{rules|Short Blade}}の知識へ歪んだ。");
+    }
+
+    [Test]
+    public void LiquidWarmStatic_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage(
+                "{{W|{{G|glowfish}}'s mind starts to fluctuate in and out of coherence.}}",
+                null,
+                Capitalize: false);
+
+            Assert.That(
+                DummyMessageQueue.LastMessage,
+                Is.EqualTo("{{W|{{G|glowfish}}'s mind starts to fluctuate in and out of coherence.}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LiquidWarmStatic_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show(
+                "{{G|glowfish}}'s knowledge of {{rules|Long Blade}} distorts into knowledge of {{rules|Cudgel}}.");
+
+            Assert.That(
+                DummyPopupShow.LastShowMessage,
+                Is.EqualTo("{{G|glowfish}}'s knowledge of {{rules|Long Blade}} distorts into knowledge of {{rules|Cudgel}}."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LiquidWarmStatic_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertLiquidWarmStaticQueuedMessage(
+            nameof(DummyLiquidWarmStaticTarget.GlitchSkills),
+            MessageFrameTranslator.MarkDirectTranslation("{{G|glowfish}}'s mind starts to fluctuate in and out of coherence."),
+            "{{G|glowfish}}'s mind starts to fluctuate in and out of coherence.");
+    }
+
+    [Test]
+    public void LiquidWarmStatic_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        AssertLiquidWarmStaticPopupMessage(
+            nameof(DummyLiquidWarmStaticTarget.GlitchSkills),
+            MessageFrameTranslator.MarkDirectTranslation(
+                "{{G|glowfish}}'s knowledge of {{rules|Long Blade}} distorts into knowledge of {{rules|Cudgel}}."),
+            "{{G|glowfish}}'s knowledge of {{rules|Long Blade}} distorts into knowledge of {{rules|Cudgel}}.");
+    }
+
+    [Test]
+    public void LiquidWarmStatic_LeavesEmptyMessagesUnchanged_WhenOwnerPatched()
+    {
+        AssertLiquidWarmStaticQueuedMessage(nameof(DummyLiquidWarmStaticTarget.GlitchSkills), string.Empty, string.Empty);
+        AssertLiquidWarmStaticPopupMessage(nameof(DummyLiquidWarmStaticTarget.GlitchMutations), string.Empty, string.Empty);
+    }
+
+    [TestCase(
         nameof(DummyKeybindsScreenConflictTarget.ConfirmConflictBind),
         "{{W|Ctrl+F}} is already bound to {{C|Fire}} and {{C|Force Bubble}}.\r\n\r\nDo you want to bind it to {{C|Fly}} instead?",
         "{{W|Ctrl+F}}はすでに{{C|Fire}} and {{C|Force Bubble}}に割り当てられています。\r\n\r\n代わりに{{C|Fly}}へ割り当てますか？")]
@@ -2133,6 +2314,25 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [TestCase(
+        "A normality lattice prevents you from altering spacetime in both your local region and the local region you're trying to interact with. You can try to push through at some risk. Your feeling is that success would be challenging. Do you want to try?",
+        "ノーマリティ格子により、あなたは自分の局所領域と干渉しようとしている局所領域の両方で時空を変えられない。危険を冒して押し通ることはできる。成功は困難だと感じる。試しますか？")]
+    [TestCase(
+        "A normality lattice prevents you from altering spacetime in the local region. You can try to push through at some risk. You estimate less than a {{R|20%}}R chance of success. Do you want to try?",
+        "ノーマリティ格子により、あなたはこの局所領域で時空を変えられない。危険を冒して押し通ることはできる。成功率は{{R|20%}}未満と見積もっている。試しますか？")]
+    [TestCase(
+        "A normality lattice prevents you from altering spacetime in that local region. You can try to push through at some risk. You estimate about a {{G|75%}}G chance of success. Do you want to try?",
+        "ノーマリティ格子により、あなたはその局所領域で時空を変えられない。危険を冒して押し通ることはできる。成功率は約{{G|75%}}と見積もっている。試しますか？")]
+    public void RealityStabilizedEvent_TranslatesOptionToContestPopup_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertRealityStabilizedEventPopup(
+            nameof(DummyRealityStabilizedEventTarget.OptionToContest),
+            source,
+            expected);
+    }
+
+    [TestCase(
         "You try to push through the normality lattice, but it snaps back into place.",
         "あなたはノーマリティ格子を押し通ろうとしたが、それは跳ね返って元に戻った。")]
     [TestCase(
@@ -2194,8 +2394,11 @@ public sealed class CombatAndLogMessageQueuePatchTests
             PatchPopupShow(harmony);
 
             DummyPopupShow.Show("phase cannon emits a shower of sparks!");
-
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("phase cannon emits a shower of sparks!"));
+
+            var optionPopup = "A normality lattice prevents you from altering spacetime in the local region. You can try to push through at some risk. You estimate about a {{G|75%}}G chance of success. Do you want to try?";
+            DummyPopupShow.Show(optionPopup);
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(optionPopup));
         }
         finally
         {
@@ -2220,6 +2423,11 @@ public sealed class CombatAndLogMessageQueuePatchTests
             nameof(DummyRealityStabilizedEventTarget.ShortCircuitDevice),
             MessageFrameTranslator.MarkDirectTranslation("phase cannon emits a shower of sparks!"),
             "phase cannon emits a shower of sparks!");
+        AssertRealityStabilizedEventPopup(
+            nameof(DummyRealityStabilizedEventTarget.OptionToContest),
+            MessageFrameTranslator.MarkDirectTranslation(
+                "A normality lattice prevents you from altering spacetime in the local region. You can try to push through at some risk. You estimate about a {{G|75%}}G chance of success. Do you want to try?"),
+            "A normality lattice prevents you from altering spacetime in the local region. You can try to push through at some risk. You estimate about a {{G|75%}}G chance of success. Do you want to try?");
     }
 
     [Test]
@@ -2227,6 +2435,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     {
         AssertRealityStabilizedEventQueuedMessage(nameof(DummyRealityStabilizedEventTarget.TryContest), string.Empty, string.Empty);
         AssertRealityStabilizedEventPopup(nameof(DummyRealityStabilizedEventTarget.ShortCircuitDevice), string.Empty, string.Empty);
+        AssertRealityStabilizedEventPopup(nameof(DummyRealityStabilizedEventTarget.OptionToContest), string.Empty, string.Empty);
     }
 
     [TestCase(
@@ -7520,6 +7729,60 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
+    private static void AssertLiquidWarmStaticQueuedMessage(string methodName, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyLiquidWarmStaticTarget), methodName, typeof(bool)),
+                typeof(LiquidWarmStaticTranslationPatch));
+
+            var target = new DummyLiquidWarmStaticTarget
+            {
+                MessageToSend = message,
+            };
+
+            RequireMethod(typeof(DummyLiquidWarmStaticTarget), methodName, typeof(bool)).Invoke(target, new object[] { false });
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertLiquidWarmStaticPopupMessage(string methodName, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyLiquidWarmStaticTarget), methodName, typeof(bool)),
+                typeof(LiquidWarmStaticTranslationPatch));
+
+            var target = new DummyLiquidWarmStaticTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            RequireMethod(typeof(DummyLiquidWarmStaticTarget), methodName, typeof(bool)).Invoke(target, new object[] { true });
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static void AssertKeybindsScreenConflictYesNoAsync(string methodName, string message, string expected)
     {
         var harmonyId = CreateHarmonyId();
@@ -7625,6 +7888,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
                     RequireMethod(typeof(DummyRealityStabilizedEventTarget), methodName, typeof(bool)),
                 nameof(DummyRealityStabilizedEventTarget.FailedToContestPopup) =>
                     RequireMethod(typeof(DummyRealityStabilizedEventTarget), methodName),
+                nameof(DummyRealityStabilizedEventTarget.OptionToContest) =>
+                    RequireMethod(typeof(DummyRealityStabilizedEventTarget), methodName),
                 _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, null),
             };
             PatchOwner(harmony, original, typeof(RealityStabilizedEventTranslationPatch));
@@ -7641,6 +7906,9 @@ public sealed class CombatAndLogMessageQueuePatchTests
                     break;
                 case nameof(DummyRealityStabilizedEventTarget.FailedToContestPopup):
                     target.FailedToContestPopup();
+                    break;
+                case nameof(DummyRealityStabilizedEventTarget.OptionToContest):
+                    target.OptionToContest();
                     break;
             }
 

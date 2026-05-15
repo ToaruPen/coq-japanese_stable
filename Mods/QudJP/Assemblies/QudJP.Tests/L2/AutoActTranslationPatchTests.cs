@@ -106,6 +106,78 @@ public sealed class AutoActTranslationPatchTests
     }
 
     [Test]
+    public void InterruptWithReason_TranslatesStopBecauseMessage_WithRepositoryPattern()
+    {
+        AssertInterruptWithReasonMessage(
+            "{{y|You stop moving because you can go no further.}}",
+            "{{y|これ以上進めないので移動をやめた。}}");
+    }
+
+    [Test]
+    public void InterruptWithObject_TranslatesSpotMessage_WithRepositoryPattern()
+    {
+        AssertInterruptWithObjectMessage(
+            "You see a snapjaw to the north and stop auto-exploring.",
+            "北にsnapjawが見えたので自動探索をやめた。");
+    }
+
+    [Test]
+    public void InterruptWithReason_TranslatesExploringStopBecauseMessage_WithRepositoryPattern()
+    {
+        AssertInterruptWithReasonMessage(
+            "{{y|You stop exploring because you can go no further.}}",
+            "{{y|これ以上進めないので探索をやめた。}}");
+    }
+
+    [Test]
+    public void InterruptWithObject_TranslatesWaitingSpotMessage_WithRepositoryPattern()
+    {
+        AssertInterruptWithObjectMessage(
+            "You see a snapjaw to the north and stop waiting.",
+            "北にsnapjawが見えたので待機をやめた。");
+    }
+
+    [Test]
+    public void InterruptWithReason_DoesNotTranslateSemanticQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchSemanticMessageQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage(
+                "{{y|You stop moving because you can go no further.}}",
+                "y",
+                Capitalize: false);
+
+            Assert.That(
+                DummyMessageQueue.LastMessage,
+                Is.EqualTo("{{y|You stop moving because you can go no further.}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void InterruptWithReason_DoesNotRetranslateDirectMarkedMessage_WhenOwnerPatched()
+    {
+        AssertInterruptWithReasonMessage(
+            MessageFrameTranslator.MarkDirectTranslation("{{y|You stop moving because you can go no further.}}"),
+            "{{y|You stop moving because you can go no further.}}");
+    }
+
+    [Test]
+    public void InterruptWithReason_LeavesEmptyMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertInterruptWithReasonMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
     public void ResetAutoexploreProperties_TranslatesResetStatus_WhenPatched()
     {
         WritePatterns(
@@ -219,12 +291,17 @@ public sealed class AutoActTranslationPatchTests
 
     private static void PatchMessageQueue(Harmony harmony)
     {
-        harmony.Patch(
-            original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
-            prefix: new HarmonyMethod(RequireMethod(typeof(CombatAndLogMessageQueuePatch), nameof(CombatAndLogMessageQueuePatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+        PatchSemanticMessageQueue(harmony);
         harmony.Patch(
             original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
             prefix: new HarmonyMethod(RequireMethod(typeof(MessageLogPatch), nameof(MessageLogPatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+    }
+
+    private static void PatchSemanticMessageQueue(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(CombatAndLogMessageQueuePatch), nameof(CombatAndLogMessageQueuePatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
     }
 
     private static void PatchAutoActWithReasonTarget(Harmony harmony)
@@ -268,6 +345,59 @@ public sealed class AutoActTranslationPatchTests
             };
 
             _ = target.ResetAutoexploreProperties();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertInterruptWithReasonMessage(string source, string expected)
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchAutoActWithReasonTarget(harmony);
+            PatchMessageQueue(harmony);
+
+            var target = new DummyAutoActInterruptBecauseTarget
+            {
+                MessageToSend = source,
+                ColorToSend = "y",
+            };
+
+            target.Interrupt("you can go no further");
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertInterruptWithObjectMessage(string source, string expected)
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchAutoActWithObjectTarget(harmony);
+            PatchMessageQueue(harmony);
+
+            var target = new DummyAutoActInterruptObjectTarget
+            {
+                MessageToSend = source,
+            };
+
+            target.Interrupt(new DummyGameObject { DisplayName = "snapjaw" });
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }

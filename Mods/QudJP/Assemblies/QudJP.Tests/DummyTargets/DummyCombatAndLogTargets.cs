@@ -586,6 +586,11 @@ internal sealed class DummySunderMindTarget
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
     }
 
+    public void Nosebleed()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
     public void Tick()
     {
         if (!string.IsNullOrEmpty(MessageToSend))
@@ -595,6 +600,36 @@ internal sealed class DummySunderMindTarget
         }
 
         DummyPopupShow.Show(PopupMessageToSend);
+    }
+}
+
+internal sealed class DummyLiquidWarmStaticTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public void GlitchSkills(bool usePopup)
+    {
+        Emit(usePopup);
+    }
+
+    public void GlitchMutations(bool usePopup)
+    {
+        Emit(usePopup);
+    }
+
+    private void Emit(bool usePopup)
+    {
+        if (usePopup)
+        {
+            DummyPopupShow.Show(PopupMessageToSend);
+            return;
+        }
+
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
     }
 }
 
@@ -671,6 +706,12 @@ internal sealed class DummyRealityStabilizedEventTarget
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     public void FailedToContestPopup()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void OptionToContest()
     {
         DummyPopupShow.Show(PopupMessageToSend);
     }

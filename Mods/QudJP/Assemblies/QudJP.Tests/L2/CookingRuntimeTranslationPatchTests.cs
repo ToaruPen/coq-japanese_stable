@@ -60,6 +60,40 @@ public sealed class CookingRuntimeTranslationPatchTests
         AssertQueuedMessage(source, null, expected);
     }
 
+    [TestCase("You phase out.", "あなたは位相が外れた。")]
+    [TestCase("It phases out.", "それは位相が外れた。")]
+    [TestCase("They phase out.", "それらは位相が外れた。")]
+    [TestCase("He phases out.", "彼は位相が外れた。")]
+    [TestCase("She phases out.", "彼女は位相が外れた。")]
+    [TestCase("You perform an act of nimble violence.", "あなたは俊敏な暴力行為を行った。")]
+    [TestCase("It performs an act of brutal violence.", "それは残忍な暴力行為を行った。")]
+    [TestCase("Your wounds heal significantly.", "あなたの傷が大きく癒えた。")]
+    [TestCase("His wounds heal a bit.", "彼の傷が少し癒えた。")]
+    [TestCase("Her wounds heal a bit.", "彼女の傷が少し癒えた。")]
+    [TestCase("Their muscles bulge.", "それらの筋肉が膨れ上がった。")]
+    [TestCase("Plants burgeon around them!", "それらの周囲に植物が芽吹いた！")]
+    [TestCase("Plants burgeon around him!", "彼の周囲に植物が芽吹いた！")]
+    [TestCase("Plants burgeon around her!", "彼女の周囲に植物が芽吹いた！")]
+    [TestCase("He intimidates everyone around him.", "彼は周囲の全員を威圧した。")]
+    [TestCase("She intimidates everyone around her.", "彼女は周囲の全員を威圧した。")]
+    [TestCase("You stop bleeding.", "あなたは出血が止まった。")]
+    [TestCase("You teleport.", "あなたはテレポートした。")]
+    [TestCase("It teleports.", "それはテレポートした。")]
+    [TestCase("They teleport.", "それらはテレポートした。")]
+    [TestCase("You teleport all creatures surrounding you.", "あなたは周囲のすべてのクリーチャーをテレポートさせた。")]
+    [TestCase("It teleports all creatures surrounding it.", "それは周囲のすべてのクリーチャーをテレポートさせた。")]
+    [TestCase("They teleport all creatures surrounding them.", "それらは周囲のすべてのクリーチャーをテレポートさせた。")]
+    [TestCase("He teleports all creatures surrounding him.", "彼は周囲のすべてのクリーチャーをテレポートさせた。")]
+    [TestCase("She teleports all creatures surrounding her.", "彼女は周囲のすべてのクリーチャーをテレポートさせた。")]
+    [TestCase("You don't thirst.", "あなたは喉が渇かなくなった。")]
+    [TestCase("It don't thirst.", "それは喉が渇かなくなった。")]
+    [TestCase("They don't thirst.", "それらは喉が渇かなくなった。")]
+    [TestCase("You don't thirst for the next 12 hours.", "あなたは次の12時間喉が渇かなくなった。")]
+    public void ProceduralCookingTrigger_TranslatesResolvedNotifications_WhenOwnerPatched(string source, string expected)
+    {
+        AssertQueuedMessage(nameof(DummyCookingRuntimeTarget.Trigger), source, null, expected);
+    }
+
     [Test]
     public void CookingQueuedMessage_TranslatesModBlinkEscapeFateIntervenes_WhenOwnerPatched()
     {
@@ -90,10 +124,34 @@ public sealed class CookingRuntimeTranslationPatchTests
     }
 
     [Test]
+    public void ProceduralCookingTrigger_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("You phase out.", null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("You phase out."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void CookingRuntime_DoesNotRetranslateDirectMarkedMessages_WhenOwnerPatched()
     {
         AssertPopupMessage(MessageFrameTranslator.MarkDirectTranslation("You bounce."), "You bounce.");
         AssertQueuedMessage(MessageFrameTranslator.MarkDirectTranslation("Your phase remains stable."), null, "Your phase remains stable.");
+        AssertQueuedMessage(
+            nameof(DummyCookingRuntimeTarget.Trigger),
+            MessageFrameTranslator.MarkDirectTranslation("You phase out."),
+            null,
+            "You phase out.");
     }
 
     [Test]
@@ -107,6 +165,7 @@ public sealed class CookingRuntimeTranslationPatchTests
     {
         AssertPopupMessage(string.Empty, string.Empty);
         AssertQueuedMessage(string.Empty, null, string.Empty);
+        AssertQueuedMessage(nameof(DummyCookingRuntimeTarget.Trigger), string.Empty, null, string.Empty);
     }
 
     private static void AssertPopupMessage(string source, string expected)
@@ -161,14 +220,7 @@ public sealed class CookingRuntimeTranslationPatchTests
                 ColorToSend = color,
             };
 
-            if (ownerMethodName == nameof(DummyCookingRuntimeTarget.FireQueuedEffect))
-            {
-                _ = target.FireQueuedEffect(new DummyGameEvent());
-            }
-            else
-            {
-                _ = target.CheckBlinkEscape();
-            }
+            InvokeQueuedOwnerMethod(ownerMethodName, target);
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
             Assert.That(DummyMessageQueue.LastColor, Is.EqualTo(color));
@@ -181,9 +233,29 @@ public sealed class CookingRuntimeTranslationPatchTests
 
     private static Type[] OwnerParameterTypes(string ownerMethodName)
     {
-        return ownerMethodName == nameof(DummyCookingRuntimeTarget.FireQueuedEffect)
-            ? new[] { typeof(DummyGameEvent) }
-            : Type.EmptyTypes;
+        return ownerMethodName switch
+        {
+            nameof(DummyCookingRuntimeTarget.FireQueuedEffect) => new[] { typeof(DummyGameEvent) },
+            _ => Type.EmptyTypes,
+        };
+    }
+
+    private static void InvokeQueuedOwnerMethod(string ownerMethodName, DummyCookingRuntimeTarget target)
+    {
+        switch (ownerMethodName)
+        {
+            case nameof(DummyCookingRuntimeTarget.FireQueuedEffect):
+                _ = target.FireQueuedEffect(new DummyGameEvent());
+                break;
+            case nameof(DummyCookingRuntimeTarget.CheckBlinkEscape):
+                _ = target.CheckBlinkEscape();
+                break;
+            case nameof(DummyCookingRuntimeTarget.Trigger):
+                target.Trigger();
+                break;
+            default:
+                throw new InvalidOperationException($"Unsupported cooking runtime owner method: {ownerMethodName}");
+        }
     }
 
     private static void PatchPopupShow(Harmony harmony)

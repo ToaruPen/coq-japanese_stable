@@ -808,6 +808,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Event",
         "XRL.World.BeforeApplyDamageEvent",
         "XRL.World.GameObject|XRL.World.GameObject|XRL.World.Damage",
+        "",
         "XRL.World.GameObject|System.Boolean",
         "XRL.World.Conversations.EnteredElementEvent",
     })]
@@ -857,6 +858,7 @@ public sealed class TargetMethodResolutionTests
             "XRL.World.Parts.ModBlinkEscape|CheckBlinkEscape|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|XRL.World.Damage",
             "XRL.World.Effects.CookingDomainTeleport_UnitBlink|FireEvent|System.Void|XRL.World.Event",
             "XRL.World.Effects.NoPhase_ProceduralCookingTriggeredAction_Effect|FireEvent|System.Boolean|XRL.World.Event",
+            "XRL.World.Effects.ProceduralCookingEffectWithTrigger|Trigger|System.Void",
             "XRL.World.Skills.Cooking.CookingRecipe|ApplyEffectsTo|System.Boolean|XRL.World.GameObject|System.Boolean",
             "XRL.World.Conversations.Parts.WaterRitualCookingRecipe|HandleEvent|System.Boolean|XRL.World.Conversations.EnteredElementEvent",
         }));
@@ -972,6 +974,12 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Mutation.SunderMind|BeginSunder|System.Void|XRL.World.GameObject",
         "XRL.World.Parts.Mutation.SunderMind|PenetrationFailure|System.Void|XRL.World.GameObject",
         "XRL.World.Parts.Mutation.SunderMind|Tick|System.Void",
+        "XRL.World.Parts.Mutation.SunderMind|Nosebleed|System.Void|XRL.World.GameObject|XRL.World.Effects.MemberOfPsychicBattle",
+    })]
+    [TestCase(typeof(LiquidWarmStaticTranslationPatch), new[]
+    {
+        "XRL.Liquids.LiquidWarmStatic|GlitchSkills|System.Boolean|XRL.World.GameObject",
+        "XRL.Liquids.LiquidWarmStatic|GlitchMutations|System.Boolean|XRL.World.GameObject",
     })]
     [TestCase(typeof(KeybindsScreenConflictTranslationPatch), new[]
     {
@@ -997,6 +1005,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(RealityStabilizedEventTranslationPatch), new[]
     {
         "XRL.World.Effects.RealityStabilized|TryContest|XRL.World.Effects.RealityStabilized+ContestResult|XRL.World.GameObject|System.Int32|System.Int32",
+        "XRL.World.Effects.RealityStabilized|OptionToContest|XRL.World.Effects.RealityStabilized+ContestResult|XRL.World.GameObject|System.Int32|System.Boolean",
         "XRL.World.Effects.RealityStabilized|FailedToContest|System.Void|XRL.World.GameObject",
         "XRL.World.Effects.RealityStabilized|ShortCircuitDevice|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.Event",
     })]
@@ -1555,6 +1564,10 @@ public sealed class TargetMethodResolutionTests
         "XRL.UI.StatusScreen|BuyStat|System.Void|XRL.World.GameObject|System.String",
         "XRL.UI.StatusScreen|BuyRandomMutation|System.Boolean|XRL.World.GameObject",
         "XRL.UI.StatusScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(StatusScreenMutationPopupTranslationPatch), new[]
+    {
+        "XRL.UI.StatusScreen|ShowMutationPopup|System.Void|XRL.World.GameObject|XRL.World.Parts.Mutation.BaseMutation",
     })]
     [TestCase(typeof(CampfirePreserveTranslationPatch), new[]
     {

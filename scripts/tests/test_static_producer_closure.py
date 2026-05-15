@@ -149,6 +149,7 @@ def test_covered_owner_families_are_removed_from_owner_action_queue() -> None:
         assert raw_families[family_id]["family_closure_status"] in {
             "owner_patch_required",
             "needs_family_review",
+            "runtime_required",
         }
         assert family_closure_status(raw_families[family_id]) == COVERED_BY_OWNER_PATCH
 
@@ -169,6 +170,129 @@ def test_game_object_heal_owner_family_is_closed_by_current_owner_tests() -> Non
         family["producer_family_id"]
         for family in owner_action_queue(inventory)
     }
+
+
+def test_power_switch_emit_families_are_closed_by_blueprint_template_coverage() -> None:
+    """PowerSwitch emitted template fields are translated before the emit stage."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    family_ids = {
+        "XRL.World.Parts/PowerSwitch.cs::XRL.World.Parts.PowerSwitch.AccessCheck",
+        "XRL.World.Parts/PowerSwitch.cs::XRL.World.Parts.PowerSwitch.TryPowerSwitchOn",
+        "XRL.World.Parts/PowerSwitch.cs::XRL.World.Parts.PowerSwitch.TryPowerSwitchOff",
+        "XRL.World.Parts/RemotePowerSwitch.cs::XRL.World.Parts.RemotePowerSwitch.HandleEvent",
+    }
+
+    for family_id in family_ids:
+        assert raw_families[family_id]["family_closure_status"] == "runtime_required"
+        assert family_id in covered_family_ids()
+        assert family_closure_status(raw_families[family_id]) == COVERED_BY_OWNER_PATCH
+
+
+def test_treat_as_solid_family_is_closed_by_object_blueprint_overlays() -> None:
+    """TreatAsSolid.Message is object-blueprint data translated before message emission."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    family_id = "XRL.World.Parts/TreatAsSolid.cs::XRL.World.Parts.TreatAsSolid.Match"
+
+    assert raw_families[family_id]["family_closure_status"] == "runtime_required"
+    assert family_id in covered_family_ids()
+    assert family_closure_status(raw_families[family_id]) == COVERED_BY_OWNER_PATCH
+
+
+def test_sunder_mind_nosebleed_family_is_closed_by_owner_route() -> None:
+    """SunderMind.Nosebleed runtime rows are covered by the SunderMind owner route."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    family_id = "XRL.World.Parts.Mutation/SunderMind.cs::XRL.World.Parts.Mutation.SunderMind.Nosebleed"
+
+    assert raw_families[family_id]["family_closure_status"] == "runtime_required"
+    assert family_id in covered_family_ids()
+    assert family_closure_status(raw_families[family_id]) == COVERED_BY_OWNER_PATCH
+
+
+def test_liquid_warm_static_glitch_families_are_closed_by_owner_route() -> None:
+    """Warm static skill/mutation glitch messages are covered by owner-scoped translation."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    family_ids = {
+        "XRL.Liquids/LiquidWarmStatic.cs::XRL.Liquids.LiquidWarmStatic.GlitchSkills",
+        "XRL.Liquids/LiquidWarmStatic.cs::XRL.Liquids.LiquidWarmStatic.GlitchMutations",
+    }
+
+    for family_id in family_ids:
+        assert raw_families[family_id]["family_closure_status"] == "runtime_required"
+        assert family_id in covered_family_ids()
+        assert family_closure_status(raw_families[family_id]) == COVERED_BY_OWNER_PATCH
+
+
+def test_auto_act_interrupt_family_is_closed_by_owner_route() -> None:
+    """AutoAct.Interrupt runtime stop messages are covered by owner-scoped patterns."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    family_id = "XRL.World.Capabilities/AutoAct.cs::XRL.World.Capabilities.AutoAct.Interrupt"
+
+    assert raw_families[family_id]["family_closure_status"] == "runtime_required"
+    assert family_id in covered_family_ids()
+    assert family_closure_status(raw_families[family_id]) == COVERED_BY_OWNER_PATCH
+
+
+def test_procedural_cooking_trigger_family_is_closed_by_owner_route() -> None:
+    """Procedural cooking trigger notifications are covered after resolved token replacement."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    family_id = (
+        "XRL.World.Effects/ProceduralCookingEffectWithTrigger.cs::"
+        "XRL.World.Effects.ProceduralCookingEffectWithTrigger.Trigger"
+    )
+
+    assert raw_families[family_id]["family_closure_status"] == "runtime_required"
+    assert family_id in covered_family_ids()
+    assert family_closure_status(raw_families[family_id]) == COVERED_BY_OWNER_PATCH
+
+
+def test_reality_stabilized_option_to_contest_family_is_closed_by_owner_route() -> None:
+    """RealityStabilized.OptionToContest popups are covered by the event owner route."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    family_id = "XRL.World.Effects/RealityStabilized.cs::XRL.World.Effects.RealityStabilized.OptionToContest"
+
+    assert raw_families[family_id]["family_closure_status"] == "runtime_required"
+    assert family_id in covered_family_ids()
+    assert family_closure_status(raw_families[family_id]) == COVERED_BY_OWNER_PATCH
+
+
+def test_status_screen_show_mutation_popup_family_is_closed_by_owner_route() -> None:
+    """StatusScreen.ShowMutationPopup generated mutation popups are covered by owner context."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    family_id = "XRL.UI/StatusScreen.cs::XRL.UI.StatusScreen.ShowMutationPopup"
+
+    assert raw_families[family_id]["family_closure_status"] == "runtime_required"
+    assert family_id in covered_family_ids()
+    assert family_closure_status(raw_families[family_id]) == COVERED_BY_OWNER_PATCH
+
+
+def test_skills_and_powers_show_family_is_closed_by_data_route() -> None:
+    """SkillsAndPowersScreen.Show description popups are Skills.jp.xml data-backed."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    family_id = "XRL.UI/SkillsAndPowersScreen.cs::XRL.UI.SkillsAndPowersScreen.Show"
+
+    assert raw_families[family_id]["family_closure_status"] == "runtime_required"
+    assert family_id in covered_family_ids()
+    assert family_closure_status(raw_families[family_id]) == COVERED_BY_OWNER_PATCH
+
+
+def test_base_liquid_object_entered_cell_family_is_closed_by_template_route() -> None:
+    """BaseLiquid.ObjectEnteredCell slippery messages are StartReplace template-backed."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    family_id = "XRL.Liquids/BaseLiquid.cs::XRL.Liquids.BaseLiquid.ObjectEnteredCell"
+
+    assert raw_families[family_id]["family_closure_status"] == "runtime_required"
+    assert family_id in covered_family_ids()
+    assert family_closure_status(raw_families[family_id]) == COVERED_BY_OWNER_PATCH
 
 
 def test_trade_ui_vendor_owner_callsites_are_split_from_fixed_fallbacks() -> None:

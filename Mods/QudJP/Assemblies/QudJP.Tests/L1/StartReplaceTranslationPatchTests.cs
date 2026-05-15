@@ -1,3 +1,4 @@
+using System.Text.Json;
 using QudJP.Patches;
 
 namespace QudJP.Tests.L1;
@@ -45,5 +46,30 @@ public sealed class StartReplaceTranslationPatchTests
         StartReplaceTranslationPatch.Prefix(ref source);
 
         Assert.That(source, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void LiquidSlipTemplates_CoverAllBaseLiquidSlipperyMessages()
+    {
+        using var document = JsonDocument.Parse(File.ReadAllText(dictionaryPath));
+        var entries = document.RootElement
+            .GetProperty("entries")
+            .EnumerateArray()
+            .Select(static entry => entry.GetProperty("key").GetString())
+            .Where(static source => !string.IsNullOrWhiteSpace(source))
+            .ToHashSet(StringComparer.Ordinal);
+        var expectedTemplates = new[]
+        {
+            "{{K|=subject.T= =verb:slip= on the ink!}}",
+            "{{slimy|=subject.T= =verb:slip= on the slime!}}",
+            "{{C|=subject.T= =verb:slip= on the oil!}}",
+            "{{C|=subject.T= =verb:slip= on the ice!}}",
+            "{{Y|=subject.T= =verb:slip= on the gel!}}",
+        };
+
+        Assert.That(
+            expectedTemplates.Where(template => !entries.Contains(template)).ToArray(),
+            Is.Empty,
+            "BaseLiquid.ObjectEnteredCell SlipperyMessage templates must stay covered before GameText.VariableReplace emits messages.");
     }
 }
