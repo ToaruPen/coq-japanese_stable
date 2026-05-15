@@ -32,6 +32,16 @@ public static class RealityStabilizedEventTranslationPatch
         "^(?<device>.+?) emits? a shower of sparks!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private const string NormalityLatticePopup =
+        "You try to push through the normality lattice, but it snaps back into place.";
+
+    private const string NormalityLatticeWinceSuffix = " You wince in pain.";
+
+    private const string NormalityLatticeTranslation =
+        "あなたはノーマリティ格子を押し通ろうとしたが、それは跳ね返って元に戻った。";
+
+    private const string NormalityLatticeWinceTranslation = "あなたは痛みに顔をしかめた。";
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -118,12 +128,46 @@ public static class RealityStabilizedEventTranslationPatch
             return true;
         }
 
+        if (TryTranslateNormalityLatticePopup(source, out translated))
+        {
+            DynamicTextObservability.RecordTransform(route, family + "." + Context, source, translated);
+            return true;
+        }
+
         if (!TryTranslatePattern(EmitSparksPattern, source, device => $"{device}が火花の雨を放った！", out translated))
         {
             return false;
         }
 
         DynamicTextObservability.RecordTransform(route, family + "." + Context, source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateNormalityLatticePopup(string source, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        string? result = null;
+
+        if (string.Equals(stripped, NormalityLatticePopup, StringComparison.Ordinal))
+        {
+            result = NormalityLatticeTranslation;
+        }
+        else if (string.Equals(stripped, NormalityLatticePopup + NormalityLatticeWinceSuffix, StringComparison.Ordinal))
+        {
+            result = NormalityLatticeTranslation + NormalityLatticeWinceTranslation;
+        }
+
+        if (result is null)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            result,
+            spans,
+            stripped.Length,
+            source);
         return true;
     }
 

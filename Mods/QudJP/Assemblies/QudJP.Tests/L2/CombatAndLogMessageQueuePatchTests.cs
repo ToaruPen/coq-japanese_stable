@@ -130,6 +130,9 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [TestCase(
+        "OUCH! You collide with a chrome pyramid.",
+        "痛っ！chrome pyramidに衝突した。")]
+    [TestCase(
         "The way is blocked by an chrome pyramid.",
         "chrome pyramidに道を塞がれている。")]
     [TestCase(
@@ -2124,8 +2127,35 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void RealityStabilizedEvent_TranslatesShortCircuitPopup_WhenOwnerPatched()
     {
         AssertRealityStabilizedEventPopup(
+            nameof(DummyRealityStabilizedEventTarget.ShortCircuitDevice),
             "{{G|phase cannon}} emits a shower of sparks!",
             "{{G|phase cannon}}が火花の雨を放った！");
+    }
+
+    [TestCase(
+        "You try to push through the normality lattice, but it snaps back into place.",
+        "あなたはノーマリティ格子を押し通ろうとしたが、それは跳ね返って元に戻った。")]
+    [TestCase(
+        "You try to push through the normality lattice, but it snaps back into place. You wince in pain.",
+        "あなたはノーマリティ格子を押し通ろうとしたが、それは跳ね返って元に戻った。あなたは痛みに顔をしかめた。")]
+    [TestCase(
+        "You push against the normality lattice, but nothing happens.",
+        "You push against the normality lattice, but nothing happens.")]
+    [TestCase("", "")]
+    [TestCase(
+        "\x01You try to push through the normality lattice, but it snaps back into place.",
+        "You try to push through the normality lattice, but it snaps back into place.")]
+    [TestCase(
+        "{{R|You try to push through the normality lattice, but it snaps back into place.}}",
+        "{{R|あなたはノーマリティ格子を押し通ろうとしたが、それは跳ね返って元に戻った。}}")]
+    public void RealityStabilizedEvent_TranslatesFailedContestSelfPopup_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertRealityStabilizedEventPopup(
+            nameof(DummyRealityStabilizedEventTarget.FailedToContestPopup),
+            source,
+            expected);
     }
 
     [TestCase("You feel a psychic whiff as glowfish pushes past resistance in the structure of spacetime.")]
@@ -2187,6 +2217,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void RealityStabilizedEvent_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
     {
         AssertRealityStabilizedEventPopup(
+            nameof(DummyRealityStabilizedEventTarget.ShortCircuitDevice),
             MessageFrameTranslator.MarkDirectTranslation("phase cannon emits a shower of sparks!"),
             "phase cannon emits a shower of sparks!");
     }
@@ -2195,7 +2226,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void RealityStabilizedEvent_LeavesEmptyMessagesUnchanged_WhenOwnerPatched()
     {
         AssertRealityStabilizedEventQueuedMessage(nameof(DummyRealityStabilizedEventTarget.TryContest), string.Empty, string.Empty);
-        AssertRealityStabilizedEventPopup(string.Empty, string.Empty);
+        AssertRealityStabilizedEventPopup(nameof(DummyRealityStabilizedEventTarget.ShortCircuitDevice), string.Empty, string.Empty);
     }
 
     [TestCase(
@@ -7581,24 +7612,37 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
-    private static void AssertRealityStabilizedEventPopup(string message, string expected)
+    private static void AssertRealityStabilizedEventPopup(string methodName, string message, string expected)
     {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try
         {
             PatchPopupShow(harmony);
-            PatchOwner(
-                harmony,
-                RequireMethod(typeof(DummyRealityStabilizedEventTarget), nameof(DummyRealityStabilizedEventTarget.ShortCircuitDevice), typeof(bool)),
-                typeof(RealityStabilizedEventTranslationPatch));
+            MethodInfo original = methodName switch
+            {
+                nameof(DummyRealityStabilizedEventTarget.ShortCircuitDevice) =>
+                    RequireMethod(typeof(DummyRealityStabilizedEventTarget), methodName, typeof(bool)),
+                nameof(DummyRealityStabilizedEventTarget.FailedToContestPopup) =>
+                    RequireMethod(typeof(DummyRealityStabilizedEventTarget), methodName),
+                _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, null),
+            };
+            PatchOwner(harmony, original, typeof(RealityStabilizedEventTranslationPatch));
 
             var target = new DummyRealityStabilizedEventTarget
             {
                 PopupMessageToSend = message,
             };
 
-            target.ShortCircuitDevice(usePopup: true);
+            switch (methodName)
+            {
+                case nameof(DummyRealityStabilizedEventTarget.ShortCircuitDevice):
+                    target.ShortCircuitDevice(usePopup: true);
+                    break;
+                case nameof(DummyRealityStabilizedEventTarget.FailedToContestPopup):
+                    target.FailedToContestPopup();
+                    break;
+            }
 
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
         }

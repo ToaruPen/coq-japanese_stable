@@ -670,6 +670,12 @@ internal sealed class DummyRealityStabilizedEventTarget
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
+    public void FailedToContestPopup()
+    {
+        DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public void ShortCircuitDevice(bool usePopup)
     {
         if (usePopup)

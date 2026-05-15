@@ -2420,7 +2420,7 @@
         {
             "key": "You try to push through the normality lattice, but it snaps back into place.",
             "context": "XRL.UI.Popup.Show.Message",
-            "text": "正常性格子を押し通ろうとするが、すぐに元の位置へ戻る。"
+            "text": "ノーマリティ格子を押し通ろうとするが、すぐに元の位置へ戻る。"
         },
         {
             "key": "You'll be able to explore the world freely after the tutorial.\n\nFor now, let's visit Joppa.",
@@ -2671,6 +2671,76 @@
             "key": "{{r|Your mind is stranded here.}}",
             "context": "XRL.UI.Popup.Show.Message",
             "text": "{{r|心がここに取り残されている。}}"
+        },
+        {
+            "key": "That code is invalid.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "そのコードは無効だ。"
+        },
+        {
+            "key": "Your new pet is ready to love.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "新しいペットが愛情を待っている。"
+        },
+        {
+            "key": "You have no activated abilities.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "発動できるアビリティがない。"
+        },
+        {
+            "key": "{{R|Error}}",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "{{R|エラー}}"
+        },
+        {
+            "key": "Mouse input is disabled but you clicked on the screen several times. Would you like to enable mouse input?",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "マウス入力は無効だが、画面が何度かクリックされた。マウス入力を有効にするか？"
+        },
+        {
+            "key": "There is no valid last character to use.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "使用できる最後のキャラクターがない。"
+        },
+        {
+            "key": " {{W|C}} - Copy seed  {{W|ESC}} - Exit ",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": " {{W|C}} - シードをコピー  {{W|ESC}} - 終了 "
+        },
+        {
+            "key": "Choose color",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "色を選択"
+        },
+        {
+            "key": "What color do you want to draw with?",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "何色で描くか？"
+        },
+        {
+            "key": "Choose a primary color.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "主色を選択。"
+        },
+        {
+            "key": "Choose a secondary color.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "副色を選択。"
+        },
+        {
+            "key": "Choose a color for your maker's mark.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "製作者の印の色を選択。"
+        },
+        {
+            "key": "That name is already in use.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "その名前は既に使われている。"
+        },
+        {
+            "key": "There was a fatal exception attempting to save your game. Caves of Qud attempted to recover your prior save. You probably want to close the game and reload your most recent save. It'd be helpful to send the save and logs to support@freeholdgames.com",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "ゲーム保存中に致命的な例外が発生した。Caves of Qud は以前のセーブの復元を試みた。ゲームを終了して直近のセーブを読み込み直すのがよいだろう。セーブデータとログを support@freeholdgames.com に送ると助かる。"
         }
     ]
 }
