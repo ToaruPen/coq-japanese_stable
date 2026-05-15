@@ -1826,6 +1826,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.TeleporterPair|AttemptTeleport|System.Boolean|XRL.World.GameObject|XRL.World.IEvent",
     })]
+    [TestCase(typeof(ITeleporterTranslationPatch), new[]
+    {
+        "XRL.World.Parts.ITeleporter|AttemptTeleport|System.Boolean|XRL.World.GameObject|XRL.World.IEvent",
+    })]
     [TestCase(typeof(ShortBladesHobbleTranslationPatch), new[]
     {
         "XRL.World.Parts.Skill.ShortBlades_Hobble|FireEvent|System.Boolean|XRL.World.Event",

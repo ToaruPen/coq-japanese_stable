@@ -14991,6 +14991,58 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts/ITeleporter.cs::"
+            "XRL.World.Parts.ITeleporter.AttemptTeleport"
+        ),
+        lines=(243, 247, 252, 266, 276, 279, 282, 287, 291, 311),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/ITeleporterTranslationPatch.cs",
+                (
+                    "ITeleporterTranslationPatch",
+                    "XRL.World.Parts.ITeleporter",
+                    "AttemptTeleport",
+                    "ProtocolThinWorldThickWorld",
+                    "RemotePocketDimension",
+                    "RustedActivationButton",
+                    "ActivateRecoiler",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("ITeleporterTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                ("ITeleporterTranslationPatch.TryTranslateQueuedMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/ITeleporterTranslationPatchTests.cs",
+                (
+                    "AttemptTeleport_TranslatesOwnerPopups_WhenOwnerPatched",
+                    "AttemptTeleport_TranslatesQueuedActivation_WhenOwnerPatched",
+                    "AttemptTeleport_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                    "AttemptTeleport_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                    "AttemptTeleport_DoesNotRetranslateDirectMarkedMessages_WhenOwnerPatched",
+                    "AttemptTeleport_DoesNotClaimFixedRuntimeOrEmptyPopups_WhenOwnerPatched",
+                    "encoded with an imprint of the Thin World",
+                    "remote pocket dimension",
+                    "activation button is rusted in place",
+                    "You activate the recoiler.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(ITeleporterTranslationPatch)",
+                    "XRL.World.Parts.ITeleporter|AttemptTeleport|System.Boolean|XRL.World.GameObject|XRL.World.IEvent",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World.Parts.Skill/ShortBlades_Hobble.cs::"
             "XRL.World.Parts.Skill.ShortBlades_Hobble.FireEvent"
         ),
