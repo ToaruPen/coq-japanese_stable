@@ -204,12 +204,12 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.ExamineSifrah),
         "You have mastered examining artifacts of this complexity. Do you want to perform detailed examination anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the examination.",
-        "この難度での遺物調査は熟達済みだ。それでも詳細に遺物調査を試みますか？『いいえ』なら、可能なら自動で成功する。",
+        "この難度での遺物調査は熟達済みだ。それでも詳細に遺物調査を試みますか？『いいえ』なら、自動で成功する。",
         "Examine")]
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.HackingSifrah),
         "You have mastered hacks of this complexity. Do you want to perform a detailed hack anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the hack.",
-        "この難度でのハッキングは熟達済みだ。それでも詳細なハッキングを試みますか？『いいえ』なら、可能なら自動で成功する。",
+        "この難度でのハッキングは熟達済みだ。それでも詳細なハッキングを試みますか？『いいえ』なら、自動で成功する。",
         "Hacking")]
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.ProselytizationSifrah),
@@ -224,7 +224,7 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.RepairSifrah),
         "You have mastered repairs of this complexity. Do you want to perform detailed repairs anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the repairs.",
-        "この難度での修理は熟達済みだ。それでも詳細な修理を試みますか？『いいえ』なら、可能なら修理が自動で成功する。",
+        "この難度での修理は熟達済みだ。それでも詳細な修理を試みますか？『いいえ』なら、修理が自動で成功する。",
         "Repair")]
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.PsychicCombatSifrah),

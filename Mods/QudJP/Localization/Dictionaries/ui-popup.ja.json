@@ -1031,12 +1031,12 @@
         {
             "key": "You have mastered examining artifacts of this complexity. Do you want to perform detailed examination anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the examination.",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "この難度での遺物調査は熟達済みだ。それでも詳細に遺物調査を試みますか？『いいえ』なら、可能なら自動で成功する。"
+            "text": "この難度での遺物調査は熟達済みだ。それでも詳細に遺物調査を試みますか？『いいえ』なら、自動で成功する。"
         },
         {
             "key": "You have mastered hacks of this complexity. Do you want to perform a detailed hack anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the hack.",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "この難度でのハッキングは熟達済みだ。それでも詳細なハッキングを試みますか？『いいえ』なら、可能なら自動で成功する。"
+            "text": "この難度でのハッキングは熟達済みだ。それでも詳細なハッキングを試みますか？『いいえ』なら、自動で成功する。"
         },
         {
             "key": "You have mastered proselytization at this level of discourse. Do you want to perform detailed proselytization anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at proselytization if that is possible.",
@@ -1056,7 +1056,7 @@
         {
             "key": "You have mastered repairs of this complexity. Do you want to perform detailed repairs anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the repairs.",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "この難度での修理は熟達済みだ。それでも詳細な修理を試みますか？『いいえ』なら、可能なら修理が自動で成功する。"
+            "text": "この難度での修理は熟達済みだ。それでも詳細な修理を試みますか？『いいえ』なら、修理が自動で成功する。"
         },
         {
             "key": "You have no hands to beat at the flames with. Do you want to roll on the ground to try to put them out?",
