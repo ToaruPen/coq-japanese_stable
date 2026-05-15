@@ -346,6 +346,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.IEvent",
     })]
     [TestCase(typeof(PhysicsObjectEnteringCellTranslationPatch), "HandleEvent", "XRL.World.Parts.Physics", "System.Boolean", new[] { "XRL.World.ObjectEnteringCellEvent" })]
+    [TestCase(typeof(PhysicsProcessTakeDamageTranslationPatch), "ProcessTakeDamage", "XRL.World.Parts.Physics", "System.Boolean", new[] { "XRL.World.Event" })]
     [TestCase(typeof(PhysicsApplyDischargeTranslationPatch), "ApplyDischarge", "XRL.World.Parts.Physics", "System.Int32", new[]
     {
         "XRL.World.Cell",
