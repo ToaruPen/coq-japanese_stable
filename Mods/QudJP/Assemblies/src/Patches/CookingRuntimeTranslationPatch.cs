@@ -56,6 +56,103 @@ public static class CookingRuntimeTranslationPatch
         "^You start to metabolize the meal, gaining the following effect for the rest of the day:\\n\\n(?<effect>[\\s\\S]+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex ProceduralCookingSubjectNotificationPattern = new(
+        "^(?<subject>You|It|They|He|She) (?<body>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ProceduralCookingPossessiveNotificationPattern = new(
+        "^(?<possessive>Your|Its|Their|His|Her) (?<body>wounds heal significantly\\.|wounds heal a bit\\.|muscles bulge\\.)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ProceduralCookingPlantsBurgeonPattern = new(
+        "^Plants burgeon around (?<target>you|it|them|him|her)!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Dictionary<string, string> ProceduralCookingSubjectPredicates = new(StringComparer.Ordinal)
+    {
+        ["assume a limber pose."] = "しなやかな構えを取った。",
+        ["assumes a limber pose."] = "しなやかな構えを取った。",
+        ["perform an act of nimble violence."] = "俊敏な暴力行為を行った。",
+        ["performs an act of nimble violence."] = "俊敏な暴力行為を行った。",
+        ["stiffen."] = "硬直した。",
+        ["stiffens."] = "硬直した。",
+        ["become fortified against the cold."] = "冷気への耐性が高まった。",
+        ["becomes fortified against the cold."] = "冷気への耐性が高まった。",
+        ["freeze an area with cryokinesis."] = "冷却念力で一帯を凍らせた。",
+        ["freezes an area with cryokinesis."] = "冷却念力で一帯を凍らせた。",
+        ["emit a powerful ray of frost."] = "強力な冷気の光線を放った。",
+        ["emits a powerful ray of frost."] = "強力な冷気の光線を放った。",
+        ["become impervious to cold."] = "冷気が効かなくなった。",
+        ["becomes impervious to cold."] = "冷気が効かなくなった。",
+        ["release a powerful electrical discharge."] = "強力な放電を放った。",
+        ["releases a powerful electrical discharge."] = "強力な放電を放った。",
+        ["release a powerful electromagnetic pulse."] = "強力な電磁パルスを放った。",
+        ["releases a powerful electromagnetic pulse."] = "強力な電磁パルスを放った。",
+        ["become impervious to electrical damage."] = "電撃ダメージが効かなくなった。",
+        ["becomes impervious to electrical damage."] = "電撃ダメージが効かなくなった。",
+        ["become fortified against electrical damage."] = "電撃ダメージへの耐性が高まった。",
+        ["becomes fortified against electrical damage."] = "電撃ダメージへの耐性が高まった。",
+        ["become immune to fear."] = "恐怖に免疫を得た。",
+        ["becomes immune to fear."] = "恐怖に免疫を得た。",
+        ["intimidate everyone around you."] = "周囲の全員を威圧した。",
+        ["intimidates everyone around it."] = "周囲の全員を威圧した。",
+        ["intimidate everyone around them."] = "周囲の全員を威圧した。",
+        ["intimidates everyone around him."] = "周囲の全員を威圧した。",
+        ["intimidates everyone around her."] = "周囲の全員を威圧した。",
+        ["become impervious to fungal spores."] = "真菌の胞子が効かなくなった。",
+        ["becomes impervious to fungal spores."] = "真菌の胞子が効かなくなった。",
+        ["heal to full."] = "完全に回復した。",
+        ["heals to full."] = "完全に回復した。",
+        ["become heartier."] = "より頑健になった。",
+        ["becomes heartier."] = "より頑健になった。",
+        ["emit a powerful ray of flame."] = "強力な火炎の光線を放った。",
+        ["emits a powerful ray of flame."] = "強力な火炎の光線を放った。",
+        ["become fortified against the heat."] = "熱への耐性が高まった。",
+        ["becomes fortified against the heat."] = "熱への耐性が高まった。",
+        ["become impervious to the heat."] = "熱が効かなくなった。",
+        ["becomes impervious to the heat."] = "熱が効かなくなった。",
+        ["toast an area with pyrokinesis."] = "発火念力で一帯を焼いた。",
+        ["toasts an area with pyrokinesis."] = "発火念力で一帯を焼いた。",
+        ["feel less afflicted."] = "苦痛が和らいだ。",
+        ["feels less afflicted."] = "苦痛が和らいだ。",
+        ["feel the swell of love inside."] = "内側に愛が満ちるのを感じた。",
+        ["feels the swell of love inside."] = "内側に愛が満ちるのを感じた。",
+        ["become impervious to disease."] = "病気が効かなくなった。",
+        ["becomes impervious to disease."] = "病気が効かなくなった。",
+        ["feel like you might be fighting off any ailments you have."] = "病を撃退できそうな気がした。",
+        ["feels like you might be fighting off any ailments you have."] = "病を撃退できそうな気がした。",
+        ["feel better."] = "気分が良くなった。",
+        ["feels better."] = "気分が良くなった。",
+        ["become phase-anchored."] = "位相固定された。",
+        ["becomes phase-anchored."] = "位相固定された。",
+        ["phase out."] = "位相が外れた。",
+        ["phases out."] = "位相が外れた。",
+        ["teleport."] = "テレポートした。",
+        ["teleports."] = "テレポートした。",
+        ["teleport all creatures surrounding you."] = "周囲のすべてのクリーチャーをテレポートさせた。",
+        ["teleports all creatures surrounding it."] = "周囲のすべてのクリーチャーをテレポートさせた。",
+        ["teleport all creatures surrounding them."] = "周囲のすべてのクリーチャーをテレポートさせた。",
+        ["teleports all creatures surrounding him."] = "周囲のすべてのクリーチャーをテレポートさせた。",
+        ["teleports all creatures surrounding her."] = "周囲のすべてのクリーチャーをテレポートさせた。",
+        ["expel a blast of quills."] = "針の突風を放った。",
+        ["expels a blast of quills."] = "針の突風を放った。",
+        ["grow spines all over your body."] = "全身に棘が生えた。",
+        ["grows spines all over your body."] = "全身に棘が生えた。",
+        ["grow tiny spines all over your body."] = "全身に小さな棘が生えた。",
+        ["grows tiny spines all over your body."] = "全身に小さな棘が生えた。",
+        ["feel a overwhelming springiness inside."] = "内側に圧倒的な弾力を感じた。",
+        ["feels a overwhelming springiness inside."] = "内側に圧倒的な弾力を感じた。",
+        ["feel a springiness inside."] = "内側に弾力を感じた。",
+        ["perform an act of brutal violence."] = "残忍な暴力行為を行った。",
+        ["performs an act of brutal violence."] = "残忍な暴力行為を行った。",
+        ["stop bleeding."] = "出血が止まった。",
+        ["stops bleeding."] = "出血が止まった。",
+        ["shoot out a trio of sticky tongues."] = "粘つく舌を三本撃ち出した。",
+        ["shoots out a trio of sticky tongues."] = "粘つく舌を三本撃ち出した。",
+        ["don't thirst."] = "喉が渇かなくなった。",
+        ["don't thirst for the next 12 hours."] = "次の12時間喉が渇かなくなった。",
+    };
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -111,6 +208,7 @@ public static class CookingRuntimeTranslationPatch
         }
         AddTarget(targets, "XRL.World.Effects.CookingDomainTeleport_UnitBlink", "FireEvent", new[] { eventType });
         AddTarget(targets, "XRL.World.Effects.NoPhase_ProceduralCookingTriggeredAction_Effect", "FireEvent", new[] { eventType });
+        AddTarget(targets, "XRL.World.Effects.ProceduralCookingEffectWithTrigger", "Trigger", Type.EmptyTypes);
         AddTarget(targets, "XRL.World.Skills.Cooking.CookingRecipe", "ApplyEffectsTo", new[] { gameObjectType, typeof(bool) });
         if (enteredElementEventType is not null)
         {
@@ -370,6 +468,11 @@ public static class CookingRuntimeTranslationPatch
 
     private static bool TryTranslateQueuedCore(string source, out string translated)
     {
+        if (TryTranslateProceduralCookingTriggerNotification(source, out translated))
+        {
+            return true;
+        }
+
         if (source == "Your phase remains stable.")
         {
             translated = "あなたの位相は安定したままだ。";
@@ -396,6 +499,98 @@ public static class CookingRuntimeTranslationPatch
                 source,
                 (match, spans) => "運命が介入し、あなたは" + Restore(match, spans, "target") + "にダメージを与えられなかった。",
                 out translated);
+    }
+
+    private static bool TryTranslateProceduralCookingTriggerNotification(string source, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+
+        if (!TryTranslateProceduralCookingTriggerNotificationCore(stripped, out var coreTranslated))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            coreTranslated,
+            spans,
+            stripped.Length,
+            source);
+        return true;
+    }
+
+    private static bool TryTranslateProceduralCookingTriggerNotificationCore(string source, out string translated)
+    {
+        var subjectMatch = ProceduralCookingSubjectNotificationPattern.Match(source);
+        if (subjectMatch.Success
+            && ProceduralCookingSubjectPredicates.TryGetValue(subjectMatch.Groups["body"].Value, out var predicate))
+        {
+            translated = TranslateProceduralCookingSubject(subjectMatch.Groups["subject"].Value) + "は" + predicate;
+            return true;
+        }
+
+        var possessiveMatch = ProceduralCookingPossessiveNotificationPattern.Match(source);
+        if (possessiveMatch.Success)
+        {
+            var possessive = TranslateProceduralCookingPossessive(possessiveMatch.Groups["possessive"].Value);
+            translated = possessiveMatch.Groups["body"].Value switch
+            {
+                "wounds heal significantly." => possessive + "傷が大きく癒えた。",
+                "wounds heal a bit." => possessive + "傷が少し癒えた。",
+                "muscles bulge." => possessive + "筋肉が膨れ上がった。",
+                _ => source,
+            };
+            return !string.Equals(translated, source, StringComparison.Ordinal);
+        }
+
+        var plantsMatch = ProceduralCookingPlantsBurgeonPattern.Match(source);
+        if (plantsMatch.Success)
+        {
+            translated = TranslateProceduralCookingObject(plantsMatch.Groups["target"].Value) + "の周囲に植物が芽吹いた！";
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static string TranslateProceduralCookingSubject(string subject)
+    {
+        return subject switch
+        {
+            "You" => "あなた",
+            "It" => "それ",
+            "They" => "それら",
+            "He" => "彼",
+            "She" => "彼女",
+            _ => subject,
+        };
+    }
+
+    private static string TranslateProceduralCookingPossessive(string possessive)
+    {
+        return possessive switch
+        {
+            "Your" => "あなたの",
+            "Its" => "それの",
+            "Their" => "それらの",
+            "His" => "彼の",
+            "Her" => "彼女の",
+            _ => possessive,
+        };
+    }
+
+    private static string TranslateProceduralCookingObject(string target)
+    {
+        return target switch
+        {
+            "you" => "あなた",
+            "it" => "それ",
+            "them" => "それら",
+            "him" => "彼",
+            "her" => "彼女",
+            _ => target,
+        };
     }
 
     private static void AddTarget(List<MethodBase> targets, string typeName, string methodName, Type[] parameters)

@@ -1000,19 +1000,34 @@ def _sifrah_pure_owner_popup_callsites() -> tuple[CoveredOwnerCallsites, ...]:
 
 
 def _sunder_mind_owner_families() -> tuple[CoveredOwnerFamily, ...]:
+    nosebleed_signature = "XRL.World.Parts.Mutation.SunderMind|Nosebleed|System.Void|XRL.World.GameObject|XRL.World.Effects.MemberOfPsychicBattle"  # noqa: E501
     target_signatures = (
-        ("CancelSunder", "XRL.World.Parts.Mutation.SunderMind|CancelSunder|System.Void"),
-        ("BeginSunder", "XRL.World.Parts.Mutation.SunderMind|BeginSunder|System.Void|XRL.World.GameObject"),
+        (
+            "CancelSunder",
+            "XRL.World.Parts.Mutation.SunderMind|CancelSunder|System.Void",
+            ("owner_patch_required",),
+        ),
+        (
+            "BeginSunder",
+            "XRL.World.Parts.Mutation.SunderMind|BeginSunder|System.Void|XRL.World.GameObject",
+            ("owner_patch_required",),
+        ),
         (
             "PenetrationFailure",
             "XRL.World.Parts.Mutation.SunderMind|PenetrationFailure|System.Void|XRL.World.GameObject",
+            ("owner_patch_required",),
+        ),
+        (
+            "Nosebleed",
+            nosebleed_signature,
+            ("runtime_required",),
         ),
     )
 
     return tuple(
         CoveredOwnerFamily(
             family_id=f"XRL.World.Parts.Mutation/SunderMind.cs::XRL.World.Parts.Mutation.SunderMind.{method_name}",
-            inventory_statuses=("owner_patch_required",),
+            inventory_statuses=inventory_statuses,
             evidence_files=(
                 EvidenceFile(
                     "Mods/QudJP/Assemblies/src/Patches/SunderMindTranslationPatch.cs",
@@ -1048,7 +1063,64 @@ def _sunder_mind_owner_families() -> tuple[CoveredOwnerFamily, ...]:
                 ),
             ),
         )
-        for method_name, signature in target_signatures
+        for method_name, signature, inventory_statuses in target_signatures
+    )
+
+
+def _liquid_warm_static_families() -> tuple[CoveredOwnerFamily, ...]:
+    evidence = (
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/src/Patches/LiquidWarmStaticTranslationPatch.cs",
+            (
+                "LiquidWarmStaticTranslationPatch",
+                "GlitchSkills",
+                "GlitchMutations",
+                "MindFluctuatesPattern",
+                "KnowledgeDistortsPattern",
+                "GenomeFluctuatesPattern",
+                "MutationTransmutesPattern",
+            ),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+            ("LiquidWarmStaticTranslationPatch.TryTranslateQueuedMessage",),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+            ("LiquidWarmStaticTranslationPatch.TryTranslatePopupMessage",),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+            (
+                "LiquidWarmStatic_TranslatesQueuedMessages_WhenOwnerPatched",
+                "LiquidWarmStatic_TranslatesPopupMessages_WhenOwnerPatched",
+                "LiquidWarmStatic_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                "LiquidWarmStatic_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                "LiquidWarmStatic_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                "LiquidWarmStatic_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                "LiquidWarmStatic_LeavesEmptyMessagesUnchanged_WhenOwnerPatched",
+            ),
+        ),
+        EvidenceFile(
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+            (
+                "typeof(LiquidWarmStaticTranslationPatch)",
+                "XRL.Liquids.LiquidWarmStatic|GlitchSkills|System.Boolean|XRL.World.GameObject",
+                "XRL.Liquids.LiquidWarmStatic|GlitchMutations|System.Boolean|XRL.World.GameObject",
+            ),
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.Liquids/LiquidWarmStatic.cs::XRL.Liquids.LiquidWarmStatic.GlitchSkills",
+            inventory_statuses=("runtime_required",),
+            evidence_files=evidence,
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.Liquids/LiquidWarmStatic.cs::XRL.Liquids.LiquidWarmStatic.GlitchMutations",
+            inventory_statuses=("runtime_required",),
+            evidence_files=evidence,
+        ),
     )
 
 
@@ -1691,6 +1763,7 @@ def _cooking_runtime_families() -> tuple[CoveredOwnerFamily, ...]:
             "TryTranslatePopupMessage",
             "TryTranslateQueuedMessage",
             "ModBlinkEscape",
+            "ProceduralCookingEffectWithTrigger",
         ),
     )
     tests = EvidenceFile(
@@ -1699,6 +1772,8 @@ def _cooking_runtime_families() -> tuple[CoveredOwnerFamily, ...]:
             "BasicCookingPopup_TranslatesRuntimeWellFedMessages_WhenOwnerPatched",
             "SpecialCookingPopup_TranslatesRuntimeMessages_WhenOwnerPatched",
             "CookingQueuedMessage_TranslatesRuntimeMessages_WhenOwnerPatched",
+            "ProceduralCookingTrigger_TranslatesResolvedNotifications_WhenOwnerPatched",
+            "ProceduralCookingTrigger_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
             "CookingQueuedMessage_TranslatesModBlinkEscapeFateIntervenes_WhenOwnerPatched",
             "CheckBlinkEscape",
             "CookingPopup_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
@@ -1740,6 +1815,9 @@ def _cooking_runtime_families() -> tuple[CoveredOwnerFamily, ...]:
         "XRL.World.Effects/CookingDomainTeleport_UnitBlink.cs::XRL.World.Effects.CookingDomainTeleport_UnitBlink.FireEvent",
         "XRL.World.Effects/NoPhase_ProceduralCookingTriggeredAction_Effect.cs::XRL.World.Effects.NoPhase_ProceduralCookingTriggeredAction_Effect.FireEvent",
     )
+    runtime_queue_family_ids = (
+        "XRL.World.Effects/ProceduralCookingEffectWithTrigger.cs::XRL.World.Effects.ProceduralCookingEffectWithTrigger.Trigger",
+    )
     return tuple(
         CoveredOwnerFamily(
             family_id=family_id,
@@ -1764,6 +1842,18 @@ def _cooking_runtime_families() -> tuple[CoveredOwnerFamily, ...]:
             ),
         )
         for family_id in queue_family_ids
+    ) + tuple(
+        CoveredOwnerFamily(
+            family_id=family_id,
+            inventory_statuses=("runtime_required",),
+            evidence_files=(
+                patch,
+                pipeline_queue,
+                tests,
+                resolution(*owner_parts(family_id)),
+            ),
+        )
+        for family_id in runtime_queue_family_ids
     )
 
 
@@ -2935,6 +3025,101 @@ def _status_screen_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             inventory_statuses=("owner_patch_required",),
             evidence_files=(patch, pipeline, tests, resolution),
         ),
+        CoveredOwnerFamily(
+            family_id="XRL.UI/StatusScreen.cs::XRL.UI.StatusScreen.ShowMutationPopup",
+            inventory_statuses=("runtime_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/StatusScreenMutationPopupTranslationPatch.cs",
+                    (
+                        "StatusScreenMutationPopupTranslationPatch",
+                        "ShowMutationPopup",
+                        "TryTranslatePopupMessage",
+                        "CharacterStatusScreenTextTranslator.TryTranslateMutationDetails",
+                        "TryTranslateRankBoostLine",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("StatusScreenMutationPopupTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/StatusScreenPopupTranslationPatchTests.cs",
+                    (
+                        "ShowMutationPopup_TranslatesUpgradePrompt_WhenOwnerPatched",
+                        "ShowMutationPopup_TranslatesInsufficientPointsTailPreservingColor_WhenOwnerPatched",
+                        "ShowMutationPopup_TranslatesIncreasedRankAndRankBoost_WhenOwnerPatched",
+                        "ShowMutationPopup_TranslatesRankBoostReasonFamilies_PreservingColor",
+                        "StatusScreenPopup_DoesNotTranslatePsychicGlimmerPopup_WhenOwnerAbsent",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(StatusScreenMutationPopupTranslationPatch)",
+                        "XRL.UI.StatusScreen|ShowMutationPopup|System.Void|XRL.World.GameObject|XRL.World.Parts.Mutation.BaseMutation",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
+def _skills_and_powers_show_data_families() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.UI/SkillsAndPowersScreen.cs::XRL.UI.SkillsAndPowersScreen.Show",
+            inventory_statuses=("runtime_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L1/LocalizationCoverageTests.cs",
+                    (
+                        "SkillsXml_CoversAllSkillAndPowerDescriptions_ForFormattedDescriptionPopups",
+                        "SkillsAndPowersScreen.Show formatted-description",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Skills.jp.xml",
+                    (
+                        '<skill Name="Acrobatics"',
+                        '<power Name="Swift Reflexes"',
+                        'Description="曲芸に長けている。"',
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
+def _base_liquid_object_entered_cell_template_families() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.Liquids/BaseLiquid.cs::XRL.Liquids.BaseLiquid.ObjectEnteredCell",
+            inventory_statuses=("runtime_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/StartReplaceTranslationPatch.cs",
+                    ("StartReplaceTranslationPatch", "GameTextExtensions", "StartReplace"),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L1/StartReplaceTranslationPatchTests.cs",
+                    (
+                        "LiquidSlipTemplates_CoverAllBaseLiquidSlipperyMessages",
+                        "{{K|=subject.T= =verb:slip= on the ink!}}",
+                        "{{slimy|=subject.T= =verb:slip= on the slime!}}",
+                        "{{Y|=subject.T= =verb:slip= on the gel!}}",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/templates-variable.ja.json",
+                    (
+                        "XRL.Liquids.LiquidInk",
+                        "XRL.Liquids.LiquidSlime",
+                        "XRL.Liquids.LiquidGel",
+                    ),
+                ),
+            ),
+        ),
     )
 
 
@@ -3180,17 +3365,24 @@ def _reality_stabilized_event_families() -> tuple[CoveredOwnerFamily, ...]:
         (
             "TryContest",
             "XRL.World.Effects.RealityStabilized|TryContest|XRL.World.Effects.RealityStabilized+ContestResult|XRL.World.GameObject|System.Int32|System.Int32",
+            "owner_patch_required",
+        ),
+        (
+            "OptionToContest",
+            "XRL.World.Effects.RealityStabilized|OptionToContest|XRL.World.Effects.RealityStabilized+ContestResult|XRL.World.GameObject|System.Int32|System.Boolean",
+            "runtime_required",
         ),
         (
             "ShortCircuitDevice",
             "XRL.World.Effects.RealityStabilized|ShortCircuitDevice|System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.Event",
+            "owner_patch_required",
         ),
     )
 
     return tuple(
         CoveredOwnerFamily(
             family_id=f"XRL.World.Effects/RealityStabilized.cs::XRL.World.Effects.RealityStabilized.{method_name}",
-            inventory_statuses=("owner_patch_required",),
+            inventory_statuses=(inventory_status,),
             evidence_files=(
                 EvidenceFile(
                     "Mods/QudJP/Assemblies/src/Patches/RealityStabilizedEventTranslationPatch.cs",
@@ -3209,6 +3401,7 @@ def _reality_stabilized_event_families() -> tuple[CoveredOwnerFamily, ...]:
                     (
                         "RealityStabilizedEvent_TranslatesQueuedMessages_WhenOwnerPatched",
                         "RealityStabilizedEvent_TranslatesShortCircuitPopup_WhenOwnerPatched",
+                        "RealityStabilizedEvent_TranslatesOptionToContestPopup_WhenOwnerPatched",
                         "RealityStabilizedEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
                         "RealityStabilizedEvent_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
                         "RealityStabilizedEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
@@ -3225,7 +3418,7 @@ def _reality_stabilized_event_families() -> tuple[CoveredOwnerFamily, ...]:
                 ),
             ),
         )
-        for method_name, signature in target_signatures
+        for method_name, signature, inventory_status in target_signatures
     )
 
 
@@ -6845,8 +7038,60 @@ def _single_fixed_queue_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     )
 
 
-def _auto_act_reset_family() -> tuple[CoveredOwnerFamily, ...]:
+def _auto_act_families() -> tuple[CoveredOwnerFamily, ...]:
     return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Capabilities/AutoAct.cs::XRL.World.Capabilities.AutoAct.Interrupt",
+            inventory_statuses=("runtime_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/AutoActTranslationPatch.cs",
+                    (
+                        "AutoActTranslationPatch",
+                        "AutoAct.Interrupt(string, Cell, GameObject, bool)",
+                        "AutoAct.Interrupt(GameObject, bool, bool)",
+                        "TryTranslateQueuedMessage",
+                        "TryPreparePatternMessage",
+                        "AutoAct",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("AutoActTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/AutoActTranslationPatchTests.cs",
+                    (
+                        "InterruptWithReason_TranslatesStopBecauseMessage_WithRepositoryPattern",
+                        "InterruptWithObject_TranslatesSpotMessage_WithRepositoryPattern",
+                        "InterruptWithReason_TranslatesExploringStopBecauseMessage_WithRepositoryPattern",
+                        "InterruptWithObject_TranslatesWaitingSpotMessage_WithRepositoryPattern",
+                        "InterruptWithReason_DoesNotTranslateSemanticQueueOnlyTraffic_WhenOwnerAbsent",
+                        "InterruptWithReason_DoesNotRetranslateDirectMarkedMessage_WhenOwnerPatched",
+                        "InterruptWithReason_LeavesEmptyMessageUnchanged_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(AutoActTranslationPatch)",
+                        "XRL.World.Capabilities.AutoAct|Interrupt|System.Void|System.String|XRL.World.Cell|XRL.World.GameObject|System.Boolean",
+                        "XRL.World.Capabilities.AutoAct|Interrupt|System.Void|XRL.World.GameObject|System.Boolean|System.Boolean",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+                    (
+                        "auto-exploring|exploring|waiting|disassembling",
+                        "auto-exploring|exploring|waiting|disassembling) because",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/ui-messagelog-world.ja.json",
+                    ('"exploring"', '"waiting"', '"disassembling"'),
+                ),
+            ),
+        ),
         CoveredOwnerFamily(
             family_id="XRL.World.Capabilities/AutoAct.cs::XRL.World.Capabilities.AutoAct.ResetAutoexploreProperties",
             inventory_statuses=("owner_patch_required",),
@@ -12416,7 +12661,112 @@ def _issue_576_runtime_deferred_callsites() -> tuple[DeferredRuntimeCallsites, .
     )
 
 
+def _power_switch_template_emit_families() -> tuple[CoveredOwnerFamily, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/BlueprintTemplateTranslationPatch.cs",
+        (
+            "BlueprintTemplateTranslationPatch",
+            '"PowerSwitch"',
+            '"ActivateSuccessMessage"',
+            '"ActivateFailureMessage"',
+            '"DeactivateSuccessMessage"',
+            '"DeactivateFailureMessage"',
+            '"KeyObjectAccessMessage"',
+            '"PsychometryAccessMessage"',
+            '"AccessFailureMessage"',
+        ),
+    )
+    dictionary = EvidenceFile(
+        "Mods/QudJP/Localization/BlueprintTemplates/templates.ja.json",
+        (
+            "=subject.The==subject.name= =verb:start= up with a hum.",
+            "=subject.name=がうなり声を上げて起動した。",
+            "Nothing happens.",
+            "何も起こらなかった。",
+            "=subject.The==subject.name= =verb:shut= down with a whir.",
+            "=subject.name=がうなり声を上げて停止した。",
+            "=subject.The==subject.name= =verb:recognize= your =object.name=.",
+            "=subject.name=があなたの=object.name=を認識した。",
+            "{{g|You touch =subject.the==subject.name= and recall",
+            "=verb:beep:afterpronoun= warmly.}}",
+            "{{r|A loud buzz is emitted. The unauthorized glyph flashes on the display.}}",
+        ),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L1/BlueprintTemplateTranslationPatchTests.cs",
+        (
+            "TranslatablePartFields_PowerSwitchHasSevenFields",
+            "LoadTranslations_PowerSwitchAndForceProjectorTemplatesPreserveAccessPlaceholders",
+            "TranslatePartFields_NormalizesPowerSwitchAccessTemplates_BeforeEmitStage",
+            "TranslatePartFields_NormalizesPowerSwitchEmitTemplates_BeforeEmitStage",
+        ),
+    )
+    evidence = (patch, dictionary, tests)
+    family_ids = (
+        "XRL.World.Parts/PowerSwitch.cs::XRL.World.Parts.PowerSwitch.AccessCheck",
+        "XRL.World.Parts/PowerSwitch.cs::XRL.World.Parts.PowerSwitch.TryPowerSwitchOn",
+        "XRL.World.Parts/PowerSwitch.cs::XRL.World.Parts.PowerSwitch.TryPowerSwitchOff",
+        "XRL.World.Parts/RemotePowerSwitch.cs::XRL.World.Parts.RemotePowerSwitch.HandleEvent",
+    )
+    return tuple(
+        CoveredOwnerFamily(
+            family_id=family_id,
+            inventory_statuses=("runtime_required",),
+            evidence_files=evidence,
+        )
+        for family_id in family_ids
+    )
+
+
+def _object_blueprint_template_emit_families() -> tuple[CoveredOwnerFamily, ...]:
+    treat_as_solid_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L1/LocalizationCoverageTests.cs",
+        (
+            "TreatAsSolidMessages_AreLocalizedInObjectBlueprintOverlays",
+            "The darkness consumes",
+            "under the pressure of normality",
+            "=verb:collapse=",
+        ),
+    )
+    treat_as_solid_creatures = EvidenceFile(
+        "Mods/QudJP/Localization/ObjectBlueprints/Creatures.jp.xml",
+        (
+            '"TreatAsSolid"',
+            "闇が=subject.t=を飲み込む",
+        ),
+    )
+    treat_as_solid_hidden_objects = EvidenceFile(
+        "Mods/QudJP/Localization/ObjectBlueprints/HiddenObjects.jp.xml",
+        (
+            '"TreatAsSolid"',
+            "闇が =subject.t= を呑み込む",
+        ),
+    )
+    treat_as_solid_items = EvidenceFile(
+        "Mods/QudJP/Localization/ObjectBlueprints/Items.jp.xml",
+        (
+            '"TreatAsSolid"',
+            "闇が=subject.t=を飲み込む",
+            "=subject.T=は常態の圧",
+        ),
+    )
+    return (
+        CoveredOwnerFamily(
+            family_id="XRL.World.Parts/TreatAsSolid.cs::XRL.World.Parts.TreatAsSolid.Match",
+            inventory_statuses=("runtime_required",),
+            evidence_files=(
+                treat_as_solid_tests,
+                treat_as_solid_creatures,
+                treat_as_solid_hidden_objects,
+                treat_as_solid_items,
+            ),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
+    *_object_blueprint_template_emit_families(),
+    *_power_switch_template_emit_families(),
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
         inventory_statuses=("owner_patch_required",),
@@ -13268,6 +13618,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_item_modding_sifrah_result_families(),
     *_sifrah_pure_owner_popup_families(),
     *_sunder_mind_owner_families(),
+    *_liquid_warm_static_families(),
     *_keybinds_screen_conflict_families(),
     *_ability_manager_popup_families(),
     *_cooking_runtime_families(),
@@ -13276,6 +13627,8 @@ COVERED_OWNER_FAMILIES: Final = (
     *_grit_gate_terminal_owner_families(),
     *_pick_item_take_all_family(),
     *_status_screen_popup_families(),
+    *_skills_and_powers_show_data_families(),
+    *_base_liquid_object_entered_cell_template_families(),
     *_campfire_preserve_families(),
     *_reality_stabilized_event_families(),
     *_cybernetic_rejection_syndrome_families(),
@@ -14600,7 +14953,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_engraver_families(),
     *_wish_command_queue_families(),
     *_single_callsite_owner_queue_families(),
-    *_auto_act_reset_family(),
+    *_auto_act_families(),
     *_prefixed_owner_queue_families(),
     *_generated_subject_queue_families(),
 )

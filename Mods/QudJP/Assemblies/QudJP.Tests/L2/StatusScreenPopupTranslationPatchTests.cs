@@ -17,6 +17,7 @@ public sealed class StatusScreenPopupTranslationPatchTests
         DynamicTextObservability.ResetForTests();
         LocalizationAssetResolver.SetLocalizationRootForTests(GetLocalizationRoot());
         StatusScreenPopupTranslationPatch.ResetForTests();
+        StatusScreenMutationPopupTranslationPatch.ResetForTests();
         DummyPopupShow.Reset();
         DummyStatusScreenPopupTarget.MessageToSend = string.Empty;
     }
@@ -25,6 +26,7 @@ public sealed class StatusScreenPopupTranslationPatchTests
     public void TearDown()
     {
         StatusScreenPopupTranslationPatch.ResetForTests();
+        StatusScreenMutationPopupTranslationPatch.ResetForTests();
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
         DynamicTextObservability.ResetForTests();
@@ -105,6 +107,194 @@ public sealed class StatusScreenPopupTranslationPatchTests
     }
 
     [Test]
+    public void ShowMutationPopup_TranslatesUpgradePrompt_WhenOwnerPatched()
+    {
+        const string source =
+            "You generate a wall of force.\n\n{{w|This rank}}:\n9 contiguous stationary force fields.\n\n{{w|Next rank}}:\n10 contiguous stationary force fields.\n\nIt will cost {{C|1}} mutation point to increase Force Wall's rank by 1.\nDo you wish to increase this mutation's rank?";
+
+        var translated = TranslatePopupMessage(
+            ownerMethod: RequireMethod(
+                typeof(DummyStatusScreenPopupTarget),
+                nameof(DummyStatusScreenPopupTarget.ShowMutationPopup),
+                typeof(DummyGameObject),
+                typeof(DummyCharacterMutation)),
+            source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.StartWith("力の壁を生み出し、9マス連続の力場で敵を遮る。"));
+            Assert.That(translated, Does.Contain("{{w|現在ランク}}:"));
+            Assert.That(translated, Does.Contain("{{w|次ランク}}:"));
+            Assert.That(translated, Does.EndWith("力場壁のランクを1上げるには変異ポイントが{{C|1}}ポイント必要だ。\nこの変異のランクを上げますか？"));
+        });
+    }
+
+    [Test]
+    public void ShowMutationPopup_PreservesRankBoostReasonsBeforeUpgradePrompt_WhenOwnerPatched()
+    {
+        const string source =
+            "You generate a wall of force.\n\n{{w|This rank}}:\n9 contiguous stationary force fields.\n\n{{w|Next rank}}:\n10 contiguous stationary force fields.\n\n{{G|+ This mutation's rank is increased by 1 due to your high adrenaline.}}\n\nIt will cost {{C|1}} mutation point to increase Force Wall's rank by 1.\nDo you wish to increase this mutation's rank?";
+
+        var translated = TranslatePopupMessage(
+            ownerMethod: RequireMethod(
+                typeof(DummyStatusScreenPopupTarget),
+                nameof(DummyStatusScreenPopupTarget.ShowMutationPopup),
+                typeof(DummyGameObject),
+                typeof(DummyCharacterMutation)),
+            source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("{{w|現在ランク}}:"));
+            Assert.That(translated, Does.Contain("{{w|次ランク}}:"));
+            Assert.That(translated, Does.Contain("{{G|+ この変異のランクは高いアドレナリンにより1上昇している。}}"));
+            Assert.That(translated, Does.EndWith("力場壁のランクを1上げるには変異ポイントが{{C|1}}ポイント必要だ。\nこの変異のランクを上げますか？"));
+        });
+    }
+
+    [Test]
+    public void ShowMutationPopup_TranslatesInsufficientPointsTailPreservingColor_WhenOwnerPatched()
+    {
+        AssertPopupMessage(
+            ownerMethod: RequireMethod(
+                typeof(DummyStatusScreenPopupTarget),
+                nameof(DummyStatusScreenPopupTarget.ShowMutationPopup),
+                typeof(DummyGameObject),
+                typeof(DummyCharacterMutation)),
+            "{{C|You do not have enough mutation points to increase that mutation's rank.}}",
+            "{{C|その変異のランクを上げるための変異ポイントが足りない。}}");
+    }
+
+    [Test]
+    public void ShowMutationPopup_TranslatesIncreasedRankAndRankBoost_WhenOwnerPatched()
+    {
+        AssertPopupMessage(
+            ownerMethod: RequireMethod(
+                typeof(DummyStatusScreenPopupTarget),
+                nameof(DummyStatusScreenPopupTarget.ShowMutationPopup),
+                typeof(DummyGameObject),
+                typeof(DummyCharacterMutation)),
+            "You have increased Force Wall's base rank to {{C|2}}!\n\n{{G|* This mutation's base rank is 2.}}",
+            "力場壁の基本ランクを{{C|2}}に上げた！\n\n{{G|* この変異の基本ランクは2。}}");
+    }
+
+    [TestCase(
+        "{{K|* You do not possess this defect inherently, and so you cannot advance its rank.}}",
+        "{{K|* この欠陥を本来持っていないため、ランクを上げることはできない。}}")]
+    [TestCase(
+        "{{G|+ All your mutations' ranks are increased by 2.}}",
+        "{{G|+ すべての変異ランクが2上昇している。}}")]
+    [TestCase(
+        "{{R|- All your defects' ranks are decreased by 1.}}",
+        "{{R|- すべての欠陥ランクが1低下している。}}")]
+    [TestCase(
+        "{{G|+ All your Physical mutations' ranks are increased by 2.}}",
+        "{{G|+ すべての身体的変異ランクが2上昇している。}}")]
+    [TestCase(
+        "{{R|- All your Mental defects' ranks are decreased by 1.}}",
+        "{{R|- すべての精神的欠陥ランクが1低下している。}}")]
+    [TestCase(
+        "{{G|+ This mutation's rank is increased by 2 due to your high adrenaline.}}",
+        "{{G|+ この変異のランクは高いアドレナリンにより2上昇している。}}")]
+    [TestCase(
+        "{{G|+ This mutation's rank is increased by 3 due to being rapidly advanced 1 time.}}",
+        "{{G|+ この変異のランクは1回の急速成長により3上昇している。}}")]
+    [TestCase(
+        "{{G|+ This mutation's rank is increased by 2 due to being rapidly advanced 2 times.}}",
+        "{{G|+ この変異のランクは2回の急速成長により2上昇している。}}")]
+    [TestCase(
+        "{{G|+ This mutation's rank is increased by 2 due to a metabolizing effect.}}",
+        "{{G|+ この変異のランクは代謝効果により2上昇している。}}")]
+    [TestCase(
+        "{{G|+ This mutation's rank is increased by 2 due to a tonic effect.}}",
+        "{{G|+ この変異のランクはトニック効果により2上昇している。}}")]
+    [TestCase(
+        "{{G|+ This mutation's rank is increased by 1 due to your equipped item, Stopsvalinn.}}",
+        "{{G|+ この変異のランクは装備品 Stopsvalinn により1上昇している。}}")]
+    [TestCase(
+        "{{G|+ This mutation's rank is increased by 1 due to your equipped item, {{C|Stopsvalinn}}.}}",
+        "{{G|+ この変異のランクは装備品 {{C|Stopsvalinn}} により1上昇している。}}")]
+    [TestCase(
+        "{{G|+ This mutation's rank is increased by 1 due to {{C|phase conjugate}}.}}",
+        "{{G|+ この変異のランクは{{C|phase conjugate}}により1上昇している。}}")]
+    [TestCase(
+        "{{G|+ This mutation's rank is increased by 1 due to your {{C|neural lattice}}.}}",
+        "{{G|+ この変異のランクはあなたの{{C|neural lattice}}により1上昇している。}}")]
+    [TestCase(
+        "{{G|+ This mutation's rank is increased by 1 due to phase conjugate.}}",
+        "{{G|+ この変異のランクはphase conjugateにより1上昇している。}}")]
+    [TestCase(
+        "{{G|+ This mutation's rank is increased by 1 due to your neural lattice.}}",
+        "{{G|+ この変異のランクはあなたのneural latticeにより1上昇している。}}")]
+    [TestCase(
+        "{{G|+ Mutation ranks cannot be reduced below 1.}}",
+        "{{G|+ 変異ランクは1未満には下げられない。}}")]
+    [TestCase(
+        "{{R|- This mutation's rank is capped at 10 due to your level.}}",
+        "{{R|- この変異のランクはあなたのレベルにより10に制限されている。}}")]
+    public void ShowMutationPopup_TranslatesRankBoostReasonFamilies_PreservingColor(string sourceReason, string expectedReason)
+    {
+        AssertPopupMessage(
+            ownerMethod: RequireMethod(
+                typeof(DummyStatusScreenPopupTarget),
+                nameof(DummyStatusScreenPopupTarget.ShowMutationPopup),
+                typeof(DummyGameObject),
+                typeof(DummyCharacterMutation)),
+            "You have increased Force Wall's base rank to {{C|2}}!\n\n" + sourceReason,
+            "力場壁の基本ランクを{{C|2}}に上げた！\n\n" + expectedReason);
+    }
+
+    [Test]
+    public void ShowMutationPopup_RestoresOuterMutationScopeAfterNestedPopup()
+    {
+        object? outerState;
+        StatusScreenMutationPopupTranslationPatch.Prefix(
+            new DummyCharacterMutation { EntryName = "Force Wall", DisplayName = "Force Wall", Level = 1 },
+            out outerState);
+        try
+        {
+            object? innerState;
+            StatusScreenMutationPopupTranslationPatch.Prefix(
+                new DummyCharacterMutation { EntryName = "Light Manipulation", DisplayName = "Light Manipulation", Level = 1 },
+                out innerState);
+            try
+            {
+                var innerTranslated = StatusScreenMutationPopupTranslationPatch.TryTranslatePopupMessage(
+                    "Light radius: 1",
+                    nameof(PopupShowTranslationPatch),
+                    "Popup.Show",
+                    out var innerMessage);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(innerTranslated, Is.True);
+                    Assert.That(innerMessage, Does.StartWith("光を操る。"));
+                });
+            }
+            finally
+            {
+                _ = StatusScreenMutationPopupTranslationPatch.Finalizer(null, innerState);
+            }
+
+            var outerTranslated = StatusScreenMutationPopupTranslationPatch.TryTranslatePopupMessage(
+                "You generate a wall of force.",
+                nameof(PopupShowTranslationPatch),
+                "Popup.Show",
+                out var outerMessage);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(outerTranslated, Is.True);
+                Assert.That(outerMessage, Does.StartWith("力の壁を生み出し"));
+            });
+        }
+        finally
+        {
+            _ = StatusScreenMutationPopupTranslationPatch.Finalizer(null, outerState);
+        }
+    }
+
+    [Test]
     public void TryTranslatePopupMessage_TranslatesGainedMutation_WhenOwnerScopeIsActive()
     {
         StatusScreenPopupTranslationPatch.Prefix();
@@ -159,6 +349,12 @@ public sealed class StatusScreenPopupTranslationPatchTests
             DummyPopupShow.Show("TODOJASON GLIMMER={{C|42}}");
 
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("TODOJASON GLIMMER={{C|42}}"));
+
+            DummyPopupShow.Show("{{C|You do not have enough mutation points to increase that mutation's rank.}}");
+
+            Assert.That(
+                DummyPopupShow.LastShowMessage,
+                Is.EqualTo("{{C|You do not have enough mutation points to increase that mutation's rank.}}"));
         }
         finally
         {
@@ -173,6 +369,15 @@ public sealed class StatusScreenPopupTranslationPatchTests
             ownerMethod: RequireMethod(typeof(DummyStatusScreenPopupTarget), nameof(DummyStatusScreenPopupTarget.BuyStat), typeof(DummyGameObject), typeof(string)),
             MessageFrameTranslator.MarkDirectTranslation("You have increased your Ego to {{C|18}}!"),
             "You have increased your Ego to {{C|18}}!");
+        AssertPopupMessage(
+            ownerMethod: RequireMethod(
+                typeof(DummyStatusScreenPopupTarget),
+                nameof(DummyStatusScreenPopupTarget.ShowMutationPopup),
+                typeof(DummyGameObject),
+                typeof(DummyCharacterMutation)),
+            MessageFrameTranslator.MarkDirectTranslation(
+                "{{C|You do not have enough mutation points to increase that mutation's rank.}}"),
+            "{{C|You do not have enough mutation points to increase that mutation's rank.}}");
     }
 
     [Test]
@@ -180,6 +385,14 @@ public sealed class StatusScreenPopupTranslationPatchTests
     {
         AssertPopupMessage(
             ownerMethod: RequireMethod(typeof(DummyStatusScreenPopupTarget), nameof(DummyStatusScreenPopupTarget.BuyRandomMutation), typeof(DummyGameObject)),
+            string.Empty,
+            string.Empty);
+        AssertPopupMessage(
+            ownerMethod: RequireMethod(
+                typeof(DummyStatusScreenPopupTarget),
+                nameof(DummyStatusScreenPopupTarget.ShowMutationPopup),
+                typeof(DummyGameObject),
+                typeof(DummyCharacterMutation)),
             string.Empty,
             string.Empty);
     }
@@ -216,6 +429,11 @@ public sealed class StatusScreenPopupTranslationPatchTests
             nameof(DummyStatusScreenPopupTarget.BuyStat) => new object[] { new DummyGameObject(), "Strength" },
             nameof(DummyStatusScreenPopupTarget.BuyRandomMutation) => new object[] { new DummyGameObject() },
             nameof(DummyStatusScreenPopupTarget.Show) => new object[] { new DummyGameObject() },
+            nameof(DummyStatusScreenPopupTarget.ShowMutationPopup) => new object[]
+            {
+                new DummyGameObject(),
+                new DummyCharacterMutation { EntryName = "Force Wall", DisplayName = "Force Wall", Level = 1 },
+            },
             _ => Array.Empty<object>(),
         };
     }
@@ -242,6 +460,15 @@ public sealed class StatusScreenPopupTranslationPatchTests
             original: original,
             prefix: new HarmonyMethod(RequireMethod(typeof(StatusScreenPopupTranslationPatch), nameof(StatusScreenPopupTranslationPatch.Prefix))),
             finalizer: new HarmonyMethod(RequireMethod(typeof(StatusScreenPopupTranslationPatch), nameof(StatusScreenPopupTranslationPatch.Finalizer), typeof(Exception))));
+        if (original.Name != nameof(DummyStatusScreenPopupTarget.ShowMutationPopup))
+        {
+            return;
+        }
+
+        harmony.Patch(
+            original: original,
+            prefix: new HarmonyMethod(RequireMethod(typeof(StatusScreenMutationPopupTranslationPatch), nameof(StatusScreenMutationPopupTranslationPatch.Prefix), typeof(object), typeof(object).MakeByRefType())),
+            finalizer: new HarmonyMethod(RequireMethod(typeof(StatusScreenMutationPopupTranslationPatch), nameof(StatusScreenMutationPopupTranslationPatch.Finalizer), typeof(Exception), typeof(object))));
     }
 
     private static MethodInfo RequireMethod(Type type, string name, params Type[] parameters)
