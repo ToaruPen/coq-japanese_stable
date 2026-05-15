@@ -259,7 +259,7 @@ public static class CookingRuntimeTranslationPatch
             out translated);
     }
 
-    private static bool TryTranslateMetabolizeMealPopup(string source, out string translated)
+    internal static bool TryTranslateMetabolizeMealPopup(string source, out string translated)
     {
         return TryTranslatePattern(
             MetabolizeMealPattern,

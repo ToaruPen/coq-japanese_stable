@@ -3307,6 +3307,57 @@ def _campfire_cook_availability_families() -> tuple[CoveredOwnerFamily, ...]:
     )
 
 
+def _campfire_cook_from_ingredients_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookFromIngredients",
+            lines=(1030, 1059),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/CampfireCookFromIngredientsTranslationPatch.cs",
+                    (
+                        "CampfireCookFromIngredientsTranslationPatch",
+                        "CookFromIngredients",
+                        "RecipeCreatedPattern",
+                        "CookingRuntimeTranslationPatch.TryTranslateMetabolizeMealPopup",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("CampfireCookFromIngredientsTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/CookingRuntimeTranslationPatch.cs",
+                    ("TryTranslateMetabolizeMealPopup", "TranslateCookingEffectLines"),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CampfireCookFromIngredientsTranslationPatchTests.cs",
+                    (
+                        "CookFromIngredients_TranslatesOwnerPopups_WhenOwnerPatched",
+                        "CookFromIngredients_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "CookFromIngredients_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+                        "CookFromIngredients_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+                        "CookFromIngredients_DoesNotClaimDeferredFixedOrRuntimePopups_WhenOwnerPatched",
+                        "You create a new recipe for",
+                        "You start to metabolize the meal",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "TargetMethod_ResolvesExpectedSignature",
+                        "typeof(CampfireCookFromIngredientsTranslationPatch)",
+                        "XRL.World.Parts.Campfire",
+                        "CookFromIngredients",
+                        "System.Boolean",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _teleprojector_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     target_signatures = (
         (
@@ -13833,6 +13884,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_mutation_generated_text_callsites(),
     *_pick_target_show_picker_callsites(),
     *_campfire_nostrums_owner_callsites(),
+    *_campfire_cook_from_ingredients_owner_callsites(),
     *_physics_handle_event_object_entering_cell_callsites(),
     *_physics_handle_event_inventory_action_popup_callsites(),
     CoveredOwnerCallsites(
