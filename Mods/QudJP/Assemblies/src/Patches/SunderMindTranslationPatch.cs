@@ -173,7 +173,7 @@ public static class SunderMindTranslationPatch
             BeginQueuePattern,
             source,
             (match, spans) =>
-                $"精神の霊界に穿ち{Restore(match, spans, "target")}へ通路を掘り、{Restore(match, spans, "possessive")}精神を破壊し始めた！",
+                $"精神の霊界に穿ち{Restore(match, spans, "target")}へ通路を掘り、{TranslateMindOwner(Restore(match, spans, "possessive"))}精神を破壊し始めた！",
             out translated)
             || TryTranslatePattern(
                 PenetrationFailurePattern,
@@ -282,9 +282,21 @@ public static class SunderMindTranslationPatch
 
     private static string TranslateMindOwner(string source)
     {
-        if (source == "your")
+        switch (source.ToUpperInvariant())
         {
-            return "あなたの";
+            case "YOUR":
+            case "YOURS":
+                return "あなたの";
+            case "ITS":
+                return "その";
+            case "THEIR":
+            case "THEIRS":
+                return "彼らの";
+            case "HIS":
+                return "彼の";
+            case "HER":
+            case "HERS":
+                return "彼女の";
         }
 
         return source.EndsWith("'s", StringComparison.Ordinal)

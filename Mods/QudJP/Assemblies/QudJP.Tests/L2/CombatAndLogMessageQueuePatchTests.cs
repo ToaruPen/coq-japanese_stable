@@ -1969,12 +1969,15 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertSunderMindQueuedMessage(methodName, source, color, expected);
     }
 
-    [Test]
-    public void SunderMind_TranslatesBeginSunderQueuedMessage_WhenOwnerPatched()
+    [TestCase(
+        "You burrow a channel through the psychic aether to {{G|glowfish}} and begin to sunder its mind!",
+        "精神の霊界に穿ち{{G|glowfish}}へ通路を掘り、その精神を破壊し始めた！")]
+    [TestCase(
+        "You burrow a channel through the psychic aether to the pair and begin to sunder their mind!",
+        "精神の霊界に穿ちthe pairへ通路を掘り、彼らの精神を破壊し始めた！")]
+    public void SunderMind_TranslatesBeginSunderQueuedMessage_WhenOwnerPatched(string source, string expected)
     {
-        AssertSunderMindBeginSunderQueuedMessage(
-            "You burrow a channel through the psychic aether to {{G|glowfish}} and begin to sunder its mind!",
-            "精神の霊界に穿ち{{G|glowfish}}へ通路を掘り、its精神を破壊し始めた！");
+        AssertSunderMindBeginSunderQueuedMessage(source, expected);
     }
 
     [Test]
@@ -2210,6 +2213,15 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertLiquidWarmStaticPopupMessage(nameof(DummyLiquidWarmStaticTarget.GlitchMutations), string.Empty, string.Empty);
     }
 
+    [Test]
+    public void LiquidWarmStatic_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched()
+    {
+        const string queued = "{{W|This warm static message is unsupported.}}";
+        const string popup = "An unknown warm static event happens.";
+        AssertLiquidWarmStaticQueuedMessage(nameof(DummyLiquidWarmStaticTarget.GlitchSkills), queued, queued);
+        AssertLiquidWarmStaticPopupMessage(nameof(DummyLiquidWarmStaticTarget.GlitchMutations), popup, popup);
+    }
+
     [TestCase(
         nameof(DummyKeybindsScreenConflictTarget.ConfirmConflictBind),
         "{{W|Ctrl+F}} is already bound to {{C|Fire}} and {{C|Force Bubble}}.\r\n\r\nDo you want to bind it to {{C|Fly}} instead?",
@@ -2322,6 +2334,9 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase(
         "A normality lattice prevents you from altering spacetime in that local region. You can try to push through at some risk. You estimate about a {{G|75%}}G chance of success. Do you want to try?",
         "ノーマリティ格子により、あなたはその局所領域で時空を変えられない。危険を冒して押し通ることはできる。成功率は約{{G|75%}}と見積もっている。試しますか？")]
+    [TestCase(
+        "A normality lattice crackles nearby.",
+        "A normality lattice crackles nearby.")]
     public void RealityStabilizedEvent_TranslatesOptionToContestPopup_WhenOwnerPatched(
         string source,
         string expected)
@@ -7736,7 +7751,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         try
         {
             PatchQueue(harmony);
-            PatchOwner(
+            PatchOwnerWithIntState(
                 harmony,
                 RequireMethod(typeof(DummyLiquidWarmStaticTarget), methodName, typeof(bool)),
                 typeof(LiquidWarmStaticTranslationPatch));
@@ -7763,7 +7778,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         try
         {
             PatchPopupShow(harmony);
-            PatchOwner(
+            PatchOwnerWithIntState(
                 harmony,
                 RequireMethod(typeof(DummyLiquidWarmStaticTarget), methodName, typeof(bool)),
                 typeof(LiquidWarmStaticTranslationPatch));
@@ -10655,6 +10670,14 @@ public sealed class CombatAndLogMessageQueuePatchTests
             original: original,
             prefix: new HarmonyMethod(RequireMethod(patchType, "Prefix")),
             finalizer: new HarmonyMethod(RequireMethod(patchType, "Finalizer", typeof(Exception))));
+    }
+
+    private static void PatchOwnerWithIntState(Harmony harmony, MethodInfo original, Type patchType)
+    {
+        harmony.Patch(
+            original: original,
+            prefix: new HarmonyMethod(RequireMethod(patchType, "Prefix", typeof(int).MakeByRefType())),
+            finalizer: new HarmonyMethod(RequireMethod(patchType, "Finalizer", typeof(Exception), typeof(int))));
     }
 
     private static string CreateHarmonyId()

@@ -36,6 +36,8 @@ public static class RealityStabilizedEventTranslationPatch
         "^(?<intro>A normality lattice prevents you from altering spacetime in (?:(?:both your local region and the local region you're trying to interact with)|(?:the|that) local region)\\.) You can try to push through at some risk\\. Your feeling is that success would be (?<difficulty>almost impossible|challenging|moderately difficult|easy|very easy)\\. Do you want to try\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    // OptionToContestChancePattern accepts the color-control suffix after the <percent>\d+% capture
+    // from markup like "{{R|20%}}R"; ColorAwareTranslationComposer strips the wrapper but leaves the suffix.
     private static readonly Regex OptionToContestChancePattern = new(
         "^(?<intro>A normality lattice prevents you from altering spacetime in (?:(?:both your local region and the local region you're trying to interact with)|(?:the|that) local region)\\.) You can try to push through at some risk\\. You estimate (?<estimate>less than a|about a) (?<percent>\\d+%)(?:[A-Za-z])? chance of success\\. Do you want to try\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);

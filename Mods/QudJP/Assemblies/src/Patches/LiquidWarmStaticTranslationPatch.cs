@@ -48,26 +48,25 @@ public static class LiquidWarmStaticTranslationPatch
         return targets;
     }
 
-    public static void Prefix()
+    public static void Prefix(out int __state)
     {
         try
         {
+            __state = activeDepth;
             activeDepth++;
         }
         catch (Exception ex)
         {
+            __state = 0;
             Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
         }
     }
 
-    public static Exception? Finalizer(Exception? __exception)
+    public static Exception? Finalizer(Exception? __exception, int __state)
     {
         try
         {
-            if (activeDepth > 0)
-            {
-                activeDepth--;
-            }
+            activeDepth = __state;
         }
         catch (Exception ex)
         {
