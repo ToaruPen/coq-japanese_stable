@@ -1824,8 +1824,18 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^(.+?) critically hits you (.+?)[!.] \\(x(\\d+)\\)$",
+      "template": "{0}が会心であなたに{1}命中！ (x{2})",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^(.+?) hits you (.+?)[!.] \\(x(\\d+)\\)$",
       "template": "{0}があなたに{1}命中！ (x{2})",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(.+?) critically hits (.+?) (.+?)[!.] \\(x(\\d+)\\)$",
+      "template": "{0}が会心で{1}に{2}命中！ (x{3})",
       "route": "emit-message"
     },
     {
@@ -1834,22 +1844,42 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) (?:critically )?hits you \\(x(\\d+)\\) (.+?)!$",
+      "pattern": "^(.+?) critically hits you \\(x(\\d+)\\) (.+?)!$",
+      "template": "{0}が会心であなたに{2}命中！ (x{1})",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(.+?) hits you \\(x(\\d+)\\) (.+?)!$",
       "template": "{0}があなたに{2}命中！ (x{1})",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) (?:critically )?hits (.+?) \\(x(\\d+)\\) (.+?)!$",
+      "pattern": "^(.+?) critically hits (.+?) \\(x(\\d+)\\) (.+?)!$",
+      "template": "{0}が会心で{1}に{3}命中！ (x{2})",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(.+?) hits (.+?) \\(x(\\d+)\\) (.+?)!$",
       "template": "{0}が{1}に{3}命中！ (x{2})",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) (?:critically )?hits you(.*)\\.$",
+      "pattern": "^(.+?) critically hits you(.*)\\.$",
+      "template": "{0}が会心であなたに命中した{1}。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(.+?) hits you(.*)\\.$",
       "template": "{0}があなたに命中した{1}。",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) (?:critically )?hits (.+?) (to the .+?)\\.$",
+      "pattern": "^(.+?) critically hits (.+?) (to the .+?)\\.$",
+      "template": "{0}が会心で{1}に命中した {2}。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(.+?) hits (.+?) (to the .+?)\\.$",
       "template": "{0}が{1}に命中した {2}。",
       "route": "emit-message"
     },

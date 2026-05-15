@@ -2138,6 +2138,16 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase(
         "You try to push through the normality lattice, but it snaps back into place. You wince in pain.",
         "あなたは通常性格子を押し通ろうとしたが、それは跳ね返って元に戻った。あなたは痛みに顔をしかめた。")]
+    [TestCase(
+        "You push against the normality lattice, but nothing happens.",
+        "You push against the normality lattice, but nothing happens.")]
+    [TestCase("", "")]
+    [TestCase(
+        "\x01You try to push through the normality lattice, but it snaps back into place.",
+        "You try to push through the normality lattice, but it snaps back into place.")]
+    [TestCase(
+        "{{R|You try to push through the normality lattice, but it snaps back into place.}}",
+        "{{R|あなたは通常性格子を押し通ろうとしたが、それは跳ね返って元に戻った。}}")]
     public void RealityStabilizedEvent_TranslatesFailedContestSelfPopup_WhenOwnerPatched(
         string source,
         string expected)

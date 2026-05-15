@@ -349,10 +349,15 @@ public sealed class MessagePatternTranslatorTests
     [TestCase("The タレット hits タム with a 鉛スラッグ, but their mental attack has no effect.", "タレットは鉛スラッグでタムに命中させたが、精神攻撃は効果がない")]
     [TestCase("The タレット hits タム (x2) with a 鉛スラッグ!", "タレットは鉛スラッグでタムに命中した (x2)")]
     [TestCase("鉛スラッグ hits you to the east! (x2)", "鉛スラッグがあなたにto the east命中！ (x2)")]
+    [TestCase("鉛スラッグ critically hits you to the east! (x2)", "鉛スラッグが会心であなたにto the east命中！ (x2)")]
     [TestCase("鉛スラッグ hits you to the east, but your mental attack has no effect.", "鉛スラッグがあなたに命中した to the east, but your mental attack has no effect。")]
+    [TestCase("鉛スラッグ critically hits you to the east.", "鉛スラッグが会心であなたに命中した to the east。")]
     [TestCase("鉛スラッグ hits タム to the east, but your mental attack has no effect.", "鉛スラッグがタムに命中した to the east, but your mental attack has no effect。")]
+    [TestCase("鉛スラッグ critically hits タム to the east.", "鉛スラッグが会心でタムに命中した to the east。")]
     [TestCase("鉛スラッグ hits you (x2) to the east!", "鉛スラッグがあなたにto the east命中！ (x2)")]
+    [TestCase("鉛スラッグ critically hits you (x2) to the east!", "鉛スラッグが会心であなたにto the east命中！ (x2)")]
     [TestCase("鉛スラッグ hits タム (x2) to the east!", "鉛スラッグがタムにto the east命中！ (x2)")]
+    [TestCase("鉛スラッグ critically hits タム (x2) to the east!", "鉛スラッグが会心でタムにto the east命中！ (x2)")]
     public void Translate_RepositoryDictionary_AppliesEmitMessageSweepPatterns(string source, string expected)
     {
         UseRepositoryPatternDictionary();

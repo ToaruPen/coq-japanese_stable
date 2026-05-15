@@ -145,20 +145,30 @@ public static class RealityStabilizedEventTranslationPatch
 
     private static bool TryTranslateNormalityLatticePopup(string source, out string translated)
     {
-        if (string.Equals(source, NormalityLatticePopup, StringComparison.Ordinal))
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        string? result = null;
+
+        if (string.Equals(stripped, NormalityLatticePopup, StringComparison.Ordinal))
         {
-            translated = NormalityLatticeTranslation;
-            return true;
+            result = NormalityLatticeTranslation;
+        }
+        else if (string.Equals(stripped, NormalityLatticePopup + NormalityLatticeWinceSuffix, StringComparison.Ordinal))
+        {
+            result = NormalityLatticeTranslation + NormalityLatticeWinceTranslation;
         }
 
-        if (string.Equals(source, NormalityLatticePopup + NormalityLatticeWinceSuffix, StringComparison.Ordinal))
+        if (result is null)
         {
-            translated = NormalityLatticeTranslation + NormalityLatticeWinceTranslation;
-            return true;
+            translated = source;
+            return false;
         }
 
-        translated = source;
-        return false;
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            result,
+            spans,
+            stripped.Length,
+            source);
+        return true;
     }
 
     private static void AddTarget(List<MethodBase> targets, Type targetType, string methodName, Type[] parameters)
