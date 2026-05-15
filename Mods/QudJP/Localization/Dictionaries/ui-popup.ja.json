@@ -2420,7 +2420,7 @@
         {
             "key": "You try to push through the normality lattice, but it snaps back into place.",
             "context": "XRL.UI.Popup.Show.Message",
-            "text": "正常性格子を押し通ろうとするが、すぐに元の位置へ戻る。"
+            "text": "ノーマリティ格子を押し通ろうとするが、すぐに元の位置へ戻る。"
         },
         {
             "key": "You'll be able to explore the world freely after the tutorial.\n\nFor now, let's visit Joppa.",

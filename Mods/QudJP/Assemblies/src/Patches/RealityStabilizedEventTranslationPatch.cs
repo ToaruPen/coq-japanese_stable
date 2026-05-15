@@ -38,7 +38,7 @@ public static class RealityStabilizedEventTranslationPatch
     private const string NormalityLatticeWinceSuffix = " You wince in pain.";
 
     private const string NormalityLatticeTranslation =
-        "あなたは通常性格子を押し通ろうとしたが、それは跳ね返って元に戻った。";
+        "あなたはノーマリティ格子を押し通ろうとしたが、それは跳ね返って元に戻った。";
 
     private const string NormalityLatticeWinceTranslation = "あなたは痛みに顔をしかめた。";
 
