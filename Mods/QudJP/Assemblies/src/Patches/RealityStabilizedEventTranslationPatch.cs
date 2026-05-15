@@ -36,10 +36,10 @@ public static class RealityStabilizedEventTranslationPatch
         "^(?<intro>A normality lattice prevents you from altering spacetime in (?:(?:both your local region and the local region you're trying to interact with)|(?:the|that) local region)\\.) You can try to push through at some risk\\. Your feeling is that success would be (?<difficulty>almost impossible|challenging|moderately difficult|easy|very easy)\\. Do you want to try\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
-    // OptionToContestChancePattern accepts the color-control suffix after the <percent>\d+% capture
+    // OptionToContestChancePattern keeps the color-control suffix in <percentToken>\d+%(?:[A-Za-z])?
     // from markup like "{{R|20%}}R"; ColorAwareTranslationComposer strips the wrapper but leaves the suffix.
     private static readonly Regex OptionToContestChancePattern = new(
-        "^(?<intro>A normality lattice prevents you from altering spacetime in (?:(?:both your local region and the local region you're trying to interact with)|(?:the|that) local region)\\.) You can try to push through at some risk\\. You estimate (?<estimate>less than a|about a) (?<percent>\\d+%)(?:[A-Za-z])? chance of success\\. Do you want to try\\?$",
+        "^(?<intro>A normality lattice prevents you from altering spacetime in (?:(?:both your local region and the local region you're trying to interact with)|(?:the|that) local region)\\.) You can try to push through at some risk\\. You estimate (?<estimate>less than a|about a) (?<percentToken>\\d+%(?:[A-Za-z])?) chance of success\\. Do you want to try\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private const string NormalityLatticePopup =
@@ -170,7 +170,7 @@ public static class RealityStabilizedEventTranslationPatch
                 source,
                 (match, spans) =>
                 {
-                    var chance = Restore(match, spans, "percent");
+                    var chance = Restore(match, spans, "percentToken");
                     var estimate = Restore(match, spans, "estimate") == "less than a"
                         ? chance + "未満"
                         : "約" + chance;

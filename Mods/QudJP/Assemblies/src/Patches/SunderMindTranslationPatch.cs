@@ -58,7 +58,7 @@ public static class SunderMindTranslationPatch
         var targetType = AccessTools.TypeByName("XRL.World.Parts.Mutation.SunderMind");
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
         var memberOfPsychicBattleType = AccessTools.TypeByName("XRL.World.Effects.MemberOfPsychicBattle");
-        if (targetType is null || gameObjectType is null || memberOfPsychicBattleType is null)
+        if (targetType is null || gameObjectType is null)
         {
             Trace.TraceError("QudJP: {0} target types not found.", Context);
             return targets;
@@ -68,7 +68,15 @@ public static class SunderMindTranslationPatch
         AddTarget(targets, targetType, "BeginSunder", new[] { gameObjectType });
         AddTarget(targets, targetType, "PenetrationFailure", new[] { gameObjectType });
         AddTarget(targets, targetType, "Tick", Type.EmptyTypes);
-        AddTarget(targets, targetType, "Nosebleed", new[] { gameObjectType, memberOfPsychicBattleType });
+        if (memberOfPsychicBattleType is not null)
+        {
+            AddTarget(targets, targetType, "Nosebleed", new[] { gameObjectType, memberOfPsychicBattleType });
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0}.Nosebleed MemberOfPsychicBattle target type not found; skipping Nosebleed only.", Context);
+        }
+
         return targets;
     }
 

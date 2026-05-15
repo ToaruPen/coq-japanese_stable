@@ -2330,10 +2330,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
         "ノーマリティ格子により、あなたは自分の局所領域と干渉しようとしている局所領域の両方で時空を変えられない。危険を冒して押し通ることはできる。成功は困難だと感じる。試しますか？")]
     [TestCase(
         "A normality lattice prevents you from altering spacetime in the local region. You can try to push through at some risk. You estimate less than a {{R|20%}}R chance of success. Do you want to try?",
-        "ノーマリティ格子により、あなたはこの局所領域で時空を変えられない。危険を冒して押し通ることはできる。成功率は{{R|20%}}未満と見積もっている。試しますか？")]
+        "ノーマリティ格子により、あなたはこの局所領域で時空を変えられない。危険を冒して押し通ることはできる。成功率は{{R|20%}}R未満と見積もっている。試しますか？")]
     [TestCase(
         "A normality lattice prevents you from altering spacetime in that local region. You can try to push through at some risk. You estimate about a {{G|75%}}G chance of success. Do you want to try?",
-        "ノーマリティ格子により、あなたはその局所領域で時空を変えられない。危険を冒して押し通ることはできる。成功率は約{{G|75%}}と見積もっている。試しますか？")]
+        "ノーマリティ格子により、あなたはその局所領域で時空を変えられない。危険を冒して押し通ることはできる。成功率は約{{G|75%}}Gと見積もっている。試しますか？")]
     [TestCase(
         "A normality lattice crackles nearby.",
         "A normality lattice crackles nearby.")]
