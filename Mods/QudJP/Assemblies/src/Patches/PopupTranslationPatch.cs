@@ -420,6 +420,12 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (MetricsManagerLogErrorTranslationPatch.TryTranslatePopupMessage(source, route, family, out var metricsManagerLogErrorTranslated))
+        {
+            translated = metricsManagerLogErrorTranslated;
+            return true;
+        }
+
         if (DeathWrapperFamilyTranslator.TryTranslatePopup(stripped, spans, route, out var deathTranslated))
         {
             translated = deathTranslated;

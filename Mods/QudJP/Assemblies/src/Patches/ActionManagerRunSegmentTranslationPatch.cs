@@ -46,23 +46,24 @@ public static class ActionManagerRunSegmentTranslationPatch
     [ThreadStatic]
     private static string? directMarkerPassThroughText;
 
-    [HarmonyTargetMethod]
-    private static MethodBase? TargetMethod()
+    [HarmonyTargetMethods]
+    private static IEnumerable<MethodBase> TargetMethods()
     {
         var targetType = AccessTools.TypeByName("XRL.Core.ActionManager");
         if (targetType is null)
         {
             Trace.TraceError("QudJP: {0} target type not found.", Context);
-            return null;
+            yield break;
         }
 
         var method = AccessTools.Method(targetType, "RunSegment", Type.EmptyTypes);
         if (method is null)
         {
             Trace.TraceError("QudJP: {0}.RunSegment() target not found.", Context);
+            yield break;
         }
 
-        return method;
+        yield return method;
     }
 
     public static void Prefix()

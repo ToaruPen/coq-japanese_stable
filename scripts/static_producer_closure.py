@@ -11735,6 +11735,53 @@ def _action_manager_run_segment_owner_callsites() -> tuple[CoveredOwnerCallsites
     )
 
 
+def _metrics_manager_log_error_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MetricsManagerLogErrorTranslationPatch.cs",
+        (
+            "MetricsManagerLogErrorTranslationPatch",
+            "MetricsManager",
+            "LogError",
+            "DiagnosticBodyPreserved",
+            "{{R|エラー}}",
+        ),
+    )
+    popup_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+        ("MetricsManagerLogErrorTranslationPatch.TryTranslatePopupMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/MetricsManagerLogErrorTranslationPatchTests.cs",
+        (
+            "LogError_TranslatesTitleAndPreservesDiagnosticBody_WhenOwnerPatched",
+            "LogError_DoesNotClaimDiagnosticPopup_WhenOwnerAbsent",
+            "LogError_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "LogError_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+            "LogExceptionRuntimeShape_StaysDeferred_WhenOwnerAbsent",
+            "boom\\n   at MetricsManager.LogError()",
+            "LoadMap - boom\\n   at MetricsManager.LogError()",
+            "LoadMap:\\nSystem.InvalidOperationException: boom",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(MetricsManagerLogErrorTranslationPatch)",
+            "MetricsManager|LogError|System.Void|System.String",
+            "MetricsManager|LogError|System.Void|System.String|System.String",
+            "MetricsManager|LogError|System.Void|System.String|System.Exception",
+        ),
+    )
+    return (
+        CoveredOwnerCallsites(
+            family_id="MetricsManager.cs::MetricsManager.LogError",
+            lines=(372, 394, 427),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(patch, popup_pipeline, tests, target_tests),
+        ),
+    )
+
+
 def _wish_command_queue_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/WishCommandQueueTranslationPatch.cs",
@@ -14062,6 +14109,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_physics_handle_event_inventory_action_popup_callsites(),
     *_liquid_volume_handle_event_owner_callsites(),
     *_action_manager_run_segment_owner_callsites(),
+    *_metrics_manager_log_error_owner_callsites(),
     CoveredOwnerCallsites(
         family_id=(
             "XRL.World.Parts.Mutation/Carapace.cs::"

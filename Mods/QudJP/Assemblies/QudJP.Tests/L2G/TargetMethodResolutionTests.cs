@@ -1710,6 +1710,12 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.Core.ActionManager|RunSegment|System.Void",
     })]
+    [TestCase(typeof(MetricsManagerLogErrorTranslationPatch), new[]
+    {
+        "MetricsManager|LogError|System.Void|System.String",
+        "MetricsManager|LogError|System.Void|System.String|System.String",
+        "MetricsManager|LogError|System.Void|System.String|System.Exception",
+    })]
     [TestCase(typeof(PrefixedOwnerQueueTranslationPatch), new[]
     {
         "XRL.World.AI.GoalHandlers.Flee|TakeAction|System.Void",
