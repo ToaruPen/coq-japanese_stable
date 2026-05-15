@@ -1706,6 +1706,10 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Capabilities.AutoAct|Interrupt|System.Void|XRL.World.GameObject|System.Boolean|System.Boolean",
         "XRL.World.Capabilities.AutoAct|ResetAutoexploreProperties|System.Boolean",
     })]
+    [TestCase(typeof(ActionManagerRunSegmentTranslationPatch), new[]
+    {
+        "XRL.Core.ActionManager|RunSegment|System.Void",
+    })]
     [TestCase(typeof(PrefixedOwnerQueueTranslationPatch), new[]
     {
         "XRL.World.AI.GoalHandlers.Flee|TakeAction|System.Void",

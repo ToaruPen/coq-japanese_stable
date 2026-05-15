@@ -101,6 +101,8 @@ public sealed class ColorTagAllowlistCoverageTests
             // Keys identify the ColorAwareTranslationComposer.Strip call site, not the containing method declaration.
             ["Mods/QudJP/Assemblies/src/Observability/FinalOutputObservability.cs:109:RecordDirectMarker"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/AbilityBarAfterRenderTranslationPatch.cs:239:HasColorMarkup"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
+            ["Mods/QudJP/Assemblies/src/Patches/ActionManagerRunSegmentTranslationPatch.cs:112:TryTranslatePopupMessage"] = "Audited Strip call: popup target colors are restored through the local MarkupAwareRestoreCapture helper.",
+            ["Mods/QudJP/Assemblies/src/Patches/ActionManagerRunSegmentTranslationPatch.cs:133:TryTranslateQueuedMessage"] = "Audited Strip call: queued target colors are restored through the local MarkupAwareRestoreCapture helper.",
             ["Mods/QudJP/Assemblies/src/Patches/ActiveEffectTextTranslator.cs:131:TryTranslateExact"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/ActiveEffectTextTranslator.cs:170:TryTranslateTemplate"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/AnimateObjectTranslationPatch.cs:109:TryTranslate"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
@@ -244,6 +246,7 @@ public sealed class ColorTagAllowlistCoverageTests
 
     private static readonly string[] MarkupAwareCaptureOwnerFiles =
     {
+        "Mods/QudJP/Assemblies/src/Patches/ActionManagerRunSegmentTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/BasePronounProviderCustomizePopupTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/BrainBrineCurseTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/CampfireCookAvailabilityTranslationPatch.cs",

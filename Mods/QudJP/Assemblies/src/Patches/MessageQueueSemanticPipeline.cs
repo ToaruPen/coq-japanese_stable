@@ -9,6 +9,7 @@ internal static class MessageQueueSemanticPipeline
     [
         PhysicsApplyDischargeTranslationPatch.TryTranslateQueuedMessage,
         AutoActTranslationPatch.TryTranslateQueuedMessage,
+        ActionManagerRunSegmentTranslationPatch.TryTranslateQueuedMessage,
         PrefixedOwnerQueueTranslationPatch.TryTranslateQueuedMessage,
         PhysicsObjectEnteringCellTranslationPatch.TryTranslateQueuedMessage,
         CrippleApplyTranslationPatch.TryTranslateQueuedMessage,

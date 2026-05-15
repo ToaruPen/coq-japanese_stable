@@ -11671,6 +11671,70 @@ def _liquid_volume_handle_event_owner_callsites() -> tuple[CoveredOwnerCallsites
     )
 
 
+def _action_manager_run_segment_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/ActionManagerRunSegmentTranslationPatch.cs",
+        (
+            "ActionManagerRunSegmentTranslationPatch",
+            "RunSegment",
+            "TryTranslatePopupMessage",
+            "TryTranslateQueuedMessage",
+            "PathToTarget",
+            "PathTowardDirection",
+            "NoNearby",
+            "SafeReachStairs",
+            "AutoAttackNotHostile",
+            "CannotSeeTarget",
+            "NavigateToTarget",
+            "UnableToAttack",
+            "ReachTarget",
+        ),
+    )
+    popup_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("ActionManagerRunSegmentTranslationPatch.TryTranslatePopupMessage",),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("ActionManagerRunSegmentTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/ActionManagerRunSegmentTranslationPatchTests.cs",
+        (
+            "RunSegment_TranslatesOwnerPopups_WhenOwnerPatched",
+            "RunSegment_TranslatesOwnerQueuedMessages_WhenOwnerPatched",
+            "RunSegment_DoesNotClaimOwnerMessages_WhenOwnerAbsent",
+            "RunSegment_DoesNotRetranslateDirectMarkedMessages_WhenOwnerPatched",
+            "RunSegment_LeavesEmptyMessagesUnchanged_WhenOwnerPatched",
+            "RunSegment_DoesNotClaimDeferredFixedPopups_WhenOwnerPatched",
+            "You cannot find a path to {{Y|the snapjaw}}.",
+            "You cannot find a path toward the northeast.",
+            "There are no stairways leading upward nearby.",
+            "You can't figure out how to safely reach the stairs from here.",
+            "You will not auto-attack {{Y|the snapjaw}} because it is not hostile to you.",
+            "You cannot see your target.",
+            "You can't find a way to navigate to {{Y|the snapjaw}}.",
+            "You are unable to attack {{Y|the snapjaw}}.",
+            "You can't seem to find a way to reach {{Y|the snapjaw}}.",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(ActionManagerRunSegmentTranslationPatch)",
+            "XRL.Core.ActionManager|RunSegment|System.Void",
+        ),
+    )
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.Core/ActionManager.cs::XRL.Core.ActionManager.RunSegment",
+            lines=(1002, 1157, 1315, 1325, 1520, 1539, 1551, 1570, 1603),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(patch, popup_pipeline, queue_pipeline, tests, target_tests),
+        ),
+    )
+
+
 def _wish_command_queue_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/WishCommandQueueTranslationPatch.cs",
@@ -13997,6 +14061,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_physics_handle_event_object_entering_cell_callsites(),
     *_physics_handle_event_inventory_action_popup_callsites(),
     *_liquid_volume_handle_event_owner_callsites(),
+    *_action_manager_run_segment_owner_callsites(),
     CoveredOwnerCallsites(
         family_id=(
             "XRL.World.Parts.Mutation/Carapace.cs::"
