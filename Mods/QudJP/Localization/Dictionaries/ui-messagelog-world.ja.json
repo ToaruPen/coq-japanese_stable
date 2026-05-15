@@ -242,7 +242,7 @@
         {
             "key": "You have mastered psychic combat at this level of difficulty. Do you want to guide the process in detail anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically receive the results of strong but unexceptional performance.",
             "context": "XRL.World.PsychicCombat.Sifrah",
-            "text": "この難度での精神戦は熟達済みだ。より高い成功率を狙って詳細に指揮しますか？「いいえ」を選ぶと標準的な成功の結果を自動で受け取ります。"
+            "text": "この難度での精神戦は熟達済みだ。より高い成功率を狙って詳細に指揮しますか？『いいえ』なら、標準的な成功の結果を自動で受け取る。"
         },
         {
             "key": "Do you want to finish psychic combat as matters stand?",
@@ -357,7 +357,7 @@
         {
             "key": "You have mastered psychic combat at this level of difficulty. Do you want to guide the process in detail anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically receive the results of strong but unexceptional performance.",
             "context": "XRL.World.XRL.World.PsychicCombatSifrah",
-            "text": "この難度での精神戦は熟達済みだ。より高い成功率を狙って詳細に指揮しますか？「いいえ」を選ぶと標準的な成功の結果を自動で受け取ります。"
+            "text": "この難度での精神戦は熟達済みだ。より高い成功率を狙って詳細に指揮しますか？『いいえ』なら、標準的な成功の結果を自動で受け取る。"
         },
         {
             "key": "Do you want to finish psychic combat as matters stand?",
