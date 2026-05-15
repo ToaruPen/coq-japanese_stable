@@ -173,10 +173,6 @@ internal static class ColorRouteCatalog
                 new(
                     2,
                     "PickOption prompt/title/options are generic popup fixed text; dynamic option producers need owner helpers first."),
-            ["Mods/QudJP/Assemblies/src/Patches/PopupShowSpaceTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] =
-                new(
-                    2,
-                    "ShowSpace exposes generic popup body/title text without a narrower known producer owner."),
             ["Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] =
                 new(
                     1,
@@ -267,7 +263,6 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/SkillsAndPowersStatusScreenTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 3,
             ["Mods/QudJP/Assemblies/src/Patches/DeathReasonTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] = 1,
-            ["Mods/QudJP/Assemblies/src/Patches/PopupShowSpaceTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] = 2,
             ["Mods/QudJP/Assemblies/src/Patches/SinkPrereqTextFieldTranslator.cs|UITextSkinTranslationPatch.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/StatusScreenPopupTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
