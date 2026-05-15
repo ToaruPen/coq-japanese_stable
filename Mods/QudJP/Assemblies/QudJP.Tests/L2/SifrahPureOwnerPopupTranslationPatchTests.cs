@@ -199,42 +199,42 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.DisarmingSifrah),
         "You have mastered disarming operations of this complexity. Do you want to perform detailed disarming anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed.",
-        "この難度での解除作業は熟達済みだ。それでも詳細に解除を試みるか？『いいえ』なら、自動で成功する。",
+        "この難度での解除作業は熟達済みだ。それでも詳細に解除を試みますか？『いいえ』なら、自動で成功する。",
         "Disarming")]
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.ExamineSifrah),
         "You have mastered examining artifacts of this complexity. Do you want to perform detailed examination anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the examination.",
-        "この難度での遺物調査は熟達済みだ。それでも詳細に遺物調査を試みるか？『いいえ』なら、可能なら自動で成功する。",
+        "この難度での遺物調査は熟達済みだ。それでも詳細に遺物調査を試みますか？『いいえ』なら、可能なら自動で成功する。",
         "Examine")]
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.HackingSifrah),
         "You have mastered hacks of this complexity. Do you want to perform a detailed hack anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the hack.",
-        "この難度でのハッキングは熟達済みだ。それでも詳細なハッキングを試みるか？『いいえ』なら、可能なら自動で成功する。",
+        "この難度でのハッキングは熟達済みだ。それでも詳細なハッキングを試みますか？『いいえ』なら、可能なら自動で成功する。",
         "Hacking")]
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.ProselytizationSifrah),
         "You have mastered proselytization at this level of discourse. Do you want to perform detailed proselytization anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at proselytization if that is possible.",
-        "このレベルの布教は熟達済みだ。それでも詳細な布教を試みるか？『いいえ』なら、可能なら布教が自動で成功する。",
+        "このレベルの布教は熟達済みだ。それでも詳細な布教を試みますか？『いいえ』なら、可能なら布教が自動で成功する。",
         "Proselytization")]
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.RebukingSifrah),
         "You have mastered rebuking robots of this grade. Do you want to perform a detailed rebuke anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed t the rebuke if that is possible.",
-        "この難度でのロボット叱責は熟達済みだ。それでも詳細な叱責を試みるか？『いいえ』なら、可能なら叱責が自動で成功する。",
+        "この難度でのロボット叱責は熟達済みだ。それでも詳細な叱責を試みますか？『いいえ』なら、可能なら叱責が自動で成功する。",
         "Rebuking")]
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.RepairSifrah),
         "You have mastered repairs of this complexity. Do you want to perform detailed repairs anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the repairs.",
-        "この難度での修理は熟達済みだ。それでも詳細な修理を試みるか？『いいえ』なら、可能なら修理が自動で成功する。",
+        "この難度での修理は熟達済みだ。それでも詳細な修理を試みますか？『いいえ』なら、可能なら修理が自動で成功する。",
         "Repair")]
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.PsychicCombatSifrah),
         "You have mastered psychic combat at this level of difficulty. Do you want to guide the process in detail anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically receive the results of strong but unexceptional performance.",
-        "この難度での精神戦闘は習熟済みだ。卓越した成功率を狙って詳細な手順を自ら指揮する？「いいえ」を選ぶと、平凡でも堅実な結果が自動的に得られる。",
+        "この難度での精神戦闘は習熟済みだ。卓越した成功率を狙って詳細な手順を自ら指揮しますか？「いいえ」を選ぶと、平凡でも堅実な結果が自動的に得られます。",
         "PsychicCombat")]
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.RealityDistortionSifrah),
         "You have mastered reality distortion at this level of difficulty. Do you want to guide the process in detail anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically receive the results of strong but unexceptional performance.",
-        "この難度での現実歪曲は熟達済みだ。それでも詳細に制御するか？『いいえ』なら、強いが平凡な結果を自動で得る。",
+        "この難度での現実歪曲は熟達済みだ。それでも詳細に制御しますか？『いいえ』なら、強いが平凡な結果を自動で得る。",
         "RealityDistortion")]
     public void Patch_TranslatesMasteredPrompt_WhenOwnerPatched(
         string methodName,

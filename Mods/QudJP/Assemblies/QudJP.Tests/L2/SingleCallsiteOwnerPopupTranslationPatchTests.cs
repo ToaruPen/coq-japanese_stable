@@ -143,7 +143,7 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.AttemptProselytization),
         "Argyve is already your follower. Do you want to proselytize him anyway?",
-        "Argyveはすでにあなたの仲間だ。それでも勧誘するか？",
+        "Argyveはすでにあなたの仲間だ。それでも勧誘しますか？",
         "ProselytizeFollowerConfirmation",
         PopupMethod.ShowYesNo)]
     [TestCase(
@@ -215,7 +215,7 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleNeutronFluxBeginTakeActionEvent),
         "{{Y|The flask}} beeps loudly and flashes a warning glyph. Do you want to stop travelling?",
-        "{{Y|The flask}}が大きくビープ音を鳴らし、警告グリフを点滅させる。移動をやめるか？",
+        "{{Y|The flask}}が大きくビープ音を鳴らし、警告グリフを点滅させる。移動をやめますか？",
         "NeutronFluxWarningGlyph",
         PopupMethod.ShowYesNo)]
     [TestCase(

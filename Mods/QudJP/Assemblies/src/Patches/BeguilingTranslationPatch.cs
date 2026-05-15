@@ -163,7 +163,7 @@ public static class BeguilingTranslationPatch
             || TryTranslatePattern(
                 AlreadyFollowerPattern,
                 source,
-                (match, spans) => $"{Restore(match, spans, "target")}はすでにあなたの仲間だ。それでも{Restore(match, spans, "them")}を魅了するか？",
+                (match, spans) => $"{Restore(match, spans, "target")}はすでにあなたの仲間だ。それでも{Restore(match, spans, "them")}を魅了しますか？",
                 out translated)
             || TryTranslatePattern(
                 OutshinePattern,

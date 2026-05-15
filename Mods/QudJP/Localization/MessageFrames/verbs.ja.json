@@ -1966,12 +1966,12 @@
     {
       "verb": "are",
       "extra": "already your follower\\. Do you want to beguile (?:him|her|it|them) anyway",
-      "text": "{subject}はすでにあなたの仲間だ。それでも魅了するか{endmark}"
+      "text": "{subject}はすでにあなたの仲間だ。それでも魅了しますか{endmark}"
     },
     {
       "verb": "are",
       "extra": "already your follower\\. Do you want to proselytize (?:him|her|it|them) anyway",
-      "text": "{subject}はすでにあなたの仲間だ。それでも勧誘するか{endmark}"
+      "text": "{subject}はすでにあなたの仲間だ。それでも勧誘しますか{endmark}"
     },
     {
       "verb": "are",

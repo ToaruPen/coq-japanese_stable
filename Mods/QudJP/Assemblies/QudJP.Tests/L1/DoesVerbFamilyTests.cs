@@ -222,13 +222,13 @@ public sealed class DoesVerbFamilyTests
 
     // --- Not Owned Family ---
 
-    [TestCase("The 武器 is not owned by you, and trying to repair 武器 will be considered an act of theft. Are you sure?", "武器はあなたのものではなく、武器を修理しようとすると窃盗行為とみなされる。本当に行うか？")]
-    [TestCase("The 武器 is not owned by you, and using 武器 will be considered an act of theft. Are you sure?", "武器はあなたのものではなく、武器を使用すると窃盗行為とみなされる。本当に行うか？")]
-    [TestCase("The 武器 is not owned by you, and examining 武器 will be considered an act of theft. Continue?", "武器はあなたのものではなく、武器を調べると窃盗行為とみなされる。続けるか？")]
-    [TestCase("The 水筒 is not owned by you. Are you sure you want to pour from 水筒?", "水筒はあなたのものではない。水筒から注いでよいか？")]
-    [TestCase("The 装置 is not owned by you. Are you sure you want to disassemble 装置?", "装置はあなたのものではない。装置を分解してよいか？")]
+    [TestCase("The 武器 is not owned by you, and trying to repair 武器 will be considered an act of theft. Are you sure?", "武器はあなたのものではなく、武器を修理しようとすると窃盗行為とみなされる。本当に行いますか？")]
+    [TestCase("The 武器 is not owned by you, and using 武器 will be considered an act of theft. Are you sure?", "武器はあなたのものではなく、武器を使用すると窃盗行為とみなされる。本当に行いますか？")]
+    [TestCase("The 武器 is not owned by you, and examining 武器 will be considered an act of theft. Continue?", "武器はあなたのものではなく、武器を調べると窃盗行為とみなされる。続けますか？")]
+    [TestCase("The 水筒 is not owned by you. Are you sure you want to pour from 水筒?", "水筒はあなたのものではない。水筒から注ぎますか？")]
+    [TestCase("The 装置 is not owned by you. Are you sure you want to disassemble 装置?", "装置はあなたのものではない。装置を分解しますか？")]
     // Color-wrapped
-    [TestCase("{{r|The 武器 is not owned by you, and trying to repair 武器 will be considered an act of theft. Are you sure?}}", "{{r|武器はあなたのものではなく、武器を修理しようとすると窃盗行為とみなされる。本当に行うか？}}")]
+    [TestCase("{{r|The 武器 is not owned by you, and trying to repair 武器 will be considered an act of theft. Are you sure?}}", "{{r|武器はあなたのものではなく、武器を修理しようとすると窃盗行為とみなされる。本当に行いますか？}}")]
     public void Translate_NotOwnedFamily(string input, string expected)
     {
         AssertTranslated(input, expected);
@@ -430,7 +430,7 @@ public sealed class DoesVerbFamilyTests
     [TestCase("The 回収装置 reclaims a 金属片.", "回収装置は金属片を回収した。")]
     [TestCase("The 盗賊 bot snags your 光線銃!", "盗賊 botはあなたの光線銃をかすめ取った！")]
     [TestCase("The 装置 needs 3 more rounds before it can be fired again.", "装置は再発射まであと3ラウンド必要だ。")]
-    [TestCase("The 商人 is already your follower. Do you want to beguile it anyway?", "商人はすでにあなたの仲間だ。それでも魅了するか？")]
+    [TestCase("The 商人 is already your follower. Do you want to beguile it anyway?", "商人はすでにあなたの仲間だ。それでも魅了しますか？")]
     public void Translate_ReviewedDoesFamilies(string input, string expected)
     {
         AssertTranslated(input, expected);

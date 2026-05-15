@@ -188,7 +188,7 @@ public static class RepairTranslationPatch
                 RestoreCapture(match, spans, "target"),
                 "を修理しようとすると",
                 RestoreCapture(match, spans, "risk"),
-                "を損傷させる危険がある。本当に行うか？"),
+                "を損傷させる危険がある。本当に行いますか？"),
             stripped,
             spans);
         Record(route, family, "OwnershipRisk", source, translated);
@@ -217,7 +217,7 @@ public static class RepairTranslationPatch
                 RestoreCapture(match, spans, "container"),
                 "の中にある",
                 RestoreCapture(match, spans, "target"),
-                "を修理しようとすると損傷を引き起こす危険がある。本当に行うか？"),
+                "を修理しようとすると損傷を引き起こす危険がある。本当に行いますか？"),
             stripped,
             spans);
         Record(route, family, "ContainerOwnershipRisk", source, translated);
@@ -318,7 +318,7 @@ public static class RepairTranslationPatch
                 RestoreCapture(match, spans, "target"),
                 "を修理するために<",
                 RestoreCapture(match, spans, "bits"),
-                ">を消費するか？所持ビット:\n\n",
+                ">を消費しますか？所持ビット:\n\n",
                 RestoreCapture(match, spans, "owned")),
             stripped,
             spans);

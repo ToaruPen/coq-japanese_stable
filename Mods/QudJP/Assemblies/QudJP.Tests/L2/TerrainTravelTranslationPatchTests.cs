@@ -129,7 +129,7 @@ public sealed class TerrainTravelTranslationPatchTests
     {
         AssertOwnerPopup(
             "{{R|Your health has dropped below {{C|40%}}!}} Do you want to stop travelling?",
-            "{{R|HPが{{C|40%}}を下回った！}} 移動をやめるか？",
+            "{{R|HPが{{C|40%}}を下回った！}} 移動をやめますか？",
             "HpWarningStopTravel");
     }
 

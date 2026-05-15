@@ -210,7 +210,7 @@
     {
       "key": "Are you sure you want to buy ",
       "context": "XRL.UI.SkillsAndPowersScreen",
-      "text": "購入してもよろしいですか: "
+      "text": "購入しますか: "
     },
     {
       "key": "Buy Mutation",

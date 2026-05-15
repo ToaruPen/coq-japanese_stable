@@ -205,7 +205,7 @@ public static class TerrainTravelTranslationPatch
             return false;
         }
 
-        translated = "{{R|HPが{{C|" + match.Groups["value"].Value + "%}}を下回った！}} 移動をやめるか？";
+        translated = "{{R|HPが{{C|" + match.Groups["value"].Value + "%}}を下回った！}} 移動をやめますか？";
         return true;
     }
 }

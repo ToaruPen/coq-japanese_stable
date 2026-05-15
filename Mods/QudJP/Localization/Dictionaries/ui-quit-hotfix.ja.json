@@ -11,12 +11,12 @@
   "entries": [
     {
       "key": "If you quit without saving, you will lose all your unsaved\\nprogress. Are you sure you want to QUIT and LOSE YOUR\\nPROGRESS?\\n \\n Type '",
-      "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「"
+      "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「"
     },
     {
       "key": "If you quit without saving, you will lose all your unsaved\\nprogress. Are you sure you want to QUIT and LOSE YOUR\\nPROGRESS?\\n \\n Type 'QUIT' to confirm.",
       "context": "PopupMessage.ShowPopup.Message",
-      "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+      "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
     }
   ]
 }

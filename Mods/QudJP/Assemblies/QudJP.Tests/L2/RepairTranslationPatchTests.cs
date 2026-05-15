@@ -33,12 +33,12 @@ public sealed class RepairTranslationPatchTests
     [TestCase(
         nameof(DummyRepairProducerTarget.HandleEvent),
         "{{Y|青銅の短剣}} is not owned by you, and trying to repair {{Y|青銅の短剣}} risks damaging {{R|青銅の短剣}}. Are you sure you want to do so?",
-        "{{Y|青銅の短剣}}はあなたのものではなく、{{Y|青銅の短剣}}を修理しようとすると{{R|青銅の短剣}}を損傷させる危険がある。本当に行うか？",
+        "{{Y|青銅の短剣}}はあなたのものではなく、{{Y|青銅の短剣}}を修理しようとすると{{R|青銅の短剣}}を損傷させる危険がある。本当に行いますか？",
         "OwnershipRisk")]
     [TestCase(
         nameof(DummyRepairProducerTarget.HandleEvent),
         "{{C|古い箱}} is not owned by you, and trying to repair {{Y|ひび割れたレンズ}} inside {{C|古い箱}} risks causing damage. Are you sure you want to do so?",
-        "{{C|古い箱}}はあなたのものではなく、{{C|古い箱}}の中にある{{Y|ひび割れたレンズ}}を修理しようとすると損傷を引き起こす危険がある。本当に行うか？",
+        "{{C|古い箱}}はあなたのものではなく、{{C|古い箱}}の中にある{{Y|ひび割れたレンズ}}を修理しようとすると損傷を引き起こす危険がある。本当に行いますか？",
         "ContainerOwnershipRisk")]
     public void Patch_TranslatesRepairConfirmationPopup_WhenOwnerPatched(
         string methodName,
@@ -272,7 +272,7 @@ public sealed class RepairTranslationPatchTests
             {
                 Assert.That(
                     DummyPopupShow.LastShowYesNoCancelMessage,
-                    Is.EqualTo("{{Y|ひび割れたレンズ}}を修理するために<{{|ABCD}}>を消費するか？所持ビット:\n\n{{|A: 1, B: 0}}"));
+            Is.EqualTo("{{Y|ひび割れたレンズ}}を修理するために<{{|ABCD}}>を消費しますか？所持ビット:\n\n{{|A: 1, B: 0}}"));
                 Assert.That(RepairHitCount(nameof(PopupShowTranslationPatch), "SpendBits"), Is.EqualTo(1));
             });
         }

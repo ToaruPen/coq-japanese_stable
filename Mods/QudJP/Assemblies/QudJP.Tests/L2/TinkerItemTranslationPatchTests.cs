@@ -47,10 +47,10 @@ public sealed class TinkerItemTranslationPatchTests
 
     [TestCase(
         "The bronze dagger is not owned by you. Are you sure you want to disassemble it?",
-        "bronze daggerはあなたのものではない。それを分解してよいか？")]
+        "bronze daggerはあなたのものではない。それを分解しますか？")]
     [TestCase(
         "{{Y|the bronze daggers}}are not owned by you. Are you sure you want to disassemble them?",
-        "{{Y|bronze daggers}}はあなたのものではない。それらを分解してよいか？")]
+        "{{Y|bronze daggers}}はあなたのものではない。それらを分解しますか？")]
     public void HandleEvent_TranslatesOwnedItemDisassemblyPrompt_WhenOwnerPatched(
         string source,
         string expected)
@@ -73,10 +73,10 @@ public sealed class TinkerItemTranslationPatchTests
 
     [TestCase(
         "Are you sure you want to disassemble the bronze dagger?",
-        "bronze daggerを分解してよいか？")]
+        "bronze daggerを分解しますか？")]
     [TestCase(
         "Are you sure you want to disassemble all the bronze daggers?",
-        "bronze daggersをすべて分解してよいか？")]
+        "bronze daggersをすべて分解しますか？")]
     public void HandleEvent_TranslatesDisassemblyConfirmation_WhenOwnerPatched(
         string source,
         string expected)
@@ -99,10 +99,10 @@ public sealed class TinkerItemTranslationPatchTests
 
     [TestCase(
         "{{C|the chest}} is not owned by you. Are you sure you want to disassemble a bronze dagger inside it?",
-        "{{C|chest}}はあなたのものではない。その中のbronze daggerを分解してよいか？")]
+        "{{C|chest}}はあなたのものではない。その中のbronze daggerを分解しますか？")]
     [TestCase(
         "{{C|the chests}} are not owned by you. Are you sure you want to disassemble items inside them?",
-        "{{C|chests}}はあなたのものではない。その中のアイテムを分解してよいか？")]
+        "{{C|chests}}はあなたのものではない。その中のアイテムを分解しますか？")]
     public void HandleEvent_TranslatesContainerOwnedDisassemblyPrompt_WhenOwnerPatched(
         string source,
         string expected)

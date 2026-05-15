@@ -188,7 +188,7 @@ public static class ExaminerTranslationPatch
             TranslateSubject(match, spans, "owner")
             + "はあなたのものではない。調べると"
             + TranslateObject(match, spans, "riskTarget")
-            + "を傷つけるおそれがある。それでもそうするか？",
+            + "を傷つけるおそれがある。それでもそうしますか？",
             stripped,
             spans);
         Record(route, family, "OwnedExamine", source, translated);
@@ -216,7 +216,7 @@ public static class ExaminerTranslationPatch
             + TranslateObject(match, spans, "inside")
             + "の中にある"
             + TranslateObject(match, spans, "item")
-            + "を調べると損傷を引き起こすおそれがある。それでもそうするか？",
+            + "を調べると損傷を引き起こすおそれがある。それでもそうしますか？",
             stripped,
             spans);
         Record(route, family, "ContainerOwnedExamine", source, translated);

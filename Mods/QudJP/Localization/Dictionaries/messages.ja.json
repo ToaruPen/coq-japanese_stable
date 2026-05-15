@@ -1140,27 +1140,27 @@
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) not owned by you, and trying to repair (.+?) will be considered an act of theft\\. Are you sure\\?$",
-      "template": "{0}はあなたのものではなく、{1}を修理しようとすると窃盗行為とみなされる。本当に行うか？",
+      "template": "{0}はあなたのものではなく、{1}を修理しようとすると窃盗行為とみなされる。本当に行いますか？",
       "route": "popup"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) not owned by you, and using (.+?) will be considered an act of theft\\. Are you sure\\?$",
-      "template": "{0}はあなたのものではなく、{1}を使用すると窃盗行為とみなされる。本当に行うか？",
+      "template": "{0}はあなたのものではなく、{1}を使用すると窃盗行為とみなされる。本当に行いますか？",
       "route": "popup"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) not owned by you, and examining (.+?) will be considered an act of theft\\. Continue\\?$",
-      "template": "{0}はあなたのものではなく、{1}を調べると窃盗行為とみなされる。続けるか？",
+      "template": "{0}はあなたのものではなく、{1}を調べると窃盗行為とみなされる。続けますか？",
       "route": "popup"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) not owned by you\\. Are you sure you want to pour from (.+?)\\?$",
-      "template": "{0}はあなたのものではない。{1}から注いでよいか？",
+      "template": "{0}はあなたのものではない。{1}から注ぎますか？",
       "route": "popup"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) not owned by you\\. Are you sure you want to disassemble (.+?)\\?$",
-      "template": "{0}はあなたのものではない。{1}を分解してよいか？",
+      "template": "{0}はあなたのものではない。{1}を分解しますか？",
       "route": "popup"
     },
     {

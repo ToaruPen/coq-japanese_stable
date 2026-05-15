@@ -158,7 +158,7 @@ public sealed class PopupAskNumberTranslationPatchTests
     {
         WriteDictionary((
             "{0}: how many do you want to preserve? (max = {1})",
-            "{0}: いくつ保存するか？ (最大 = {1})"));
+            "{0}: いくつ保存しますか？ (最大 = {1})"));
 
         using var patch = PatchMethod(nameof(DummyPopupGenericTarget.AskNumber));
 
@@ -166,7 +166,7 @@ public sealed class PopupAskNumberTranslationPatchTests
 
         Assert.That(
             DummyPopupGenericTarget.LastAskNumberMessage,
-            Is.EqualTo("{{Y|fermented yuckwheat stem}}: いくつ保存するか？ (最大 = 3)"));
+            Is.EqualTo("{{Y|fermented yuckwheat stem}}: いくつ保存しますか？ (最大 = 3)"));
     }
 
     [Test]
