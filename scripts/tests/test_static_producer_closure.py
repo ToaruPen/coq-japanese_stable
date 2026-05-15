@@ -1,16 +1,21 @@
 from __future__ import annotations
 
+from collections import Counter
 from pathlib import Path
 
 from scripts.static_producer_closure import (
     COVERED_BY_OWNER_PATCH,
     COVERED_OWNER_CALLSITES,
     COVERED_OWNER_FAMILIES,
+    DEFERRED_RUNTIME_CALLSITES,
     covered_callsite_keys,
     covered_family_ids,
+    deferred_runtime_callsite_keys,
     family_closure_status,
+    format_message_candidate_policy_queue,
     format_owner_action_queue,
     load_inventory,
+    message_candidate_policy_entries,
     owner_action_queue,
     owner_action_queue_by_file,
     validate_covered_owner_families,
@@ -37,6 +42,26 @@ def test_covered_owner_callsite_registry_has_unique_line_keys() -> None:
 
     assert len(expected_keys) == len(set(expected_keys))
     assert covered_callsite_keys() == frozenset(expected_keys)
+
+
+def test_deferred_runtime_callsite_registry_has_unique_line_keys() -> None:
+    """Runtime-required deferrals must be unique and visible."""
+    expected_keys = [
+        (deferred.family_id, line)
+        for deferred in DEFERRED_RUNTIME_CALLSITES
+        for line in deferred.lines
+    ]
+
+    assert len(expected_keys) == len(set(expected_keys))
+    assert deferred_runtime_callsite_keys() == frozenset(expected_keys)
+
+
+def test_owner_covered_runtime_callsite_can_close_local_dataflow_shape() -> None:
+    """A scanner runtime row can be owner-covered when static local dataflow and tests prove the shape."""
+    family_id = "XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.HandleEvent"
+
+    assert (family_id, 2582) in covered_callsite_keys()
+    assert (family_id, 2582) not in deferred_runtime_callsite_keys()
 
 
 def test_covered_owner_families_have_current_source_and_test_evidence() -> None:
@@ -151,10 +176,9 @@ def test_trade_ui_vendor_owner_callsites_are_split_from_fixed_fallbacks() -> Non
     inventory = load_inventory(TRACKED_INVENTORY)
     raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
-    source_entries = owner_action_queue_by_file(inventory)
-    trade_ui_entry = next(entry for entry in source_entries if entry["source_file"] == "XRL.UI/TradeUI.cs")
     examine_id = "XRL.UI/TradeUI.cs::XRL.UI.TradeUI.DoVendorExamine"
     recharge_id = "XRL.UI/TradeUI.cs::XRL.UI.TradeUI.DoVendorRecharge"
+    show_trade_id = "XRL.UI/TradeUI.cs::XRL.UI.TradeUI.ShowTradeScreen"
 
     assert raw_families[examine_id]["family_closure_status"] == "needs_family_review"
     assert raw_families[recharge_id]["family_closure_status"] == "needs_family_review"
@@ -164,7 +188,8 @@ def test_trade_ui_vendor_owner_callsites_are_split_from_fixed_fallbacks() -> Non
     assert recharge_id not in covered_family_ids()
     assert examine_id not in queued_family_ids
     assert recharge_id not in queued_family_ids
-    assert [family["member_name"] for family in trade_ui_entry["families"]] == ["ShowTradeScreen"]
+    assert show_trade_id not in queued_family_ids
+    assert not any(entry["source_file"] == "XRL.UI/TradeUI.cs" for entry in owner_action_queue_by_file(inventory))
 
 
 def test_journal_screen_popup_owner_callsites_are_split_from_fixed_fallbacks() -> None:
@@ -187,7 +212,7 @@ def test_journal_screen_popup_owner_callsites_are_split_from_fixed_fallbacks() -
 
 
 def test_conversation_script_popup_owner_callsites_are_split_from_fixed_and_runtime_fallbacks() -> None:
-    """ConversationScript popup owner callsites must close without claiming fixed or runtime popups."""
+    """ConversationScript popup owner callsites close while runtime popups are deferred."""
     inventory = load_inventory(TRACKED_INVENTORY)
     raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
@@ -201,16 +226,11 @@ def test_conversation_script_popup_owner_callsites_are_split_from_fixed_and_runt
         assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
         assert family_closure_status(raw_families[family_id]) == "needs_family_review"
         assert family_id not in covered_family_ids()
-        assert family_id in queued_family_ids
+        assert family_id not in queued_family_ids
 
-    conversation_entry = next(
-        entry for entry in source_entries if entry["source_file"] == "XRL.World.Parts/ConversationScript.cs"
-    )
-    assert conversation_entry["callsite_count"] == 6
-    assert [family["member_name"] for family in conversation_entry["families"]] == [
-        "IsPhysicalConversationPossible",
-        "IsMentalConversationPossible",
-    ]
+    assert "XRL.World.Parts/ConversationScript.cs" not in {
+        entry["source_file"] for entry in source_entries
+    }
 
 
 def test_terrain_travel_owner_callsites_are_split_from_runtime_and_fixed_popups() -> None:
@@ -229,13 +249,17 @@ def test_terrain_travel_owner_callsites_are_split_from_runtime_and_fixed_popups(
         assert family_closure_status(raw_families[family_id]) == "needs_family_review"
         assert family_id not in covered_family_ids()
 
-    assert "XRL.World.Parts/TerrainTravel.cs::XRL.World.Parts.TerrainTravel.HandleEvent" in queued_family_ids
-    assert "XRL.World.Parts/TerrainTravel.cs::XRL.World.Parts.TerrainTravel.HandleLeavingCell" not in queued_family_ids
-    terrain_entry = next(
-        entry for entry in source_entries if entry["source_file"] == "XRL.World.Parts/TerrainTravel.cs"
+    assert ("XRL.World.Parts/TerrainTravel.cs::XRL.World.Parts.TerrainTravel.HandleEvent", 120) in (
+        deferred_runtime_callsite_keys()
     )
-    assert terrain_entry["callsite_count"] == 2
-    assert [family["member_name"] for family in terrain_entry["families"]] == ["HandleEvent"]
+    assert ("XRL.World.Parts/TerrainTravel.cs::XRL.World.Parts.TerrainTravel.HandleEvent", 124) in (
+        deferred_runtime_callsite_keys()
+    )
+    assert "XRL.World.Parts/TerrainTravel.cs::XRL.World.Parts.TerrainTravel.HandleEvent" not in queued_family_ids
+    assert "XRL.World.Parts/TerrainTravel.cs::XRL.World.Parts.TerrainTravel.HandleLeavingCell" not in queued_family_ids
+    assert "XRL.World.Parts/TerrainTravel.cs" not in {
+        entry["source_file"] for entry in source_entries
+    }
 
 
 def test_precognition_owner_queue_callsites_are_split_from_fixed_popups() -> None:
@@ -318,7 +342,7 @@ def test_single_fixed_queue_owner_callsites_are_split_from_mixed_siblings() -> N
         },
         "XRL.World.Parts/ThiefBot.cs::XRL.World.Parts.ThiefBot.FireEvent": {
             "closed_lines": {45, 76},
-            "queued": True,
+            "queued": False,
         },
     }
 
@@ -341,7 +365,7 @@ def test_single_mixed_owner_callsites_are_split_from_fixed_and_runtime_siblings(
     split_families = {
         "XRL.World.Parts/StairsDown.cs::XRL.World.Parts.StairsDown.CheckPullDown": {
             "closed_lines": {372, 439},
-            "queued": True,
+            "queued": False,
         },
         (
             "XRL.World.ZoneParts/ScriptCallToArms.cs::"
@@ -383,7 +407,6 @@ def test_zone_manager_owner_callsites_are_split_from_runtime_and_fixed_popup_sha
     raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
     callsite_keys = covered_callsite_keys()
-    source_entries = owner_action_queue_by_file(inventory)
     set_active_zone_family_id = "XRL.World/ZoneManager.cs::XRL.World.ZoneManager.SetActiveZone"
     generate_zone_family_id = "XRL.World/ZoneManager.cs::XRL.World.ZoneManager.GenerateZone"
 
@@ -392,26 +415,13 @@ def test_zone_manager_owner_callsites_are_split_from_runtime_and_fixed_popup_sha
         assert family_closure_status(raw_families[family_id]) == "needs_family_review"
         assert family_id not in covered_family_ids()
 
-    assert set_active_zone_family_id in queued_family_ids
+    assert (set_active_zone_family_id, 1889) in deferred_runtime_callsite_keys()
+    assert (set_active_zone_family_id, 1912) in deferred_runtime_callsite_keys()
+    assert set_active_zone_family_id not in queued_family_ids
     assert generate_zone_family_id not in queued_family_ids
     assert {
         line for covered_family, line in callsite_keys if covered_family == generate_zone_family_id
     } == {3286, 3570}
-
-    zone_manager_entry = next(
-        entry for entry in source_entries if entry["source_file"] == "XRL.World/ZoneManager.cs"
-    )
-    assert zone_manager_entry["callsite_count"] == 2
-    assert [family["member_name"] for family in zone_manager_entry["families"]] == ["SetActiveZone"]
-    assert [
-        family["representative_lines"] for family in zone_manager_entry["families"]
-    ] == [[1889, 1912]]
-    assert [
-        family["closure_status_counts"] for family in zone_manager_entry["families"]
-    ] == [{"runtime_required": 2}]
-    assert [family["surface_counts"] for family in zone_manager_entry["families"]] == [
-        {"AddPlayerMessage": 2},
-    ]
 
 
 def test_additional_single_callsite_owner_popup_families_are_closed_by_owner_patch() -> None:
@@ -498,9 +508,7 @@ def test_xrlcore_old_save_popup_callsite_is_split_from_fixed_save_management_pop
     assert (family_id, 3962) in covered_callsite_keys()
     assert family_id not in queued_family_ids
 
-    xrlcore_entry = next(entry for entry in source_entries if entry["source_file"] == "XRL.Core/XRLCore.cs")
-    assert "SaveManagement" not in [family["member_name"] for family in xrlcore_entry["families"]]
-    assert "PlayerTurn" in [family["member_name"] for family in xrlcore_entry["families"]]
+    assert "XRL.Core/XRLCore.cs" not in {entry["source_file"] for entry in source_entries}
 
 
 def test_sifrah_token_item_owner_callsites_are_split_from_fixed_kind_message() -> None:
@@ -616,7 +624,6 @@ def test_water_ritual_random_mutation_incompatible_popup_is_split_from_fixed_and
     inventory = load_inventory(TRACKED_INVENTORY)
     raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
-    source_entries = owner_action_queue_by_file(inventory)
     family_id = (
         "XRL.World.Conversations.Parts/WaterRitualRandomMutation.cs::"
         "XRL.World.Conversations.Parts.WaterRitualRandomMutation.HandleEvent"
@@ -626,23 +633,13 @@ def test_water_ritual_random_mutation_incompatible_popup_is_split_from_fixed_and
         for callsite in inventory["callsites"]
         if callsite["producer_family_id"] == family_id
     ]
-    queued_family = next(
-        family
-        for source_entry in source_entries
-        for family in source_entry["families"]
-        if family["producer_family_id"] == family_id
-    )
 
     assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
     assert family_closure_status(raw_families[family_id]) == "needs_family_review"
     assert family_id not in covered_family_ids()
     assert (family_id, 92) in covered_callsite_keys()
-    assert family_id in queued_family_ids
-    assert queued_family["representative_lines"] == [88, 98]
-    assert queued_family["closure_status_counts"] == {
-        "messages_candidate": 1,
-        "runtime_required": 1,
-    }
+    assert (family_id, 98) in deferred_runtime_callsite_keys()
+    assert family_id not in queued_family_ids
     assert {
         (callsite["line"], callsite["closure_status"])
         for callsite in family_callsites
@@ -937,7 +934,8 @@ def test_neutron_flux_containment_popups_are_split_from_runtime_warning() -> Non
     assert (family_id, 63) in covered_callsite_keys()
     assert (family_id, 91) in covered_callsite_keys()
     assert (family_id, 99) not in covered_callsite_keys()
-    assert family_id in queued_family_ids
+    assert (family_id, 99) in deferred_runtime_callsite_keys()
+    assert family_id not in queued_family_ids
     assert {
         (callsite["line"], callsite["target_surface"], callsite["closure_status"])
         for callsite in family_callsites
@@ -976,45 +974,94 @@ def test_polygel_handle_event_popups_are_split_from_fixed_popup() -> None:
     }
 
 
-def test_uncovered_high_volume_owner_family_remains_in_owner_action_queue() -> None:
-    """Uncovered high-volume owner families must stay actionable."""
+def test_message_candidate_policy_entries_group_remaining_static_and_pattern_rows() -> None:
+    """Message-candidate policy export must split existing leaves, rejects, and pattern deferrals."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    entries = message_candidate_policy_entries(inventory, REPO_ROOT)
+    decision_counts = Counter(entry["decision"] for entry in entries)
+    choose_color_entry = next(entry for entry in entries if entry["literal_text"] == "Choose color")
+    empty_entry = next(
+        entry
+        for entry in entries
+        if entry["source_file"] == "XRL.UI/Popup.cs" and entry["literal_text"] == ""
+    )
+    chat_template_entry = next(
+        entry
+        for entry in entries
+        if entry["producer_family_id"] == "XRL.World.Parts/Chat.cs::XRL.World.Parts.Chat.PerformChat"
+    )
+
+    assert len(entries) == 698
+    assert decision_counts == {
+        "existing_dictionary_coverage": 542,
+        "existing_message_pattern_coverage": 144,
+        "existing_does_verb_route_coverage": 5,
+        "existing_owner_route_coverage": 2,
+        "reject_pseudo_leaf": 5,
+    }
+    assert choose_color_entry["decision"] == "existing_dictionary_coverage"
+    assert choose_color_entry["coverage_locations"] == [
+        "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json"
+    ]
+    assert empty_entry["decision"] == "reject_pseudo_leaf"
+    assert chat_template_entry["decision"] == "existing_does_verb_route_coverage"
+
+
+def test_message_candidate_policy_text_summary_reports_group_counts() -> None:
+    """Message-candidate text output must be useful as a policy handoff summary."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+
+    summary = format_message_candidate_policy_queue(inventory, repo_root=REPO_ROOT)
+
+    assert "message candidate policy queue: 698 text arguments" in summary
+    assert "existing_dictionary_coverage:542" in summary
+    assert "existing_message_pattern_coverage:144" in summary
+    assert "existing_does_verb_route_coverage:5" in summary
+    assert "existing_owner_route_coverage:2" in summary
+    assert "reject_pseudo_leaf:5" in summary
+
+
+def test_large_mixed_families_drop_out_of_owner_action_queue_after_runtime_deferral() -> None:
+    """Large mixed families should leave the owner queue after owner and runtime rows are split."""
     inventory = load_inventory(TRACKED_INVENTORY)
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
 
-    assert "XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookFromIngredients" in queued_family_ids
+    assert {
+        "XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookPresetMeal",
+        "XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookFromIngredients",
+        "XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookFromRecipe",
+        "XRL.Core/XRLCore.cs::XRL.Core.XRLCore.PlayerTurn",
+        "XRL.World.Parts/Inventory.cs::XRL.World.Parts.Inventory.FireEvent",
+        "XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.HandleEvent",
+        "XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.ProcessTargetedMove",
+        (
+            "XRL.World.Parts/ConversationScript.cs::"
+            "XRL.World.Parts.ConversationScript.IsPhysicalConversationPossible"
+        ),
+        (
+            "XRL.World.Parts/ConversationScript.cs::"
+            "XRL.World.Parts.ConversationScript.IsMentalConversationPossible"
+        ),
+        "XRL.World.Parts/Crayons.cs::XRL.World.Parts.Crayons.HandleEvent",
+        "XRL.World.Parts/Chat.cs::XRL.World.Parts.Chat.PerformChat",
+        "XRL.World.Parts/ITeleporter.cs::XRL.World.Parts.ITeleporter.AttemptTeleport",
+        "XRL.World.Parts/MissileWeapon.cs::XRL.World.Parts.MissileWeapon.FireEvent",
+        "XRL.World.Parts/Garbage.cs::XRL.World.Parts.Garbage.AttemptRifle",
+    }.isdisjoint(queued_family_ids)
 
 
 def test_owner_action_queue_groups_actionable_work_by_source_file() -> None:
-    """Static producer work queue must expose class-file starting points."""
+    """All static producer owner-route work must be closed or explicitly deferred."""
     inventory = load_inventory(TRACKED_INVENTORY)
     source_entries = owner_action_queue_by_file(inventory)
-    campfire_entry = next(entry for entry in source_entries if entry["source_file"] == "XRL.World.Parts/Campfire.cs")
 
-    assert source_entries == sorted(
-        source_entries,
-        key=lambda entry: (
-            -entry["family_count"],
-            -entry["text_argument_count"],
-            -entry["callsite_count"],
-            entry["source_file"],
-        ),
-    )
-    assert campfire_entry["family_count"] > 0
-    assert campfire_entry["text_argument_count"] > 0
-    assert any(
-        family["producer_family_id"]
-        == "XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookFromIngredients"
-        for family in campfire_entry["families"]
-    )
+    assert source_entries == []
 
 
 def test_owner_action_queue_text_summary_names_source_files_and_methods() -> None:
-    """Text output must be useful as an agent handoff queue."""
+    """Text output must report a zero-sized owner queue when no owner action remains."""
     inventory = load_inventory(TRACKED_INVENTORY)
 
     summary = format_owner_action_queue(inventory, limit=5)
 
-    assert "owner action queue:" in summary
-    assert ".cs:" in summary
-    assert "surfaces=" in summary
-    assert "line " in summary
+    assert summary == "owner action queue: 0 families, 0 callsites, 0 text arguments across 0 source files"

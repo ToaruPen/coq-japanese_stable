@@ -17,6 +17,8 @@ DEFAULT_INVENTORY_PATH: Final = REPO_ROOT / "docs" / "static-producer-inventory.
 COVERED_BY_OWNER_PATCH: Final = "covered_by_owner_patch"
 OWNER_ACTION_STATUSES: Final = frozenset({"owner_patch_required", "needs_family_review"})
 OWNER_ACTION_CALLSITE_STATUSES: Final = frozenset({"owner_patch_required", "runtime_required", "needs_family_review"})
+MESSAGE_CANDIDATE_STATUS: Final = "messages_candidate"
+DICTIONARY_RELATIVE_ROOT: Final = Path("Mods/QudJP/Localization/Dictionaries")
 HACKING_SIFRAH_RESULT_SIGNATURE_SUFFIX: Final = (
     "System.Void|XRL.World.GameObject|XRL.World.GameObject|XRL.World.HackingSifrah"
 )
@@ -42,6 +44,17 @@ COMBAT_MELEE_ATTACK_SIGNATURE_PARTS: Final = (
 )
 COMBAT_MELEE_ATTACK_FULL_SIGNATURE: Final = "|".join(COMBAT_MELEE_ATTACK_SIGNATURE_PARTS)
 OutputFormat = Literal["text", "json"]
+OutputQueue = Literal["owner", "message-candidates"]
+MessageCandidateDecision = Literal[
+    "existing_dictionary_coverage",
+    "existing_message_pattern_coverage",
+    "existing_does_verb_route_coverage",
+    "existing_owner_route_coverage",
+    "fixed_popup_leaf_addition_candidate",
+    "reject_pseudo_leaf",
+    "defer_emit_message_pattern",
+    "defer_generated_or_runtime",
+]
 
 
 class OwnerActionQueueEntry(TypedDict):
@@ -72,6 +85,27 @@ class SourceFileQueueEntry(TypedDict):
     families: list[OwnerActionQueueEntry]
 
 
+class MessageCandidatePolicyEntry(TypedDict):
+    """Policy review row for one remaining messages_candidate text argument."""
+
+    source_file: str
+    producer_family_id: str
+    type_name: str
+    member_name: str
+    member_start_line: int
+    line: int
+    target_surface: str
+    argument_role: str
+    formal_index: int
+    expression: str
+    expression_kind: str
+    literal_text: str | None
+    decision: MessageCandidateDecision
+    destination: str
+    reason: str
+    coverage_locations: list[str]
+
+
 @dataclass(frozen=True)
 class EvidenceFile:
     """A source or test file that must contain evidence for a covered family."""
@@ -96,6 +130,37 @@ class CoveredOwnerCallsites:
     family_id: str
     lines: tuple[int, ...]
     inventory_statuses: tuple[str, ...]
+    evidence_files: tuple[EvidenceFile, ...]
+
+
+@dataclass(frozen=True)
+class DeferredRuntimeCallsites:
+    """Runtime-dependent callsites that should not remain in the owner-action queue."""
+
+    family_id: str
+    lines: tuple[int, ...]
+    reason: str
+    evidence_files: tuple[EvidenceFile, ...]
+
+
+@dataclass(frozen=True)
+class CoveredMessagePatternCallsites:
+    """Inventory message-candidate callsites covered by current message patterns and tests."""
+
+    family_id: str
+    lines: tuple[int, ...]
+    evidence_files: tuple[EvidenceFile, ...]
+
+
+@dataclass(frozen=True)
+class CoveredMessageCandidateRouteCallsites:
+    """Inventory message-candidate callsites covered by non-pattern translation routes."""
+
+    family_id: str
+    lines: tuple[int, ...]
+    decision: MessageCandidateDecision
+    destination: str
+    reason: str
     evidence_files: tuple[EvidenceFile, ...]
 
 
@@ -3004,7 +3069,7 @@ def _physics_handle_event_object_entering_cell_callsites() -> tuple[CoveredOwner
     return (
         CoveredOwnerCallsites(
             family_id="XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.HandleEvent",
-            lines=(2593, 2598),
+            lines=(2582, 2593, 2598),
             inventory_statuses=("needs_family_review",),
             evidence_files=(
                 EvidenceFile(
@@ -3027,6 +3092,7 @@ def _physics_handle_event_object_entering_cell_callsites() -> tuple[CoveredOwner
                         "PhysicsObjectEnteringCell_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
                         "PhysicsObjectEnteringCell_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
                         "PhysicsObjectEnteringCell_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                        "OUCH! You collide with a chrome pyramid.",
                         "The way is blocked by an chrome pyramid.",
                         "too difficult to traverse via the world map",
                     ),
@@ -3042,6 +3108,7 @@ def _physics_handle_event_object_entering_cell_callsites() -> tuple[CoveredOwner
                 EvidenceFile(
                     "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
                     (
+                        "OUCH! You collide with",
                         "The way is blocked by",
                         "too difficult to traverse via the world map",
                     ),
@@ -11990,6 +12057,365 @@ def _xrl_core_player_turn_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]
     )
 
 
+def _issue_576_runtime_deferred_callsites() -> tuple[DeferredRuntimeCallsites, ...]:
+    """Runtime-only leftovers split out of large mixed static-producer families."""
+    report = EvidenceFile(
+        "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
+        (
+            "Campfire cooking runtime deferrals",
+            "XRLCore PlayerTurn runtime deferrals",
+            "Inventory FireEvent runtime deferrals",
+            "Physics and ConversationScript runtime deferrals",
+            "Next owner queue runtime deferrals",
+            "Small mixed-family runtime deferrals",
+            "Final small mixed-family runtime deferrals",
+        ),
+    )
+    tests = EvidenceFile(
+        "scripts/tests/test_static_producer_closure.py",
+        (
+            "test_deferred_runtime_callsite_registry_has_unique_line_keys",
+            "test_large_mixed_families_drop_out_of_owner_action_queue_after_runtime_deferral",
+        ),
+    )
+
+    return (
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookPresetMeal",
+            lines=(738,),
+            reason="HistorySpice cooking ate text is generated at runtime.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookFromIngredients",
+            lines=(1012, 1017, 1023, 1039, 1044, 1050, 1068, 1075, 1082),
+            reason="DescribeMeal and HistorySpice cooking ate text depend on runtime ingredient and spice expansion.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookFromRecipe",
+            lines=(1221, 1228),
+            reason="HistorySpice cooking ate text is generated at runtime.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.Core/XRLCore.cs::XRL.Core.XRLCore.PlayerTurn",
+            lines=(945, 1057, 1335, 1780),
+            reason="PlayerTurn popup text depends on runtime ability, game state, zone, or control binding values.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/Inventory.cs::XRL.World.Parts.Inventory.FireEvent",
+            lines=(1657, 1726, 1745, 1974, 2036, 2046, 2089, 2100, 2147),
+            reason="Inventory failure-message variables are supplied by runtime event/procedure branches.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.HandleEvent",
+            lines=(2589, 2847),
+            reason="Physics block/debug messages are supplied by runtime object tags, properties, or debug internals.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.ProcessTargetedMove",
+            lines=(3912,),
+            reason="NoTeleport failure popup is supplied by a runtime target-cell object property or tag.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id=(
+                "XRL.World.Parts/ConversationScript.cs::"
+                "XRL.World.Parts.ConversationScript.IsPhysicalConversationPossible"
+            ),
+            lines=(273, 323),
+            reason="Conversation physical failure text is supplied by runtime event failure-message variables.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id=(
+                "XRL.World.Parts/ConversationScript.cs::"
+                "XRL.World.Parts.ConversationScript.IsMentalConversationPossible"
+            ),
+            lines=(363, 381),
+            reason="Conversation mental failure text is supplied by runtime event failure-message variables.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/Crayons.cs::XRL.World.Parts.Crayons.HandleEvent",
+            lines=(63,),
+            reason=(
+                "ShowColorPicker visible title is a covered fixed leaf; null intro and empty spacing text "
+                "are pseudo-runtime arguments."
+            ),
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/Chat.cs::XRL.World.Parts.Chat.PerformChat",
+            lines=(182, 191, 206),
+            reason=(
+                "Chat payload text is read from the runtime Says property and may be authored bracket/star "
+                "pass-through text."
+            ),
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/ITeleporter.cs::XRL.World.Parts.ITeleporter.AttemptTeleport",
+            lines=(297,),
+            reason="Custom teleport failure text is supplied by the active teleporter implementation at runtime.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/MissileWeapon.cs::XRL.World.Parts.MissileWeapon.FireEvent",
+            lines=(2472, 2490),
+            reason="Missile load-ammo failure text is supplied by runtime ammo/load events.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/Garbage.cs::XRL.World.Parts.Garbage.AttemptRifle",
+            lines=(148,),
+            reason="Trash-divining journal-note text is composed from runtime note selection and note body text.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/TattooGun.cs::XRL.World.Parts.TattooGun.AttemptTattoo",
+            lines=(177,),
+            reason=(
+                "ShowColorPicker visible primary-color title is a covered fixed leaf; null intro and spacing "
+                "are pseudo-runtime arguments."
+            ),
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.UI/Popup.cs::XRL.UI.Popup.AskStringAsync",
+            lines=(1395,),
+            reason="AskStringAsync color picker uses a covered fixed title plus runtime input preview content.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Tinkering/TinkeringHelpers.cs::XRL.World.Tinkering.TinkeringHelpers.CheckMakersMark",
+            lines=(99,),
+            reason="Maker's mark color picker uses a covered fixed title plus runtime maker-mark preview content.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.UI/TradeUI.cs::XRL.UI.TradeUI.ShowTradeScreen",
+            lines=(1087,),
+            reason="Haggle popup text is assembled from runtime trade-offer state.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.HandleEvent",
+            lines=(3192, 3227, 3538),
+            reason="Liquid interaction detail text is assembled in runtime string builders.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/RandomAltarBaetyl.cs::XRL.World.Parts.RandomAltarBaetyl.BaetylWantsSacrifice",
+            lines=(759, 805),
+            reason="Baetyl sacrifice and reward detail text is assembled in runtime string builders.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/Stomach.cs::XRL.World.Parts.Stomach.FireEvent",
+            lines=(538,),
+            reason="Drinking/eating outcome detail text is assembled in a runtime string builder.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL/SifrahGame.cs::XRL.SifrahGame.UseInsight",
+            lines=(856,),
+            reason="Insight option-elimination popup text is assembled from runtime Sifrah option state.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.UI/AbilityManager.cs::XRL.UI.AbilityManager.Show",
+            lines=(483,),
+            reason="Ability not-usable popup text is supplied by the runtime ActivatedAbilityEntry.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.UI/OptionsUI.cs::XRL.UI.OptionsUI.Show",
+            lines=(546,),
+            reason="Restart-required option prompt is assembled from runtime option display text.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id=(
+                "XRL.World.Conversations.Parts/WaterRitualRandomMutation.cs::"
+                "XRL.World.Conversations.Parts.WaterRitualRandomMutation.HandleEvent"
+            ),
+            lines=(98,),
+            reason=(
+                "Water ritual mutation reward text is authored per conversation part and filled with "
+                "runtime speaker/mutation data."
+            ),
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Effects/ShadeOil_Tonic.cs::XRL.World.Effects.ShadeOil_Tonic.FireEvent",
+            lines=(196,),
+            reason="Shade-oil phasing prompt is assembled from runtime phase context and source object names.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts.Skill/Rifle_SuppressiveFire.cs::XRL.World.Parts.Skill.Rifle_SuppressiveFire.FireEvent",
+            lines=(64,),
+            reason="Suppressive-fire reload popup is supplied by runtime ammo events or current control binding text.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts.Skill/Rifle_WoundingFire.cs::XRL.World.Parts.Skill.Rifle_WoundingFire.FireEvent",
+            lines=(60,),
+            reason="Wounding-fire reload popup is supplied by runtime ammo events or current control binding text.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/FixitSpray.cs::XRL.World.Parts.FixitSpray.HandleEvent",
+            lines=(90,),
+            reason="Fix-it spray fallback popup is supplied by runtime inventory-action message data.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/IZoneLandmark.cs::XRL.World.Parts.IZoneLandmark.WishCurrent",
+            lines=(139,),
+            reason="Landmark wish output is built from runtime zone/location landmark data.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/TerrainTravel.cs::XRL.World.Parts.TerrainTravel.HandleEvent",
+            lines=(120, 124),
+            reason="Terrain encounter prompts are supplied by runtime encounter definitions.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World/ZoneManager.cs::XRL.World.ZoneManager.SetActiveZone",
+            lines=(1889, 1912),
+            reason="Active-zone display messages are composed from runtime zone names and entry messages.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="MetricsManager.cs::MetricsManager.LogException",
+            lines=(563,),
+            reason="Exception popup body is assembled from runtime exception and metric context.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.Core/Scores.cs::XRL.Core.Scores.Show",
+            lines=(265,),
+            reason="High-score details popup displays runtime score detail text.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.UI/StatusScreen.cs::XRL.UI.StatusScreen.Show",
+            lines=(460,),
+            reason="Psychic glimmer popup text is generated from runtime glimmer value.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id=(
+                "XRL.World.Conversations.Parts/WaterRitualBuySecret.cs::"
+                "XRL.World.Conversations.Parts.WaterRitualBuySecret.RevealEntry"
+            ),
+            lines=(64,),
+            reason="Water ritual secret text is supplied by the runtime journal entry.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts.Skill/Snapjaw_Howl.cs::XRL.World.Parts.Skill.Snapjaw_Howl.FireEvent",
+            lines=(146,),
+            reason="Snapjaw howl effect list is assembled from runtime nearby objects.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id=(
+                "XRL.World.Parts/ActivatedAbilityEntry.cs::"
+                "XRL.World.Parts.ActivatedAbilityEntry.TrySendCommandEventOnPlayer"
+            ),
+            lines=(555,),
+            reason="Activated ability failure message is returned by the runtime command event.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/DestroyOnUnequip.cs::XRL.World.Parts.DestroyOnUnequip.HandleEvent",
+            lines=(33,),
+            reason="Destroy-on-unequip popup is supplied by part data and variable-replaced at runtime.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/Examiner.cs::XRL.World.Parts.Examiner.ResultCriticalFailure",
+            lines=(951,),
+            reason="Critical examination failure popup is selected from runtime examination state.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/Fetches.cs::XRL.World.Parts.Fetches.HandleEvent",
+            lines=(35,),
+            reason="Fetch sniff message is part-authored text variable-replaced against the runtime object.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/MagnetizedApplicator.cs::XRL.World.Parts.MagnetizedApplicator.HandleEvent",
+            lines=(66,),
+            reason="Magnetized applicator callback popup is supplied by runtime event message data.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/Mutations.cs::XRL.World.Parts.Mutations.WishMutation",
+            lines=(976,),
+            reason="Wish mutation failure popup is composed from runtime wish arguments.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/NephalProperties.cs::XRL.World.Parts.NephalProperties.HandleEvent",
+            lines=(161,),
+            reason="Nephal phase message is part-authored text variable-replaced with runtime actor/object data.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/NeutronFluxContainment.cs::XRL.World.Parts.NeutronFluxContainment.HandleEvent",
+            lines=(99,),
+            reason="Neutron flux warning popup is built from runtime containment state.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/StairsDown.cs::XRL.World.Parts.StairsDown.CheckPullDown",
+            lines=(443,),
+            reason="Pull-down message is supplied by part/runtime data.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/ThiefBot.cs::XRL.World.Parts.ThiefBot.FireEvent",
+            lines=(69,),
+            reason="Thief-bot steal message is assembled from runtime target/item data.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/Tonic.cs::XRL.World.Parts.Tonic.HandleEvent",
+            lines=(212,),
+            reason="Tonic action popup is supplied by part/runtime message data.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL.World/GameObjectFactory.cs::XRL.World.GameObjectFactory.HandleBlueprintXML",
+            lines=(1761,),
+            reason="Blueprint XML popup displays runtime blueprint XML content.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL/PopulationManager.cs::XRL.PopulationManager.WishGenerate",
+            lines=(1015,),
+            reason="Population wish generation output is assembled from runtime generated objects.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
+            family_id="XRL/XRLGame.cs::XRL.XRLGame.LoadGame",
+            lines=(1916,),
+            reason="Load-game failure popup displays runtime exception/failure message text.",
+            evidence_files=(report, tests),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -14406,12 +14832,12 @@ COVERED_OWNER_CALLSITES: Final = (
             ),
         ),
     ),
-    CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Effects/RealityStabilized.cs::"
-            "XRL.World.Effects.RealityStabilized.FailedToContest"
-        ),
-        lines=(489, 493),
+        CoveredOwnerCallsites(
+            family_id=(
+                "XRL.World.Effects/RealityStabilized.cs::"
+                "XRL.World.Effects.RealityStabilized.FailedToContest"
+            ),
+        lines=(477, 489, 493),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
             EvidenceFile(
@@ -14419,10 +14845,16 @@ COVERED_OWNER_CALLSITES: Final = (
                 (
                     "RealityStabilizedEventTranslationPatch",
                     "FailedToContest",
+                    "NormalityLatticePopup",
                     "PsychicThudPattern",
                     "WincePattern",
                     "TryTranslateQueuedMessage",
+                    "TryTranslatePopupMessage",
                 ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("RealityStabilizedEventTranslationPatch.TryTranslatePopupMessage",),
             ),
             EvidenceFile(
                 "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
@@ -14431,10 +14863,12 @@ COVERED_OWNER_CALLSITES: Final = (
             EvidenceFile(
                 "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
                 (
+                    "RealityStabilizedEvent_TranslatesFailedContestSelfPopup_WhenOwnerPatched",
                     "RealityStabilizedEvent_TranslatesQueuedMessages_WhenOwnerPatched",
                     "RealityStabilizedEvent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
                     "RealityStabilizedEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
                     "RealityStabilizedEvent_LeavesEmptyMessagesUnchanged_WhenOwnerPatched",
+                    "You try to push through the normality lattice, but it snaps back into place.",
                     "nameof(DummyRealityStabilizedEventTarget.FailedToContest)",
                     "You feel a psychic thud as {{G|glowfish}} pushes against",
                     "someone pushes against the structure of spacetime and fails to break through.",
@@ -17163,6 +17597,497 @@ COVERED_OWNER_CALLSITE_KEYS: Final = frozenset(
     for covered in COVERED_OWNER_CALLSITES
     for line in covered.lines
 )
+DEFERRED_RUNTIME_CALLSITES: Final = _issue_576_runtime_deferred_callsites()
+DEFERRED_RUNTIME_CALLSITE_KEYS: Final = frozenset(
+    (deferred.family_id, line)
+    for deferred in DEFERRED_RUNTIME_CALLSITES
+    for line in deferred.lines
+)
+CYBERNETICS_BUTCHER_PATTERN_FILE: Final = "XRL.World.Parts/CyberneticsButcherableCybernetic.cs::"
+CYBERNETICS_BUTCHER_PATTERN_MEMBER: Final = "XRL.World.Parts.CyberneticsButcherableCybernetic.AttemptButcher"
+CYBERNETICS_BUTCHER_PATTERN_FAMILY_ID: Final = (
+    f"{CYBERNETICS_BUTCHER_PATTERN_FILE}{CYBERNETICS_BUTCHER_PATTERN_MEMBER}"
+)
+HOLOGRAPHIC_VISAGE_PATTERN_FILE: Final = "XRL.World.Parts/CyberneticsHolographicVisage.cs::"
+HOLOGRAPHIC_VISAGE_PATTERN_MEMBER: Final = "XRL.World.Parts.CyberneticsHolographicVisage.SelectVisage"
+HOLOGRAPHIC_VISAGE_PATTERN_FAMILY_ID: Final = (
+    f"{HOLOGRAPHIC_VISAGE_PATTERN_FILE}{HOLOGRAPHIC_VISAGE_PATTERN_MEMBER}"
+)
+TINKERING_MINE_EXCEPTIONAL_SUCCESS_PATTERN_FILE: Final = "XRL.World.Parts/Tinkering_Mine.cs::"
+TINKERING_MINE_EXCEPTIONAL_SUCCESS_PATTERN_MEMBER: Final = (
+    "XRL.World.Parts.Tinkering_Mine.DisarmingResultExceptionalSuccess"
+)
+TINKERING_MINE_EXCEPTIONAL_SUCCESS_PATTERN_FAMILY_ID: Final = (
+    f"{TINKERING_MINE_EXCEPTIONAL_SUCCESS_PATTERN_FILE}{TINKERING_MINE_EXCEPTIONAL_SUCCESS_PATTERN_MEMBER}"
+)
+VEHICLE_MELEE_INFILTRATION_PATTERN_FILE: Final = "XRL.World.Parts/VehicleMeleeInfiltration.cs::"
+VEHICLE_MELEE_INFILTRATION_PATTERN_MEMBER: Final = "XRL.World.Parts.VehicleMeleeInfiltration.HandleEvent"
+VEHICLE_MELEE_INFILTRATION_PATTERN_FAMILY_ID: Final = (
+    f"{VEHICLE_MELEE_INFILTRATION_PATTERN_FILE}{VEHICLE_MELEE_INFILTRATION_PATTERN_MEMBER}"
+)
+MESSAGE_PATTERN_COVERED_CALLSITES: Final = (
+    CoveredMessagePatternCallsites(
+        "XRL.Liquids/LiquidProteanGunk.cs::XRL.Liquids.LiquidProteanGunk.ProcessTurns",
+        (208, 219),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.Liquids/LiquidWarmStatic.cs::XRL.Liquids.LiquidWarmStatic.GlitchLiquidComponents",
+        (417, 421),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.Liquids/LiquidWarmStatic.cs::XRL.Liquids.LiquidWarmStatic.WishWarmEffect",
+        (827,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.Liquids/LiquidWarmStatic.cs::XRL.Liquids.LiquidWarmStatic.WishWarmEffectSpec",
+        (844, 849),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Effects/Bleeding.cs::XRL.World.Effects.Bleeding.StopMessage",
+        (333,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Effects/FungalCureQueasy.cs::XRL.World.Effects.FungalCureQueasy.Apply",
+        (48,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Effects/IrisdualCallow.cs::XRL.World.Effects.IrisdualCallow.Apply",
+        (139,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Effects/IrisdualCallow.cs::XRL.World.Effects.IrisdualCallow.Remove",
+        (146,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Effects/Luminous.cs::XRL.World.Effects.Luminous.Remove",
+        (53,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Effects/Nosebleed.cs::XRL.World.Effects.Nosebleed.StartMessage",
+        (93, 97, 102, 106),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Effects/Nosebleed.cs::XRL.World.Effects.Nosebleed.StopMessage",
+        (120, 124, 129, 133),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts.Mutation/Carapace.cs::XRL.World.Parts.Mutation.Carapace.Loosen",
+        (221, 230),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts.Mutation/ForceBubble.cs::XRL.World.Parts.Mutation.ForceBubble.CreateBubble",
+        (210,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts.Mutation/ErosTeleportation.cs::XRL.World.Parts.Mutation.ErosTeleportation.Cast",
+        (139,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/ChevronWall.cs::XRL.World.Parts.ChevronWall.HandleEvent",
+        (54, 58),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/CherubimLock.cs::XRL.World.Parts.CherubimLock.FireEvent",
+        (105,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/Combat.cs::XRL.World.Parts.Combat.PerformMeleeAttack",
+        (690, 695),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/CursedCellSocket.cs::XRL.World.Parts.CursedCellSocket.HandleEvent",
+        (68,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        CYBERNETICS_BUTCHER_PATTERN_FAMILY_ID,
+        (161, 165, 178, 182),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        HOLOGRAPHIC_VISAGE_PATTERN_FAMILY_ID,
+        (150,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/DecoyHologramEmitter.cs::XRL.World.Parts.DecoyHologramEmitter.PlaceHologram",
+        (329,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/DecoyHologramEmitter.cs::XRL.World.Parts.DecoyHologramEmitter.DestroyHolograms",
+        (438, 450),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/Door.cs::XRL.World.Parts.Door.AttemptOpen",
+        (388, 396, 404, 432, 446, 461, 475, 510),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/Door.cs::XRL.World.Parts.Door.AttemptClose",
+        (630, 642, 657, 692),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/FungalInfection.cs::XRL.World.Parts.FungalInfection.FireEvent",
+        (81,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/FungalInfection.cs::XRL.World.Parts.FungalInfection.Cure",
+        (121,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/EquipStatBoost.cs::XRL.World.Parts.EquipStatBoost.ExamineFailure",
+        (364,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/Garbage.cs::XRL.World.Parts.Garbage.AttemptRifle",
+        (168, 179, 192),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/GeomagneticDisc.cs::XRL.World.Parts.GeomagneticDisc.FireEvent",
+        (202,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/Harvestable.cs::XRL.World.Parts.Harvestable.AttemptHarvest",
+        (316, 320, 324, 331, 335, 339),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/HelpingHands.cs::XRL.World.Parts.HelpingHands.ExamineFailure",
+        (114,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/HexCrystal.cs::XRL.World.Parts.HexCrystal.HandleEvent",
+        (54, 58),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/JoppaZealot.cs::XRL.World.Parts.JoppaZealot.ZealotDeclaim",
+        (118,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/MagazineAmmoLoader.cs::XRL.World.Parts.MagazineAmmoLoader.HandleEvent",
+        (353,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/MagazineAmmoLoader.cs::XRL.World.Parts.MagazineAmmoLoader.Load",
+        (613,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/MissileWeapon.cs::XRL.World.Parts.MissileWeapon.MissileHit",
+        (
+            1678,
+            1682,
+            1783,
+            1787,
+            1794,
+            1798,
+            1836,
+            1840,
+            1849,
+            1853,
+            1866,
+            1870,
+            1878,
+            1882,
+            2018,
+            2022,
+            2027,
+            2039,
+            2043,
+            2048,
+            2053,
+            2057,
+            2069,
+            2073,
+            2078,
+            2082,
+            2089,
+            2093,
+            2098,
+            2102,
+            2113,
+            2117,
+            2122,
+            2126,
+            2133,
+            2137,
+            2142,
+            2146,
+            2166,
+            2170,
+            2175,
+            2185,
+            2189,
+            2194,
+            2199,
+            2203,
+            2214,
+            2218,
+            2223,
+            2227,
+            2234,
+            2238,
+            2243,
+            2247,
+            2258,
+            2262,
+            2267,
+            2271,
+            2278,
+            2282,
+            2287,
+            2291,
+        ),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/MissileWeapon.cs::XRL.World.Parts.MissileWeapon.FireEvent",
+        (2590, 3476),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/Mutations.cs::XRL.World.Parts.Mutations.AddChimericBodyPart",
+        (562,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/RocketSkates.cs::XRL.World.Parts.RocketSkates.HandleEvent",
+        (103,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/SixDayZealot.cs::XRL.World.Parts.SixDayZealot.ZealotDeclaim",
+        (60,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/SoupSludge.cs::XRL.World.Parts.SoupSludge.CatalyzeMessage",
+        (155, 159),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/SpaceTimeVortex.cs::XRL.World.Parts.SpaceTimeVortex.ApplyVortex",
+        (386,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/Tinkering_Mine.cs::XRL.World.Parts.Tinkering_Mine.DisarmingResultSuccess",
+        (820,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        TINKERING_MINE_EXCEPTIONAL_SUCCESS_PATTERN_FAMILY_ID,
+        (834,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/Tinkering_Mine.cs::XRL.World.Parts.Tinkering_Mine.DisarmingResultPartialSuccess",
+        (843,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        VEHICLE_MELEE_INFILTRATION_PATTERN_FAMILY_ID,
+        (103,),
+        (),
+    ),
+    CoveredMessagePatternCallsites(
+        "XRL.World.Parts/ShevaStarshipControl.cs::XRL.World.Parts.ShevaStarshipControl.CheckTimer",
+        (142,),
+        (),
+    ),
+)
+MESSAGE_PATTERN_COVERED_CALLSITE_KEYS: Final = frozenset(
+    (covered.family_id, line)
+    for covered in MESSAGE_PATTERN_COVERED_CALLSITES
+    for line in covered.lines
+)
+MESSAGE_CANDIDATE_ROUTE_COVERED_CALLSITES: Final = (
+    CoveredMessageCandidateRouteCallsites(
+        "XRL.World.Parts.Mutation/AcidSlimeGlands.cs::XRL.World.Parts.Mutation.AcidSlimeGlands.FireEvent",
+        (81,),
+        "existing_dictionary_coverage",
+        "existing popup dictionary leaf",
+        "static popup leaf is covered by the parameterized out-of-range popup dictionary leaf",
+        (
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                ("That is out of range! ({0} squares)",),
+            ),
+        ),
+    ),
+    CoveredMessageCandidateRouteCallsites(
+        "XRL.World.Parts.Mutation/Burgeoning.cs::XRL.World.Parts.Mutation.Burgeoning.Burgeon",
+        (205,),
+        "existing_dictionary_coverage",
+        "existing popup dictionary leaf",
+        "static popup leaf is covered by the parameterized out-of-range popup dictionary leaf",
+        (
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                ("That is out of range! ({0} squares)",),
+            ),
+        ),
+    ),
+    CoveredMessageCandidateRouteCallsites(
+        "XRL.World.Parts.Mutation/FrostWebs.cs::XRL.World.Parts.Mutation.FrostWebs.FireEvent",
+        (113,),
+        "existing_dictionary_coverage",
+        "existing popup dictionary leaf",
+        "static popup leaf is covered by the parameterized out-of-range popup dictionary leaf",
+        (
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                ("That is out of range! ({0} squares)",),
+            ),
+        ),
+    ),
+    CoveredMessageCandidateRouteCallsites(
+        "XRL.World.Parts.Mutation/SlogGlands.cs::XRL.World.Parts.Mutation.SlogGlands.FireEvent",
+        (148,),
+        "existing_dictionary_coverage",
+        "existing popup dictionary leaf",
+        "static popup leaf is covered by the parameterized out-of-range popup dictionary leaf",
+        (
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                ("That is out of range! ({0} squares)",),
+            ),
+        ),
+    ),
+    CoveredMessageCandidateRouteCallsites(
+        "XRL.World.Parts.Mutation/SpacetimeVortex.cs::XRL.World.Parts.Mutation.SpacetimeVortex.FireEvent",
+        (117,),
+        "existing_dictionary_coverage",
+        "existing popup dictionary leaf",
+        "static popup leaf is covered by the parameterized target out-of-range popup dictionary leaf",
+        (
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+                ("That target is out of range! ({0} squares)",),
+            ),
+        ),
+    ),
+    CoveredMessageCandidateRouteCallsites(
+        "XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.Extinguish",
+        (1936,),
+        "existing_does_verb_route_coverage",
+        "existing DoesVerb route",
+        "current verbs.ja.json frames and DoesVerb tests cover this generated sentence",
+        (
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L1/DoesVerbFamilyTests.cs",
+                ("The 炎 is extinguished by the 水.",),
+            ),
+        ),
+    ),
+    CoveredMessageCandidateRouteCallsites(
+        "XRL.World.Parts/Chat.cs::XRL.World.Parts.Chat.PerformChat",
+        (195, 210),
+        "existing_does_verb_route_coverage",
+        "existing DoesVerb route",
+        "current verbs.ja.json frames and DoesVerb tests cover the generated speech frame",
+        (
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L1/DoesVerbFamilyTests.cs",
+                ("The 熊 says, '{{|挨拶}}'.",),
+            ),
+        ),
+    ),
+    CoveredMessageCandidateRouteCallsites(
+        "XRL.World.Parts/FungalInfection.cs::XRL.World.Parts.FungalInfection.FireEvent",
+        (77,),
+        "existing_does_verb_route_coverage",
+        "existing DoesVerb route",
+        "current verbs.ja.json frames and DoesVerb tests cover this generated sentence",
+        (
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L1/DoesVerbFamilyTests.cs",
+                ("The 装置 is immune to conventional treatments.",),
+            ),
+        ),
+    ),
+    CoveredMessageCandidateRouteCallsites(
+        "XRL.World.Parts/MagazineAmmoLoader.cs::XRL.World.Parts.MagazineAmmoLoader.HandleEvent",
+        (361,),
+        "existing_does_verb_route_coverage",
+        "existing DoesVerb route",
+        "current verbs.ja.json frames and DoesVerb tests cover this generated sentence",
+        (
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L1/DoesVerbFamilyTests.cs",
+                ("The 武器 is already fully loaded.",),
+            ),
+        ),
+    ),
+    CoveredMessageCandidateRouteCallsites(
+        "XRL.World.Parts/DesalinationPellet.cs::XRL.World.Parts.DesalinationPellet.HandleEvent",
+        (85,),
+        "existing_owner_route_coverage",
+        "existing owner route",
+        "current owner patch and fragment translator cover this generated composite message",
+        (
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/DesalinationPelletTranslationPatch.cs",
+                ("XRL.World.Parts.DesalinationPellet", "HandleEvent"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldPartsProducerTranslationPatchTests.cs",
+                ("DesalinationPelletPatch_TranslatesCompositePopupPrefix_WhenPatched",),
+            ),
+        ),
+    ),
+    CoveredMessageCandidateRouteCallsites(
+        "XRL.World.Parts/DeployableInfrastructure.cs::XRL.World.Parts.DeployableInfrastructure.DeployOne",
+        (334,),
+        "existing_owner_route_coverage",
+        "existing owner route",
+        "current owner patch and queue semantic pipeline cover this generated DoesVerb message",
+        (
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/DeployableInfrastructureTranslationPatch.cs",
+                ("XRL.World.Parts.DeployableInfrastructure", "DeployOne"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                ("DeployableInfrastructurePatch_TranslatesDeployMessage_WhenPatched",),
+            ),
+        ),
+    ),
+)
+MESSAGE_CANDIDATE_ROUTE_COVERED_CALLSITE_DETAILS: Final = {
+    (covered.family_id, line): covered
+    for covered in MESSAGE_CANDIDATE_ROUTE_COVERED_CALLSITES
+    for line in covered.lines
+}
 
 
 def load_inventory(path: Path) -> InventoryPayload:
@@ -17178,6 +18103,11 @@ def covered_family_ids() -> frozenset[str]:
 def covered_callsite_keys() -> frozenset[tuple[str, int]]:
     """Return mixed-family callsites that current tests close as owner-patch covered."""
     return COVERED_OWNER_CALLSITE_KEYS
+
+
+def deferred_runtime_callsite_keys() -> frozenset[tuple[str, int]]:
+    """Return runtime-required callsites that are explicitly outside static owner-action work."""
+    return DEFERRED_RUNTIME_CALLSITE_KEYS
 
 
 def family_closure_status(family: FamilyPayload) -> str:
@@ -17224,6 +18154,126 @@ def owner_action_queue_by_file(inventory: InventoryPayload) -> list[SourceFileQu
             entry["source_file"],
         ),
     )
+
+
+def message_candidate_policy_entries(
+    inventory: InventoryPayload,
+    repo_root: Path = REPO_ROOT,
+) -> list[MessageCandidatePolicyEntry]:
+    """Return remaining messages_candidate text arguments with policy routing."""
+    dictionary_locations = _dictionary_key_locations(repo_root / DICTIONARY_RELATIVE_ROOT, repo_root)
+    entries: list[MessageCandidatePolicyEntry] = []
+    covered_families = covered_family_ids()
+    covered_callsites = covered_callsite_keys()
+    for callsite in inventory["callsites"]:
+        if callsite["producer_family_id"] in covered_families:
+            continue
+        if (callsite["producer_family_id"], callsite["line"]) in covered_callsites:
+            continue
+
+        for text_argument in callsite["text_arguments"]:
+            if text_argument["closure_status"] != MESSAGE_CANDIDATE_STATUS:
+                continue
+
+            callsite_key = (callsite["producer_family_id"], callsite["line"])
+            literal_text = _literal_expression_value(text_argument["expression"])
+            if callsite_key in MESSAGE_PATTERN_COVERED_CALLSITE_KEYS:
+                decision: MessageCandidateDecision = "existing_message_pattern_coverage"
+                destination = "existing message pattern"
+                reason = "current messages.ja.json patterns and tests cover this generated EmitMessage shape"
+            elif route_coverage := MESSAGE_CANDIDATE_ROUTE_COVERED_CALLSITE_DETAILS.get(callsite_key):
+                decision = route_coverage.decision
+                destination = route_coverage.destination
+                reason = route_coverage.reason
+            else:
+                decision, destination, reason = _message_candidate_policy(
+                    target_surface=callsite["target_surface"],
+                    expression_kind=text_argument["expression_kind"],
+                    literal_text=literal_text,
+                    dictionary_locations=dictionary_locations,
+                )
+            entries.append(
+                {
+                    "source_file": callsite["file"],
+                    "producer_family_id": callsite["producer_family_id"],
+                    "type_name": callsite["type_name"],
+                    "member_name": callsite["member_name"],
+                    "member_start_line": callsite["member_start_line"],
+                    "line": callsite["line"],
+                    "target_surface": callsite["target_surface"],
+                    "argument_role": text_argument["role"],
+                    "formal_index": text_argument["formal_index"],
+                    "expression": text_argument["expression"],
+                    "expression_kind": text_argument["expression_kind"],
+                    "literal_text": literal_text,
+                    "decision": decision,
+                    "destination": destination,
+                    "reason": reason,
+                    "coverage_locations": sorted(dictionary_locations.get(literal_text or "", ())),
+                }
+            )
+
+    return sorted(
+        entries,
+        key=lambda entry: (
+            entry["decision"],
+            entry["destination"],
+            entry["source_file"],
+            entry["line"],
+            entry["formal_index"],
+        ),
+    )
+
+
+def format_message_candidate_policy_queue(
+    inventory: InventoryPayload,
+    *,
+    repo_root: Path = REPO_ROOT,
+) -> str:
+    """Format remaining messages_candidate policy groups for review."""
+    entries = message_candidate_policy_entries(inventory, repo_root)
+    decision_counts = _message_candidate_counter(entries, "decision")
+    destination_counts = _message_candidate_counter(entries, "destination")
+    source_files = {entry["source_file"] for entry in entries}
+    lines = [
+        "".join(
+            (
+                "message candidate policy queue: ",
+                f"{len(entries)} text arguments across {len(source_files)} source files; ",
+                f"decisions={_format_counter(decision_counts)}; ",
+                f"destinations={_format_counter(destination_counts)}",
+            )
+        )
+    ]
+
+    grouped: dict[str, list[MessageCandidatePolicyEntry]] = {}
+    for entry in entries:
+        grouped.setdefault(entry["decision"], []).append(entry)
+
+    for decision in sorted(grouped):
+        decision_entries = grouped[decision]
+        destinations = _message_candidate_counter(decision_entries, "destination")
+        surfaces = _message_candidate_counter(decision_entries, "target_surface")
+        lines.append(
+            "".join(
+                (
+                    f"- {decision}: {len(decision_entries)} text args; ",
+                    f"destinations={_format_counter(destinations)}; ",
+                    f"surfaces={_format_counter(surfaces)}",
+                )
+            )
+        )
+        lines.extend(
+            "".join(
+                (
+                    f"  - {entry['source_file']}:{entry['line']} ",
+                    f"{entry['target_surface']} {entry['expression']}",
+                )
+            )
+            for entry in decision_entries[:5]
+        )
+
+    return "\n".join(lines)
 
 
 def format_owner_action_queue(
@@ -17308,8 +18358,99 @@ def validate_covered_owner_families(
         errors.extend(_validate_evidence_files(covered.family_id, covered.evidence_files, repo_root))
 
     errors.extend(_validate_covered_owner_callsites(inventory, families, repo_root))
+    errors.extend(_validate_deferred_runtime_callsites(inventory, families, repo_root))
+    errors.extend(_validate_message_pattern_covered_callsites(inventory, repo_root))
+    errors.extend(_validate_message_candidate_route_covered_callsites(inventory, repo_root))
 
     return errors
+
+
+def _dictionary_key_locations(dictionary_root: Path, repo_root: Path = REPO_ROOT) -> dict[str, set[str]]:
+    locations: dict[str, set[str]] = {}
+    for path in sorted(dictionary_root.glob("*.ja.json")):
+        payload = cast("dict[str, object]", json.loads(path.read_text(encoding="utf-8")))
+        raw_entries = payload.get("entries", ())
+        if not isinstance(raw_entries, list):
+            continue
+        entries = cast("list[object]", raw_entries)
+        for raw_entry in entries:
+            if not isinstance(raw_entry, dict):
+                continue
+            entry = cast("dict[str, object]", raw_entry)
+            key = entry.get("key")
+            if isinstance(key, str):
+                locations.setdefault(key, set()).add(str(path.relative_to(repo_root)))
+    return locations
+
+
+def _literal_expression_value(expression: str) -> str | None:
+    if not (expression.startswith('"') and expression.endswith('"')):
+        return None
+
+    try:
+        value = cast("object", json.loads(expression))
+    except json.JSONDecodeError:
+        return None
+
+    return value if isinstance(value, str) else None
+
+
+def _message_candidate_policy(
+    *,
+    target_surface: str,
+    expression_kind: str,
+    literal_text: str | None,
+    dictionary_locations: dict[str, set[str]],
+) -> tuple[MessageCandidateDecision, str, str]:
+    if literal_text is not None and literal_text.strip() == "":
+        return (
+            "reject_pseudo_leaf",
+            "none",
+            "empty or whitespace-only popup text is pseudo-leaf noise, not a player-facing dictionary leaf",
+        )
+
+    if target_surface == "EmitMessage":
+        if expression_kind == "static_literal" and literal_text in dictionary_locations:
+            return (
+                "existing_dictionary_coverage",
+                "existing message dictionary leaf",
+                "static EmitMessage leaf already has exact dictionary coverage",
+            )
+        return (
+            "defer_emit_message_pattern",
+            "message-pattern route review",
+            "EmitMessage text is message-route traffic and must be reviewed as a message pattern or owner route",
+        )
+
+    if target_surface == "Popup.Show*" and expression_kind == "static_literal":
+        if literal_text in dictionary_locations:
+            return (
+                "existing_dictionary_coverage",
+                "existing popup dictionary leaf",
+                "static popup leaf already has exact dictionary coverage",
+            )
+        return (
+            "fixed_popup_leaf_addition_candidate",
+            "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+            "static popup leaf has no exact dictionary coverage and is eligible for narrow popup dictionary review",
+        )
+
+    return (
+        "defer_generated_or_runtime",
+        "owner/runtime route review",
+        "non-static or non-popup candidate needs route-specific review before dictionary promotion",
+    )
+
+
+def _message_candidate_counter(
+    entries: list[MessageCandidatePolicyEntry],
+    key: Literal["decision", "destination", "target_surface"],
+) -> dict[str, int]:
+    counter: dict[str, int] = {}
+    for entry in entries:
+        value = entry[key]
+        counter[value] = counter.get(value, 0) + 1
+    return counter
 
 
 def _validate_covered_owner_callsites(
@@ -17346,6 +18487,135 @@ def _validate_covered_owner_callsites(
     return errors
 
 
+def _validate_deferred_runtime_callsites(
+    inventory: InventoryPayload,
+    families: dict[str, FamilyPayload],
+    repo_root: Path,
+) -> list[str]:
+    errors: list[str] = []
+    callsites_by_family: dict[str, list[CallsitePayload]] = {}
+    for callsite in inventory["callsites"]:
+        callsites_by_family.setdefault(callsite["producer_family_id"], []).append(callsite)
+
+    seen_callsite_keys: set[tuple[str, int]] = set()
+    for deferred in DEFERRED_RUNTIME_CALLSITES:
+        family = families.get(deferred.family_id)
+        if family is None:
+            errors.append(f"deferred runtime family missing from inventory: {deferred.family_id}")
+            continue
+
+        errors.extend(
+            _validate_deferred_runtime_callsite_lines(
+                deferred,
+                callsites_by_family.get(deferred.family_id, []),
+                seen_callsite_keys,
+            )
+        )
+        errors.extend(_validate_evidence_files(deferred.family_id, deferred.evidence_files, repo_root))
+
+    return errors
+
+
+def _validate_deferred_runtime_callsite_lines(
+    deferred: DeferredRuntimeCallsites,
+    family_callsites: list[CallsitePayload],
+    seen_callsite_keys: set[tuple[str, int]],
+) -> list[str]:
+    errors: list[str] = []
+    indexed_callsites = {callsite["line"]: callsite for callsite in family_callsites}
+    for line in deferred.lines:
+        key = (deferred.family_id, line)
+        if key in seen_callsite_keys:
+            errors.append(f"duplicate deferred runtime callsite: {deferred.family_id}:{line}")
+            continue
+
+        seen_callsite_keys.add(key)
+        callsite = indexed_callsites.get(line)
+        if callsite is None:
+            errors.append(f"deferred runtime callsite missing from inventory: {deferred.family_id}:{line}")
+            continue
+
+        if callsite["closure_status"] != "runtime_required":
+            errors.append(
+                f"{deferred.family_id}:{line}: expected runtime_required callsite, got {callsite['closure_status']}"
+            )
+
+    return errors
+
+
+def _validate_message_pattern_covered_callsites(
+    inventory: InventoryPayload,
+    repo_root: Path,
+) -> list[str]:
+    errors: list[str] = []
+    callsites_by_family: dict[str, list[CallsitePayload]] = {}
+    for callsite in inventory["callsites"]:
+        callsites_by_family.setdefault(callsite["producer_family_id"], []).append(callsite)
+
+    seen_callsite_keys: set[tuple[str, int]] = set()
+    for covered in MESSAGE_PATTERN_COVERED_CALLSITES:
+        errors.extend(
+            _validate_message_pattern_callsite_lines(
+                covered,
+                callsites_by_family.get(covered.family_id, []),
+                seen_callsite_keys,
+            )
+        )
+        errors.extend(_validate_evidence_files(covered.family_id, covered.evidence_files, repo_root))
+
+    return errors
+
+
+def _validate_message_candidate_route_covered_callsites(
+    inventory: InventoryPayload,
+    repo_root: Path,
+) -> list[str]:
+    errors: list[str] = []
+    callsites_by_family: dict[str, list[CallsitePayload]] = {}
+    for callsite in inventory["callsites"]:
+        callsites_by_family.setdefault(callsite["producer_family_id"], []).append(callsite)
+
+    seen_callsite_keys: set[tuple[str, int]] = set()
+    for covered in MESSAGE_CANDIDATE_ROUTE_COVERED_CALLSITES:
+        errors.extend(
+            _validate_message_pattern_callsite_lines(
+                covered,
+                callsites_by_family.get(covered.family_id, []),
+                seen_callsite_keys,
+            )
+        )
+        errors.extend(_validate_evidence_files(covered.family_id, covered.evidence_files, repo_root))
+
+    return errors
+
+
+def _validate_message_pattern_callsite_lines(
+    covered: CoveredMessagePatternCallsites | CoveredMessageCandidateRouteCallsites,
+    family_callsites: list[CallsitePayload],
+    seen_callsite_keys: set[tuple[str, int]],
+) -> list[str]:
+    errors: list[str] = []
+    indexed_callsites = {callsite["line"]: callsite for callsite in family_callsites}
+    for line in covered.lines:
+        key = (covered.family_id, line)
+        if key in seen_callsite_keys:
+            errors.append(f"duplicate message-pattern covered callsite: {covered.family_id}:{line}")
+            continue
+
+        seen_callsite_keys.add(key)
+        callsite = indexed_callsites.get(line)
+        if callsite is None:
+            errors.append(f"message-pattern covered callsite missing from inventory: {covered.family_id}:{line}")
+            continue
+
+        if callsite["closure_status"] != MESSAGE_CANDIDATE_STATUS:
+            errors.append(
+                f"{covered.family_id}:{line}: expected messages_candidate callsite, got {callsite['closure_status']}"
+            )
+
+    return errors
+
+
 def _validate_covered_owner_callsite_lines(
     covered: CoveredOwnerCallsites,
     family_callsites: list[CallsitePayload],
@@ -17365,9 +18635,14 @@ def _validate_covered_owner_callsite_lines(
             errors.append(f"covered callsite missing from inventory: {covered.family_id}:{line}")
             continue
 
-        if callsite["closure_status"] != "owner_patch_required":
+        if callsite["closure_status"] not in {"owner_patch_required", "runtime_required"}:
             errors.append(
-                f"{covered.family_id}:{line}: expected owner_patch_required callsite, got {callsite['closure_status']}"
+                "".join(
+                    (
+                        f"{covered.family_id}:{line}: expected owner_patch_required/runtime_required callsite, ",
+                        f"got {callsite['closure_status']}",
+                    )
+                )
             )
 
     return errors
@@ -17397,13 +18672,15 @@ def _validate_evidence_files(
 
 def main(argv: list[str] | None = None) -> int:
     """Print or serialize the current static-producer owner action queue."""
-    parser = ArgumentParser(description="Summarize static producer owner-route work by decompiled C# file.")
+    parser = ArgumentParser(description="Summarize static producer owner-route and message-candidate policy work.")
     _ = parser.add_argument("--inventory", type=Path, default=DEFAULT_INVENTORY_PATH)
+    _ = parser.add_argument("--queue", choices=("owner", "message-candidates"), default="owner")
     _ = parser.add_argument("--format", choices=("text", "json"), default="text")
     _ = parser.add_argument("--limit", type=int, default=30, help="maximum source files for text output; 0 means all")
     args = parser.parse_args(argv)
 
     inventory_path = cast("Path", args.inventory)
+    queue = cast("OutputQueue", args.queue)
     output_format = cast("OutputFormat", args.format)
     limit_arg = cast("int", args.limit)
     limit = None if limit_arg == 0 else limit_arg
@@ -17413,6 +18690,25 @@ def main(argv: list[str] | None = None) -> int:
     if evidence_errors:
         _ = sys.stderr.write("\n".join(evidence_errors) + "\n")
         return 1
+
+    if queue == "message-candidates":
+        entries = message_candidate_policy_entries(inventory)
+        if output_format == "json":
+            payload = {
+                "schema_version": "1.0",
+                "inventory": str(inventory_path),
+                "source_file_count": len({entry["source_file"] for entry in entries}),
+                "text_argument_count": len(entries),
+                "decision_counts": _message_candidate_counter(entries, "decision"),
+                "destination_counts": _message_candidate_counter(entries, "destination"),
+                "surface_counts": _message_candidate_counter(entries, "target_surface"),
+                "entries": entries,
+            }
+            _ = sys.stdout.write(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
+            return 0
+
+        _ = sys.stdout.write(format_message_candidate_policy_queue(inventory) + "\n")
+        return 0
 
     if output_format == "json":
         source_entries = owner_action_queue_by_file(inventory)
@@ -17475,13 +18771,20 @@ def _remaining_family_callsite_records(inventory: InventoryPayload, family: Fami
     if family["producer_family_id"] in covered_family_ids():
         return []
 
+    deferred_runtime_keys = deferred_runtime_callsite_keys()
+
     if not _family_has_partial_callsite_coverage(family["producer_family_id"]):
-        return _family_callsite_records(inventory, family)
+        return [
+            call
+            for call in _family_callsite_records(inventory, family)
+            if (call["producer_family_id"], call["line"]) not in deferred_runtime_keys
+        ]
 
     return [
         call
         for call in _family_callsite_records(inventory, family)
         if (call["producer_family_id"], call["line"]) not in covered_callsite_keys()
+        and (call["producer_family_id"], call["line"]) not in deferred_runtime_keys
     ]
 
 
@@ -17489,9 +18792,6 @@ def _family_has_owner_action_remaining(inventory: InventoryPayload, family: Fami
     status = family_closure_status(family)
     if status not in OWNER_ACTION_STATUSES:
         return False
-
-    if not _family_has_partial_callsite_coverage(family["producer_family_id"]):
-        return True
 
     return any(
         call["closure_status"] in OWNER_ACTION_CALLSITE_STATUSES

@@ -12,7 +12,7 @@ _EXPECTED_MESSAGE_ROUTE_COUNTS = {
     "popup": 12,
     "journal": 0,
     "leaf": 0,
-    "emit-message": 303,
+    "emit-message": 308,
     "does-verb": 0,
     "message-log": 1,
     "description": 4,

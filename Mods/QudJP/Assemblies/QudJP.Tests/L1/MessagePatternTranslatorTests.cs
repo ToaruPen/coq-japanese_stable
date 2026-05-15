@@ -343,6 +343,16 @@ public sealed class MessagePatternTranslatorTests
     [TestCase("熊の carapace loosens.", "熊の甲殻が緩んだ")]
     [TestCase("The zealot mumbles inaudibly, encased in ice.", "氷に閉じ込められた狂信者が、聞き取れないほどに呟いた。")]
     [TestCase("The infected crust of skin on 熊の left arm loosens and breaks away.", "熊の left armの感染した皮膚の痂皮が緩んで剥がれ落ちた。")]
+    [TestCase("Exodus launch in 7...", "エクソダス発射まで7…")]
+    [TestCase("Something hits タム (x2) with a 鉛スラッグ for 6 damage!", "何かが鉛スラッグでタムに6ダメージを与えた！ (x2)")]
+    [TestCase("The タレット hits you with a 鉛スラッグ, but your mental attack has no effect.", "タレットの鉛スラッグが命中したが、精神攻撃は効果がない")]
+    [TestCase("The タレット hits タム with a 鉛スラッグ, but their mental attack has no effect.", "タレットは鉛スラッグでタムに命中させたが、精神攻撃は効果がない")]
+    [TestCase("The タレット hits タム (x2) with a 鉛スラッグ!", "タレットは鉛スラッグでタムに命中した (x2)")]
+    [TestCase("鉛スラッグ hits you to the east! (x2)", "鉛スラッグがあなたにto the east命中！ (x2)")]
+    [TestCase("鉛スラッグ hits you to the east, but your mental attack has no effect.", "鉛スラッグがあなたに命中した to the east, but your mental attack has no effect。")]
+    [TestCase("鉛スラッグ hits タム to the east, but your mental attack has no effect.", "鉛スラッグがタムに命中した to the east, but your mental attack has no effect。")]
+    [TestCase("鉛スラッグ hits you (x2) to the east!", "鉛スラッグがあなたにto the east命中！ (x2)")]
+    [TestCase("鉛スラッグ hits タム (x2) to the east!", "鉛スラッグがタムにto the east命中！ (x2)")]
     public void Translate_RepositoryDictionary_AppliesEmitMessageSweepPatterns(string source, string expected)
     {
         UseRepositoryPatternDictionary();

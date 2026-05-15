@@ -32,6 +32,16 @@ public static class RealityStabilizedEventTranslationPatch
         "^(?<device>.+?) emits? a shower of sparks!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private const string NormalityLatticePopup =
+        "You try to push through the normality lattice, but it snaps back into place.";
+
+    private const string NormalityLatticeWinceSuffix = " You wince in pain.";
+
+    private const string NormalityLatticeTranslation =
+        "あなたは通常性格子を押し通ろうとしたが、それは跳ね返って元に戻った。";
+
+    private const string NormalityLatticeWinceTranslation = "あなたは痛みに顔をしかめた。";
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -118,6 +128,12 @@ public static class RealityStabilizedEventTranslationPatch
             return true;
         }
 
+        if (TryTranslateNormalityLatticePopup(source, out translated))
+        {
+            DynamicTextObservability.RecordTransform(route, family + "." + Context, source, translated);
+            return true;
+        }
+
         if (!TryTranslatePattern(EmitSparksPattern, source, device => $"{device}が火花の雨を放った！", out translated))
         {
             return false;
@@ -125,6 +141,24 @@ public static class RealityStabilizedEventTranslationPatch
 
         DynamicTextObservability.RecordTransform(route, family + "." + Context, source, translated);
         return true;
+    }
+
+    private static bool TryTranslateNormalityLatticePopup(string source, out string translated)
+    {
+        if (string.Equals(source, NormalityLatticePopup, StringComparison.Ordinal))
+        {
+            translated = NormalityLatticeTranslation;
+            return true;
+        }
+
+        if (string.Equals(source, NormalityLatticePopup + NormalityLatticeWinceSuffix, StringComparison.Ordinal))
+        {
+            translated = NormalityLatticeTranslation + NormalityLatticeWinceTranslation;
+            return true;
+        }
+
+        translated = source;
+        return false;
     }
 
     private static void AddTarget(List<MethodBase> targets, Type targetType, string methodName, Type[] parameters)

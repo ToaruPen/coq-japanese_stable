@@ -370,6 +370,7 @@ public sealed class DoesVerbFamilyTests
     // --- Say Family ---
 
     [TestCase("The 熊 says, '挨拶'.", "熊は「挨拶」と言った")]
+    [TestCase("The 熊 says, '{{|挨拶}}'.", "熊は「挨拶」と言った{{|}}")]
     // Color-wrapped
     [TestCase("{{g|The 熊 says, '挨拶'.}}", "{{g|熊は「挨拶」と言った}}")]
     public void Translate_SayFamily(string input, string expected)
