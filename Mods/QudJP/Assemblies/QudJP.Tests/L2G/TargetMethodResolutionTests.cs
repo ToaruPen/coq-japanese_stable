@@ -1026,6 +1026,8 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.Campfire|NostrumsStopBleeding|System.Void",
         "XRL.World.Parts.Campfire|NostrumsTreatPoison|System.Void",
+        "XRL.World.Parts.Campfire|NostrumsTreatIllness|System.Void",
+        "XRL.World.Parts.Campfire|NostrumsTreatDiseaseOnset|System.Void",
     })]
     [TestCase(typeof(TeleprojectorTranslationPatch), new[]
     {

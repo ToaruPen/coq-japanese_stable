@@ -54,6 +54,36 @@ public static class CampfireNostrumsTranslationPatch
     private static readonly Regex NeitherPoisonedPattern = new(
         "^Neither you nor (?<target>.+?) are poisoned\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex ConditionNoMedicinalIngredientsPattern = new(
+        "^You have no medicinal ingredients with which to treat (?<condition>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CureConditionPassThroughPattern = new(
+        "^You try to cure (?<condition>.+?), but your limbs pass through .+\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex IllnessCannotAffectPattern = new(
+        "^You try to (?<condition>.+?illness), but cannot affect .+\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CureConditionPattern = new(
+        "^You cure (?<condition>.+?) with a balm made from (?<ingredient>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex NeitherIllPattern = new(
+        "^Neither you nor (?<target>.+?) are ill\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex DiseaseAlreadyBoostedPattern = new(
+        "^(?<target>.+?) already has boosted immunity from a nostrum\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex DiseaseCannotAffectPattern = new(
+        "^You try to (?<condition>.+?disease onset), but cannot affect .+\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex BoostImmunityPattern = new(
+        "^You boost (?<immunity>.+?) with a balm made from (?<ingredient>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex BoostImmunityIneffectivePattern = new(
+        "^You try to boost (?<immunity>.+?) with a balm made from (?<ingredient>.+?), but it is ineffective\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex NeitherDiseaseOnsetPattern = new(
+        "^Neither you nor (?<target>.+?) are suffering from the onset of a disease\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [ThreadStatic]
     private static int activeDepth;
@@ -68,7 +98,13 @@ public static class CampfireNostrumsTranslationPatch
             yield break;
         }
 
-        foreach (var methodName in new[] { "NostrumsStopBleeding", "NostrumsTreatPoison" })
+        foreach (var methodName in new[]
+        {
+            "NostrumsStopBleeding",
+            "NostrumsTreatPoison",
+            "NostrumsTreatIllness",
+            "NostrumsTreatDiseaseOnset",
+        })
         {
             var method = AccessTools.Method(targetType, methodName, Type.EmptyTypes);
             if (method is null)
@@ -326,6 +362,101 @@ public static class CampfireNostrumsTranslationPatch
             return true;
         }
 
+        if (TryTranslateConditionNoMedicinalIngredients(source, stripped, spans, out translated, out detail))
+        {
+            return true;
+        }
+
+        if (TryTranslateCureConditionPassThrough(source, stripped, spans, out translated, out detail))
+        {
+            return true;
+        }
+
+        if (TryTranslateTargetPattern(
+            source,
+            stripped,
+            spans,
+            IllnessCannotAffectPattern,
+            "condition",
+            condition => condition + "を治そうとするが、影響を与えられない。",
+            "IllnessCannotAffect",
+            out translated,
+            out detail))
+        {
+            return true;
+        }
+
+        if (TryTranslateCureCondition(source, stripped, spans, out translated, out detail))
+        {
+            return true;
+        }
+
+        if (TryTranslateTargetPattern(
+            source,
+            stripped,
+            spans,
+            NeitherIllPattern,
+            "target",
+            target => "あなたも" + target + "も病気ではない。",
+            "NeitherIll",
+            out translated,
+            out detail))
+        {
+            return true;
+        }
+
+        if (TryTranslateTargetPattern(
+            source,
+            stripped,
+            spans,
+            DiseaseAlreadyBoostedPattern,
+            "target",
+            target => target + "はすでに薬で免疫を高めている。",
+            "DiseaseAlreadyBoosted",
+            out translated,
+            out detail))
+        {
+            return true;
+        }
+
+        if (TryTranslateTargetPattern(
+            source,
+            stripped,
+            spans,
+            DiseaseCannotAffectPattern,
+            "condition",
+            condition => condition + "を治そうとするが、影響を与えられない。",
+            "DiseaseCannotAffect",
+            out translated,
+            out detail))
+        {
+            return true;
+        }
+
+        if (TryTranslateBoostImmunity(source, stripped, spans, ineffective: false, out translated, out detail))
+        {
+            return true;
+        }
+
+        if (TryTranslateBoostImmunity(source, stripped, spans, ineffective: true, out translated, out detail))
+        {
+            return true;
+        }
+
+        if (TryTranslateTargetPattern(
+            source,
+            stripped,
+            spans,
+            NeitherDiseaseOnsetPattern,
+            "target",
+            target => "あなたも" + target + "も病気の発症に苦しんでいない。",
+            "NeitherDiseaseOnset",
+            out translated,
+            out detail))
+        {
+            return true;
+        }
+
         translated = source;
         detail = string.Empty;
         return false;
@@ -396,6 +527,124 @@ public static class CampfireNostrumsTranslationPatch
         }
 
         return source;
+    }
+
+    private static bool TryTranslateConditionNoMedicinalIngredients(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated,
+        out string detail)
+    {
+        var match = ConditionNoMedicinalIngredientsPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            detail = string.Empty;
+            return false;
+        }
+
+        var condition = RestoreCapture(match, spans, "condition").Trim();
+        translated = RestoreWholeSourceBoundaryWrappers(
+            condition + "を治療する薬用素材がない。",
+            spans,
+            stripped.Length,
+            source);
+        detail = IsIllnessCondition(condition)
+            ? "IllnessNoMedicinalIngredients"
+            : "DiseaseNoMedicinalIngredients";
+        return true;
+    }
+
+    private static bool TryTranslateCureConditionPassThrough(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated,
+        out string detail)
+    {
+        var match = CureConditionPassThroughPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            detail = string.Empty;
+            return false;
+        }
+
+        var condition = RestoreCapture(match, spans, "condition").Trim();
+        translated = RestoreWholeSourceBoundaryWrappers(
+            condition + "を治そうとするが、手が体をすり抜ける。",
+            spans,
+            stripped.Length,
+            source);
+        detail = IsDiseaseOnsetCondition(condition) ? "DiseasePassThrough" : "IllnessPassThrough";
+        return true;
+    }
+
+    private static bool TryTranslateCureCondition(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated,
+        out string detail)
+    {
+        var match = CureConditionPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            detail = string.Empty;
+            return false;
+        }
+
+        var condition = RestoreCapture(match, spans, "condition").Trim();
+        var ingredient = RestoreCapture(match, spans, "ingredient").Trim();
+        translated = RestoreWholeSourceBoundaryWrappers(
+            ingredient + "で作った塗り薬で" + condition + "を治した。",
+            spans,
+            stripped.Length,
+            source);
+        detail = IsIllnessCondition(condition) ? "CureIllness" : "CureDiseaseOnset";
+        return true;
+    }
+
+    private static bool TryTranslateBoostImmunity(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        bool ineffective,
+        out string translated,
+        out string detail)
+    {
+        var pattern = ineffective ? BoostImmunityIneffectivePattern : BoostImmunityPattern;
+        var match = pattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            detail = string.Empty;
+            return false;
+        }
+
+        var immunity = RestoreCapture(match, spans, "immunity").Trim();
+        var ingredient = RestoreCapture(match, spans, "ingredient").Trim();
+        var suffix = ineffective ? "を高めようとするが、効果がない。" : "を高めた。";
+        translated = RestoreWholeSourceBoundaryWrappers(
+            ingredient + "で作った塗り薬で" + immunity + suffix,
+            spans,
+            stripped.Length,
+            source);
+        detail = ineffective ? "BoostImmunityIneffective" : "BoostImmunity";
+        return true;
+    }
+
+    private static bool IsIllnessCondition(string condition)
+    {
+        return condition.EndsWith("'s illness", StringComparison.Ordinal);
+    }
+
+    private static bool IsDiseaseOnsetCondition(string condition)
+    {
+        return condition.EndsWith("'s diease onset", StringComparison.Ordinal)
+            || condition.EndsWith("'s disease onset", StringComparison.Ordinal);
     }
 
     private static string RestoreCapture(Match match, IReadOnlyList<ColorSpan> spans, string groupName)

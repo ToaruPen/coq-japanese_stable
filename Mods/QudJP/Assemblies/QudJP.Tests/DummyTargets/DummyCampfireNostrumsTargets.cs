@@ -13,6 +13,21 @@ internal sealed class DummyCampfireNostrumsTarget
 
     public void NostrumsTreatPoison()
     {
+        SendPopupMessage();
+    }
+
+    public void NostrumsTreatIllness()
+    {
+        SendPopupMessage();
+    }
+
+    public void NostrumsTreatDiseaseOnset()
+    {
+        SendPopupMessage();
+    }
+
+    private void SendPopupMessage()
+    {
         if (UseFailurePopup)
         {
             DummyPopupShow.ShowFail(PopupMessageToSend);

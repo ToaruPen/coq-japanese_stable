@@ -93,6 +93,71 @@ public sealed class CampfireNostrumsTranslationPatchTests
         "Neither you nor {{M|Eskhind}} are poisoned.",
         "あなたも{{M|Eskhind}}も毒状態ではない。",
         "NeitherPoisoned")]
+    [TestCase(
+        nameof(DummyCampfireNostrumsTarget.NostrumsTreatIllness),
+        "You have no medicinal ingredients with which to treat {{C|salt kraken}}'s illness.",
+        "{{C|salt kraken}}'s illnessを治療する薬用素材がない。",
+        "IllnessNoMedicinalIngredients")]
+    [TestCase(
+        nameof(DummyCampfireNostrumsTarget.NostrumsTreatIllness),
+        "You try to cure {{C|salt kraken}}'s illness, but your limbs pass through them.",
+        "{{C|salt kraken}}'s illnessを治そうとするが、手が体をすり抜ける。",
+        "IllnessPassThrough")]
+    [TestCase(
+        nameof(DummyCampfireNostrumsTarget.NostrumsTreatIllness),
+        "You try to {{Y|glowfish}}'s illness, but cannot affect them.",
+        "{{Y|glowfish}}'s illnessを治そうとするが、影響を与えられない。",
+        "IllnessCannotAffect")]
+    [TestCase(
+        nameof(DummyCampfireNostrumsTarget.NostrumsTreatIllness),
+        "You cure {{G|snapjaw scavenger}}'s illness with a balm made from {{Y|witchwood bark}}.",
+        "{{Y|witchwood bark}}で作った塗り薬で{{G|snapjaw scavenger}}'s illnessを治した。",
+        "CureIllness")]
+    [TestCase(
+        nameof(DummyCampfireNostrumsTarget.NostrumsTreatIllness),
+        "Neither you nor {{M|Eskhind}} are ill.",
+        "あなたも{{M|Eskhind}}も病気ではない。",
+        "NeitherIll")]
+    [TestCase(
+        nameof(DummyCampfireNostrumsTarget.NostrumsTreatDiseaseOnset),
+        "{{C|salt kraken}} already has boosted immunity from a nostrum.",
+        "{{C|salt kraken}}はすでに薬で免疫を高めている。",
+        "DiseaseAlreadyBoosted")]
+    [TestCase(
+        nameof(DummyCampfireNostrumsTarget.NostrumsTreatDiseaseOnset),
+        "You have no medicinal ingredients with which to treat {{C|salt kraken}}'s sore throat.",
+        "{{C|salt kraken}}'s sore throatを治療する薬用素材がない。",
+        "DiseaseNoMedicinalIngredients")]
+    [TestCase(
+        nameof(DummyCampfireNostrumsTarget.NostrumsTreatDiseaseOnset),
+        "You try to cure {{C|salt kraken}}'s diease onset, but your limbs pass through them.",
+        "{{C|salt kraken}}'s diease onsetを治そうとするが、手が体をすり抜ける。",
+        "DiseasePassThrough")]
+    [TestCase(
+        nameof(DummyCampfireNostrumsTarget.NostrumsTreatDiseaseOnset),
+        "You try to {{Y|glowfish}}'s disease onset, but cannot affect them.",
+        "{{Y|glowfish}}'s disease onsetを治そうとするが、影響を与えられない。",
+        "DiseaseCannotAffect")]
+    [TestCase(
+        nameof(DummyCampfireNostrumsTarget.NostrumsTreatDiseaseOnset),
+        "You cure {{G|snapjaw scavenger}}'s sore throat with a balm made from {{Y|witchwood bark}}.",
+        "{{Y|witchwood bark}}で作った塗り薬で{{G|snapjaw scavenger}}'s sore throatを治した。",
+        "CureDiseaseOnset")]
+    [TestCase(
+        nameof(DummyCampfireNostrumsTarget.NostrumsTreatDiseaseOnset),
+        "You boost {{G|snapjaw scavenger}}'s immunity with a balm made from {{Y|witchwood bark}}.",
+        "{{Y|witchwood bark}}で作った塗り薬で{{G|snapjaw scavenger}}'s immunityを高めた。",
+        "BoostImmunity")]
+    [TestCase(
+        nameof(DummyCampfireNostrumsTarget.NostrumsTreatDiseaseOnset),
+        "You try to boost {{G|snapjaw scavenger}}'s immunity with a balm made from {{Y|witchwood bark}}, but it is ineffective.",
+        "{{Y|witchwood bark}}で作った塗り薬で{{G|snapjaw scavenger}}'s immunityを高めようとするが、効果がない。",
+        "BoostImmunityIneffective")]
+    [TestCase(
+        nameof(DummyCampfireNostrumsTarget.NostrumsTreatDiseaseOnset),
+        "Neither you nor {{M|Eskhind}} are suffering from the onset of a disease.",
+        "あなたも{{M|Eskhind}}も病気の発症に苦しんでいない。",
+        "NeitherDiseaseOnset")]
     public void Patch_TranslatesCampfireNostrumsPopups_WhenOwnerPatched(
         string ownerMethodName,
         string source,
@@ -158,7 +223,7 @@ public sealed class CampfireNostrumsTranslationPatchTests
                 var target = new DummyCampfireNostrumsTarget
                 {
                     PopupMessageToSend = source,
-                    UseFailurePopup = !string.Equals(detail, "CurePoison", StringComparison.Ordinal),
+                    UseFailurePopup = ShouldUseFailurePopup(detail),
                 };
 
                 _ = ownerMethod.Invoke(target, Array.Empty<object>());
@@ -176,6 +241,12 @@ public sealed class CampfireNostrumsTranslationPatchTests
         return DynamicTextObservability.GetRouteFamilyHitCountForTests(
             nameof(PopupShowTranslationPatch),
             "Popup.ProducerText." + nameof(CampfireNostrumsTranslationPatch) + "." + detail);
+    }
+
+    private static bool ShouldUseFailurePopup(string detail)
+    {
+        return detail is not ("CurePoison" or "CureIllness" or "CureDiseaseOnset" or "BoostImmunity"
+            or "BoostImmunityIneffective");
     }
 
     private static MethodInfo RequireOwnerMethod(string methodName)
