@@ -381,6 +381,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "StairsDownCompanionFell",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.ProcessTargetedMove),
+        "Do you really want to attack {{Y|the snapjaw}}?",
+        "本当に{{Y|snapjaw}}を攻撃しますか？",
+        "PhysicsAttackConfirm",
+        PopupMethod.ShowYesNo)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.ProcessTargetedMove),
+        "{{W|Do you really want to attack the ウォーターヴァイン農家?}}",
+        "{{W|本当にウォーターヴァイン農家を攻撃しますか？}}",
+        "PhysicsAttackConfirm",
+        PopupMethod.ShowYesNo)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.ShowScriptCallToArmsWarning),
         "Otho yells, '{{W|Argyve! Come back here!}}'",
         "オソが叫ぶ。「{{W|Argyve！戻ってこい！}}」",
@@ -851,6 +863,9 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "Your companion, {{G|Q Girl}},has fallen down {{Y|the deep shaft}} to the east!",
         "StairsDownCompanionFell")]
     [TestCase(
+        "Do you really want to attack {{Y|the snapjaw}}?",
+        "PhysicsAttackConfirm")]
+    [TestCase(
         "Otho yells, '{{W|Argyve! Come back here!}}'",
         "ScriptCallToArmsOthoYells")]
     [TestCase(
@@ -985,6 +1000,10 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         nameof(DummySingleCallsiteOwnerPopupTarget.WishGeneratePopulation),
         "The population 'JoppaVillagers' distributed as follows over 1000 generations;\nSnapjaw: 1.00000%",
         "PopulationManagerMissingTable")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.ProcessTargetedMove),
+        "{{Y|normality field}} prevents spacetime movement.",
+        "PhysicsAttackConfirm")]
     public void Patch_DoesNotClaimDeferredRuntimePopups_WhenOwnerPatched(
         string methodName,
         string source,
@@ -1135,6 +1154,8 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.World.Parts.SpaceTimeVortex|ApplyVortex",
             nameof(DummySingleCallsiteOwnerPopupTarget.CheckPullDown) =>
                 "XRL.World.Parts.StairsDown|CheckPullDown",
+            nameof(DummySingleCallsiteOwnerPopupTarget.ProcessTargetedMove) =>
+                "XRL.World.Parts.Physics|ProcessTargetedMove",
             nameof(DummySingleCallsiteOwnerPopupTarget.ShowScriptCallToArmsWarning) =>
                 "XRL.World.ZoneParts.ScriptCallToArms|ShowWarning",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleWaterRitualRecord) =>

@@ -54,6 +54,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string SpreadPaxOwner = "XRL.World.QuestManagers.SpreadPax|Finish";
     private const string ToolboxOwner = "XRL.World.Parts.Toolbox|HandleBonus";
     private const string TrainingBookOwner = "XRL.World.Parts.TrainingBook|HandleEvent";
+    private const string PhysicsProcessTargetedMoveOwner = "XRL.World.Parts.Physics|ProcessTargetedMove";
     private const string WaterRitualRecordOwner = "XRL.World.Parts.WaterRitualRecord|HandleEvent";
     private const string CursedCellSocketOwner = "XRL.World.Parts.CursedCellSocket|HandleEvent";
     private const string DestroyOnUnequipOwner = "XRL.World.Parts.DestroyOnUnequip|HandleEvent";
@@ -322,6 +323,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         var beginBeingUnequippedEventType = AccessTools.TypeByName("XRL.World.BeginBeingUnequippedEvent");
         var axeDismemberType = AccessTools.TypeByName("XRL.World.Parts.Skill.Axe_Dismember");
         var cudgelSlamType = AccessTools.TypeByName("XRL.World.Parts.Skill.Cudgel_Slam");
+        var cellType = AccessTools.TypeByName("XRL.World.Cell");
         if (gameObjectType is null
             || eventType is null
             || iEventType is null
@@ -339,7 +341,8 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             || beginTakeActionEventType is null
             || beginBeingUnequippedEventType is null
             || axeDismemberType is null
-            || cudgelSlamType is null)
+            || cudgelSlamType is null
+            || cellType is null)
         {
             Trace.TraceError("QudJP: {0} target parameter types not found.", Context);
             return targets;
@@ -545,6 +548,26 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.StairsDown",
             "CheckPullDown",
             [gameObjectType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Physics",
+            "ProcessTargetedMove",
+            [
+                cellType,
+                typeof(string),
+                typeof(string),
+                typeof(string),
+                typeof(int?),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+                typeof(string),
+                typeof(string),
+                gameObjectType,
+            ]);
         AddTarget(
             targets,
             "XRL.World.ZoneParts.ScriptCallToArms",
@@ -1090,6 +1113,13 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             return true;
         }
 
+        if (OwnerMatches(ownerKey, PhysicsProcessTargetedMoveOwner)
+            && TryTranslatePhysicsAttackConfirm(source, out translated))
+        {
+            detail = "PhysicsAttackConfirm";
+            return true;
+        }
+
         match = ScriptCallToArmsOthoYellsPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, ScriptCallToArmsOwner))
         {
@@ -1238,6 +1268,12 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         translated = source;
         detail = string.Empty;
         return false;
+    }
+
+    private static bool TryTranslatePhysicsAttackConfirm(string source, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        return PopupTranslationPatch.TryTranslatePhysicsAttackConfirmText(stripped, spans, out translated);
     }
 
     private static string? CurrentOwnerKey()

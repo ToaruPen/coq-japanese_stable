@@ -13867,6 +13867,58 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
+            "XRL.World.Parts/Physics.cs::"
+            "XRL.World.Parts.Physics.ProcessTargetedMove"
+        ),
+        lines=(3938,),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                (
+                    "SingleCallsiteOwnerPopupTranslationPatch",
+                    "PhysicsProcessTargetedMoveOwner",
+                    "TryTranslatePhysicsAttackConfirm",
+                    "PopupTranslationPatch.TryTranslatePhysicsAttackConfirmText",
+                    "PhysicsAttackConfirm",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+                (
+                    "PhysicsAttackConfirmPattern",
+                    "TryTranslatePhysicsAttackConfirmText",
+                    "本当に",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesSingleCallsiteOwnerPopups_WhenOwnerPatched",
+                    "Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner",
+                    "Patch_DoesNotClaimDeferredRuntimePopups_WhenOwnerPatched",
+                    "nameof(DummySingleCallsiteOwnerPopupTarget.ProcessTargetedMove)",
+                    "Do you really want to attack {{Y|the snapjaw}}?",
+                    "{{W|Do you really want to attack the ウォーターヴァイン農家?}}",
+                    "{{Y|normality field}} prevents spacetime movement.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "typeof(SingleCallsiteOwnerPopupTranslationPatch)",
+                    "XRL.World.Parts.Physics|ProcessTargetedMove|System.Boolean|XRL.World.Cell",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
+        family_id=(
             "XRL.World.Effects/RealityStabilized.cs::"
             "XRL.World.Effects.RealityStabilized.FailedToContest"
         ),

@@ -1931,6 +1931,40 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         return true;
     }
 
+    public bool ProcessTargetedMove(
+        DummyCell? targetCell,
+        string type,
+        string preEvent,
+        string postEvent,
+        int? energyCost = null,
+        bool forced = false,
+        bool system = false,
+        bool ignoreCombat = false,
+        bool ignoreGravity = false,
+        bool noStack = false,
+        bool usePopups = false,
+        string? leaveVerb = null,
+        string? arriveVerb = null,
+        DummyGameObject? ignore = null)
+    {
+        _ = targetCell;
+        _ = type;
+        _ = preEvent;
+        _ = postEvent;
+        _ = energyCost;
+        _ = forced;
+        _ = system;
+        _ = ignoreCombat;
+        _ = ignoreGravity;
+        _ = noStack;
+        _ = usePopups;
+        _ = leaveVerb;
+        _ = arriveVerb;
+        _ = ignore;
+        _ = DummyPopupShow.ShowYesNo(PopupMessageToShow);
+        return true;
+    }
+
     public void ShowScriptCallToArmsWarning()
     {
         _ = nameof(ShowScriptCallToArmsWarning);

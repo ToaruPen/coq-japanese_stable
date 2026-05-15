@@ -1385,6 +1385,20 @@ public static class PopupTranslationPatch
         IReadOnlyList<ColorSpan> spans,
         out string translated)
     {
+        if (!TryTranslatePhysicsAttackConfirmText(source, spans, out translated))
+        {
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(route, family, source, translated);
+        return true;
+    }
+
+    internal static bool TryTranslatePhysicsAttackConfirmText(
+        string source,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated)
+    {
         var match = PhysicsAttackConfirmPattern.Match(source);
         if (!match.Success)
         {
@@ -1407,7 +1421,6 @@ public static class PopupTranslationPatch
             translated = ColorAwareTranslationComposer.Restore(translated, boundarySpans);
         }
 
-        DynamicTextObservability.RecordTransform(route, family, source, translated);
         return true;
     }
 
