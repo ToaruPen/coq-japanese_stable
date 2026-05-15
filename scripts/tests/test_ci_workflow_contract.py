@@ -125,5 +125,9 @@ def test_ci_message_pattern_route_counts_match_python_contract() -> None:
     workflow = _workflow_text()
     localization_job = _job_block(workflow, "localization", "justfile")
     matches = re.findall(r"--expect-count ([\w-]+)=(\d+)", localization_job)
+    observed: dict[str, int] = {}
+    for route, count in matches:
+        assert route not in observed, f"duplicate --expect-count for route: {route}"
+        observed[route] = int(count)
 
-    assert dict(matches) == {route: str(count) for route, count in _EXPECTED_MESSAGE_ROUTE_COUNTS.items()}
+    assert observed == _EXPECTED_MESSAGE_ROUTE_COUNTS
