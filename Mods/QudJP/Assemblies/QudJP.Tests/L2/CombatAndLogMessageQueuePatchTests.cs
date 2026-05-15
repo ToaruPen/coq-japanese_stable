@@ -3718,7 +3718,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     {
         AssertBeguilingPopup(
             "{{G|The snapjaw}} is already your follower. Do you want to beguile {{G|it}} anyway?",
-            "{{G|The snapjaw}}はすでにあなたの仲間だ。それでも{{G|it}}を魅了するか？");
+            "{{G|The snapjaw}}はすでにあなたの仲間だ。それでも{{G|it}}を魅了しますか？");
     }
 
     [Test]

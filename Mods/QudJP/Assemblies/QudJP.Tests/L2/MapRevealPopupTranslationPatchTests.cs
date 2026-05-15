@@ -22,11 +22,11 @@ public sealed class MapRevealPopupTranslationPatchTests
 
     [TestCase(
         "{{Y|ancient map}} is not owned by you, and using {{Y|it}} will consume {{Y|it}}. Are you sure you want to do so?",
-        "{{Y|ancient map}}はあなたのものではなく、{{Y|it}}を使うと{{Y|it}}は消費される。本当に行うか？",
+        "{{Y|ancient map}}はあなたのものではなく、{{Y|it}}を使うと{{Y|it}}は消費される。本当に行いますか？",
         "OwnerConsumptionWarning")]
     [TestCase(
         "{{C|satchel}} are not owned by you, and using {{Y|the map}} will consume {{Y|it}}. Are you sure you want to do so?",
-        "{{C|satchel}}はあなたのものではなく、{{Y|the map}}を使うと{{Y|it}}は消費される。本当に行うか？",
+        "{{C|satchel}}はあなたのものではなく、{{Y|the map}}を使うと{{Y|it}}は消費される。本当に行いますか？",
         "OwnerConsumptionWarning")]
     [TestCase(
         "{{Y|ancient map}} seems to be behaving as nothing more than an ordinary piece of paper.",
@@ -50,11 +50,11 @@ public sealed class MapRevealPopupTranslationPatchTests
 
     [TestCase(
         "{{Y|ancient deed}} is not owned by you, and using {{Y|it}} will consume {{Y|it}}. Are you sure you want to do so?",
-        "{{Y|ancient deed}}はあなたのものではなく、{{Y|it}}を使うと{{Y|it}}は消費される。本当に行うか？",
+        "{{Y|ancient deed}}はあなたのものではなく、{{Y|it}}を使うと{{Y|it}}は消費される。本当に行いますか？",
         "OwnerConsumptionWarning")]
     [TestCase(
         "{{C|satchel}} are not owned by you, and using {{Y|the deed}} will consume {{Y|it}}. Are you sure you want to do so?",
-        "{{C|satchel}}はあなたのものではなく、{{Y|the deed}}を使うと{{Y|it}}は消費される。本当に行うか？",
+        "{{C|satchel}}はあなたのものではなく、{{Y|the deed}}を使うと{{Y|it}}は消費される。本当に行いますか？",
         "OwnerConsumptionWarning")]
     [TestCase(
         "{{Y|ancient deed}} seems to be behaving as nothing more than an ordinary piece of paper.",

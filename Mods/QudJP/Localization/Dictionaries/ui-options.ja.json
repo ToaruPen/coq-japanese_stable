@@ -122,7 +122,7 @@
     {
       "key": "Are you sure you want to override your keymap with the default?",
       "context": "Qud.UI.KeybindsScreen.RestoreDefaults.Confirm",
-      "text": "キー設定を既定に上書きします。よろしいですか？"
+      "text": "キー設定を既定に上書きしますか？"
     },
     {
       "key": "{{C|Configuring Controller:}} {{c|Keyboard && Mouse}}",

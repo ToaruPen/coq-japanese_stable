@@ -103,7 +103,7 @@
         },
         {
             "key": "That is not owned by you. Are you sure you want to open it?",
-            "text": "それはあなたの所有物ではない。本当に開けるか？"
+            "text": "それはあなたの所有物ではない。本当に開けますか？"
         },
         {
             "key": "Are you sure you want to delete the save game for {0}?",
@@ -160,7 +160,7 @@
         },
         {
             "key": "Would you like to walk to the nearest stairway down?",
-            "text": "最寄りの下り階段まで移動するか？"
+            "text": "最寄りの下り階段まで移動しますか？"
         },
         {
             "key": "learn",
@@ -208,7 +208,7 @@
         },
         {
             "key": "There's nothing on that. Would you like to store an item?",
-            "text": "そこには何も置かれていない。アイテムを預けるか？"
+            "text": "そこには何も置かれていない。アイテムを預けますか？"
         },
         {
             "key": "You need a dram of either blood or putrescence to desecrate a shrine.",
@@ -297,7 +297,7 @@
         {
             "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\n Type 'QUIT' to confirm.",
             "context": "Popup.AskString.Prompt",
-            "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+            "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         },
         {
             "key": "If you quit without saving, you will lose all your progress and your character will be lost. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\nType 'ABANDON' to confirm.",
@@ -446,17 +446,17 @@
         {
             "key": "Are you sure you want to ascend the Spindle? You know of no means to descend again.\n\nType 'ASCEND' to confirm.",
             "context": "XRL.UI.Popup.AskString.Prompt",
-            "text": "本当にスピンドルを登るか？ 再び下りる手段はない。\n\n「ASCEND」と入力すると確定する。"
+            "text": "本当にスピンドルを登りますか？ 再び下りる手段はない。\n\n「ASCEND」と入力すると確定する。"
         },
         {
             "key": "Are you sure you want to return to Qud? \n\nType 'RETURN' to confirm.",
             "context": "XRL.UI.Popup.AskString.Prompt",
-            "text": "本当にクッドへ戻るか？\n\n「RETURN」と入力すると確定する。"
+            "text": "本当にクッドへ戻りますか？\n\n「RETURN」と入力すると確定する。"
         },
         {
             "key": "Crossing into Brightsheol will retire your character. Are you sure you want to do it? Type 'CROSS' to confirm.",
             "context": "XRL.UI.Popup.AskString.Prompt",
-            "text": "ブライトシェオルへ渡るとキャラクターは引退する。本当にそうするか？「CROSS」と入力すると確定する。"
+            "text": "ブライトシェオルへ渡るとキャラクターは引退する。本当にそうしますか？「CROSS」と入力すると確定する。"
         },
         {
             "key": "Describe your tattoo. For example: \"a tiny snail\".",
@@ -816,12 +816,12 @@
         {
             "key": "Are you sure you want to forget this recipe?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "本当にこのレシピを忘れるか？"
+            "text": "本当にこのレシピを忘れますか？"
         },
         {
             "key": "Are you sure you want to go to the world map?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "本当にワールドマップへ行くか？"
+            "text": "本当にワールドマップへ行きますか？"
         },
         {
             "key": "Are you sure you want to save and quit?",
@@ -831,62 +831,62 @@
         {
             "key": "Are you sure you want to sunder your own mind?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "本当に自分の心を引き裂くか？"
+            "text": "本当に自分の心を引き裂きますか？"
         },
         {
             "key": "Barathrum is not in the golem. Ascend anyway?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "ゴーレムにバラサラムはいない。それでも昇るか？"
+            "text": "ゴーレムにバラサラムはいない。それでも昇りますか？"
         },
         {
             "key": "DEBUG: Do you really want to die?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "DEBUG: 本当に死ぬか？"
+            "text": "DEBUG: 本当に死にますか？"
         },
         {
             "key": "Do you want to continue despite being unable to use Psychometry?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "サイコメトリーを使えないまま続けるか？"
+            "text": "サイコメトリーを使えないまま続けますか？"
         },
         {
             "key": "Do you want to finish haggling as matters stand?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "現状のまま取引を終えるか？"
+            "text": "現状のまま取引を終えますか？"
         },
         {
             "key": "Do you want to finish the attempt as matters stand?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "現状のまま試行を終えるか？"
+            "text": "現状のまま試行を終えますか？"
         },
         {
             "key": "Do you want to finish the beguiling attempt as matters stand?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "現状のまま魅了の試みを終えるか？"
+            "text": "現状のまま魅了の試みを終えますか？"
         },
         {
             "key": "Do you want to finish the formal water ritual as matters stand?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "現状のまま正式な水儀を終えるか？"
+            "text": "現状のまま正式な水儀を終えますか？"
         },
         {
             "key": "Do you want to finish the naming ritual as matters stand?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "現状のまま命名の儀式を終えるか？"
+            "text": "現状のまま命名の儀式を終えますか？"
         },
         {
             "key": "Do you want to finish the offering ritual as matters stand?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "現状のまま献上の儀式を終えるか？"
+            "text": "現状のまま献上の儀式を終えますか？"
         },
         {
             "key": "Do you want to finish the proselytization attempt as matters stand?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "現状のまま布教の試みを終えるか？"
+            "text": "現状のまま布教の試みを終えますか？"
         },
         {
             "key": "Do you want to finish the rebuking attempt as matters stand?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "現状のまま叱責の試みを終えるか？"
+            "text": "現状のまま叱責の試みを終えますか？"
         },
         {
             "key": "Do you want to save first?",
@@ -896,62 +896,62 @@
         {
             "key": "Do you want to stop travelling?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "移動をやめるか？"
+            "text": "移動をやめますか？"
         },
         {
             "key": "Do you want to use a low-level hack? Low-level hacks make it more difficult to read the terminal output but reduce the chance of triggering security alerts.",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "低レベルハックを使うか？低レベルハックは端末出力の可読性を下げるが、セキュリティ警告を引き起こす可能性を下げる。"
+            "text": "低レベルハックを使いますか？低レベルハックは端末出力の可読性を下げるが、セキュリティ警告を引き起こす可能性を下げる。"
         },
         {
             "key": "Do you want to wait until the ascent is done?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "上昇が終わるまで待つか？"
+            "text": "上昇が終わるまで待ちますか？"
         },
         {
             "key": "Drinking that much will probably make you sick, do you want to continue?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "それだけ飲むとたぶん気分が悪くなる。それでも続けるか？"
+            "text": "それだけ飲むとたぶん気分が悪くなる。それでも続けますか？"
         },
         {
             "key": "Exiting now will finish haggling as matters stand. Are you sure you want to exit?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "今終了すると現状のまま取引が終わる。本当に終了するか？"
+            "text": "今終了すると現状のまま取引が終わる。本当に終了しますか？"
         },
         {
             "key": "Exiting now will finish the attempt as matters stand. Are you sure you want to exit?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "今終了すると現状のまま試行が終わる。本当に終了するか？"
+            "text": "今終了すると現状のまま試行が終わる。本当に終了しますか？"
         },
         {
             "key": "Exiting now will finish the beguiling attempt as matters stand. Are you sure you want to exit?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "今終了すると現状のまま魅了の試みが終わる。本当に終了するか？"
+            "text": "今終了すると現状のまま魅了の試みが終わる。本当に終了しますか？"
         },
         {
             "key": "Exiting now will finish the formal water ritual as matters stand. Are you sure you want to exit?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "今終了すると現状のまま正式な水儀が終わる。本当に終了するか？"
+            "text": "今終了すると現状のまま正式な水儀が終わる。本当に終了しますか？"
         },
         {
             "key": "Exiting now will finish the naming ritual as matters stand. Are you sure you want to exit?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "今終了すると現状のまま命名の儀式が終わる。本当に終了するか？"
+            "text": "今終了すると現状のまま命名の儀式が終わる。本当に終了しますか？"
         },
         {
             "key": "Exiting now will finish the offering ritual as matters stand. Are you sure you want to exit?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "今終了すると現状のまま献上の儀式が終わる。本当に終了するか？"
+            "text": "今終了すると現状のまま献上の儀式が終わる。本当に終了しますか？"
         },
         {
             "key": "Exiting now will finish the proselytization attempt as matters stand. Are you sure you want to exit?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "今終了すると現状のまま布教の試みが終わる。本当に終了するか？"
+            "text": "今終了すると現状のまま布教の試みが終わる。本当に終了しますか？"
         },
         {
             "key": "Exiting now will finish the rebuking attempt as matters stand. Are you sure you want to exit?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "今終了すると現状のまま叱責の試みが終わる。本当に終了するか？"
+            "text": "今終了すると現状のまま叱責の試みが終わる。本当に終了しますか？"
         },
         {
             "key": "Load your last quick save?",
@@ -981,107 +981,107 @@
         {
             "key": "That is not owned by you. Are you sure you want to take it?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "それはあなたの所有物ではない。本当に取るか？"
+            "text": "それはあなたの所有物ではない。本当に取りますか？"
         },
         {
             "key": "The control pit dissolves to silence.\n\nDo you want to wait until the ascent is done?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "制御坑は静寂に溶ける。\n\n上昇が終わるまで待つか？"
+            "text": "制御坑は静寂に溶ける。\n\n上昇が終わるまで待ちますか？"
         },
         {
             "key": "This zone didn't build properly, do you wish to rebuild it?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "このゾーンは正常に生成されていない。再生成するか？"
+            "text": "このゾーンは正常に生成されていない。再生成しますか？"
         },
         {
             "key": "This zone isn't building properly. Do you want to force it to stop and build immediately?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "このゾーンは正常に生成されていない。強制的に停止して直ちに生成し直すか？"
+            "text": "このゾーンは正常に生成されていない。強制的に停止して直ちに生成し直しますか？"
         },
         {
             "key": "Would you like to walk to the nearest stairway up?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "最寄りの上り階段まで移動するか？"
+            "text": "最寄りの上り階段まで移動しますか？"
         },
         {
             "key": "You are leaving the ambient broadcast power grid and transitioning to backup power. Are you sure?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "環境放送電力網を離れ、予備電源に切り替える。本当にいいか？"
+            "text": "環境放送電力網を離れ、予備電源に切り替えますか？"
         },
         {
             "key": "You aren't finished! Are you sure you want to abort the process?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "まだ終わっていない。本当に処理を中断するか？"
+            "text": "まだ終わっていない。本当に処理を中断しますか？"
         },
         {
             "key": "You do not have the skill associated with that power. Would you like to purchase the required skill?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "その能力に対応する技能を持っていない。必要な技能を購入するか？"
+            "text": "その能力に対応する技能を持っていない。必要な技能を購入しますか？"
         },
         {
             "key": "You have mastered beguilement at this level of challenge. Do you want to perform detailed beguilement anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at beguilement if that is possible.",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "この難度での魅了は熟達済みだ。それでも詳細に魅了を試みるか？『いいえ』なら、可能なら魅了が自動で成功する。"
+            "text": "この難度での魅了は熟達済みだ。それでも詳細に魅了を試みますか？『いいえ』なら、可能なら魅了が自動で成功する。"
         },
         {
             "key": "You have mastered disarming operations of this complexity. Do you want to perform detailed disarming anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed.",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "この難度での解除作業は熟達済みだ。それでも詳細に解除を試みるか？『いいえ』なら、自動で成功する。"
+            "text": "この難度での解除作業は熟達済みだ。それでも詳細に解除を試みますか？『いいえ』なら、自動で成功する。"
         },
         {
             "key": "You have mastered examining artifacts of this complexity. Do you want to perform detailed examination anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the examination.",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "この難度での遺物調査は熟達済みだ。それでも詳細に遺物調査を試みるか？『いいえ』なら、可能なら自動で成功する。"
+            "text": "この難度での遺物調査は熟達済みだ。それでも詳細に遺物調査を試みますか？『いいえ』なら、自動で成功する。"
         },
         {
             "key": "You have mastered hacks of this complexity. Do you want to perform a detailed hack anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the hack.",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "この難度でのハッキングは熟達済みだ。それでも詳細なハッキングを試みるか？『いいえ』なら、可能なら自動で成功する。"
+            "text": "この難度でのハッキングは熟達済みだ。それでも詳細なハッキングを試みますか？『いいえ』なら、自動で成功する。"
         },
         {
             "key": "You have mastered proselytization at this level of discourse. Do you want to perform detailed proselytization anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at proselytization if that is possible.",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "このレベルの布教は熟達済みだ。それでも詳細な布教を試みるか？『いいえ』なら、可能なら布教が自動で成功する。"
+            "text": "このレベルの布教は熟達済みだ。それでも詳細な布教を試みますか？『いいえ』なら、可能なら布教が自動で成功する。"
         },
         {
             "key": "You have mastered reality distortion at this level of difficulty. Do you want to guide the process in detail anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically receive the results of strong but unexceptional performance.",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "この難度での現実歪曲は熟達済みだ。それでも詳細に制御するか？『いいえ』なら、強いが平凡な結果を自動で得る。"
+            "text": "この難度での現実歪曲は熟達済みだ。それでも詳細に制御しますか？『いいえ』なら、強いが平凡な結果を自動で得る。"
         },
         {
             "key": "You have mastered rebuking robots of this grade. Do you want to perform a detailed rebuke anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed t the rebuke if that is possible.",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "この難度でのロボット叱責は熟達済みだ。それでも詳細な叱責を試みるか？『いいえ』なら、可能なら叱責が自動で成功する。"
+            "text": "この難度でのロボット叱責は熟達済みだ。それでも詳細な叱責を試みますか？『いいえ』なら、可能なら叱責が自動で成功する。"
         },
         {
             "key": "You have mastered repairs of this complexity. Do you want to perform detailed repairs anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed at the repairs.",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "この難度での修理は熟達済みだ。それでも詳細な修理を試みるか？『いいえ』なら、可能なら修理が自動で成功する。"
+            "text": "この難度での修理は熟達済みだ。それでも詳細な修理を試みますか？『いいえ』なら、修理が自動で成功する。"
         },
         {
             "key": "You have no hands to beat at the flames with. Do you want to roll on the ground to try to put them out?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "炎を叩く手がない。地面を転がって消火を試みるか？"
+            "text": "炎を叩く手がない。地面を転がって消火を試みますか？"
         },
         {
             "key": "You haven't selected an option for every slot. Are you sure you want to complete the turn?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "すべてのスロットで選択を終えていない。本当にターンを完了するか？"
+            "text": "すべてのスロットで選択を終えていない。本当にターンを完了しますか？"
         },
         {
             "key": "You sense your imminent demise. Would you like to return to the start of your vision?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "死が目前に迫っている。予知視の始まりに戻るか？"
+            "text": "死が目前に迫っている。予知視の始まりに戻りますか？"
         },
         {
             "key": "Your precognition is about to run out. Would you like to return to the start of your vision?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "予知視がもうすぐ尽きる。予知視の始まりに戻るか？"
+            "text": "予知視がもうすぐ尽きる。予知視の始まりに戻りますか？"
         },
         {
             "key": "Your {{sphynx|sphynx}} {{Y|salt}} is about to run out. Would you like to return to the start of your vision?",
             "context": "XRL.UI.Popup.ShowYesNo.Message",
-            "text": "あなたの{{sphynx|スフィンクス}} {{Y|ソルト}}がもうすぐ尽きる。予知視の始まりに戻るか？"
+            "text": "あなたの{{sphynx|スフィンクス}} {{Y|ソルト}}がもうすぐ尽きる。予知視の始まりに戻りますか？"
         },
         {
             "key": "You died.\n\nEntombed in the burial chamber of Resheph, the Last Sultan.",
@@ -2410,7 +2410,7 @@
         },
         {
             "key": "{0}: how many do you want to preserve? (max = {1})",
-            "text": "{0}: いくつ保存するか？ (最大 = {1})"
+            "text": "{0}: いくつ保存しますか？ (最大 = {1})"
         },
         {
             "key": "You think you've made a terrible mistake...",
@@ -2695,7 +2695,7 @@
         {
             "key": "Mouse input is disabled but you clicked on the screen several times. Would you like to enable mouse input?",
             "context": "XRL.UI.Popup.Show.Message",
-            "text": "マウス入力は無効だが、画面が何度かクリックされた。マウス入力を有効にするか？"
+            "text": "マウス入力は無効だが、画面が何度かクリックされた。マウス入力を有効にしますか？"
         },
         {
             "key": "There is no valid last character to use.",

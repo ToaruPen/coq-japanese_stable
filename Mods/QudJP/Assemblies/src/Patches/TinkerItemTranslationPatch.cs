@@ -138,7 +138,7 @@ public static class TinkerItemTranslationPatch
                 + TranslateInside(match, spans)
                 + "の"
                 + TranslateDisassemblyTarget(match, spans, "target")
-                + "を分解してよいか？";
+                + "を分解しますか？";
             detail = "ContainerOwnedDisassembly";
             return true;
         }
@@ -149,7 +149,7 @@ public static class TinkerItemTranslationPatch
             translated = RestoreObject(match, spans, "owner")
                 + "はあなたのものではない。"
                 + TranslatePronounOrObject(match, spans, "target")
-                + "を分解してよいか？";
+                + "を分解しますか？";
             detail = "OwnedItemDisassembly";
             return true;
         }
@@ -157,7 +157,7 @@ public static class TinkerItemTranslationPatch
         match = DisassemblyConfirmationPattern.Match(stripped);
         if (match.Success)
         {
-            translated = TranslateDisassemblyConfirmationTarget(match, spans) + "分解してよいか？";
+            translated = TranslateDisassemblyConfirmationTarget(match, spans) + "分解しますか？";
             detail = "DisassemblyConfirmation";
             return true;
         }

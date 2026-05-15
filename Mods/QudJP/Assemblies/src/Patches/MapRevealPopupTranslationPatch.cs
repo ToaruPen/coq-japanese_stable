@@ -176,7 +176,7 @@ public static class MapRevealPopupTranslationPatch
                 RestoreCapture(match, spans, "target"),
                 "を使うと",
                 RestoreCapture(match, spans, "consumed"),
-                "は消費される。本当に行うか？"),
+                "は消費される。本当に行いますか？"),
             stripped,
             spans,
             source);

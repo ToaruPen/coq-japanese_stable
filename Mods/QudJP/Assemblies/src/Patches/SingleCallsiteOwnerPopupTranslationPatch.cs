@@ -912,7 +912,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         match = NeutronFluxWarningGlyphPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, NeutronFluxContainmentOwner))
         {
-            translated = $"{match.Groups["object"].Value}が大きくビープ音を鳴らし、警告グリフを点滅させる。移動をやめるか？";
+            translated = $"{match.Groups["object"].Value}が大きくビープ音を鳴らし、警告グリフを点滅させる。移動をやめますか？";
             detail = "NeutronFluxWarningGlyph";
             return true;
         }

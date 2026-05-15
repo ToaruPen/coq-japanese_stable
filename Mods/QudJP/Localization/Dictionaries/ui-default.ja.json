@@ -678,11 +678,11 @@
     },
     {
       "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\n Type '",
-      "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「"
+      "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「"
     },
     {
       "key": "If you quit without saving, you will lose all your progress and your character will be lost. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\nType '",
-      "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「"
+      "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「"
     },
     {
       "key": "character creation",
@@ -732,22 +732,22 @@
     {
       "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\n Type 'QUIT' to confirm.",
       "context": "PopupMessage.ShowPopup.Message",
-      "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+      "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
     },
     {
       "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\nType 'QUIT' to confirm.",
       "context": "PopupMessage.ShowPopup.Message",
-      "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+      "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
     },
     {
       "key": "If you quit without saving, you will lose all your progress and your character will be lost. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\n Type 'QUIT' to confirm.",
       "context": "PopupMessage.ShowPopup.Message",
-      "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+      "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
     },
     {
       "key": "If you quit without saving, you will lose all your progress and your character will be lost. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\nType 'QUIT' to confirm.",
       "context": "PopupMessage.ShowPopup.Message",
-      "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+      "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
     },
     {
       "key": "' to confirm.",
@@ -860,22 +860,22 @@
     {
       "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\n Type 'QUIT' to confirm.",
       "context": "Qud.UI.PopupMessage.ShowPopup.Message",
-      "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+      "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
     },
     {
       "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\nType 'QUIT' to confirm.",
       "context": "Qud.UI.PopupMessage.ShowPopup.Message",
-      "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+      "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
     },
     {
       "key": "If you quit without saving, you will lose all your progress and your character will be lost. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\n Type 'QUIT' to confirm.",
       "context": "Qud.UI.PopupMessage.ShowPopup.Message",
-      "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+      "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
     },
     {
       "key": "If you quit without saving, you will lose all your progress and your character will be lost. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\\n\\nType 'QUIT' to confirm.",
       "context": "Qud.UI.PopupMessage.ShowPopup.Message",
-      "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+      "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
     },
     {
       "key": "navigate",

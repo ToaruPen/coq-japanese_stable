@@ -1446,34 +1446,6 @@
     {
       "scope": "cross_file",
       "path": "Dictionaries",
-      "key": "You have mastered psychic combat at this level of difficulty. Do you want to guide the process in detail anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically receive the results of strong but unexceptional performance.",
-      "entry_count": 3,
-      "texts": [
-        "この難度での精神戦は熟達済みだ。より高い成功率を狙って詳細に指揮しますか？「いいえ」を選ぶと標準的な成功の結果を自動で受け取ります。",
-        "この難度での精神戦は熟達済みだ。より高い成功率を狙って詳細に指揮する？「いいえ」を選ぶと標準的な成功の結果を自動で受け取る。",
-        "この難度での精神戦闘は習熟済みだ。卓越した成功率を狙って詳細な手順を自ら指揮する？「いいえ」を選ぶと、平凡でも堅実な結果が自動的に得られる。"
-      ],
-      "occurrences": [
-        {
-          "path": "Dictionaries/ui-messagelog-world.ja.json",
-          "entry_index": 50,
-          "text": "この難度での精神戦は熟達済みだ。より高い成功率を狙って詳細に指揮しますか？「いいえ」を選ぶと標準的な成功の結果を自動で受け取ります。"
-        },
-        {
-          "path": "Dictionaries/ui-messagelog-world.ja.json",
-          "entry_index": 73,
-          "text": "この難度での精神戦は熟達済みだ。より高い成功率を狙って詳細に指揮する？「いいえ」を選ぶと標準的な成功の結果を自動で受け取る。"
-        },
-        {
-          "path": "Dictionaries/world-parts.ja.json",
-          "entry_index": 591,
-          "text": "この難度での精神戦闘は習熟済みだ。卓越した成功率を狙って詳細な手順を自ら指揮する？「いいえ」を選ぶと、平凡でも堅実な結果が自動的に得られる。"
-        }
-      ]
-    },
-    {
-      "scope": "cross_file",
-      "path": "Dictionaries",
       "key": "You have no active quests.",
       "entry_count": 2,
       "texts": [
@@ -4619,19 +4591,19 @@
       "key": "If you quit without saving, you will lose all your progress and your character will be lost. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\n Type 'QUIT' to confirm.",
       "entry_count": 2,
       "texts": [
-        "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。",
-        "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+        "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。",
+        "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
       ],
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
           "entry_index": 181,
-          "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+          "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
           "entry_index": 212,
-          "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+          "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         }
       ]
     },
@@ -4641,19 +4613,19 @@
       "key": "If you quit without saving, you will lose all your progress and your character will be lost. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\nType 'QUIT' to confirm.",
       "entry_count": 2,
       "texts": [
-        "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。",
-        "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+        "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。",
+        "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
       ],
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
           "entry_index": 182,
-          "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+          "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
           "entry_index": 213,
-          "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+          "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         }
       ]
     },
@@ -4663,19 +4635,19 @@
       "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\n Type 'QUIT' to confirm.",
       "entry_count": 2,
       "texts": [
-        "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。",
-        "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+        "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。",
+        "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
       ],
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
           "entry_index": 179,
-          "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+          "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
           "entry_index": 210,
-          "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+          "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         }
       ]
     },
@@ -4685,19 +4657,19 @@
       "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\nType 'QUIT' to confirm.",
       "entry_count": 2,
       "texts": [
-        "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。",
-        "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+        "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。",
+        "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
       ],
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
           "entry_index": 180,
-          "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+          "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
           "entry_index": 211,
-          "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了してよろしいですか？\\n\\n「QUIT」と入力すると確定します。"
+          "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         }
       ]
     },
@@ -5203,19 +5175,19 @@
       "key": "Exiting now will finish psychic combat as matters stand. Are you sure you want to exit?",
       "entry_count": 2,
       "texts": [
-        "今終了すると現状のまま精神戦が終わる。終了してもいいですか？",
-        "今終了すると現状のまま精神戦が終わる。終了してもいいですか？"
+        "今終了すると現状のまま精神戦が終わる。終了しますか？",
+        "今終了すると現状のまま精神戦が終わる。終了しますか？"
       ],
       "occurrences": [
         {
           "path": "Dictionaries/ui-messagelog-world.ja.json",
           "entry_index": 52,
-          "text": "今終了すると現状のまま精神戦が終わる。終了してもいいですか？"
+          "text": "今終了すると現状のまま精神戦が終わる。終了しますか？"
         },
         {
           "path": "Dictionaries/ui-messagelog-world.ja.json",
           "entry_index": 75,
-          "text": "今終了すると現状のまま精神戦が終わる。終了してもいいですか？"
+          "text": "今終了すると現状のまま精神戦が終わる。終了しますか？"
         }
       ]
     },
@@ -5313,19 +5285,19 @@
       "key": "You have mastered psychic combat at this level of difficulty. Do you want to guide the process in detail anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically receive the results of strong but unexceptional performance.",
       "entry_count": 2,
       "texts": [
-        "この難度での精神戦は熟達済みだ。より高い成功率を狙って詳細に指揮しますか？「いいえ」を選ぶと標準的な成功の結果を自動で受け取ります。",
-        "この難度での精神戦は熟達済みだ。より高い成功率を狙って詳細に指揮する？「いいえ」を選ぶと標準的な成功の結果を自動で受け取る。"
+        "この難度での精神戦は熟達済みだ。それでも詳細に指揮しますか？『いいえ』なら、強いが平凡な結果を自動で得る。",
+        "この難度での精神戦は熟達済みだ。それでも詳細に指揮しますか？『いいえ』なら、強いが平凡な結果を自動で得る。"
       ],
       "occurrences": [
         {
           "path": "Dictionaries/ui-messagelog-world.ja.json",
           "entry_index": 50,
-          "text": "この難度での精神戦は熟達済みだ。より高い成功率を狙って詳細に指揮しますか？「いいえ」を選ぶと標準的な成功の結果を自動で受け取ります。"
+          "text": "この難度での精神戦は熟達済みだ。それでも詳細に指揮しますか？『いいえ』なら、強いが平凡な結果を自動で得る。"
         },
         {
           "path": "Dictionaries/ui-messagelog-world.ja.json",
           "entry_index": 73,
-          "text": "この難度での精神戦は熟達済みだ。より高い成功率を狙って詳細に指揮する？「いいえ」を選ぶと標準的な成功の結果を自動で受け取る。"
+          "text": "この難度での精神戦は熟達済みだ。それでも詳細に指揮しますか？『いいえ』なら、強いが平凡な結果を自動で得る。"
         }
       ]
     },
