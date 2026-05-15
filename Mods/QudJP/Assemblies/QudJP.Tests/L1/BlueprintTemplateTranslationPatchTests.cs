@@ -293,6 +293,60 @@ public sealed class BlueprintTemplateTranslationPatchTests
         });
     }
 
+    [Test]
+    public void TranslatePartFields_NormalizesPowerSwitchEmitTemplates_BeforeEmitStage()
+    {
+        var translations = BlueprintTemplateTranslationPatch.LoadTranslations();
+        Assert.That(translations, Is.Not.Null);
+
+        SetPrivateStaticField("settersCacheField", typeof(DummyBlueprintPart).GetField("_SettersCache")!);
+        SetPrivateStaticField("originalValueField", typeof(DummyPartSetter).GetField(nameof(DummyPartSetter.OriginalValue))!);
+        SetPrivateStaticField("parsedValueField", typeof(DummyPartSetter).GetField(nameof(DummyPartSetter.ParsedValue))!);
+
+        var part = new DummyBlueprintPart();
+        part._SettersCache["ActivateSuccessMessage"] = new DummyPartSetter
+        {
+            OriginalValue = "=subject.The==subject.name= =verb:start= up with a hum.",
+            ParsedValue = "=subject.The==subject.name= =verb:start= up with a hum.",
+        };
+        part._SettersCache["ActivateFailureMessage"] = new DummyPartSetter
+        {
+            OriginalValue = "Nothing happens.",
+            ParsedValue = "Nothing happens.",
+        };
+        part._SettersCache["DeactivateSuccessMessage"] = new DummyPartSetter
+        {
+            OriginalValue = "=subject.The==subject.name= =verb:shut= down with a whir.",
+            ParsedValue = "=subject.The==subject.name= =verb:shut= down with a whir.",
+        };
+        part._SettersCache["DeactivateFailureMessage"] = new DummyPartSetter
+        {
+            OriginalValue = "Nothing happens.",
+            ParsedValue = "Nothing happens.",
+        };
+
+        var translatedCount = (int)typeof(BlueprintTemplateTranslationPatch)
+            .GetMethod("TranslatePartFields", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { part, BlueprintTemplateTranslationPatch.GetTranslatablePartFields()["PowerSwitch"], translations! })!;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translatedCount, Is.EqualTo(4));
+            Assert.That(
+                GetDummyPartSetter(part, "ActivateSuccessMessage").OriginalValue,
+                Is.EqualTo("=subject.name=がうなり声を上げて起動した。"));
+            Assert.That(
+                GetDummyPartSetter(part, "ActivateFailureMessage").OriginalValue,
+                Is.EqualTo("何も起こらなかった。"));
+            Assert.That(
+                GetDummyPartSetter(part, "DeactivateSuccessMessage").OriginalValue,
+                Is.EqualTo("=subject.name=がうなり声を上げて停止した。"));
+            Assert.That(
+                GetDummyPartSetter(part, "DeactivateFailureMessage").OriginalValue,
+                Is.EqualTo("何も起こらなかった。"));
+        });
+    }
+
     private static void SetPrivateStaticField(string fieldName, object value)
     {
         typeof(BlueprintTemplateTranslationPatch)

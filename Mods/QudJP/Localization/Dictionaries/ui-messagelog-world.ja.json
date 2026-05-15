@@ -1385,6 +1385,18 @@
             "text": "{{C|眠り}}に落ちた！"
         },
         {
+            "key": "exploring",
+            "text": "探索"
+        },
+        {
+            "key": "waiting",
+            "text": "待機"
+        },
+        {
+            "key": "disassembling",
+            "text": "分解"
+        },
+        {
             "key": "{target} are sucked into {vortex}.",
             "context": "XRL.World.Capabilities.Messaging",
             "text": "{target}は{vortex}に吸い込まれた。"

@@ -29,7 +29,23 @@ public static class SunderMindTranslationPatch
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex HeadExplodesPattern = new(
-        "^(?<owner>.+?)'s head explodes!$",
+        "^(?:(?<owner>.+?)'s|Your) head explodes!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex BlastNoDamageMessagePattern = new(
+        "^(?<attacker>You|.+?) (?<verb>sunder|sunders) (?<target>.+?) mind(?<multiplier>\\(x\\d+\\)) for (?<damage>.+?) damage!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex NoseBeginsToBleedPattern = new(
+        "^(?:(?<owner>.+?)'s|Your) nose begins to bleed\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CoreBeginsToLeakPattern = new(
+        "^(?:(?<owner>.+?)'s|Your) core begins to leak\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex BrainBeginsToHemorrhagePattern = new(
+        "^(?:(?<owner>.+?)'s|Your) brain begins to hemorrhage\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [ThreadStatic]
@@ -41,6 +57,7 @@ public static class SunderMindTranslationPatch
         var targets = new List<MethodBase>();
         var targetType = AccessTools.TypeByName("XRL.World.Parts.Mutation.SunderMind");
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
+        var memberOfPsychicBattleType = AccessTools.TypeByName("XRL.World.Effects.MemberOfPsychicBattle");
         if (targetType is null || gameObjectType is null)
         {
             Trace.TraceError("QudJP: {0} target types not found.", Context);
@@ -51,29 +68,37 @@ public static class SunderMindTranslationPatch
         AddTarget(targets, targetType, "BeginSunder", new[] { gameObjectType });
         AddTarget(targets, targetType, "PenetrationFailure", new[] { gameObjectType });
         AddTarget(targets, targetType, "Tick", Type.EmptyTypes);
+        if (memberOfPsychicBattleType is not null)
+        {
+            AddTarget(targets, targetType, "Nosebleed", new[] { gameObjectType, memberOfPsychicBattleType });
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0}.Nosebleed MemberOfPsychicBattle target type not found; skipping Nosebleed only.", Context);
+        }
+
         return targets;
     }
 
-    public static void Prefix()
+    public static void Prefix(out int __state)
     {
         try
         {
+            __state = activeDepth;
             activeDepth++;
         }
         catch (Exception ex)
         {
+            __state = 0;
             Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
         }
     }
 
-    public static Exception? Finalizer(Exception? __exception)
+    public static Exception? Finalizer(Exception? __exception, int __state)
     {
         try
         {
-            if (activeDepth > 0)
-            {
-                activeDepth--;
-            }
+            activeDepth = __state;
         }
         catch (Exception ex)
         {
@@ -155,7 +180,7 @@ public static class SunderMindTranslationPatch
             BeginQueuePattern,
             source,
             (match, spans) =>
-                $"精神の霊界に穿ち{Restore(match, spans, "target")}へ通路を掘り、{Restore(match, spans, "possessive")}精神を破壊し始めた！",
+                $"精神の霊界に穿ち{Restore(match, spans, "target")}へ通路を掘り、{TranslateMindOwner(Restore(match, spans, "possessive"))}精神を破壊し始めた！",
             out translated)
             || TryTranslatePattern(
                 PenetrationFailurePattern,
@@ -163,9 +188,35 @@ public static class SunderMindTranslationPatch
                 (match, spans) => $"{Restore(match, spans, "defenses")}を突破できなかった。",
                 out translated)
             || TryTranslatePattern(
+                BlastNoDamageMessagePattern,
+                source,
+                (match, spans) =>
+                {
+                    var attacker = match.Groups["attacker"].Value;
+                    var subject = attacker == "You" ? "あなた" : RestoreWithoutWholeSourceBoundary(match, spans, "attacker");
+                    var mindOwner = TranslateMindOwner(Restore(match, spans, "target"));
+                    return $"{subject}は{mindOwner}精神を{Restore(match, spans, "multiplier")}破壊し、{Restore(match, spans, "damage")}ダメージを与えた！";
+                },
+                out translated)
+            || TryTranslatePattern(
                 HeadExplodesPattern,
                 source,
-                (match, spans) => $"{Restore(match, spans, "owner")}の頭が爆発した！",
+                (match, spans) => $"{RestorePossessiveOwner(match, spans)}の頭が爆発した！",
+                out translated)
+            || TryTranslatePattern(
+                NoseBeginsToBleedPattern,
+                source,
+                (match, spans) => $"{RestorePossessiveOwner(match, spans)}の鼻血が出始めた。",
+                out translated)
+            || TryTranslatePattern(
+                CoreBeginsToLeakPattern,
+                source,
+                (match, spans) => $"{RestorePossessiveOwner(match, spans)}のコアが漏れ始めた。",
+                out translated)
+            || TryTranslatePattern(
+                BrainBeginsToHemorrhagePattern,
+                source,
+                (match, spans) => $"{RestorePossessiveOwner(match, spans)}の脳が出血し始めた。",
                 out translated);
     }
 
@@ -222,5 +273,41 @@ public static class SunderMindTranslationPatch
     {
         var group = match.Groups[groupName];
         return ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group).Trim();
+    }
+
+    private static string RestoreWithoutWholeSourceBoundary(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
+    {
+        var group = match.Groups[groupName];
+        var innerSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, match.Value.Length);
+        return ColorAwareTranslationComposer.RestoreCapture(group.Value, innerSpans, group).Trim();
+    }
+
+    private static string RestorePossessiveOwner(Match match, IReadOnlyList<ColorSpan> spans)
+    {
+        return match.Groups["owner"].Success ? Restore(match, spans, "owner") : "あなた";
+    }
+
+    private static string TranslateMindOwner(string source)
+    {
+        switch (source.ToUpperInvariant())
+        {
+            case "YOUR":
+            case "YOURS":
+                return "あなたの";
+            case "ITS":
+                return "その";
+            case "THEIR":
+            case "THEIRS":
+                return "彼らの";
+            case "HIS":
+                return "彼の";
+            case "HER":
+            case "HERS":
+                return "彼女の";
+        }
+
+        return source.EndsWith("'s", StringComparison.Ordinal)
+            ? source.Substring(0, source.Length - 2) + "の"
+            : source + "の";
     }
 }

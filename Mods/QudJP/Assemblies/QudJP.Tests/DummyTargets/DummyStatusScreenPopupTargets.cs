@@ -28,4 +28,12 @@ internal static class DummyStatusScreenPopupTarget
         _ = go;
         DummyPopupShow.Show(MessageToSend);
     }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public static void ShowMutationPopup(DummyGameObject go, DummyCharacterMutation mutation)
+    {
+        _ = go;
+        _ = mutation;
+        DummyPopupShow.Show(MessageToSend);
+    }
 }

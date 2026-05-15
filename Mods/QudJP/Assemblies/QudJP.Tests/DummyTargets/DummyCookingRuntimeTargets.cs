@@ -26,4 +26,9 @@ internal sealed class DummyCookingRuntimeTarget
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
         return true;
     }
+
+    public void Trigger()
+    {
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
 }

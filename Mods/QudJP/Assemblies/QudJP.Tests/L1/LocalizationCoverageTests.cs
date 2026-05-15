@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using QudJP.Patches;
 
@@ -89,6 +90,35 @@ public sealed class LocalizationCoverageTests
         {
             Assert.That(skillNames.Except(skillNameKeys).ToArray(), Is.Empty, "Missing skill-name entries in skills dictionaries.");
             Assert.That(powerNames.Except(skillNameKeys).ToArray(), Is.Empty, "Missing power-name entries in skills dictionaries.");
+        });
+    }
+
+    [Test]
+    public void SkillsXml_CoversAllSkillAndPowerDescriptions_ForFormattedDescriptionPopups()
+    {
+        var skillsDocument = XDocument.Load(Path.Combine(localizationRoot, "Skills.jp.xml"));
+        var describedEntries = skillsDocument.Root!
+            .Elements("skill")
+            .Concat(skillsDocument.Root!.Descendants("power"))
+            .Select(static element => new
+            {
+                Name = element.Attribute("Name")?.Value ?? "<missing name>",
+                Description = element.Attribute("Description")?.Value,
+            })
+            .ToArray();
+        var missingDescriptions = describedEntries
+            .Where(static entry => string.IsNullOrWhiteSpace(entry.Description))
+            .Select(static entry => entry.Name)
+            .ToArray();
+        var englishDescriptions = describedEntries
+            .Where(static entry => Regex.IsMatch(entry.Description ?? string.Empty, "[A-Za-z]{5,}"))
+            .Select(static entry => $"{entry.Name}: {entry.Description}")
+            .ToArray();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(missingDescriptions, Is.Empty, "SkillsAndPowersScreen.Show formatted-description popups require localized Description attributes.");
+            Assert.That(englishDescriptions, Is.Empty, "Skill/power descriptions should not retain untranslated long English words.");
         });
     }
 
@@ -643,6 +673,48 @@ public sealed class LocalizationCoverageTests
             Assert.That(petResponse, Is.EqualTo("=subject.T=がにゃあと鳴く。"));
             Assert.That(petResponse, Does.Not.Contain("meow"));
             Assert.That(petResponse, Does.Not.Contain("meows"));
+        });
+    }
+
+    [Test]
+    public void TreatAsSolidMessages_AreLocalizedInObjectBlueprintOverlays()
+    {
+        var objectBlueprintRoot = Path.Combine(localizationRoot, "ObjectBlueprints");
+        var treatAsSolidMessages = Directory.EnumerateFiles(objectBlueprintRoot, "*.jp.xml")
+            .SelectMany(file => XDocument.Load(file).Root!
+                .Elements("object")
+                .SelectMany(obj => obj
+                    .Elements("part")
+                    .Where(static part => string.Equals(
+                        part.Attribute("Name")?.Value,
+                        "TreatAsSolid",
+                        StringComparison.Ordinal))
+                    .Select(part => new
+                    {
+                        FileName = Path.GetFileName(file),
+                        ObjectName = obj.Attribute("Name")?.Value ?? string.Empty,
+                        Message = part.Attribute("Message")?.Value ?? string.Empty,
+                    })))
+            .Where(static row => !string.IsNullOrWhiteSpace(row.Message))
+            .ToArray();
+
+        Assert.That(treatAsSolidMessages, Has.Length.EqualTo(20));
+        Assert.Multiple(() =>
+        {
+            foreach (var row in treatAsSolidMessages)
+            {
+                Assert.That(row.Message, Does.Contain("=subject."),
+                    $"{row.FileName}#{row.ObjectName} must preserve the subject placeholder.");
+                Assert.That(row.Message, Does.Not.Contain("The darkness consumes"),
+                    $"{row.FileName}#{row.ObjectName} must not keep the English darkness template.");
+                Assert.That(row.Message, Does.Not.Contain("under the pressure of normality"),
+                    $"{row.FileName}#{row.ObjectName} must not keep the English normality template.");
+                Assert.That(row.Message, Does.Not.Contain("=verb:collapse="),
+                    $"{row.FileName}#{row.ObjectName} must not keep the English verb slot.");
+            }
+
+            Assert.That(treatAsSolidMessages.Select(static row => row.Message), Has.Some.Contains("闇"));
+            Assert.That(treatAsSolidMessages.Select(static row => row.Message), Has.Some.Contains("常態"));
         });
     }
 
