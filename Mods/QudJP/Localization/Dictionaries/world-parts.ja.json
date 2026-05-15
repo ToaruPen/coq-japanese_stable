@@ -2962,7 +2962,7 @@
         {
             "key": "You have mastered psychic combat at this level of difficulty. Do you want to guide the process in detail anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically receive the results of strong but unexceptional performance.",
             "context": "XRL.World.Parts.XRL.World.PsychicCombatSifrah",
-            "text": "この難度での精神戦闘は習熟済みだ。卓越した成功率を狙って詳細な手順を自ら指揮しますか？「いいえ」を選ぶと、平凡でも堅実な結果が自動的に得られます。"
+            "text": "この難度での精神戦闘は習熟済みだ。卓越した成功率を狙って詳細な手順を自ら指揮しますか？『いいえ』なら、平凡でも堅実な結果が自動的に得られる。"
         },
         {
             "key": "You have no more usable options, so your performance so far will determine the outcome.",
