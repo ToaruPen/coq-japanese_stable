@@ -72,6 +72,7 @@ internal static class PopupShowSemanticPipeline
         CampfireCookAvailabilityTranslationPatch.TryTranslatePopupMessage,
         CampfirePreserveTranslationPatch.TryTranslatePopupMessage,
         CampfireCookFromIngredientsTranslationPatch.TryTranslatePopupMessage,
+        InventoryFireEventTranslationPatch.TryTranslatePopupMessage,
         PhysicsInventoryActionPopupTranslationPatch.TryTranslatePopupMessage,
         WaterRitualPopupTranslationPatch.TryTranslatePopupMessage,
         PsychometryTranslationPatch.TryTranslatePopupMessage,

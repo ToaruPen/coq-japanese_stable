@@ -48,6 +48,7 @@ internal static class MessageQueueSemanticPipeline
         StomachTranslationPatch.TryTranslateQueuedMessage,
         PrecognitionTranslationPatch.TryTranslateQueuedMessage,
         WishCommandQueueTranslationPatch.TryTranslateQueuedMessage,
+        InventoryFireEventTranslationPatch.TryTranslateQueuedMessage,
         SingleCallsiteOwnerQueueTranslationPatch.TryTranslateQueuedMessage,
         FugueOnStepTranslationPatch.TryTranslateQueuedMessage,
         MentalShieldTranslationPatch.TryTranslateQueuedMessage,

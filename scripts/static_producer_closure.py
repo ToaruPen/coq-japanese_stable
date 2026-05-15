@@ -11563,6 +11563,52 @@ def _generated_success_popup_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     )
 
 
+def _inventory_fire_event_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/InventoryFireEventTranslationPatch.cs",
+        (
+            "InventoryFireEventTranslationPatch",
+            "XRL.World.Parts.Inventory",
+            "FireEvent",
+            "GraveyardZoneQueuePattern",
+            "ContainerOwnershipPromptPattern",
+        ),
+    )
+    popup_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("InventoryFireEventTranslationPatch.TryTranslatePopupMessage",),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("InventoryFireEventTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/InventoryFireEventTranslationPatchTests.cs",
+        (
+            "InventoryFireEvent_TranslatesGraveyardZoneQueuedMessage_WhenOwnerPatched",
+            "InventoryFireEvent_TranslatesContainerOwnershipPopup_WhenOwnerPatched",
+            "InventoryFireEvent_DoesNotClaimOwnerMessages_WhenOwnerAbsent",
+            "InventoryFireEvent_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "InventoryFireEvent_LeavesRuntimeFailureMessagesUnchanged_WhenOwnerPatched",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(InventoryFireEventTranslationPatch)",
+            "XRL.World.Parts.Inventory|FireEvent|System.Boolean|XRL.World.Event",
+        ),
+    )
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts/Inventory.cs::XRL.World.Parts.Inventory.FireEvent",
+            lines=(1946, 2214),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(patch, popup_pipeline, queue_pipeline, tests, target_tests),
+        ),
+    )
+
+
 def _wish_command_queue_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/WishCommandQueueTranslationPatch.cs",
@@ -13873,6 +13919,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_neutron_flux_containment_owner_callsites(),
     *_polygel_handle_event_owner_callsites(),
     *_generated_success_popup_callsites(),
+    *_inventory_fire_event_owner_callsites(),
     *_garbage_attempt_rifle_owner_callsites(),
     *_ability_manager_show_owner_callsites(),
     *_enclosing_exit_enclosure_owner_callsites(),

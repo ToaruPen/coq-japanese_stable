@@ -1767,6 +1767,10 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.ConversationScript|IsPhysicalConversationPossible|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.Boolean|System.Boolean|System.Boolean|System.Int32",
         "XRL.World.Parts.ConversationScript|IsMentalConversationPossible|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.Boolean|System.Boolean|System.Int32",
     })]
+    [TestCase(typeof(InventoryFireEventTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Inventory|FireEvent|System.Boolean|XRL.World.Event",
+    })]
     [TestCase(typeof(TerrainTravelTranslationPatch), new[]
     {
         "XRL.World.Parts.TerrainTravel|HandleEvent|System.Boolean|XRL.World.ObjectEnteredCellEvent",
