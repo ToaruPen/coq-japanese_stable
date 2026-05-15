@@ -11609,6 +11609,68 @@ def _inventory_fire_event_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]
     )
 
 
+def _liquid_volume_handle_event_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    patch = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/LiquidVolumeTranslationPatch.cs",
+        (
+            "TryTranslatePopupMessage",
+            "TryTranslateQueuedMessage",
+            "HandleEvent",
+        ),
+    )
+    fragments = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/LiquidVolumeFragmentTranslator.cs",
+        (
+            "Fizzy",
+            "OwnershipDrink",
+            "OwnershipDrain",
+            "DrainConfirm",
+            "OwnershipFill",
+            "EmptyFirst",
+            "OwnershipCollect",
+            "CollectConfirm",
+            "OwnershipUseLiquid",
+        ),
+    )
+    popup_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        ("LiquidVolumeTranslationPatch.TryTranslatePopupMessage",),
+    )
+    queue_pipeline = EvidenceFile(
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        ("LiquidVolumeTranslationPatch.TryTranslateQueuedMessage",),
+    )
+    tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldPartsProducerTranslationPatchTests.cs",
+        (
+            "LiquidVolumePatch_TranslatesHandleEventOwnerMessages_WhenOwnerPatched",
+            "LiquidVolumePatch_DoesNotTranslatePopup_WhenOwnerAbsent",
+            "LiquidVolumePatch_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+            "LiquidVolumePatch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
+            "LiquidVolumePatch_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+            "LiquidVolumePatch_LeavesEmptyMessagesUnchanged_WhenOwnerPatched",
+            "nameof(DummyLiquidVolumeProducerTarget.HandleEvent)",
+            "The {{Y|canteen}} is not owned by you. Are you sure you want to drink from {{Y|it}}?",
+            "You are able to collect 129 drams of {{B|fresh water}}. Are you sure you want to?",
+        ),
+    )
+    target_tests = EvidenceFile(
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        (
+            "typeof(LiquidVolumeTranslationPatch)",
+            "XRL.World.Parts.LiquidVolume|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        ),
+    )
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.HandleEvent",
+            lines=(3149, 3159, 3295, 3301, 3326, 3385, 3468, 3475, 3559),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(patch, fragments, popup_pipeline, queue_pipeline, tests, target_tests),
+        ),
+    )
+
+
 def _wish_command_queue_families() -> tuple[CoveredOwnerFamily, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/WishCommandQueueTranslationPatch.cs",
@@ -13934,6 +13996,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_campfire_cook_from_ingredients_owner_callsites(),
     *_physics_handle_event_object_entering_cell_callsites(),
     *_physics_handle_event_inventory_action_popup_callsites(),
+    *_liquid_volume_handle_event_owner_callsites(),
     CoveredOwnerCallsites(
         family_id=(
             "XRL.World.Parts.Mutation/Carapace.cs::"

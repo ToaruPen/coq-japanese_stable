@@ -190,6 +190,96 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [Test]
+    public void LiquidVolumePatch_TranslatesHandleEventOwnerMessages_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(
+                harmony,
+                nameof(DummyPopupShow.ShowYesNoCancel),
+                typeof(string),
+                typeof(string),
+                typeof(bool),
+                typeof(int));
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyLiquidVolumeProducerTarget), nameof(DummyLiquidVolumeProducerTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(LiquidVolumeTranslationPatch));
+
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                PopupMethod = nameof(DummyPopupShow.ShowYesNoCancel),
+            };
+
+            target.PopupMessageToShow = "The {{Y|canteen}} is not owned by you. Are you sure you want to drink from {{Y|it}}?";
+            target.HandleEvent(new DummyInventoryActionEvent());
+            var ownershipDrink = DummyPopupShow.LastShowYesNoCancelMessage;
+
+            target.PopupMessageToShow = "The {{Y|canteen}} is not owned by you. Are you sure you want to drain {{Y|it}}?";
+            target.HandleEvent(new DummyInventoryActionEvent());
+            var ownershipDrain = DummyPopupShow.LastShowYesNoCancelMessage;
+
+            target.PopupMessageToShow = "Are you sure you want to drain {{Y|canteen}}?";
+            target.HandleEvent(new DummyInventoryActionEvent());
+            var drainConfirm = DummyPopupShow.LastShowYesNoCancelMessage;
+
+            target.PopupMessageToShow = "The {{Y|canteen}} is not owned by you. Are you sure you want to fill {{Y|it}}?";
+            target.HandleEvent(new DummyInventoryActionEvent());
+            var ownershipFill = DummyPopupShow.LastShowYesNoCancelMessage;
+
+            target.PopupMessageToShow = "Do you want to empty {{Y|canteen}} first?";
+            target.HandleEvent(new DummyInventoryActionEvent());
+            var emptyFirst = DummyPopupShow.LastShowYesNoCancelMessage;
+
+            target.PopupMessageToShow = "The {{Y|canteen}} is not owned by you. Are you sure you want to collect from {{Y|it}}?";
+            target.HandleEvent(new DummyInventoryActionEvent());
+            var ownershipCollect = DummyPopupShow.LastShowYesNoCancelMessage;
+
+            target.PopupMessageToShow = "You are able to collect 129 drams of {{B|fresh water}}. Are you sure you want to?";
+            target.HandleEvent(new DummyInventoryActionEvent());
+            var collectConfirm = DummyPopupShow.LastShowYesNoCancelMessage;
+
+            target.PopupMessageToShow = "The {{Y|canteen}} is not owned by you. Are you sure you want to use {{B|fresh water}} from {{Y|it}}?";
+            target.HandleEvent(new DummyInventoryActionEvent());
+            var ownershipUseLiquid = DummyPopupShow.LastShowYesNoCancelMessage;
+
+            target.PopupMessageToShow = string.Empty;
+            target.QueuedMessageToSend = "It's fizzy.";
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(ownershipDrink, Is.EqualTo("{{Y|canteen}}はあなたの所有物ではない。本当にそこから飲みますか？"));
+                Assert.That(ownershipDrain, Is.EqualTo("{{Y|canteen}}はあなたの所有物ではない。本当に排出しますか？"));
+                Assert.That(drainConfirm, Is.EqualTo("{{Y|canteen}}を本当に排出しますか？"));
+                Assert.That(ownershipFill, Is.EqualTo("{{Y|canteen}}はあなたの所有物ではない。本当に満たしますか？"));
+                Assert.That(emptyFirst, Is.EqualTo("{{Y|canteen}}を先に空にしますか？"));
+                Assert.That(ownershipCollect, Is.EqualTo("{{Y|canteen}}はあなたの所有物ではない。本当にそこから集めますか？"));
+                Assert.That(collectConfirm, Is.EqualTo("{{B|fresh water}}を129ドラム集められる。本当にそうしますか？"));
+                Assert.That(ownershipUseLiquid, Is.EqualTo("{{Y|canteen}}はあなたの所有物ではない。{{B|fresh water}}を本当にそこから使いますか？"));
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("シュワシュワしている。"));
+                Assert.That(LiquidVolumePopupHitCount("OwnershipDrink"), Is.EqualTo(1));
+                Assert.That(LiquidVolumePopupHitCount("OwnershipDrain"), Is.EqualTo(1));
+                Assert.That(LiquidVolumePopupHitCount("DrainConfirm"), Is.EqualTo(1));
+                Assert.That(LiquidVolumePopupHitCount("OwnershipFill"), Is.EqualTo(1));
+                Assert.That(LiquidVolumePopupHitCount("EmptyFirst"), Is.EqualTo(1));
+                Assert.That(LiquidVolumePopupHitCount("OwnershipCollect"), Is.EqualTo(1));
+                Assert.That(LiquidVolumePopupHitCount("CollectConfirm"), Is.EqualTo(1));
+                Assert.That(LiquidVolumePopupHitCount("OwnershipUseLiquid"), Is.EqualTo(1));
+                Assert.That(LiquidVolumeQueuedHitCount("Fizzy"), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void LiquidVolumePatch_DoesNotTranslatePopup_WhenOwnerAbsent()
     {
         var harmonyId = CreateHarmonyId();
@@ -1959,6 +2049,20 @@ public sealed class WorldPartsProducerTranslationPatchTests
         }
 
         throw new ArgumentOutOfRangeException(nameof(targetType), targetType, null);
+    }
+
+    private static int LiquidVolumePopupHitCount(string detail)
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupShowTranslationPatch),
+            "Popup.Show.LiquidVolumeTranslationPatch." + detail);
+    }
+
+    private static int LiquidVolumeQueuedHitCount(string detail)
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            "MessageQueue.AddPlayerMessage",
+            nameof(LiquidVolumeTranslationPatch) + ".Queued." + detail);
     }
 
     private void WritePatternDictionary(params (string pattern, string template)[] patterns)
