@@ -11941,6 +11941,55 @@ def _long_blades_core_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     )
 
 
+def _xrl_core_player_turn_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.Core/XRLCore.cs::XRL.Core.XRLCore.PlayerTurn",
+            lines=(699, 722, 1489, 1869, 1984, 1988, 1999, 2003, 2149, 2153),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/XrlCorePlayerTurnTranslationPatch.cs",
+                    (
+                        "XrlCorePlayerTurnTranslationPatch",
+                        "TryTranslatePopupMessage",
+                        "TryTranslateQueuedMessage",
+                        "InvalidInventoryObjectPattern",
+                        "AutoattackNonHostilePattern",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("XrlCorePlayerTurnTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("XrlCorePlayerTurnTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/XrlCorePlayerTurnTranslationPatchTests.cs",
+                    (
+                        "PlayerTurn_TranslatesOwnerPopups_WhenOwnerPatched",
+                        "PlayerTurn_TranslatesOwnerQueuedMessages_WhenOwnerPatched",
+                        "PlayerTurn_DoesNotRecordOwnerPopupRoute_WhenOwnerAbsent",
+                        "PlayerTurn_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "PlayerTurn_DoesNotRetranslateDirectMarkedMessages_WhenOwnerPatched",
+                        "PlayerTurn_DoesNotClaimDeferredFixedOrEmptyPopups_WhenOwnerPatched",
+                        "PlayerTurn_DoesNotClaimEmptyOrUnsupportedQueuedMessages_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(XrlCorePlayerTurnTranslationPatch)",
+                        "XRL.Core.XRLCore|PlayerTurn|System.Void",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 COVERED_OWNER_FAMILIES: Final = (
     CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
@@ -14164,6 +14213,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_action_manager_run_segment_owner_callsites(),
     *_metrics_manager_log_error_owner_callsites(),
     *_long_blades_core_owner_callsites(),
+    *_xrl_core_player_turn_owner_callsites(),
     CoveredOwnerCallsites(
         family_id=(
             "XRL.World.Parts.Mutation/Carapace.cs::"

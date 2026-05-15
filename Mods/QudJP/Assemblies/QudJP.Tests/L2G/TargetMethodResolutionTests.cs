@@ -1892,6 +1892,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.LongBladesCore|FireEvent|System.Boolean|XRL.World.Event",
     })]
+    [TestCase(typeof(XrlCorePlayerTurnTranslationPatch), new[]
+    {
+        "XRL.Core.XRLCore|PlayerTurn|System.Void",
+    })]
     [TestCase(typeof(SingleCallsiteOwnerPopupTranslationPatch), new[]
     {
         "XRL.World.Quests.AscensionSystem|BarathrumStartConversation|System.Void|XRL.World.GameObject",

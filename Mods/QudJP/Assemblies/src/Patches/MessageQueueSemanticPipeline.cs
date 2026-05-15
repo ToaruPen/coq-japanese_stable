@@ -12,6 +12,7 @@ internal static class MessageQueueSemanticPipeline
         ActionManagerRunSegmentTranslationPatch.TryTranslateQueuedMessage,
         ITeleporterTranslationPatch.TryTranslateQueuedMessage,
         LongBladesCoreTranslationPatch.TryTranslateQueuedMessage,
+        XrlCorePlayerTurnTranslationPatch.TryTranslateQueuedMessage,
         PrefixedOwnerQueueTranslationPatch.TryTranslateQueuedMessage,
         PhysicsObjectEnteringCellTranslationPatch.TryTranslateQueuedMessage,
         CrippleApplyTranslationPatch.TryTranslateQueuedMessage,
