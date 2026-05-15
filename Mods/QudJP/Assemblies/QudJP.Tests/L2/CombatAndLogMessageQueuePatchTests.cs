@@ -7751,7 +7751,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         try
         {
             PatchQueue(harmony);
-            PatchOwnerWithIntState(
+            PatchOwner(
                 harmony,
                 RequireMethod(typeof(DummyLiquidWarmStaticTarget), methodName, typeof(bool)),
                 typeof(LiquidWarmStaticTranslationPatch));
@@ -7778,7 +7778,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         try
         {
             PatchPopupShow(harmony);
-            PatchOwnerWithIntState(
+            PatchOwner(
                 harmony,
                 RequireMethod(typeof(DummyLiquidWarmStaticTarget), methodName, typeof(bool)),
                 typeof(LiquidWarmStaticTranslationPatch));
@@ -10669,15 +10669,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         harmony.Patch(
             original: original,
             prefix: new HarmonyMethod(RequireMethod(patchType, "Prefix")),
-            finalizer: new HarmonyMethod(RequireMethod(patchType, "Finalizer", typeof(Exception))));
-    }
-
-    private static void PatchOwnerWithIntState(Harmony harmony, MethodInfo original, Type patchType)
-    {
-        harmony.Patch(
-            original: original,
-            prefix: new HarmonyMethod(RequireMethod(patchType, "Prefix", typeof(int).MakeByRefType())),
-            finalizer: new HarmonyMethod(RequireMethod(patchType, "Finalizer", typeof(Exception), typeof(int))));
+            finalizer: new HarmonyMethod(RequireMethod(patchType, "Finalizer")));
     }
 
     private static string CreateHarmonyId()
