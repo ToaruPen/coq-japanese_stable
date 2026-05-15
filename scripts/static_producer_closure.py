@@ -16567,6 +16567,62 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
+        family_id="XRL.UI/TradeUI.cs::XRL.UI.TradeUI.ShowTradeScreen",
+        lines=(364, 370, 376, 387, 393, 402, 441, 804, 908),
+        inventory_statuses=("needs_family_review",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/TradeUiVendorPopupTranslationPatch.cs",
+                ("TradeUiVendorPopupTranslationPatch", "ShowTradeScreen", "TryTranslatePopupMessage"),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+                ("TradeUiVendorPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs",
+                (
+                    "TradeUiPopup.CannotCarry",
+                    "TradeUiPopup.EngagedInMelee",
+                    "TradeUiPopup.OnFire",
+                    "TradeUiPopup.WaterDebt",
+                    "TradeUiPopup.WaterDebtGiveYourDrams",
+                    "TradeUiPopup.WaterDebtGiveIt",
+                    "TradeUiPopup.HasNothingToTrade",
+                    "TradeUiPopup.MissingSkill",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Localization/Dictionaries/ui-trade.ja.json",
+                (
+                    "{0} cannot carry things.",
+                    "{0} engaged in melee combat and is too busy to trade with you.",
+                    "{0} on fire and is too busy to trade with you.",
+                    "{0} will not trade with you until you pay {1} the {2} you owe {3}.",
+                    "{0} will not trade with you until you pay {1} the {2} you owe {3}. Do you want to give {4} your {5} now?",  # noqa: E501
+                    "{0} will not trade with you until you pay {1} the {2} you owe {3}. Do you want to give it to {4} now?",  # noqa: E501
+                    "{0} does not have the skill to {1}.",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/TradeUiPopupTranslationPatchTests.cs",
+                (
+                    "VendorOwnerPatch_TranslatesShowTradeScreenOwnerPopups_WhenOwnerPatched",
+                    "VendorOwnerPatch_LeavesEmptyNewVendorOwnerPopupUnchanged_WhenOwnerPatched",
+                    "VendorOwnerPatch_DoesNotTranslateNewVendorOwnerPopups_WhenOwnerAbsent",
+                    "VendorOwnerPatch_DoesNotRetranslateDirectMarkedNewVendorOwnerPopups_WhenOwnerPatched",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "TradeUiVendorPopupProducerMethods_ResolveExpectedFullSignatures",
+                    "XRL.UI.TradeUI|ShowTradeScreen|System.Void|XRL.World.GameObject|System.Single|XRL.UI.TradeUI+TradeScreenMode",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerCallsites(
         family_id="XRL.UI/TradeUI.cs::XRL.UI.TradeUI.DoVendorExamine",
         lines=(1217, 1222, 1229, 1231, 1234, 1245),
         inventory_statuses=("needs_family_review",),
