@@ -229,7 +229,7 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.PsychicCombatSifrah),
         "You have mastered psychic combat at this level of difficulty. Do you want to guide the process in detail anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically receive the results of strong but unexceptional performance.",
-        "この難度での精神戦は熟達済みだ。より高い成功率を狙って詳細に指揮しますか？『いいえ』なら、標準的な成功の結果を自動で受け取る。",
+        "この難度での精神戦は熟達済みだ。それでも詳細に指揮しますか？『いいえ』なら、強いが平凡な結果を自動で得る。",
         "PsychicCombat")]
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.RealityDistortionSifrah),
