@@ -160,6 +160,37 @@ public sealed class AbilityBarAfterRenderTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesGeneratedActiveEffectPartsAcrossTmpSegments()
+    {
+        WriteDictionary(
+            ("ACTIVE EFFECTS:", "アクティブ効果:"),
+            ("wading", "浅瀬を進んでいる"));
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("tarry", "{{K|タール質の}}"),
+            ("wet", "{{B|濡れた}}"));
+
+        RunWithPostfixPatch(() =>
+        {
+            var target = new DummyAbilityBarAfterRenderTarget
+            {
+                NextEffectText =
+                    "<color=#FFFFFFFF><color=#508d75>ACTIVE EFFECTS:</color></color><color=#B1C9C3FF> </color><color=#155352FF>tarry</color><color=#0096FFFF> wet</color><color=#B1C9C3FF>, </color><color=#0096FFFF>wading</color>",
+            };
+
+            target.AfterRender(core: null, sb: null);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    target.GetEffectText(),
+                    Is.EqualTo("<color=#FFFFFFFF><color=#508d75>アクティブ効果:</color></color><color=#B1C9C3FF> </color>{{K|タール質の}}{{B|濡れた}}<color=#B1C9C3FF>、</color><color=#0096FFFF>浅瀬を進んでいる</color>"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("tarry wet"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
     public void Postfix_PreservesSeparatorTmpSegment_WhenCommaBelongsToPreviousEffectColor()
     {
         WriteDictionary(("ACTIVE EFFECTS:", "アクティブ効果:"));

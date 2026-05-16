@@ -529,7 +529,7 @@ internal static class GetDisplayNameRouteTranslator
         var baseGroup = match.Groups["base"];
         var baseSource = baseGroup.Value;
         var translatedBase = RestoreWholeSlice(TranslateDisplayNameFragment(baseSource, route), spans, baseGroup);
-        var stats = RestoreVisibleSlice(match.Groups["stats"], spans);
+        var stats = RestoreCompactWeaponStatsSlice(match.Groups["stats"], spans);
         var suffixes = match.Groups["suffixes"];
         var suffixEnd = suffixes.Index + suffixes.Length;
         var builder = new StringBuilder();
@@ -548,7 +548,7 @@ internal static class GetDisplayNameRouteTranslator
                 if (string.Equals(translatedState, stateGroup.Value, StringComparison.Ordinal))
                 {
                     builder.Append(' ');
-                    builder.Append(RestoreVisibleSlice(suffixMatch.Groups["bracket"], spans));
+                    builder.Append(RestoreCompactWeaponSuffixSlice(suffixMatch.Groups["bracket"], spans));
                     continue;
                 }
 
@@ -560,7 +560,7 @@ internal static class GetDisplayNameRouteTranslator
             }
 
             builder.Append(' ');
-            builder.Append(RestoreVisibleSlice(suffixMatch.Groups["angle"], spans));
+            builder.Append(RestoreCompactWeaponSuffixSlice(suffixMatch.Groups["angle"], spans));
         }
 
         if (scannedTo != suffixEnd || !changed)
@@ -597,7 +597,9 @@ internal static class GetDisplayNameRouteTranslator
         var baseGroup = match.Groups["base"];
         var baseSource = baseGroup.Value;
         var translatedBase = RestoreWholeSlice(TranslateDisplayNameFragment(baseSource, route), spans, baseGroup);
-        var stats = RestoreVisibleSlice(match.Groups["stats"], spans);
+        var stats = string.Equals(transformName, "DisplayName.CompactWeaponStatsSuffix", StringComparison.Ordinal)
+            ? RestoreCompactWeaponStatsSlice(match.Groups["stats"], spans)
+            : RestoreVisibleSlice(match.Groups["stats"], spans);
         var stateGroup = match.Groups["state"];
 
         var translatedState = stateGroup.Success
@@ -1289,6 +1291,124 @@ internal static class GetDisplayNameRouteTranslator
         return ColorAwareTranslationComposer.Restore(
             group.Value,
             sliceSpans);
+    }
+
+    private static string RestoreCompactWeaponStatsSlice(Group group, IReadOnlyList<ColorSpan> spans)
+    {
+        return ColorizeRawCompactWeaponStats(RestoreVisibleSlice(group, spans));
+    }
+
+    private static string RestoreCompactWeaponSuffixSlice(Group group, IReadOnlyList<ColorSpan> spans)
+    {
+        var restored = RestoreVisibleSlice(group, spans);
+        restored = ColorizeRawBracketSuffix(restored);
+        return ColorizeRawAngleCodeSuffix(restored);
+    }
+
+    private static string ColorizeRawCompactWeaponStats(string source)
+    {
+        if (source.IndexOf('\u001a') < 0 && source.IndexOf('\u0003') < 0)
+        {
+            return source;
+        }
+
+        var builder = new StringBuilder(source.Length + 16);
+        for (var index = 0; index < source.Length; index++)
+        {
+            var current = source[index];
+            if (current == '\u001a' && !IsAlreadyTaggedControlSymbol(source, index, "{{c|"))
+            {
+                builder.Append("{{c|\u001a}}");
+                continue;
+            }
+
+            if (current == '\u0003' && !IsAlreadyTaggedControlSymbol(source, index, "{{r|"))
+            {
+                builder.Append("{{r|\u0003}}");
+                continue;
+            }
+
+            builder.Append(current);
+        }
+
+        return builder.ToString();
+    }
+
+    private static bool IsAlreadyTaggedControlSymbol(string source, int index, string prefix)
+    {
+        return index >= prefix.Length
+            && index + 2 < source.Length
+            && string.Compare(source, index - prefix.Length, prefix, 0, prefix.Length, StringComparison.Ordinal) == 0
+            && source[index + 1] == '}'
+            && source[index + 2] == '}';
+    }
+
+    private static string ColorizeRawAngleCodeSuffix(string source)
+    {
+        if (source.Length < 3
+            || source[0] != '<'
+            || source[source.Length - 1] != '>'
+            || ContainsCharacter(source, '{'))
+        {
+            return source;
+        }
+
+        var code = source.Substring(1, source.Length - 2);
+        if (code.Length == 0)
+        {
+            return source;
+        }
+
+        var builder = new StringBuilder(source.Length + (code.Length * 6));
+        builder.Append("{{y|<{{|");
+        for (var index = 0; index < code.Length; index++)
+        {
+            var current = code[index];
+            if (current >= '0' && current <= '9')
+            {
+                builder.Append("{{g|");
+                builder.Append(current);
+                builder.Append("}}");
+                continue;
+            }
+
+            if ((current >= 'A' && current <= 'Z') || (current >= 'a' && current <= 'z'))
+            {
+                builder.Append("{{B|");
+                builder.Append(current);
+                builder.Append("}}");
+                continue;
+            }
+
+            builder.Append(current);
+        }
+
+        builder.Append("}}>}}");
+        return builder.ToString();
+    }
+
+    private static string ColorizeRawBracketSuffix(string source)
+    {
+        return source.Length >= 3
+            && source[0] == '['
+            && source[source.Length - 1] == ']'
+            && !ContainsCharacter(source, '{')
+            && JapaneseCharacterPattern.IsMatch(source)
+            ? "{{y|" + source + "}}"
+            : source;
+    }
+
+    private static bool ContainsCharacter(string source, char value)
+    {
+        for (var index = 0; index < source.Length; index++)
+        {
+            if (source[index] == value)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static void RemoveUnmatchedTrailingSliceClosers(List<ColorSpan> spans)
