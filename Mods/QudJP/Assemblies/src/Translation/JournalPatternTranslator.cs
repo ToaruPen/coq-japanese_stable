@@ -785,14 +785,14 @@ internal static class JournalPatternTranslator
             return villageCapture;
         }
 
-        if (TryTranslateArticlelessTemplateCapture(source, out var articlelessCapture))
-        {
-            return articlelessCapture;
-        }
-
         if (HistoricSpiceGeneratedNameTranslator.TryTranslateCapture(source, out var historicGeneratedCapture))
         {
             return historicGeneratedCapture;
+        }
+
+        if (TryTranslateArticlelessTemplateCapture(source, out var articlelessCapture))
+        {
+            return articlelessCapture;
         }
 
         return source;
@@ -854,8 +854,8 @@ internal static class JournalPatternTranslator
             }
         }
 
-        translated = source;
-        return false;
+        translated = rest;
+        return true;
     }
 
     private static string LowerAscii(string source)

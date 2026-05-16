@@ -38,7 +38,7 @@ public sealed class SifrahTokenItemPopupTranslationPatchTests
     [TestCase(
         nameof(DummySifrahTokenItemPopupProducerTarget.SocialSifrahTokenGiftCheckTokenUse),
         "You do not have {{C|an engraved dagger}}.",
-        "{{C|an engraved dagger}}を持っていない。",
+        "{{C|engraved dagger}}を持っていない。",
         "SocialSifrahTokenGiftHaveNone")]
     [TestCase(
         nameof(DummySifrahTokenItemPopupProducerTarget.SocialSifrahTokenItemCheckTokenUse),
@@ -48,7 +48,7 @@ public sealed class SifrahTokenItemPopupTranslationPatchTests
     [TestCase(
         nameof(DummySifrahTokenItemPopupProducerTarget.SocialSifrahTokenItemCheckTokenUse),
         "You do not have {{B|a woven basket}}.",
-        "{{B|a woven basket}}を持っていない。",
+        "{{B|woven basket}}を持っていない。",
         "SocialSifrahTokenItemHaveNone")]
     public void Patch_TranslatesSifrahTokenItemPopups_WhenOwnerPatched(
         string methodName,
@@ -189,7 +189,7 @@ public sealed class SifrahTokenItemPopupTranslationPatchTests
                         InvokeOwnerMethod(innerTarget, innerMethodName);
                         Assert.Multiple(() =>
                         {
-                            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{B|a woven basket}}を持っていない。"));
+                            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{B|woven basket}}を持っていない。"));
                             Assert.That(HitCount("SocialSifrahTokenItemHaveNone"), Is.EqualTo(1));
                             Assert.That(HitCount("SocialSifrahTokenGiftAnyMore"), Is.Zero);
                         });

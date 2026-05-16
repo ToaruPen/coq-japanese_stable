@@ -139,6 +139,7 @@ public sealed class AbilityBarAfterRenderTranslationPatchTests
     {
         WriteDictionary(
             ("ACTIVE EFFECTS:", "アクティブ効果:"),
+            ("swimming", "泳いでいる"),
             ("wet", "濡れた"));
 
         RunWithPostfixPatch(() =>
@@ -154,7 +155,7 @@ public sealed class AbilityBarAfterRenderTranslationPatchTests
             Assert.That(
                 target.GetEffectText(),
                 Is.EqualTo(
-                    "<color=#FFFFFFFF><color=#508d75>アクティブ効果:</color></color> <color=#0096FFFF>swimming</color>、<color=#B1C9C3FF>{{B|濡れた}}</color>"));
+                    "<color=#FFFFFFFF><color=#508d75>アクティブ効果:</color></color> <color=#0096FFFF>泳いでいる</color>、<color=#B1C9C3FF>{{B|濡れた}}</color>"));
         });
     }
 

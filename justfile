@@ -548,6 +548,11 @@ text-construction-surface-queue source_root=decompiled_root output="/tmp/roslyn-
   just text-construction-inventory {{quote(source_root)}} {{quote(output)}} ""
   {{python}} scripts/text_construction_surface_policy.py --inventory {{quote(output)}} --limit {{quote(limit)}}
 
+# Audit source routes and test expectations for English function-word residue risks.
+function-word-residue-audit source_root=decompiled_root tests_root="Mods/QudJP/Assemblies/QudJP.Tests" output="/tmp/qudjp-function-word-residue-audit.json" limit="100":
+  {{python}} scripts/audit_function_word_residue.py --source-root {{quote(source_root)}} --tests-root {{quote(tests_root)}} --output {{quote(output)}} --format json
+  {{python}} scripts/audit_function_word_residue.py --source-root {{quote(source_root)}} --tests-root {{quote(tests_root)}} --limit {{quote(limit)}}
+
 # Verify agent-loop tools and dotfiles script availability.
 tool-check:
   bash scripts/agent_cycle.sh tool-check

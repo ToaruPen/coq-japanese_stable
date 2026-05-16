@@ -272,7 +272,7 @@ public static class LiquidLoaderTranslationPatch
         var liquidGroup = match.Groups["liquid"];
         if (liquidGroup.Success)
         {
-            return $"{loader}はすでに{ColorAwareTranslationComposer.RestoreCapture(liquidGroup.Value, spans, liquidGroup).Trim()}で満杯だ。";
+            return $"{loader}はすでに{Restore(match, spans, "liquid")}で満杯だ。";
         }
 
         return $"{loader}はすでに満杯だ。";
@@ -312,6 +312,22 @@ public static class LiquidLoaderTranslationPatch
     private static string Restore(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
     {
         var group = match.Groups[groupName];
-        return ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group).Trim();
+        var restored = ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group).Trim();
+        return ColorAwareTranslationComposer.TranslatePreservingColors(restored, NormalizeFunctionWordLabel);
+    }
+
+    private static string NormalizeFunctionWordLabel(string label)
+    {
+        var normalized = StringHelpers.StripLeadingEnglishArticle(
+            label,
+            includeCapitalizedDefiniteArticle: true,
+            includeCapitalizedIndefiniteArticle: true);
+        if (normalized.StartsWith("your ", StringComparison.Ordinal)
+            || normalized.StartsWith("Your ", StringComparison.Ordinal))
+        {
+            return "あなたの" + normalized.Substring(5);
+        }
+
+        return normalized;
     }
 }

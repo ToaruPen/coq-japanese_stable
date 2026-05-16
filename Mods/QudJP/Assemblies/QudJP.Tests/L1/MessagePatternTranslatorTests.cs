@@ -1100,7 +1100,7 @@ public sealed class MessagePatternTranslatorTests
 
         var translated = MessagePatternTranslator.Translate("You remember the Desiccated Spectre.");
 
-        Assert.That(translated, Is.EqualTo("the Desiccated Spectreを思い出した。"));
+        Assert.That(translated, Is.EqualTo("Desiccated Spectreを思い出した。"));
     }
 
     [Test]

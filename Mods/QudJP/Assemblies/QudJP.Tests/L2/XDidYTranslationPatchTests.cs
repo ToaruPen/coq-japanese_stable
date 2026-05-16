@@ -671,7 +671,7 @@ public sealed class XDidYTranslationPatchTests
         }
     }
 
-    [TestCase("brass statue of a 山羊人の種播き", "\u0001あなたはbrass statue of a 山羊人の種播きの下で短い祈りを唱えた。", false)]
+    [TestCase("brass statue of a 山羊人の種播き", "\u0001あなたは山羊人の種播きの真鍮の像の下で短い祈りを唱えた。", false)]
     [TestCase("", null, true)]
     [TestCase("{{W|stone statue of a 山羊人の種播き}}", "\u0001あなたは{{W|山羊人の種播きの石の像}}の下で短い祈りを唱えた。", false)]
     [TestCase("\u0001stone statue of a 山羊人の種播き", "\u0001あなたは\u0001stone statue of a 山羊人の種播きの下で短い祈りを唱えた。", false)]
@@ -681,6 +681,7 @@ public sealed class XDidYTranslationPatchTests
         bool expectedOriginalExecuted)
     {
         WriteUiDictionary(
+            ("brass", "真鍮"),
             ("stone", "石"),
             ("statue", "像"));
         WriteDictionary(tier2: new[] { ("voice", "a short prayer beneath {0}", "{0}の下で短い祈りを唱えた") });

@@ -19,8 +19,6 @@ internal static class MessagePatternTranslator
         new ConcurrentDictionary<string, Regex>(StringComparer.Ordinal);
     private static readonly ConcurrentDictionary<string, CachedPatternFile> PatternFileCache =
         new ConcurrentDictionary<string, CachedPatternFile>(StringComparer.Ordinal);
-    private static readonly Regex JapaneseCharacterPattern =
-        new Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly ConcurrentDictionary<string, int> MissingPatternCounts =
         new ConcurrentDictionary<string, int>(StringComparer.Ordinal);
     private static readonly ConcurrentDictionary<string, int> MissingRouteCounts =
@@ -983,6 +981,11 @@ internal static class MessagePatternTranslator
             return "あなた";
         }
 
+        if (string.Equals(source, "yourself", StringComparison.Ordinal))
+        {
+            return "自分自身";
+        }
+
         using var _ = Translator.PushMissingKeyLoggingSuppression(true);
         if (ActivatedAbilityNameTranslator.TryTranslateVisibleName(source, out var activatedAbilityCapture))
         {
@@ -1008,6 +1011,11 @@ internal static class MessagePatternTranslator
         if (TryTranslatePossessiveCapture(source, out var possessiveCapture))
         {
             return possessiveCapture;
+        }
+
+        if (TryTranslatePossessivePronounCapture(source, out var possessivePronounCapture))
+        {
+            return possessivePronounCapture;
         }
 
         var direct = Translator.Translate(source);
@@ -1055,6 +1063,60 @@ internal static class MessagePatternTranslator
         return true;
     }
 
+    private static bool TryTranslatePossessivePronounCapture(string source, out string translated)
+    {
+        if (TryStripPossessivePronounPrefix(source, out var prefix, out var rest))
+        {
+            translated = prefix + TranslateTemplateCapture(rest);
+            return true;
+        }
+
+        translated = string.Empty;
+        return false;
+    }
+
+    private static bool TryStripPossessivePronounPrefix(string source, out string translatedPrefix, out string rest)
+    {
+        translatedPrefix = string.Empty;
+        rest = string.Empty;
+
+        if (source.StartsWith("your ", StringComparison.Ordinal)
+            || source.StartsWith("Your ", StringComparison.Ordinal))
+        {
+            translatedPrefix = "あなたの";
+            rest = source.Substring(5);
+            return rest.Length > 0;
+        }
+
+        if (source.StartsWith("its ", StringComparison.Ordinal)
+            || source.StartsWith("Its ", StringComparison.Ordinal))
+        {
+            translatedPrefix = "その";
+            rest = source.Substring(4);
+            return rest.Length > 0;
+        }
+
+        if (source.StartsWith("his ", StringComparison.Ordinal)
+            || source.StartsWith("His ", StringComparison.Ordinal)
+            || source.StartsWith("her ", StringComparison.Ordinal)
+            || source.StartsWith("Her ", StringComparison.Ordinal))
+        {
+            translatedPrefix = "その";
+            rest = source.Substring(4);
+            return rest.Length > 0;
+        }
+
+        if (source.StartsWith("their ", StringComparison.Ordinal)
+            || source.StartsWith("Their ", StringComparison.Ordinal))
+        {
+            translatedPrefix = "その";
+            rest = source.Substring(6);
+            return rest.Length > 0;
+        }
+
+        return false;
+    }
+
     private static string? TranslateArticleStrippedTemplateCapture(string source)
     {
         var strippedArticle = StringHelpers.StripLeadingEnglishArticle(
@@ -1082,7 +1144,7 @@ internal static class MessagePatternTranslator
             }
         }
 
-        return JapaneseCharacterPattern.IsMatch(strippedArticle) ? strippedArticle : null;
+        return strippedArticle;
     }
 
     private static string LowerAscii(string source)

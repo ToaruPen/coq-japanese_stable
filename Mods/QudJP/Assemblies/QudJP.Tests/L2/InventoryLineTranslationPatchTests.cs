@@ -113,14 +113,16 @@ public sealed partial class Issue201StatusScreensBatch2Tests
     }
 
     [Test]
-    public void InventoryLinePostfix_DoesNotUseDisplayNameRouteForItemNames_WhenPatched()
+    public void InventoryLinePostfix_UsesDisplayNameRouteForItemNames_WhenPatched()
     {
         WriteDictionary(
             ("items", "個"));
         WriteDictionaryFile(
             "ui-displayname-atomic.ja.json",
-            ("water flask", "水袋"),
-            ("empty", "空"));
+            ("water flask", "水袋"));
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("[empty]", "[空]"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -141,12 +143,12 @@ public sealed partial class Issue201StatusScreensBatch2Tests
             Assert.Multiple(() =>
             {
                 Assert.That(itemTarget.OriginalExecuted, Is.True);
-                Assert.That(itemTarget.text.Text, Is.EqualTo("water flask [empty]"));
+                Assert.That(itemTarget.text.Text, Is.EqualTo("水袋 [空]"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(InventoryLineTranslationPatch),
                         "InventoryLine.ItemName"),
-                    Is.Zero);
+                    Is.GreaterThan(0));
             });
         }
         finally

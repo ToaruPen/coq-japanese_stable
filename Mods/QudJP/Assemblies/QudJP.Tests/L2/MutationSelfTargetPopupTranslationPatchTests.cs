@@ -51,7 +51,7 @@ public sealed class MutationSelfTargetPopupTranslationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo("yourselfを標的にしてもよいか？"));
+                Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo("自分自身を標的にしてもよいか？"));
                 Assert.That(HitCount(), Is.EqualTo(1));
             });
         });
@@ -68,7 +68,7 @@ public sealed class MutationSelfTargetPopupTranslationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo("yourselfを標的にしてもよいか？"));
+                Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo("自分自身を標的にしてもよいか？"));
                 Assert.That(HitCount(), Is.Zero);
             });
         });
@@ -168,7 +168,7 @@ public sealed class MutationSelfTargetPopupTranslationPatchTests
 
                 Assert.Multiple(() =>
                 {
-                    Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo("{{Y|your clone}}を標的にしてもよいか？"));
+                    Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo("{{Y|あなたのclone}}を標的にしてもよいか？"));
                     Assert.That(HitCount(), Is.EqualTo(1));
                 });
             });
@@ -198,7 +198,7 @@ public sealed class MutationSelfTargetPopupTranslationPatchTests
                         innerTarget.FlamingRayCast();
                         Assert.Multiple(() =>
                         {
-                            Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo("yourselfを標的にしてもよいか？"));
+                            Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo("自分自身を標的にしてもよいか？"));
                             Assert.That(HitCount(), Is.EqualTo(1));
                         });
                     },
@@ -208,7 +208,7 @@ public sealed class MutationSelfTargetPopupTranslationPatchTests
 
                 Assert.Multiple(() =>
                 {
-                    Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo("{{Y|your clone}}を標的にしてもよいか？"));
+                    Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo("{{Y|あなたのclone}}を標的にしてもよいか？"));
                     Assert.That(HitCount(), Is.EqualTo(2));
                 });
             });

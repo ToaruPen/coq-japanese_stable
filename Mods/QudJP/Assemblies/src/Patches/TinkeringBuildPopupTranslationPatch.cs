@@ -124,7 +124,7 @@ public static class TinkeringBuildPopupTranslationPatch
         var item = source.Substring(TinkerUpPrefix.Length, source.Length - TinkerUpPrefix.Length - 1);
         if (item.StartsWith("{{", StringComparison.Ordinal))
         {
-            translated = $"{item}を作った！";
+            translated = $"{NormalizeItemLabel(item)}を作った！";
             return true;
         }
 
@@ -137,7 +137,7 @@ public static class TinkeringBuildPopupTranslationPatch
             {
                 if (TryTranslateCount(count, out var translatedCount))
                 {
-                    translated = $"{rest}を{translatedCount}個作った！";
+                    translated = $"{NormalizeItemLabel(rest)}を{translatedCount}個作った！";
                     return true;
                 }
 
@@ -146,8 +146,18 @@ public static class TinkeringBuildPopupTranslationPatch
             }
         }
 
-        translated = $"{item}を作った！";
+        translated = $"{NormalizeItemLabel(item)}を作った！";
         return true;
+    }
+
+    private static string NormalizeItemLabel(string source)
+    {
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            static visible => StringHelpers.StripLeadingEnglishArticle(
+                visible,
+                includeCapitalizedDefiniteArticle: true,
+                includeCapitalizedIndefiniteArticle: true));
     }
 
     private static bool IsIndefiniteArticle(string value)

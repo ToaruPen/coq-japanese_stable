@@ -31,6 +31,7 @@
     { "key": "keratin", "context": "GetDisplayName.GeneratedCanvasTent.Component", "text": "ケラチン質" },
     { "key": "tent", "context": "GetDisplayName.GeneratedCanvasTent.Component", "text": "天幕" },
     { "key": "tortoise", "context": "GetDisplayName.GeneratedCanvasTent.Component", "text": "亀" },
+    { "key": "brass", "context": "GetDisplayName.GeneratedRandomStatue.Component", "text": "真鍮" },
     { "key": "marble", "context": "GetDisplayName.GeneratedRandomStatue.Component", "text": "大理石" },
     { "key": "statue", "context": "GetDisplayName.GeneratedRandomStatue.Component", "text": "像" },
     { "key": "stone", "context": "GetDisplayName.GeneratedRandomStatue.Component", "text": "石" },
