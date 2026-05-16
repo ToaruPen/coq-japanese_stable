@@ -1760,7 +1760,7 @@
     },
     {
       "pattern": "^Your shot goes wild!$",
-      "template": "あなたの射撃が逸れた！",
+      "template": "あなたの弾が逸れた！",
       "route": "emit-message"
     },
     {
