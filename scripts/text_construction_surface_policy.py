@@ -369,8 +369,15 @@ def lane_summary_payload(
         summary["text_construction_count"] += entry["text_construction_count"]
         closure_status = entry["closure_status"]
         summary["closure_status_counts"][closure_status] = summary["closure_status_counts"].get(closure_status, 0) + 1
-        if len(summary["top_entries"]) < top_per_lane:
-            summary["top_entries"].append(entry)
+        if top_per_lane > 0:
+            summary["top_entries"] = sorted(
+                [*summary["top_entries"], entry],
+                key=lambda top_entry: (
+                    -top_entry["text_construction_count"],
+                    top_entry["source_file"],
+                    top_entry["member_name"],
+                ),
+            )[:top_per_lane]
 
     return {
         "schema_version": "1.0",

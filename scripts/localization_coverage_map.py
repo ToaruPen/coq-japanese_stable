@@ -245,21 +245,35 @@ def _validate_surface_status_contract(surface_id: str, surface: CoverageSurface)
 
 def _validate_true_zero_definition(document: CoverageMap) -> list[str]:
     errors: list[str] = []
-    definition = document.get("true_untranslated_zero_definition")
-    if definition is None:
+    definition_object = cast("object", document.get("true_untranslated_zero_definition"))
+    if definition_object is None:
         return ["missing true_untranslated_zero_definition"]
+    if not isinstance(definition_object, dict):
+        return ["true_untranslated_zero_definition must be an object"]
 
-    if not definition["statement"].strip():
+    definition = cast("dict[str, object]", definition_object)
+
+    statement = definition.get("statement")
+    if statement is None:
+        errors.append("true_untranslated_zero_definition.statement is missing")
+    elif not isinstance(statement, str) or not statement.strip():
         errors.append("true_untranslated_zero_definition.statement must be non-empty")
-    if not _non_empty_list(definition["required_proofs"]):
+    if "required_proofs" not in definition:
+        errors.append("true_untranslated_zero_definition.required_proofs is missing")
+    elif not _non_empty_list(definition.get("required_proofs")):
         errors.append("true_untranslated_zero_definition.required_proofs must be a non-empty list")
-    if not _non_empty_list(definition["disallowed_proofs"]):
+    if "disallowed_proofs" not in definition:
+        errors.append("true_untranslated_zero_definition.disallowed_proofs is missing")
+    elif not _non_empty_list(definition.get("disallowed_proofs")):
         errors.append("true_untranslated_zero_definition.disallowed_proofs must be a non-empty list")
     return errors
 
 
-def _non_empty_list(value: list[str] | None) -> bool:
-    return value is not None and len(value) > 0
+def _non_empty_list(value: object) -> bool:
+    if not isinstance(value, list):
+        return False
+    values = cast("list[object]", value)
+    return len(values) > 0 and all(isinstance(item, str) for item in values)
 
 
 def _append_existing_path_error(

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from scripts.localization_coverage_map import (
@@ -30,6 +31,26 @@ def test_localization_coverage_map_defines_true_untranslated_zero_closeout() -> 
     assert len(definition["required_proofs"]) >= 3
     assert any("runtime" in proof for proof in definition["required_proofs"])
     assert any("sink" in proof for proof in definition["disallowed_proofs"])
+
+
+def test_localization_coverage_map_reports_invalid_true_zero_definition_fields(tmp_path: Path) -> None:
+    """Coverage-map validation must report malformed true-zero metadata without crashing."""
+    document: dict[str, object] = {
+        "schema_version": "1.0",
+        "game_version": "1.0.4",
+        "true_untranslated_zero_definition": {
+            "required_proofs": "runtime evidence",
+            "disallowed_proofs": [1],
+        },
+        "surfaces": [],
+    }
+    _ = (tmp_path / "map.json").write_text(json.dumps(document), encoding="utf-8")
+
+    errors = validate_map(tmp_path, Path("map.json"))
+
+    assert "true_untranslated_zero_definition.statement is missing" in errors
+    assert "true_untranslated_zero_definition.required_proofs must be a non-empty list" in errors
+    assert "true_untranslated_zero_definition.disallowed_proofs must be a non-empty list" in errors
 
 
 def test_localization_coverage_map_surfaces_have_closeout_contracts() -> None:

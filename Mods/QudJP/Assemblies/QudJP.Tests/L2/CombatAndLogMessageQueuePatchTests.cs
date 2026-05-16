@@ -1251,10 +1251,14 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [TestCase("The snapjaw hits you with an iron arrow (x2) for 7 damage!", "snapjawのiron arrowで7ダメージを受けた！ (x2)")]
+    [TestCase("The {{Y|snapjaw}} hits you with an {{B|iron arrow}} (x2) for 7 damage!", "{{Y|snapjaw}}の{{B|iron arrow}}で7ダメージを受けた！ (x2)")]
     [TestCase("You hit the snapjaw (x2) with an iron arrow for 7 damage!", "iron arrowでsnapjawに7ダメージを与えた！ (x2)")]
     [TestCase("You critically hit the snapjaw (x2) with an iron arrow for 7 damage!", "iron arrowでsnapjawに会心の一撃、7ダメージを与えた！ (x2)")]
     [TestCase("The snapjaw hits with an iron arrow (x2) for 7 damage!", "snapjawはiron arrowで7ダメージを与えた！ (x2)")]
     [TestCase("The snapjaw hits the eyeless crab with an iron arrow (x2) for 7 damage!", "snapjawがiron arrowでeyeless crabに7ダメージを与えた！ (x2)")]
+    [TestCase("The snapjaw swings an iron arrow.", "The snapjaw swings an iron arrow.")]
+    [TestCase("", "")]
+    [TestCase("\u0001The snapjaw hits you with an iron arrow (x2) for 7 damage!", "The snapjaw hits you with an iron arrow (x2) for 7 damage!")]
     public void MissileWeaponHit_TranslatesInventoriedMultiplierDamageShapes_WhenOwnerPatched(
         string message,
         string expected)
@@ -3031,6 +3035,9 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("You dump the {{B|water}} out of {{Y|the chain pistol}}.", "{{Y|the chain pistol}}から{{B|water}}を捨てた。")]
     [TestCase("You partially fill {{Y|the chain pistol}} with {{B|water}}.", "{{Y|the chain pistol}}を{{B|water}}で部分的に満たした。")]
     [TestCase("You fill {{Y|the chain pistol}} with {{B|water}}.", "{{Y|the chain pistol}}を{{B|water}}で満たした。")]
+    [TestCase("You inspect the chain pistol.", "You inspect the chain pistol.")]
+    [TestCase("", "")]
+    [TestCase("\u0001You have no water for the chain pistol.", "You have no water for the chain pistol.")]
     public void LiquidLoader_TranslatesQueuedMessages_WhenOwnerPatched(string source, string expected)
     {
         AssertLiquidLoaderQueuedMessage(source, expected);
@@ -3047,8 +3054,22 @@ public sealed class CombatAndLogMessageQueuePatchTests
             "{{Y|The bio ammo rack}}は疲弊した！");
     }
 
+    [TestCase("The bio ammo rack is exhausted!", "\u0001The bio ammo rackは疲弊した！")]
+    [TestCase("The bio ammo rack hums.", "The bio ammo rack hums.")]
+    [TestCase("", "")]
+    [TestCase("\u0001The bio ammo rack is exhausted!", "\u0001The bio ammo rack is exhausted!")]
+    public void LiquidLoader_HandlesBioAmmoEventMessageEdgeCases_WhenOwnerPatched(
+        string source,
+        string expectedFieldValue)
+    {
+        AssertLiquidLoaderEventMessage(typeof(DummyCheckLoadAmmoEvent), source, expectedFieldValue, expectedIsMarked: false);
+    }
+
     [TestCase("You have no {{B|water}} to supply {{Y|the host}} with.", "{{Y|the host}}に供給する{{B|water}}がない。")]
     [TestCase("{{Y|The host}} has no room for more {{B|water}}.", "{{Y|The host}}にはこれ以上{{B|water}}を入れる余地がない。")]
+    [TestCase("You inspect the host.", "You inspect the host.")]
+    [TestCase("", "")]
+    [TestCase("\u0001You have no water to supply the host with.", "You have no water to supply the host with.")]
     public void LiquidLoader_TranslatesPopupMessages_WhenOwnerPatched(string source, string expected)
     {
         AssertLiquidLoaderPopup(source, expected);
@@ -5273,6 +5294,11 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
     [TestCase("The snapjaw has no limbs.", "snapjawには四肢がない")]
     [TestCase("{{Y|The snapjaw}} has no limbs.", "{{Y|snapjaw}}には四肢がない")]
+    [TestCase("You have no limbs.", "あなたには四肢がない")]
+    [TestCase("{{Y|You}} have no limbs.", "{{Y|あなた}}には四肢がない")]
+    [TestCase("The snapjaw keeps fighting.", "The snapjaw keeps fighting.")]
+    [TestCase("", "")]
+    [TestCase("\u0001The snapjaw has no limbs.", "The snapjaw has no limbs.")]
     public void PhysicAmputateLimb_TranslatesNoLimbsPopup_WhenOwnerPatched(string source, string expected)
     {
         AssertPhysicAmputateLimbPopup(source, expected);
@@ -8467,7 +8493,11 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
-    private static void AssertLiquidLoaderEventMessage(Type eventType, string message, string expected)
+    private static void AssertLiquidLoaderEventMessage(
+        Type eventType,
+        string message,
+        string expected,
+        bool expectedIsMarked = true)
     {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -8491,7 +8521,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
             var field = eventType.GetField("Message")
                 ?? throw new InvalidOperationException("Dummy liquid loader event lacks Message field.");
-            Assert.That(field.GetValue(eventObject), Is.EqualTo(MessageFrameTranslator.MarkDirectTranslation(expected)));
+            var expectedFieldValue = expectedIsMarked
+                ? MessageFrameTranslator.MarkDirectTranslation(expected)
+                : expected;
+            Assert.That(field.GetValue(eventObject), Is.EqualTo(expectedFieldValue));
         }
         finally
         {

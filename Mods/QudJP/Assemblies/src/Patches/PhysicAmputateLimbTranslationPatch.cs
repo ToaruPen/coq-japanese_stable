@@ -110,15 +110,24 @@ public static class PhysicAmputateLimbTranslationPatch
             includeCapitalizedDefiniteArticle: true);
         if (!string.Equals(direct, value, StringComparison.Ordinal))
         {
-            return direct;
+            return IsSecondPersonSubject(direct) ? "あなた" : direct;
         }
 
         var visible = ColorAwareTranslationComposer.GetVisibleText(value);
         var withoutArticle = StringHelpers.StripLeadingEnglishArticle(
             visible,
             includeCapitalizedDefiniteArticle: true);
-        return string.Equals(withoutArticle, visible, StringComparison.Ordinal)
+        var replacement = IsSecondPersonSubject(visible) || IsSecondPersonSubject(withoutArticle)
+            ? "あなた"
+            : withoutArticle;
+
+        return string.Equals(replacement, visible, StringComparison.Ordinal)
             ? value
-            : ColorAwareTranslationComposer.TranslatePreservingColors(value, _ => withoutArticle);
+            : ColorAwareTranslationComposer.TranslatePreservingColors(value, _ => replacement);
+    }
+
+    private static bool IsSecondPersonSubject(string value)
+    {
+        return string.Equals(value, "You", StringComparison.OrdinalIgnoreCase);
     }
 }

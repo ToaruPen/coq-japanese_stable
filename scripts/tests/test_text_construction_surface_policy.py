@@ -216,13 +216,13 @@ def test_lane_summary_payload_reports_counts_and_top_families() -> None:
                 "XRL.World.Parts/BandageMedication.cs::BandageMedication.PerformBandaging()",
                 "XRL.World.Parts/BandageMedication.cs",
                 "PerformBandaging",
-                {"MessageFrame": 4},
+                {"MessageFrame": 1},
             ),
             _family(
                 "XRL.World.Parts/Combat.cs::Combat.Attack()",
                 "XRL.World.Parts/Combat.cs",
                 "Attack",
-                {"MessageFrame": 2},
+                {"MessageFrame": 5},
             ),
             _family("Internal.cs::Internal.Fields", "Internal.cs", "Fields", {"Attribute": 5}),
         ]
@@ -234,7 +234,7 @@ def test_lane_summary_payload_reports_counts_and_top_families() -> None:
     assert lane["entry_count"] == 2
     assert lane["text_construction_count"] == 6
     assert lane["closure_status_counts"] == {"action_required": 2}
-    assert [entry["source_file"] for entry in lane["top_entries"]] == ["XRL.World.Parts/BandageMedication.cs"]
+    assert [entry["source_file"] for entry in lane["top_entries"]] == ["XRL.World.Parts/Combat.cs"]
     assert "non_target" not in payload["lane_counts"]
 
 
