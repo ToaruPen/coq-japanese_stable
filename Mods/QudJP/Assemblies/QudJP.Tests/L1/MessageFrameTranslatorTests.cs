@@ -771,8 +771,11 @@ public sealed class MessageFrameTranslatorTests
             {
                 ("begin", "{0}", "{t0}が始まった"),
                 ("begin", "{0} from another wound", "別の傷から{t0}が始まった"),
-                ("begin", "acting like {0} {1}", "{t1}のふりをし始めた"),
-                ("stop", "{0}", "{t0}が止まった")
+                ("begin", "acting like {0} {1}", "{t0} {t1}のふりをし始めた"),
+                ("begin", "acting like {0} {1} from another wound", "{t0} {t1}のふりをし始めた（別の傷から）"),
+                ("stop", "{0}", "{t0}が止まった"),
+                ("stop", "acting like {0} {1}", "{t0} {t1}のふりをやめた"),
+                ("stop", "acting like {0} {1} so much", "{t0} {t1}のふりをするのをやめた")
             });
 
         Assert.Multiple(() =>
@@ -788,14 +791,39 @@ public sealed class MessageFrameTranslatorTests
             Assert.That(oozing, Is.EqualTo("粘液は別の傷から滲出が始まった！"));
 
             Assert.That(
-                MessageFrameTranslator.TryTranslateXDidY("幻影", "begin", "acting like it is fluxing", null, out var holographic),
+                MessageFrameTranslator.TryTranslateXDidY("幻影", "begin", "acting like chrome hoverer", null, out var holographic),
                 Is.True);
-            Assert.That(holographic, Is.EqualTo("幻影はフラックス漏れのふりをし始めた。"));
+            Assert.That(holographic, Is.EqualTo("幻影はchrome hovererのふりをし始めた。"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY(
+                    "幻影",
+                    "begin",
+                    "acting like chrome hoverer from another wound",
+                    null,
+                    out var holographicWound),
+                Is.True);
+            Assert.That(holographicWound, Is.EqualTo("幻影はchrome hovererのふりをし始めた（別の傷から）。"));
 
             Assert.That(
                 MessageFrameTranslator.TryTranslateXDidY("機械", "stop", "leaking", ".", out var stopped),
                 Is.True);
             Assert.That(stopped, Is.EqualTo("機械は液漏れが止まった。"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("幻影", "stop", "acting like chrome hoverer", ".", out var stoppedActing),
+                Is.True);
+            Assert.That(stoppedActing, Is.EqualTo("幻影はchrome hovererのふりをやめた。"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY(
+                    "幻影",
+                    "stop",
+                    "acting like chrome hoverer so much",
+                    ".",
+                    out var stoppedActingSoMuch),
+                Is.True);
+            Assert.That(stoppedActingSoMuch, Is.EqualTo("幻影はchrome hovererのふりをするのをやめた。"));
         });
     }
 

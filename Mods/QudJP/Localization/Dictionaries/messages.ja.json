@@ -630,12 +630,12 @@
     },
     {
       "pattern": "^You hit something (.+?)[.!]?$",
-      "template": "{t0}の方角の何かに命中した",
+      "template": "{t0}の何かに命中した",
       "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:hits|hit) something (.+?)[.!]?$",
-      "template": "{t0}は{t1}の方角の何かに命中させた",
+      "template": "{t0}は{t1}の何かに命中させた",
       "route": "message-frame"
     },
     {

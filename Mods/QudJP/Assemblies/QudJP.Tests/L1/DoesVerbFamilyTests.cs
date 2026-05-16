@@ -596,8 +596,8 @@ public sealed class DoesVerbFamilyTests
 
     [TestCase("Something hits the 熊 with an 矢 for 5 damage.", "何かが矢で熊に5ダメージを与えた")]
     [TestCase("Something hits the 熊 with an 矢.", "何かが矢で熊に命中した")]
-    [TestCase("You hit something to the north!", "北側の方角の何かに命中した")]
-    [TestCase("The 熊 hits something to the south.", "熊は南側の方角の何かに命中させた")]
+    [TestCase("You hit something to the north!", "北側の何かに命中した")]
+    [TestCase("The 熊 hits something to the south.", "熊は南側の何かに命中させた")]
     // Color-wrapped
     [TestCase("{{r|Something hits the 熊 with an 矢 for 5 damage.}}", "{{r|何かが矢で熊に5ダメージを与えた}}")]
     public void Translate_MissileHitSomethingFamily(string input, string expected)

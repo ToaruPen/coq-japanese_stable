@@ -2146,12 +2146,12 @@
     {
       "verb": "begin",
       "extra": "acting like {0} {1}",
-      "text": "{t1}のふりをし始めた"
+      "text": "{t0} {t1}のふりをし始めた"
     },
     {
       "verb": "begin",
       "extra": "acting like {0} {1} from another wound",
-      "text": "{t1}のふりをし始めた（別の傷から）"
+      "text": "{t0} {t1}のふりをし始めた（別の傷から）"
     },
     {
       "verb": "begin",
@@ -2716,12 +2716,12 @@
     {
       "verb": "stop",
       "extra": "acting like {0} {1}",
-      "text": "{1}のふりをやめた"
+      "text": "{t0} {t1}のふりをやめた"
     },
     {
       "verb": "stop",
       "extra": "acting like {0} {1} so much",
-      "text": "{1}のふりをするのをやめた"
+      "text": "{t0} {t1}のふりをするのをやめた"
     },
     {
       "verb": "stop",
