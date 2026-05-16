@@ -115,7 +115,7 @@ public sealed class MessagePatternTranslatorTests
 
         var translated = MessagePatternTranslator.Translate(source);
 
-        Assert.That(translated, Is.EqualTo(expected));
+        Assert.That(translated, Is.EqualTo(expected), source);
     }
 
 
@@ -335,7 +335,7 @@ public sealed class MessagePatternTranslatorTests
     [TestCase("Brown sludge splashes into your mouth. You wince at the metallic taste.", "茶色い汚泥が口に入った。金属の味に顔をしかめた。")]
     [TestCase("The liquids stop reacting.", "液体の反応が止まった")]
     [TestCase("The reacting liquids congeal into a SoupSludge.", "反応した液体が凝固しSoupSludgeになった")]
-    [TestCase("The primordial soup nearby starts reacting with the water.", "nearbyの原初のスープがwaterと反応を始めた")]
+    [TestCase("The primordial soup nearby starts reacting with the water.", "近くの原初のスープが水と反応を始めた")]
     [TestCase("You receive tinkering bits <{{|AB}}>.", "修理ビット<{{|AB}}>を受け取った。")]
     [TestCase("You make some progress disarming 地雷.", "地雷の解除が少し進んだ。")]
     [TestCase("An image of タム disappears.", "タムの映像が消えた。")]
@@ -348,16 +348,21 @@ public sealed class MessagePatternTranslatorTests
     [TestCase("The タレット hits you with a 鉛スラッグ, but your mental attack has no effect.", "タレットの鉛スラッグが命中したが、精神攻撃は効果がない")]
     [TestCase("The タレット hits タム with a 鉛スラッグ, but their mental attack has no effect.", "タレットは鉛スラッグでタムに命中させたが、精神攻撃は効果がない")]
     [TestCase("The タレット hits タム (x2) with a 鉛スラッグ!", "タレットは鉛スラッグでタムに命中した (x2)")]
-    [TestCase("鉛スラッグ hits you to the east! (x2)", "鉛スラッグがあなたにto the east命中！ (x2)")]
-    [TestCase("鉛スラッグ critically hits you to the east! (x2)", "鉛スラッグが会心であなたにto the east命中！ (x2)")]
-    [TestCase("鉛スラッグ hits you to the east, but your mental attack has no effect.", "鉛スラッグがあなたに命中した to the east, but your mental attack has no effect。")]
-    [TestCase("鉛スラッグ critically hits you to the east.", "鉛スラッグが会心であなたに命中した to the east。")]
-    [TestCase("鉛スラッグ hits タム to the east, but your mental attack has no effect.", "鉛スラッグがタムに命中した to the east, but your mental attack has no effect。")]
-    [TestCase("鉛スラッグ critically hits タム to the east.", "鉛スラッグが会心でタムに命中した to the east。")]
-    [TestCase("鉛スラッグ hits you (x2) to the east!", "鉛スラッグがあなたにto the east命中！ (x2)")]
-    [TestCase("鉛スラッグ critically hits you (x2) to the east!", "鉛スラッグが会心であなたにto the east命中！ (x2)")]
-    [TestCase("鉛スラッグ hits タム (x2) to the east!", "鉛スラッグがタムにto the east命中！ (x2)")]
-    [TestCase("鉛スラッグ critically hits タム (x2) to the east!", "鉛スラッグが会心でタムにto the east命中！ (x2)")]
+    [TestCase("鉛スラッグ hits you to the east! (x2)", "鉛スラッグがあなたに東側に命中！ (x2)")]
+    [TestCase("鉛スラッグ critically hits you to the east! (x2)", "鉛スラッグが会心であなたに東側に命中！ (x2)")]
+    [TestCase("鉛スラッグ hits you to the east, but your mental attack has no effect.", "鉛スラッグがあなたに東側に命中したが、精神攻撃は効果がない")]
+    [TestCase("鉛スラッグ critically hits you to the east.", "鉛スラッグが会心であなたに東側に命中した。")]
+    [TestCase("鉛スラッグ hits タム to the east, but your mental attack has no effect.", "鉛スラッグがタムに東側に命中したが、精神攻撃は効果がない")]
+    [TestCase("鉛スラッグ critically hits タム to the east.", "鉛スラッグが会心でタムに東側に命中した。")]
+    [TestCase("鉛スラッグ hits you (x2) to the east!", "鉛スラッグがあなたに東側に命中！ (x2)")]
+    [TestCase("鉛スラッグ critically hits you (x2) to the east!", "鉛スラッグが会心であなたに東側に命中！ (x2)")]
+    [TestCase("鉛スラッグ hits タム (x2) to the east!", "鉛スラッグがタムに東側に命中！ (x2)")]
+    [TestCase("鉛スラッグ critically hits タム (x2) to the east!", "鉛スラッグが会心でタムに東側に命中！ (x2)")]
+    [TestCase("The スナップジョー is destroyed.", "スナップジョーは破壊された")]
+    [TestCase("An スナップジョー dies.", "スナップジョーは死んだ")]
+    [TestCase("You hit the 熊 for 3 damage.", "熊に3ダメージを与えた")]
+    [TestCase("the 熊 hits you for 2 damage.", "熊の攻撃で2ダメージを受けた")]
+    [TestCase("an ironshank misses you.", "ironshankの攻撃は外れた")]
     public void Translate_RepositoryDictionary_AppliesEmitMessageSweepPatterns(string source, string expected)
     {
         UseRepositoryPatternDictionary();
@@ -365,6 +370,17 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate(source);
 
         Assert.That(translated, Is.EqualTo(expected));
+    }
+
+    [TestCase("You pass by a 編みかご.", "編みかごのそばを通り過ぎた。")]
+    [TestCase("You pass by an 編みかご.", "編みかごのそばを通り過ぎた。")]
+    [TestCase("You pass by the ウォーターヴァイン.", "ウォーターヴァインのそばを通り過ぎた。")]
+    [TestCase("You pass by ウォーターヴァイン.", "ウォーターヴァインのそばを通り過ぎた。")]
+    public void Translate_RepositoryDictionary_StripsEnglishArticlesFromPassByCapture(string source, string expected)
+    {
+        UseRepositoryPatternDictionary();
+
+        Assert.That(MessagePatternTranslator.Translate(source), Is.EqualTo(expected));
     }
 
     [Test]
@@ -510,11 +526,12 @@ public sealed class MessagePatternTranslatorTests
     public void Translate_AppliesMentalAttackNoEffectPattern()
     {
         WritePatternDictionary(
-            ("^Your mental attack does not affect (.+?)\\.$", "あなたの精神攻撃は{0}に効かない。"));
+            ("^Your mental attack does not affect (.+?)\\.$", "あなたの精神攻撃は{t0}に効かない。"));
+        WriteExactDictionary(("turret", "タレット"));
 
         var translated = MessagePatternTranslator.Translate("Your mental attack does not affect the turret.");
 
-        Assert.That(translated, Is.EqualTo("あなたの精神攻撃はthe turretに効かない。"));
+        Assert.That(translated, Is.EqualTo("あなたの精神攻撃はタレットに効かない。"));
     }
 
     [Test]
@@ -542,11 +559,11 @@ public sealed class MessagePatternTranslatorTests
     [Test]
     public void Translate_AppliesNpcHitsSomethingPatternWithExclamation()
     {
-        WritePatternDictionary(("^(.+?) hits something (.+?)[.!]?$", "{0}の射撃が{1}の何かに命中した。"));
+        UseRepositoryPatternDictionary();
 
-        var translated = MessagePatternTranslator.Translate("Turret hits something to the east!");
+        var translated = MessagePatternTranslator.Translate("タレット hits something to the east!");
 
-        Assert.That(translated, Is.EqualTo("Turretの射撃がto the eastの何かに命中した。"));
+        Assert.That(translated, Is.EqualTo("タレットは東側の何かに命中させた"));
     }
 
     [Test]
@@ -706,6 +723,24 @@ public sealed class MessagePatternTranslatorTests
         Assert.That(translated, Is.EqualTo("あなたは出血で1ダメージを受けた。"));
     }
 
+    [TestCase("The {{B|濡れた}}光葉 begins leaking.", "{{B|濡れた}}光葉は液漏れし始めた。")]
+    [TestCase("an 樹液まみれの濡れた光葉 begins oozing from another wound.", "樹液まみれの濡れた光葉は別の傷から滲出し始めた。")]
+    [TestCase("A {{B|濡れた}}光葉 stops fluxing.", "{{B|濡れた}}光葉のフラックス漏れは止まった。")]
+    [TestCase("The {{B|濡れた}}光葉 takes 1 damage from leaking.", "{{B|濡れた}}光葉は液漏れで1ダメージを受けた。")]
+    [TestCase("the 樹液まみれの濡れた光葉 takes no damage from oozing.", "樹液まみれの濡れた光葉は滲出でダメージを受けなかった。")]
+    [TestCase("One of タムの wounds stops leaking.", "タムの傷のひとつの液漏れが止まった。")]
+    [TestCase("One of the 樹液まみれの濡れた光葉の wounds stops leaking.", "樹液まみれの濡れた光葉の傷のひとつの液漏れが止まった。")]
+    public void Translate_RepositoryDictionary_TranslatesCirculatoryLossEventMessages(
+        string source,
+        string expected)
+    {
+        UseRepositoryPatternDictionary();
+
+        var actual = MessagePatternTranslator.Translate(source);
+
+        Assert.That(actual, Is.EqualTo(expected), source);
+    }
+
     [Test]
     public void Translate_RepositoryDictionary_UsesSpecificWoundStopBleedingPatternBeforeGenericBleedingStopPattern()
     {
@@ -714,6 +749,27 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate("One of タムの wounds stops bleeding.");
 
         Assert.That(translated, Is.EqualTo("タムの傷のひとつの出血が止まった。"));
+    }
+
+    [TestCase("熊 nose begins leaking more heavily.", "熊の鼻が激しく液漏れし始めた。")]
+    [TestCase("熊 noses begin oozing more heavily.", "熊の鼻が激しく滲出し始めた。")]
+    public void Translate_RepositoryDictionary_TranslatesCirculatoryLossNoseFallbackPatterns(
+        string source,
+        string expected)
+    {
+        UseRepositoryPatternDictionary();
+
+        Assert.That(MessagePatternTranslator.Translate(source), Is.EqualTo(expected), () => source);
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_StillTranslatesCombatWoundsPattern()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("The 熊 wounds タム.");
+
+        Assert.That(translated, Is.EqualTo("熊はタムに深手を負わせた"));
     }
 
     [Test]
@@ -896,11 +952,11 @@ public sealed class MessagePatternTranslatorTests
     [Test]
     public void Translate_AppliesYellPattern()
     {
-        WritePatternDictionary(("^(.+?) yells, '(.+)'$", "{0}は「{1}」と叫んだ。"));
+        UseRepositoryPatternDictionary();
 
         var translated = MessagePatternTranslator.Translate("The ウォーターヴァイン農家のメカニマス教徒改宗者 yells, 'Is it a dybbuk that possesses the robot? It should be sacred and still.'");
 
-        Assert.That(translated, Is.EqualTo("The ウォーターヴァイン農家のメカニマス教徒改宗者は「Is it a dybbuk that possesses the robot? It should be sacred and still.」と叫んだ。"));
+        Assert.That(translated, Is.EqualTo("ウォーターヴァイン農家のメカニマス教徒改宗者は「Is it a dybbuk that possesses the robot? It should be sacred and still.」と叫んだ。"));
     }
 
     [Test]

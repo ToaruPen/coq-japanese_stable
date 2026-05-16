@@ -1062,6 +1062,9 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.BioAmmoLoader|HandleEvent|System.Boolean|XRL.World.CommandReloadEvent",
         "XRL.World.Parts.BioAmmoLoader|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.BioAmmoLoader|HandleEvent|System.Boolean|XRL.World.CheckLoadAmmoEvent",
+        "XRL.World.Parts.BioAmmoLoader|HandleEvent|System.Boolean|XRL.World.LoadAmmoEvent",
+        "XRL.World.Parts.BioAmmoLoader|HandleEvent|System.Boolean|XRL.World.GetNotReadyToFireMessageEvent",
         "XRL.World.Parts.LiquidAmmoLoader|HandleEvent|System.Boolean|XRL.World.CommandReloadEvent",
         "XRL.World.Parts.LiquidAmmoLoader|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.ModLiquidCooled|HandleEvent|System.Boolean|XRL.World.CommandReloadEvent",

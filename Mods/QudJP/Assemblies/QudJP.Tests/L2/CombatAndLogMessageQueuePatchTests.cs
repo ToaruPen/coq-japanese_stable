@@ -119,6 +119,9 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("{{r|You take 5 {{icy|cold damage}} from the shard!}}", "{{r|shardで5{{icy|冷気ダメージ}}を受けた！}}")]
     [TestCase("{{r|You take 8 damage from your laser beam! {{R|(x2)}}}}", "{{r|your laser beamで8ダメージを受けた！ {{R|(x2)}}}}")]
     [TestCase("{{r|You take 6 damage {{R|(x2)}} from colliding with the chrome wall.}}", "{{r|{{R|(x2)}} chrome wallとの衝突で6ダメージを受けた。}}")]
+    [TestCase("The {{B|濡れた}}光葉 takes 1 damage from leaking.", "{{B|濡れた}}光葉は液漏れで1ダメージを受けた。")]
+    [TestCase("The 樹液まみれの濡れた光葉 takes no damage from oozing.", "樹液まみれの濡れた光葉は滲出でダメージを受けなかった。")]
+    [TestCase("{{r|You take 1 damage from fluxing.}}", "{{r|フラックス漏れで1ダメージを受けた。}}")]
     [TestCase(
         "{{r|You take 9 damage from your plasma you started by you near your ally and You!}}",
         "{{r|your plasma you started by you near your ally and Youで9ダメージを受けた！}}")]
@@ -6335,7 +6338,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
             ("Brown sludge splashes into your mouth. You wince at the metallic taste.", "茶色い汚泥が口に入った。金属の味に顔をしかめた。"),
             ("The liquids stop reacting.", "液体の反応が止まった"),
             ("The reacting liquids congeal into a SoupSludge.", "反応した液体が凝固しSoupSludgeになった"),
-            ("The primordial soup nearby starts reacting with the water.", "nearbyの原初のスープがwaterと反応を始めた"),
+            ("The primordial soup nearby starts reacting with the water.", "近くの原初のスープが水と反応を始めた"),
             ("You receive tinkering bits <{{|AB}}>.", "修理ビット<{{|AB}}>を受け取った。"),
             ("You receive 奇妙な小物!", "奇妙な小物を受け取った"),
             ("You make some progress disarming 地雷.", "地雷の解除が少し進んだ。"),

@@ -601,6 +601,21 @@ internal static class MessageFrameTranslator
             return trimmed;
         }
 
+        if (TryTranslateArticleSeparatedList(trimmed, out var translatedList))
+        {
+            return translatedList;
+        }
+
+        if (DirectionPhraseTranslator.TryTranslateNounStem(trimmed, out var direction))
+        {
+            return direction;
+        }
+
+        if (CirculatoryLossTermTranslator.TryTranslateTermPhrase(trimmed, out var circulatoryLossTerm))
+        {
+            return circulatoryLossTerm;
+        }
+
         if (string.Equals(trimmed, "you", StringComparison.OrdinalIgnoreCase))
         {
             return "あなた";
@@ -629,6 +644,11 @@ internal static class MessageFrameTranslator
         if (string.Equals(trimmed, "her", StringComparison.OrdinalIgnoreCase))
         {
             return "彼女の";
+        }
+
+        if (TryTranslatePossessivePhrase(trimmed, out var possessivePhrase))
+        {
+            return possessivePhrase;
         }
 
         if (trimmed.EndsWith("'s", StringComparison.Ordinal))
@@ -662,13 +682,60 @@ internal static class MessageFrameTranslator
             return "それらの" + TranslatePlaceholderValue(trimmed.Substring(6));
         }
 
-        if (Translator.TryGetTranslation(trimmed, out var translated)
+        if (TryGetOptionalGlobalTranslation(trimmed, out var translated)
             && !string.Equals(translated, trimmed, StringComparison.Ordinal))
         {
             return translated;
         }
 
         return trimmed;
+    }
+
+    private static bool TryTranslateArticleSeparatedList(string source, out string translated)
+    {
+        var parts = source.Split(new[] { " and " }, StringSplitOptions.None);
+        if (parts.Length < 2)
+        {
+            translated = string.Empty;
+            return false;
+        }
+
+        var hasArticle = false;
+        var translatedParts = new string[parts.Length];
+        for (var index = 0; index < parts.Length; index++)
+        {
+            var part = parts[index].Trim();
+            hasArticle |= StartsWithEnglishArticle(part);
+            translatedParts[index] = TranslatePlaceholderValue(part);
+        }
+
+        translated = hasArticle ? string.Join("と", translatedParts) : string.Empty;
+        return hasArticle;
+    }
+
+    private static bool StartsWithEnglishArticle(string source)
+    {
+        return source.StartsWith("The ", StringComparison.Ordinal)
+            || source.StartsWith("the ", StringComparison.Ordinal)
+            || source.StartsWith("A ", StringComparison.Ordinal)
+            || source.StartsWith("a ", StringComparison.Ordinal)
+            || source.StartsWith("An ", StringComparison.Ordinal)
+            || source.StartsWith("an ", StringComparison.Ordinal);
+    }
+
+    private static bool TryTranslatePossessivePhrase(string source, out string translated)
+    {
+        var index = source.IndexOf("'s ", StringComparison.Ordinal);
+        if (index <= 0)
+        {
+            translated = string.Empty;
+            return false;
+        }
+
+        var owner = TranslatePlaceholderValue(source.Substring(0, index));
+        var owned = TranslatePlaceholderValue(source.Substring(index + 3));
+        translated = owner + "の" + owned;
+        return true;
     }
 
     private static string BuildSingleObjectTail(string? preposition, string? extra)
@@ -755,7 +822,7 @@ internal static class MessageFrameTranslator
         }
 
         var normalizedText = normalized!;
-        if (Translator.TryGetTranslation(normalizedText, out var translated)
+        if (TryGetOptionalGlobalTranslation(normalizedText, out var translated)
             && !string.Equals(translated, normalizedText, StringComparison.Ordinal))
         {
             suffix = translated;
@@ -764,6 +831,19 @@ internal static class MessageFrameTranslator
 
         suffix = string.Empty;
         return false;
+    }
+
+    private static bool TryGetOptionalGlobalTranslation(string key, out string translated)
+    {
+        try
+        {
+            return Translator.TryGetTranslation(key, out translated);
+        }
+        catch (DirectoryNotFoundException)
+        {
+            translated = key;
+            return false;
+        }
     }
 
     private static void AppendWithSpaceIfNeeded(StringBuilder builder, string? text)

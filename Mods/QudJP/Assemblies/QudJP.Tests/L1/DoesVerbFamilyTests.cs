@@ -450,10 +450,10 @@ public sealed class DoesVerbFamilyTests
     // --- Cleave Family ---
 
     [TestCase("The 戦士 cleaves through your 盾.", "戦士はあなたの盾を両断した")]
-    [TestCase("The 戦士 cleaves through the 熊's 腕.", "戦士は熊's 腕を両断した")]
+    [TestCase("The 戦士 cleaves through the 熊's 腕.", "戦士は熊の腕を両断した")]
     // Color-wrapped
     [TestCase("{{R|The 戦士 cleaves through your 盾.}}", "{{R|戦士はあなたの盾を両断した}}")]
-    [TestCase("{{g|The 戦士 cleaves through the 熊's 腕.}}", "{{g|戦士は熊's 腕を両断した}}")]
+    [TestCase("{{g|The 戦士 cleaves through the 熊's 腕.}}", "{{g|戦士は熊の腕を両断した}}")]
     public void Translate_CleaveFamily(string input, string expected)
     {
         AssertTranslated(input, expected);
@@ -578,6 +578,7 @@ public sealed class DoesVerbFamilyTests
 
     [TestCase("You critically hit the 熊 (x3) with a 短弓 for 15 damage!", "短弓で熊に会心の一撃、15ダメージを与えた！ (x3)")]
     [TestCase("You hit the 熊 (x2) with an 矢 for 8 damage!", "矢で熊に8ダメージを与えた！ (x2)")]
+    [TestCase("You hit the 熊 for 5 damage.", "熊に5ダメージを与えた")]
     [TestCase("You hit the 熊 with a 矢 for 5 damage.", "矢で熊に5ダメージを与えた")]
     [TestCase("You critically hit the 熊 (x3) with a 短弓!", "短弓で熊に会心の一撃！ (x3)")]
     [TestCase("You hit the 熊 (x2) with a 矢!", "矢で熊に命中した (x2)")]
@@ -595,8 +596,8 @@ public sealed class DoesVerbFamilyTests
 
     [TestCase("Something hits the 熊 with an 矢 for 5 damage.", "何かが矢で熊に5ダメージを与えた")]
     [TestCase("Something hits the 熊 with an 矢.", "何かが矢で熊に命中した")]
-    [TestCase("You hit something to the north!", "to the northの方角の何かに命中した")]
-    [TestCase("The 熊 hits something to the south.", "熊はto the southの方角の何かに命中させた")]
+    [TestCase("You hit something to the north!", "北側の何かに命中した")]
+    [TestCase("The 熊 hits something to the south.", "熊は南側の何かに命中させた")]
     // Color-wrapped
     [TestCase("{{r|Something hits the 熊 with an 矢 for 5 damage.}}", "{{r|何かが矢で熊に5ダメージを与えた}}")]
     public void Translate_MissileHitSomethingFamily(string input, string expected)
@@ -699,10 +700,10 @@ public sealed class DoesVerbFamilyTests
 
     // --- Pass By Family ---
 
-    [TestCase("The 矢 whizzes past to the north.", "矢がto the northのそばを通り過ぎた")]
-    [TestCase("The 矢 flies past to the south.", "矢がto the southのそばを通り過ぎた")]
+    [TestCase("The 矢 whizzes past to the north.", "矢が北側のそばを通り過ぎた")]
+    [TestCase("The 矢 flies past to the south.", "矢が南側のそばを通り過ぎた")]
     // Color-wrapped
-    [TestCase("{{r|The 矢 whizzes past to the north.}}", "{{r|矢がto the northのそばを通り過ぎた}}")]
+    [TestCase("{{r|The 矢 whizzes past to the north.}}", "{{r|矢が北側のそばを通り過ぎた}}")]
     public void Translate_PassByFamily(string input, string expected)
     {
         AssertTranslated(input, expected);
@@ -772,16 +773,16 @@ public sealed class DoesVerbFamilyTests
 
     // --- Nosebleed Family ---
 
-    [TestCase("Your nose begins bleeding more heavily.", "あなたの鼻からさらに激しくbleedingが始まった")]
-    [TestCase("Your nose begins bleeding.", "あなたの鼻からbleedingが始まった")]
-    [TestCase("Your nose stops bleeding quite so heavily.", "あなたの鼻からのbleedingが少し治まった")]
-    [TestCase("Your nose stops bleeding.", "あなたの鼻からのbleedingが止まった")]
-    [TestCase("The 熊's nose begins bleeding.", "熊の鼻からbleedingが始まった")]
-    [TestCase("The 熊's nose stops bleeding.", "熊の鼻からのbleedingが止まった")]
-    [TestCase("The 熊's noses begin bleeding more heavily.", "熊の鼻からさらに激しくbleedingが始まった")]
-    [TestCase("The 熊's noses stop bleeding quite so heavily.", "熊の鼻からのbleedingが少し治まった")]
+    [TestCase("Your nose begins bleeding more heavily.", "あなたの鼻からさらに激しく出血が始まった")]
+    [TestCase("Your nose begins leaking.", "あなたの鼻から液漏れが始まった")]
+    [TestCase("Your nose stops oozing quite so heavily.", "あなたの鼻からの滲出が少し治まった")]
+    [TestCase("Your nose stops fluxing.", "あなたの鼻からのフラックス漏れが止まった")]
+    [TestCase("The 熊's nose begins bleeding.", "熊の鼻から出血が始まった")]
+    [TestCase("The 熊's nose stops leaking.", "熊の鼻からの液漏れが止まった")]
+    [TestCase("The 熊's noses begin oozing more heavily.", "熊の鼻からさらに激しく滲出が始まった")]
+    [TestCase("The 熊's noses stop fluxing quite so heavily.", "熊の鼻からのフラックス漏れが少し治まった")]
     // Color-wrapped
-    [TestCase("{{r|Your nose begins bleeding.}}", "{{r|あなたの鼻からbleedingが始まった}}")]
+    [TestCase("{{r|Your nose begins bleeding.}}", "{{r|あなたの鼻から出血が始まった}}")]
     public void Translate_NosebleedFamily(string input, string expected)
     {
         AssertTranslated(input, expected);
@@ -872,7 +873,7 @@ public sealed class DoesVerbFamilyTests
 
     [TestCase("The reacting liquids congeal into a スラッジ.", "反応した液体が凝固しスラッジになった")]
     [TestCase("The liquids stop reacting.", "液体の反応が止まった")]
-    [TestCase("The primordial soup to the east starts reacting with the 酸.", "to the eastの原初のスープが酸と反応を始めた")]
+    [TestCase("The primordial soup to the east starts reacting with the 酸.", "東側の原初のスープが酸と反応を始めた")]
     // Color-wrapped
     [TestCase("{{g|The reacting liquids congeal into a スラッジ.}}", "{{g|反応した液体が凝固しスラッジになった}}")]
     public void Translate_LiquidReactionFamily(string input, string expected)
@@ -944,10 +945,10 @@ public sealed class DoesVerbFamilyTests
 
     // --- Flailing/Battering Family ---
 
-    [TestCase("Suddenly the 武器 starts flailing around and battering you!", "突然武器が暴れ出し、youを殴りつけた！")]
-    [TestCase("Two tubular sections of the 武器 flail around and batter you!", "武器の2本の管状の部分が暴れ、youを殴りつけた！")]
+    [TestCase("Suddenly the 武器 starts flailing around and battering you!", "突然武器が暴れ出し、あなたを殴りつけた！")]
+    [TestCase("Two tubular sections of the 武器 flail around and batter you!", "武器の2本の管状の部分が暴れ、あなたを殴りつけた！")]
     // Color-wrapped
-    [TestCase("{{r|Two tubular sections of the 武器 flail around and batter you!}}", "{{r|武器の2本の管状の部分が暴れ、youを殴りつけた！}}")]
+    [TestCase("{{r|Two tubular sections of the 武器 flail around and batter you!}}", "{{r|武器の2本の管状の部分が暴れ、あなたを殴りつけた！}}")]
     public void Translate_FlailingBatteringFamily(string input, string expected)
     {
         AssertTranslated(input, expected);
@@ -1077,8 +1078,8 @@ public sealed class DoesVerbFamilyTests
 
     // --- Holographic Visage Family ---
 
-    [TestCase("In a glissade of light, the 熊's visage morphs into an image pleasing to the Barathrumites.", "光が滑るように走り、熊の顔貌はthe Barathrumitesに好ましい姿へと変化した")]
-    [TestCase("{{g|In a glissade of light, the 熊's visage morphs into an image pleasing to the Barathrumites.}}", "{{g|光が滑るように走り、熊の顔貌はthe Barathrumitesに好ましい姿へと変化した}}")]
+    [TestCase("In a glissade of light, the 熊's visage morphs into an image pleasing to the Barathrumites.", "光が滑るように走り、熊の顔貌はバラサラム派（技師団）に好ましい姿へと変化した")]
+    [TestCase("{{g|In a glissade of light, the 熊's visage morphs into an image pleasing to the Barathrumites.}}", "{{g|光が滑るように走り、熊の顔貌はバラサラム派（技師団）に好ましい姿へと変化した}}")]
     public void Translate_HolographicVisageFamily(string input, string expected)
     {
         AssertTranslated(input, expected);

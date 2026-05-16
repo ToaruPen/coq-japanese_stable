@@ -15,7 +15,13 @@ Classification = Literal[
     "non_target",
 ]
 OutputFormat = Literal["text", "json", "lanes-json"]
-ClosureStatus = Literal["action_required", "covered_by_owner_route"]
+ClosureStatus = Literal[
+    "action_required",
+    "covered_by_owner_route",
+    "partial_coverage",
+    "runtime_required",
+    "likely_true_gap",
+]
 ClosureLane = Literal[
     "activated_ability_names",
     "combat_message_frame_does",
@@ -135,6 +141,326 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
             "Mods/QudJP/Assemblies/QudJP.Tests/L1/DoesVerbFamilyTests.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessagePatternTranslatorTests.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+        ],
+    },
+    (
+        "XRL.World.Parts/MissileWeapon.cs::MissileWeapon.MissileHit("
+        "GameObject,GameObject,GameObject,GameObject,Projectile,GameObject,GameObject,"
+        "MissilePath,Cell,FireType,int,int,int,bool,GameObject,bool,ref bool,ref bool,ref bool,bool,bool)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/MissileWeaponHitTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessagePatternTranslatorTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+            "docs/reports/2026-05-15-issue-699-static-producer-message-candidates.md",
+        ],
+    },
+    "XRL.World/GameObject.cs::GameObject.PerformThrow(GameObject,Cell,GameObject,MissilePath,int,int?,int?,int?)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/GameObjectPerformThrowTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        ],
+    },
+    (
+        "XRL.World/GameObject.cs::GameObject.Move("
+        "string,out GameObject,bool,bool,bool,bool,bool,bool,GameObject,GameObject,"
+        "bool,int?,string,int?,bool,bool,GameObject,GameObject,int)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/GameObjectMoveTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        ],
+    },
+    (
+        "XRL.UI/PickTarget.cs::PickTarget.ShowPicker("
+        "PickStyle,int,int,int,int,bool,AllowVis,Predicate<XRL.World.GameObject>,"
+        "Predicate<XRL.World.GameObject>,XRL.World.GameObject,Point2D?,string,bool,bool)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/PickTargetShowPickerTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/PickTargetShowPickerTranslationPatchTests.cs",
+            "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+        ],
+    },
+    "Qud.UI/GameSummaryScreen.cs::GameSummaryScreen._ShowGameSummary(string,string,string,bool)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/GameSummaryScreenShowTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/src/Patches/GameSummaryTextTranslator.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/GameSummaryTextTranslatorTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/GameSummaryAndAsleepTranslationPatchTests.cs",
+        ],
+    },
+    "Qud.UI/SkillsAndPowersStatusScreen.cs::SkillsAndPowersStatusScreen.UpdateDetailsFromNode(SPNode)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/SkillsAndPowersStatusScreenDetailsPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/SkillsAndAbilitiesOwnerPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        ],
+    },
+    "XRL.World.Parts.Mutation/PhotosyntheticSkin.cs::PhotosyntheticSkin.Mutate(GameObject,int)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            "Mods/QudJP/Localization/ActivatedAbilities.jp.xml",
+            "Mods/QudJP/Localization/Dictionaries/ui-skillsandpowers.ja.json",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/LocalizationCoverageTests.cs",
+        ],
+    },
+    "XRL.World.Parts/Inventory.cs::Inventory.FireEvent(Event)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/InventoryFireEventTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/InventoryFireEventTranslationPatchTests.cs",
+            "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
+        ],
+    },
+    "XRL.World.Parts/MissileWeapon.cs::MissileWeapon.FireEvent(Event)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessagePatternTranslatorTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+            "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
+            "docs/reports/2026-05-15-issue-699-static-producer-message-candidates.md",
+        ],
+    },
+    "XRL.UI/TradeUI.cs::TradeUI.ShowTradeScreen(GameObject,float,TradeScreenMode)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/TradeUiPopupTranslationPatchTests.cs",
+            "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
+        ],
+    },
+    "XRL.World.Parts/LongBladesCore.cs::LongBladesCore.FireEvent(Event)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/LongBladesCoreTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/LongBladesCoreTranslationPatchTests.cs",
+        ],
+    },
+    "XRL.World.Parts/LiquidVolume.cs::LiquidVolume.HandleEvent(InventoryActionEvent)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/LiquidVolumeTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/WorldPartsFragmentTranslatorTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldPartsProducerTranslationPatchTests.cs",
+            "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
+        ],
+    },
+    "XRL.World.Parts/Tonic.cs::Tonic.HandleEvent(InventoryActionEvent)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/TonicTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerQueueTranslationPatchTests.cs",
+            "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
+        ],
+    },
+    "XRL.World.ZoneBuilders/Village.cs::Village.BuildZone(Zone)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/AddVillageGospelsTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/src/Patches/GenerateVillageEraHistoryTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/HistoricNarrativeTranslationPatchesTests.cs",
+        ],
+    },
+    "XRL.World.ZoneBuilders/VillageCoda.cs::VillageCoda.BuildZone(Zone)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/AddVillageGospelsTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/src/Patches/GenerateVillageEraHistoryTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/HistoricNarrativeTranslationPatchesTests.cs",
+        ],
+    },
+    "XRL.World/ZoneManager.cs::ZoneManager.SetActiveZone(Zone)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/ZoneManagerSetActiveZoneTranslationPatchTests.cs",
+            "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
+            "docs/reports/2026-05-15-static-uncovered-coverage-triage.md",
+        ],
+    },
+    "XRL.World.Parts/CherubimSpawner.cs::CherubimSpawner.HandleEvent(BeforeObjectCreatedEvent)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/CherubimSpawnerReplaceDescriptionPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CherubimSpawnerReplaceDescriptionPatchTests.cs",
+        ],
+    },
+    "XRL.World.Parts/SultanShrine.cs::SultanShrine.ShrineInitialize()": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/SultanShrineWrapperTranslator.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/SultanShrineWrapperTranslatorTests.cs",
+        ],
+    },
+    "XRL.UI/StatusScreen.cs::StatusScreen.Show(GameObject)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/StatusScreenPopupTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/StatusScreenPopupTranslationPatchTests.cs",
+            "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
+        ],
+    },
+    "XRL.Core/XRLCore.cs::XRLCore.PlayerTurn()": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/XrlCorePlayerTurnTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/XrlCorePlayerTurnTranslationPatchTests.cs",
+            "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
+        ],
+    },
+    "XRL.UI/TinkeringScreen.cs::TinkeringScreen.Show(GameObject,GameObject,IEvent)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/TinkeringScreenTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/TinkeringTranslationPatchTests.cs",
+        ],
+    },
+    "XRL.UI/InventoryScreen.cs::InventoryScreen.Show(GameObject)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/InventoryScreenTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/LegacyGamepadPromptTranslationPatchTests.cs",
+        ],
+    },
+    "XRL.UI/AbilityManager.cs::AbilityManager.Show(XRL.World.GameObject)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/AbilityManagerShowTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+            "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
+        ],
+    },
+    "Qud.UI/TinkeringDetailsLine.cs::TinkeringDetailsLine.setData(FrameworkDataElement)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/TinkeringDetailsLineTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/TinkeringTranslationPatchTests.cs",
+            "docs/reports/2026-05-15-static-uncovered-coverage-triage.md",
+        ],
+    },
+    "XRL.World/PsychicCombatSifrah.cs::PsychicCombatSifrah.PsychicCombatSifrah(GameObject,string,int,int,string)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/SifrahPureOwnerPopupTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/SifrahPureOwnerPopupTranslationPatchTests.cs",
+        ],
+    },
+    "XRL.World.Parts.Mutation/MultiHorns.cs::MultiHorns.Mutate(GameObject,int)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Localization/Dictionaries/ui-skillsandpowers.ja.json",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/LocalizationCoverageTests.cs",
+        ],
+    },
+    (
+        "XRL.World.Parts/MissileWeapon.cs::MissileWeapon.ShowPicker("
+        "int,int,bool,AllowVis,int,bool,GameObject,ref FireType,int)"
+    ): {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/UITextSkinTranslationPatchTests.cs",
+        ],
+    },
+    "XRL.UI/OptionsUI.cs::OptionsUI.Show()": {
+        "closure_status": "runtime_required",
+        "closure_evidence": [
+            "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
+            "Mods/QudJP/Localization/Dictionaries/ui-options.ja.json",
+        ],
+    },
+    "XRL.World.Parts/SultanRegion.cs::SultanRegion.FireEvent(Event)": {
+        "closure_status": "runtime_required",
+        "closure_evidence": [
+            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
+        ],
+    },
+    "XRL.World.Parts/Tombstone.cs::Tombstone.GenerateTombstone()": {
+        "closure_status": "runtime_required",
+        "closure_evidence": [
+            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
+        ],
+    },
+    "XRL.World.ZoneBuilders/VillageBase.cs::VillageBase.getAVillageWall()": {
+        "closure_status": "likely_true_gap",
+        "closure_evidence": [
+            "docs/reports/2026-05-15-static-uncovered-coverage-triage.md",
+            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
+        ],
+    },
+    "XRL.World.ZoneBuilders/VillageCodaBase.cs::VillageCodaBase.getAVillageWall()": {
+        "closure_status": "likely_true_gap",
+        "closure_evidence": [
+            "docs/reports/2026-05-15-static-uncovered-coverage-triage.md",
+            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
+        ],
+    },
+    "XRL.World.Parts/CherubimSpawner.cs::CherubimSpawner.BestowElement(GameObject,string,bool)": {
+        "closure_status": "likely_true_gap",
+        "closure_evidence": [
+            "docs/reports/2026-05-15-static-uncovered-coverage-triage.md",
+            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
+        ],
+    },
+    "XRL.World.Parts/TurretTinker.cs::TurretTinker.FireEvent(Event)": {
+        "closure_status": "likely_true_gap",
+        "closure_evidence": [
+            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
+        ],
+    },
+    "XRL.Core/XRLCore.cs::XRLCore._Start()": {
+        "closure_status": "likely_true_gap",
+        "closure_evidence": [
+            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
+        ],
+    },
+    "XRL.World/RandomAltarBaetylRewardManager.cs::RandomAltarBaetylRewardManager.HandleRewardNode(XmlDataHelper)": {
+        "closure_status": "likely_true_gap",
+        "closure_evidence": [
+            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
+        ],
+    },
+    "XRL.World.Parts/ModGigantic.cs::ModGigantic.GetDescription(int,GameObject)": {
+        "closure_status": "likely_true_gap",
+        "closure_evidence": [
+            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
+        ],
+    },
+    "XRL.World.Parts/BandageMedication.cs::BandageMedication.PerformBandaging(GameObject,GameObject)": {
+        "closure_status": "likely_true_gap",
+        "closure_evidence": [
+            "docs/reports/2026-05-15-static-uncovered-coverage-triage.md",
+            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
+        ],
+    },
+    "XRL.World.Parts.Skill/Tactics_Charge.cs::Tactics_Charge.PerformCharge()": {
+        "closure_status": "likely_true_gap",
+        "closure_evidence": [
+            "docs/reports/2026-05-15-static-uncovered-coverage-triage.md",
+            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
+        ],
+    },
+    "XRL.World.Parts.Mutation/MultiHorns.cs::MultiHorns.PerformCharge(List<Cell>,bool)": {
+        "closure_status": "likely_true_gap",
+        "closure_evidence": [
+            "docs/reports/2026-05-15-static-uncovered-coverage-triage.md",
+            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
+        ],
+    },
+    "XRL.World.Parts.Skill/Physic_AmputateLimb.cs::Physic_AmputateLimb.FireEvent(Event)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/src/Patches/PhysicAmputateLimbTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
         ],
     },
 }

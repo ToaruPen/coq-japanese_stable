@@ -266,6 +266,11 @@ public static class PhysicsProcessTakeDamageTranslationPatch
 
     private static string TranslateDamageSource(string source)
     {
+        if (CirculatoryLossTermTranslator.TryTranslateTermPhrase(source, out var circulatoryLossTerm))
+        {
+            return circulatoryLossTerm;
+        }
+
         return source switch
         {
             "acid" => "酸",

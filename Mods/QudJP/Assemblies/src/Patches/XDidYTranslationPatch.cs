@@ -733,7 +733,7 @@ public static class XDidYTranslationPatch
     {
         if (!string.IsNullOrWhiteSpace(subjectOverride))
         {
-            return TranslateDisplayFragment(subjectOverride!);
+            return NormalizeFrameLabel(TranslateDisplayFragment(subjectOverride!));
         }
 
         if (IsPlayer(actor))
@@ -741,7 +741,7 @@ public static class XDidYTranslationPatch
             return "あなた";
         }
 
-        return GetEntityDisplayName(actor, capitalize: true, useFullNames, indefiniteSubject);
+        return NormalizeFrameLabel(GetEntityDisplayName(actor, capitalize: true, useFullNames, indefiniteSubject));
     }
 
     private static string GetOwnerPrefix(object? owner, bool useFullNames, bool indefiniteSubject)
@@ -756,7 +756,7 @@ public static class XDidYTranslationPatch
             return "あなたの";
         }
 
-        var label = GetEntityDisplayName(owner, capitalize: false, useFullNames, indefiniteSubject);
+        var label = NormalizeFrameLabel(GetEntityDisplayName(owner, capitalize: false, useFullNames, indefiniteSubject));
         return string.IsNullOrWhiteSpace(label)
             ? string.Empty
             : MakePossessiveLabel(label);
@@ -810,7 +810,7 @@ public static class XDidYTranslationPatch
             return possessive ? "あなたの" : "あなた";
         }
 
-        var label = GetEntityDisplayName(value, capitalize: false, useFullNames, indefiniteObject || indefiniteObjectForOthers);
+        var label = NormalizeFrameLabel(GetEntityDisplayName(value, capitalize: false, useFullNames, indefiniteObject || indefiniteObjectForOthers));
         if (string.IsNullOrWhiteSpace(label))
         {
             return string.Empty;
@@ -824,6 +824,14 @@ public static class XDidYTranslationPatch
         }
 
         return possessive ? MakePossessiveLabel(label) : label;
+    }
+
+    private static string NormalizeFrameLabel(string label)
+    {
+        return StringHelpers.StripLeadingEnglishArticle(
+            label,
+            includeCapitalizedDefiniteArticle: true,
+            includeCapitalizedIndefiniteArticle: true);
     }
 
     private static string GetEntityDisplayName(object? value, bool capitalize, bool useFullNames, bool indefiniteArticle)
