@@ -41,7 +41,7 @@
     <part Name="Physics" Weight="1" />
     <part Name="Description" Short="骨格と脂肪を再形成し、柔らかな天使の顔立ちへと整える秘儀。氷棚の胸に抱かれたイブルの民は、この処置で薔薇色の頬を得る。" />
     <part Name="Render" DisplayName="{{Y|天使の面差し}}" Tile="Items/sw_cherubic.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Face" Cost="1" BehaviorDescription="+1 意志" />
+    <part Name="CyberneticsBaseItem" Slots="Face" Cost="1" BehaviorDescription="+1 自我" />
     <part Name="CyberneticsStatModifier" Stats="Ego:1" />
     <tag Name="StartingCybernetic:Artifex" />
     <tag Name="StartingCybernetic:Consul" />
@@ -112,7 +112,7 @@
     <part Name="Physics" Weight="1" />
     <part Name="Description" Short="高弾性の足首腱がバネのように収縮し、跳躍や踏み込みを強化する。" />
     <part Name="Render" DisplayName="{{Y|高弾性足首腱}}" Tile="Items/sw_hypertendons.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Feet" Cost="2" BehaviorDescription="+10 移動速度&#10;+1 AV" />
+    <part Name="CyberneticsBaseItem" Slots="Feet" Cost="2" BehaviorDescription="+6 移動速度" />
     <part Name="CyberneticsStatModifier" Stats="MoveSpeed:-6" />
     <tag Name="StartingCybernetic:General" />
     <part Name="ItemElements" Elements="travel::3" />
@@ -120,7 +120,7 @@
   <object Name="ParabolicMuscularSubroutine" Inherits="BaseCyberneticsEquipment_2point" Replace="true">
     <part Name="Description" Short="筋繊維を放物線補間で制御するサブルーチンが、揺るぎない突きと投擲を実現する。" />
     <part Name="Render" DisplayName="{{Y|放物筋サブルーチン}}" Tile="Items/sw_parabolic.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Arm" Cost="2" BehaviorDescription="+1 命中ボーナス&#10;+1 AV" />
+    <part Name="CyberneticsBaseItem" Slots="Arm" Cost="2" BehaviorDescription="投擲距離が2マス伸びる。&#10;投擲距離内の目標へ投げると、命中率が100%になる。" />
     <part Name="CyberneticsPropertyModifier" Props="ThrowRangeBonus:2;ThrowToHitBonus:2;CloseThrowRangeAccuracyBonus:100" />
     <tag Name="StartingCybernetic:General" />
   </object>
@@ -137,7 +137,7 @@
     <part Name="Physics" Weight="5" />
     <part Name="Description" Short="射撃時に腕と肩を固定する可変ロック。反動の揺り戻しを打ち消す。" />
     <part Name="Render" DisplayName="{{Y|安定化アームロック}}" Tile="Items/sw_armlocks.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Arm" Cost="2" BehaviorDescription="{BURST}の反動ペナルティを軽減する。" />
+    <part Name="CyberneticsBaseItem" Slots="Arm" Cost="2" BehaviorDescription="遠隔攻撃の命中判定では、敏捷が6高いものとして扱われる。" />
     <part Name="CyberneticsPropertyModifier" Props="MissileWeaponAccuracyBonus:3" />
     <tag Name="StartingCybernetic:General" />
   </object>
@@ -145,7 +145,7 @@
     <part Name="Physics" Weight="1" />
     <part Name="Description" Short="指の屈筋を圧縮空気で駆動し、武器の引き金や手作業を瞬時に行う。" />
     <part Name="Render" DisplayName="{{Y|高速リリース屈筋}}" Tile="Items/sw_flexors.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="2" BehaviorDescription="+2 命中ボーナス" />
+    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="2" BehaviorDescription="拳銃を25%速く発射できる。" />
     <part Name="CyberneticsPropertyModifier" Props="PistolEnergyModifier:25" />
     <tag Name="StartingCybernetic:General" />
   </object>
@@ -153,7 +153,7 @@
     <part Name="Physics" Weight="15" />
     <part Name="Description" Short="手指の骨をカーバイド合金に置換し、殴打と握力を大幅に強化する。" />
     <part Name="Render" DisplayName="{{Y|カーバイド製手骨}}" Tile="Items/sw_carbidehand.bmp" TileColor="&amp;b" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="2" BehaviorDescription="+2 STR" />
+    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="2" BehaviorDescription="拳のダメージが2d3になる。" />
     <part Name="CyberneticsFistReplacement" FistObject="CarbideFist" />
     <tag Name="StartingCybernetic:General" />
     <part Name="ItemElements" Elements="might::3" />
@@ -174,7 +174,7 @@
     <part Name="Physics" Weight="10" />
     <part Name="Description" Short="上腕二頭筋を五等分の人工筋に置換し、屈伸の瞬発力を劇的に高める。" />
     <part Name="Render" DisplayName="{{Y|ペンタセプス}}" Tile="Items/sw_pentacips.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Feet" Cost="2" BehaviorDescription="+2 STR" />
+    <part Name="CyberneticsBaseItem" Slots="Feet" Cost="2" BehaviorDescription="突撃の射程が4マス伸びる。" />
     <part Name="CyberneticsPropertyModifier" Props="ChargeRangeModifier:4" />
     <tag Name="StartingCybernetic:General" />
   </object>
@@ -182,14 +182,14 @@
     <part Name="Physics" Weight="1" />
     <part Name="Description" Short="口腔と指先に触媒ノードを配置し、複数デバイスの通信をローカルで統合する。" />
     <part Name="Render" DisplayName="{{Y|通信インターロック}}" Tile="Items/sw_comminterlock.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Hands,Feet,Body,Back,Face,Arm,Head" Cost="2" BehaviorDescription="同一ゾーン内の電気機器を遠隔操作できる。" />
+    <part Name="CyberneticsBaseItem" Slots="Hands,Feet,Body,Back,Face,Arm,Head" Cost="2" BehaviorDescription="ロボットを5レベル高いものとして叱責する。" />
     <part Name="CyberneticsCommunicationsInterlock" Bonus="5" />
   </object>
   <object Name="InflatableAxons" Inherits="BaseCyberneticsEquipment_2point" Replace="true">
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="膨張する人工軸索が神経伝達を加速し、反射的な回避を助ける。" />
     <part Name="Render" DisplayName="{{Y|膨張軸索}}" Tile="Items/sw_axions.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="2" BehaviorDescription="+2 DEX" />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="2" BehaviorDescription="発動。クールダウン100。&#10;10ラウンドのあいだ俊敏 +40、その後10ラウンド鈍重になる（俊敏 -10）。" />
     <part Name="CyberneticsInflatableAxons" Bonus="40" />
     <tag Name="StartingCybernetic:General" />
     <tag Name="CyberneticsOneOnly" />
@@ -198,7 +198,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="夜行性捕食者のモチーフで気道を整え、低酸素環境でも活動できるようにする。" />
     <part Name="Render" DisplayName="{{Y|夜の頂点}}" Tile="Items/sw_nocturnal.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="2" BehaviorDescription="+20 体力点&#10;+10 運動スキル" />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="2" BehaviorDescription="昼間の自然回復率 +10%。&#10;夜ごとに1回《徘徊》でき、100ラウンドのあいだ敏捷 +6、移動速度 +10。" />
     <part Name="CyberneticsNocturnalApex" />
     <tag Name="StartingCybernetic:Priest of All Suns" />
     <tag Name="StartingCybernetic:Priest of All Moons" />
@@ -211,7 +211,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="極小のセンサー列が空気の流れを測り、周囲の動体を察知する。" />
     <part Name="Render" DisplayName="{{Y|気流マイクロセンサー}}" Tile="Items/sw_aircurrent.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Body,Head" Cost="2" BehaviorDescription="周囲の敵を自動でスポットする。" />
+    <part Name="CyberneticsBaseItem" Slots="Body,Head" Cost="2" BehaviorDescription="階段などの上下マップ遷移が常に明らかになる。" />
     <part Name="CyberneticsAirCurrentMicrosensor" />
     <tag Name="StartingCybernetic:Child of the Deep" />
     <tag Name="StartingCybernetic:Child of the Wheel" />
@@ -223,7 +223,7 @@
     <part Name="Physics" Weight="8" />
     <part Name="Description" Short="圧縮空気のピストンが脚部を伸縮させ、跳躍と踏破力を高める。" />
     <part Name="Render" DisplayName="{{Y|空気圧ピストン}}" Tile="Items/sw_cyber_pneumatic_pistons.bmp" ColorString="&amp;c" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Feet" Cost="2" BehaviorDescription="+10 移動速度&#10;+1 ジャンプ距離" />
+    <part Name="CyberneticsBaseItem" Slots="Feet" Cost="2" BehaviorDescription="ジャンプ距離が4マス伸びる。" />
     <part Name="CyberneticsPropertyModifier" Props="JumpRangeModifier:4" />
     <part Name="CyberneticsSyncJump" />
   </object>
@@ -231,14 +231,14 @@
     <part Name="Physics" Weight="2" />
     <part Name="Description" Short="衝撃を受けると反射的に硬化する頭蓋プレート。" />
     <part Name="Render" DisplayName="{{Y|反応頭蓋プレート}}" Tile="Items/sw_cyber_reactive_cranial_plating.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="2" BehaviorDescription="+2 AV" />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="2" BehaviorDescription="運動エネルギーによる朦朧・気絶を受けない。" />
     <part Name="CyberneticsReactiveCranialPlating" />
   </object>
   <object Name="PhaseHarmonicModulator" Inherits="BaseCyberneticsEquipment_2point" Replace="true">
     <part Name="Physics" Weight="1" />
     <part Name="Description" Short="相転移の基準周波を発振し、空間のたわみを整える共鳴モジュール。" />
     <part Name="Render" DisplayName="{{Y|位相調和モジュレーター}}" Tile="Items/sw_cyber_phase_harmonic_modulator.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Hands,Feet,Body,Back,Face,Arm,Head" Cost="2" BehaviorDescription="相転移系の攻撃を10%軽減する。" />
+    <part Name="CyberneticsBaseItem" Slots="Hands,Feet,Body,Back,Face,Arm,Head" Cost="2" BehaviorDescription="同位相・異位相どちらの物体やクリーチャーとも干渉できる。" />
     <part Name="CyberneticsPhaseHarmonicModulator" />
     <tag Name="CyberneticsOneOnly" />
   </object>
@@ -246,7 +246,7 @@
     <part Name="Physics" Weight="3" />
     <part Name="Description" Short="耐火泡を瞬時に噴出するミクロポンプ群。" />
     <part Name="Render" DisplayName="{{Y|消火システム}}" Tile="Items/sw_cyber_fire_suppression_system.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Head,Body,Back" Cost="2" BehaviorDescription="炎上時に自動で消火し、火炎ダメージを20%軽減する。" />
+    <part Name="CyberneticsBaseItem" Slots="Head,Body,Back" Cost="2" BehaviorDescription="炎上している間、毎ターン自動的に難燃ジェルを放出する。" />
     <part Name="CyberneticsFireSuppressionSystem" />
     <tag Name="CyberneticsOneOnly" />
   </object>
@@ -254,7 +254,7 @@
     <part Name="Physics" Weight="1" />
     <part Name="Description" Short="可動式のスパイクが足裏から突き出し、不整地でも姿勢を固定する。" />
     <part Name="Render" DisplayName="{{Y|アンカー・スパイク}}" Tile="Items/sw_cyber_anchor_spikes.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Feet" Cost="2" BehaviorDescription="転倒・ノックバックに対するセーヴに +4。" />
+    <part Name="CyberneticsBaseItem" Slots="Feet" Cost="2" BehaviorDescription="物理的な手段で強制移動させられない。" />
     <part Name="CyberneticsAnchorSpikes" />
     <tag Name="CyberneticsOneOnly" />
   </object>
@@ -262,7 +262,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="光を操る微細ラティスを2層構造にし、眩惑効果を高めた模型。" />
     <part Name="Render" DisplayName="{{Y|スキングリッター Mk2}}" Tile="Items/sw_skin_glitter.bmp" TileColor="&amp;m" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Back,Body" Cost="2" BehaviorDescription="光属性攻撃を屈折させる確率 +15%" />
+    <part Name="CyberneticsBaseItem" Slots="Back,Body" Cost="2" BehaviorDescription="光属性攻撃を屈折させる確率 +16%" />
     <part Name="CyberneticsRefractLight" Chance="16" />
     <xtagGrammar massNoun="true" />
     <part Name="ItemElements" Elements="glass::3" />
@@ -271,7 +271,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="高度な技能パターンを焼き付けた上位スキルソフト。" />
     <part Name="Render" DisplayName="{{Y|スキルソフト Mk2}}" Tile="Items/sw_skillsoft.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="2" BehaviorDescription="コスト 0～100 SP のスキルを1つ習得する。" />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="2" BehaviorDescription="コスト 51～150 SP のスキルを1つ習得する。" />
     <part Name="CyberneticsSingleSkillsoft" MinCost="51" MaxCost="150" />
     <part Name="ItemElements" Elements="scholarship::3" />
   </object>
@@ -279,7 +279,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="図面・設計術を脳に直接書き込むソフトウェアの第二世代。" />
     <part Name="Render" DisplayName="{{Y|スキーマソフト Mk2}}" Tile="Items/sw_schemasoft.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="2" BehaviorDescription="工匠IIIまでの設計図を1つ会得する。" />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="2" BehaviorDescription="単一の遺物分類の全設計図にアクセスできる。" />
     <part Name="CyberneticsSchemasoft" MaxTier="3" />
     <tag Name="CyberneticsDestroyOnRemoval" />
     <part Name="ItemElements" Elements="scholarship::3" />
@@ -288,7 +288,7 @@
     <part Name="Physics" Weight="1" />
     <part Name="Description" Short="導電性のシャントが電撃を体外へ逃し、感電を防止する。" />
     <part Name="Render" DisplayName="{{Y|グラウンディングシャント}}" Tile="Items/sw_grounding_shunts.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Feet" Cost="2" BehaviorDescription="+12 電撃耐性" />
+    <part Name="CyberneticsBaseItem" Slots="Feet" Cost="2" BehaviorDescription="+50 電撃耐性" />
     <part Name="CyberneticsStatModifier" Stats="ElectricResistance:50" />
     <part Name="ItemElements" Elements="circuitry::3" />
   </object>
@@ -296,14 +296,14 @@
     <part Name="Physics" Weight="10" />
     <part Name="Description" Short="皮膚の下に重ねた合金プレートが刃と弾丸を逸らし、防護服を兼ねる。" />
     <part Name="Render" DisplayName="{{Y|皮質装甲}}" Tile="Items/sw_dermalplating.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Body,Head,Back" Cost="3" BehaviorDescription="+3 AV" />
+    <part Name="CyberneticsBaseItem" Slots="Body,Head,Back" Cost="3" BehaviorDescription="+1 AV" />
     <part Name="CyberneticsStatModifier" Stats="AV:1" />
   </object>
   <object Name="TransparentSkin" Inherits="BaseCyberneticsEquipment_3point" Replace="true">
     <part Name="Physics" Weight="5" />
     <part Name="Description" Short="血管と筋繊維を丸裸にする透明皮膚。至福と恐怖を同時に演出する。" />
     <part Name="Render" DisplayName="{{Y|透明皮膚 Mk2}}" Tile="Items/sw_transparent.bmp" TileColor="&amp;C" DetailColor="R" />
-    <part Name="CyberneticsBaseItem" Slots="Body,Back" Cost="3" BehaviorDescription="+4 DV" />
+    <part Name="CyberneticsBaseItem" Slots="Body,Back" Cost="3" BehaviorDescription="+3 DV" />
     <part Name="CyberneticsStatModifier" Stats="DV:3" />
     <part Name="ItemElements" Elements="glass::4" />
   </object>
@@ -311,42 +311,42 @@
     <part Name="Physics" Weight="5" />
     <part Name="Description" Short="滑らかな金属の義手。精密作業と握力が共に向上する。" />
     <part Name="Render" DisplayName="{{Y|バイオニックハンド}}" Tile="Items/sw_bionichands.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="3" BehaviorDescription="+2 STR&#10;+2 DEX" />
+    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="3" BehaviorDescription="+2 敏捷" />
     <part Name="CyberneticsStatModifier" Stats="Agility:2" />
   </object>
   <object Name="BionicArm" Inherits="BaseCyberneticsEquipment_3point" Replace="true">
     <part Name="Physics" Weight="8" />
     <part Name="Description" Short="骨格・筋肉・腱をすべて人工パーツに置換したバイオニックアーム。" />
     <part Name="Render" DisplayName="{{Y|バイオニックアーム}}" Tile="Items/sw_bionicarm.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Arm" Cost="3" BehaviorDescription="+3 STR" />
+    <part Name="CyberneticsBaseItem" Slots="Arm" Cost="3" BehaviorDescription="+2 筋力" />
     <part Name="CyberneticsStatModifier" Stats="Strength:2" />
   </object>
   <object Name="UltraElasticAnkleTendons" Inherits="BaseCyberneticsEquipment_3point" Replace="true">
     <part Name="Physics" Weight="1" />
     <part Name="Description" Short="極超弾性の腱束が脚力を爆発的に高める。着地時の衝撃も吸収する。" />
     <part Name="Render" DisplayName="{{Y|超弾性足首腱}}" Tile="Items/sw_ultratendons.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Feet" Cost="3" BehaviorDescription="+20 移動速度&#10;+2 AV" />
+    <part Name="CyberneticsBaseItem" Slots="Feet" Cost="3" BehaviorDescription="+10 移動速度" />
     <part Name="CyberneticsStatModifier" Stats="MoveSpeed:-10" />
   </object>
   <object Name="BeautifulVisage" Inherits="BaseCyberneticsEquipment_3point" Replace="true">
     <part Name="Physics" Weight="1" />
     <part Name="Description" Short="顔面の骨格を微細に削り、審美家が唸る完璧な対称を描く。" />
     <part Name="Render" DisplayName="{{Y|美麗な顔立ち}}" Tile="Items/sw_beautiful.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Face" Cost="3" BehaviorDescription="+2 意志" />
+    <part Name="CyberneticsBaseItem" Slots="Face" Cost="3" BehaviorDescription="+2 自我" />
     <part Name="CyberneticsStatModifier" Stats="Ego:2" />
     <part Name="ItemElements" Elements="jewels::4" />
   </object>
   <object Name="DopamineSynth" Inherits="BaseCyberneticsEquipment_3point" Replace="true">
     <part Name="Description" Short="脳内でドーパミンを合成・投与するための精製器。" />
     <part Name="Render" DisplayName="{{Y|ドーパミンシンセサイザー}}" Tile="Items/sw_dopamine.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="3" BehaviorDescription="気力回復速度 +25%" />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="3" BehaviorDescription="+2 意志力" />
     <part Name="CyberneticsStatModifier" Stats="Willpower:2" />
   </object>
   <object Name="BionicHeart" Inherits="BaseCyberneticsEquipment_3point" Replace="true">
     <part Name="Physics" Weight="2" />
     <part Name="Description" Short="発振器と人工弁を備えた合成心臓。血流を絶え間なく送り出す。" />
     <part Name="Render" DisplayName="{{Y|バイオニックハート}}" Tile="Items/sw_bionicheart.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Body" Cost="3" BehaviorDescription="+3 CON" />
+    <part Name="CyberneticsBaseItem" Slots="Body" Cost="3" BehaviorDescription="+2 頑健" />
     <part Name="CyberneticsStatModifier" Stats="Toughness:2" />
     <part Name="CyberneticsEffectSuppressor" Effects="CardiacArrest" />
   </object>
@@ -354,7 +354,7 @@
     <part Name="Physics" Weight="3" />
     <part Name="Description" Short="巨人族の遺伝子を模した義手。握れば岩さえ砕ける。" />
     <part Name="Render" DisplayName="{{Y|巨人の手}}" Tile="Items/sw_gianthands.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="3" BehaviorDescription="+4 STR" />
+    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="3" BehaviorDescription="両手武器を片手で扱える。" />
     <part Name="GiantHands" WorksOnSelf="false" WorksOnImplantee="true" />
   </object>
   <object Name="MedassistModule" Inherits="BaseCyberneticsEquipment_3point" Replace="true">
@@ -362,7 +362,7 @@
     <part Name="Description" Short="ナノ注射器と診断装置を統合した応急処置モジュール。" />
     <part Name="Render" DisplayName="{{Y|メッドアシスト・モジュール}}" Tile="Items/sw_cyber_medassist_module.bmp" TileColor="&amp;r" DetailColor="C" />
     <part Name="Inventory" />
-    <part Name="CyberneticsBaseItem" Slots="Body,Back,Arm" Cost="3" BehaviorDescription="治療スキル +10&#10;止血と包帯の時間を半減する。" />
+    <part Name="CyberneticsBaseItem" Slots="Body,Back,Arm" Cost="3" BehaviorDescription="インジェクターの使用アクションコストを80%軽減する。&#10;最大8本のインジェクターを装填でき、メドアシストモジュールAIが適切と判断したときに（AIの裁量で）アクションコストなしに自動使用する。" />
     <part Name="CyberneticsMedassistModule" />
     <part Name="ReduceEnergyCosts" ChargeUse="0" IncludeTypes="Medication" PercentageReduction="80" GenerateShortDescription="false" NameForStatus="ManualStentSystem" />
     <tag Name="CyberneticsOneOnly" />
@@ -372,7 +372,7 @@
     <part Name="Description" Short="筋膜にパラジウムを電着し、導電と疲労回復を両立させる。" />
     <part Name="Render" DisplayName="{{Y|パラジウム電着}}" Tile="Items/sw_electrodeposits.bmp" TileColor="&amp;C" DetailColor="r" />
     <part Name="Inventory" />
-    <part Name="CyberneticsBaseItem" Slots="Head,Body,Back,Arm" Cost="3" BehaviorDescription="+3 CON&#10;+10 電撃耐性" />
+    <part Name="CyberneticsBaseItem" Slots="Head,Body,Back,Arm" Cost="3" BehaviorDescription="局所格子に20ユニットの演算力を供給する。&#10;頭部に埋め込むと知力 +2。" />
     <part Name="CyberneticsPalladiumElectrodeposits" />
     <part Name="ItemElements" Elements="circuitry::4" />
     <tag Name="CyberneticsDestroyOnRemoval" />
@@ -382,14 +382,14 @@
     <part Name="Physics" Weight="1" />
     <part Name="Description" Short="生体認証でのみ解除できるセキュリティロックを全身のハードポイントに組み込む。" />
     <part Name="Render" DisplayName="{{Y|セキュリティ・インターロック}}" Tile="Items/sw_security.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Hands,Feet,Body,Back,Face,Arm,Head" Cost="3" BehaviorDescription="装備やインベントリの窃取を防ぐ。自身のみが解除可能。" />
+    <part Name="CyberneticsBaseItem" Slots="Hands,Feet,Body,Back,Face,Arm,Head" Cost="3" BehaviorDescription="どんな扉でも解錠できる。" />
     <part Name="CyberneticsPropertyModifier" Props="DoorUnlocker:1" />
     <tag Name="CyberneticsDestroyOnRemoval" />
   </object>
   <object Name="IntravenousPort" Inherits="BaseCyberneticsEquipment_3point" Replace="true">
     <part Name="Description" Short="体内に埋め込んだ多重点滴口。薬剤や滋養を即時循環させる。" />
     <part Name="Render" DisplayName="{{Y|静注ポート}}" Tile="Items/sw_intravenous.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Hands,Feet,Body,Back,Face,Arm,Head" Cost="3" BehaviorDescription="注射/トニックの効果時間 +50%&#10;副作用の確率 -25%" />
+    <part Name="CyberneticsBaseItem" Slots="Hands,Feet,Body,Back,Face,Arm,Head" Cost="3" BehaviorDescription="トニックの効果時間が2倍になる。" />
     <part Name="CyberneticsTonicDurationModifier" Percentage="100" />
     <part Name="ItemElements" Elements="salt::4" />
   </object>
@@ -397,7 +397,7 @@
     <part Name="Physics" Weight="3" />
     <part Name="Description" Short="断熱材を高密度化し、極寒・灼熱双方への耐性を確保する。" />
     <part Name="Render" DisplayName="{{Y|高級皮膚断熱材}}" Tile="Items/sw_highgrade.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Body,Head,Back" Cost="3" BehaviorDescription="+12 熱耐性&#10;+12 冷気耐性" />
+    <part Name="CyberneticsBaseItem" Slots="Body,Head,Back" Cost="3" BehaviorDescription="+9 熱耐性&#10;+9 冷気耐性&#10;+9 電撃耐性&#10;+9 酸耐性" />
     <part Name="CyberneticsStatModifier" Stats="HeatResistance:9;ColdResistance:9;ElectricResistance:9;AcidResistance:9" />
     <tag Name="CyberneticsDestroyOnRemoval" />
   </object>
@@ -405,7 +405,7 @@
     <part Name="Physics" Weight="5" />
     <part Name="Description" Short="物質の再配列を行う微小工場。破損した装備をその場で修復する。" />
     <part Name="Render" DisplayName="{{Y|物質再構築機}}" Tile="Items/sw_matter.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Body" Cost="3" BehaviorDescription="装備の耐久度を徐々に修復する。工作時間 -25%" />
+    <part Name="CyberneticsBaseItem" Slots="Body" Cost="3" BehaviorDescription="発動。クールダウン100。&#10;マップ上の探索済みランダム地点へテレポートする。" />
     <part Name="CyberneticsMatterRecompositer" />
     <part Name="ItemElements" Elements="travel::4" />
     <tag Name="CyberneticsOneOnly" />
@@ -414,7 +414,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="皮膚を変幻自在に造形できる顔面ルーム。表情を任意の意匠で固定できる。" />
     <part Name="Render" DisplayName="{{Y|カスタム・フェイス}}" Tile="Items/sw_custom.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Face" Cost="3" BehaviorDescription="+2 意志&#10;あらゆる顔貌への変装が可能になる。" />
+    <part Name="CyberneticsBaseItem" Slots="Face" Cost="3" BehaviorDescription="インストール時に選んだ派閥との評判 +300" />
     <part Name="CyberneticsCustomVisage" />
     <tag Name="CyberneticsDestroyOnRemoval" />
   </object>
@@ -422,7 +422,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="背部に伸縮アームを備えたラックを取り付け、武器やツールを複数携行できるようにする。" />
     <part Name="Render" DisplayName="{{Y|装備ラック}}" Tile="Items/sw_cyber_equipment_rack.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Body" Cost="3" BehaviorDescription="装備スロット（手持ち）を1つ追加する。" />
+    <part Name="CyberneticsBaseItem" Slots="Body" Cost="3" BehaviorDescription="背中装備スロットが1つ増える。" />
     <part Name="CyberneticsEquipmentRack" />
     <tag Name="CyberneticsModifiesAnatomy" />
   </object>
@@ -430,14 +430,14 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="毒素を瞬時に分解する人工肝臓。" />
     <part Name="Render" DisplayName="{{Y|バイオニック肝臓}}" Tile="Items/sw_cyberliver.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Body" Cost="3" BehaviorDescription="毒・病気に対するセーヴに +4。" />
+    <part Name="CyberneticsBaseItem" Slots="Body" Cost="3" BehaviorDescription="毒と病気に対して免疫を得る。" />
     <part Name="CyberneticsBionicLiver" />
   </object>
   <object Name="AnomalyFumigator" Inherits="BaseCyberneticsEquipment_3point" Replace="true">
     <part Name="Physics" Weight="1" />
     <part Name="Description" Short="異常空間を燻蒸して安定させる希少な噴霧装置。" />
     <part Name="Render" DisplayName="{{Y|異常燻蒸器}}" Tile="Items/sw_cyber_anomaly_fumigator.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Hands,Feet,Body,Back,Face,Arm,Head" Cost="3" BehaviorDescription="異常地形で受けるダメージ -25%&#10;混沌系の敵に対して+2命中" />
+    <part Name="CyberneticsBaseItem" Slots="Hands,Feet,Body,Back,Face,Arm,Head" Cost="3" BehaviorDescription="毎ターン、通常性ガスの雲を放出する。" />
     <part Name="CyberneticsAnomalyFumigator" />
     <tag Name="CyberneticsOneOnly" />
   </object>
@@ -445,7 +445,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="高度な戦術・工学に対応した第三世代スキルソフト。" />
     <part Name="Render" DisplayName="{{Y|スキルソフト Mk3}}" Tile="Items/sw_skillsoft.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="3" BehaviorDescription="コスト 0～150 SP のスキルを1つ習得する。" />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="3" BehaviorDescription="コストが151 SPより高いスキルを1つ習得する。" />
     <part Name="CyberneticsSingleSkillsoft" MinCost="151" MaxCost="999" />
     <part Name="ItemElements" Elements="scholarship::4" />
   </object>
@@ -453,7 +453,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="希少な設計図を脳に直接ロードする第三世代スキーマソフト。" />
     <part Name="Render" DisplayName="{{Y|スキーマソフト Mk3}}" Tile="Items/sw_schemasoft.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="3" BehaviorDescription="工匠IV相当の設計図を1つ会得する。" />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="3" BehaviorDescription="単一の遺物分類の全設計図にアクセスできる。" />
     <part Name="CyberneticsSchemasoft" MaxTier="5" />
     <tag Name="CyberneticsDestroyOnRemoval" />
     <part Name="ItemElements" Elements="scholarship::4" />
@@ -462,7 +462,7 @@
     <part Name="Physics" Weight="18" />
     <part Name="Description" Short="フラーレン合金の骨格を手に移植し、怪力を常時発揮する。" />
     <part Name="Render" DisplayName="{{Y|フラーレン手骨}}" Tile="Items/sw_carbidehand.bmp" TileColor="&amp;K" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="4" BehaviorDescription="+4 STR" />
+    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="4" BehaviorDescription="拳のダメージが2d4+1になる。" />
     <part Name="CyberneticsFistReplacement" FistObject="FulleriteFist" />
     <part Name="ItemElements" Elements="might::5" />
   </object>
@@ -482,7 +482,7 @@
     <part Name="Physics" Weight="75" />
     <part Name="Description" Short="下半身をキャタピラに換装し、重量物でも滑らかに運搬できる。" />
     <part Name="Render" DisplayName="{{Y|モーター駆動キャタピラ}}" Tile="Items/sw_treads.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Feet" Cost="4" BehaviorDescription="+25 移動速度&#10;重量ペナルティを無視して移動できる。&#10;移動／ノックダウン／拘束に対するセーヴ +4。" />
+    <part Name="CyberneticsBaseItem" Slots="Feet" Cost="4" BehaviorDescription="+150 移動速度&#10;強制移動・転倒・拘束に対するセーヴ +4&#10;靴を装備できない。&#10;このインプラントは取り外せない。" />
     <part Name="CyberneticsMotorizedTreads" />
     <part Name="CyberneticsStatModifier" Stats="MoveSpeed:-150" />
     <part Name="SaveModifier" Vs="Move,Knockdown,Restraint" Amount="4" IsEMPSensitive="true" IsTechScannable="true" NameForStatus="DriveTrain" ShowInShortDescription="false" />
@@ -499,14 +499,14 @@
     <part Name="Physics" Weight="4" />
     <part Name="Description" Short="衝撃を受けた瞬間に硬化するトラウマプレート。内臓損傷を防ぐ。" />
     <part Name="Render" DisplayName="{{Y|反応式トラウマプレート}}" Tile="Items/sw_cyber_reactive_trauma_plate.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Body" Cost="4" BehaviorDescription="+5 AV&#10;クリティカルヒットを25%の確率で無効化する。&#10;さらに、致死ダメージまたは最大HPの50%以上のダメージを一度だけ無効化し、このインプラントは自壊する。" />
+    <part Name="CyberneticsBaseItem" Slots="Body" Cost="4" BehaviorDescription="致死量のダメージ、または最大HPの50%以上のダメージを与えるダメージ源を1回無効化する。このインプラントはその過程で破壊される。" />
     <part Name="LifeSaver" ChanceVsLethal="100" ChanceVsMaxHitpointsThreshold="100" MaxHitpointsThreshold="50" MaxUses="1" DestroyWhenUsedUp="true" ChargeUse="0" IsEMPSensitive="false" LethalMessage="=subject.Name's= =object.name= =object.verb:burst= outward, destroying =objpronouns.reflexive= to prevent potentially lethal damage." MaxHitpointsThresholdMessage="=subject.Name's= =object.name= =object.verb:burst= outward, destroying =objpronouns.reflexive= to prevent catastrophic damage." NameForStatus="TraumaInterventionSystem" />
   </object>
   <object Name="GunRack" Inherits="BaseCyberneticsEquipment_4point" Replace="true">
     <part Name="Physics" Weight="20" />
     <part Name="Description" Short="背部に展開式ガンラックを搭載し、武器の持ち替えを瞬時に行う。" />
     <part Name="Render" DisplayName="{{Y|ガンラック}}" Tile="Items/sw_gunrack.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Back" Cost="6" BehaviorDescription="メイン装備を即座に切り替えられる。リロード時間 -25%" />
+    <part Name="CyberneticsBaseItem" Slots="Back" Cost="6" BehaviorDescription="左右の遠隔武器スロットが1つずつ増える。&#10;背中に装備を着用できない。" />
     <part Name="CyberneticsGunRack" />
     <part Name="Metal" />
     <part Name="NoDamage" />
@@ -520,7 +520,7 @@
     <part Name="Description" Short="身体そのものに帰還コイルを備え、任意位置へ復帰できる。" />
     <part Name="Render" DisplayName="{{Y|オンボード・リコイラー}}" Tile="Items/sw_cyber_onboard_recoiler.bmp" ColorString="&amp;C" DetailColor="r" />
     <part Name="ItemElements" Elements="travel::5" />
-    <part Name="CyberneticsBaseItem" Slots="Hands,Feet,Body,Back,Face,Arm,Head" Cost="4" BehaviorDescription="任意の場所を登録して瞬時に帰還する能力を得る。" />
+    <part Name="CyberneticsBaseItem" Slots="Hands,Feet,Body,Back,Face,Arm,Head" Cost="4" BehaviorDescription="このインプラントに場所を刻印（クールダウン100）し、その場所へリコイル（クールダウン50）できる。" />
     <part Name="CyberneticsOnboardRecoilerTeleporter" Sound="Sounds/Interact/sfx_interact_recoiler_activate" />
     <part Name="CyberneticsOnboardRecoilerImprinting" Sound="Sounds/Interact/sfx_interact_recoiler_location_imprint" />
   </object>
@@ -528,14 +528,14 @@
     <part Name="Physics" Weight="15" />
     <part Name="Description" Short="体幹に磁気コアを据え、金属装備へのシナジーを高める。" />
     <part Name="Render" DisplayName="{{Y|磁気コア}}" Tile="Items/sw_magnetic_core.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Body" Cost="4" BehaviorDescription="+2 電撃耐性&#10;金属武器の命中 +2" />
+    <part Name="CyberneticsBaseItem" Slots="Body" Cost="4" BehaviorDescription="浮遊物装備スロットが1つ増える。" />
     <part Name="CyberneticsMagneticCore" />
   </object>
   <object Name="Phase-Adaptive Scope" Inherits="BaseCyberneticsEquipment_4point" Replace="true">
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="位相に応じて焦点を調整する照準器。相転移目標も捉え続ける。" />
     <part Name="Render" DisplayName="{{Y|位相適応スコープ}}" Tile="Items/implant_phase_adaptive_scope.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Back" Cost="4" BehaviorDescription="遠隔攻撃の命中 +3&#10;相転移中の敵にも通常命中。" />
+    <part Name="CyberneticsBaseItem" Slots="Back" Cost="4" BehaviorDescription="遠隔武器を発射するか物を投げると、その投射物は位相をずらして障害物を通り抜け、目標に到達する。" />
     <part Name="CyberneticsPhaseAdaptiveScope" />
     <tag Name="CyberneticsOneOnly" />
   </object>
@@ -543,7 +543,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="工匠上級者向けの最上位スキーマソフト。古代図面を完全再現する。" />
     <part Name="Render" DisplayName="{{Y|スキーマソフト Mk4}}" Tile="Items/sw_schemasoft.bmp" ColorString="&amp;C" DetailColor="R" />
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="4" BehaviorDescription="高Tierの設計図を1つ会得し、工作難易度を1段階下げる。" />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="4" BehaviorDescription="単一の遺物分類の全設計図にアクセスできる。" />
     <part Name="CyberneticsSchemasoft" MaxTier="7" />
     <part Name="ItemElements" Elements="scholarship::5" />
     <tag Name="CyberneticsDestroyOnRemoval" />
@@ -552,7 +552,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="力場を刃として形成し、分子単位で切削を行う精密旋盤。" />
     <part Name="Render" DisplayName="{{Y|精密フォース旋盤}}" Tile="Items/implant_precision_force_lathe.bmp" TileColor="&amp;c" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Head,Arm,Body,Back" Cost="4" BehaviorDescription="工作時間 -50%&#10;工作素材消費 -1 (最低1)" />
+    <part Name="CyberneticsBaseItem" Slots="Head,Arm,Body,Back" Cost="4" BehaviorDescription="空いている手持ちまたは投擲武器スロットにフォースナイフを生成する。&#10;フォースナイフを投げると、別のフォースナイフが即座に投擲武器スロットに実体化する。&#10;フォースナイフは1d8ダメージを与え、貫通値は対象のAVと等しく、投擲距離 +6。&#10;フォースナイフはあなたとの接触を失うか装備から外れると消える。&#10;フォース・モジュレーターを埋め込んでいる場合、フォースナイフを力場越しに投げられる。" />
     <part Name="CyberneticsPrecisionForceLathe" />
     <tag Name="CyberneticsOneOnly" />
   </object>
@@ -580,7 +580,7 @@
     <part Name="Physics" Weight="8" />
     <part Name="Description" Short="鏡のような装甲で覆われた腕。光と射撃を跳ね返す。" />
     <part Name="Render" DisplayName="{{Y|鏡面義肢}}" Tile="Items/implant_grafted_mirror_arm.bmp" HFlip="true" TileColor="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Arm" Cost="5" BehaviorDescription="+3 AV&#10;光線攻撃を25%の確率で反射する。" />
+    <part Name="CyberneticsBaseItem" Slots="Arm" Cost="5" BehaviorDescription="投擲武器スロットが1つ増える。&#10;投擲を行うと、すべての投擲武器スロットから同時に投げる。" />
     <part Name="CyberneticsGraftedMirrorArm" />
     <part Name="ItemElements" Elements="glass::6" />
   </object>
@@ -588,7 +588,7 @@
     <part Name="Physics" Weight="2" />
     <part Name="Description" Short="指先に配した微細マニピュレーター群。極小の工作を手早く行える。" />
     <part Name="Render" DisplayName="{{Y|マイクロマニピュレーターアレイ}}" Tile="Items/sw_cyber_micromanipulator_array.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="5" BehaviorDescription="解体・組立の時間 -50%&#10;工作判定 +3" />
+    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="5" BehaviorDescription="戦闘中でも工作と修理を1ターンのアクションコストで行える。&#10;その他の工作スキルのアクションコストを40%軽減する。&#10;遺物識別時、知力が8高いものとして扱われる。&#10;遺物の解体でビットを回収する確率 +10%。" />
     <part Name="CyberneticsMicromanipulatorArray" />
     <part Name="ItemElements" Elements="scholarship::5" />
     <part Name="Toolbox" ChargeUse="0" WorksOnCarrier="false" TrackAsToolbox="false" UnpoweredInspectBonus="8" UnpoweredDisassembleBonus="10" ComputePowerFactor="1" NameForStatus="DiagnosticSensors" />
@@ -597,7 +597,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="地層を貫通する探査レーダー。壁の向こうの動体まで捉える。" />
     <part Name="Render" DisplayName="{{Y|貫通レーダー}}" Tile="Items/sw_cyber_penetrating_radar.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Body,Back,Head,Face,Arm" Cost="6" BehaviorDescription="壁越しの敵を検知し、ステルスを無視する。" />
+    <part Name="CyberneticsBaseItem" Slots="Body,Back,Head,Face,Arm" Cost="6" BehaviorDescription="半径10マス以内を完全に視認できる。ただし力場と時空異常には遮られる。" />
     <part Name="CyberneticsPenetratingRadar" />
     <tag Name="CyberneticsOneOnly" />
   </object>
@@ -605,7 +605,7 @@
     <part Name="Physics" Weight="2" />
     <part Name="Description" Short="有機物を燃料に変換して発電する小型炉。" />
     <part Name="Render" DisplayName="{{Y|生体動力炉}}" Tile="Items/sw_cyber_biodynamic_power_plant.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Body" Cost="6" BehaviorDescription="バッテリー回復速度 +50%&#10;電力系アクティブ能力のクールダウン -25%" />
+    <part Name="CyberneticsBaseItem" Slots="Body" Cost="6" BehaviorDescription="ジャック改造を持つアイテムなど、オンボード電源システムを利用できる装備品に、毎ターン5000ユニットのチャージを継続供給する。" />
     <part Name="CyberneticsBiodynamicPowerPlant" />
     <part Name="ItemElements" Elements="circuitry::7" />
   </object>
@@ -613,7 +613,7 @@
     <part Name="Physics" Weight="1" />
     <part Name="Description" Short="局所的な静止場を投射し、物体の時間流を遅延させる。" />
     <part Name="Render" DisplayName="{{Y|ステイシス・プロジェクター}}" Tile="Items/sw_stasis_projector.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Head,Arm,Hands,Body,Back" Cost="6" BehaviorDescription="射程 7 の敵1体を数ターン行動不能にするアクティブ能力を得る。" />
+    <part Name="CyberneticsBaseItem" Slots="Head,Arm,Hands,Body,Back" Cost="6" BehaviorDescription="発動。クールダウン100。&#10;約5ラウンド持続する隣接したステイシス場を最大6マスまで生成する。" />
     <part Name="CyberneticsStasisProjector" />
     <part Name="ItemElements" Elements="time::7" />
   </object>
@@ -621,7 +621,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="顔面をホログラムで覆い、任意の姿を投影できる。" />
     <part Name="Render" DisplayName="{{Y|ホログラフィック・フェイス}}" Tile="Items/implant_holographic_visage.bmp" ColorString="&amp;B" TileColor="&amp;C" DetailColor="B" />
-    <part Name="CyberneticsBaseItem" Slots="Face" Cost="6" BehaviorDescription="偽装判定に +4&#10;希望するNPCの姿に成り代われる。" />
+    <part Name="CyberneticsBaseItem" Slots="Face" Cost="6" BehaviorDescription="インストール時に選んだ派閥との評判 +200&#10;発動すると選択した派閥を変更できる。" />
     <part Name="CyberneticsHolographicVisage" />
     <tag Name="CyberneticsOneOnly" />
     <part Name="ItemElements" Elements="jewels::5" />
@@ -630,7 +630,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="複数のスペクトルで同時に走査する光学センサー群。" />
     <part Name="Render" DisplayName="{{Y|光学マルチスキャナ}}" Tile="Items/sw_multiscanner.bmp" TileColor="&amp;C" DetailColor="m" />
-    <part Name="CyberneticsBaseItem" Slots="Face" Cost="8" BehaviorDescription="隠密と透明状態の敵を常に看破する。" />
+    <part Name="CyberneticsBaseItem" Slots="Face" Cost="8" BehaviorDescription="ロボット・生物・構造物の正確なHP・AV・DVを参照できる。&#10;遺物を自動識別する。&#10;階段などの上下マップ遷移が常に明らかになる。" />
     <part Name="CyberneticsAirCurrentMicrosensor" />
     <part Name="CyberneticsOpticalMultiscanner" />
     <part Name="CyberneticsPropertyModifier" Props="TechScannerEquipped:1;BioScannerEquipped:1;StructureScannerEquipped:1" />
@@ -640,7 +640,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="社交的な判断を補助する協調プロセッサ。水儀や交渉の最適解を提示する。" />
     <part Name="Render" DisplayName="{{Y|ソーシャルコプロセッサ}}" Tile="Items/sw_social_coprocessor.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="8" BehaviorDescription="+3 意志&#10;水儀と取引価格に +10% のボーナス" />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="8" BehaviorDescription="新しいクリーチャーと水儀を行うたび、評判を追加で25得る。初めての水儀後にこのインプラントを埋め込んだ場合、その相手と次に水儀を行うと評判を25得る。&#10;水儀での評判コストが20%減少する。&#10;《布教》できるクリーチャーが1体増える。&#10;ローカルラティス上の演算力が高いほど効果が増す。" />
     <part Name="CyberneticsSocialCoprocessor" />
     <tag Name="CyberneticsDestroyOnRemoval" />
     <tag Name="CyberneticsOneOnly" />
@@ -649,7 +649,7 @@
     <part Name="Physics" Weight="3" />
     <part Name="Description" Short="自分と対象を時間的に絡め取り、相互の位置を交換したまま固定する。" />
     <part Name="Render" DisplayName="{{Y|ステイシス・エンタングラー}}" Tile="Items/implant_stasis_entangler.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Feet,Back,Body" Cost="8" BehaviorDescription="対象と位置を入れ替え、双方を1ターン行動不能にする。" />
+    <part Name="CyberneticsBaseItem" Slots="Feet,Back,Body" Cost="8" BehaviorDescription="発動。クールダウン200。&#10;視線内のクリーチャー1体を選ぶ。他の全クリーチャーを15ラウンドのステイシス場に入れる。" />
     <part Name="CyberneticsStasisEntangler" />
     <part Name="ItemElements" Elements="time::8" />
     <tag Name="CyberneticsOneOnly" />
@@ -658,7 +658,7 @@
     <part Name="Physics" Weight="9" />
     <part Name="Description" Short="クリスティール骨を移植した究極の義手。信じがたい破壊力を誇る。" />
     <part Name="Render" DisplayName="{{Y|クリスティール手骨}}" Tile="Items/sw_carbidehand.bmp" TileColor="&amp;G" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="8" BehaviorDescription="+6 STR" />
+    <part Name="CyberneticsBaseItem" Slots="Hands" Cost="8" BehaviorDescription="拳のダメージが3d4になる。" />
     <part Name="CyberneticsFistReplacement" FistObject="CrysteelFist" />
     <part Name="ItemElements" Elements="might::8" />
   </object>
@@ -678,7 +678,7 @@
     <part Name="Physics" Weight="5" />
     <part Name="Description" Short="高精度で物質を再構成するプレミアムモデル。遺失技術の修復も可能。" />
     <part Name="Render" DisplayName="{{Y|高忠実度物質再構築機}}" Tile="Items/sw_cyber_high_fidelity_matter_recompositer.bmp" ColorString="&amp;C" DetailColor="r" />
-    <part Name="CyberneticsBaseItem" Slots="Body" Cost="8" BehaviorDescription="装備耐久の自動修復が二倍の速度になる。&#10;工作時に追加で+1設計図を選べる。" />
+    <part Name="CyberneticsBaseItem" Slots="Body" Cost="8" BehaviorDescription="発動。クールダウン50。&#10;マップ上の探索済み任意の場所へテレポートする。" />
     <part Name="CyberneticsHighFidelityMatterRecompositer" />
     <part Name="ItemElements" Elements="travel::8" />
     <tag Name="CyberneticsOneOnly" />
@@ -687,7 +687,7 @@
     <part Name="Physics" Weight="0" />
     <part Name="Description" Short="技能ツリー丸ごとをロードする特注ソフト。複数スキルを一度に習得できる。" />
     <part Name="Render" DisplayName="{{Y|ツリースキルソフト}}" Tile="Items/sw_skillsoft.bmp" ColorString="&amp;C" DetailColor="R" />
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="8" BehaviorDescription="同一ツリーのスキルを最大3つまで獲得する。" />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="8" BehaviorDescription="スキルツリー全体にアクセスできる。" />
     <part Name="CyberneticsTreeSkillsoft" />
     <part Name="ItemElements" Elements="scholarship::8" />
   </object>
@@ -695,7 +695,7 @@
     <part Name="Render" DisplayName="{{Y|カテドラ}}" Tile="Items/sw_cathedra.bmp" ColorString="&amp;c" DetailColor="r" />
     <part Name="Description" Short="接合ニッチを備えた巨大な玉座。羽根状の装飾に宝石をはめ込むと異なる機能を発揮する。" />
     <part Name="Physics" Weight="20" />
-    <part Name="CyberneticsBaseItem" Slots="Back" Cost="12" BehaviorDescription="+100 移動速度&#10;+50 HP&#10;+100 所持重量&#10;+3 意志&#10;飛行能力を得る。&#10;&#10;発動（CT 100）: 宝石ごとの効果を引き起こす。&#10;&#10;背中に装備を着用できない。&#10;このインプラントは取り外せない。" />
+    <part Name="CyberneticsBaseItem" Slots="Back" Cost="12" BehaviorDescription="+100 移動速度&#10;+50 HP&#10;+100 所持重量&#10;+3 自我&#10;飛行能力を得る。&#10;&#10;発動（CT 100）: 宝石ごとの効果を引き起こす。&#10;&#10;背中に装備を着用できない。&#10;このインプラントは取り外せない。" />
     <part Name="CyberneticsStatModifier" Stats="MoveSpeed:-100;Hitpoints:50;Ego:3" />
     <part Name="Metal" />
     <part Name="NoDamage" />
@@ -708,26 +708,26 @@
   <object Name="CathedraSapphire" Inherits="BaseCathedra" Replace="true">
     <part Name="Render" DisplayName="{{Y|サファイア装飾のカテドラ}}" ColorString="&amp;c" DetailColor="B" />
     <part Name="Description" Short="象牙色の背凭れに、盲者の符丁が線刻された青い装飾が這う。翼と欄干は異界の階層を映す比例で組まれている。" />
-    <part Name="CyberneticsBaseItem" BehaviorDescription="+100 移動速度&#10;+50 HP&#10;+100 所持重量&#10;+3 意志&#10;飛行能力を得る。&#10;&#10;発動（CT 100）: 周囲に衝撃波を放ち、敵を吹き飛ばして気絶させる。&#10;&#10;背中に装備を着用できない。&#10;このインプラントは取り外せない。" />
+    <part Name="CyberneticsBaseItem" BehaviorDescription="+100 移動速度&#10;+50 HP&#10;+100 所持重量&#10;+3 自我&#10;飛行能力を得る。&#10;&#10;発動（CT 100）: 周囲に衝撃波を放ち、敵を吹き飛ばして気絶させる。&#10;&#10;背中に装備を着用できない。&#10;このインプラントは取り外せない。" />
     <part Name="CyberneticsCathedraSapphire" />
   </object>
   <object Name="CathedraRuby" Inherits="BaseCathedra" Replace="true">
     <part Name="Render" DisplayName="{{Y|ルビー装飾のカテドラ}}" ColorString="&amp;c" DetailColor="R" />
     <part Name="Description" Short="赤い巨岩から掘り出された座面には、波のような傷と焼け跡が残る。儀式の熱がいまだ冷めやらぬ。" />
-    <part Name="CyberneticsBaseItem" BehaviorDescription="+100 移動速度&#10;+50 HP&#10;+100 所持重量&#10;+3 意志&#10;飛行能力を得る。&#10;&#10;発動（CT 100）: 自身を中心に熱念動フィールドを展開する。&#10;&#10;背中に装備を着用できない。&#10;このインプラントは取り外せない。" />
+    <part Name="CyberneticsBaseItem" BehaviorDescription="+100 移動速度&#10;+50 HP&#10;+100 所持重量&#10;+3 自我&#10;飛行能力を得る。&#10;&#10;発動（CT 100）: 自身を中心に熱念動フィールドを展開する。&#10;&#10;背中に装備を着用できない。&#10;このインプラントは取り外せない。" />
     <part Name="CyberneticsCathedraRuby" />
   </object>
   <object Name="CathedraWhiteOpal" Inherits="BaseCathedra" Replace="true">
     <part Name="Render" DisplayName="{{Y|ホワイトオパール装飾のカテドラ}}" ColorString="&amp;c" DetailColor="Y" />
     <part Name="Description" Short="金の座面に彫られた裸像たちの上を、無数の煌めきが覆い尽くす。彼らの姿は絡み合い、黄金の丘を滑り落ちていく。" />
-    <part Name="CyberneticsBaseItem" BehaviorDescription="+100 移動速度&#10;+50 HP&#10;+100 所持重量&#10;+3 意志&#10;飛行能力を得る。&#10;&#10;発動（CT 100）: 周囲に煌めく粉塵を撒き散らす。&#10;&#10;背中に装備を着用できない。&#10;このインプラントは取り外せない。" />
+    <part Name="CyberneticsBaseItem" BehaviorDescription="+100 移動速度&#10;+50 HP&#10;+100 所持重量&#10;+3 自我&#10;飛行能力を得る。&#10;&#10;発動（CT 100）: 周囲に煌めく粉塵を撒き散らす。&#10;&#10;背中に装備を着用できない。&#10;このインプラントは取り外せない。" />
     <part Name="CyberneticsCathedraWhiteOpal" />
     <part Name="ItemElements" Elements="glass::8" />
   </object>
   <object Name="CathedraBlackOpal" Inherits="BaseCathedra" Replace="true">
     <part Name="Render" DisplayName="{{Y|ブラックオパール装飾のカテドラ}}" ColorString="&amp;c" DetailColor="K" />
     <part Name="Description" Short="広い座面と肘掛けには髪のような細線が走り、宝石の群体を銀河のように分割している。古の木工を超えた痕跡だ。" />
-    <part Name="CyberneticsBaseItem" BehaviorDescription="+100 移動速度&#10;+50 HP&#10;+100 所持重量&#10;+3 意志&#10;飛行能力を得る。&#10;&#10;発動（CT 100）: 時空を裂き、クァドのランダムな場所へ跳躍する。&#10;&#10;背中に装備を着用できない。&#10;このインプラントは取り外せない。" />
+    <part Name="CyberneticsBaseItem" BehaviorDescription="+100 移動速度&#10;+50 HP&#10;+100 所持重量&#10;+3 自我&#10;飛行能力を得る。&#10;&#10;発動（CT 100）: 時空を裂き、クァドのランダムな場所へ跳躍する。&#10;&#10;背中に装備を着用できない。&#10;このインプラントは取り外せない。" />
     <part Name="CyberneticsCathedraBlackOpal" />
     <part Name="ItemElements" Elements="chance::8" />
   </object>

@@ -1699,7 +1699,6 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(GolemQuestSelectionPopupTranslationPatch), new[]
     {
         "XRL.World.Quests.GolemQuest.GolemBodySelection|WishSpec|System.Void|System.String",
-        "XRL.World.Quests.GolemQuest.GolemMaterialSelection`2|Pick|System.Void",
     })]
     [TestCase(typeof(LocationFinderPopupTranslationPatch), new[]
     {
@@ -1987,6 +1986,14 @@ public sealed class TargetMethodResolutionTests
         }
 
         Assert.That(actualSignatures, Is.EquivalentTo(expectedSignatures));
+    }
+
+    [Test]
+    public void GolemQuestSelectionPopupTargetMethods_SkipOpenGenericMaterialPick()
+    {
+        var signatures = ResolveTargetMethodSignatures(typeof(GolemQuestSelectionPopupTranslationPatch));
+
+        Assert.That(signatures, Does.Not.Contain("XRL.World.Quests.GolemQuest.GolemMaterialSelection`2|Pick|System.Void"));
     }
 
     [Test]

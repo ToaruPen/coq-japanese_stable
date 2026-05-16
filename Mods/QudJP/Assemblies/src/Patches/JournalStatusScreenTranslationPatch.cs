@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Diagnostics;
 using System.Reflection;
 using HarmonyLib;
@@ -30,23 +29,6 @@ public static class JournalStatusScreenTranslationPatch
         return method;
     }
 
-    public static void Prefix(object? __instance)
-    {
-        try
-        {
-            if (__instance is null)
-            {
-                return;
-            }
-
-            TranslateCategoryInfos(__instance);
-        }
-        catch (Exception ex)
-        {
-            Trace.TraceError("QudJP: JournalStatusScreenTranslationPatch.Prefix failed: {0}", ex);
-        }
-    }
-
     public static void Postfix(object? __instance)
     {
         try
@@ -63,40 +45,6 @@ public static class JournalStatusScreenTranslationPatch
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: JournalStatusScreenTranslationPatch.Postfix failed: {0}", ex);
-        }
-    }
-
-    private static void TranslateCategoryInfos(object instance)
-    {
-        if (UiBindingTranslationHelpers.GetMemberValue(instance, "categoryInfos") is not IEnumerable categoryInfos)
-        {
-            return;
-        }
-
-        var index = 0;
-        foreach (var categoryInfo in categoryInfos)
-        {
-            if (categoryInfo is null)
-            {
-                index++;
-                continue;
-            }
-
-            var current = UiBindingTranslationHelpers.GetStringMemberValue(categoryInfo, "Name");
-            if (string.IsNullOrEmpty(current))
-            {
-                index++;
-                continue;
-            }
-
-            var route = ObservabilityHelpers.ComposeContext(Context, "categoryInfos[" + index + "].Name");
-            var translated = UiBindingTranslationHelpers.TranslateVisibleText(current!, route, "JournalStatusScreen.CategoryInfo");
-            if (!string.Equals(translated, current, StringComparison.Ordinal))
-            {
-                UiBindingTranslationHelpers.SetMemberValue(categoryInfo, "Name", translated);
-            }
-
-            index++;
         }
     }
 

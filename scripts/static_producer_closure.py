@@ -9627,10 +9627,10 @@ def _existing_popup_owner_route_families() -> tuple[CoveredOwnerFamily, ...]:
     golem_tests = EvidenceFile(
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/GolemQuestSelectionPopupTranslationPatchTests.cs",
         (
-            "Patch_TranslatesGolemSelectionPopups_WhenOwnerPatched",
-            "Patch_DoesNotTranslateGolemSelectionPopup_WhenOwnerAbsent",
-            "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
-            "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
+            "TryTranslatePopupMessage_TranslatesKnownGolemSelectionPopup_WithoutOwnerScope",
+            "Patch_TranslatesKnownGolemSelectionPopup_WhenOwnerAbsent",
+            "Patch_DoesNotRetranslateDirectMarkedPopup",
+            "Patch_LeavesEmptyPopupUnchanged",
         ),
     )
     popup_show_pipeline = EvidenceFile(
@@ -9766,14 +9766,14 @@ def _existing_popup_owner_route_families() -> tuple[CoveredOwnerFamily, ...]:
             evidence_files=(
                 EvidenceFile(
                     "Mods/QudJP/Assemblies/src/Patches/GolemQuestSelectionPopupTranslationPatch.cs",
-                    ("GolemQuestSelectionPopupTranslationPatch", "GolemMaterialSelection", "MissingRequirementPattern"),
+                    ("GolemQuestSelectionPopupTranslationPatch", "MissingRequirementPattern"),
                 ),
                 popup_show_pipeline,
                 golem_tests,
                 EvidenceFile(
                     "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
                     (
-                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                        "GolemQuestSelectionPopupTargetMethods_SkipOpenGenericMaterialPick",
                         "XRL.World.Quests.GolemQuest.GolemMaterialSelection",
                         "Pick",
                         "XRL.World.Quests.GolemQuest.GolemMaterialSelection`2|Pick|System.Void",

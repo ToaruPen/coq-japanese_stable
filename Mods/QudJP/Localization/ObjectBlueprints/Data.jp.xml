@@ -159,199 +159,199 @@
   <object Name="UnknownSmallPlatinumTube">
     <part Name="Render" DisplayName="{{y|白金色の}}チューブ"/>
   </object>
-  <object Name="ProceduralCookingIngredient_artifacts">
+  <object Name="ProceduralCookingIngredient_artifacts" Load="Merge">
     <tag Name="Description" Value="遺物由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_thirst">
+  <object Name="ProceduralCookingIngredient_thirst" Load="Merge">
     <tag Name="Description" Value="水と渇き由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_secrets">
+  <object Name="ProceduralCookingIngredient_secrets" Load="Merge">
     <tag Name="Description" Value="秘密由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_darkness">
+  <object Name="ProceduralCookingIngredient_darkness" Load="Merge">
     <tag Name="Description" Value="暗闇由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_armor">
+  <object Name="ProceduralCookingIngredient_armor" Load="Merge">
     <tag Name="Description" Value="装甲由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_plantMinor">
+  <object Name="ProceduralCookingIngredient_plantMinor" Load="Merge">
     <tag Name="Description" Value="シンプルな植物由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_plantHighTier">
+  <object Name="ProceduralCookingIngredient_plantHighTier" Load="Merge">
     <tag Name="Description" Value="強力な植物由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_electric">
+  <object Name="ProceduralCookingIngredient_electric" Load="Merge">
     <tag Name="Description" Value="電気由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_cold">
+  <object Name="ProceduralCookingIngredient_cold" Load="Merge">
     <tag Name="Description" Value="冷気由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_heat">
+  <object Name="ProceduralCookingIngredient_heat" Load="Merge">
     <tag Name="Description" Value="熱と火炎由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_love">
+  <object Name="ProceduralCookingIngredient_love" Load="Merge">
     <tag Name="Description" Value="愛と忠義由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_teleport">
+  <object Name="ProceduralCookingIngredient_teleport" Load="Merge">
     <tag Name="Description" Value="テレポート由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_regenLowtier">
+  <object Name="ProceduralCookingIngredient_regenLowtier" Load="Merge">
     <tag Name="Description" Value="再生と治癒由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_regenHightier">
+  <object Name="ProceduralCookingIngredient_regenHightier" Load="Merge">
     <tag Name="Description" Value="強力な再生と治癒由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_medicinal">
+  <object Name="ProceduralCookingIngredient_medicinal" Load="Merge">
     <tag Name="Description" Value="病気の予防と治療由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_acid">
+  <object Name="ProceduralCookingIngredient_acid" Load="Merge">
     <tag Name="Description" Value="酸性由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_fungus">
+  <object Name="ProceduralCookingIngredient_fungus" Load="Merge">
     <tag Name="Description" Value="菌類由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_phase">
+  <object Name="ProceduralCookingIngredient_phase" Load="Merge">
     <tag Name="Description" Value="相転移由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_HP">
+  <object Name="ProceduralCookingIngredient_HP" Load="Merge">
     <tag Name="Description" Value="HP由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_reflectHighTier">
+  <object Name="ProceduralCookingIngredient_reflectHighTier" Load="Merge">
     <tag Name="Description" Value="強力なダメージ反射由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_reflect">
+  <object Name="ProceduralCookingIngredient_reflect" Load="Merge">
     <tag Name="Description" Value="ダメージ反射由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_willpower">
+  <object Name="ProceduralCookingIngredient_willpower" Load="Merge">
     <tag Name="Description" Value="シンプルな意志力由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_strength">
+  <object Name="ProceduralCookingIngredient_strength" Load="Merge">
     <tag Name="Description" Value="筋力由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_burrowing">
+  <object Name="ProceduralCookingIngredient_burrowing" Load="Merge">
     <tag Name="Description" Value="地中潜行由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_agility">
+  <object Name="ProceduralCookingIngredient_agility" Load="Merge">
     <tag Name="Description" Value="敏捷由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_fear">
+  <object Name="ProceduralCookingIngredient_fear" Load="Merge">
     <tag Name="Description" Value="恐怖由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_fireBreath">
+  <object Name="ProceduralCookingIngredient_fireBreath" Load="Merge">
     <tag Name="Description" Value="火炎吐息"/>
   </object>
-  <object Name="ProceduralCookingIngredient_elderFireBreath">
+  <object Name="ProceduralCookingIngredient_elderFireBreath" Load="Merge">
     <tag Name="Description" Value="強力な火炎吐息"/>
   </object>
-  <object Name="ProceduralCookingIngredient_iceBreath">
+  <object Name="ProceduralCookingIngredient_iceBreath" Load="Merge">
     <tag Name="Description" Value="冷気吐息"/>
   </object>
-  <object Name="ProceduralCookingIngredient_elderIceBreath">
+  <object Name="ProceduralCookingIngredient_elderIceBreath" Load="Merge">
     <tag Name="Description" Value="強力な冷気吐息"/>
   </object>
-  <object Name="ProceduralCookingIngredient_corrosiveGasBreath">
+  <object Name="ProceduralCookingIngredient_corrosiveGasBreath" Load="Merge">
     <tag Name="Description" Value="腐食性ガス吐息"/>
   </object>
-  <object Name="ProceduralCookingIngredient_elderCorrosiveGasBreath">
+  <object Name="ProceduralCookingIngredient_elderCorrosiveGasBreath" Load="Merge">
     <tag Name="Description" Value="強力な腐食性ガス吐息"/>
   </object>
-  <object Name="ProceduralCookingIngredient_sleepGasBreath">
+  <object Name="ProceduralCookingIngredient_sleepGasBreath" Load="Merge">
     <tag Name="Description" Value="睡眠ガス吐息"/>
   </object>
-  <object Name="ProceduralCookingIngredient_elderSleepGasBreath">
+  <object Name="ProceduralCookingIngredient_elderSleepGasBreath" Load="Merge">
     <tag Name="Description" Value="強力な睡眠ガス吐息"/>
   </object>
-  <object Name="ProceduralCookingIngredient_normalityGasBreath">
+  <object Name="ProceduralCookingIngredient_normalityGasBreath" Load="Merge">
     <tag Name="Description" Value="常態化ガス吐息"/>
   </object>
-  <object Name="ProceduralCookingIngredient_elderNormalityGasBreath">
+  <object Name="ProceduralCookingIngredient_elderNormalityGasBreath" Load="Merge">
     <tag Name="Description" Value="強力な常態化ガス吐息"/>
   </object>
-  <object Name="ProceduralCookingIngredient_poisonGasBreath">
+  <object Name="ProceduralCookingIngredient_poisonGasBreath" Load="Merge">
     <tag Name="Description" Value="毒ガス吐息"/>
   </object>
-  <object Name="ProceduralCookingIngredient_elderPoisonGasBreath">
+  <object Name="ProceduralCookingIngredient_elderPoisonGasBreath" Load="Merge">
     <tag Name="Description" Value="強力な毒ガス吐息"/>
   </object>
-  <object Name="ProceduralCookingIngredient_stunGasBreath">
+  <object Name="ProceduralCookingIngredient_stunGasBreath" Load="Merge">
     <tag Name="Description" Value="衝撃ガス吐息"/>
   </object>
-  <object Name="ProceduralCookingIngredient_elderStunGasBreath">
+  <object Name="ProceduralCookingIngredient_elderStunGasBreath" Load="Merge">
     <tag Name="Description" Value="強力な衝撃ガス吐息"/>
   </object>
-  <object Name="ProceduralCookingIngredient_confusionGasBreath">
+  <object Name="ProceduralCookingIngredient_confusionGasBreath" Load="Merge">
     <tag Name="Description" Value="混乱ガス吐息"/>
   </object>
-  <object Name="ProceduralCookingIngredient_elderConfusionGasBreath">
+  <object Name="ProceduralCookingIngredient_elderConfusionGasBreath" Load="Merge">
     <tag Name="Description" Value="強力な混乱ガス吐息"/>
   </object>
-  <object Name="ProceduralCookingIngredient_starch">
+  <object Name="ProceduralCookingIngredient_starch" Load="Merge">
     <tag Name="Description" Value="特殊な俊敏由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_lignin">
+  <object Name="ProceduralCookingIngredient_lignin" Load="Merge">
     <tag Name="Description" Value="特殊な再生由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_quicknessMinor">
+  <object Name="ProceduralCookingIngredient_quicknessMinor" Load="Merge">
     <tag Name="Description" Value="シンプルな俊敏由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_density">
+  <object Name="ProceduralCookingIngredient_density" Load="Merge">
     <tag Name="Description" Value="不安定な密度由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_dissociation">
+  <object Name="ProceduralCookingIngredient_dissociation" Load="Merge">
     <tag Name="Description" Value="解離性"/>
   </object>
-  <object Name="ProceduralCookingIngredient_attributes">
+  <object Name="ProceduralCookingIngredient_attributes" Load="Merge">
     <tag Name="Description" Value="属性不明由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_slimeSpitting">
+  <object Name="ProceduralCookingIngredient_slimeSpitting" Load="Merge">
     <tag Name="Description" Value="粘液噴射"/>
   </object>
-  <object Name="ProceduralCookingIngredient_regenLowtierMinor">
+  <object Name="ProceduralCookingIngredient_regenLowtierMinor" Load="Merge">
     <tag Name="Description" Value="シンプルな再生と治癒由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_coldMinor">
+  <object Name="ProceduralCookingIngredient_coldMinor" Load="Merge">
     <tag Name="Description" Value="シンプルな冷気由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_heatMinor">
+  <object Name="ProceduralCookingIngredient_heatMinor" Load="Merge">
     <tag Name="Description" Value="シンプルな熱と火炎由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_medicinalMinor">
+  <object Name="ProceduralCookingIngredient_medicinalMinor" Load="Merge">
     <tag Name="Description" Value="シンプルな疾病予防由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_acidMinor">
+  <object Name="ProceduralCookingIngredient_acidMinor" Load="Merge">
     <tag Name="Description" Value="シンプルな酸性由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_tastyMinor">
+  <object Name="ProceduralCookingIngredient_tastyMinor" Load="Merge">
     <tag Name="Description" Value="シンプルな風味由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_cloningMinor">
+  <object Name="ProceduralCookingIngredient_cloningMinor" Load="Merge">
     <tag Name="Description" Value="シンプルなクローン生成"/>
   </object>
-  <object Name="ProceduralCookingIngredient_stabilityMinor">
+  <object Name="ProceduralCookingIngredient_stabilityMinor" Load="Merge">
     <tag Name="Description" Value="シンプルな安定化由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_selfPoison">
+  <object Name="ProceduralCookingIngredient_selfPoison" Load="Merge">
     <tag Name="Description" Value="自毒化"/>
   </object>
-  <object Name="ProceduralCookingIngredient_selfGlotrot">
+  <object Name="ProceduralCookingIngredient_selfGlotrot" Load="Merge">
     <tag Name="Description" Value="自己感染"/>
   </object>
-  <object Name="ProceduralCookingIngredient_rubberLowTier">
+  <object Name="ProceduralCookingIngredient_rubberLowTier" Load="Merge">
     <tag Name="Description" Value="ゴム質由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_rubberHighTier">
+  <object Name="ProceduralCookingIngredient_rubberHighTier" Load="Merge">
     <tag Name="Description" Value="強力なゴム質由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_tongue">
+  <object Name="ProceduralCookingIngredient_tongue" Load="Merge">
     <tag Name="Description" Value="舌由来"/>
   </object>
-  <object Name="ProceduralCookingIngredient_random">
+  <object Name="ProceduralCookingIngredient_random" Load="Merge">
     <tag Name="Description" Value="ランダム"/>
   </object>
-  <object Name="ProceduralCookingIngredient_randomHighTier">
+  <object Name="ProceduralCookingIngredient_randomHighTier" Load="Merge">
     <tag Name="Description" Value="ランダム（たいてい強力）"/>
   </object>
-  <object Name="ProceduralCookingIngredient_ego">
+  <object Name="ProceduralCookingIngredient_ego" Load="Merge">
     <tag Name="Description" Value="自我由来"/>
   </object>
 </objects>
