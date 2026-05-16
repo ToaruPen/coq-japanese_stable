@@ -157,6 +157,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
             target.ProcessTakeDamage(eventObject);
 
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{r|酸で3ダメージを受けた！}}"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.Null.Or.Empty);
         }
         finally
         {

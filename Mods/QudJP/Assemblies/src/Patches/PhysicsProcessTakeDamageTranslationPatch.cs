@@ -26,6 +26,12 @@ public static class PhysicsProcessTakeDamageTranslationPatch
     [ThreadStatic]
     private static int activeDepth;
 
+    private static readonly object eventHasFlagMethodLock = new();
+
+    private static Type? cachedEventHasFlagType;
+
+    private static MethodInfo? cachedEventHasFlagMethod;
+
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
     {
@@ -301,7 +307,21 @@ public static class PhysicsProcessTakeDamageTranslationPatch
             return false;
         }
 
-        var method = eventObject.GetType().GetMethod("HasFlag", new[] { typeof(string) });
+        var method = GetEventHasFlagMethod(eventObject.GetType());
         return method?.Invoke(eventObject, new object[] { flag }) is true;
+    }
+
+    private static MethodInfo? GetEventHasFlagMethod(Type eventType)
+    {
+        lock (eventHasFlagMethodLock)
+        {
+            if (cachedEventHasFlagType != eventType)
+            {
+                cachedEventHasFlagMethod = eventType.GetMethod("HasFlag", new[] { typeof(string) });
+                cachedEventHasFlagType = eventType;
+            }
+
+            return cachedEventHasFlagMethod;
+        }
     }
 }
