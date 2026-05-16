@@ -77,6 +77,7 @@ internal static class PopupShowSemanticPipeline
         CampfirePreserveTranslationPatch.TryTranslatePopupMessage,
         CampfireCookFromIngredientsTranslationPatch.TryTranslatePopupMessage,
         InventoryFireEventTranslationPatch.TryTranslatePopupMessage,
+        PhysicsProcessTakeDamageTranslationPatch.TryTranslatePopupMessage,
         PhysicsInventoryActionPopupTranslationPatch.TryTranslatePopupMessage,
         ActionManagerRunSegmentTranslationPatch.TryTranslatePopupMessage,
         WaterRitualPopupTranslationPatch.TryTranslatePopupMessage,

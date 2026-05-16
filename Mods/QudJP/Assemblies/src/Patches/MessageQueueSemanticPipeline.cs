@@ -8,6 +8,7 @@ internal static class MessageQueueSemanticPipeline
     private static readonly QueuedMessageTranslator[] Translators =
     [
         PhysicsApplyDischargeTranslationPatch.TryTranslateQueuedMessage,
+        PhysicsProcessTakeDamageTranslationPatch.TryTranslateQueuedMessage,
         AutoActTranslationPatch.TryTranslateQueuedMessage,
         ActionManagerRunSegmentTranslationPatch.TryTranslateQueuedMessage,
         ITeleporterTranslationPatch.TryTranslateQueuedMessage,

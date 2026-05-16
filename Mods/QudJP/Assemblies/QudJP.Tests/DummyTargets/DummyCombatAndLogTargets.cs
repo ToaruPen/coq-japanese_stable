@@ -42,7 +42,19 @@ internal sealed class DummyObjectEnteringCellEvent
 
 internal sealed class DummyGameEvent
 {
+    private readonly HashSet<string> flags = new(StringComparer.Ordinal);
+
     public string ID { get; set; } = string.Empty;
+
+    public void SetFlag(string flag)
+    {
+        flags.Add(flag);
+    }
+
+    public bool HasFlag(string flag)
+    {
+        return flags.Contains(flag);
+    }
 }
 
 internal sealed class DummyPhysicsApplyDischargeTarget
@@ -102,6 +114,27 @@ internal sealed class DummyPhysicsApplyDischargeTarget
 
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
         return 1;
+    }
+}
+
+internal sealed class DummyPhysicsProcessTakeDamageTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public bool ProcessTakeDamage(DummyGameEvent E)
+    {
+        if (E.HasFlag("UsePopups"))
+        {
+            DummyPopupShow.Show(PopupMessageToSend);
+            return true;
+        }
+
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
     }
 }
 

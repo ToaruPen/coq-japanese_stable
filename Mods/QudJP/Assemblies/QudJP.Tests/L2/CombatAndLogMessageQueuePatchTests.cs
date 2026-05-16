@@ -107,6 +107,110 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
+    [TestCase("{{r|You take 7 damage from the acid!}}", "{{r|酸で7ダメージを受けた！}}")]
+    [TestCase("{{r|You take 7 damage from the acid}}", "{{r|酸で7ダメージを受けた}}")]
+    [TestCase("{{r|You take 7 damage while phased!}}", "{{r|You take 7 damage while phased!}}")]
+    [TestCase("{{r|You take no damage from the acid!}}", "{{r|酸でダメージを受けなかった！}}")]
+    [TestCase("The snapjaw takes 4 damage from the acid!", "snapjawは酸で4ダメージを受けた！")]
+    [TestCase("The snapjaw takes no damage from the acid!", "snapjawは酸でダメージを受けなかった！")]
+    [TestCase("snapjaws take 4 damage from the acid!", "snapjawsは酸で4ダメージを受けた！")]
+    [TestCase("{{r|You take 3 damage being run over by the chrome pyramid!}}", "{{r|chrome pyramidに轢かれて3ダメージを受けた！}}")]
+    [TestCase("{{r|You take 5 heat from the blaze!}}", "{{r|blazeで5熱ダメージを受けた！}}")]
+    [TestCase("{{r|You take 5 {{icy|cold damage}} from the shard!}}", "{{r|shardで5{{icy|冷気ダメージ}}を受けた！}}")]
+    [TestCase("{{r|You take 8 damage from your laser beam! {{R|(x2)}}}}", "{{r|your laser beamで8ダメージを受けた！ {{R|(x2)}}}}")]
+    [TestCase("{{r|You take 6 damage {{R|(x2)}} from colliding with the chrome wall.}}", "{{r|{{R|(x2)}} chrome wallとの衝突で6ダメージを受けた。}}")]
+    [TestCase(
+        "{{r|You take 9 damage from your plasma you started by you near your ally and You!}}",
+        "{{r|your plasma you started by you near your ally and Youで9ダメージを受けた！}}")]
+    public void PhysicsProcessTakeDamage_TranslatesDamageFrames_WhenOwnerPatched(string source, string expected)
+    {
+        AssertPhysicsProcessTakeDamageQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void PhysicsProcessTakeDamage_PreservesColorWrappers_WhenOwnerPatched()
+    {
+        AssertPhysicsProcessTakeDamageQueuedMessage(
+            "{{r|You take 6 damage from {{G|glowfish}}!}}",
+            "{{r|{{G|glowfish}}で6ダメージを受けた！}}");
+    }
+
+    [Test]
+    public void PhysicsProcessTakeDamage_TranslatesDamageFramePopup_WhenUsePopups()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyPhysicsProcessTakeDamageTarget), nameof(DummyPhysicsProcessTakeDamageTarget.ProcessTakeDamage), typeof(DummyGameEvent)),
+                typeof(PhysicsProcessTakeDamageTranslationPatch));
+
+            var eventObject = new DummyGameEvent();
+            eventObject.SetFlag("UsePopups");
+            var target = new DummyPhysicsProcessTakeDamageTarget
+            {
+                PopupMessageToSend = "{{r|You take 3 damage from the acid!}}",
+            };
+
+            target.ProcessTakeDamage(eventObject);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{r|酸で3ダメージを受けた！}}"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.Null.Or.Empty);
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void PhysicsProcessTakeDamage_DoesNotTranslateNoDamageMessagePassThrough_WhenOwnerPatched()
+    {
+        var eventObject = new DummyGameEvent();
+        eventObject.SetFlag("NoDamageMessage");
+
+        AssertPhysicsProcessTakeDamageQueuedMessage(
+            "{{r|You sunder {{G|glowfish}}'s mind{{R|(x2)}} for 5 damage!}}",
+            "{{r|You sunder {{G|glowfish}}'s mind{{R|(x2)}} for 5 damage!}}",
+            eventObject);
+    }
+
+    [Test]
+    public void PhysicsProcessTakeDamage_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage("{{r|You take 7 damage from the acid!}}", null, Capitalize: false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("{{r|You take 7 damage from the acid!}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void PhysicsProcessTakeDamage_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertPhysicsProcessTakeDamageQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("{{r|You take 7 damage from the acid!}}"),
+            "{{r|You take 7 damage from the acid!}}");
+    }
+
+    [Test]
+    public void PhysicsProcessTakeDamage_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertPhysicsProcessTakeDamageQueuedMessage(string.Empty, string.Empty);
+    }
+
     [Test]
     public void PhysicsObjectEnteringCell_TranslatesBlockedMessage_WhenPatched()
     {
@@ -10655,6 +10759,39 @@ public sealed class CombatAndLogMessageQueuePatchTests
             };
 
             target.HandleEvent(new DummyObjectEnteringCellEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertPhysicsProcessTakeDamageQueuedMessage(
+        string source,
+        string expected,
+        DummyGameEvent? eventObject = null)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyPhysicsProcessTakeDamageTarget),
+                    nameof(DummyPhysicsProcessTakeDamageTarget.ProcessTakeDamage),
+                    typeof(DummyGameEvent)),
+                typeof(PhysicsProcessTakeDamageTranslationPatch));
+
+            var target = new DummyPhysicsProcessTakeDamageTarget
+            {
+                MessageToSend = source,
+            };
+
+            target.ProcessTakeDamage(eventObject ?? new DummyGameEvent());
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }

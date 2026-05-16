@@ -3303,6 +3303,58 @@ def _physics_handle_event_object_entering_cell_callsites() -> tuple[CoveredOwner
     )
 
 
+def _physics_process_take_damage_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id="XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.ProcessTakeDamage",
+            lines=(3795, 3811),
+            inventory_statuses=("runtime_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PhysicsProcessTakeDamageTranslationPatch.cs",
+                    (
+                        "PhysicsProcessTakeDamageTranslationPatch",
+                        "ProcessTakeDamage",
+                        "NoDamageMessage",
+                        "TryTranslateDamageFrame",
+                        "PlayerDamageFramePattern",
+                        "ThirdPersonDamageFramePattern",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+                    ("PhysicsProcessTakeDamageTranslationPatch.TryTranslateQueuedMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("PhysicsProcessTakeDamageTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+                    (
+                        "PhysicsProcessTakeDamage_TranslatesDamageFrames_WhenOwnerPatched",
+                        "PhysicsProcessTakeDamage_PreservesColorWrappers_WhenOwnerPatched",
+                        "PhysicsProcessTakeDamage_TranslatesDamageFramePopup_WhenUsePopups",
+                        "PhysicsProcessTakeDamage_DoesNotTranslateNoDamageMessagePassThrough_WhenOwnerPatched",
+                        "PhysicsProcessTakeDamage_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
+                        "PhysicsProcessTakeDamage_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
+                        "PhysicsProcessTakeDamage_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(PhysicsProcessTakeDamageTranslationPatch)",
+                        "XRL.World.Parts.Physics",
+                        "System.Boolean",
+                        "XRL.World.Event",
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def _physics_handle_event_inventory_action_popup_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     return (
         CoveredOwnerCallsites(
@@ -12362,6 +12414,12 @@ def _issue_576_runtime_deferred_callsites() -> tuple[DeferredRuntimeCallsites, .
             evidence_files=(report, tests),
         ),
         DeferredRuntimeCallsites(
+            family_id="XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.ProcessTakeDamage",
+            lines=(3780,),
+            reason="NoDamageMessage is a pass-through from upstream owners, not a Physics-composed damage frame.",
+            evidence_files=(report, tests),
+        ),
+        DeferredRuntimeCallsites(
             family_id="XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.ProcessTargetedMove",
             lines=(3912,),
             reason="NoTeleport failure popup is supplied by a runtime target-cell object property or tag.",
@@ -14987,6 +15045,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_campfire_nostrums_owner_callsites(),
     *_campfire_cook_from_ingredients_owner_callsites(),
     *_physics_handle_event_object_entering_cell_callsites(),
+    *_physics_process_take_damage_owner_callsites(),
     *_physics_handle_event_inventory_action_popup_callsites(),
     *_liquid_volume_handle_event_owner_callsites(),
     *_action_manager_run_segment_owner_callsites(),
