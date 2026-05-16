@@ -559,12 +559,11 @@ public sealed class MessagePatternTranslatorTests
     [Test]
     public void Translate_AppliesNpcHitsSomethingPatternWithExclamation()
     {
-        WriteExactDictionary(("Turret", "タレット"));
-        WritePatternDictionary(("^(.+?) hits something (.+?)[.!]?$", "{t0}の射撃が{t1}の何かに命中した。"));
+        UseRepositoryPatternDictionary();
 
-        var translated = MessagePatternTranslator.Translate("Turret hits something to the east!");
+        var translated = MessagePatternTranslator.Translate("タレット hits something to the east!");
 
-        Assert.That(translated, Is.EqualTo("タレットの射撃が東側の何かに命中した。"));
+        Assert.That(translated, Is.EqualTo("タレットは東側の何かに命中させた"));
     }
 
     [Test]
@@ -953,7 +952,7 @@ public sealed class MessagePatternTranslatorTests
     [Test]
     public void Translate_AppliesYellPattern()
     {
-        WritePatternDictionary(("^(?:The |the |[Aa]n? )?(.+?) yells, '(.+)'$", "{t0}は「{1}」と叫んだ。"));
+        UseRepositoryPatternDictionary();
 
         var translated = MessagePatternTranslator.Translate("The ウォーターヴァイン農家のメカニマス教徒改宗者 yells, 'Is it a dybbuk that possesses the robot? It should be sacred and still.'");
 

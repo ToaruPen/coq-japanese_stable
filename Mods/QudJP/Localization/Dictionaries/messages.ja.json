@@ -1119,8 +1119,8 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The )?(.+?) yells, '(.+)'$",
-      "template": "{0}は「{1}」と叫んだ。",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) yells, '(.+)'$",
+      "template": "{t0}は「{1}」と叫んだ。",
       "route": "emit-message"
     },
     {
