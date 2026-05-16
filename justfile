@@ -4,6 +4,7 @@ python := "uv run python"
 decompiled_root := env_var("HOME") + "/dev/coq-decompiled_stable"
 decompiled_annals_root := env_var("HOME") + "/dev/coq-decompiled_stable/XRL.Annals"
 dotnet_artifacts_root := env_var_or_default("QUDJP_DOTNET_ARTIFACTS_ROOT", ".artifacts/dotnet")
+dotnet_test_build_properties := "-p:RunAnalyzers=false -p:RunAnalyzersDuringBuild=false"
 
 default:
   just --list
@@ -36,7 +37,7 @@ test-l1:
   mkdir -p "$run_root/a/b"
   cp -R Mods/QudJP/Localization "$run_root/Localization"
   artifacts_root="$run_root/a/b"
-  dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-dependencies --artifacts-path "$artifacts_root"
+  dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-dependencies --artifacts-path "$artifacts_root" {{dotnet_test_build_properties}}
   test_dll="$artifacts_root/bin/QudJP.Tests/release/QudJP.Tests.dll"
   dotnet test "$test_dll" --filter "TestCategory=L1"
 
@@ -50,7 +51,7 @@ test-l2:
   mkdir -p "$run_root/a/b"
   cp -R Mods/QudJP/Localization "$run_root/Localization"
   artifacts_root="$run_root/a/b"
-  dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-dependencies --artifacts-path "$artifacts_root"
+  dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-dependencies --artifacts-path "$artifacts_root" {{dotnet_test_build_properties}}
   test_dll="$artifacts_root/bin/QudJP.Tests/release/QudJP.Tests.dll"
   dotnet test "$test_dll" --filter "TestCategory=L2"
 
@@ -64,7 +65,7 @@ test-l2g:
   mkdir -p "$run_root/a/b"
   cp -R Mods/QudJP/Localization "$run_root/Localization"
   artifacts_root="$run_root/a/b"
-  dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-dependencies --artifacts-path "$artifacts_root"
+  dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-dependencies --artifacts-path "$artifacts_root" {{dotnet_test_build_properties}}
   test_dll="$artifacts_root/bin/QudJP.Tests/release/QudJP.Tests.dll"
   dotnet test "$test_dll" --filter "TestCategory=L2G"
 
@@ -78,7 +79,7 @@ test-csharp:
   mkdir -p "$run_root/a/b"
   cp -R Mods/QudJP/Localization "$run_root/Localization"
   artifacts_root="$run_root/a/b"
-  dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-dependencies --artifacts-path "$artifacts_root"
+  dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-dependencies --artifacts-path "$artifacts_root" {{dotnet_test_build_properties}}
   test_dll="$artifacts_root/bin/QudJP.Tests/release/QudJP.Tests.dll"
   dotnet test "$test_dll"
 
@@ -426,7 +427,7 @@ ci-dotnet:
   mkdir -p "$run_root/a/b"
   cp -R Mods/QudJP/Localization "$run_root/Localization"
   artifacts_root="$run_root/a/b"
-  dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-dependencies --artifacts-path "$artifacts_root"
+  dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-dependencies --artifacts-path "$artifacts_root" {{dotnet_test_build_properties}}
   dotnet test "$artifacts_root/bin/QudJP.Tests/release/QudJP.Tests.dll"
 
 # Build the Annals Roslyn extractor.

@@ -136,6 +136,8 @@ just test-l2g
 `QudJP.Tests.csproj` を `--no-dependencies` で build してから生成済み
 `QudJP.Tests.dll` を test します。これにより別 shell から L1/L2/L2G を
 parallel 実行しても、MSBuild/Roslyn の `bin` / `obj` 書き込みが競合しません。
+これらのテスト artifact 用 build では analyzer を無効化します。analyzer
+coverage は `just build` / CI の `Build QudJP` が担います。
 既定の artifacts root は `.artifacts/dotnet` です。
 
 ---

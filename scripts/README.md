@@ -89,10 +89,11 @@ just roslyn-test
 just roslyn-check
 ```
 
-These recipes and the Python wrappers build repo-local Roslyn tools into
+These recipes and the Python wrappers build repo-local Roslyn tools under
 `QUDJP_DOTNET_ARTIFACTS_ROOT` (default: `.artifacts/dotnet`) and execute the
-produced DLL. This is the supported path for parallel local test and scanner
-runs.
+produced DLL. Python wrappers reuse the shared incremental build cache behind
+per-tool locks, while validation recipes that need full isolation create
+run-scoped artifact roots under the same parent.
 
 Annals pattern extractor と text construction inventory の入口も `just`
 から呼び出せます。

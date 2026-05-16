@@ -1,4 +1,4 @@
-"""Helpers for running repo-local dotnet tools with run-scoped artifacts."""
+"""Helpers for running repo-local dotnet tools with cached or run-scoped artifacts."""
 # ruff: noqa: S314, S603 -- parses repo-local csproj files and invokes repo-local dotnet tools
 
 from __future__ import annotations
@@ -11,6 +11,7 @@ import tempfile
 import time
 import xml.etree.ElementTree as ET
 from contextlib import contextmanager
+from hashlib import sha256
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
@@ -50,22 +51,40 @@ def run_tool_project(
             artifacts_root=artifacts_root,
             timeout=timeout,
         )
-        dotnet = _dotnet_path()
-        command = [dotnet, str(tool_dll), *args]
-        try:
-            return subprocess.run(
-                command,
-                capture_output=True,
-                text=True,
-                check=False,
+        return _run_tool_dll(tool_dll, args, timeout=timeout)
+
+
+def run_cached_tool_project(
+    project_path: Path,
+    args: list[str],
+    *,
+    timeout: int,
+    configuration: str = "Release",
+) -> subprocess.CompletedProcess[str]:
+    """Build a repo-local tool in the shared artifacts root and execute its DLL."""
+    resolved_project = project_path.resolve()
+    if not resolved_project.is_file():
+        msg = f"dotnet tool project is missing: {resolved_project}"
+        raise DotnetToolError(msg)
+
+    assembly_name = _assembly_name(resolved_project)
+    artifacts_root = _artifacts_root()
+    with _build_lock(artifacts_root, assembly_name):
+        tool_dll = _tool_dll_path(artifacts_root, assembly_name, configuration)
+        if _cached_tool_is_stale(resolved_project, tool_dll):
+            tool_dll = _build_tool_project(
+                resolved_project,
+                configuration=configuration,
+                artifacts_root=artifacts_root,
                 timeout=timeout,
             )
-        except subprocess.TimeoutExpired as exc:
-            details = "\n".join(part for part in (_output_text(exc.stdout), _output_text(exc.stderr)) if part)
-            msg = f"dotnet tool timed out after {timeout}s: {shlex.join(command)}"
-            if details:
-                msg = f"{msg}\n{details}"
-            raise DotnetToolError(msg) from exc
+            stamp_path = _tool_sources_stamp_path(tool_dll)
+            try:
+                _ = stamp_path.write_text(_tool_sources_fingerprint(resolved_project), encoding="utf-8")
+            except OSError as exc:
+                msg = f"failed to write dotnet tool source fingerprint stamp: {stamp_path}: {exc}"
+                raise DotnetToolError(msg) from exc
+    return _run_tool_dll(tool_dll, args, timeout=timeout)
 
 
 def build_tool_project(project_path: Path, *, configuration: str = "Release") -> Path:
@@ -116,11 +135,78 @@ def _build_tool_project(
             msg = f"{msg}\n{details}"
         raise DotnetToolError(msg)
 
-    tool_dll = artifacts_root / "bin" / assembly_name / configuration.lower() / f"{assembly_name}.dll"
+    tool_dll = _tool_dll_path(artifacts_root, assembly_name, configuration)
     if not tool_dll.is_file():
         msg = f"dotnet build succeeded but did not produce expected tool DLL: {tool_dll}"
         raise DotnetToolError(msg)
     return tool_dll
+
+
+def _tool_dll_path(artifacts_root: Path, assembly_name: str, configuration: str) -> Path:
+    return artifacts_root / "bin" / assembly_name / configuration.lower() / f"{assembly_name}.dll"
+
+
+def _cached_tool_is_stale(project_path: Path, tool_dll: Path) -> bool:
+    if not tool_dll.is_file():
+        return True
+
+    stamp_path = _tool_sources_stamp_path(tool_dll)
+    try:
+        cached_fingerprint = stamp_path.read_text(encoding="utf-8").strip()
+    except FileNotFoundError:
+        return True
+    except OSError as exc:
+        msg = f"failed to read dotnet tool source fingerprint stamp: {stamp_path}: {exc}"
+        raise DotnetToolError(msg) from exc
+    return cached_fingerprint != _tool_sources_fingerprint(project_path)
+
+
+def _tool_sources_stamp_path(tool_dll: Path) -> Path:
+    return tool_dll.with_name(f"{tool_dll.name}.sources.sha256")
+
+
+def _tool_sources_fingerprint(project_path: Path) -> str:
+    digest = sha256()
+    source_root = project_path.parent
+    for path in _tool_source_paths(project_path):
+        digest.update(path.relative_to(source_root).as_posix().encode())
+        digest.update(b"\0")
+        try:
+            digest.update(path.read_bytes())
+        except OSError as exc:
+            msg = f"failed to read dotnet tool source for fingerprint: {path}: {exc}"
+            raise DotnetToolError(msg) from exc
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
+def _tool_source_paths(project_path: Path) -> list[Path]:
+    source_root = project_path.parent
+    source_paths = [
+        path
+        for path in source_root.rglob("*.cs")
+        if not {"bin", "obj"}.intersection(path.relative_to(source_root).parts)
+    ]
+    return [project_path, *sorted(source_paths)]
+
+
+def _run_tool_dll(tool_dll: Path, args: list[str], *, timeout: int) -> subprocess.CompletedProcess[str]:
+    dotnet = _dotnet_path()
+    command = [dotnet, str(tool_dll), *args]
+    try:
+        return subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired as exc:
+        details = "\n".join(part for part in (_output_text(exc.stdout), _output_text(exc.stderr)) if part)
+        msg = f"dotnet tool timed out after {timeout}s: {shlex.join(command)}"
+        if details:
+            msg = f"{msg}\n{details}"
+        raise DotnetToolError(msg) from exc
 
 
 def _run_build_command(

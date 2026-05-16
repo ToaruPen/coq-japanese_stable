@@ -40,9 +40,14 @@ just test-l2
 just test-l2g
 ```
 
-Run `just test-l1`, `just test-l2`, and `just test-l2g` sequentially for local
-verification unless the task explicitly establishes isolated artifacts for a
-parallel run.
+`just test-l1`, `just test-l2`, `just test-l2g`, and `just test-csharp` are
+behavior-test entrypoints. Their test artifact builds intentionally disable
+analyzers for speed. Use `just build`, `just check`, or `just pr-check` when
+analyzer coverage is required.
+
+Use `just test-csharp` for broad local C# behavior coverage. Use category
+recipes for focused layer checks; they use isolated artifacts and can run
+concurrently when the local machine can afford the duplicated setup.
 
 Use deterministic tooling before prompt-only reasoning for route and call-shape
 work:

@@ -114,8 +114,10 @@ def test_local_csharp_full_suite_builds_test_project_once() -> None:
     recipe = _recipe_block(justfile, "test-csharp", "python-check")
     check_recipe = _recipe_block(justfile, "check", "pr-check")
 
+    assert 'dotnet_test_build_properties := "-p:RunAnalyzers=false -p:RunAnalyzersDuringBuild=false"' in justfile
     assert "dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj" in recipe
     assert recipe.count("dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj") == 1
+    assert "{{dotnet_test_build_properties}}" in recipe
     assert recipe.count('dotnet test "$test_dll"') == 1
     assert "TestCategory=" not in recipe
 

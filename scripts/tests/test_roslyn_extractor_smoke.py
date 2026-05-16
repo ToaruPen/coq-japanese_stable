@@ -11,6 +11,8 @@ from typing import cast
 
 import pytest
 
+from scripts.dotnet_tool_runner import build_tool_project
+
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 ANNALS_PROJECT_PATH = _REPO_ROOT / "scripts" / "tools" / "AnnalsPatternExtractor" / "AnnalsPatternExtractor.csproj"
 STATIC_PRODUCER_PROJECT_PATH = (
@@ -22,6 +24,14 @@ STATIC_PRODUCER_PROJECT_PATH = (
 )
 SEMANTIC_PROBE_PROJECT_PATH = _REPO_ROOT / "scripts" / "tools" / "RoslynSemanticProbe" / "RoslynSemanticProbe.csproj"
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "annals"
+
+
+@pytest.fixture(scope="session")
+def annals_tool_dll() -> Path:
+    """Build the Annals extractor once for smoke execution."""
+    if not shutil.which("dotnet"):
+        pytest.skip("dotnet SDK not available")
+    return build_tool_project(ANNALS_PROJECT_PATH)
 
 
 @pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
@@ -67,7 +77,7 @@ def test_semantic_probe_csproj_builds_in_release() -> None:
 
 
 @pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
-def test_threeplus_arm_chain_does_not_collide_with_sibling_if(tmp_path: Path) -> None:
+def test_threeplus_arm_chain_does_not_collide_with_sibling_if(tmp_path: Path, annals_tool_dll: Path) -> None:
     """3+-arm else-if chains must produce arm-distinct ids that don't collide with sibling ifs.
 
     Regression guard for issue-430 follow-up (ChallengeSultan): when a 3-arm chain drives a
@@ -85,10 +95,7 @@ def test_threeplus_arm_chain_does_not_collide_with_sibling_if(tmp_path: Path) ->
     result = subprocess.run(
         [
             "dotnet",
-            "run",
-            "--project",
-            str(ANNALS_PROJECT_PATH),
-            "--",
+            str(annals_tool_dll),
             "--source-root",
             str(FIXTURES),
             "--include",
@@ -125,7 +132,7 @@ def test_threeplus_arm_chain_does_not_collide_with_sibling_if(tmp_path: Path) ->
 
 
 @pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
-def test_flatten_concat_partial_rollback(tmp_path: Path) -> None:
+def test_flatten_concat_partial_rollback(tmp_path: Path, annals_tool_dll: Path) -> None:
     """FlattenConcat must roll back stale pieces when a sub-expression fails.
 
     Regression guard for A1 (Devin finding): when a local variable's initializer
@@ -143,10 +150,7 @@ def test_flatten_concat_partial_rollback(tmp_path: Path) -> None:
     result = subprocess.run(
         [
             "dotnet",
-            "run",
-            "--project",
-            str(ANNALS_PROJECT_PATH),
-            "--",
+            str(annals_tool_dll),
             "--source-root",
             str(FIXTURES),
             "--include",

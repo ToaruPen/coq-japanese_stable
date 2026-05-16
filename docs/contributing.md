@@ -114,12 +114,15 @@ just test-l2
 # L2G (ゲーム DLL 必須)
 just test-l2g
 
+# analyzer も含む通常のローカルゲート
+just check
+
 # Python スクリプトの lint とテスト
 just python-check
 just python-test
 ```
 
-全テストがパスすれば環境構築完了です。
+全テストがパスし、`just check` も通れば環境構築完了です。
 
 非 macOS で L2G を走らせる場合は、ビルドと同じ `GameDir` を渡してください。例:
 
@@ -322,8 +325,9 @@ uv run python scripts/sync_mod.py \
 `just lsp-check` は `.sln` / `.csproj` / reference stub / dotnet tool manifest
 の変更時、または editor の診断と `dotnet build` の結果が食い違う時に使います。
 これは language-server が repo の solution を読めることを確認する補助導線であり、
-compiler / analyzer / test の代替ではありません。挙動ゲートは引き続き `just build`
-と `just test-l1` / `just test-l2` / `just test-l2g` です。
+compiler / analyzer / test の代替ではありません。`just test-l1` / `just test-l2` /
+`just test-l2g` は挙動テストのゲートで、analyzer と production build のゲートは
+`just build`、`just check`、または `just pr-check` です。
 
 Codex では repo-local hook (`.codex/hooks.json`) から
 `.codex/hooks/lsp-check-after-tool.sh` を呼びます。Codex 側の matcher は広く、
@@ -446,7 +450,7 @@ PR を出すと GitHub Actions (`.github/workflows/ci.yml`) が変更ファイ�
 
 **全ジョブがパスしないとマージできません。**
 
-ローカルの同一 worktree では `just test-l1` / `just test-l2` / `just test-l2g` を並列実行しないでください。各カテゴリは `obj/` と `bin/` の出力先を共有するため、同時ビルドすると `CS2012` などの DLL file lock で失敗することがあります。CI の matrix 実行は runner が隔離されているため、この制約の対象外です。
+ローカルの同一 worktree でも `just test-l1` / `just test-l2` / `just test-l2g` は run-scoped artifacts を使うため、カテゴリ間の並列実行で `obj/` / `bin/` の file lock は共有しません。ただし各カテゴリが別々に test artifact を build するため、全体確認では `just test-csharp` や `just check` を優先してください。PR 前の最終確認では analyzer を含む `just check` または `just pr-check` を使います。
 
 ---
 

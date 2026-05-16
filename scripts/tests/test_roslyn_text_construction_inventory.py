@@ -1,5 +1,5 @@
 """Smoke tests for the Roslyn text construction inventory tool."""
-# ruff: noqa: S603,S607 -- tests invoke dotnet (PATH-resolved) to drive the repo-local tool
+# ruff: noqa: S603 -- tests invoke dotnet to drive the repo-local tool
 
 from __future__ import annotations
 
@@ -11,12 +11,25 @@ from typing import Any
 
 import pytest
 
+from scripts.dotnet_tool_runner import build_tool_project
+
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 PROJECT_PATH = _REPO_ROOT / "scripts" / "tools" / "TextConstructionInventory" / "TextConstructionInventory.csproj"
 
 
+@pytest.fixture(scope="session")
+def inventory_tool_dll() -> Path:
+    """Build the inventory tool once and reuse its DLL for smoke tests."""
+    if not shutil.which("dotnet"):
+        pytest.skip("dotnet SDK not available")
+    return build_tool_project(PROJECT_PATH)
+
+
 @pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
-def test_roslyn_inventory_emits_raw_free_deterministic_family_summary(tmp_path: Path) -> None:  # noqa: PLR0915
+def test_roslyn_inventory_emits_raw_free_deterministic_family_summary(  # noqa: PLR0915
+    tmp_path: Path,
+    inventory_tool_dll: Path,
+) -> None:
     """The Roslyn tool records construction shapes and surfaces without source text."""
     source_root = tmp_path / "source"
     source_root.mkdir()
@@ -76,8 +89,8 @@ public static class MessageQueue
     output_b = tmp_path / "inventory-b.json"
     summary_output = tmp_path / "inventory-summary.md"
 
-    _run_tool(source_root, output_a, summary_output=summary_output)
-    _run_tool(source_root, output_b)
+    _run_tool(inventory_tool_dll, source_root, output_a, summary_output=summary_output)
+    _run_tool(inventory_tool_dll, source_root, output_b)
 
     assert output_a.read_text(encoding="utf-8") == output_b.read_text(encoding="utf-8")
     payload = json.loads(output_a.read_text(encoding="utf-8"))
@@ -148,26 +161,15 @@ public static class MessageQueue
 
 
 @pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
-def test_roslyn_inventory_csproj_builds_in_release() -> None:
-    """The Roslyn inventory tool must build cleanly so it does not rot."""
-    result = subprocess.run(
-        ["dotnet", "build", str(PROJECT_PATH), "--configuration", "Release"],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert result.returncode == 0, (
-        f"dotnet build failed (exit {result.returncode}).\nstdout:\n{result.stdout}\nstderr:\n{result.stderr}"
-    )
+def test_roslyn_inventory_csproj_builds_in_release(inventory_tool_dll: Path) -> None:
+    """The shared Release-build fixture must produce the Roslyn inventory DLL."""
+    assert inventory_tool_dll.is_file()
 
 
-def _run_tool(source_root: Path, output: Path, *, summary_output: Path | None = None) -> None:
+def _run_tool(tool_dll: Path, source_root: Path, output: Path, *, summary_output: Path | None = None) -> None:
     command = [
         "dotnet",
-        "run",
-        "--project",
-        str(PROJECT_PATH),
-        "--",
+        str(tool_dll),
         "--source-root",
         str(source_root),
         "--output",

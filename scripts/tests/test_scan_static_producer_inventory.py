@@ -103,14 +103,14 @@ def test_write_inventory_reports_roslyn_scanner_timeout(
     _ = project_path.write_text("<Project />\n", encoding="utf-8")
     monkeypatch.setattr(scanner, "PROJECT_PATH", project_path)
 
-    def fake_run_tool_project(project: Path, args: list[str], *, timeout: int) -> object:
+    def fake_run_cached_tool_project(project: Path, args: list[str], *, timeout: int) -> object:
         assert project == project_path
         assert "--source-root" in args
         assert timeout == scanner.ROSLYN_SCANNER_TIMEOUT_SECONDS
         message = f"dotnet tool timed out after {timeout}s: dotnet scanner.dll\npartial stdout\npartial stderr"
         raise DotnetToolError(message)
 
-    monkeypatch.setattr(scanner, "run_tool_project", fake_run_tool_project)
+    monkeypatch.setattr(scanner, "run_cached_tool_project", fake_run_cached_tool_project)
 
     with pytest.raises(RuntimeError) as exc_info:
         write_inventory(source_root, tmp_path / "inventory.json")
