@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from scripts.localization_coverage_map import (
@@ -17,6 +18,49 @@ def test_localization_coverage_map_is_valid_and_complete() -> None:
     errors = validate_map(REPO_ROOT)
 
     assert errors == []
+
+
+def test_localization_coverage_map_defines_true_untranslated_zero_closeout() -> None:
+    """The map must define what evidence is required before claiming zero untranslated text."""
+    document = load_map(MAP_PATH)
+    definition = document.get("true_untranslated_zero_definition")
+    assert definition is not None
+
+    assert "player-visible" in definition["statement"]
+    assert "without fresh runtime evidence" in definition["statement"]
+    assert len(definition["required_proofs"]) >= 3
+    assert any("runtime" in proof for proof in definition["required_proofs"])
+    assert any("sink" in proof for proof in definition["disallowed_proofs"])
+
+
+def test_localization_coverage_map_reports_invalid_true_zero_definition_fields(tmp_path: Path) -> None:
+    """Coverage-map validation must report malformed true-zero metadata without crashing."""
+    document: dict[str, object] = {
+        "schema_version": "1.0",
+        "game_version": "1.0.4",
+        "true_untranslated_zero_definition": {
+            "required_proofs": "runtime evidence",
+            "disallowed_proofs": [1],
+        },
+        "surfaces": [],
+    }
+    _ = (tmp_path / "map.json").write_text(json.dumps(document), encoding="utf-8")
+
+    errors = validate_map(tmp_path, Path("map.json"))
+
+    assert "true_untranslated_zero_definition.statement is missing" in errors
+    assert "true_untranslated_zero_definition.required_proofs must be a non-empty list" in errors
+    assert "true_untranslated_zero_definition.disallowed_proofs must be a non-empty list" in errors
+
+
+def test_localization_coverage_map_surfaces_have_closeout_contracts() -> None:
+    """Every surface lane must name its owner and the evidence gate that closes it."""
+    document = load_map(MAP_PATH)
+
+    for surface in document["surfaces"]:
+        assert surface["closure_owner"]
+        assert surface["closure_gate_type"]
+        assert surface["closure_evidence"]
 
 
 def test_localization_coverage_map_keeps_runtime_and_sink_boundary_lanes_explicit() -> None:

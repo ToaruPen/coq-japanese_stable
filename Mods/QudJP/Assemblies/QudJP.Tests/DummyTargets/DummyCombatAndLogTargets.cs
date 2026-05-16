@@ -928,6 +928,24 @@ internal sealed class DummyLiquidLoaderTarget
         return true;
     }
 
+    public bool HandleEvent(DummyCheckLoadAmmoEvent eventObject)
+    {
+        eventObject.Message = MessageToSend;
+        return false;
+    }
+
+    public bool HandleEvent(DummyLoadAmmoEvent eventObject)
+    {
+        eventObject.Message = MessageToSend;
+        return false;
+    }
+
+    public bool HandleEvent(DummyGetNotReadyToFireMessageEvent eventObject)
+    {
+        eventObject.Message = MessageToSend;
+        return true;
+    }
+
     public bool FireEvent(DummyEvent? eventObject = null)
     {
         _ = eventObject;
@@ -939,6 +957,21 @@ internal sealed class DummyLiquidLoaderTarget
 internal sealed class DummyCommandReloadEvent
 {
     public string Id { get; set; } = nameof(DummyCommandReloadEvent);
+}
+
+internal sealed class DummyCheckLoadAmmoEvent
+{
+    public string? Message;
+}
+
+internal sealed class DummyLoadAmmoEvent
+{
+    public string? Message;
+}
+
+internal sealed class DummyGetNotReadyToFireMessageEvent
+{
+    public string? Message;
 }
 
 internal sealed class DummyEvent
@@ -1373,6 +1406,8 @@ internal sealed class DummySimpleOwnerQueueTarget
 
     public string? ColorToSend { get; set; }
 
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
     public bool FireEvent(DummyEvent? eventObject = null)
     {
         _ = eventObject;
@@ -1516,6 +1551,20 @@ internal sealed class DummySimpleOwnerQueueTarget
     public void BodyPartUnequipPartAndChildren()
     {
         _ = nameof(BodyPartUnequipPartAndChildren);
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+    }
+
+    public bool PhysicAmputateLimbFireEvent(DummyEvent? eventObject = null)
+    {
+        _ = eventObject;
+        _ = nameof(PhysicAmputateLimbFireEvent);
+        DummyPopupShow.ShowFail(PopupMessageToSend);
+        return true;
+    }
+
+    public void MissileWeaponHit()
+    {
+        _ = nameof(MissileWeaponHit);
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
     }
 

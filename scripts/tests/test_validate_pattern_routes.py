@@ -8,17 +8,17 @@ import pytest
 from scripts.validate_pattern_routes import ALLOWED_ROUTES, main, validate_pattern_routes
 
 _EXPECTED_MESSAGE_ROUTE_COUNTS = {
-    "message-frame": 41,
-    "popup": 12,
-    "journal": 0,
+    "message-frame": 53,
+    "popup": 14,
+    "journal": 1,
     "leaf": 0,
-    "emit-message": 314,
+    "emit-message": 336,
     "does-verb": 0,
     "message-log": 1,
-    "description": 4,
+    "description": 10,
     "effect-cripple": 1,
-    "needs-harmony-patch": 37,
-    "unclassified": 6,
+    "needs-harmony-patch": 0,
+    "unclassified": 0,
 }
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -52,6 +52,7 @@ def test_validate_pattern_routes_reports_counts_for_valid_routes(tmp_path: Path)
     assert report.counts["needs-harmony-patch"] == 1
     assert report.missing_routes == []
     assert report.invalid_routes == []
+    assert report.missing_needs_harmony_patch_deferrals == []
     assert set(report.counts) == set(ALLOWED_ROUTES)
 
 
@@ -103,12 +104,33 @@ def test_repository_message_patterns_match_expected_route_inventory(
     """The shipped message pattern dictionary must match the reviewed route inventory."""
     monkeypatch.chdir(tmp_path)
 
-    report = validate_pattern_routes(_REPOSITORY_MESSAGE_PATTERNS_PATH, _EXPECTED_MESSAGE_ROUTE_COUNTS)
+    report = validate_pattern_routes(
+        _REPOSITORY_MESSAGE_PATTERNS_PATH,
+        _EXPECTED_MESSAGE_ROUTE_COUNTS,
+        require_needs_harmony_patch_deferrals=True,
+    )
 
     assert report.missing_routes == []
     assert report.invalid_routes == []
+    assert report.missing_needs_harmony_patch_deferrals == []
     assert report.route_count_mismatches == []
     assert report.has_errors is False
+
+
+def test_validate_pattern_routes_requires_explicit_needs_harmony_patch_deferrals(tmp_path: Path) -> None:
+    """Repository needs-harmony-patch rows must be intentional deferrals, not stale route labels."""
+    path = tmp_path / "needs-deferral.json"
+    _write_patterns(
+        path,
+        [{"pattern": "^The (.+?) needs a new patch$", "template": "x", "route": "needs-harmony-patch"}],
+    )
+
+    report = validate_pattern_routes(path, require_needs_harmony_patch_deferrals=True)
+
+    assert report.missing_needs_harmony_patch_deferrals == [
+        "patterns[0] needs-harmony-patch lacks explicit deferral evidence: ^The (.+?) needs a new patch$"
+    ]
+    assert report.has_errors is True
 
 
 def test_main_reports_nonstr_route_and_returns_nonzero(

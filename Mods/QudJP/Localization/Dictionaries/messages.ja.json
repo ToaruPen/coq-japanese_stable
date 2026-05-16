@@ -47,12 +47,12 @@
       "template": "最初の{t0}以来、{1}の村人たちは{t3}を{t2}食してきた。",
       "route": "description"
     },
-    {"pattern": "^(.+?), ((?i:someone|somebody|a mysterious person|a child|a woman|a man|a baby|some group|some sect|some organization|some party|some cabal|some group of friends|some group of lovers|people|folk|communities|kindred|families|kin|kind|kinsfolk|tribe|clan)) ((?i:gather|come together|habitate together|cluster|assemble|live together)) in ((?i:reverence|awe|worship|adoration|devotion|piety|deification|love|honor)) of (.+?)\\.$", "template": "{0}、{t1}が{4}に{t3}して{t2}。", "route": "unclassified"},
-    {"pattern": "^((?i:someone|somebody|a mysterious person|a child|a woman|a man|a baby|some group|some sect|some organization|some party|some cabal|some group of friends|some group of lovers|people|folk|communities|kindred|families|kin|kind|kinsfolk|tribe|clan)) ((?i:gather|come together|habitate together|cluster|assemble|live together)) (.+?) in ((?i:reverence|awe|worship|adoration|devotion|piety|deification|love|honor)) of (.+?)\\.$", "template": "{2}に{t0}が{4}に{t3}して{t1}。", "route": "unclassified"},
-    {"pattern": "^(.+?), ((?i:someone|somebody|a mysterious person|a child|a woman|a man|a baby|some group|some sect|some organization|some party|some cabal|some group of friends|some group of lovers|people|folk|communities|kindred|families|kin|kind|kinsfolk|tribe|clan)) ((?i:gather|come together|habitate together|cluster|assemble|live together)) to ((?i:profane|mock|scorn|violate|blaspheme)) (.+?)\\.$", "template": "{0}、{t1}が{4}を{t3}ために{t2}。", "route": "unclassified"},
-    {"pattern": "^((?i:someone|somebody|a mysterious person|a child|a woman|a man|a baby|some group|some sect|some organization|some party|some cabal|some group of friends|some group of lovers|people|folk|communities|kindred|families|kin|kind|kinsfolk|tribe|clan)) ((?i:gather|come together|habitate together|cluster|assemble|live together)) (.+?) to ((?i:profane|mock|scorn|violate|blaspheme)) (.+?)\\.$", "template": "{2}に{t0}が{4}を{t3}ために{t1}。", "route": "unclassified"},
-    {"pattern": "^(.+?), [Tt]here's a ((?i:gathering|conclave|congregation|settlement|band|flock|society)) of (.+?) and their ((?i:folk|communities|kindred|families|kin|kind|kinsfolk|tribe|clan))\\.$", "template": "{0}、{t2}とその{t3}の{t1}がある。", "route": "unclassified"},
-    {"pattern": "^[Tt]here's a ((?i:gathering|conclave|congregation|settlement|band|flock|society)) of (.+?) and their ((?i:folk|communities|kindred|families|kin|kind|kinsfolk|tribe|clan)) (.+?)\\.$", "template": "{3}に{t1}とその{t2}の{t0}がある。", "route": "unclassified"},
+    {"pattern": "^(.+?), ((?i:someone|somebody|a mysterious person|a child|a woman|a man|a baby|some group|some sect|some organization|some party|some cabal|some group of friends|some group of lovers|people|folk|communities|kindred|families|kin|kind|kinsfolk|tribe|clan)) ((?i:gather|come together|habitate together|cluster|assemble|live together)) in ((?i:reverence|awe|worship|adoration|devotion|piety|deification|love|honor)) of (.+?)\\.$", "template": "{0}、{t1}が{4}に{t3}して{t2}。", "route": "description"},
+    {"pattern": "^((?i:someone|somebody|a mysterious person|a child|a woman|a man|a baby|some group|some sect|some organization|some party|some cabal|some group of friends|some group of lovers|people|folk|communities|kindred|families|kin|kind|kinsfolk|tribe|clan)) ((?i:gather|come together|habitate together|cluster|assemble|live together)) (.+?) in ((?i:reverence|awe|worship|adoration|devotion|piety|deification|love|honor)) of (.+?)\\.$", "template": "{2}に{t0}が{4}に{t3}して{t1}。", "route": "description"},
+    {"pattern": "^(.+?), ((?i:someone|somebody|a mysterious person|a child|a woman|a man|a baby|some group|some sect|some organization|some party|some cabal|some group of friends|some group of lovers|people|folk|communities|kindred|families|kin|kind|kinsfolk|tribe|clan)) ((?i:gather|come together|habitate together|cluster|assemble|live together)) to ((?i:profane|mock|scorn|violate|blaspheme)) (.+?)\\.$", "template": "{0}、{t1}が{4}を{t3}ために{t2}。", "route": "description"},
+    {"pattern": "^((?i:someone|somebody|a mysterious person|a child|a woman|a man|a baby|some group|some sect|some organization|some party|some cabal|some group of friends|some group of lovers|people|folk|communities|kindred|families|kin|kind|kinsfolk|tribe|clan)) ((?i:gather|come together|habitate together|cluster|assemble|live together)) (.+?) to ((?i:profane|mock|scorn|violate|blaspheme)) (.+?)\\.$", "template": "{2}に{t0}が{4}を{t3}ために{t1}。", "route": "description"},
+    {"pattern": "^(.+?), [Tt]here's a ((?i:gathering|conclave|congregation|settlement|band|flock|society)) of (.+?) and their ((?i:folk|communities|kindred|families|kin|kind|kinsfolk|tribe|clan))\\.$", "template": "{0}、{t2}とその{t3}の{t1}がある。", "route": "description"},
+    {"pattern": "^[Tt]here's a ((?i:gathering|conclave|congregation|settlement|band|flock|society)) of (.+?) and their ((?i:folk|communities|kindred|families|kin|kind|kinsfolk|tribe|clan)) (.+?)\\.$", "template": "{3}に{t1}とその{t2}の{t0}がある。", "route": "description"},
     {
       "pattern": "^You hit (?:the |a |an )?(.+?) in a vital area[.!]?$",
       "template": "{0}の急所に命中した",
@@ -91,7 +91,7 @@
     {
       "pattern": "^You hit (?:the |a |an )?(.+?) with (?:the |a |an )?(.+?) \\(x(\\d+)\\) for (\\d+) damage!$",
       "template": "{1}で{0}に{3}ダメージを与えた！ (x{2})",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^You hit (?:the |a |an )?(.+?) with (?:a |an |the )?(.+?) for (\\d+) damage[.!]?$",
@@ -251,32 +251,32 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) exhausted!$",
       "template": "{0}は疲弊した！",
-      "route": "needs-harmony-patch"
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) exhausted\\.$",
       "template": "{0}は疲弊した。",
-      "route": "needs-harmony-patch"
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) exhausted$",
       "template": "{0}は疲弊した",
-      "route": "needs-harmony-patch"
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) sealed!$",
       "template": "{0}は封印された！",
-      "route": "needs-harmony-patch"
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) sealed\\.$",
       "template": "{0}は封印された。",
-      "route": "needs-harmony-patch"
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) sealed$",
       "template": "{0}は封印された",
-      "route": "needs-harmony-patch"
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) and (?:the |a |an )?(.+?) collide and fall to the ground[.!]?$",
@@ -491,7 +491,7 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits you with (?:the |a |an )?(.+?) \\(x(\\d+)\\) for (\\d+) damage!$",
       "template": "{0}の{1}で{3}ダメージを受けた！ (x{2})",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:hits|hit) you with (?:a |an |the )?(.+?) for (\\d+) damage[.!]?$",
@@ -551,12 +551,12 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) with (?:the |a |an )?(.+?) \\(x(\\d+)\\) for (\\d+) damage!$",
       "template": "{0}が{2}で{1}に{4}ダメージを与えた！ (x{3})",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits with (?:a |an |the )?(.+?) \\(x(\\d+)\\) for (\\d+) damage!$",
       "template": "{0}は{1}で{3}ダメージを与えた！ (x{2})",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically (?:hits|hit) (?:the |a |an )?(?!you)(.+?) with (?:a |an |the )?(.+?), but (?:his|her|its|their) mental attack has no effect[.!]?$",
@@ -1131,12 +1131,12 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) utterly unresponsive[.!]?$",
       "template": "{0}はまったく反応しない",
-      "route": "needs-harmony-patch"
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) not bleeding[.!]?$",
       "template": "{0}は出血していない",
-      "route": "needs-harmony-patch"
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) not owned by you, and trying to repair (.+?) will be considered an act of theft\\. Are you sure\\?$",
@@ -1211,7 +1211,7 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:has|have) no limbs[.!]?$",
       "template": "{0}には四肢がない",
-      "route": "needs-harmony-patch"
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(?!You)(.+?) (?:has|have) no more ammo!$",
@@ -1246,7 +1246,7 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:beeps|beep) loudly and (?:flashes|flash) a warning glyph[.!]?$",
       "template": "{0}は大きなビープ音を鳴らし、警告記号を点滅させた",
-      "route": "needs-harmony-patch"
+      "route": "message-frame"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) cannot be moved[.!]?$",
@@ -1941,117 +1941,117 @@
     {
       "pattern": "^OUCH! You collide with (?:the |a |an |some )?(.+?)[.]$",
       "template": "痛っ！{0}に衝突した。",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^The way is blocked by (?:the |a |an |some )?(.+?)[.!]?$",
       "template": "{0}に道を塞がれている。",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) too difficult to traverse via the world map\\. You\\'ll have to find your way on the surface\\.$",
       "template": "{0}はワールドマップでは通り抜けられないほど険しい。地表から道を探す必要がある。",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^You heal for (\\d+) hit points?\\.$",
       "template": "あなたは{0}HP回復した。",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) heals? for (\\d+) hit points?\\.$",
       "template": "{0}は{1}HP回復した。",
-      "route": "needs-harmony-patch"
+      "route": "message-frame"
     },
     {
       "pattern": "^You lose (-?\\d+) hit points?\\.$",
       "template": "あなたは{0}HP失った。",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) lose[s]? (-?\\d+) hit points?\\.$",
       "template": "{0}は{1}HP失った。",
-      "route": "needs-harmony-patch"
+      "route": "message-frame"
     },
     {
       "pattern": "^You are stopped short by (?:the |a |an )?(.+?)[.!]?$",
       "template": "{0}に行く手を阻まれた。",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) stuck[.!]?$",
       "template": "{0}は動けなくなった。",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^You can\\'t budge (?:the |a |an )?(.+?)[.!]?$",
       "template": "{0}を押し動かせない。",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^There (?:is|are) (.+?) that way\\. Move (.+?) again to enter (?:it|them) and start swimming\\.$",
       "template": "その先には{0}がある。もう一度{1}へ移動すると中に入り、泳ぎ始める。",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^There (?:is|are) (.+?) that way\\. Do you want to go (.+?) and start swimming\\?$",
       "template": "その先には{0}がある。{1}へ進み、泳ぎ始めるか？",
-      "route": "needs-harmony-patch"
+      "route": "popup"
     },
     {
       "pattern": "^Are you sure you want to move into (.+?)\\? Move (.+?) again to confirm\\.$",
       "template": "{0}に入ってもよいか？ 確認するにはもう一度{1}へ移動する。",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^Are you sure you want to drop down a level\\? Move (.+?) again to confirm\\.$",
       "template": "1階層下へ降りてもよいか？ 確認するにはもう一度{0}へ移動する。",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^Are you sure you want to target (.+?)\\?$",
       "template": "{0}を標的にしてもよいか？",
-      "route": "needs-harmony-patch"
+      "route": "popup"
     },
     {
       "pattern": "^You toggle (.+?) on\\.$",
       "template": "{t0}をオンにした。",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^You toggle (.+?) off\\.$",
       "template": "{t0}をオフにした。",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^Your companion, (.+?), (.+?)\\.$",
       "template": "あなたの仲間である{0}は{1}。",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^Your regenerative metabolism cures you of (.+?)\\.$",
       "template": "あなたの再生代謝が{0}を治した。",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) cures you of (.+?)\\.$",
       "template": "{0}があなたの{1}を治した。",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^Notes: (.+)$",
       "template": "注記: {0}",
-      "route": "needs-harmony-patch"
+      "route": "journal"
     },
     {
       "pattern": "^Zone build failure:(.+)$",
       "template": "ゾーン構築失敗:{0}",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     },
     {
       "pattern": "^(?:An|The) electrical arc leaps from (?:the |a |an )?(.+?) toward (.+?)!$",
       "template": "電弧が{0}から{1}へ走った！",
-      "route": "needs-harmony-patch"
+      "route": "emit-message"
     }
   ]
 }

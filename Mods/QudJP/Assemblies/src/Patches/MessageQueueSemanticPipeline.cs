@@ -11,6 +11,7 @@ internal static class MessageQueueSemanticPipeline
         PhysicsProcessTakeDamageTranslationPatch.TryTranslateQueuedMessage,
         AutoActTranslationPatch.TryTranslateQueuedMessage,
         ActionManagerRunSegmentTranslationPatch.TryTranslateQueuedMessage,
+        MissileWeaponHitTranslationPatch.TryTranslateQueuedMessage,
         ITeleporterTranslationPatch.TryTranslateQueuedMessage,
         LongBladesCoreTranslationPatch.TryTranslateQueuedMessage,
         XrlCorePlayerTurnTranslationPatch.TryTranslateQueuedMessage,

@@ -8,6 +8,7 @@ from scripts.text_construction_surface_policy import (
     build_surface_queue,
     classify_family,
     format_surface_queue,
+    lane_summary_payload,
     queue_payload,
     valuable_surface_queue,
 )
@@ -131,6 +132,112 @@ def test_policy_keeps_debug_or_wish_routes_out_of_valuable_queue() -> None:
     assert [entry["source_file"] for entry in valuable_surface_queue(inventory)] == ["XRL.World.Parts/Combat.cs"]
 
 
+def test_policy_assigns_actionable_closure_lanes() -> None:
+    """Valuable queue entries are split into closure lanes for issue-sized ownership work."""
+    inventory = _inventory(
+        [
+            _family(
+                "XRL.World.Parts/Combat.cs::Combat.Attack()",
+                "XRL.World.Parts/Combat.cs",
+                "Attack",
+                {"MessageFrame": 2, "Does": 1},
+            ),
+            _family(
+                "XRL.World.ZoneBuilders/Village.cs::Village.BuildZone(Zone)",
+                "XRL.World.ZoneBuilders/Village.cs",
+                "BuildZone",
+                {"HistoricStringExpander": 3},
+            ),
+            _family(
+                "Qud.UI/TinkeringDetailsLine.cs::TinkeringDetailsLine.setData(object)",
+                "Qud.UI/TinkeringDetailsLine.cs",
+                "setData",
+                {"SetText": 2},
+            ),
+            _family(
+                "XRL.World.Parts/CherubimSpawner.cs::CherubimSpawner.BestowElement(string)",
+                "XRL.World.Parts/CherubimSpawner.cs",
+                "BestowElement",
+                {"DisplayNameAssignment": 1},
+            ),
+        ]
+    )
+
+    lanes = {entry["family_id"]: entry["closure_lane"] for entry in valuable_surface_queue(inventory)}
+
+    assert lanes["XRL.World.Parts/Combat.cs::Combat.Attack()"] == "combat_message_frame_does"
+    assert lanes["XRL.World.ZoneBuilders/Village.cs::Village.BuildZone(Zone)"] == "history_generated_text"
+    assert (
+        lanes["Qud.UI/TinkeringDetailsLine.cs::TinkeringDetailsLine.setData(object)"]
+        == "screen_ui_direct_text"
+    )
+    assert (
+        lanes["XRL.World.Parts/CherubimSpawner.cs::CherubimSpawner.BestowElement(string)"]
+        == "display_name_composition"
+    )
+
+
+def test_policy_applies_reviewed_closure_overlay_for_high_risk_combat_lane() -> None:
+    """High-risk text-construction lanes can carry reviewed owner-route closure evidence."""
+    inventory = _inventory(
+        [
+            _family(
+                "XRL.World.Parts/Combat.cs::Combat.MeleeAttackWithWeaponInternal(GameObject,GameObject,GameObject,BodyPart,string,int,int,int,int,int,bool,bool)",
+                "XRL.World.Parts/Combat.cs",
+                "MeleeAttackWithWeaponInternal",
+                {"AddPlayerMessage": 1, "Does": 1},
+            ),
+            _family(
+                "XRL.World.Parts/BandageMedication.cs::BandageMedication.PerformBandaging()",
+                "XRL.World.Parts/BandageMedication.cs",
+                "PerformBandaging",
+                {"MessageFrame": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+    covered = entries[
+        "XRL.World.Parts/Combat.cs::Combat.MeleeAttackWithWeaponInternal(GameObject,GameObject,GameObject,BodyPart,string,int,int,int,int,int,bool,bool)"
+    ]
+    action_required = entries["XRL.World.Parts/BandageMedication.cs::BandageMedication.PerformBandaging()"]
+
+    assert covered["closure_lane"] == "combat_message_frame_does"
+    assert covered["closure_status"] == "covered_by_owner_route"
+    assert "CombatAndLogMessageQueuePatchTests.cs" in " ".join(covered["closure_evidence"])
+    assert action_required["closure_status"] == "action_required"
+
+
+def test_lane_summary_payload_reports_counts_and_top_families() -> None:
+    """Lane output must summarize counts and representative high-risk families."""
+    inventory = _inventory(
+        [
+            _family(
+                "XRL.World.Parts/BandageMedication.cs::BandageMedication.PerformBandaging()",
+                "XRL.World.Parts/BandageMedication.cs",
+                "PerformBandaging",
+                {"MessageFrame": 1},
+            ),
+            _family(
+                "XRL.World.Parts/Combat.cs::Combat.Attack()",
+                "XRL.World.Parts/Combat.cs",
+                "Attack",
+                {"MessageFrame": 5},
+            ),
+            _family("Internal.cs::Internal.Fields", "Internal.cs", "Fields", {"Attribute": 5}),
+        ]
+    )
+
+    payload = lane_summary_payload(inventory, inventory_path=Path("inventory.json"), top_per_lane=1)
+
+    lane = payload["lanes"]["combat_message_frame_does"]
+    assert lane["entry_count"] == 2
+    assert lane["text_construction_count"] == 6
+    assert lane["closure_status_counts"] == {"action_required": 2}
+    assert [entry["source_file"] for entry in lane["top_entries"]] == ["XRL.World.Parts/Combat.cs"]
+    assert "non_target" not in payload["lane_counts"]
+
+
 def test_queue_payload_defaults_to_valuable_surfaces_only() -> None:
     """The handoff queue must not mix valuable localization surfaces with generic text noise."""
     inventory = _inventory(
@@ -143,6 +250,7 @@ def test_queue_payload_defaults_to_valuable_surfaces_only() -> None:
     payload = queue_payload(inventory, inventory_path=Path("inventory.json"))
 
     assert payload["counts"] == {"player_visible_owner_candidate": 1}
+    assert payload["lane_counts"] == {"screen_ui_direct_text": 1}
     assert [entry["source_file"] for entry in payload["entries"]] == ["Qud.UI/TradeLine.cs"]
 
 
@@ -162,7 +270,8 @@ def test_text_summary_names_reason_and_action_for_agent_handoff() -> None:
     summary = format_surface_queue(inventory, inventory_path=Path("inventory.json"))
 
     assert "text construction surface queue:" in summary
-    assert "[player_visible_owner_candidate]" in summary
+    assert "[player_visible_owner_candidate/screen_ui_direct_text]" in summary
+    assert "closure lanes:" in summary
     assert "Qud.UI/InventoryLine.cs" in summary
     assert "reason:" in summary
     assert "action:" in summary
