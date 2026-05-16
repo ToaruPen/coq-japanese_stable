@@ -38,6 +38,18 @@ internal static class DoesVerbRouteTranslator
             return false;
         }
 
+        if (TryParseMarkedMessage(source, out var sourceMarker, out var sourceVisible)
+            && TryTranslateVisibleMessage(
+                sourceVisible,
+                sourceMarker.Verb,
+                sourceMarker.SubjectLength,
+                sourceMarker.FragmentLength,
+                sourceMarker.Adverb,
+                out translated))
+        {
+            return true;
+        }
+
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         if (!TryParseMarkedMessage(stripped, out var marker, out var visible))
         {

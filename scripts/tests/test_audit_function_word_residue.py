@@ -39,6 +39,26 @@ E.AddTag("[swimming]");
     assert {entry["path"] for entry in entries} == {"XRL.World.Effects/Demo.cs"}
 
 
+def test_source_audit_reads_verbatim_and_raw_csharp_string_literals(tmp_path: Path) -> None:
+    """Source audit sees function words in nonstandard C# string literal forms."""
+    source_root = tmp_path / "decompiled"
+    source_file = source_root / "XRL.World.Parts" / "Demo.cs"
+    source_file.parent.mkdir(parents=True)
+    source_file.write_text(
+        '''Popup.Show(@"You pass by a ""web"".");
+Popup.Show("""You pass by the web.""");
+''',
+        encoding="utf-8",
+    )
+
+    entries = audit_source_tree(source_root)
+
+    assert [entry["category"] for entry in entries] == [
+        "visible_string_function_word",
+        "visible_string_function_word",
+    ]
+
+
 def test_test_audit_flags_localized_expectations_with_residue(tmp_path: Path) -> None:
     """Test audit flags localized expectations that still preserve English residue."""
     tests_root = tmp_path / "QudJP.Tests"

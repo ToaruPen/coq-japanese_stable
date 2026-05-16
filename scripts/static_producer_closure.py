@@ -6192,7 +6192,7 @@ def _generated_queue_does_verb_families() -> tuple[CoveredOwnerFamily, ...]:
                         *tests.required_substrings,
                         "BodyPartUnequipPartAndChildren",
                         "Your {{Y|carbide dagger}} falls to the ground.",
-                        "Your {{Y|carbide dagger}}は地面に倒れた。",
+                        "{{Y|carbide dagger}}は地面に倒れた。",
                     ),
                 ),
                 EvidenceFile(

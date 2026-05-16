@@ -42,7 +42,7 @@ DISPLAY_NAME_STATE_RE: Final = re.compile(
     r"\[(?:swimming|sitting(?: on [^\]]+)?|empty|broken|cracked|rusted|asleep|prone)\]",
     re.IGNORECASE,
 )
-STRING_LITERAL_RE: Final = re.compile(r'"(?:\\.|[^"\\])*"')
+STRING_LITERAL_RE: Final = re.compile(r'"""(?:[^"]|"(?!"")|""(?!"))*"""|@"(?:[^"]|"")*"|"(?:\\.|[^"\\])*"')
 JAPANESE_RE: Final = re.compile(r"[\u3040-\u30ff\u3400-\u9fff]")
 FUNCTION_WORD_RE: Final = re.compile(
     r"(?<![A-Za-z])(?:a|an|the|your|its|their|his|her|to|from|with|of|by)(?![A-Za-z])",
@@ -461,6 +461,11 @@ def _dedupe_entries(entries: list[AuditEntry]) -> list[AuditEntry]:
 
 
 def _decode_csharp_string(token: str) -> str:
+    if token.startswith('"""') and token.endswith('"""'):
+        return token[3:-3]
+    if token.startswith('@"') and token.endswith('"'):
+        return token[2:-1].replace('""', '"')
+
     value = token[1:-1]
     return (
         value.replace(r"\"", '"')

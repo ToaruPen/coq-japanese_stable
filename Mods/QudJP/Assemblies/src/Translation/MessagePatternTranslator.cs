@@ -981,7 +981,7 @@ internal static class MessagePatternTranslator
             return "あなた";
         }
 
-        if (string.Equals(source, "yourself", StringComparison.Ordinal))
+        if (string.Equals(source, "yourself", StringComparison.OrdinalIgnoreCase))
         {
             return "自分自身";
         }

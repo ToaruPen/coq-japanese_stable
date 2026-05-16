@@ -5336,7 +5336,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         "fall",
         "Your {{Y|carbide dagger}}",
         " to the ground.",
-        "Your {{Y|carbide dagger}}は地面に倒れた。")]
+        "{{Y|carbide dagger}}は地面に倒れた。")]
     [TestCase(
         nameof(DummySimpleOwnerQueueTarget.ExtradimensionalLootFireEvent),
         "The hunter drops",

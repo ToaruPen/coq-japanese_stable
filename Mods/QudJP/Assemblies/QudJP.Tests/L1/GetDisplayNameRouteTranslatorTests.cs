@@ -517,7 +517,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
                     "mine {{y|[{{R|10 sec}}]}}",
                     nameof(GetDisplayNamePatch)),
-                Is.EqualTo("地雷 [10秒]"));
+                Is.EqualTo("地雷 [{{R|10秒}}]"));
             Assert.That(
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
                     "ingredient {{y|[{{C|3}} cooking servings]}}",
@@ -542,12 +542,32 @@ public sealed class GetDisplayNameRouteTranslatorTests
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
                     "snapjaw [{{B|stuck in a web}}]",
                     nameof(GetDisplayNamePatch)),
-                Is.EqualTo("スナップジョー [網にはまっている]"));
+                Is.EqualTo("スナップジョー [{{B|網にはまっている}}]"));
             Assert.That(
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
                     "snapjaw [{{B|grabbed by an iron sword}}]",
                     nameof(GetDisplayNamePatch)),
-                Is.EqualTo("スナップジョー [鉄の剣につかまれている]"));
+                Is.EqualTo("スナップジョー [{{B|鉄の剣につかまれている}}]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "snapjaw [wrapped around a web]",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("スナップジョー [wrapped around a web]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "\u0001snapjaw [stuck in a web]",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("\u0001snapjaw [stuck in a web]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    string.Empty,
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo(string.Empty));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "{{B|}}",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("{{B|}}"));
         });
     }
 

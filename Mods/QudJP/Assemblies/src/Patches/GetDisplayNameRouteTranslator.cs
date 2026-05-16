@@ -117,7 +117,12 @@ internal static class GetDisplayNameRouteTranslator
             route = nameof(GetDisplayNameRouteTranslator);
         }
 
-        using var _ = Translator.PushLogContext(context);
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
+        {
+            return source!;
+        }
+
+        using var logScope = Translator.PushLogContext(context);
 
         if (TryHandleParenthesizedColoredChargeStatusFallback(source!, route, out var chargeStatusFallback))
         {
@@ -160,6 +165,11 @@ internal static class GetDisplayNameRouteTranslator
         if (TryTranslateCompactWeaponStatsDisplayNameSuffix(stripped, spans, route, out var compactWeaponStatsTranslation))
         {
             return compactWeaponStatsTranslation;
+        }
+
+        if (TryTranslateBracketedDisplayNameSuffix(stripped, spans, route, out var bracketedSuffixTranslation))
+        {
+            return bracketedSuffixTranslation;
         }
 
         if (TryTranslateDisplayNameRouteText(stripped, route, out var translated))
@@ -423,6 +433,41 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         translated = translatedBase + " [" + translatedState + "]";
+        DynamicTextObservability.RecordTransform(route, "DisplayName.BracketedSuffix", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateBracketedDisplayNameSuffix(
+        string source,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        out string translated)
+    {
+        var match = BracketedDisplayNameSuffixPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var baseGroup = match.Groups["base"];
+        var stateGroup = match.Groups["state"];
+        var translatedBase = RestoreWholeSlice(TranslateDisplayNameFragment(baseGroup.Value, route), spans, baseGroup);
+        var translatedState = RestoreWholeSlice(TranslateDisplayNameState(stateGroup.Value, route), spans, stateGroup);
+
+        if (string.Equals(translatedBase, baseGroup.Value, StringComparison.Ordinal)
+            && string.Equals(translatedState, stateGroup.Value, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = translatedBase + " [" + translatedState + "]";
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translated,
+            spans,
+            source.Length);
+
         DynamicTextObservability.RecordTransform(route, "DisplayName.BracketedSuffix", source, translated);
         return true;
     }
