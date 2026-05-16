@@ -1779,7 +1779,7 @@
     {
       "verb": "stare",
       "extra": "at {0} menacingly",
-      "text": "{0}を睨みつけた"
+      "text": "{t0}を睨みつけた"
     },
     {
       "verb": "stare",
@@ -2051,7 +2051,7 @@
     {
       "verb": "are",
       "extra": "promoted to the {0} of {1}",
-      "text": "{1}の{0}に昇進した"
+      "text": "{t1}の{t0}に昇進した"
     },
     {
       "verb": "are",
@@ -2091,7 +2091,7 @@
     {
       "verb": "assume",
       "extra": "the form of {0}",
-      "text": "{0}の姿をとった"
+      "text": "{t0}の姿をとった"
     },
     {
       "verb": "atomize",
@@ -2146,27 +2146,27 @@
     {
       "verb": "begin",
       "extra": "acting like {0} {1}",
-      "text": "{1}のふりをし始めた"
+      "text": "{t1}のふりをし始めた"
     },
     {
       "verb": "begin",
       "extra": "acting like {0} {1} from another wound",
-      "text": "{1}のふりをし始めた（別の傷から）"
+      "text": "{t1}のふりをし始めた（別の傷から）"
     },
     {
       "verb": "begin",
       "extra": "{0}",
-      "text": "{0}が始まった"
+      "text": "{t0}が始まった"
     },
     {
       "verb": "begin",
       "extra": "{0} from another wound",
-      "text": "別の傷から{0}"
+      "text": "別の傷から{t0}が始まった"
     },
     {
       "verb": "break",
       "extra": "free from {0}",
-      "text": "{0}から抜け出した"
+      "text": "{t0}から抜け出した"
     },
     {
       "verb": "butcher",
@@ -2191,7 +2191,7 @@
     {
       "verb": "cleave",
       "extra": "through (?:the |a |an )?(.+?)",
-      "text": "{subject}は{0}を両断した"
+      "text": "{subject}は{t0}を両断した"
     },
     {
       "verb": "cleave",
@@ -2421,7 +2421,7 @@
     {
       "verb": "hit",
       "extra": "{0} for {1} damage",
-      "text": "{0}に{1}ダメージを与えた"
+      "text": "{t0}に{1}ダメージを与えた"
     },
     {
       "verb": "hum",
@@ -2611,7 +2611,7 @@
     {
       "verb": "rifle",
       "extra": "through (?:the |a |an )?(.+?)",
-      "text": "{subject}は{0}を漁った"
+      "text": "{subject}は{t0}を漁った"
     },
     {
       "verb": "rip",
@@ -2731,7 +2731,7 @@
     {
       "verb": "stop",
       "extra": "{0}",
-      "text": "{0}が止まった"
+      "text": "{t0}が止まった"
     },
     {
       "verb": "strike",
@@ -2781,7 +2781,7 @@
     {
       "verb": "teleport",
       "extra": "{0} away",
-      "text": "{0}をテレポートさせた"
+      "text": "{t0}をテレポートさせた"
     },
     {
       "verb": "tighten",

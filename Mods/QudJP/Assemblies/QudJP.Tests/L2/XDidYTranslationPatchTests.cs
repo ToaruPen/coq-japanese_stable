@@ -101,6 +101,31 @@ public sealed class XDidYTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesXDidY_StripsGeneratedSubjectArticle()
+    {
+        WriteDictionary(tier1: new[] { ("appear", "現れた") });
+
+        var actor = new DummyCurrentDisplayNameTarget(
+            "光葉",
+            definiteDisplayName: "The 光葉",
+            indefiniteDisplayName: "An 光葉");
+
+        RunWithXDidYPatch(() =>
+        {
+            DummyXDidYTarget.XDidY(
+                Actor: actor,
+                Verb: "appear",
+                AlwaysVisible: true);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+                Assert.That(lastMessage, Is.EqualTo("\u0001光葉は現れた。"));
+            });
+        });
+    }
+
+    [Test]
     public void Prefix_TranslatesBreatherConeXDidYAndSkipsOriginalEnglishAssembly()
     {
         WriteDictionary(tier2: new[] { ("breath", "a cone of poison gas", "毒ガスを円錐状に吐き出した") });
@@ -532,6 +557,34 @@ public sealed class XDidYTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesXDidYToZWadeThroughLiquid_StripsGeneratedObjectArticle()
+    {
+        WriteDictionary(tier3: new[] { ("wade", "through {0}", "{0}の中をかき分けて進んだ") });
+
+        var liquid = new DummyCurrentDisplayNameTarget(
+            "塩水の水たまり",
+            indefiniteDisplayName: "a 塩水の水たまり");
+
+        RunWithXDidYToZPatch(() =>
+        {
+            DummyXDidYTarget.XDidYToZ(
+                Actor: null,
+                Verb: "wade",
+                Preposition: "through",
+                Object: liquid,
+                SubjectOverride: "あなた",
+                IndefiniteObject: true,
+                AlwaysVisible: true);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+                Assert.That(lastMessage, Is.EqualTo("\u0001あなたは塩水の水たまりの中をかき分けて進んだ。"));
+            });
+        });
+    }
+
+    [Test]
     public void Prefix_TranslatesXDidYToZObjectDisplayNameBeforePrepositionSuffix()
     {
         File.WriteAllText(
@@ -673,6 +726,53 @@ public sealed class XDidYTranslationPatchTests
                 IndirectObject: "青銅の短剣",
                 Extra: "for 5 damage",
                 SubjectOverride: "熊",
+                AlwaysVisible: true,
+                EndMark: "!");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+                Assert.That(lastMessage, Is.EqualTo("\u0001熊は青銅の短剣でスナップジョーに5ダメージを与えた！"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_TranslatesWDidXToYWithZ_StripsGeneratedObjectArticles()
+    {
+        WriteDictionary(tier3: new[] { ("strike", "{0} with {1} for {2} damage", "{1}で{0}に{2}ダメージを与えた") });
+
+        var target = new DummyCurrentDisplayNameTarget(
+            "スナップジョー",
+            indefiniteDisplayName: "an スナップジョー");
+        var weapon = new DummyCurrentDisplayNameTarget(
+            "青銅の短剣",
+            indefiniteDisplayName: "a 青銅の短剣");
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyXDidYTarget), nameof(DummyXDidYTarget.WDidXToYWithZ)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(XDidYTranslationPatch), nameof(XDidYTranslationPatch.PrefixWDidXToYWithZForTests))));
+
+            DummyXDidYTarget.WDidXToYWithZ(
+                Actor: null,
+                Verb: "strike",
+                DirectPreposition: null,
+                DirectObject: target,
+                IndirectPreposition: "with",
+                IndirectObject: weapon,
+                Extra: "for 5 damage",
+                SubjectOverride: "熊",
+                IndefiniteDirectObject: true,
+                IndefiniteIndirectObject: true,
                 AlwaysVisible: true,
                 EndMark: "!");
 
@@ -886,11 +986,20 @@ public sealed class XDidYTranslationPatchTests
     private sealed class DummyCurrentDisplayNameTarget
     {
         private readonly string displayName;
+        private readonly string? definiteDisplayName;
+        private readonly string? indefiniteDisplayName;
         private readonly string toStringText;
 
-        public DummyCurrentDisplayNameTarget(string displayName, string? displayNameMember = null, string toStringText = "Object")
+        public DummyCurrentDisplayNameTarget(
+            string displayName,
+            string? displayNameMember = null,
+            string toStringText = "Object",
+            string? definiteDisplayName = null,
+            string? indefiniteDisplayName = null)
         {
             this.displayName = displayName;
+            this.definiteDisplayName = definiteDisplayName;
+            this.indefiniteDisplayName = indefiniteDisplayName;
             DisplayName = displayNameMember ?? displayName;
             this.toStringText = toStringText;
         }
@@ -927,7 +1036,7 @@ public sealed class XDidYTranslationPatchTests
             object? AsPossessedBy = null,
             bool Reference = false)
         {
-            return displayName;
+            return ResolveDisplayName(WithIndefiniteArticle);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -956,6 +1065,21 @@ public sealed class XDidYTranslationPatchTests
             object? AsPossessedBy = null,
             bool Reference = false)
         {
+            return ResolveDisplayName(WithIndefiniteArticle);
+        }
+
+        private string ResolveDisplayName(bool withIndefiniteArticle)
+        {
+            if (withIndefiniteArticle && indefiniteDisplayName is not null)
+            {
+                return indefiniteDisplayName;
+            }
+
+            if (!withIndefiniteArticle && definiteDisplayName is not null)
+            {
+                return definiteDisplayName;
+            }
+
             return displayName;
         }
 

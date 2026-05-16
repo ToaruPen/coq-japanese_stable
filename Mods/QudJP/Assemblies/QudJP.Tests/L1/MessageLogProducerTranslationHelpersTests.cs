@@ -315,7 +315,7 @@ public sealed class MessageLogProducerTranslationHelpersTests
     [Test]
     public void PreparePassByMessage_MarksTranslatedMessage()
     {
-        WritePatternDictionary(("^You pass by (.+?)[.!]?$", "{0}のそばを通り過ぎた。"));
+        WritePatternDictionary(("^You pass by (?:a |an |the )?(.+?)[.!]?$", "{0}のそばを通り過ぎた。"));
 
         var result = MessageLogProducerTranslationHelpers.PreparePassByMessage(
             "You pass by ウォーターヴァイン.",
@@ -324,10 +324,23 @@ public sealed class MessageLogProducerTranslationHelpersTests
         Assert.That(result, Is.EqualTo("\u0001ウォーターヴァインのそばを通り過ぎた。"));
     }
 
+    [TestCase("You pass by an 編みかご.", "\u0001編みかごのそばを通り過ぎた。")]
+    [TestCase("You pass by the ウォーターヴァイン.", "\u0001ウォーターヴァインのそばを通り過ぎた。")]
+    public void PreparePassByMessage_StripsLeadingEnglishArticle(string source, string expected)
+    {
+        WritePatternDictionary(("^You pass by (?:a |an |the )?(.+?)[.!]?$", "{0}のそばを通り過ぎた。"));
+
+        var result = MessageLogProducerTranslationHelpers.PreparePassByMessage(
+            source,
+            "PhysicsEnterCellPassByTranslationPatch");
+
+        Assert.That(result, Is.EqualTo(expected));
+    }
+
     [Test]
     public void PreparePassByMessage_PreservesColorTags()
     {
-        WritePatternDictionary(("^You pass by (.+?)[.!]?$", "{0}のそばを通り過ぎた。"));
+        WritePatternDictionary(("^You pass by (?:a |an |the )?(.+?)[.!]?$", "{0}のそばを通り過ぎた。"));
 
         var result = MessageLogProducerTranslationHelpers.PreparePassByMessage(
             "You pass by <color=#ff0>ウォーターヴァイン</color>.",

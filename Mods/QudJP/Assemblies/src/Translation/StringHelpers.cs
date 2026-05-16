@@ -12,7 +12,10 @@ internal static class StringHelpers
             : source;
     }
 
-    internal static string StripLeadingEnglishArticle(string source, bool includeCapitalizedDefiniteArticle = false)
+    internal static string StripLeadingEnglishArticle(
+        string source,
+        bool includeCapitalizedDefiniteArticle = false,
+        bool includeCapitalizedIndefiniteArticle = false)
     {
         if (source.StartsWith("a ", StringComparison.Ordinal))
         {
@@ -32,6 +35,16 @@ internal static class StringHelpers
         if (includeCapitalizedDefiniteArticle && source.StartsWith("The ", StringComparison.Ordinal))
         {
             return source.Substring(4);
+        }
+
+        if (includeCapitalizedIndefiniteArticle && source.StartsWith("A ", StringComparison.Ordinal))
+        {
+            return source.Substring(2);
+        }
+
+        if (includeCapitalizedIndefiniteArticle && source.StartsWith("An ", StringComparison.Ordinal))
+        {
+            return source.Substring(3);
         }
 
         return source;

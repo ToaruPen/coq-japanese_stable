@@ -129,8 +129,13 @@ public sealed class PhysicsEnterCellPassByTranslationPatchTests
         }
     }
 
-    [Test]
-    public void AggregateMessageQueuePatch_TranslatesEnterCellPassByUsingRepositoryPattern_WhenPatched()
+    [TestCase("You pass by a 編みかご.", "編みかごのそばを通り過ぎた。")]
+    [TestCase("You pass by an 編みかご.", "編みかごのそばを通り過ぎた。")]
+    [TestCase("You pass by the ウォーターヴァイン.", "ウォーターヴァインのそばを通り過ぎた。")]
+    [TestCase("You pass by ウォーターヴァイン.", "ウォーターヴァインのそばを通り過ぎた。")]
+    public void AggregateMessageQueuePatch_TranslatesArticleVariantsUsingRepositoryPattern_WhenPatched(
+        string source,
+        string expected)
     {
         UseRepositoryPatternDictionary();
 
@@ -161,12 +166,9 @@ public sealed class PhysicsEnterCellPassByTranslationPatchTests
                     typeof(string),
                     typeof(bool))));
 
-            var target = new DummyPhysicsEnterCellTarget();
-            target.PassingBy.Add("ウォーターヴァイン");
+            DummyMessageQueue.AddPlayerMessage(source, "&W", Capitalize: false);
 
-            target.EnterCell();
-
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("ウォーターヴァインのそばを通り過ぎた。"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }
         finally
         {

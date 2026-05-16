@@ -995,6 +995,21 @@ internal static class MessagePatternTranslator
             return historySpiceComponent;
         }
 
+        if (CirculatoryLossTermTranslator.TryTranslateTermPhrase(source, out var circulatoryLossTerm))
+        {
+            return circulatoryLossTerm;
+        }
+
+        if (DirectionPhraseTranslator.TryTranslateNounStem(source, out var direction))
+        {
+            return direction;
+        }
+
+        if (TryTranslatePossessiveCapture(source, out var possessiveCapture))
+        {
+            return possessiveCapture;
+        }
+
         var direct = Translator.Translate(source);
         if (!string.Equals(direct, source, StringComparison.Ordinal))
         {
@@ -1025,9 +1040,27 @@ internal static class MessagePatternTranslator
         return source;
     }
 
+    private static bool TryTranslatePossessiveCapture(string source, out string translated)
+    {
+        var index = source.IndexOf("'s ", StringComparison.Ordinal);
+        if (index <= 0)
+        {
+            translated = string.Empty;
+            return false;
+        }
+
+        var owner = TranslateTemplateCapture(source.Substring(0, index));
+        var owned = TranslateTemplateCapture(source.Substring(index + 3));
+        translated = owner + "の" + owned;
+        return true;
+    }
+
     private static string? TranslateArticleStrippedTemplateCapture(string source)
     {
-        var strippedArticle = StringHelpers.StripLeadingEnglishArticle(source);
+        var strippedArticle = StringHelpers.StripLeadingEnglishArticle(
+            source,
+            includeCapitalizedDefiniteArticle: true,
+            includeCapitalizedIndefiniteArticle: true);
         if (string.Equals(strippedArticle, source, StringComparison.Ordinal))
         {
             return null;

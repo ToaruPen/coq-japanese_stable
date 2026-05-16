@@ -144,32 +144,32 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^You hit (.+) for (\\d+) damage[.!]?$",
+      "pattern": "^You hit (?:the |a |an )?(.+) for (\\d+) damage[.!]?$",
       "template": "{0}に{1}ダメージを与えた",
       "route": "emit-message"
     },
     {
-      "pattern": "^You crit (.+) for (\\d+) damage[.!]?$",
+      "pattern": "^You crit (?:the |a |an )?(.+) for (\\d+) damage[.!]?$",
       "template": "{0}に会心の一撃で{1}ダメージを与えた",
       "route": "emit-message"
     },
     {
-      "pattern": "^You attack (.+?)[.!]?$",
+      "pattern": "^You attack (?:the |a |an )?(.+?)[.!]?$",
       "template": "{0}に攻撃した",
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The )?(.+) hits you for (\\d+) damage[.!]?$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+) hits you for (\\d+) damage[.!]?$",
       "template": "{0}の攻撃で{1}ダメージを受けた",
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The )?(.+) crits you for (\\d+) damage[.!]?$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+) crits you for (\\d+) damage[.!]?$",
       "template": "{0}の会心の一撃で{1}ダメージを受けた",
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The )?(.+) attacks you[.!]?$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+) attacks you[.!]?$",
       "template": "{0}があなたを攻撃してきた",
       "route": "emit-message"
     },
@@ -199,7 +199,7 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The )?(.+) misses you[.!]?$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+) misses you[.!]?$",
       "template": "{0}の攻撃は外れた",
       "route": "emit-message"
     },
@@ -224,7 +224,7 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The )?(.+?) takes (\\d+) damage from (?:the )?(.+?)の acid![.!]?$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) takes (\\d+) damage from (?:the |a |an )?(.+?)の acid![.!]?$",
       "template": "{0}は{2}の酸で{1}ダメージを受けた！",
       "route": "emit-message"
     },
@@ -354,13 +354,13 @@
       "route": "message-frame"
     },
     {
-      "pattern": "^(.+?) is destroyed[.!]?$",
-      "template": "{0}は破壊された",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) is destroyed[.!]?$",
+      "template": "{t0}は破壊された",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) dies[.!]?$",
-      "template": "{0}は死んだ",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) dies[.!]?$",
+      "template": "{t0}は死んだ",
       "route": "emit-message"
     },
     {
@@ -439,32 +439,32 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The )?(.+) critically hits \\((x\\d+)\\) for (\\d+) damage with (?:his|her|its) (.+?)[.!] \\[(.+?)\\]$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+) critically hits \\((x\\d+)\\) for (\\d+) damage with (?:his|her|its) (.+?)[.!] \\[(.+?)\\]$",
       "template": "{0}の{3}が会心し、{2}ダメージを受けた。({1}) [{4}]",
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The )?(.+) critically hits \\((x\\d+)\\) for (\\d+) damage with their (.+?)[.!] \\[(.+?)\\]$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+) critically hits \\((x\\d+)\\) for (\\d+) damage with their (.+?)[.!] \\[(.+?)\\]$",
       "template": "{0}の{3}が会心し、{2}ダメージを受けた。({1}) [{4}]",
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The )?(.+) hits \\((x\\d+)\\) for (\\d+) damage with (?:his|her|its) (.+?)[.!] \\[(.+?)\\]$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+) hits \\((x\\d+)\\) for (\\d+) damage with (?:his|her|its) (.+?)[.!] \\[(.+?)\\]$",
       "template": "{0}の{3}で{2}ダメージを受けた。({1}) [{4}]",
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The )?(.+) hits \\((x\\d+)\\) for (\\d+) damage with their (.+?)[.!] \\[(.+?)\\]$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+) hits \\((x\\d+)\\) for (\\d+) damage with their (.+?)[.!] \\[(.+?)\\]$",
       "template": "{0}の{3}で{2}ダメージを受けた。({1}) [{4}]",
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The )?(.+) misses you with (?:his|her|its) (.+?)[.!] \\[(.+?) vs (.+?)\\]$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+) misses you with (?:his|her|its) (.+?)[.!] \\[(.+?) vs (.+?)\\]$",
       "template": "{0}の{1}は外れた。[{2} vs {3}]",
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The )?(.+) misses you with their (.+?)[.!] \\[(.+?) vs (.+?)\\]$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+) misses you with their (.+?)[.!] \\[(.+?) vs (.+?)\\]$",
       "template": "{0}の{1}は外れた。[{2} vs {3}]",
       "route": "emit-message"
     },
@@ -630,12 +630,12 @@
     },
     {
       "pattern": "^You hit something (.+?)[.!]?$",
-      "template": "{0}の方角の何かに命中した",
+      "template": "{t0}の方角の何かに命中した",
       "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:hits|hit) something (.+?)[.!]?$",
-      "template": "{0}は{1}の方角の何かに命中させた",
+      "template": "{t0}は{t1}の方角の何かに命中させた",
       "route": "message-frame"
     },
     {
@@ -799,28 +799,28 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+) begins bleeding from another wound[.!]?$",
-      "template": "{0}はさらに出血し始めた。",
+      "pattern": "^(.+) begins (bleeding|leaking|oozing|fluxing) from another wound[.!]?$",
+      "template": "{0}は別の傷から{t1}し始めた。",
       "route": "emit-message"
     },
     {
       "pattern": "^Your (?:noses?|nose) (?:begins?|begin) (.+?) more heavily[.!]?$",
-      "template": "あなたの鼻からさらに激しく{0}が始まった",
+      "template": "あなたの鼻からさらに激しく{t0}が始まった",
       "route": "emit-message"
     },
     {
       "pattern": "^Your (?:noses?|nose) (?:begins?|begin) (.+?)[.!]?$",
-      "template": "あなたの鼻から{0}が始まった",
+      "template": "あなたの鼻から{t0}が始まった",
       "route": "emit-message"
     },
     {
       "pattern": "^Your (?:noses?|nose) (?:stops?|stop) (.+?) quite so heavily[.!]?$",
-      "template": "あなたの鼻からの{0}が少し治まった",
+      "template": "あなたの鼻からの{t0}が少し治まった",
       "route": "emit-message"
     },
     {
       "pattern": "^Your (?:noses?|nose) (?:stops?|stop) (.+?)[.!]?$",
-      "template": "あなたの鼻からの{0}が止まった",
+      "template": "あなたの鼻からの{t0}が止まった",
       "route": "emit-message"
     },
     {
@@ -840,52 +840,52 @@
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (?:noses?|nose) (?:begins?|begin) (.+?) more heavily[.!]?$",
-      "template": "{0}の鼻からさらに激しく{1}が始まった",
+      "template": "{0}の鼻からさらに激しく{t1}が始まった",
       "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (?:noses?|nose) (?:begins?|begin) (.+?)[.!]?$",
-      "template": "{0}の鼻から{1}が始まった",
+      "template": "{0}の鼻から{t1}が始まった",
       "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (?:noses?|nose) (?:stops?|stop) (.+?) quite so heavily[.!]?$",
-      "template": "{0}の鼻からの{1}が少し治まった",
+      "template": "{0}の鼻からの{t1}が少し治まった",
       "route": "emit-message"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') (?:noses?|nose) (?:stops?|stop) (.+?)[.!]?$",
-      "template": "{0}の鼻からの{1}が止まった",
+      "template": "{0}の鼻からの{t1}が止まった",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+) begins bleeding[.!]?$",
-      "template": "{0}は出血し始めた。",
+      "pattern": "^(.+) begins (bleeding|leaking|oozing|fluxing)[.!]?$",
+      "template": "{0}は{t1}し始めた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^One of (.+?)の wounds stops bleeding[.!]?$",
-      "template": "{0}の傷のひとつの出血が止まった。",
+      "pattern": "^One of (?:the |a |an )?(.+?)の wounds stops (bleeding|leaking|oozing|fluxing)[.!]?$",
+      "template": "{0}の傷のひとつの{t1}が止まった。",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+) stops bleeding[.!]?$",
-      "template": "{0}の出血は止まった。",
+      "pattern": "^(.+) stops (bleeding|leaking|oozing|fluxing)[.!]?$",
+      "template": "{0}の{t1}は止まった。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You take (\\d+) damage from bleeding[.!]?$",
-      "template": "あなたは出血で{0}ダメージを受けた。",
+      "pattern": "^You take (\\d+) damage from (bleeding|leaking|oozing|fluxing)[.!]?$",
+      "template": "あなたは{t1}で{0}ダメージを受けた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+) takes (\\d+) damage from bleeding[.!]?$",
-      "template": "{0}は出血で{1}ダメージを受けた。",
+      "pattern": "^(.+) takes (\\d+) damage from (bleeding|leaking|oozing|fluxing)[.!]?$",
+      "template": "{0}は{t2}で{1}ダメージを受けた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+) takes no damage from bleeding[.!]?$",
-      "template": "{0}は出血でダメージを受けなかった。",
+      "pattern": "^(.+) takes no damage from (bleeding|leaking|oozing|fluxing)[.!]?$",
+      "template": "{0}は{t1}でダメージを受けなかった。",
       "route": "emit-message"
     },
     {
@@ -919,12 +919,7 @@
       "route": "popup"
     },
     {
-      "pattern": "^You pass by a (.+?)[.!]?$",
-      "template": "{0}のそばを通り過ぎた。",
-      "route": "emit-message"
-    },
-    {
-      "pattern": "^You pass by (.+?)[.!]?$",
+      "pattern": "^You pass by (?:a |an |the )?(.+?)[.!]?$",
       "template": "{0}のそばを通り過ぎた。",
       "route": "emit-message"
     },
@@ -1109,8 +1104,8 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) takes (\\d+) damage from your freezing weapon![.!]?$",
-      "template": "{0}はあなたの凍てつく武器で{1}ダメージを受けた！",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) takes (\\d+) damage from your freezing weapon![.!]?$",
+      "template": "{t0}はあなたの凍てつく武器で{1}ダメージを受けた！",
       "route": "emit-message"
     },
     {
@@ -1225,7 +1220,7 @@
     },
     {
       "pattern": "^Your mental attack does not affect (.+?)\\.$",
-      "template": "あなたの精神攻撃は{0}に効かない。",
+      "template": "あなたの精神攻撃は{t0}に効かない。",
       "route": "emit-message"
     },
     {
@@ -1289,18 +1284,18 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) ogled you lovingly after you employed your charm\\.$",
-      "template": "あなたの魅了術を受けて{0}がうっとりとこちらを見つめた。",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) ogled you lovingly after you employed your charm\\.$",
+      "template": "あなたの魅了術を受けて{t0}がうっとりとこちらを見つめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^With the help of Pax Klanq and the Barathrumites, you constructed (.+?)\\.$",
-      "template": "パクス・クランクとバラサラム派の助けを借りて{0}を建造した。",
+      "pattern": "^With the help of Pax Klanq and the Barathrumites, you constructed (?:the |a |an )?(.+?)\\.$",
+      "template": "パクス・クランクとバラサラム派の助けを借りて{t0}を建造した。",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) provided you with insightful commentary on (.+?)\\.$",
-      "template": "{0}が{1}について洞察に満ちた解説をしてくれた。",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) provided you with insightful commentary on (?:the |a |an )?(.+?)\\.$",
+      "template": "{t0}が{t1}について洞察に満ちた解説をしてくれた。",
       "route": "emit-message"
     },
     {
@@ -1410,7 +1405,7 @@
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:whizzes|whiz|flies|fly|zooms|zoom|streaks|streak|whistles|whistle|hurtles|hurtle|sails|sail|zips|zip|buzzes|buzz|passes|pass|speeds|speed|races|race|rushes|rush|whooshes|whoosh|goes|go|hisses|hiss|screams|scream) past (.+?)[.!]?$",
-      "template": "{0}が{1}のそばを通り過ぎた",
+      "template": "{t0}が{t1}のそばを通り過ぎた",
       "route": "emit-message"
     },
     {
@@ -1530,7 +1525,7 @@
     },
     {
       "pattern": "^The primordial soup (.+?) starts reacting with the (.+?)[.!]?$",
-      "template": "{0}の原初のスープが{1}と反応を始めた",
+      "template": "{t0}の原初のスープが{t1}と反応を始めた",
       "route": "emit-message"
     },
     {
@@ -1539,8 +1534,8 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) applied to (.+?)[.!]?$",
-      "template": "{0}が{1}に適用された",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) applied to (?:the |a |an )?(.+?)[.!]?$",
+      "template": "{t0}が{t1}に適用された",
       "route": "emit-message"
     },
     {
@@ -1555,7 +1550,7 @@
     },
     {
       "pattern": "^One of (?:the |a |an )?(.+?)(?:'s|s') wounds stops (.+?)[.!]?$",
-      "template": "{0}の傷のひとつの{1}が止まった",
+      "template": "{0}の傷のひとつの{t1}が止まった",
       "route": "emit-message"
     },
     {
@@ -1625,7 +1620,7 @@
     },
     {
       "pattern": "^In a glissade of light, (?:the |a |an )?(.+?)(?:'s|s') visage morphs into an image pleasing to (.+?)[.!]?$",
-      "template": "光が滑るように走り、{0}の顔貌は{1}に好ましい姿へと変化した",
+      "template": "光が滑るように走り、{t0}の顔貌は{t1}に好ましい姿へと変化した",
       "route": "emit-message"
     },
     {
@@ -1635,7 +1630,7 @@
     },
     {
       "pattern": "^Suddenly (?:the |a |an )?(.+?) (?:starts|start) flailing around and battering (?:the |a |an )?(.+?)!$",
-      "template": "突然{0}が暴れ出し、{1}を殴りつけた！",
+      "template": "突然{t0}が暴れ出し、{t1}を殴りつけた！",
       "route": "emit-message"
     },
     {
@@ -1645,7 +1640,7 @@
     },
     {
       "pattern": "^Two tubular sections of (?:the |a |an )?(.+?) flail around and batter (?:the |a |an )?(.+?)!$",
-      "template": "{0}の2本の管状の部分が暴れ、{1}を殴りつけた！",
+      "template": "{t0}の2本の管状の部分が暴れ、{t1}を殴りつけた！",
       "route": "emit-message"
     },
     {
@@ -1709,8 +1704,8 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) rind softens while (.+?) recrystallizes?\\.$",
-      "template": "{0}の外皮が軟化し、{1}が再結晶化した。",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) rind softens while (?:the |a |an )?(.+?) recrystallizes?\\.$",
+      "template": "{t0}の外皮が軟化し、{t1}が再結晶化した。",
       "route": "emit-message"
     },
     {
@@ -1734,78 +1729,33 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) noses? begins? (.+) more heavily\\.$",
-      "template": "{0}の鼻が激しく{1}し始めた。",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) noses? begins? (.+) more heavily\\.$",
+      "template": "{t0}の鼻が激しく{t1}し始めた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) noses? begins? (.+)\\.$",
-      "template": "{0}の鼻が{1}し始めた。",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) noses? begins? (.+)\\.$",
+      "template": "{t0}の鼻が{t1}し始めた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) noses? stops? (.+)\\.$",
-      "template": "{0}の鼻の{1}が止まった。",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) noses? stops? (.+)\\.$",
+      "template": "{t0}の鼻の{t1}が止まった。",
       "route": "emit-message"
     },
     {
       "pattern": "^Your noses? begins? (.+) more heavily\\.$",
-      "template": "あなたの鼻が激しく{0}し始めた。",
+      "template": "あなたの鼻が激しく{t0}し始めた。",
       "route": "emit-message"
     },
     {
       "pattern": "^Your noses? begins? (.+)\\.$",
-      "template": "あなたの鼻が{0}し始めた。",
+      "template": "あなたの鼻が{t0}し始めた。",
       "route": "emit-message"
     },
     {
       "pattern": "^Your noses? stops? (.+)\\.$",
-      "template": "あなたの鼻の{0}が止まった。",
-      "route": "emit-message"
-    },
-    {
-      "pattern": "^(.+?) fails? to penetrate (.+?)'s armor with (.+?)[!.](.*)$",
-      "template": "{0}は{2}で{1}の装甲を貫通できなかった！{3}",
-      "route": "emit-message"
-    },
-    {
-      "pattern": "^(.+?) fails? to penetrate your armor with (.+?)[!.](.*)$",
-      "template": "{0}は{1}であなたの装甲を貫通できなかった！{2}",
-      "route": "emit-message"
-    },
-    {
-      "pattern": "^(.+?) suppressive fire locks (.+) in place\\.$",
-      "template": "{0}の制圧射撃が{1}を釘付けにした。",
-      "route": "emit-message"
-    },
-    {
-      "pattern": "^(.+?) flattening fire drops (.+) to the ground!$",
-      "template": "{0}の鎮圧射撃が{1}を地面に叩き伏せた！",
-      "route": "emit-message"
-    },
-    {
-      "pattern": "^(.+?) wounds? (.+)\\.$",
-      "template": "{0}が{1}を負傷させた。",
-      "route": "emit-message"
-    },
-    {
-      "pattern": "^(.+?) disorients? (.+)\\.$",
-      "template": "{0}が{1}を混乱させた。",
-      "route": "emit-message"
-    },
-    {
-      "pattern": "^(.+?)'s shot goes wild!$",
-      "template": "{0}の射撃が逸れた！",
-      "route": "emit-message"
-    },
-    {
-      "pattern": "^Something hits (.+?) with (.+?) for (\\d+) damage[.!]?(.*)$",
-      "template": "何かが{1}で{0}に{2}ダメージを与えた。{3}",
-      "route": "emit-message"
-    },
-    {
-      "pattern": "^(.+?) hits something (.+?)[.!]?$",
-      "template": "{0}の射撃が{1}の何かに命中した。",
+      "template": "あなたの鼻の{t0}が止まった。",
       "route": "emit-message"
     },
     {
@@ -1814,53 +1764,133 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) hits you (.+?) for (\\d+) damage[.!]?(.*)$",
-      "template": "{0}があなたに{1}命中、{2}ダメージ！{3}",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits you (to the (?:north|south|east|west|northeast|northwest|southeast|southwest)) for (\\d+) damage[.!]?(.*)$",
+      "template": "{t0}があなたに{t1}に命中、{2}ダメージ！{3}",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) hits (.+?) (.+?) for (\\d+) damage[.!]?(.*)$",
-      "template": "{0}が{1}に{2}命中、{3}ダメージ！{4}",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) (to the (?:north|south|east|west|northeast|northwest|southeast|southwest)) for (\\d+) damage[.!]?(.*)$",
+      "template": "{t0}が{t1}に{t2}に命中、{3}ダメージ！{4}",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) critically hits you (.+?)[!.] \\(x(\\d+)\\)$",
-      "template": "{0}が会心であなたに{1}命中！ (x{2})",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically hits you (to the (?:north|south|east|west|northeast|northwest|southeast|southwest))[!.] \\(x(\\d+)\\)$",
+      "template": "{t0}が会心であなたに{t1}に命中！ (x{2})",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) hits you (.+?)[!.] \\(x(\\d+)\\)$",
-      "template": "{0}があなたに{1}命中！ (x{2})",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits you (to the (?:north|south|east|west|northeast|northwest|southeast|southwest))[!.] \\(x(\\d+)\\)$",
+      "template": "{t0}があなたに{t1}に命中！ (x{2})",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) critically hits (.+?) (.+?)[!.] \\(x(\\d+)\\)$",
-      "template": "{0}が会心で{1}に{2}命中！ (x{3})",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically hits (?:the |a |an )?(.+?) (to the (?:north|south|east|west|northeast|northwest|southeast|southwest))[!.] \\(x(\\d+)\\)$",
+      "template": "{t0}が会心で{t1}に{t2}に命中！ (x{3})",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) hits (.+?) (.+?)[!.] \\(x(\\d+)\\)$",
-      "template": "{0}が{1}に{2}命中！ (x{3})",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) (to the (?:north|south|east|west|northeast|northwest|southeast|southwest))[!.] \\(x(\\d+)\\)$",
+      "template": "{t0}が{t1}に{t2}に命中！ (x{3})",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) critically hits you \\(x(\\d+)\\) (.+?)!$",
-      "template": "{0}が会心であなたに{2}命中！ (x{1})",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically hits you \\(x(\\d+)\\) (to the (?:north|south|east|west|northeast|northwest|southeast|southwest))!$",
+      "template": "{t0}が会心であなたに{t2}に命中！ (x{1})",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) hits you \\(x(\\d+)\\) (.+?)!$",
-      "template": "{0}があなたに{2}命中！ (x{1})",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits you \\(x(\\d+)\\) (to the (?:north|south|east|west|northeast|northwest|southeast|southwest))!$",
+      "template": "{t0}があなたに{t2}に命中！ (x{1})",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) critically hits (.+?) \\(x(\\d+)\\) (.+?)!$",
-      "template": "{0}が会心で{1}に{3}命中！ (x{2})",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically hits (?:the |a |an )?(.+?) \\(x(\\d+)\\) (to the (?:north|south|east|west|northeast|northwest|southeast|southwest))!$",
+      "template": "{t0}が会心で{t1}に{t3}に命中！ (x{2})",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) hits (.+?) \\(x(\\d+)\\) (.+?)!$",
-      "template": "{0}が{1}に{3}命中！ (x{2})",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) \\(x(\\d+)\\) (to the (?:north|south|east|west|northeast|northwest|southeast|southwest))!$",
+      "template": "{t0}が{t1}に{t3}に命中！ (x{2})",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits you (.+?) for (\\d+) damage[.!]?(.*)$",
+      "template": "{t0}があなたに{1}命中、{2}ダメージ！{3}",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) (.+?) for (\\d+) damage[.!]?(.*)$",
+      "template": "{t0}が{t1}に{2}命中、{3}ダメージ！{4}",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically hits you (.+?)[!.] \\(x(\\d+)\\)$",
+      "template": "{t0}が会心であなたに{1}命中！ (x{2})",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits you (.+?)[!.] \\(x(\\d+)\\)$",
+      "template": "{t0}があなたに{1}命中！ (x{2})",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically hits (?:the |a |an )?(.+?) (.+?)[!.] \\(x(\\d+)\\)$",
+      "template": "{t0}が会心で{t1}に{2}命中！ (x{3})",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) (.+?)[!.] \\(x(\\d+)\\)$",
+      "template": "{t0}が{t1}に{2}命中！ (x{3})",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically hits you \\(x(\\d+)\\) (.+?)!$",
+      "template": "{t0}が会心であなたに{2}命中！ (x{1})",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits you \\(x(\\d+)\\) (.+?)!$",
+      "template": "{t0}があなたに{2}命中！ (x{1})",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically hits (?:the |a |an )?(.+?) \\(x(\\d+)\\) (.+?)!$",
+      "template": "{t0}が会心で{t1}に{3}命中！ (x{2})",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) \\(x(\\d+)\\) (.+?)!$",
+      "template": "{t0}が{t1}に{3}命中！ (x{2})",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically hits you (to the (?:north|south|east|west|northeast|northwest|southeast|southwest)), but your mental attack has no effect[.!]?$",
+      "template": "{t0}が会心であなたに{t1}に命中したが、精神攻撃は効果がない",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits you (to the (?:north|south|east|west|northeast|northwest|southeast|southwest)), but your mental attack has no effect[.!]?$",
+      "template": "{t0}があなたに{t1}に命中したが、精神攻撃は効果がない",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically hits (?:the |a |an )?(.+?) (to the (?:north|south|east|west|northeast|northwest|southeast|southwest)), but (?:his|her|its|their|your) mental attack has no effect[.!]?$",
+      "template": "{t0}が会心で{t1}に{t2}に命中したが、精神攻撃は効果がない",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) (to the (?:north|south|east|west|northeast|northwest|southeast|southwest)), but (?:his|her|its|their|your) mental attack has no effect[.!]?$",
+      "template": "{t0}が{t1}に{t2}に命中したが、精神攻撃は効果がない",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically hits you (to the (?:north|south|east|west|northeast|northwest|southeast|southwest))\\.$",
+      "template": "{t0}が会心であなたに{t1}に命中した。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits you (to the (?:north|south|east|west|northeast|northwest|southeast|southwest))\\.$",
+      "template": "{t0}があなたに{t1}に命中した。",
       "route": "emit-message"
     },
     {
@@ -1874,18 +1904,18 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) critically hits (.+?) (to the .+?)\\.$",
-      "template": "{0}が会心で{1}に命中した {2}。",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) critically hits (?:the |a |an )?(.+?) (to the (?:north|south|east|west|northeast|northwest|southeast|southwest))\\.$",
+      "template": "{t0}が会心で{t1}に{t2}に命中した。",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) hits (.+?) (to the .+?)\\.$",
-      "template": "{0}が{1}に命中した {2}。",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits (?:the |a |an )?(.+?) (to the (?:north|south|east|west|northeast|northwest|southeast|southwest))\\.$",
+      "template": "{t0}が{t1}に{t2}に命中した。",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+?) noses? begins? to bleed\\.$",
-      "template": "{0}の鼻が出血し始めた。",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) noses? begins? to bleed\\.$",
+      "template": "{t0}の鼻が出血し始めた。",
       "route": "emit-message"
     },
     {

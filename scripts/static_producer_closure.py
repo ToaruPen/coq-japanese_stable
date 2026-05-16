@@ -13028,11 +13028,11 @@ COVERED_OWNER_FAMILIES: Final = (
             EvidenceFile(
                 "Mods/QudJP/Assemblies/QudJP.Tests/L2/PhysicsEnterCellPassByTranslationPatchTests.cs",
                 (
-                    "AggregateMessageQueuePatch_TranslatesEnterCellPassByUsingRepositoryPattern_WhenPatched",
+                    "AggregateMessageQueuePatch_TranslatesArticleVariantsUsingRepositoryPattern_WhenPatched",
                     "AggregateMessageQueuePatch_PreservesPrefixOrder_WhenPatched",
                     "AggregateMessageQueuePatch_PassesThroughEmptyAndDirectMarkedMessages_WhenPatched",
                     "Prefix_PassesThroughEnglishWhenPatternDoesNotMatch_WhenPatched",
-                    "DummyPhysicsEnterCellTarget",
+                    "DummyMessageQueue",
                     "string.Empty",
                     "MessageFrameTranslator.MarkDirectTranslation",
                     "You pass by ",
@@ -13056,8 +13056,7 @@ COVERED_OWNER_FAMILIES: Final = (
             EvidenceFile(
                 "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
                 (
-                    "^You pass by a (.+?)[.!]?$",
-                    "^You pass by (.+?)[.!]?$",
+                    "^You pass by (?:a |an |the )?(.+?)[.!]?$",
                 ),
             ),
         ),
@@ -13145,7 +13144,7 @@ COVERED_OWNER_FAMILIES: Final = (
                 "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
                 (
                     "^You miss with your (.+?)[.!] ",
-                    "^(?:The )?(.+) misses you[.!]?$",
+                    "^(?:The |the |[Aa]n? )?(.+) misses you[.!]?$",
                     "^Your mental attack does not affect (.+?)\\\\.$",
                     "^You fail to deal damage with your attack! ",
                     "^You don't penetrate (?:the )?(.+?)(?:'s|s'|の) armor[.!]?$",

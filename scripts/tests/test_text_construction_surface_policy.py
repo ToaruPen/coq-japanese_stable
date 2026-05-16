@@ -208,6 +208,54 @@ def test_policy_applies_reviewed_closure_overlay_for_high_risk_combat_lane() -> 
     assert action_required["closure_status"] == "action_required"
 
 
+def test_policy_separates_reviewed_issue711_work_without_overclaiming_closure() -> None:
+    """Reviewed issue-711 families distinguish closed, partial, runtime, and likely-gap work."""
+    missile_hit_family_id = (
+        "XRL.World.Parts/MissileWeapon.cs::MissileWeapon.MissileHit("
+        "GameObject,GameObject,GameObject,GameObject,Projectile,GameObject,GameObject,"
+        "MissilePath,Cell,FireType,int,int,int,bool,GameObject,bool,ref bool,ref bool,ref bool,bool,bool)"
+    )
+    inventory_family_id = "XRL.World.Parts/Inventory.cs::Inventory.FireEvent(Event)"
+    tombstone_family_id = "XRL.World.Parts/Tombstone.cs::Tombstone.GenerateTombstone()"
+    mod_gigantic_family_id = "XRL.World.Parts/ModGigantic.cs::ModGigantic.GetDescription(int,GameObject)"
+
+    inventory = _inventory(
+        [
+            _family(
+                missile_hit_family_id,
+                "XRL.World.Parts/MissileWeapon.cs",
+                "MissileHit",
+                {"Does": 1, "EmitMessage": 1},
+            ),
+            _family(
+                inventory_family_id,
+                "XRL.World.Parts/Inventory.cs",
+                "FireEvent",
+                {"Popup": 1, "MessageFrame": 1},
+            ),
+            _family(
+                tombstone_family_id,
+                "XRL.World.Parts/Tombstone.cs",
+                "GenerateTombstone",
+                {"HistoricStringExpander": 1},
+            ),
+            _family(
+                mod_gigantic_family_id,
+                "XRL.World.Parts/ModGigantic.cs",
+                "GetDescription",
+                {"EffectDescriptionReturn": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    assert entries[missile_hit_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[inventory_family_id]["closure_status"] == "partial_coverage"
+    assert entries[tombstone_family_id]["closure_status"] == "runtime_required"
+    assert entries[mod_gigantic_family_id]["closure_status"] == "likely_true_gap"
+
+
 def test_lane_summary_payload_reports_counts_and_top_families() -> None:
     """Lane output must summarize counts and representative high-risk families."""
     inventory = _inventory(

@@ -257,7 +257,7 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.SetFactionRank),
         "You are promoted to the Warden of the Barathrumites.",
-        "あなたはthe BarathrumitesのWardenに昇進した。",
+        "あなたはBarathrumitesのWardenに昇進した。",
         "ReputationRankPromotion",
         PopupMethod.Show)]
     [TestCase(
