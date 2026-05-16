@@ -3054,15 +3054,24 @@ public sealed class CombatAndLogMessageQueuePatchTests
             "{{Y|The bio ammo rack}}は疲弊した！");
     }
 
-    [TestCase("The bio ammo rack is exhausted!", "\u0001The bio ammo rackは疲弊した！")]
-    [TestCase("The bio ammo rack hums.", "The bio ammo rack hums.")]
-    [TestCase("", "")]
-    [TestCase("\u0001The bio ammo rack is exhausted!", "\u0001The bio ammo rack is exhausted!")]
+    [TestCase(typeof(DummyCheckLoadAmmoEvent), "The bio ammo rack is exhausted!", "\u0001The bio ammo rackは疲弊した！")]
+    [TestCase(typeof(DummyCheckLoadAmmoEvent), "The bio ammo rack hums.", "The bio ammo rack hums.")]
+    [TestCase(typeof(DummyCheckLoadAmmoEvent), "", "")]
+    [TestCase(typeof(DummyCheckLoadAmmoEvent), "\u0001The bio ammo rack is exhausted!", "\u0001The bio ammo rack is exhausted!")]
+    [TestCase(typeof(DummyLoadAmmoEvent), "The bio ammo rack is exhausted!", "\u0001The bio ammo rackは疲弊した！")]
+    [TestCase(typeof(DummyLoadAmmoEvent), "The bio ammo rack hums.", "The bio ammo rack hums.")]
+    [TestCase(typeof(DummyLoadAmmoEvent), "", "")]
+    [TestCase(typeof(DummyLoadAmmoEvent), "\u0001The bio ammo rack is exhausted!", "\u0001The bio ammo rack is exhausted!")]
+    [TestCase(typeof(DummyGetNotReadyToFireMessageEvent), "The bio ammo rack is exhausted!", "\u0001The bio ammo rackは疲弊した！")]
+    [TestCase(typeof(DummyGetNotReadyToFireMessageEvent), "The bio ammo rack hums.", "The bio ammo rack hums.")]
+    [TestCase(typeof(DummyGetNotReadyToFireMessageEvent), "", "")]
+    [TestCase(typeof(DummyGetNotReadyToFireMessageEvent), "\u0001The bio ammo rack is exhausted!", "\u0001The bio ammo rack is exhausted!")]
     public void LiquidLoader_HandlesBioAmmoEventMessageEdgeCases_WhenOwnerPatched(
+        Type eventType,
         string source,
         string expectedFieldValue)
     {
-        AssertLiquidLoaderEventMessage(typeof(DummyCheckLoadAmmoEvent), source, expectedFieldValue, expectedIsMarked: false);
+        AssertLiquidLoaderEventMessage(eventType, source, expectedFieldValue, expectedIsMarked: false);
     }
 
     [TestCase("You have no {{B|water}} to supply {{Y|the host}} with.", "{{Y|the host}}に供給する{{B|water}}がない。")]
