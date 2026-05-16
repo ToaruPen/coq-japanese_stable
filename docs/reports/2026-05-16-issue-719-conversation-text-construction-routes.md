@@ -21,7 +21,7 @@ Commands:
 
 ```bash
 just static-producer-owner-queue 10
-just text-construction-surface-queue /Users/toarupen/dev/coq-decompiled_stable /tmp/issue719-text-construction-inventory-final.json 10
+just text-construction-surface-queue "$HOME/dev/coq-decompiled_stable" /tmp/issue719-text-construction-inventory-final.json 10
 uv run python scripts/text_construction_surface_policy.py \
   --inventory /tmp/issue719-text-construction-inventory-final.json \
   --format lanes-json \

@@ -203,11 +203,11 @@ public static class ConversationDisplayTextPatch
         result = ReplaceDirection(result, "to the south", "南側");
         result = ReplaceDirection(result, "to the east", "東側");
         result = ReplaceDirection(result, "to the west", "西側");
+        result = ReplaceDirection(result, "somewhere", "どこか");
         result = ReplaceDirection(result, "nearby", "近く");
         result = ReplaceDirection(result, "above", "上方");
         result = ReplaceDirection(result, "below", "下方");
         result = ReplaceDirection(result, "here", "ここ");
-        result = ReplaceDirection(result, "somewhere", "どこか");
         if (!string.Equals(result, source, StringComparison.Ordinal))
         {
             result = ReplaceDirection(result, ", or ", "、または ");

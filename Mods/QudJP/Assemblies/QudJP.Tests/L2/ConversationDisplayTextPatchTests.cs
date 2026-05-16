@@ -408,6 +408,9 @@ public sealed class ConversationDisplayTextPatchTests
     [TestCase(
         "{{y|Tam}}, to the west を探してみてくれ。",
         "{{y|Tam}}, 西側 を探してみてくれ。")]
+    [TestCase(
+        "{{y|Tam}}, somewhere を探してみてくれ。",
+        "{{y|Tam}}, どこか を探してみてくれ。")]
     public void Postfix_TranslatesQuestSignpostDirections_ForAllLocalizedTemplates(
         string source,
         string expected)
@@ -433,6 +436,14 @@ public sealed class ConversationDisplayTextPatchTests
         WriteDictionary(("Long Blades", "長剣"));
 
         AssertPatchedText("I seek Long Blades.", "長剣を求めている。");
+    }
+
+    [Test]
+    public void Postfix_TranslatesInitiatorySkillPrompt_WithEnglishFallback_WhenPatched()
+    {
+        WriteDictionary(("Long Blades", "長剣"));
+
+        AssertPatchedText("I seek Chronomancy.", "Chronomancyを求めている。");
     }
 
     [Test]
