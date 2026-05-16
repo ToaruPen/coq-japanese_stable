@@ -816,7 +816,7 @@
         },
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 43,
+          "entry_index": 72,
           "text": "監視官"
         }
       ]
@@ -1737,7 +1737,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 264,
+          "entry_index": 293,
           "text": "{{G|酸の}}"
         },
         {
@@ -1760,7 +1760,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 263,
+          "entry_index": 292,
           "text": "{{G|酸性の}}"
         },
         {
@@ -1787,7 +1787,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 314,
+          "entry_index": 343,
           "text": "{{g|藻質の}}"
         },
         {
@@ -1832,7 +1832,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 332,
+          "entry_index": 361,
           "text": "{{r|血まみれの}}"
         },
         {
@@ -1872,6 +1872,34 @@
     {
       "scope": "cross_file",
       "path": "Dictionaries",
+      "key": "brass",
+      "entry_count": 3,
+      "texts": [
+        "真鍮",
+        "黄銅",
+        "黄銅"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-atomic.ja.json",
+          "entry_index": 23,
+          "text": "真鍮"
+        },
+        {
+          "path": "Dictionaries/ui-zone-display.ja.json",
+          "entry_index": 55,
+          "text": "黄銅"
+        },
+        {
+          "path": "Dictionaries/world-gospels.ja.json",
+          "entry_index": 468,
+          "text": "黄銅"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
       "key": "cider",
       "entry_count": 2,
       "texts": [
@@ -1881,7 +1909,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 303,
+          "entry_index": 332,
           "text": "{{cider|サイダーの}}"
         },
         {
@@ -1925,7 +1953,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 286,
+          "entry_index": 315,
           "text": "{{Y|希釈された}}"
         },
         {
@@ -1947,7 +1975,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 206,
+          "entry_index": 235,
           "text": "{{fiery|燃え盛る}}"
         },
         {
@@ -1969,7 +1997,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 324,
+          "entry_index": 353,
           "text": "{{neutronic|中性子フラックスの}}"
         },
         {
@@ -1991,7 +2019,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 305,
+          "entry_index": 334,
           "text": "{{cider|芳香の}}"
         },
         {
@@ -2014,7 +2042,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 221,
+          "entry_index": 250,
           "text": "{{freezing|凍結した}}"
         },
         {
@@ -2041,7 +2069,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 257,
+          "entry_index": 286,
           "text": "{{freezing|凍結した}}"
         },
         {
@@ -2085,7 +2113,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 267,
+          "entry_index": 296,
           "text": "{{G|どろどろの}}"
         },
         {
@@ -2107,7 +2135,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 266,
+          "entry_index": 295,
           "text": "{{G|どろりとした}}"
         },
         {
@@ -2129,7 +2157,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 308,
+          "entry_index": 337,
           "text": "{{cloning|均質化した}}"
         },
         {
@@ -2151,7 +2179,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 338,
+          "entry_index": 367,
           "text": "{{w|はちみつの}}"
         },
         {
@@ -2173,7 +2201,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 208,
+          "entry_index": 237,
           "text": "{{icy|氷の}}"
         },
         {
@@ -2217,7 +2245,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 113,
+          "entry_index": 142,
           "text": "液まみれの"
         },
         {
@@ -2239,7 +2267,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 39,
+          "entry_index": 68,
           "text": "迷子の"
         },
         {
@@ -2305,7 +2333,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 261,
+          "entry_index": 290,
           "text": "{{C|発光する}}"
         },
         {
@@ -2327,7 +2355,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 319,
+          "entry_index": 348,
           "text": "{{lava|マグマ質の}}"
         },
         {
@@ -2393,7 +2421,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 273,
+          "entry_index": 302,
           "text": "{{K|油の}}"
         },
         {
@@ -2416,7 +2444,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 272,
+          "entry_index": 301,
           "text": "{{K|油まみれの}}"
         },
         {
@@ -2443,7 +2471,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 275,
+          "entry_index": 304,
           "text": "{{K|軟泥の}}"
         },
         {
@@ -2465,7 +2493,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 277,
+          "entry_index": 306,
           "text": "{{K|滲み出ている}}"
         },
         {
@@ -2487,7 +2515,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 331,
+          "entry_index": 360,
           "text": "{{radiant|輝く}}"
         },
         {
@@ -2554,7 +2582,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 293,
+          "entry_index": 322,
           "text": "{{Y|塩の}}"
         },
         {
@@ -2582,7 +2610,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 291,
+          "entry_index": 320,
           "text": "{{Y|塩気のある}}"
         },
         {
@@ -2609,7 +2637,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 246,
+          "entry_index": 275,
           "text": "{{scaled|鱗状の}}"
         },
         {
@@ -2659,7 +2687,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 315,
+          "entry_index": 344,
           "text": "{{g|スライムの}}"
         },
         {
@@ -2682,7 +2710,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 335,
+          "entry_index": 364,
           "text": "{{slimy|粘液質の}}"
         },
         {
@@ -2709,7 +2737,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 340,
+          "entry_index": 369,
           "text": "{{w|汚泥の}}"
         },
         {
@@ -2803,7 +2831,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 278,
+          "entry_index": 307,
           "text": "香辛料入りの"
         },
         {
@@ -2853,7 +2881,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 114,
+          "entry_index": 143,
           "text": "染みだらけ"
         },
         {
@@ -2875,7 +2903,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 346,
+          "entry_index": 375,
           "text": "{{w|粘ついた}}"
         },
         {
@@ -2897,7 +2925,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 281,
+          "entry_index": 310,
           "text": "{{K|タールの}}"
         },
         {
@@ -2920,7 +2948,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 280,
+          "entry_index": 309,
           "text": "{{K|タール質の}}"
         },
         {
@@ -2949,7 +2977,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 258,
+          "entry_index": 287,
           "text": "{{B|水の}}"
         },
         {
@@ -2986,7 +3014,7 @@
         },
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 259,
+          "entry_index": 288,
           "text": "{{B|濡れた}}"
         }
       ]
@@ -3003,7 +3031,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 321,
+          "entry_index": 350,
           "text": "{{m|ワインの}}"
         },
         {
@@ -3047,7 +3075,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 115,
+          "entry_index": 144,
           "text": "{{B|水の}}"
         },
         {
@@ -3069,7 +3097,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 116,
+          "entry_index": 145,
           "text": "{{B|濡れた}}"
         },
         {
@@ -3091,7 +3119,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 118,
+          "entry_index": 147,
           "text": "{{C|発光する}}"
         },
         {
@@ -3114,7 +3142,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 120,
+          "entry_index": 149,
           "text": "{{G|酸性の}}"
         },
         {
@@ -3141,7 +3169,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 121,
+          "entry_index": 150,
           "text": "{{G|酸の}}"
         },
         {
@@ -3207,7 +3235,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 127,
+          "entry_index": 156,
           "text": "{{K|インクの}}"
         },
         {
@@ -3229,7 +3257,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 129,
+          "entry_index": 158,
           "text": "{{K|油まみれの}}"
         },
         {
@@ -3251,7 +3279,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 130,
+          "entry_index": 159,
           "text": "{{K|油の}}"
         },
         {
@@ -3273,7 +3301,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 132,
+          "entry_index": 161,
           "text": "{{K|軟泥の}}"
         },
         {
@@ -3295,7 +3323,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 137,
+          "entry_index": 166,
           "text": "{{K|タールの}}"
         },
         {
@@ -3317,7 +3345,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 140,
+          "entry_index": 169,
           "text": "{{W|樹液の}}"
         },
         {
@@ -3339,7 +3367,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 142,
+          "entry_index": 171,
           "text": "{{Y|希釈された}}"
         },
         {
@@ -3361,7 +3389,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 144,
+          "entry_index": 173,
           "text": "{{Y|ゲル状の}}"
         },
         {
@@ -3383,7 +3411,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 73,
+          "entry_index": 102,
           "text": "{{Y|伝説{{W|的}}}}"
         },
         {
@@ -3405,7 +3433,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 77,
+          "entry_index": 106,
           "text": "{{Y|名工品}}"
         },
         {
@@ -3427,7 +3455,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 148,
+          "entry_index": 177,
           "text": "{{Y|塩の}}"
         },
         {
@@ -3449,7 +3477,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 154,
+          "entry_index": 183,
           "text": "{{Y|蝋の}}"
         },
         {
@@ -3471,7 +3499,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 156,
+          "entry_index": 185,
           "text": "{{brainbrine|脳髄汁の}}"
         },
         {
@@ -3493,7 +3521,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 158,
+          "entry_index": 187,
           "text": "{{cider|サイダーの}}"
         },
         {
@@ -3515,7 +3543,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 160,
+          "entry_index": 189,
           "text": "{{cider|芳香の}}"
         },
         {
@@ -3537,7 +3565,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 161,
+          "entry_index": 190,
           "text": "{{cloning|クローン薬液の}}"
         },
         {
@@ -3559,7 +3587,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 163,
+          "entry_index": 192,
           "text": "{{cloning|均質化した}}"
         },
         {
@@ -3581,7 +3609,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 164,
+          "entry_index": 193,
           "text": "{{c|どろどろの}}"
         },
         {
@@ -3603,7 +3631,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 167,
+          "entry_index": 196,
           "text": "{{g|藻まみれの}}"
         },
         {
@@ -3625,7 +3653,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 169,
+          "entry_index": 198,
           "text": "{{g|藻質の}}"
         },
         {
@@ -3647,7 +3675,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 170,
+          "entry_index": 199,
           "text": "{{g|スライムの}}"
         },
         {
@@ -3669,7 +3697,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 172,
+          "entry_index": 201,
           "text": "{{lava|溶岩まみれの}}"
         },
         {
@@ -3691,7 +3719,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 174,
+          "entry_index": 203,
           "text": "{{lava|マグマ質の}}"
         },
         {
@@ -3713,7 +3741,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 175,
+          "entry_index": 204,
           "text": "{{m|芳醇な}}"
         },
         {
@@ -3735,7 +3763,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 176,
+          "entry_index": 205,
           "text": "{{m|ワインの}}"
         },
         {
@@ -3757,7 +3785,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 178,
+          "entry_index": 207,
           "text": "{{nervous|神経質な}}"
         },
         {
@@ -3779,7 +3807,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 179,
+          "entry_index": 208,
           "text": "{{neutronic|中性子フラックスの}}"
         },
         {
@@ -3801,7 +3829,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 181,
+          "entry_index": 210,
           "text": "{{neutronic|中性化した}}"
         },
         {
@@ -3823,7 +3851,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 182,
+          "entry_index": 211,
           "text": "{{neutronic|中性子質の}}"
         },
         {
@@ -3845,7 +3873,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 183,
+          "entry_index": 212,
           "text": "{{putrid|腐敗液の}}"
         },
         {
@@ -3867,7 +3895,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 185,
+          "entry_index": 214,
           "text": "{{putrid|腐敗した}}"
         },
         {
@@ -3889,7 +3917,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 190,
+          "entry_index": 219,
           "text": "{{slimy|粘液質の}}"
         },
         {
@@ -3911,7 +3939,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 191,
+          "entry_index": 220,
           "text": "{{sunslag|サンスラグの}}"
         },
         {
@@ -3933,7 +3961,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 193,
+          "entry_index": 222,
           "text": "{{w|はちみつの}}"
         },
         {
@@ -3955,7 +3983,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 195,
+          "entry_index": 224,
           "text": "{{w|汚泥の}}"
         },
         {
