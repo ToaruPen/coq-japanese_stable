@@ -3346,6 +3346,7 @@ def _physics_process_take_damage_owner_callsites() -> tuple[CoveredOwnerCallsite
                     (
                         "typeof(PhysicsProcessTakeDamageTranslationPatch)",
                         "XRL.World.Parts.Physics",
+                        "System.Boolean",
                         "XRL.World.Event",
                     ),
                 ),

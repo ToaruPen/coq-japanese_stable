@@ -269,6 +269,11 @@ public static class PhysicsProcessTakeDamageTranslationPatch
 
     private static string TranslatePunctuation(string punct)
     {
+        if (string.IsNullOrEmpty(punct))
+        {
+            return string.Empty;
+        }
+
         return punct == "!" ? "！" : "。";
     }
 
