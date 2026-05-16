@@ -327,6 +327,10 @@ public sealed class ConversationDisplayTextPatchTests
     [TestCase("生きて飲め。 [End]", "生きて飲め。")]
     [TestCase("取引しよう。 [begin trade]", "取引しよう。")]
     [TestCase("お前の渇きは私の渇き、私の水はお前のものだ。 [begin water ritual; 1 dram of water]", "お前の渇きは私の渇き、私の水はお前のものだ。")]
+    [TestCase("お前の渇きは私の渇き、私の水はお前のものだ。 {{K|[begin water ritual; {{C|1}} dram of water]}}", "お前の渇きは私の渇き、私の水はお前のものだ。")]
+    [TestCase("{{G|お前の渇きは私の渇き、私の水はお前のものだ。}} {{g|[begin water ritual; {{C|1}} dram of water]}}", "{{G|お前の渇きは私の渇き、私の水はお前のものだ。}}")]
+    [TestCase("{{G|取引しよう。}} {{g|[begin trade]}}", "{{G|取引しよう。}}")]
+    [TestCase("取引しよう。\n{{g|[begin trade]}}\n", "取引しよう。")]
     public void Postfix_StripsTrailingActionMarkers_WhenPatched(string source, string expected)
     {
         WriteDictionary(("Dummy", "ダミー"));
@@ -342,6 +346,140 @@ public sealed class ConversationDisplayTextPatchTests
 
             var element = new DummyConversationElement(source);
             var result = element.GetDisplayText(withColor: false);
+            Assert.That(result, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_TranslatesColoredChoiceBody_AfterStrippingColoredActionMarker()
+    {
+        WriteDictionary(("Live and drink.", "生きて飲め。"));
+
+        AssertPatchedText("{{G|Live and drink.}} {{g|[begin trade]}}", "{{G|生きて飲め。}}");
+    }
+
+    [Test]
+    public void Postfix_TranslatesWaterRitualReputationSummary_WhenPatched()
+    {
+        WriteDictionary(("Dummy", "ダミー"));
+
+        AssertPatchedText(
+            "生きて飲め。\n\n{{C|-----}}\n{{y|Your reputation with {{C|Issachari}} is {{C|100}}.\nTam can award an additional {{C|50}} reputation.}}",
+            "生きて飲め。\n\n{{C|-----}}\n{{y|{{C|Issachari}}との評判は{{C|100}}。\nTamから追加で{{C|50}}の評判を得られる。}}");
+    }
+
+    [TestCase("まだ！ soon に戻って。", "まだ！ もうすぐ に戻って。")]
+    [TestCase("まだ！ in one day に戻って。", "まだ！ 1日後 に戻って。")]
+    [TestCase("まだ！ in three days に戻って。", "まだ！ 3日後 に戻って。")]
+    public void Postfix_TranslatesMoundCountdown_WhenPatched(string source, string expected)
+    {
+        WriteDictionary(("Dummy", "ダミー"));
+
+        AssertPatchedText(source, expected);
+    }
+
+    [Test]
+    public void Postfix_TranslatesQuestSignpostDirections_WhenPatched()
+    {
+        WriteDictionary(("Dummy", "ダミー"));
+
+        AssertPatchedText(
+            "{{y|Tam}}, to the northeast, or {{y|Ara}} also to the south に会いに行くといい。",
+            "{{y|Tam}}, 北東側、または {{y|Ara}} も南側 に会いに行くといい。");
+    }
+
+    [Test]
+    public void Postfix_TranslatesRepeatedQuestSignpostDiagonalDirections_WhenPatched()
+    {
+        WriteDictionary(("Dummy", "ダミー"));
+
+        AssertPatchedText(
+            "{{y|Tam}}, to the northeast, or {{y|Ara}} also to the northeast に会いに行くといい。",
+            "{{y|Tam}}, 北東側、または {{y|Ara}} も北東側 に会いに行くといい。");
+    }
+
+    [TestCase(
+        "{{y|Tam}}, to the north と話してみてくれ。",
+        "{{y|Tam}}, 北側 と話してみてくれ。")]
+    [TestCase(
+        "{{y|Tam}}, to the west を探してみてくれ。",
+        "{{y|Tam}}, 西側 を探してみてくれ。")]
+    [TestCase(
+        "{{y|Tam}}, somewhere を探してみてくれ。",
+        "{{y|Tam}}, どこか を探してみてくれ。")]
+    public void Postfix_TranslatesQuestSignpostDirections_ForAllLocalizedTemplates(
+        string source,
+        string expected)
+    {
+        WriteDictionary(("Dummy", "ダミー"));
+
+        AssertPatchedText(source, expected);
+    }
+
+    [Test]
+    public void Postfix_DoesNotTranslateDirectionFragmentsOutsideQuestSignpostText()
+    {
+        WriteDictionary(("Dummy", "ダミー"));
+
+        AssertPatchedText(
+            "{{y|Tam}} says you can rest here or travel to the north.",
+            "{{y|Tam}} says you can rest here or travel to the north.");
+    }
+
+    [Test]
+    public void Postfix_TranslatesInitiatorySkillPrompt_WhenPatched()
+    {
+        WriteDictionary(("Long Blades", "長剣"));
+
+        AssertPatchedText("I seek Long Blades.", "長剣を求めている。");
+    }
+
+    [Test]
+    public void Postfix_TranslatesInitiatorySkillPrompt_WithEnglishFallback_WhenPatched()
+    {
+        WriteDictionary(("Long Blades", "長剣"));
+
+        AssertPatchedText("I seek Chronomancy.", "Chronomancyを求めている。");
+    }
+
+    [Test]
+    public void Postfix_TranslatesWaterRitualTinkeringRecipeModLabel_WhenPatched()
+    {
+        WriteDictionary(("Dummy", "ダミー"));
+
+        AssertPatchedText(
+            "[{{W|Item mod}}] - {{C|serrated}}について学ぶ。",
+            "[{{W|アイテム改造}}] - {{C|serrated}}について学ぶ。");
+    }
+
+    [Test]
+    public void Postfix_TranslatesHermitOathFallback_WhenPatched()
+    {
+        WriteDictionary(("Dummy", "ダミー"));
+
+        AssertPatchedText(
+            "hermit、もう二度と邪魔しないと誓う。",
+            "隠者、もう二度と邪魔しないと誓う。");
+    }
+
+    private static void AssertPatchedText(string source, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyConversationElement), nameof(DummyConversationElement.GetDisplayText)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(ConversationDisplayTextPatch), nameof(ConversationDisplayTextPatch.Postfix))));
+
+            var element = new DummyConversationElement(source);
+            var result = element.GetDisplayText(withColor: false);
+
             Assert.That(result, Is.EqualTo(expected));
         }
         finally

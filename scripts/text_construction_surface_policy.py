@@ -25,6 +25,7 @@ ClosureStatus = Literal[
 ClosureLane = Literal[
     "activated_ability_names",
     "combat_message_frame_does",
+    "conversation_routes",
     "description_effect_detail",
     "display_name_composition",
     "history_generated_text",
@@ -44,6 +45,9 @@ class ClosureOverlayEntry(TypedDict):
 PLAYER_VISIBLE_API_SURFACES: Final = {
     "ActivatedAbility",
     "AddPlayerMessage",
+    "ConversationChoiceTag",
+    "ConversationTextAppend",
+    "ConversationTextReplace",
     "Description",
     "DescriptionReturn",
     "DisplayNameReturn",
@@ -121,20 +125,111 @@ CLASSIFICATION_ORDER: Final = {
 VALUABLE_CLASSIFICATIONS: Final = frozenset({"player_visible_api", "player_visible_owner_candidate"})
 LANE_ORDER: Final = {
     "combat_message_frame_does": 0,
-    "history_generated_text": 1,
-    "screen_ui_direct_text": 2,
-    "display_name_composition": 3,
-    "description_effect_detail": 4,
-    "journal_quest_routes": 5,
-    "activated_ability_names": 6,
-    "producer_message_popup": 7,
-    "other_owner_candidate": 8,
+    "conversation_routes": 1,
+    "history_generated_text": 2,
+    "screen_ui_direct_text": 3,
+    "display_name_composition": 4,
+    "description_effect_detail": 5,
+    "journal_quest_routes": 6,
+    "activated_ability_names": 7,
+    "producer_message_popup": 8,
+    "other_owner_candidate": 9,
 }
 COMBAT_MELEE_ATTACK_FAMILY_ID: Final = (
     "XRL.World.Parts/Combat.cs::Combat.MeleeAttackWithWeaponInternal("
     "GameObject,GameObject,GameObject,BodyPart,string,int,int,int,int,int,bool,bool)"
 )
+CONVERSATION_CHOICE_TAG_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/ConversationDisplayTextPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationDisplayTextPatchTests.cs",
+    "docs/reports/2026-05-16-issue-719-conversation-text-construction-routes.md",
+]
+CONVERSATION_BODY_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/ConversationDisplayTextPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationDisplayTextPatchTests.cs",
+    "docs/reports/2026-05-16-issue-719-conversation-text-construction-routes.md",
+]
+QUEST_SIGNPOST_PARTIAL_EVIDENCE: Final = "QuestSignpost directions translated; names use data routes"
+TINKERING_RECIPE_PARTIAL_EVIDENCE: Final = "Tinkering recipe label translated; names use data routes"
+HERMIT_OATH_PARTIAL_EVIDENCE: Final = "Default hermit address translated; custom addresses use data routes"
+LEARN_SKILL_PARTIAL_EVIDENCE: Final = "Initiatory prompt translated; skill names use dictionary routes"
 TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
+    "XRL.World.Conversations.Parts/WaterRitual.cs::WaterRitual.HandleEvent(DisplayTextEvent)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": CONVERSATION_BODY_EVIDENCE,
+    },
+    "XRL.World.Conversations.Parts/MoundContext.cs::MoundContext.HandleEvent(PrepareTextEvent)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": CONVERSATION_BODY_EVIDENCE,
+    },
+    "XRL.World.Conversations.Parts/QuestSignpost.cs::QuestSignpost.HandleEvent(PrepareTextEvent)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            *CONVERSATION_BODY_EVIDENCE,
+            QUEST_SIGNPOST_PARTIAL_EVIDENCE,
+        ],
+    },
+    (
+        "XRL.World.Conversations.Parts/WaterRitualTinkeringRecipe.cs::"
+        "WaterRitualTinkeringRecipe.HandleEvent(PrepareTextEvent)"
+    ): {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            *CONVERSATION_BODY_EVIDENCE,
+            TINKERING_RECIPE_PARTIAL_EVIDENCE,
+        ],
+    },
+    (
+        "XRL.World.Conversations.Parts/WaterRitualHermitOath.cs::"
+        "WaterRitualHermitOath.HandleEvent(PrepareTextEvent)"
+    ): {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            *CONVERSATION_BODY_EVIDENCE,
+            HERMIT_OATH_PARTIAL_EVIDENCE,
+        ],
+    },
+    (
+        "XRL.World.Conversations.Parts/WaterRitualLearnSkill.cs::"
+        "WaterRitualLearnSkill.HandleEvent(PrepareTextEvent)"
+    ): {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            *CONVERSATION_BODY_EVIDENCE,
+            LEARN_SKILL_PARTIAL_EVIDENCE,
+        ],
+    },
+    "XRL.World.Conversations.Parts/KithAndKinExclusion.cs::KithAndKinExclusion.HandleEvent(PrepareTextEvent)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "docs/reports/2026-05-16-issue-719-conversation-text-construction-routes.md",
+            "thief name replacement is a Kith-and-Kin game-state/display-name route, not a static producer route",
+        ],
+    },
+    "XRL.World.Conversations.Parts/KithAndKinMotive.cs::KithAndKinMotive.HandleEvent(PrepareTextEvent)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            "docs/reports/2026-05-16-issue-719-conversation-text-construction-routes.md",
+            "circumstance influence replacement is a Kith-and-Kin clue/game-state route, not a static producer route",
+        ],
+    },
+    "XRL.World.Conversations.Parts/GlotrotFilter.cs::GlotrotFilter.HandleEvent(PrepareTextEvent)": {
+        "closure_status": "runtime_required",
+        "closure_evidence": [
+            "docs/reports/2026-05-16-issue-719-conversation-text-construction-routes.md",
+            "Glotrot intentionally rewrites text into disease speech at runtime",
+        ],
+    },
+    (
+        "XRL.World.Conversations.Parts/InsertRandomBookLine.cs::"
+        "InsertRandomBookLine.HandleEvent(PrepareTextEvent)"
+    ): {
+        "closure_status": "runtime_required",
+        "closure_evidence": [
+            "docs/reports/2026-05-16-issue-719-conversation-text-construction-routes.md",
+            "inserted book lines must be verified through book/data localization runtime evidence",
+        ],
+    },
     COMBAT_MELEE_ATTACK_FAMILY_ID: {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": [
@@ -819,8 +914,17 @@ def _queue_entry(family: TextConstructionFamily) -> SurfaceQueueEntry:
 def _closure_overlay(family_id: str) -> tuple[ClosureStatus, list[str]]:
     overlay = TEXT_CONSTRUCTION_CLOSURE_OVERLAY.get(family_id)
     if overlay is None:
+        if _is_conversation_choice_tag_family_id(family_id):
+            return "covered_by_owner_route", list(CONVERSATION_CHOICE_TAG_EVIDENCE)
         return "action_required", []
     return overlay["closure_status"], list(overlay["closure_evidence"])
+
+
+def _is_conversation_choice_tag_family_id(family_id: str) -> bool:
+    return (
+        family_id.startswith("XRL.World.Conversations.Parts/")
+        and family_id.endswith(".HandleEvent(GetChoiceTagEvent)")
+    )
 
 
 def _closure_lane(family: TextConstructionFamily, classified: ClassifiedSurface) -> ClosureLane:
@@ -829,6 +933,8 @@ def _closure_lane(family: TextConstructionFamily, classified: ClassifiedSurface)
 
     if surfaces & {"MessageFrame", "Does"}:
         lane: ClosureLane = "combat_message_frame_does"
+    elif surfaces & {"ConversationChoiceTag", "ConversationTextAppend", "ConversationTextReplace"}:
+        lane = "conversation_routes"
     elif "HistoricStringExpander" in surfaces:
         lane = "history_generated_text"
     elif surfaces & {"SetText", "DirectTextAssignment"} and _has_prefix(file_path, UI_OWNER_FILE_PREFIXES):

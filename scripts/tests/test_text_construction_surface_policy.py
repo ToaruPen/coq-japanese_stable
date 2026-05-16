@@ -160,6 +160,18 @@ def test_policy_assigns_actionable_closure_lanes() -> None:
                 "BestowElement",
                 {"DisplayNameAssignment": 1},
             ),
+            _family(
+                "XRL.World.Conversations.Parts/Trade.cs::Trade.HandleEvent(GetChoiceTagEvent)",
+                "XRL.World.Conversations.Parts/Trade.cs",
+                "HandleEvent",
+                {"ConversationChoiceTag": 1},
+            ),
+            _family(
+                "XRL.World.Conversations.Parts/WaterRitual.cs::WaterRitual.HandleEvent(DisplayTextEvent)",
+                "XRL.World.Conversations.Parts/WaterRitual.cs",
+                "HandleEvent",
+                {"ConversationTextAppend": 1},
+            ),
         ]
     )
 
@@ -175,6 +187,59 @@ def test_policy_assigns_actionable_closure_lanes() -> None:
         lanes["XRL.World.Parts/CherubimSpawner.cs::CherubimSpawner.BestowElement(string)"]
         == "display_name_composition"
     )
+    assert (
+        lanes["XRL.World.Conversations.Parts/Trade.cs::Trade.HandleEvent(GetChoiceTagEvent)"]
+        == "conversation_routes"
+    )
+    assert (
+        lanes["XRL.World.Conversations.Parts/WaterRitual.cs::WaterRitual.HandleEvent(DisplayTextEvent)"]
+        == "conversation_routes"
+    )
+
+
+def test_policy_closes_reviewed_conversation_choice_tags_and_classifies_body_routes() -> None:
+    """Issue-719 conversation routes carry owner-route closure without static producer conflation."""
+    trade_family_id = "XRL.World.Conversations.Parts/Trade.cs::Trade.HandleEvent(GetChoiceTagEvent)"
+    mound_family_id = "XRL.World.Conversations.Parts/MoundContext.cs::MoundContext.HandleEvent(PrepareTextEvent)"
+    signpost_family_id = "XRL.World.Conversations.Parts/QuestSignpost.cs::QuestSignpost.HandleEvent(PrepareTextEvent)"
+    glotrot_family_id = "XRL.World.Conversations.Parts/GlotrotFilter.cs::GlotrotFilter.HandleEvent(PrepareTextEvent)"
+
+    inventory = _inventory(
+        [
+            _family(
+                trade_family_id,
+                "XRL.World.Conversations.Parts/Trade.cs",
+                "HandleEvent",
+                {"ConversationChoiceTag": 1},
+            ),
+            _family(
+                mound_family_id,
+                "XRL.World.Conversations.Parts/MoundContext.cs",
+                "HandleEvent",
+                {"ConversationTextReplace": 1},
+            ),
+            _family(
+                signpost_family_id,
+                "XRL.World.Conversations.Parts/QuestSignpost.cs",
+                "HandleEvent",
+                {"ConversationTextReplace": 1},
+            ),
+            _family(
+                glotrot_family_id,
+                "XRL.World.Conversations.Parts/GlotrotFilter.cs",
+                "HandleEvent",
+                {"ConversationTextAppend": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    assert entries[trade_family_id]["closure_status"] == "covered_by_owner_route"
+    assert "ConversationDisplayTextPatchTests.cs" in " ".join(entries[trade_family_id]["closure_evidence"])
+    assert entries[mound_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[signpost_family_id]["closure_status"] == "partial_coverage"
+    assert entries[glotrot_family_id]["closure_status"] == "runtime_required"
 
 
 def test_policy_applies_reviewed_closure_overlay_for_high_risk_combat_lane() -> None:
