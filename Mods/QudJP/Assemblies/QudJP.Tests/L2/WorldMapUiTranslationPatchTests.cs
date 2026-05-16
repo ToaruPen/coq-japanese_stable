@@ -149,6 +149,24 @@ public sealed class WorldMapUiTranslationPatchTests
     }
 
     [Test]
+    public void JournalStatusScreenTarget_UsesClearDefault_WhenCurrentCategoryIsOutOfRange()
+    {
+        var target = new DummyJournalStatusScreenTarget
+        {
+            CurrentCategory = 99,
+            NextCategoryText = "Locations",
+        };
+
+        target.UpdateViewFromData();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(target.CategoryNameReadDuringUpdate, Is.Null);
+            Assert.That(target.categoryText.Text, Is.EqualTo("Locations"));
+        });
+    }
+
+    [Test]
     public void StatusScreensScreenPostfix_TranslatesFilterNavigationAndAccept_WhenPatched()
     {
         WriteDictionary(

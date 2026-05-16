@@ -46,6 +46,13 @@ internal sealed class DummyJournalStatusScreenTarget
 
     public void UpdateViewFromData()
     {
+        if (CurrentCategory < 0 || CurrentCategory >= categoryInfos.Count)
+        {
+            CategoryNameReadDuringUpdate = null;
+            categoryText.SetText(NextCategoryText);
+            return;
+        }
+
         CategoryNameReadDuringUpdate = categoryInfos[CurrentCategory].Name;
         categoryText.SetText(NextCategoryText);
     }
