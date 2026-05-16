@@ -545,6 +545,11 @@ internal static class ContextClassifier
     private static string AssignmentSurface(ExpressionSyntax left)
     {
         var target = left.ToString();
+        if (IsConversationChoiceTagAssignment(left))
+        {
+            return "ConversationChoiceTag";
+        }
+
         if (target.EndsWith(".text", StringComparison.Ordinal)
             || target.EndsWith(".Text", StringComparison.Ordinal))
         {
@@ -565,6 +570,28 @@ internal static class ContextClassifier
 
         return "Assignment";
     }
+
+    private static bool IsConversationChoiceTagAssignment(ExpressionSyntax left)
+    {
+        if (left is not MemberAccessExpressionSyntax memberAccess
+            || !string.Equals(memberAccess.Name.Identifier.ValueText, "Tag", StringComparison.Ordinal)
+            || memberAccess.Expression is not IdentifierNameSyntax receiver)
+        {
+            return false;
+        }
+
+        var method = left.FirstAncestorOrSelf<MethodDeclarationSyntax>();
+        if (method is null
+            || !string.Equals(method.Identifier.ValueText, "HandleEvent", StringComparison.Ordinal)
+            || method.ParameterList.Parameters.Count != 1)
+        {
+            return false;
+        }
+
+        var parameter = method.ParameterList.Parameters[0];
+        return string.Equals(parameter.Identifier.ValueText, receiver.Identifier.ValueText, StringComparison.Ordinal)
+            && string.Equals(parameter.Type?.ToString(), "GetChoiceTagEvent", StringComparison.Ordinal);
+    }
 }
 
 internal static class SurfaceClassifier
@@ -576,10 +603,24 @@ internal static class SurfaceClassifier
     {
         var method = MethodName(invocation.Expression);
         var receiver = ReceiverName(invocation.Expression);
+        var receiverExpression = ReceiverExpression(invocation.Expression);
 
         if (string.Equals(method, "SetText", StringComparison.Ordinal))
         {
             return "SetText";
+        }
+
+        if (IsConversationTextReceiver(receiverExpression))
+        {
+            if (IsStringBuilderAppend(method))
+            {
+                return "ConversationTextAppend";
+            }
+
+            if (string.Equals(method, "Replace", StringComparison.Ordinal))
+            {
+                return "ConversationTextReplace";
+            }
         }
 
         if (IsStringBuilderAppend(method))
@@ -715,6 +756,16 @@ internal static class SurfaceClassifier
         }
 
         return null;
+    }
+
+    private static string? ReceiverExpression(ExpressionSyntax expression)
+    {
+        return expression is MemberAccessExpressionSyntax member ? member.Expression.ToString() : null;
+    }
+
+    private static bool IsConversationTextReceiver(string? receiverExpression)
+    {
+        return string.Equals(receiverExpression, "E.Text", StringComparison.Ordinal);
     }
 }
 

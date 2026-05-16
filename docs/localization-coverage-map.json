@@ -308,32 +308,46 @@
       "label": "Conversation display text, simple/question templates, and pronoun exchange",
       "category": "route_family_tests",
       "status": "partial_tests_no_inventory",
-      "closure_owner": "conversation data/template owner tests pending complete conversation inventory",
+      "closure_owner": "ConversationDisplayTextPatch plus conversation data/template owner tests",
       "closure_gate_type": "route_family_test_gap",
       "closure_evidence": [
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationDisplayTextPatchTests.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationTemplateTranslationPatchTests.cs",
-        "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationPronounExchangeTranslationPatchTests.cs"
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationPronounExchangeTranslationPatchTests.cs",
+        "docs/reports/2026-05-16-issue-719-conversation-text-construction-routes.md",
+        "text-construction lane: conversation_routes"
       ],
       "target_surfaces": [
         "ConversationDisplayText",
         "ConversationSimpleTemplate",
         "ConversationQuestionTemplate",
-        "ConversationPronounExchange"
+        "ConversationPronounExchange",
+        "ConversationChoiceTag",
+        "ConversationTextAppend",
+        "ConversationTextReplace"
       ],
+      "scanner": "scripts/tools/TextConstructionInventory/",
+      "closure_gate": "scripts/text_construction_surface_policy.py",
       "tests": [
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationDisplayTextPatchTests.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationTemplateTranslationPatchTests.cs",
-        "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationPronounExchangeTranslationPatchTests.cs"
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationPronounExchangeTranslationPatchTests.cs",
+        "scripts/tests/test_roslyn_text_construction_inventory.py",
+        "scripts/tests/test_text_construction_surface_policy.py"
       ],
       "commands": [
-        "just test-l2"
+        "just test-l2",
+        "just text-construction-surface-queue",
+        "uv run python scripts/text_construction_surface_policy.py --inventory /tmp/roslyn-text-construction-inventory.json --format lanes-json --include valuable --limit 0"
       ],
       "known_limits": [
         "Conversation data/templates do not have a complete tracked inventory.",
-        "Conversation routes may include authored XML/data and runtime-composed text."
+        "Conversation routes may include authored XML/data and runtime-composed text.",
+        "Static producer queue zero does not close conversation choice tags or body append/replace routes.",
+        "Issue-719 conversation text-construction lane has 0 action_required entries, with residual partial/runtime rows delegated to display-name, data-source, Kith-and-Kin, book, or runtime evidence routes."
       ],
       "next_actions": [
+        "Keep the conversation_routes text-construction lane separate from popup/message static producer closure.",
         "Add a conversation-data inventory or classify conversation assets separately from runtime templates."
       ]
     },

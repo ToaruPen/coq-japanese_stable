@@ -68,6 +68,41 @@ public sealed class TextRoutes
     public string Overload(in string value) => "In";
 }
 
+public sealed class ConversationRoutes
+{
+    public bool HandleEvent(GetChoiceTagEvent E)
+    {
+        E.Tag = "{{g|[begin trade]}}";
+        return false;
+    }
+
+    public bool HandleEvent(DisplayTextEvent E)
+    {
+        E.Text.Append("You gain reputation.");
+        E.Text.Replace("old", "new");
+        return false;
+    }
+
+    public void UpdateQuestStep(QuestStep step)
+    {
+        step.Text = step.Text.Replace("=name=", "Nephilim");
+    }
+}
+
+public sealed class NonConversationRoutes
+{
+    public bool HandleEvent(NotChoiceTagEvent E)
+    {
+        E.Tag = "not a conversation choice tag";
+        return false;
+    }
+
+    public void UpdateItemTag(Item item)
+    {
+        item.Tag = "tag";
+    }
+}
+
 public static class Popup
 {
     public static void Show(string message) {}
@@ -76,6 +111,31 @@ public static class Popup
 public static class MessageQueue
 {
     public static void AddPlayerMessage(string message) {}
+}
+
+public sealed class GetChoiceTagEvent
+{
+    public string Tag { get; set; }
+}
+
+public sealed class NotChoiceTagEvent
+{
+    public string Tag { get; set; }
+}
+
+public sealed class DisplayTextEvent
+{
+    public StringBuilder Text { get; } = new StringBuilder();
+}
+
+public sealed class QuestStep
+{
+    public string Text { get; set; } = "";
+}
+
+public sealed class Item
+{
+    public string Tag { get; set; } = "";
 }
 """,
         encoding="utf-8",
@@ -113,8 +173,12 @@ public static class MessageQueue
     assert "ByRef" not in serialized
     assert "Out" not in serialized
     assert '"In"' not in serialized
+    assert "begin trade" not in serialized
+    assert "You gain reputation" not in serialized
+    assert "not a conversation choice tag" not in serialized
 
     totals = payload["totals"]
+    assert totals["surface_counts"]["Assignment"] == 2
     assert totals["surface_counts"]["Popup"] == 1
     assert totals["surface_counts"]["AddPlayerMessage"] == 1
     assert totals["surface_counts"]["StringBuilderAppend"] == 1
@@ -122,9 +186,14 @@ public static class MessageQueue
     assert totals["surface_counts"]["DisplayNameAssignment"] == 1
     assert totals["surface_counts"]["DisplayNameReturn"] == 1
     assert totals["surface_counts"]["Return"] == 6
+    assert totals["surface_counts"]["ConversationChoiceTag"] == 1
+    assert totals["surface_counts"]["ConversationTextAppend"] == 1
+    assert totals["surface_counts"]["ConversationTextReplace"] == 2
+    assert totals["surface_counts"]["DirectTextAssignment"] == 2
+    assert totals["surface_counts"]["ReplaceChain"] == 2
     assert totals["shape_counts"]["concatenation"] == 1
     assert totals["shape_counts"]["interpolation"] == 1
-    assert totals["shape_counts"]["static_literal"] == 10
+    assert totals["shape_counts"]["static_literal"] == 20
 
     family = _family(payload, "Demo.cs::TextRoutes.Build(string)")
     assert family["surface_counts"] == {
@@ -142,6 +211,33 @@ public static class MessageQueue
     assert display_family["context_counts"] == {"return_expression": 1}
     assert display_family["surface_counts"] == {"DisplayNameReturn": 1}
 
+    choice_tag_family = _family(payload, "Demo.cs::ConversationRoutes.HandleEvent(GetChoiceTagEvent)")
+    assert choice_tag_family["surface_counts"] == {
+        "ConversationChoiceTag": 1,
+    }
+
+    display_text_family = _family(payload, "Demo.cs::ConversationRoutes.HandleEvent(DisplayTextEvent)")
+    assert display_text_family["surface_counts"] == {
+        "ConversationTextAppend": 1,
+        "ConversationTextReplace": 2,
+    }
+
+    quest_step_family = _family(payload, "Demo.cs::ConversationRoutes.UpdateQuestStep(QuestStep)")
+    assert quest_step_family["surface_counts"] == {
+        "DirectTextAssignment": 2,
+        "ReplaceChain": 2,
+    }
+
+    non_choice_tag_family = _family(payload, "Demo.cs::NonConversationRoutes.HandleEvent(NotChoiceTagEvent)")
+    assert non_choice_tag_family["surface_counts"] == {
+        "Assignment": 1,
+    }
+
+    item_tag_family = _family(payload, "Demo.cs::NonConversationRoutes.UpdateItemTag(Item)")
+    assert item_tag_family["surface_counts"] == {
+        "Assignment": 1,
+    }
+
     assert _family(payload, "Demo.cs::TextRoutes.Overload(string)")["member_signature"] == "Overload(string)"
     assert _family(payload, "Demo.cs::TextRoutes.Overload<T>(string)")["member_signature"] == "Overload<T>(string)"
     assert _family(payload, "Demo.cs::TextRoutes.Overload(ref string)")["member_signature"] == "Overload(ref string)"
@@ -150,14 +246,16 @@ public static class MessageQueue
 
     summary = summary_output.read_text(encoding="utf-8")
     assert "# Roslyn Text Construction Inventory Summary" in summary
-    assert "| Producer/member families | 8 |" in summary
-    assert "| Text constructions | 12 |" in summary
+    assert "| Producer/member families | 15 |" in summary
+    assert "| Text constructions | 22 |" in summary
     assert "- `Broken.cs`" in summary
     assert "`DisplayNameAssignment`" in summary
     assert "full generated family inventory is intentionally not committed" in summary
     assert "Hello" not in summary
     assert "Warning" not in summary
     assert "Done" not in summary
+    assert "begin trade" not in summary
+    assert "not a conversation choice tag" not in summary
 
 
 @pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
