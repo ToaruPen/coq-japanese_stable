@@ -28,6 +28,21 @@ internal static class WorldModsTextTranslator
     private static readonly Regex CoProcessorPattern = new Regex(
         "^[Cc]o-[Pp]rocessor: When powered, this item grants (?<bonus>bonus|[+-]\\d+) (?<attribute>.+?) and provides (?:(?<units>\\d+) units of )?compute power to the local lattice\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex ActivePartStatusSuffixPattern = new Regex(
+        "^(?<body>.+) \\((?<status>unpowered|nonfunctional|EMP|unfueled|fuel contaminated|switched off|warming up)\\)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex ComputeNodePattern = new Regex(
+        "^When (?<conditions>.+), provides (?<amount>\\d+) (?<unit>unit|units) of compute power to the local lattice\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex ActiveLightSourcePattern = new Regex(
+        "^When (?<conditions>.+), provides (?<kind>light|night vision)(?: in radius (?<radius>\\d+))?\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex PartsGasChancePattern = new Regex(
+        "^(?<chance>\\d+)% chance per turn to repel gases (?<location>near|within (?:(?<article>a|an)-square radius|(?<radius>\\d+) squares) of) (?<scope>.+)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex PartsGasAlwaysPattern = new Regex(
+        "^Repels gases (?<location>near|within (?:(?<article>a|an)-square radius|(?<radius>\\d+) squares) of) (?<scope>.+)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex CounterweightedPattern = new Regex(
         "^Counterweighted: Adds (?<bonus>a bonus|[+-]\\d+) to hit\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -62,7 +77,7 @@ internal static class WorldModsTextTranslator
         "^Disguise: This item makes its wearer appear to be (?<appearance>.+)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex DisguiseReputationPattern = new Regex(
-        "^\\+(?<amount>\\d+) reputation with (?<faction>.+)$",
+        "^(?<amount>[+-]\\d+) reputation with (?<faction>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex FactionSlayerPattern = new Regex(
         "^(?<chance>\\d+)% chance to behead (?<target>.+) on hit\\.$",
@@ -116,6 +131,12 @@ internal static class WorldModsTextTranslator
         }
 
         if (TryTranslateScopedExact(source, route, family, out translated))
+        {
+            translated = CloseDanglingRulesSpan(translated);
+            return true;
+        }
+
+        if (TryTranslateActivePartStatusSuffix(source, route, family, out translated))
         {
             translated = CloseDanglingRulesSpan(translated);
             return true;
@@ -210,6 +231,21 @@ internal static class WorldModsTextTranslator
         }
 
         if (TryTranslateCoProcessorTemplate(source, route, family, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateComputeNodeTemplate(source, route, family, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateActiveLightSourceTemplate(source, route, family, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslatePartsGasTemplate(source, route, family, out translated))
         {
             return true;
         }
@@ -542,6 +578,122 @@ internal static class WorldModsTextTranslator
         return !string.Equals(source, translated, StringComparison.Ordinal);
     }
 
+    private static bool TryTranslateActivePartStatusSuffix(string source, string route, string family, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = ActivePartStatusSuffixPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var body = match.Groups["body"].Value;
+        var status = TranslateActivePartStatus(match.Groups["status"].Value);
+        if (!TryTranslate(body, route, family, out var translatedBody))
+        {
+            translatedBody = body;
+        }
+
+        var visible = translatedBody + "（" + status + "）";
+        var contentSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, stripped.Length);
+        translated = RestoreTemplateBoundarySpans(stripped, contentSpans, match, visible);
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translated,
+            spans,
+            stripped.Length);
+        DynamicTextObservability.RecordTransform(route, family, source, translated);
+        return !string.Equals(source, translated, StringComparison.Ordinal);
+    }
+
+    private static bool TryTranslateComputeNodeTemplate(string source, string route, string family, out string translated)
+    {
+        return TryTranslateTemplate(
+            source,
+            route,
+            family,
+            ComputeNodePattern,
+            "When {0}, provides {1} {2} of compute power to the local lattice.",
+            (match, spans) => new[]
+            {
+                GetTranslatedCapture(match, spans, "conditions", TranslateActivePartConditionList),
+                GetTranslatedCapture(match, spans, "amount"),
+                GetTranslatedCapture(match, spans, "unit", TranslateComputeUnit),
+            },
+            out translated);
+    }
+
+    private static bool TryTranslateActiveLightSourceTemplate(string source, string route, string family, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = ActiveLightSourcePattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var templateKey = match.Groups["radius"].Success
+            ? "When {0}, provides {1} in radius {2}."
+            : "When {0}, provides {1}.";
+        var template = ScopedDictionaryLookup.TranslateExactOrLowerAscii(templateKey, WorldModsDictionaryFile);
+        if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var args = match.Groups["radius"].Success
+            ? new[]
+            {
+                GetTranslatedCapture(match, spans, "conditions", TranslateActivePartConditionList),
+                GetTranslatedCapture(match, spans, "kind", TranslateLightKind),
+                GetTranslatedCapture(match, spans, "radius"),
+            }
+            : new[]
+            {
+                GetTranslatedCapture(match, spans, "conditions", TranslateActivePartConditionList),
+                GetTranslatedCapture(match, spans, "kind", TranslateLightKind),
+            };
+
+        var formatted = TryFormatTemplate(source, stripped, spans, route, family, match, template!, args, out translated);
+        translated = RestoreRulesOpeningIfNeeded(source, translated, formatted);
+        return formatted;
+    }
+
+    private static bool TryTranslatePartsGasTemplate(string source, string route, string family, out string translated)
+    {
+        if (TryTranslateTemplate(
+            source,
+            route,
+            family,
+            PartsGasChancePattern,
+            "{0}% chance per turn to repel gases {1} {2}.",
+            (match, spans) => new[]
+            {
+                GetTranslatedCapture(match, spans, "chance"),
+                TranslateGasLocation(match),
+                GetTranslatedCapture(match, spans, "scope", TranslateActivePartScope),
+            },
+            out translated))
+        {
+            return true;
+        }
+
+        return TryTranslateTemplate(
+            source,
+            route,
+            family,
+            PartsGasAlwaysPattern,
+            "Repels gases {0} {1}.",
+            (match, spans) => new[]
+            {
+                TranslateGasLocation(match),
+                GetTranslatedCapture(match, spans, "scope", TranslateActivePartScope),
+            },
+            out translated);
+    }
+
     private static bool TryTranslateCounterweightedTemplate(string source, string route, string family, out string translated)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
@@ -566,7 +718,9 @@ internal static class WorldModsTextTranslator
             ? Array.Empty<string>()
             : new[] { GetTranslatedCapture(match, spans, "bonus") };
 
-        return TryFormatTemplate(source, stripped, spans, route, family, match, template!, args, out translated);
+        var formatted = TryFormatTemplate(source, stripped, spans, route, family, match, template!, args, out translated);
+        translated = RestoreRulesOpeningIfNeeded(source, translated, formatted);
+        return formatted;
     }
 
     private static bool TryTranslateDisguiseReputationTemplate(string source, string route, string family, out string translated)
@@ -604,7 +758,9 @@ internal static class WorldModsTextTranslator
             faction,
         };
 
-        return TryFormatTemplate(source, stripped, spans, route, family, match, template!, args, out translated);
+        var formatted = TryFormatTemplate(source, stripped, spans, route, family, match, template!, args, out translated);
+        translated = RestoreRulesOpeningIfNeeded(source, translated, formatted);
+        return formatted;
     }
 
     private static bool TryTranslateElementalDamageTemplate(
@@ -664,7 +820,8 @@ internal static class WorldModsTextTranslator
             return false;
         }
 
-        return TryFormatTemplate(source, stripped, spans, route, family, match, template!, buildArguments(match, spans), out translated);
+        var contentSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, stripped.Length);
+        return TryFormatTemplate(source, stripped, spans, route, family, match, template!, buildArguments(match, contentSpans), out translated);
     }
 
     private static bool TryFormatTemplate(
@@ -679,10 +836,24 @@ internal static class WorldModsTextTranslator
         out string translated)
     {
         var visible = string.Format(CultureInfo.InvariantCulture, template, args);
-        translated = RestoreTemplateBoundarySpans(stripped, spans, match, visible);
+        var contentSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, stripped.Length);
+        translated = RestoreTemplateBoundarySpans(stripped, contentSpans, match, visible);
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translated,
+            spans,
+            stripped.Length);
 
         DynamicTextObservability.RecordTransform(route, family, source, translated);
         return !string.Equals(source, translated, StringComparison.Ordinal);
+    }
+
+    private static string RestoreRulesOpeningIfNeeded(string source, string translated, bool translatedSuccessfully)
+    {
+        return translatedSuccessfully
+            && source.StartsWith("{{rules|", StringComparison.Ordinal)
+            && !translated.StartsWith("{{rules|", StringComparison.Ordinal)
+            ? "{{rules|" + translated + "}}"
+            : translated;
     }
 
     private static string RestoreTemplateBoundarySpans(
@@ -904,6 +1075,152 @@ internal static class WorldModsTextTranslator
         return string.Equals(source, "bonus", StringComparison.Ordinal)
             ? "ボーナス"
             : TranslateTemplateCapture(source);
+    }
+
+    private static string TranslateComputeUnit(string source)
+    {
+        return string.Equals(source, "unit", StringComparison.Ordinal)
+            || string.Equals(source, "units", StringComparison.Ordinal)
+            ? "ユニット"
+            : TranslateTemplateCapture(source);
+    }
+
+    private static string TranslateLightKind(string source)
+    {
+        return source switch
+        {
+            "light" => "光",
+            "night vision" => "暗視",
+            _ => TranslateTemplateCapture(source),
+        };
+    }
+
+    private static string TranslateActivePartStatus(string source)
+    {
+        return source switch
+        {
+            "EMP" => "EMP",
+            "unpowered" => "無電力",
+            "unfueled" => "燃料切れ",
+            "fuel contaminated" => "燃料汚染",
+            "switched off" => "オフ",
+            "warming up" => "ウォームアップ中",
+            "nonfunctional" => "機能停止",
+            _ => TranslateTemplateCapture(source),
+        };
+    }
+
+    private static string TranslateActivePartConditionList(string source)
+    {
+        var normalized = WhitespacePattern.Replace(source.Trim(), " ");
+        normalized = normalized
+            .Replace("、", "|")
+            .Replace("，", "|")
+            .Replace(" and ", "|")
+            .Replace(" or ", "|")
+            .Replace("または", "|")
+            .Replace("と", "|");
+
+        var rawParts = normalized.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+        var parts = new List<string>();
+        for (var index = 0; index < rawParts.Length; index++)
+        {
+            var part = rawParts[index].Trim();
+            if (part.Length == 0)
+            {
+                continue;
+            }
+
+            parts.Add(part switch
+            {
+                "equipped" => "装備",
+                "implanted" => "埋め込み",
+                "powered" => "通電",
+                "in use" => "使用",
+                "operational" => "稼働",
+                _ => TranslateTemplateCapture(part),
+            });
+        }
+
+        if (parts.Count == 0)
+        {
+            return TranslateTemplateCapture(source);
+        }
+
+        if (parts.Count == 1)
+        {
+            return parts[0] + "中";
+        }
+
+        return string.Join("・", parts) + "中";
+    }
+
+    private static string TranslateGasLocation(Match match)
+    {
+        var location = match.Groups["location"].Value;
+        if (string.Equals(location, "near", StringComparison.Ordinal))
+        {
+            return "近くの";
+        }
+
+        if (match.Groups["article"].Success)
+        {
+            return "半径1マス以内の";
+        }
+
+        if (match.Groups["radius"].Success)
+        {
+            return "半径" + match.Groups["radius"].Value + "マス以内の";
+        }
+
+        return TranslateTemplateCapture(location);
+    }
+
+    private static string TranslateActivePartScope(string source)
+    {
+        var normalized = WhitespacePattern.Replace(source.Trim(), " ");
+        if (normalized.StartsWith("its ", StringComparison.Ordinal))
+        {
+            normalized = normalized.Substring(4);
+        }
+
+        normalized = normalized
+            .Replace("、", "|")
+            .Replace("，", "|")
+            .Replace(" or ", "|")
+            .Replace("または", "|");
+
+        var rawParts = normalized.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+        var parts = new List<string>();
+        for (var index = 0; index < rawParts.Length; index++)
+        {
+            var part = rawParts[index].Trim();
+            if (part.Length == 0)
+            {
+                continue;
+            }
+
+            parts.Add(part switch
+            {
+                "user" => "使用者",
+                "wielder" => "使用者",
+                "wearer" => "着用者",
+                "carrier" => "携帯者",
+                "contents" => "内容物",
+                "vicinity" => "周辺",
+                "immediate vicinity" => "直近",
+                "nearby vicinity" => "近傍",
+                "operating area" => "作動範囲",
+                _ => TranslateTemplateCapture(part),
+            });
+        }
+
+        if (parts.Count == 0)
+        {
+            return TranslateTemplateCapture(source);
+        }
+
+        return string.Join("または", parts);
     }
 
     private static string TranslateTemplateCapture(string source)

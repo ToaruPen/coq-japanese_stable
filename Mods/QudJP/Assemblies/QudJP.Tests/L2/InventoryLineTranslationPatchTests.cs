@@ -158,6 +158,45 @@ public sealed partial class Issue201StatusScreensBatch2Tests
     }
 
     [Test]
+    public void InventoryLinePostfix_TranslatesCompactWeaponTrailingStates_WhenPatched()
+    {
+        WriteDictionary(
+            ("items", "個"));
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("[rusted]", "[{{r|錆びた}}]"),
+            ("[broken]", "[{{r|破損}}]"));
+
+        var source =
+            "クローム・リボルバー {{c|\u001a}}7 {{r|\u0003}}1d6 {{y|[鉛スラッグ x6]}} [{{r|rusted}}] [{{r|broken}}] {{y|<{{|{{B|C}}{{B|C}}{{g|2}}}}>}}";
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyInventoryLineTarget), nameof(DummyInventoryLineTarget.setData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(InventoryLineTranslationPatch), nameof(InventoryLineTranslationPatch.Postfix))));
+
+            var itemTarget = new DummyInventoryLineTarget();
+            itemTarget.setData(new DummyInventoryLineDataTarget
+            {
+                category = false,
+                displayName = source,
+                go = new DummyStatusGameObject { DisplayName = source, Weight = 7 },
+            });
+
+            Assert.That(
+                itemTarget.text.Text,
+                Is.EqualTo("クローム・リボルバー {{c|\u001a}}7 {{r|\u0003}}1d6 {{y|[鉛スラッグ x6]}} [{{r|錆びた}}] [{{r|破損}}] {{y|<{{|{{B|C}}{{B|C}}{{g|2}}}}>}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void InventoryLinePostfix_LeavesUnsupportedInputOnOriginalPath()
     {
         var harmonyId = CreateHarmonyId();

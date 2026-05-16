@@ -77,7 +77,8 @@
         "Delete"
       ],
       "patterns": [
-        "^\\[(?:Tab|Esc|Enter|Space|Delete|[A-Z])\\]$"
+        "^\\[(?:Tab|Esc|Enter|Space|Delete|[A-Z])\\]$",
+        "^(?:[\\uE000-\\uF8FF]+\\+)*(?:Tab|Esc|Enter|Space|Delete|[A-Z])(?:\\s+(?:[\\uE000-\\uF8FF]+\\+)*(?:Tab|Esc|Enter|Space|Delete|[A-Z]))*$"
       ],
       "protected_tokens": [
         "Tab",
