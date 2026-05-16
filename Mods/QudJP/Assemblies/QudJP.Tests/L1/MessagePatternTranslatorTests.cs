@@ -115,7 +115,7 @@ public sealed class MessagePatternTranslatorTests
 
         var translated = MessagePatternTranslator.Translate(source);
 
-        Assert.That(translated, Is.EqualTo(expected));
+        Assert.That(translated, Is.EqualTo(expected), source);
     }
 
 
@@ -724,6 +724,24 @@ public sealed class MessagePatternTranslatorTests
         Assert.That(translated, Is.EqualTo("あなたは出血で1ダメージを受けた。"));
     }
 
+    [TestCase("The {{B|濡れた}}光葉 begins leaking.", "{{B|濡れた}}光葉は液漏れし始めた。")]
+    [TestCase("an 樹液まみれの濡れた光葉 begins oozing from another wound.", "樹液まみれの濡れた光葉は別の傷から滲出し始めた。")]
+    [TestCase("A {{B|濡れた}}光葉 stops fluxing.", "{{B|濡れた}}光葉のフラックス漏れは止まった。")]
+    [TestCase("The {{B|濡れた}}光葉 takes 1 damage from leaking.", "{{B|濡れた}}光葉は液漏れで1ダメージを受けた。")]
+    [TestCase("the 樹液まみれの濡れた光葉 takes no damage from oozing.", "樹液まみれの濡れた光葉は滲出でダメージを受けなかった。")]
+    [TestCase("One of タムの wounds stops leaking.", "タムの傷のひとつの液漏れが止まった。")]
+    [TestCase("One of the 樹液まみれの濡れた光葉の wounds stops leaking.", "樹液まみれの濡れた光葉の傷のひとつの液漏れが止まった。")]
+    public void Translate_RepositoryDictionary_TranslatesCirculatoryLossEventMessages(
+        string source,
+        string expected)
+    {
+        UseRepositoryPatternDictionary();
+
+        var actual = MessagePatternTranslator.Translate(source);
+
+        Assert.That(actual, Is.EqualTo(expected), source);
+    }
+
     [Test]
     public void Translate_RepositoryDictionary_UsesSpecificWoundStopBleedingPatternBeforeGenericBleedingStopPattern()
     {
@@ -732,19 +750,6 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate("One of タムの wounds stops bleeding.");
 
         Assert.That(translated, Is.EqualTo("タムの傷のひとつの出血が止まった。"));
-    }
-
-    [TestCase("One of タムの wounds stops leaking.", "タムの傷のひとつの液漏れが止まった。")]
-    [TestCase("One of the 樹液まみれの濡れた光葉の wounds stops leaking.", "樹液まみれの濡れた光葉の傷のひとつの液漏れが止まった。")]
-    public void Translate_RepositoryDictionary_TranslatesCirculatoryLossWoundStopBeforeCombatWoundsPattern(
-        string source,
-        string expected)
-    {
-        UseRepositoryPatternDictionary();
-
-        var translated = MessagePatternTranslator.Translate(source);
-
-        Assert.That(translated, Is.EqualTo(expected));
     }
 
     [TestCase("熊 nose begins leaking more heavily.", "熊の鼻が激しく液漏れし始めた。")]

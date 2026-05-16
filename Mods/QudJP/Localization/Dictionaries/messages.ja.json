@@ -799,7 +799,7 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+) begins (bleeding|leaking|oozing|fluxing) from another wound[.!]?$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) begins (bleeding|leaking|oozing|fluxing) from another wound[.!]?$",
       "template": "{0}は別の傷から{t1}し始めた。",
       "route": "emit-message"
     },
@@ -859,7 +859,7 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+) begins (bleeding|leaking|oozing|fluxing)[.!]?$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) begins (bleeding|leaking|oozing|fluxing)[.!]?$",
       "template": "{0}は{t1}し始めた。",
       "route": "emit-message"
     },
@@ -869,7 +869,7 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+) stops (bleeding|leaking|oozing|fluxing)[.!]?$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) stops (bleeding|leaking|oozing|fluxing)[.!]?$",
       "template": "{0}の{t1}は止まった。",
       "route": "emit-message"
     },
@@ -879,12 +879,12 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+) takes (\\d+) damage from (bleeding|leaking|oozing|fluxing)[.!]?$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) takes (\\d+) damage from (bleeding|leaking|oozing|fluxing)[.!]?$",
       "template": "{0}は{t2}で{1}ダメージを受けた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^(.+) takes no damage from (bleeding|leaking|oozing|fluxing)[.!]?$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) takes no damage from (bleeding|leaking|oozing|fluxing)[.!]?$",
       "template": "{0}は{t1}でダメージを受けなかった。",
       "route": "emit-message"
     },
