@@ -541,8 +541,8 @@ public static class PhysicsProcessTakeDamageTranslationPatch
         var fireStarted = FireStartedSourcePattern.Match(source);
         if (fireStarted.Success)
         {
-            var owner = fireStarted.Groups["owner"].Value;
-            translated = owner.Equals("you", StringComparison.Ordinal)
+            var owner = TranslateFireStarter(fireStarted.Groups["owner"].Value);
+            translated = owner.Equals("あなた", StringComparison.Ordinal)
                 ? "あなたが起こした火"
                 : owner + "が起こした火";
             return true;
@@ -674,6 +674,15 @@ public static class PhysicsProcessTakeDamageTranslationPatch
     private static string NormalizeVisiblePossessiveOwner(string owner)
     {
         owner = owner.Trim();
+        if (owner.StartsWith("an ", StringComparison.OrdinalIgnoreCase))
+        {
+            owner = owner.Substring(3).TrimStart();
+        }
+        else if (owner.StartsWith("a ", StringComparison.OrdinalIgnoreCase))
+        {
+            owner = owner.Substring(2).TrimStart();
+        }
+
         if (owner.Equals("your", StringComparison.Ordinal) || owner.Equals("Your", StringComparison.Ordinal))
         {
             return "あなたの";
