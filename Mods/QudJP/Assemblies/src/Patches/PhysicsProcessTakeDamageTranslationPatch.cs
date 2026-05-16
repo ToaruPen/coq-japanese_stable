@@ -572,7 +572,13 @@ public static class PhysicsProcessTakeDamageTranslationPatch
         var armor = ArmorSourcePattern.Match(source);
         if (armor.Success)
         {
-            translated = armor.Groups["owner"].Value + armor.Groups["kind"].Value + "装甲";
+            var kind = armor.Groups["kind"].Value;
+            if (!TryTranslateExactVisibleDamageSourcePhrase(kind, out var translatedKind))
+            {
+                translatedKind = kind;
+            }
+
+            translated = armor.Groups["owner"].Value + translatedKind + "装甲";
             return true;
         }
 

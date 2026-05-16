@@ -152,6 +152,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("The target takes 4 damage from your projectile.", "targetはあなたの投射物で4ダメージを受けた。")]
     [TestCase("The target takes 4 damage from your attack.", "targetはあなたの攻撃で4ダメージを受けた。")]
     [TestCase("The target takes 4 damage from your carbide armor!", "targetはあなたのcarbide装甲で4ダメージを受けた！")]
+    [TestCase("The target takes 4 damage from your freezing effect armor!", "targetはあなたの凍結効果装甲で4ダメージを受けた！")]
     [TestCase("The target takes 4 damage from your spores!", "targetはあなたの胞子で4ダメージを受けた！")]
     [TestCase("The target takes 4 damage from your thorns.", "targetはあなたの棘で4ダメージを受けた。")]
     [TestCase("The target takes 4 damage from your impalement.", "targetはあなたの串刺しで4ダメージを受けた。")]
