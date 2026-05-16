@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace QudJP;
@@ -52,6 +53,13 @@ internal static class StatusLineTranslationHelpers
 
         var weaponClassMatch = WeaponClassPattern.Match(source);
         if (weaponClassMatch.Success
+            && TryTranslateScopedWeaponClassLine(source, out translated))
+        {
+            DynamicTextObservability.RecordTransform(route, family, source, translated);
+            return true;
+        }
+
+        if (weaponClassMatch.Success
             && TryTranslateLabeledValueLine(weaponClassMatch, "Weapon Class:", route, out translated))
         {
             DynamicTextObservability.RecordTransform(route, family, source, translated);
@@ -71,6 +79,22 @@ internal static class StatusLineTranslationHelpers
             && TryTranslateLabeledValueLine(weightMatch, "Weight:", route, out translated, translateValue: false))
         {
             DynamicTextObservability.RecordTransform(route, family, source, translated);
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryTranslateScopedWeaponClassLine(string source, out string translated)
+    {
+        var scoped = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContextOnly(
+            source,
+            "XRL.World.Parts.MeleeWeapon.GetShortDescription",
+            "world-mods.ja.json");
+        if (!string.IsNullOrEmpty(scoped) && !string.Equals(scoped, source, StringComparison.Ordinal))
+        {
+            translated = scoped!;
             return true;
         }
 
@@ -199,6 +223,12 @@ internal static class StatusLineTranslationHelpers
         var translatedParts = new string[parts.Length];
         for (var index = 0; index < parts.Length; index++)
         {
+            if (TryTranslateGeneratedActiveEffectPart(parts[index], out var generatedPart))
+            {
+                translatedParts[index] = generatedPart;
+                continue;
+            }
+
             var translatedPart = StringHelpers.TranslateExactOrLowerAscii(parts[index], route);
             translatedParts[index] = translatedPart ?? parts[index];
         }
@@ -210,6 +240,52 @@ internal static class StatusLineTranslationHelpers
         }
 
         DynamicTextObservability.RecordTransform(route, family, source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateGeneratedActiveEffectPart(string source, out string translated)
+    {
+        if (source.IndexOf(" ", StringComparison.Ordinal) < 0)
+        {
+            translated = source;
+            return false;
+        }
+
+        if (TryTranslateDisplayNameModifierSequence(source, out translated))
+        {
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryTranslateDisplayNameModifierSequence(string source, out string translated)
+    {
+        var parts = source.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length < 2)
+        {
+            translated = source;
+            return false;
+        }
+
+        var builder = new StringBuilder();
+        for (var index = 0; index < parts.Length; index++)
+        {
+            var part = parts[index];
+            var translatedPart = ScopedDictionaryLookup.TranslateExactOrLowerAscii(
+                part,
+                "ui-displayname-adjectives.ja.json");
+            if (string.IsNullOrEmpty(translatedPart) || string.Equals(translatedPart, part, StringComparison.Ordinal))
+            {
+                translated = source;
+                return false;
+            }
+
+            builder.Append(translatedPart);
+        }
+
+        translated = builder.ToString();
         return true;
     }
 
