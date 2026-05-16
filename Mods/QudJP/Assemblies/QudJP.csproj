@@ -41,7 +41,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="!Exists('$(ManagedDir)/0Harmony.dll')">
-    <PackageReference Include="Lib.Harmony" Version="2.2.2" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="Lib.Harmony" Version="2.4.2" PrivateAssets="all" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup>
