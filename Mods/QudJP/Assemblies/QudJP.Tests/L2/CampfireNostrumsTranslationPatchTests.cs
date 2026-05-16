@@ -54,6 +54,11 @@ public sealed class CampfireNostrumsTranslationPatchTests
         "あなたも{{M|Eskhind}}も出血していない。",
         "NeitherBleeding")]
     [TestCase(
+        nameof(DummyCampfireNostrumsTarget.NostrumsStopBleeding),
+        "You are not bleeding.",
+        "あなたは出血していない。",
+        "NotBleeding")]
+    [TestCase(
         nameof(DummyCampfireNostrumsTarget.NostrumsTreatPoison),
         "You have no medicinal ingredients with which to treat the poison coursing through snapjaw scavenger.",
         "snapjaw scavengerを蝕む毒を治療する薬用素材がない。",

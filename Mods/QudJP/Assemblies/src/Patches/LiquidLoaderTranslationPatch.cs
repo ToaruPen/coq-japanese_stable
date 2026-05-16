@@ -36,6 +36,10 @@ public static class LiquidLoaderTranslationPatch
         "^(?<host>.+?) (?:has|have) no room for more (?<liquid>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex ExhaustedPattern = new(
+        "^(?<loader>.+?) (?:is|are) exhausted!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -45,13 +49,27 @@ public static class LiquidLoaderTranslationPatch
         var targets = new List<MethodBase>();
         var commandReloadEventType = AccessTools.TypeByName("XRL.World.CommandReloadEvent");
         var eventType = AccessTools.TypeByName("XRL.World.Event");
-        if (commandReloadEventType is null || eventType is null)
+        var checkLoadAmmoEventType = AccessTools.TypeByName("XRL.World.CheckLoadAmmoEvent");
+        var loadAmmoEventType = AccessTools.TypeByName("XRL.World.LoadAmmoEvent");
+        var getNotReadyToFireMessageEventType = AccessTools.TypeByName("XRL.World.GetNotReadyToFireMessageEvent");
+        if (commandReloadEventType is null
+            || eventType is null
+            || checkLoadAmmoEventType is null
+            || loadAmmoEventType is null
+            || getNotReadyToFireMessageEventType is null)
         {
             Trace.TraceError("QudJP: {0} target event types not found.", Context);
             return targets;
         }
 
-        AddLoaderTargets(targets, "XRL.World.Parts.BioAmmoLoader", commandReloadEventType, eventType);
+        AddLoaderTargets(
+            targets,
+            "XRL.World.Parts.BioAmmoLoader",
+            commandReloadEventType,
+            eventType,
+            checkLoadAmmoEventType,
+            loadAmmoEventType,
+            getNotReadyToFireMessageEventType);
         AddLoaderTargets(targets, "XRL.World.Parts.LiquidAmmoLoader", commandReloadEventType, eventType);
         AddLoaderTargets(targets, "XRL.World.Parts.ModLiquidCooled", commandReloadEventType, eventType);
         return targets;
@@ -130,6 +148,18 @@ public static class LiquidLoaderTranslationPatch
         return true;
     }
 
+    public static void Postfix(object? __0)
+    {
+        try
+        {
+            TranslateEventMessage(__0);
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.Postfix failed: {1}", Context, ex);
+        }
+    }
+
     private static void AddLoaderTargets(
         List<MethodBase> targets,
         string typeName,
@@ -147,6 +177,28 @@ public static class LiquidLoaderTranslationPatch
         AddTarget(targets, targetType, "FireEvent", new[] { eventType });
     }
 
+    private static void AddLoaderTargets(
+        List<MethodBase> targets,
+        string typeName,
+        Type commandReloadEventType,
+        Type eventType,
+        Type checkLoadAmmoEventType,
+        Type loadAmmoEventType,
+        Type getNotReadyToFireMessageEventType)
+    {
+        AddLoaderTargets(targets, typeName, commandReloadEventType, eventType);
+
+        var targetType = AccessTools.TypeByName(typeName);
+        if (targetType is null)
+        {
+            return;
+        }
+
+        AddTarget(targets, targetType, "HandleEvent", new[] { checkLoadAmmoEventType });
+        AddTarget(targets, targetType, "HandleEvent", new[] { loadAmmoEventType });
+        AddTarget(targets, targetType, "HandleEvent", new[] { getNotReadyToFireMessageEventType });
+    }
+
     private static void AddTarget(List<MethodBase> targets, Type targetType, string methodName, Type[] parameters)
     {
         var method = AccessTools.Method(targetType, methodName, parameters);
@@ -157,6 +209,26 @@ public static class LiquidLoaderTranslationPatch
         }
 
         Trace.TraceError("QudJP: {0}.{1}.{2} target not found.", Context, targetType.FullName, methodName);
+    }
+
+    private static void TranslateEventMessage(object? eventObject)
+    {
+        if (eventObject is null)
+        {
+            return;
+        }
+
+        var messageField = AccessTools.Field(eventObject.GetType(), "Message");
+        if (messageField?.GetValue(eventObject) is not string source
+            || string.IsNullOrEmpty(source)
+            || MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _)
+            || !TryTranslateQueuedCore(source, out var translated))
+        {
+            return;
+        }
+
+        DynamicTextObservability.RecordTransform(Context, "LiquidLoader.EventMessage", source, translated);
+        messageField.SetValue(eventObject, MessageFrameTranslator.MarkDirectTranslation(translated));
     }
 
     private static bool TryTranslateQueuedCore(string source, out string translated)
@@ -172,7 +244,12 @@ public static class LiquidLoaderTranslationPatch
                 source,
                 (match, spans) => $"{Restore(match, spans, "loader")}から{Restore(match, spans, "liquid")}を捨てた。",
                 out translated)
-            || TryTranslatePattern(FillPattern, source, TranslateFill, out translated);
+            || TryTranslatePattern(FillPattern, source, TranslateFill, out translated)
+            || TryTranslatePattern(
+                ExhaustedPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "loader")}は疲弊した！",
+                out translated);
     }
 
     private static bool TryTranslatePopupCore(string source, out string translated)

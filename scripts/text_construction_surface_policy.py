@@ -14,7 +14,26 @@ Classification = Literal[
     "candidate_only",
     "non_target",
 ]
-OutputFormat = Literal["text", "json"]
+OutputFormat = Literal["text", "json", "lanes-json"]
+ClosureStatus = Literal["action_required", "covered_by_owner_route"]
+ClosureLane = Literal[
+    "activated_ability_names",
+    "combat_message_frame_does",
+    "description_effect_detail",
+    "display_name_composition",
+    "history_generated_text",
+    "journal_quest_routes",
+    "producer_message_popup",
+    "screen_ui_direct_text",
+    "other_owner_candidate",
+]
+
+
+class ClosureOverlayEntry(TypedDict):
+    """Reviewed closure evidence for one text-construction family."""
+
+    closure_status: ClosureStatus
+    closure_evidence: list[str]
 
 PLAYER_VISIBLE_API_SURFACES: Final = {
     "ActivatedAbility",
@@ -94,6 +113,31 @@ CLASSIFICATION_ORDER: Final = {
     "non_target": 3,
 }
 VALUABLE_CLASSIFICATIONS: Final = frozenset({"player_visible_api", "player_visible_owner_candidate"})
+LANE_ORDER: Final = {
+    "combat_message_frame_does": 0,
+    "history_generated_text": 1,
+    "screen_ui_direct_text": 2,
+    "display_name_composition": 3,
+    "description_effect_detail": 4,
+    "journal_quest_routes": 5,
+    "activated_ability_names": 6,
+    "producer_message_popup": 7,
+    "other_owner_candidate": 8,
+}
+COMBAT_MELEE_ATTACK_FAMILY_ID: Final = (
+    "XRL.World.Parts/Combat.cs::Combat.MeleeAttackWithWeaponInternal("
+    "GameObject,GameObject,GameObject,BodyPart,string,int,int,int,int,int,bool,bool)"
+)
+TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
+    COMBAT_MELEE_ATTACK_FAMILY_ID: {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/DoesVerbFamilyTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessagePatternTranslatorTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+        ],
+    },
+}
 
 
 class TextConstructionFamily(TypedDict):
@@ -127,6 +171,9 @@ class SurfaceQueueEntry(TypedDict):
     """One classified text-construction family for localization planning."""
 
     classification: Classification
+    closure_lane: ClosureLane
+    closure_status: ClosureStatus
+    closure_evidence: list[str]
     family_id: str
     source_file: str
     type_name: str
@@ -149,7 +196,26 @@ class SurfaceQueuePayload(TypedDict):
     schema_version: str
     inventory: str
     counts: dict[str, int]
+    lane_counts: dict[str, int]
     entries: list[SurfaceQueueEntry]
+
+
+class LaneSummary(TypedDict):
+    """Aggregated closure-lane handoff summary."""
+
+    entry_count: int
+    text_construction_count: int
+    closure_status_counts: dict[str, int]
+    top_entries: list[SurfaceQueueEntry]
+
+
+class LaneSummaryPayload(TypedDict):
+    """Serialized closure-lane summary."""
+
+    schema_version: str
+    inventory: str
+    lane_counts: dict[str, int]
+    lanes: dict[str, LaneSummary]
 
 
 class ClassifiedSurface(TypedDict):
@@ -264,14 +330,53 @@ def queue_payload(
     """Build a JSON-serializable classified queue payload."""
     entries = _filter_entries(build_surface_queue(inventory), include)
     counts: dict[str, int] = {}
+    lane_counts: dict[str, int] = {}
     for entry in entries:
         counts[entry["classification"]] = counts.get(entry["classification"], 0) + 1
+        lane_counts[entry["closure_lane"]] = lane_counts.get(entry["closure_lane"], 0) + 1
 
     return {
         "schema_version": "1.0",
         "inventory": str(inventory_path),
         "counts": counts,
+        "lane_counts": dict(sorted(lane_counts.items(), key=lambda item: LANE_ORDER[item[0]])),
         "entries": entries,
+    }
+
+
+def lane_summary_payload(
+    inventory: TextConstructionInventory,
+    *,
+    inventory_path: Path,
+    include: str = "valuable",
+    top_per_lane: int = 5,
+) -> LaneSummaryPayload:
+    """Build an actionable closure-lane summary with representative top families."""
+    payload = queue_payload(inventory, inventory_path=inventory_path, include=include)
+    lanes: dict[str, LaneSummary] = {}
+    for entry in payload["entries"]:
+        lane = entry["closure_lane"]
+        summary = lanes.setdefault(
+            lane,
+            {
+                "entry_count": 0,
+                "text_construction_count": 0,
+                "closure_status_counts": {},
+                "top_entries": [],
+            },
+        )
+        summary["entry_count"] += 1
+        summary["text_construction_count"] += entry["text_construction_count"]
+        closure_status = entry["closure_status"]
+        summary["closure_status_counts"][closure_status] = summary["closure_status_counts"].get(closure_status, 0) + 1
+        if len(summary["top_entries"]) < top_per_lane:
+            summary["top_entries"].append(entry)
+
+    return {
+        "schema_version": "1.0",
+        "inventory": str(inventory_path),
+        "lane_counts": payload["lane_counts"],
+        "lanes": dict(sorted(lanes.items(), key=lambda item: LANE_ORDER[item[0]])),
     }
 
 
@@ -287,7 +392,8 @@ def format_surface_queue(
     entries = payload["entries"] if limit is None else payload["entries"][:limit]
     total_entries = len(payload["entries"])
     lines = [
-        f"text construction surface queue: {total_entries} entries; counts={_format_counter(payload['counts'])}"
+        f"text construction surface queue: {total_entries} entries; counts={_format_counter(payload['counts'])}",
+        f"closure lanes: {_format_counter(payload['lane_counts'])}",
     ]
 
     for index, entry in enumerate(entries, start=1):
@@ -299,10 +405,11 @@ def format_surface_queue(
         lines.append(
             "".join(
                 (
-                    f"{index}. [{entry['classification']}] {entry['source_file']}:",
+                    f"{index}. [{entry['classification']}/{entry['closure_lane']}] {entry['source_file']}:",
                     f"{entry['member_start_line']} {entry['type_name']}.{entry['member_signature']} ",
                     f"surfaces={','.join(surfaces)} ",
-                    f"count={entry['text_construction_count']}",
+                    f"count={entry['text_construction_count']} ",
+                    f"closure={entry['closure_status']}",
                 )
             )
         )
@@ -319,7 +426,7 @@ def main(argv: list[str] | None = None) -> int:
     """Classify a TextConstructionInventory JSON file."""
     parser = ArgumentParser(description="Classify player-visible text-construction surfaces.")
     _ = parser.add_argument("--inventory", type=Path, required=True)
-    _ = parser.add_argument("--format", choices=("text", "json"), default="text")
+    _ = parser.add_argument("--format", choices=("text", "json", "lanes-json"), default="text")
     _ = parser.add_argument(
         "--include",
         choices=("valuable", "all", "candidate-only", "non-target"),
@@ -340,6 +447,11 @@ def main(argv: list[str] | None = None) -> int:
         _ = sys.stdout.write(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
         return 0
 
+    if output_format == "lanes-json":
+        payload = lane_summary_payload(inventory, inventory_path=inventory_path, include=include)
+        _ = sys.stdout.write(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
+        return 0
+
     text = format_surface_queue(inventory, inventory_path=inventory_path, include=include, limit=limit)
     _ = sys.stdout.write(text + "\n")
     return 0
@@ -347,8 +459,13 @@ def main(argv: list[str] | None = None) -> int:
 
 def _queue_entry(family: TextConstructionFamily) -> SurfaceQueueEntry:
     classified = classify_family(family)
+    closure_lane = _closure_lane(family, classified)
+    closure_status, closure_evidence = _closure_overlay(family["family_id"])
     return {
         "classification": classified["classification"],
+        "closure_lane": closure_lane,
+        "closure_status": closure_status,
+        "closure_evidence": closure_evidence,
         "family_id": family["family_id"],
         "source_file": family["file"],
         "type_name": family["type_name"],
@@ -364,6 +481,38 @@ def _queue_entry(family: TextConstructionFamily) -> SurfaceQueueEntry:
         "reason": classified["reason"],
         "action": classified["action"],
     }
+
+
+def _closure_overlay(family_id: str) -> tuple[ClosureStatus, list[str]]:
+    overlay = TEXT_CONSTRUCTION_CLOSURE_OVERLAY.get(family_id)
+    if overlay is None:
+        return "action_required", []
+    return overlay["closure_status"], list(overlay["closure_evidence"])
+
+
+def _closure_lane(family: TextConstructionFamily, classified: ClassifiedSurface) -> ClosureLane:
+    surfaces = set(classified["player_visible_surfaces"]) | set(classified["contextual_surfaces"])
+    file_path = family["file"]
+
+    if surfaces & {"MessageFrame", "Does"}:
+        lane: ClosureLane = "combat_message_frame_does"
+    elif "HistoricStringExpander" in surfaces:
+        lane = "history_generated_text"
+    elif surfaces & {"SetText", "DirectTextAssignment"} and _has_prefix(file_path, UI_OWNER_FILE_PREFIXES):
+        lane = "screen_ui_direct_text"
+    elif surfaces & {"DisplayNameAssignment", "DisplayNameReturn", "DisplayTextReturn", "GetDisplayName"}:
+        lane = "display_name_composition"
+    elif surfaces & {"Description", "DescriptionAssignment", "DescriptionReturn", "EffectDescriptionReturn"}:
+        lane = "description_effect_detail"
+    elif "JournalAPI" in surfaces:
+        lane = "journal_quest_routes"
+    elif "ActivatedAbility" in surfaces:
+        lane = "activated_ability_names"
+    elif surfaces & {"AddPlayerMessage", "EmitMessage", "Popup", "TutorialManagerPopup"}:
+        lane = "producer_message_popup"
+    else:
+        lane = "other_owner_candidate"
+    return lane
 
 
 def _is_player_visible_owner_candidate(family: TextConstructionFamily) -> bool:

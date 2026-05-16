@@ -9,6 +9,7 @@ import sys
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Final
 
 ALLOWED_ROUTES = (
     "message-frame",
@@ -52,6 +53,12 @@ _JOURNAL_MARKERS = (
     "You note this piece of information",
     "You note the location of ",
 )
+NEEDS_HARMONY_PATCH_DEFERRAL_SOURCE: Final = "docs/superpowers/plans/2026-03-24-does-verb-manifest.md"
+NEEDS_HARMONY_PATCH_DEFERRED_PATTERNS: Final = ()
+NEEDS_HARMONY_PATCH_DEFERRAL_EVIDENCE: Final = dict.fromkeys(
+    NEEDS_HARMONY_PATCH_DEFERRED_PATTERNS,
+    NEEDS_HARMONY_PATCH_DEFERRAL_SOURCE,
+)
 
 
 @dataclass(frozen=True)
@@ -62,12 +69,18 @@ class RouteValidationReport:
     counts: dict[str, int]
     missing_routes: list[str]
     invalid_routes: list[str]
+    missing_needs_harmony_patch_deferrals: list[str]
     route_count_mismatches: list[str]
 
     @property
     def has_errors(self) -> bool:
         """Return true when any validation check failed."""
-        return bool(self.missing_routes or self.invalid_routes or self.route_count_mismatches)
+        return bool(
+            self.missing_routes
+            or self.invalid_routes
+            or self.missing_needs_harmony_patch_deferrals
+            or self.route_count_mismatches
+        )
 
 
 def classify_route(pattern: str) -> str:
@@ -93,7 +106,12 @@ def classify_route(pattern: str) -> str:
     return route
 
 
-def validate_pattern_routes(path: Path, expected_counts: dict[str, int] | None = None) -> RouteValidationReport:
+def validate_pattern_routes(
+    path: Path,
+    expected_counts: dict[str, int] | None = None,
+    *,
+    require_needs_harmony_patch_deferrals: bool = False,
+) -> RouteValidationReport:
     """Validate route fields and summarize counts by allowed route."""
     raw = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(raw, dict):
@@ -107,6 +125,7 @@ def validate_pattern_routes(path: Path, expected_counts: dict[str, int] | None =
     counts: Counter[str] = Counter()
     missing_routes: list[str] = []
     invalid_routes: list[str] = []
+    missing_needs_harmony_patch_deferrals: list[str] = []
 
     for index, entry in enumerate(patterns):
         if not isinstance(entry, dict):
@@ -123,6 +142,14 @@ def validate_pattern_routes(path: Path, expected_counts: dict[str, int] | None =
             continue
 
         counts[route] += 1
+        if (
+            require_needs_harmony_patch_deferrals
+            and route == "needs-harmony-patch"
+            and pattern not in NEEDS_HARMONY_PATCH_DEFERRAL_EVIDENCE
+        ):
+            missing_needs_harmony_patch_deferrals.append(
+                f"patterns[{index}] needs-harmony-patch lacks explicit deferral evidence: {pattern}"
+            )
 
     ordered_counts = {route: counts.get(route, 0) for route in ALLOWED_ROUTES}
     route_count_mismatches = []
@@ -138,6 +165,7 @@ def validate_pattern_routes(path: Path, expected_counts: dict[str, int] | None =
         counts=ordered_counts,
         missing_routes=missing_routes,
         invalid_routes=invalid_routes,
+        missing_needs_harmony_patch_deferrals=missing_needs_harmony_patch_deferrals,
         route_count_mismatches=route_count_mismatches,
     )
 
@@ -150,6 +178,7 @@ def _print_report(report: RouteValidationReport) -> None:
 
     _print_issues("Missing route entries", report.missing_routes)
     _print_issues("Invalid route entries", report.invalid_routes)
+    _print_issues("Missing needs-harmony-patch deferrals", report.missing_needs_harmony_patch_deferrals)
     _print_issues("Route count mismatches", report.route_count_mismatches)
 
     if not report.has_errors:
@@ -203,6 +232,11 @@ def main(argv: list[str] | None = None) -> int:
         type=_parse_expected_count,
         help="Require an exact route count. May be specified more than once.",
     )
+    parser.add_argument(
+        "--require-needs-harmony-patch-deferrals",
+        action="store_true",
+        help="Require every needs-harmony-patch row to be listed in the explicit deferral registry.",
+    )
     args = parser.parse_args(argv)
     expected_counts: dict[str, int] = {}
     for route, count in args.expect_count:
@@ -211,7 +245,11 @@ def main(argv: list[str] | None = None) -> int:
         expected_counts[route] = count
 
     try:
-        report = validate_pattern_routes(args.path, expected_counts)
+        report = validate_pattern_routes(
+            args.path,
+            expected_counts,
+            require_needs_harmony_patch_deferrals=args.require_needs_harmony_patch_deferrals,
+        )
     except (FileNotFoundError, TypeError, json.JSONDecodeError) as exc:
         print(f"Error: {exc}", file=sys.stderr)  # noqa: T201
         return 1

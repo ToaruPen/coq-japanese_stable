@@ -28,6 +28,10 @@ public static class GeneratedQueueDoesVerbTranslationPatch
         "^Somebody rifles through (?<target>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex NoLimbsPattern = new(
+        "^(?<subject>.+?) (?:has|have) no limbs\\.?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -142,7 +146,8 @@ public static class GeneratedQueueDoesVerbTranslationPatch
         if (TryTranslateDropDown(stripped, spans, sourceWithoutLeadingDoesMarker, out var generatedTranslated)
             || TryTranslatePaxKlanq(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated)
             || TryTranslateExtradimensionalLoot(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated)
-            || TryTranslateSomebodyRiflesThrough(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated))
+            || TryTranslateSomebodyRiflesThrough(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated)
+            || TryTranslateNoLimbs(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated))
         {
             DynamicTextObservability.RecordTransform("MessageQueue.AddPlayerMessage", Context, message, generatedTranslated);
             message = generatedTranslated;
@@ -273,6 +278,27 @@ public static class GeneratedQueueDoesVerbTranslationPatch
 
         translated = RestoreWholeSourceBoundary(
             $"誰かが{StripLeadingArticle(RestoreCapture(match, spans, "target"))}を漁った",
+            spans,
+            stripped,
+            source);
+        return true;
+    }
+
+    private static bool TryTranslateNoLimbs(
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string source,
+        out string translated)
+    {
+        var match = NoLimbsPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = string.Empty;
+            return false;
+        }
+
+        translated = RestoreWholeSourceBoundary(
+            $"{NormalizeSubject(RestoreCapture(match, spans, "subject"))}には四肢がない",
             spans,
             stripped,
             source);

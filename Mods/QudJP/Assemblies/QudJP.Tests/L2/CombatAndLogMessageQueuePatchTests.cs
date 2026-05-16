@@ -1250,6 +1250,19 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertGameObjectPerformThrowQueuedMessage(message, expected);
     }
 
+    [TestCase("The snapjaw hits you with an iron arrow (x2) for 7 damage!", "snapjawのiron arrowで7ダメージを受けた！ (x2)")]
+    [TestCase("You hit the snapjaw (x2) with an iron arrow for 7 damage!", "iron arrowでsnapjawに7ダメージを与えた！ (x2)")]
+    [TestCase("You critically hit the snapjaw (x2) with an iron arrow for 7 damage!", "iron arrowでsnapjawに会心の一撃、7ダメージを与えた！ (x2)")]
+    [TestCase("The snapjaw hits with an iron arrow (x2) for 7 damage!", "snapjawはiron arrowで7ダメージを与えた！ (x2)")]
+    [TestCase("The snapjaw hits the eyeless crab with an iron arrow (x2) for 7 damage!", "snapjawがiron arrowでeyeless crabに7ダメージを与えた！ (x2)")]
+    public void MissileWeaponHit_TranslatesInventoriedMultiplierDamageShapes_WhenOwnerPatched(
+        string message,
+        string expected)
+    {
+        UseRepositoryPatternDictionary();
+        AssertMissileWeaponHitQueuedMessage(message, expected);
+    }
+
     [Test]
     public void GameObjectPerformThrow_TranslatesSelfTargetPopup_WhenOwnerPatched()
     {
@@ -3021,6 +3034,17 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void LiquidLoader_TranslatesQueuedMessages_WhenOwnerPatched(string source, string expected)
     {
         AssertLiquidLoaderQueuedMessage(source, expected);
+    }
+
+    [TestCase(typeof(DummyCheckLoadAmmoEvent))]
+    [TestCase(typeof(DummyLoadAmmoEvent))]
+    [TestCase(typeof(DummyGetNotReadyToFireMessageEvent))]
+    public void LiquidLoader_TranslatesBioAmmoEventMessages_WhenOwnerPatched(Type eventType)
+    {
+        AssertLiquidLoaderEventMessage(
+            eventType,
+            "{{Y|The bio ammo rack}} is exhausted!",
+            "{{Y|The bio ammo rack}}は疲弊した！");
     }
 
     [TestCase("You have no {{B|water}} to supply {{Y|the host}} with.", "{{Y|the host}}に供給する{{B|water}}がない。")]
@@ -5247,6 +5271,13 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertGeneratedQueueDoesVerbMessage(methodName, source, expected);
     }
 
+    [TestCase("The snapjaw has no limbs.", "snapjawには四肢がない")]
+    [TestCase("{{Y|The snapjaw}} has no limbs.", "{{Y|snapjaw}}には四肢がない")]
+    public void PhysicAmputateLimb_TranslatesNoLimbsPopup_WhenOwnerPatched(string source, string expected)
+    {
+        AssertPhysicAmputateLimbPopup(source, expected);
+    }
+
     [TestCase(
         nameof(DummySimpleOwnerQueueTarget.DropOffStolenGoodsMoveToDropoff),
         "The snapjaw drops",
@@ -7372,6 +7403,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
+    private static void AssertMissileWeaponHitQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.MissileWeaponHit)),
+                typeof(MissileWeaponHitTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.MissileWeaponHit();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static void AssertGameObjectToggleActivatedAbilityQueuedMessage(string message, string expected)
     {
         var harmonyId = CreateHarmonyId();
@@ -8409,6 +8467,38 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
+    private static void AssertLiquidLoaderEventMessage(Type eventType, string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            var method = RequireMethod(typeof(DummyLiquidLoaderTarget), nameof(DummyLiquidLoaderTarget.HandleEvent), eventType);
+            harmony.Patch(
+                original: method,
+                prefix: new HarmonyMethod(RequireMethod(typeof(LiquidLoaderTranslationPatch), nameof(LiquidLoaderTranslationPatch.Prefix))),
+                postfix: new HarmonyMethod(RequireMethod(typeof(LiquidLoaderTranslationPatch), nameof(LiquidLoaderTranslationPatch.Postfix))),
+                finalizer: new HarmonyMethod(RequireMethod(typeof(LiquidLoaderTranslationPatch), nameof(LiquidLoaderTranslationPatch.Finalizer))));
+
+            var target = new DummyLiquidLoaderTarget
+            {
+                MessageToSend = message,
+            };
+            var eventObject = Activator.CreateInstance(eventType)
+                ?? throw new InvalidOperationException("Dummy liquid loader event could not be created.");
+
+            _ = method.Invoke(target, [eventObject]);
+
+            var field = eventType.GetField("Message")
+                ?? throw new InvalidOperationException("Dummy liquid loader event lacks Message field.");
+            Assert.That(field.GetValue(eventObject), Is.EqualTo(MessageFrameTranslator.MarkDirectTranslation(expected)));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static void AssertLiquidLoaderPopup(string message, string expected)
     {
         var harmonyId = CreateHarmonyId();
@@ -8427,6 +8517,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
             };
 
             _ = target.FireEvent(new DummyEvent());
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertPhysicAmputateLimbPopup(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowFail(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.PhysicAmputateLimbFireEvent), typeof(DummyEvent)),
+                typeof(PhysicAmputateLimbTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                PopupMessageToSend = message,
+            };
+
+            _ = target.PhysicAmputateLimbFireEvent(new DummyEvent());
 
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
         }

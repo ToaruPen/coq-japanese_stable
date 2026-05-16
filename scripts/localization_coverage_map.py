@@ -31,6 +31,16 @@ REQUIRED_CATEGORIES: Final = {
     "route_family_tests",
     "runtime_evidence",
 }
+REQUIRED_CLOSEOUT_GATE_TYPES: Final = {
+    "asset_validator",
+    "classified_queue",
+    "domain_report_gap",
+    "explicit_runtime_evidence",
+    "legacy_reference_only",
+    "route_family_test_gap",
+    "sink_boundary_observation",
+    "tracked_inventory_closure",
+}
 
 REQUIRED_SURFACE_IDS: Final = {
     "activated_ability_names",
@@ -60,6 +70,9 @@ class CoverageSurface(TypedDict):
     label: str
     category: str
     status: str
+    closure_owner: str
+    closure_gate_type: str
+    closure_evidence: list[str]
     target_surfaces: list[str]
     scanner: NotRequired[str]
     inventory_artifact: NotRequired[str]
@@ -72,12 +85,21 @@ class CoverageSurface(TypedDict):
     next_actions: list[str]
 
 
+class TrueUntranslatedZeroDefinition(TypedDict):
+    """Project-level closeout definition for untranslated-zero claims."""
+
+    statement: str
+    required_proofs: list[str]
+    disallowed_proofs: list[str]
+
+
 class CoverageMap(TypedDict):
     """Machine-readable localization coverage map."""
 
     schema_version: str
     game_version: str
     description: NotRequired[str]
+    true_untranslated_zero_definition: NotRequired[TrueUntranslatedZeroDefinition]
     surfaces: list[CoverageSurface]
 
 
@@ -86,6 +108,9 @@ REQUIRED_FIELDS: Final = (
     "label",
     "category",
     "status",
+    "closure_owner",
+    "closure_gate_type",
+    "closure_evidence",
     "target_surfaces",
     "known_limits",
     "next_actions",
@@ -106,6 +131,7 @@ def validate_map(repo_root: Path, path: Path = MAP_PATH) -> list[str]:
         errors.append(f"unexpected schema_version: {document.get('schema_version')!r}")
     if document.get("game_version") != GAME_VERSION:
         errors.append(f"unexpected game_version: {document.get('game_version')!r}")
+    errors.extend(_validate_true_zero_definition(document))
 
     surfaces = document["surfaces"]
     ids = [surface.get("id", "") for surface in surfaces]
@@ -149,6 +175,9 @@ def _validate_surface_enums(surface_id: str, surface: CoverageSurface) -> list[s
         errors.append(f"{surface_id}: unknown category {category!r}")
     if status not in REQUIRED_STATUSES:
         errors.append(f"{surface_id}: unknown status {status!r}")
+    closure_gate_type = surface.get("closure_gate_type", "")
+    if closure_gate_type not in REQUIRED_CLOSEOUT_GATE_TYPES:
+        errors.append(f"{surface_id}: unknown closure_gate_type {closure_gate_type!r}")
 
     return errors
 
@@ -156,6 +185,7 @@ def _validate_surface_enums(surface_id: str, surface: CoverageSurface) -> list[s
 def _validate_surface_lists(surface_id: str, surface: CoverageSurface) -> list[str]:
     errors: list[str] = []
     required_lists = (
+        ("closure_evidence", surface.get("closure_evidence")),
         ("target_surfaces", surface.get("target_surfaces")),
         ("known_limits", surface.get("known_limits")),
         ("next_actions", surface.get("next_actions")),
@@ -207,7 +237,24 @@ def _validate_surface_status_contract(surface_id: str, surface: CoverageSurface)
 
     if status == "legacy_view_only" and category != "legacy_view":
         errors.append(f"{surface_id}: legacy_view_only status must use legacy_view category")
+    if not str(surface.get("closure_owner", "")).strip():
+        errors.append(f"{surface_id}: closure_owner must be non-empty")
 
+    return errors
+
+
+def _validate_true_zero_definition(document: CoverageMap) -> list[str]:
+    errors: list[str] = []
+    definition = document.get("true_untranslated_zero_definition")
+    if definition is None:
+        return ["missing true_untranslated_zero_definition"]
+
+    if not definition["statement"].strip():
+        errors.append("true_untranslated_zero_definition.statement must be non-empty")
+    if not _non_empty_list(definition["required_proofs"]):
+        errors.append("true_untranslated_zero_definition.required_proofs must be a non-empty list")
+    if not _non_empty_list(definition["disallowed_proofs"]):
+        errors.append("true_untranslated_zero_definition.disallowed_proofs must be a non-empty list")
     return errors
 
 

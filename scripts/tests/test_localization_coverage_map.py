@@ -19,6 +19,29 @@ def test_localization_coverage_map_is_valid_and_complete() -> None:
     assert errors == []
 
 
+def test_localization_coverage_map_defines_true_untranslated_zero_closeout() -> None:
+    """The map must define what evidence is required before claiming zero untranslated text."""
+    document = load_map(MAP_PATH)
+    definition = document.get("true_untranslated_zero_definition")
+    assert definition is not None
+
+    assert "player-visible" in definition["statement"]
+    assert "without fresh runtime evidence" in definition["statement"]
+    assert len(definition["required_proofs"]) >= 3
+    assert any("runtime" in proof for proof in definition["required_proofs"])
+    assert any("sink" in proof for proof in definition["disallowed_proofs"])
+
+
+def test_localization_coverage_map_surfaces_have_closeout_contracts() -> None:
+    """Every surface lane must name its owner and the evidence gate that closes it."""
+    document = load_map(MAP_PATH)
+
+    for surface in document["surfaces"]:
+        assert surface["closure_owner"]
+        assert surface["closure_gate_type"]
+        assert surface["closure_evidence"]
+
+
 def test_localization_coverage_map_keeps_runtime_and_sink_boundary_lanes_explicit() -> None:
     """The map must keep runtime and sink-boundary lanes separate from static coverage."""
     document = load_map(MAP_PATH)

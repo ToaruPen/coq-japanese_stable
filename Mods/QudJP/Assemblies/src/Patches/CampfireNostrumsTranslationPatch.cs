@@ -30,6 +30,9 @@ public static class CampfireNostrumsTranslationPatch
     private static readonly Regex NeitherBleedingPattern = new(
         "^Neither you nor (?<target>.+?) are bleeding\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex NotBleedingPattern = new(
+        "^You are not bleeding\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex NoMedicinalIngredientsPattern = new(
         "^You have no medicinal ingredients with which to treat the poison coursing through (?<target>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -186,6 +189,17 @@ public static class CampfireNostrumsTranslationPatch
             out translated,
             out detail))
         {
+            return true;
+        }
+
+        if (NotBleedingPattern.IsMatch(stripped))
+        {
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                "あなたは出血していない。",
+                spans,
+                stripped.Length,
+                source);
+            detail = "NotBleeding";
             return true;
         }
 
