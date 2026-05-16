@@ -20,14 +20,40 @@ internal sealed class DummyJournalStatusScreenTarget
 
     public DummyUITextSkin categoryText = new DummyUITextSkin();
 
+    public List<DummyJournalCategoryInfo> categoryInfos = new List<DummyJournalCategoryInfo>
+    {
+        new DummyJournalCategoryInfo
+        {
+            Name = "Locations",
+        },
+        new DummyJournalCategoryInfo
+        {
+            Name = "Gossip and Lore",
+        },
+        new DummyJournalCategoryInfo
+        {
+            Name = "Sultan Histories",
+        },
+    };
+
     public DummyMenuOption CMD_INSERT = new DummyMenuOption("Add", "CmdInsert");
 
     public DummyMenuOption CMD_DELETE = new DummyMenuOption("Delete", "CmdDelete");
 
     public string NextCategoryText { get; set; } = "Locations";
 
+    public string? CategoryNameReadDuringUpdate { get; private set; }
+
     public void UpdateViewFromData()
     {
+        if (CurrentCategory < 0 || CurrentCategory >= categoryInfos.Count)
+        {
+            CategoryNameReadDuringUpdate = null;
+            categoryText.SetText(NextCategoryText);
+            return;
+        }
+
+        CategoryNameReadDuringUpdate = categoryInfos[CurrentCategory].Name;
         categoryText.SetText(NextCategoryText);
     }
 
@@ -35,6 +61,11 @@ internal sealed class DummyJournalStatusScreenTarget
     {
         return "Journal";
     }
+}
+
+internal sealed class DummyJournalCategoryInfo
+{
+    public string Name = string.Empty;
 }
 
 internal sealed class DummyJournalLineDataTarget

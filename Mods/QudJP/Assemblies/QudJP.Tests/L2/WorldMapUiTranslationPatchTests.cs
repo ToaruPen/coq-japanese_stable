@@ -101,6 +101,87 @@ public sealed class WorldMapUiTranslationPatchTests
     }
 
     [Test]
+    public void JournalStatusScreenPatch_PreservesInternalCategoryNamesBeforeOriginal_WhenPatched()
+    {
+        WriteDictionary(
+            "ui-journal.ja.json",
+            ("Locations", "場所"),
+            ("Gossip and Lore", "噂と伝承"),
+            ("Sultan Histories", "スルタン史"),
+            ("Add", "追加"),
+            ("Delete", "削除"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            var prefix = AccessTools.Method(typeof(JournalStatusScreenTranslationPatch), "Prefix");
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyJournalStatusScreenTarget), nameof(DummyJournalStatusScreenTarget.UpdateViewFromData)),
+                prefix: prefix is null ? null : new HarmonyMethod(prefix),
+                postfix: new HarmonyMethod(RequireMethod(typeof(JournalStatusScreenTranslationPatch), nameof(JournalStatusScreenTranslationPatch.Postfix))));
+
+            var target = new DummyJournalStatusScreenTarget
+            {
+                CurrentCategory = 0,
+            };
+            target.UpdateViewFromData();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.CategoryNameReadDuringUpdate, Is.EqualTo("Locations"));
+                Assert.That(target.categoryInfos[0].Name, Is.EqualTo("Locations"));
+                Assert.That(target.categoryText.Text, Is.EqualTo("場所"));
+                Assert.That(target.CMD_INSERT.Description, Is.EqualTo("追加"));
+                Assert.That(target.CMD_DELETE.Description, Is.EqualTo("削除"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(JournalStatusScreenTranslationPatch), "JournalStatusScreen.CategoryText"),
+                    Is.EqualTo(1));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(JournalStatusScreenTranslationPatch), "JournalStatusScreen.MenuOption"),
+                    Is.EqualTo(2));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void JournalStatusScreenPostfix_TranslatesCategoryText_WhenCurrentCategoryIsOutOfRange()
+    {
+        WriteDictionary(
+            "ui-journal.ja.json",
+            ("Locations", "場所"),
+            ("Add", "追加"),
+            ("Delete", "削除"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyJournalStatusScreenTarget), nameof(DummyJournalStatusScreenTarget.UpdateViewFromData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(JournalStatusScreenTranslationPatch), nameof(JournalStatusScreenTranslationPatch.Postfix))));
+
+            var target = new DummyJournalStatusScreenTarget
+            {
+                CurrentCategory = 99,
+                NextCategoryText = "Locations",
+            };
+
+            target.UpdateViewFromData();
+
+            Assert.That(target.categoryText.Text, Is.EqualTo("場所"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void StatusScreensScreenPostfix_TranslatesFilterNavigationAndAccept_WhenPatched()
     {
         WriteDictionary(

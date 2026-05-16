@@ -33,14 +33,6 @@ public static class GolemQuestSelectionPopupTranslationPatch
         {
             yield return method;
         }
-
-        foreach (var method in ResolveTarget(
-                     "XRL.World.Quests.GolemQuest.GolemMaterialSelection`2",
-                     "Pick",
-                     Type.EmptyTypes))
-        {
-            yield return method;
-        }
     }
 
     public static void Prefix()
@@ -73,16 +65,16 @@ public static class GolemQuestSelectionPopupTranslationPatch
     {
         _ = family;
 
-        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(source))
+        if (string.IsNullOrEmpty(source))
         {
             translated = source;
             return false;
         }
 
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
         {
-            translated = markedText;
-            return true;
+            translated = source;
+            return false;
         }
 
         if (TryTranslateCore(source, out translated, out var detail))
