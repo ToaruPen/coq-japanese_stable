@@ -149,21 +149,36 @@ public sealed class WorldMapUiTranslationPatchTests
     }
 
     [Test]
-    public void JournalStatusScreenTarget_UsesClearDefault_WhenCurrentCategoryIsOutOfRange()
+    public void JournalStatusScreenPostfix_TranslatesCategoryText_WhenCurrentCategoryIsOutOfRange()
     {
-        var target = new DummyJournalStatusScreenTarget
-        {
-            CurrentCategory = 99,
-            NextCategoryText = "Locations",
-        };
+        WriteDictionary(
+            "ui-journal.ja.json",
+            ("Locations", "場所"),
+            ("Add", "追加"),
+            ("Delete", "削除"));
 
-        target.UpdateViewFromData();
-
-        Assert.Multiple(() =>
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
         {
-            Assert.That(target.CategoryNameReadDuringUpdate, Is.Null);
-            Assert.That(target.categoryText.Text, Is.EqualTo("Locations"));
-        });
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyJournalStatusScreenTarget), nameof(DummyJournalStatusScreenTarget.UpdateViewFromData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(JournalStatusScreenTranslationPatch), nameof(JournalStatusScreenTranslationPatch.Postfix))));
+
+            var target = new DummyJournalStatusScreenTarget
+            {
+                CurrentCategory = 99,
+                NextCategoryText = "Locations",
+            };
+
+            target.UpdateViewFromData();
+
+            Assert.That(target.categoryText.Text, Is.EqualTo("場所"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     [Test]
