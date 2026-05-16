@@ -140,7 +140,11 @@ jobs:
 
       - name: Build QudJP.Tests
         if: hashFiles('Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj') != ''
-        run: dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release
+        run: >
+          dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj
+          --configuration Release
+          -p:RunAnalyzers=false
+          -p:RunAnalyzersDuringBuild=false
 
       - name: Upload QudJP test artifact
         if: hashFiles('Mods/QudJP/Assemblies/QudJP.Tests/bin/Release/net10.0/QudJP.Tests.dll') != ''

@@ -13,7 +13,7 @@ REPO_ROOT: Final = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.dotnet_tool_runner import DotnetToolError, run_tool_project  # noqa: E402
+from scripts.dotnet_tool_runner import DotnetToolError, run_cached_tool_project  # noqa: E402
 
 DEFAULT_SOURCE_ROOT: Final = Path("~/dev/coq-decompiled_stable").expanduser()
 ROSLYN_PROBE_TIMEOUT_SECONDS: Final = 600
@@ -45,7 +45,7 @@ def run_probe(args: list[str]) -> JsonObject:
 
     output_path = _output_path_from_args(args)
     try:
-        result = run_tool_project(PROJECT_PATH, args, timeout=ROSLYN_PROBE_TIMEOUT_SECONDS)
+        result = run_cached_tool_project(PROJECT_PATH, args, timeout=ROSLYN_PROBE_TIMEOUT_SECONDS)
     except DotnetToolError as exc:
         raise RuntimeError(str(exc)) from exc
 

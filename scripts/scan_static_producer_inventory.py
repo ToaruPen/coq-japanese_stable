@@ -15,7 +15,7 @@ REPO_ROOT: Final = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.dotnet_tool_runner import DotnetToolError, run_tool_project  # noqa: E402
+from scripts.dotnet_tool_runner import DotnetToolError, run_cached_tool_project  # noqa: E402
 
 SCHEMA_VERSION: Final = "1.0"
 GAME_VERSION: Final = "1.0.4"
@@ -205,7 +205,7 @@ def _run_roslyn_scanner(source_root: Path, output_path: Path) -> InventoryPayloa
         str(output_path),
     ]
     try:
-        result = run_tool_project(PROJECT_PATH, tool_args, timeout=ROSLYN_SCANNER_TIMEOUT_SECONDS)
+        result = run_cached_tool_project(PROJECT_PATH, tool_args, timeout=ROSLYN_SCANNER_TIMEOUT_SECONDS)
     except DotnetToolError as exc:
         raise RuntimeError(str(exc)) from exc
     if result.returncode != 0:

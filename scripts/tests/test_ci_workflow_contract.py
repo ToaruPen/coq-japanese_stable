@@ -20,6 +20,14 @@ def _job_block(workflow: str, job_name: str, next_job_name: str | None) -> str:
     return workflow[start:end]
 
 
+def _step_block(job: str, step_name: str, next_step_name: str | None) -> str:
+    start = job.index(f"\n      - name: {step_name}\n")
+    if next_step_name is None:
+        return job[start:]
+    end = job.index(f"\n      - name: {next_step_name}\n", start + 1)
+    return job[start:end]
+
+
 def test_ci_keeps_required_build_check_as_aggregator() -> None:
     """The branch-protection-facing build job stays stable while work runs in parallel jobs."""
     workflow = _workflow_text()
@@ -40,6 +48,21 @@ def test_ci_splits_qudjp_test_categories_into_matrix() -> None:
     assert '--filter "TestCategory=${{ matrix.category }}"' in workflow
     assert "actions/upload-artifact" in workflow
     assert "actions/download-artifact" in workflow
+
+
+def test_ci_keeps_analyzers_on_production_build_and_skips_them_for_test_artifact() -> None:
+    """The CI test DLL should build cheaply without dropping the production analyzer gate."""
+    workflow = _workflow_text()
+    job = _job_block(workflow, "qudjp-dotnet-build", "qudjp-dotnet-test")
+    production_build = _step_block(job, "Build QudJP", "Build QudJP.Tests")
+    test_artifact_build = _step_block(job, "Build QudJP.Tests", "Upload QudJP test artifact")
+
+    assert "dotnet build Mods/QudJP/Assemblies/QudJP.csproj --configuration Release" in production_build
+    assert "-p:RunAnalyzers" not in production_build
+    assert "-p:RunAnalyzersDuringBuild" not in production_build
+    assert "dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj" in test_artifact_build
+    assert "-p:RunAnalyzers=false" in test_artifact_build
+    assert "-p:RunAnalyzersDuringBuild=false" in test_artifact_build
 
 
 def test_ci_checks_out_repo_for_qudjp_test_matrix() -> None:

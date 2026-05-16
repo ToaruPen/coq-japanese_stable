@@ -77,7 +77,8 @@ Use this skill to turn runtime untranslated text into the smallest correct QudJP
 
 5. Verify using `just` recipes where available.
    - Build: `just build`
-   - C# tests: `just test-l1`, `just test-l2`, `just test-l2g`
+   - C# behavior tests: `just test-l1`, `just test-l2`, `just test-l2g`
+   - Analyzer-inclusive local gates: `just build`, `just check`, or `just pr-check`
    - Localization checks: `just localization-check`, `just translation-token-check`
    - Static coverage map check: `just localization-coverage-map-check`
    - Broad local gate: `just check`

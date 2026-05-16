@@ -14,7 +14,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.dotnet_tool_runner import DotnetToolError, run_tool_project  # noqa: E402
+from scripts.dotnet_tool_runner import DotnetToolError, run_cached_tool_project  # noqa: E402
 
 PROJECT_PATH = REPO_ROOT / "scripts" / "tools" / "AnnalsPatternExtractor" / "AnnalsPatternExtractor.csproj"
 EXTRACTOR_TIMEOUT_SECONDS = 600
@@ -68,9 +68,9 @@ def main(argv: list[str] | None = None) -> int:
         "--output",
         str(args.output),
     ]
-    print("[extract] building and running AnnalsPatternExtractor via isolated dotnet artifacts")
+    print("[extract] building and running AnnalsPatternExtractor via cached dotnet artifacts")
     try:
-        result = run_tool_project(PROJECT_PATH, tool_args, timeout=EXTRACTOR_TIMEOUT_SECONDS)
+        result = run_cached_tool_project(PROJECT_PATH, tool_args, timeout=EXTRACTOR_TIMEOUT_SECONDS)
     except DotnetToolError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1

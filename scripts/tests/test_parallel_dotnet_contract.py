@@ -1,4 +1,5 @@
 """Static contracts for parallel-safe dotnet/Roslyn test execution."""
+# pyright: reportPrivateUsage=false
 
 from __future__ import annotations
 
@@ -37,6 +38,24 @@ def _age_path(path: Path) -> None:
     os.utime(path, (stale_time, stale_time))
 
 
+def _write_probe_project(tmp_path: Path) -> Path:
+    project_path = tmp_path / "Probe.csproj"
+    _ = project_path.write_text(
+        "<Project><PropertyGroup><AssemblyName>Probe</AssemblyName></PropertyGroup></Project>\n",
+        encoding="utf-8",
+    )
+    return project_path
+
+
+def _write_cached_probe_dll(artifacts_root: Path, project_path: Path) -> Path:
+    dll = artifacts_root / "bin" / "Probe" / "release" / "Probe.dll"
+    dll.parent.mkdir(parents=True)
+    _ = dll.write_text("", encoding="utf-8")
+    stamp = dotnet_tool_runner._tool_sources_stamp_path(dll)  # noqa: SLF001
+    _ = stamp.write_text(dotnet_tool_runner._tool_sources_fingerprint(project_path), encoding="utf-8")  # noqa: SLF001
+    return dll
+
+
 def test_category_test_recipes_use_isolated_artifacts_and_test_built_dll() -> None:
     """L1/L2/L2G recipes must be safe to launch from separate shells in parallel."""
     justfile = "\n" + _read_repo_file("justfile")
@@ -50,25 +69,27 @@ def test_category_test_recipes_use_isolated_artifacts_and_test_built_dll() -> No
         assert f"{{{{dotnet_artifacts_root}}}}/{recipe_name}" in block
         assert "--artifacts-path" in block
         assert "--no-dependencies" in block
+        assert "{{dotnet_test_build_properties}}" in block
         assert "QudJP.Tests.dll" in block
         assert "dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj" not in block
         assert f"TestCategory={category}" in block
 
 
 def test_roslyn_tool_wrappers_use_run_scoped_dotnet_runner() -> None:
-    """Python Roslyn wrappers should use the shared run-scoped dotnet helper."""
+    """Python Roslyn wrappers should use the shared cached dotnet helper."""
     for path in (
         "scripts/extract_annals_patterns.py",
         "scripts/roslyn_semantic_probe.py",
         "scripts/scan_static_producer_inventory.py",
     ):
         text = _read_repo_file(path)
-        assert "run_tool_project" in text
+        assert "run_cached_tool_project" in text
 
     helper = _read_repo_file("scripts/dotnet_tool_runner.py")
     assert "--artifacts-path" in helper
     assert "TemporaryDirectory" in helper
     assert "tool-runs" in helper
+    assert "run_cached_tool_project" in helper
     assert "owner.pid" in helper
     assert "_remove_stale_lock" in helper
 
@@ -223,13 +244,226 @@ def test_run_tool_project_applies_timeout_to_build(
     monkeypatch.setattr(subprocess, "run", fake_run)
 
     with pytest.raises(dotnet_tool_runner.DotnetToolError) as exc_info:
-        dotnet_tool_runner.run_tool_project(project_path, [], timeout=3)
+        _ = dotnet_tool_runner.run_tool_project(project_path, [], timeout=3)
 
     message = str(exc_info.value)
     assert "dotnet build timed out after 3s" in message
     assert project_path.as_posix() in message
     assert "partial stdout" in message
     assert "partial stderr" in message
+
+
+def test_run_cached_tool_project_reuses_shared_artifacts_root(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Cached wrapper runs should rebuild incrementally in the shared artifacts root."""
+    project_path = _write_probe_project(tmp_path)
+    artifacts_root = tmp_path / "artifacts"
+    monkeypatch.setattr(dotnet_tool_runner, "_dotnet_path", lambda: "dotnet")
+    monkeypatch.setattr(dotnet_tool_runner, "_artifacts_root", lambda: artifacts_root)
+
+    def fake_run_build_command(
+        command: list[str],
+        *,
+        timeout: float,
+        artifacts_root: Path,
+        assembly_name: str,
+        use_lock: bool,
+    ) -> subprocess.CompletedProcess[str]:
+        assert timeout == 7
+        assert artifacts_root == tmp_path / "artifacts"
+        assert assembly_name == "Probe"
+        assert not use_lock
+        assert (artifacts_root / "locks" / "Probe.lock" / "owner.pid").is_file()
+        assert "--artifacts-path" in command
+        dll = artifacts_root / "bin" / assembly_name / "release" / "Probe.dll"
+        dll.parent.mkdir(parents=True)
+        _ = dll.write_text("", encoding="utf-8")
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    def fake_run_tool_dll(
+        tool_dll: Path,
+        args: list[str],
+        *,
+        timeout: int,
+    ) -> subprocess.CompletedProcess[str]:
+        assert tool_dll == artifacts_root / "bin" / "Probe" / "release" / "Probe.dll"
+        assert args == ["--flag"]
+        assert timeout == 7
+        assert not (artifacts_root / "locks" / "Probe.lock" / "owner.pid").exists()
+        return subprocess.CompletedProcess(["dotnet", str(tool_dll), *args], 0, "ok", "")
+
+    monkeypatch.setattr(dotnet_tool_runner, "_run_build_command", fake_run_build_command)
+    monkeypatch.setattr(dotnet_tool_runner, "_run_tool_dll", fake_run_tool_dll)
+
+    result = dotnet_tool_runner.run_cached_tool_project(project_path, ["--flag"], timeout=7)
+
+    assert result.stdout == "ok"
+
+
+def test_run_cached_tool_project_skips_build_when_cached_dll_is_fresh(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Fresh cached tool DLLs should avoid repeated dotnet build startup."""
+    project_path = _write_probe_project(tmp_path)
+    artifacts_root = tmp_path / "artifacts"
+    dll = _write_cached_probe_dll(artifacts_root, project_path)
+    fresh_time = project_path.stat().st_mtime + 10.0
+    os.utime(dll, (fresh_time, fresh_time))
+    monkeypatch.setattr(dotnet_tool_runner, "_dotnet_path", lambda: "dotnet")
+    monkeypatch.setattr(dotnet_tool_runner, "_artifacts_root", lambda: artifacts_root)
+
+    def fail_build(
+        command: list[str],
+        *,
+        timeout: float,
+        artifacts_root: Path,
+        assembly_name: str,
+        use_lock: bool,
+    ) -> subprocess.CompletedProcess[str]:
+        _ = command, timeout, artifacts_root, assembly_name, use_lock
+        pytest.fail("fresh cached tool should not invoke dotnet build")
+
+    def fake_run_tool_dll(
+        tool_dll: Path,
+        args: list[str],
+        *,
+        timeout: int,
+    ) -> subprocess.CompletedProcess[str]:
+        assert tool_dll == dll
+        assert args == ["--cached"]
+        assert timeout == 5
+        return subprocess.CompletedProcess(["dotnet", str(tool_dll), *args], 0, "cached", "")
+
+    monkeypatch.setattr(dotnet_tool_runner, "_run_build_command", fail_build)
+    monkeypatch.setattr(dotnet_tool_runner, "_run_tool_dll", fake_run_tool_dll)
+
+    result = dotnet_tool_runner.run_cached_tool_project(project_path, ["--cached"], timeout=5)
+
+    assert result.stdout == "cached"
+
+
+def test_run_cached_tool_project_rebuilds_when_source_file_is_deleted(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Cached tool fingerprints should catch SDK-style glob source deletions."""
+    project_path = _write_probe_project(tmp_path)
+    source_path = tmp_path / "Program.cs"
+    artifacts_root = tmp_path / "artifacts"
+    _ = source_path.write_text("public static class Program {}\n", encoding="utf-8")
+    dll = _write_cached_probe_dll(artifacts_root, project_path)
+    source_path.unlink()
+
+    monkeypatch.setattr(dotnet_tool_runner, "_dotnet_path", lambda: "dotnet")
+    monkeypatch.setattr(dotnet_tool_runner, "_artifacts_root", lambda: artifacts_root)
+
+    build_calls = 0
+
+    def fake_run_build_command(
+        command: list[str],
+        *,
+        timeout: float,
+        artifacts_root: Path,
+        assembly_name: str,
+        use_lock: bool,
+    ) -> subprocess.CompletedProcess[str]:
+        nonlocal build_calls
+        _ = timeout, use_lock
+        build_calls += 1
+        assert command[0] == "dotnet"
+        _ = (artifacts_root / "bin" / assembly_name / "release" / "Probe.dll").write_text("", encoding="utf-8")
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    def fake_run_tool_dll(
+        tool_dll: Path,
+        args: list[str],
+        *,
+        timeout: int,
+    ) -> subprocess.CompletedProcess[str]:
+        assert tool_dll == dll
+        assert args == []
+        assert timeout == 5
+        return subprocess.CompletedProcess(["dotnet", str(tool_dll)], 0, "rebuilt", "")
+
+    monkeypatch.setattr(dotnet_tool_runner, "_run_build_command", fake_run_build_command)
+    monkeypatch.setattr(dotnet_tool_runner, "_run_tool_dll", fake_run_tool_dll)
+
+    result = dotnet_tool_runner.run_cached_tool_project(project_path, [], timeout=5)
+
+    assert build_calls == 1
+    assert result.stdout == "rebuilt"
+
+
+def test_run_cached_tool_project_normalizes_stamp_write_errors(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Stamp write failures should retain the failing path in a DotnetToolError."""
+    project_path = _write_probe_project(tmp_path)
+    artifacts_root = tmp_path / "artifacts"
+    broken_stamp = tmp_path / "missing-parent" / "Probe.dll.sources.sha256"
+    monkeypatch.setattr(dotnet_tool_runner, "_dotnet_path", lambda: "dotnet")
+    monkeypatch.setattr(dotnet_tool_runner, "_artifacts_root", lambda: artifacts_root)
+
+    def broken_stamp_path(_tool_dll: Path) -> Path:
+        return broken_stamp
+
+    monkeypatch.setattr(dotnet_tool_runner, "_tool_sources_stamp_path", broken_stamp_path)
+
+    def fake_run_build_command(
+        command: list[str],
+        *,
+        timeout: float,
+        artifacts_root: Path,
+        assembly_name: str,
+        use_lock: bool,
+    ) -> subprocess.CompletedProcess[str]:
+        _ = timeout, use_lock
+        assert command[0] == "dotnet"
+        dll = artifacts_root / "bin" / assembly_name / "release" / "Probe.dll"
+        dll.parent.mkdir(parents=True)
+        _ = dll.write_text("", encoding="utf-8")
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(dotnet_tool_runner, "_run_build_command", fake_run_build_command)
+
+    with pytest.raises(dotnet_tool_runner.DotnetToolError) as exc_info:
+        _ = dotnet_tool_runner.run_cached_tool_project(project_path, [], timeout=5)
+
+    assert broken_stamp.as_posix() in str(exc_info.value)
+    assert isinstance(exc_info.value.__cause__, OSError)
+
+
+def test_cached_tool_stale_check_normalizes_stamp_read_errors(tmp_path: Path) -> None:
+    """Unreadable stamp paths should report the failing stamp path consistently."""
+    project_path = _write_probe_project(tmp_path)
+    artifacts_root = tmp_path / "artifacts"
+    dll = _write_cached_probe_dll(artifacts_root, project_path)
+    stamp = dotnet_tool_runner._tool_sources_stamp_path(dll)  # noqa: SLF001
+    stamp.unlink()
+    stamp.mkdir()
+
+    with pytest.raises(dotnet_tool_runner.DotnetToolError) as exc_info:
+        _ = dotnet_tool_runner._cached_tool_is_stale(project_path, dll)  # noqa: SLF001
+
+    assert stamp.as_posix() in str(exc_info.value)
+    assert isinstance(exc_info.value.__cause__, OSError)
+
+
+def test_tool_sources_fingerprint_normalizes_source_read_errors(tmp_path: Path) -> None:
+    """Unreadable source inputs should report the failing source path consistently."""
+    project_path = _write_probe_project(tmp_path)
+    broken_source = tmp_path / "Broken.cs"
+    broken_source.mkdir()
+
+    with pytest.raises(dotnet_tool_runner.DotnetToolError) as exc_info:
+        _ = dotnet_tool_runner._tool_sources_fingerprint(project_path)  # noqa: SLF001
+
+    assert broken_source.as_posix() in str(exc_info.value)
+    assert isinstance(exc_info.value.__cause__, OSError)
 
 
 def test_parallel_dotnet_policy_is_documented() -> None:
