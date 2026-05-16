@@ -149,6 +149,9 @@ public sealed class WorldModsTextTranslatorTests
         "+200 reputation with {{Y|the Issachari tribe}}",
         "{{Y|イッサカリ族}}との評判+200")]
     [TestCase(
+        "-100 reputation with the Issachari tribe",
+        "イッサカリ族との評判-100")]
+    [TestCase(
         "{{W|Co-processor: When powered, this item grants +2 Intelligence and provides 13 units of compute power to the local lattice.}}",
         "{{W|共同処理装置: 通電中、知力に+2を与え、局所格子に13ユニットの演算力を供給する。}}")]
     [TestCase(
@@ -157,6 +160,24 @@ public sealed class WorldModsTextTranslatorTests
     [TestCase(
         "Offhand Attack Chance: 15%",
         "オフハンド命中率: 15%")]
+    [TestCase(
+        "When equipped and powered, provides 10 units of compute power to the local lattice.",
+        "装備・通電中、局所格子に10ユニットの演算力を供給する。")]
+    [TestCase(
+        "When equipped and powered, provides 10 units of compute power to the local lattice. (unpowered)",
+        "装備・通電中、局所格子に10ユニットの演算力を供給する。（無電力）")]
+    [TestCase(
+        "{{rules|When equipped and powered, provides 10 units of compute power to the local lattice. (unpowered)}}",
+        "{{rules|装備・通電中、局所格子に10ユニットの演算力を供給する。（無電力）}}")]
+    [TestCase(
+        "When equipped、powered、とin use, provides light in radius 2.",
+        "装備・通電・使用中、半径2に光を提供する。")]
+    [TestCase(
+        "25% chance per turn to repel gases near its wielderまたはwearer.",
+        "使用者または着用者近くのガスを毎ターン25%の確率で退ける。")]
+    [TestCase(
+        "{{rules|25% chance per turn to repel gases near its wielderまたはwearer.}}",
+        "{{rules|使用者または着用者近くのガスを毎ターン25%の確率で退ける。}}")]
     public void TryTranslate_TranslatesDynamicWorldModsTemplates(string source, string expected)
     {
         WriteDynamicWorldModsDictionary();
@@ -305,6 +326,29 @@ public sealed class WorldModsTextTranslatorTests
         {
             Assert.That(ok, Is.True);
             Assert.That(translated, Is.EqualTo("武器カテゴリ: 棍棒（クリティカル時に朦朧付与）"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateCompareStatusLine_UsesScopedWholeWeaponClassLineBeforeValueLookup()
+    {
+        WriteDictionaryWithContext(
+            "world-mods.ja.json",
+            ("XRL.World.Parts.MeleeWeapon.GetShortDescription",
+                "Weapon Class: Long Blades (increased penetration on critical hit)",
+                "武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
+
+        var ok = StatusLineTranslationHelpers.TryTranslateCompareStatusLine(
+            "Weapon Class: Long Blades (increased penetration on critical hit)",
+            "DescriptionShortDescriptionPatch",
+            "Description.CompareStatus",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("Long Blades (increased penetration on critical hit)"), Is.EqualTo(0));
         });
     }
 
@@ -460,6 +504,32 @@ public sealed class WorldModsTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslateActiveEffectsLine_TranslatesGeneratedDisplayNameEffectParts()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("ACTIVE EFFECTS:", "発動中の効果:"),
+            ("wading", "浅瀬を進んでいる"));
+        WriteDictionary(
+            "ui-displayname-adjectives.ja.json",
+            ("tarry", "べとつく"),
+            ("wet", "{{B|濡れた}}"));
+
+        var ok = StatusLineTranslationHelpers.TryTranslateActiveEffectsLine(
+            "ACTIVE EFFECTS: tarry wet, wading",
+            "DescriptionShortDescriptionPatch",
+            "Description.ActiveEffects",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("発動中の効果: べとつく{{B|濡れた}}、浅瀬を進んでいる"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("tarry wet"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public void TryTranslateLevelExpLine_TranslatesLevelLabelWithoutMissingRouteNoise()
     {
         WriteDictionary(
@@ -513,6 +583,11 @@ public sealed class WorldModsTextTranslatorTests
             ("Anti-gravity: When powered, this item's weight is reduced by {0}% plus {1} {2}.", "反重力: 通電中、この品の重量は{0}%減り、さらに{1}{2}軽くなる。"),
             ("Co-Processor: When powered, this item grants {0} {1} and provides compute power to the local lattice.", "共同処理装置: 通電中、{1}に{0}を与え、局所格子に演算力を供給する。"),
             ("Co-Processor: When powered, this item grants {0} {1} and provides {2} units of compute power to the local lattice.", "共同処理装置: 通電中、{1}に{0}を与え、局所格子に{2}ユニットの演算力を供給する。"),
+            ("When {0}, provides {1} {2} of compute power to the local lattice.", "{0}、局所格子に{1}{2}の演算力を供給する。"),
+            ("When {0}, provides {1} in radius {2}.", "{0}、半径{2}に{1}を提供する。"),
+            ("When {0}, provides {1}.", "{0}、{1}を提供する。"),
+            ("{0}% chance per turn to repel gases {1} {2}.", "{2}{1}ガスを毎ターン{0}%の確率で退ける。"),
+            ("Repels gases {0} {1}.", "{1}{0}ガスを退ける。"),
             ("Counterweighted: Adds a bonus to hit.", "つり合い調整: 命中にボーナスを与える。"),
             ("Counterweighted: Adds {0} to hit.", "つり合い調整: 命中に{0}のボーナスを与える。"),
             ("Displacer: When powered, this weapon randomly teleports its target {0} tiles away on a successful hit.", "位相転移: 通電中、この武器は命中時に対象を無作為に{0}マス離れた場所へ転移させる。"),
@@ -543,6 +618,29 @@ public sealed class WorldModsTextTranslatorTests
             }
 
             writer.Write("{\"key\":\"");
+            writer.Write(EscapeJson(entries[index].key));
+            writer.Write("\",\"text\":\"");
+            writer.Write(EscapeJson(entries[index].text));
+            writer.Write("\"}");
+        }
+
+        writer.WriteLine("]}");
+    }
+
+    private void WriteDictionaryWithContext(string fileName, params (string context, string key, string text)[] entries)
+    {
+        using var writer = new StreamWriter(Path.Combine(tempDirectory, fileName), append: false, Utf8WithoutBom);
+        writer.Write("{\"entries\":[");
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                writer.Write(',');
+            }
+
+            writer.Write("{\"context\":\"");
+            writer.Write(EscapeJson(entries[index].context));
+            writer.Write("\",\"key\":\"");
             writer.Write(EscapeJson(entries[index].key));
             writer.Write("\",\"text\":\"");
             writer.Write(EscapeJson(entries[index].text));

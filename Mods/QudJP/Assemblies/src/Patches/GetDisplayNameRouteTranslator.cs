@@ -31,6 +31,12 @@ internal static class GetDisplayNameRouteTranslator
         new Regex(
             @"^(?<base>.+?) (?<stats>(?:\x1a[^\[\r\n]*(?: \x03[^\[\r\n]+)?|\x03[^\[\r\n]+))(?: \[(?<state>.+)\])?$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CompactWeaponStatsDisplayNameSuffixSequencePattern =
+        new Regex(
+            @"^(?<base>.+?) (?<stats>(?:\x1a[^\[\r\n<]*(?: \x03[^\[\r\n<]+)?|\x03[^\[\r\n<]+))(?<suffixes>(?: (?:\[[^\]\r\n]+\]|<[^>\r\n]+>))+)$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex DisplayNameTrailingSuffixPattern =
+        new Regex(@"\G (?:(?<bracket>\[(?<state>[^\]\r\n]+)\])|(?<angle><[^>\r\n]+>))", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex ParenthesizedDisplayNameSuffixPattern =
         new Regex("^(?<base>.+?)\\s+\\((?<state>[A-Za-z][A-Za-z\\s-]*)\\)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex QuantityDisplayNameSuffixPattern =
@@ -165,6 +171,11 @@ internal static class GetDisplayNameRouteTranslator
         if (TryTranslateCompactWeaponStatsDisplayNameSuffix(stripped, spans, route, out var compactWeaponStatsTranslation))
         {
             return compactWeaponStatsTranslation;
+        }
+
+        if (TryTranslateCompactWeaponStatsDisplayNameSuffixSequence(stripped, spans, route, out var compactWeaponStatsSuffixSequenceTranslation))
+        {
+            return compactWeaponStatsSuffixSequenceTranslation;
         }
 
         if (TryTranslateBracketedDisplayNameSuffix(stripped, spans, route, out var bracketedSuffixTranslation))
@@ -500,6 +511,72 @@ internal static class GetDisplayNameRouteTranslator
             CompactWeaponStatsDisplayNameSuffixPattern,
             "DisplayName.CompactWeaponStatsSuffix",
             out translated);
+    }
+
+    private static bool TryTranslateCompactWeaponStatsDisplayNameSuffixSequence(
+        string source,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        out string translated)
+    {
+        var match = CompactWeaponStatsDisplayNameSuffixSequencePattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var baseGroup = match.Groups["base"];
+        var baseSource = baseGroup.Value;
+        var translatedBase = RestoreWholeSlice(TranslateDisplayNameFragment(baseSource, route), spans, baseGroup);
+        var stats = RestoreVisibleSlice(match.Groups["stats"], spans);
+        var suffixes = match.Groups["suffixes"];
+        var suffixEnd = suffixes.Index + suffixes.Length;
+        var builder = new StringBuilder();
+        var changed = !string.Equals(translatedBase, baseSource, StringComparison.Ordinal);
+        var scannedTo = suffixes.Index;
+
+        for (var suffixMatch = DisplayNameTrailingSuffixPattern.Match(source, suffixes.Index);
+             suffixMatch.Success && suffixMatch.Index < suffixEnd;
+             suffixMatch = suffixMatch.NextMatch())
+        {
+            scannedTo = suffixMatch.Index + suffixMatch.Length;
+            if (suffixMatch.Groups["bracket"].Success)
+            {
+                var stateGroup = suffixMatch.Groups["state"];
+                var translatedState = TranslateDisplayNameState(stateGroup.Value, route);
+                if (string.Equals(translatedState, stateGroup.Value, StringComparison.Ordinal))
+                {
+                    builder.Append(' ');
+                    builder.Append(RestoreVisibleSlice(suffixMatch.Groups["bracket"], spans));
+                    continue;
+                }
+
+                builder.Append(" [");
+                builder.Append(RestoreWholeSlice(translatedState, spans, stateGroup));
+                builder.Append(']');
+                changed = true;
+                continue;
+            }
+
+            builder.Append(' ');
+            builder.Append(RestoreVisibleSlice(suffixMatch.Groups["angle"], spans));
+        }
+
+        if (scannedTo != suffixEnd || !changed)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = translatedBase + " " + stats + builder;
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translated,
+            spans,
+            source.Length);
+
+        DynamicTextObservability.RecordTransform(route, "DisplayName.CompactWeaponStatsSuffixSequence", source, translated);
+        return true;
     }
 
     private static bool TryTranslateStatDisplayNameSuffix(

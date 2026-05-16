@@ -1061,6 +1061,26 @@
       "text": "共同処理装置: 通電中、{1}に{0}を与え、局所格子に{2}ユニットの演算力を供給する。"
     },
     {
+      "key": "When {0}, provides {1} {2} of compute power to the local lattice.",
+      "text": "{0}、局所格子に{1}{2}の演算力を供給する。"
+    },
+    {
+      "key": "When {0}, provides {1} in radius {2}.",
+      "text": "{0}、半径{2}に{1}を提供する。"
+    },
+    {
+      "key": "When {0}, provides {1}.",
+      "text": "{0}、{1}を提供する。"
+    },
+    {
+      "key": "{0}% chance per turn to repel gases {1} {2}.",
+      "text": "{2}{1}ガスを毎ターン{0}%の確率で退ける。"
+    },
+    {
+      "key": "Repels gases {0} {1}.",
+      "text": "{1}{0}ガスを退ける。"
+    },
+    {
       "key": "Counterweighted: Adds a bonus to hit.",
       "text": "つり合い調整: 命中にボーナスを与える。"
     },

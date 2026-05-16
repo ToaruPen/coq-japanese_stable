@@ -153,6 +153,23 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_TranslatesCompactWeaponTrailingStatesAfterAmmoAndAngleCode()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("[rusted]", "[{{r|錆びた}}]"),
+            ("[broken]", "[{{r|破損}}]"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "クローム・リボルバー {{c|\u001a}}7 {{r|\u0003}}1d6 {{y|[鉛スラッグ x6]}} [{{r|rusted}}] [{{r|broken}}] {{y|<{{|{{B|C}}{{B|C}}{{g|2}}}}>}}",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("クローム・リボルバー {{c|\u001a}}7 {{r|\u0003}}1d6 {{y|[鉛スラッグ x6]}} [{{r|錆びた}}] [{{r|破損}}] {{y|<{{|{{B|C}}{{B|C}}{{g|2}}}}>}}"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_UsesScopedStateTemplateLookup()
     {
         WriteDictionary(

@@ -69,6 +69,13 @@ def test_classify_preserved_stat_abbreviation() -> None:
     assert result.slot_evidence == ["STR"]
 
 
+def test_classify_private_use_key_chords_as_preserved_control_tokens() -> None:
+    """Control glyph key chords are runtime input labels, not untranslated prose."""
+    result = classify(_mk("+Tab ++Tab", route="<no-context>"))
+    assert result.classification == TriageClassification.PRESERVED_ENGLISH
+    assert "Tab" in result.slot_evidence
+
+
 def test_classify_compact_effect_stat_modifier_lines_are_preserved_english() -> None:
     """Compact stat-abbreviation modifier lines are game-rule notation, not translation work."""
     for stat in ["AV", "DV", "MA", "PV"]:
