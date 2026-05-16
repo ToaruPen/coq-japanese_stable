@@ -469,6 +469,11 @@
             "text": "{{B|泳いでいる}}"
         },
         {
+            "key": "bloody wet",
+            "context": "XRL.World.Effects.LiquidCovered.DisplayName",
+            "text": "血に濡れている"
+        },
+        {
             "key": "{{B|wading}}",
             "context": "XRL.World.Effects.Wading.Description",
             "text": "{{B|浅瀬を進んでいる}}"

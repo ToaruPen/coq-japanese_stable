@@ -13,6 +13,8 @@
     { "key": "lying on {0}", "context": "GetDisplayName.StateTemplate", "text": "{0}に横たわっている" },
     { "key": "enclosed in {0}", "context": "GetDisplayName.StateTemplate", "text": "{0}に閉じ込められている" },
     { "key": "engulfed by {0}", "context": "GetDisplayName.StateTemplate", "text": "{0}に呑み込まれている" },
-    { "key": "auto-collecting {0}", "context": "GetDisplayName.StateTemplate", "text": "{0}を自動収集中" }
+    { "key": "auto-collecting {0}", "context": "GetDisplayName.StateTemplate", "text": "{0}を自動収集中" },
+    { "key": "stuck in {0}", "context": "GetDisplayName.StateTemplate", "text": "{0}にはまっている" },
+    { "key": "grabbed by {0}", "context": "GetDisplayName.StateTemplate", "text": "{0}につかまれている" }
   ]
 }

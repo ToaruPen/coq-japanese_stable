@@ -155,7 +155,7 @@
       "candidate_id": "FoundGuild#gospel",
       "event_property": "gospel",
       "input_source": "After treating with the Farmers' Guild, Nuntu convinced them to help him found a workshop in Hinnom for the purpose of studying glass. They named it the Glass Workshop.",
-      "expected_japanese_exact": "農夫ギルドとtreatingしたのち、NuntuはhimがHinnomに工房を創設する助力をするよう彼らを説得した。その目的はガラスのをstudyingことだった。彼らはそれをthe Glass Workshopと名づけた。"
+      "expected_japanese_exact": "農夫ギルドとtreatingしたのち、NuntuはhimがHinnomに工房を創設する助力をするよう彼らを説得した。その目的はガラスのをstudyingことだった。彼らはそれをGlass Workshopと名づけた。"
     },
     {
       "candidate_id": "CorruptAdministrator#gospel#case:0#if:then",
@@ -191,13 +191,13 @@
       "candidate_id": "FakedDeath#gospel",
       "event_property": "gospel",
       "input_source": "In 5597 BR, it was discovered that Yarad II's death had been faked. Despite reports to the contrary, Yarad II was alive and well. She was known thenceforth as the Gleaming Ghost of Barracks District Temrir.",
-      "expected_japanese_exact": "5597年、Yarad II's death had been fakedとの事実が明らかになった。相反する報告にもかかわらず、Yarad IIは健在だった。Yarad IIは以後the Gleaming Ghost of Barracks District Temrirとして知られるようになった。"
+      "expected_japanese_exact": "5597年、Yarad II's death had been fakedとの事実が明らかになった。相反する報告にもかかわらず、Yarad IIは健在だった。Yarad IIは以後Gleaming Ghost of Barracks District Temrirとして知られるようになった。"
     },
     {
       "candidate_id": "FakedDeath#tombInscription",
       "event_property": "tombInscription",
       "input_source": "Look! Behold the Gleaming Ghost of Barracks District Temrir, who in the High Salt Sun defied death and emerged from the glassy ruins.",
-      "expected_japanese_exact": "見よ、驚嘆せよ！ the Gleaming Ghost of Barracks District Temrirは高き塩の太陽に死を退け、glassy ruinsより現れた。"
+      "expected_japanese_exact": "見よ、驚嘆せよ！ Gleaming Ghost of Barracks District Temrirは高き塩の太陽に死を退け、glassy ruinsより現れた。"
     },
     {
       "candidate_id": "FoundAsBabe#gospel#case:0",
@@ -245,13 +245,13 @@
       "candidate_id": "BornAsHeir#gospel",
       "event_property": "gospel",
       "input_source": "One starry night in Salt Dunes, a healthy child was born to the sultan at Red Rock. At the moment of her birth, a glass comet crossed the sky, and in celebration the people danced in the streets. The babe was named Nuntu, but the people called her the Glassborn.",
-      "expected_japanese_exact": "One starry night、Salt Dunesのレッドロックにて、スルタンに健やかなる子が生まれた。herの誕生の瞬間、a glass comet crossed the sky、祝賀として民はdanced in the streets。その嬰児はNuntuと名づけられたが、民はherをthe Glassbornと呼んだ。"
+      "expected_japanese_exact": "One starry night、Salt Dunesのレッドロックにて、スルタンに健やかなる子が生まれた。herの誕生の瞬間、glass comet crossed the sky、祝賀として民はdanced in the streets。その嬰児はNuntuと名づけられたが、民はherをGlassbornと呼んだ。"
     },
     {
       "candidate_id": "BornAsHeir#tombInscription",
       "event_property": "tombInscription",
       "input_source": "Look! Behold the life of Nuntu -- called the Glassborn! -- scion of the Fossilized Saads and she who was dowered the Glass Crown. Observe the twin miracles of the High Salt Sun: the heiress was born, and a glass comet crossed the sky.",
-      "expected_japanese_exact": "見よ！ Behold、Nuntuの生涯を。すなわちthe Glassbornと呼ばれし者、化石化せしサアドの裔にして、Glass Crownを授けられし者なり。高き塩の太陽の双つの奇跡を見よ。heiressが生まれ、そしてa glass comet crossed the sky。"
+      "expected_japanese_exact": "見よ！ Behold、Nuntuの生涯を。すなわちGlassbornと呼ばれし者、化石化せしサアドの裔にして、Glass Crownを授けられし者なり。高き塩の太陽の双つの奇跡を見よ。heiressが生まれ、そしてglass comet crossed the sky。"
     },
     {
       "candidate_id": "Marry#gospel#opt:base",
@@ -263,7 +263,7 @@
       "candidate_id": "Marry#gospel#opt:with1",
       "event_property": "gospel",
       "input_source": "Under a glass eclipse, Nuntu cemented her friendship with Farmers' Guild by marrying Arconaut's Hall. In celebration, the Farmers' Guild bestowed upon Nuntu a wedding gift they called the Glass Torch.",
-      "expected_japanese_exact": "Under a glass eclipse、NuntuはArconaut's Hallと婚姻を結ぶことにより、農夫ギルドとのherの友誼を固めた。In celebration、農夫ギルドはNuntuに、彼らがthe Glass Torchと呼ぶ婚礼の贈り物を授けた。"
+      "expected_japanese_exact": "Under a glass eclipse、NuntuはArconaut's Hallと婚姻を結ぶことにより、農夫ギルドとのherの友誼を固めた。In celebration、農夫ギルドはNuntuに、彼らがGlass Torchと呼ぶ婚礼の贈り物を授けた。"
     },
     {
       "candidate_id": "Marry#tombInscription",

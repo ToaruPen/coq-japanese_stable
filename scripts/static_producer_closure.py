@@ -1258,7 +1258,7 @@ def _cudgel_smash_up_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
                         "CombatSkillMessages_TranslateInventoriedQueuedShapes_WhenOwnerPatched",
                         "CombatSkillMessages_DoNotTranslateQueueOnlyTraffic_WhenOwnerAbsent",
                         "{{G|You prepare {{Y|your cudgel}} for demolition.}}",
-                        "{{G|{{Y|your cudgel}}を破壊のために構えた。}}",
+                        "{{G|{{Y|あなたのcudgel}}を破壊のために構えた。}}",
                     ),
                 ),
                 EvidenceFile(
@@ -6192,7 +6192,7 @@ def _generated_queue_does_verb_families() -> tuple[CoveredOwnerFamily, ...]:
                         *tests.required_substrings,
                         "BodyPartUnequipPartAndChildren",
                         "Your {{Y|carbide dagger}} falls to the ground.",
-                        "Your {{Y|carbide dagger}}は地面に倒れた。",
+                        "{{Y|carbide dagger}}は地面に倒れた。",
                     ),
                 ),
                 EvidenceFile(
@@ -9165,7 +9165,7 @@ def _mutation_self_target_popup_families() -> tuple[CoveredOwnerFamily, ...]:
         "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
         (
             "^Are you sure you want to target (.+?)\\\\?$",
-            "{0}を標的にしてもよいか？",  # noqa: RUF001
+            "{t0}を標的にしてもよいか？",  # noqa: RUF001
         ),
     )
     tests = EvidenceFile(

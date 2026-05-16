@@ -232,7 +232,7 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Patches/ZoneWindChangeTranslationPatch.cs:114:TryTranslate"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:30:Strip"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Translation/JournalPatternTranslator.cs:77:Translate"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
-            ["Mods/QudJP/Assemblies/src/Translation/MessagePatternTranslator.cs:85:Translate"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
+            ["Mods/QudJP/Assemblies/src/Translation/MessagePatternTranslator.cs:83:Translate"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/UI/FontManager.cs:250:TryWarmPrimaryFontCharactersForUi"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
         };
 
@@ -250,6 +250,7 @@ public sealed class ColorTagAllowlistCoverageTests
         "Mods/QudJP/Assemblies/src/Patches/DeathWrapperFamilyTranslator.cs",
         "Mods/QudJP/Assemblies/src/Patches/DisplayNameSemanticPipeline.cs",
         "Mods/QudJP/Assemblies/src/Patches/GameManagerUpdateSelectedAbilityPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/InventoryLineTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/TradeLineTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/XDidYTranslationPatch.cs",
     };

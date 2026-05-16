@@ -87,7 +87,7 @@ public static class CudgelConkPopupTranslationPatch
         if (noHeadMatch.Success)
         {
             translated = string.Concat(
-                noHeadMatch.Groups["target"].Value,
+                TranslateFunctionWordLabel(noHeadMatch.Groups["target"].Value),
                 "には殴る頭のようなものがない。");
             DynamicTextObservability.RecordTransform(route, family + "." + Context + ".NoHead", source, translated);
             return true;
@@ -98,9 +98,9 @@ public static class CudgelConkPopupTranslationPatch
         {
             translated = string.Concat(
                 "本当に",
-                confirmSelfConkMatch.Groups["target"].Value,
+                TranslateFunctionWordLabel(confirmSelfConkMatch.Groups["target"].Value),
                 "を",
-                confirmSelfConkMatch.Groups["location"].Value,
+                TranslateBodyLocation(confirmSelfConkMatch.Groups["location"].Value),
                 "にこん棒で殴りますか？");
             DynamicTextObservability.RecordTransform(route, family + "." + Context + ".ConfirmSelfConk", source, translated);
             return true;
@@ -108,5 +108,42 @@ public static class CudgelConkPopupTranslationPatch
 
         translated = source;
         return false;
+    }
+
+    private static string TranslateFunctionWordLabel(string source)
+    {
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            visible =>
+            {
+                if (string.Equals(visible, "yourself", StringComparison.Ordinal))
+                {
+                    return "自分自身";
+                }
+
+                return StringHelpers.StripLeadingEnglishArticle(
+                    visible,
+                    includeCapitalizedDefiniteArticle: true,
+                    includeCapitalizedIndefiniteArticle: true);
+            });
+    }
+
+    private static string TranslateBodyLocation(string source)
+    {
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            visible =>
+            {
+                var normalized = StringHelpers.StripLeadingEnglishArticle(
+                    visible,
+                    includeCapitalizedDefiniteArticle: true,
+                    includeCapitalizedIndefiniteArticle: true);
+                if (string.Equals(normalized, "head", StringComparison.Ordinal))
+                {
+                    return "頭";
+                }
+
+                return normalized;
+            });
     }
 }

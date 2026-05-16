@@ -255,11 +255,29 @@ public static class MutationGeneratedTextTranslationPatch
     {
         var subject = match.Groups["you"].Success
             ? "あなた"
-            : RestoreCapture(match, spans, "subject").Trim();
-        var objects = RestoreCapture(match, spans, "objects").Trim();
+            : TranslateFunctionWordLabel(RestoreCapture(match, spans, "subject").Trim());
+        var objects = TranslateFunctionWordLabel(RestoreCapture(match, spans, "objects").Trim());
         var punctuation = string.Equals(match.Groups["punct"].Value, "!", StringComparison.Ordinal) ? "！" : "。";
         var translated = subject + "は" + objects + "を吐き出した" + punctuation;
         return RestoreWholeSourceBoundaryWrappers(translated, spans, stripped.Length, source);
+    }
+
+    private static string TranslateFunctionWordLabel(string source)
+    {
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            visible =>
+            {
+                if (string.Equals(visible, "yourself", StringComparison.Ordinal))
+                {
+                    return "自分自身";
+                }
+
+                return StringHelpers.StripLeadingEnglishArticle(
+                    visible,
+                    includeCapitalizedDefiniteArticle: true,
+                    includeCapitalizedIndefiniteArticle: true);
+            });
     }
 
     private static string TranslateLifeDrainTarget(Match match, IReadOnlyList<ColorSpan> spans)

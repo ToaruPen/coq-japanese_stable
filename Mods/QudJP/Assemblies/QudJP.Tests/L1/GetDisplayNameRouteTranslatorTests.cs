@@ -387,7 +387,8 @@ public sealed class GetDisplayNameRouteTranslatorTests
     {
         WriteDictionaryFile(
             "ui-displayname-adjectives.ja.json",
-            ("wet", "{{B|濡れた}}"));
+            ("wet", "{{B|濡れた}}"),
+            ("[swimming]", "[泳いでいる]"));
 
         var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
             "{{B|wet グロウフィッシュ}} [swimming]",
@@ -395,7 +396,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Is.EqualTo("{{B|濡れた}}グロウフィッシュ [swimming]"));
+            Assert.That(translated, Is.EqualTo("{{B|濡れた}}グロウフィッシュ [泳いでいる]"));
             Assert.That(translated, Does.Not.Contain("{{B|{{B|"));
             Assert.That(translated, Does.Not.Contain("{{B}}|"));
         });
@@ -416,6 +417,157 @@ public sealed class GetDisplayNameRouteTranslatorTests
         {
             Assert.That(translated, Is.EqualTo("水袋 [{{K|空}}]"));
             Assert.That(translated, Does.Not.Contain("[{{K|空]}}"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesColorWrappedStaticDisplayNameStates()
+    {
+        WriteDictionary(
+            ("iron sword", "鉄の剣"),
+            ("snapjaw", "スナップジョー"),
+            ("banner", "旗"));
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("[rusted]", "[{{r|錆びた}}]"),
+            ("[broken]", "[{{r|破損}}]"),
+            ("[cracked]", "[{{r|ひび割れ}}]"),
+            ("[wading]", "[{{B|浅瀬を進んでいる}}]"),
+            ("[raised]", "[{{g|掲揚中}}]"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "iron sword [{{r|rusted}}]",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("鉄の剣 [{{r|錆びた}}]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "iron sword [{{r|broken}}]",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("鉄の剣 [{{r|破損}}]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "iron sword [{{r|cracked}}]",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("鉄の剣 [{{r|ひび割れ}}]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "snapjaw {{y|[{{B|wading}}]}}",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("スナップジョー [{{B|浅瀬を進んでいる}}]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "banner {{y|[{{g|raised}}]}}",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("旗 [{{g|掲揚中}}]"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesStaticDisplayNameAdjectives()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("magnetized", "磁化した"),
+            ("fungus-ridden", "真菌まみれの"),
+            ("grenade", "グレネード"),
+            ("snapjaw", "スナップジョー"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "magnetized 鉄の剣",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("磁化した鉄の剣"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "fungus-ridden スナップジョー",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("真菌まみれのスナップジョー"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesDynamicBracketedDisplayNameStates()
+    {
+        WriteDictionary(
+            ("mine", "地雷"),
+            ("ingredient", "食材"),
+            ("rack", "ラック"),
+            ("deed", "証書"),
+            ("magazine", "マガジン"),
+            ("Hindren", "ヒンドレン"),
+            ("lead slug", "鉛スラッグ"),
+            ("snapjaw", "スナップジョー"),
+            ("iron sword", "鉄の剣"),
+            ("web", "網"));
+        WriteDictionaryFile(
+            "Scoped/ui-displayname-state-templates.ja.json",
+            "{\"entries\":["
+            + "{\"key\":\"stuck in {0}\",\"context\":\"GetDisplayName.StateTemplate\",\"text\":\"{0}にはまっている\"},"
+            + "{\"key\":\"grabbed by {0}\",\"context\":\"GetDisplayName.StateTemplate\",\"text\":\"{0}につかまれている\"}"
+            + "]}\n");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "mine {{y|[{{R|10 sec}}]}}",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("地雷 [{{R|10秒}}]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "ingredient {{y|[{{C|3}} cooking servings]}}",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("食材 [調理3回分]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "rack {{y|[2 cells]}}",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("ラック [セル2個]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "deed {{y|[Hindren chapter]}}",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("証書 [ヒンドレン支部]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "magazine {{y|[lead slug]}}",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("マガジン [鉛スラッグ]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "snapjaw [{{B|stuck in a web}}]",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("スナップジョー [{{B|網にはまっている}}]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "snapjaw [{{B|grabbed by an iron sword}}]",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("スナップジョー [{{B|鉄の剣につかまれている}}]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "snapjaw [wrapped around a web]",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("スナップジョー [wrapped around a web]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "\u0001snapjaw [stuck in a web]",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("\u0001snapjaw [stuck in a web]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    string.Empty,
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo(string.Empty));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "{{B|}}",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("{{B|}}"));
         });
     }
 

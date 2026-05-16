@@ -1,0 +1,4 @@
+interface:
+  display_name: "QudJP Function-Word Residue Audit"
+  short_description: "Audit QudJP English article, possessive, direction, and state suffix residue"
+  default_prompt: "Use $qudjp-function-word-residue-audit to audit QudJP English function-word residue before route fixes."

@@ -65,7 +65,7 @@ public sealed class CudgelConkPopupTranslationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo("本当にyourselfを{{C|the head}}にこん棒で殴りますか？"));
+                Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo("本当に自分自身を{{C|頭}}にこん棒で殴りますか？"));
                 Assert.That(HitCount("ConfirmSelfConk"), Is.EqualTo(1));
             });
         });

@@ -991,6 +991,16 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_TranslatesCapitalizedYourselfCapture()
+    {
+        WritePatternDictionary(("^(.+?) repairs\\.$", "{t0}を修理した。"));
+
+        var translated = MessagePatternTranslator.Translate("Yourself repairs.");
+
+        Assert.That(translated, Is.EqualTo("自分自身を修理した。"));
+    }
+
+    [Test]
     public void Translate_AppliesBlockedMovementPattern()
     {
         WritePatternDictionary(("^You stop moving because the (.+?) is in the way[.!]?$", "{0}が邪魔で移動をやめた。"));
@@ -1100,7 +1110,7 @@ public sealed class MessagePatternTranslatorTests
 
         var translated = MessagePatternTranslator.Translate("You remember the Desiccated Spectre.");
 
-        Assert.That(translated, Is.EqualTo("the Desiccated Spectreを思い出した。"));
+        Assert.That(translated, Is.EqualTo("Desiccated Spectreを思い出した。"));
     }
 
     [Test]

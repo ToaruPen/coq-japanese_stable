@@ -2040,7 +2040,7 @@
     },
     {
       "pattern": "^Are you sure you want to target (.+?)\\?$",
-      "template": "{0}を標的にしてもよいか？",
+      "template": "{t0}を標的にしてもよいか？",
       "route": "popup"
     },
     {

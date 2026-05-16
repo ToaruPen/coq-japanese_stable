@@ -288,7 +288,8 @@ public static class GrammarMakePossessivePatch
     {
         try
         {
-            __result = word.EndsWith("の", StringComparison.Ordinal) ? word : word + "の";
+            var normalized = StripLeadingEnglishArticlePreservingColors(word);
+            __result = normalized.EndsWith("の", StringComparison.Ordinal) ? normalized : normalized + "の";
             GrammarPatchHelpers.LogTransform("MakePossessive", word, __result, logWhenUnchanged: true);
             return false;
         }
@@ -297,6 +298,24 @@ public static class GrammarMakePossessivePatch
             Trace.TraceError("QudJP: GrammarMakePossessivePatch.Prefix failed: {0}", ex);
             return true;
         }
+    }
+
+    private static string StripLeadingEnglishArticlePreservingColors(string source)
+    {
+        var (visible, spans) = ColorAwareTranslationComposer.Strip(source);
+        var normalized = StringHelpers.StripLeadingEnglishArticle(
+            visible,
+            includeCapitalizedDefiniteArticle: true,
+            includeCapitalizedIndefiniteArticle: true);
+        if (string.Equals(normalized, visible, StringComparison.Ordinal))
+        {
+            return source;
+        }
+
+        return ColorAwareTranslationComposer.RestoreSourceBoundaryWrappersByVisibleTextPreservingTranslatedOwnership(
+            normalized,
+            spans,
+            visible);
     }
 }
 

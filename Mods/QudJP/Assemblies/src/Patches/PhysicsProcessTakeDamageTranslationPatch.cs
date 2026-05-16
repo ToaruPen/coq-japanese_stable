@@ -266,6 +266,7 @@ public static class PhysicsProcessTakeDamageTranslationPatch
 
     private static string TranslateDamageSource(string source)
     {
+        source = NormalizeDamageSourceLabel(source);
         if (CirculatoryLossTermTranslator.TryTranslateTermPhrase(source, out var circulatoryLossTerm))
         {
             return circulatoryLossTerm;
@@ -282,6 +283,25 @@ public static class PhysicsProcessTakeDamageTranslationPatch
             "sonic" => "音波",
             _ => source,
         };
+    }
+
+    private static string NormalizeDamageSourceLabel(string source)
+    {
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            static visible =>
+            {
+                if (visible.StartsWith("your ", StringComparison.Ordinal)
+                    || visible.StartsWith("Your ", StringComparison.Ordinal))
+                {
+                    return "あなたの" + visible.Substring(5);
+                }
+
+                return StringHelpers.StripLeadingEnglishArticle(
+                    visible,
+                    includeCapitalizedDefiniteArticle: true,
+                    includeCapitalizedIndefiniteArticle: true);
+            });
     }
 
     private static string TranslateDamageType(string source)

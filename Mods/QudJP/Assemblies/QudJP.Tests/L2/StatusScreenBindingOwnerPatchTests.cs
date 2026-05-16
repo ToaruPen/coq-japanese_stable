@@ -164,7 +164,8 @@ public sealed class StatusScreenBindingOwnerPatchTests
     {
         WriteDictionary(
             ("Beguiled", "魅了"),
-            ("astrally burdened", "星界的に重く縛られた"));
+            ("astrally burdened", "星界的に重く縛られた"),
+            ("bloody wet", "血に濡れている"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -190,11 +191,20 @@ public sealed class StatusScreenBindingOwnerPatchTests
                     DisplayName = "astrally burdened",
                 },
             });
+            var compoundTarget = new DummyCharacterEffectLineTarget();
+            compoundTarget.setData(new DummyCharacterEffectLineDataTarget
+            {
+                effect = new DummyStatusEffect
+                {
+                    DisplayName = "bloody wet",
+                },
+            });
 
             Assert.Multiple(() =>
             {
                 Assert.That(target.text.Text, Is.EqualTo("魅了"));
                 Assert.That(uncoloredTarget.text.Text, Is.EqualTo("星界的に重く縛られた"));
+                Assert.That(compoundTarget.text.Text, Is.EqualTo("血に濡れている"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(CharacterEffectLineTranslationPatch),

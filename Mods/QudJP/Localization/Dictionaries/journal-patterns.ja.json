@@ -148,32 +148,32 @@
     },
     {
       "pattern": "^You slew (.+?) and encoded their psyche's psionic bits on the holographic boundary of your own psyche\\.$",
-      "template": "{0}を倒し、その精神のサイオニック・ビットを自らの精神のホログラフィック境界面に刻み付けた。",
+      "template": "{t0}を倒し、その精神のサイオニック・ビットを自らの精神のホログラフィック境界面に刻み付けた。",
       "route": "journal"
     },
     {
       "pattern": "^You slew (.+?) and watched their psyche radiate into nothingness\\.$",
-      "template": "{0}を倒し、その精神が虚無へ放射されるのを見届けた。",
+      "template": "{t0}を倒し、その精神が虚無へ放射されるのを見届けた。",
       "route": "journal"
     },
     {
       "pattern": "^After a climactic battle of wills, (.+?) slew (.+?) and absorbed (?:his|her|their|its) psyche, thickening toward Godhood\\.$",
-      "template": "意志の頂上決戦の末、{0}は{1}を倒してその精神を吸収し、神格へと近づいた。",
+      "template": "意志の頂上決戦の末、{t0}は{t1}を倒してその精神を吸収し、神格へと近づいた。",
       "route": "journal"
     },
     {
       "pattern": "^You slew your bonded kith (.+?), violating the covenant of the water ritual and earning the emnity of all\\.$",
-      "template": "水の儀式で結ばれた同胞{0}を殺し、その誓約を破って全ての者の敵意を買った。",
+      "template": "水の儀式で結ばれた同胞{t0}を殺し、その誓約を破って全ての者の敵意を買った。",
       "route": "journal"
     },
     {
       "pattern": "^Blasphemously, the traitor (.+?) attacked =name=, (?:his|her|their|its) water-sib, and =name= was forced to slay (?:him|her|them|it)\\. Deep in grief, =name= wept for one year\\.$",
-      "template": "冒涜的にも、裏切り者の{0}は水の同胞である=name=を襲い、=name=は{0}を殺さざるを得なかった。深い悲しみの中、=name=は一年間泣き続けた。",
+      "template": "冒涜的にも、裏切り者の{t0}は水の同胞である=name=を襲い、=name=は{t0}を殺さざるを得なかった。深い悲しみの中、=name=は一年間泣き続けた。",
       "route": "journal"
     },
     {
       "pattern": "^You slew (.+?)\\.$",
-      "template": "{0}を倒した。",
+      "template": "{t0}を倒した。",
       "route": "journal"
     },
     {
@@ -228,32 +228,32 @@
     },
     {
       "pattern": "^In the month of (.+?) of (.+?), =name= was challenged by <spice\\.commonPhrases\\.pretender\\.!random\\.article> to a duel over the rights of (.+?)\\. =name= won and had the pretender's psyche kibbled and absorbed into (.+?) own\\.$",
-      "template": "{1}年{0}、=name=は{2}の権利を巡り<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name=は勝利し、偽者の精神を刻んで吸収した。",
+      "template": "{1}年{0}、=name=は{t2}の権利を巡り<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name=は勝利し、偽者の精神を刻んで吸収した。",
       "route": "journal"
     },
     {
       "pattern": "^In the month of (.+?) of (.+?), =name= was challenged by <spice\\.commonPhrases\\.pretender\\.!random\\.article> to a duel over the rights of (.+?)\\. =name= won and had the pretender's psyche kibbled and radiated into nothingness\\.$",
-      "template": "{1}年{0}、=name=は{2}の権利を巡って<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name=は勝利し、偽者の精神を刻んで無へと放射させた。",
+      "template": "{1}年{0}、=name=は{t2}の権利を巡って<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name=は勝利し、偽者の精神を刻んで無へと放射させた。",
       "route": "journal"
     },
     {
       "pattern": "^In the month of (.+?) of (.+?), =name= was challenged by <spice\\.commonPhrases\\.pretender\\.!random\\.article> to a duel over the rights of (.+?)\\. =name= won and slew the pretender, charitably not radiating <spice\\.pronouns\\.possessive\\.!random> psyche into nothingness\\.$",
-      "template": "{1}年{0}、=name=は{2}の権利を巡って<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name=は勝利し、偽者を倒したが、その精神を無へと放射することは慈悲としてしなかった。",
+      "template": "{1}年{0}、=name=は{t2}の権利を巡って<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name=は勝利し、偽者を倒したが、その精神を無へと放射することは慈悲としてしなかった。",
       "route": "journal"
     },
     {
       "pattern": "^In the month of (.+?) of (.+?), =name= was challenged by <spice\\.commonPhrases\\.pretender\\.!random\\.article> to a duel over the rights of (.+?)\\. =name= won and murdered the pretender before tragically realizing <spice\\.pronouns\\.subject\\.!random> was (?:your|his|her|their|its) water-sib\\.$",
-      "template": "{1}年{0}、=name=は{2}の権利を巡り<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name=は勝利し、偽者を殺した後、悲劇的にも<spice.pronouns.subject.!random>が水の同胞だったと気づいた。",
+      "template": "{1}年{0}、=name=は{t2}の権利を巡り<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name=は勝利し、偽者を殺した後、悲劇的にも<spice.pronouns.subject.!random>が水の同胞だったと気づいた。",
       "route": "journal"
     },
     {
       "pattern": "^In the month of (.+?) of (.+?), brave =name= slew (.+?) in single combat\\.$",
-      "template": "{1}年{0}、勇敢なる=name=は一騎打ちで{2}を倒した。",
+      "template": "{1}年{0}、勇敢なる=name=は一騎打ちで{t2}を倒した。",
       "route": "journal"
     },
     {
       "pattern": "^In the month of (.+?) of (.+?), =name= was challenged by <spice\\.commonPhrases\\.pretender\\.!random\\.article> to a duel over the rights of (.+?)\\. =name= won and murdered the pretender <spice\\.elements\\.(.+?)\\.murdermethods\\.!random>\\.$",
-      "template": "{1}年{0}、=name=は{2}の権利を巡り<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name=は勝利し、<spice.elements.{3}.murdermethods.!random>で偽者を殺した。",
+      "template": "{1}年{0}、=name=は{t2}の権利を巡り<spice.commonPhrases.pretender.!random.article>に決闘を挑まれた。=name=は勝利し、<spice.elements.{3}.murdermethods.!random>で偽者を殺した。",
       "route": "journal"
     },
     {

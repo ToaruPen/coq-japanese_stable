@@ -39,7 +39,7 @@ public sealed class TinkeringBuildPopupTranslationPatchTests
         Assert.That(TinkeringBuildHitCount(), Is.EqualTo(1));
     }
 
-    [TestCase("You tinker up {{Y|a freeze grenade}}!", "{{Y|a freeze grenade}}を作った！")]
+    [TestCase("You tinker up {{Y|a freeze grenade}}!", "{{Y|freeze grenade}}を作った！")]
     [TestCase("You tinker up two {{Y|freeze grenades}}!", "{{Y|freeze grenades}}を2個作った！")]
     public void PerformUITinkerBuild_TranslatesSuccessPopups_WhenOwnerPatched(string source, string expected)
     {
@@ -112,7 +112,7 @@ public sealed class TinkeringBuildPopupTranslationPatchTests
                     innerTarget.PerformUITinkerBuild();
                     Assert.Multiple(() =>
                     {
-                        Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{Y|a freeze grenade}}を作った！"));
+                        Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{Y|freeze grenade}}を作った！"));
                         Assert.That(TinkeringBuildHitCount(), Is.EqualTo(1));
                     });
                 },

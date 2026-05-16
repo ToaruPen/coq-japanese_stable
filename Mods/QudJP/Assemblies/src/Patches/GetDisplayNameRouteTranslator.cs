@@ -53,7 +53,7 @@ internal static class GetDisplayNameRouteTranslator
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PrepositionalStateTemplatePattern =
         new Regex(
-            "^(?<template>sitting on|lying on|enclosed in|engulfed by|auto-collecting) (?<target>.+)$",
+            "^(?<template>sitting on|lying on|enclosed in|engulfed by|auto-collecting|stuck in|grabbed by) (?<target>.+)$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex QuantifiedLiquidStatePattern =
         new Regex(
@@ -63,6 +63,14 @@ internal static class GetDisplayNameRouteTranslator
         new Regex(
             "^(?<liquid>.+?),\\s+(?<state>[A-Za-z][A-Za-z\\s-]*)$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex TimedDisplayNameStatePattern =
+        new Regex("^(?<count>\\d+) sec$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CookingServingsDisplayNameStatePattern =
+        new Regex("^(?<count>\\d+) cooking servings?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex EnergyCellsDisplayNameStatePattern =
+        new Regex("^(?<count>\\d+) cells?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex ChapterDisplayNameStatePattern =
+        new Regex("^(?<owner>.+?) chapter$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex GeneratedCanvasTentPattern =
         new Regex(
             "^(?<body>[A-Za-z][A-Za-z\\s-]*?) tent$",
@@ -109,7 +117,12 @@ internal static class GetDisplayNameRouteTranslator
             route = nameof(GetDisplayNameRouteTranslator);
         }
 
-        using var _ = Translator.PushLogContext(context);
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
+        {
+            return source!;
+        }
+
+        using var logScope = Translator.PushLogContext(context);
 
         if (TryHandleParenthesizedColoredChargeStatusFallback(source!, route, out var chargeStatusFallback))
         {
@@ -152,6 +165,11 @@ internal static class GetDisplayNameRouteTranslator
         if (TryTranslateCompactWeaponStatsDisplayNameSuffix(stripped, spans, route, out var compactWeaponStatsTranslation))
         {
             return compactWeaponStatsTranslation;
+        }
+
+        if (TryTranslateBracketedDisplayNameSuffix(stripped, spans, route, out var bracketedSuffixTranslation))
+        {
+            return bracketedSuffixTranslation;
         }
 
         if (TryTranslateDisplayNameRouteText(stripped, route, out var translated))
@@ -415,6 +433,41 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         translated = translatedBase + " [" + translatedState + "]";
+        DynamicTextObservability.RecordTransform(route, "DisplayName.BracketedSuffix", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateBracketedDisplayNameSuffix(
+        string source,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        out string translated)
+    {
+        var match = BracketedDisplayNameSuffixPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var baseGroup = match.Groups["base"];
+        var stateGroup = match.Groups["state"];
+        var translatedBase = RestoreWholeSlice(TranslateDisplayNameFragment(baseGroup.Value, route), spans, baseGroup);
+        var translatedState = RestoreWholeSlice(TranslateDisplayNameState(stateGroup.Value, route), spans, stateGroup);
+
+        if (string.Equals(translatedBase, baseGroup.Value, StringComparison.Ordinal)
+            && string.Equals(translatedState, stateGroup.Value, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = translatedBase + " [" + translatedState + "]";
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translated,
+            spans,
+            source.Length);
+
         DynamicTextObservability.RecordTransform(route, "DisplayName.BracketedSuffix", source, translated);
         return true;
     }
@@ -804,6 +857,11 @@ internal static class GetDisplayNameRouteTranslator
             return quantifiedLiquid;
         }
 
+        if (TryTranslateGeneratedDisplayNameState(source, route, out var generatedState))
+        {
+            return generatedState;
+        }
+
         if (TryTranslateDisplayNameStateTemplate(source, route, out var translated))
         {
             return translated;
@@ -816,6 +874,66 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         return source;
+    }
+
+    private static bool TryTranslateGeneratedDisplayNameState(string source, string route, out string translated)
+    {
+        var timedMatch = TimedDisplayNameStatePattern.Match(source);
+        if (timedMatch.Success)
+        {
+            return GeneratedDisplayNameStateTranslated(
+                source,
+                route,
+                timedMatch.Groups["count"].Value + "秒",
+                out translated);
+        }
+
+        var cookingServingsMatch = CookingServingsDisplayNameStatePattern.Match(source);
+        if (cookingServingsMatch.Success)
+        {
+            return GeneratedDisplayNameStateTranslated(
+                source,
+                route,
+                "調理" + cookingServingsMatch.Groups["count"].Value + "回分",
+                out translated);
+        }
+
+        var energyCellsMatch = EnergyCellsDisplayNameStatePattern.Match(source);
+        if (energyCellsMatch.Success)
+        {
+            return GeneratedDisplayNameStateTranslated(
+                source,
+                route,
+                "セル" + energyCellsMatch.Groups["count"].Value + "個",
+                out translated);
+        }
+
+        var chapterMatch = ChapterDisplayNameStatePattern.Match(source);
+        if (chapterMatch.Success)
+        {
+            var translatedOwner = TranslateDisplayNameStateTarget(chapterMatch.Groups["owner"].Value, route);
+            return GeneratedDisplayNameStateTranslated(source, route, translatedOwner + "支部", out translated);
+        }
+
+        var displayName = TranslateDisplayNameFragment(source, route);
+        if (!string.Equals(displayName, source, StringComparison.Ordinal))
+        {
+            return GeneratedDisplayNameStateTranslated(source, route, displayName, out translated);
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool GeneratedDisplayNameStateTranslated(
+        string source,
+        string route,
+        string value,
+        out string translated)
+    {
+        translated = value;
+        DynamicTextObservability.RecordTransform(route, "DisplayName.GeneratedState", source, translated);
+        return true;
     }
 
     private static bool TryTranslateQuantifiedLiquidState(string source, string route, out string translated)

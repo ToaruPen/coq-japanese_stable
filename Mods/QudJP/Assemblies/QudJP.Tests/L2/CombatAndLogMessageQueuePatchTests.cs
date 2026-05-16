@@ -117,14 +117,14 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("{{r|You take 3 damage being run over by the chrome pyramid!}}", "{{r|chrome pyramidに轢かれて3ダメージを受けた！}}")]
     [TestCase("{{r|You take 5 heat from the blaze!}}", "{{r|blazeで5熱ダメージを受けた！}}")]
     [TestCase("{{r|You take 5 {{icy|cold damage}} from the shard!}}", "{{r|shardで5{{icy|冷気ダメージ}}を受けた！}}")]
-    [TestCase("{{r|You take 8 damage from your laser beam! {{R|(x2)}}}}", "{{r|your laser beamで8ダメージを受けた！ {{R|(x2)}}}}")]
+    [TestCase("{{r|You take 8 damage from your laser beam! {{R|(x2)}}}}", "{{r|あなたのlaser beamで8ダメージを受けた！ {{R|(x2)}}}}")]
     [TestCase("{{r|You take 6 damage {{R|(x2)}} from colliding with the chrome wall.}}", "{{r|{{R|(x2)}} chrome wallとの衝突で6ダメージを受けた。}}")]
     [TestCase("The {{B|濡れた}}光葉 takes 1 damage from leaking.", "{{B|濡れた}}光葉は液漏れで1ダメージを受けた。")]
     [TestCase("The 樹液まみれの濡れた光葉 takes no damage from oozing.", "樹液まみれの濡れた光葉は滲出でダメージを受けなかった。")]
     [TestCase("{{r|You take 1 damage from fluxing.}}", "{{r|フラックス漏れで1ダメージを受けた。}}")]
     [TestCase(
         "{{r|You take 9 damage from your plasma you started by you near your ally and You!}}",
-        "{{r|your plasma you started by you near your ally and Youで9ダメージを受けた！}}")]
+        "{{r|あなたのplasma you started by you near your ally and Youで9ダメージを受けた！}}")]
     public void PhysicsProcessTakeDamage_TranslatesDamageFrames_WhenOwnerPatched(string source, string expected)
     {
         AssertPhysicsProcessTakeDamageQueuedMessage(source, expected);
@@ -1302,7 +1302,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
             target.PerformThrow(new DummyGameObject(), new DummyCell());
 
-            Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo("yourselfを標的にしてもよいか？"));
+            Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo("自分自身を標的にしてもよいか？"));
         }
         finally
         {
@@ -3032,12 +3032,12 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertCyberneticsMedassistModuleQueuedMessage(string.Empty, string.Empty, string.Empty);
     }
 
-    [TestCase("{{Y|The biodynamic power plant}} is already full.", "{{Y|The biodynamic power plant}}はすでに満杯だ。")]
-    [TestCase("{{Y|The liquid-cooled chain pistol}} is already full of {{B|water}}.", "{{Y|The liquid-cooled chain pistol}}はすでに{{B|water}}で満杯だ。")]
-    [TestCase("You have no {{B|water}} for {{Y|the chain pistol}}.", "{{Y|the chain pistol}}用の{{B|water}}がない。")]
-    [TestCase("You dump the {{B|water}} out of {{Y|the chain pistol}}.", "{{Y|the chain pistol}}から{{B|water}}を捨てた。")]
-    [TestCase("You partially fill {{Y|the chain pistol}} with {{B|water}}.", "{{Y|the chain pistol}}を{{B|water}}で部分的に満たした。")]
-    [TestCase("You fill {{Y|the chain pistol}} with {{B|water}}.", "{{Y|the chain pistol}}を{{B|water}}で満たした。")]
+    [TestCase("{{Y|The biodynamic power plant}} is already full.", "{{Y|biodynamic power plant}}はすでに満杯だ。")]
+    [TestCase("{{Y|The liquid-cooled chain pistol}} is already full of {{B|water}}.", "{{Y|liquid-cooled chain pistol}}はすでに{{B|water}}で満杯だ。")]
+    [TestCase("You have no {{B|water}} for {{Y|the chain pistol}}.", "{{Y|chain pistol}}用の{{B|water}}がない。")]
+    [TestCase("You dump the {{B|water}} out of {{Y|the chain pistol}}.", "{{Y|chain pistol}}から{{B|water}}を捨てた。")]
+    [TestCase("You partially fill {{Y|the chain pistol}} with {{B|water}}.", "{{Y|chain pistol}}を{{B|water}}で部分的に満たした。")]
+    [TestCase("You fill {{Y|the chain pistol}} with {{B|water}}.", "{{Y|chain pistol}}を{{B|water}}で満たした。")]
     [TestCase("You inspect the chain pistol.", "You inspect the chain pistol.")]
     [TestCase("", "")]
     [TestCase("\u0001You have no water for the chain pistol.", "You have no water for the chain pistol.")]
@@ -3054,18 +3054,18 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertLiquidLoaderEventMessage(
             eventType,
             "{{Y|The bio ammo rack}} is exhausted!",
-            "{{Y|The bio ammo rack}}は疲弊した！");
+            "{{Y|bio ammo rack}}は疲弊した！");
     }
 
-    [TestCase(typeof(DummyCheckLoadAmmoEvent), "The bio ammo rack is exhausted!", "\u0001The bio ammo rackは疲弊した！")]
+    [TestCase(typeof(DummyCheckLoadAmmoEvent), "The bio ammo rack is exhausted!", "\u0001bio ammo rackは疲弊した！")]
     [TestCase(typeof(DummyCheckLoadAmmoEvent), "The bio ammo rack hums.", "The bio ammo rack hums.")]
     [TestCase(typeof(DummyCheckLoadAmmoEvent), "", "")]
     [TestCase(typeof(DummyCheckLoadAmmoEvent), "\u0001The bio ammo rack is exhausted!", "\u0001The bio ammo rack is exhausted!")]
-    [TestCase(typeof(DummyLoadAmmoEvent), "The bio ammo rack is exhausted!", "\u0001The bio ammo rackは疲弊した！")]
+    [TestCase(typeof(DummyLoadAmmoEvent), "The bio ammo rack is exhausted!", "\u0001bio ammo rackは疲弊した！")]
     [TestCase(typeof(DummyLoadAmmoEvent), "The bio ammo rack hums.", "The bio ammo rack hums.")]
     [TestCase(typeof(DummyLoadAmmoEvent), "", "")]
     [TestCase(typeof(DummyLoadAmmoEvent), "\u0001The bio ammo rack is exhausted!", "\u0001The bio ammo rack is exhausted!")]
-    [TestCase(typeof(DummyGetNotReadyToFireMessageEvent), "The bio ammo rack is exhausted!", "\u0001The bio ammo rackは疲弊した！")]
+    [TestCase(typeof(DummyGetNotReadyToFireMessageEvent), "The bio ammo rack is exhausted!", "\u0001bio ammo rackは疲弊した！")]
     [TestCase(typeof(DummyGetNotReadyToFireMessageEvent), "The bio ammo rack hums.", "The bio ammo rack hums.")]
     [TestCase(typeof(DummyGetNotReadyToFireMessageEvent), "", "")]
     [TestCase(typeof(DummyGetNotReadyToFireMessageEvent), "\u0001The bio ammo rack is exhausted!", "\u0001The bio ammo rack is exhausted!")]
@@ -3077,8 +3077,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertLiquidLoaderEventMessage(eventType, source, expectedFieldValue, expectedIsMarked: false);
     }
 
-    [TestCase("You have no {{B|water}} to supply {{Y|the host}} with.", "{{Y|the host}}に供給する{{B|water}}がない。")]
-    [TestCase("{{Y|The host}} has no room for more {{B|water}}.", "{{Y|The host}}にはこれ以上{{B|water}}を入れる余地がない。")]
+    [TestCase("You have no {{B|water}} to supply {{Y|the host}} with.", "{{Y|host}}に供給する{{B|water}}がない。")]
+    [TestCase("{{Y|The host}} has no room for more {{B|water}}.", "{{Y|host}}にはこれ以上{{B|water}}を入れる余地がない。")]
     [TestCase("You inspect the host.", "You inspect the host.")]
     [TestCase("", "")]
     [TestCase("\u0001You have no water to supply the host with.", "You have no water to supply the host with.")]
@@ -3484,14 +3484,14 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("snapjaw kicks glowfish backwards.", "snapjawがglowfishを後ろへ蹴り飛ばした。")]
     [TestCase(
         "The momentum from your charge causes your {{Y|battle axe}} to cleave deeper through {{R|snapjaw's armor}}.",
-        "突撃の勢いで{{Y|battle axe}}が{{R|snapjaw's armor}}をさらに深く切り裂いた。")]
-    [TestCase("You cleave through snapjaw's armor.", "snapjaw's armorを切り裂いた。")]
+        "突撃の勢いで{{Y|battle axe}}が{{R|snapjawのarmor}}をさらに深く切り裂いた。")]
+    [TestCase("You cleave through snapjaw's armor.", "snapjawのarmorを切り裂いた。")]
     [TestCase("snapjaw cleaves through your armor.", "snapjawがあなたのarmorを切り裂いた。")]
-    [TestCase("snapjaw cleaves through glowfish's armor.", "snapjawがglowfish's armorを切り裂いた。")]
+    [TestCase("snapjaw cleaves through glowfish's armor.", "snapjawがglowfishのarmorを切り裂いた。")]
     [TestCase("You shook off the stun.", "スタンを振り払った。")]
     [TestCase("You shook off the dazing.", "朦朧を振り払った。")]
-    [TestCase("The snapjaw shook off the stun.", "The snapjawはスタンを振り払った。")]
-    [TestCase("The snapjaw shook off the dazing.", "The snapjawは朦朧を振り払った。")]
+    [TestCase("The snapjaw shook off the stun.", "snapjawはスタンを振り払った。")]
+    [TestCase("The snapjaw shook off the dazing.", "snapjawは朦朧を振り払った。")]
     [TestCase(
         "A supernal force helps you shake off the effect!",
         "超自然的な力が効果を振り払う助けとなった！")]
@@ -3501,11 +3501,11 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase(
         "A supernal force helps you shake off a mental state!",
         "超自然的な力が精神状態を振り払う助けとなった！")]
-    [TestCase("You backswing with {{Y|your cudgel}}.", "{{Y|your cudgel}}で返し打ちした。")]
+    [TestCase("You backswing with {{Y|your cudgel}}.", "{{Y|あなたのcudgel}}で返し打ちした。")]
     [TestCase(
         "{{G|You prepare {{Y|your cudgel}} for demolition.}}",
-        "{{G|{{Y|your cudgel}}を破壊のために構えた。}}")]
-    [TestCase("The snapjaw backswings with {{Y|its cudgel}}.", "The snapjawが{{Y|its cudgel}}で返し打ちした。")]
+        "{{G|{{Y|あなたのcudgel}}を破壊のために構えた。}}")]
+    [TestCase("The snapjaw backswings with {{Y|its cudgel}}.", "snapjawが{{Y|そのcudgel}}で返し打ちした。")]
     [TestCase(
         "You muster your will and shake off some of your confusion.",
         "意志の力で混乱の一部を振り払った。")]
@@ -3514,10 +3514,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
         "意志の力で混乱を振り払った。")]
     [TestCase("You lose sight of your mark.", "標的を見失った。")]
     [TestCase("Your tracking of your mark has been disrupted.", "印付けの追跡が乱された。")]
-    [TestCase("The snapjaw resists your shield slam.", "The snapjawはあなたのシールドスラムに抵抗した。")]
-    [TestCase("You resist {{R|the snapjaw's shield slam}}.", "{{R|the snapjaw's shield slam}}に抵抗した。")]
-    [TestCase("You rejoinder with {{Y|your dagger}}.", "{{Y|your dagger}}で反撃した。")]
-    [TestCase("The snapjaw rejoinders with {{Y|its dagger}}.", "The snapjawが{{Y|its dagger}}で反撃した。")]
+    [TestCase("The snapjaw resists your shield slam.", "snapjawはあなたのシールドスラムに抵抗した。")]
+    [TestCase("You resist {{R|the snapjaw's shield slam}}.", "{{R|snapjawのshield slam}}に抵抗した。")]
+    [TestCase("You rejoinder with {{Y|your dagger}}.", "{{Y|あなたのdagger}}で反撃した。")]
+    [TestCase("The snapjaw rejoinders with {{Y|its dagger}}.", "snapjawが{{Y|そのdagger}}で反撃した。")]
     public void CombatSkillMessages_TranslateInventoriedQueuedShapes_WhenOwnerPatched(string source, string expected)
     {
         AssertCombatSkillQueuedMessage(source, expected);
@@ -3587,7 +3587,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
                 Assert.Multiple(() =>
                 {
-                    Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("snapjaw's armorを切り裂いた。"));
+                    Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("snapjawのarmorを切り裂いた。"));
                     Assert.That(CombatSkillHitCount(), Is.EqualTo(1));
                 });
             }
@@ -5283,7 +5283,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase(
         nameof(DummySimpleOwnerQueueTarget.BodyPartUnequipPartAndChildren),
         "Your {{Y|carbide dagger}} falls to the ground.",
-        "Your {{Y|carbide dagger}}は地面に倒れた。")]
+        "{{Y|carbide dagger}}は地面に倒れた。")]
     [TestCase(
         nameof(DummySimpleOwnerQueueTarget.ExtradimensionalLootFireEvent),
         "The hunter drops an {{Y|eigenrifle}}, and by sheer chance it quantum tunnels and fully materializes in this dimension.",
@@ -5336,7 +5336,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         "fall",
         "Your {{Y|carbide dagger}}",
         " to the ground.",
-        "Your {{Y|carbide dagger}}は地面に倒れた。")]
+        "{{Y|carbide dagger}}は地面に倒れた。")]
     [TestCase(
         nameof(DummySimpleOwnerQueueTarget.ExtradimensionalLootFireEvent),
         "The hunter drops",

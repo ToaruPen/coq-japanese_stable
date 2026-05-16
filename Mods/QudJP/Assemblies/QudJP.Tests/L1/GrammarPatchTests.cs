@@ -139,6 +139,24 @@ public sealed class GrammarPatchTests
         });
     }
 
+    [TestCase("the {{B|濡れた}}グロウフィッシュ", "{{B|濡れた}}グロウフィッシュの")]
+    [TestCase("{{Y|the chain pistol}}", "{{Y|chain pistol}}の")]
+    [TestCase("<color=#ff0>The sword</color>", "<color=#ff0>sword</color>の")]
+    [TestCase("The sword", "swordの")]
+    [TestCase("an artifact", "artifactの")]
+    public void MakePossessivePatch_StripsLeadingEnglishArticle(string source, string expected)
+    {
+        var result = string.Empty;
+
+        var skipped = GrammarMakePossessivePatch.Prefix(source, ref result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(skipped, Is.False);
+            Assert.That(result, Is.EqualTo(expected));
+        });
+    }
+
     [Test]
     public void MakePossessivePatch_HandlesEmptyString()
     {

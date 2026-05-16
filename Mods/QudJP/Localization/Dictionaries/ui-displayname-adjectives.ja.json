@@ -130,6 +130,46 @@
       "text": "水かき付き"
     },
     {
+      "key": "burrowing",
+      "context": "GetDisplayName.Adjective",
+      "text": "穴掘りの"
+    },
+    {
+      "key": "dazzling",
+      "context": "GetDisplayName.Adjective",
+      "text": "目もくらむ"
+    },
+    {
+      "key": "cryptic",
+      "context": "GetDisplayName.Adjective",
+      "text": "謎めいた"
+    },
+    {
+      "key": "plasmatic",
+      "context": "GetDisplayName.Adjective",
+      "text": "プラズマ状の"
+    },
+    {
+      "key": "rank",
+      "context": "GetDisplayName.Adjective",
+      "text": "悪臭を放つ"
+    },
+    {
+      "key": "conjoined",
+      "context": "GetDisplayName.Adjective",
+      "text": "結合した"
+    },
+    {
+      "key": "magnetized",
+      "context": "GetDisplayName.Adjective",
+      "text": "磁化した"
+    },
+    {
+      "key": "fungus-ridden",
+      "context": "GetDisplayName.Adjective",
+      "text": "真菌まみれの"
+    },
+    {
       "key": "deep",
       "context": "GetDisplayName.Adjective",
       "text": "深い"
@@ -150,6 +190,11 @@
       "text": "[空／密封]"
     },
     {
+      "key": "[swimming]",
+      "context": "GetDisplayName.State",
+      "text": "[泳いでいる]"
+    },
+    {
       "key": "[sealed]",
       "context": "GetDisplayName.State",
       "text": "[密封]"
@@ -158,6 +203,106 @@
       "key": "[auto-collecting]",
       "context": "GetDisplayName.State",
       "text": "[自動採取中]"
+    },
+    {
+      "key": "[1 cooking serving]",
+      "context": "GetDisplayName.State",
+      "text": "[調理1回分]"
+    },
+    {
+      "key": "[deactivated]",
+      "context": "GetDisplayName.State",
+      "text": "[停止中]"
+    },
+    {
+      "key": "[chapter unspecified]",
+      "context": "GetDisplayName.State",
+      "text": "[支部未指定]"
+    },
+    {
+      "key": "[no cells]",
+      "context": "GetDisplayName.State",
+      "text": "[セルなし]"
+    },
+    {
+      "key": "[1 cell]",
+      "context": "GetDisplayName.State",
+      "text": "[セル1個]"
+    },
+    {
+      "key": "[raised]",
+      "context": "GetDisplayName.State",
+      "text": "[掲揚中]"
+    },
+    {
+      "key": "[furled]",
+      "context": "GetDisplayName.State",
+      "text": "[畳まれている]"
+    },
+    {
+      "key": "[hanging]",
+      "context": "GetDisplayName.State",
+      "text": "[吊り下げ中]"
+    },
+    {
+      "key": "[on ground]",
+      "context": "GetDisplayName.State",
+      "text": "[地面]"
+    },
+    {
+      "key": "[no cell]",
+      "context": "GetDisplayName.State",
+      "text": "[セルなし]"
+    },
+    {
+      "key": "[flying]",
+      "context": "GetDisplayName.State",
+      "text": "[{{B|飛行}}]"
+    },
+    {
+      "key": "[prone]",
+      "context": "GetDisplayName.State",
+      "text": "[{{B|伏せ}}]"
+    },
+    {
+      "key": "[wading]",
+      "context": "GetDisplayName.State",
+      "text": "[{{B|浅瀬を進んでいる}}]"
+    },
+    {
+      "key": "[broken]",
+      "context": "GetDisplayName.State",
+      "text": "[{{r|破損}}]"
+    },
+    {
+      "key": "[tomb-tethered]",
+      "context": "GetDisplayName.State",
+      "text": "[{{Y|墓所に繋がれた}}]"
+    },
+    {
+      "key": "[cracked]",
+      "context": "GetDisplayName.State",
+      "text": "[{{r|ひび割れ}}]"
+    },
+    {
+      "key": "[rusted]",
+      "context": "GetDisplayName.State",
+      "text": "[{{r|錆びた}}]"
+    },
+    {
+      "key": "[sitting]",
+      "context": "GetDisplayName.State",
+      "text": "[座っている]"
+    },
+    {
+      "key": "[stuck]",
+      "context": "GetDisplayName.State",
+      "text": "[拘束]"
+    },
+    {
+      "key": "[grabbed]",
+      "context": "GetDisplayName.State",
+      "text": "[つかまれている]"
     },
     {
       "key": "lit",

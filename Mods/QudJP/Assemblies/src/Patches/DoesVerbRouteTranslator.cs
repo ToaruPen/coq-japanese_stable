@@ -38,6 +38,18 @@ internal static class DoesVerbRouteTranslator
             return false;
         }
 
+        if (TryParseMarkedMessage(source, out var sourceMarker, out var sourceVisible)
+            && TryTranslateVisibleMessage(
+                sourceVisible,
+                sourceMarker.Verb,
+                sourceMarker.SubjectLength,
+                sourceMarker.FragmentLength,
+                sourceMarker.Adverb,
+                out translated))
+        {
+            return true;
+        }
+
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         if (!TryParseMarkedMessage(stripped, out var marker, out var visible))
         {
@@ -64,13 +76,20 @@ internal static class DoesVerbRouteTranslator
         }
 
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
-        if (!TryTranslatePlainVisibleSentence(stripped, out var visibleTranslated))
+        var subjectSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, stripped.Length);
+        if (!TryTranslatePlainVisibleSentence(stripped, subjectSpans, out var visibleTranslated))
         {
             translated = source;
             return false;
         }
 
-        translated = ColorAwareTranslationComposer.Restore(visibleTranslated, spans);
+        translated = ColorAwareTranslationComposer.HasColorMarkup(visibleTranslated)
+            ? ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                visibleTranslated,
+                spans,
+                stripped.Length,
+                source)
+            : ColorAwareTranslationComposer.Restore(visibleTranslated, spans);
         return true;
     }
 
@@ -79,7 +98,10 @@ internal static class DoesVerbRouteTranslator
         return TryTranslatePlainSentence(source, out translated);
     }
 
-    private static bool TryTranslatePlainVisibleSentence(string source, out string translated)
+    private static bool TryTranslatePlainVisibleSentence(
+        string source,
+        IReadOnlyList<ColorSpan>? spans,
+        out string translated)
     {
         translated = string.Empty;
         var text = source.Trim();
@@ -123,13 +145,19 @@ internal static class DoesVerbRouteTranslator
         for (var index = 0; index < candidates.Count; index++)
         {
             var candidate = candidates[index];
-            if (TryTranslateFromParts(candidate.Subject, candidate.Verb, candidate.Extra, endMark, out translated))
+            var subject = NormalizeAndRestoreSubjectMarkup(candidate.Subject, spans);
+            if (TryTranslateFromNormalizedParts(subject, candidate.Verb, candidate.Extra, endMark, out translated))
             {
                 return true;
             }
 
             if (TrySplitTrailingAdverb(candidate.Subject, out var trimmedSubject, out var adverb)
-                && TryTranslateFromParts(trimmedSubject, candidate.Verb, CombineExtra(adverb, candidate.Extra), endMark, out translated))
+                && TryTranslateFromNormalizedParts(
+                    NormalizeAndRestoreSubjectMarkup(trimmedSubject, spans),
+                    candidate.Verb,
+                    CombineExtra(adverb, candidate.Extra),
+                    endMark,
+                    out translated))
             {
                 return true;
             }
@@ -137,6 +165,25 @@ internal static class DoesVerbRouteTranslator
 
         translated = string.Empty;
         return false;
+    }
+
+    private static string NormalizeAndRestoreSubjectMarkup(string subject, IReadOnlyList<ColorSpan>? spans)
+    {
+        var normalizedSubject = NormalizeSubject(subject);
+        if (spans is null || spans.Count == 0)
+        {
+            return normalizedSubject;
+        }
+
+        var restored = ColorAwareTranslationComposer.RestoreSourceBoundaryWrappersByVisibleTextPreservingTranslatedOwnership(
+            normalizedSubject,
+            spans,
+            subject);
+        return ColorAwareTranslationComposer.RestoreWholeSliceBoundaryWrappersPreservingTranslatedOwnership(
+            restored,
+            spans,
+            sourceStart: 0,
+            sourceLength: subject.Length);
     }
 
     private static bool TryTranslateFromParts(
@@ -147,6 +194,16 @@ internal static class DoesVerbRouteTranslator
         out string translated)
     {
         var normalizedSubject = NormalizeSubject(subject);
+        return MessageFrameTranslator.TryTranslateXDidY(normalizedSubject, verb, extra, endMark, out translated);
+    }
+
+    private static bool TryTranslateFromNormalizedParts(
+        string normalizedSubject,
+        string verb,
+        string? extra,
+        string? endMark,
+        out string translated)
+    {
         return MessageFrameTranslator.TryTranslateXDidY(normalizedSubject, verb, extra, endMark, out translated);
     }
 
@@ -162,6 +219,12 @@ internal static class DoesVerbRouteTranslator
             || string.Equals(trimmed, "you", StringComparison.Ordinal))
         {
             return "あなた";
+        }
+
+        if (trimmed.StartsWith("Your ", StringComparison.Ordinal)
+            || trimmed.StartsWith("your ", StringComparison.Ordinal))
+        {
+            return trimmed.Substring(5);
         }
 
         if (trimmed.StartsWith("The ", StringComparison.Ordinal)

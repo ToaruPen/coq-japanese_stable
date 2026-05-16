@@ -237,7 +237,7 @@ public static class SifrahTokenItemPopupTranslationPatch
             return false;
         }
 
-        var item = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(itemGroup.Value, spans, itemGroup).Trim();
+        var item = NormalizeItemLabel(ColorAwareTranslationComposer.MarkupAwareRestoreCapture(itemGroup.Value, spans, itemGroup).Trim());
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
             translate(item),
             spans,
@@ -245,6 +245,16 @@ public static class SifrahTokenItemPopupTranslationPatch
             source);
         DynamicTextObservability.RecordTransform(route, "Popup.ProducerText." + Context + "." + detail, source, translated);
         return true;
+    }
+
+    private static string NormalizeItemLabel(string source)
+    {
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            static visible => StringHelpers.StripLeadingEnglishArticle(
+                visible,
+                includeCapitalizedDefiniteArticle: true,
+                includeCapitalizedIndefiniteArticle: true));
     }
 
     private static bool IsActiveOwner(string declaringType, string memberName, string dummyMemberName)

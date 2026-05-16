@@ -451,6 +451,46 @@ public static class CombatSkillMessageTranslationPatch
     private static string Restore(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
     {
         var group = match.Groups[groupName];
-        return ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group).Trim();
+        var restored = ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group).Trim();
+        return ColorAwareTranslationComposer.TranslatePreservingColors(restored, NormalizeCombatLabel);
+    }
+
+    private static string NormalizeCombatLabel(string label)
+    {
+        var normalized = StringHelpers.StripLeadingEnglishArticle(
+            label,
+            includeCapitalizedDefiniteArticle: true,
+            includeCapitalizedIndefiniteArticle: true);
+
+        normalized = ReplaceLeadingPossessive(normalized, "your ", "あなたの");
+        normalized = ReplaceLeadingPossessive(normalized, "Your ", "あなたの");
+        normalized = ReplaceLeadingPossessive(normalized, "its ", "その");
+        normalized = ReplaceLeadingPossessive(normalized, "Its ", "その");
+        normalized = ReplaceLeadingPossessive(normalized, "their ", "その");
+        normalized = ReplaceLeadingPossessive(normalized, "Their ", "その");
+        normalized = ReplaceLeadingPossessive(normalized, "his ", "その");
+        normalized = ReplaceLeadingPossessive(normalized, "His ", "その");
+        normalized = ReplaceLeadingPossessive(normalized, "her ", "その");
+        normalized = ReplaceLeadingPossessive(normalized, "Her ", "その");
+
+        var possessiveIndex = normalized.IndexOf("'s ", StringComparison.Ordinal);
+        if (possessiveIndex > 0)
+        {
+            var owner = normalized.Substring(0, possessiveIndex);
+            var owned = normalized.Substring(possessiveIndex + 3);
+            if (owner.Length > 0 && owned.Length > 0)
+            {
+                normalized = owner + "の" + owned;
+            }
+        }
+
+        return normalized;
+    }
+
+    private static string ReplaceLeadingPossessive(string source, string possessive, string replacement)
+    {
+        return source.StartsWith(possessive, StringComparison.Ordinal)
+            ? replacement + source.Substring(possessive.Length)
+            : source;
     }
 }

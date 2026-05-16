@@ -75,10 +75,10 @@ public sealed class MutationGeneratedTextTranslationPatchTests
             expectedHits: 1);
     }
 
-    [TestCase("You belch forth a quartz urchin.", "あなたはa quartz urchinを吐き出した。")]
-    [TestCase("You belch forth {{G|a quartz urchin}}.", "あなたは{{G|a quartz urchin}}を吐き出した。")]
-    [TestCase("{{Y|You belch forth a quartz urchin!}}", "{{Y|あなたはa quartz urchinを吐き出した！}}")]
-    [TestCase("The urchin belcher belches forth 2 quartz urchins.", "The urchin belcherは2 quartz urchinsを吐き出した。")]
+    [TestCase("You belch forth a quartz urchin.", "あなたはquartz urchinを吐き出した。")]
+    [TestCase("You belch forth {{G|a quartz urchin}}.", "あなたは{{G|quartz urchin}}を吐き出した。")]
+    [TestCase("{{Y|You belch forth a quartz urchin!}}", "{{Y|あなたはquartz urchinを吐き出した！}}")]
+    [TestCase("The urchin belcher belches forth 2 quartz urchins.", "urchin belcherは2 quartz urchinsを吐き出した。")]
     public void Patch_TranslatesBelcherGeneratedQueueMessage_WhenOwnerPatched(string source, string expected)
     {
         AssertOwnerQueuedMessage(
