@@ -64,7 +64,7 @@ public static class PhysicsProcessTakeDamageTranslationPatch
         }
         catch (Exception ex)
         {
-            __state = 0;
+            __state = activeDepth;
             Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
         }
     }
@@ -158,7 +158,7 @@ public static class PhysicsProcessTakeDamageTranslationPatch
         Regex pattern,
         string stripped,
         System.Collections.Generic.IReadOnlyList<ColorSpan> spans,
-        Func<Match, System.Collections.Generic.IReadOnlyList<ColorSpan>, string> translate,
+        DamageFrameTranslator translate,
         out string translated)
     {
         var match = pattern.Match(stripped);
@@ -168,25 +168,47 @@ public static class PhysicsProcessTakeDamageTranslationPatch
             return false;
         }
 
-        translated = translate(match, spans);
+        if (translate(match, spans, out translated))
+        {
+            return true;
+        }
+
+        translated = stripped;
+        return false;
+    }
+
+    private delegate bool DamageFrameTranslator(
+        Match match,
+        System.Collections.Generic.IReadOnlyList<ColorSpan> spans,
+        out string translated);
+
+    private static bool TranslatePlayerDamageFrame(Match match, System.Collections.Generic.IReadOnlyList<ColorSpan> spans, out string translated)
+    {
+        if (!TryTranslateTail(Restore(match, spans, "tail"), out var tail))
+        {
+            translated = string.Empty;
+            return false;
+        }
+
+        translated = match.Groups["nodamage"].Success
+            ? tail + "ダメージを受けなかった" + TranslatePunctuation(match.Groups["punct"].Value) + RestoreRaw(match, spans, "suffix")
+            : tail + Restore(match, spans, "amount") + TranslateDamageType(Restore(match, spans, "type")) + "を受けた" + TranslatePunctuation(match.Groups["punct"].Value) + RestoreRaw(match, spans, "suffix");
         return true;
     }
 
-    private static string TranslatePlayerDamageFrame(Match match, System.Collections.Generic.IReadOnlyList<ColorSpan> spans)
-    {
-        var tail = TranslateTail(Restore(match, spans, "tail"));
-        return match.Groups["nodamage"].Success
-            ? tail + "ダメージを受けなかった" + TranslatePunctuation(match.Groups["punct"].Value) + RestoreRaw(match, spans, "suffix")
-            : tail + Restore(match, spans, "amount") + TranslateDamageType(Restore(match, spans, "type")) + "を受けた" + TranslatePunctuation(match.Groups["punct"].Value) + RestoreRaw(match, spans, "suffix");
-    }
-
-    private static string TranslateThirdPersonDamageFrame(Match match, System.Collections.Generic.IReadOnlyList<ColorSpan> spans)
+    private static bool TranslateThirdPersonDamageFrame(Match match, System.Collections.Generic.IReadOnlyList<ColorSpan> spans, out string translated)
     {
         var subject = StripLeadingArticle(Restore(match, spans, "subject"));
-        var tail = TranslateTail(Restore(match, spans, "tail"));
-        return match.Groups["nodamage"].Success
+        if (!TryTranslateTail(Restore(match, spans, "tail"), out var tail))
+        {
+            translated = string.Empty;
+            return false;
+        }
+
+        translated = match.Groups["nodamage"].Success
             ? subject + "は" + tail + "ダメージを受けなかった" + TranslatePunctuation(match.Groups["punct"].Value) + RestoreRaw(match, spans, "suffix")
             : subject + "は" + tail + Restore(match, spans, "amount") + TranslateDamageType(Restore(match, spans, "type")) + "を受けた" + TranslatePunctuation(match.Groups["punct"].Value) + RestoreRaw(match, spans, "suffix");
+        return true;
     }
 
     private static bool TryStripPlayerDamageWrapper(string source, out string visibleSource)
@@ -214,15 +236,22 @@ public static class PhysicsProcessTakeDamageTranslationPatch
         return ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, spans, group);
     }
 
-    private static string TranslateTail(string tail)
+    private static bool TryTranslateTail(string tail, out string translated)
     {
         var prefixedTail = TailMultiplierPrefixPattern.Match(tail);
         if (prefixedTail.Success)
         {
-            return prefixedTail.Groups["prefix"].Value + TranslateTail(prefixedTail.Groups["tail"].Value);
+            if (TryTranslateTail(prefixedTail.Groups["tail"].Value, out var translatedTail))
+            {
+                translated = prefixedTail.Groups["prefix"].Value + translatedTail;
+                return true;
+            }
+
+            translated = string.Empty;
+            return false;
         }
 
-        return tail switch
+        translated = tail switch
         {
             var value when value.StartsWith("from colliding with ", StringComparison.Ordinal) => TranslateDamageSource(StripLeadingArticle(value.Substring(20))) + "との衝突で",
             var value when value.StartsWith("from ", StringComparison.Ordinal) => TranslateDamageSource(StripLeadingArticle(value.Substring(5))) + "で",
@@ -230,8 +259,9 @@ public static class PhysicsProcessTakeDamageTranslationPatch
             var value when value.StartsWith("because of ", StringComparison.Ordinal) => TranslateDamageSource(StripLeadingArticle(value.Substring(11))) + "により",
             var value when value.StartsWith("due to ", StringComparison.Ordinal) => TranslateDamageSource(StripLeadingArticle(value.Substring(7))) + "により",
             var value when value.StartsWith("being run over by ", StringComparison.Ordinal) => TranslateDamageSource(StripLeadingArticle(value.Substring(18))) + "に轢かれて",
-            _ => tail + "で",
+            _ => string.Empty,
         };
+        return translated.Length > 0;
     }
 
     private static string TranslateDamageSource(string source)

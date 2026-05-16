@@ -109,6 +109,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
     [TestCase("{{r|You take 7 damage from the acid!}}", "{{r|酸で7ダメージを受けた！}}")]
     [TestCase("{{r|You take 7 damage from the acid}}", "{{r|酸で7ダメージを受けた}}")]
+    [TestCase("{{r|You take 7 damage while phased!}}", "{{r|You take 7 damage while phased!}}")]
     [TestCase("{{r|You take no damage from the acid!}}", "{{r|酸でダメージを受けなかった！}}")]
     [TestCase("The snapjaw takes 4 damage from the acid!", "snapjawは酸で4ダメージを受けた！")]
     [TestCase("The snapjaw takes no damage from the acid!", "snapjawは酸でダメージを受けなかった！")]
