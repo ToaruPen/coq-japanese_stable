@@ -1836,6 +1836,35 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void Flight_TranslatesDoesVerbMarkedQueuedMessages_WhenOwnerPatched()
+    {
+        UseRepositoryMessageFrames();
+
+        var subject = "The 巨大トンボ";
+        var source = DoesVerbRouteTranslator.MarkDoesFragment(
+            subject + " begins",
+            "begin",
+            subject.Length,
+            null) + " flying.";
+
+        AssertFlightMessage(
+            nameof(DummyFlightTarget.StartFlying),
+            source,
+            null,
+            "巨大トンボが飛翔し始めた。");
+    }
+
+    [Test]
+    public void Flight_StripsLeadingEnglishArticleFromThirdPersonSubject_WhenOwnerPatched()
+    {
+        AssertFlightMessage(
+            nameof(DummyFlightTarget.StartFlying),
+            "The 巨大トンボ begins flying.",
+            null,
+            "巨大トンボが飛行を開始した。");
+    }
+
+    [Test]
     public void Flight_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
     {
         var harmonyId = CreateHarmonyId();

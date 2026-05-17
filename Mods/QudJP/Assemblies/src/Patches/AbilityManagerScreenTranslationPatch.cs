@@ -296,6 +296,15 @@ public static class AbilityManagerScreenTranslationPatch
     private static string TranslateBindingText(string source, string family)
     {
         var translated = TranslateRawFragments(source);
+        var detail = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateDetailText(
+            translated,
+            ObservabilityHelpers.ComposeContext(Context, family),
+            recordTransform: false);
+        if (detail.changed)
+        {
+            translated = detail.translated;
+        }
+
         if (string.Equals(translated, source, StringComparison.Ordinal))
         {
             translated = StringHelpers.TryGetTranslationExactOrLowerAscii(source, out var exact)

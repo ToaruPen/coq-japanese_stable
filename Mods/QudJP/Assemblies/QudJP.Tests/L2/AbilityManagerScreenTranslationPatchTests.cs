@@ -262,6 +262,49 @@ public sealed class AbilityManagerScreenTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesGeneratedDetailStatLines_WhenHighlightChanges()
+    {
+        WriteDictionary(
+            ("Time Dilation", "時間膨張"),
+            ("Type: ", "種別: "),
+            ("Mutations", "変異"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyAbilityManagerScreenTarget), nameof(DummyAbilityManagerScreenTarget.HandleHighlightLeft)),
+                postfix: new HarmonyMethod(RequirePatchPostfix()));
+
+            var screen = new DummyAbilityManagerScreenTarget();
+            screen.HandleHighlightLeft(new DummyAbilityManagerScreenLineData
+            {
+                Id = "ability",
+                ability = new DummyAbilityManagerEntryTarget
+                {
+                    DisplayName = "Time Dilation",
+                    Class = "Mutations",
+                    Description = "Duration: 15 rounds\nArea: 7x7\nCooldown reduced by 22 due to high Willpower.",
+                },
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(screen.rightSideHeaderText.text, Is.EqualTo("時間膨張"));
+                Assert.That(
+                    screen.rightSideDescriptionArea.text,
+                    Is.EqualTo("{{y|種別: }}変異\n\n持続時間: 15 ラウンド\n効果範囲: 7x7\nクールダウンが22短縮（高い意志力による）。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Postfix_FallsBackToEnglish_WhenDictionaryEntriesAreMissing()
     {
         WriteDictionary(("Maneuvers", "戦技"));

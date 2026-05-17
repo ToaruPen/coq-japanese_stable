@@ -38,6 +38,12 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
         new Regex("^(?<indent>\\s*):(?<name>.+?) \\[(?<cost>\\d+)sp\\] (?<requirement>\\d+) (?<attribute>Strength|Toughness|Willpower|Agility|Ego|Intelligence)(?:, (?<prereq>.+))?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PrefixedSkillNamePattern =
         new Regex("^(?<indent>\\s*):(?<name>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex GeneratedDetailStatLinePattern =
+        new Regex("^(?<label>Duration|Range|Area|Radius|Cooldown|Cooldown Remaining Turns): (?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CooldownAdjustmentPattern =
+        new Regex("^Cooldown (?<direction>reduced|increased) by (?<amount>.+?) due to (?<reason>.+)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CooldownFloorPattern =
+        new Regex("^Cooldown cannot be reduced below (?<amount>.+?) rounds\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
@@ -135,13 +141,7 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
         string route,
         bool recordTransform)
     {
-        var exact = TryTranslateExactLeafPreservingColors(source, route, recordTransform);
-        if (exact.changed)
-        {
-            return exact;
-        }
-
-        return TryTranslateLineCollection(source, route, "SkillsAndPowers.DetailText", TryTranslateExactLeafPreservingColors, recordTransform);
+        return TryTranslateLineCollection(source, route, "SkillsAndPowers.DetailText", TryTranslateDetailLinePreservingColors, recordTransform);
     }
 
     internal static (bool changed, string translated) TryTranslateLearnedStatusText(
@@ -395,6 +395,157 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
         }
 
         return (true, translated);
+    }
+
+    private static (bool changed, string translated) TryTranslateDetailLinePreservingColors(
+        string source,
+        string route,
+        bool recordTransform)
+    {
+        var exact = TryTranslateExactLeafPreservingColors(source, route, recordTransform);
+        if (exact.changed)
+        {
+            return exact;
+        }
+
+        if (TryTranslateGeneratedDetailStatLine(source, route, recordTransform, out var translatedStatLine))
+        {
+            return (true, translatedStatLine);
+        }
+
+        if (TryTranslateCooldownAdjustmentLine(source, route, recordTransform, out var translatedCooldownLine))
+        {
+            return (true, translatedCooldownLine);
+        }
+
+        return (false, source);
+    }
+
+    private static bool TryTranslateGeneratedDetailStatLine(
+        string source,
+        string route,
+        bool recordTransform,
+        out string translated)
+    {
+        translated = source;
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = GeneratedDetailStatLinePattern.Match(stripped);
+        if (!match.Success)
+        {
+            return false;
+        }
+
+        var label = TranslateGeneratedDetailLabel(match.Groups["label"].Value);
+        var value = ColorAwareTranslationComposer.RestoreCapture(match.Groups["value"].Value, spans, match.Groups["value"]);
+        translated = label + ": " + TranslateGeneratedDetailValue(value);
+        if (recordTransform)
+        {
+            DynamicTextObservability.RecordTransform(route, "SkillsAndPowers.GeneratedDetailStatLine", source, translated);
+        }
+
+        return true;
+    }
+
+    private static bool TryTranslateCooldownAdjustmentLine(
+        string source,
+        string route,
+        bool recordTransform,
+        out string translated)
+    {
+        translated = source;
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var adjustmentMatch = CooldownAdjustmentPattern.Match(stripped);
+        if (adjustmentMatch.Success)
+        {
+            var amount = ColorAwareTranslationComposer.RestoreCapture(
+                adjustmentMatch.Groups["amount"].Value,
+                spans,
+                adjustmentMatch.Groups["amount"]);
+            var reason = TranslateCooldownReason(adjustmentMatch.Groups["reason"].Value);
+            translated = string.Equals(adjustmentMatch.Groups["direction"].Value, "reduced", StringComparison.Ordinal)
+                ? $"クールダウンが{amount}短縮（{reason}による）。"
+                : $"クールダウンが{amount}増加（{reason}による）。";
+            if (recordTransform)
+            {
+                DynamicTextObservability.RecordTransform(route, "SkillsAndPowers.CooldownAdjustment", source, translated);
+            }
+
+            return true;
+        }
+
+        var floorMatch = CooldownFloorPattern.Match(stripped);
+        if (!floorMatch.Success)
+        {
+            return false;
+        }
+
+        var floorAmount = ColorAwareTranslationComposer.RestoreCapture(
+            floorMatch.Groups["amount"].Value,
+            spans,
+            floorMatch.Groups["amount"]);
+        translated = $"クールダウンは{floorAmount}ラウンド未満には短縮されない。";
+        if (recordTransform)
+        {
+            DynamicTextObservability.RecordTransform(route, "SkillsAndPowers.CooldownFloor", source, translated);
+        }
+
+        return true;
+    }
+
+    private static string TranslateGeneratedDetailLabel(string label)
+    {
+        return label switch
+        {
+            "Duration" => "持続時間",
+            "Range" => "射程",
+            "Area" => "効果範囲",
+            "Radius" => "半径",
+            "Cooldown" => "クールダウン",
+            "Cooldown Remaining Turns" => "クールダウン残りターン",
+            _ => label,
+        };
+    }
+
+    private static string TranslateGeneratedDetailValue(string value)
+    {
+        var translated = value;
+        translated = translated.Replace("centered around yourself", "自分中心");
+        translated = translated.Replace("around self", "自分中心");
+        translated = translated.Replace("move actions", "移動アクション");
+        translated = translated.Replace("rounds", "ラウンド");
+        translated = translated.Replace("round", "ラウンド");
+        translated = translated.Replace("turns", "ターン");
+        translated = translated.Replace("turn", "ターン");
+        translated = translated.Replace("squares", "マス");
+        translated = translated.Replace("square", "マス");
+        translated = translated.Replace("sight", "視界");
+        return translated;
+    }
+
+    private static string TranslateCooldownReason(string reason)
+    {
+        var translated = TranslateLeaf(reason);
+        if (!string.Equals(translated, reason, StringComparison.Ordinal))
+        {
+            return translated;
+        }
+
+        return reason switch
+        {
+            "high Strength" => "高い筋力",
+            "high Toughness" => "高い耐久力",
+            "high Willpower" => "高い意志力",
+            "high Agility" => "高い敏捷性",
+            "high Ego" => "高い自我",
+            "high Intelligence" => "高い知性",
+            "low Strength" => "低い筋力",
+            "low Toughness" => "低い耐久力",
+            "low Willpower" => "低い意志力",
+            "low Agility" => "低い敏捷性",
+            "low Ego" => "低い自我",
+            "low Intelligence" => "低い知性",
+            _ => reason,
+        };
     }
 
     private static (bool changed, string translated) TryTranslateLineCollection(

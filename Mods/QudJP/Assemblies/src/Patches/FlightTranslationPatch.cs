@@ -92,6 +92,13 @@ public static class FlightTranslationPatch
         }
 
         var source = message;
+        if (DoesVerbRouteTranslator.TryTranslateMarkedMessage(source, out var doesVerbTranslated))
+        {
+            DynamicTextObservability.RecordTransform(Context, "Flight", source, doesVerbTranslated);
+            message = MessageFrameTranslator.MarkDirectTranslation(doesVerbTranslated);
+            return true;
+        }
+
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         if (!TryTranslateCore(source, stripped, spans, out var translated))
         {
@@ -184,7 +191,26 @@ public static class FlightTranslationPatch
     private static string RestoreSubject(Match match, IReadOnlyList<ColorSpan> spans)
     {
         var group = match.Groups["subject"];
-        return ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, spans, group).Trim();
+        return StripLeadingEnglishArticle(ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, spans, group).Trim());
+    }
+
+    private static string StripLeadingEnglishArticle(string subject)
+    {
+        if (subject.StartsWith("The ", StringComparison.Ordinal)
+            || subject.StartsWith("the ", StringComparison.Ordinal)
+            || subject.StartsWith("A ", StringComparison.Ordinal)
+            || subject.StartsWith("a ", StringComparison.Ordinal))
+        {
+            return subject.Substring(subject.IndexOf(' ') + 1);
+        }
+
+        if (subject.StartsWith("An ", StringComparison.Ordinal)
+            || subject.StartsWith("an ", StringComparison.Ordinal))
+        {
+            return subject.Substring(subject.IndexOf(' ') + 1);
+        }
+
+        return subject;
     }
 
     private static string RestoreWholeSourceBoundary(

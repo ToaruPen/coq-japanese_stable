@@ -1203,6 +1203,11 @@
     },
     {
       "verb": "begin",
+      "extra": "flying",
+      "text": "{subject}が飛翔し始めた{endmark}"
+    },
+    {
+      "verb": "begin",
       "extra": "healing",
       "text": "回復を始めた"
     },

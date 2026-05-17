@@ -119,6 +119,12 @@ public static class ITeleporterTranslationPatch
             return true;
         }
 
+        if (DoesVerbRouteTranslator.TryTranslateMarkedMessage(source, out translated))
+        {
+            DynamicTextObservability.RecordTransform(route, "Popup.ProducerText." + Context + ".DoesVerb", source, translated);
+            return true;
+        }
+
         _ = family;
 
         var ownerFamily = "Popup.ProducerText." + Context;
