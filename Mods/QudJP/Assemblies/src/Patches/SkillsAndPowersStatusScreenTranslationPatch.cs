@@ -475,14 +475,13 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
         var attribute = RestoreTranslatedCapture(match, spans, "attribute", TranslateAttributeRequirement);
 
         var translatedVisible = $"{match.Groups["indent"].Value}{colon}{name} {costBlock} {requirement} {attribute}";
-        var changed = !string.Equals(translatedVisible, stripped, StringComparison.Ordinal);
         if (match.Groups["prereq"].Success)
         {
             var prereq = RestoreTranslatedCapture(match, spans, "prereq", TranslateLeaf);
             translatedVisible += $", {prereq}";
-            changed |= !string.Equals(prereq, match.Groups["prereq"].Value, StringComparison.Ordinal);
         }
 
+        var changed = !string.Equals(translatedVisible, stripped, StringComparison.Ordinal);
         if (!changed)
         {
             translated = source;

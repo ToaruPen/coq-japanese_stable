@@ -88,7 +88,7 @@ public static class SkillsAndPowersStatusScreenDetailsPatch
             Component component => component.gameObject,
             _ => null,
         };
-        if (gameObject is null)
+        if (gameObject == null)
         {
             return;
         }
@@ -98,7 +98,7 @@ public static class SkillsAndPowersStatusScreenDetailsPatch
         for (var index = 0; index < texts.Length; index++)
         {
             var text = texts[index];
-            if (text is null || string.IsNullOrEmpty(text.text))
+            if (text == null || string.IsNullOrEmpty(text.text))
             {
                 continue;
             }
