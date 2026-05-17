@@ -22,6 +22,11 @@
     <DefineConstants>$(DefineConstants);HAS_TMP</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition="!Exists('$(ManagedDir)/Unity.TextMeshPro.dll')">
+    <UseUnityReferenceStubs>true</UseUnityReferenceStubs>
+    <DefineConstants>$(DefineConstants);UNITY_REFERENCE_STUBS</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="FsCheck" Version="3.3.2" />
     <PackageReference Include="FsCheck.NUnit" Version="3.3.2" />
@@ -99,6 +104,15 @@
       <HintPath>$(ManagedDir)/UnityEngine.TextRenderingModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseUnityReferenceStubs)' == 'true'">
+    <ProjectReference Include="../ReferenceStubs/UnityEngine.CoreModule/UnityEngine.CoreModule.csproj" />
+    <ProjectReference Include="../ReferenceStubs/UnityEngine.TextRenderingModule/UnityEngine.TextRenderingModule.csproj" />
+    <ProjectReference Include="../ReferenceStubs/UnityEngine.TextCoreFontEngineModule/UnityEngine.TextCoreFontEngineModule.csproj" />
+    <ProjectReference Include="../ReferenceStubs/UnityEngine.TextCoreTextEngineModule/UnityEngine.TextCoreTextEngineModule.csproj" />
+    <ProjectReference Include="../ReferenceStubs/UnityEngine.UI/UnityEngine.UI.csproj" />
+    <ProjectReference Include="../ReferenceStubs/Unity.TextMeshPro/Unity.TextMeshPro.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="Exists('$(ManagedDir)/Unity.TextMeshPro.dll')">
