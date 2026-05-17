@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -72,7 +73,7 @@ public static class StatusScreensScreenTranslationPatch
             return;
         }
 
-        var optionType = options.Count > 0 ? options[0]!.GetType() : null;
+        var optionType = options.Count > 0 ? options[0]?.GetType() : GetGenericListElementType(options.GetType());
         if (optionType is null)
         {
             return;
@@ -83,6 +84,19 @@ public static class StatusScreensScreenTranslationPatch
         {
             options.Add(option);
         }
+    }
+
+    private static Type? GetGenericListElementType(Type listType)
+    {
+        if (listType.IsGenericType && listType.GetGenericArguments().Length == 1)
+        {
+            return listType.GetGenericArguments()[0];
+        }
+
+        return listType.GetInterfaces()
+            .Where(type => type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IList<>))
+            .Select(type => type.GetGenericArguments()[0])
+            .FirstOrDefault();
     }
 
     private static object? CreateMenuOption(Type optionType, string description, string inputCommand)

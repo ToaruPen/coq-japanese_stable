@@ -193,6 +193,55 @@ public sealed partial class Issue201OtherUiBindingPatchTests
         }
     }
 
+    [Test]
+    public void BookScreenPrefix_FallbacksToEnglishActiveEffectsTitle_WhenDictionaryMissing()
+    {
+        WriteDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyBookScreenTarget), nameof(DummyBookScreenTarget.showScreen), new[] { typeof(DummyBookTarget), typeof(string), typeof(Action<int>), typeof(Action<int>) }),
+                prefix: new HarmonyMethod(RequireMethod(typeof(BookScreenTranslationPatch), nameof(BookScreenTranslationPatch.Prefix))));
+
+            var target = new DummyBookScreenTarget();
+            target.showScreen(new DummyBookTarget { Title = "&WActive Effects&Y - Location" });
+
+            Assert.That(target.titleText.Text, Is.EqualTo("{{W|Active Effects}}{{Y| - Location}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [TestCase("")]
+    [TestCase("&WActive Effects&Y - {")]
+    public void BookScreenPrefix_DoesNotTransformEmptyOrMalformedActiveEffectsTitle(string title)
+    {
+        WriteDictionary(("Active Effects - {0}", "発動中の効果 - {0}"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyBookScreenTarget), nameof(DummyBookScreenTarget.showScreen), new[] { typeof(DummyBookTarget), typeof(string), typeof(Action<int>), typeof(Action<int>) }),
+                prefix: new HarmonyMethod(RequireMethod(typeof(BookScreenTranslationPatch), nameof(BookScreenTranslationPatch.Prefix))));
+
+            var target = new DummyBookScreenTarget();
+            target.showScreen(new DummyBookTarget { Title = title });
+
+            Assert.That(target.titleText.Text, Is.EqualTo(title));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

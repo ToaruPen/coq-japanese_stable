@@ -217,9 +217,48 @@ public sealed class WorldMapUiTranslationPatchTests
                 Assert.That(target.defaultMenuOptionOrder[3].InputCommand, Is.EqualTo("Page Right"));
                 Assert.That(target.defaultMenuOptionOrder[3].Description, Is.EqualTo("次のタブ"));
                 Assert.That(target.defaultMenuOptionOrder[3].KeyDescription, Is.Null);
+                Assert.That(target.updateMenuBar, Is.True);
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(StatusScreensScreenTranslationPatch), "StatusScreensScreen.MenuOption"),
                     Is.EqualTo(6));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void StatusScreensScreenPostfix_CreatesPageTabOptions_WhenMenuListStartsEmpty()
+    {
+        WriteDictionary(
+            "ui-statusscreens.ja.json",
+            ("Previous tab", "前のタブ"),
+            ("Next tab", "次のタブ"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyStatusScreensScreenTarget), nameof(DummyStatusScreensScreenTarget.UpdateViewFromData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(StatusScreensScreenTranslationPatch), nameof(StatusScreensScreenTranslationPatch.Postfix))));
+
+            var target = new DummyStatusScreensScreenTarget();
+            target.defaultMenuOptionOrder.Clear();
+            target.UpdateViewFromData();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.defaultMenuOptionOrder, Has.Count.EqualTo(2));
+                Assert.That(target.defaultMenuOptionOrder[0].InputCommand, Is.EqualTo("Page Left"));
+                Assert.That(target.defaultMenuOptionOrder[0].Description, Is.EqualTo("前のタブ"));
+                Assert.That(target.defaultMenuOptionOrder[0].KeyDescription, Is.Null);
+                Assert.That(target.defaultMenuOptionOrder[1].InputCommand, Is.EqualTo("Page Right"));
+                Assert.That(target.defaultMenuOptionOrder[1].Description, Is.EqualTo("次のタブ"));
+                Assert.That(target.defaultMenuOptionOrder[1].KeyDescription, Is.Null);
+                Assert.That(target.updateMenuBar, Is.True);
             });
         }
         finally

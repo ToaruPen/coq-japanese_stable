@@ -105,6 +105,70 @@ public sealed class SkillsAndPowersStatusScreenTranslationPatchTests
         });
     }
 
+    [Test]
+    public void TryTranslateDetailText_LeavesNonMatchingEnglishLineUnchanged()
+    {
+        var source = "Some unrelated line.";
+
+        var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateDetailText(
+            source,
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.changed, Is.False);
+            Assert.That(result.translated, Is.EqualTo(source));
+        });
+    }
+
+    [Test]
+    public void TryTranslateDetailText_LeavesEmptyInputUnchanged()
+    {
+        var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateDetailText(
+            string.Empty,
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.changed, Is.False);
+            Assert.That(result.translated, Is.Empty);
+        });
+    }
+
+    [Test]
+    public void TryTranslateDetailText_LeavesDirectMarkedInputUnchanged()
+    {
+        var source = "\x01{{G|Some unrelated line.}}";
+
+        var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateDetailText(
+            source,
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.changed, Is.False);
+            Assert.That(result.translated, Is.EqualTo(source));
+        });
+    }
+
+    [Test]
+    public void TryTranslateDetailText_PreservesCooldownReasonColors()
+    {
+        var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateDetailText(
+            "Cooldown reduced by 7 due to {{G|high Willpower}}.",
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.changed, Is.True);
+            Assert.That(result.translated, Is.EqualTo("クールダウンが7短縮（{{G|高い意志力}}による）。"));
+        });
+    }
+
     private void WriteDictionaryFile(string relativePath, params (string key, string text)[] entries)
     {
         var builder = new StringBuilder();

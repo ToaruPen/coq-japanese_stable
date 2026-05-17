@@ -191,7 +191,8 @@ public static class FlightTranslationPatch
     private static string RestoreSubject(Match match, IReadOnlyList<ColorSpan> spans)
     {
         var group = match.Groups["subject"];
-        return StripLeadingEnglishArticle(ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, spans, group).Trim());
+        var stripped = StripLeadingEnglishArticle(group.Value.Trim());
+        return ColorAwareTranslationComposer.MarkupAwareRestoreCapture(stripped, spans, group).Trim();
     }
 
     private static string StripLeadingEnglishArticle(string subject)

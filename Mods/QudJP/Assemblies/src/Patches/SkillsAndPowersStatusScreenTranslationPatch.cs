@@ -461,7 +461,11 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
                 adjustmentMatch.Groups["amount"].Value,
                 spans,
                 adjustmentMatch.Groups["amount"]);
-            var reason = TranslateCooldownReason(adjustmentMatch.Groups["reason"].Value);
+            var rawReason = ColorAwareTranslationComposer.RestoreCapture(
+                adjustmentMatch.Groups["reason"].Value,
+                spans,
+                adjustmentMatch.Groups["reason"]);
+            var reason = ColorAwareTranslationComposer.TranslatePreservingColors(rawReason, TranslateCooldownReason);
             translated = string.Equals(adjustmentMatch.Groups["direction"].Value, "reduced", StringComparison.Ordinal)
                 ? $"クールダウンが{amount}短縮（{reason}による）。"
                 : $"クールダウンが{amount}増加（{reason}による）。";

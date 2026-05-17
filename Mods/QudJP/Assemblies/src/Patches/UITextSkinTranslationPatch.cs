@@ -110,13 +110,14 @@ public static class UITextSkinTranslationPatch
 #if HAS_TMP
     private static void RepairActiveEffectsTitleText(object? instance, string? text)
     {
-        if (!ShouldRepairActiveEffectsTitle(text) || instance is not Component component || string.IsNullOrEmpty(text))
+        var component = instance as Component;
+        if (!ShouldRepairActiveEffectsTitle(text) || component == null || string.IsNullOrEmpty(text))
         {
             return;
         }
 
         var tmp = component.GetComponent<TextMeshProUGUI>();
-        if (tmp is null)
+        if (tmp == null)
         {
             return;
         }
@@ -128,8 +129,8 @@ public static class UITextSkinTranslationPatch
         }
 
         tmp.text = richText;
-        SetStringFieldIfPresent(instance, "formattedText", richText);
-        SetStringFieldIfPresent(instance, "lasttext", text!);
+        SetStringFieldIfPresent(component, "formattedText", richText);
+        SetStringFieldIfPresent(component, "lasttext", text!);
         tmp.richText = true;
         FontManager.ForcePrimaryFont(tmp);
         tmp.overflowMode = TextOverflowModes.Overflow;
@@ -163,7 +164,7 @@ public static class UITextSkinTranslationPatch
             + " pageCount="
             + tmp.textInfo.pageCount.ToString(System.Globalization.CultureInfo.InvariantCulture)
             + " font='"
-            + (tmp.font is null ? string.Empty : tmp.font.name)
+            + (tmp.font == null ? string.Empty : tmp.font.name)
             + "'");
 #endif
     }
