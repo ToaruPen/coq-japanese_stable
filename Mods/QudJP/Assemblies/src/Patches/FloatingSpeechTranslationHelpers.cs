@@ -18,7 +18,7 @@ internal static class FloatingSpeechTranslationHelpers
         @"{{W\|'(?<line>.*?)'\}}",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
-    internal static bool TryTranslateWhiteWrappedParticle(
+    internal static bool TryTranslateWhiteWrappedParticleColorCode(
         string source,
         IReadOnlyDictionary<string, string> lines,
         out string translated)
@@ -30,7 +30,7 @@ internal static class FloatingSpeechTranslationHelpers
             return false;
         }
 
-        translated = "{{W|" + translatedLine + "}}";
+        translated = "&W" + translatedLine;
         return true;
     }
 
@@ -61,6 +61,15 @@ internal static class FloatingSpeechTranslationHelpers
         translated = WhiteQuotedFramePattern.Replace(
             source,
             static match => "{{W|「" + match.Groups["line"].Value + "」}}",
+            1);
+        return !string.Equals(translated, source, StringComparison.Ordinal);
+    }
+
+    internal static bool TryNormalizeWhiteQuotedParticleFrame(string source, out string translated)
+    {
+        translated = WhiteQuotedFramePattern.Replace(
+            source,
+            static match => "&W「" + match.Groups["line"].Value + "」",
             1);
         return !string.Equals(translated, source, StringComparison.Ordinal);
     }

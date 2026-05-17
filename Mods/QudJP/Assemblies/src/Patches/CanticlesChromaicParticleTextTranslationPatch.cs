@@ -68,7 +68,7 @@ public static class CanticlesChromaicParticleTextTranslationPatch
         var source = text;
         if (!OwnerTranslationScope.IsActive(activeDepth)
             || string.IsNullOrEmpty(text)
-            || !FloatingSpeechTranslationHelpers.TryNormalizeWhiteQuotedFrame(text, out var translated))
+            || !FloatingSpeechTranslationHelpers.TryNormalizeWhiteQuotedParticleFrame(text, out var translated))
         {
             return false;
         }

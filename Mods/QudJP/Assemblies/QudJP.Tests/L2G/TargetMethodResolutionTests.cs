@@ -477,6 +477,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(TextMeshProFontPatch), "OnEnable", "TMPro.TextMeshPro", "System.Void", new string[0])]
     [TestCase(typeof(TmpInputFieldFontPatch), "OnEnable", "TMPro.TMP_InputField", "System.Void", new string[0])]
     [TestCase(typeof(LegacyUITextFontPatch), "OnEnable", "UnityEngine.UI.Text", "System.Void", new string[0])]
+    [TestCase(typeof(LegacyTextMeshFontPatch), "set_text", "UnityEngine.TextMesh", "System.Void", new[] { "System.String" })]
     [TestCase(typeof(ModMenuLineTranslationPatch), "Update", "Qud.UI.ModMenuLine", "System.Void", new string[0])]
 #endif
     public void TargetMethod_ResolvesExpectedSignature(

@@ -101,7 +101,7 @@ public static class JoppaZealotTranslationPatch
     {
         if (!OwnerTranslationScope.IsActive(activeDepth)
             || string.IsNullOrEmpty(text)
-            || !FloatingSpeechTranslationHelpers.TryTranslateWhiteWrappedParticle(text, Lines, out var translated))
+            || !FloatingSpeechTranslationHelpers.TryTranslateWhiteWrappedParticleColorCode(text, Lines, out var translated))
         {
             return false;
         }

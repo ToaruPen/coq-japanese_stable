@@ -33,6 +33,8 @@ public sealed class FloatingYellTextTranslationPatchTests
         MessageFrameTranslator.ResetForTests();
         DummyMessageQueue.Reset();
         DummyParticleTextTarget.Reset();
+        DummyCombatJuiceRenderer.Reset();
+        CombatJuiceFloatingTextRenderer.SetRendererForTests(DummyCombatJuiceRenderer.Render);
     }
 
     [TearDown]
@@ -43,8 +45,10 @@ public sealed class FloatingYellTextTranslationPatchTests
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
+        CombatJuiceFloatingTextRenderer.SetRendererForTests(null);
         DummyMessageQueue.Reset();
         DummyParticleTextTarget.Reset();
+        DummyCombatJuiceRenderer.Reset();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -55,19 +59,19 @@ public sealed class FloatingYellTextTranslationPatchTests
     [TestCase(
         "Who ventures into the Great Salt Desert, and nearer the Six Day Stilt?",
         "狂信者は{{W|「大塩砂漠へ足を踏み入れ、六日のスティルトに近づく者は誰だ？」}}と叫んだ",
-        "{{W|大塩砂漠へ足を踏み入れ、六日のスティルトに近づく者は誰だ？}}")]
+        "大塩砂漠へ足を踏み入れ、六日のスティルトに近づく者は誰だ？")]
     [TestCase(
         "Hmm, what of your artifacts? Make an offering of them to Shekhinah at the Sacred Well.",
         "狂信者は{{W|「ふむ、お前のアーティファクトはどうした？それらを聖なる井戸のシェキーナへ捧げよ。」}}と叫んだ",
-        "{{W|ふむ、お前のアーティファクトはどうした？それらを聖なる井戸のシェキーナへ捧げよ。}}")]
+        "ふむ、お前のアーティファクトはどうした？それらを聖なる井戸のシェキーナへ捧げよ。")]
     [TestCase(
         "The beauty! My stomach is in stirs.",
         "狂信者は{{W|「なんという美しさだ！腹の底がかき乱される。」}}と叫んだ",
-        "{{W|なんという美しさだ！腹の底がかき乱される。}}")]
+        "なんという美しさだ！腹の底がかき乱される。")]
     [TestCase(
         "Is it a dybbuk that possesses the robot? It should be sacred and still.",
         "狂信者は{{W|「ロボットに憑いているのはディブクか？それは神聖で静止しているべきものだ。」}}と叫んだ",
-        "{{W|ロボットに憑いているのはディブクか？それは神聖で静止しているべきものだ。}}")]
+        "ロボットに憑いているのはディブクか？それは神聖で静止しているべきものだ。")]
     public void JoppaZealot_TranslatesMessageLogAndFloatingText_WhenOwnerPatched(
         string line,
         string expectedMessage,
@@ -83,7 +87,8 @@ public sealed class FloatingYellTextTranslationPatchTests
                 Assert.Multiple(() =>
                 {
                     Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expectedMessage));
-                    Assert.That(DummyParticleTextTarget.LastText, Is.EqualTo(expectedParticle));
+                    Assert.That(DummyParticleTextTarget.LastText, Is.Empty);
+                    Assert.That(DummyCombatJuiceRenderer.LastText, Is.EqualTo(expectedParticle));
                     Assert.That(QueueHitCount(typeof(JoppaZealotTranslationPatch), "Yell"), Is.EqualTo(1));
                     Assert.That(ParticleHitCount(typeof(JoppaZealotTranslationPatch), "FloatingSpeech"), Is.EqualTo(1));
                 });
@@ -93,19 +98,19 @@ public sealed class FloatingYellTextTranslationPatchTests
     [TestCase(
         "Make an offering at the Argent Well! Pay homage to your Fathers!",
         "狂信者が{{W|「白銀の泉に捧げものをせよ！父祖を称えよ！」}}と叫んだ",
-        "{{W|白銀の泉に捧げものをせよ！父祖を称えよ！}}")]
+        "白銀の泉に捧げものをせよ！父祖を称えよ！")]
     [TestCase(
         "Cast down your artifacts! You are not worthy of their make!",
         "狂信者が{{W|「アーティファクトを打ち捨てよ！貴様にそれを持つ資格はない！」}}と叫んだ",
-        "{{W|アーティファクトを打ち捨てよ！貴様にそれを持つ資格はない！}}")]
+        "アーティファクトを打ち捨てよ！貴様にそれを持つ資格はない！")]
     [TestCase(
         "Piety compels you to deliver your sacred relics to the priests in the cathedral! Cleanse them of your filth!",
         "狂信者が{{W|「信仰心があるなら聖遺物を大聖堂の司祭に届けよ！貴様の穢れを清めるのだ！」}}と叫んだ",
-        "{{W|信仰心があるなら聖遺物を大聖堂の司祭に届けよ！貴様の穢れを清めるのだ！}}")]
+        "信仰心があるなら聖遺物を大聖堂の司祭に届けよ！貴様の穢れを清めるのだ！")]
     [TestCase(
         "The Machine commands that you exorcise robots and bring their sacred husks here!",
         "狂信者が{{W|「機械の御意志により、ロボットを祓い清め、聖なる殻をここへ持って来い！」}}と叫んだ",
-        "{{W|機械の御意志により、ロボットを祓い清め、聖なる殻をここへ持って来い！}}")]
+        "機械の御意志により、ロボットを祓い清め、聖なる殻をここへ持って来い！")]
     public void SixDayZealot_TranslatesMessageLogAndFloatingText_WhenOwnerPatched(
         string line,
         string expectedMessage,
@@ -121,7 +126,8 @@ public sealed class FloatingYellTextTranslationPatchTests
                 Assert.Multiple(() =>
                 {
                     Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expectedMessage));
-                    Assert.That(DummyParticleTextTarget.LastText, Is.EqualTo(expectedParticle));
+                    Assert.That(DummyParticleTextTarget.LastText, Is.Empty);
+                    Assert.That(DummyCombatJuiceRenderer.LastText, Is.EqualTo(expectedParticle));
                     Assert.That(QueueHitCount(typeof(SixDayZealotTranslationPatch), "Yell"), Is.EqualTo(1));
                     Assert.That(ParticleHitCount(typeof(SixDayZealotTranslationPatch), "FloatingSpeech"), Is.EqualTo(1));
                 });
@@ -141,8 +147,11 @@ public sealed class FloatingYellTextTranslationPatchTests
                 Assert.Multiple(() =>
                 {
                     Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("E-Rosは{{W|「今行くよ、リーダー！」}}と叫んだ"));
-                    Assert.That(DummyParticleTextTarget.LastText, Is.EqualTo("今行くよ、リーダー！"));
-                    Assert.That(DummyParticleTextTarget.LastColor, Is.EqualTo('W'));
+                    Assert.That(DummyParticleTextTarget.LastText, Is.Empty);
+                    Assert.That(DummyCombatJuiceRenderer.LastText, Is.EqualTo("今行くよ、リーダー！"));
+                    Assert.That(DummyCombatJuiceRenderer.LastColor.r, Is.EqualTo(1f));
+                    Assert.That(DummyCombatJuiceRenderer.LastColor.g, Is.EqualTo(1f));
+                    Assert.That(DummyCombatJuiceRenderer.LastColor.b, Is.EqualTo(0f));
                     Assert.That(QueueHitCount(typeof(ErosTeleportationTranslationPatch), "Yell"), Is.EqualTo(1));
                     Assert.That(EmitMessageHitCount("EmitMessage"), Is.Zero);
                     Assert.That(ParticleHitCount(typeof(ErosTeleportationTranslationPatch), "FloatingSpeech"), Is.EqualTo(1));
@@ -162,8 +171,9 @@ public sealed class FloatingYellTextTranslationPatchTests
 
                 Assert.Multiple(() =>
                 {
-                    Assert.That(DummyParticleTextTarget.LastText, Is.EqualTo("構えよ！"));
-                    Assert.That(DummyParticleTextTarget.LastColor, Is.EqualTo('W'));
+                    Assert.That(DummyParticleTextTarget.LastText, Is.Empty);
+                    Assert.That(DummyCombatJuiceRenderer.LastText, Is.EqualTo("構えよ！"));
+                    Assert.That(DummyCombatJuiceRenderer.LastFloatLength, Is.EqualTo(-8f));
                     Assert.That(ParticleHitCount(typeof(LongBladesCoreTranslationPatch), "EnGarde"), Is.EqualTo(1));
                 });
             });
@@ -182,7 +192,8 @@ public sealed class FloatingYellTextTranslationPatchTests
                 Assert.Multiple(() =>
                 {
                     Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("説教者は言う、{{W|「これは日本語の一節」}}"));
-                    Assert.That(DummyParticleTextTarget.LastText, Is.EqualTo("{{W|「これは日本語の一節」}}"));
+                    Assert.That(DummyParticleTextTarget.LastText, Is.Empty);
+                    Assert.That(DummyCombatJuiceRenderer.LastText, Is.EqualTo("「これは日本語の一節」"));
                     Assert.That(QueueHitCount(typeof(PreacherHomilyTranslationPatch), "QuotedHomilyFrame"), Is.EqualTo(1));
                     Assert.That(ParticleHitCount(typeof(PreacherHomilyTranslationPatch), "FloatingHomilyFrame"), Is.EqualTo(1));
                 });
@@ -208,7 +219,8 @@ public sealed class FloatingYellTextTranslationPatchTests
                             Assert.Multiple(() =>
                             {
                                 Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("説教者は言う、{{W|「内側の説教」}}"));
-                                Assert.That(DummyParticleTextTarget.LastText, Is.EqualTo("{{W|「内側の説教」}}"));
+                                Assert.That(DummyParticleTextTarget.LastText, Is.Empty);
+                                Assert.That(DummyCombatJuiceRenderer.LastText, Is.EqualTo("「内側の説教」"));
                                 Assert.That(QueueHitCount(typeof(PreacherHomilyTranslationPatch), "QuotedHomilyFrame"), Is.EqualTo(1));
                                 Assert.That(ParticleHitCount(typeof(PreacherHomilyTranslationPatch), "FloatingHomilyFrame"), Is.EqualTo(1));
                                 Assert.That(ParticleHitCount(typeof(JoppaZealotTranslationPatch), "FloatingSpeech"), Is.EqualTo(1));
@@ -219,7 +231,8 @@ public sealed class FloatingYellTextTranslationPatchTests
 
                 Assert.Multiple(() =>
                 {
-                    Assert.That(DummyParticleTextTarget.LastText, Is.EqualTo("{{W|なんという美しさだ！腹の底がかき乱される。}}"));
+                    Assert.That(DummyParticleTextTarget.LastText, Is.Empty);
+                    Assert.That(DummyCombatJuiceRenderer.LastText, Is.EqualTo("なんという美しさだ！腹の底がかき乱される。"));
                     Assert.That(ParticleHitCount(typeof(JoppaZealotTranslationPatch), "FloatingSpeech"), Is.EqualTo(2));
                     Assert.That(ParticleHitCount(typeof(PreacherHomilyTranslationPatch), "FloatingHomilyFrame"), Is.EqualTo(1));
                 });
@@ -238,7 +251,8 @@ public sealed class FloatingYellTextTranslationPatchTests
 
                 Assert.Multiple(() =>
                 {
-                    Assert.That(DummyParticleTextTarget.LastText, Is.EqualTo("{{W|「銀の父祖を讃えよ」}}"));
+                    Assert.That(DummyParticleTextTarget.LastText, Is.Empty);
+                    Assert.That(DummyCombatJuiceRenderer.LastText, Is.EqualTo("「銀の父祖を讃えよ」"));
                     Assert.That(ParticleHitCount(typeof(CanticlesChromaicParticleTextTranslationPatch), "FloatingCanticleFrame"), Is.EqualTo(1));
                 });
             });
@@ -248,7 +262,7 @@ public sealed class FloatingYellTextTranslationPatchTests
     public void ParticleText_DoesNotTranslateSupportedText_WhenOwnerAbsent()
     {
         WithPatchedParticleOnly(() =>
-            DummyParticleTextTarget.ParticleText("{{W|Who ventures into the Great Salt Desert, and nearer the Six Day Stilt?}}", 0.4f, 0.2f, ' ', IgnoreVisibility: true));
+            DummyParticleTextTarget.Current.ParticleText("{{W|Who ventures into the Great Salt Desert, and nearer the Six Day Stilt?}}", 0.4f, 0.2f, ' ', IgnoreVisibility: true));
 
         Assert.Multiple(() =>
         {
@@ -261,7 +275,7 @@ public sealed class FloatingYellTextTranslationPatchTests
     public void ParticleText_DoesNotTranslateFloatLifeOverload_WhenOwnerAbsent()
     {
         WithPatchedParticleOnly(() =>
-            DummyParticleTextTarget.ParticleText("{{W|Who ventures into the Great Salt Desert, and nearer the Six Day Stilt?}}", 1.5f, 24));
+            DummyParticleTextTarget.Current.ParticleText("{{W|Who ventures into the Great Salt Desert, and nearer the Six Day Stilt?}}", 1.5f, 24));
 
         Assert.Multiple(() =>
         {
@@ -292,7 +306,7 @@ public sealed class FloatingYellTextTranslationPatchTests
     public void ParticleText_DoesNotTranslateUnsupportedText_WhenOwnerAbsent(string text)
     {
         WithPatchedParticleOnly(() =>
-            DummyParticleTextTarget.ParticleText(text, IgnoreVisibility: true));
+            DummyParticleTextTarget.Current.ParticleText(text, IgnoreVisibility: true));
 
         Assert.Multiple(() =>
         {
@@ -438,7 +452,9 @@ public sealed class FloatingYellTextTranslationPatchTests
         var prefix = new HarmonyMethod(RequireMethod(
             typeof(GameObjectParticleTextTranslationPatch),
             nameof(GameObjectParticleTextTranslationPatch.Prefix),
-            typeof(string).MakeByRefType()));
+            typeof(object),
+            typeof(string).MakeByRefType(),
+            typeof(object[])));
 
         harmony.Patch(
             original: RequireMethod(typeof(DummyParticleTextTarget), nameof(DummyParticleTextTarget.ParticleText), typeof(string), typeof(bool)),
@@ -537,7 +553,7 @@ public sealed class FloatingYellTextTranslationPatchTests
             _ = Dialog;
             DummyMessagingEmitMessageTarget.MessageToSend = "The zealot yells, {{W|'" + line + "'}}";
             DummyMessagingEmitMessageTarget.EmitMessage(new DummyGameObject(), "unused", ' ', false, true, false);
-            DummyParticleTextTarget.ParticleText("{{W|" + line + "}}", 0.4f, 0.2f, ' ', IgnoreVisibility: true);
+            DummyParticleTextTarget.Current.ParticleText("{{W|" + line + "}}", 0.4f, 0.2f, ' ', IgnoreVisibility: true);
         }
     }
 
@@ -550,7 +566,7 @@ public sealed class FloatingYellTextTranslationPatchTests
             _ = Dialog;
             DummyMessagingEmitMessageTarget.MessageToSend = "The zealot yells {{W|'" + line + "'}}";
             DummyMessagingEmitMessageTarget.EmitMessage(new DummyGameObject(), "unused", ' ', false, true, false);
-            DummyParticleTextTarget.ParticleText("{{W|" + line + "}}", IgnoreVisibility: true);
+            DummyParticleTextTarget.Current.ParticleText("{{W|" + line + "}}", IgnoreVisibility: true);
         }
     }
 
@@ -561,7 +577,7 @@ public sealed class FloatingYellTextTranslationPatchTests
         {
             DummyMessagingEmitMessageTarget.MessageToSend = "E-Ros yells, {{W|'I'm coming, " + leader + "!'}}";
             DummyMessagingEmitMessageTarget.EmitMessage(new DummyGameObject(), "unused", ' ', false, true, false);
-            DummyParticleTextTarget.ParticleText("I'm coming, " + leader + "!", 'W');
+            DummyParticleTextTarget.Current.ParticleText("I'm coming, " + leader + "!", 'W');
         }
     }
 
@@ -571,7 +587,7 @@ public sealed class FloatingYellTextTranslationPatchTests
         public void FireEvent(DummyEvent eventContext)
         {
             _ = eventContext;
-            DummyParticleTextTarget.ParticleText("En garde!", 'W');
+            DummyParticleTextTarget.Current.ParticleText("En garde!", 'W');
         }
     }
 
@@ -584,7 +600,7 @@ public sealed class FloatingYellTextTranslationPatchTests
             _ = Dialog;
             DummyMessagingEmitMessageTarget.MessageToSend = "説教者は言う、{{W|'" + line + "'}}";
             DummyMessagingEmitMessageTarget.EmitMessage(new DummyGameObject(), "unused", ' ', false, true, false);
-            DummyParticleTextTarget.ParticleText("{{W|'" + line + "'}}", IgnoreVisibility: true);
+            DummyParticleTextTarget.Current.ParticleText("{{W|'" + line + "'}}", IgnoreVisibility: true);
         }
     }
 
@@ -595,9 +611,9 @@ public sealed class FloatingYellTextTranslationPatchTests
         {
             _ = who;
             _ = Dialog;
-            DummyParticleTextTarget.ParticleText("{{W|Who ventures into the Great Salt Desert, and nearer the Six Day Stilt?}}", IgnoreVisibility: true);
+            DummyParticleTextTarget.Current.ParticleText("{{W|Who ventures into the Great Salt Desert, and nearer the Six Day Stilt?}}", IgnoreVisibility: true);
             nestedAction();
-            DummyParticleTextTarget.ParticleText("{{W|The beauty! My stomach is in stirs.}}", IgnoreVisibility: true);
+            DummyParticleTextTarget.Current.ParticleText("{{W|The beauty! My stomach is in stirs.}}", IgnoreVisibility: true);
         }
     }
 
@@ -606,7 +622,7 @@ public sealed class FloatingYellTextTranslationPatchTests
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void UseToken()
         {
-            DummyParticleTextTarget.ParticleText("{{W|'" + line + "'}}");
+            DummyParticleTextTarget.Current.ParticleText("{{W|'" + line + "'}}");
         }
     }
 
@@ -617,27 +633,43 @@ public sealed class FloatingYellTextTranslationPatchTests
         {
             _ = who;
             _ = Dialog;
-            DummyParticleTextTarget.ParticleText(text, IgnoreVisibility: true);
+            DummyParticleTextTarget.Current.ParticleText(text, IgnoreVisibility: true);
         }
     }
 
-    private static class DummyParticleTextTarget
+    private sealed class DummyParticleTextTarget
     {
+        public static DummyParticleTextTarget Current { get; } = new();
+
         public static string LastText { get; private set; } = string.Empty;
 
         public static char LastColor { get; private set; }
 
         public static bool LastIgnoreVisibility { get; private set; }
 
+        private object CellForTests { get; } = new();
+
+        public bool Visible { get; set; } = true;
+
+        private object GetCurrentCell()
+        {
+            return CellForTests;
+        }
+
+        private bool IsVisible()
+        {
+            return Visible;
+        }
+
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void ParticleText(string Text, bool IgnoreVisibility = false)
+        public void ParticleText(string Text, bool IgnoreVisibility = false)
         {
             LastText = Text;
             LastIgnoreVisibility = IgnoreVisibility;
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void ParticleText(string Text, float Velocity, int Life)
+        public void ParticleText(string Text, float Velocity, int Life)
         {
             _ = Velocity;
             _ = Life;
@@ -645,7 +677,7 @@ public sealed class FloatingYellTextTranslationPatchTests
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void ParticleText(string Text, float xVel, float yVel, char Color = ' ', bool IgnoreVisibility = false)
+        public void ParticleText(string Text, float xVel, float yVel, char Color = ' ', bool IgnoreVisibility = false)
         {
             _ = xVel;
             _ = yVel;
@@ -655,7 +687,7 @@ public sealed class FloatingYellTextTranslationPatchTests
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void ParticleText(string Text, char Color, bool IgnoreVisibility = false, float juiceDuration = 1.5f, float floatLength = -8f)
+        public void ParticleText(string Text, char Color, bool IgnoreVisibility = false, float juiceDuration = 1.5f, float floatLength = -8f)
         {
             _ = juiceDuration;
             _ = floatLength;
@@ -669,6 +701,46 @@ public sealed class FloatingYellTextTranslationPatchTests
             LastText = string.Empty;
             LastColor = '\0';
             LastIgnoreVisibility = false;
+            Current.Visible = true;
+            _ = Current.GetCurrentCell();
+            _ = Current.IsVisible();
+        }
+    }
+
+    private static class DummyCombatJuiceRenderer
+    {
+        public static string LastText { get; private set; } = string.Empty;
+
+        public static UnityEngine.Color LastColor { get; private set; }
+
+        public static float LastFloatLength { get; private set; }
+
+        public static bool Render(
+            object cell,
+            string text,
+            UnityEngine.Color color,
+            float duration,
+            float floatLength,
+            float scale,
+            bool ignoreVisibility,
+            object gameObject)
+        {
+            _ = cell;
+            _ = duration;
+            _ = scale;
+            _ = ignoreVisibility;
+            _ = gameObject;
+            LastText = text;
+            LastColor = color;
+            LastFloatLength = floatLength;
+            return true;
+        }
+
+        public static void Reset()
+        {
+            LastText = string.Empty;
+            LastColor = default;
+            LastFloatLength = 0f;
         }
     }
 }
