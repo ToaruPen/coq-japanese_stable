@@ -120,6 +120,63 @@ public sealed class SkillsAndPowersStatusScreenTranslationPatchTests
         });
     }
 
+    [Test]
+    public void TryTranslateStructuredLinePreservingColors_LeavesUnknownLeafTextUnchanged()
+    {
+        WriteDictionaryFile("ui-skillsandpowers.ja.json", ("Tinker I", "工匠 I"));
+        const string source = "{{K|:Unknown Power}}";
+
+        var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateStructuredLinePreservingColors(
+            source,
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.changed, Is.False);
+            Assert.That(result.translated, Is.EqualTo(source));
+        });
+    }
+
+    [TestCase("")]
+    [TestCase("{{K|}}")]
+    [TestCase("\u0001{{K|:Tinker II}}")]
+    public void TryTranslateStructuredLinePreservingColors_PassesThroughMarkerAndEmptyEdgeCases(string source)
+    {
+        WriteDictionaryFile("ui-skillsandpowers.ja.json", ("Tinker II", "工匠 II"));
+
+        var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateStructuredLinePreservingColors(
+            source,
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.changed, Is.False);
+            Assert.That(result.translated, Is.EqualTo(source));
+        });
+    }
+
+    [Test]
+    public void TryTranslateStructuredLinePreservingColors_RestoresWholeLineBoundaryWrapper()
+    {
+        WriteDictionaryFile(
+            "ui-skillsandpowers.ja.json",
+            ("Tinker I", "工匠 I"),
+            ("Tinker II", "工匠 II"));
+
+        var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateStructuredLinePreservingColors(
+            "{{K|Tinker II [200sp] 23 Intelligence, Tinker I}}",
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.changed, Is.True);
+            Assert.That(result.translated, Is.EqualTo("{{K|工匠 II [200sp] 23 INT, 工匠 I}}"));
+        });
+    }
+
     private void WriteDictionaryFile(string relativePath, params (string key, string text)[] entries)
     {
         var builder = new StringBuilder();

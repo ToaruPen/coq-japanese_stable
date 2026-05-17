@@ -488,7 +488,11 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
             return false;
         }
 
-        translated = translatedVisible;
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translatedVisible,
+            spans,
+            stripped.Length,
+            source);
         if (recordTransform)
         {
             DynamicTextObservability.RecordTransform(route, "SkillsAndPowers.SkillLine.CaptureColors", source, translated);
