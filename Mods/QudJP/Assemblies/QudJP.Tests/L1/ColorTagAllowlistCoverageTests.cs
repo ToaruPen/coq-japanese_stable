@@ -266,6 +266,7 @@ public sealed class ColorTagAllowlistCoverageTests
         "Mods/QudJP/Assemblies/src/Patches/CampfireNostrumsTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/CampfireRemainsAttemptLightTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/CloningStartBuddedCloneTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/ConversationDisplayTextPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/CyberneticsStasisEntanglerTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/DanceRitualOpponentTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/DeathWrapperFamilyTranslator.cs",
