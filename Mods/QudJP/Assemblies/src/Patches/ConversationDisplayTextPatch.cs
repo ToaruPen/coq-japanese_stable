@@ -12,7 +12,22 @@ public static class ConversationDisplayTextPatch
 {
     private static readonly Regex TrailingActionMarkerPattern =
         new Regex(
-            @"\s+(?:\{\{[^|{}]+?\|)?\[[^\]]+\](?:\}\})?\s*$",
+            @"(?<leading>\s+)(?<marker>(?:\{\{[^|{}]+?\|)?\[[^\]]+\](?:\}\})?)\s*$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex WaterRitualActionMarkerPattern =
+        new Regex(
+            @"^\[begin water ritual(?:; (?<amount>\d+) drams? of (?<liquid>.+?))?\]$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex BasicActionMarkerPattern =
+        new Regex(
+            @"^\[(?<action>End|begin trade)\]$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TranslatedTrailingActionMarkerPattern =
+        new Regex(
+            @"(?<leading>\s+)(?<marker>(?:\{\{[^|{}]+?\|)?\[(?:終了|取引を始める|水儀式を始める[^\]]*)\](?:\}\})?)$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex WaterRitualReputationSummaryPattern = new(
@@ -86,7 +101,86 @@ public static class ConversationDisplayTextPatch
             return source;
         }
 
+        if (TryTranslateKnownActionMarker(match.Groups["marker"].Value, out var translatedMarker))
+        {
+            return source.Substring(0, match.Index) + match.Groups["leading"].Value + translatedMarker;
+        }
+
         return source.Substring(0, match.Index);
+    }
+
+    private static bool TryTranslateKnownActionMarker(string source, out string translated)
+    {
+        if (TryTranslateWaterRitualActionMarker(source, out translated))
+        {
+            return true;
+        }
+
+        return TryTranslateBasicActionMarker(source, out translated);
+    }
+
+    private static bool TryTranslateBasicActionMarker(string source, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = BasicActionMarkerPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var visible = match.Groups["action"].Value switch
+        {
+            "End" => "[終了]",
+            "begin trade" => "[取引を始める]",
+            _ => stripped,
+        };
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            visible,
+            spans,
+            stripped.Length,
+            source);
+        DynamicTextObservability.RecordTransform(
+            nameof(ConversationDisplayTextPatch),
+            "ConversationDisplay.BasicActionMarker",
+            source,
+            translated);
+        return true;
+    }
+
+    private static bool TryTranslateWaterRitualActionMarker(string source, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = WaterRitualActionMarkerPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var visible = "[水儀式を始める]";
+        var amountGroup = match.Groups["amount"];
+        var liquidGroup = match.Groups["liquid"];
+        if (amountGroup.Success && liquidGroup.Success)
+        {
+            var amount = ColorAwareTranslationComposer.RestoreCapture(amountGroup.Value, spans, amountGroup);
+            var liquid = WaterRitualTextTranslator.TranslateLiquidVisible(liquidGroup.Value);
+            liquid = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(liquid, spans, liquidGroup);
+            visible = "[水儀式を始める; " + amount + "ドラムの" + liquid + "]";
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            visible,
+            spans,
+            stripped.Length,
+            source);
+        DynamicTextObservability.RecordTransform(
+            nameof(ConversationDisplayTextPatch),
+            "ConversationDisplay.WaterRitualActionMarker",
+            source,
+            translated);
+        return true;
     }
 
     private static string TranslateStructuredConversationDisplayText(string source)
@@ -297,6 +391,20 @@ public static class ConversationDisplayTextPatch
     }
 
     private static string TranslateConversationDisplayText(string source)
+    {
+        var markerMatch = TranslatedTrailingActionMarkerPattern.Match(source);
+        if (markerMatch.Success)
+        {
+            var body = source.Substring(0, markerMatch.Index);
+            return TranslateConversationDisplayTextWithoutActionMarker(body)
+                + markerMatch.Groups["leading"].Value
+                + markerMatch.Groups["marker"].Value;
+        }
+
+        return TranslateConversationDisplayTextWithoutActionMarker(source);
+    }
+
+    private static string TranslateConversationDisplayTextWithoutActionMarker(string source)
     {
         var route = nameof(ConversationDisplayTextPatch);
         return ColorAwareTranslationComposer.TranslatePreservingColors(

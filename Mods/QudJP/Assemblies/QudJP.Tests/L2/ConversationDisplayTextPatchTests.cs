@@ -108,7 +108,7 @@ public sealed class ConversationDisplayTextPatchTests
             var choice = new DummyConversationElement("Live and drink, tinker. [End]")
                 .GetDisplayText(withColor: false);
 
-            Assert.That(choice, Is.EqualTo("生きて飲め、工匠。"));
+            Assert.That(choice, Is.EqualTo("生きて飲め、工匠。 [終了]"));
         }
         finally
         {
@@ -324,34 +324,25 @@ public sealed class ConversationDisplayTextPatchTests
         }
     }
 
-    [TestCase("生きて飲め。 [End]", "生きて飲め。")]
-    [TestCase("取引しよう。 [begin trade]", "取引しよう。")]
-    [TestCase("お前の渇きは私の渇き、私の水はお前のものだ。 [begin water ritual; 1 dram of water]", "お前の渇きは私の渇き、私の水はお前のものだ。")]
-    [TestCase("お前の渇きは私の渇き、私の水はお前のものだ。 {{K|[begin water ritual; {{C|1}} dram of water]}}", "お前の渇きは私の渇き、私の水はお前のものだ。")]
-    [TestCase("{{G|お前の渇きは私の渇き、私の水はお前のものだ。}} {{g|[begin water ritual; {{C|1}} dram of water]}}", "{{G|お前の渇きは私の渇き、私の水はお前のものだ。}}")]
-    [TestCase("{{G|取引しよう。}} {{g|[begin trade]}}", "{{G|取引しよう。}}")]
-    [TestCase("取引しよう。\n{{g|[begin trade]}}\n", "取引しよう。")]
-    public void Postfix_StripsTrailingActionMarkers_WhenPatched(string source, string expected)
+    [TestCase("生きて飲め。 [End]", "生きて飲め。 [終了]")]
+    [TestCase("取引しよう。 [begin trade]", "取引しよう。 [取引を始める]")]
+    [TestCase("{{G|取引しよう。}} {{g|[begin trade]}}", "{{G|取引しよう。}} {{g|[取引を始める]}}")]
+    [TestCase("取引しよう。\n{{g|[begin trade]}}\n", "取引しよう。\n{{g|[取引を始める]}}")]
+    [TestCase(
+        "お前の渇きは私の渇き、私の水はお前のものだ。 [begin water ritual; 1 dram of water]",
+        "お前の渇きは私の渇き、私の水はお前のものだ。 [水儀式を始める; 1ドラムの水]")]
+    [TestCase(
+        "お前の渇きは私の渇き、私の水はお前のものだ。 {{K|[begin water ritual; {{C|1}} dram of water]}}",
+        "お前の渇きは私の渇き、私の水はお前のものだ。 {{K|[水儀式を始める; {{C|1}}ドラムの水]}}")]
+    [TestCase(
+        "{{G|お前の渇きは私の渇き、私の水はお前のものだ。}} {{g|[begin water ritual; {{C|1}} dram of {{B|fresh water}}]}}",
+        "{{G|お前の渇きは私の渇き、私の水はお前のものだ。}} {{g|[水儀式を始める; {{C|1}}ドラムの{{B|真水}}]}}")]
+    [TestCase(
+        "お前の渇きは私の渇き、私の水はお前のものだ。 {{K|[begin water ritual]}}",
+        "お前の渇きは私の渇き、私の水はお前のものだ。 {{K|[水儀式を始める]}}")]
+    public void Postfix_TranslatesKnownTrailingActionMarkers_WhenPatched(string source, string expected)
     {
-        WriteDictionary(("Dummy", "ダミー"));
-
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-
-        try
-        {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyConversationElement), nameof(DummyConversationElement.GetDisplayText)),
-                postfix: new HarmonyMethod(RequireMethod(typeof(ConversationDisplayTextPatch), nameof(ConversationDisplayTextPatch.Postfix))));
-
-            var element = new DummyConversationElement(source);
-            var result = element.GetDisplayText(withColor: false);
-            Assert.That(result, Is.EqualTo(expected));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        AssertPatchedText(source, expected);
     }
 
     [Test]
@@ -359,7 +350,7 @@ public sealed class ConversationDisplayTextPatchTests
     {
         WriteDictionary(("Live and drink.", "生きて飲め。"));
 
-        AssertPatchedText("{{G|Live and drink.}} {{g|[begin trade]}}", "{{G|生きて飲め。}}");
+        AssertPatchedText("{{G|Live and drink.}} {{g|[begin trade]}}", "{{G|生きて飲め。}} {{g|[取引を始める]}}");
     }
 
     [Test]
