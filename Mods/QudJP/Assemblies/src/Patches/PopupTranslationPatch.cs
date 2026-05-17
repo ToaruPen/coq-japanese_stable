@@ -510,6 +510,16 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (WaterRitualTextTranslator.TryTranslateReputationMessage(
+                source,
+                route,
+                family + ".WaterRitualReputation",
+                out var waterRitualReputationTranslated))
+        {
+            translated = waterRitualReputationTranslated;
+            return true;
+        }
+
         if (IsAlreadyLocalizedPopupTextCore(stripped))
         {
             translated = source;

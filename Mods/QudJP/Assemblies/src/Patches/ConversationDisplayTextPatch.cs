@@ -19,6 +19,10 @@ public static class ConversationDisplayTextPatch
         @"\{\{C\|-----\}\}\n\{\{y\|Your reputation with (?<faction>.+?) is \{\{C\|(?<current>-?\d+)\}\}\.\n(?<speaker>.+?) can award an additional \{\{C\|(?<available>-?\d+)\}\} reputation\.\}\}",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex WaterRitualKinshipTermPattern = new(
+        @"\bwater(?:-sib|のきょうだい)\b",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex MoundCountdownPattern = new(
         @"(?<=まだ！ )(?<countdown>soon|in (?:\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty) days?)(?= に戻って。)",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -88,6 +92,7 @@ public static class ConversationDisplayTextPatch
     private static string TranslateStructuredConversationDisplayText(string source)
     {
         var translated = TranslateWaterRitualReputationSummary(source);
+        translated = TranslateWaterRitualKinshipTerms(translated);
         translated = TranslateMoundCountdown(translated);
         translated = TranslateQuestSignpostDirections(translated);
         translated = TranslateWaterRitualRecipeLabel(translated);
@@ -114,6 +119,22 @@ public static class ConversationDisplayTextPatch
                 DynamicTextObservability.RecordTransform(
                     nameof(ConversationDisplayTextPatch),
                     "ConversationDisplay.WaterRitualReputationSummary",
+                    match.Value,
+                    translated);
+                return translated;
+        });
+    }
+
+    private static string TranslateWaterRitualKinshipTerms(string source)
+    {
+        return WaterRitualKinshipTermPattern.Replace(
+            source,
+            match =>
+            {
+                const string translated = "水のきょうだい";
+                DynamicTextObservability.RecordTransform(
+                    nameof(ConversationDisplayTextPatch),
+                    "ConversationDisplay.WaterRitualKinshipTerm",
                     match.Value,
                     translated);
                 return translated;

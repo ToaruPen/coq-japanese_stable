@@ -102,7 +102,7 @@ public sealed class WaterRitualPopupTranslationPatchTests
         nameof(DummyWaterRitualPopupProducerTarget.WaterRitualPerformRitual),
         nameof(DummyPopupShow.Show),
         "You share your {{B|fresh water}} with {{G|Tam}} and begin the water ritual.",
-        "{{G|Tam}}と{{B|fresh water}}を分かち合い、水の儀式を始めた。",
+        "{{G|Tam}}と{{B|真水}}を分かち合い、水の儀式を始めた。",
         "PerformRitual")]
     [TestCase(
         nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuyItemHandleEvent),
@@ -273,6 +273,57 @@ public sealed class WaterRitualPopupTranslationPatchTests
                 Assert.That(HitCount(detail), Is.Zero);
             });
         });
+    }
+
+    [TestCase(
+        "&yYour reputation with &Cthe 監視官同胞団&y increased by &G100&y to &C-50&y.",
+        "&y&C監視官同胞団&yとの評判が&G100&y増加し、&C-50&yになった。",
+        "Reputation")]
+    [TestCase(
+        "&yBecause they admire 監視官イラメ, your reputation with the ジョッパの村人たち increased by &G100&y to &C-40&y.",
+        "&y監視官イラメを尊敬しているため、ジョッパの村人たちとの評判が&G100&y増加し、&C-40&yになった。",
+        "ReputationBecause")]
+    public void Patch_TranslatesWaterRitualReputationPopup_WhenOwnerAbsent(
+        string source,
+        string expected,
+        string detail)
+    {
+        WithPatchedPopupOnly(
+            nameof(DummyPopupShow.Show),
+            () =>
+            {
+                DummyPopupShow.Show(source);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+                    Assert.That(
+                        DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                            nameof(PopupShowTranslationPatch),
+                            "Popup.ProducerText.WaterRitualReputation." + detail),
+                        Is.EqualTo(1));
+                });
+            });
+    }
+
+    [TestCase(
+        "Your reputation with {{C|the 監視官同胞団}} increased by {{G|100}} to {{g|600}}.\n\nYou are now {{g|favored}} by {{C|the 監視官同胞団}}.",
+        "{{C|監視官同胞団}}との評判が{{G|100}}増加し、{{g|600}}になった。\n\n{{C|監視官同胞団}}から{{g|好意的}}と見なされるようになった。")]
+    [TestCase(
+        "Because they dislike 監視官イラメ, your reputation with the villagers of テガニプ decreased by {{R|100}} to {{r|-600}}.\n\nThe villagers of テガニプ are now {{r|despised}} to you.",
+        "監視官イラメをよく思っていないため、テガニプの村人たちとの評判が{{R|100}}減少し、{{r|-600}}になった。\n\nテガニプの村人たちはあなたを{{r|憎悪されている}}と見なすようになった。")]
+    public void Patch_TranslatesWaterRitualReputationPopup_WithStandingParagraph(
+        string source,
+        string expected)
+    {
+        WithPatchedPopupOnly(
+            nameof(DummyPopupShow.Show),
+            () =>
+            {
+                DummyPopupShow.Show(source);
+
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+            });
     }
 
     [Test]

@@ -125,6 +125,15 @@ internal static class GameSummaryTextTranslator
             }
         }
 
+        if (WaterRitualTextTranslator.TryTranslateMessage(
+                source,
+                Context,
+                "GameSummary.WaterRitual",
+                out var waterRitualTranslated))
+        {
+            return waterRitualTranslated;
+        }
+
         var titleMatch = TitlePattern.Match(source);
         if (titleMatch.Success)
         {
@@ -218,7 +227,8 @@ internal static class GameSummaryTextTranslator
             || source.StartsWith("You recovered", StringComparison.Ordinal)
             || source.StartsWith("You note ", StringComparison.Ordinal)
             || source.StartsWith("You discovered ", StringComparison.Ordinal)
-            || source.StartsWith("You located ", StringComparison.Ordinal);
+            || source.StartsWith("You located ", StringComparison.Ordinal)
+            || source.StartsWith("In sacred ritual ", StringComparison.Ordinal);
     }
 
     private static string FormatTemplate(string key, string fallback, params object[] args)

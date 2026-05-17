@@ -372,6 +372,15 @@ public sealed class ConversationDisplayTextPatchTests
             "生きて飲め。\n\n{{C|-----}}\n{{y|{{C|Issachari}}との評判は{{C|100}}。\nTamから追加で{{C|50}}の評判を得られる。}}");
     }
 
+    [TestCase("生きて飲め、water-sib。", "生きて飲め、水のきょうだい。")]
+    [TestCase("秘密を打ち明けてくれ、waterのきょうだい。", "秘密を打ち明けてくれ、水のきょうだい。")]
+    [TestCase("waterのきょうだい、共に来てくれないか。", "水のきょうだい、共に来てくれないか。")]
+    [TestCase("{{K|waterのきょうだい、共に来てくれないか。}}", "{{K|水のきょうだい、共に来てくれないか。}}")]
+    public void Postfix_TranslatesWaterRitualKinshipTerms_WhenPatched(string source, string expected)
+    {
+        AssertPatchedText(source, expected);
+    }
+
     [TestCase("まだ！ soon に戻って。", "まだ！ もうすぐ に戻って。")]
     [TestCase("まだ！ in one day に戻って。", "まだ！ 1日後 に戻って。")]
     [TestCase("まだ！ in three days に戻って。", "まだ！ 3日後 に戻って。")]
