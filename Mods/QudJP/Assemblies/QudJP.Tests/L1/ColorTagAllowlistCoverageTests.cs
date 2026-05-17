@@ -308,6 +308,7 @@ public sealed class ColorTagAllowlistCoverageTests
         "Mods/QudJP/Assemblies/src/Patches/SifrahPureOwnerPopupTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/SifrahTokenItemPopupTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/SkillsAndPowersSelectNodePopupTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/SkillsAndPowersStatusScreenTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/SoundManagerSetChannelTrackTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/SpindleNegotiationTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/SurvivalCampAttemptCampPopupTranslationPatch.cs",

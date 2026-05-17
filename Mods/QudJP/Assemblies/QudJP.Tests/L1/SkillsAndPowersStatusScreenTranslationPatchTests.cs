@@ -50,6 +50,31 @@ public sealed class SkillsAndPowersStatusScreenTranslationPatchTests
     }
 
     [Test]
+    public void TryTranslateExactLeafPreservingColors_TranslatesUppercaseHeaderAndBracketedSkillNames()
+    {
+        WriteDictionaryFile(
+            "ui-skillsandpowers.ja.json",
+            ("Required Skills", "前提スキル"),
+            ("Tinker I", "工匠 I"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                SkillsAndPowersStatusScreenTranslationPatch.TryTranslateExactLeafPreservingColors(
+                    "[REQUIRED SKILLS]",
+                    nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+                    recordTransform: false).translated,
+                Is.EqualTo("[前提スキル]"));
+            Assert.That(
+                SkillsAndPowersStatusScreenTranslationPatch.TryTranslateExactLeafPreservingColors(
+                    "{{R|[Tinker I]}}",
+                    nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+                    recordTransform: false).translated,
+                Is.EqualTo("{{R|[工匠 I]}}"));
+        });
+    }
+
+    [Test]
     public void TryTranslateText_TranslatesStructuredSkillLineUsingScopedSkillNames()
     {
         WriteDictionaryFile(
@@ -70,6 +95,28 @@ public sealed class SkillsAndPowersStatusScreenTranslationPatchTests
         {
             Assert.That(translated, Is.True);
             Assert.That(result, Is.EqualTo("  :説得 [100sp] 19 EGO, 辺境行"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateStructuredLinePreservingColors_RebuildsPowerEntryLineWithoutOffsettingCaptures()
+    {
+        WriteDictionaryFile(
+            "ui-skillsandpowers.ja.json",
+            ("Tinker I", "工匠 I"),
+            ("Tinker II", "工匠 II"));
+
+        var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateStructuredLinePreservingColors(
+            "    {{K|:}}{{K|Tinker II}} [{{K|200}}sp] {{C|23}} {{R|Intelligence}}, {{R|Tinker I}}",
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.changed, Is.True);
+            Assert.That(
+                result.translated,
+                Is.EqualTo("    :{{K|工匠 II}} [{{K|200}}sp] {{C|23}} {{R|INT}}, {{R|工匠 I}}"));
         });
     }
 

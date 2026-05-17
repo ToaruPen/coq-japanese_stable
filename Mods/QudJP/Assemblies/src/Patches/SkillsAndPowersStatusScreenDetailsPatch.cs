@@ -2,6 +2,8 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using HarmonyLib;
+using TMPro;
+using UnityEngine;
 
 namespace QudJP.Patches;
 
@@ -46,6 +48,7 @@ public static class SkillsAndPowersStatusScreenDetailsPatch
             TranslateTextField(___requirementsText, "requirementsText", SkillsAndPowersStatusScreenTranslationPatch.TryTranslateRequirementsOwnerText);
             TranslateTextField(___requiredSkillsText, "requiredSkillsText", SkillsAndPowersStatusScreenTranslationPatch.TryTranslateRequiredSkillsOwnerText);
             TranslateTextField(___requiredSkillsHeader, "requiredSkillsHeader", SkillsAndPowersStatusScreenTranslationPatch.TryTranslateExactLeafPreservingColors);
+            TranslateGameObjectChildText(___requiredSkillsHeader, "requiredSkillsHeader", SkillsAndPowersStatusScreenTranslationPatch.TryTranslateExactLeafPreservingColors);
         }
         catch (Exception ex)
         {
@@ -72,5 +75,39 @@ public static class SkillsAndPowersStatusScreenDetailsPatch
         }
 
         _ = UITextSkinReflectionAccessor.SetCurrentText(uiTextSkin, translated, nameof(SkillsAndPowersStatusScreenDetailsPatch));
+    }
+
+    private static void TranslateGameObjectChildText(
+        object? value,
+        string fieldName,
+        Func<string, string, bool, (bool changed, string translated)> translator)
+    {
+        var gameObject = value switch
+        {
+            GameObject direct => direct,
+            Component component => component.gameObject,
+            _ => null,
+        };
+        if (gameObject is null)
+        {
+            return;
+        }
+
+        var route = ObservabilityHelpers.ComposeContext(nameof(SkillsAndPowersStatusScreenDetailsPatch), "field=" + fieldName + ".childText");
+        var texts = gameObject.GetComponentsInChildren<TMP_Text>(includeInactive: true);
+        for (var index = 0; index < texts.Length; index++)
+        {
+            var text = texts[index];
+            if (text is null || string.IsNullOrEmpty(text.text))
+            {
+                continue;
+            }
+
+            var (changed, translated) = translator(text.text, route, true);
+            if (changed)
+            {
+                text.SetText(translated);
+            }
+        }
     }
 }
