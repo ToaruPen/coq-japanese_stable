@@ -148,6 +148,24 @@ public static class LongBladesCoreTranslationPatch
         return true;
     }
 
+    internal static bool TryTranslateParticleText(ref string text)
+    {
+        if (!OwnerTranslationScope.IsActive(activeDepth)
+            || !string.Equals(text, "En garde!", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        const string translated = "構えよ！";
+        DynamicTextObservability.RecordTransform(
+            "GameObject.ParticleText",
+            Context + ".EnGarde",
+            text,
+            translated);
+        text = translated;
+        return true;
+    }
+
     private static bool TryTranslateAggressiveLungeBlocked(
         string source,
         string stripped,

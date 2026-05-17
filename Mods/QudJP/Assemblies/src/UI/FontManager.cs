@@ -308,6 +308,26 @@ public static class FontManager
         }
     }
 
+    internal static void ApplyToTextMesh(TextMesh textMesh)
+    {
+        if (textMesh is null)
+        {
+            throw new ArgumentNullException(nameof(textMesh));
+        }
+
+        if (textMesh.font is not null && !IsVanillaLegacyFont(textMesh.font))
+        {
+            return;
+        }
+
+        legacyFont ??= TryCreateLegacyFallbackFont();
+
+        var fallbackFont = legacyFont
+            ?? throw new InvalidOperationException("QudJP FontManager: legacy font is not initialized.");
+
+        textMesh.font = fallbackFont;
+    }
+
     private static Font? TryCreateLegacyFallbackFont()
     {
         try
