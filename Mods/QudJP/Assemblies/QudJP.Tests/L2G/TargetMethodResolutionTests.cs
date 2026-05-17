@@ -1908,6 +1908,33 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.LongBladesCore|FireEvent|System.Boolean|XRL.World.Event",
     })]
+    [TestCase(typeof(GameObjectParticleTextTranslationPatch), new[]
+    {
+        "XRL.World.GameObject|ParticleText|System.Void|System.String|System.Single|System.Int32",
+        "XRL.World.GameObject|ParticleText|System.Void|System.String|System.Boolean",
+        "XRL.World.GameObject|ParticleText|System.Void|System.String|System.Single|System.Single|System.Char|System.Boolean",
+        "XRL.World.GameObject|ParticleText|System.Void|System.String|System.Char|System.Boolean|System.Single|System.Single",
+    })]
+    [TestCase(typeof(JoppaZealotTranslationPatch), new[]
+    {
+        "XRL.World.Parts.JoppaZealot|ZealotDeclaim|System.Void|XRL.World.GameObject|System.Boolean",
+    })]
+    [TestCase(typeof(SixDayZealotTranslationPatch), new[]
+    {
+        "XRL.World.Parts.SixDayZealot|ZealotDeclaim|System.Void|XRL.World.GameObject|System.Boolean",
+    })]
+    [TestCase(typeof(ErosTeleportationTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Mutation.ErosTeleportation|Cast|System.Boolean|XRL.World.Parts.Mutation.ErosTeleportation|System.String|XRL.World.Event|XRL.World.Cell",
+    })]
+    [TestCase(typeof(PreacherHomilyTranslationPatch), new[]
+    {
+        "XRL.World.Parts.Preacher|PreacherHomily|System.Void|XRL.World.GameObject|System.Boolean",
+    })]
+    [TestCase(typeof(CanticlesChromaicParticleTextTranslationPatch), new[]
+    {
+        "XRL.World.SocialSifrahTokenReadFromTheCanticlesChromaic|UseToken|System.Void|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+    })]
     [TestCase(typeof(XrlCorePlayerTurnTranslationPatch), new[]
     {
         "XRL.Core.XRLCore|PlayerTurn|System.Void",
