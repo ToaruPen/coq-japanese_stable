@@ -204,11 +204,11 @@ public static class SkillsAndPowersLineTranslationPatch
             return exact.translated;
         }
 
-        return ColorAwareTranslationComposer.TranslatePreservingColors(
+        var structured = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateStructuredLinePreservingColors(
             source,
-            visible => SkillsAndPowersStatusScreenTranslationPatch.TryTranslateText(visible, route, out var candidate)
-                ? candidate
-                : visible);
+            route,
+            recordTransform: true);
+        return structured.changed ? structured.translated : source;
     }
 
     private static string TranslateSkillRightText(string source, string route, string learnedStatus, string affordabilityColor)

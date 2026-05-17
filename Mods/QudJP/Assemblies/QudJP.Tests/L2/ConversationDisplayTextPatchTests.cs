@@ -108,7 +108,7 @@ public sealed class ConversationDisplayTextPatchTests
             var choice = new DummyConversationElement("Live and drink, tinker. [End]")
                 .GetDisplayText(withColor: false);
 
-            Assert.That(choice, Is.EqualTo("生きて飲め、工匠。"));
+            Assert.That(choice, Is.EqualTo("生きて飲め、工匠。 [終了]"));
         }
         finally
         {
@@ -324,34 +324,72 @@ public sealed class ConversationDisplayTextPatchTests
         }
     }
 
-    [TestCase("生きて飲め。 [End]", "生きて飲め。")]
-    [TestCase("取引しよう。 [begin trade]", "取引しよう。")]
-    [TestCase("お前の渇きは私の渇き、私の水はお前のものだ。 [begin water ritual; 1 dram of water]", "お前の渇きは私の渇き、私の水はお前のものだ。")]
-    [TestCase("お前の渇きは私の渇き、私の水はお前のものだ。 {{K|[begin water ritual; {{C|1}} dram of water]}}", "お前の渇きは私の渇き、私の水はお前のものだ。")]
-    [TestCase("{{G|お前の渇きは私の渇き、私の水はお前のものだ。}} {{g|[begin water ritual; {{C|1}} dram of water]}}", "{{G|お前の渇きは私の渇き、私の水はお前のものだ。}}")]
-    [TestCase("{{G|取引しよう。}} {{g|[begin trade]}}", "{{G|取引しよう。}}")]
-    [TestCase("取引しよう。\n{{g|[begin trade]}}\n", "取引しよう。")]
-    public void Postfix_StripsTrailingActionMarkers_WhenPatched(string source, string expected)
+    [TestCase("生きて飲め。 [End]", "生きて飲め。 [終了]")]
+    [TestCase("取引しよう。 [begin trade]", "取引しよう。 [取引を始める]")]
+    [TestCase("{{G|取引しよう。}} {{g|[begin trade]}}", "{{G|取引しよう。}} {{g|[取引を始める]}}")]
+    [TestCase("取引しよう。\n{{g|[begin trade]}}\n", "取引しよう。\n{{g|[取引を始める]}}")]
+    [TestCase(
+        "お前の渇きは私の渇き、私の水はお前のものだ。 [begin water ritual; 1 dram of water]",
+        "お前の渇きは私の渇き、私の水はお前のものだ。 [水儀式を始める; 1ドラムの水]")]
+    [TestCase(
+        "お前の渇きは私の渇き、私の水はお前のものだ。 {{K|[begin water ritual; {{C|1}} dram of water]}}",
+        "お前の渇きは私の渇き、私の水はお前のものだ。 {{K|[水儀式を始める; {{C|1}}ドラムの水]}}")]
+    [TestCase(
+        "{{G|お前の渇きは私の渇き、私の水はお前のものだ。}} {{g|[begin water ritual; {{C|1}} dram of {{B|fresh water}}]}}",
+        "{{G|お前の渇きは私の渇き、私の水はお前のものだ。}} {{g|[水儀式を始める; {{C|1}}ドラムの{{B|真水}}]}}")]
+    [TestCase(
+        "お前の渇きは私の渇き、私の水はお前のものだ。 {{K|[begin water ritual]}}",
+        "お前の渇きは私の渇き、私の水はお前のものだ。 {{K|[水儀式を始める]}}")]
+    [TestCase(
+        "秘密を打ち明けてくれ、水のきょうだい。 {{g|[{{C|75}} reputation]}}",
+        "秘密を打ち明けてくれ、水のきょうだい。 {{g|[評判 {{C|75}}]}}")]
+    [TestCase(
+        "秘密を話そう。 {{g|[{{C|+50}}{{c|+10}} reputation]}}",
+        "秘密を話そう。 {{g|[評判 {{C|+50}}{{c|+10}}]}}")]
+    [TestCase(
+        "お前たちの好物の料理を教えてくれないか？ {{g|[learn to cook {{W|starapple jam}}: {{C|50}} reputation]}}",
+        "お前たちの好物の料理を教えてくれないか？ {{g|[{{W|starapple jam}}の料理を習う: 評判 {{C|50}}]}}")]
+    [TestCase(
+        "共に来てくれ。 {{g|[gain {{C|2}} {{W|skill points}}: {{C|100}} reputation]}}",
+        "共に来てくれ。 {{g|[{{C|2}}スキルポイントを得る: 評判 {{C|100}}]}}")]
+    [TestCase(
+        "変異を教えてくれ。 {{g|[gain {{M|Light Manipulation}}: {{C|200}} reputation]}}",
+        "変異を教えてくれ。 {{g|[{{M|Light Manipulation}}を得る: 評判 {{C|200}}]}}")]
+    [TestCase(
+        "感染させてくれ。 {{g|[become infected with brooding goldpuff: {{C|75}} reputation]}}",
+        "感染させてくれ。 {{g|[brooding goldpuffに感染する: 評判 {{C|75}}]}}")]
+    [TestCase(
+        "剣術を教えてくれ。 {{g|[learn {{W|Long Blades}}: {{C|200}} reputation, {{C|-50}} SP]}}",
+        "剣術を教えてくれ。 {{g|[{{W|Long Blades}}を習う: 評判 {{C|200}}, SP {{C|-50}}]}}")]
+    [TestCase("話を聞こう。 {{W|[Accept Quest]}}", "話を聞こう。 {{W|[クエストを受ける]}}")]
+    [TestCase("話を聞こう。 {{W|[Accept Quest - level-based reward]}}", "話を聞こう。 {{W|[クエストを受ける - レベル基準報酬]}}")]
+    [TestCase("報告しよう。 {{W|[Complete Quest]}}", "報告しよう。 {{W|[クエストを完了する]}}")]
+    [TestCase("進めよう。 {{W|[Complete Quest Step]}}", "進めよう。 {{W|[クエスト段階を完了する]}}")]
+    [TestCase("戦うしかない。 {{R|[Fight]}}", "戦うしかない。 {{R|[戦う]}}")]
+    [TestCase("本を渡そう。 {{g|[Give Books]}}", "本を渡そう。 {{g|[本を渡す]}}")]
+    [TestCase("秘密を共有しよう。 {{g|[Share secrets from Resheph's life]}}", "秘密を共有しよう。 {{g|[レシェフの生涯の秘密を共有する]}}")]
+    [TestCase("候補を確認しよう。 {{W|[confirm {{C|Kyakuukya}} as a sanctuary option]}}", "候補を確認しよう。 {{W|[{{C|Kyakuukya}}を聖域候補として確認する]}}")]
+    [TestCase("条件を満たしている。 {{C|[Loved by {{Y|the Farmers' Guild}}]}}", "条件を満たしている。 {{C|[{{Y|the Farmers' Guild}}に愛されている]}}")]
+    [TestCase("条件を満たしていない。 {{r|[Hated by {{Y|the Farmers' Guild}}]}}", "条件を満たしていない。 {{r|[{{Y|the Farmers' Guild}}に憎まれている]}}")]
+    public void Postfix_TranslatesKnownTrailingActionMarkers_WhenPatched(string source, string expected)
     {
-        WriteDictionary(("Dummy", "ダミー"));
+        AssertPatchedText(source, expected);
+    }
 
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
+    [TestCase(
+        "Live and drink. [custom authored tag]",
+        "生きて飲め。 [custom authored tag]")]
+    [TestCase(
+        "Live and drink. {{W|[custom authored tag]}}",
+        "生きて飲め。 {{W|[custom authored tag]}}")]
+    [TestCase(
+        "Live and drink. {{W|[custom authored tag: {{C|42}}]}}",
+        "生きて飲め。 {{W|[custom authored tag: {{C|42}}]}}")]
+    public void Postfix_PreservesUnknownAuthoredTrailingActionMarkers_WhenPatched(string source, string expected)
+    {
+        WriteDictionary(("Live and drink.", "生きて飲め。"));
 
-        try
-        {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyConversationElement), nameof(DummyConversationElement.GetDisplayText)),
-                postfix: new HarmonyMethod(RequireMethod(typeof(ConversationDisplayTextPatch), nameof(ConversationDisplayTextPatch.Postfix))));
-
-            var element = new DummyConversationElement(source);
-            var result = element.GetDisplayText(withColor: false);
-            Assert.That(result, Is.EqualTo(expected));
-        }
-        finally
-        {
-            harmony.UnpatchAll(harmonyId);
-        }
+        AssertPatchedText(source, expected);
     }
 
     [Test]
@@ -359,7 +397,7 @@ public sealed class ConversationDisplayTextPatchTests
     {
         WriteDictionary(("Live and drink.", "生きて飲め。"));
 
-        AssertPatchedText("{{G|Live and drink.}} {{g|[begin trade]}}", "{{G|生きて飲め。}}");
+        AssertPatchedText("{{G|Live and drink.}} {{g|[begin trade]}}", "{{G|生きて飲め。}} {{g|[取引を始める]}}");
     }
 
     [Test]
@@ -370,6 +408,15 @@ public sealed class ConversationDisplayTextPatchTests
         AssertPatchedText(
             "生きて飲め。\n\n{{C|-----}}\n{{y|Your reputation with {{C|Issachari}} is {{C|100}}.\nTam can award an additional {{C|50}} reputation.}}",
             "生きて飲め。\n\n{{C|-----}}\n{{y|{{C|Issachari}}との評判は{{C|100}}。\nTamから追加で{{C|50}}の評判を得られる。}}");
+    }
+
+    [TestCase("生きて飲め、water-sib。", "生きて飲め、水のきょうだい。")]
+    [TestCase("秘密を打ち明けてくれ、waterのきょうだい。", "秘密を打ち明けてくれ、水のきょうだい。")]
+    [TestCase("waterのきょうだい、共に来てくれないか。", "水のきょうだい、共に来てくれないか。")]
+    [TestCase("{{K|waterのきょうだい、共に来てくれないか。}}", "{{K|水のきょうだい、共に来てくれないか。}}")]
+    public void Postfix_TranslatesWaterRitualKinshipTerms_WhenPatched(string source, string expected)
+    {
+        AssertPatchedText(source, expected);
     }
 
     [TestCase("まだ！ soon に戻って。", "まだ！ もうすぐ に戻って。")]

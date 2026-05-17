@@ -43,6 +43,10 @@ public sealed class SkillsAndPowersLineTranslationPatchTests
     {
         WriteDictionary(
             ("Long Blades", "長刃"),
+            ("Tinkering", "工匠"),
+            ("Tinker I", "工匠 I"),
+            ("Tinker II", "工匠 II"),
+            ("Learned", "習得済み"),
             ("Starting Cost [{val} sp]", "開始コスト [{val} sp]"),
             ("Pyrokinesis", "発火術"));
 
@@ -74,8 +78,30 @@ public sealed class SkillsAndPowersLineTranslationPatchTests
                 entry = new DummySPNodeTarget
                 {
                     Power = new DummyPowerDefinition(),
-                    Name = "Pyrokinesis",
+                    Name = "Tinker II",
+                    ModernText = "    {{K|:}}{{K|Tinker II}} [{{K|200}}sp] {{C|23}} {{R|Intelligence}}, {{R|Tinker I}}",
                     LearnedStatus = DummyLearnedStatus.Learned,
+                },
+            });
+
+            var learnedSkillTarget = new DummySkillsAndPowersLineTarget();
+            learnedSkillTarget.setData(new DummySkillsAndPowersLineDataTarget
+            {
+                entry = new DummySPNodeTarget
+                {
+                    Name = "Tinkering",
+                    Skill = new DummySkillDefinition
+                    {
+                        Cost = 100,
+                    },
+                    LearnedStatus = DummyLearnedStatus.Learned,
+                    powers =
+                    {
+                        new DummySPNodeTarget { LearnedStatus = DummyLearnedStatus.Learned },
+                        new DummySPNodeTarget { LearnedStatus = DummyLearnedStatus.Learned },
+                        new DummySPNodeTarget { LearnedStatus = DummyLearnedStatus.None },
+                        new DummySPNodeTarget { LearnedStatus = DummyLearnedStatus.None },
+                    },
                 },
             });
 
@@ -83,7 +109,9 @@ public sealed class SkillsAndPowersLineTranslationPatchTests
             {
                 Assert.That(skillTarget.skillText.Text, Is.EqualTo("長刃"));
                 Assert.That(skillTarget.skillRightText.Text, Is.EqualTo("開始コスト {{g|[100 sp]}}"));
-                Assert.That(powerTarget.powerText.Text, Is.EqualTo("発火術"));
+                Assert.That(powerTarget.powerText.Text, Is.EqualTo("    {{K|:}}{{K|工匠 II}} [{{K|200}}sp] {{C|23}} {{R|INT}}, {{R|工匠 I}}"));
+                Assert.That(learnedSkillTarget.skillText.Text, Is.EqualTo(" {{G|工匠}}"));
+                Assert.That(learnedSkillTarget.skillRightText.Text, Is.EqualTo("{{g|習得済み}} [2/4]"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(SkillsAndPowersLineTranslationPatch),

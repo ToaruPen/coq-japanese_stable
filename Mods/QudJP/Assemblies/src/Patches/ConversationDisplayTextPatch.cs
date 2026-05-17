@@ -12,11 +12,70 @@ public static class ConversationDisplayTextPatch
 {
     private static readonly Regex TrailingActionMarkerPattern =
         new Regex(
-            @"\s+(?:\{\{[^|{}]+?\|)?\[[^\]]+\](?:\}\})?\s*$",
+            @"(?<leading>\s+)(?<marker>(?:\{\{[^|{}]+?\|)?\[[^\]]+\](?:\}\})?)\s*$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex WaterRitualActionMarkerPattern =
+        new Regex(
+            @"^\[begin water ritual(?:; (?<amount>\d+) drams? of (?<liquid>.+?))?\]$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex WaterRitualReputationCostMarkerPattern =
+        new Regex(
+            @"^\[(?<amount>[+-]?\d+(?:[+-]\d+)?) reputation\]$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex WaterRitualLearnToCookMarkerPattern =
+        new Regex(
+            @"^\[learn to cook (?<recipe>.+?): (?<cost>[+-]?\d+(?:[+-]\d+)?) reputation\]$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex WaterRitualGainSkillPointsMarkerPattern =
+        new Regex(
+            @"^\[gain (?<points>\d+) skill points: (?<cost>[+-]?\d+(?:[+-]\d+)?) reputation\]$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex WaterRitualGainMutationMarkerPattern =
+        new Regex(
+            @"^\[gain (?<mutation>.+?): (?<cost>[+-]?\d+(?:[+-]\d+)?) reputation\]$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex WaterRitualFungusColonizeMarkerPattern =
+        new Regex(
+            @"^\[become infected with (?<infection>.+?): (?<cost>[+-]?\d+(?:[+-]\d+)?) reputation\]$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex WaterRitualLearnSkillMarkerPattern =
+        new Regex(
+            @"^\[(?:learn (?<skill>.+?): )?(?<cost>[+-]?\d+(?:[+-]\d+)?) reputation(?:, (?<points>[+-]?\d+) SP)?\]$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex AddSlynthCandidateMarkerPattern =
+        new Regex(
+            @"^\[confirm (?<site>.+?) as a sanctuary option\]$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex RequireReputationMarkerPattern =
+        new Regex(
+            @"^\[(?<standing>Loved by|Liked by|Indifferent to|Disliked by|Hated by) (?<faction>.+?)\]$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex BasicActionMarkerPattern =
+        new Regex(
+            @"^\[(?<action>End|begin trade|Build Golem|give artifact|Fight|Give Books|Share secrets from Resheph's life|Select limb to infect|lesser victory|greater victory|victory|Accept Quest(?: - level-based reward)?|Complete Quest Step|Complete Quest(?: - level-based reward)?)\]$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TranslatedTrailingActionMarkerPattern =
+        new Regex(
+            @"(?<leading>\s+)(?<marker>(?:\{\{[^|{}]+?\|)?\[(?:終了|取引を始める|水儀式を始める[^\]]*)\](?:\}\})?)$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex WaterRitualReputationSummaryPattern = new(
         @"\{\{C\|-----\}\}\n\{\{y\|Your reputation with (?<faction>.+?) is \{\{C\|(?<current>-?\d+)\}\}\.\n(?<speaker>.+?) can award an additional \{\{C\|(?<available>-?\d+)\}\} reputation\.\}\}",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex WaterRitualKinshipTermPattern = new(
+        @"\bwater(?:-sib|のきょうだい)\b",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex MoundCountdownPattern = new(
@@ -82,12 +141,293 @@ public static class ConversationDisplayTextPatch
             return source;
         }
 
-        return source.Substring(0, match.Index);
+        if (TryTranslateKnownActionMarker(match.Groups["marker"].Value, out var translatedMarker))
+        {
+            return source.Substring(0, match.Index) + match.Groups["leading"].Value + translatedMarker;
+        }
+
+        return source;
+    }
+
+    private static bool TryTranslateKnownActionMarker(string source, out string translated)
+    {
+        if (TryTranslateWaterRitualActionMarker(source, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateWaterRitualChoiceMarker(source, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateRequireReputationMarker(source, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateAddSlynthCandidateMarker(source, out translated))
+        {
+            return true;
+        }
+
+        return TryTranslateBasicActionMarker(source, out translated);
+    }
+
+    private static bool TryTranslateBasicActionMarker(string source, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = BasicActionMarkerPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var visible = match.Groups["action"].Value switch
+        {
+            "End" => "[終了]",
+            "begin trade" => "[取引を始める]",
+            "Build Golem" => "[ゴーレムを造る]",
+            "give artifact" => "[アーティファクトを渡す]",
+            "Fight" => "[戦う]",
+            "Give Books" => "[本を渡す]",
+            "Share secrets from Resheph's life" => "[レシェフの生涯の秘密を共有する]",
+            "Select limb to infect" => "[感染させる肢を選ぶ]",
+            "lesser victory" => "[小さな勝利]",
+            "greater victory" => "[大いなる勝利]",
+            "victory" => "[勝利]",
+            "Accept Quest" => "[クエストを受ける]",
+            "Accept Quest - level-based reward" => "[クエストを受ける - レベル基準報酬]",
+            "Complete Quest Step" => "[クエスト段階を完了する]",
+            "Complete Quest" => "[クエストを完了する]",
+            "Complete Quest - level-based reward" => "[クエストを完了する - レベル基準報酬]",
+            _ => stripped,
+        };
+
+        translated = RestoreTranslatedActionMarker(
+            source,
+            stripped,
+            spans,
+            visible,
+            "ConversationDisplay.BasicActionMarker");
+        return true;
+    }
+
+    private static bool TryTranslateWaterRitualActionMarker(string source, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = WaterRitualActionMarkerPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var visible = "[水儀式を始める]";
+        var amountGroup = match.Groups["amount"];
+        var liquidGroup = match.Groups["liquid"];
+        if (amountGroup.Success && liquidGroup.Success)
+        {
+            var amount = ColorAwareTranslationComposer.RestoreCapture(amountGroup.Value, spans, amountGroup);
+            var liquid = WaterRitualTextTranslator.TranslateLiquidVisible(liquidGroup.Value);
+            liquid = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(liquid, spans, liquidGroup);
+            visible = "[水儀式を始める; " + amount + "ドラムの" + liquid + "]";
+        }
+
+        translated = RestoreTranslatedActionMarker(
+            source,
+            stripped,
+            spans,
+            visible,
+            "ConversationDisplay.WaterRitualActionMarker");
+        return true;
+    }
+
+    private static bool TryTranslateRequireReputationMarker(string source, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = RequireReputationMarkerPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var faction = RestoreActionMarkerCapture(match, spans, "faction");
+        var visible = match.Groups["standing"].Value switch
+        {
+            "Loved by" => "[" + faction + "に愛されている]",
+            "Liked by" => "[" + faction + "に好かれている]",
+            "Indifferent to" => "[" + faction + "に中立]",
+            "Disliked by" => "[" + faction + "に嫌われている]",
+            "Hated by" => "[" + faction + "に憎まれている]",
+            _ => stripped,
+        };
+
+        translated = RestoreTranslatedActionMarker(
+            source,
+            stripped,
+            spans,
+            visible,
+            "ConversationDisplay.RequireReputationMarker");
+        return true;
+    }
+
+    private static bool TryTranslateAddSlynthCandidateMarker(string source, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = AddSlynthCandidateMarkerPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var site = RestoreActionMarkerCapture(match, spans, "site");
+        var visible = "[" + site + "を聖域候補として確認する]";
+        translated = RestoreTranslatedActionMarker(
+            source,
+            stripped,
+            spans,
+            visible,
+            "ConversationDisplay.AddSlynthCandidateMarker");
+        return true;
+    }
+
+    private static bool TryTranslateWaterRitualChoiceMarker(string source, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (!TryBuildWaterRitualChoiceMarker(stripped, spans, out var visible))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = RestoreTranslatedActionMarker(
+            source,
+            stripped,
+            spans,
+            visible,
+            "ConversationDisplay.WaterRitualChoiceMarker");
+        return true;
+    }
+
+    private static bool TryBuildWaterRitualChoiceMarker(
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        out string visible)
+    {
+        var match = WaterRitualLearnToCookMarkerPattern.Match(stripped);
+        if (match.Success)
+        {
+            visible =
+                "[" + RestoreActionMarkerCapture(match, spans, "recipe")
+                + "の料理を習う: 評判 "
+                + RestoreActionMarkerCapture(match, spans, "cost")
+                + "]";
+            return true;
+        }
+
+        match = WaterRitualGainSkillPointsMarkerPattern.Match(stripped);
+        if (match.Success)
+        {
+            visible =
+                "[" + RestoreActionMarkerCapture(match, spans, "points")
+                + "スキルポイントを得る: 評判 "
+                + RestoreActionMarkerCapture(match, spans, "cost")
+                + "]";
+            return true;
+        }
+
+        match = WaterRitualGainMutationMarkerPattern.Match(stripped);
+        if (match.Success)
+        {
+            visible =
+                "[" + RestoreActionMarkerCapture(match, spans, "mutation")
+                + "を得る: 評判 "
+                + RestoreActionMarkerCapture(match, spans, "cost")
+                + "]";
+            return true;
+        }
+
+        match = WaterRitualFungusColonizeMarkerPattern.Match(stripped);
+        if (match.Success)
+        {
+            visible =
+                "[" + RestoreActionMarkerCapture(match, spans, "infection")
+                + "に感染する: 評判 "
+                + RestoreActionMarkerCapture(match, spans, "cost")
+                + "]";
+            return true;
+        }
+
+        match = WaterRitualReputationCostMarkerPattern.Match(stripped);
+        if (match.Success)
+        {
+            visible = "[評判 " + RestoreActionMarkerCapture(match, spans, "amount") + "]";
+            return true;
+        }
+
+        match = WaterRitualLearnSkillMarkerPattern.Match(stripped);
+        if (match.Success)
+        {
+            visible = BuildWaterRitualLearnSkillMarker(match, spans);
+            return true;
+        }
+
+        visible = stripped;
+        return false;
+    }
+
+    private static string BuildWaterRitualLearnSkillMarker(Match match, IReadOnlyList<ColorSpan> spans)
+    {
+        var cost = RestoreActionMarkerCapture(match, spans, "cost");
+        var pointsGroup = match.Groups["points"];
+        var suffix = pointsGroup.Success
+            ? ", SP " + RestoreActionMarkerCapture(match, spans, "points")
+            : string.Empty;
+
+        var skillGroup = match.Groups["skill"];
+        if (!skillGroup.Success)
+        {
+            return "[評判 " + cost + suffix + "]";
+        }
+
+        return "[" + RestoreActionMarkerCapture(match, spans, "skill") + "を習う: 評判 " + cost + suffix + "]";
+    }
+
+    private static string RestoreActionMarkerCapture(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
+    {
+        var group = match.Groups[groupName];
+        var markerSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, match.Value.Length);
+        return ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, markerSpans, group).Trim();
+    }
+
+    private static string RestoreTranslatedActionMarker(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string visible,
+        string detail)
+    {
+        var translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            visible,
+            spans,
+            stripped.Length,
+            source);
+        DynamicTextObservability.RecordTransform(
+            nameof(ConversationDisplayTextPatch),
+            detail,
+            source,
+            translated);
+        return translated;
     }
 
     private static string TranslateStructuredConversationDisplayText(string source)
     {
         var translated = TranslateWaterRitualReputationSummary(source);
+        translated = TranslateWaterRitualKinshipTerms(translated);
         translated = TranslateMoundCountdown(translated);
         translated = TranslateQuestSignpostDirections(translated);
         translated = TranslateWaterRitualRecipeLabel(translated);
@@ -114,6 +454,22 @@ public static class ConversationDisplayTextPatch
                 DynamicTextObservability.RecordTransform(
                     nameof(ConversationDisplayTextPatch),
                     "ConversationDisplay.WaterRitualReputationSummary",
+                    match.Value,
+                    translated);
+                return translated;
+        });
+    }
+
+    private static string TranslateWaterRitualKinshipTerms(string source)
+    {
+        return WaterRitualKinshipTermPattern.Replace(
+            source,
+            match =>
+            {
+                const string translated = "水のきょうだい";
+                DynamicTextObservability.RecordTransform(
+                    nameof(ConversationDisplayTextPatch),
+                    "ConversationDisplay.WaterRitualKinshipTerm",
                     match.Value,
                     translated);
                 return translated;
@@ -276,6 +632,29 @@ public static class ConversationDisplayTextPatch
     }
 
     private static string TranslateConversationDisplayText(string source)
+    {
+        var markerMatch = TranslatedTrailingActionMarkerPattern.Match(source);
+        if (markerMatch.Success)
+        {
+            var body = source.Substring(0, markerMatch.Index);
+            return TranslateConversationDisplayTextWithoutActionMarker(body)
+                + markerMatch.Groups["leading"].Value
+                + markerMatch.Groups["marker"].Value;
+        }
+
+        markerMatch = TrailingActionMarkerPattern.Match(source);
+        if (markerMatch.Success)
+        {
+            var body = source.Substring(0, markerMatch.Index);
+            return TranslateConversationDisplayTextWithoutActionMarker(body)
+                + markerMatch.Groups["leading"].Value
+                + markerMatch.Groups["marker"].Value;
+        }
+
+        return TranslateConversationDisplayTextWithoutActionMarker(source);
+    }
+
+    private static string TranslateConversationDisplayTextWithoutActionMarker(string source)
     {
         var route = nameof(ConversationDisplayTextPatch);
         return ColorAwareTranslationComposer.TranslatePreservingColors(

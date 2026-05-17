@@ -72,7 +72,7 @@ public sealed class SkillsAndAbilitiesOwnerPatchTests
                 Assert.That(screen.learnedText.Text, Is.EqualTo("{{G|[習得済み]}}"));
                 Assert.That(screen.requirementsText.Text, Is.EqualTo(":: {{C|100}} SP ::\n:: 23 INT ::"));
                 Assert.That(screen.requiredSkillsHeader.Text, Is.EqualTo("前提スキル"));
-                Assert.That(screen.requiredSkillsText.Text, Is.EqualTo("  :工匠 II [200sp] 23 INT, 工匠 I\n:近接"));
+                Assert.That(screen.requiredSkillsText.Text, Is.EqualTo("{{R|[工匠 I]}}\n  :工匠 II [200sp] 23 INT, 工匠 I\n:近接"));
             });
         }
         finally
