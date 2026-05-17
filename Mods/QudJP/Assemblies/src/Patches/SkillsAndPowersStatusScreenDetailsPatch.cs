@@ -106,7 +106,7 @@ public static class SkillsAndPowersStatusScreenDetailsPatch
             var (changed, translated) = translator(text.text, route, true);
             if (changed)
             {
-                text.SetText(translated);
+                text.text = translated;
             }
         }
     }
