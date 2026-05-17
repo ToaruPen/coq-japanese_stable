@@ -462,7 +462,10 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
             return false;
         }
 
-        var colon = match.Groups["colon"].Value;
+        var colon = ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
+            match.Groups["colon"].Value,
+            spans,
+            match.Groups["colon"]);
         var name = RestoreTranslatedCapture(match, spans, "name", TranslateLeaf);
         var costBlock = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(
             match.Groups["costBlock"].Value,

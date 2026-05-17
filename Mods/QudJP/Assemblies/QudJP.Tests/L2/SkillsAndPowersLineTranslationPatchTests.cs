@@ -109,7 +109,7 @@ public sealed class SkillsAndPowersLineTranslationPatchTests
             {
                 Assert.That(skillTarget.skillText.Text, Is.EqualTo("長刃"));
                 Assert.That(skillTarget.skillRightText.Text, Is.EqualTo("開始コスト {{g|[100 sp]}}"));
-                Assert.That(powerTarget.powerText.Text, Is.EqualTo("    :{{K|工匠 II}} [{{K|200}}sp] {{C|23}} {{R|INT}}, {{R|工匠 I}}"));
+                Assert.That(powerTarget.powerText.Text, Is.EqualTo("    {{K|:}}{{K|工匠 II}} [{{K|200}}sp] {{C|23}} {{R|INT}}, {{R|工匠 I}}"));
                 Assert.That(learnedSkillTarget.skillText.Text, Is.EqualTo(" {{G|工匠}}"));
                 Assert.That(learnedSkillTarget.skillRightText.Text, Is.EqualTo("{{g|習得済み}} [2/4]"));
                 Assert.That(

@@ -116,7 +116,7 @@ public sealed class SkillsAndPowersStatusScreenTranslationPatchTests
             Assert.That(result.changed, Is.True);
             Assert.That(
                 result.translated,
-                Is.EqualTo("    :{{K|工匠 II}} [{{K|200}}sp] {{C|23}} {{R|INT}}, {{R|工匠 I}}"));
+                Is.EqualTo("    {{K|:}}{{K|工匠 II}} [{{K|200}}sp] {{C|23}} {{R|INT}}, {{R|工匠 I}}"));
         });
     }
 
