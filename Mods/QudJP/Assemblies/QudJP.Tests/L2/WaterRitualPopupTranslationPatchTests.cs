@@ -217,11 +217,6 @@ public sealed class WaterRitualPopupTranslationPatchTests
         "You don't have a high enough reputation with {{Y|the Farmers' Guild}}.",
         "ReputationTooLow")]
     [TestCase(
-        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualPerformRitual),
-        nameof(DummyPopupShow.Show),
-        "You share your {{B|fresh water}} with {{G|Tam}} and begin the water ritual.",
-        "PerformRitual")]
-    [TestCase(
         nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuyItemHandleEvent),
         nameof(DummyPopupShow.Show),
         "{{G|Tam}} gifts you {{Y|the electrobow}}!",
@@ -272,7 +267,32 @@ public sealed class WaterRitualPopupTranslationPatchTests
                 Assert.That(LastPopupMessage(popupMethod), Is.EqualTo(source));
                 Assert.That(HitCount(detail), Is.Zero);
             });
-        });
+            });
+    }
+
+    [Test]
+    public void Patch_TranslatesWaterRitualPerformRitualPopup_WhenOwnerAbsent()
+    {
+        const string source = "You share your {{B|fresh water}} with {{G|Tam}} and begin the water ritual.";
+
+        WithPatchedPopupOnly(
+            nameof(DummyPopupShow.Show),
+            () =>
+            {
+                DummyPopupShow.Show(source);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(
+                        DummyPopupShow.LastShowMessage,
+                        Is.EqualTo("{{G|Tam}}と{{B|真水}}を分かち合い、水の儀式を始めた。"));
+                    Assert.That(
+                        DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                            nameof(PopupShowTranslationPatch),
+                            "Popup.ProducerText.WaterRitual.PerformRitual"),
+                        Is.EqualTo(1));
+                });
+            });
     }
 
     [TestCase(

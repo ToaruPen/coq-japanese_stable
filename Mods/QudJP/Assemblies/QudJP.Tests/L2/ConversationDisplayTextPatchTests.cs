@@ -340,8 +340,55 @@ public sealed class ConversationDisplayTextPatchTests
     [TestCase(
         "お前の渇きは私の渇き、私の水はお前のものだ。 {{K|[begin water ritual]}}",
         "お前の渇きは私の渇き、私の水はお前のものだ。 {{K|[水儀式を始める]}}")]
+    [TestCase(
+        "秘密を打ち明けてくれ、水のきょうだい。 {{g|[{{C|75}} reputation]}}",
+        "秘密を打ち明けてくれ、水のきょうだい。 {{g|[評判 {{C|75}}]}}")]
+    [TestCase(
+        "秘密を話そう。 {{g|[{{C|+50}}{{c|+10}} reputation]}}",
+        "秘密を話そう。 {{g|[評判 {{C|+50}}{{c|+10}}]}}")]
+    [TestCase(
+        "お前たちの好物の料理を教えてくれないか？ {{g|[learn to cook {{W|starapple jam}}: {{C|50}} reputation]}}",
+        "お前たちの好物の料理を教えてくれないか？ {{g|[{{W|starapple jam}}の料理を習う: 評判 {{C|50}}]}}")]
+    [TestCase(
+        "共に来てくれ。 {{g|[gain {{C|2}} {{W|skill points}}: {{C|100}} reputation]}}",
+        "共に来てくれ。 {{g|[{{C|2}}スキルポイントを得る: 評判 {{C|100}}]}}")]
+    [TestCase(
+        "変異を教えてくれ。 {{g|[gain {{M|Light Manipulation}}: {{C|200}} reputation]}}",
+        "変異を教えてくれ。 {{g|[{{M|Light Manipulation}}を得る: 評判 {{C|200}}]}}")]
+    [TestCase(
+        "感染させてくれ。 {{g|[become infected with brooding goldpuff: {{C|75}} reputation]}}",
+        "感染させてくれ。 {{g|[brooding goldpuffに感染する: 評判 {{C|75}}]}}")]
+    [TestCase(
+        "剣術を教えてくれ。 {{g|[learn {{W|Long Blades}}: {{C|200}} reputation, {{C|-50}} SP]}}",
+        "剣術を教えてくれ。 {{g|[{{W|Long Blades}}を習う: 評判 {{C|200}}, SP {{C|-50}}]}}")]
+    [TestCase("話を聞こう。 {{W|[Accept Quest]}}", "話を聞こう。 {{W|[クエストを受ける]}}")]
+    [TestCase("話を聞こう。 {{W|[Accept Quest - level-based reward]}}", "話を聞こう。 {{W|[クエストを受ける - レベル基準報酬]}}")]
+    [TestCase("報告しよう。 {{W|[Complete Quest]}}", "報告しよう。 {{W|[クエストを完了する]}}")]
+    [TestCase("進めよう。 {{W|[Complete Quest Step]}}", "進めよう。 {{W|[クエスト段階を完了する]}}")]
+    [TestCase("戦うしかない。 {{R|[Fight]}}", "戦うしかない。 {{R|[戦う]}}")]
+    [TestCase("本を渡そう。 {{g|[Give Books]}}", "本を渡そう。 {{g|[本を渡す]}}")]
+    [TestCase("秘密を共有しよう。 {{g|[Share secrets from Resheph's life]}}", "秘密を共有しよう。 {{g|[レシェフの生涯の秘密を共有する]}}")]
+    [TestCase("候補を確認しよう。 {{W|[confirm {{C|Kyakuukya}} as a sanctuary option]}}", "候補を確認しよう。 {{W|[{{C|Kyakuukya}}を聖域候補として確認する]}}")]
+    [TestCase("条件を満たしている。 {{C|[Loved by {{Y|the Farmers' Guild}}]}}", "条件を満たしている。 {{C|[{{Y|the Farmers' Guild}}に愛されている]}}")]
+    [TestCase("条件を満たしていない。 {{r|[Hated by {{Y|the Farmers' Guild}}]}}", "条件を満たしていない。 {{r|[{{Y|the Farmers' Guild}}に憎まれている]}}")]
     public void Postfix_TranslatesKnownTrailingActionMarkers_WhenPatched(string source, string expected)
     {
+        AssertPatchedText(source, expected);
+    }
+
+    [TestCase(
+        "Live and drink. [custom authored tag]",
+        "生きて飲め。 [custom authored tag]")]
+    [TestCase(
+        "Live and drink. {{W|[custom authored tag]}}",
+        "生きて飲め。 {{W|[custom authored tag]}}")]
+    [TestCase(
+        "Live and drink. {{W|[custom authored tag: {{C|42}}]}}",
+        "生きて飲め。 {{W|[custom authored tag: {{C|42}}]}}")]
+    public void Postfix_PreservesUnknownAuthoredTrailingActionMarkers_WhenPatched(string source, string expected)
+    {
+        WriteDictionary(("Live and drink.", "生きて飲め。"));
+
         AssertPatchedText(source, expected);
     }
 
