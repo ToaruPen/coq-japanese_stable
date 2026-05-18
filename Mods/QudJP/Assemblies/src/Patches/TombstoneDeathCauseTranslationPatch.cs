@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
@@ -23,25 +24,37 @@ public static class TombstoneDeathCauseTranslationPatch
 
     public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
-        var transformed = 0;
-        foreach (var instruction in instructions)
+        try
         {
-            if (TryGetClipTextReplacement(instruction, out var replacement))
+            var originalInstructions = instructions.ToList();
+            var transformed = 0;
+            var transformedInstructions = new List<CodeInstruction>(originalInstructions.Count);
+            foreach (var instruction in originalInstructions)
             {
-                transformed++;
-                yield return new CodeInstruction(OpCodes.Ldarg_0);
-                yield return new CodeInstruction(
-                    OpCodes.Call,
-                    replacement);
-                continue;
+                if (TryGetClipTextReplacement(instruction, out var replacement))
+                {
+                    transformed++;
+                    transformedInstructions.Add(new CodeInstruction(OpCodes.Ldarg_0));
+                    transformedInstructions.Add(new CodeInstruction(
+                        OpCodes.Call,
+                        replacement));
+                    continue;
+                }
+
+                transformedInstructions.Add(instruction);
             }
 
-            yield return instruction;
-        }
+            if (transformed == 0)
+            {
+                Trace.TraceWarning("QudJP: {0}.Transpiler found no StringFormat.ClipText calls.", Context);
+            }
 
-        if (transformed == 0)
+            return transformedInstructions;
+        }
+        catch (Exception ex)
         {
-            Trace.TraceWarning("QudJP: {0}.Transpiler found no StringFormat.ClipText calls.", Context);
+            Trace.TraceError("QudJP: {0}.Transpiler failed; returning original instructions: {1}", Context, ex);
+            return instructions;
         }
     }
 
@@ -101,13 +114,21 @@ public static class TombstoneDeathCauseTranslationPatch
             return source;
         }
 
-        var clipped = method.Invoke(null, [source, maxWidth]) as string;
-        if (clipped is null)
+        try
         {
+            var clipped = method.Invoke(null, [source, maxWidth]) as string;
+            if (clipped is null)
+            {
+                return source;
+            }
+
+            return clipped;
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.ClipText fallback failed: {1}", Context, ex);
             return source;
         }
-
-        return clipped;
     }
 
     private static string ClipText(
@@ -126,15 +147,23 @@ public static class TombstoneDeathCauseTranslationPatch
             return source;
         }
 
-        var clipped = method.Invoke(
-            null,
-            [source, maxWidth, keepNewlines, transformMarkup, transformMarkupIfMultipleLines]) as string;
-        if (clipped is null)
+        try
         {
+            var clipped = method.Invoke(
+                null,
+                [source, maxWidth, keepNewlines, transformMarkup, transformMarkupIfMultipleLines]) as string;
+            if (clipped is null)
+            {
+                return source;
+            }
+
+            return clipped;
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.ClipText fallback failed: {1}", Context, ex);
             return source;
         }
-
-        return clipped;
     }
 
     private static void AddTarget(ICollection<MethodBase> targets, string typeName, string methodName)
