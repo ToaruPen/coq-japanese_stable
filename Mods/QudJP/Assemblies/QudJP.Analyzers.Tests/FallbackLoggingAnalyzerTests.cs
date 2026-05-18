@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CSharp.Testing.NUnit;
 using NUnit.Framework;
 using QudJP.Analyzers;
 

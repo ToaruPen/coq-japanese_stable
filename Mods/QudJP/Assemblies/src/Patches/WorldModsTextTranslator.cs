@@ -8,6 +8,7 @@ namespace QudJP;
 internal static class WorldModsTextTranslator
 {
     private const string WorldModsDictionaryFile = "world-mods.ja.json";
+    private const string AddsRepAppendDescriptionContext = "XRL.World.Parts.AddsRep.AppendDescription";
 
     private static readonly Regex JapaneseCharacterPattern = new Regex(
         "[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]",
@@ -734,7 +735,10 @@ internal static class WorldModsTextTranslator
         }
 
         const string templateKey = "+{0} reputation with {1}";
-        var template = ScopedDictionaryLookup.TranslateExactOrLowerAscii(templateKey, WorldModsDictionaryFile);
+        var template = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
+            templateKey,
+            AddsRepAppendDescriptionContext,
+            WorldModsDictionaryFile);
         if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
         {
             translated = source;

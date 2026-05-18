@@ -165,6 +165,51 @@ public sealed class GameSummaryTextTranslatorTests
     }
 
     [Test]
+    public void TranslateDetails_TranslatesWaterRitualJournalLines()
+    {
+        WriteDictionary(("water", "水"));
+        WritePatternDictionary(
+            ("^In sacred ritual you shared your (.+?) with (.+?)\\.$", "神聖な儀式で、あなたは{t1}と{t0}を分かち合った。"),
+            ("^In sacred ritual =name= shared (?:his|her|their|its) holy (.+?) with noted luminary (.+?)\\.$", "神聖な儀式で、=name=は著名な人物{t1}と聖なる{t0}を分かち合った。"));
+
+        var source = string.Join(
+            "\n",
+            "In sacred ritual you shared your water with 監視官イラメ.",
+            "In sacred ritual =name= shared their holy water with noted luminary 監視官イラメ.");
+
+        var translated = GameSummaryTextTranslator.TranslateDetails(source);
+
+        Assert.That(
+            translated,
+            Is.EqualTo(string.Join(
+                "\n",
+                "神聖な儀式で、あなたは監視官イラメと水を分かち合った。",
+                "神聖な儀式で、=name=は著名な人物監視官イラメと聖なる水を分かち合った。")));
+    }
+
+    [Test]
+    public void TranslateDetails_TranslatesWaterRitualReputationFinalMessages()
+    {
+        var translated = GameSummaryTextTranslator.TranslateDetails(
+            "{{y|Because they despise メフメット, your reputation with 鳥 decreased by {{R|100}} to {{C|-100}}.}}");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{y|メフメットをひどく嫌っているため、鳥との評判が{{R|100}}減少し、{{C|-100}}になった。}}"));
+    }
+
+    [Test]
+    public void TranslateDetails_TranslatesWaterRitualReputationStandingFinalMessages()
+    {
+        var translated = GameSummaryTextTranslator.TranslateDetails(
+            "Your reputation with {{C|the 監視官同胞団}} increased by {{G|100}} to {{g|600}}.\n\nYou are now {{g|favored}} by {{C|the 監視官同胞団}}.");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{C|監視官同胞団}}との評判が{{G|100}}増加し、{{g|600}}になった。\n\n{{C|監視官同胞団}}から{{g|好意的}}と見なされるようになった。"));
+    }
+
+    [Test]
     public void TranslateCauseAndDetails_PreserveEmptyAndMarkerPrefixedInputs()
     {
         WriteDictionary(("You abandoned all hope.", "あなたはすべての希望を捨てた。"));

@@ -394,7 +394,7 @@ public static class WaterRitualPopupTranslationPatch
         if (TryTranslatePattern(
                 PerformRitualPattern,
                 source,
-                (match, spans) => $"{Restore(match, spans, "speaker")}と{Restore(match, spans, "liquid")}を分かち合い、水の儀式を始めた。",
+                (match, spans) => $"{Restore(match, spans, "speaker")}と{RestoreTranslated(match, spans, "liquid", WaterRitualTextTranslator.TranslateLiquidVisible)}を分かち合い、水の儀式を始めた。",
                 out translated))
         {
             detail = "PerformRitual";
@@ -497,5 +497,15 @@ public static class WaterRitualPopupTranslationPatch
     {
         var group = match.Groups[groupName];
         return ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group).Trim();
+    }
+
+    private static string RestoreTranslated(
+        Match match,
+        IReadOnlyList<ColorSpan> spans,
+        string groupName,
+        Func<string, string> translate)
+    {
+        var group = match.Groups[groupName];
+        return ColorAwareTranslationComposer.RestoreCapture(translate(group.Value), spans, group).Trim();
     }
 }

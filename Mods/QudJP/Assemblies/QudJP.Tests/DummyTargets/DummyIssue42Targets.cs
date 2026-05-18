@@ -92,8 +92,8 @@ internal sealed class DummySkillsAndPowersDetailScreen
         skillNameText.SetText(skillNode.Name);
         learnedText.SetText("{{G|[Learned]}}");
         requirementsText.SetText(":: {{C|100}} SP ::\n:: 23 Intelligence ::");
-        requiredSkillsHeader.SetText("Required Skills");
-        requiredSkillsText.SetText("  :Tinker II [200sp] 23 Intelligence, Tinker I\n:Melee");
+        requiredSkillsHeader.SetText("REQUIRED SKILLS");
+        requiredSkillsText.SetText("{{R|[Tinker I]}}\n  :Tinker II [200sp] 23 Intelligence, Tinker I\n:Melee");
     }
 }
 

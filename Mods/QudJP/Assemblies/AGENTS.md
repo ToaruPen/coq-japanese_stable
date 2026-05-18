@@ -83,6 +83,10 @@ Route decisions follow `docs/RULES.md`:
 - prefer producer-owned or stable mid-pipeline fixes
 - treat most sink and near-sink routes as observation-only
 - do not hide dynamic or owner-routed bugs with broad dictionary entries
+- when a route-local dynamic translator captures owner, source, kind, item,
+  mutation, effect, or similar slots, decide explicitly whether each slot should
+  pass through the existing exact/visible phrase translator before concatenation
+  so registered terms do not leak inside composite strings
 - preserve Qud markup, TMP/rich-text tags, `\x01`, `=variable.name=`, and
   numeric placeholders as indivisible contract tokens
 - prove no-op fallback behavior and at least one route boundary for tooltip,

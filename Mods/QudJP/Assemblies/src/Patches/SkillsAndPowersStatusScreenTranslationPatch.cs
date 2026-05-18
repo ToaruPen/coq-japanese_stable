@@ -35,9 +35,11 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
     private static readonly Regex RequirementBlockPattern =
         new Regex("^:: (?<cost>\\d+) SP ::\\n:: (?<requirement>\\d+) (?<attribute>Strength|Toughness|Willpower|Agility|Ego|Intelligence) ::\\n?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex SkillLinePattern =
-        new Regex("^(?<indent>\\s*):(?<name>.+?) \\[(?<cost>\\d+)sp\\] (?<requirement>\\d+) (?<attribute>Strength|Toughness|Willpower|Agility|Ego|Intelligence)(?:, (?<prereq>.+))?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        new Regex("^(?<indent>\\s*)(?<colon>:?)(?<name>.+?) (?<costBlock>\\[(?<cost>\\d+)sp\\]) (?<requirement>\\d+) (?<attribute>Strength|Toughness|Willpower|Agility|Ego|Intelligence)(?:, (?<prereq>.+))?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PrefixedSkillNamePattern =
         new Regex("^(?<indent>\\s*):(?<name>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex BracketedLeafPattern =
+        new Regex("^\\[(?<inner>.+)\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
@@ -202,6 +204,50 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
 
     internal static string TranslateLeaf(string source)
     {
+        var leadingLength = source.Length - source.TrimStart().Length;
+        var trailingLength = source.Length - source.TrimEnd().Length;
+        var coreLength = source.Length - leadingLength - trailingLength;
+        if (coreLength <= 0)
+        {
+            return source;
+        }
+
+        var prefix = leadingLength == 0 ? string.Empty : source.Substring(0, leadingLength);
+        var suffix = trailingLength == 0 ? string.Empty : source.Substring(source.Length - trailingLength);
+        var core = source.Substring(leadingLength, coreLength);
+        var translatedCore = TranslateLeafCore(core);
+        return string.Equals(translatedCore, core, StringComparison.Ordinal)
+            ? source
+            : prefix + translatedCore + suffix;
+    }
+
+    private static string TranslateLeafCore(string source)
+    {
+        var normalizedSource = string.Equals(source, "REQUIRED SKILLS", StringComparison.Ordinal)
+            ? "Required Skills"
+            : source;
+        var direct = TranslateDictionaryLeaf(normalizedSource);
+        if (!string.Equals(direct, normalizedSource, StringComparison.Ordinal))
+        {
+            return direct;
+        }
+
+        var bracketedMatch = BracketedLeafPattern.Match(source);
+        if (bracketedMatch.Success)
+        {
+            var inner = bracketedMatch.Groups["inner"].Value;
+            var translatedInner = TranslateLeafCore(inner);
+            if (!string.Equals(translatedInner, inner, StringComparison.Ordinal))
+            {
+                return "[" + translatedInner + "]";
+            }
+        }
+
+        return source;
+    }
+
+    private static string TranslateDictionaryLeaf(string source)
+    {
         var scoped = ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, SkillNameDictionaryFile);
         if (scoped is not null && !string.Equals(scoped, source, StringComparison.Ordinal))
         {
@@ -336,7 +382,7 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
         var attribute = TranslateAttributeRequirement(match.Groups["attribute"].Value);
         var changed = !string.Equals(name, match.Groups["name"].Value, StringComparison.Ordinal)
             || !string.Equals(attribute, match.Groups["attribute"].Value, StringComparison.Ordinal);
-        var translatedLine = $"{name} [{match.Groups["cost"].Value}sp] {match.Groups["requirement"].Value} {attribute}";
+        var translatedLine = $"{name} {match.Groups["costBlock"].Value} {match.Groups["requirement"].Value} {attribute}";
         if (match.Groups["prereq"].Success)
         {
             var prereq = TranslateLeaf(match.Groups["prereq"].Value);
@@ -350,7 +396,7 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
             return false;
         }
 
-        translated = $"{match.Groups["indent"].Value}:{translatedLine}";
+        translated = $"{match.Groups["indent"].Value}{match.Groups["colon"].Value}{translatedLine}";
         DynamicTextObservability.RecordTransform(route, "SkillLine", source, translated);
         return true;
     }
@@ -376,11 +422,16 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
         return true;
     }
 
-    private static (bool changed, string translated) TryTranslateStructuredLinePreservingColors(
+    internal static (bool changed, string translated) TryTranslateStructuredLinePreservingColors(
         string source,
         string route,
         bool recordTransform)
     {
+        if (TryTranslateSkillLinePreservingCaptureColors(source, route, recordTransform, out var captureColored))
+        {
+            return (true, captureColored);
+        }
+
         var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
             source,
             visible => TryTranslateText(visible, route, out var structured) ? structured : TranslateLeaf(visible));
@@ -395,6 +446,73 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
         }
 
         return (true, translated);
+    }
+
+    private static bool TryTranslateSkillLinePreservingCaptureColors(
+        string source,
+        string route,
+        bool recordTransform,
+        out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = SkillLinePattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var colon = ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
+            match.Groups["colon"].Value,
+            spans,
+            match.Groups["colon"]);
+        var name = RestoreTranslatedCapture(match, spans, "name", TranslateLeaf);
+        var costBlock = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(
+            match.Groups["costBlock"].Value,
+            spans,
+            match.Groups["costBlock"]).Trim();
+        var requirement = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(
+            match.Groups["requirement"].Value,
+            spans,
+            match.Groups["requirement"]).Trim();
+        var attribute = RestoreTranslatedCapture(match, spans, "attribute", TranslateAttributeRequirement);
+
+        var translatedVisible = $"{match.Groups["indent"].Value}{colon}{name} {costBlock} {requirement} {attribute}";
+        if (match.Groups["prereq"].Success)
+        {
+            var prereq = RestoreTranslatedCapture(match, spans, "prereq", TranslateLeaf);
+            translatedVisible += $", {prereq}";
+        }
+
+        var changed = !string.Equals(translatedVisible, stripped, StringComparison.Ordinal);
+        if (!changed)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translatedVisible,
+            spans,
+            stripped.Length,
+            source);
+        if (recordTransform)
+        {
+            DynamicTextObservability.RecordTransform(route, "SkillsAndPowers.SkillLine.CaptureColors", source, translated);
+        }
+
+        return true;
+    }
+
+    private static string RestoreTranslatedCapture(
+        Match match,
+        IReadOnlyList<ColorSpan> spans,
+        string groupName,
+        Func<string, string> translate)
+    {
+        var group = match.Groups[groupName];
+        var translated = translate(group.Value);
+        return ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(translated, spans, group).Trim();
     }
 
     private static (bool changed, string translated) TryTranslateLineCollection(

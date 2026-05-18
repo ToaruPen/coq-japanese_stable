@@ -170,6 +170,22 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_RestoresCompactWeaponStatTags_FromRuntimeControlCodes()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("[rusted]", "[{{r|錆びた}}]"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "クローム・リボルバー \u001a7 \u00031d6 [鉛スラッグ x6] [rusted] <CC2>",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("クローム・リボルバー {{c|\u001a}}7 {{r|\u0003}}1d6 {{y|[鉛スラッグ x6]}} [{{r|錆びた}}] {{y|<{{|{{B|C}}{{B|C}}{{g|2}}}}>}}"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_UsesScopedStateTemplateLookup()
     {
         WriteDictionary(

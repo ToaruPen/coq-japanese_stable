@@ -348,6 +348,20 @@ public sealed class DescriptionTextTranslatorTests
     }
 
     [Test]
+    public void TranslateShortDescription_TranslatesWorldModsReputationLine_WithLocalizedFaction()
+    {
+        WriteContextDictionary(
+            "world-mods.ja.json",
+            ("XRL.World.Parts.AddsRep.AppendDescription", "+{0} reputation with {1}", "{1}との評判{0:+#;-#}"));
+
+        var translated = DescriptionTextTranslator.TranslateShortDescription(
+            "-200 reputation with 猫",
+            "DescriptionShortDescriptionPatch");
+
+        Assert.That(translated, Is.EqualTo("猫との評判-200"));
+    }
+
+    [Test]
     public void TranslateLongDescription_DoesNotReportNoPattern_ForAlreadyLocalizedDescriptionFragments()
     {
         const string localizedLine =
@@ -535,6 +549,33 @@ public sealed class DescriptionTextTranslatorTests
             }
 
             builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        builder.AppendLine();
+        var path = Path.Combine(dictionaryDirectory, fileName);
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllText(path, builder.ToString(), Utf8WithoutBom);
+    }
+
+    private void WriteContextDictionary(string fileName, params (string context, string key, string text)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.Append("{\"entries\":[");
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"context\":\"");
+            builder.Append(EscapeJson(entries[index].context));
+            builder.Append("\",\"key\":\"");
             builder.Append(EscapeJson(entries[index].key));
             builder.Append("\",\"text\":\"");
             builder.Append(EscapeJson(entries[index].text));

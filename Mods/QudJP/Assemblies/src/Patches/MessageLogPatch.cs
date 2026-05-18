@@ -64,6 +64,16 @@ public static class MessageLogPatch
                 return true;
             }
 
+            if (WaterRitualTextTranslator.TryTranslateMessage(
+                    Message,
+                    nameof(MessageLogPatch),
+                    "MessageLog.WaterRitual",
+                    out var waterRitualTranslated))
+            {
+                Message = waterRitualTranslated;
+                return true;
+            }
+
             SinkObservation.LogUnclaimed(
                 nameof(MessageLogPatch),
                 nameof(MessageLogPatch),
