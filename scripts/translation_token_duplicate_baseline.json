@@ -86,7 +86,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 253,
+          "entry_index": 258,
           "text": "または"
         },
         {
@@ -291,7 +291,7 @@
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 128,
+          "entry_index": 133,
           "text": "平均"
         },
         {
@@ -336,7 +336,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 230,
+          "entry_index": 235,
           "text": "鈍器"
         },
         {
@@ -407,7 +407,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 126,
+          "entry_index": 131,
           "text": "敵対的"
         },
         {
@@ -429,7 +429,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 124,
+          "entry_index": 129,
           "text": "負傷"
         },
         {
@@ -479,7 +479,7 @@
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 151,
+          "entry_index": 156,
           "text": "最終セーブ："
         },
         {
@@ -507,7 +507,7 @@
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 150,
+          "entry_index": 155,
           "text": "場所："
         },
         {
@@ -573,7 +573,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 123,
+          "entry_index": 128,
           "text": "完璧"
         },
         {
@@ -606,7 +606,7 @@
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 227,
+          "entry_index": 232,
           "text": "ピストル"
         }
       ]
@@ -629,7 +629,7 @@
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 98,
+          "entry_index": 103,
           "text": "潤っている"
         },
         {
@@ -657,12 +657,12 @@
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 176,
+          "entry_index": 181,
           "text": "ランダムに選択"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 177,
+          "entry_index": 182,
           "text": "ランダムに選択"
         }
       ]
@@ -855,7 +855,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 269,
+          "entry_index": 274,
           "text": "あなたはレシェフの計画に従い、魔女団の帰還に備えて世界から高等生命を一掃することにした。"
         },
         {
@@ -877,7 +877,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 272,
+          "entry_index": 277,
           "text": "あなたは回転の疫病を無効化した。\n\nそしてレシェフを滅ぼし、バラサラムと共に塵に覆われた宇宙へと飛び立ち、星々を渡ることにした。"
         },
         {
@@ -899,7 +899,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 266,
+          "entry_index": 271,
           "text": "あなたは回転の疫病を無効化した。\n\nそしてレシェフを滅ぼし、クッドに戻って芽吹く世界の庭を耕すことにした。"
         },
         {
@@ -921,7 +921,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 262,
+          "entry_index": 267,
           "text": "あなたは回転の疫病を無効化した。\n\nそして芽吹く世界を救うためレシェフを滅ぼしたが、北シェヴァに取り残された。"
         },
         {
@@ -943,7 +943,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 264,
+          "entry_index": 269,
           "text": "あなたは回転の疫病を無効化した。\n\nそしてレシェフと契約を結び、魔女団の帰還に備えてクッドを整えることにした。"
         },
         {
@@ -965,7 +965,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 260,
+          "entry_index": 265,
           "text": "あなたは回転の疫病を無効化した。\n\nそして紡錘を解放し、他の者の昇華に道を譲り、ブライトシェオルへと渡った。"
         },
         {
@@ -987,7 +987,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 276,
+          "entry_index": 281,
           "text": "あなたは回転の疫病を無効化した。\n\nそしてバラサラムと共に塵に覆われた宇宙へと飛び立ち、星々を渡ることにした。"
         },
         {
@@ -1009,7 +1009,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 278,
+          "entry_index": 283,
           "text": "あなたは回転の疫病を無効化した。\n\nそして塵に覆われた宇宙へと飛び立ち、星々を渡ることにした。"
         },
         {
@@ -1031,7 +1031,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 268,
+          "entry_index": 273,
           "text": "あなたは回転の疫病を無効化した。\n\nそしてクッドに戻り、芽吹く世界の庭を耕すことにした。"
         },
         {
@@ -1053,7 +1053,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 270,
+          "entry_index": 275,
           "text": "あなたは回転の疫病を無効化した。\n\nしかし翻意し、レシェフの計画に従って魔女団の帰還に備え、世界から高等生命を一掃することにした。"
         },
         {
@@ -1257,7 +1257,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 271,
+          "entry_index": 276,
           "text": "あなたはレシェフを滅ぼし、バラサラムと共に塵に覆われた宇宙へと飛び立ち、星々を渡ることにした。"
         },
         {
@@ -1279,7 +1279,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 273,
+          "entry_index": 278,
           "text": "あなたはレシェフを滅ぼし、塵に覆われた宇宙へと飛び立ち、星々を渡ることにした。"
         },
         {
@@ -1301,7 +1301,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 265,
+          "entry_index": 270,
           "text": "あなたはレシェフを滅ぼし、クッドに戻って芽吹く世界の庭を耕すことにした。"
         },
         {
@@ -1323,7 +1323,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 261,
+          "entry_index": 266,
           "text": "あなたは芽吹く世界を救うためレシェフを滅ぼしたが、北シェヴァに取り残された。"
         },
         {
@@ -1367,7 +1367,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 263,
+          "entry_index": 268,
           "text": "あなたはレシェフと契約を結び、魔女団の帰還に備えてクッドを整えることにした。"
         },
         {
@@ -1411,7 +1411,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 259,
+          "entry_index": 264,
           "text": "あなたは紡錘を解放し、他の者の昇華に道を譲り、ブライトシェオルへと渡った。"
         },
         {
@@ -1599,7 +1599,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 275,
+          "entry_index": 280,
           "text": "あなたはバラサラムと共に塵に覆われた宇宙へと飛び立ち、星々を渡ることにした。"
         },
         {
@@ -1621,7 +1621,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 277,
+          "entry_index": 282,
           "text": "あなたは塵に覆われた宇宙へと飛び立ち、星々を渡ることにした。"
         },
         {
@@ -1643,7 +1643,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 267,
+          "entry_index": 272,
           "text": "あなたはレシェフを退け、クッドに戻って芽吹く世界の庭を耕すことにした。"
         },
         {
@@ -1715,7 +1715,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 240,
+          "entry_index": 245,
           "text": "射撃が大きく逸れた！"
         },
         {
@@ -2311,7 +2311,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 198,
+          "entry_index": 203,
           "text": "低"
         },
         {
@@ -2660,7 +2660,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 226,
+          "entry_index": 231,
           "text": "決定"
         },
         {
@@ -2809,7 +2809,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 218,
+          "entry_index": 223,
           "text": "並び替え: "
         },
         {
@@ -3009,7 +3009,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 135,
+          "entry_index": 140,
           "text": "濡れている"
         },
         {
@@ -3213,7 +3213,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 244,
+          "entry_index": 249,
           "text": "{{K|設計図を持っていない。}}"
         },
         {
@@ -4581,12 +4581,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 203,
+          "entry_index": 208,
           "text": "斧（クリティカル時に装甲切断）"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 236,
+          "entry_index": 241,
           "text": "斧（クリティカル時に装甲切断）"
         }
       ]
@@ -4603,12 +4603,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 201,
+          "entry_index": 206,
           "text": "鈍器（クリティカル時に朦朧付与）"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 234,
+          "entry_index": 239,
           "text": "鈍器（クリティカル時に朦朧付与）"
         }
       ]
@@ -4625,12 +4625,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 181,
+          "entry_index": 186,
           "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 212,
+          "entry_index": 217,
           "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         }
       ]
@@ -4647,12 +4647,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 182,
+          "entry_index": 187,
           "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 213,
+          "entry_index": 218,
           "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         }
       ]
@@ -4669,12 +4669,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 179,
+          "entry_index": 184,
           "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 210,
+          "entry_index": 215,
           "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         }
       ]
@@ -4691,12 +4691,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 180,
+          "entry_index": 185,
           "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 211,
+          "entry_index": 216,
           "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         }
       ]
@@ -4718,7 +4718,7 @@
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 151,
+          "entry_index": 156,
           "text": "最終セーブ："
         }
       ]
@@ -4740,7 +4740,7 @@
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 150,
+          "entry_index": 155,
           "text": "場所："
         }
       ]
@@ -4757,12 +4757,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 204,
+          "entry_index": 209,
           "text": "長剣（切断可能）"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 237,
+          "entry_index": 242,
           "text": "長剣（切断可能）"
         }
       ]
@@ -4806,7 +4806,7 @@
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 164,
+          "entry_index": 169,
           "text": "セーブせずに終了"
         }
       ]
@@ -4823,12 +4823,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 176,
+          "entry_index": 181,
           "text": "ランダムに選択"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 177,
+          "entry_index": 182,
           "text": "ランダムに選択"
         }
       ]
@@ -4845,12 +4845,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 238,
+          "entry_index": 243,
           "text": "選択をリセット"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 239,
+          "entry_index": 244,
           "text": "選択をリセット"
         }
       ]
@@ -4872,7 +4872,7 @@
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 163,
+          "entry_index": 168,
           "text": "セーブして終了"
         }
       ]
@@ -4889,12 +4889,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 202,
+          "entry_index": 207,
           "text": "短剣（クリティカル時に出血）"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 235,
+          "entry_index": 240,
           "text": "短剣（クリティカル時に出血）"
         }
       ]
