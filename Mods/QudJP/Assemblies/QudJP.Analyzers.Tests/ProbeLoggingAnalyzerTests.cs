@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp.Testing;
-using Microsoft.CodeAnalysis.CSharp.Testing.NUnit;
-using Microsoft.CodeAnalysis.Testing.Verifiers;
+using Microsoft.CodeAnalysis.Testing;
 using NUnit.Framework;
 using QudJP.Analyzers;
 
@@ -384,10 +383,9 @@ namespace QudJP
 }
 """;
 
-#pragma warning disable CS0618 // Existing analyzer test package exposes NUnitVerifier as obsolete.
-        var test = new CSharpAnalyzerTest<ProbeLoggingAnalyzer, NUnitVerifier>();
-#pragma warning restore CS0618
-        test.TestState.Sources.Add(("RuntimeDiagnostics.cs", source));
+        var test = new CSharpAnalyzerTest<ProbeLoggingAnalyzer, DefaultVerifier>();
+        test.TestState.Sources.Add(
+            ("RuntimeDiagnostics.cs", AnalyzerVerifier<ProbeLoggingAnalyzer>.NullableEnableDirective + source));
 
         await test.RunAsync().ConfigureAwait(false);
     }

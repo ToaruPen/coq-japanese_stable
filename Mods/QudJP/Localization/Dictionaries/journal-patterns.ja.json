@@ -7,6 +7,16 @@
       "route": "journal"
     },
     {
+      "pattern": "^In sacred ritual you shared your (.+?) with (.+?)\\.$",
+      "template": "神聖な儀式で、あなたは{t1}と{t0}を分かち合った。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^In sacred ritual =name= shared (?:his|her|their|its) holy (.+?) with noted luminary (.+?)\\.$",
+      "template": "神聖な儀式で、=name=は著名な人物{t1}と聖なる{t0}を分かち合った。",
+      "route": "journal"
+    },
+    {
       "pattern": "^You note this piece of information in the Sultan Histories > (.+?) section of your journal\\.[.!]?$",
       "template": "この情報をジャーナルの「スルタン史 > {0}」欄に記録した。",
       "route": "journal"

@@ -118,6 +118,42 @@ public sealed class MessageLogPatchTests
         });
     }
 
+    [Test]
+    public void Prefix_TranslatesWaterRitualStartAndPreservesColors()
+    {
+        var message = "&yYou share your &Bwater&y with 監視官イラメ and begin the water ritual.";
+
+        var result = MessageLogPatch.Prefix(ref message);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(message, Is.EqualTo("&y監視官イラメと&B水&yを分かち合い、水の儀式を始めた。"));
+            Assert.That(result, Is.True);
+        });
+    }
+
+    [TestCase(
+        "&yYour reputation with &Cthe 監視官同胞団&y increased by &G100&y to &C-50&y.",
+        "&y&C監視官同胞団&yとの評判が&G100&y増加し、&C-50&yになった。")]
+    [TestCase(
+        "&yBecause they admire 監視官イラメ, your reputation with the ジョッパの村人たち increased by &G100&y to &C-40&y.",
+        "&y監視官イラメを尊敬しているため、ジョッパの村人たちとの評判が&G100&y増加し、&C-40&yになった。")]
+    [TestCase(
+        "&yBecause they dislike 監視官イラメ, your reputation with the villagers of テガニプ decreased by &R50&y to &C-50&y.",
+        "&y監視官イラメをよく思っていないため、テガニプの村人たちとの評判が&R50&y減少し、&C-50&yになった。")]
+    public void Prefix_TranslatesWaterRitualReputationMessagesAndPreservesColors(string source, string expected)
+    {
+        var message = source;
+
+        var result = MessageLogPatch.Prefix(ref message);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(message, Is.EqualTo(expected));
+            Assert.That(result, Is.True);
+        });
+    }
+
     private static void UseRepositoryDictionary()
     {
         var repositoryDictionaryPath = Path.GetFullPath(

@@ -243,7 +243,7 @@ internal static class StatusLineTranslationHelpers
         return true;
     }
 
-    private static bool TryTranslateGeneratedActiveEffectPart(string source, out string translated)
+    internal static bool TryTranslateGeneratedActiveEffectPart(string source, out string translated)
     {
         if (source.IndexOf(" ", StringComparison.Ordinal) < 0)
         {

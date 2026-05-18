@@ -136,8 +136,18 @@ public static class AbilityBarAfterRenderTranslationPatch
             if (partLength > 0)
             {
                 var part = tail.Substring(partStart, partLength);
-                var translatedPart = StringHelpers.TranslateExactOrLowerAscii(part);
-                translatedParts.Add(ColorAwareTranslationComposer.RestoreSlice(translatedPart ?? part, spans, startIndex + partStart, partLength));
+                string translatedPart;
+                if (StatusLineTranslationHelpers.TryTranslateGeneratedActiveEffectPart(part, out var generatedPart))
+                {
+                    translatedPart = generatedPart;
+                }
+                else
+                {
+                    var exactPart = StringHelpers.TranslateExactOrLowerAscii(part);
+                    translatedPart = exactPart is null ? part : exactPart;
+                }
+
+                translatedParts.Add(RestoreActiveEffectPart(translatedPart, spans, startIndex + partStart, partLength));
             }
 
             if (separatorIndex < 0)
@@ -150,6 +160,21 @@ public static class AbilityBarAfterRenderTranslationPatch
         }
 
         return string.Concat(translatedParts);
+    }
+
+    private static string RestoreActiveEffectPart(
+        string translatedPart,
+        IReadOnlyList<ColorSpan>? spans,
+        int startIndex,
+        int length)
+    {
+        return HasColorMarkup(translatedPart)
+            ? ColorAwareTranslationComposer.RestoreWholeSliceBoundaryWrappersPreservingTranslatedOwnership(
+                translatedPart,
+                spans,
+                startIndex,
+                length)
+            : ColorAwareTranslationComposer.RestoreSlice(translatedPart, spans, startIndex, length);
     }
 
     private static bool TryTranslateTargetText(string source, string route, out string translated)

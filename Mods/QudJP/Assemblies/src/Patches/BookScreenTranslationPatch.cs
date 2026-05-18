@@ -143,12 +143,22 @@ public static class BookScreenTranslationPatch
     {
         translated = title;
         var match = ActiveEffectsTitleRegex.Match(title);
-        if (!match.Success || !Translator.TryGetTranslation("Active Effects - {0}", out var template))
+        if (!match.Success)
         {
             return false;
         }
 
         var name = match.Groups["name"].Value;
+        if (HasUnbalancedModernMarkupBoundary(name))
+        {
+            return false;
+        }
+
+        if (!Translator.TryGetTranslation("Active Effects - {0}", out var template))
+        {
+            template = "Active Effects - {0}";
+        }
+
         var visibleLabel = template.Replace(" - {0}", string.Empty);
         if (string.Equals(visibleLabel, template, StringComparison.Ordinal))
         {
@@ -160,6 +170,30 @@ public static class BookScreenTranslationPatch
             : template.Replace("{0}", name);
         DynamicTextObservability.RecordTransform(route, "BookScreen.TitleText", title, translated);
         return true;
+    }
+
+    private static bool HasUnbalancedModernMarkupBoundary(string value)
+    {
+        var openCount = 0;
+        var closeCount = 0;
+        var hasOpeningBrace = false;
+        for (var index = 0; index < value.Length - 1; index++)
+        {
+            hasOpeningBrace |= value[index] == '{';
+            if (value[index] == '{' && value[index + 1] == '{')
+            {
+                openCount++;
+                index++;
+            }
+            else if (value[index] == '}' && value[index + 1] == '}')
+            {
+                closeCount++;
+                index++;
+            }
+        }
+
+        hasOpeningBrace |= value.Length > 0 && value[value.Length - 1] == '{';
+        return openCount != closeCount || hasOpeningBrace && openCount == 0;
     }
 
     private static void TranslateMenuOptions(Type? targetType)
