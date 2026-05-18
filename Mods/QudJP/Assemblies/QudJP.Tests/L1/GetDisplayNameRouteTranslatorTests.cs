@@ -529,6 +529,9 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [TestCase("advertisement for {{M|クユラミルの蒸留所, 伝説の樹液商}}", "{{M|クユラミルの蒸留所, 伝説の樹液商}}の広告")]
+    [TestCase("advertisement for {{M|Resheph}}", "{{M|レシェフ}}の広告")]
+    [TestCase("advertisement for \u0001{{M|レシェフ}}", "{{M|レシェフ}}の広告")]
+    [TestCase("advertisement for {{M|unknown merchant}}", "{{M|unknown merchant}}の広告")]
     [TestCase("clone of a snapjaw", "スナップジョーのクローン")]
     [TestCase("hologram of a snapjaw", "スナップジョーのホログラム")]
     [TestCase("phylactery of High Templar", "高位聖堂騎士のファイラクテリー")]

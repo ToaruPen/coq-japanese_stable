@@ -1714,7 +1714,7 @@ internal static class GetDisplayNameRouteTranslator
             target,
             includeCapitalizedDefiniteArticle: true,
             includeCapitalizedIndefiniteArticle: true);
-        var translatedTarget = TranslateDisplayNameFragment(target, route);
+        var translatedTarget = TranslateDisplayNameFragmentPreservingColors(target, route);
 
         translated = match.Groups["prefix"].Value switch
         {
