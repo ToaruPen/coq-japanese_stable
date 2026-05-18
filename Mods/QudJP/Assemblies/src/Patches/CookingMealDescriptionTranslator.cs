@@ -30,6 +30,12 @@ internal static class CookingMealDescriptionTranslator
             return false;
         }
 
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return false;
+        }
+
         var original = source!;
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(original);
         if (TryTranslatePattern(TossPattern, stripped, spans, original, match =>

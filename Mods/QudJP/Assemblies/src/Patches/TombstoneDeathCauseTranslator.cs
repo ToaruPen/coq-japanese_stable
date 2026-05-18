@@ -101,7 +101,12 @@ internal static class TombstoneDeathCauseTranslator
     {
         if (string.IsNullOrEmpty(source))
         {
-            translated = source ?? string.Empty;
+            translated = source!;
+            if (translated is null)
+            {
+                translated = string.Empty;
+            }
+
             return false;
         }
 

@@ -36,6 +36,29 @@ public sealed class VillagePetConversationTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateQuestion_PassesThroughUnknownEmptyColorTagsAndDirectMarker()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(VillagePetConversationTranslator.TryTranslateQuestion(string.Empty, out var empty), Is.False);
+            Assert.That(empty, Is.Empty);
+
+            Assert.That(VillagePetConversationTranslator.TryTranslateQuestion("Why is this impossible?", out var unknown), Is.False);
+            Assert.That(unknown, Is.EqualTo("Why is this impossible?"));
+
+            Assert.That(VillagePetConversationTranslator.TryTranslateQuestion("{{Y|Why is this impossible?}}", out var colorTagged), Is.False);
+            Assert.That(colorTagged, Is.EqualTo("{{Y|Why is this impossible?}}"));
+
+            Assert.That(
+                VillagePetConversationTranslator.TryTranslateQuestion(
+                    MessageFrameTranslator.DirectTranslationMarker + "Why are there glowfish here?",
+                    out var direct),
+                Is.False);
+            Assert.That(direct, Is.EqualTo("Why are there glowfish here?"));
+        });
+    }
+
     [TestCase("Nib just showed up one day and started singing.", "Nibはある日ふらりと現れ、歌い始めたんだ。")]
     [TestCase("They just showed up one day and started guarding the gate.", "ある日ふらりと現れ、門を守り始めたんだ。")]
     [TestCase("They've been here for as long as I remember, breaking bread.", "私が覚えている限りずっとここにいて、パンを分け合っている。")]

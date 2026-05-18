@@ -96,11 +96,14 @@ public sealed class DynamicQuestItemNameMutationTranslatorTests
     public void TryTranslate_ReturnsFalse_ForEmptyInput()
     {
         var translated = DynamicQuestItemNameMutationTranslator.TryTranslate(null, out var result);
+        var emptyTranslated = DynamicQuestItemNameMutationTranslator.TryTranslate(string.Empty, out var emptyResult);
 
         Assert.Multiple(() =>
         {
             Assert.That(translated, Is.False);
             Assert.That(result, Is.Empty);
+            Assert.That(emptyTranslated, Is.False);
+            Assert.That(emptyResult, Is.Empty);
         });
     }
 

@@ -88,6 +88,9 @@ public sealed class VillageLeaderConversationTranslatorTests
     {
         Assert.Multiple(() =>
         {
+            Assert.That(VillageLeaderConversationTranslator.TryTranslate(string.Empty, out var empty), Is.False);
+            Assert.That(empty, Is.Empty);
+
             Assert.That(VillageLeaderConversationTranslator.TryTranslate("Welcome, friend.", out var unknown), Is.False);
             Assert.That(unknown, Is.EqualTo("Welcome, friend."));
 

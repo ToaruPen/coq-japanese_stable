@@ -161,6 +161,7 @@ public static class TombstoneDeathCauseTranslationPatch
         var parameters = method.GetParameters();
         if (method.ReturnType != typeof(string)
             || !string.Equals(method.Name, "ClipText", StringComparison.Ordinal)
+            || !string.Equals(method.DeclaringType?.FullName, "XRL.UI.StringFormat", StringComparison.Ordinal)
             || parameters.Length is not (2 or 5)
             || parameters[0].ParameterType != typeof(string)
             || parameters[1].ParameterType != typeof(int))

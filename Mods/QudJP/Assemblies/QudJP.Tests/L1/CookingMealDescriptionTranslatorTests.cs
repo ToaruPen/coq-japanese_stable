@@ -59,6 +59,20 @@ public sealed class CookingMealDescriptionTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslate_StripsDirectMarkerWithoutRetranslating()
+    {
+        var ok = CookingMealDescriptionTranslator.TryTranslate(
+            MessageFrameTranslator.DirectTranslationMarker + "You toss snapjaw haunch into a pot and stir.",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(translated, Is.EqualTo("You toss snapjaw haunch into a pot and stir."));
+        });
+    }
+
     [TestCase("")]
     [TestCase("A savory meal made from {{Y|snapjaw haunch}}.")]
     [TestCase("You eat the meal. It's tastier than usual.")]
