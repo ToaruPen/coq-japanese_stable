@@ -62,7 +62,7 @@ public sealed partial class Issue201OtherUiBindingPatchTests
             ("Codex of Leaves", "葉の宝典"),
             ("Previous Page", "前のページ"),
             ("Next Page", "次のページ"),
-            ("Close book", "本を閉じる"));
+            ("Close book", "閉じる"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -81,7 +81,7 @@ public sealed partial class Issue201OtherUiBindingPatchTests
                 Assert.That(DummyBookScreenTarget.PREV_PAGE.Description, Is.EqualTo("前のページ"));
                 Assert.That(DummyBookScreenTarget.PREV_PAGE.KeyDescription, Is.EqualTo("前のページ"));
                 Assert.That(DummyBookScreenTarget.NEXT_PAGE.Description, Is.EqualTo("次のページ"));
-                Assert.That(DummyBookScreenTarget.getItemMenuOptions[2].Description, Is.EqualTo("本を閉じる"));
+                Assert.That(DummyBookScreenTarget.getItemMenuOptions[2].Description, Is.EqualTo("閉じる"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(BookScreenTranslationPatch), "BookScreen.TitleText"),
                     Is.GreaterThan(0));
@@ -114,6 +114,127 @@ public sealed partial class Issue201OtherUiBindingPatchTests
             target.showScreen("leaf-journal");
 
             Assert.That(target.titleText.Text, Is.EqualTo("葉の日誌"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void BookScreenPrefix_TranslatesActiveEffectsTitleTemplate_ToModernUiMarkup()
+    {
+        WriteDictionary(("Active Effects - {0}", "発動中の効果 - {0}"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyBookScreenTarget), nameof(DummyBookScreenTarget.showScreen), new[] { typeof(DummyBookTarget), typeof(string), typeof(Action<int>), typeof(Action<int>) }),
+                prefix: new HarmonyMethod(RequireMethod(typeof(BookScreenTranslationPatch), nameof(BookScreenTranslationPatch.Prefix))));
+
+            var target = new DummyBookScreenTarget();
+            target.showScreen(new DummyBookTarget { Title = "&WActive Effects&Y - クラミルの蒸留所" });
+
+            Assert.That(target.titleText.Text, Is.EqualTo("{{W|発動中の効果}}{{Y| - クラミルの蒸留所}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void BookScreenPrefix_TranslatesActiveEffectsTitleTemplate_WithMarkupTransformedName_ToModernUiMarkup()
+    {
+        WriteDictionary(("Active Effects - {0}", "発動中の効果 - {0}"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyBookScreenTarget), nameof(DummyBookScreenTarget.showScreen), new[] { typeof(DummyBookTarget), typeof(string), typeof(Action<int>), typeof(Action<int>) }),
+                prefix: new HarmonyMethod(RequireMethod(typeof(BookScreenTranslationPatch), nameof(BookScreenTranslationPatch.Prefix))));
+
+            var target = new DummyBookScreenTarget();
+            target.showScreen(new DummyBookTarget { Title = "&WActive Effects&Y - {{W|goatfolk}}" });
+
+            Assert.That(target.titleText.Text, Is.EqualTo("{{W|発動中の効果}}{{Y| - {{W|goatfolk}}}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void BookScreenPrefix_NormalizesAlreadyTranslatedActiveEffectsTitle_ToModernUiMarkup()
+    {
+        WriteDictionary(("Active Effects - {0}", "発動中の効果 - {0}"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyBookScreenTarget), nameof(DummyBookScreenTarget.showScreen), new[] { typeof(DummyBookTarget), typeof(string), typeof(Action<int>), typeof(Action<int>) }),
+                prefix: new HarmonyMethod(RequireMethod(typeof(BookScreenTranslationPatch), nameof(BookScreenTranslationPatch.Prefix))));
+
+            var target = new DummyBookScreenTarget();
+            target.showScreen(new DummyBookTarget { Title = "&W発動中の効果&Y - ウォーターヴァイン農家" });
+
+            Assert.That(target.titleText.Text, Is.EqualTo("{{W|発動中の効果}}{{Y| - ウォーターヴァイン農家}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void BookScreenPrefix_FallbacksToEnglishActiveEffectsTitle_WhenDictionaryMissing()
+    {
+        WriteDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyBookScreenTarget), nameof(DummyBookScreenTarget.showScreen), new[] { typeof(DummyBookTarget), typeof(string), typeof(Action<int>), typeof(Action<int>) }),
+                prefix: new HarmonyMethod(RequireMethod(typeof(BookScreenTranslationPatch), nameof(BookScreenTranslationPatch.Prefix))));
+
+            var target = new DummyBookScreenTarget();
+            target.showScreen(new DummyBookTarget { Title = "&WActive Effects&Y - Location" });
+
+            Assert.That(target.titleText.Text, Is.EqualTo("{{W|Active Effects}}{{Y| - Location}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [TestCase("")]
+    [TestCase("&WActive Effects&Y - {")]
+    public void BookScreenPrefix_DoesNotTransformEmptyOrMalformedActiveEffectsTitle(string title)
+    {
+        WriteDictionary(("Active Effects - {0}", "発動中の効果 - {0}"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyBookScreenTarget), nameof(DummyBookScreenTarget.showScreen), new[] { typeof(DummyBookTarget), typeof(string), typeof(Action<int>), typeof(Action<int>) }),
+                prefix: new HarmonyMethod(RequireMethod(typeof(BookScreenTranslationPatch), nameof(BookScreenTranslationPatch.Prefix))));
+
+            var target = new DummyBookScreenTarget();
+            target.showScreen(new DummyBookTarget { Title = title });
+
+            Assert.That(target.titleText.Text, Is.EqualTo(title));
         }
         finally
         {

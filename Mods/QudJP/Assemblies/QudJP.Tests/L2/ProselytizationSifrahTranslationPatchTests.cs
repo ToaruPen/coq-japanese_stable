@@ -1,6 +1,7 @@
 using System.Reflection;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
+using QudJP.Tests.L1;
 
 namespace QudJP.Tests.L2;
 
@@ -12,7 +13,10 @@ public sealed class ProselytizationSifrahTranslationPatchTests
     [SetUp]
     public void SetUp()
     {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
         DynamicTextObservability.ResetForTests();
+        MessageFrameTranslator.ResetForTests();
+        MessageFrameTranslator.SetDictionaryPathForTests(RepositoryMessageFramePath());
         SinkObservation.ResetForTests();
         DummyPopupShow.Reset();
     }
@@ -20,7 +24,9 @@ public sealed class ProselytizationSifrahTranslationPatchTests
     [TearDown]
     public void TearDown()
     {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
         DynamicTextObservability.ResetForTests();
+        MessageFrameTranslator.ResetForTests();
         SinkObservation.ResetForTests();
     }
 
@@ -93,6 +99,36 @@ public sealed class ProselytizationSifrahTranslationPatchTests
     }
 
     [Test]
+    public void Patch_TranslatesMarkedDoesVerbPopup_WhenOwnerPatched()
+    {
+        const string subject = "The 巡礼者";
+        var source = DoesVerbRouteTranslator.MarkDoesFragment(
+            subject + " is",
+            "are",
+            subject.Length,
+            null) + " unconvinced by your pleas.";
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(ProselytizationSifrahTranslationPatch),
+            RequireOwnerMethod(nameof(DummyProselytizationSifrahProducerTarget.ResultFailure)),
+            () =>
+            {
+                var target = new DummyProselytizationSifrahProducerTarget
+                {
+                    PopupMessageToShow = source,
+                };
+
+                target.ResultFailure(new DummyGameObject());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("巡礼者はあなたの懇願に納得していない"));
+                    Assert.That(ProselytizationHitCount("DoesVerb"), Is.EqualTo(1));
+                });
+            });
+    }
+
+    [Test]
     public void Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
     {
         OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
@@ -149,5 +185,16 @@ public sealed class ProselytizationSifrahTranslationPatchTests
     private static int ProselytizationHitCount(string detail)
     {
         return OwnerPopupRouteTestHarness.RouteHitCount(typeof(ProselytizationSifrahTranslationPatch), detail);
+    }
+
+    private static string RepositoryMessageFramePath()
+    {
+        return Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "MessageFrames",
+            "verbs.ja.json");
     }
 }

@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 
@@ -40,12 +42,84 @@ public static class StatusScreensScreenTranslationPatch
             }
 
             TranslateMenuOption(UiBindingTranslationHelpers.GetMemberValue(__instance, "SET_FILTER"), "SET_FILTER");
+            EnsurePageTabMenuOptions(__instance);
             TranslateMenuOptionList(__instance, "defaultMenuOptionOrder");
+            UiBindingTranslationHelpers.SetMemberValue(__instance, "updateMenuBar", true);
         }
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: StatusScreensScreenTranslationPatch.Postfix failed: {0}", ex);
         }
+    }
+
+    private static void EnsurePageTabMenuOptions(object instance)
+    {
+        if (UiBindingTranslationHelpers.GetMemberValue(instance, "defaultMenuOptionOrder") is not IList options)
+        {
+            return;
+        }
+
+        EnsureMenuOption(options, "Page Left", "Previous tab");
+        EnsureMenuOption(options, "Page Right", "Next tab");
+    }
+
+    private static void EnsureMenuOption(IList options, string inputCommand, string description)
+    {
+        if (options.Cast<object>().Any(option => string.Equals(
+            UiBindingTranslationHelpers.GetStringMemberValue(option, "InputCommand"),
+            inputCommand,
+            StringComparison.Ordinal)))
+        {
+            return;
+        }
+
+        var optionType = options.Count > 0 ? options[0]?.GetType() : GetGenericListElementType(options.GetType());
+        if (optionType is null)
+        {
+            return;
+        }
+
+        var option = CreateMenuOption(optionType, description, inputCommand);
+        if (option is not null)
+        {
+            options.Add(option);
+        }
+    }
+
+    private static Type? GetGenericListElementType(Type listType)
+    {
+        if (listType.IsGenericType && listType.GetGenericArguments().Length == 1)
+        {
+            return listType.GetGenericArguments()[0];
+        }
+
+        return listType.GetInterfaces()
+            .Where(type => type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IList<>))
+            .Select(type => type.GetGenericArguments()[0])
+            .FirstOrDefault();
+    }
+
+    private static object? CreateMenuOption(Type optionType, string description, string inputCommand)
+    {
+        object? option;
+        var constructor = AccessTools.Constructor(optionType, new[] { typeof(string), typeof(string), typeof(string) });
+        if (constructor is not null)
+        {
+            option = constructor.Invoke(new object?[] { description, inputCommand, null });
+        }
+        else
+        {
+            option = Activator.CreateInstance(optionType);
+        }
+
+        if (option is null)
+        {
+            return null;
+        }
+
+        UiBindingTranslationHelpers.SetMemberValue(option, "Description", description);
+        UiBindingTranslationHelpers.SetMemberValue(option, "InputCommand", inputCommand);
+        return option;
     }
 
     private static void TranslateMenuOptionList(object instance, string memberName)

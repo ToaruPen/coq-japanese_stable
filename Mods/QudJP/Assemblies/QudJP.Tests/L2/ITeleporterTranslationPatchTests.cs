@@ -2,6 +2,7 @@ using System.Reflection;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
+using QudJP.Tests.L1;
 
 namespace QudJP.Tests.L2;
 
@@ -29,6 +30,7 @@ public sealed class ITeleporterTranslationPatchTests
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
+        MessageFrameTranslator.SetDictionaryPathForTests(RepositoryMessageFramePath());
         DummyMessageQueue.Reset();
         DummyPopupShow.Reset();
     }
@@ -109,6 +111,34 @@ public sealed class ITeleporterTranslationPatchTests
                 Assert.That(QueueHitCount("ActivateRecoiler"), Is.EqualTo(1));
             });
         });
+    }
+
+    [Test]
+    public void AttemptTeleport_TranslatesMarkedDoesVerbPopup_WhenOwnerPatched()
+    {
+        const string subject = "The リコイラー";
+        var source = DoesVerbRouteTranslator.MarkDoesFragment(
+            subject + " is",
+            "are",
+            subject.Length,
+            null) + " encoded with an imprint of the Thin World that has no meaning in the Thick World.";
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(ITeleporterTranslationPatch),
+            RequireOwnerMethod(),
+            () =>
+            {
+                new DummyITeleporterProducer
+                {
+                    PopupMessageToShow = source,
+                }.AttemptTeleport(new DummyGameObject(), new DummyEvent());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("リコイラーは薄界の刻印で符号化されているが、厚界では意味を成さない"));
+                    Assert.That(PopupHitCount("DoesVerb"), Is.EqualTo(1));
+                });
+            });
     }
 
     [Test]
@@ -304,6 +334,17 @@ public sealed class ITeleporterTranslationPatchTests
     private static string CreateHarmonyId()
     {
         return "qudjp.iteleporter-l2." + Guid.NewGuid().ToString("N");
+    }
+
+    private static string RepositoryMessageFramePath()
+    {
+        return Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "MessageFrames",
+            "verbs.ja.json");
     }
 
     private sealed class DummyITeleporterProducer

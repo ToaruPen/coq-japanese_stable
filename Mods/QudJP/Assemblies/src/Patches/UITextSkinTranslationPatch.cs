@@ -5,6 +5,10 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using HarmonyLib;
 using QudJP;
+#if HAS_TMP
+using TMPro;
+using UnityEngine;
+#endif
 
 namespace QudJP.Patches;
 
@@ -37,6 +41,8 @@ public static class UITextSkinTranslationPatch
         new Regex("^Your [A-Za-z]+ score determines", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex CharGenBulletBlockPattern =
         new Regex("(^|\\n)ù ", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex ActiveEffectsVisibleTitlePattern =
+        new Regex("^発動中の効果 - (?<name>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 #pragma warning disable S1144, CA1823
     private static readonly string[] CharGenStackHints =
     {
@@ -72,6 +78,142 @@ public static class UITextSkinTranslationPatch
         {
             Trace.TraceError("QudJP: UITextSkinTranslationPatch.Prefix failed: {0}", ex);
         }
+    }
+
+    public static void Postfix(object? __instance, string text)
+    {
+#if HAS_TMP
+        try
+        {
+            RepairActiveEffectsTitleText(__instance, text);
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: UITextSkinTranslationPatch.Postfix failed: {0}", ex);
+        }
+#else
+        _ = __instance;
+        _ = text;
+#endif
+    }
+
+    internal static bool ShouldRepairActiveEffectsTitleForTests(string? text)
+    {
+        return ShouldRepairActiveEffectsTitle(text);
+    }
+
+    internal static string BuildActiveEffectsTitleRtfForTests(string text)
+    {
+        return BuildActiveEffectsTitleRtf(text);
+    }
+
+#if HAS_TMP
+    private static void RepairActiveEffectsTitleText(object? instance, string? text)
+    {
+        var component = instance as Component;
+        if (!ShouldRepairActiveEffectsTitle(text) || component == null || string.IsNullOrEmpty(text))
+        {
+            return;
+        }
+
+        var tmp = component.GetComponent<TextMeshProUGUI>();
+        if (tmp == null)
+        {
+            return;
+        }
+
+        var richText = BuildActiveEffectsTitleRtf(text!);
+        if (string.IsNullOrEmpty(richText))
+        {
+            return;
+        }
+
+        tmp.text = richText;
+        SetStringFieldIfPresent(component, "formattedText", richText);
+        SetStringFieldIfPresent(component, "lasttext", text!);
+        tmp.richText = true;
+        FontManager.ForcePrimaryFont(tmp);
+        tmp.overflowMode = TextOverflowModes.Overflow;
+        tmp.textWrappingMode = TextWrappingModes.NoWrap;
+        if (tmp.maxVisibleCharacters <= 0)
+        {
+            tmp.maxVisibleCharacters = int.MaxValue;
+        }
+
+        if (tmp.maxVisibleLines <= 0)
+        {
+            tmp.maxVisibleLines = int.MaxValue;
+        }
+
+        if (tmp.pageToDisplay <= 0)
+        {
+            tmp.pageToDisplay = 1;
+        }
+
+        tmp.havePropertiesChanged = true;
+        tmp.SetAllDirty();
+        tmp.ForceMeshUpdate(ignoreActiveState: true, forceTextReparsing: true);
+#if QUDJP_DEV_BUILD
+        RuntimeDiagnostics.LogVerboseProbe(() =>
+            "[QudJP] ActiveEffectsTitleTextRepair/v1: text='"
+            + ColorAwareTranslationComposer.GetVisibleText(text!)
+            + "' tmpText='"
+            + tmp.text
+            + "' chars="
+            + tmp.textInfo.characterCount.ToString(System.Globalization.CultureInfo.InvariantCulture)
+            + " pageCount="
+            + tmp.textInfo.pageCount.ToString(System.Globalization.CultureInfo.InvariantCulture)
+            + " font='"
+            + (tmp.font == null ? string.Empty : tmp.font.name)
+            + "'");
+#endif
+    }
+
+    private static void SetStringFieldIfPresent(object instance, string fieldName, string value)
+    {
+#pragma warning disable S3011
+        var field = instance.GetType().GetField(
+            fieldName,
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+#pragma warning restore S3011
+        if (field?.FieldType == typeof(string))
+        {
+            field.SetValue(instance, value);
+        }
+    }
+#endif
+
+    private static bool ShouldRepairActiveEffectsTitle(string? text)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return false;
+        }
+
+        var visible = ColorAwareTranslationComposer.GetVisibleText(text);
+        return visible.StartsWith("発動中の効果 - ", StringComparison.Ordinal);
+    }
+
+    private static string BuildActiveEffectsTitleRtf(string text)
+    {
+        var visible = ColorAwareTranslationComposer.GetVisibleText(text);
+        var match = ActiveEffectsVisibleTitlePattern.Match(visible);
+        if (!match.Success)
+        {
+            return string.Empty;
+        }
+
+        return "<color=#CFC041FF>発動中の効果</color><color=#40A4B9FF> - "
+            + EscapeTmpRichText(match.Groups["name"].Value)
+            + "</color>";
+    }
+
+    private static string EscapeTmpRichText(string value)
+    {
+        return value
+            .Replace("&", "&amp;")
+            .Replace("<", "&lt;")
+            .Replace(">", "&gt;");
     }
 
     internal static string TranslatePreservingColors(string? source, string? context = null)

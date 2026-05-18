@@ -367,6 +367,26 @@
       "text": "発動中の効果はない。"
     },
     {
+      "key": "Previous Page",
+      "text": "前のページ"
+    },
+    {
+      "key": "Next Page",
+      "text": "次のページ"
+    },
+    {
+      "key": "Close book",
+      "text": "閉じる"
+    },
+    {
+      "key": "Previous tab",
+      "text": "前のタブ"
+    },
+    {
+      "key": "Next tab",
+      "text": "次のタブ"
+    },
+    {
       "key": "take all",
       "text": "すべて取る"
     },

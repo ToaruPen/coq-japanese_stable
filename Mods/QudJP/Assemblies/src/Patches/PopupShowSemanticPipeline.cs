@@ -64,6 +64,7 @@ internal static class PopupShowSemanticPipeline
         SifrahTokenItemPopupTranslationPatch.TryTranslatePopupMessage,
         SifrahPureOwnerPopupTranslationPatch.TryTranslatePopupMessage,
         ItemModdingSifrahTranslationPatch.TryTranslatePopupMessage,
+        ProselytizationSifrahTranslationPatch.TryTranslatePopupMessage,
         CudgelConkPopupTranslationPatch.TryTranslatePopupMessage,
         PhysicAmputateLimbTranslationPatch.TryTranslatePopupMessage,
         SunderMindTranslationPatch.TryTranslatePopupMessage,
