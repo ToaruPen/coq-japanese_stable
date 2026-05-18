@@ -57,9 +57,16 @@ internal sealed class DummyAbilityBarButtonTextTarget
 {
     public List<object> AbilityButtons = new List<object>();
 
+    public DummyTextMeshProText AbilityScreenHotkey = new DummyTextMeshProText();
+
     public void Update()
     {
     }
+}
+
+internal sealed class DummyTextMeshProText
+{
+    public string text = string.Empty;
 }
 
 internal sealed class DummyAbilityBarButton

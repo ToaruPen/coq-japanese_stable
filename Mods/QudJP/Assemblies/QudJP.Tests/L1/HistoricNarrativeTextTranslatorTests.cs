@@ -55,6 +55,25 @@ public sealed class HistoricNarrativeTextTranslatorTests
         File.WriteAllText(patternFilePath, sb.ToString(), Utf8WithoutBom);
     }
 
+    private void WriteScopedHistorySpiceDictionary(params (string Key, string Text)[] entries)
+    {
+        var scopedDirectory = Path.Combine(dictionaryDirectory, "Scoped");
+        Directory.CreateDirectory(scopedDirectory);
+
+        var sb = new StringBuilder();
+        sb.Append("{\"entries\":[");
+        for (var i = 0; i < entries.Length; i++)
+        {
+            if (i > 0) sb.Append(',');
+            var (key, text) = entries[i];
+            sb.Append("{\"key\":\"").Append(EscapeJson(key))
+                .Append("\",\"text\":\"").Append(EscapeJson(text)).Append("\"}");
+        }
+        sb.Append("]}");
+        File.WriteAllText(Path.Combine(scopedDirectory, "historyspice-common.ja.json"), sb.ToString(), Utf8WithoutBom);
+    }
+
+
     private static string EscapeJson(string value)
     {
         return value
@@ -93,6 +112,25 @@ public sealed class HistoricNarrativeTextTranslatorTests
 
         // Loose contains-style assertion to tolerate JournalPatternTranslator template-engine variations.
         Assert.That(translated, Does.Contain("即位"));
+    }
+
+    [Test]
+    public void Translate_AnnalsAfterYearsPattern_DoesNotDuplicateYearsPhrase()
+    {
+        WriteScopedHistorySpiceDictionary(("three", "三"), ("long", "長い"));
+        WritePatternDictionary((
+            "^For the sake of (.+?), (.+?) (.+?) at (.+?) in (.+?) to (.+?) among the (.+?) and (.+?)\\. After (.+?) (.+?) years, (.+?) (.+?) at (.+?)\\.$",
+            "{t0}のため、{t1}は{t4}の{t3}にて{t2}、{t6}と{t7}の間に{t5}せんとした。{t8}年もの{t9}歳月を経て、{t10}は{t12}にて{t11}。"));
+
+        var translated = HistoricNarrativeTextTranslator.Translate(
+            "For the sake of peace, Nara preached at a shrine in Qud to trade among the farmers and fishers. After three long years, Nara rested at Joppa.");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("三年もの長い歳月を経て"));
+            Assert.That(translated, Does.Not.Contain("年月ののち"));
+            Assert.That(translated, Does.Not.Contain("ののち"));
+        });
     }
 
     [Test]

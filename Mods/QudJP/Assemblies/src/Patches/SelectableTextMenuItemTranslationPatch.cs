@@ -68,7 +68,7 @@ public static class SelectableTextMenuItemTranslationPatch
 
     internal static string TranslateMenuItemTextForDisplay(string source, string? popupId)
     {
-        return StripDirectTranslationMarkers(
+        return MessageFrameTranslator.StripAllDirectTranslationMarkers(
             PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute(source, Context, popupId));
     }
 
@@ -126,10 +126,4 @@ public static class SelectableTextMenuItemTranslationPatch
         return AccessTools.Field(popupMessageType, "lastPopupID")?.GetValue(null) as string;
     }
 
-    private static string StripDirectTranslationMarkers(string source)
-    {
-        return source.IndexOf(MessageFrameTranslator.DirectTranslationMarker) < 0
-            ? source
-            : source.Replace(MessageFrameTranslator.DirectTranslationMarker.ToString(), string.Empty);
-    }
 }

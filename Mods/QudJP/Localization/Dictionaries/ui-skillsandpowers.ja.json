@@ -831,9 +831,24 @@
       "text": "支配"
     },
     {
+      "key": "Rebuke Robot",
+      "context": "AbilityManager.Name",
+      "text": "ロボットを叱責"
+    },
+    {
       "key": "Maneuvers",
       "context": "AbilityManager.Class",
       "text": "戦技"
+    },
+    {
+      "key": "Physical Mutations",
+      "context": "AbilityManager.Class",
+      "text": "身体変異"
+    },
+    {
+      "key": "Mental Mutations",
+      "context": "AbilityManager.Class",
+      "text": "精神変異"
     },
     {
       "key": "Make Camp",
@@ -1064,6 +1079,21 @@
       "key": "Start a campfire for cooking meals and preserving foods.",
       "context": "TMP.Description",
       "text": "料理や保存のためのキャンプファイアを起こす。"
+    },
+    {
+      "key": "You can't make camp in combat.",
+      "context": "AbilityManager.Description",
+      "text": "戦闘中は野営できない。"
+    },
+    {
+      "key": "You admonish a robot into following your commands.",
+      "context": "AbilityManager.Description",
+      "text": "ロボットを叱責し、命令に従わせる。"
+    },
+    {
+      "key": "Level + Ego-based difficulty check.",
+      "context": "AbilityManager.Description",
+      "text": "レベル + 自我を基にした難易度判定。"
     },
     {
       "key": "Starting Cost [{val} sp]",

@@ -108,6 +108,23 @@ public sealed class PlayerStatusBarProducerTranslationHelpersTests
 
     [TestCase("Zone")]
     [TestCase("ZoneOnly")]
+    public void TranslateStringDataValue_ZoneRoutes_StripEmbeddedDirectMarkerInput(string fieldName)
+    {
+        var translated = InvokeHelperStringMethod(
+            "TranslateStringDataValue",
+            fieldName,
+            "surface, \u0001ジョッパ",
+            "PlayerStatusBarProducerTranslationPatch.Zone");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("surface, ジョッパ"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("\u0001ジョッパ"), Is.EqualTo(0));
+        });
+    }
+
+    [TestCase("Zone")]
+    [TestCase("ZoneOnly")]
     public void TranslateStringDataValue_ZoneRoutes_PreserveColorTagsInCompositeNames(string fieldName)
     {
         WriteDictionary(

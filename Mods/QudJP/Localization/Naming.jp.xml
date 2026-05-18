@@ -1330,18 +1330,31 @@
       </templates>
       <templatevars Load="Replace">
         <templatevar Name="Honorific">
-          <value Name="spice.adjectives.!random" />
-          <value Name="spice.nouns.!random" />
+          <value Name="聖者" />
+          <value Name="予言者" />
+          <value Name="巡礼者" />
+          <value Name="守護者" />
+          <value Name="賢者" />
+          <value Name="殉教者" />
+          <value Name="沈黙者" />
+          <value Name="星見" />
         </templatevar>
       </templatevars>
     </namestyle>
     <namestyle Name="Godhed Hero Epithet" Load="Merge">
       <templates Load="Replace">
-        <template Name="*Adjective*・ゴッドヘッド" />
+        <template Name="*Adjective*ゴッドヘッド" />
       </templates>
       <templatevars Load="Replace">
         <templatevar Name="Adjective">
-          <value Name="spice.adjectives.!random" />
+          <value Name="錆びた" />
+          <value Name="聖なる" />
+          <value Name="白熱した" />
+          <value Name="塩まみれの" />
+          <value Name="ガラスの" />
+          <value Name="水銀の" />
+          <value Name="真鍮の" />
+          <value Name="夢見る" />
         </templatevar>
       </templatevars>
     </namestyle>
@@ -1349,21 +1362,57 @@
       <templates Load="Replace">
         <template Name="*Noun1*のゴッドヘッド" />
         <template Name="*Noun1*・*Noun2*のゴッドヘッド" Weight="2" />
-        <template Name="*Adj*・*Noun1*のゴッドヘッド" Weight="2" />
+        <template Name="*Adj**Noun1*のゴッドヘッド" Weight="2" />
         <template Name="*NounPlural*のゴッドヘッド" />
       </templates>
       <templatevars Load="Replace">
         <templatevar Name="Noun1">
-          <value Name="spice.nouns.!random" />
+          <value Name="塩" />
+          <value Name="錆" />
+          <value Name="ガラス" />
+          <value Name="水銀" />
+          <value Name="真鍮" />
+          <value Name="水晶" />
+          <value Name="回路" />
+          <value Name="炉" />
+          <value Name="神託" />
+          <value Name="幻視" />
+          <value Name="渦" />
+          <value Name="墓標" />
         </templatevar>
         <templatevar Name="Noun2">
-          <value Name="spice.nouns.!random" />
+          <value Name="塩" />
+          <value Name="錆" />
+          <value Name="ガラス" />
+          <value Name="水銀" />
+          <value Name="真鍮" />
+          <value Name="水晶" />
+          <value Name="回路" />
+          <value Name="炉" />
+          <value Name="神託" />
+          <value Name="幻視" />
+          <value Name="渦" />
+          <value Name="墓標" />
         </templatevar>
         <templatevar Name="NounPlural">
-          <value Name="spice.nouns.!random.pluralize" />
+          <value Name="塩柱" />
+          <value Name="錆片" />
+          <value Name="ガラス片" />
+          <value Name="水銀滴" />
+          <value Name="真鍮輪" />
+          <value Name="水晶群" />
+          <value Name="回路群" />
+          <value Name="炉心群" />
         </templatevar>
         <templatevar Name="Adj">
-          <value Name="spice.adjectives.!random" />
+          <value Name="錆びた" />
+          <value Name="聖なる" />
+          <value Name="白熱した" />
+          <value Name="塩まみれの" />
+          <value Name="ガラスの" />
+          <value Name="水銀の" />
+          <value Name="真鍮の" />
+          <value Name="夢見る" />
         </templatevar>
       </templatevars>
     </namestyle>

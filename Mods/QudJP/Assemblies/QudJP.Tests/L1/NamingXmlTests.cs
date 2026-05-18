@@ -77,6 +77,40 @@ public sealed class NamingXmlTests
         Assert.That(rendered, Is.EqualTo("プトーの従者"));
     }
 
+    [Test]
+    public void NamingXml_DoesNotLeaveHistorySpiceTemplateVars()
+    {
+        var values = document.Descendants("value")
+            .Select(element => element.Attribute("Name")?.Value)
+            .Where(value => value is not null)
+            .Cast<string>();
+
+        Assert.That(values, Has.None.Contains("spice."));
+    }
+
+    [Test]
+    public void GodhedHeroEpithet_UsesAdjectiveWithoutMiddleDot()
+    {
+        var template = GetTemplate("Godhed Hero Epithet");
+
+        var rendered = template.Replace("*Adjective*", "錆びた", StringComparison.Ordinal);
+
+        Assert.That(rendered, Is.EqualTo("錆びたゴッドヘッド"));
+    }
+
+    [Test]
+    public void GodhedHeroTitle_UsesAdjectiveNounPhraseWithoutMiddleDot()
+    {
+        var template = GetTemplates("Godhed Hero Title")
+            .Single(value => value.Contains("*Adj*", StringComparison.Ordinal));
+
+        var rendered = template
+            .Replace("*Adj*", "聖なる", StringComparison.Ordinal)
+            .Replace("*Noun1*", "塩", StringComparison.Ordinal);
+
+        Assert.That(rendered, Is.EqualTo("聖なる塩のゴッドヘッド"));
+    }
+
     private XElement GetNameStyle(string name)
     {
         return document.Root?
@@ -88,12 +122,20 @@ public sealed class NamingXmlTests
 
     private string GetTemplate(string styleName)
     {
+        return GetTemplates(styleName).FirstOrDefault(value => !string.IsNullOrEmpty(value))
+               ?? throw new InvalidOperationException($"template missing for namestyle '{styleName}'");
+    }
+
+    private IReadOnlyList<string> GetTemplates(string styleName)
+    {
         var style = GetNameStyle(styleName);
         return style.Element("templates")?
                    .Elements("template")
                    .Select(element => element.Attribute("Name")?.Value)
-                   .FirstOrDefault(value => !string.IsNullOrEmpty(value))
-               ?? throw new InvalidOperationException($"template missing for namestyle '{styleName}'");
+                   .Where(value => value is not null)
+                   .Cast<string>()
+                   .ToArray()
+               ?? throw new InvalidOperationException($"templates missing for namestyle '{styleName}'");
     }
 
     private string GetTemplateVarValue(string styleName, string varName)

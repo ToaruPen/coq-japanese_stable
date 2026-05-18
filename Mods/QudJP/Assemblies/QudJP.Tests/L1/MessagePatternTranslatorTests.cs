@@ -1094,7 +1094,7 @@ public sealed class MessagePatternTranslatorTests
     [Test]
     public void Translate_TranslatesHistoricSpiceFakedDeathCognomenCapture()
     {
-        WriteExactDictionary(("desiccated", "乾ききった"), ("spectre", "亡霊"));
+        WriteScopedHistorySpiceDictionary(("desiccated", "乾ききった"), ("spectre", "亡霊"));
         WritePatternDictionary(("^You remember (.+?)[.!]?$", "{t0}を思い出した。"));
 
         var translated = MessagePatternTranslator.Translate("You remember the Desiccated Spectre.");
@@ -1105,7 +1105,7 @@ public sealed class MessagePatternTranslatorTests
     [Test]
     public void Translate_HistoricSpiceFakedDeathCognomenCapture_FallsBackToEnglishCaptureWhenPiecesAreMissing()
     {
-        WriteExactDictionary(("desiccated", "乾ききった"));
+        WriteScopedHistorySpiceDictionary(("desiccated", "乾ききった"));
         WritePatternDictionary(("^You remember (.+?)[.!]?$", "{t0}を思い出した。"));
 
         var translated = MessagePatternTranslator.Translate("You remember the Desiccated Spectre.");
@@ -1116,7 +1116,7 @@ public sealed class MessagePatternTranslatorTests
     [Test]
     public void Translate_HistoricSpiceFakedDeathCognomenCapture_PreservesColorMarkup()
     {
-        WriteExactDictionary(("desiccated", "乾ききった"), ("spectre", "亡霊"));
+        WriteScopedHistorySpiceDictionary(("desiccated", "乾ききった"), ("spectre", "亡霊"));
         WritePatternDictionary(("^You remember (.+?)[.!]?$", "{t0}を思い出した。"));
 
         var translated = MessagePatternTranslator.Translate("{{W|You remember the Desiccated Spectre.}}");
@@ -1127,7 +1127,7 @@ public sealed class MessagePatternTranslatorTests
     [Test]
     public void Translate_HistoricSpiceFakedDeathCognomenCapture_DoesNotReapplyWhenMarkedDirect()
     {
-        WriteExactDictionary(("desiccated", "乾ききった"), ("spectre", "亡霊"));
+        WriteScopedHistorySpiceDictionary(("desiccated", "乾ききった"), ("spectre", "亡霊"));
         WritePatternDictionary(("^You remember (.+?)[.!]?$", "{t0}を思い出した。"));
         var source = MessageFrameTranslator.MarkDirectTranslation("You remember the Desiccated Spectre.");
 
@@ -1139,7 +1139,7 @@ public sealed class MessagePatternTranslatorTests
     [Test]
     public void Translate_HistoricSpiceFakedDeathCognomenCapture_ReturnsEmptyInput()
     {
-        WriteExactDictionary(("desiccated", "乾ききった"), ("spectre", "亡霊"));
+        WriteScopedHistorySpiceDictionary(("desiccated", "乾ききった"), ("spectre", "亡霊"));
         WritePatternDictionary(("^You remember (.+?)[.!]?$", "{t0}を思い出した。"));
 
         Assert.That(MessagePatternTranslator.Translate(string.Empty), Is.EqualTo(string.Empty));

@@ -115,6 +115,18 @@ internal static class MessageFrameTranslator
         return true;
     }
 
+    internal static string StripAllDirectTranslationMarkers(string? source)
+    {
+        if (string.IsNullOrEmpty(source))
+        {
+            return source ?? string.Empty;
+        }
+
+        return source!.IndexOf(DirectTranslationMarker) < 0
+            ? source
+            : source.Replace(DirectTranslationMarker.ToString(), string.Empty);
+    }
+
     internal static bool TryTranslateXDidY(
         string? subject,
         string verb,

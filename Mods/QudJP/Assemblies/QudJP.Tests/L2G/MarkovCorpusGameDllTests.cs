@@ -1,6 +1,7 @@
 #if HAS_GAME_DLL
 using System.Collections;
 using System.Reflection;
+using HarmonyLib;
 using QudJP.Patches;
 
 namespace QudJP.Tests.L2G;
@@ -61,6 +62,29 @@ public sealed class MarkovCorpusGameDllTests
             Assert.That(sentences.All(s => s.EndsWith(".", StringComparison.Ordinal)), Is.True, "All generated sentences should end with '.'.");
             Assert.That(sentences.Any(s => s.Contains('。')), Is.False, "No generated sentence should contain '。'.");
             Assert.That(sentences.Any(s => s.Contains("  ", StringComparison.Ordinal)), Is.False, "No generated sentence should contain double spaces.");
+        });
+    }
+
+    [Test]
+    public void VanillaCorpusReplacement_ProducesJapaneseShortSentencesForNullSeedMemorialRoutes()
+    {
+        var corpusCache = MarkovCorpusTranslationPatch.GetCorpusCacheForTests();
+        corpusCache.Remove(MarkovCorpusTranslationPatch.VanillaCorpusName);
+
+        Assert.That(MarkovCorpusTranslationPatch.EnsureJapaneseCorpusLoaded(MarkovCorpusTranslationPatch.VanillaCorpusName), Is.True);
+        Assert.That(corpusCache.Contains(MarkovCorpusTranslationPatch.VanillaCorpusName), Is.True);
+
+        var chainData = corpusCache[MarkovCorpusTranslationPatch.VanillaCorpusName]
+            ?? throw new InvalidOperationException("Japanese vanilla corpus cache entry was not created.");
+        const int sampleSize = 50;
+        var sentences = Enumerable.Range(0, sampleSize)
+            .Select(_ => GenerateShortSentence(chainData, seed: null, maxWords: 12).TrimEnd())
+            .ToArray();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(sentences.All(s => !string.IsNullOrEmpty(s)), Is.True, "All short sentences should be non-empty.");
+            Assert.That(sentences.All(MarkovCorpusTranslationPatch.ContainsJapaneseCharacters), Is.True, "EaterUrn and crypt *shortMarkov* null-seed routes should draw from the Japanese vanilla corpus.");
         });
     }
 
@@ -139,6 +163,17 @@ public sealed class MarkovCorpusGameDllTests
             ?? throw new InvalidOperationException("FindJapaneseSeed method not found.");
 
         return method.Invoke(null, new[] { chainData }) as string;
+    }
+
+    private static string GenerateShortSentence(object chainData, string? seed, int maxWords)
+    {
+        var markovChainType = GameTypeResolver.FindType("XRL.MarkovChain", "MarkovChain")
+            ?? throw new InvalidOperationException("XRL.MarkovChain type not found.");
+        var method = AccessTools.Method(markovChainType, "GenerateShortSentence", [chainData.GetType(), typeof(string), typeof(int)])
+            ?? throw new MissingMethodException(markovChainType.FullName, "GenerateShortSentence");
+
+        return method.Invoke(null, [chainData, seed, maxWords]) as string
+            ?? throw new InvalidOperationException("MarkovChain.GenerateShortSentence returned null.");
     }
 
     private static void SetOpeningWords(object chainData, params string[] values)

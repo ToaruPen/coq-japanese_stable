@@ -4,6 +4,10 @@ internal sealed class DummyAbilityEntryTarget
 {
     public string DisplayName { get; set; } = string.Empty;
 
+    public string? DisplayForHotkey { get; set; }
+
+    public string? Command { get; set; }
+
     public bool Enabled { get; set; } = true;
 
     public bool IsAttack { get; set; }

@@ -199,7 +199,7 @@ public sealed class GetDisplayNameProcessPatchTests
     [Test]
     public void Postfix_TranslatesHistoricSpiceFakedDeathCognomen_WhenPatched()
     {
-        WriteDictionary(("desiccated", "乾ききった"), ("spectre", "亡霊"));
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("desiccated", "乾ききった"), ("spectre", "亡霊"));
 
         RunWithDisplayNameProcessPatch(() =>
         {

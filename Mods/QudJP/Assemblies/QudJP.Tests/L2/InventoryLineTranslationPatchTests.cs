@@ -158,6 +158,48 @@ public sealed partial class Issue201StatusScreensBatch2Tests
     }
 
     [Test]
+    public void InventoryLinePostfix_TranslatesMerchantAdvertisementTitleAndStripsEmbeddedMarker()
+    {
+        WriteDictionary(("items", "個"));
+
+        var source = "advertisement for "
+            + MessageFrameTranslator.DirectTranslationMarker
+            + "{{M|クユラミルの蒸留所, 伝説の樹液商}}";
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyInventoryLineTarget), nameof(DummyInventoryLineTarget.setData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(InventoryLineTranslationPatch), nameof(InventoryLineTranslationPatch.Postfix))));
+
+            var itemTarget = new DummyInventoryLineTarget();
+            itemTarget.setData(new DummyInventoryLineDataTarget
+            {
+                category = false,
+                displayName = source,
+                go = new DummyStatusGameObject { DisplayName = source, Weight = 7 },
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(itemTarget.OriginalExecuted, Is.True);
+                Assert.That(itemTarget.text.Text, Is.EqualTo("{{M|クユラミルの蒸留所, 伝説の樹液商}}の広告"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(InventoryLineTranslationPatch),
+                        "InventoryLine.MerchantAdvertisementTitle"),
+                    Is.GreaterThan(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void InventoryLinePostfix_TranslatesCompactWeaponTrailingStates_WhenPatched()
     {
         WriteDictionary(

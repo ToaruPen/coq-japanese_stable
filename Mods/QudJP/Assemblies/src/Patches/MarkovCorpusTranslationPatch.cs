@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -281,6 +282,7 @@ public static class MarkovCorpusTranslationPatch
 
         var (order, corpusText) = LoadJapaneseCorpusSource();
         var chainData = BuildChainData(corpusText, order);
+        PreferJapaneseOpeningWords(chainData);
         corpusCache[corpus] = chainData;
 
         try
@@ -312,6 +314,35 @@ public static class MarkovCorpusTranslationPatch
         }
 
         return corpusCache;
+    }
+
+    private static void PreferJapaneseOpeningWords(object chainData)
+    {
+        var openingWordsField = AccessTools.Field(chainData.GetType(), "OpeningWords");
+        if (openingWordsField?.GetValue(chainData) is not IList openingWords)
+        {
+            return;
+        }
+
+        var japaneseOpeningWords = new List<string>(openingWords.Count);
+        foreach (var openingWord in openingWords)
+        {
+            if (openingWord is string candidate && ContainsJapaneseCharacters(candidate))
+            {
+                japaneseOpeningWords.Add(candidate);
+            }
+        }
+
+        if (japaneseOpeningWords.Count == 0 || japaneseOpeningWords.Count == openingWords.Count)
+        {
+            return;
+        }
+
+        openingWords.Clear();
+        for (var index = 0; index < japaneseOpeningWords.Count; index++)
+        {
+            openingWords.Add(japaneseOpeningWords[index]);
+        }
     }
 
     private static string NormalizeSentence(string? source)

@@ -113,6 +113,10 @@ internal static class GetDisplayNameRouteTranslator
         new Regex(
             "^(?<material>[A-Za-z][A-Za-z\\s-]*?) statue of (?<subject>.+)$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex GeneratedEnglishPrefixDisplayNamePattern =
+        new Regex(
+            "^(?<prefix>advertisement for|ruined mural of|mural of|shrine to|clone of|hologram of|phylactery of|villagers of|Cult of) (?<target>.+)$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
     private static readonly Regex JapaneseCharacterPattern =
         new Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex EnglishWordPattern =
@@ -176,6 +180,11 @@ internal static class GetDisplayNameRouteTranslator
         if (TryTranslateParenthesizedColoredChargeStatus(source!, route, out var chargeStatusTranslation))
         {
             source = chargeStatusTranslation;
+        }
+
+        if (TryTranslateGeneratedEnglishPrefixDisplayName(source!, route, out var prefixTranslation))
+        {
+            return prefixTranslation;
         }
 
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
@@ -418,6 +427,12 @@ internal static class GetDisplayNameRouteTranslator
         if (TryTranslateGeneratedRandomStatueName(transformed, route, out var randomStatueTranslated))
         {
             translated = randomStatueTranslated;
+            return true;
+        }
+
+        if (TryTranslateGeneratedEnglishPrefixDisplayName(transformed, route, out var prefixTranslated))
+        {
+            translated = prefixTranslated;
             return true;
         }
 
@@ -1683,6 +1698,109 @@ internal static class GetDisplayNameRouteTranslator
         translated = modifierPrefix + translatedSubject + "の" + translatedMaterial + "の" + translatedStatue;
         DynamicTextObservability.RecordTransform(route, "DisplayName.GeneratedRandomStatue", source, translated);
         return true;
+    }
+
+    private static bool TryTranslateGeneratedEnglishPrefixDisplayName(string source, string route, out string translated)
+    {
+        var match = GeneratedEnglishPrefixDisplayNamePattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var target = MessageFrameTranslator.StripAllDirectTranslationMarkers(match.Groups["target"].Value);
+        target = StringHelpers.StripLeadingEnglishArticle(
+            target,
+            includeCapitalizedDefiniteArticle: true,
+            includeCapitalizedIndefiniteArticle: true);
+
+        if (TryTranslateGeneratedEnglishPrefixTargetWithSuffix(target, route, out var translatedTargetWithSuffix))
+        {
+            translated = BuildGeneratedEnglishPrefixDisplayName(
+                match.Groups["prefix"].Value,
+                translatedTargetWithSuffix.TranslatedTarget) + translatedTargetWithSuffix.TranslatedSuffix;
+            if (string.Equals(translated, source, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            DynamicTextObservability.RecordTransform(route, "DisplayName.GeneratedEnglishPrefix", source, translated);
+            return true;
+        }
+
+        var translatedTarget = TranslateDisplayNameFragmentPreservingColors(target, route);
+
+        translated = BuildGeneratedEnglishPrefixDisplayName(match.Groups["prefix"].Value, translatedTarget);
+        if (string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(route, "DisplayName.GeneratedEnglishPrefix", source, translated);
+        return true;
+    }
+
+    private static (string TranslatedTarget, string TranslatedSuffix) TranslateGeneratedEnglishPrefixTargetSuffix(
+        Group baseGroup,
+        Group stateGroup,
+        string opening,
+        string closing,
+        string route)
+    {
+        return (
+            TranslateDisplayNameFragmentPreservingColors(baseGroup.Value, route),
+            " " + opening + TranslateDisplayNameState(stateGroup.Value, route) + closing);
+    }
+
+    private static bool TryTranslateGeneratedEnglishPrefixTargetWithSuffix(
+        string target,
+        string route,
+        out (string TranslatedTarget, string TranslatedSuffix) translated)
+    {
+        var bracketedMatch = BracketedDisplayNameSuffixPattern.Match(target);
+        if (bracketedMatch.Success)
+        {
+            translated = TranslateGeneratedEnglishPrefixTargetSuffix(
+                bracketedMatch.Groups["base"],
+                bracketedMatch.Groups["state"],
+                "[",
+                "]",
+                route);
+            return true;
+        }
+
+        var parenthesizedMatch = ParenthesizedDisplayNameSuffixPattern.Match(target);
+        if (parenthesizedMatch.Success)
+        {
+            translated = TranslateGeneratedEnglishPrefixTargetSuffix(
+                parenthesizedMatch.Groups["base"],
+                parenthesizedMatch.Groups["state"],
+                "(",
+                ")",
+                route);
+            return true;
+        }
+
+        translated = default;
+        return false;
+    }
+
+    private static string BuildGeneratedEnglishPrefixDisplayName(string prefix, string translatedTarget)
+    {
+        return prefix switch
+        {
+            "advertisement for" => translatedTarget + "の広告",
+            "clone of" => translatedTarget + "のクローン",
+            "hologram of" => translatedTarget + "のホログラム",
+            "phylactery of" => translatedTarget + "のファイラクテリー",
+            "mural of" => translatedTarget + "の壁画",
+            "ruined mural of" => translatedTarget + "の崩れた壁画",
+            "shrine to" => translatedTarget + "の祠",
+            "villagers of" => translatedTarget + "の村人",
+            "Cult of" => translatedTarget + "教団",
+            _ => string.Empty,
+        };
     }
 
     private static bool TryTranslateRandomStatueMaterialPhrase(
