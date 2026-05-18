@@ -486,10 +486,18 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
             return false;
         }
 
-        var label = TranslateGeneratedDetailLabel(match.Groups["label"].Value);
+        var rawLabel = match.Groups["label"].Value;
+        var translatedLabel = TranslateGeneratedDetailLabel(rawLabel);
+        var label = ColorAwareTranslationComposer.RestoreCapture(
+            translatedLabel,
+            spans,
+            match.Groups["label"]);
         var value = ColorAwareTranslationComposer.RestoreCapture(match.Groups["value"].Value, spans, match.Groups["value"]);
         var translatedValue = ColorAwareTranslationComposer.TranslatePreservingColors(value, TranslateGeneratedDetailValue);
-        translated = label + ": " + translatedValue;
+        translated = ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
+            label + ": " + translatedValue,
+            spans,
+            match.Groups[0]);
         if (recordTransform)
         {
             DynamicTextObservability.RecordTransform(route, "SkillsAndPowers.GeneratedDetailStatLine", source, translated);
