@@ -4,8 +4,11 @@ internal sealed class DummyUITextSkinField
 {
     public string? text;
 
+    public int SetTextCallCount { get; private set; }
+
     public void SetText(string value)
     {
+        SetTextCallCount++;
         text = value;
     }
 }

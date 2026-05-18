@@ -22,6 +22,8 @@ internal sealed class DummyStatusScreensScreenTarget
 {
     public static DummyMenuOption SET_FILTER = new DummyMenuOption("Filter", "CmdFilter", "Filter");
 
+    public DummyStatusScreensNavigationContext screenGlobalContext = new DummyStatusScreensNavigationContext();
+
     public List<DummyMenuOption> defaultMenuOptionOrder = new List<DummyMenuOption>
     {
         new DummyMenuOption("navigation", "NavigationXYAxis"),
@@ -36,4 +38,9 @@ internal sealed class DummyStatusScreensScreenTarget
     public void UpdateViewFromData()
     {
     }
+}
+
+internal sealed class DummyStatusScreensNavigationContext
+{
+    public List<DummyMenuOption> menuOptionDescriptions = new List<DummyMenuOption>();
 }

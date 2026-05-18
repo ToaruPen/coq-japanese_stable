@@ -86,4 +86,14 @@ public sealed class MessageFrameTranslatorPropertyTests
             Assert.That(message, Is.EqualTo(" ジョッパ"));
         });
     }
+
+    [Test]
+    public void StripAllDirectTranslationMarkers_RemovesEmbeddedMarkers()
+    {
+        var message = $"advertisement for {MessageFrameTranslator.DirectTranslationMarker}{{{{M|ジョッパ}}}}";
+
+        var stripped = MessageFrameTranslator.StripAllDirectTranslationMarkers(message);
+
+        Assert.That(stripped, Is.EqualTo("advertisement for {{M|ジョッパ}}"));
+    }
 }

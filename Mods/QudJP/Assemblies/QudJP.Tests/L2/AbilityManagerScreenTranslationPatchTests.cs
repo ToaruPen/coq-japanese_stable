@@ -156,6 +156,48 @@ public sealed class AbilityManagerScreenTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_PreservesInputKeyDescriptions_WhenDictionaryContainsCommonWords()
+    {
+        WriteDictionary(
+            ("Close Menu", "メニューを閉じる"),
+            ("navigate", "移動"),
+            ("Activate Selected Ability", "選択中の能力を起動"),
+            ("Toggle Sort", "並び替え切替"),
+            ("sort: ", "並び替え: "),
+            ("custom", "任意"),
+            ("by class", "クラス別"),
+            ("search", "検索"),
+            ("Space", "宇宙"));
+
+        DummyAbilityManagerScreenTarget.defaultMenuOptions[3].KeyDescription = "Space";
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyAbilityManagerScreenTarget), nameof(DummyAbilityManagerScreenTarget.UpdateMenuBars)),
+                postfix: new HarmonyMethod(RequirePatchPostfix()));
+
+            var screen = new DummyAbilityManagerScreenTarget();
+            screen.UpdateMenuBars();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(screen.hotkeyBar.choices[2].KeyDescription, Is.EqualTo("並び替え切替"));
+                Assert.That(screen.hotkeyBar.choices[3].KeyDescription, Is.EqualTo("Space"));
+                Assert.That(screen.hotkeyBar.renderedKeyDescriptions[2], Is.EqualTo("並び替え切替"));
+                Assert.That(screen.hotkeyBar.renderedKeyDescriptions[3], Is.EqualTo("Space"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Postfix_FallsBackToEnglishForFilterAndHotkey_WhenDictionaryEntriesAreMissing()
     {
         WriteDictionary();
@@ -326,6 +368,183 @@ public sealed class AbilityManagerScreenTranslationPatchTests
             {
                 Assert.That(screen.rightSideHeaderText.text, Is.EqualTo("スプリント"));
                 Assert.That(screen.rightSideDescriptionArea.text, Is.EqualTo("{{y|種別: }}変異\n\n素早く移動する。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_TranslatesAbilityDetailsStructuredFragments_WhenHighlightChanges()
+    {
+        WriteDictionary(
+            ("Camp", "キャンプ"),
+            ("Type: ", "種別: "),
+            ("Maneuvers", "戦技"),
+            ("Start a campfire for cooking meals and preserving foods.", "調理と食品保存のために焚き火を起こす。"),
+            ("You can't make camp in combat.", "戦闘中はキャンプできない。"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyAbilityManagerScreenTarget), nameof(DummyAbilityManagerScreenTarget.HandleHighlightLeft)),
+                postfix: new HarmonyMethod(RequirePatchPostfix()));
+
+            var screen = new DummyAbilityManagerScreenTarget();
+            screen.HandleHighlightLeft(new DummyAbilityManagerScreenLineData
+            {
+                Id = "ability",
+                ability = new DummyAbilityManagerEntryTarget
+                {
+                    DisplayName = "Camp",
+                    Class = "Maneuvers",
+                    Description =
+                        "Start a campfire for cooking meals and preserving foods. You can't make camp in combat.\nCooldown: {{G|85}} round\n\nCooldown reduced by 15 due to high Willpower.",
+                },
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(screen.rightSideHeaderText.text, Is.EqualTo("キャンプ"));
+                Assert.That(screen.rightSideDescriptionArea.SetTextCallCount, Is.EqualTo(2));
+                Assert.That(
+                    screen.rightSideDescriptionArea.text,
+                    Is.EqualTo("{{y|種別: }}戦技\n\n調理と食品保存のために焚き火を起こす。 戦闘中はキャンプできない。\nクールダウン: {{G|85}}ラウンド\n\n高い意志力によりクールダウンが15短縮された。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_TranslatesRuntimeAbilityManagerDetailsVariants_WhenHighlightChanges()
+    {
+        WriteDictionary(
+            ("Carapace", "甲殻"),
+            ("Lase", "レーザー照射"),
+            ("Rebuke Robot", "ロボットを叱責"),
+            ("Type: ", "種別: "),
+            ("Physical Mutations", "身体変異"),
+            ("Mental Mutations", "精神変異"),
+            ("You admonish a robot into following your commands.", "ロボットを叱責し、命令に従わせる。"),
+            ("Level + Ego-based difficulty check.", "レベル + 自我を基にした難易度判定。"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyAbilityManagerScreenTarget), nameof(DummyAbilityManagerScreenTarget.HandleHighlightLeft)),
+                postfix: new HarmonyMethod(RequirePatchPostfix()));
+
+            var screen = new DummyAbilityManagerScreenTarget();
+            screen.HandleHighlightLeft(new DummyAbilityManagerScreenLineData
+            {
+                Id = "ability",
+                ability = new DummyAbilityManagerEntryTarget
+                {
+                    DisplayName = "Tighten 甲殻",
+                    Class = "Mental Mutations",
+                    Description =
+                        "隣接する敵対的なクリーチャーを6d4 roundのあいだ恐怖で退却させる。\n\nDuration: 6d6 round\nRange: sight\nCooldown: {{G|43}} round\n\nCooldown reduced by 7 due to high Willpower.",
+                },
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(screen.rightSideHeaderText.text, Is.EqualTo("甲殻を締め付ける"));
+                Assert.That(
+                    screen.rightSideDescriptionArea.text,
+                    Is.EqualTo("{{y|種別: }}精神変異\n\n隣接する敵対的なクリーチャーを6d4ラウンドのあいだ恐怖で退却させる。\n\n持続時間: 6d6ラウンド\n射程: 視界\nクールダウン: {{G|43}}ラウンド\n\n高い意志力によりクールダウンが7短縮された。"));
+            });
+
+            screen.HandleHighlightLeft(new DummyAbilityManagerScreenLineData
+            {
+                Id = "lase",
+                ability = new DummyAbilityManagerEntryTarget
+                {
+                    DisplayName = "Lase (4 charges)",
+                    Class = "Mental Mutations",
+                    Description = "Range: 12\nCooldown: {{G|43}} round",
+                },
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(screen.rightSideHeaderText.text, Is.EqualTo("レーザー照射 (4チャージ)"));
+                Assert.That(
+                    screen.rightSideDescriptionArea.text,
+                    Is.EqualTo("{{y|種別: }}精神変異\n\n射程: 12\nクールダウン: {{G|43}}ラウンド"));
+            });
+
+            screen.HandleHighlightLeft(new DummyAbilityManagerScreenLineData
+            {
+                Id = "rebuke",
+                ability = new DummyAbilityManagerEntryTarget
+                {
+                    DisplayName = "Rebuke Robot",
+                    Class = "Mental Mutations",
+                    Description = "You admonish a robot into following your commands. Level + Ego-based difficulty check.\nCooldown: {{G|85}} round",
+                },
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(screen.rightSideHeaderText.text, Is.EqualTo("ロボットを叱責"));
+                Assert.That(
+                    screen.rightSideDescriptionArea.text,
+                    Is.EqualTo("{{y|種別: }}精神変異\n\nロボットを叱責し、命令に従わせる。 レベル + 自我を基にした難易度判定。\nクールダウン: {{G|85}}ラウンド"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_TranslatesMutationClassAndAreaDetails_WhenHighlightChanges()
+    {
+        WriteDictionary(
+            ("Quills", "針毛"),
+            ("Type: ", "種別: "),
+            ("Physical Mutations", "身体変異"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyAbilityManagerScreenTarget), nameof(DummyAbilityManagerScreenTarget.HandleHighlightLeft)),
+                postfix: new HarmonyMethod(RequirePatchPostfix()));
+
+            var screen = new DummyAbilityManagerScreenTarget();
+            screen.HandleHighlightLeft(new DummyAbilityManagerScreenLineData
+            {
+                Id = "ability",
+                ability = new DummyAbilityManagerEntryTarget
+                {
+                    DisplayName = "Quills",
+                    Class = "Physical Mutations",
+                    Description = "Area: 2x2 centered around yourself\nArea: 7x7\nCooldown: 200 round",
+                },
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(screen.rightSideHeaderText.text, Is.EqualTo("針毛"));
+                Assert.That(
+                    screen.rightSideDescriptionArea.text,
+                    Is.EqualTo("{{y|種別: }}身体変異\n\n範囲: 自分を中心に2x2\n範囲: 7x7\nクールダウン: 200ラウンド"));
             });
         }
         finally

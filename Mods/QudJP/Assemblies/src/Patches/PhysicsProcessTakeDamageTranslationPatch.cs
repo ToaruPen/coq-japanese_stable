@@ -278,9 +278,13 @@ public static class PhysicsProcessTakeDamageTranslationPatch
             "cold" => "冷気",
             "electric" or "electrical" => "電撃",
             "fire" or "heat" => "熱",
+            "laser beam" or "lase beam" => "レーザービーム",
             "mental" => "精神",
             "poison" => "毒",
             "sonic" => "音波",
+            "あなたのlaser beam" or "あなたのlase beam" => "あなたのレーザービーム",
+            var value when value.EndsWith("'s laser beam", StringComparison.Ordinal) => value.Substring(0, value.Length - 13) + "のレーザービーム",
+            var value when value.EndsWith("'s lase beam", StringComparison.Ordinal) => value.Substring(0, value.Length - 12) + "のレーザービーム",
             _ => source,
         };
     }

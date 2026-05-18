@@ -97,7 +97,8 @@ public static class QudMenuBottomContextTranslationPatch
             var translated = PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute(
                 normalized,
                 nameof(QudMenuBottomContextTranslationPatch));
-            var displayText = ColorAwareTranslationComposer.Strip(translated).stripped;
+            var displayText = MessageFrameTranslator.StripAllDirectTranslationMarkers(
+                ColorAwareTranslationComposer.Strip(translated).stripped);
 
             if (string.Equals(displayText, current, StringComparison.Ordinal))
             {

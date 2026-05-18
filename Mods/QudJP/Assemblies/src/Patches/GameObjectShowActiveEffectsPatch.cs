@@ -12,6 +12,7 @@ public static class GameObjectShowActiveEffectsPatch
 {
     private const string NoActiveEffectsText = "No active effects.";
     private const string ActiveEffectsTitlePrefix = "&WActive Effects&Y - ";
+    private const string ActiveEffectsVisibleTitlePrefix = "Active Effects - ";
 
     private static readonly MethodInfo TranslateNoActiveEffectsTextMethod =
         AccessTools.Method(typeof(GameObjectShowActiveEffectsPatch), nameof(TranslateNoActiveEffectsText))
@@ -91,5 +92,31 @@ public static class GameObjectShowActiveEffectsPatch
         }
 
         return "&W" + visiblePrefix + "&Y - ";
+    }
+
+    public static string TranslateActiveEffectsTitle(string source)
+    {
+        if (string.IsNullOrEmpty(source))
+        {
+            return source;
+        }
+
+        if (source.StartsWith(ActiveEffectsTitlePrefix, StringComparison.Ordinal))
+        {
+            var translatedPrefix = TranslateActiveEffectsTitlePrefix();
+            return string.Equals(translatedPrefix, ActiveEffectsTitlePrefix, StringComparison.Ordinal)
+                ? source
+                : translatedPrefix + source.Substring(ActiveEffectsTitlePrefix.Length);
+        }
+
+        if (!source.StartsWith(ActiveEffectsVisibleTitlePrefix, StringComparison.Ordinal))
+        {
+            return source;
+        }
+
+        var template = Translator.Translate("Active Effects - {0}");
+        return string.Equals(template, "Active Effects - {0}", StringComparison.Ordinal)
+            ? source
+            : template.Replace("{0}", source.Substring(ActiveEffectsVisibleTitlePrefix.Length));
     }
 }

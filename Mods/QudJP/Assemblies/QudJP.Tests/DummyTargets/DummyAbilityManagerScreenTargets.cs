@@ -22,6 +22,8 @@ internal sealed class DummyAbilityManagerScreenLineData
 
 internal sealed class DummyAbilityManagerMenuOption
 {
+    public string? InputCommand { get; set; }
+
     public string? Description { get; set; }
 
     public string? KeyDescription { get; set; }
@@ -35,7 +37,8 @@ internal sealed class DummyAbilityManagerHotkeyBar
 
     public void BeforeShow(object? descriptor, IEnumerable<DummyAbilityManagerMenuOption> menuOptions)
     {
-        choices = menuOptions.ToList();
+        choices.Clear();
+        choices.AddRange(menuOptions);
         renderedDescriptions = choices.Select(static option => option.Description).ToList();
         renderedKeyDescriptions = choices.Select(static option => option.KeyDescription).ToList();
     }
@@ -45,21 +48,23 @@ internal sealed class DummyAbilityManagerScreenTarget
 {
     public static DummyAbilityManagerMenuOption TOGGLE_SORT = new()
     {
+        InputCommand = "Toggle",
         KeyDescription = "Toggle Sort",
         Description = "sort: {{w|custom}}/{{y|by class}}",
     };
 
     public static DummyAbilityManagerMenuOption FILTER_ITEMS = new()
     {
+        InputCommand = "CmdFilter",
         Description = "search",
     };
 
     public static List<DummyAbilityManagerMenuOption> defaultMenuOptions =
     [
-        new DummyAbilityManagerMenuOption { Description = "Close Menu" },
-        new DummyAbilityManagerMenuOption { Description = "navigate" },
+        new DummyAbilityManagerMenuOption { InputCommand = "Cancel", Description = "Close Menu" },
+        new DummyAbilityManagerMenuOption { InputCommand = "NavigationXYAxis", Description = "navigate" },
         TOGGLE_SORT,
-        new DummyAbilityManagerMenuOption { Description = "Activate Selected Ability" },
+        new DummyAbilityManagerMenuOption { InputCommand = "Accept", Description = "Activate Selected Ability" },
         FILTER_ITEMS,
     ];
 
@@ -148,10 +153,10 @@ internal sealed class DummyAbilityManagerScreenTarget
         FILTER_ITEMS = new DummyAbilityManagerMenuOption { Description = "search" };
         defaultMenuOptions =
         [
-            new DummyAbilityManagerMenuOption { Description = "Close Menu" },
-            new DummyAbilityManagerMenuOption { Description = "navigate" },
+            new DummyAbilityManagerMenuOption { InputCommand = "Cancel", Description = "Close Menu" },
+            new DummyAbilityManagerMenuOption { InputCommand = "NavigationXYAxis", Description = "navigate" },
             TOGGLE_SORT,
-            new DummyAbilityManagerMenuOption { Description = "Activate Selected Ability" },
+            new DummyAbilityManagerMenuOption { InputCommand = "Accept", Description = "Activate Selected Ability" },
             FILTER_ITEMS,
         ];
         StaticPopupMessageToShow = string.Empty;

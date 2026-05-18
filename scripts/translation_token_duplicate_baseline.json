@@ -520,6 +520,34 @@
     {
       "scope": "cross_file",
       "path": "Dictionaries",
+      "key": "Look",
+      "entry_count": 3,
+      "texts": [
+        "見よ",
+        "見る",
+        "見る"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/Scoped/historyspice-common.ja.json",
+          "entry_index": 139,
+          "text": "見よ"
+        },
+        {
+          "path": "Dictionaries/ui-default.ja.json",
+          "entry_index": 81,
+          "text": "見る"
+        },
+        {
+          "path": "Dictionaries/ui-popup.ja.json",
+          "entry_index": 6,
+          "text": "見る"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
       "key": "Missile Weapon",
       "entry_count": 2,
       "texts": [
@@ -684,7 +712,7 @@
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 194,
+          "entry_index": 196,
           "text": "技能ポイント"
         }
       ]
@@ -1900,6 +1928,28 @@
     {
       "scope": "cross_file",
       "path": "Dictionaries",
+      "key": "chrome",
+      "entry_count": 2,
+      "texts": [
+        "クロム",
+        "クローム"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/Scoped/historyspice-common.ja.json",
+          "entry_index": 73,
+          "text": "クロム"
+        },
+        {
+          "path": "Dictionaries/world-gospels.ja.json",
+          "entry_index": 526,
+          "text": "クローム"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
       "key": "cider",
       "entry_count": 2,
       "texts": [
@@ -2098,6 +2148,28 @@
           "path": "Dictionaries/ui-messagelog-world.ja.json",
           "entry_index": 15,
           "text": "回収"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "glass",
+      "entry_count": 2,
+      "texts": [
+        "ガラス",
+        "ガラスの"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/Scoped/historyspice-common.ja.json",
+          "entry_index": 74,
+          "text": "ガラス"
+        },
+        {
+          "path": "Dictionaries/world-gospels.ja.json",
+          "entry_index": 702,
+          "text": "ガラスの"
         }
       ]
     },
@@ -2573,13 +2645,19 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "salt",
-      "entry_count": 3,
+      "entry_count": 4,
       "texts": [
         "{{Y|塩の}}",
+        "塩",
         "塩",
         "塩"
       ],
       "occurrences": [
+        {
+          "path": "Dictionaries/Scoped/historyspice-common.ja.json",
+          "entry_index": 75,
+          "text": "塩"
+        },
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
           "entry_index": 322,
@@ -2845,13 +2923,19 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "square",
-      "entry_count": 3,
+      "entry_count": 4,
       "texts": [
         "マス",
         "マス",
+        "四角",
         "正方形"
       ],
       "occurrences": [
+        {
+          "path": "Dictionaries/Scoped/historyspice-common.ja.json",
+          "entry_index": 71,
+          "text": "四角"
+        },
         {
           "path": "Dictionaries/ui-zone-display.ja.json",
           "entry_index": 226,
@@ -6086,7 +6170,7 @@
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 167,
+          "entry_index": 169,
           "text": "野営"
         }
       ]
@@ -6103,12 +6187,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 168,
+          "entry_index": 170,
           "text": "食事準備"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 169,
+          "entry_index": 171,
           "text": "食事準備"
         }
       ]
@@ -6125,12 +6209,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 173,
+          "entry_index": 175,
           "text": "心の羅針"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 174,
+          "entry_index": 176,
           "text": "心の羅針"
         }
       ]
@@ -6147,12 +6231,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 179,
+          "entry_index": 181,
           "text": "秘薬"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 180,
+          "entry_index": 182,
           "text": "秘薬"
         }
       ]
@@ -6169,12 +6253,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 184,
+          "entry_index": 186,
           "text": "治療"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 185,
+          "entry_index": 187,
           "text": "治療"
         }
       ]
@@ -6191,12 +6275,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 187,
+          "entry_index": 189,
           "text": "布教"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 188,
+          "entry_index": 190,
           "text": "布教"
         }
       ]
@@ -6213,12 +6297,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 191,
+          "entry_index": 193,
           "text": "修理"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 192,
+          "entry_index": 194,
           "text": "修理"
         }
       ]
@@ -6235,12 +6319,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 198,
+          "entry_index": 200,
           "text": "シールドスラム"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 199,
+          "entry_index": 201,
           "text": "シールドスラム"
         }
       ]
@@ -6257,12 +6341,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 207,
+          "entry_index": 209,
           "text": "蛇油売り"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 208,
+          "entry_index": 210,
           "text": "蛇油売り"
         }
       ]
@@ -6279,12 +6363,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 209,
+          "entry_index": 211,
           "text": "香辛師"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 210,
+          "entry_index": 212,
           "text": "香辛師"
         }
       ]
@@ -6301,12 +6385,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 227,
+          "entry_index": 230,
           "text": "戦術"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 228,
+          "entry_index": 231,
           "text": "戦術"
         }
       ]
@@ -6323,12 +6407,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 231,
+          "entry_index": 234,
           "text": "工匠 I"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 232,
+          "entry_index": 235,
           "text": "工匠 I"
         }
       ]
@@ -6345,12 +6429,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 243,
+          "entry_index": 246,
           "text": "風雨に耐えた"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 244,
+          "entry_index": 247,
           "text": "風雪錬成"
         }
       ]
@@ -6367,12 +6451,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 267,
+          "entry_index": 270,
           "text": "荒野の伝承: 渓谷"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 268,
+          "entry_index": 271,
           "text": "荒地巡り：峡谷"
         }
       ]
@@ -6389,12 +6473,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 269,
+          "entry_index": 272,
           "text": "荒野の伝承: 花畑"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 270,
+          "entry_index": 273,
           "text": "荒地巡り：花畑"
         }
       ]
@@ -6411,12 +6495,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 271,
+          "entry_index": 274,
           "text": "荒野の伝承: 丘と山岳"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 272,
+          "entry_index": 275,
           "text": "荒地巡り：丘陵と山"
         }
       ]
@@ -6433,12 +6517,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 273,
+          "entry_index": 276,
           "text": "荒野の伝承: ジャングル"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 274,
+          "entry_index": 277,
           "text": "荒地巡り：ジャングル"
         }
       ]
@@ -6455,12 +6539,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 275,
+          "entry_index": 278,
           "text": "荒野の伝承: 沼地"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 276,
+          "entry_index": 279,
           "text": "荒地巡り：湿地"
         }
       ]
@@ -6477,12 +6561,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 277,
+          "entry_index": 280,
           "text": "荒野の伝承: ランダム"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 278,
+          "entry_index": 281,
           "text": "荒野の伝承: ランダム"
         }
       ]
@@ -6499,12 +6583,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 279,
+          "entry_index": 282,
           "text": "荒野の伝承: 河川と湖"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 280,
+          "entry_index": 283,
           "text": "荒地巡り：河川"
         }
       ]
@@ -6521,12 +6605,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 281,
+          "entry_index": 284,
           "text": "荒野の伝承: 遺跡"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 282,
+          "entry_index": 285,
           "text": "荒地巡り：廃墟"
         }
       ]
@@ -6543,12 +6627,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 283,
+          "entry_index": 286,
           "text": "荒野の伝承: 塩砂丘"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 284,
+          "entry_index": 287,
           "text": "荒地巡り：塩砂漠"
         }
       ]

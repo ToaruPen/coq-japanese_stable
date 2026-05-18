@@ -20,6 +20,14 @@
     {
       "key": "Accept",
       "text": "決定"
+    },
+    {
+      "key": "Previous tab",
+      "text": "前のタブ"
+    },
+    {
+      "key": "Next tab",
+      "text": "次のタブ"
     }
   ]
 }

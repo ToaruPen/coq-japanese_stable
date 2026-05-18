@@ -158,8 +158,9 @@ public static class InventoryLineTranslationPatch
             return source;
         }
 
+        var sanitizedSource = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
         var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
-            source,
+            sanitizedSource,
             static visible => StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var candidate)
                 ? candidate
                 : visible);
@@ -173,11 +174,21 @@ public static class InventoryLineTranslationPatch
 
     private static string TranslateItemDisplayName(string source, string route)
     {
+        if (MerchantAdvertisementTextTranslator.TryTranslateBookTitle(source, out var translatedBookTitle))
+        {
+            DynamicTextObservability.RecordTransform(
+                route,
+                "InventoryLine.MerchantAdvertisementTitle",
+                source,
+                translatedBookTitle);
+            return translatedBookTitle;
+        }
+
         var translated = TranslateVisibleText(source, route, "InventoryLine.ItemName");
         if (string.Equals(translated, source, StringComparison.Ordinal))
         {
             translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
-                source,
+                MessageFrameTranslator.StripAllDirectTranslationMarkers(source),
                 ObservabilityHelpers.ComposeContext(route, "segment=displayName"));
             if (!string.Equals(translated, source, StringComparison.Ordinal))
             {
@@ -185,7 +196,7 @@ public static class InventoryLineTranslationPatch
             }
         }
 
-        return translated;
+        return MessageFrameTranslator.StripAllDirectTranslationMarkers(translated);
     }
 
     private static string TranslateCategoryWeightText(string source, int amount, int weight, bool showItemCount, string route)

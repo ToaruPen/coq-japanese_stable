@@ -333,6 +333,33 @@ public sealed class GetDisplayNameRouteTranslatorTests
         });
     }
 
+    [TestCase("advertisement for {{M|クユラミルの蒸留所, 伝説の樹液商}}", "{{M|クユラミルの蒸留所, 伝説の樹液商}}の広告")]
+    [TestCase("clone of a snapjaw", "スナップジョーのクローン")]
+    [TestCase("hologram of a snapjaw", "スナップジョーのホログラム")]
+    [TestCase("phylactery of High Templar", "高位聖堂騎士のファイラクテリー")]
+    [TestCase("mural of Resheph", "レシェフの壁画")]
+    [TestCase("ruined mural of Resheph", "レシェフの崩れた壁画")]
+    [TestCase("shrine to Resheph", "レシェフの祠")]
+    [TestCase("villagers of Joppa", "ジョッパの村人")]
+    [TestCase("Cult of Baram", "バラム教団")]
+    public void TranslatePreservingColors_TranslatesGeneratedEnglishPrefixDisplayNames(
+        string source,
+        string expected)
+    {
+        WriteDictionary(
+            ("snapjaw", "スナップジョー"),
+            ("High Templar", "高位聖堂騎士"),
+            ("Resheph", "レシェフ"),
+            ("Joppa", "ジョッパ"),
+            ("Baram", "バラム"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
     [Test]
     public void TranslatePreservingColors_PrefersTrimmedExactLookupBeforeProperNameModifierHeuristic()
     {

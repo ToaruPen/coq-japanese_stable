@@ -155,121 +155,127 @@
       "candidate_id": "FoundGuild#gospel",
       "event_property": "gospel",
       "input_source": "After treating with the Farmers' Guild, Nuntu convinced them to help him found a workshop in Hinnom for the purpose of studying glass. They named it the Glass Workshop.",
-      "expected_japanese_exact": "農夫ギルドとtreatingしたのち、NuntuはhimがHinnomに工房を創設する助力をするよう彼らを説得した。その目的はガラスのをstudyingことだった。彼らはそれをGlass Workshopと名づけた。"
+      "expected_japanese_exact": "農夫ギルドと協議したのち、Nuntuはその者がヒンノムに工房を創設する助力をするよう彼らを説得した。その目的はガラスを研究することだった。彼らはそれをガラス工房と名づけた。"
     },
     {
       "candidate_id": "CorruptAdministrator#gospel#case:0#if:then",
       "event_property": "gospel",
       "input_source": "In 1234 AR, a corrupt administrator was appointed minister of Salt Dunes. She outlawed the practice of glass-making, and Nuntu was forced to flee.",
-      "expected_japanese_exact": "1234年、腐敗した施政官がSalt Dunesの大臣に任じられた。その者はglass-makingの営みを禁じ、Nuntuは逃亡を余儀なくされた。"
+      "expected_japanese_exact": "1234年、腐敗した施政官が塩砂丘の大臣に任じられた。その者はガラス加工の営みを禁じ、Nuntuは逃亡を余儀なくされた。"
     },
     {
       "candidate_id": "CorruptAdministrator#gospel#case:1#if:then",
       "event_property": "gospel",
       "input_source": "In 1234 AR, a corrupt administrator was appointed minister of Salt Dunes. She outlawed association with the Farmers' Guild, and Nuntu was forced to flee.",
-      "expected_japanese_exact": "1234年、腐敗した施政官がSalt Dunesの大臣に任じられた。その者は農夫ギルドとの交わりを禁じ、Nuntuは逃亡を余儀なくされた。"
+      "expected_japanese_exact": "1234年、腐敗した施政官が塩砂丘の大臣に任じられた。その者は農夫ギルドとの交わりを禁じ、Nuntuは逃亡を余儀なくされた。"
     },
     {
       "candidate_id": "SecretRitual#gospel#if:then#arm:1",
       "event_property": "gospel",
       "input_source": "While wandering around Salt Dunes, Nuntu stumbled upon a clan of the Farmers' Guild performing a secret ritual. Because of his chromatic aura, they accepted him into their fold and taught him their secrets.",
-      "expected_japanese_exact": "Salt Dunesの辺りをさまよううち、Nuntuは秘密の儀式を行う農夫ギルドの一族に出くわした。his chromatic auraゆえ、彼らはhimを仲間に迎え入れ、himに彼らの秘密を授けた。"
+      "expected_japanese_exact": "塩砂丘の辺りをさまよううち、Nuntuは秘密の儀式を行う農夫ギルドの一族に出くわした。その色彩のオーラゆえ、彼らはその者を仲間に迎え入れ、その者に彼らの秘密を授けた。"
     },
     {
       "candidate_id": "GenericDeath#gospel",
       "event_property": "gospel",
       "input_source": "In 5597 BR, Yarad, Hammer-in-Turquoise, the Ilep Sorrow, died of natural causes. He was 216 years old.",
-      "expected_japanese_exact": "5597年、Yarad, Hammer-in-Turquoise, the Ilep Sorrowは自然の理により身罷った。享年216歳であった。"
+      "expected_japanese_exact": "5597年、Yarad、ターコイズの槌、イレプの悲哀は自然の理により身罷った。享年216歳であった。"
     },
     {
       "candidate_id": "GenericDeath#tombInscription",
       "event_property": "tombInscription",
       "input_source": "In the High Salt Sun, Yarad, Hammer-in-Turquoise, the Ilep Sorrow laid his body to rest and crossed into Brightsheol. He was 216 years old.",
-      "expected_japanese_exact": "高き塩の太陽、Yarad, Hammer-in-Turquoise, the Ilep Sorrowはその身を休め、ブライトシェオルへ渡った。享年216歳であった。"
+      "expected_japanese_exact": "高き塩の太陽、Yarad、ターコイズの槌、イレプの悲哀はその身を休め、ブライトシェオルへ渡った。その者は享年216歳であった。"
     },
     {
       "candidate_id": "FakedDeath#gospel",
       "event_property": "gospel",
       "input_source": "In 5597 BR, it was discovered that Yarad II's death had been faked. Despite reports to the contrary, Yarad II was alive and well. She was known thenceforth as the Gleaming Ghost of Barracks District Temrir.",
-      "expected_japanese_exact": "5597年、Yarad II's death had been fakedとの事実が明らかになった。相反する報告にもかかわらず、Yarad IIは健在だった。Yarad IIは以後Gleaming Ghost of Barracks District Temrirとして知られるようになった。"
+      "expected_japanese_exact": "5597年、Yarad IIの死が偽装されていたとの事実が明らかになった。相反する報告にもかかわらず、Yarad IIは健在だった。その者は以後煌めき幽鬼・Barracks District Temrirとして知られるようになった。"
     },
     {
       "candidate_id": "FakedDeath#tombInscription",
       "event_property": "tombInscription",
       "input_source": "Look! Behold the Gleaming Ghost of Barracks District Temrir, who in the High Salt Sun defied death and emerged from the glassy ruins.",
-      "expected_japanese_exact": "見よ、驚嘆せよ！ Gleaming Ghost of Barracks District Temrirは高き塩の太陽に死を退け、glassy ruinsより現れた。"
+      "expected_japanese_exact": "見よ、驚嘆せよ！ 煌めき幽鬼・Barracks District Temrirは高き塩の太陽に死を退け、ガラスのような遺跡より現れた。"
     },
     {
       "candidate_id": "FoundAsBabe#gospel#case:0",
       "event_property": "gospel",
       "input_source": "One moonless night, a babe was found swaddled beneath the glass arch with jade eyes. That babe came to be known as Nuntu.",
-      "expected_japanese_exact": "One moonless night、ひとりの嬰児（with jade eyes）がbeneath the glass archにて産着に包まれて見いだされた。その嬰児はのちにNuntuとして知られるようになった。"
+      "expected_japanese_exact": "月なき夜、ひとりの嬰児（翡翠色の瞳を持つ）がガラスのアーチの下にて産着に包まれて見いだされた。その嬰児はのちにNuntuとして知られるようになった。"
     },
     {
       "candidate_id": "FoundAsBabe#gospel#case:1",
       "event_property": "gospel",
       "input_source": "One dawn, a glassblower found a babe with silver hair outside her workshop. She and her fellow glassblowers adopted the babe and named him Nuntu.",
-      "expected_japanese_exact": "One dawn、ひとりのglassblowerが、her 工房の外でひとりの嬰児（with silver hair）を見いだした。Sheとherの同業のglassblowersはその嬰児を養子に迎え、himをNuntuと名づけた。"
+      "expected_japanese_exact": "ある夜明け、ひとりのガラス職人が、その工房の外でひとりの嬰児（銀の髪をした）を見いだした。その者と同業のガラス職人たちはその嬰児を養子に迎え、その者をNuntuと名づけた。"
     },
     {
       "candidate_id": "FoundAsBabe#gospel#case:default#opt:base",
       "event_property": "gospel",
       "input_source": "One starless night, a babe was found swaddled with amber eyes by a group of Farmers' Guild in Salt Dunes. They took her into their fold and fostered her, and she became known as Mamon, Gleaming Scion of Farmers' Guild.",
-      "expected_japanese_exact": "One starless night、ひとりの嬰児（with amber eyes）がSalt Dunesにて、農夫ギルドの一団により産着に包まれた姿で見いだされた。彼らはherを仲間に迎えてherを育み、sheはマモン、農夫ギルドのGleamingなるScionとして知られるようになった。"
+      "expected_japanese_exact": "星なき夜、ひとりの嬰児（琥珀色の瞳を持つ）が塩砂丘にて、農夫ギルドの一団により産着に包まれた姿で見いだされた。彼らはその者を仲間に迎えてその者を育み、その者はマモン、農夫ギルドの煌めきなる末裔として知られるようになった。"
     },
     {
       "candidate_id": "FoundAsBabe#gospel#case:default#opt:with1",
       "event_property": "gospel",
       "input_source": "One starless night, a babe was found swaddled with amber eyes by a group of Farmers' Guild in Salt Dunes. They took her into their fold and fostered her, and she became known as Mamon, the Opal Lamb of Farmers' Guild.",
-      "expected_japanese_exact": "One starless night、ひとりの嬰児（with amber eyes）がSalt Dunesにて、農夫ギルドの一団により産着に包まれた姿で見いだされた。彼らはherを仲間に迎えてherを育み、sheはマモン、農夫ギルドのOpalなるLambとして知られるようになった。"
+      "expected_japanese_exact": "星なき夜、ひとりの嬰児（琥珀色の瞳を持つ）が塩砂丘にて、農夫ギルドの一団により産着に包まれた姿で見いだされた。彼らはその者を仲間に迎えてその者を育み、その者はマモン、農夫ギルドのオパールなる仔羊として知られるようになった。"
     },
     {
       "candidate_id": "FoundAsBabe#tombInscription#opt:base",
       "event_property": "tombInscription",
       "input_source": "One rainy evening, a babe was found swaddled with quartz skin by a group of Mechanimists in Red Rock. They took him into their fold and fostered him, and he became known as Yarad, Chrome Child of Mechanimists.",
-      "expected_japanese_exact": "One rainy evening、ひとりの嬰児（with quartz skin）がレッドロックにて、メカニマス教団の一団により産着に包まれた姿で見いだされた。彼らはhimを仲間に迎えてhimを育み、heはYarad、メカニマス教団のクロームなる子として知られるようになった。"
+      "expected_japanese_exact": "雨降る夕べ、ひとりの嬰児（水晶の肌を持つ）がレッドロックにて、メカニマス教団の一団により産着に包まれた姿で見いだされた。彼らはその者を仲間に迎えてその者を育み、その者はYarad、メカニマス教団のクロムなる子として知られるようになった。"
     },
     {
       "candidate_id": "FoundAsBabe#tombInscription#opt:with1",
       "event_property": "tombInscription",
       "input_source": "One rainy evening, a babe was found swaddled with quartz skin by a group of Mechanimists in Red Rock. They took him into their fold and fostered him, and he became known as Yarad, the Argent Heir of Mechanimists.",
-      "expected_japanese_exact": "One rainy evening、ひとりの嬰児（with quartz skin）がレッドロックにて、メカニマス教団の一団により産着に包まれた姿で見いだされた。彼らはhimを仲間に迎えてhimを育み、heはYarad、メカニマス教団のArgentなるHeirとして知られるようになった。"
+      "expected_japanese_exact": "雨降る夕べ、ひとりの嬰児（水晶の肌を持つ）がレッドロックにて、メカニマス教団の一団により産着に包まれた姿で見いだされた。彼らはその者を仲間に迎えてその者を育み、その者はYarad、メカニマス教団の銀白なる継承者として知られるようになった。"
     },
     {
       "candidate_id": "Adopted#gospel",
       "event_property": "gospel",
       "input_source": "Nuntu was adopted by glassblowers who love glass-making.",
-      "expected_japanese_exact": "Nuntuは、glass-makingを愛するglassblowersに養子として迎えられた。"
+      "expected_japanese_exact": "Nuntuは、ガラス加工を愛するガラス職人たちに養子として迎えられた。"
     },
     {
       "candidate_id": "BornAsHeir#gospel",
       "event_property": "gospel",
       "input_source": "One starry night in Salt Dunes, a healthy child was born to the sultan at Red Rock. At the moment of her birth, a glass comet crossed the sky, and in celebration the people danced in the streets. The babe was named Nuntu, but the people called her the Glassborn.",
-      "expected_japanese_exact": "One starry night、Salt Dunesのレッドロックにて、スルタンに健やかなる子が生まれた。herの誕生の瞬間、glass comet crossed the sky、祝賀として民はdanced in the streets。その嬰児はNuntuと名づけられたが、民はherをGlassbornと呼んだ。"
+      "expected_japanese_exact": "星降る夜、塩砂丘のレッドロックにて、スルタンに健やかなる子が生まれた。その者の誕生の瞬間、ガラスの彗星が空を横切り、祝賀として民は通りで踊った。その嬰児はNuntuと名づけられたが、民はその者をガラス生まれと呼んだ。"
     },
     {
       "candidate_id": "BornAsHeir#tombInscription",
       "event_property": "tombInscription",
       "input_source": "Look! Behold the life of Nuntu -- called the Glassborn! -- scion of the Fossilized Saads and she who was dowered the Glass Crown. Observe the twin miracles of the High Salt Sun: the heiress was born, and a glass comet crossed the sky.",
-      "expected_japanese_exact": "見よ！ Behold、Nuntuの生涯を。すなわちGlassbornと呼ばれし者、化石化せしサアドの裔にして、Glass Crownを授けられし者なり。高き塩の太陽の双つの奇跡を見よ。heiressが生まれ、そしてglass comet crossed the sky。"
+      "expected_japanese_exact": "見よ！ 驚嘆せよ、Nuntuの生涯を。すなわちガラス生まれと呼ばれし者、化石化せしサアドの裔にして、その者はガラスの冠を授けられし者なり。高き塩の太陽の双つの奇跡を見よ。女継承者が生まれ、そしてガラスの彗星が空を横切り。"
     },
     {
       "candidate_id": "Marry#gospel#opt:base",
       "event_property": "gospel",
       "input_source": "Under a glass eclipse, Nuntu cemented her friendship with glassblowers by marrying Arconaut's Hall.",
-      "expected_japanese_exact": "Under a glass eclipse、NuntuはArconaut's Hallと婚姻を結ぶことにより、glassblowersとのherの友誼を固めた。"
+      "expected_japanese_exact": "ガラスの日食の下、Nuntuはアルコノートの堂と婚姻を結ぶことにより、ガラス職人たちとの友誼を固めた。"
     },
     {
       "candidate_id": "Marry#gospel#opt:with1",
       "event_property": "gospel",
       "input_source": "Under a glass eclipse, Nuntu cemented her friendship with Farmers' Guild by marrying Arconaut's Hall. In celebration, the Farmers' Guild bestowed upon Nuntu a wedding gift they called the Glass Torch.",
-      "expected_japanese_exact": "Under a glass eclipse、NuntuはArconaut's Hallと婚姻を結ぶことにより、農夫ギルドとのherの友誼を固めた。In celebration、農夫ギルドはNuntuに、彼らがGlass Torchと呼ぶ婚礼の贈り物を授けた。"
+      "expected_japanese_exact": "ガラスの日食の下、Nuntuはアルコノートの堂と婚姻を結ぶことにより、農夫ギルドとの友誼を固めた。祝賀として、農夫ギルドはNuntuに、彼らがガラスの松明と呼ぶ婚礼の贈り物を授けた。"
     },
     {
       "candidate_id": "Marry#tombInscription",
       "event_property": "tombInscription",
       "input_source": "Blessed union, Nuntu and Arconaut's Hall, whose legendary alliance by marriage founded glassblowers' guildhalls.",
-      "expected_japanese_exact": "Blessed union、NuntuとArconaut's Hall、その伝説的な婚姻同盟はfounded glassblowers' guildhalls。"
+      "expected_japanese_exact": "祝福されし結びつき、Nuntuとアルコノートの堂、その伝説的な婚姻同盟はガラス職人たちのギルドホールを創設した。"
+    },
+    {
+      "candidate_id": "LocationConstructed#gospel",
+      "event_property": "gospel",
+      "input_source": "construction begain in 5091 and ended in 5142",
+      "expected_japanese_exact": "建造は5091年に始まり、5142年に終わった"
     },
     {
       "candidate_id": "edge_empty_gospel",

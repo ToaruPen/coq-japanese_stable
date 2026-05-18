@@ -28,6 +28,58 @@ public static class AbilityManagerScreenTranslationPatch
         "Type: ",
     };
 
+    private static readonly Regex InputKeyDescriptionPattern = new(
+        @"^(?:(?:Ctrl|Alt|Shift|Cmd|Command|Option|Meta)\+)*(?:[A-Z]|\d|F\d{1,2}|Space|Enter|Return|Esc|Escape|Tab|Backspace|Delete|Home|End|Page Up|Page Down|Up|Down|Left|Right|Mouse \d|Mouse [A-Za-z]+)$",
+        RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    private static readonly Regex CooldownValuePattern = new(
+        @"\bCooldown:\s+(?<value>\{\{[^{}|]+\|\d+\}\}|\d+)\s+rounds?\b",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CooldownReducedPattern = new(
+        @"\bCooldown reduced by (?<amount>\d+) due to high Willpower\.",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CooldownFloorPattern = new(
+        @"\bCooldown cannot be reduced below (?<amount>\d+) rounds?\.",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex AreaCenteredPattern = new(
+        @"\bArea:\s+(?<area>\d+x\d+) centered around yourself\b",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex DurationValuePattern = new(
+        @"(?m)^Duration:\s+(?<duration>[^\r\n]+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex AreaValuePattern = new(
+        @"(?m)^Area:\s+(?<area>[^\r\n]+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex RangeSpacesPattern = new(
+        @"\bRange:\s+(?<range>\d+(?:-\d+)?) spaces?\b",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex RangeValuePattern = new(
+        @"\bRange:\s+(?<range>sight|\d+(?:-\d+)?)\b",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex PerRoundPattern = new(
+        @"\b(?<amount>\d+d\d+|\d+) per round\b",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex PerRoundsPattern = new(
+        @"\b(?<amount>\d+d\d+|\d+) per (?<rounds>\d+) rounds\b",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex RoundUnitPattern = new(
+        @"(?<value>\{\{[^{}|]+\|\d+\}\}|\d+d\d+|\d+)\s+rounds?(?![A-Za-z])",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TranslatableSentencePattern = new(
+        @"(?<sentence>[^.\n]+\.)(?<space>\s*)",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
@@ -155,6 +207,7 @@ public static class AbilityManagerScreenTranslationPatch
             return;
         }
 
+        var refreshOptions = CopyMenuOptionsForRefresh(choices, enumerable);
         var index = 0;
         var changed = false;
         foreach (var choice in enumerable)
@@ -170,10 +223,67 @@ public static class AbilityManagerScreenTranslationPatch
             index++;
         }
 
+        LogHotkeyBarProbe(choices);
         if (changed && hotkeyBar is not null)
         {
-            InvokeBeforeShow(hotkeyBar, enumerable);
+            InvokeBeforeShow(hotkeyBar, refreshOptions);
         }
+    }
+
+    private static IEnumerable CopyMenuOptionsForRefresh(object choices, IEnumerable menuOptions)
+    {
+        if (choices is IList sourceList)
+        {
+            var copiedList = Activator.CreateInstance(choices.GetType());
+            if (copiedList is IList targetList)
+            {
+                foreach (var option in sourceList)
+                {
+                    targetList.Add(option);
+                }
+
+                return targetList;
+            }
+        }
+
+        var fallback = new ArrayList();
+        foreach (var option in menuOptions)
+        {
+            fallback.Add(option);
+        }
+
+        return fallback;
+    }
+
+    private static void LogHotkeyBarProbe(object choices)
+    {
+        RuntimeDiagnostics.LogVerboseProbe(() =>
+        {
+            if (choices is not IEnumerable enumerable)
+            {
+                return "[QudJP] AbilityManagerScreenHotkeyBarProbe/v1: choices=<not-enumerable>";
+            }
+
+            var parts = new List<string>();
+            foreach (var choice in enumerable)
+            {
+                if (choice is null)
+                {
+                    continue;
+                }
+
+                parts.Add("{cmd="
+                    + ProbeValue(UiBindingTranslationHelpers.GetStringMemberValue(choice, "InputCommand"))
+                    + ",desc="
+                    + ProbeValue(UiBindingTranslationHelpers.GetStringMemberValue(choice, "Description"))
+                    + ",key="
+                    + ProbeValue(UiBindingTranslationHelpers.GetStringMemberValue(choice, "KeyDescription"))
+                    + "}");
+            }
+
+            return "[QudJP] AbilityManagerScreenHotkeyBarProbe/v1: choices="
+                + (parts.Count == 0 ? "[]" : string.Join(",", parts));
+        });
     }
 
     private static void TranslateDetailsPane(object instance, object[]? args)
@@ -189,7 +299,7 @@ public static class AbilityManagerScreenTranslationPatch
         var ability = UiBindingTranslationHelpers.GetMemberValue(element, "ability");
         if (ability is not null)
         {
-            var translatedName = TranslateFragment(GetRequiredStringMemberValue(ability, "DisplayName"));
+            var translatedName = TranslateAbilityNameFragment(GetRequiredStringMemberValue(ability, "DisplayName"));
             var translatedClass = TranslateFragment(GetRequiredStringMemberValue(ability, "Class"));
             var translatedDescription = TranslateBindingText(
                 GetRequiredStringMemberValue(ability, "Description"),
@@ -233,7 +343,7 @@ public static class AbilityManagerScreenTranslationPatch
         var translated = TranslateBindingText(current!, family);
         if (!string.Equals(translated, current, StringComparison.Ordinal))
         {
-            UiBindingTranslationHelpers.SetMemberValue(field, textMemberName, translated);
+            SetTextField(instance, fieldName, translated);
         }
     }
 
@@ -245,13 +355,22 @@ public static class AbilityManagerScreenTranslationPatch
             return;
         }
 
-        UiBindingTranslationHelpers.SetMemberValue(field, "text", value);
+        if (!UITextSkinReflectionAccessor.SetCurrentText(field, value, Context))
+        {
+            UiBindingTranslationHelpers.SetMemberValue(field, "text", value);
+        }
     }
 
     private static bool TranslateMenuOptionMember(object menuOption, string memberName, string routeSuffix)
     {
         var current = UiBindingTranslationHelpers.GetStringMemberValue(menuOption, memberName);
         if (string.IsNullOrEmpty(current))
+        {
+            return false;
+        }
+
+        if (string.Equals(memberName, "KeyDescription", StringComparison.Ordinal)
+            && IsInputKeyDescription(current!))
         {
             return false;
         }
@@ -274,7 +393,9 @@ public static class AbilityManagerScreenTranslationPatch
             return;
         }
 
-        var translated = TranslateFragment(current!);
+        var translated = string.Equals(memberName, "DisplayName", StringComparison.Ordinal)
+            ? TranslateAbilityNameFragment(current!)
+            : TranslateFragment(current!);
         if (!string.Equals(translated, current, StringComparison.Ordinal))
         {
             UiBindingTranslationHelpers.SetMemberValue(ability, memberName, translated);
@@ -296,6 +417,8 @@ public static class AbilityManagerScreenTranslationPatch
     private static string TranslateBindingText(string source, string family)
     {
         var translated = TranslateRawFragments(source);
+        translated = TranslateStructuredDetails(translated);
+        translated = TranslateSentenceFragments(translated);
         if (string.Equals(translated, source, StringComparison.Ordinal))
         {
             translated = StringHelpers.TryGetTranslationExactOrLowerAscii(source, out var exact)
@@ -309,6 +432,57 @@ public static class AbilityManagerScreenTranslationPatch
         }
 
         return translated;
+    }
+
+    private static bool IsInputKeyDescription(string source)
+    {
+        return InputKeyDescriptionPattern.IsMatch(source.Trim());
+    }
+
+    private static string TranslateStructuredDetails(string source)
+    {
+        var translated = source;
+        translated = CooldownValuePattern.Replace(translated, static match => "クールダウン: " + match.Groups["value"].Value + "ラウンド");
+        translated = translated.Replace("Cooldown Remaining Turns: ", "残りクールダウンターン: ");
+        translated = CooldownReducedPattern.Replace(translated, static match => "高い意志力によりクールダウンが" + match.Groups["amount"].Value + "短縮された。");
+        translated = CooldownFloorPattern.Replace(translated, static match => "クールダウンは" + match.Groups["amount"].Value + "ラウンド未満には短縮できない。");
+        translated = AreaCenteredPattern.Replace(translated, static match => "範囲: 自分を中心に" + match.Groups["area"].Value);
+        translated = DurationValuePattern.Replace(translated, static match => "持続時間: " + match.Groups["duration"].Value);
+        translated = AreaValuePattern.Replace(translated, static match => "範囲: " + match.Groups["area"].Value);
+        translated = RangeSpacesPattern.Replace(translated, static match => "射程: " + match.Groups["range"].Value + "マス");
+        translated = RangeValuePattern.Replace(translated, static match => "射程: " + TranslateRangeValue(match.Groups["range"].Value));
+        translated = PerRoundsPattern.Replace(translated, static match => match.Groups["rounds"].Value + "ラウンドにつき" + match.Groups["amount"].Value);
+        translated = PerRoundPattern.Replace(translated, static match => "1ラウンドにつき" + match.Groups["amount"].Value);
+        translated = RoundUnitPattern.Replace(translated, static match => match.Groups["value"].Value + "ラウンド");
+        translated = Regex.Replace(translated, @"\bToughness\b", "頑健性", RegexOptions.CultureInvariant);
+        translated = Regex.Replace(translated, @"\bWillpower\b", "意志力", RegexOptions.CultureInvariant);
+        return translated;
+    }
+
+    private static string TranslateRangeValue(string value)
+    {
+        return string.Equals(value, "sight", StringComparison.Ordinal)
+            ? "視界"
+            : value;
+    }
+
+    private static string TranslateSentenceFragments(string source)
+    {
+        return TranslatableSentencePattern.Replace(
+            source,
+            static match =>
+            {
+                var sentence = match.Groups["sentence"].Value.TrimStart();
+                if (!StringHelpers.TryGetTranslationExactOrLowerAscii(sentence, out var translated)
+                    || string.Equals(translated, sentence, StringComparison.Ordinal))
+                {
+                    return match.Value;
+                }
+
+                var leadingLength = match.Groups["sentence"].Value.Length - sentence.Length;
+                var leading = leadingLength > 0 ? match.Groups["sentence"].Value.Substring(0, leadingLength) : string.Empty;
+                return leading + translated + match.Groups["space"].Value;
+            });
     }
 
     private static string TranslateRawFragments(string source)
@@ -379,6 +553,17 @@ public static class AbilityManagerScreenTranslationPatch
             : source;
     }
 
+    private static string TranslateAbilityNameFragment(string source)
+    {
+        if (ActivatedAbilityNameTranslator.TryTranslateVisibleName(source, out var translated)
+            && !string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            return translated;
+        }
+
+        return TranslateFragment(source);
+    }
+
     private static object? GetStaticMemberValue(Type targetType, string memberName)
     {
         var property = AccessTools.Property(targetType, memberName);
@@ -413,5 +598,15 @@ public static class AbilityManagerScreenTranslationPatch
         }
 
         _ = beforeShow.Invoke(hotkeyBar, new object?[] { null, menuOptions });
+    }
+
+    private static string ProbeValue(string? value)
+    {
+        if (value is null)
+        {
+            return "'<null>'";
+        }
+
+        return "'" + value.Replace("\\", "\\\\").Replace("\r", "\\r").Replace("\n", "\\n").Replace("'", "\\'") + "'";
     }
 }

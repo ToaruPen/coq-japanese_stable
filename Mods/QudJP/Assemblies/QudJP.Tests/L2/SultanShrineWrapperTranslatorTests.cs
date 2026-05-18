@@ -153,7 +153,7 @@ public sealed class SultanShrineWrapperTranslatorTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Does.Contain("Rust Wellsを発見した"));
+            Assert.That(translated, Does.Contain("錆の井戸を発見した"));
             Assert.That(translated, Does.Not.Contain("discovered Rust Wells"));
             Assert.That(translated, Does.EndWith("{{Y|完璧}}"));
         });

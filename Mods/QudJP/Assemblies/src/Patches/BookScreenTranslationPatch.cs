@@ -118,9 +118,20 @@ public static class BookScreenTranslationPatch
         }
 
         var route = ObservabilityHelpers.ComposeContext(Context, "field=titleText");
-        var translated = TranslateVisibleText(title, route, "BookScreen.TitleText");
+        var translated = GameObjectShowActiveEffectsPatch.TranslateActiveEffectsTitle(title);
+        var translatedByActiveEffectsRoute = !string.Equals(translated, title, StringComparison.Ordinal);
+        if (string.Equals(translated, title, StringComparison.Ordinal))
+        {
+            translated = TranslateVisibleText(title, route, "BookScreen.TitleText");
+        }
+
         if (!string.Equals(translated, title, StringComparison.Ordinal))
         {
+            if (translatedByActiveEffectsRoute)
+            {
+                DynamicTextObservability.RecordTransform(route, "BookScreen.TitleText", title, translated);
+            }
+
             SetMemberValue(book, "Title", translated);
         }
     }

@@ -10,6 +10,15 @@ internal static class ActivatedAbilityNameTranslator
     private static readonly Regex ReleaseGasPattern =
         new Regex("^Release (?<gas>.+ Gas)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex TightenPattern =
+        new Regex("^Tighten (?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex DischargeChargePattern =
+        new Regex("^Discharge \\[(?<count>\\d+) charge\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex LaseChargesPattern =
+        new Regex("^Lase \\((?<count>\\d+) charges\\)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     internal static string TranslatePreservingColors(string source, string route, string family)
     {
         if (string.IsNullOrEmpty(source))
@@ -46,6 +55,29 @@ internal static class ActivatedAbilityNameTranslator
             return true;
         }
 
+        var tightenMatch = TightenPattern.Match(source);
+        if (tightenMatch.Success
+            && TryTranslateTightenName(tightenMatch.Groups["target"].Value, out translated))
+        {
+            return true;
+        }
+
+        var dischargeMatch = DischargeChargePattern.Match(source);
+        if (dischargeMatch.Success
+            && TryTranslateBaseAbilityName("Discharge", out var discharge))
+        {
+            translated = discharge + " [" + dischargeMatch.Groups["count"].Value + "チャージ]";
+            return true;
+        }
+
+        var laseMatch = LaseChargesPattern.Match(source);
+        if (laseMatch.Success
+            && TryTranslateBaseAbilityName("Lase", out var lase))
+        {
+            translated = lase + " (" + laseMatch.Groups["count"].Value + "チャージ)";
+            return true;
+        }
+
         translated = source;
         return false;
     }
@@ -73,5 +105,48 @@ internal static class ActivatedAbilityNameTranslator
         }
 
         return translatedGenerationName + "放出";
+    }
+
+    private static bool TryTranslateTightenName(string target, out string translated)
+    {
+        var translatedTarget = target;
+        if (ContainsAsciiLetter(target) && !TryTranslateBaseAbilityName(target, out translatedTarget))
+        {
+            translated = "Tighten " + target;
+            return false;
+        }
+
+        translated = translatedTarget + "を締め付ける";
+        return true;
+    }
+
+    private static bool TryTranslateBaseAbilityName(string source, out string translated)
+    {
+        var scoped = ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, SkillsAndPowersDictionaryFile);
+        if (scoped is not null)
+        {
+            translated = scoped;
+            return true;
+        }
+
+        if (StringHelpers.TryGetTranslationExactOrLowerAscii(source, out translated))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool ContainsAsciiLetter(string source)
+    {
+        foreach (var character in source)
+        {
+            if ((character >= 'A' && character <= 'Z') || (character >= 'a' && character <= 'z'))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

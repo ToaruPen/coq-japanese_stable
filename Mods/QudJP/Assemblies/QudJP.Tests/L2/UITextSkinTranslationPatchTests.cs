@@ -83,6 +83,16 @@ public sealed class UITextSkinTranslationPatchTests
         Assert.That(output, Does.Contain("direct_marker_status='present'"));
     }
 
+    [Test]
+    public void Prefix_StripsEmbeddedDirectTranslationMarkerBeforeFinalDisplay()
+    {
+        var text = "advertisement for \u0001{{M|クユラミルの蒸留所, 伝説の樹液商}}";
+
+        UITextSkinTranslationPatch.Prefix(ref text);
+
+        Assert.That(text, Is.EqualTo("advertisement for {{M|クユラミルの蒸留所, 伝説の樹液商}}"));
+    }
+
     [TestCaseSource(typeof(QudJP.Tests.L1.ColorRouteInvariantCases), nameof(QudJP.Tests.L1.ColorRouteInvariantCases.UiTextSkinCases))]
     public void TranslatePreservingColors_PreservesSharedInvariantCases(QudJP.Tests.L1.ColorTranslationCase testCase)
     {

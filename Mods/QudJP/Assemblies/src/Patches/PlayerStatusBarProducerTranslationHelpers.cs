@@ -18,17 +18,23 @@ internal static class PlayerStatusBarProducerTranslationHelpers
             return source;
         }
 
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            return MessageFrameTranslator.StripAllDirectTranslationMarkers(markedText);
+        }
+
+        var sanitizedSource = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
         return fieldName switch
         {
-            "FoodWater" => TranslateFoodWater(source, route),
-            "Zone" => TranslateZone(source, route, "PlayerStatusBar.Zone"),
-            "ZoneOnly" => TranslateZone(source, route, "PlayerStatusBar.ZoneOnly"),
-            "HPBar" => TranslateHpBar(source, route),
-            "PlayerName" => TranslateExact(source, route, "PlayerStatusBar.PlayerName"),
-            "Time" => TranslateCalendarStatus(source, route),
-            "Temp" => PreserveReadout(source, route, "PlayerStatusBar.Temp.PreservedReadout"),
-            "Weight" => PreserveReadout(source, route, "PlayerStatusBar.Weight.PreservedReadout"),
-            _ => source,
+            "FoodWater" => TranslateFoodWater(sanitizedSource, route),
+            "Zone" => TranslateZone(sanitizedSource, route, "PlayerStatusBar.Zone"),
+            "ZoneOnly" => TranslateZone(sanitizedSource, route, "PlayerStatusBar.ZoneOnly"),
+            "HPBar" => TranslateHpBar(sanitizedSource, route),
+            "PlayerName" => TranslateExact(sanitizedSource, route, "PlayerStatusBar.PlayerName"),
+            "Time" => TranslateCalendarStatus(sanitizedSource, route),
+            "Temp" => PreserveReadout(sanitizedSource, route, "PlayerStatusBar.Temp.PreservedReadout"),
+            "Weight" => PreserveReadout(sanitizedSource, route, "PlayerStatusBar.Weight.PreservedReadout"),
+            _ => sanitizedSource,
         };
     }
 

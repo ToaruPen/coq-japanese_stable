@@ -32,6 +32,14 @@ internal static class JournalPatternTranslator
         new Regex("^(?:the|The) villagers of (?<name>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex LeadingArticlePattern =
         new Regex("^(?:a|an|the|A|An|The)\\s+(?<rest>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex WithEyesPattern =
+        new Regex("^with (?<color>.+?) eyes$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex WithHairPattern =
+        new Regex("^with (?<color>.+?) hair$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex WithSkinPattern =
+        new Regex("^with (?<material>.+?) skin$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex PossessivePrefixPattern =
+        new Regex("^(?:his|her|its|their) (?<rest>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex JapaneseCharacterPattern =
         new Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -757,11 +765,31 @@ internal static class JournalPatternTranslator
 
     private static string TranslateTemplateCapture(string source)
     {
+        if (TryTranslatePronounCapture(source, out var pronounCapture))
+        {
+            return pronounCapture;
+        }
+
         using var _ = Translator.PushMissingKeyLoggingSuppression(true);
         var historySpiceComponent = HistorySpiceComponentLookup.TranslateExactOrLowerAscii(source);
         if (historySpiceComponent is not null)
         {
             return historySpiceComponent;
+        }
+
+        if (TryTranslatePhysicalTraitCapture(source, out var traitCapture))
+        {
+            return traitCapture;
+        }
+
+        if (TryTranslatePossessiveCapture(source, out var possessiveCapture))
+        {
+            return possessiveCapture;
+        }
+
+        if (TryTranslateTitlePhraseCapture(source, out var titlePhraseCapture))
+        {
+            return titlePhraseCapture;
         }
 
         var direct = Translator.Translate(source);
@@ -796,6 +824,91 @@ internal static class JournalPatternTranslator
         }
 
         return source;
+    }
+
+    private static bool TryTranslatePronounCapture(string source, out string translated)
+    {
+        switch (source)
+        {
+            case "he":
+            case "He":
+            case "she":
+            case "She":
+            case "him":
+            case "her":
+                translated = "その者";
+                return true;
+            case "his":
+            case "its":
+                translated = "その";
+                return true;
+            case "they":
+            case "They":
+            case "them":
+                translated = "彼ら";
+                return true;
+            case "their":
+                translated = "彼らの";
+                return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryTranslatePhysicalTraitCapture(string source, out string translated)
+    {
+        var eyesMatch = WithEyesPattern.Match(source);
+        if (eyesMatch.Success
+            && HistorySpiceComponentLookup.TryTranslateWord(eyesMatch.Groups["color"].Value, out var eyeColor))
+        {
+            translated = eyeColor + "の瞳を持つ";
+            return true;
+        }
+
+        var hairMatch = WithHairPattern.Match(source);
+        if (hairMatch.Success
+            && HistorySpiceComponentLookup.TryTranslateWord(hairMatch.Groups["color"].Value, out var hairColor))
+        {
+            translated = hairColor + "の髪をした";
+            return true;
+        }
+
+        var skinMatch = WithSkinPattern.Match(source);
+        if (skinMatch.Success
+            && HistorySpiceComponentLookup.TryTranslateWord(skinMatch.Groups["material"].Value, out var skinMaterial))
+        {
+            translated = skinMaterial + "の肌を持つ";
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryTranslatePossessiveCapture(string source, out string translated)
+    {
+        var possessiveMatch = PossessivePrefixPattern.Match(source);
+        if (possessiveMatch.Success)
+        {
+            translated = "その" + TranslateTemplateCapture(possessiveMatch.Groups["rest"].Value);
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryTranslateTitlePhraseCapture(string source, out string translated)
+    {
+        if (HistorySpiceComponentLookup.TryTranslateTitlePhrase(source, out var titlePhrase))
+        {
+            translated = titlePhrase;
+            return true;
+        }
+
+        translated = source;
+        return false;
     }
 
     private static bool TryTranslateVillageTemplateCapture(string source, out string translated)
@@ -836,22 +949,11 @@ internal static class JournalPatternTranslator
             return true;
         }
 
-        var direct = Translator.Translate(rest);
-        if (!string.Equals(direct, rest, StringComparison.Ordinal))
+        var translatedRest = TranslateTemplateCapture(rest);
+        if (!string.Equals(translatedRest, rest, StringComparison.Ordinal))
         {
-            translated = direct;
+            translated = translatedRest;
             return true;
-        }
-
-        var lower = LowerAscii(rest);
-        if (!string.Equals(lower, rest, StringComparison.Ordinal))
-        {
-            var lowered = Translator.Translate(lower);
-            if (!string.Equals(lowered, lower, StringComparison.Ordinal))
-            {
-                translated = lowered;
-                return true;
-            }
         }
 
         translated = rest;

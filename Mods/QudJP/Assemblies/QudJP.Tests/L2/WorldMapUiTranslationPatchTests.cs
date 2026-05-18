@@ -188,7 +188,9 @@ public sealed class WorldMapUiTranslationPatchTests
             "ui-statusscreens.ja.json",
             ("Filter", "絞り込み"),
             ("navigation", "移動"),
-            ("Accept", "決定"));
+            ("Accept", "決定"),
+            ("Previous tab", "前のタブ"),
+            ("Next tab", "次のタブ"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -204,12 +206,17 @@ public sealed class WorldMapUiTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(DummyStatusScreensScreenTarget.SET_FILTER.Description, Is.EqualTo("絞り込み"));
-                Assert.That(DummyStatusScreensScreenTarget.SET_FILTER.KeyDescription, Is.EqualTo("絞り込み"));
+                Assert.That(DummyStatusScreensScreenTarget.SET_FILTER.KeyDescription, Is.EqualTo("Filter"));
                 Assert.That(target.defaultMenuOptionOrder[0].Description, Is.EqualTo("移動"));
                 Assert.That(target.defaultMenuOptionOrder[1].Description, Is.EqualTo("決定"));
+                Assert.That(target.screenGlobalContext.menuOptionDescriptions, Has.Count.EqualTo(2));
+                Assert.That(target.screenGlobalContext.menuOptionDescriptions[0].InputCommand, Is.EqualTo("Page Left"));
+                Assert.That(target.screenGlobalContext.menuOptionDescriptions[0].Description, Is.EqualTo("前のタブ"));
+                Assert.That(target.screenGlobalContext.menuOptionDescriptions[1].InputCommand, Is.EqualTo("Page Right"));
+                Assert.That(target.screenGlobalContext.menuOptionDescriptions[1].Description, Is.EqualTo("次のタブ"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(StatusScreensScreenTranslationPatch), "StatusScreensScreen.MenuOption"),
-                    Is.EqualTo(4));
+                    Is.EqualTo(5));
             });
         }
         finally

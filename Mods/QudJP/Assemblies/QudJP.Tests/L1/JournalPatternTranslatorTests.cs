@@ -101,7 +101,7 @@ public sealed class JournalPatternTranslatorTests
         WriteDictionaryFile(
             "date-l1.ja.json",
             new[] { ("5th", "第5"), ("Tishru ii Ux", "ティシュル II・ウクス") });
-        WriteDictionaryFile("history-l1.ja.json", new[] { ("desiccated", "乾ききった"), ("spectre", "亡霊") });
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", new[] { ("desiccated", "乾ききった"), ("spectre", "亡霊") });
         WritePatternDictionary(("^On the (.+?) of (.+?), you were killed by (.+?)\\.$", "{t1}の{t0}日、{t2}に殺された。"));
 
         var translated = JournalPatternTranslator.Translate(

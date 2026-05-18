@@ -88,21 +88,23 @@ public static class UITextSkinTranslationPatch
 
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
+            var sanitizedMarkedText = MessageFrameTranslator.StripAllDirectTranslationMarkers(markedText);
             FinalOutputObservability.RecordDirectMarker(
                 nameof(UITextSkinTranslationPatch),
                 context ?? string.Empty,
                 FinalOutputObservability.DetailDirectMarker,
                 source,
-                markedText);
-            return markedText;
+                sanitizedMarkedText);
+            return sanitizedMarkedText;
         }
 
-        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var sanitizedSource = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(sanitizedSource);
         var effectiveContext = context;
 
         if (stripped.Length == 0)
         {
-            return source!;
+            return sanitizedSource;
         }
 
         if (IsIgnoredDirectRouteToken(stripped, effectiveContext))
@@ -111,9 +113,9 @@ public static class UITextSkinTranslationPatch
                 nameof(UITextSkinTranslationPatch),
                 effectiveContext ?? string.Empty,
                 "IgnoredDirectRouteToken",
-                source!,
+                sanitizedSource,
                 stripped);
-            return source!;
+            return sanitizedSource;
         }
 
         if (TryTranslateDirectUiActionToken(stripped, effectiveContext, out var directActionTranslation))
@@ -122,17 +124,17 @@ public static class UITextSkinTranslationPatch
             DynamicTextObservability.RecordTransform(
                 nameof(UITextSkinTranslationPatch),
                 "DirectUiActionToken",
-                source!,
+                sanitizedSource,
                 translated);
             return translated;
         }
 
-        if (TryTranslatePickTargetUiText(source!, stripped, effectiveContext, out var pickTargetTranslation))
+        if (TryTranslatePickTargetUiText(sanitizedSource, stripped, effectiveContext, out var pickTargetTranslation))
         {
             DynamicTextObservability.RecordTransform(
                 nameof(PickTargetWindowTextTranslator),
                 "PickTarget.UiText",
-                source!,
+                sanitizedSource,
                 pickTargetTranslation);
             return pickTargetTranslation;
         }
@@ -144,7 +146,7 @@ public static class UITextSkinTranslationPatch
             FinalOutputObservability.RecordAlreadyLocalized(
                 nameof(UITextSkinTranslationPatch),
                 effectiveContext ?? string.Empty,
-                source!,
+                sanitizedSource,
                 stripped);
         }
         else if (shouldSkipTranslation)
@@ -153,7 +155,7 @@ public static class UITextSkinTranslationPatch
                 nameof(UITextSkinTranslationPatch),
                 effectiveContext ?? string.Empty,
                 FinalOutputObservability.DetailSkipped,
-                source!,
+                sanitizedSource,
                 stripped);
         }
         else
@@ -162,11 +164,11 @@ public static class UITextSkinTranslationPatch
                 nameof(UITextSkinTranslationPatch),
                 effectiveContext ?? string.Empty,
                 SinkObservation.ObservationOnlyDetail,
-                source!,
+                sanitizedSource,
                 stripped);
         }
 
-        return source!;
+        return sanitizedSource;
     }
 
     private static bool TryTranslateDirectUiActionToken(string source, string? context, out string translated)

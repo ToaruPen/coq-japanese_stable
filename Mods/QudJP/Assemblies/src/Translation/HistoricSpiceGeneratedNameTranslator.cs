@@ -65,6 +65,7 @@ internal static class HistoricSpiceGeneratedNameTranslator
         "cake",
         "dumpling",
         "doughnut",
+        "wafers",
         "tajine",
         "couscous",
         "dolma",
@@ -118,7 +119,8 @@ internal static class HistoricSpiceGeneratedNameTranslator
 
     internal static bool TryTranslateCapture(string source, out string translated)
     {
-        if (TryTranslateFakedDeathCognomen(source, out translated)
+        if (TryTranslateCommaSeparatedCognomens(source, out translated)
+            || TryTranslateFakedDeathCognomen(source, out translated)
             || TryTranslateFestivalName(source, out translated)
             || TryTranslateDishName(source, out translated))
         {
@@ -129,13 +131,55 @@ internal static class HistoricSpiceGeneratedNameTranslator
         return false;
     }
 
+    private static bool TryTranslateCommaSeparatedCognomens(string source, out string translated)
+    {
+        var parts = source.Split(new[] { ", " }, StringSplitOptions.None);
+        if (parts.Length < 2)
+        {
+            translated = source;
+            return false;
+        }
+
+        var translatedParts = new string[parts.Length];
+        translatedParts[0] = parts[0];
+        var changed = false;
+
+        for (var index = 1; index < parts.Length; index++)
+        {
+            if (TryTranslateCognomenPart(parts[index], out var translatedPart))
+            {
+                translatedParts[index] = translatedPart;
+                changed = true;
+            }
+            else
+            {
+                translatedParts[index] = parts[index];
+            }
+        }
+
+        translated = changed ? string.Join("、", translatedParts) : source;
+        return changed;
+    }
+
+    private static bool TryTranslateCognomenPart(string source, out string translated)
+    {
+        var exact = HistorySpiceComponentLookup.TranslateExactOrLowerAscii(source);
+        if (exact is not null)
+        {
+            translated = exact;
+            return true;
+        }
+
+        return HistorySpiceComponentLookup.TryTranslateTitlePhrase(source, out translated);
+    }
+
     private static bool TryTranslateFakedDeathCognomen(string source, out string translated)
     {
         var match = FakedDeathCognomenPattern.Match(source);
         if (!match.Success
             || !GhostWords.Contains(match.Groups["ghost"].Value)
-            || !TryTranslateWord(match.Groups["adjective"].Value, out var adjective)
-            || !TryTranslateWord(match.Groups["ghost"].Value, out var ghost))
+            || !HistorySpiceComponentLookup.TryTranslateWord(match.Groups["adjective"].Value, out var adjective)
+            || !HistorySpiceComponentLookup.TryTranslateWord(match.Groups["ghost"].Value, out var ghost))
         {
             translated = source;
             return false;
@@ -156,8 +200,8 @@ internal static class HistoricSpiceGeneratedNameTranslator
         var ofMatch = FestivalOfPattern.Match(source);
         if (ofMatch.Success
             && IsFestivalWord(ofMatch.Groups["festival"].Value)
-            && TryTranslateWord(ofMatch.Groups["festival"].Value, out var festival)
-            && TryTranslateTitlePhrase(ofMatch.Groups["subject"].Value, out var subject))
+            && HistorySpiceComponentLookup.TryTranslateWord(ofMatch.Groups["festival"].Value, out var festival)
+            && HistorySpiceComponentLookup.TryTranslateTitlePhrase(ofMatch.Groups["subject"].Value, out var subject))
         {
             translated = subject + "の" + festival;
             return true;
@@ -166,8 +210,8 @@ internal static class HistoricSpiceGeneratedNameTranslator
         var trailingMatch = TrailingFestivalPattern.Match(source);
         if (trailingMatch.Success
             && IsFestivalWord(trailingMatch.Groups["festival"].Value)
-            && TryTranslateWord(trailingMatch.Groups["festival"].Value, out festival)
-            && TryTranslateTitlePhrase(trailingMatch.Groups["subject"].Value, out subject))
+            && HistorySpiceComponentLookup.TryTranslateWord(trailingMatch.Groups["festival"].Value, out festival)
+            && HistorySpiceComponentLookup.TryTranslateTitlePhrase(trailingMatch.Groups["subject"].Value, out subject))
         {
             translated = subject + "の" + festival;
             return true;
@@ -199,53 +243,18 @@ internal static class HistoricSpiceGeneratedNameTranslator
         return true;
     }
 
-    private static bool TryTranslateTitlePhrase(string source, out string translated)
-    {
-        var words = SplitWords(source);
-        if (words.Length == 0 || !TryTranslateWords(words, out var translatedWords))
-        {
-            translated = source;
-            return false;
-        }
-
-        translated = string.Concat(translatedWords);
-        return true;
-    }
-
     private static bool TryTranslateWords(string[] words, out string[] translatedWords)
     {
         translatedWords = new string[words.Length];
         for (var index = 0; index < words.Length; index++)
         {
-            if (!TryTranslateWord(words[index], out translatedWords[index]))
+            if (!HistorySpiceComponentLookup.TryTranslateWord(words[index], out translatedWords[index]))
             {
                 return false;
             }
         }
 
         return true;
-    }
-
-    private static bool TryTranslateWord(string source, out string translated)
-    {
-        using var _ = Translator.PushMissingKeyLoggingSuppression(true);
-        var lower = LowerAscii(source);
-        var scoped = HistorySpiceComponentLookup.TranslateExactOrLowerAscii(lower);
-        if (scoped is not null)
-        {
-            translated = scoped;
-            return true;
-        }
-
-        var direct = Translator.Translate(lower);
-        if (!string.Equals(direct, lower, StringComparison.Ordinal))
-        {
-            translated = direct;
-            return true;
-        }
-
-        translated = source;
-        return false;
     }
 
     private static int FindDishWordIndex(string[] words)
@@ -325,22 +334,4 @@ internal static class HistoricSpiceGeneratedNameTranslator
     private static string[] SplitWords(string source) =>
         source.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-    private static string LowerAscii(string source)
-    {
-        var buffer = source.ToCharArray();
-        var changed = false;
-        for (var index = 0; index < buffer.Length; index++)
-        {
-            var character = buffer[index];
-            if (character < 'A' || character > 'Z')
-            {
-                continue;
-            }
-
-            buffer[index] = (char)(character + ('a' - 'A'));
-            changed = true;
-        }
-
-        return changed ? new string(buffer) : source;
-    }
 }
