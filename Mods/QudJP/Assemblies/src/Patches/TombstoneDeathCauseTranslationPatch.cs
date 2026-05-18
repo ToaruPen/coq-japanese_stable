@@ -101,7 +101,13 @@ public static class TombstoneDeathCauseTranslationPatch
             return source;
         }
 
-        return method.Invoke(null, [source, maxWidth]) as string ?? source;
+        var clipped = method.Invoke(null, [source, maxWidth]) as string;
+        if (clipped is null)
+        {
+            return source;
+        }
+
+        return clipped;
     }
 
     private static string ClipText(
@@ -120,9 +126,15 @@ public static class TombstoneDeathCauseTranslationPatch
             return source;
         }
 
-        return method.Invoke(
+        var clipped = method.Invoke(
             null,
-            [source, maxWidth, keepNewlines, transformMarkup, transformMarkupIfMultipleLines]) as string ?? source;
+            [source, maxWidth, keepNewlines, transformMarkup, transformMarkupIfMultipleLines]) as string;
+        if (clipped is null)
+        {
+            return source;
+        }
+
+        return clipped;
     }
 
     private static void AddTarget(ICollection<MethodBase> targets, string typeName, string methodName)

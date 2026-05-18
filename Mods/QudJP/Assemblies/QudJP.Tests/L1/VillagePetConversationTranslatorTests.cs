@@ -96,6 +96,9 @@ public sealed class VillagePetConversationTranslatorTests
     {
         Assert.Multiple(() =>
         {
+            Assert.That(VillagePetConversationTranslator.TryTranslateAnswer(string.Empty, out var empty), Is.False);
+            Assert.That(empty, Is.Empty);
+
             Assert.That(VillagePetConversationTranslator.TryTranslateAnswer("They are complicated.", out var unknown), Is.False);
             Assert.That(unknown, Is.EqualTo("They are complicated."));
 
