@@ -532,6 +532,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
     [TestCase("advertisement for {{M|Resheph}}", "{{M|レシェフ}}の広告")]
     [TestCase("advertisement for \u0001{{M|レシェフ}}", "{{M|レシェフ}}の広告")]
     [TestCase("advertisement for {{M|unknown merchant}}", "{{M|unknown merchant}}の広告")]
+    [TestCase("advertisement for {{M|Resheph}} [empty]", "{{M|レシェフ}}の広告 [空]")]
     [TestCase("clone of a snapjaw", "スナップジョーのクローン")]
     [TestCase("hologram of a snapjaw", "スナップジョーのホログラム")]
     [TestCase("phylactery of High Templar", "高位聖堂騎士のファイラクテリー")]
@@ -550,6 +551,9 @@ public sealed class GetDisplayNameRouteTranslatorTests
             ("Resheph", "レシェフ"),
             ("Joppa", "ジョッパ"),
             ("Baram", "バラム"));
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("[empty]", "[空]"));
 
         var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
             source,

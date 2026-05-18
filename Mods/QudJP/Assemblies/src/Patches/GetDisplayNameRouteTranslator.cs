@@ -1714,9 +1714,81 @@ internal static class GetDisplayNameRouteTranslator
             target,
             includeCapitalizedDefiniteArticle: true,
             includeCapitalizedIndefiniteArticle: true);
+
+        if (TryTranslateGeneratedEnglishPrefixTargetWithSuffix(target, route, out var translatedTargetWithSuffix))
+        {
+            translated = BuildGeneratedEnglishPrefixDisplayName(
+                match.Groups["prefix"].Value,
+                translatedTargetWithSuffix.TranslatedTarget) + translatedTargetWithSuffix.TranslatedSuffix;
+            if (string.Equals(translated, source, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            DynamicTextObservability.RecordTransform(route, "DisplayName.GeneratedEnglishPrefix", source, translated);
+            return true;
+        }
+
         var translatedTarget = TranslateDisplayNameFragmentPreservingColors(target, route);
 
-        translated = match.Groups["prefix"].Value switch
+        translated = BuildGeneratedEnglishPrefixDisplayName(match.Groups["prefix"].Value, translatedTarget);
+        if (string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(route, "DisplayName.GeneratedEnglishPrefix", source, translated);
+        return true;
+    }
+
+    private static (string TranslatedTarget, string TranslatedSuffix) TranslateGeneratedEnglishPrefixTargetSuffix(
+        Group baseGroup,
+        Group stateGroup,
+        string opening,
+        string closing,
+        string route)
+    {
+        return (
+            TranslateDisplayNameFragmentPreservingColors(baseGroup.Value, route),
+            " " + opening + TranslateDisplayNameState(stateGroup.Value, route) + closing);
+    }
+
+    private static bool TryTranslateGeneratedEnglishPrefixTargetWithSuffix(
+        string target,
+        string route,
+        out (string TranslatedTarget, string TranslatedSuffix) translated)
+    {
+        var bracketedMatch = BracketedDisplayNameSuffixPattern.Match(target);
+        if (bracketedMatch.Success)
+        {
+            translated = TranslateGeneratedEnglishPrefixTargetSuffix(
+                bracketedMatch.Groups["base"],
+                bracketedMatch.Groups["state"],
+                "[",
+                "]",
+                route);
+            return true;
+        }
+
+        var parenthesizedMatch = ParenthesizedDisplayNameSuffixPattern.Match(target);
+        if (parenthesizedMatch.Success)
+        {
+            translated = TranslateGeneratedEnglishPrefixTargetSuffix(
+                parenthesizedMatch.Groups["base"],
+                parenthesizedMatch.Groups["state"],
+                "(",
+                ")",
+                route);
+            return true;
+        }
+
+        translated = default;
+        return false;
+    }
+
+    private static string BuildGeneratedEnglishPrefixDisplayName(string prefix, string translatedTarget)
+    {
+        return prefix switch
         {
             "advertisement for" => translatedTarget + "の広告",
             "clone of" => translatedTarget + "のクローン",
@@ -1727,16 +1799,8 @@ internal static class GetDisplayNameRouteTranslator
             "shrine to" => translatedTarget + "の祠",
             "villagers of" => translatedTarget + "の村人",
             "Cult of" => translatedTarget + "教団",
-            _ => source,
+            _ => string.Empty,
         };
-
-        if (string.Equals(translated, source, StringComparison.Ordinal))
-        {
-            return false;
-        }
-
-        DynamicTextObservability.RecordTransform(route, "DisplayName.GeneratedEnglishPrefix", source, translated);
-        return true;
     }
 
     private static bool TryTranslateRandomStatueMaterialPhrase(

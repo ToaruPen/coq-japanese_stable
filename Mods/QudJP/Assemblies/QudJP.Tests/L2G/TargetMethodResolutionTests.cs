@@ -1004,18 +1004,21 @@ public sealed class TargetMethodResolutionTests
     public void DimensionManagerGeneratedNameTranslationPatch_TargetMethods_ResolveExpectedOwners()
     {
         var signatures = ResolveTargetMethodSignatures(typeof(DimensionManagerGeneratedNameTranslationPatch));
-        var extraMethod = InvokeTargetMethod(typeof(DimensionManagerExtraDimensionNameTranslationPatch));
 
-        Assert.Multiple(() =>
+        Assert.That(signatures, Is.EquivalentTo(new[]
         {
-            Assert.That(signatures, Is.EquivalentTo(new[]
-            {
-                "XRL.World.Encounters.DimensionManager|InitializeFaction|XRL.World.Encounters.PsychicFaction",
-            }));
-            Assert.That(
-                FullMethodSignature(extraMethod!),
-                Is.EqualTo("XRL.World.Encounters.DimensionManager|GenerateMoreDimensions|System.Void"));
-        });
+            "XRL.World.Encounters.DimensionManager|InitializeFaction|XRL.World.Encounters.PsychicFaction",
+        }));
+    }
+
+    [Test]
+    public void DimensionManagerExtraDimensionNameTranslationPatch_TargetMethod_ResolvesExpectedOwner()
+    {
+        var method = InvokeTargetMethod(typeof(DimensionManagerExtraDimensionNameTranslationPatch));
+
+        Assert.That(
+            FullMethodSignature(method!),
+            Is.EqualTo("XRL.World.Encounters.DimensionManager|GenerateMoreDimensions|System.Void"));
     }
 
     [Test]
