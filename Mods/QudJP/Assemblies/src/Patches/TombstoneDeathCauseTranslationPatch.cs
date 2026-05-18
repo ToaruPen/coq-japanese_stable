@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
-using XRL.UI;
 
 namespace QudJP.Patches;
 
@@ -58,12 +57,12 @@ public static class TombstoneDeathCauseTranslationPatch
                 text = translated;
             }
 
-            return StringFormat.ClipText(text, maxWidth);
+            return ClipText(text, maxWidth);
         }
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: {0}.ClipTextTranslatingDeathCause failed: {1}", Context, ex);
-            return StringFormat.ClipText(source, maxWidth);
+            return ClipText(source, maxWidth);
         }
     }
 
@@ -85,13 +84,45 @@ public static class TombstoneDeathCauseTranslationPatch
                 text = translated;
             }
 
-            return StringFormat.ClipText(text, maxWidth, keepNewlines, transformMarkup, transformMarkupIfMultipleLines);
+            return ClipText(text, maxWidth, keepNewlines, transformMarkup, transformMarkupIfMultipleLines);
         }
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: {0}.ClipTextTranslatingDeathCause failed: {1}", Context, ex);
-            return StringFormat.ClipText(source, maxWidth, keepNewlines, transformMarkup, transformMarkupIfMultipleLines);
+            return ClipText(source, maxWidth, keepNewlines, transformMarkup, transformMarkupIfMultipleLines);
         }
+    }
+
+    private static string ClipText(string source, int maxWidth)
+    {
+        var method = AccessTools.Method(AccessTools.TypeByName("XRL.UI.StringFormat"), "ClipText", [typeof(string), typeof(int)]);
+        if (method is null)
+        {
+            return source;
+        }
+
+        return method.Invoke(null, [source, maxWidth]) as string ?? source;
+    }
+
+    private static string ClipText(
+        string source,
+        int maxWidth,
+        bool keepNewlines,
+        bool transformMarkup,
+        bool transformMarkupIfMultipleLines)
+    {
+        var method = AccessTools.Method(
+            AccessTools.TypeByName("XRL.UI.StringFormat"),
+            "ClipText",
+            [typeof(string), typeof(int), typeof(bool), typeof(bool), typeof(bool)]);
+        if (method is null)
+        {
+            return source;
+        }
+
+        return method.Invoke(
+            null,
+            [source, maxWidth, keepNewlines, transformMarkup, transformMarkupIfMultipleLines]) as string ?? source;
     }
 
     private static void AddTarget(ICollection<MethodBase> targets, string typeName, string methodName)

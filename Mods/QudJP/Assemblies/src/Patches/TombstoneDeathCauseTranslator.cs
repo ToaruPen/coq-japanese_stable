@@ -219,5 +219,16 @@ internal static class TombstoneDeathCauseTranslator
         }
     }
 
-    private readonly record struct PrefixFrame(string Prefix, Func<string, string> Build);
+    private readonly struct PrefixFrame
+    {
+        public PrefixFrame(string prefix, Func<string, string> build)
+        {
+            Prefix = prefix;
+            Build = build;
+        }
+
+        public string Prefix { get; }
+
+        public Func<string, string> Build { get; }
+    }
 }

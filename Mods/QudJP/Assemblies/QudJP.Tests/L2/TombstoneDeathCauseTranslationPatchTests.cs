@@ -2,7 +2,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using HarmonyLib;
 using QudJP.Patches;
-using XRL.UI;
 
 namespace QudJP.Tests.L2;
 
@@ -128,14 +127,22 @@ internal sealed class DummyTombstoneDeathCauseTarget
     [MethodImpl(MethodImplOptions.NoInlining)]
     public void GenerateTombstone()
     {
-        Lines.Add(StringFormat.ClipText("Here lies", 80));
-        Lines.Add(StringFormat.ClipText(Inscription ?? "Stabbed to death by a snapjaw", 80));
+        Lines.Add(DummyStringFormat.ClipText("Here lies", 80));
+        Lines.Add(DummyStringFormat.ClipText(Inscription ?? "Stabbed to death by a snapjaw", 80));
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     public void GenerateRachelTombstone()
     {
-        Lines.Add(StringFormat.ClipText("Here lies", 80));
-        Lines.Add(StringFormat.ClipText("Succumbed to glotrot.", 80));
+        Lines.Add(DummyStringFormat.ClipText("Here lies", 80));
+        Lines.Add(DummyStringFormat.ClipText("Succumbed to glotrot.", 80));
+    }
+}
+
+internal static class DummyStringFormat
+{
+    public static string ClipText(string source, int maxWidth)
+    {
+        return source.Length <= maxWidth ? source : source.Substring(0, maxWidth);
     }
 }
