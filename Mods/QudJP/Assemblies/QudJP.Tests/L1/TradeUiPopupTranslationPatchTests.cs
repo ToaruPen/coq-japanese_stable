@@ -104,7 +104,7 @@ public sealed class TradeUiPopupTranslationPatchTests
         "merchant identifies laser pistol as a laser pistol.",
         "{0} identifies {1} as {2}.",
         "{0}は{1}を{2}だと鑑定した。",
-        "merchantはlaser pistolをa laser pistolだと鑑定した。")]
+        "merchantはlaser pistolをlaser pistolだと鑑定した。")]
     [TestCase(
         "These items are too complex for 商人 to repair.",
         "{0} are too complex for {1} to repair.",
@@ -202,6 +202,22 @@ public sealed class TradeUiPopupTranslationPatchTests
         var translated = TradeUiPopupTranslationPatch.TranslatePopupText(source);
 
         Assert.That(translated, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void TranslatePopupText_TranslatesIdentifyResultWithPossessiveAndWithClauseDisplayNames()
+    {
+        WriteDictionary(("{0} identifies {1} as {2}.", "{0}は{1}を{2}だと鑑定した。"));
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("beamsplitter", "GetDisplayName.Adjective", "{{R-R-r-r-g-g-G-G-B-B-b-b sequence|ビームスプリッタ装着}}"));
+
+        var translated = TradeUiPopupTranslationPatch.TranslatePopupText(
+            "You identify your ライフル as a {{C|レーザー}}ライフル with {{R-R-r-r-g-g-G-G-B-B-b-b sequence|beamsplitter}}.");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("あなたはライフルを{{C|レーザー}}ライフル（{{R-R-r-r-g-g-G-G-B-B-b-b sequence|ビームスプリッタ装着}}）だと鑑定した。"));
     }
 
     [TestCase(
@@ -388,6 +404,42 @@ public sealed class TradeUiPopupTranslationPatchTests
 
         File.WriteAllText(
             Path.Combine(dictionaryDirectory, "trade-ui-popup-tests.ja.json"),
+            builder.ToString(),
+            Utf8WithoutBom);
+    }
+
+    private void WriteDictionaryFile(string fileName, params (string key, string? context, string text)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.Append("{\"entries\":[");
+
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
+            builder.Append('"');
+            if (!string.IsNullOrWhiteSpace(entries[index].context))
+            {
+                builder.Append(",\"context\":\"");
+                builder.Append(EscapeJson(entries[index].context!));
+                builder.Append('"');
+            }
+
+            builder.Append(",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        builder.AppendLine();
+
+        File.WriteAllText(
+            Path.Combine(dictionaryDirectory, fileName),
             builder.ToString(),
             Utf8WithoutBom);
     }

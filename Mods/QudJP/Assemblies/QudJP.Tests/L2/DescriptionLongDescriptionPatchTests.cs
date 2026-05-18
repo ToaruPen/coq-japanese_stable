@@ -168,6 +168,41 @@ public sealed class DescriptionLongDescriptionPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesMasterworkRuntimeDescription_FromScopedWorldModsDictionary()
+    {
+        WriteScopedDictionary(
+            ("Masterwork: This weapon scores critical hits {0} of the time instead of 5%.", "傑作: この武器のクリティカル発生率は{0}（通常は5%）。"));
+
+        RunWithDescriptionPatch(() =>
+        {
+            const string source = "{{rules|Masterwork: This weapon scores critical hits 15% of the time instead of 5%.}}";
+            var target = new DummyDescriptionTarget(source);
+            var builder = new StringBuilder();
+            target.GetLongDescription(builder);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    builder.ToString(),
+                    Is.EqualTo("{{rules|傑作: この武器のクリティカル発生率は15%（通常は5%）。}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(DescriptionLongDescriptionPatch),
+                        "Description.WorldMods"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    SinkObservation.GetHitCountForTests(
+                        nameof(UITextSkinTranslationPatch),
+                        nameof(DescriptionLongDescriptionPatch),
+                        SinkObservation.ObservationOnlyDetail,
+                        source,
+                        source),
+                    Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
     public void Postfix_PreservesExistingPrefix_WhenPatched()
     {
         WriteDictionary(("It crackles with static.", "それは静電気を散らしている。"));

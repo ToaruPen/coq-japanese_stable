@@ -9,6 +9,9 @@ internal static class WorldModsTextTranslator
 {
     private const string WorldModsDictionaryFile = "world-mods.ja.json";
     private const string AddsRepAppendDescriptionContext = "XRL.World.Parts.AddsRep.AppendDescription";
+    private const string MeleeWeaponShortDescriptionContext = "XRL.World.Parts.MeleeWeapon.GetShortDescription";
+    private const string MasterworkDescriptionContext = "XRL.World.Parts.ModMasterwork.GetShortDescription";
+    private const string BeamsplitterDescriptionContext = "XRL.World.Parts.ModBeamsplitter.GetShortDescription";
 
     private static readonly Regex JapaneseCharacterPattern = new Regex(
         "[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]",
@@ -49,6 +52,9 @@ internal static class WorldModsTextTranslator
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex DisplacerPattern = new Regex(
         "^Displacer: When powered, this weapon randomly teleports its target (?<distance>\\d+-\\d+) tiles away on a successful hit\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex BeamsplitterPattern = new Regex(
+        "^Fitted with beamsplitter: This weapon has (?:(?:a|an) )?(?<count>\\d+)-way spread with each shot at -1 penetration roll\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex ElectrifiedPattern = new Regex(
         "^Electrified: When powered, this weapon deals(?: an additional (?<damage>\\d+(?:-\\d+)?)| additional)?\\s+electrical damage on hit\\.$",
@@ -202,14 +208,7 @@ internal static class WorldModsTextTranslator
             return true;
         }
 
-        if (TryTranslateTemplate(
-            source,
-            route,
-            family,
-            OffhandAttackChancePattern,
-            "Offhand Attack Chance: {0}%",
-            (match, spans) => new[] { GetTranslatedCapture(match, spans, "chance") },
-            out translated))
+        if (TryTranslateOffhandAttackChanceTemplate(source, route, family, out translated))
         {
             return true;
         }
@@ -263,6 +262,15 @@ internal static class WorldModsTextTranslator
             DisplacerPattern,
             "Displacer: When powered, this weapon randomly teleports its target {0} tiles away on a successful hit.",
             (match, spans) => new[] { GetTranslatedCapture(match, spans, "distance") },
+            out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateBeamsplitterTemplate(
+            source,
+            route,
+            family,
             out translated))
         {
             return true;
@@ -526,17 +534,106 @@ internal static class WorldModsTextTranslator
             return false;
         }
 
-        var template = Translator.Translate("Masterwork: This weapon scores critical hits {0} of the time instead of 5%.");
-        if (string.Equals(template, "Masterwork: This weapon scores critical hits {0} of the time instead of 5%.", StringComparison.Ordinal))
+        const string templateKey = "Masterwork: This weapon scores critical hits {0} of the time instead of 5%.";
+        var template = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
+            templateKey,
+            MasterworkDescriptionContext,
+            WorldModsDictionaryFile);
+        if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
         {
             translated = source;
             return false;
         }
 
-        var visible = template.Replace("{0}", match.Groups["value"].Value);
-        translated = ColorAwareTranslationComposer.Restore(visible, spans);
-        DynamicTextObservability.RecordTransform(route, family, source, translated);
-        return !string.Equals(source, translated, StringComparison.Ordinal);
+        var contentSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, stripped.Length);
+        return TryFormatTemplate(
+            source,
+            stripped,
+            spans,
+            route,
+            family,
+            match,
+            template!,
+            new[] { GetTranslatedCapture(match, contentSpans, "value") },
+            out translated);
+    }
+
+    private static bool TryTranslateBeamsplitterTemplate(string source, string route, string family, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = BeamsplitterPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        const string templateKey = "Fitted with beamsplitter: This weapon has a {0}-way spread with each shot at -1 penetration roll.";
+        var template = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
+            templateKey,
+            BeamsplitterDescriptionContext,
+            WorldModsDictionaryFile);
+        if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
+        {
+            template = ScopedDictionaryLookup.TranslateExactOrLowerAscii(templateKey, WorldModsDictionaryFile);
+        }
+
+        if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var contentSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, stripped.Length);
+        return TryFormatTemplate(
+            source,
+            stripped,
+            spans,
+            route,
+            family,
+            match,
+            template!,
+            new[] { match.Groups["count"].Success ? GetTranslatedCapture(match, contentSpans, "count") : "3" },
+            out translated);
+    }
+
+    private static bool TryTranslateOffhandAttackChanceTemplate(string source, string route, string family, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = OffhandAttackChancePattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        const string templateKey = "Offhand Attack Chance: {0}%";
+        var template = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
+            templateKey,
+            MeleeWeaponShortDescriptionContext,
+            WorldModsDictionaryFile);
+        if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
+        {
+            template = ScopedDictionaryLookup.TranslateExactOrLowerAscii(templateKey, WorldModsDictionaryFile);
+        }
+
+        if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var contentSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, stripped.Length);
+        return TryFormatTemplate(
+            source,
+            stripped,
+            spans,
+            route,
+            family,
+            match,
+            template!,
+            new[] { GetTranslatedCapture(match, contentSpans, "chance") },
+            out translated);
     }
 
     private static bool TryTranslateCoProcessorTemplate(string source, string route, string family, out string translated)

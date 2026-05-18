@@ -145,14 +145,50 @@ public sealed partial class Issue201OtherUiBindingPatchTests
             {
                 Assert.That(buildTarget.OriginalExecuted, Is.True);
                 Assert.That(buildTarget.modBitCostText.Text, Does.Contain("{{K|| ビットコスト |}}"));
+                Assert.That(buildTarget.modBitCostText.Text, Does.Contain("{{R|A}}{{C|C}}"));
                 Assert.That(buildTarget.modBitCostText.Text, Does.Contain("{{K|| 素材 |}}"));
                 Assert.That(buildTarget.modBitCostText.Text, Does.Contain("-または-"));
                 Assert.That(modTarget.modBitCostText.Text, Does.Contain("{{K || ビットコスト |}}"));
+                Assert.That(modTarget.modBitCostText.Text, Does.Contain("{{R|A}}{{C|C}}"));
                 Assert.That(modTarget.modBitCostText.Text, Does.Contain("{{K|| 素材 |}}"));
                 Assert.That(modTarget.modBitCostText.Text, Does.Contain("-または-"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TinkeringDetailsLineTranslationPatch), "TinkeringDetails.ModBitCostText"),
                     Is.GreaterThan(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void TinkeringLinePostfix_PreservesColoredBitCostTags_WhenItemLineDoesNotNeedFragmentTranslation()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyTinkeringLineTarget), nameof(DummyTinkeringLineTarget.setData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(TinkeringLineTranslationPatch), nameof(TinkeringLineTranslationPatch.Postfix))));
+
+            var target = new DummyTinkeringLineTarget();
+            target.setData(new DummyTinkeringLineDataTarget
+            {
+                mode = 0,
+                costString = "{{R|A}}{{C|C}}",
+                data = new DummyTinkeringRecipeData
+                {
+                    DisplayName = "チェーンピストル",
+                },
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.OriginalExecuted, Is.True);
+                Assert.That(target.text.Text, Is.EqualTo("    チェーンピストル [{{R|A}}{{C|C}}]"));
             });
         }
         finally

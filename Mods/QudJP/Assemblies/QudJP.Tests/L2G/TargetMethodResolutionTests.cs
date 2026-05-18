@@ -758,6 +758,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.GameObject",
         "XRL.World.GameObject",
         "XRL.World.GameObject",
+        "XRL.World.GameObject|System.Int32",
     })]
     [TestCase(typeof(ItemNamingTranslationPatch), new[]
     {
@@ -1496,6 +1497,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Examiner|ResultFailure|System.Void|XRL.World.GameObject",
         "XRL.World.Parts.Examiner|ResultFakeConfusionFailure|System.Void|XRL.World.GameObject",
         "XRL.World.Parts.Examiner|ResultCriticalFailure|System.Void|XRL.World.GameObject",
+        "XRL.World.Parts.Examiner|ResultPartialSuccess|System.Void|XRL.World.GameObject|System.Int32",
     })]
     [TestCase(typeof(ItemNamingTranslationPatch), new[]
     {
