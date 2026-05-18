@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -11,6 +12,9 @@ namespace QudJP.Patches;
 public static class BookScreenTranslationPatch
 {
     private const string Context = nameof(BookScreenTranslationPatch);
+    private static readonly Regex ActiveEffectsTitleRegex = new(
+        @"^(?<prefix>&W)?(?<label>Active Effects|発動中の効果)(?<separatorColor>&Y)? - (?<name>.+)$",
+        RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
@@ -118,22 +122,78 @@ public static class BookScreenTranslationPatch
         }
 
         var route = ObservabilityHelpers.ComposeContext(Context, "field=titleText");
-        var translated = GameObjectShowActiveEffectsPatch.TranslateActiveEffectsTitle(title);
-        var translatedByActiveEffectsRoute = !string.Equals(translated, title, StringComparison.Ordinal);
-        if (string.Equals(translated, title, StringComparison.Ordinal))
-        {
-            translated = TranslateVisibleText(title, route, "BookScreen.TitleText");
-        }
-
+        var translated = TranslateBookTitleText(title, route);
         if (!string.Equals(translated, title, StringComparison.Ordinal))
         {
-            if (translatedByActiveEffectsRoute)
-            {
-                DynamicTextObservability.RecordTransform(route, "BookScreen.TitleText", title, translated);
-            }
-
             SetMemberValue(book, "Title", translated);
         }
+    }
+
+    private static string TranslateBookTitleText(string title, string route)
+    {
+        if (TryTranslateActiveEffectsTitle(title, route, out var translated))
+        {
+            return translated;
+        }
+
+        return TranslateVisibleText(title, route, "BookScreen.TitleText");
+    }
+
+    private static bool TryTranslateActiveEffectsTitle(string title, string route, out string translated)
+    {
+        translated = title;
+        var match = ActiveEffectsTitleRegex.Match(title);
+        if (!match.Success)
+        {
+            return false;
+        }
+
+        var name = match.Groups["name"].Value;
+        if (HasUnbalancedModernMarkupBoundary(name))
+        {
+            return false;
+        }
+
+        if (!Translator.TryGetTranslation("Active Effects - {0}", out var template))
+        {
+            template = "Active Effects - {0}";
+        }
+
+        var visibleLabel = template.Replace(" - {0}", string.Empty);
+        if (string.Equals(visibleLabel, template, StringComparison.Ordinal))
+        {
+            visibleLabel = template.Replace("{0}", string.Empty).TrimEnd();
+        }
+
+        translated = !string.IsNullOrEmpty(match.Groups["prefix"].Value)
+            ? "{{W|" + visibleLabel + "}}{{Y| - " + name + "}}"
+            : template.Replace("{0}", name);
+        DynamicTextObservability.RecordTransform(route, "BookScreen.TitleText", title, translated);
+        return true;
+    }
+
+    private static bool HasUnbalancedModernMarkupBoundary(string value)
+    {
+        var openCount = 0;
+        var closeCount = 0;
+        var hasOpeningBrace = false;
+        for (var index = 0; index < value.Length - 1; index++)
+        {
+            hasOpeningBrace |= value[index] == '{';
+            if (value[index] == '{' && value[index + 1] == '{')
+            {
+                openCount++;
+                index++;
+            }
+            else if (value[index] == '}' && value[index + 1] == '}')
+            {
+                closeCount++;
+                index++;
+            }
+        }
+
+        hasOpeningBrace |= value.Length > 0 && value[value.Length - 1] == '{';
+        return openCount != closeCount || hasOpeningBrace && openCount == 0;
     }
 
     private static void TranslateMenuOptions(Type? targetType)

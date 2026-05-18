@@ -102,11 +102,20 @@ public static class ProselytizationSifrahTranslationPatch
             return false;
         }
 
+        if (DoesVerbRouteTranslator.TryTranslateMarkedMessage(source, out translated))
+        {
+            DynamicTextObservability.RecordTransform(route, "Popup.ProducerText." + Context + ".DoesVerb", source, translated);
+            return true;
+        }
+
+        _ = family;
+
+        var ownerFamily = "Popup.ProducerText." + Context;
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
-        if (TryTranslate(CriticalFailurePattern, "はあなたの無礼に気分を害した。", source, stripped, spans, route, family, "CriticalFailure", out translated)
-            || TryTranslate(FailurePattern, "はあなたの懇願に納得しなかった。", source, stripped, spans, route, family, "Failure", out translated)
-            || TryTranslate(PartialSuccessPattern, "はあなたの懇願に納得しなかったが、さらに聞きたがっている。", source, stripped, spans, route, family, "PartialSuccess", out translated)
-            || TryTranslate(SympatheticButUnablePattern, "は同情的だが、あなたに加われない。", source, stripped, spans, route, family, "SympatheticButUnable", out translated))
+        if (TryTranslate(CriticalFailurePattern, "はあなたの無礼に気分を害した。", source, stripped, spans, route, ownerFamily, "CriticalFailure", out translated)
+            || TryTranslate(FailurePattern, "はあなたの懇願に納得しなかった。", source, stripped, spans, route, ownerFamily, "Failure", out translated)
+            || TryTranslate(PartialSuccessPattern, "はあなたの懇願に納得しなかったが、さらに聞きたがっている。", source, stripped, spans, route, ownerFamily, "PartialSuccess", out translated)
+            || TryTranslate(SympatheticButUnablePattern, "は同情的だが、あなたに加われない。", source, stripped, spans, route, ownerFamily, "SympatheticButUnable", out translated))
         {
             return true;
         }
@@ -160,6 +169,6 @@ public static class ProselytizationSifrahTranslationPatch
 
     private static void Record(string route, string family, string detail, string source, string translated)
     {
-        DynamicTextObservability.RecordTransform(route, family + "." + Context + "." + detail, source, translated);
+        DynamicTextObservability.RecordTransform(route, family + "." + detail, source, translated);
     }
 }

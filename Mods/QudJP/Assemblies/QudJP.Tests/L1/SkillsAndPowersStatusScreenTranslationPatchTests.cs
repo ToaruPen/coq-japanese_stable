@@ -177,6 +177,132 @@ public sealed class SkillsAndPowersStatusScreenTranslationPatchTests
         });
     }
 
+    [Test]
+    public void TryTranslateDetailText_TranslatesGeneratedAbilityStatLinesAndCooldownAdjustment()
+    {
+        var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateDetailText(
+            "Duration: 6d6 rounds\nRange: 8\nArea: 7x7\nCooldown: {{G|43}} rounds\nCooldown reduced by 7 due to high Willpower.",
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.changed, Is.True);
+            Assert.That(
+                result.translated,
+                Is.EqualTo("持続時間: 6d6 ラウンド\n射程: 8\n効果範囲: 7x7\nクールダウン: {{G|43}} ラウンド\nクールダウンが7短縮（高い意志力による）。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateDetailText_PreservesColorsInsideGeneratedAbilityStatValues()
+    {
+        var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateDetailText(
+            "Duration: {{G|6 rounds}}",
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.changed, Is.True);
+            Assert.That(result.translated, Is.EqualTo("持続時間: {{G|6 ラウンド}}"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateDetailText_PreservesLabelAndWholeLineColorsInGeneratedAbilityStatLines()
+    {
+        var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateDetailText(
+            "{{K|{{G|Duration}}: 6 rounds}}",
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.changed, Is.True);
+            Assert.That(result.translated, Is.EqualTo("{{K|{{G|持続時間}}: 6 ラウンド}}"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateDetailText_TranslatesCooldownFloorLine()
+    {
+        var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateDetailText(
+            "Cooldown cannot be reduced below {{G|5}} rounds.",
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.changed, Is.True);
+            Assert.That(result.translated, Is.EqualTo("クールダウンは{{G|5}}ラウンド未満には短縮されない。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateDetailText_LeavesNonMatchingEnglishLineUnchanged()
+    {
+        var source = "Some unrelated line.";
+
+        var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateDetailText(
+            source,
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.changed, Is.False);
+            Assert.That(result.translated, Is.EqualTo(source));
+        });
+    }
+
+    [Test]
+    public void TryTranslateDetailText_LeavesEmptyInputUnchanged()
+    {
+        var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateDetailText(
+            string.Empty,
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.changed, Is.False);
+            Assert.That(result.translated, Is.Empty);
+        });
+    }
+
+    [Test]
+    public void TryTranslateDetailText_LeavesDirectMarkedInputUnchanged()
+    {
+        var source = "\x01{{G|Some unrelated line.}}";
+
+        var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateDetailText(
+            source,
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.changed, Is.False);
+            Assert.That(result.translated, Is.EqualTo(source));
+        });
+    }
+
+    [Test]
+    public void TryTranslateDetailText_PreservesCooldownReasonColors()
+    {
+        var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateDetailText(
+            "Cooldown reduced by 7 due to {{G|high Willpower}}.",
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.changed, Is.True);
+            Assert.That(result.translated, Is.EqualTo("クールダウンが7短縮（{{G|高い意志力}}による）。"));
+        });
+    }
+
     private void WriteDictionaryFile(string relativePath, params (string key, string text)[] entries)
     {
         var builder = new StringBuilder();

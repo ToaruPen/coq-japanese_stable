@@ -71,6 +71,42 @@ public sealed class UITextSkinTranslationPatchTests
         Assert.That(text, Is.EqualTo("{{W|Hello}}"));
     }
 
+    [TestCase("{{W|発動中の効果}}{{Y| - クラミルの蒸留所}}")]
+    [TestCase("&W発動中の効果&Y - クラミルの蒸留所")]
+    public void ShouldRepairActiveEffectsTitle_DetectsColoredTitleText(string text)
+    {
+        Assert.That(UITextSkinTranslationPatch.ShouldRepairActiveEffectsTitleForTests(text), Is.True);
+    }
+
+    [TestCase("発動中の効果はない。")]
+    [TestCase("{{W|[Esc]}} 閉じる")]
+    public void ShouldRepairActiveEffectsTitle_IgnoresNonTitleText(string text)
+    {
+        Assert.That(UITextSkinTranslationPatch.ShouldRepairActiveEffectsTitleForTests(text), Is.False);
+    }
+
+    [Test]
+    public void BuildActiveEffectsTitleRtf_ConvertsLocalizedTitleToTmpRichText()
+    {
+        var result = UITextSkinTranslationPatch.BuildActiveEffectsTitleRtfForTests(
+            "{{W|発動中の効果}}{{Y| - ウォーターヴァイン農家}}");
+
+        Assert.That(
+            result,
+            Is.EqualTo("<color=#CFC041FF>発動中の効果</color><color=#40A4B9FF> - ウォーターヴァイン農家</color>"));
+    }
+
+    [Test]
+    public void BuildActiveEffectsTitleRtf_EscapesTmpMarkupInTargetName()
+    {
+        var result = UITextSkinTranslationPatch.BuildActiveEffectsTitleRtfForTests(
+            "{{W|発動中の効果}}{{Y| - <snapjaw> friend}}");
+
+        Assert.That(
+            result,
+            Is.EqualTo("<color=#CFC041FF>発動中の効果</color><color=#40A4B9FF> - &lt;snapjaw&gt; friend</color>"));
+    }
+
     [Test]
     public void Prefix_StripsDirectTranslationMarkerBeforeSinkTranslation()
     {

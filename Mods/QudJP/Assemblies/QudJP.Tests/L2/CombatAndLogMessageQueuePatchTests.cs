@@ -1891,6 +1891,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
     [TestCase(nameof(DummyFlightTarget.StartFlying), "You begin flying!", null, "飛行を開始した！")]
     [TestCase(nameof(DummyFlightTarget.StartFlying), "{{G|chrome hoverer}} begins flying.", null, "{{G|chrome hoverer}}が飛行を開始した。")]
+    [TestCase(nameof(DummyFlightTarget.StartFlying), "{{G|The chrome hoverer}} begins flying.", null, "{{G|chrome hoverer}}が飛行を開始した。")]
     [TestCase(nameof(DummyFlightTarget.StartFlying), "You begin using an additional flight capability.", null, "追加の飛行手段を使い始めた。")]
     [TestCase(nameof(DummyFlightTarget.StopFlying), "You return to the ground.", null, "地上に戻った。")]
     [TestCase(nameof(DummyFlightTarget.StopFlying), "{{G|chrome hoverer}} returns to the ground.", null, "{{G|chrome hoverer}}が地上に戻った。")]
@@ -1907,6 +1908,35 @@ public sealed class CombatAndLogMessageQueuePatchTests
         string expected)
     {
         AssertFlightMessage(methodName, source, color, expected);
+    }
+
+    [Test]
+    public void Flight_TranslatesDoesVerbMarkedQueuedMessages_WhenOwnerPatched()
+    {
+        UseRepositoryMessageFrames();
+
+        var subject = "The 巨大トンボ";
+        var source = DoesVerbRouteTranslator.MarkDoesFragment(
+            subject + " begins",
+            "begin",
+            subject.Length,
+            null) + " flying.";
+
+        AssertFlightMessage(
+            nameof(DummyFlightTarget.StartFlying),
+            source,
+            null,
+            "巨大トンボが飛翔し始めた。");
+    }
+
+    [Test]
+    public void Flight_StripsLeadingEnglishArticleFromThirdPersonSubject_WhenOwnerPatched()
+    {
+        AssertFlightMessage(
+            nameof(DummyFlightTarget.StartFlying),
+            "The 巨大トンボ begins flying.",
+            null,
+            "巨大トンボが飛行を開始した。");
     }
 
     [Test]

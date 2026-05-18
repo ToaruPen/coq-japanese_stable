@@ -304,6 +304,49 @@ public sealed class AbilityManagerScreenTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesGeneratedDetailStatLines_WhenHighlightChanges()
+    {
+        WriteDictionary(
+            ("Time Dilation", "時間膨張"),
+            ("Type: ", "種別: "),
+            ("Mutations", "変異"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyAbilityManagerScreenTarget), nameof(DummyAbilityManagerScreenTarget.HandleHighlightLeft)),
+                postfix: new HarmonyMethod(RequirePatchPostfix()));
+
+            var screen = new DummyAbilityManagerScreenTarget();
+            screen.HandleHighlightLeft(new DummyAbilityManagerScreenLineData
+            {
+                Id = "ability",
+                ability = new DummyAbilityManagerEntryTarget
+                {
+                    DisplayName = "Time Dilation",
+                    Class = "Mutations",
+                    Description = "Duration: 15 rounds\nArea: 7x7\nCooldown reduced by 22 due to high Willpower.",
+                },
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(screen.rightSideHeaderText.text, Is.EqualTo("時間膨張"));
+                Assert.That(
+                    screen.rightSideDescriptionArea.text,
+                    Is.EqualTo("{{y|種別: }}変異\n\n持続時間: 15 ラウンド\n効果範囲: 7x7\nクールダウンが22短縮（高い意志力による）。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Postfix_FallsBackToEnglish_WhenDictionaryEntriesAreMissing()
     {
         WriteDictionary(("Maneuvers", "戦技"));
@@ -414,7 +457,7 @@ public sealed class AbilityManagerScreenTranslationPatchTests
                 Assert.That(screen.rightSideDescriptionArea.SetTextCallCount, Is.EqualTo(2));
                 Assert.That(
                     screen.rightSideDescriptionArea.text,
-                    Is.EqualTo("{{y|種別: }}戦技\n\n調理と食品保存のために焚き火を起こす。 戦闘中はキャンプできない。\nクールダウン: {{G|85}}ラウンド\n\n高い意志力によりクールダウンが15短縮された。"));
+                    Is.EqualTo("{{y|種別: }}戦技\n\n調理と食品保存のために焚き火を起こす。 戦闘中はキャンプできない。\nクールダウン: {{G|85}} ラウンド\n\nクールダウンが15短縮（高い意志力による）。"));
             });
         }
         finally
@@ -463,7 +506,7 @@ public sealed class AbilityManagerScreenTranslationPatchTests
                 Assert.That(screen.rightSideHeaderText.text, Is.EqualTo("甲殻を締め付ける"));
                 Assert.That(
                     screen.rightSideDescriptionArea.text,
-                    Is.EqualTo("{{y|種別: }}精神変異\n\n隣接する敵対的なクリーチャーを6d4ラウンドのあいだ恐怖で退却させる。\n\n持続時間: 6d6ラウンド\n射程: 視界\nクールダウン: {{G|43}}ラウンド\n\n高い意志力によりクールダウンが7短縮された。"));
+                    Is.EqualTo("{{y|種別: }}精神変異\n\n隣接する敵対的なクリーチャーを6d4ラウンドのあいだ恐怖で退却させる。\n\n持続時間: 6d6 ラウンド\n射程: 視界\nクールダウン: {{G|43}} ラウンド\n\nクールダウンが7短縮（高い意志力による）。"));
             });
 
             screen.HandleHighlightLeft(new DummyAbilityManagerScreenLineData
@@ -482,7 +525,7 @@ public sealed class AbilityManagerScreenTranslationPatchTests
                 Assert.That(screen.rightSideHeaderText.text, Is.EqualTo("レーザー照射 (4チャージ)"));
                 Assert.That(
                     screen.rightSideDescriptionArea.text,
-                    Is.EqualTo("{{y|種別: }}精神変異\n\n射程: 12\nクールダウン: {{G|43}}ラウンド"));
+                    Is.EqualTo("{{y|種別: }}精神変異\n\n射程: 12\nクールダウン: {{G|43}} ラウンド"));
             });
 
             screen.HandleHighlightLeft(new DummyAbilityManagerScreenLineData
@@ -501,7 +544,7 @@ public sealed class AbilityManagerScreenTranslationPatchTests
                 Assert.That(screen.rightSideHeaderText.text, Is.EqualTo("ロボットを叱責"));
                 Assert.That(
                     screen.rightSideDescriptionArea.text,
-                    Is.EqualTo("{{y|種別: }}精神変異\n\nロボットを叱責し、命令に従わせる。 レベル + 自我を基にした難易度判定。\nクールダウン: {{G|85}}ラウンド"));
+                    Is.EqualTo("{{y|種別: }}精神変異\n\nロボットを叱責し、命令に従わせる。 レベル + 自我を基にした難易度判定。\nクールダウン: {{G|85}} ラウンド"));
             });
         }
         finally
@@ -544,7 +587,7 @@ public sealed class AbilityManagerScreenTranslationPatchTests
                 Assert.That(screen.rightSideHeaderText.text, Is.EqualTo("針毛"));
                 Assert.That(
                     screen.rightSideDescriptionArea.text,
-                    Is.EqualTo("{{y|種別: }}身体変異\n\n範囲: 自分を中心に2x2\n範囲: 7x7\nクールダウン: 200ラウンド"));
+                    Is.EqualTo("{{y|種別: }}身体変異\n\n効果範囲: 2x2 自分中心\n効果範囲: 7x7\nクールダウン: 200 ラウンド"));
             });
         }
         finally
